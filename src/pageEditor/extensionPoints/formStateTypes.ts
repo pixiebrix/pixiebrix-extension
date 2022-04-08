@@ -143,7 +143,7 @@ export interface PanelFormState
 // ContextMenuFormState
 type ContextMenuExtensionState = BaseExtensionState &
   Except<ContextMenuConfig, "action">;
-type ContextMenuExtensionPoint = BaseExtensionPointState & {
+type ContextMenuExtensionPointState = BaseExtensionPointState & {
   definition: {
     type: ExtensionPointType;
     defaultOptions: ContextMenuDefaultOptions;
@@ -156,7 +156,10 @@ type ContextMenuExtensionPoint = BaseExtensionPointState & {
 };
 
 export interface ContextMenuFormState
-  extends BaseFormState<ContextMenuExtensionState, ContextMenuExtensionPoint> {
+  extends BaseFormState<
+    ContextMenuExtensionState,
+    ContextMenuExtensionPointState
+  > {
   type: "contextMenu";
 }
 
@@ -174,6 +177,12 @@ type QuickBarExtensionPointState = BaseExtensionPointState & {
     isAvailable: NormalizedAvailability;
   };
 };
+
+export function isQuickBarExtensionPoint(
+  extensionPoint: BaseExtensionPointState
+): extensionPoint is QuickBarExtensionPointState {
+  return extensionPoint.definition.type === "quickBar";
+}
 
 export interface QuickBarFormState
   extends BaseFormState<QuickBarExtensionState, QuickBarExtensionPointState> {

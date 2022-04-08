@@ -26,16 +26,27 @@ export const SERVICE_STORAGE_KEY = "service-url" as ManualStorageKey;
 
 type ConfiguredHost = string | null | undefined;
 
+const MANAGED_HOSTNAME_KEY = "serviceUrl" as ManualStorageKey;
+
 export function withoutTrailingSlash(url: string): string {
-  return url.endsWith("/") ? url.slice(0, -1) : url;
+  return url.replace(/\/$/, "");
 }
 
 export async function getBaseURL(): Promise<string> {
   if (isExtensionContext()) {
     const configured = await readStorage<ConfiguredHost>(SERVICE_STORAGE_KEY);
-    return withoutTrailingSlash(
-      isEmpty(configured) ? DEFAULT_SERVICE_URL : configured
+    if (!isEmpty(configured)) {
+      return withoutTrailingSlash(configured);
+    }
+
+    const managed = await readStorage<string>(
+      MANAGED_HOSTNAME_KEY,
+      undefined,
+      "managed"
     );
+    if (!isEmpty(managed)) {
+      return withoutTrailingSlash(managed);
+    }
   }
 
   return withoutTrailingSlash(DEFAULT_SERVICE_URL);

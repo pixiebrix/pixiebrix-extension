@@ -21,17 +21,9 @@ import {
   getMethod,
   getNotifier,
 } from "webext-messenger";
-import { isBackground } from "webext-detect-page";
 import type { SanitizedServiceConfiguration } from "@/core";
 import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
-
-// TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
-if (isBackground() && process.env.DEBUG) {
-  console.warn(
-    "This should not have been imported in the background page. Use the API directly instead."
-  );
-}
 
 // Chrome offers this API in more contexts than Firefox, so it skips the messenger entirely
 export const containsPermissions = browser.permissions
@@ -105,17 +97,23 @@ export const proxyService = getMethod("PROXY", bg) as <TData>(
   requestConfig: AxiosRequestConfig
 ) => Promise<RemoteResponse<TData>>;
 
+// Use `reportError` instead */
+// export const recordError = getNotifier("RECORD_ERROR", bg);
+
 export const recordLog = getNotifier("RECORD_LOG", bg);
-export const recordError = getNotifier("RECORD_ERROR", bg);
 export const recordEvent = getNotifier("RECORD_EVENT", bg);
 export const getLoggingConfig = getMethod("GET_LOGGING_CONFIG", bg);
 export const setLoggingConfig = getMethod("SET_LOGGING_CONFIG", bg);
 export const clearLogs = getMethod("CLEAR_LOGS", bg);
+export const clearExtensionDebugLogs = getMethod(
+  "CLEAR_EXTENSION_DEBUG_LOGS",
+  bg
+);
 
 export const traces = {
   addEntry: getNotifier("ADD_TRACE_ENTRY", bg),
   addExit: getNotifier("ADD_TRACE_EXIT", bg),
-  clear: getNotifier("CLEAR_TRACES", bg),
+  clear: getMethod("CLEAR_TRACES", bg),
   clearAll: getNotifier("CLEAR_ALL_TRACES", bg),
 };
 

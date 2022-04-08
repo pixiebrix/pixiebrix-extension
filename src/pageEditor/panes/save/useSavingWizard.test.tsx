@@ -31,7 +31,7 @@ import {
   installedRecipeMetadataFactory,
 } from "@/testUtils/factories";
 import useCreateMock from "@/pageEditor/hooks/useCreate";
-import useResetMock from "@/pageEditor/hooks/useReset";
+import useResetMock from "@/pageEditor/hooks/useResetExtension";
 import {
   useCreateRecipeMutation as useCreateRecipeMutationMock,
   useUpdateRecipeMutation as useUpdateRecipeMutationMock,
@@ -51,7 +51,7 @@ jest.unmock("react-redux");
 
 jest.mock("@/telemetry/logging");
 jest.mock("@/pageEditor/hooks/useCreate");
-jest.mock("@/pageEditor/hooks/useReset");
+jest.mock("@/pageEditor/hooks/useResetExtension");
 
 jest.mock("@/services/api", () => ({
   useCreateRecipeMutation: jest.fn().mockReturnValue([]),
@@ -202,6 +202,8 @@ describe("saving a Recipe Extension", () => {
     (useCreateMock as jest.Mock).mockReturnValue(createMock);
 
     const resetMock = jest.fn();
+    // eslint-disable-next-line unicorn/no-useless-undefined -- the parameter is required, the async function return value is void
+    resetMock.mockResolvedValue(undefined);
     (useResetMock as jest.Mock).mockReturnValue(resetMock);
 
     const createRecipeMock = jest.fn();
@@ -240,13 +242,18 @@ describe("saving a Recipe Extension", () => {
       });
     });
 
+    // Ensure the Saving dialog is open, but saving hasn't started yet
     expect(result.current.isWizardOpen).toBe(true);
     expect(result.current.isSaving).toBe(false);
 
+    // These deferreds let us go through saveElementAsPersonalExtension step by step
+    const resettingElementDeferred = pDefer<void>();
+    resetMock.mockReturnValueOnce(resettingElementDeferred.promise);
     const creatingElementDeferred = pDefer<void>();
     createMock.mockReturnValueOnce(creatingElementDeferred.promise);
 
     // Saving as personal extension
+    // Invoke the saveElementAsPersonalExtension but don't wait for it to resolve yet
     const savingElementPromise = act(async () =>
       result.current.saveElementAsPersonalExtension()
     );
@@ -255,7 +262,7 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isWizardOpen).toBe(true);
     expect(result.current.isSaving).toBe(true);
 
-    // Check new element added
+    // Check new element added to redux store
     const elements = selectElements(store.getState());
     expect(elements).toHaveLength(2);
     expect(elements[0].recipe).toStrictEqual({
@@ -274,6 +281,10 @@ describe("saving a Recipe Extension", () => {
       shouldShowConfirmation: false,
     });
 
+    // Resolving the reset promise to go further in the saveElementAsPersonalExtension
+    resettingElementDeferred.resolve();
+    await resettingElementDeferred.promise;
+
     // Check new element is saved
     expect(createMock).toHaveBeenCalledTimes(1);
     expect(createMock).toHaveBeenCalledWith({
@@ -281,13 +292,17 @@ describe("saving a Recipe Extension", () => {
       pushToCloud: true,
     });
 
-    // Check the original recipe element is uninstalled
+    // Resolving the create promise to go further in the saveElementAsPersonalExtension
     creatingElementDeferred.resolve();
     await creatingElementDeferred.promise;
+
+    // Check the original recipe element is uninstalled
     expect(selectElements(store.getState())).toHaveLength(1);
 
-    // Check wizard state after saving
+    // Waiting for the saveElementAsPersonalExtension to complete entirely
     await savingElementPromise;
+
+    // Check wizard state after saving
     expect(result.current.isWizardOpen).toBe(false);
     expect(result.current.isSaving).toBe(false);
   });

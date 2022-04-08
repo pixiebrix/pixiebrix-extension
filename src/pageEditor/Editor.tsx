@@ -44,12 +44,14 @@ import { thisTab } from "@/pageEditor/utils";
 import {
   selectActiveElement,
   selectIsAddToRecipeModalVisible,
+  selectIsRemoveFromRecipeModalVisible,
 } from "@/pageEditor/slices/editorSelectors";
 import RecipePane from "@/pageEditor/panes/RecipePane";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
 import { RootState } from "@/pageEditor/pageEditorTypes";
 import AddToRecipeModal from "@/pageEditor/sidebar/AddToRecipeModal";
+import RemoveFromRecipeModal from "@/pageEditor/sidebar/RemoveFromRecipeModal";
 
 const selectEditor = ({ editor }: RootState) => editor;
 
@@ -103,6 +105,9 @@ const Editor: React.FunctionComponent = () => {
 
   const isAddToRecipeModalVisible = useSelector(
     selectIsAddToRecipeModalVisible
+  );
+  const isRemoveFromRecipeModalVisible = useSelector(
+    selectIsRemoveFromRecipeModalVisible
   );
 
   const body = useMemo(() => {
@@ -179,6 +184,8 @@ const Editor: React.FunctionComponent = () => {
       </div>
 
       {isAddToRecipeModalVisible && !isLoadingRecipes && <AddToRecipeModal />}
+
+      {isRemoveFromRecipeModalVisible && <RemoveFromRecipeModal />}
     </>
   );
 };

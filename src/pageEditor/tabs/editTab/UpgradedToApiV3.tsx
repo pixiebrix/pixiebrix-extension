@@ -27,12 +27,9 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { selectShowV3UpgradeMessageForActiveElement } from "@/pageEditor/slices/editorSelectors";
-import { RootState } from "@/pageEditor/pageEditorTypes";
 
 const UpgradedToApiV3: React.FC = () => {
-  const showMessage = useSelector<RootState, boolean>(
-    selectShowV3UpgradeMessageForActiveElement
-  );
+  const showMessage = useSelector(selectShowV3UpgradeMessageForActiveElement);
   const dispatch = useDispatch();
 
   return (

@@ -28,7 +28,7 @@ import { uuidv4 } from "@/types/helpers";
 import { reportEvent } from "@/telemetry/events";
 import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { selectActiveExtensionId } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveElementId } from "@/pageEditor/slices/editorSelectors";
 import { BlockType } from "@/runtime/runtimeTypes";
 
 type ElementBlockEditProps = {
@@ -45,7 +45,7 @@ const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
   onBlockSelected,
 }) => {
   const sessionId = useSelector(selectSessionId);
-  const extensionId = useSelector(selectActiveExtensionId);
+  const elementId = useSelector(selectActiveElementId);
 
   const [renderBlocks] = useAsyncState<IBlock[]>(
     async () => {
@@ -71,7 +71,7 @@ const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
     reportEvent("BrickAdd", {
       brickId: block.id,
       sessionId,
-      extensionId,
+      elementId,
       source: "PageEditor-DocumentBuilder",
     });
     onBlockSelected(blockConfig);

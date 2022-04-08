@@ -26,6 +26,7 @@ import { PersistedExtension } from "@/core";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { updateDeployments } from "@/background/deployment";
+import { reportEvent } from "@/telemetry/events";
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 
@@ -133,6 +134,18 @@ beforeEach(() => {
 });
 
 describe("updateDeployments", () => {
+  test("opens options page if enterprise customer becomes unlinked", async () => {
+    isLinkedMock.mockResolvedValue(false);
+
+    await updateDeployments();
+
+    expect(reportEvent).toHaveBeenCalledWith(
+      "OrganizationExtensionLink",
+      expect.anything()
+    );
+    expect(openOptionsPageMock.mock.calls).toHaveLength(1);
+  });
+
   test("can add deployment from empty state if deployment has permissions", async () => {
     isLinkedMock.mockResolvedValue(true);
     containsPermissionsMock.mockResolvedValue(true);

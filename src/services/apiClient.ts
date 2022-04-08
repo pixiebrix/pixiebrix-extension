@@ -42,7 +42,7 @@ export async function absoluteApiUrl(
     return relativeOrAbsoluteURL;
   }
 
-  return new URL(relativeOrAbsoluteURL, await getBaseURL()).href;
+  return new URL(relativeOrAbsoluteURL, base).href;
 }
 
 /**

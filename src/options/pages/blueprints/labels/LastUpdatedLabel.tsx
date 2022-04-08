@@ -18,7 +18,7 @@ import styles from "./SharingLabel.module.scss";
 
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock } from "@fortawesome/free-regular-svg-icons";
+import { faClock } from "@fortawesome/free-solid-svg-icons";
 import { timeSince } from "@/utils/timeUtils";
 import React from "react";
 import cx from "classnames";

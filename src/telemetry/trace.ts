@@ -192,15 +192,11 @@ export async function clearExtensionTraces(extensionId: UUID): Promise<void> {
   let cnt = 0;
 
   const db = await getDB();
-
   const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
-
-  // There's probably a better way to write this using the index
-  for await (const cursor of tx.store) {
-    if (cursor.value.extensionId === extensionId) {
-      cnt++;
-      await cursor.delete();
-    }
+  const index = tx.store.index("extensionId");
+  for await (const cursor of index.iterate(extensionId)) {
+    cnt++;
+    await cursor.delete();
   }
 
   console.debug("Cleared %d trace entries for extension %s", cnt, extensionId);

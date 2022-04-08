@@ -45,6 +45,7 @@ import Footer from "@/pageEditor/sidebar/Footer";
 import {
   faAngleDoubleLeft,
   faAngleDoubleRight,
+  faFileExport,
   faFileImport,
   faSync,
 } from "@fortawesome/free-solid-svg-icons";
@@ -56,8 +57,7 @@ import RecipeEntry from "@/pageEditor/sidebar/RecipeEntry";
 import useFlags from "@/hooks/useFlags";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import {
-  getIdForElement,
-  selectActiveExtensionId,
+  selectActiveElementId,
   selectActiveRecipeId,
   selectElements,
   selectIsAddToRecipeModalVisible,
@@ -66,6 +66,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useGetRecipesQuery } from "@/services/api";
+import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
   <Button
@@ -105,7 +106,28 @@ const AddToRecipeButton: React.VFC<{ disabled: boolean }> = ({ disabled }) => {
       }}
       disabled={disabled}
     >
-      <FontAwesomeIcon icon={faFileImport} />
+      <FontAwesomeIcon icon={faFileImport} size="lg" />
+    </Button>
+  );
+};
+
+const RemoveFromRecipeButton: React.VFC<{ disabled: boolean }> = ({
+  disabled,
+}) => {
+  const dispatch = useDispatch();
+
+  return (
+    <Button
+      type="button"
+      size="sm"
+      variant="light"
+      title="Remove extension from blueprint"
+      onClick={() => {
+        dispatch(actions.showRemoveFromRecipeModal());
+      }}
+      disabled={disabled}
+    >
+      <FontAwesomeIcon icon={faFileExport} size="lg" />
     </Button>
   );
 };
@@ -139,15 +161,26 @@ const SidebarExpanded: React.VoidFunctionComponent<{
 }> = ({ collapseSidebar }) => {
   const context = useContext(PageEditorTabContext);
 
-  const { data: recipes, isLoading: isLoadingRecipes } = useGetRecipesQuery();
+  const { data: allRecipes, isLoading: isLoadingRecipes } =
+    useGetRecipesQuery();
 
   const isInsertingElement = useSelector((state: EditorState) =>
     Boolean(state.inserting)
   );
-  const activeElementId = useSelector(selectActiveExtensionId);
+  const activeElementId = useSelector(selectActiveElementId);
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const installed = useSelector(selectExtensions);
   const elements = useSelector(selectElements);
+
+  const recipes = useMemo(
+    () =>
+      allRecipes?.filter((recipe) =>
+        [...installed, ...elements].some(
+          (element) => getRecipeIdForElement(element) === recipe.metadata.id
+        )
+      ) ?? [],
+    [allRecipes, elements, installed]
+  );
 
   const { flagOn } = useFlags();
   const showDeveloperUI =
@@ -176,6 +209,8 @@ const SidebarExpanded: React.VoidFunctionComponent<{
     isEmpty(recipes) ||
     activeElement === undefined ||
     activeElement.recipe != null;
+
+  const removeFromRecipeButtonDisabled = activeElement?.recipe == null;
 
   const elementHash = hash(
     sortBy(
@@ -280,7 +315,12 @@ const SidebarExpanded: React.VoidFunctionComponent<{
             {showDeveloperUI && <ReloadButton />}
 
             {flagOn("page-editor-blueprints") && (
-              <AddToRecipeButton disabled={addToRecipeButtonDisabled} />
+              <>
+                <AddToRecipeButton disabled={addToRecipeButtonDisabled} />
+                <RemoveFromRecipeButton
+                  disabled={removeFromRecipeButtonDisabled}
+                />
+              </>
             )}
           </div>
           <Button
@@ -317,7 +357,6 @@ const SidebarExpanded: React.VoidFunctionComponent<{
                 key={recipeId}
                 recipeId={recipeId}
                 recipes={recipes}
-                elements={elements}
                 activeRecipeId={activeRecipeId}
               >
                 {elements.map((element) => (
