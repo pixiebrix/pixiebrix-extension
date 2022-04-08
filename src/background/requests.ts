@@ -58,6 +58,7 @@ export async function serializableAxiosRequest<T>(
     "Network requests must be made from the background page"
   );
 
+  // Axios does not perform validation, so call before the axios call.
   assertHttpsUrl(config.url, config.baseURL);
 
   const { data, status, statusText } = await axios(config);

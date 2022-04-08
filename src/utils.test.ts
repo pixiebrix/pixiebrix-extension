@@ -66,12 +66,9 @@ describe("assertHttpsUrl", () => {
   });
   test("rejects invalid URLs", () => {
     expect(() => assertHttpsUrl("https::/example.com")).toThrow(
-      new BusinessError(
-        "Invalid URL: https::/example.com (base URL: http://localhost/)"
-      )
+      new BusinessError("Invalid URL: https::/example.com")
     );
   });
-
   test("parses relative URLs with a base", () => {
     expect(
       assertHttpsUrl("/cool/path", "https://example.com/page")
