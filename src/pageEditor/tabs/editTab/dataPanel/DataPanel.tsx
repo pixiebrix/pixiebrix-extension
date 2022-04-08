@@ -316,7 +316,8 @@ const DataPanel: React.FC<{
             mountOnEnter
             unmountOnExit
           >
-            {block.if && (
+            {/* The value of block.if can be `false`, in this case we also need to show the warning */}
+            {block.if != null && (
               <div className="text-info">
                 <FontAwesomeIcon icon={faInfoCircle} /> This brick has a
                 condition. The brick will not execute if the condition is not

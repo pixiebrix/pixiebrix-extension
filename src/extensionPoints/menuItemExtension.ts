@@ -19,7 +19,11 @@ import { uuidv4 } from "@/types/helpers";
 import { ExtensionPoint } from "@/types";
 import { checkAvailable } from "@/blocks/available";
 import { castArray, cloneDeep, debounce, merge, once } from "lodash";
-import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
+import {
+  InitialValues,
+  reduceExtensionPipeline,
+  reducePipeline,
+} from "@/runtime/reducePipeline";
 import {
   hasCancelRootCause,
   MultipleElementsFoundError,
@@ -490,6 +494,8 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         root: document,
       };
 
+      // NOTE: don't use reduceExtensionPipeline because this is just evaluating the condition and shouldn't show up
+      // as a "run" in the logs/traces. We also leave off the extensionLogger (see note)
       const show = await reducePipeline(extension.config.if, initialValues, {
         // Don't pass extension: extensionLogger because our log display doesn't handle the in-extension point
         // conditionals yet
@@ -544,7 +550,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           root: document,
         };
 
-        await reducePipeline(actionConfig, initialValues, {
+        await reduceExtensionPipeline(actionConfig, initialValues, {
           logger: extensionLogger,
           ...apiVersionOptions(extension.apiVersion),
         });
