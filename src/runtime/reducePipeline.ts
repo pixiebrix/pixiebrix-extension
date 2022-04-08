@@ -476,7 +476,7 @@ export async function blockReducer(
 
     traces.addExit({
       ...preconfiguredTraceExit,
-      output: previousOutput as JsonObject,
+      output: null,
       skippedRun: true,
     });
 
