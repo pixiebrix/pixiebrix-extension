@@ -26,23 +26,29 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
-import { selectRecipeIsDirty } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectDirtyMetadataForRecipeId,
+  selectRecipeIsDirty,
+} from "@/pageEditor/slices/editorSelectors";
+import { useGetRecipesQuery } from "@/services/api";
 
 type RecipeEntryProps = {
   recipeId: RegistryId;
-  recipes?: RecipeDefinition[];
-  activeRecipeId: RegistryId | null;
+  isActive?: boolean;
 };
 
 const RecipeEntry: React.FC<RecipeEntryProps> = ({
   recipeId,
-  recipes,
-  activeRecipeId,
+  isActive,
   children,
 }) => {
   const [expanded, setExpanded] = useState(false);
   const dispatch = useDispatch();
-  const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
+  const { data: recipes } = useGetRecipesQuery();
+  const savedName = recipes?.find((recipe) => recipe.metadata.id === recipeId)
+    ?.metadata?.name;
+  const dirtyName = useSelector(selectDirtyMetadataForRecipeId(recipeId))?.name;
+  const name = dirtyName ?? savedName ?? "Loading...";
   const isDirty = useSelector(selectRecipeIsDirty(recipeId));
 
   const caretIcon = expanded ? faCaretDown : faCaretRight;
@@ -52,9 +58,9 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
       <ListGroup.Item
         className={cx(styles.root, "list-group-item-action")}
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
-        active={recipeId === activeRecipeId}
+        active={isActive}
         key={`recipe-${recipeId}`}
-        onClick={() => dispatch(actions.selectRecipe(recipe))}
+        onClick={() => dispatch(actions.selectRecipeId(recipeId))}
       >
         <button
           className={styles.icon}
@@ -65,7 +71,7 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
         >
           <FontAwesomeIcon icon={caretIcon} />
         </button>
-        <span className={styles.name}>{recipe?.metadata?.name}</span>
+        <span className={styles.name}>{name}</span>
         {isDirty && (
           <span className={cx(styles.icon, "text-danger")}>
             <UnsavedChangesIcon />

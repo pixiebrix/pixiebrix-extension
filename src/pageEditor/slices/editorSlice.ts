@@ -18,7 +18,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getErrorMessage } from "@/errors";
 import { clearExtensionTraces } from "@/telemetry/trace";
-import { RecipeMetadata, RegistryId, UUID } from "@/core";
+import { RecipeMetadata, RegistryId, SafeString, UUID } from "@/core";
 import {
   FOUNDATION_NODE_ID,
   makeInitialElementUIState,
@@ -29,18 +29,18 @@ import { BlockConfig } from "@/blocks/types";
 import { ExtensionPointType } from "@/extensionPoints/types";
 import {
   OptionsDefinition,
-  RecipeDefinition,
   RecipeMetadataFormState,
 } from "@/types/definitions";
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
-import { uuidv4 } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { isEmpty } from "lodash";
+import { freshIdentifier } from "@/utils";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
-  activeElement: null,
+  activeElementId: null,
   activeRecipeId: null,
   error: null,
   beta: false,
@@ -107,7 +107,7 @@ function syncElementNodeUIStates(
 }
 
 function setActiveNodeId(state: WritableDraft<EditorState>, nodeId: NodeId) {
-  const elementUIState = state.elementUIStates[state.activeElement];
+  const elementUIState = state.elementUIStates[state.activeElementId];
   ensureNodeUIState(elementUIState, nodeId);
   elementUIState.activeNodeId = nodeId;
 }
@@ -131,20 +131,20 @@ export const editorSlice = createSlice({
       state.error = null;
       state.dirty[element.uuid] = true;
       state.beta = false;
-      state.activeElement = element.uuid;
+      state.activeElementId = element.uuid;
       state.selectionSeq++;
       state.elementUIStates[element.uuid] = makeInitialElementUIState();
     },
     betaError(state, action: PayloadAction<{ error: string }>) {
       state.error = action.payload.error;
       state.beta = true;
-      state.activeElement = null;
+      state.activeElementId = null;
     },
     adapterError(state, action: PayloadAction<{ uuid: UUID; error: unknown }>) {
       const { uuid, error } = action.payload;
       state.error = getErrorMessage(error);
       state.beta = false;
-      state.activeElement = uuid;
+      state.activeElementId = uuid;
       state.selectionSeq++;
     },
     selectInstalled(state, action: PayloadAction<FormState>) {
@@ -158,7 +158,7 @@ export const editorSlice = createSlice({
 
       state.error = null;
       state.beta = null;
-      state.activeElement = uuid;
+      state.activeElementId = uuid;
       state.activeRecipeId = null;
       state.selectionSeq++;
       ensureElementUIState(state, uuid);
@@ -190,7 +190,7 @@ export const editorSlice = createSlice({
 
       state.error = null;
       state.beta = null;
-      state.activeElement = elementId;
+      state.activeElementId = elementId;
       state.activeRecipeId = null;
       state.selectionSeq++;
       ensureElementUIState(state, elementId);
@@ -250,8 +250,8 @@ export const editorSlice = createSlice({
     },
     removeElement(state, action: PayloadAction<UUID>) {
       const uuid = action.payload;
-      if (state.activeElement === uuid) {
-        state.activeElement = null;
+      if (state.activeElementId === uuid) {
+        state.activeElementId = null;
       }
 
       // This is called from the remove-recipe logic. When removing all extensions
@@ -268,12 +268,12 @@ export const editorSlice = createSlice({
       // Make sure we're not keeping any private data around from Page Editor sessions
       void clearExtensionTraces(uuid);
     },
-    selectRecipe(state, action: PayloadAction<RecipeDefinition>) {
-      const recipe = action.payload;
+    selectRecipeId(state, action: PayloadAction<RegistryId>) {
+      const recipeId = action.payload;
       state.error = null;
       state.beta = null;
-      state.activeElement = null;
-      state.activeRecipeId = recipe.metadata.id;
+      state.activeElementId = null;
+      state.activeRecipeId = recipeId;
       state.selectionSeq++;
     },
     setBetaUIEnabled(state, action: PayloadAction<boolean>) {
@@ -286,7 +286,7 @@ export const editorSlice = createSlice({
         newActiveNodeId?: NodeId;
       }>
     ) {
-      const elementUIState = state.elementUIStates[state.activeElement];
+      const elementUIState = state.elementUIStates[state.activeElementId];
       const { nodeIdToRemove, newActiveNodeId } = action.payload;
 
       const activeNodeId = newActiveNodeId ?? FOUNDATION_NODE_ID;
@@ -298,7 +298,7 @@ export const editorSlice = createSlice({
       setActiveNodeId(state, action.payload);
     },
     setNodeDataPanelTabSelected(state, action: PayloadAction<string>) {
-      const elementUIState = state.elementUIStates[state.activeElement];
+      const elementUIState = state.elementUIStates[state.activeElementId];
       const nodeUIState =
         elementUIState.nodeUIStates[elementUIState.activeNodeId];
       nodeUIState.dataPanel.activeTabKey = action.payload;
@@ -308,7 +308,7 @@ export const editorSlice = createSlice({
       action: PayloadAction<{ tabKey: string; query: string }>
     ) {
       const { tabKey, query } = action.payload;
-      const elementUIState = state.elementUIStates[state.activeElement];
+      const elementUIState = state.elementUIStates[state.activeElementId];
       const nodeUIState =
         elementUIState.nodeUIStates[elementUIState.activeNodeId];
       nodeUIState.dataPanel.tabQueries[tabKey] = query;
@@ -322,10 +322,10 @@ export const editorSlice = createSlice({
       delete state.copiedBlock;
     },
     showV3UpgradeMessage(state) {
-      state.showV3UpgradeMessageByElement[state.activeElement] = true;
+      state.showV3UpgradeMessageByElement[state.activeElementId] = true;
     },
     hideV3UpgradeMessage(state) {
-      state.showV3UpgradeMessageByElement[state.activeElement] = false;
+      state.showV3UpgradeMessageByElement[state.activeElementId] = false;
     },
     editRecipeOptions(state, action: PayloadAction<OptionsDefinition>) {
       const recipeId = state.activeRecipeId;
@@ -400,7 +400,7 @@ export const editorSlice = createSlice({
 
       if (!keepLocalCopy) {
         ensureElementUIState(state, newId);
-        state.activeElement = newId;
+        state.activeElementId = newId;
         state.elements.splice(elementIndex, 1);
         delete state.dirty[element.uuid];
         delete state.elementUIStates[element.uuid];
@@ -439,7 +439,7 @@ export const editorSlice = createSlice({
       state.elements.splice(elementIndex, 1);
       delete state.dirty[elementId];
       delete state.elementUIStates[elementId];
-      state.activeElement = undefined;
+      state.activeElementId = undefined;
 
       if (keepLocalCopy) {
         const newId = uuidv4();
@@ -450,7 +450,7 @@ export const editorSlice = createSlice({
         });
         state.dirty[newId] = true;
         ensureElementUIState(state, newId);
-        state.activeElement = newId;
+        state.activeElementId = newId;
       }
     },
     clearDeletedElementsForRecipe(state, action: PayloadAction<RegistryId>) {
@@ -474,6 +474,49 @@ export const editorSlice = createSlice({
     },
     clearActiveRecipe(state) {
       state.activeRecipeId = null;
+    },
+    createNewRecipeFromElement(
+      state,
+      action: PayloadAction<{
+        elementId: UUID;
+        userScope: string;
+      }>
+    ) {
+      const { elementId, userScope } = action.payload;
+      const recipeIds = Object.keys(state.dirtyRecipeMetadataById);
+      const newId = freshIdentifier(
+        `${userScope}/new-blueprint` as SafeString,
+        recipeIds
+      );
+      const newRecipeId = validateRegistryId(newId);
+      const newRecipeMetadata: RecipeMetadataFormState = {
+        id: newRecipeId,
+        name: "New Blueprint",
+        version: "",
+        description: "",
+      };
+      state.dirtyRecipeMetadataById[newRecipeId] = newRecipeMetadata;
+      state.dirtyRecipeOptionsById[newRecipeId] = {
+        schema: {},
+        uiSchema: {},
+      };
+      const element = state.elements.find(
+        (element) => element.uuid === elementId
+      );
+      if (!element) {
+        throw new Error(
+          "Error creating blueprint, extension element not found"
+        );
+      }
+
+      element.recipe = {
+        ...newRecipeMetadata,
+        sharing: null,
+        updated_at: null,
+      };
+      state.activeElementId = null;
+      state.activeRecipeId = newRecipeId;
+      state.selectionSeq++;
     },
   },
 });

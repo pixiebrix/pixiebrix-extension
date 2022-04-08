@@ -47,6 +47,7 @@ import {
   faAngleDoubleRight,
   faFileExport,
   faFileImport,
+  faFileMedical,
   faSync,
 } from "@fortawesome/free-solid-svg-icons";
 import { CSSTransition } from "react-transition-group";
@@ -67,6 +68,7 @@ import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useGetRecipesQuery } from "@/services/api";
 import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
+import { selectScope } from "@/auth/authSelectors";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
   <Button
@@ -128,6 +130,34 @@ const RemoveFromRecipeButton: React.VFC<{ disabled: boolean }> = ({
       disabled={disabled}
     >
       <FontAwesomeIcon icon={faFileExport} size="lg" />
+    </Button>
+  );
+};
+
+const CreateNewRecipeButton: React.VFC<{ disabled: boolean }> = ({
+  disabled,
+}) => {
+  const dispatch = useDispatch();
+  const scope = useSelector(selectScope);
+  const activeElementId = useSelector(selectActiveElementId);
+
+  return (
+    <Button
+      type="button"
+      size="sm"
+      variant="light"
+      title="Create a new blueprint with this extension"
+      onClick={() => {
+        dispatch(
+          actions.createNewRecipeFromElement({
+            elementId: activeElementId,
+            userScope: scope,
+          })
+        );
+      }}
+      disabled={disabled}
+    >
+      <FontAwesomeIcon icon={faFileMedical} size="lg" />
     </Button>
   );
 };
@@ -210,6 +240,9 @@ const SidebarExpanded: React.VoidFunctionComponent<{
     activeElement.recipe != null;
 
   const removeFromRecipeButtonDisabled = activeElement?.recipe == null;
+
+  const createRecipeButtonDisabled =
+    activeElement == null || activeElement.recipe != null;
 
   const elementHash = hash(
     sortBy(
@@ -315,6 +348,8 @@ const SidebarExpanded: React.VoidFunctionComponent<{
             <AddToRecipeButton disabled={addToRecipeButtonDisabled} />
 
             <RemoveFromRecipeButton disabled={removeFromRecipeButtonDisabled} />
+
+            <CreateNewRecipeButton disabled={createRecipeButtonDisabled} />
           </div>
           <Button
             variant="light"
@@ -349,8 +384,7 @@ const SidebarExpanded: React.VoidFunctionComponent<{
               <RecipeEntry
                 key={recipeId}
                 recipeId={recipeId}
-                recipes={recipes}
-                activeRecipeId={activeRecipeId}
+                isActive={recipeId === activeRecipeId}
               >
                 {elements.map((element) => (
                   <ElementListItem

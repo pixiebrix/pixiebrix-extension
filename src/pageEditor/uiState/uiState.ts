@@ -44,7 +44,7 @@ export function makeInitialElementUIState(): ElementUIState {
 export function selectActiveElementUIState(
   rootState: RootState
 ): ElementUIState {
-  return rootState.editor.elementUIStates[rootState.editor.activeElement];
+  return rootState.editor.elementUIStates[rootState.editor.activeElementId];
 }
 
 export function selectActiveNodeUIState(rootState: RootState): NodeUIState {

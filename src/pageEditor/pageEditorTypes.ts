@@ -64,7 +64,7 @@ export interface EditorState {
   /**
    * The uuid of the active element, if an extension is selected
    */
-  activeElement: UUID | null;
+  activeElementId: UUID | null;
 
   /**
    * The registry id of the active recipe, if a recipe is selected

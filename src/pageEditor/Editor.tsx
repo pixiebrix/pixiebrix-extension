@@ -35,14 +35,10 @@ import useEscapeHandler from "@/pageEditor/hooks/useEscapeHandler";
 import GenericInsertPane from "@/pageEditor/panes/insert/GenericInsertPane";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import {
-  useGetMarketplaceListingsQuery,
-  useGetRecipesQuery,
-} from "@/services/api";
+import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { cancelSelect } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import {
-  selectActiveElement,
   selectIsAddToRecipeModalVisible,
   selectIsRemoveFromRecipeModalVisible,
 } from "@/pageEditor/slices/editorSelectors";
@@ -58,7 +54,6 @@ const selectEditor = ({ editor }: RootState) => editor;
 const Editor: React.FunctionComponent = () => {
   const { tabState, connecting } = useContext(PageEditorTabContext);
   const installed = useSelector(selectExtensions);
-  const { data: recipes, isLoading: isLoadingRecipes } = useGetRecipesQuery();
   const dispatch = useDispatch();
 
   const sessionId = useSelector(selectSessionId);
@@ -78,18 +73,13 @@ const Editor: React.FunctionComponent = () => {
   useGetMarketplaceListingsQuery();
 
   const {
-    selectionSeq,
     inserting,
     elements,
+    activeElementId,
     activeRecipeId,
     error: editorError,
     beta,
   } = useSelector(selectEditor);
-
-  const selectedElement = useSelector(selectActiveElement);
-  const selectedRecipe = recipes?.find(
-    (recipe) => recipe.metadata.id === activeRecipeId
-  );
 
   const cancelInsert = useCallback(async () => {
     dispatch(actions.toggleInsert(null));
@@ -142,15 +132,10 @@ const Editor: React.FunctionComponent = () => {
           <span className="text-danger">{editorError}</span>
         </div>
       );
-    } else if (selectedElement) {
-      return (
-        <EditorPane
-          selectedElement={selectedElement}
-          selectionSeq={selectionSeq}
-        />
-      );
-    } else if (selectedRecipe) {
-      return <RecipePane recipe={selectedRecipe} />;
+    } else if (activeElementId) {
+      return <EditorPane />;
+    } else if (activeRecipeId) {
+      return <RecipePane />;
     } else if (
       availableDynamicIds?.size ||
       installed.length > unavailableCount
@@ -167,13 +152,12 @@ const Editor: React.FunctionComponent = () => {
     editorError,
     beta,
     inserting,
-    selectedElement,
-    selectedRecipe,
+    activeElementId,
+    activeRecipeId,
     availableDynamicIds?.size,
     installed.length,
     unavailableCount,
     cancelInsert,
-    selectionSeq,
   ]);
 
   return (
@@ -183,7 +167,7 @@ const Editor: React.FunctionComponent = () => {
         {body}
       </div>
 
-      {isAddToRecipeModalVisible && !isLoadingRecipes && <AddToRecipeModal />}
+      {isAddToRecipeModalVisible && <AddToRecipeModal />}
 
       {isRemoveFromRecipeModalVisible && <RemoveFromRecipeModal />}
     </>
