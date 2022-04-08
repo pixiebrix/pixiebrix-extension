@@ -21,7 +21,10 @@ import Mustache from "mustache";
 import { errorBoundary } from "@/blocks/renderers/common";
 import { checkAvailable } from "@/blocks/available";
 import { castArray, cloneDeep } from "lodash";
-import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
+import {
+  InitialValues,
+  reduceExtensionPipeline,
+} from "@/runtime/reducePipeline";
 import { boolean } from "@/utils";
 import {
   awaitElementOnce,
@@ -380,7 +383,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
           root: document,
         };
 
-        const rendererPromise = reducePipeline(body, initialValues, {
+        const rendererPromise = reduceExtensionPipeline(body, initialValues, {
           logger: extensionLogger,
           ...apiVersionOptions(extension.apiVersion),
         }) as Promise<RendererOutput>;

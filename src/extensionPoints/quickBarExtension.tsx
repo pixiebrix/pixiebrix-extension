@@ -16,7 +16,10 @@
  */
 
 import React from "react";
-import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
+import {
+  InitialValues,
+  reduceExtensionPipeline,
+} from "@/runtime/reducePipeline";
 import { ExtensionPoint } from "@/types";
 import {
   IBlock,
@@ -224,7 +227,7 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
             optionsArgs: extension.optionsArgs,
           };
 
-          await reducePipeline(actionConfig, initialValues, {
+          await reduceExtensionPipeline(actionConfig, initialValues, {
             logger: extensionLogger,
             ...apiVersionOptions(extension.apiVersion),
           });

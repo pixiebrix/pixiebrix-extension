@@ -591,6 +591,23 @@ function throwBlockError(
   );
 }
 
+/** Execute all the blocks of an extension. */
+export async function reduceExtensionPipeline(
+  pipeline: BlockConfig | BlockPipeline,
+  initialValues: InitialValues,
+  partialOptions: Partial<ReduceOptions> = {}
+): Promise<unknown> {
+  const pipelineLogger = partialOptions.logger ?? new ConsoleLogger();
+
+  // `await` promises to avoid race condition where the calls here delete debug entries from this call to reducePipeline
+  await Promise.allSettled([
+    traces.clear(pipelineLogger.context.extensionId),
+    clearExtensionDebugLogs(pipelineLogger.context.extensionId),
+  ]);
+
+  return reducePipeline(pipeline, initialValues, partialOptions);
+}
+
 /** Execute a pipeline of blocks and return the result. */
 export async function reducePipeline(
   pipeline: BlockConfig | BlockPipeline,
@@ -609,12 +626,6 @@ export async function reducePipeline(
     "@input": input,
     "@options": optionsArgs ?? {},
   } as unknown as BlockArgContext;
-
-  // `await` promises to avoid race condition where the calls here delete debug entries from this call to reducePipeline
-  await Promise.allSettled([
-    traces.clear(pipelineLogger.context.extensionId),
-    clearExtensionDebugLogs(pipelineLogger.context.extensionId),
-  ]);
 
   // When using explicit data flow, the first block (and other blocks) use `@input` in the context to get the inputs
   let output: unknown = explicitDataFlow ? {} : input;

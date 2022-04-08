@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
+import {
+  InitialValues,
+  reduceExtensionPipeline,
+} from "@/runtime/reducePipeline";
 import { ExtensionPoint } from "@/types";
 import {
   IBlock,
@@ -298,7 +301,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
           optionsArgs: extension.optionsArgs,
         };
 
-        await reducePipeline(actionConfig, initialValues, {
+        await reduceExtensionPipeline(actionConfig, initialValues, {
           logger: extensionLogger,
           ...apiVersionOptions(extension.apiVersion),
         });

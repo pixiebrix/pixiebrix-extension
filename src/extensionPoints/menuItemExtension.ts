@@ -19,7 +19,11 @@ import { uuidv4 } from "@/types/helpers";
 import { ExtensionPoint } from "@/types";
 import { checkAvailable } from "@/blocks/available";
 import { castArray, cloneDeep, debounce, merge, once } from "lodash";
-import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
+import {
+  InitialValues,
+  reduceExtensionPipeline,
+  reducePipeline,
+} from "@/runtime/reducePipeline";
 import {
   hasCancelRootCause,
   MultipleElementsFoundError,
@@ -544,7 +548,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           root: document,
         };
 
-        await reducePipeline(actionConfig, initialValues, {
+        await reduceExtensionPipeline(actionConfig, initialValues, {
           logger: extensionLogger,
           ...apiVersionOptions(extension.apiVersion),
         });
