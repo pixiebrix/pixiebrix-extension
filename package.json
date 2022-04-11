@@ -143,7 +143,7 @@
     "urlpattern-polyfill": "^1.0.0-rc1",
     "use-async-effect": "^2.2.3",
     "use-debounce": "^7.0.0",
-    "use-immer": "^0.6.0",
+    "use-immer": "^0.7.0",
     "uuid": "^8.3.2",
     "webext-additional-permissions": "^2.3.0",
     "webext-content-scripts": "^1.0.1",
