@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// eslint-disable-next-line import/no-unassigned-import -- It's a polyfill
+import "urlpattern-polyfill";
 import { patternToRegex } from "webext-patterns";
 import { castArray } from "lodash";
 import { Availability } from "@/blocks/types";
 import { BusinessError } from "@/errors";
 import { $safeFind } from "@/helpers";
-import { URLPatternInit } from "urlpattern-polyfill/dist/url-pattern.interfaces";
-import { URLPattern } from "urlpattern-polyfill/dist";
 import { Entries } from "type-fest";
 
 export function testMatchPatterns(
