@@ -194,4 +194,14 @@ describe("makeURL", () => {
       "https://pixiebrix.com/?b=ORIGINAL"
     );
   });
+
+  test("preserve hash", () => {
+    const origin = "https://pixiebrix.com#example";
+    expect(makeURL(origin)).toBe("https://pixiebrix.com/#example");
+  });
+
+  test("preserve hash and query string", () => {
+    const origin = "https://pixiebrix.com?foo=bar#example";
+    expect(makeURL(origin)).toBe("https://pixiebrix.com/?foo=bar#example");
+  });
 });
