@@ -171,7 +171,7 @@
     "@swc/jest": "^0.2.10",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
-    "@testing-library/react-hooks": "^7.0.2",
+    "@testing-library/react-hooks": "^8.0.0",
     "@testing-library/user-event": "^14.0.4",
     "@types/chrome": "0.0.162",
     "@types/data-urls": "^2.0.1",
