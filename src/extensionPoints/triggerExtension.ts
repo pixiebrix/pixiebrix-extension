@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ExtensionPoint } from "@/types";
 import {
   InitialValues,
   reduceExtensionPipeline,
@@ -32,6 +31,7 @@ import {
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
+  ExtensionPoint,
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";

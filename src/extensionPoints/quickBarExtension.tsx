@@ -20,7 +20,6 @@ import {
   InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
-import { ExtensionPoint } from "@/types";
 import {
   IBlock,
   IconConfig,
@@ -33,6 +32,7 @@ import {
 import { propertiesToSchema } from "@/validators/generic";
 import { Manifest, Menus, Permissions } from "webextension-polyfill";
 import {
+  ExtensionPoint,
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
