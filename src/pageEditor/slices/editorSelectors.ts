@@ -153,3 +153,6 @@ export const selectInstalledRecipeMetadatas = createSelector(
 
 export const selectSelectionSeq = (state: RootState) =>
   state.editor.selectionSeq;
+
+export const selectNewRecipeIds = (state: RootState) =>
+  state.editor.newRecipeIds;

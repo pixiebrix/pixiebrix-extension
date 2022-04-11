@@ -17,7 +17,6 @@
 
 import React, { useState } from "react";
 import { RegistryId } from "@/core";
-import { RecipeDefinition } from "@/types/definitions";
 import styles from "./Entry.module.scss";
 import { UnsavedChangesIcon } from "@/pageEditor/sidebar/ExtensionIcons";
 import { ListGroup } from "react-bootstrap";

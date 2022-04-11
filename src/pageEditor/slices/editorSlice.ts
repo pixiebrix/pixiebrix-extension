@@ -56,6 +56,7 @@ export const initialState: EditorState = {
   isAddToRecipeModalVisible: false,
   isRemoveFromRecipeModalVisible: false,
   deletedElementsByRecipeId: {},
+  newRecipeIds: [],
 };
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
@@ -483,12 +484,12 @@ export const editorSlice = createSlice({
       }>
     ) {
       const { elementId, userScope } = action.payload;
-      const recipeIds = Object.keys(state.dirtyRecipeMetadataById);
       const newId = freshIdentifier(
         `${userScope}/new-blueprint` as SafeString,
-        recipeIds
+        state.newRecipeIds
       );
       const newRecipeId = validateRegistryId(newId);
+      state.newRecipeIds.push(newRecipeId);
       const newRecipeMetadata: RecipeMetadataFormState = {
         id: newRecipeId,
         name: "New Blueprint",
@@ -514,6 +515,7 @@ export const editorSlice = createSlice({
         sharing: null,
         updated_at: null,
       };
+      state.dirty[elementId] = true;
       state.activeElementId = null;
       state.activeRecipeId = newRecipeId;
       state.selectionSeq++;

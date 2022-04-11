@@ -135,6 +135,11 @@ export interface EditorState {
    * Unsaved extensions that have been deleted from a recipe
    */
   deletedElementsByRecipeId: Record<RegistryId, FormState[]>;
+
+  /**
+   * Newly created recipes that have not been saved yet
+   */
+  newRecipeIds: RegistryId[];
 }
 
 export type RootState = AuthRootState &
