@@ -180,4 +180,28 @@ describe("makeURL", () => {
       "http://localhost/blueprints?id=1"
     );
   });
+
+  test("preserve existing search parameters", () => {
+    const origin = "https://pixiebrix.com?a=ORIGINAL&b=ORIGINAL";
+    expect(makeURL(origin, { a: "NEW", c: "NEW" })).toBe(
+      "https://pixiebrix.com/?a=NEW&b=ORIGINAL&c=NEW"
+    );
+  });
+
+  test("override existing search parameters if requested", () => {
+    const origin = "https://pixiebrix.com?a=ORIGINAL&b=ORIGINAL&c=ORIGINAL";
+    expect(makeURL(origin, { a: null, c: null })).toBe(
+      "https://pixiebrix.com/?b=ORIGINAL"
+    );
+  });
+
+  test("preserve hash", () => {
+    const origin = "https://pixiebrix.com#example";
+    expect(makeURL(origin)).toBe("https://pixiebrix.com/#example");
+  });
+
+  test("preserve hash and query string", () => {
+    const origin = "https://pixiebrix.com?foo=bar#example";
+    expect(makeURL(origin)).toBe("https://pixiebrix.com/?foo=bar#example");
+  });
 });
