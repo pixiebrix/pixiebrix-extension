@@ -12,3 +12,5 @@ updates:
       interval: weekly
       time: "08:42" # UTC
     open-pull-requests-limit: 20
+    reviewers:
+      - "fregante"
