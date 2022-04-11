@@ -399,10 +399,15 @@ export function makeURL(
   params: Record<string, string | number | boolean> = {},
   spaceEncoding: "plus" | "percent" = URL_INPUT_SPACE_ENCODING_DEFAULT
 ): string {
-  const result = new URL(url, location.origin);
-  const cleanParams = omitBy(params, isNullOrBlank) as Record<string, string>;
   // https://javascript.info/url#searchparams
-  result.search = new URLSearchParams(cleanParams).toString();
+  const result = new URL(url, location.origin);
+  for (const [key, value] of Object.entries(params)) {
+    if (isNullOrBlank(value)) {
+      result.searchParams.delete(key);
+    } else {
+      result.searchParams.set(key, String(value));
+    }
+  }
 
   if (spaceEncoding === "percent" && result.search.length > 0) {
     result.search = result.search.replaceAll("+", SPACE_ENCODED_VALUE);
