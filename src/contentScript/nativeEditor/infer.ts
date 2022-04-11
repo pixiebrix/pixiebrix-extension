@@ -45,7 +45,7 @@ const ATTR_SKIP_ELEMENT_PATTERNS = [
   /^([\dA-Za-z]+)-chevron-down$/,
 ];
 
-const UNIQUE_ATTRIBUTES: string[] = [
+export const UNIQUE_ATTRIBUTES: string[] = [
   "id",
   "name",
 
@@ -60,6 +60,10 @@ const UNIQUE_ATTRIBUTES: string[] = [
 const UNIQUE_ATTRIBUTES_REGEX = new RegExp(
   UNIQUE_ATTRIBUTES.map((attribute) => `^\\[${attribute}=`).join("|")
 );
+
+export const UNIQUE_ATTRIBUTES_SELECTOR = UNIQUE_ATTRIBUTES.map(
+  (attribute) => `[${attribute}]`
+).join(",");
 
 /**
  * Attribute names to exclude from button/panel template inference.
