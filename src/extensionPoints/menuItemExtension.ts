@@ -16,7 +16,6 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { ExtensionPoint } from "@/types";
 import { checkAvailable } from "@/blocks/available";
 import { castArray, cloneDeep, debounce, merge, once } from "lodash";
 import {
@@ -37,6 +36,7 @@ import {
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import {
+  ExtensionPoint,
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
