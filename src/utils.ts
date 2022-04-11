@@ -32,7 +32,6 @@ import {
   maxBy,
   negate,
   ObjectIterator,
-  omitBy,
   partial,
   partialRight,
   pickBy,
