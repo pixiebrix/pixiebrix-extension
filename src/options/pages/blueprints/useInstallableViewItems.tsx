@@ -37,6 +37,7 @@ import {
 } from "@/options/pages/blueprints/utils/installableUtils";
 import {
   useGetMarketplaceListingsQuery,
+  useGetMeQuery,
   useGetOrganizationsQuery,
   useGetRecipesQuery,
 } from "@/services/api";
@@ -50,9 +51,12 @@ function useInstallableViewItems(installables: Installable[]): {
 } {
   const scope = useSelector(selectScope);
   const installedExtensions = useSelector(selectExtensions);
-  const organizations = useGetOrganizationsQuery();
   const listings = useGetMarketplaceListingsQuery();
   const recipes = useGetRecipesQuery();
+  const {
+    data: { organization_memberships } = {},
+    isLoading: organizationsIsLoading,
+  } = useGetMeQuery();
 
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({
@@ -102,7 +106,11 @@ function useInstallableViewItems(installables: Installable[]): {
         description: getDescription(installable),
         sharing: {
           packageId: getPackageId(installable),
-          source: getSharingType(installable, organizations.data ?? [], scope),
+          source: getSharingType(
+            installable,
+            organization_memberships ?? [],
+            scope
+          ),
         },
         updatedAt: getUpdatedAt(installable),
         status:
@@ -125,7 +133,7 @@ function useInstallableViewItems(installables: Installable[]): {
       installables,
       installedExtensions,
       isActive,
-      organizations.data,
+      organization_memberships,
       recipes.data,
       scope,
     ]
@@ -134,7 +142,7 @@ function useInstallableViewItems(installables: Installable[]): {
   return {
     installableViewItems,
     isLoading:
-      organizations.isLoading || recipes.isLoading || listings.isLoading,
+      organizationsIsLoading || recipes.isLoading || listings.isLoading,
   };
 }
 
