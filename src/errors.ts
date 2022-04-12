@@ -479,7 +479,6 @@ export function getErrorMessage(
     return networkErrorMessage;
   }
 
-  // If network error doesn't originate from RTK, handle by message property
   if (isAxiosError(error)) {
     const serverMessage = selectServerErrorMessage(error);
     if (serverMessage) {

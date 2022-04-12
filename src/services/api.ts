@@ -88,7 +88,6 @@ const appBaseQuery: BaseQueryFn<QueryArgs> = async ({
     const client = await (requireLinked
       ? getLinkedApiClient()
       : getApiClient());
-
     const result = await client({ url, method, data });
 
     return { data: result.data, meta };
@@ -97,6 +96,7 @@ const appBaseQuery: BaseQueryFn<QueryArgs> = async ({
       delete error.toJSON;
 
       return {
+        // This lets the error keep the original shape and become serializable for Redux store
         error: JSON.parse(JSON.stringify(error)),
       };
     }
