@@ -68,8 +68,8 @@ describe("getSharingType", () => {
 
     const testOrganizations = [
       {
-        organization: orgId,
-        organization_name: "test_org",
+        id: orgId,
+        name: "test_org",
         role: UserRole.admin,
       },
     ];
@@ -93,8 +93,8 @@ describe("getSharingType", () => {
 
     const testOrganizations = [
       {
-        organization: orgId,
-        organization_name: "test_org",
+        id: orgId,
+        name: "test_org",
         role: UserRole.admin,
       },
     ];
