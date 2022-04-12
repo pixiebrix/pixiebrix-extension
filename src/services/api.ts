@@ -46,18 +46,16 @@ import { dumpBrickYaml } from "@/runtime/brickYaml";
 import { propertiesToSchema } from "@/validators/generic";
 import { produce } from "immer";
 import { sortBy } from "lodash";
-import { miniSerializeError, SerializedError } from "@reduxjs/toolkit";
+import { miniSerializeError } from "@reduxjs/toolkit";
 
 // Temporary type for RTK query errors. Matches the example from
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery.
 // See errorContract
 // TODO: remove in https://github.com/pixiebrix/pixiebrix-extension/issues/3126
 export type ApiError = {
+  [key: string]: unknown;
   status?: number | undefined;
-  data: unknown | undefined;
-  // Will be serialized AxiosError. Serialized to kept in the Redux store.
-  error: SerializedError;
-  isAxiosError: boolean;
+  isAxiosError?: boolean;
 };
 
 type QueryArgs = {
@@ -89,7 +87,7 @@ type QueryArgs = {
 };
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
-const appBaseQuery: BaseQueryFn<QueryArgs, unknown> = async ({
+const appBaseQuery: BaseQueryFn<QueryArgs, unknown, ApiError> = async ({
   url,
   method,
   data,
@@ -100,14 +98,17 @@ const appBaseQuery: BaseQueryFn<QueryArgs, unknown> = async ({
     const client = await (requireLinked
       ? getLinkedApiClient()
       : getApiClient());
+
     const result = await client({ url, method, data });
 
     return { data: result.data, meta };
   } catch (error) {
     if (isAxiosError(error)) {
-      // Axios offers its own serialization method, but it doesn't include the response.
-      // By deleting toJSON, the serialize-error library will use its default serialization
       delete error.toJSON;
+
+      return {
+        error: JSON.parse(JSON.stringify(error)),
+      };
     }
 
     return {
