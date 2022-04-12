@@ -112,7 +112,7 @@ const BlueprintActions: React.FunctionComponent<{
           </span>
         ),
         action: actions.deleteExtension,
-        hide: !(actions.deleteExtension || isCloudExtension),
+        hide: !isCloudExtension,
         className: "text-danger",
       },
     ],
