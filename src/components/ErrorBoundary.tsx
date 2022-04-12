@@ -24,6 +24,7 @@ import { getErrorMessage } from "@/errors";
 import reportError from "@/telemetry/reportError";
 import { UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
+import Centered from "@/layout/Centered";
 
 interface Props {
   /**
@@ -62,7 +63,7 @@ class ErrorBoundary extends Component<Props, State> {
   override render(): React.ReactNode {
     if (this.state.hasError) {
       return (
-        <div className="p-3">
+        <Centered>
           <h1>Something went wrong.</h1>
           {this.props.errorContext && <h2>{this.props.errorContext}</h2>}
           {!isEmpty(this.state.errorMessage) && (
@@ -91,7 +92,7 @@ class ErrorBoundary extends Component<Props, State> {
                 )}
             </pre>
           )}
-        </div>
+        </Centered>
       );
     }
 

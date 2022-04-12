@@ -15,15 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "@/components/Loader";
-import { ApiError, useGetMeQuery } from "@/services/api";
+import { useGetMeQuery } from "@/services/api";
 import {
   addListener as addAuthListener,
   removeListener as removeAuthListener,
   isLinked,
   updateUserData,
+  clearExtensionAuth,
 } from "@/auth/token";
 import {
   selectExtensionAuthState,
@@ -34,15 +35,11 @@ import { anonAuth } from "@/auth/authConstants";
 import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Me } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
-import { isAxiosError, NO_INTERNET_MESSAGE } from "@/errors";
-import { deserializeError } from "serialize-error";
+import { AxiosError } from "axios";
 
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
   LoginPage: React.VFC;
-
-  /** Rendered request to `/me` fails */
-  ErrorPage?: React.VFC<{ error: unknown }>;
 };
 
 /**
@@ -54,11 +51,7 @@ type RequireAuthProps = {
  *   token-based authentication.
  * - Therefore, also check the extension has the Authentication header token from the server.
  */
-const RequireAuth: React.FC<RequireAuthProps> = ({
-  children,
-  LoginPage,
-  ErrorPage,
-}) => {
+const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
   const dispatch = useDispatch();
 
   const hasCachedLoggedIn = useSelector(selectIsLoggedIn);
@@ -124,6 +117,11 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     void setAuth(me);
   }, [isMeSuccess, me, dispatch]);
 
+  const error = meError ?? tokenError;
+  if ((error as AxiosError)?.response?.status === 401) {
+    void clearExtensionAuth();
+  }
+
   // Show SetupPage if there is auth error or user not logged in
   if (
     // Currently, useGetMeQuery will only return a 401 if the user has a non-empty invalid token. If the extension
@@ -131,7 +129,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     // the user is not authenticated.
     // http://github.com/pixiebrix/pixiebrix-app/blob/0686663bf007cf4b33d547d9f124d1fa2a83ec9a/api/views/site.py#L210-L210
     // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3056
-    (meError as ApiError)?.status === 401 ||
+    (error as AxiosError)?.response?.status === 401 ||
     (!hasCachedLoggedIn && !meLoading) ||
     (!hasToken && !tokenLoading)
   ) {
@@ -141,6 +139,11 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   // Optimistically skip waiting if we have cached auth data
   if (!hasCachedLoggedIn && isLoading) {
     return <Loader />;
+  }
+
+  // RequireAuth only knows how to handle auth errors. Rethrow any other errors
+  if (error != null) {
+    throw error;
   }
 
   return <>{children}</>;

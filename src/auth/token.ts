@@ -48,12 +48,6 @@ export async function readAuthData(): Promise<
   return readStorage(STORAGE_EXTENSION_KEY, {});
 }
 
-window.aaa = {
-  read: () => readAuthData(),
-  write: (data: Partial<TokenAuthData>) =>
-    setStorage(STORAGE_EXTENSION_KEY, data),
-};
-
 export async function getExtensionToken(): Promise<string | undefined> {
   const { token } = await readAuthData();
   return token;
