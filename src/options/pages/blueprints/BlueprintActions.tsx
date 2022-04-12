@@ -29,6 +29,7 @@ import React, { useMemo } from "react";
 import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
 import { InstallableViewItem } from "./blueprintsTypes";
 import useFlags from "@/hooks/useFlags";
+import { isExtension } from "@/options/pages/blueprints/utils/installableUtils";
 
 const BlueprintActions: React.FunctionComponent<{
   installableViewItem: InstallableViewItem;
@@ -38,7 +39,9 @@ const BlueprintActions: React.FunctionComponent<{
   const { installable, hasUpdate, status, sharing } = installableViewItem;
   const actions = useInstallableActions(installable);
   const isCloudExtension =
-    sharing.source.type === "Personal" && status !== "Active";
+    isExtension(installable) &&
+    sharing.source.type === "Personal" &&
+    status !== "Active";
 
   const actionItems = useMemo(
     () => [
@@ -109,7 +112,7 @@ const BlueprintActions: React.FunctionComponent<{
           </span>
         ),
         action: actions.deleteExtension,
-        hide: !isCloudExtension,
+        hide: !(actions.deleteExtension || isCloudExtension),
         className: "text-danger",
       },
     ],
