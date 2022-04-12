@@ -117,8 +117,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     void setAuth(me);
   }, [isMeSuccess, me, dispatch]);
 
-  const error = meError ?? tokenError;
-  if ((error as AxiosError)?.response?.status === 401) {
+  if ((meError as AxiosError)?.response?.status === 401) {
     void clearExtensionAuth();
   }
 
@@ -129,7 +128,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     // the user is not authenticated.
     // http://github.com/pixiebrix/pixiebrix-app/blob/0686663bf007cf4b33d547d9f124d1fa2a83ec9a/api/views/site.py#L210-L210
     // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3056
-    (error as AxiosError)?.response?.status === 401 ||
+    (meError as AxiosError)?.response?.status === 401 ||
     (!hasCachedLoggedIn && !meLoading) ||
     (!hasToken && !tokenLoading)
   ) {
@@ -142,6 +141,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
   }
 
   // RequireAuth only knows how to handle auth errors. Rethrow any other errors
+  const error = meError ?? tokenError;
   if (error != null) {
     throw error;
   }

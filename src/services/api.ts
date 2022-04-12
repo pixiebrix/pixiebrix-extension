@@ -48,16 +48,6 @@ import { produce } from "immer";
 import { sortBy } from "lodash";
 import { miniSerializeError } from "@reduxjs/toolkit";
 
-// Temporary type for RTK query errors. Matches the example from
-// https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery.
-// See errorContract
-// TODO: remove in https://github.com/pixiebrix/pixiebrix-extension/issues/3126
-export type ApiError = {
-  [key: string]: unknown;
-  status?: number | undefined;
-  isAxiosError?: boolean;
-};
-
 type QueryArgs = {
   /**
    * The relative PixieBrix URL. The client will apply the configured base service URL.
@@ -87,7 +77,7 @@ type QueryArgs = {
 };
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
-const appBaseQuery: BaseQueryFn<QueryArgs, unknown, ApiError> = async ({
+const appBaseQuery: BaseQueryFn<QueryArgs> = async ({
   url,
   method,
   data,
