@@ -19,7 +19,7 @@ import { RegistryId, ResolvedExtension } from "@/core";
 import { TableInstance } from "react-table";
 import { RecipeDefinition } from "@/types/definitions";
 import { ReactNode } from "react";
-import { MeOrganization } from "@/types/contract";
+import { Organization } from "@/types/contract";
 
 // XXX: should this be UnresolvedExtension instead of ResolvedExtension? The old screens used ResolvedExtension
 export type Installable = RecipeDefinition | ResolvedExtension;
@@ -28,7 +28,7 @@ export type SharingType = "Personal" | "Team" | "Public" | "Deployment";
 export type SharingSource = {
   type: SharingType;
   label: string;
-  organization: MeOrganization;
+  organization: Organization;
 };
 
 export type InstallableStatus = "Active" | "Inactive";

@@ -27,7 +27,7 @@ import FactoryResetSettings from "@/options/pages/settings/FactoryResetSettings"
 import AdvancedSettings from "@/options/pages/settings/AdvancedSettings";
 import ExperimentalSettings from "@/options/pages/settings/ExperimentalSettings";
 import useFlags from "@/hooks/useFlags";
-import { selectOrganization } from "@/auth/authSelectors";
+import { selectOrganizations } from "@/auth/authSelectors";
 import { useSelector } from "react-redux";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
@@ -38,7 +38,7 @@ const Section: React.FunctionComponent = ({ children }) => (
 );
 
 const SettingsPage: React.FunctionComponent = () => {
-  const organization = useSelector(selectOrganization);
+  const organization = useSelector(selectOrganizations);
 
   const { flagOn, permit } = useFlags();
 

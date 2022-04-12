@@ -24,7 +24,7 @@ import {
   UUID,
 } from "@/core";
 import * as semver from "semver";
-import { MeOrganization } from "@/types/contract";
+import { Organization } from "@/types/contract";
 import {
   Installable,
   SharingSource,
@@ -35,7 +35,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 
 export const getSharingType = (
   installable: Installable,
-  organizations: MeOrganization[],
+  organizations: Organization[],
   scope: string
 ): SharingSource => {
   let sharingType: SharingType = null;
@@ -56,9 +56,9 @@ export const getSharingType = (
     sharingType === "Team" ||
     // There's a corner case for team deployments of public market bricks. The organization will come through as
     // nullish here.
-    (sharingType === "Deployment" && organization?.organization_name)
+    (sharingType === "Deployment" && organization?.name)
   ) {
-    label = organization.organization_name;
+    label = organization.name;
   } else {
     label = sharingType;
   }
@@ -219,7 +219,7 @@ export function updateAvailable(
 
 export const getOrganization = (
   installable: Installable,
-  organizations: MeOrganization[]
+  organizations: Organization[]
 ) => {
   const sharing = isExtension(installable)
     ? installable._recipe?.sharing
@@ -232,7 +232,7 @@ export const getOrganization = (
   // If more than one sharing organization, use the first.
   // This is an uncommon scenario.
   return organizations.find((org) =>
-    sharing.organizations.includes(org.organization as UUID)
+    sharing.organizations.includes(org.id as UUID)
   );
 };
 

@@ -22,5 +22,5 @@ export const selectIsLoggedIn = (state: AuthRootState) =>
   selectAuth(state).isLoggedIn;
 export const selectScope = (state: AuthRootState) => selectAuth(state).scope;
 export const selectFlags = (state: AuthRootState) => selectAuth(state).flags;
-export const selectOrganization = (state: AuthRootState) =>
-  selectAuth(state).organization;
+export const selectOrganizations = (state: AuthRootState) =>
+  selectAuth(state).organizations;

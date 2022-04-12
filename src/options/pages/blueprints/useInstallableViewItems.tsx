@@ -37,12 +37,11 @@ import {
 } from "@/options/pages/blueprints/utils/installableUtils";
 import {
   useGetMarketplaceListingsQuery,
-  useGetMeQuery,
   useGetRecipesQuery,
 } from "@/services/api";
 import { MarketplaceListing } from "@/types/contract";
 import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
-import { selectScope } from "@/auth/authSelectors";
+import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 
 function useInstallableViewItems(installables: Installable[]): {
   installableViewItems: InstallableViewItem[];
@@ -52,10 +51,7 @@ function useInstallableViewItems(installables: Installable[]): {
   const installedExtensions = useSelector(selectExtensions);
   const listings = useGetMarketplaceListingsQuery();
   const recipes = useGetRecipesQuery();
-  const {
-    data: { organization_memberships } = {},
-    isLoading: organizationsIsLoading,
-  } = useGetMeQuery();
+  const organizations = useSelector(selectOrganizations);
 
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({
@@ -105,11 +101,7 @@ function useInstallableViewItems(installables: Installable[]): {
         description: getDescription(installable),
         sharing: {
           packageId: getPackageId(installable),
-          source: getSharingType(
-            installable,
-            organization_memberships ?? [],
-            scope
-          ),
+          source: getSharingType(installable, organizations ?? [], scope),
         },
         updatedAt: getUpdatedAt(installable),
         status:
@@ -132,7 +124,7 @@ function useInstallableViewItems(installables: Installable[]): {
       installables,
       installedExtensions,
       isActive,
-      organization_memberships,
+      organizations,
       recipes.data,
       scope,
     ]
@@ -140,8 +132,7 @@ function useInstallableViewItems(installables: Installable[]): {
 
   return {
     installableViewItems,
-    isLoading:
-      organizationsIsLoading || recipes.isLoading || listings.isLoading,
+    isLoading: recipes.isLoading || listings.isLoading,
   };
 }
 
