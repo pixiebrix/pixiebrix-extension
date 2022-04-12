@@ -94,27 +94,6 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     skip: !hasToken,
   });
 
-  const error = useMemo(() => {
-    if (meError) {
-      if (!navigator.onLine) {
-        return new Error(NO_INTERNET_MESSAGE);
-      }
-
-      if ("error" in meError && isAxiosError(meError.error)) {
-        return deserializeError(meError.error);
-      }
-
-      // Not sure why, but Typescript thinks that meError can be a SerializedError.
-      return meError;
-    }
-
-    if (tokenError) {
-      return tokenError;
-    }
-
-    return null;
-  }, [meError, tokenError]);
-
   const isLoading = tokenLoading || meLoading;
 
   useEffect(() => {
@@ -157,15 +136,6 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     (!hasToken && !tokenLoading)
   ) {
     return <LoginPage />;
-  }
-
-  if (error) {
-    if (ErrorPage) {
-      return <ErrorPage error={error} />;
-    }
-
-    // Will be handled by an ErrorBoundary
-    throw error;
   }
 
   // Optimistically skip waiting if we have cached auth data

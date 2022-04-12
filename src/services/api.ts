@@ -26,7 +26,7 @@ import {
 } from "@/types/definitions";
 import { AxiosRequestConfig } from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
-import { isAxiosError } from "@/errors";
+import { isAxiosError, NO_INTERNET_MESSAGE } from "@/errors";
 import {
   CloudExtension,
   Database,
@@ -48,6 +48,7 @@ import { produce } from "immer";
 import { sortBy } from "lodash";
 import { clearExtensionAuth } from "@/auth/token";
 import { ErrorObject, serializeError } from "serialize-error";
+import { miniSerializeError } from "@reduxjs/toolkit";
 
 // Temporary type for RTK query errors. Matches the example from
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery.
@@ -104,12 +105,21 @@ const appBaseQuery: BaseQueryFn<QueryArgs, unknown, ApiError> = async ({
 
     return { data: result.data, meta };
   } catch (error) {
+    if (!navigator.onLine) {
+      return {
+        error: {
+          data: NO_INTERNET_MESSAGE,
+          originalError: miniSerializeError(new Error(NO_INTERNET_MESSAGE)),
+        },
+      };
+    }
+
     if (isAxiosError(error)) {
-      if (error.response?.status === 401) {
-        console.debug("Invalid token, resetting extension auth");
-        // The token is bad, clear it out
-        await clearExtensionAuth();
-      }
+      // if (error.response?.status === 401) {
+      //   console.debug("Invalid token, resetting extension auth");
+      //   // The token is bad, clear it out
+      //   await clearExtensionAuth();
+      // }
 
       // Axios offers its own serialization method, but it doesn't include the response.
       // By deleting toJSON, the serialize-error library will use its default serialization
@@ -121,15 +131,17 @@ const appBaseQuery: BaseQueryFn<QueryArgs, unknown, ApiError> = async ({
         error: {
           status: error.response?.status,
           data: error.response?.data,
-          error: serializeError(error),
+          originalError: miniSerializeError(error),
         },
       };
     }
 
-    // Potential errors at this point: ExtensionNotLinked. Currently re-throwing the error since it can't match
-    // the {status, data} properties we had originally in RTK query
-    // TODO: remove in https://github.com/pixiebrix/pixiebrix-extension/issues/3126
-    throw error;
+    return {
+      error: {
+        data: "Non network error",
+        originalError: miniSerializeError(error),
+      },
+    };
   }
 };
 
