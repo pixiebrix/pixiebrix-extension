@@ -38,7 +38,6 @@ import {
 import {
   useGetMarketplaceListingsQuery,
   useGetMeQuery,
-  useGetOrganizationsQuery,
   useGetRecipesQuery,
 } from "@/services/api";
 import { MarketplaceListing } from "@/types/contract";
