@@ -50,10 +50,9 @@ function useInstallableViewItems(installables: Installable[]): {
 } {
   const scope = useSelector(selectScope);
   const installedExtensions = useSelector(selectExtensions);
-  // TODO: rename e.g. organizationsQuery
-  const organizations = useGetOrganizationsQuery();
-  const listings = useGetMarketplaceListingsQuery();
-  const recipes = useGetRecipesQuery();
+  const organizationsQuery = useGetOrganizationsQuery();
+  const listingsQuery = useGetMarketplaceListingsQuery();
+  const recipesQuery = useGetRecipesQuery();
 
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({
@@ -80,20 +79,20 @@ function useInstallableViewItems(installables: Installable[]): {
 
   const installableIcon = useCallback(
     (installable: Installable) => {
-      const listing: MarketplaceListing | null = listings.isLoading
+      const listing: MarketplaceListing | null = listingsQuery.isLoading
         ? null
-        : listings.data[getPackageId(installable)];
+        : listingsQuery.data[getPackageId(installable)];
 
       return (
         <InstallableIcon
           listing={listing}
           installable={installable}
-          isLoading={listings.isLoading}
+          isLoading={listingsQuery.isLoading}
           size={"2x"}
         />
       );
     },
-    [listings]
+    [listingsQuery]
   );
 
   const installableViewItems = useMemo(
@@ -103,14 +102,18 @@ function useInstallableViewItems(installables: Installable[]): {
         description: getDescription(installable),
         sharing: {
           packageId: getPackageId(installable),
-          source: getSharingType(installable, organizations.data ?? [], scope),
+          source: getSharingType(
+            installable,
+            organizationsQuery.data ?? [],
+            scope
+          ),
         },
         updatedAt: getUpdatedAt(installable),
         status:
           // Cast needed because otherwise TypeScript types as "string"
           (isActive(installable) ? "Active" : "Inactive") as InstallableStatus,
         hasUpdate: updateAvailable(
-          recipes.data,
+          recipesQuery.data,
           installedExtensions,
           installable
         ),
@@ -126,8 +129,8 @@ function useInstallableViewItems(installables: Installable[]): {
       installables,
       installedExtensions,
       isActive,
-      organizations.data,
-      recipes.data,
+      organizationsQuery.data,
+      recipesQuery.data,
       scope,
     ]
   );
@@ -135,7 +138,9 @@ function useInstallableViewItems(installables: Installable[]): {
   return {
     installableViewItems,
     isLoading:
-      organizations.isLoading || recipes.isLoading || listings.isLoading,
+      organizationsQuery.isLoading ||
+      recipesQuery.isLoading ||
+      listingsQuery.isLoading,
   };
 }
 
