@@ -50,6 +50,7 @@ function useInstallableViewItems(installables: Installable[]): {
 } {
   const scope = useSelector(selectScope);
   const installedExtensions = useSelector(selectExtensions);
+  // TODO: rename e.g. organizationsQuery
   const organizations = useGetOrganizationsQuery();
   const listings = useGetMarketplaceListingsQuery();
   const recipes = useGetRecipesQuery();

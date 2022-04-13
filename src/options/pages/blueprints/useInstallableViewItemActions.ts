@@ -25,7 +25,7 @@ import {
   isShared,
   selectExtensionsFromInstallable,
 } from "@/options/pages/blueprints/utils/installableUtils";
-import { Installable } from "./blueprintsTypes";
+import { InstallableViewItem } from "./blueprintsTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import {
@@ -44,14 +44,24 @@ import { useModals } from "@/components/ConfirmationModal";
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
 import { selectScope } from "@/auth/authSelectors";
 import { OptionsState } from "@/store/extensionsTypes";
+import useFlags from "@/hooks/useFlags";
 
 const { removeExtension } = extensionsSlice.actions;
 
-function useInstallableActions(installable: Installable) {
+function useInstallableViewItemActions(
+  installableViewItem: InstallableViewItem
+) {
+  const { installable, status, sharing } = installableViewItem;
   const dispatch = useDispatch();
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
   const scope = useSelector(selectScope);
+  const { permit } = useFlags();
+
+  const isCloudExtension =
+    isExtension(installable) &&
+    sharing.source.type === "Personal" &&
+    status !== "Active";
 
   const extensionsFromInstallable = useSelector(
     (state: { options: OptionsState }) =>
@@ -200,18 +210,26 @@ function useInstallableActions(installable: Installable) {
   );
 
   return {
-    viewShare,
-    uninstall,
-    viewLogs,
+    viewShare: isCloudExtension ? null : viewShare,
+    uninstall:
+      status === "Active" &&
+      sharing.source.type !== "Deployment" &&
+      permit("uninstall")
+        ? uninstall
+        : null,
+    viewLogs: status === "Active" ? viewLogs : null,
     exportBlueprint,
     activate,
-    deleteExtension: isExtension(installable) ? deleteExtension : null,
+    deleteExtension: isCloudExtension ? deleteExtension : null,
     requestPermissions: hasPermissions ? null : requestPermissions,
     reinstall:
-      isExtensionFromRecipe(installable) || isBlueprint(installable)
+      (isExtensionFromRecipe(installable) || isBlueprint(installable)) &&
+      // Managed extensions are updated via the deployment banner
+      sharing.source.type !== "Deployment" &&
+      status === "Active"
         ? reinstall
         : null,
   };
 }
 
-export default useInstallableActions;
+export default useInstallableViewItemActions;
