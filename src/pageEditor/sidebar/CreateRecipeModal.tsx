@@ -134,10 +134,15 @@ const CreateRecipeModal: React.VFC = () => {
         name="id"
         label="Blueprint ID"
         description="The registry ID of this blueprint"
+        widerLabel
       />
-      <ConnectedFieldTemplate name="name" label="Name" />
-      <ConnectedFieldTemplate name="version" label="Version" />
-      <ConnectedFieldTemplate name="description" label="Description" />
+      <ConnectedFieldTemplate name="name" label="Name" widerLabel />
+      <ConnectedFieldTemplate name="version" label="Version" widerLabel />
+      <ConnectedFieldTemplate
+        name="description"
+        label="Description"
+        widerLabel
+      />
     </>
   );
 
