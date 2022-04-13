@@ -44,6 +44,7 @@ import {
   DEFAULT_EXTENSION_POINT_VAR,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
 } from "@/pageEditor/extensionPoints/base";
+import slugify from "slugify";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -57,6 +58,15 @@ export function generateScopeBrickId(
   const match = PACKAGE_REGEX.exec(sourceId);
   return validateRegistryId(
     compact([newScope, match.groups?.collection, match.groups?.name]).join("/")
+  );
+}
+
+export function generateRecipeId(
+  userScope: string,
+  extensionLabel: string
+): RegistryId {
+  return validateRegistryId(
+    `${userScope}/${slugify(extensionLabel).toLowerCase()}`
   );
 }
 
@@ -267,7 +277,7 @@ type RecipeParts = {
 };
 
 /**
- * Create a copy of `sourceRecipe` with `metadata` and `elements`.
+ * Create a copy of `sourceRecipe` (if provided) with `metadata` and `elements`.
  *
  * NOTE: the caller is responsible for updating an extensionPoint package (i.e., that has its own version). This method
  * only handles the extensionPoint if it's an inner definition
@@ -278,7 +288,7 @@ type RecipeParts = {
  * @param options the recipe's options form state
  * @param metadata the recipe's metadata form state
  */
-export function replaceRecipeContent({
+export function buildRecipe({
   sourceRecipe,
   cleanRecipeExtensions,
   dirtyRecipeElements,

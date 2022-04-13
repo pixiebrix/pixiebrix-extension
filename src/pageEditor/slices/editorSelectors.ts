@@ -133,6 +133,9 @@ export const selectIsAddToRecipeModalVisible = (state: RootState) =>
 export const selectIsRemoveFromRecipeModalVisible = (state: RootState) =>
   state.editor.isRemoveFromRecipeModalVisible;
 
+export const selectIsCreateRecipeModalVisible = (state: RootState) =>
+  state.editor.isCreateRecipeModalVisible;
+
 export const selectInstalledRecipeMetadatas = createSelector(
   selectElements,
   selectExtensions,
@@ -156,3 +159,6 @@ export const selectSelectionSeq = (state: RootState) =>
 
 export const selectNewRecipeIds = (state: RootState) =>
   state.editor.newRecipeIds;
+
+export const selectKeepLocalCopyOnCreateRecipe = (state: RootState) =>
+  state.editor.keepLocalCopyOnCreateRecipe;

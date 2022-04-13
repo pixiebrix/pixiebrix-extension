@@ -36,11 +36,10 @@ import styles from "./EditRecipe.module.scss";
 const EditRecipe: React.VoidFunctionComponent = () => {
   const recipeId = useSelector(selectActiveRecipeId);
   const { data: recipes, isLoading, error } = useGetRecipesQuery();
+  const dirtyMetadata = useSelector(selectDirtyMetadataForRecipeId(recipeId));
   const savedMetadata = recipes?.find(
     (recipe) => recipe.metadata.id === recipeId
   )?.metadata;
-  const isSaved = Boolean(savedMetadata);
-  const dirtyMetadata = useSelector(selectDirtyMetadataForRecipeId(recipeId));
   const metadata = dirtyMetadata ?? savedMetadata;
 
   const initialFormState: RecipeMetadataFormState = {
@@ -104,7 +103,8 @@ const EditRecipe: React.VoidFunctionComponent = () => {
                         name="metadata.id"
                         label="Blueprint ID"
                         description="The registry ID of this blueprint"
-                        readOnly={isSaved}
+                        // Blueprint IDs may not be changed after creation
+                        readOnly
                       />
                       <ConnectedFieldTemplate
                         name="metadata.name"

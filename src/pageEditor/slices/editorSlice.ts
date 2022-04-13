@@ -18,7 +18,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getErrorMessage } from "@/errors";
 import { clearExtensionTraces } from "@/telemetry/trace";
-import { RecipeMetadata, RegistryId, SafeString, UUID } from "@/core";
+import { RecipeMetadata, RegistryId, UUID } from "@/core";
 import {
   FOUNDATION_NODE_ID,
   makeInitialElementUIState,
@@ -34,9 +34,8 @@ import {
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { isEmpty } from "lodash";
-import { freshIdentifier } from "@/utils";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -55,6 +54,8 @@ export const initialState: EditorState = {
   dirtyRecipeMetadataById: {},
   isAddToRecipeModalVisible: false,
   isRemoveFromRecipeModalVisible: false,
+  isCreateRecipeModalVisible: false,
+  keepLocalCopyOnCreateRecipe: false,
   deletedElementsByRecipeId: {},
   newRecipeIds: [],
 };
@@ -476,49 +477,13 @@ export const editorSlice = createSlice({
     clearActiveRecipe(state) {
       state.activeRecipeId = null;
     },
-    createNewRecipeFromElement(
-      state,
-      action: PayloadAction<{
-        elementId: UUID;
-        userScope: string;
-      }>
-    ) {
-      const { elementId, userScope } = action.payload;
-      const newId = freshIdentifier(
-        `${userScope}/new-blueprint` as SafeString,
-        state.newRecipeIds
-      );
-      const newRecipeId = validateRegistryId(newId);
-      state.newRecipeIds.push(newRecipeId);
-      const newRecipeMetadata: RecipeMetadataFormState = {
-        id: newRecipeId,
-        name: "New Blueprint",
-        version: "",
-        description: "",
-      };
-      state.dirtyRecipeMetadataById[newRecipeId] = newRecipeMetadata;
-      state.dirtyRecipeOptionsById[newRecipeId] = {
-        schema: {},
-        uiSchema: {},
-      };
-      const element = state.elements.find(
-        (element) => element.uuid === elementId
-      );
-      if (!element) {
-        throw new Error(
-          "Error creating blueprint, extension element not found"
-        );
-      }
-
-      element.recipe = {
-        ...newRecipeMetadata,
-        sharing: null,
-        updated_at: null,
-      };
-      state.dirty[elementId] = true;
-      state.activeElementId = null;
-      state.activeRecipeId = newRecipeId;
-      state.selectionSeq++;
+    transitionToCreateRecipeModal(state, action: PayloadAction<boolean>) {
+      state.isAddToRecipeModalVisible = false;
+      state.keepLocalCopyOnCreateRecipe = action.payload;
+      state.isCreateRecipeModalVisible = true;
+    },
+    hideCreateRecipeModal(state) {
+      state.isCreateRecipeModalVisible = false;
     },
   },
 });

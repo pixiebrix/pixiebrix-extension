@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
@@ -26,7 +26,7 @@ import {
   selectActiveElement,
   selectInstalledRecipeMetadatas,
 } from "@/pageEditor/slices/editorSelectors";
-import { RecipeMetadata } from "@/core";
+import { RecipeMetadata, RegistryId } from "@/core";
 import { Form, Formik } from "formik";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import notify from "@/utils/notify";
@@ -34,12 +34,12 @@ import notify from "@/utils/notify";
 const { actions: optionsActions } = extensionsSlice;
 
 type FormState = {
-  recipeMetadata: RecipeMetadata;
+  recipeId: RegistryId;
   keepLocalCopy: boolean;
 };
 
 const initialFormState: FormState = {
-  recipeMetadata: null,
+  recipeId: null,
   keepLocalCopy: false,
 };
 
@@ -47,15 +47,30 @@ const AddToRecipeModal: React.VFC = () => {
   const recipeMetadatas = useSelector(selectInstalledRecipeMetadatas);
   const activeElement = useSelector(selectActiveElement);
 
+  const recipeMetadataById = useMemo(() => {
+    const result: Record<RegistryId, RecipeMetadata> = {};
+    for (const metadata of recipeMetadatas) {
+      result[metadata.id] = metadata;
+    }
+
+    return result;
+  }, [recipeMetadatas]);
+
   const dispatch = useDispatch();
+
   const hideModal = () => {
     dispatch(editorActions.hideAddToRecipeModal());
   };
 
-  function onConfirmAddToRecipe(
-    recipeMetadata: RecipeMetadata,
-    keepLocalCopy: boolean
-  ) {
+  function onConfirmAddToRecipe(recipeId: RegistryId, keepLocalCopy: boolean) {
+    if (recipeId === "@new") {
+      dispatch(editorActions.transitionToCreateRecipeModal(keepLocalCopy));
+      return;
+    }
+
+    // eslint-disable-next-line security/detect-object-injection -- recipe id is from select options
+    const recipeMetadata = recipeMetadataById[recipeId];
+
     try {
       const elementId = activeElement.uuid;
       dispatch(
@@ -78,10 +93,13 @@ const AddToRecipeModal: React.VFC = () => {
     }
   }
 
-  const selectOptions = recipeMetadatas.map((metadata) => ({
-    label: metadata.name,
-    value: metadata,
-  }));
+  const selectOptions = [
+    { label: "Create new blueprint...", value: "@new" },
+    ...recipeMetadatas.map((metadata) => ({
+      label: metadata.name,
+      value: metadata.id,
+    })),
+  ];
 
   return (
     <Modal show onHide={hideModal}>
@@ -92,15 +110,15 @@ const AddToRecipeModal: React.VFC = () => {
       </Modal.Header>
       <Formik
         initialValues={initialFormState}
-        onSubmit={({ recipeMetadata, keepLocalCopy }) => {
-          onConfirmAddToRecipe(recipeMetadata, keepLocalCopy);
+        onSubmit={({ recipeId, keepLocalCopy }) => {
+          onConfirmAddToRecipe(recipeId, keepLocalCopy);
         }}
       >
         {({ handleSubmit }) => (
           <Form onSubmit={handleSubmit}>
             <Modal.Body>
               <ConnectedFieldTemplate
-                name="recipeMetadata"
+                name="recipeId"
                 hideLabel
                 description="Choose a blueprint"
                 as={SelectWidget}

@@ -22,10 +22,8 @@ import {
   selectDirtyRecipeMetadata,
   selectDirtyRecipeOptions,
   selectElements,
-  selectNewRecipeIds,
 } from "@/pageEditor/slices/editorSelectors";
 import {
-  useCreateRecipeMutation,
   useGetEditablePackagesQuery,
   useGetRecipesQuery,
   useUpdateRecipeMutation,
@@ -34,7 +32,7 @@ import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { replaceRecipeContent } from "@/pageEditor/panes/save/saveHelpers";
+import { buildRecipe } from "@/pageEditor/panes/save/saveHelpers";
 import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
 import useCreate from "@/pageEditor/hooks/useCreate";
@@ -53,13 +51,11 @@ function useRecipeSaver(): RecipeSaver {
   const { data: recipes, isLoading } = useGetRecipesQuery();
   const { data: editablePackages } = useGetEditablePackagesQuery();
   const [updateRecipe] = useUpdateRecipeMutation();
-  const [createRecipe] = useCreateRecipeMutation();
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
   const installedExtensions = useSelector(selectExtensions);
   const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptions);
   const dirtyRecipeMetadata = useSelector(selectDirtyRecipeMetadata);
-  const newRecipeIds = useSelector(selectNewRecipeIds);
   const { showConfirmation } = useModals();
   const [isSaving, setIsSaving] = useState(false);
 
@@ -68,22 +64,21 @@ function useRecipeSaver(): RecipeSaver {
    * Throws errors for various bad states
    */
   async function save(recipeId: RegistryId) {
-    const isNew = newRecipeIds.includes(recipeId);
     const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
-    if (recipe == null && !isNew) {
+    if (recipe == null) {
       throw new Error(
         "You no longer have edit permissions for the blueprint. Please reload the Editor."
       );
     }
 
+    const dirtyRecipeElements = editorFormElements.filter(
+      (element) =>
+        element.recipe?.id === recipeId && isDirtyByElementId[element.uuid]
+    );
     const cleanRecipeExtensions = installedExtensions.filter(
       (extension) =>
         extension._recipe?.id === recipeId &&
         !dirtyRecipeElements.some((element) => element.uuid === extension.id)
-    );
-    const dirtyRecipeElements = editorFormElements.filter(
-      (element) =>
-        element.recipe?.id === recipeId && isDirtyByElementId[element.uuid]
     );
     // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
     const newOptions = dirtyRecipeOptions[recipeId];
@@ -101,7 +96,7 @@ function useRecipeSaver(): RecipeSaver {
       return;
     }
 
-    const newRecipe = replaceRecipeContent({
+    const newRecipe = buildRecipe({
       sourceRecipe: recipe,
       cleanRecipeExtensions,
       dirtyRecipeElements,
@@ -114,17 +109,10 @@ function useRecipeSaver(): RecipeSaver {
       (x) => x.name === newRecipe.metadata.id
     )?.id;
 
-    const request = isNew
-      ? createRecipe({
-          recipe: newRecipe,
-          organizations: [],
-          public: false,
-        })
-      : updateRecipe({
-          packageId,
-          recipe: newRecipe,
-        });
-    const response = await request.unwrap();
+    const response = await updateRecipe({
+      packageId,
+      recipe: newRecipe,
+    }).unwrap();
 
     const newRecipeMetadata = selectRecipeMetadata(newRecipe, response);
 

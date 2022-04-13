@@ -132,6 +132,16 @@ export interface EditorState {
   isRemoveFromRecipeModalVisible: boolean;
 
   /**
+   * Are we showing the "create blueprint" modal?
+   */
+  isCreateRecipeModalVisible: boolean;
+
+  /**
+   * When creating a new blueprint from an existing extension, should we keep a separate copy of the extension?
+   */
+  keepLocalCopyOnCreateRecipe: boolean;
+
+  /**
    * Unsaved extensions that have been deleted from a recipe
    */
   deletedElementsByRecipeId: Record<RegistryId, FormState[]>;
