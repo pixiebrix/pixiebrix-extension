@@ -38,7 +38,7 @@ const Section: React.FunctionComponent = ({ children }) => (
 );
 
 const SettingsPage: React.FunctionComponent = () => {
-  const organization = useSelector(selectOrganizations);
+  const organizations = useSelector(selectOrganizations);
 
   const { flagOn, permit } = useFlags();
 
@@ -56,7 +56,7 @@ const SettingsPage: React.FunctionComponent = () => {
         </p>
       }
     >
-      {(organization == null || DEBUG) && (
+      {(organizations == null || DEBUG) && (
         <Section>
           <PrivacySettings />
         </Section>
