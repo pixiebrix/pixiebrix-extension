@@ -46,7 +46,7 @@ import { dumpBrickYaml } from "@/runtime/brickYaml";
 import { propertiesToSchema } from "@/validators/generic";
 import { produce } from "immer";
 import { sortBy } from "lodash";
-import { miniSerializeError } from "@reduxjs/toolkit";
+import { serializeError } from "serialize-error";
 
 type QueryArgs = {
   /**
@@ -93,16 +93,13 @@ const appBaseQuery: BaseQueryFn<QueryArgs> = async ({
     return { data: result.data, meta };
   } catch (error) {
     if (isAxiosError(error)) {
+      // Axios offers its own serialization method, but it reshapes the Error object (doesn't include the response, puts the status on the root level).
+      // By deleting toJSON, the serialize-error library will use its default serialization
       delete error.toJSON;
-
-      return {
-        // This lets the error keep the original shape and become serializable for Redux store
-        error: JSON.parse(JSON.stringify(error)),
-      };
     }
 
     return {
-      error: miniSerializeError(error),
+      error: serializeError(error),
     };
   }
 };
