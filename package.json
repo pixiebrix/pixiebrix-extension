@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.5.10-alpha.1",
+  "version": "1.6.0-alpha.1",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "jest",
@@ -132,7 +132,7 @@
     "regenerator-runtime": "^0.13.9",
     "reselect": "^4.0.0",
     "rollbar": "^2.24.0",
-    "schema-to-yup": "1.11.8",
+    "schema-to-yup": "1.11.9",
     "semver": "^7.3.5",
     "serialize-error": "^9.0.0",
     "simple-icons": "^5.8.0",
@@ -140,10 +140,10 @@
     "timezone-mock": "^1.2.2",
     "to-json-schema": "^0.2.5",
     "url-join": "^5.0.0",
-    "urlpattern-polyfill": "^1.0.0-rc1",
+    "urlpattern-polyfill": "^4.0.3",
     "use-async-effect": "^2.2.3",
     "use-debounce": "^7.0.0",
-    "use-immer": "^0.6.0",
+    "use-immer": "^0.7.0",
     "uuid": "^8.3.2",
     "webext-additional-permissions": "^2.3.0",
     "webext-content-scripts": "^1.0.1",
@@ -263,7 +263,7 @@
     "webpack-merge": "^5.8.0",
     "webpack-target-webextension": "^1.0.0",
     "yaml-jest-transform": "^1.0.0",
-    "yaml-loader": "^0.6.0",
+    "yaml-loader": "^0.7.0",
     "zip-dir": "^2.0.0"
   },
   "webExt": {

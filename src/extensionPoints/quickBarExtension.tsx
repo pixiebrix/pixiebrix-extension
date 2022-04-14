@@ -16,8 +16,10 @@
  */
 
 import React from "react";
-import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
-import { ExtensionPoint } from "@/types";
+import {
+  InitialValues,
+  reduceExtensionPipeline,
+} from "@/runtime/reducePipeline";
 import {
   IBlock,
   IconConfig,
@@ -30,6 +32,7 @@ import {
 import { propertiesToSchema } from "@/validators/generic";
 import { Manifest, Menus, Permissions } from "webextension-polyfill";
 import {
+  ExtensionPoint,
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
@@ -69,6 +72,14 @@ export type QuickBarConfig = {
 };
 
 export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConfig> {
+  static isQuickBarExtensionPoint(
+    extensionPoint: IExtensionPoint
+  ): extensionPoint is QuickBarExtensionPoint {
+    // Need to a access a type specific property (QuickBarExtensionPoint._definition) on a base-typed entity (IExtensionPoint)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (extensionPoint as any)?._definition?.type === "quickBar";
+  }
+
   abstract get targetMode(): QuickBarTargetMode;
 
   abstract getBaseReader(): Promise<IReader>;
@@ -216,7 +227,7 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
             optionsArgs: extension.optionsArgs,
           };
 
-          await reducePipeline(actionConfig, initialValues, {
+          await reduceExtensionPipeline(actionConfig, initialValues, {
             logger: extensionLogger,
             ...apiVersionOptions(extension.apiVersion),
           });

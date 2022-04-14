@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ExtensionPoint } from "@/types";
-import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
+import {
+  InitialValues,
+  reduceExtensionPipeline,
+} from "@/runtime/reducePipeline";
 import {
   IBlock,
   ResolvedExtension,
@@ -29,6 +31,7 @@ import {
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
+  ExtensionPoint,
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
@@ -304,7 +307,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/2910
     try {
-      await reducePipeline(actionConfig, initialValues, {
+      await reduceExtensionPipeline(actionConfig, initialValues, {
         logger: extensionLogger,
         ...apiVersionOptions(extension.apiVersion),
       });

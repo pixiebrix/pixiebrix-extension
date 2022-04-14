@@ -365,6 +365,12 @@ export function isPrivatePageError(error: unknown): boolean {
   );
 }
 
+export const NO_INTERNET_MESSAGE =
+  "No response received. You are not connected to the internet.";
+
+export const NO_RESPONSE_MESSAGE =
+  "No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/network-errors for troubleshooting information";
+
 /**
  * Heuristically select the most user-friendly error message for an Axios response.
  *
@@ -383,6 +389,10 @@ export function isPrivatePageError(error: unknown): boolean {
 function selectServerErrorMessage({ response }: AxiosError): string | null {
   // For examples of DRF errors, see the pixiebrix-app repository:
   // http://github.com/pixiebrix/pixiebrix-app/blob/5ef1e4e414be6485fae999440b69f2b6da993668/api/tests/test_errors.py#L15-L15
+
+  if (response == null) {
+    return NO_RESPONSE_MESSAGE;
+  }
 
   // Handle 400 responses created by DRF serializers
   if (isBadRequestResponse(response)) {

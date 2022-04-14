@@ -52,6 +52,7 @@ import useFlags from "@/hooks/useFlags";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import RequireAuth from "@/auth/RequireAuth";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
+import Centered from "@/layout/Centered";
 
 // Register the built-in bricks
 registerEditors();
@@ -61,19 +62,28 @@ registerContribBlocks();
 // Register Widgets
 registerDefaultWidgets();
 
-const Layout = () => {
-  // Get the latest brick definitions. Put it here in Layout instead of App to ensure the Redux store has been hydrated
-  // by the time refresh is called.
+const RefreshBricks: React.VFC = () => {
+  // Get the latest brick definitions. Defined as a component to put inside the RequireAuth gate in the layout.
   useRefresh();
+  return null;
+};
 
+const ErrorScreen: React.VFC<{ error: unknown }> = ({ error }) => (
+  <Centered>
+    <ErrorDisplay error={error} />
+  </Centered>
+);
+
+const Layout = () => {
   const { permit } = useFlags();
 
   return (
     <div>
       <Navbar />
       <Container fluid className="page-body-wrapper">
-        {/* It is guaranteed that under RequireAuth the user is logged in. */}
-        <RequireAuth LoginPage={SetupPage} ErrorPage={ErrorDisplay}>
+        {/* It is guaranteed that under RequireAuth the user has a valid API token. */}
+        <RequireAuth LoginPage={SetupPage} ErrorPage={ErrorScreen}>
+          <RefreshBricks />
           <Sidebar />
           <div className="main-panel">
             <ErrorModal />
