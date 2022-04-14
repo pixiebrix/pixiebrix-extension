@@ -142,6 +142,7 @@ describe("Trace normal execution", () => {
       blockConfig,
       templateContext: { "@input": { inputArg: "hello" }, "@options": {} },
       renderedArgs: { message: "hello" } as unknown as RenderedArgs,
+      renderError: null,
     };
 
     const expectedExit: TraceExitData = {

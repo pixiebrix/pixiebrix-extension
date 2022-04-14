@@ -330,14 +330,6 @@ async function renderBlockArg(
     );
   }
 
-  traces.addEntry({
-    ...selectTraceRecordMeta(resolvedConfig, options),
-    timestamp: new Date().toISOString(),
-    templateContext: state.context as JsonObject,
-    renderedArgs: blockArgs,
-    blockConfig: config,
-  });
-
   return blockArgs;
 }
 
@@ -448,16 +440,27 @@ export async function blockReducer(
   // Adjust the root according to the `root` and `rootMode` props on the blockConfig
   const blockRoot = selectBlockRootElement(blockConfig, root);
 
-  const props: BlockProps = {
-    args: await renderBlockArg(
+  let renderedArgs: RenderedArgs;
+  let renderError: unknown;
+  try {
+    renderedArgs = await renderBlockArg(
       resolvedConfig,
       { ...state, root: blockRoot },
       blockOptions
-    ),
-    root: blockRoot,
-    previousOutput,
-    context: contextWithPreviousOutput,
-  };
+    );
+  } catch (error) {
+    renderError = error;
+  }
+
+  traces.addEntry({
+    ...selectTraceRecordMeta(resolvedConfig, options),
+    timestamp: new Date().toISOString(),
+    templateContext: context as JsonObject,
+    renderError: renderError ? serializeError(renderError) : null,
+    // `renderedArgs` will be null if there's an error rendering args
+    renderedArgs,
+    blockConfig: resolvedConfig.config,
+  });
 
   const preconfiguredTraceExit: TraceExitData = {
     runId,
@@ -482,6 +485,18 @@ export async function blockReducer(
 
     return { output: previousOutput, context };
   }
+
+  if (renderError) {
+    throw renderError;
+  }
+
+  // Must run aboveshouldRunBlock
+  const props: BlockProps = {
+    args: renderedArgs,
+    root: blockRoot,
+    previousOutput,
+    context: contextWithPreviousOutput,
+  };
 
   const output = await runBlock(resolvedConfig, props, blockOptions);
 
