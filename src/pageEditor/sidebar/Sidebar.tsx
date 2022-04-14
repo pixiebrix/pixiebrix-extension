@@ -20,7 +20,7 @@ import styles from "./Sidebar.module.scss";
 import React, { FormEvent, useContext, useMemo, useState } from "react";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { PageEditorTabContext } from "@/pageEditor/context";
-import { isEmpty, sortBy } from "lodash";
+import { sortBy } from "lodash";
 import { sleep } from "@/utils";
 import {
   Badge,
@@ -275,6 +275,43 @@ const SidebarExpanded: React.VoidFunctionComponent<{
       />
     );
 
+  const listItems = sortBy(
+    [...elementsByRecipeId, ...orphanedElements],
+    (item) => {
+      if (Array.isArray(item)) {
+        const recipeId = item[0];
+        const recipe = recipes.find(
+          (recipe) => recipe.metadata.id === recipeId
+        );
+        return recipe?.metadata?.name ?? "";
+      }
+
+      return item.label;
+    }
+  ).map((item) => {
+    if (Array.isArray(item)) {
+      const [recipeId, elements] = item;
+      return (
+        <RecipeEntry
+          key={recipeId}
+          recipeId={recipeId}
+          isActive={recipeId === activeRecipeId}
+        >
+          {elements.map((element) => (
+            <ElementListItem
+              key={getIdForElement(element)}
+              element={element}
+              isNested
+            />
+          ))}
+        </RecipeEntry>
+      );
+    }
+
+    const element = item;
+    return <ElementListItem key={getIdForElement(element)} element={element} />;
+  });
+
   return (
     <div className={cx(styles.root, styles.expanded)}>
       <div>
@@ -340,34 +377,7 @@ const SidebarExpanded: React.VoidFunctionComponent<{
         ) : null}
       </div>
       <div className={styles.extensions}>
-        {isLoadingRecipes ? (
-          <Loader />
-        ) : (
-          <ListGroup>
-            {elementsByRecipeId.map(([recipeId, elements]) => (
-              <RecipeEntry
-                key={recipeId}
-                recipeId={recipeId}
-                isActive={recipeId === activeRecipeId}
-              >
-                {elements.map((element) => (
-                  <ElementListItem
-                    key={getIdForElement(element)}
-                    element={element}
-                    isNested={true}
-                  />
-                ))}
-              </RecipeEntry>
-            ))}
-            {!isEmpty(orphanedElements) &&
-              orphanedElements.map((element) => (
-                <ElementListItem
-                  key={getIdForElement(element)}
-                  element={element}
-                />
-              ))}
-          </ListGroup>
-        )}
+        {isLoadingRecipes ? <Loader /> : <ListGroup>{listItems}</ListGroup>}
       </div>
       <Footer />
     </div>
