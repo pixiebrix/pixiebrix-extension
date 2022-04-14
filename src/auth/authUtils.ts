@@ -71,7 +71,7 @@ export function selectExtensionAuthState({
     isLoggedIn: true,
     isOnboarded,
     extension: true,
-    organization,
+    organization: organization,
     organizations,
     groups,
     flags,

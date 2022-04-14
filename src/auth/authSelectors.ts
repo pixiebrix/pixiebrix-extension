@@ -24,3 +24,5 @@ export const selectScope = (state: AuthRootState) => selectAuth(state).scope;
 export const selectFlags = (state: AuthRootState) => selectAuth(state).flags;
 export const selectOrganizations = (state: AuthRootState) =>
   selectAuth(state).organizations;
+export const selectOrganization = (state: AuthRootState) =>
+  selectAuth(state).organization;

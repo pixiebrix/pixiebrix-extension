@@ -46,7 +46,7 @@ type MeGroup = components["schemas"]["Me"]["group_memberships"][number] & {
   id: UUID;
 };
 
-export type MeOrganization =
+type MeOrganization =
   components["schemas"]["Me"]["organization_memberships"][number] & {
     organization: UUID;
   };
