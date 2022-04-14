@@ -32,6 +32,7 @@ import BlockPreview, {
 } from "@/pageEditor/tabs/effect/BlockPreview";
 import useReduxState from "@/hooks/useReduxState";
 import {
+  faExclamationCircle,
   faExclamationTriangle,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
@@ -252,7 +253,23 @@ const DataPanel: React.FC<{
             </>
           )}
           <DataTab eventKey="rendered" isTraceEmpty={!record}>
-            {record && (
+            {record?.renderError ? (
+              <>
+                {record.skippedRun ? (
+                  <Alert variant="info">
+                    <FontAwesomeIcon icon={faInfoCircle} /> Error rendering
+                    input arguments, but brick was skipped because condition was
+                    not met
+                  </Alert>
+                ) : (
+                  <Alert variant="danger">
+                    <FontAwesomeIcon icon={faExclamationCircle} /> Error
+                    rendering input arguments
+                  </Alert>
+                )}
+                <ErrorDisplay error={record.renderError} />
+              </>
+            ) : (
               <>
                 {isInputStale && (
                   <Alert variant="warning">
@@ -261,7 +278,7 @@ const DataPanel: React.FC<{
                   </Alert>
                 )}
                 <JsonTree
-                  data={record.renderedArgs}
+                  data={record?.renderedArgs}
                   copyable
                   searchable
                   initialSearchQuery={renderedQuery}
