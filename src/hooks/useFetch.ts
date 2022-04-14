@@ -60,7 +60,10 @@ function useFetch<TData = unknown>(
         } catch (error) {
           if (!isMounted()) return;
           setError(error);
-          notify.error("An error occurred fetching data from the server");
+          notify.error({
+            message: "An error occurred fetching data from the server",
+            error,
+          });
         } finally {
           if (isMounted()) {
             setIsLoading(false);

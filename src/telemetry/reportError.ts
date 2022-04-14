@@ -47,7 +47,8 @@ export default function reportError(
       "RECORD_ERROR",
       { isNotification: true },
       bg,
-      serializeError(selectError(error)),
+      // Do not call `selectError` with string
+      typeof error === "string" ? error : serializeError(selectError(error)),
       {
         ...context,
         // Add on the reporter side of the message. On the receiving side it would always be `background`
