@@ -295,7 +295,7 @@ const DataPanel: React.FC<{
           >
             {record?.skippedRun && (
               <Alert variant="info">
-                <FontAwesomeIcon icon={faInfoCircle} /> The block did not run
+                <FontAwesomeIcon icon={faInfoCircle} /> The brick did not run
                 because the condition was not met
               </Alert>
             )}
@@ -304,7 +304,7 @@ const DataPanel: React.FC<{
                 {isCurrentStale && (
                   <Alert variant="warning">
                     <FontAwesomeIcon icon={faExclamationTriangle} /> This or a
-                    previous block has changed, output may be out of date
+                    previous brick has changed, output may be out of date
                   </Alert>
                 )}
                 <JsonTree
