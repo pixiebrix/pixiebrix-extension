@@ -152,6 +152,7 @@ export const traceErrorFactory: (
   templateContext: {},
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- nominal typing
   renderedArgs: {} as RenderedArgs,
+  renderError: null,
   blockConfig: {
     id: TEST_BLOCK_ID,
     config: {},
