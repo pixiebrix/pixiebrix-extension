@@ -15,18 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
 import { Alert, Button, Modal } from "react-bootstrap";
-import { Form, Formik } from "formik";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import { boolean, object } from "yup";
+import Form, {
+  OnSubmit,
+  RenderBody,
+  RenderSubmit,
+} from "@/components/form/Form";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -38,6 +43,10 @@ const initialFormState: FormState = {
   keepLocalCopy: true,
 };
 
+const formStateSchema = object({
+  keepLocalCopy: boolean().required(),
+});
+
 const RemoveFromRecipeModal: React.VFC = () => {
   const activeElement = useSelector(selectActiveElement);
 
@@ -46,22 +55,59 @@ const RemoveFromRecipeModal: React.VFC = () => {
     dispatch(editorActions.hideRemoveFromRecipeModal());
   };
 
-  function onConfirmRemoveFromRecipe(keepLocalCopy: boolean) {
-    try {
-      const elementId = activeElement.uuid;
-      dispatch(
-        editorActions.removeElementFromRecipe({ elementId, keepLocalCopy })
-      );
-      dispatch(optionsActions.removeExtension({ extensionId: elementId }));
-    } catch (error: unknown) {
-      notify.error({
-        message: "Problem removing extension from blueprint",
-        error,
-      });
-    } finally {
-      hideModal();
-    }
-  }
+  const onSubmit = useCallback<OnSubmit<FormState>>(
+    async ({ keepLocalCopy }, helpers) => {
+      try {
+        const elementId = activeElement.uuid;
+        dispatch(
+          editorActions.removeElementFromRecipe({ elementId, keepLocalCopy })
+        );
+        dispatch(optionsActions.removeExtension({ extensionId: elementId }));
+        hideModal();
+      } catch (error: unknown) {
+        notify.error({
+          message: "Problem removing extension from blueprint",
+          error,
+        });
+      } finally {
+        helpers.setSubmitting(false);
+      }
+    },
+    [activeElement?.uuid, dispatch, hideModal]
+  );
+
+  const renderBody: RenderBody = ({ values }) => (
+    <>
+      <ConnectedFieldTemplate
+        name="keepLocalCopy"
+        label="Keep a local copy of the extension?"
+        fitLabelWidth
+        as={SwitchButtonWidget}
+      />
+      {!values.keepLocalCopy && (
+        <Alert variant="warning">
+          <FontAwesomeIcon icon={faExclamationTriangle} />
+          &nbsp;This will delete the extension. To restore it, use the reset
+          button.
+        </Alert>
+      )}
+    </>
+  );
+
+  const renderSubmit: RenderSubmit = ({ isSubmitting, isValid, values }) => (
+    <Modal.Footer>
+      <Button variant="info" onClick={hideModal}>
+        Cancel
+      </Button>
+      <Button
+        variant="danger"
+        type="submit"
+        disabled={!isValid || isSubmitting}
+      >
+        {values.keepLocalCopy ? "Remove" : "Delete"}
+      </Button>
+    </Modal.Footer>
+  );
 
   return (
     <Modal show onHide={hideModal}>
@@ -71,40 +117,15 @@ const RemoveFromRecipeModal: React.VFC = () => {
           <em>{activeElement?.recipe?.name}</em>?
         </Modal.Title>
       </Modal.Header>
-      <Formik
-        initialValues={initialFormState}
-        onSubmit={({ keepLocalCopy }) => {
-          onConfirmRemoveFromRecipe(keepLocalCopy);
-        }}
-      >
-        {({ values, handleSubmit }) => (
-          <Form onSubmit={handleSubmit}>
-            <Modal.Body>
-              <ConnectedFieldTemplate
-                name="keepLocalCopy"
-                label="Keep a local copy of the extension?"
-                fitLabelWidth
-                as={SwitchButtonWidget}
-              />
-              {!values.keepLocalCopy && (
-                <Alert variant="warning">
-                  <FontAwesomeIcon icon={faExclamationTriangle} />
-                  &nbsp;This will delete the extension. To restore it, use the
-                  reset button.
-                </Alert>
-              )}
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="info" onClick={hideModal}>
-                Cancel
-              </Button>
-              <Button variant="danger" type="submit">
-                {values.keepLocalCopy ? "Remove" : "Delete"}
-              </Button>
-            </Modal.Footer>
-          </Form>
-        )}
-      </Formik>
+      <Modal.Body>
+        <Form
+          initialValues={initialFormState}
+          validationSchema={formStateSchema}
+          onSubmit={onSubmit}
+          renderBody={renderBody}
+          renderSubmit={renderSubmit}
+        />
+      </Modal.Body>
     </Modal>
   );
 };
