@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
@@ -27,9 +27,15 @@ import {
   selectInstalledRecipeMetadatas,
 } from "@/pageEditor/slices/editorSelectors";
 import { RecipeMetadata, RegistryId } from "@/core";
-import { Form, Formik } from "formik";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import notify from "@/utils/notify";
+import Form, {
+  OnSubmit,
+  RenderBody,
+  RenderSubmit,
+} from "@/components/form/Form";
+import { isAxiosError } from "@/errors";
+import { boolean, object, string } from "yup";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -44,6 +50,11 @@ const initialFormState: FormState = {
 };
 
 const NEW_RECIPE_ID = "@new" as RegistryId;
+
+const formStateSchema = object({
+  recipeId: string().required(),
+  keepLocalCopy: boolean().required(),
+});
 
 const AddToRecipeModal: React.VFC = () => {
   const recipeMetadatas = useSelector(selectInstalledRecipeMetadatas);
@@ -60,40 +71,50 @@ const AddToRecipeModal: React.VFC = () => {
 
   const dispatch = useDispatch();
 
-  const hideModal = () => {
+  const hideModal = useCallback(() => {
     dispatch(editorActions.hideAddToRecipeModal());
-  };
+  }, [dispatch]);
 
-  function onConfirmAddToRecipe(recipeId: RegistryId, keepLocalCopy: boolean) {
-    if (recipeId === NEW_RECIPE_ID) {
-      dispatch(editorActions.transitionToCreateRecipeModal(keepLocalCopy));
-      return;
-    }
-
-    // eslint-disable-next-line security/detect-object-injection -- recipe id is from select options
-    const recipeMetadata = recipeMetadataById[recipeId];
-
-    try {
-      const elementId = activeElement.uuid;
-      dispatch(
-        editorActions.addElementToRecipe({
-          elementId,
-          recipeMetadata,
-          keepLocalCopy,
-        })
-      );
-      if (!keepLocalCopy) {
-        dispatch(optionsActions.removeExtension({ extensionId: elementId }));
+  const onSubmit = useCallback<OnSubmit<FormState>>(
+    async ({ recipeId, keepLocalCopy }, helpers) => {
+      if (recipeId === NEW_RECIPE_ID) {
+        dispatch(editorActions.transitionToCreateRecipeModal(keepLocalCopy));
+        return;
       }
-    } catch (error: unknown) {
-      notify.error({
-        message: "Problem adding extension to blueprint",
-        error,
-      });
-    } finally {
-      hideModal();
-    }
-  }
+
+      // eslint-disable-next-line security/detect-object-injection -- recipe id is from select options
+      const recipeMetadata = recipeMetadataById[recipeId];
+
+      try {
+        const elementId = activeElement.uuid;
+        dispatch(
+          editorActions.addElementToRecipe({
+            elementId,
+            recipeMetadata,
+            keepLocalCopy,
+          })
+        );
+        if (!keepLocalCopy) {
+          dispatch(optionsActions.removeExtension({ extensionId: elementId }));
+        }
+
+        hideModal();
+      } catch (error: unknown) {
+        if (isAxiosError(error) && error.response.data.config) {
+          helpers.setStatus(error.response.data.config);
+          return;
+        }
+
+        notify.error({
+          message: "Problem adding extension to blueprint",
+          error,
+        });
+      } finally {
+        helpers.setSubmitting(false);
+      }
+    },
+    [activeElement.uuid, dispatch, hideModal, recipeMetadataById]
+  );
 
   const selectOptions = [
     { label: "➕ Create new blueprint...", value: NEW_RECIPE_ID },
@@ -103,6 +124,41 @@ const AddToRecipeModal: React.VFC = () => {
     })),
   ];
 
+  const renderBody: RenderBody = () => (
+    <>
+      <ConnectedFieldTemplate
+        name="recipeId"
+        hideLabel
+        description="Choose a blueprint"
+        as={SelectWidget}
+        options={selectOptions}
+        widerLabel
+      />
+      <ConnectedFieldTemplate
+        name="keepLocalCopy"
+        label="Keep a local copy of the extension?"
+        fitLabelWidth
+        as={SwitchButtonWidget}
+        widerLabel
+      />
+    </>
+  );
+
+  const renderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
+    <Modal.Footer>
+      <Button variant="info" onClick={hideModal}>
+        Cancel
+      </Button>
+      <Button
+        variant="primary"
+        type="submit"
+        disabled={!isValid || isSubmitting}
+      >
+        Add
+      </Button>
+    </Modal.Footer>
+  );
+
   return (
     <Modal show onHide={hideModal}>
       <Modal.Header closeButton>
@@ -110,40 +166,15 @@ const AddToRecipeModal: React.VFC = () => {
           Add <em>{activeElement?.label}</em> to a blueprint
         </Modal.Title>
       </Modal.Header>
-      <Formik
-        initialValues={initialFormState}
-        onSubmit={({ recipeId, keepLocalCopy }) => {
-          onConfirmAddToRecipe(recipeId, keepLocalCopy);
-        }}
-      >
-        {({ handleSubmit }) => (
-          <Form onSubmit={handleSubmit}>
-            <Modal.Body>
-              <ConnectedFieldTemplate
-                name="recipeId"
-                hideLabel
-                description="Choose a blueprint"
-                as={SelectWidget}
-                options={selectOptions}
-              />
-              <ConnectedFieldTemplate
-                name="keepLocalCopy"
-                label="Keep a local copy of the extension?"
-                fitLabelWidth
-                as={SwitchButtonWidget}
-              />
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="info" onClick={hideModal}>
-                Cancel
-              </Button>
-              <Button variant="primary" type="submit">
-                Add
-              </Button>
-            </Modal.Footer>
-          </Form>
-        )}
-      </Formik>
+      <Modal.Body>
+        <Form
+          validationSchema={formStateSchema}
+          initialValues={initialFormState}
+          onSubmit={onSubmit}
+          renderBody={renderBody}
+          renderSubmit={renderSubmit}
+        />
+      </Modal.Body>
     </Modal>
   );
 };
