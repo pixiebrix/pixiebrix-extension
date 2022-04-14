@@ -452,14 +452,16 @@ export async function blockReducer(
     renderError = error;
   }
 
+  // Always add the trace entry, even if the block didn't run
   traces.addEntry({
-    ...selectTraceRecordMeta(resolvedConfig, options),
+    // Pass blockOptions because it includes the trace property
+    ...selectTraceRecordMeta(resolvedConfig, blockOptions),
     timestamp: new Date().toISOString(),
     templateContext: context as JsonObject,
     renderError: renderError ? serializeError(renderError) : null,
     // `renderedArgs` will be null if there's an error rendering args
     renderedArgs,
-    blockConfig: resolvedConfig.config,
+    blockConfig,
   });
 
   const preconfiguredTraceExit: TraceExitData = {
@@ -486,11 +488,11 @@ export async function blockReducer(
     return { output: previousOutput, context };
   }
 
+  // Above we had wrapped the call to renderBlockArg in a try-catch to always have an entry trace entry
   if (renderError) {
     throw renderError;
   }
 
-  // Must run aboveshouldRunBlock
   const props: BlockProps = {
     args: renderedArgs,
     root: blockRoot,
