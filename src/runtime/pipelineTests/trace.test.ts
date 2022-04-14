@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { OutputKey, RenderedArgs } from "@/core";
+import { Expression, OutputKey, RenderedArgs, TemplateEngine } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
@@ -39,6 +39,7 @@ import {
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import MockDate from "mockdate";
 import { BlockPipeline } from "@/blocks/types";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 jest.mock("@/background/messenger/api");
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
@@ -51,6 +52,13 @@ beforeEach(() => {
   (traces.addEntry as any).mockReset();
   (traces.addExit as any).mockReset();
 });
+
+function makeExpression(template: TemplateEngine, value: string): Expression {
+  return {
+    __type__: template,
+    __value__: value,
+  };
+}
 
 describe("Trace exceptional exit", () => {
   test("trace entry and normal exit", async () => {
@@ -66,6 +74,35 @@ describe("Trace exceptional exit", () => {
       testOptions("v3")
     );
     expect(result).toStrictEqual({ message: "{{@input.inputArg}}" });
+  });
+});
+
+describe("Trace conditional execution", () => {
+  test("Trace false conditional", async () => {
+    await reducePipeline(
+      [
+        {
+          id: echoBlock.id,
+          config: {
+            message: makeExpression("nunjucks", "{{@input.inputArg}}"),
+          },
+          outputKey: validateOutputKey("conditional"),
+          if: "f",
+          instanceId: uuidv4(),
+        },
+        {
+          id: echoBlock.id,
+          config: { message: makeExpression("var", "@conditional.property") },
+          if: makeExpression("nunjucks", "{{true if @conditional}}"),
+          instanceId: uuidv4(),
+        },
+      ],
+      simpleInput({ inputArg: "hello" }),
+      testOptions("v3")
+    );
+
+    expect(traces.addEntry).toHaveBeenCalledTimes(2);
+    expect(traces.addExit).toHaveBeenCalledTimes(2);
   });
 });
 
