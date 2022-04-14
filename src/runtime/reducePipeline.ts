@@ -197,7 +197,7 @@ type RunBlockOptions = CommonOptions & {
   /**
    * Additional context to record with the trace entry/exit records.
    */
-  trace?: TraceMetadata;
+  trace: TraceMetadata | null;
 };
 
 async function execute(
@@ -429,7 +429,7 @@ export async function blockReducer(
 
   const resolvedConfig = await resolveBlockConfig(blockConfig);
 
-  const blockOptions = {
+  const optionsWithTraceRef = {
     ...options,
     trace: {
       runId,
@@ -446,7 +446,7 @@ export async function blockReducer(
     renderedArgs = await renderBlockArg(
       resolvedConfig,
       { ...state, root: blockRoot },
-      blockOptions
+      optionsWithTraceRef
     );
   } catch (error) {
     renderError = error;
@@ -455,7 +455,7 @@ export async function blockReducer(
   // Always add the trace entry, even if the block didn't run
   traces.addEntry({
     // Pass blockOptions because it includes the trace property
-    ...selectTraceRecordMeta(resolvedConfig, blockOptions),
+    ...selectTraceRecordMeta(resolvedConfig, optionsWithTraceRef),
     timestamp: new Date().toISOString(),
     templateContext: context as JsonObject,
     renderError: renderError ? serializeError(renderError) : null,
@@ -500,7 +500,7 @@ export async function blockReducer(
     context: contextWithPreviousOutput,
   };
 
-  const output = await runBlock(resolvedConfig, props, blockOptions);
+  const output = await runBlock(resolvedConfig, props, optionsWithTraceRef);
 
   if (logValues) {
     console.info(`Output for block #${index + 1}: ${blockConfig.id}`, {
