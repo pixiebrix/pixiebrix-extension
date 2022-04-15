@@ -42,7 +42,7 @@ export class RemoteMethod extends Transformer {
       service: {
         $ref: "https://app.pixiebrix.com/schemas/service#/definitions/configuredService",
         description:
-          "The service to authenticate the request, if authorization is required",
+          "Optional. The service to authenticate the request, if authorization is required",
       },
       method: {
         type: "string",

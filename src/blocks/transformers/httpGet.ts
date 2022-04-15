@@ -40,7 +40,7 @@ export class GetAPITransformer extends Transformer {
       service: {
         $ref: "https://app.pixiebrix.com/schemas/service#/definitions/configuredServiceOrVar",
         description:
-          "The service to authenticate the request, if authorization is required",
+          "Optional. The service to authenticate the request, if authorization is required",
       },
       params: {
         type: "object",

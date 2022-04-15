@@ -311,17 +311,25 @@ const ServiceField: React.FunctionComponent<
       name={field.name}
       label={makeLabelForSchemaField(props)}
       description={
-        <span>
-          A configured integration.{" "}
-          <a
-            href={`${browser.runtime.getURL("options.html")}#/services`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FontAwesomeIcon icon={faCloud} />
-            &nbsp;Configure additional integrations on the Integrations page
-          </a>
-        </span>
+        <>
+          {schema.description && (
+            <>
+              <span>{schema.description}</span>
+              <br />
+            </>
+          )}
+          <span>
+            A configured integration.{" "}
+            <a
+              href={`${browser.runtime.getURL("options.html")}#/services`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FontAwesomeIcon icon={faCloud} />
+              &nbsp;Configure additional integrations on the Integrations page
+            </a>
+          </span>
+        </>
       }
       as={SelectWidget}
       isClearable
