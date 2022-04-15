@@ -19,6 +19,8 @@ import {
   Installable,
   InstallableStatus,
   InstallableViewItem,
+  SharingSource,
+  SharingType,
 } from "@/options/pages/blueprints/blueprintsTypes";
 import React, { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
@@ -29,10 +31,12 @@ import {
   getDescription,
   getInstalledVersionNumber,
   getLabel,
+  getOrganization,
   getPackageId,
-  getSharingType,
   getUpdatedAt,
   isExtension,
+  isPersonal,
+  isPublic,
   updateAvailable,
 } from "@/options/pages/blueprints/utils/installableUtils";
 import {
@@ -42,6 +46,7 @@ import {
 import { MarketplaceListing } from "@/types/contract";
 import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
+import { isDeploymentActive } from "@/utils/deployment";
 
 function useInstallableViewItems(installables: Installable[]): {
   installableViewItems: InstallableViewItem[];
@@ -76,6 +81,84 @@ function useInstallableViewItems(installables: Installable[]): {
     [installedExtensionIds, installedRecipeIds]
   );
 
+  const isDeployment = useCallback(
+    (installable: Installable) => {
+      if (isExtension(installable)) {
+        return Boolean(installable._deployment);
+      }
+
+      for (const installedExtension of installedExtensions) {
+        if (
+          installedExtension._recipe?.id === getPackageId(installable) &&
+          installedExtension._deployment
+        ) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+    [installedExtensions]
+  );
+
+  const getSharingType = useCallback(
+    (installable: Installable, scope: string): SharingSource => {
+      let sharingType: SharingType = null;
+      const organization = getOrganization(installable, organizations);
+
+      if (isPersonal(installable, scope)) {
+        sharingType = "Personal";
+      } else if (isDeployment(installable)) {
+        sharingType = "Deployment";
+      } else if (organization) {
+        sharingType = "Team";
+      } else if (isPublic(installable)) {
+        sharingType = "Public";
+      }
+
+      let label: string;
+      if (
+        sharingType === "Team" ||
+        // There's a corner case for team deployments of public market bricks. The organization will come through as
+        // nullish here.
+        (sharingType === "Deployment" && organization?.name)
+      ) {
+        label = organization.name;
+      } else {
+        label = sharingType;
+      }
+
+      return {
+        type: sharingType,
+        label,
+        organization,
+      };
+    },
+    [isDeployment, organizations]
+  );
+
+  const getStatus = useCallback(
+    (installable: Installable): InstallableStatus => {
+      if (isDeployment(installable)) {
+        if (isExtension(installable)) {
+          return isDeploymentActive(installable) ? "Active" : "Paused";
+        }
+
+        for (const installedExtension of installedExtensions) {
+          if (
+            installedExtension._recipe?.id === getPackageId(installable) &&
+            installedExtension._deployment
+          ) {
+            return isDeploymentActive(installedExtension) ? "Active" : "Paused";
+          }
+        }
+      }
+
+      return isActive(installable) ? "Active" : "Inactive";
+    },
+    [installedExtensions, isActive, isDeployment]
+  );
+
   const installableIcon = useCallback(
     (installable: Installable) => {
       const listing: MarketplaceListing | null = listings.isLoading
@@ -101,12 +184,10 @@ function useInstallableViewItems(installables: Installable[]): {
         description: getDescription(installable),
         sharing: {
           packageId: getPackageId(installable),
-          source: getSharingType(installable, organizations, scope),
+          source: getSharingType(installable, scope),
         },
         updatedAt: getUpdatedAt(installable),
-        status:
-          // Cast needed because otherwise TypeScript types as "string"
-          (isActive(installable) ? "Active" : "Inactive") as InstallableStatus,
+        status: getStatus(installable),
         hasUpdate: updateAvailable(
           recipes.data,
           installedExtensions,
@@ -120,10 +201,11 @@ function useInstallableViewItems(installables: Installable[]): {
         installable,
       })),
     [
+      getSharingType,
+      getStatus,
       installableIcon,
       installables,
       installedExtensions,
-      isActive,
       organizations,
       recipes.data,
       scope,

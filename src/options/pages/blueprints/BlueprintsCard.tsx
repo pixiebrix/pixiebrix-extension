@@ -94,6 +94,8 @@ const BlueprintsCard: React.FunctionComponent<{
   const { installableViewItems, isLoading } =
     useInstallableViewItems(installables);
 
+  console.log("installables:", installables);
+
   const teamFilters = useMemo(
     () =>
       uniq(
