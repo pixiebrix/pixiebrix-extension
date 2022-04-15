@@ -101,7 +101,7 @@ function useInstallableViewItems(installables: Installable[]): {
         description: getDescription(installable),
         sharing: {
           packageId: getPackageId(installable),
-          source: getSharingType(installable, organizations ?? [], scope),
+          source: getSharingType(installable, organizations, scope),
         },
         updatedAt: getUpdatedAt(installable),
         status:
