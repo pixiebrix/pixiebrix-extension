@@ -21,6 +21,7 @@ import { Col, Row as BootstrapRow } from "react-bootstrap";
 import React, { useMemo } from "react";
 import {
   Column,
+  Row,
   useFilters,
   useGlobalFilter,
   useGroupBy,
@@ -41,6 +42,20 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import BlueprintsToolbar from "@/options/pages/blueprints/BlueprintsToolbar";
 import BlueprintsView from "@/options/pages/blueprints/BlueprintsView";
 import Loader from "@/components/Loader";
+
+const statusFilter = (
+  rows: Array<Row<InstallableViewItem>>,
+  _: string[],
+  filterValue: string
+) => {
+  // For UX purposes, Paused deployments will be included under the "Active" filter
+  const filterValues = [
+    filterValue,
+    ...(filterValue === "Active" ? ["Paused"] : []),
+  ];
+
+  return rows.filter((row) => filterValues.includes(row.original.status));
+};
 
 // These react-table columns aren't rendered as column headings,
 // but used to expose grouping, sorting, filtering, and global
@@ -84,7 +99,7 @@ const columns: Array<Column<InstallableViewItem>> = [
     Header: "Status",
     accessor: "status",
     disableGlobalFilter: true,
-    filter: "exactText",
+    filter: statusFilter,
   },
 ];
 
@@ -93,8 +108,6 @@ const BlueprintsCard: React.FunctionComponent<{
 }> = ({ installables }) => {
   const { installableViewItems, isLoading } =
     useInstallableViewItems(installables);
-
-  console.log("installables:", installables);
 
   const teamFilters = useMemo(
     () =>
