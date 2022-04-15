@@ -25,7 +25,11 @@ import {
 } from "@/core";
 import * as semver from "semver";
 import { Organization } from "@/types/contract";
-import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
+import {
+  Installable,
+  SharingSource,
+  SharingType,
+} from "@/options/pages/blueprints/blueprintsTypes";
 import { createSelector } from "reselect";
 import { selectExtensions } from "@/store/extensionsSelectors";
 
@@ -114,6 +118,64 @@ export const getInstalledVersionNumber = (
   );
 
   return installedExtension?._recipe?.version;
+};
+
+export const isDeployment = (
+  installable: Installable,
+  installedExtensions: UnresolvedExtension[]
+) => {
+  if (isExtension(installable)) {
+    return Boolean(installable._deployment);
+  }
+
+  for (const installedExtension of installedExtensions) {
+    if (
+      installedExtension._recipe?.id === getPackageId(installable) &&
+      installedExtension._deployment
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+export const getSharingType = (
+  installable: Installable,
+  organizations: Organization[],
+  scope: string,
+  installedExtensions: UnresolvedExtension[]
+): SharingSource => {
+  let sharingType: SharingType = null;
+  const organization = getOrganization(installable, organizations);
+
+  if (isPersonal(installable, scope)) {
+    sharingType = "Personal";
+  } else if (isDeployment(installable, installedExtensions)) {
+    sharingType = "Deployment";
+  } else if (organization) {
+    sharingType = "Team";
+  } else if (isPublic(installable)) {
+    sharingType = "Public";
+  }
+
+  let label: string;
+  if (
+    sharingType === "Team" ||
+    // There's a corner case for team deployments of public market bricks. The organization will come through as
+    // nullish here.
+    (sharingType === "Deployment" && organization?.name)
+  ) {
+    label = organization.name;
+  } else {
+    label = sharingType;
+  }
+
+  return {
+    type: sharingType,
+    label,
+    organization,
+  };
 };
 
 export function updateAvailable(

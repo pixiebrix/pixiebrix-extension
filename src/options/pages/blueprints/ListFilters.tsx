@@ -73,7 +73,6 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
           <Nav.Link
             eventKey="Active"
             onClick={() => {
-              // For UX purposes, we'll keep paused deployments in the "active" filter tab
               setFilters([{ id: "status", value: "Active" }]);
             }}
           >

@@ -28,7 +28,7 @@ import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 describe("getSharingType", () => {
   test("personal extension", () => {
     const installable: Installable = extensionFactory() as any;
-    const { type, label } = getSharingType(installable, [], "test_scope");
+    const { type, label } = getSharingType(installable, [], "test_scope", []);
 
     expect(type).toBe("Personal");
     expect(label).toBe("Personal");
@@ -42,7 +42,7 @@ describe("getSharingType", () => {
         timestamp: new Date().toISOString(),
       },
     }) as any;
-    const { type, label } = getSharingType(installable, [], "test_scope");
+    const { type, label } = getSharingType(installable, [], "test_scope", []);
 
     expect(type).toBe("Deployment");
     expect(label).toBe("Deployment");
@@ -77,7 +77,8 @@ describe("getSharingType", () => {
     const { type, label } = getSharingType(
       installable,
       testOrganizations,
-      "test_scope"
+      "test_scope",
+      []
     );
 
     expect(type).toBe("Deployment");
@@ -102,7 +103,8 @@ describe("getSharingType", () => {
     const { type, label } = getSharingType(
       installable,
       testOrganizations,
-      "test_scope"
+      "test_scope",
+      []
     );
 
     expect(type).toBe("Team");
@@ -114,7 +116,7 @@ describe("getSharingType", () => {
       sharing: sharingDefinitionFactory({ public: true }),
     }) as any;
 
-    const { type, label } = getSharingType(installable, [], "test_scope");
+    const { type, label } = getSharingType(installable, [], "test_scope", []);
 
     expect(type).toBe("Public");
     expect(label).toBe("Public");
