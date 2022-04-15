@@ -86,6 +86,11 @@ describe("Trace normal exit", () => {
       })
     );
     expect(traces.addExit).toHaveBeenCalledTimes(1);
+    expect(traces.addExit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        skippedRun: false,
+      })
+    );
   });
 });
 
@@ -93,8 +98,8 @@ describe("Trace render error", () => {
   test("Trace input render error", async () => {
     const instanceId = uuidv4();
 
-    try {
-      await reducePipeline(
+    await expect(async () =>
+      reducePipeline(
         {
           id: echoBlock.id,
           config: { message: makeExpression("var", "@doesNotExist.bar") },
@@ -102,10 +107,8 @@ describe("Trace render error", () => {
         },
         simpleInput({ inputArg: "hello" }),
         testOptions("v3")
-      );
-    } catch {
-      // Error is expected
-    }
+      )
+    ).rejects.toThrowError(/doesNotExist/);
 
     expect(traces.addEntry).toHaveBeenCalledTimes(1);
     expect(traces.addEntry).toHaveBeenCalledWith(
@@ -123,6 +126,39 @@ describe("Trace render error", () => {
         error: expect.objectContaining({
           message: "@doesNotExist.bar undefined (missing @doesNotExist)",
         }),
+      })
+    );
+  });
+
+  test("Doesn't throw when skipped", async () => {
+    const instanceId = uuidv4();
+
+    await reducePipeline(
+      {
+        id: echoBlock.id,
+        config: { message: makeExpression("var", "@doesNotExist.bar") },
+        outputKey: validateOutputKey("conditional"),
+        if: "f",
+        instanceId,
+      },
+      simpleInput({ inputArg: "hello" }),
+      testOptions("v3")
+    );
+
+    expect(traces.addEntry).toHaveBeenCalledTimes(1);
+    expect(traces.addEntry).toHaveBeenCalledWith(
+      expect.objectContaining({
+        renderedArgs: undefined,
+        renderError: expect.objectContaining({
+          message: expect.anything(),
+        }),
+      })
+    );
+
+    expect(traces.addExit).toHaveBeenCalledTimes(1);
+    expect(traces.addExit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        skippedRun: true,
       })
     );
   });
