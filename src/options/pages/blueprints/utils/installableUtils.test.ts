@@ -70,7 +70,6 @@ describe("getSharingType", () => {
       {
         id: orgId,
         name: "test_org",
-        scope: "test_scope",
         role: UserRole.admin,
       },
     ];
@@ -96,7 +95,6 @@ describe("getSharingType", () => {
       {
         id: orgId,
         name: "test_org",
-        scope: "test_scope",
         role: UserRole.admin,
       },
     ];

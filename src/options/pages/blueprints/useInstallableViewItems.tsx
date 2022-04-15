@@ -37,12 +37,11 @@ import {
 } from "@/options/pages/blueprints/utils/installableUtils";
 import {
   useGetMarketplaceListingsQuery,
-  useGetOrganizationsQuery,
   useGetRecipesQuery,
 } from "@/services/api";
 import { MarketplaceListing } from "@/types/contract";
 import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
-import { selectScope } from "@/auth/authSelectors";
+import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 
 function useInstallableViewItems(installables: Installable[]): {
   installableViewItems: InstallableViewItem[];
@@ -50,7 +49,7 @@ function useInstallableViewItems(installables: Installable[]): {
 } {
   const scope = useSelector(selectScope);
   const installedExtensions = useSelector(selectExtensions);
-  const organizationsQuery = useGetOrganizationsQuery();
+  const organizations = useSelector(selectOrganizations);
   const listingsQuery = useGetMarketplaceListingsQuery();
   const recipesQuery = useGetRecipesQuery();
 
@@ -102,11 +101,7 @@ function useInstallableViewItems(installables: Installable[]): {
         description: getDescription(installable),
         sharing: {
           packageId: getPackageId(installable),
-          source: getSharingType(
-            installable,
-            organizationsQuery.data ?? [],
-            scope
-          ),
+          source: getSharingType(installable, organizations, scope),
         },
         updatedAt: getUpdatedAt(installable),
         status:
@@ -129,7 +124,7 @@ function useInstallableViewItems(installables: Installable[]): {
       installables,
       installedExtensions,
       isActive,
-      organizationsQuery.data,
+      organizations,
       recipesQuery.data,
       scope,
     ]
@@ -137,10 +132,7 @@ function useInstallableViewItems(installables: Installable[]): {
 
   return {
     installableViewItems,
-    isLoading:
-      organizationsQuery.isLoading ||
-      recipesQuery.isLoading ||
-      listingsQuery.isLoading,
+    isLoading: recipesQuery.isLoading || listingsQuery.isLoading,
   };
 }
 
