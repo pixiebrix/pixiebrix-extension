@@ -66,7 +66,7 @@ const BlueprintActions: React.FunctionComponent<{
           </>
         ),
         action: actions.viewLogs,
-        hide: status !== "Active",
+        hide: status === "Inactive",
       },
       {
         title: (
