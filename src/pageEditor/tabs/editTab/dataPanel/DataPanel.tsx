@@ -32,6 +32,7 @@ import BlockPreview, {
 } from "@/pageEditor/tabs/effect/BlockPreview";
 import useReduxState from "@/hooks/useReduxState";
 import {
+  faExclamationCircle,
   faExclamationTriangle,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
@@ -252,7 +253,23 @@ const DataPanel: React.FC<{
             </>
           )}
           <DataTab eventKey="rendered" isTraceEmpty={!record}>
-            {record && (
+            {record?.renderError ? (
+              <>
+                {record.skippedRun ? (
+                  <Alert variant="info">
+                    <FontAwesomeIcon icon={faInfoCircle} /> Error rendering
+                    input arguments, but brick was skipped because condition was
+                    not met
+                  </Alert>
+                ) : (
+                  <Alert variant="danger">
+                    <FontAwesomeIcon icon={faExclamationCircle} /> Error
+                    rendering input arguments
+                  </Alert>
+                )}
+                <ErrorDisplay error={record.renderError} />
+              </>
+            ) : (
               <>
                 {isInputStale && (
                   <Alert variant="warning">
@@ -261,7 +278,7 @@ const DataPanel: React.FC<{
                   </Alert>
                 )}
                 <JsonTree
-                  data={record.renderedArgs}
+                  data={record?.renderedArgs}
                   copyable
                   searchable
                   initialSearchQuery={renderedQuery}
@@ -277,9 +294,9 @@ const DataPanel: React.FC<{
             isTraceOptional={previewInfo?.traceOptional}
           >
             {record?.skippedRun && (
-              <Alert variant="warning">
-                <FontAwesomeIcon icon={faExclamationTriangle} /> The block did
-                not run because the condition was not met
+              <Alert variant="info">
+                <FontAwesomeIcon icon={faInfoCircle} /> The brick did not run
+                because the condition was not met
               </Alert>
             )}
             {!record?.skippedRun && outputObj && (
@@ -287,7 +304,7 @@ const DataPanel: React.FC<{
                 {isCurrentStale && (
                   <Alert variant="warning">
                     <FontAwesomeIcon icon={faExclamationTriangle} /> This or a
-                    previous block has changed, output may be out of date
+                    previous brick has changed, output may be out of date
                   </Alert>
                 )}
                 <JsonTree
@@ -318,11 +335,11 @@ const DataPanel: React.FC<{
           >
             {/* The value of block.if can be `false`, in this case we also need to show the warning */}
             {block.if != null && (
-              <div className="text-info">
+              <Alert variant="info">
                 <FontAwesomeIcon icon={faInfoCircle} /> This brick has a
                 condition. The brick will not execute if the condition is not
                 met
-              </div>
+              </Alert>
             )}
             {showFormPreview || showDocumentPreview ? (
               <ErrorBoundary>
