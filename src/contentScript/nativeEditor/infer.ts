@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { uniq, sortBy, unary, intersection, isEmpty } from "lodash";
+import { uniq, sortBy, unary, intersection, compact } from "lodash";
 import { getCssSelector } from "css-selector-generator";
 import { isNullOrBlank, mostCommonElement, matchesAnyPattern } from "@/utils";
 import { BusinessError } from "@/errors";
@@ -28,6 +28,7 @@ import {
   PIXIEBRIX_READY_ATTRIBUTE,
 } from "@/common";
 import { guessUsefulness } from "@/utils/detectRandomString";
+import { getAttributeSelector } from "@/utils/selectorGenerator";
 
 const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
@@ -64,6 +65,14 @@ const UNIQUE_ATTRIBUTES_REGEX = new RegExp(
 export const UNIQUE_ATTRIBUTES_SELECTOR = UNIQUE_ATTRIBUTES.map(
   (attribute) => `[${attribute}]`
 ).join(",");
+
+function getUniqueAttributeSelector(element: HTMLElement): string {
+  for (const attribute of UNIQUE_ATTRIBUTES) {
+    if (element.hasAttribute(attribute)) {
+      return getAttributeSelector(attribute, element.getAttribute(attribute));
+    }
+  }
+}
 
 /**
  * Attribute names to exclude from button/panel template inference.
@@ -575,7 +584,7 @@ export function safeCssSelector(
             }
 
             const usefulness = guessUsefulness(selector);
-            console.debug("css-selector-generator:", usefulness);
+            console.debug("css-selector-generator:  ", usefulness);
             return usefulness.isRandom;
           }
         : undefined,
@@ -601,12 +610,46 @@ export function safeCssSelector(
   return selector;
 }
 
+function findAncestorsWithIdLikeSelectors(
+  element: HTMLElement,
+  root?: Element
+): HTMLElement[] {
+  // eslint-disable-next-line unicorn/no-array-callback-reference -- jQuery false positive
+  return $(element).parentsUntil(root).filter(UNIQUE_ATTRIBUTES_SELECTOR).get();
+}
+
+export function inferSelectorsIncludingStableAncestors(
+  element: HTMLElement,
+  root?: Element,
+  excludeRandomClasses?: boolean
+): string[] {
+  const stableAncestors = findAncestorsWithIdLikeSelectors(
+    element,
+    root
+  ).flatMap((stableAncestor) =>
+    inferSelectors(element, stableAncestor, excludeRandomClasses).map(
+      (selector) =>
+        [getUniqueAttributeSelector(stableAncestor), selector].join(" ")
+    )
+  );
+
+  return sortBy(
+    compact(
+      uniq([
+        ...inferSelectors(element, root, excludeRandomClasses),
+        ...stableAncestors,
+      ])
+    ),
+    getSelectorPreference
+  );
+}
+
 /**
  * Generate some CSS selector variants for an element.
  */
 export function inferSelectors(
   element: HTMLElement,
-  root: Element | null = null,
+  root?: Element,
   excludeRandomClasses?: boolean
 ): string[] {
   const makeSelector = (allowed?: Array<keyof typeof CssSelectorType>) => {
@@ -626,15 +669,18 @@ export function inferSelectors(
     }
   };
 
-  const generatedSelectors = uniq([
-    makeSelector(["id", "class", "tag", "attribute", "nthchild"]),
-    makeSelector(["tag", "class", "attribute", "nthchild"]),
-    makeSelector(["id", "tag", "attribute", "nthchild"]),
-    makeSelector(["id", "tag", "attribute"]),
-    makeSelector(),
-  ]).filter((x) => !isEmpty(x));
-
-  return sortBy(generatedSelectors, getSelectorPreference);
+  return sortBy(
+    compact(
+      uniq([
+        makeSelector(["id", "class", "tag", "attribute", "nthchild"]),
+        makeSelector(["tag", "class", "attribute", "nthchild"]),
+        makeSelector(["id", "tag", "attribute", "nthchild"]),
+        makeSelector(["id", "tag", "attribute"]),
+        makeSelector(),
+      ])
+    ),
+    getSelectorPreference
+  );
 }
 
 /**

@@ -18,21 +18,26 @@
 import { UNIQUE_ATTRIBUTES } from "@/contentScript/nativeEditor/infer";
 import { isRandomString } from "./detectRandomString";
 
-// Symbol to use when a selector was not found, easily filteable
+// Symbol to use when a selector was not found, easily filterable
 const NO_SELECTOR = "";
 
-function getAttributeSelector(attribute: Attr): string {
+/**
+ * @param name   Like "id", "data-test"
+ * @param value  Like "main-nav", "user-sidebar"
+ * @return  Like "#main-nav", "[data-test='user-sidebar']"
+ */
+export function getAttributeSelector(name: string, value: string): string {
   // Must be specified here or else the next condition creates `[id="something"]
-  if (attribute.name === "id") {
-    return "#" + attribute.value;
+  if (name === "id") {
+    return "#" + value;
   }
 
   if (
-    attribute.name === "title" ||
-    attribute.name.startsWith("aria-") ||
-    UNIQUE_ATTRIBUTES.includes(attribute.value)
+    name === "title" ||
+    name.startsWith("aria-") ||
+    UNIQUE_ATTRIBUTES.includes(value)
   ) {
-    return `[${attribute.name}="${attribute.value}"]`;
+    return `[${name}="${value}"]`;
   }
 
   return NO_SELECTOR;
@@ -52,8 +57,8 @@ function getClassSelector(className: string): string {
  * @example ["h1", ".bold", ".italic", "[aria-label=Title]"]
  */
 function getElementSelectors(target: Element): string[] {
-  const attributeSelectors = [...target.attributes].map((attribute) =>
-    getAttributeSelector(attribute)
+  const attributeSelectors = [...target.attributes].map(({ name, value }) =>
+    getAttributeSelector(name, value)
   );
   const classSelectors = [...target.classList].map((className) =>
     getClassSelector(className)
