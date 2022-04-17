@@ -18,10 +18,7 @@
 import { Framework } from "@/messaging/constants";
 import adapters from "@/frameworks/adapters";
 import { isEmpty, uniq } from "lodash";
-import {
-  inferSelectors,
-  inferSelectorsIncludingStableAncestors,
-} from "@/contentScript/nativeEditor/infer";
+import { inferSelectorsIncludingStableAncestors } from "@/contentScript/nativeEditor/infer";
 import { ElementInfo } from "@/contentScript/nativeEditor/types";
 
 export async function elementInfo(
