@@ -32,7 +32,6 @@ import {
   IGNORED_ERROR_PATTERNS,
   isAxiosError,
   isContextError,
-  isErrorObject,
 } from "@/errors";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { isAppRequest, selectAbsoluteUrl } from "@/services/requestErrorUtils";
