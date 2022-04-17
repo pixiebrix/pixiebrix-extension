@@ -28,7 +28,7 @@ import {
   PIXIEBRIX_READY_ATTRIBUTE,
 } from "@/common";
 import { guessUsefulness } from "@/utils/detectRandomString";
-import { getAttributeSelector } from "@/utils/selectorGenerator";
+import { getAttributeSelector, NO_SELECTOR } from "@/utils/selectorGenerator";
 
 const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
@@ -66,12 +66,14 @@ export const UNIQUE_ATTRIBUTES_SELECTOR = UNIQUE_ATTRIBUTES.map(
   (attribute) => `[${attribute}]`
 ).join(",");
 
-function getUniqueAttributeSelector(element: HTMLElement): string {
-  for (const attribute of UNIQUE_ATTRIBUTES) {
+function getUniqueAttributeSelectors(element: HTMLElement): string[] {
+  return UNIQUE_ATTRIBUTES.map((attribute) => {
     if (element.hasAttribute(attribute)) {
       return getAttributeSelector(attribute, element.getAttribute(attribute));
     }
-  }
+
+    return NO_SELECTOR;
+  });
 }
 
 /**
@@ -627,9 +629,13 @@ export function inferSelectorsIncludingStableAncestors(
     element,
     root
   ).flatMap((stableAncestor) =>
-    inferSelectors(element, stableAncestor, excludeRandomClasses).map(
+    inferSelectors(element, stableAncestor, excludeRandomClasses).flatMap(
       (selector) =>
-        [getUniqueAttributeSelector(stableAncestor), selector].join(" ")
+        getUniqueAttributeSelectors(stableAncestor)
+          .filter(Boolean)
+          .map((stableAttributeSelector) =>
+            [stableAttributeSelector, selector].join(" ")
+          )
     )
   );
 

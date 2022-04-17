@@ -19,7 +19,7 @@ import { UNIQUE_ATTRIBUTES } from "@/contentScript/nativeEditor/infer";
 import { isRandomString } from "./detectRandomString";
 
 // Symbol to use when a selector was not found, easily filterable
-const NO_SELECTOR = "";
+export const NO_SELECTOR = "";
 
 /**
  * @param name   Like "id", "data-test"
@@ -35,7 +35,7 @@ export function getAttributeSelector(name: string, value: string): string {
   if (
     name === "title" ||
     name.startsWith("aria-") ||
-    UNIQUE_ATTRIBUTES.includes(value)
+    UNIQUE_ATTRIBUTES.includes(name)
   ) {
     return `[${name}="${value}"]`;
   }
