@@ -19,7 +19,6 @@ import {
   InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
-import { ExtensionPoint } from "@/types";
 import {
   IBlock,
   IExtensionPoint,
@@ -32,6 +31,7 @@ import {
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
+  ExtensionPoint,
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";

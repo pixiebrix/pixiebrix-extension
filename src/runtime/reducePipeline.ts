@@ -197,7 +197,7 @@ type RunBlockOptions = CommonOptions & {
   /**
    * Additional context to record with the trace entry/exit records.
    */
-  trace?: TraceMetadata;
+  trace: TraceMetadata | null;
 };
 
 async function execute(
@@ -330,14 +330,6 @@ async function renderBlockArg(
     );
   }
 
-  traces.addEntry({
-    ...selectTraceRecordMeta(resolvedConfig, options),
-    timestamp: new Date().toISOString(),
-    templateContext: state.context as JsonObject,
-    renderedArgs: blockArgs,
-    blockConfig: config,
-  });
-
   return blockArgs;
 }
 
@@ -437,7 +429,7 @@ export async function blockReducer(
 
   const resolvedConfig = await resolveBlockConfig(blockConfig);
 
-  const blockOptions = {
+  const optionsWithTraceRef = {
     ...options,
     trace: {
       runId,
@@ -448,16 +440,29 @@ export async function blockReducer(
   // Adjust the root according to the `root` and `rootMode` props on the blockConfig
   const blockRoot = selectBlockRootElement(blockConfig, root);
 
-  const props: BlockProps = {
-    args: await renderBlockArg(
+  let renderedArgs: RenderedArgs;
+  let renderError: unknown;
+  try {
+    renderedArgs = await renderBlockArg(
       resolvedConfig,
       { ...state, root: blockRoot },
-      blockOptions
-    ),
-    root: blockRoot,
-    previousOutput,
-    context: contextWithPreviousOutput,
-  };
+      optionsWithTraceRef
+    );
+  } catch (error) {
+    renderError = error;
+  }
+
+  // Always add the trace entry, even if the block didn't run
+  traces.addEntry({
+    // Pass blockOptions because it includes the trace property
+    ...selectTraceRecordMeta(resolvedConfig, optionsWithTraceRef),
+    timestamp: new Date().toISOString(),
+    templateContext: context as JsonObject,
+    renderError: renderError ? serializeError(renderError) : null,
+    // `renderedArgs` will be null if there's an error rendering args
+    renderedArgs,
+    blockConfig,
+  });
 
   const preconfiguredTraceExit: TraceExitData = {
     runId,
@@ -483,7 +488,19 @@ export async function blockReducer(
     return { output: previousOutput, context };
   }
 
-  const output = await runBlock(resolvedConfig, props, blockOptions);
+  // Above we had wrapped the call to renderBlockArg in a try-catch to always have an entry trace entry
+  if (renderError) {
+    throw renderError;
+  }
+
+  const props: BlockProps = {
+    args: renderedArgs,
+    root: blockRoot,
+    previousOutput,
+    context: contextWithPreviousOutput,
+  };
+
+  const output = await runBlock(resolvedConfig, props, optionsWithTraceRef);
 
   if (logValues) {
     console.info(`Output for block #${index + 1}: ${blockConfig.id}`, {

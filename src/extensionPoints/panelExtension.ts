@@ -16,7 +16,6 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { ExtensionPoint } from "@/types";
 import Mustache from "mustache";
 import { errorBoundary } from "@/blocks/renderers/common";
 import { checkAvailable } from "@/blocks/available";
@@ -47,6 +46,7 @@ import {
 import {
   ExtensionPointDefinition,
   ExtensionPointConfig,
+  ExtensionPoint,
 } from "@/extensionPoints/types";
 import { propertiesToSchema } from "@/validators/generic";
 import { render } from "@/extensionPoints/dom";

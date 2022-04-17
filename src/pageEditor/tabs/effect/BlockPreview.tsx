@@ -71,6 +71,7 @@ type PreviewInfo = {
   block: IBlock;
   type: BlockType;
   isPure: boolean;
+  isRootAware: boolean;
   traceOptional: boolean;
 };
 
@@ -84,6 +85,7 @@ export function usePreviewInfo(blockId: RegistryId): AsyncState<PreviewInfo> {
     return {
       block,
       isPure: await block.isPure(),
+      isRootAware: block.isRootAware ? await block.isRootAware() : false,
       type,
       traceOptional: isTraceOptional(blockId, { type }),
     };
@@ -158,6 +160,10 @@ const BlockPreview: React.FunctionComponent<{
 
   // This defaults to "inherit" as described in the doc, see BlockConfig.rootMode
   const blockRootMode = blockConfig.rootMode ?? "inherit";
+  const shouldUseExtensionPointRoot =
+    blockInfo?.isRootAware &&
+    blockRootMode === "inherit" &&
+    isTriggerExtensionPoint(extensionPoint);
 
   const debouncedRun = useDebouncedCallback(
     async (blockConfig: BlockConfig, context: BlockArgContext) => {
@@ -170,8 +176,7 @@ const BlockPreview: React.FunctionComponent<{
       // Note: this is not possible when extensionPoint's targetMode equals "targetElement",
       // in this case a special message will be shown instead of the brick output (see the code later in the component)
       const rootSelector =
-        blockRootMode === "inherit" &&
-        isTriggerExtensionPoint(extensionPoint) &&
+        shouldUseExtensionPointRoot &&
         extensionPoint.definition.targetMode === "root"
           ? extensionPoint.definition.rootSelector
           : undefined;
@@ -215,9 +220,18 @@ const BlockPreview: React.FunctionComponent<{
     );
   }
 
+  if (blockLoading || isRunning) {
+    return (
+      <div>
+        {showTraceWarning && traceWarning}
+        <Loader />
+      </div>
+    );
+  }
+
+  // Can't use the root element from extension point because it is not static.
   if (
-    blockRootMode === "inherit" &&
-    isTriggerExtensionPoint(extensionPoint) &&
+    shouldUseExtensionPointRoot &&
     extensionPoint.definition.targetMode !== "root"
   ) {
     return (
@@ -234,15 +248,6 @@ const BlockPreview: React.FunctionComponent<{
       <div className="text-danger">
         Error loading brick from registry
         {getErrorMessage(blockError)}
-      </div>
-    );
-  }
-
-  if (blockLoading || isRunning) {
-    return (
-      <div>
-        {showTraceWarning && traceWarning}
-        <Loader />
       </div>
     );
   }

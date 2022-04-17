@@ -19,7 +19,6 @@ import {
   InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
-import { ExtensionPoint } from "@/types";
 import {
   IBlock,
   IExtensionPoint,
@@ -31,6 +30,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { Manifest, Menus, Permissions } from "webextension-polyfill";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import {
+  ExtensionPoint,
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";

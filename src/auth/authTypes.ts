@@ -109,6 +109,9 @@ export type AuthState = {
    */
   readonly extension: boolean;
 
+  /**
+   *  The SSO organization associated with the user's email domain
+   */
   readonly organization?: OrganizationAuthState | null;
 
   readonly organizations: Array<{
