@@ -46,7 +46,7 @@ import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
 import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
-import { FieldDescriptions } from "@/pageEditor/panes/save/strings";
+import { FieldDescriptions } from "@/utils/strings";
 
 const { actions: optionsActions } = extensionsSlice;
 

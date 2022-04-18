@@ -32,7 +32,7 @@ import { Formik } from "formik";
 import Effect from "@/pageEditor/components/Effect";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import styles from "./EditRecipe.module.scss";
-import { FieldDescriptions } from "@/pageEditor/panes/save/strings";
+import { FieldDescriptions } from "@/utils/strings";
 
 const EditRecipe: React.VoidFunctionComponent = () => {
   const recipeId = useSelector(selectActiveRecipeId);

@@ -59,7 +59,7 @@ import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprin
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { RequireScope } from "@/auth/RequireScope";
 import { selectScope } from "@/auth/authSelectors";
-import { FieldDescriptions } from "@/pageEditor/panes/save/strings";
+import { FieldDescriptions } from "@/utils/strings";
 
 const { attachExtension } = extensionsSlice.actions;
 
