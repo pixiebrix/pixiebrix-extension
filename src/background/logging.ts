@@ -32,7 +32,6 @@ import {
   IGNORED_ERROR_PATTERNS,
   isAxiosError,
   isContextError,
-  isErrorObject,
 } from "@/errors";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { isAppRequest, selectAbsoluteUrl } from "@/services/requestErrorUtils";
@@ -253,30 +252,6 @@ async function selectExtraContext(
   return { extensionVersion };
 }
 
-/**
- * Create a fake stacktrace that is compatible with Rollbar’s stacktrace parsing.
- */
-export function flattenStackForRollbar(stack: string, cause?: unknown): string {
-  // Some stack validation to avoid runtime errors while submitting errors
-  if (!isErrorObject(cause) || !cause.stack?.includes("\n")) {
-    return stack;
-  }
-
-  // Drop spaces from cause’s title or else Rollbar will clip the title
-  const [errorTitle] = cause.stack.split("\n", 1);
-  const causeStack = cause.stack.replace(
-    errorTitle,
-    errorTitle.replaceAll(" ", "-")
-  );
-
-  // Add a fake stacktrace line in order to preserve the cause’s title. Rollbar does not support
-  // the standard `caused by: Error: Some message\n` line and would misinterpret the stacktrace.
-  return flattenStackForRollbar(
-    stack + `\n    at CAUSED (BY.js:0:0) ${causeStack}`,
-    cause.cause
-  );
-}
-
 const warnAboutDisableDNT = once(() => {
   console.warn("Rollbar telemetry is disabled because DNT is turned on");
 });
@@ -296,10 +271,6 @@ async function reportToRollbar(
   if (!(await allowsTrack())) {
     warnAboutDisableDNT();
     return;
-  }
-
-  if (isErrorObject(error) && error.stack && error.cause) {
-    error.stack = flattenStackForRollbar(error.stack, error.cause);
   }
 
   // WARNING: the prototype chain is lost during deserialization, so make sure any predicates you call here
