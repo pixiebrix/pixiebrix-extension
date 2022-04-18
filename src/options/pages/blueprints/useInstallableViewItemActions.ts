@@ -48,9 +48,20 @@ import useFlags from "@/hooks/useFlags";
 
 const { removeExtension } = extensionsSlice.actions;
 
+export type InstallableViewItemActions = {
+  reinstall: () => void;
+  activate: () => void;
+  viewShare: () => void;
+  deleteExtension: () => void;
+  uninstall: () => void;
+  viewLogs: () => void;
+  exportBlueprint: () => void;
+  requestPermissions: () => void;
+};
+
 function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
-) {
+): InstallableViewItemActions {
   const { installable, status, sharing } = installableViewItem;
   const dispatch = useDispatch();
   const modals = useModals();
@@ -219,7 +230,7 @@ function useInstallableViewItemActions(
         : null,
     viewLogs: status === "Active" ? viewLogs : null,
     exportBlueprint,
-    activate,
+    activate: status === "Inactive" ? activate : null,
     deleteExtension: isCloudExtension ? deleteExtension : null,
     requestPermissions: hasPermissions ? null : requestPermissions,
     reinstall:
