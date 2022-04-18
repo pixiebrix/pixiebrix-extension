@@ -59,6 +59,7 @@ import { Deployment } from "@/types/contract";
 import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
 import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 
 export const recipeMetadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),

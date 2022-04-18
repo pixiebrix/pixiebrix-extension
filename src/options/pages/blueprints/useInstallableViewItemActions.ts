@@ -224,13 +224,13 @@ function useInstallableViewItemActions(
     viewShare: isCloudExtension ? null : viewShare,
     uninstall:
       status === "Active" &&
-      sharing.source.type !== "Deployment" &&
-      permit("uninstall")
+      ((sharing.source.type === "Deployment" && permit("uninstall")) ||
+        sharing.source.type !== "Deployment")
         ? uninstall
         : null,
     viewLogs: status === "Active" ? viewLogs : null,
     exportBlueprint,
-    activate: status === "Inactive" ? activate : null,
+    activate: status === "Active" ? null : activate,
     deleteExtension: isCloudExtension ? deleteExtension : null,
     requestPermissions: hasPermissions ? null : requestPermissions,
     reinstall:
