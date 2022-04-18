@@ -60,7 +60,11 @@ const RemoteMethodOptions: React.FunctionComponent<
 
   return (
     <div>
-      <SchemaField name={configName("url")} schema={inputProperties.url} />
+      <SchemaField
+        name={configName("url")}
+        schema={inputProperties.url}
+        isRequired
+      />
       <SchemaField
         name={configName("service")}
         schema={inputProperties.service}
@@ -86,7 +90,10 @@ const RemoteMethodOptions: React.FunctionComponent<
         <Alert variant="warning">
           <p>
             It looks like you&apos;re passing a JSON string to this field.
-            Consider providing an object instead.
+            PixieBrix will pass the value to the API as a string. To pass the
+            data as JSON, use the Object properties toggle, or pass a variable.
+            You can use the Parse JSON brick to parse a JSON string as a JSON
+            object
           </p>
         </Alert>
       )}

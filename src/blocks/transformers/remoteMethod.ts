@@ -51,7 +51,7 @@ export const inputProperties: Record<string, Schema> = {
   // Match anything, as valid values are determined by the API being called
   data: {
     description:
-      "Supports a JSON payload but that payload should be provided by either a variable or an object",
+      "Supports a JSON payload provided by either a variable or an object",
   },
 };
 

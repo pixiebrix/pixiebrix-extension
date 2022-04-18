@@ -15,38 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { makeTemplateExpression } from "@/testUtils/expressionTestHelpers";
 import { isJsonString } from "./RemoteMethodOptions";
 
 describe("isJsonString", () => {
   test("returns true when field value is JSON sting", () => {
-    const fieldValue = {
-      __type__: "nunjucks",
-      __value__: '{"foo": "bar"}',
-    };
+    const fieldValue = makeTemplateExpression("nunjucks", '{"foo": "bar"}');
 
     expect(isJsonString(fieldValue)).toBe(true);
   });
 
   test("returns false when field value is not JSON sting", () => {
-    const fieldValue = {
-      __type__: "nunjucks",
-      __value__: '{"foo": "bar"',
-    };
+    const fieldValue = makeTemplateExpression("nunjucks", '{"foo": "bar"');
 
     expect(isJsonString(fieldValue)).toBe(false);
   });
 
   test.each([
-    {
-      __type__: "var",
-      __value__: "@foo",
-    },
+    makeTemplateExpression("var", "@foo"),
     {},
     "",
-    {
-      __type__: "nunjucks",
-      __value__: "",
-    },
+    makeTemplateExpression("nunjucks", ""),
   ])("returns false when field is not nunjucks expression", (fieldValue) => {
     expect(isJsonString(fieldValue)).toBe(false);
   });
