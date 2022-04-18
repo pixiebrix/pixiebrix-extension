@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback } from "react";
-import { PACKAGE_REGEX, uuidv4 } from "@/types/helpers";
+import { PACKAGE_REGEX, uuidv4, validateSemVerString } from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveElement,
@@ -58,7 +58,7 @@ const CreateRecipeModal: React.VFC = () => {
   const create = useCreate();
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
 
-  // TODO: This should be yup.SchemaOf<RecipeConfiguration> but we can't set the `id` property to `RegistryId`
+  // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
   // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
   const createRecipeSchema = object({
     id: string()
@@ -66,7 +66,13 @@ const CreateRecipeModal: React.VFC = () => {
       .notOneOf(newRecipeIds, "This id is already in use")
       .required(),
     name: string().required(),
-    version: string().required(),
+    version: string()
+      .test(
+        "semver",
+        "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
+        (value: string) => validateSemVerString(value, false)
+      )
+      .required(),
     description: string(),
   });
 
