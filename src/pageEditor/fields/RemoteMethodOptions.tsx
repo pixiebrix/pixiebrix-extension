@@ -85,8 +85,8 @@ const RemoteMethodOptions: React.FunctionComponent<
       {showJsonWarning && (
         <Alert variant="warning">
           <p>
-            It looks like you're passing a JSON string to this field. Consider
-            providing an object instead.
+            It looks like you&apos;re passing a JSON string to this field.
+            Consider providing an object instead.
           </p>
         </Alert>
       )}
