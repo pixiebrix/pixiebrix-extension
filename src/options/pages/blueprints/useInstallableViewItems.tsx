@@ -86,12 +86,9 @@ function useInstallableViewItems(installables: Installable[]): {
         }
 
         const deploymentExtension = installedExtensions.find(
-          (installedExtension) => {
-            return (
-              installedExtension._recipe?.id === getPackageId(installable) &&
-              installedExtension._deployment
-            );
-          }
+          (installedExtension) =>
+            installedExtension._recipe?.id === getPackageId(installable) &&
+            installedExtension._deployment
         );
 
         return isDeploymentActive(deploymentExtension) ? "Active" : "Paused";
@@ -149,7 +146,6 @@ function useInstallableViewItems(installables: Installable[]): {
         installable,
       })),
     [
-      getSharingType,
       getStatus,
       installableIcon,
       installables,
