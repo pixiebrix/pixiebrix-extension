@@ -43,6 +43,8 @@ const initialFormState: FormState = {
   keepLocalCopy: false,
 };
 
+const NEW_RECIPE_ID = "@new" as RegistryId;
+
 const AddToRecipeModal: React.VFC = () => {
   const recipeMetadatas = useSelector(selectInstalledRecipeMetadatas);
   const activeElement = useSelector(selectActiveElement);
@@ -63,7 +65,7 @@ const AddToRecipeModal: React.VFC = () => {
   };
 
   function onConfirmAddToRecipe(recipeId: RegistryId, keepLocalCopy: boolean) {
-    if (recipeId === "@new") {
+    if (recipeId === NEW_RECIPE_ID) {
       dispatch(editorActions.transitionToCreateRecipeModal(keepLocalCopy));
       return;
     }
@@ -94,7 +96,7 @@ const AddToRecipeModal: React.VFC = () => {
   }
 
   const selectOptions = [
-    { label: "➕ Create new blueprint...", value: "@new" },
+    { label: "➕ Create new blueprint...", value: NEW_RECIPE_ID },
     ...recipeMetadatas.map((metadata) => ({
       label: metadata.name,
       value: metadata.id,
