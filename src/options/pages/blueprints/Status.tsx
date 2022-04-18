@@ -24,6 +24,7 @@ import useInstallableViewItemActions from "./useInstallableViewItemActions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
+  faPause,
   faShieldAlt,
   faSync,
 } from "@fortawesome/free-solid-svg-icons";
@@ -62,11 +63,29 @@ const Status: React.VoidFunctionComponent<{
     );
   }
 
+  if (status === "Paused") {
+    return (
+      <div className="text-muted w-100">
+        <div className={styles.root}>
+          <FontAwesomeIcon icon={faPause} />
+          <span className={styles.textStatus}>
+            Paused
+            {installedVersionNumber && (
+              <span className={styles.versionNumber}>
+                version {installedVersionNumber}
+              </span>
+            )}
+          </span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="text-success w-100">
       <div className={styles.root}>
         <FontAwesomeIcon icon={faCheck} />
-        <span className={styles.activeStatus}>
+        <span className={styles.textStatus}>
           Active
           {installedVersionNumber && (
             <span className={styles.versionNumber}>
