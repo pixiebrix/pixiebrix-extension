@@ -235,7 +235,7 @@ describe("useInstallableViewItemActions", () => {
     mockHooks({ hasPermissions: false });
     const deploymentItem = installableItemFactory({
       isExtension: false,
-      sharingType: "Deployment",
+      sharingType: "Team",
       status: "Active",
     });
 
