@@ -76,7 +76,15 @@ export type TraceEntryData = TraceRecordMeta & {
 
   templateContext: JsonObject;
 
-  renderedArgs: RenderedArgs;
+  /**
+   * The rendered args, or null if there was an error rendering the args
+   */
+  renderedArgs: RenderedArgs | null;
+
+  /**
+   * The error rendering the arguments
+   */
+  renderError: JsonObject | null;
 
   blockConfig: BlockConfig;
 };

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { OutputKey, RenderedArgs } from "@/core";
+import { Expression, OutputKey, RenderedArgs, TemplateEngine } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
@@ -39,6 +39,7 @@ import {
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import MockDate from "mockdate";
 import { BlockPipeline } from "@/blocks/types";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 jest.mock("@/background/messenger/api");
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
@@ -52,20 +53,155 @@ beforeEach(() => {
   (traces.addExit as any).mockReset();
 });
 
-describe("Trace exceptional exit", () => {
+function makeExpression(template: TemplateEngine, value: string): Expression {
+  return {
+    __type__: template,
+    __value__: value,
+  };
+}
+
+describe("Trace normal exit", () => {
   test("trace entry and normal exit", async () => {
     const instanceId = uuidv4();
 
     const result = await reducePipeline(
       {
         id: echoBlock.id,
-        config: { message: "{{@input.inputArg}}" },
+        config: { message: makeExpression("nunjucks", "{{@input.inputArg}}") },
         instanceId,
       },
       simpleInput({ inputArg: "hello" }),
       testOptions("v3")
     );
-    expect(result).toStrictEqual({ message: "{{@input.inputArg}}" });
+
+    expect(result).toStrictEqual({ message: "hello" });
+
+    expect(traces.addEntry).toHaveBeenCalledTimes(1);
+    expect(traces.addEntry).toHaveBeenCalledWith(
+      expect.objectContaining({
+        renderedArgs: expect.objectContaining({
+          message: "hello",
+        }),
+        renderError: null,
+      })
+    );
+    expect(traces.addExit).toHaveBeenCalledTimes(1);
+    expect(traces.addExit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        skippedRun: false,
+      })
+    );
+  });
+});
+
+describe("Trace render error", () => {
+  test("Trace input render error", async () => {
+    const instanceId = uuidv4();
+
+    await expect(async () =>
+      reducePipeline(
+        {
+          id: echoBlock.id,
+          config: { message: makeExpression("var", "@doesNotExist.bar") },
+          instanceId,
+        },
+        simpleInput({ inputArg: "hello" }),
+        testOptions("v3")
+      )
+    ).rejects.toThrowError(/doesNotExist/);
+
+    expect(traces.addEntry).toHaveBeenCalledTimes(1);
+    expect(traces.addEntry).toHaveBeenCalledWith(
+      expect.objectContaining({
+        renderedArgs: undefined,
+        renderError: expect.objectContaining({
+          message: expect.anything(),
+        }),
+      })
+    );
+
+    expect(traces.addExit).toHaveBeenCalledTimes(1);
+    expect(traces.addExit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        error: expect.objectContaining({
+          message: "@doesNotExist.bar undefined (missing @doesNotExist)",
+        }),
+      })
+    );
+  });
+
+  test("Doesn't throw when skipped", async () => {
+    const instanceId = uuidv4();
+
+    await reducePipeline(
+      {
+        id: echoBlock.id,
+        config: { message: makeExpression("var", "@doesNotExist.bar") },
+        outputKey: validateOutputKey("conditional"),
+        if: "f",
+        instanceId,
+      },
+      simpleInput({ inputArg: "hello" }),
+      testOptions("v3")
+    );
+
+    expect(traces.addEntry).toHaveBeenCalledTimes(1);
+    expect(traces.addEntry).toHaveBeenCalledWith(
+      expect.objectContaining({
+        renderedArgs: undefined,
+        renderError: expect.objectContaining({
+          message: expect.anything(),
+        }),
+      })
+    );
+
+    expect(traces.addExit).toHaveBeenCalledTimes(1);
+    expect(traces.addExit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        skippedRun: true,
+      })
+    );
+  });
+});
+
+describe("Trace conditional execution", () => {
+  test("Trace false conditional", async () => {
+    await reducePipeline(
+      [
+        {
+          id: echoBlock.id,
+          config: {
+            message: makeExpression("nunjucks", "{{@input.inputArg}}"),
+          },
+          outputKey: validateOutputKey("conditional"),
+          if: "f",
+          instanceId: uuidv4(),
+        },
+        {
+          id: echoBlock.id,
+          config: { message: makeExpression("var", "@conditional.property") },
+          if: makeExpression("nunjucks", "{{true if @conditional}}"),
+          instanceId: uuidv4(),
+        },
+      ],
+      simpleInput({ inputArg: "hello" }),
+      testOptions("v3")
+    );
+
+    expect(traces.addEntry).toHaveBeenCalledTimes(2);
+
+    expect(traces.addEntry).toHaveBeenCalledWith(
+      expect.objectContaining({
+        renderedArgs: { message: "hello" },
+      })
+    );
+
+    expect(traces.addExit).toHaveBeenCalledTimes(2);
+    expect(traces.addExit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        skippedRun: true,
+      })
+    );
   });
 });
 
@@ -105,6 +241,7 @@ describe("Trace normal execution", () => {
       blockConfig,
       templateContext: { "@input": { inputArg: "hello" }, "@options": {} },
       renderedArgs: { message: "hello" } as unknown as RenderedArgs,
+      renderError: null,
     };
 
     const expectedExit: TraceExitData = {
@@ -211,13 +348,15 @@ describe("Trace normal execution", () => {
     };
 
     expect(traces.addExit).toHaveBeenCalledTimes(1);
-
-    // Can't use toHaveBeenNthCalledWith because we don't want to include the stack trace in the test
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- test code
-    const args = (traces.addExit as any).mock.calls[0][0];
-    expect(args.runId).toBe(meta.runId);
-    expect(args.blockInstanceId).toBe(meta.blockInstanceId);
-    expect(args.error.name).toBe("BusinessError");
-    expect(args.error.message).toBe("hello");
+    expect(traces.addExit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        runId: meta.runId,
+        blockInstanceId: meta.blockInstanceId,
+        error: expect.objectContaining({
+          name: "BusinessError",
+          message: "hello",
+        }),
+      })
+    );
   });
 });
