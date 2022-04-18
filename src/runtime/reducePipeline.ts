@@ -38,7 +38,7 @@ import { hideNotification, showNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/blocks/errors";
 import { engineRenderer } from "@/runtime/renderers";
-import { TraceRecordMeta } from "@/telemetry/trace";
+import { TraceExitData, TraceRecordMeta } from "@/telemetry/trace";
 import { JsonObject } from "type-fest";
 import { uuidv4 } from "@/types/helpers";
 import { mapArgs } from "@/runtime/mapArgs";
@@ -197,7 +197,7 @@ type RunBlockOptions = CommonOptions & {
   /**
    * Additional context to record with the trace entry/exit records.
    */
-  trace?: TraceMetadata;
+  trace: TraceMetadata | null;
 };
 
 async function execute(
@@ -330,14 +330,6 @@ async function renderBlockArg(
     );
   }
 
-  traces.addEntry({
-    ...selectTraceRecordMeta(resolvedConfig, options),
-    timestamp: new Date().toISOString(),
-    templateContext: state.context as JsonObject,
-    renderedArgs: blockArgs,
-    blockConfig: config,
-  });
-
   return blockArgs;
 }
 
@@ -435,27 +427,9 @@ export async function blockReducer(
       ? context
       : { ...context, ...(previousOutput as UnknownObject) };
 
-  if (
-    !(await shouldRunBlock(blockConfig, contextWithPreviousOutput, options))
-  ) {
-    logger.debug(`Skipping stage ${blockConfig.id} because condition not met`);
-
-    traces.addExit({
-      runId,
-      extensionId: logger.context.extensionId,
-      blockId: blockConfig.id,
-      blockInstanceId: blockConfig.instanceId,
-      outputKey: blockConfig.outputKey,
-      output: null,
-      skippedRun: true,
-    });
-
-    return { output: previousOutput, context };
-  }
-
   const resolvedConfig = await resolveBlockConfig(blockConfig);
 
-  const blockOptions = {
+  const optionsWithTraceRef = {
     ...options,
     trace: {
       runId,
@@ -466,18 +440,67 @@ export async function blockReducer(
   // Adjust the root according to the `root` and `rootMode` props on the blockConfig
   const blockRoot = selectBlockRootElement(blockConfig, root);
 
-  const props: BlockProps = {
-    args: await renderBlockArg(
+  let renderedArgs: RenderedArgs;
+  let renderError: unknown;
+  try {
+    renderedArgs = await renderBlockArg(
       resolvedConfig,
       { ...state, root: blockRoot },
-      blockOptions
-    ),
+      optionsWithTraceRef
+    );
+  } catch (error) {
+    renderError = error;
+  }
+
+  // Always add the trace entry, even if the block didn't run
+  traces.addEntry({
+    // Pass blockOptions because it includes the trace property
+    ...selectTraceRecordMeta(resolvedConfig, optionsWithTraceRef),
+    timestamp: new Date().toISOString(),
+    templateContext: context as JsonObject,
+    renderError: renderError ? serializeError(renderError) : null,
+    // `renderedArgs` will be null if there's an error rendering args
+    renderedArgs,
+    blockConfig,
+  });
+
+  const preconfiguredTraceExit: TraceExitData = {
+    runId,
+    extensionId: logger.context.extensionId,
+    blockId: blockConfig.id,
+    blockInstanceId: blockConfig.instanceId,
+    outputKey: blockConfig.outputKey,
+    output: null,
+    skippedRun: false,
+  };
+
+  if (
+    !(await shouldRunBlock(blockConfig, contextWithPreviousOutput, options))
+  ) {
+    logger.debug(`Skipping stage ${blockConfig.id} because condition not met`);
+
+    traces.addExit({
+      ...preconfiguredTraceExit,
+      output: null,
+      skippedRun: true,
+    });
+
+    return { output: previousOutput, context };
+  }
+
+  // Above we had wrapped the call to renderBlockArg in a try-catch to always have an entry trace entry
+  if (renderError) {
+    throw renderError;
+  }
+
+  const props: BlockProps = {
+    args: renderedArgs,
     root: blockRoot,
     previousOutput,
     context: contextWithPreviousOutput,
   };
 
-  const output = await runBlock(resolvedConfig, props, blockOptions);
+  const output = await runBlock(resolvedConfig, props, optionsWithTraceRef);
 
   if (logValues) {
     console.info(`Output for block #${index + 1}: ${blockConfig.id}`, {
@@ -492,11 +515,7 @@ export async function blockReducer(
   }
 
   traces.addExit({
-    runId,
-    extensionId: logger.context.extensionId,
-    blockId: blockConfig.id,
-    blockInstanceId: blockConfig.instanceId,
-    outputKey: blockConfig.outputKey,
+    ...preconfiguredTraceExit,
     output: output as JsonObject,
     skippedRun: false,
   });
@@ -589,6 +608,23 @@ function throwBlockError(
   );
 }
 
+/** Execute all the blocks of an extension. */
+export async function reduceExtensionPipeline(
+  pipeline: BlockConfig | BlockPipeline,
+  initialValues: InitialValues,
+  partialOptions: Partial<ReduceOptions> = {}
+): Promise<unknown> {
+  const pipelineLogger = partialOptions.logger ?? new ConsoleLogger();
+
+  // `await` promises to avoid race condition where the calls here delete debug entries from this call to reducePipeline
+  await Promise.allSettled([
+    traces.clear(pipelineLogger.context.extensionId),
+    clearExtensionDebugLogs(pipelineLogger.context.extensionId),
+  ]);
+
+  return reducePipeline(pipeline, initialValues, partialOptions);
+}
+
 /** Execute a pipeline of blocks and return the result. */
 export async function reducePipeline(
   pipeline: BlockConfig | BlockPipeline,
@@ -607,12 +643,6 @@ export async function reducePipeline(
     "@input": input,
     "@options": optionsArgs ?? {},
   } as unknown as BlockArgContext;
-
-  // `await` promises to avoid race condition where the calls here delete debug entries from this call to reducePipeline
-  await Promise.allSettled([
-    traces.clear(pipelineLogger.context.extensionId),
-    clearExtensionDebugLogs(pipelineLogger.context.extensionId),
-  ]);
 
   // When using explicit data flow, the first block (and other blocks) use `@input` in the context to get the inputs
   let output: unknown = explicitDataFlow ? {} : input;

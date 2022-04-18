@@ -19,15 +19,18 @@ import { IExtension, UUID } from "@/core";
 import { useContext } from "react";
 import { PageEditorTabContext } from "@/pageEditor/context";
 import { useAsyncState } from "@/hooks/common";
-import { zip } from "lodash";
+import { compact } from "lodash";
 import hash from "object-hash";
 import { resolveDefinitions } from "@/registry/internal";
-import { thisTab } from "@/pageEditor/utils";
+import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import {
   checkAvailable,
-  getInstalledExtensionPointIds,
+  getInstalledExtensionPoints,
 } from "@/contentScript/messenger/api";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
+import { testMatchPatterns } from "@/blocks/available";
+import { isQuickBarExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
 
 export interface InstallState {
   availableInstalledIds: Set<UUID> | undefined;
@@ -36,7 +39,7 @@ export interface InstallState {
 }
 
 function useInstallState(
-  installed: IExtension[],
+  extensions: IExtension[],
   elements: FormState[]
 ): InstallState {
   const {
@@ -46,23 +49,50 @@ function useInstallState(
   const [availableInstalledIds] = useAsyncState(
     async () => {
       if (meta && !error) {
-        const extensionPointIds = new Set(
-          await getInstalledExtensionPointIds(thisTab)
+        const installedExtensionPoints = new Map(
+          (await getInstalledExtensionPoints(thisTab)).map((extensionPoint) => [
+            extensionPoint.id,
+            extensionPoint,
+          ])
         );
         const resolved = await Promise.all(
-          installed.map(async (extension) => resolveDefinitions(extension))
+          extensions.map(async (extension) => resolveDefinitions(extension))
         );
-        const available = resolved
-          .filter((x) => extensionPointIds.has(x.extensionPointId))
+        const tabUrl = await getCurrentURL();
+        const availableExtensionPointIds = resolved
+          .filter((x) => {
+            const extensionPoint = installedExtensionPoints.get(
+              x.extensionPointId
+            );
+            // Not installed means not available
+            if (extensionPoint == null) {
+              return false;
+            }
+
+            // QuickBar is installed on every page, need to filter by the documentUrlPatterns
+            if (
+              QuickBarExtensionPoint.isQuickBarExtensionPoint(extensionPoint)
+            ) {
+              return testMatchPatterns(
+                extensionPoint.documentUrlPatterns,
+                tabUrl
+              );
+            }
+
+            return true;
+          })
           .map((x) => x.id);
+
         return new Set<UUID>(
-          installed.filter((x) => available.includes(x.id)).map((x) => x.id)
+          extensions
+            .filter((x) => availableExtensionPointIds.includes(x.id))
+            .map((x) => x.id)
         );
       }
 
       return new Set<UUID>();
     },
-    [navSequence, meta, error, installed],
+    [navSequence, meta, error, extensions],
     new Set<UUID>()
   );
 
@@ -71,19 +101,28 @@ function useInstallState(
       // At this point, if the extensionPoint is an inner extension point (without its own id), then it will have
       // been expanded to extensionPoint
       if (meta && !error) {
-        const availability = await Promise.all(
-          elements.map(async (element) =>
-            checkAvailable(
-              thisTab,
-              element.extensionPoint.definition.isAvailable
-            )
+        const tabUrl = await getCurrentURL();
+        const availableElementIds = await Promise.all(
+          elements.map(
+            async ({ uuid, extensionPoint: elementExtensionPoint }) => {
+              const isAvailable = isQuickBarExtensionPoint(
+                elementExtensionPoint
+              )
+                ? testMatchPatterns(
+                    elementExtensionPoint.definition.documentUrlPatterns,
+                    tabUrl
+                  )
+                : await checkAvailable(
+                    thisTab,
+                    elementExtensionPoint.definition.isAvailable
+                  );
+
+              return isAvailable ? uuid : null;
+            }
           )
         );
-        return new Set<UUID>(
-          zip(elements, availability)
-            .filter(([, available]) => available)
-            .map(([extension]) => extension.uuid)
-        );
+
+        return new Set<UUID>(compact(availableElementIds));
       }
 
       return new Set<UUID>();
@@ -96,6 +135,10 @@ function useInstallState(
         elements.map((x) => ({
           uuid: x.uuid,
           isAvailable: x.extensionPoint.definition.isAvailable,
+          documentUrlPatterns:
+            // Including the documentUrlPatterns in the hash from any extension point type that actually has them
+            (x.extensionPoint.definition as { documentUrlPatterns?: string[] })
+              ?.documentUrlPatterns ?? "",
         }))
       ),
     ],
@@ -106,7 +149,7 @@ function useInstallState(
     availableInstalledIds,
     availableDynamicIds,
     unavailableCount: meta
-      ? installed.length - (availableInstalledIds?.size ?? 0)
+      ? extensions.length - (availableInstalledIds?.size ?? 0)
       : null,
   };
 }

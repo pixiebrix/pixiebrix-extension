@@ -1,7 +1,7 @@
 {
   "type": "object",
   "properties": {
-    "primaryOrganizationId": {
+    "managedOrganizationId": {
       "type": "string",
       "description": "PixieBrix organization ID the extension should link to"
     },

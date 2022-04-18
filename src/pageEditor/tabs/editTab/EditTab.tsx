@@ -148,6 +148,8 @@ const EditTab: React.FC<{
   const traces = useSelector(selectExtensionTrace);
 
   const nodes = useMemo<EditorNodeProps[]>(() => {
+    // A flag that shows if there are trace records related to any of the current nodes.
+    let blockNodesHaveTraces = false;
     const blockNodes: EditorNodeProps[] = blockPipeline.map(
       (blockConfig, index) => {
         const block = allBlocks.get(blockConfig.id)?.block;
@@ -155,6 +157,9 @@ const EditTab: React.FC<{
         const traceRecord = traces.find(
           (trace) => trace.blockInstanceId === nodeId
         );
+        if (traceRecord != null) {
+          blockNodesHaveTraces = true;
+        }
 
         if (!block) {
           return {
@@ -206,7 +211,8 @@ const EditTab: React.FC<{
       outputKey: "input",
       title: label,
       icon,
-      ran: traces.length > 0,
+      // Foundation Node doesn't have its own trace record, so we use the traces flag.
+      ran: blockNodesHaveTraces,
       onClick() {
         setActiveNodeId(FOUNDATION_NODE_ID);
       },

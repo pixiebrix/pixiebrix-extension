@@ -15,14 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AuthRootState } from "./authTypes";
+import React from "react";
+import { Col, Container, Row } from "react-bootstrap";
+import cx from "classnames";
 
-export const selectAuth = (state: AuthRootState) => state.auth;
-export const selectIsLoggedIn = (state: AuthRootState) =>
-  selectAuth(state).isLoggedIn;
-export const selectScope = (state: AuthRootState) => selectAuth(state).scope;
-export const selectFlags = (state: AuthRootState) => selectAuth(state).flags;
-export const selectOrganizations = (state: AuthRootState) =>
-  selectAuth(state).organizations;
-export const selectOrganization = (state: AuthRootState) =>
-  selectAuth(state).organization;
+const Centered: React.FunctionComponent<{
+  isScrollable?: boolean;
+  vertically?: boolean;
+}> = ({ isScrollable = false, vertically = false, children }) => (
+  <Container
+    fluid
+    className={cx({
+      "h-100 pb-2 overflow-auto": isScrollable,
+      "h-100": vertically,
+    })}
+  >
+    <Row
+      className={cx({
+        "h-100 align-items-center": vertically,
+      })}
+    >
+      <Col className="mx-auto mt-4 text-center" sm={11} md={9} lg={6} xl={5}>
+        {children}
+      </Col>
+    </Row>
+  </Container>
+);
+
+export default Centered;

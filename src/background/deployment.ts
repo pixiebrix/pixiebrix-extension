@@ -43,7 +43,9 @@ const { reducer, actions } = extensionsSlice;
 
 const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
 
+// See managedStorageSchema.json
 const MANAGED_CAMPAIGN_IDS_KEY = "campaignIds" as ManualStorageKey;
+const MANAGED_ORGANIZATION_ID_KEY = "managedOrganizationId" as ManualStorageKey;
 
 /**
  * Deployment installed on the client. A deployment may be installed but not active (see DeploymentContext.active)
@@ -280,9 +282,45 @@ export async function updateDeployments(): Promise<void> {
   ]);
 
   if (!linked) {
-    // If the Browser extension is unlinked (it doesn't have the API key), just NOP. If it's an enterprise user, it's
-    // likely they just need to reconnect their extension. If it's a non-enterprise user, they shouldn't have any
-    // deployments installed anyway.
+    const [campaignIds = [], managedOrganizationId] = await Promise.all([
+      readStorage(MANAGED_CAMPAIGN_IDS_KEY, undefined, "managed"),
+      readStorage(MANAGED_ORGANIZATION_ID_KEY, undefined, "managed"),
+    ]);
+
+    // If the Browser extension is unlinked (it doesn't have the API key), one of the following must be true:
+    // - The user has managed install, and they have not linked their extension yet
+    // - The user is part of an organization, and somehow lost their token: 1) the token is no longer valid
+    //   so PixieBrix cleared it out, 2) something removed the local storage entry
+    // - If the user is not an enterprise user (or has not linked their extension yet), just NOP. They likely they just
+    //   need to reconnect their extension. If it's a non-enterprise user, they shouldn't have any deployments
+    //   installed anyway.
+
+    if (organizationId != null) {
+      reportEvent("OrganizationExtensionLink", {
+        organizationId,
+        managedOrganizationId,
+        initial: false,
+        campaignIds,
+      });
+
+      void browser.runtime.openOptionsPage();
+
+      return;
+    }
+
+    if (managedOrganizationId != null) {
+      reportEvent("OrganizationExtensionLink", {
+        organizationId,
+        managedOrganizationId,
+        initial: true,
+        campaignIds,
+      });
+
+      void browser.runtime.openOptionsPage();
+
+      return;
+    }
+
     return;
   }
 
@@ -308,7 +346,7 @@ export async function updateDeployments(): Promise<void> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
-      "Skipping  deployments update because the extension is not linked to the PixieBrix service"
+      "Skipping deployments update because the extension is not linked to the PixieBrix service"
     );
     return;
   }
@@ -322,6 +360,7 @@ export async function updateDeployments(): Promise<void> {
     console.debug(
       "Skipping deployments update because /api/me/ request failed"
     );
+
     return;
   }
 

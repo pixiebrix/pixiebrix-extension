@@ -32,6 +32,7 @@ import BlockPreview, {
 } from "@/pageEditor/tabs/effect/BlockPreview";
 import useReduxState from "@/hooks/useReduxState";
 import {
+  faExclamationCircle,
   faExclamationTriangle,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
@@ -67,6 +68,8 @@ const contextFilter = (value: unknown, key: string) => {
   // keys. With the introduction of ApiVersion v2, we removed that filter
   return true;
 };
+
+const pageStateBlockIds = ["@pixiebrix/state/set", "@pixiebrix/state/get"];
 
 const DataPanel: React.FC<{
   instanceId: UUID;
@@ -146,6 +149,7 @@ const DataPanel: React.FC<{
   const showFormPreview = block.config?.schema && block.config?.uiSchema;
   const showDocumentPreview = block.config?.body;
   const showBlockPreview = record || previewInfo?.traceOptional;
+  const showPageState = pageStateBlockIds.includes(block.id);
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
     showFormPreview || showDocumentPreview ? "preview" : "output"
@@ -168,6 +172,11 @@ const DataPanel: React.FC<{
           <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey="context">Context</Nav.Link>
           </Nav.Item>
+          {showPageState && (
+            <Nav.Item className={dataPanelStyles.tabNav}>
+              <Nav.Link eventKey="pageState">Page State</Nav.Link>
+            </Nav.Item>
+          )}
           {showDeveloperTabs && (
             <>
               <Nav.Item className={dataPanelStyles.tabNav}>
@@ -186,9 +195,6 @@ const DataPanel: React.FC<{
           </Nav.Item>
           <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey="preview">Preview</Nav.Link>
-          </Nav.Item>
-          <Nav.Item className={dataPanelStyles.tabNav}>
-            <Nav.Link eventKey="pageState">Page State</Nav.Link>
           </Nav.Item>
         </Nav>
         <Tab.Content className={dataPanelStyles.tabContent}>
@@ -210,6 +216,11 @@ const DataPanel: React.FC<{
               }
             />
           </DataTab>
+          {showPageState && (
+            <DataTab eventKey="pageState">
+              <PageStateTab />
+            </DataTab>
+          )}
           {showDeveloperTabs && (
             <>
               <DataTab eventKey="formik">
@@ -242,7 +253,23 @@ const DataPanel: React.FC<{
             </>
           )}
           <DataTab eventKey="rendered" isTraceEmpty={!record}>
-            {record && (
+            {record?.renderError ? (
+              <>
+                {record.skippedRun ? (
+                  <Alert variant="info">
+                    <FontAwesomeIcon icon={faInfoCircle} /> Error rendering
+                    input arguments, but brick was skipped because condition was
+                    not met
+                  </Alert>
+                ) : (
+                  <Alert variant="danger">
+                    <FontAwesomeIcon icon={faExclamationCircle} /> Error
+                    rendering input arguments
+                  </Alert>
+                )}
+                <ErrorDisplay error={record.renderError} />
+              </>
+            ) : (
               <>
                 {isInputStale && (
                   <Alert variant="warning">
@@ -251,7 +278,7 @@ const DataPanel: React.FC<{
                   </Alert>
                 )}
                 <JsonTree
-                  data={record.renderedArgs}
+                  data={record?.renderedArgs}
                   copyable
                   searchable
                   initialSearchQuery={renderedQuery}
@@ -267,9 +294,9 @@ const DataPanel: React.FC<{
             isTraceOptional={previewInfo?.traceOptional}
           >
             {record?.skippedRun && (
-              <Alert variant="warning">
-                <FontAwesomeIcon icon={faExclamationTriangle} /> The block did
-                not run because the condition was not met
+              <Alert variant="info">
+                <FontAwesomeIcon icon={faInfoCircle} /> The brick did not run
+                because the condition was not met
               </Alert>
             )}
             {!record?.skippedRun && outputObj && (
@@ -277,7 +304,7 @@ const DataPanel: React.FC<{
                 {isCurrentStale && (
                   <Alert variant="warning">
                     <FontAwesomeIcon icon={faExclamationTriangle} /> This or a
-                    previous block has changed, output may be out of date
+                    previous brick has changed, output may be out of date
                   </Alert>
                 )}
                 <JsonTree
@@ -306,12 +333,13 @@ const DataPanel: React.FC<{
             mountOnEnter
             unmountOnExit
           >
-            {block.if && (
-              <div className="text-info">
+            {/* The value of block.if can be `false`, in this case we also need to show the warning */}
+            {block.if != null && (
+              <Alert variant="info">
                 <FontAwesomeIcon icon={faInfoCircle} /> This brick has a
                 condition. The brick will not execute if the condition is not
                 met
-              </div>
+              </Alert>
             )}
             {showFormPreview || showDocumentPreview ? (
               <ErrorBoundary>
@@ -345,9 +373,6 @@ const DataPanel: React.FC<{
                 Run the extension once to enable live preview
               </div>
             )}
-          </DataTab>
-          <DataTab eventKey="pageState">
-            <PageStateTab />
           </DataTab>
         </Tab.Content>
       </div>

@@ -33,6 +33,8 @@ const AdvancedSettings: React.FunctionComponent = () => {
 
   const clear = useCallback(async () => {
     await clearExtensionAuth();
+    // Reload to force contentScripts and background page to reload. The RequireAuth component listens for auth changes,
+    // but we should for non-extension context to reload too.
     location.reload();
     notify.success(
       "Cleared the extension token. Visit the web app to set it again"
