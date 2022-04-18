@@ -295,7 +295,8 @@ export function buildRecipe({
   options,
   metadata,
 }: RecipeParts): UnsavedRecipeDefinition {
-  // If there's no source recipe, then we're creating a new one, so we start with an empty recipe definition that will be filled in
+  // If there's no source recipe, then we're creating a new one, so we
+  // start with an empty recipe definition that will be filled in
   const recipe: UnsavedRecipeDefinition = sourceRecipe ?? {
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     kind: "recipe",
