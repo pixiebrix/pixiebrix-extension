@@ -46,19 +46,7 @@ import { dumpBrickYaml } from "@/runtime/brickYaml";
 import { propertiesToSchema } from "@/validators/generic";
 import { produce } from "immer";
 import { sortBy } from "lodash";
-import { clearExtensionAuth } from "@/auth/token";
-import { ErrorObject, serializeError } from "serialize-error";
-
-// Temporary type for RTK query errors. Matches the example from
-// https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery.
-// See errorContract
-// TODO: remove in https://github.com/pixiebrix/pixiebrix-extension/issues/3126
-export type ApiError = {
-  status: number;
-  data: unknown | undefined;
-  // Will be serialized AxiosError. Serialized to kept in the Redux store.
-  error: ErrorObject;
-};
+import { serializeError } from "serialize-error";
 
 type QueryArgs = {
   /**
@@ -89,7 +77,7 @@ type QueryArgs = {
 };
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
-const appBaseQuery: BaseQueryFn<QueryArgs, unknown, ApiError> = async ({
+const appBaseQuery: BaseQueryFn<QueryArgs> = async ({
   url,
   method,
   data,
@@ -105,31 +93,14 @@ const appBaseQuery: BaseQueryFn<QueryArgs, unknown, ApiError> = async ({
     return { data: result.data, meta };
   } catch (error) {
     if (isAxiosError(error)) {
-      if (error.response?.status === 401) {
-        console.debug("Invalid token, resetting extension auth");
-        // The token is bad, clear it out
-        await clearExtensionAuth();
-      }
-
-      // Axios offers its own serialization method, but it doesn't include the response.
+      // Axios offers its own serialization method, but it reshapes the Error object (doesn't include the response, puts the status on the root level).
       // By deleting toJSON, the serialize-error library will use its default serialization
       delete error.toJSON;
-
-      return {
-        // RTK expects the status and data fields?
-        // Serialize error because RTK stores the error in the Redux store (which should only have serializable data)
-        error: {
-          status: error.response?.status,
-          data: error.response?.data,
-          error: serializeError(error),
-        },
-      };
     }
 
-    // Potential errors at this point: ExtensionNotLinked. Currently re-throwing the error since it can't match
-    // the {status, data} properties we had originally in RTK query
-    // TODO: remove in https://github.com/pixiebrix/pixiebrix-extension/issues/3126
-    throw error;
+    return {
+      error: serializeError(error),
+    };
   }
 };
 
