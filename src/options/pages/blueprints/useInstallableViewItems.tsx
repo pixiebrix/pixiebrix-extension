@@ -124,12 +124,12 @@ function useInstallableViewItems(installables: Installable[]): {
         description: getDescription(installable),
         sharing: {
           packageId: getPackageId(installable),
-          source: getSharingType(
+          source: getSharingType({
             installable,
             organizations,
             scope,
-            installedExtensions
-          ),
+            installedExtensions,
+          }),
         },
         updatedAt: getUpdatedAt(installable),
         status: getStatus(installable),

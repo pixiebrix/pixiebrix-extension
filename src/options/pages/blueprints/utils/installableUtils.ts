@@ -136,12 +136,17 @@ export const isDeployment = (
   );
 };
 
-export const getSharingType = (
-  installable: Installable,
-  organizations: Organization[],
-  scope: string,
-  installedExtensions: UnresolvedExtension[]
-): SharingSource => {
+export const getSharingType = ({
+  installable,
+  organizations,
+  scope,
+  installedExtensions,
+}: {
+  installable: Installable;
+  organizations: Organization[];
+  scope: string;
+  installedExtensions: UnresolvedExtension[];
+}): SharingSource => {
   let sharingType: SharingType = null;
   const organization = getOrganization(installable, organizations);
 
