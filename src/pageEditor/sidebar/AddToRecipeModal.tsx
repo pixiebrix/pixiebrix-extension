@@ -94,7 +94,7 @@ const AddToRecipeModal: React.VFC = () => {
   }
 
   const selectOptions = [
-    { label: "Create new blueprint...", value: "@new" },
+    { label: "➕ Create new blueprint...", value: "@new" },
     ...recipeMetadatas.map((metadata) => ({
       label: metadata.name,
       value: metadata.id,
