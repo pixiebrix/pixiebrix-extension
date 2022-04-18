@@ -409,9 +409,10 @@ function selectServerErrorMessage(response: AxiosResponse): string | null {
     throw new Error("Expected response to be defined");
   }
 
-  // Handle 400 responses created by DRF serializers
   // For examples of DRF errors, see the pixiebrix-app repository:
   // http://github.com/pixiebrix/pixiebrix-app/blob/5ef1e4e414be6485fae999440b69f2b6da993668/api/tests/test_errors.py#L15-L15
+
+  // Handle 400 responses created by DRF serializers
   if (isBadRequestResponse(response)) {
     const data = Array.isArray(response.data)
       ? response.data.find((x) => isEmpty(x))
