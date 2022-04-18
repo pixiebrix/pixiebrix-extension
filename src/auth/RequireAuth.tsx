@@ -117,7 +117,9 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     void setAuth(me);
   }, [isMeSuccess, me, dispatch]);
 
-  if ((meError as AxiosError)?.response?.status === 401) {
+  const isUnauthenticated = (meError as AxiosError)?.response?.status === 401;
+
+  if (isUnauthenticated) {
     void clearExtensionAuth();
   }
 
@@ -128,7 +130,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     // the user is not authenticated.
     // http://github.com/pixiebrix/pixiebrix-app/blob/0686663bf007cf4b33d547d9f124d1fa2a83ec9a/api/views/site.py#L210-L210
     // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3056
-    (meError as AxiosError)?.response?.status === 401 ||
+    isUnauthenticated ||
     (!hasCachedLoggedIn && !meLoading) ||
     (!hasToken && !tokenLoading)
   ) {

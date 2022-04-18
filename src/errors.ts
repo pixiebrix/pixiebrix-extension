@@ -17,7 +17,7 @@
 
 import { MessageContext, SerializedError } from "@/core";
 import { deserializeError, ErrorObject } from "serialize-error";
-import { AxiosError } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { isObject, matchesAnyPattern } from "@/utils";
 import safeJsonStringify from "json-stringify-safe";
 import { isEmpty } from "lodash";
@@ -371,10 +371,7 @@ export const NO_INTERNET_MESSAGE =
 export const NO_RESPONSE_MESSAGE =
   "No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/network-errors for troubleshooting information";
 
-function selectNetworkErrorMessage(error: unknown): string {
-  // For examples of DRF errors, see the pixiebrix-app repository:
-  // http://github.com/pixiebrix/pixiebrix-app/blob/5ef1e4e414be6485fae999440b69f2b6da993668/api/tests/test_errors.py#L15-L15
-  // or no Internet errors
+function selectNetworkErrorMessage(error: unknown): string | null {
   if (
     (isAxiosError(error) && error.response == null) ||
     (typeof (error as any).message === "string" &&
@@ -401,12 +398,21 @@ function selectNetworkErrorMessage(error: unknown): string {
  * enrichBusinessRequestError is a related method which wraps an AxiosError in an Error subclass that encodes information
  * about why the request failed.
  *
+ * @param Response from the server. May not be null
+ *
  * @deprecated DO NOT CALL DIRECTLY. Call getErrorMessage
  * @see getErrorMessage
  * @see enrichBusinessRequestError
  */
-function selectServerErrorMessage({ response }: AxiosError): string | null {
+function selectServerErrorMessage(response: AxiosResponse): string | null {
+  if (response == null) {
+    throw new Error("Expected response to be defined");
+  }
+
   // Handle 400 responses created by DRF serializers
+  // For examples of DRF errors, see the pixiebrix-app repository:
+  // http://github.com/pixiebrix/pixiebrix-app/blob/5ef1e4e414be6485fae999440b69f2b6da993668/api/tests/test_errors.py#L15-L15
+  // or no Internet errors
   if (isBadRequestResponse(response)) {
     const data = Array.isArray(response.data)
       ? response.data.find((x) => isEmpty(x))
@@ -480,7 +486,8 @@ export function getErrorMessage(
   }
 
   if (isAxiosError(error)) {
-    const serverMessage = selectServerErrorMessage(error);
+    // The case when server response is empty handled by the selectNetworkErrorMessage above.
+    const serverMessage = selectServerErrorMessage(error.response);
     if (serverMessage) {
       return String(serverMessage);
     }
