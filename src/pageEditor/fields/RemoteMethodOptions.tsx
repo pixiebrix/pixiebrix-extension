@@ -17,10 +17,13 @@
 
 import { inputProperties } from "@/blocks/transformers/remoteMethod";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { isTemplateExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
 import { joinName } from "@/utils";
+import { useField } from "formik";
 import { partial } from "lodash";
-import React from "react";
+import React, { useEffect } from "react";
+import { Alert } from "react-bootstrap";
 
 export const REMOTE_METHOD_ID = validateRegistryId("@pixiebrix/http");
 
@@ -29,10 +32,31 @@ type RemoteMethodOptionsProps = {
   configKey: string;
 };
 
+export function isJsonString(fieldValue: unknown) {
+  if (!isTemplateExpression(fieldValue) || !fieldValue.__value__) {
+    return false;
+  }
+
+  try {
+    const parsed = JSON.parse(fieldValue.__value__);
+    return typeof parsed === "object";
+  } catch {
+    return false;
+  }
+}
+
 const RemoteMethodOptions: React.FunctionComponent<
   RemoteMethodOptionsProps
 > = ({ name, configKey }) => {
   const configName = partial(joinName, name, configKey);
+  const dataFieldName = configName("data");
+
+  const [showJsonWarning, setShowJsonWarning] = React.useState(false);
+  const [{ value: data }] = useField(dataFieldName);
+
+  useEffect(() => {
+    setShowJsonWarning(isJsonString(data));
+  }, [data]);
 
   return (
     <div>
@@ -54,10 +78,18 @@ const RemoteMethodOptions: React.FunctionComponent<
         schema={inputProperties.headers}
       />
       <SchemaField
-        name={configName("data")}
+        name={dataFieldName}
         schema={inputProperties.data}
         defaultType="object"
       />
+      {showJsonWarning && (
+        <Alert variant="warning">
+          <p>
+            It looks like you're passing a JSON string to this field. Consider
+            providing an object instead.
+          </p>
+        </Alert>
+      )}
     </div>
   );
 };
