@@ -85,14 +85,16 @@ function useInstallableViewItems(installables: Installable[]): {
           return isDeploymentActive(installable) ? "Active" : "Paused";
         }
 
-        for (const installedExtension of installedExtensions) {
-          if (
-            installedExtension._recipe?.id === getPackageId(installable) &&
-            installedExtension._deployment
-          ) {
-            return isDeploymentActive(installedExtension) ? "Active" : "Paused";
+        const deploymentExtension = installedExtensions.find(
+          (installedExtension) => {
+            return (
+              installedExtension._recipe?.id === getPackageId(installable) &&
+              installedExtension._deployment
+            );
           }
-        }
+        );
+
+        return isDeploymentActive(deploymentExtension) ? "Active" : "Paused";
       }
 
       return isActive(installable) ? "Active" : "Inactive";

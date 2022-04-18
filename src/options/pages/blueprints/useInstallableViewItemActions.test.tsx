@@ -254,4 +254,19 @@ describe("useInstallableViewItemActions", () => {
       actions
     );
   });
+
+  // eslint-disable-next-line jest/expect-expect -- assertions in expectActions helper function
+  test("paused deployment", () => {
+    mockHooks();
+    const deploymentItem = installableItemFactory({
+      isExtension: false,
+      sharingType: "Deployment",
+      status: "Paused",
+    });
+
+    const {
+      result: { current: actions },
+    } = renderHook(() => useInstallableViewItemActions(deploymentItem));
+    expectActions(["viewShare", "viewLogs", "exportBlueprint"], actions);
+  });
 });
