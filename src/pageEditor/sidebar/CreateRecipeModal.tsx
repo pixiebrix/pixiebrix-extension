@@ -46,6 +46,7 @@ import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
 import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
+import { FieldDescriptions } from "@/pageEditor/panes/save/strings";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -133,15 +134,26 @@ const CreateRecipeModal: React.VFC = () => {
       <ConnectedFieldTemplate
         name="id"
         label="Blueprint ID"
-        description="The registry ID of this blueprint"
+        description={FieldDescriptions.BLUEPRINT_ID}
         widerLabel
       />
-      <ConnectedFieldTemplate name="name" label="Name" widerLabel />
-      <ConnectedFieldTemplate name="version" label="Version" widerLabel />
+      <ConnectedFieldTemplate
+        name="name"
+        label="Name"
+        widerLabel
+        description={FieldDescriptions.BLUEPRINT_NAME}
+      />
+      <ConnectedFieldTemplate
+        name="version"
+        label="Version"
+        widerLabel
+        description={FieldDescriptions.BLUEPRINT_VERSION}
+      />
       <ConnectedFieldTemplate
         name="description"
         label="Description"
         widerLabel
+        description={FieldDescriptions.BLUEPRINT_DESCRIPTION}
       />
     </>
   );

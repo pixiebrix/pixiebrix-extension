@@ -32,6 +32,7 @@ import { Formik } from "formik";
 import Effect from "@/pageEditor/components/Effect";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import styles from "./EditRecipe.module.scss";
+import { FieldDescriptions } from "@/pageEditor/panes/save/strings";
 
 const EditRecipe: React.VoidFunctionComponent = () => {
   const recipeId = useSelector(selectActiveRecipeId);
@@ -102,21 +103,24 @@ const EditRecipe: React.VoidFunctionComponent = () => {
                       <ConnectedFieldTemplate
                         name="metadata.id"
                         label="Blueprint ID"
-                        description="The registry ID of this blueprint"
+                        description={FieldDescriptions.BLUEPRINT_ID}
                         // Blueprint IDs may not be changed after creation
                         readOnly
                       />
                       <ConnectedFieldTemplate
                         name="metadata.name"
                         label="Name"
+                        description={FieldDescriptions.BLUEPRINT_NAME}
                       />
                       <ConnectedFieldTemplate
                         name="metadata.version"
                         label="Version"
+                        description={FieldDescriptions.BLUEPRINT_VERSION}
                       />
                       <ConnectedFieldTemplate
                         name="metadata.description"
                         label="Description"
+                        description={FieldDescriptions.BLUEPRINT_DESCRIPTION}
                       />
                     </Card.Body>
                   </Card>
