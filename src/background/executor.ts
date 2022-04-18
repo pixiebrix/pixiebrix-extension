@@ -74,6 +74,10 @@ export async function waitForTargetByUrl(url: string): Promise<Target> {
   return promise;
 }
 
+/**
+ * Run a brick in the window that opened the source window
+ * @param request
+ */
 export async function requestRunInOpener(
   this: MessengerMeta,
   request: RunBlock
@@ -89,6 +93,38 @@ export async function requestRunInOpener(
   };
   const subRequest = { ...request, sourceTabId };
   return safelyRunBrick(opener, subRequest);
+}
+
+/**
+ * Run a brick in the last window that was opened from the source window
+ * @see openTab
+ */
+export async function requestRunInTarget(
+  this: MessengerMeta,
+  request: RunBlock
+): Promise<unknown> {
+  const sourceTabId = this.trace[0].tab.id;
+  const target = tabToTarget.get(sourceTabId);
+
+  if (!target) {
+    throw new BusinessError("Sender tab has no target");
+  }
+
+  const subRequest = { ...request, sourceTabId };
+  return safelyRunBrick({ tabId: target }, subRequest);
+}
+
+/**
+ * Run a brick in the topmost frame of the window/tab
+ */
+export async function requestRunInTop(
+  this: MessengerMeta,
+  request: RunBlock
+): Promise<unknown> {
+  const sourceTabId = this.trace[0].tab.id;
+
+  const subRequest = { ...request, sourceTabId };
+  return safelyRunBrick({ tabId: sourceTabId }, subRequest);
 }
 
 export async function requestRunInBroadcast(
@@ -122,21 +158,6 @@ export async function requestRunInBroadcast(
   }
 
   return [...fulfilled].map(([, value]) => value);
-}
-
-export async function requestRunInTarget(
-  this: MessengerMeta,
-  request: RunBlock
-): Promise<unknown> {
-  const sourceTabId = this.trace[0].tab.id;
-  const target = tabToTarget.get(sourceTabId);
-
-  if (!target) {
-    throw new BusinessError("Sender tab has no target");
-  }
-
-  const subRequest = { ...request, sourceTabId };
-  return safelyRunBrick({ tabId: target }, subRequest);
 }
 
 export async function openTab(

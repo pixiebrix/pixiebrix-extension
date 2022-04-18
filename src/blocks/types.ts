@@ -79,11 +79,18 @@ export type ReaderConfig =
  * - self: the current tab
  * - opener: the tab that opened the current tab
  * - target: the last tab that the current tab opened
+ * - top: the top-most frame in the window
  * - broadcast: all tabs that PixieBrix has access to (the result is returned as an array)
  * - remote: the server (currently only support identity, get, and http bricks)
  * @see {@link BlockConfig.window}
  */
-export type BlockWindow = "self" | "opener" | "target" | "broadcast" | "remote";
+export type BlockWindow =
+  | "self"
+  | "opener"
+  | "target"
+  | "top"
+  | "broadcast"
+  | "remote";
 
 /**
  * Condition expression written in templateEngine for deciding if the step should be run.
