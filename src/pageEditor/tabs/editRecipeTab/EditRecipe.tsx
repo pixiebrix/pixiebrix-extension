@@ -17,7 +17,10 @@
 
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveRecipeId,
+  selectDirtyMetadataForRecipeId,
+} from "@/pageEditor/slices/editorSelectors";
 import { useGetRecipesQuery } from "@/services/api";
 import { RecipeMetadataFormState } from "@/types/definitions";
 import { Card, Col, Container, Row } from "react-bootstrap";
@@ -29,21 +32,25 @@ import { Formik } from "formik";
 import Effect from "@/pageEditor/components/Effect";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import styles from "./EditRecipe.module.scss";
+import { FieldDescriptions } from "@/utils/strings";
 
 const EditRecipe: React.VoidFunctionComponent = () => {
   const recipeId = useSelector(selectActiveRecipeId);
   const { data: recipes, isLoading, error } = useGetRecipesQuery();
-  const metadata = recipes?.find(
+  const dirtyMetadata = useSelector(selectDirtyMetadataForRecipeId(recipeId));
+  const savedMetadata = recipes?.find(
     (recipe) => recipe.metadata.id === recipeId
   )?.metadata;
-  const formState: RecipeMetadataFormState = {
+  const metadata = dirtyMetadata ?? savedMetadata;
+
+  const initialFormState: RecipeMetadataFormState = {
     id: metadata?.id,
     name: metadata?.name,
     version: metadata?.version,
     description: metadata?.description,
   };
 
-  const initialValues = { metadata: formState };
+  const initialValues = { metadata: initialFormState };
 
   const dispatch = useDispatch();
   const updateRedux = useCallback(
@@ -96,20 +103,24 @@ const EditRecipe: React.VoidFunctionComponent = () => {
                       <ConnectedFieldTemplate
                         name="metadata.id"
                         label="Blueprint ID"
-                        description="The registry ID of this blueprint"
+                        description={FieldDescriptions.BLUEPRINT_ID}
+                        // Blueprint IDs may not be changed after creation
                         readOnly
                       />
                       <ConnectedFieldTemplate
                         name="metadata.name"
                         label="Name"
+                        description={FieldDescriptions.BLUEPRINT_NAME}
                       />
                       <ConnectedFieldTemplate
                         name="metadata.version"
                         label="Version"
+                        description={FieldDescriptions.BLUEPRINT_VERSION}
                       />
                       <ConnectedFieldTemplate
                         name="metadata.description"
                         label="Description"
+                        description={FieldDescriptions.BLUEPRINT_DESCRIPTION}
                       />
                     </Card.Body>
                   </Card>

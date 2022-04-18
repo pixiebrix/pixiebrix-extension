@@ -17,7 +17,7 @@
 
 import React, { useEffect } from "react";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useDebouncedCallback } from "use-debounce";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Formik } from "formik";
@@ -28,6 +28,10 @@ import SaveExtensionWizard from "./save/SaveExtensionWizard";
 import useSavingWizard from "./save/useSavingWizard";
 import { logActions } from "@/components/logViewer/logSlice";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import {
+  selectActiveElement,
+  selectSelectionSeq,
+} from "@/pageEditor/slices/editorSelectors";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -71,18 +75,17 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   );
 };
 
-const EditorPane: React.FunctionComponent<{
-  selectedElement: FormState;
-  selectionSeq: number;
-}> = ({ selectedElement, selectionSeq }) => {
+const EditorPane: React.VFC = () => {
+  const activeElement = useSelector(selectActiveElement);
+  const selectionSeq = useSelector(selectSelectionSeq);
   // Key to force reload of component when user selects a different element from the sidebar
-  const key = `${selectedElement.uuid}-${selectedElement.installed}-${selectionSeq}`;
+  const key = `${activeElement.uuid}-${activeElement.installed}-${selectionSeq}`;
   return (
     <>
       <ErrorBoundary key={key}>
         <Formik
           key={key}
-          initialValues={selectedElement}
+          initialValues={activeElement}
           onSubmit={() => {
             console.error(
               "Formik's submit should not be called to save an extension. Use 'saveElement' from 'useSavingWizard' instead."
