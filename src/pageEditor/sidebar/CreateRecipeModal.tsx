@@ -59,6 +59,7 @@ const CreateRecipeModal: React.VFC = () => {
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
 
   // TODO: This should be yup.SchemaOf<RecipeConfiguration> but we can't set the `id` property to `RegistryId`
+  // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
   const createRecipeSchema = yup.object().shape({
     id: yup
       .string()
