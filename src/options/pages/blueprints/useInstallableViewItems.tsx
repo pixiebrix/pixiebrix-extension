@@ -51,9 +51,9 @@ function useInstallableViewItems(installables: Installable[]): {
 } {
   const scope = useSelector(selectScope);
   const installedExtensions = useSelector(selectExtensions);
-  const listings = useGetMarketplaceListingsQuery();
-  const recipes = useGetRecipesQuery();
   const organizations = useSelector(selectOrganizations);
+  const listingsQuery = useGetMarketplaceListingsQuery();
+  const recipesQuery = useGetRecipesQuery();
 
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({
@@ -102,20 +102,20 @@ function useInstallableViewItems(installables: Installable[]): {
 
   const installableIcon = useCallback(
     (installable: Installable) => {
-      const listing: MarketplaceListing | null = listings.isLoading
+      const listing: MarketplaceListing | null = listingsQuery.isLoading
         ? null
-        : listings.data[getPackageId(installable)];
+        : listingsQuery.data[getPackageId(installable)];
 
       return (
         <InstallableIcon
           listing={listing}
           installable={installable}
-          isLoading={listings.isLoading}
+          isLoading={listingsQuery.isLoading}
           size={"2x"}
         />
       );
     },
-    [listings]
+    [listingsQuery]
   );
 
   const installableViewItems = useMemo(
@@ -135,7 +135,7 @@ function useInstallableViewItems(installables: Installable[]): {
         updatedAt: getUpdatedAt(installable),
         status: getStatus(installable),
         hasUpdate: updateAvailable(
-          recipes.data,
+          recipesQuery.data,
           installedExtensions,
           installable
         ),
@@ -153,14 +153,14 @@ function useInstallableViewItems(installables: Installable[]): {
       installables,
       installedExtensions,
       organizations,
-      recipes.data,
+      recipesQuery.data,
       scope,
     ]
   );
 
   return {
     installableViewItems,
-    isLoading: recipes.isLoading || listings.isLoading,
+    isLoading: recipesQuery.isLoading || listingsQuery.isLoading,
   };
 }
 

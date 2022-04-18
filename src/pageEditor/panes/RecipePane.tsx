@@ -20,7 +20,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
 import { Alert } from "react-bootstrap";
-import { RecipeDefinition } from "@/types/definitions";
 import Centered from "@/pageEditor/components/Centered";
 import EditorTabLayout, {
   ActionButton,
@@ -41,15 +40,10 @@ import { MessageContext } from "@/core";
 import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
 import RecipeOptions from "@/pageEditor/tabs/RecipeOptions";
-import { useGetRecipesQuery } from "@/services/api";
 import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 
-const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
-  const { data: recipes } = useGetRecipesQuery();
+const RecipePane: React.VFC = () => {
   const activeRecipeId = useSelector(selectActiveRecipeId);
-  const recipe = recipes.find(
-    (recipe) => recipe.metadata.id === activeRecipeId
-  );
   const [showQuestionModal, setShowQuestionModal] = useState(false);
 
   // We need to force the component to re-render when the recipe is reset
@@ -69,10 +63,10 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
 
   useEffect(() => {
     const messageContext: MessageContext = {
-      blueprintId: recipe.metadata.id,
+      blueprintId: activeRecipeId,
     };
     dispatch(logActions.setContext(messageContext));
-  }, [dispatch, recipe.metadata.id]);
+  }, [dispatch, activeRecipeId]);
 
   const [unreadLogsCount, logsBadgeVariant] = useLogsBadgeState();
 
@@ -138,7 +132,7 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
     },
   ];
 
-  if (!recipe) {
+  if (!activeRecipeId) {
     return (
       <Centered>
         <Alert variant="danger">Recipe not found</Alert>

@@ -34,6 +34,7 @@ export type FieldProps<As extends React.ElementType = React.ElementType> =
       name: string;
       label?: ReactNode;
       fitLabelWidth?: boolean;
+      widerLabel?: boolean;
       description?: ReactNode;
       error?: string;
       touched?: boolean;
@@ -69,6 +70,7 @@ const FieldTemplate: React.FC<FieldProps> = ({
   name,
   label,
   fitLabelWidth,
+  widerLabel,
   description,
   error,
   touched,
@@ -138,6 +140,9 @@ const FieldTemplate: React.FC<FieldProps> = ({
 
   if (fitLabelWidth) {
     labelProps.lg = "auto";
+  } else if (widerLabel) {
+    labelProps.lg = "4";
+    labelProps.xl = "3";
   } else {
     labelProps.lg = "3";
     labelProps.xl = "2";
@@ -147,6 +152,9 @@ const FieldTemplate: React.FC<FieldProps> = ({
 
   if (fitLabelWidth) {
     colProps.lg = true;
+  } else if (widerLabel) {
+    colProps.lg = label ? "8" : "12";
+    colProps.xl = label ? "9" : "12";
   } else {
     colProps.lg = label ? "9" : "12";
     colProps.xl = label ? "10" : "12";

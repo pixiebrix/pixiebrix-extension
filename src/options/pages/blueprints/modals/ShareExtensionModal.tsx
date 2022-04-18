@@ -59,6 +59,7 @@ import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprin
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { RequireScope } from "@/auth/RequireScope";
 import { selectScope } from "@/auth/authSelectors";
+import { FieldDescriptions } from "@/utils/strings";
 
 const { attachExtension } = extensionsSlice.actions;
 
@@ -186,14 +187,14 @@ const ShareExtensionModal: React.FC<{
       <ConnectedFieldTemplate
         name="name"
         label="Name"
-        description="A name for the blueprint"
+        description={FieldDescriptions.BLUEPRINT_NAME}
       />
       <ConnectedFieldTemplate
         name="blueprintId"
-        label="Registry Id"
+        label="Blueprint Id"
         description={
           <span>
-            A unique id for the blueprint.{" "}
+            {FieldDescriptions.BLUEPRINT_ID}.{" "}
             <i>Cannot be modified once shared.</i>
           </span>
         }
@@ -201,7 +202,7 @@ const ShareExtensionModal: React.FC<{
       <ConnectedFieldTemplate
         name="description"
         label="Description"
-        description="A short description of the blueprint"
+        description={FieldDescriptions.BLUEPRINT_DESCRIPTION}
       />
 
       <BootstrapForm.Group as={Row}>

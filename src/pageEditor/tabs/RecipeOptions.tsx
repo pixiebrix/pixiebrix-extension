@@ -33,6 +33,7 @@ import { FIELD_TYPE_OPTIONS } from "@/components/formBuilder/formBuilderHelpers"
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveRecipeId,
+  selectDirtyMetadataForRecipeId,
   selectDirtyOptionsForRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
@@ -52,19 +53,26 @@ const formRuntimeContext: RuntimeContext = {
   allowExpressions: false,
 };
 
-const RecipeOptions: React.VoidFunctionComponent = () => {
+const RecipeOptions: React.VFC = () => {
   const [activeField, setActiveField] = useState<string>();
   const recipeId = useSelector(selectActiveRecipeId);
   const { data: recipes, isLoading, error } = useGetRecipesQuery();
   const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
-  const options = recipe?.options ?? {
-    schema: {},
-    uiSchema: {},
-  };
-
+  const savedOptions = recipe?.options;
+  const savedMetadata = recipe?.metadata;
   const dirtyOptions = useSelector(selectDirtyOptionsForRecipeId(recipeId));
+  const dirtyMetadata = useSelector(selectDirtyMetadataForRecipeId(recipeId));
 
-  const initialValues = { optionsDefinition: dirtyOptions ?? options };
+  const options = dirtyOptions ??
+    savedOptions ?? {
+      schema: {},
+      uiSchema: {},
+    };
+
+  const initialValues = { optionsDefinition: options };
+
+  const recipeName =
+    dirtyMetadata?.name ?? savedMetadata?.name ?? "Unknown blueprint";
 
   const dispatch = useDispatch();
   const updateRedux = useCallback(
@@ -113,7 +121,7 @@ const RecipeOptions: React.VoidFunctionComponent = () => {
 
               <div className={styles.configPanel}>
                 <h5 className="mb-3">
-                  Editing Options for Blueprint &quot;{recipe.metadata.name}
+                  Editing Options for Blueprint &quot;{recipeName}
                   &quot;
                 </h5>
 

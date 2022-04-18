@@ -26,19 +26,15 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useMemo } from "react";
-import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
+import useInstallableViewItemActions from "@/options/pages/blueprints/useInstallableViewItemActions";
 import { InstallableViewItem } from "./blueprintsTypes";
-import useFlags from "@/hooks/useFlags";
 
 const BlueprintActions: React.FunctionComponent<{
   installableViewItem: InstallableViewItem;
 }> = ({ installableViewItem }) => {
-  const { permit } = useFlags();
+  const actions = useInstallableViewItemActions(installableViewItem);
 
-  const { installable, hasUpdate, status, sharing } = installableViewItem;
-  const actions = useInstallableActions(installable);
-  const isCloudExtension =
-    sharing.source.type === "Personal" && status !== "Active";
+  const { hasUpdate } = installableViewItem;
 
   const actionItems = useMemo(
     () => [
@@ -49,7 +45,7 @@ const BlueprintActions: React.FunctionComponent<{
           </>
         ),
         action: actions.viewShare,
-        hide: !actions.viewShare || isCloudExtension,
+        hide: !actions.viewShare,
       },
       {
         title: (
@@ -66,7 +62,7 @@ const BlueprintActions: React.FunctionComponent<{
           </>
         ),
         action: actions.viewLogs,
-        hide: status === "Inactive",
+        hide: !actions.viewLogs,
       },
       {
         title: (
@@ -83,11 +79,7 @@ const BlueprintActions: React.FunctionComponent<{
           </>
         ),
         action: actions.reinstall,
-        // Managed extensions are updated via the deployment banner
-        hide:
-          actions.reinstall == null ||
-          sharing.source.type === "Deployment" ||
-          status === "Inactive",
+        hide: !actions.reinstall,
       },
       {
         title: (
@@ -96,10 +88,7 @@ const BlueprintActions: React.FunctionComponent<{
           </>
         ),
         action: actions.uninstall,
-        // TODO: shift all hide logic to useInstallableActions
-        hide:
-          status !== "Active" ||
-          (sharing.source.type === "Deployment" && permit("uninstall")),
+        hide: !actions.uninstall,
         className: "text-danger",
       },
       {
@@ -109,11 +98,11 @@ const BlueprintActions: React.FunctionComponent<{
           </span>
         ),
         action: actions.deleteExtension,
-        hide: !isCloudExtension,
+        hide: !actions.deleteExtension,
         className: "text-danger",
       },
     ],
-    [actions, permit, hasUpdate, isCloudExtension, sharing.source.type, status]
+    [actions, hasUpdate]
   );
 
   return <EllipsisMenu items={actionItems} />;

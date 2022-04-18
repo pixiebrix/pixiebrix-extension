@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Expression, OutputKey, RenderedArgs, TemplateEngine } from "@/core";
+import { OutputKey, RenderedArgs } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
@@ -40,6 +40,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import MockDate from "mockdate";
 import { BlockPipeline } from "@/blocks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { makeTemplateExpression } from "@/testUtils/expressionTestHelpers";
 
 jest.mock("@/background/messenger/api");
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
@@ -53,13 +54,6 @@ beforeEach(() => {
   (traces.addExit as any).mockReset();
 });
 
-function makeExpression(template: TemplateEngine, value: string): Expression {
-  return {
-    __type__: template,
-    __value__: value,
-  };
-}
-
 describe("Trace normal exit", () => {
   test("trace entry and normal exit", async () => {
     const instanceId = uuidv4();
@@ -67,7 +61,9 @@ describe("Trace normal exit", () => {
     const result = await reducePipeline(
       {
         id: echoBlock.id,
-        config: { message: makeExpression("nunjucks", "{{@input.inputArg}}") },
+        config: {
+          message: makeTemplateExpression("nunjucks", "{{@input.inputArg}}"),
+        },
         instanceId,
       },
       simpleInput({ inputArg: "hello" }),
@@ -86,6 +82,11 @@ describe("Trace normal exit", () => {
       })
     );
     expect(traces.addExit).toHaveBeenCalledTimes(1);
+    expect(traces.addExit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        skippedRun: false,
+      })
+    );
   });
 });
 
@@ -93,19 +94,19 @@ describe("Trace render error", () => {
   test("Trace input render error", async () => {
     const instanceId = uuidv4();
 
-    try {
-      await reducePipeline(
+    await expect(async () =>
+      reducePipeline(
         {
           id: echoBlock.id,
-          config: { message: makeExpression("var", "@doesNotExist.bar") },
+          config: {
+            message: makeTemplateExpression("var", "@doesNotExist.bar"),
+          },
           instanceId,
         },
         simpleInput({ inputArg: "hello" }),
         testOptions("v3")
-      );
-    } catch {
-      // Error is expected
-    }
+      )
+    ).rejects.toThrowError(/doesNotExist/);
 
     expect(traces.addEntry).toHaveBeenCalledTimes(1);
     expect(traces.addEntry).toHaveBeenCalledWith(
@@ -126,6 +127,39 @@ describe("Trace render error", () => {
       })
     );
   });
+
+  test("Doesn't throw when skipped", async () => {
+    const instanceId = uuidv4();
+
+    await reducePipeline(
+      {
+        id: echoBlock.id,
+        config: { message: makeTemplateExpression("var", "@doesNotExist.bar") },
+        outputKey: validateOutputKey("conditional"),
+        if: "f",
+        instanceId,
+      },
+      simpleInput({ inputArg: "hello" }),
+      testOptions("v3")
+    );
+
+    expect(traces.addEntry).toHaveBeenCalledTimes(1);
+    expect(traces.addEntry).toHaveBeenCalledWith(
+      expect.objectContaining({
+        renderedArgs: undefined,
+        renderError: expect.objectContaining({
+          message: expect.anything(),
+        }),
+      })
+    );
+
+    expect(traces.addExit).toHaveBeenCalledTimes(1);
+    expect(traces.addExit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        skippedRun: true,
+      })
+    );
+  });
 });
 
 describe("Trace conditional execution", () => {
@@ -135,7 +169,7 @@ describe("Trace conditional execution", () => {
         {
           id: echoBlock.id,
           config: {
-            message: makeExpression("nunjucks", "{{@input.inputArg}}"),
+            message: makeTemplateExpression("nunjucks", "{{@input.inputArg}}"),
           },
           outputKey: validateOutputKey("conditional"),
           if: "f",
@@ -143,8 +177,10 @@ describe("Trace conditional execution", () => {
         },
         {
           id: echoBlock.id,
-          config: { message: makeExpression("var", "@conditional.property") },
-          if: makeExpression("nunjucks", "{{true if @conditional}}"),
+          config: {
+            message: makeTemplateExpression("var", "@conditional.property"),
+          },
+          if: makeTemplateExpression("nunjucks", "{{true if @conditional}}"),
           instanceId: uuidv4(),
         },
       ],

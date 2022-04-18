@@ -40,7 +40,11 @@ import { freshIdentifier } from "@/utils";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import { Except } from "type-fest";
-import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
+import {
+  DEFAULT_EXTENSION_POINT_VAR,
+  PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+} from "@/pageEditor/extensionPoints/base";
+import slugify from "slugify";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -54,6 +58,15 @@ export function generateScopeBrickId(
   const match = PACKAGE_REGEX.exec(sourceId);
   return validateRegistryId(
     compact([newScope, match.groups?.collection, match.groups?.name]).join("/")
+  );
+}
+
+export function generateRecipeId(
+  userScope: string,
+  extensionLabel: string
+): RegistryId {
+  return validateRegistryId(
+    `${userScope}/${slugify(extensionLabel).toLowerCase()}`
   );
 }
 
@@ -256,40 +269,50 @@ export function replaceRecipeExtension(
 }
 
 type RecipeParts = {
-  sourceRecipe: RecipeDefinition;
-  installedExtensions: UnresolvedExtension[];
+  sourceRecipe?: RecipeDefinition;
+  cleanRecipeExtensions: UnresolvedExtension[];
   dirtyRecipeElements: FormState[];
   options?: OptionsDefinition;
   metadata?: RecipeMetadataFormState;
 };
 
 /**
- * Create a copy of `sourceRecipe` with `metadata` and `elements`.
+ * Create a copy of `sourceRecipe` (if provided) with `metadata` and `elements`.
  *
  * NOTE: the caller is responsible for updating an extensionPoint package (i.e., that has its own version). This method
  * only handles the extensionPoint if it's an inner definition
  *
- * @param sourceRecipe the original recipe
- * @param installedExtensions the user's locally installed extensions (i.e., from optionsSlice). Used to locate the
- * element's position in sourceRecipe
+ * @param sourceRecipe the original recipe, or undefined for new recipes
+ * @param cleanRecipeExtensions the recipe's unchanged, installed extensions
  * @param dirtyRecipeElements the recipe's extension form states (i.e., submitted via Formik)
  * @param options the recipe's options form state
  * @param metadata the recipe's metadata form state
  */
-export function replaceRecipeContent({
+export function buildRecipe({
   sourceRecipe,
-  installedExtensions,
+  cleanRecipeExtensions,
   dirtyRecipeElements,
   options,
   metadata,
 }: RecipeParts): UnsavedRecipeDefinition {
-  const cleanRecipeExtensions = installedExtensions.filter(
-    (extension) =>
-      extension._recipe?.id === sourceRecipe.metadata.id &&
-      !dirtyRecipeElements.some((element) => element.uuid === extension.id)
-  );
+  // If there's no source recipe, then we're creating a new one, so we
+  // start with an empty recipe definition that will be filled in
+  const recipe: UnsavedRecipeDefinition = sourceRecipe ?? {
+    apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+    kind: "recipe",
+    metadata: {
+      id: "" as RegistryId,
+      name: "",
+    },
+    extensionPoints: [],
+    definitions: {},
+    options: {
+      schema: {},
+      uiSchema: {},
+    },
+  };
 
-  return produce(sourceRecipe, (draft) => {
+  return produce(recipe, (draft) => {
     // Options dirty state is only populated if a change is made
     if (options) {
       draft.options = isEmpty(options.schema?.properties) ? undefined : options;
@@ -312,9 +335,9 @@ export function replaceRecipeContent({
       );
     }
 
-    if (itemsApiVersion !== sourceRecipe.apiVersion) {
+    if (itemsApiVersion !== recipe.apiVersion) {
       throw new Error(
-        `Blueprint has API Version ${sourceRecipe.apiVersion}, but it's extensions have version ${itemsApiVersion}. Please use the Workshop to edit this blueprint.`
+        `Blueprint has API Version ${recipe.apiVersion}, but it's extensions have version ${itemsApiVersion}. Please use the Workshop to edit this blueprint.`
       );
     }
 

@@ -20,7 +20,7 @@ import styles from "./Status.module.scss";
 import React from "react";
 import { Button } from "react-bootstrap";
 import { InstallableViewItem } from "./blueprintsTypes";
-import useInstallableActions from "./useInstallableActions";
+import useInstallableViewItemActions from "./useInstallableViewItemActions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -30,14 +30,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 
-const Status: React.VoidFunctionComponent<InstallableViewItem> = ({
-  status,
-  installable,
-  hasUpdate,
-  installedVersionNumber,
-}) => {
+const Status: React.VoidFunctionComponent<{
+  installableViewItem: InstallableViewItem;
+}> = ({ installableViewItem }) => {
   const { activate, reinstall, requestPermissions } =
-    useInstallableActions(installable);
+    useInstallableViewItemActions(installableViewItem);
+
+  const { hasUpdate, status, installedVersionNumber } = installableViewItem;
 
   if (status === "Inactive") {
     return (

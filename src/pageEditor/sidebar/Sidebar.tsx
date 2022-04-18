@@ -205,7 +205,6 @@ const SidebarExpanded: React.VoidFunctionComponent<{
   );
   const addToRecipeButtonDisabled =
     isAddToRecipeModalVisible ||
-    isEmpty(recipes) ||
     activeElement === undefined ||
     activeElement.recipe != null;
 
@@ -349,8 +348,7 @@ const SidebarExpanded: React.VoidFunctionComponent<{
               <RecipeEntry
                 key={recipeId}
                 recipeId={recipeId}
-                recipes={recipes}
-                activeRecipeId={activeRecipeId}
+                isActive={recipeId === activeRecipeId}
               >
                 {elements.map((element) => (
                   <ElementListItem
