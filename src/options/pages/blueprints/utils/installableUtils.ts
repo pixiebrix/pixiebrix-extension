@@ -128,16 +128,12 @@ export const isDeployment = (
     return Boolean(installable._deployment);
   }
 
-  for (const installedExtension of installedExtensions) {
-    if (
-      installedExtension._recipe?.id === getPackageId(installable) &&
-      installedExtension._deployment
-    ) {
-      return true;
-    }
-  }
-
-  return false;
+  const recipeId = installable.metadata.id;
+  return installedExtensions.some(
+    (installedExtension) =>
+      installedExtension._recipe?.id === recipeId &&
+      installedExtension?._deployment
+  );
 };
 
 export const getSharingType = (
