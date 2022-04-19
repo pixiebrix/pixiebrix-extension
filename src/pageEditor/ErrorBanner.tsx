@@ -17,17 +17,19 @@
 
 import React, { useContext } from "react";
 import { PageEditorTabContext } from "@/pageEditor/context";
-import { getErrorMessage } from "@/errors";
 import { Button } from "react-bootstrap";
-import { useGetMeQuery } from "@/services/api";
 
+/**
+ * Error banner for Page Editor browser connection errors.
+ *
+ * Errors contacting the PixieBrix server are handled via `RequireAuth` and `ErrorBoundary`s
+ *
+ * @see RequireAuth
+ */
 const ErrorBanner: React.VFC = () => {
   const context = useContext(PageEditorTabContext);
-  const { error: accountError } = useGetMeQuery();
 
-  const error = accountError
-    ? `Authentication error: ${getErrorMessage(accountError)}`
-    : context.tabState.error;
+  const { error } = context.tabState;
 
   if (!error) {
     return null;
