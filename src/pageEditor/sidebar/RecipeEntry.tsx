@@ -15,18 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { RegistryId } from "@/core";
 import styles from "./Entry.module.scss";
 import { UnsavedChangesIcon } from "@/pageEditor/sidebar/ExtensionIcons";
-import { ListGroup } from "react-bootstrap";
+import { Accordion, ListGroup } from "react-bootstrap";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCaretDown,
+  faCaretRight,
+  faFile,
+} from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import {
   selectDirtyMetadataForRecipeId,
+  selectExpandedRecipeId,
   selectRecipeIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
 import { useGetRecipesQuery } from "@/services/api";
@@ -41,7 +46,8 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
   isActive,
   children,
 }) => {
-  const [expanded, setExpanded] = useState(false);
+  const expandedRecipeId = useSelector(selectExpandedRecipeId);
+  const isExpanded = expandedRecipeId === recipeId;
   const dispatch = useDispatch();
   const { data: recipes } = useGetRecipesQuery();
   const savedName = recipes?.find((recipe) => recipe.metadata.id === recipeId)
@@ -50,34 +56,32 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
   const name = dirtyName ?? savedName ?? "Loading...";
   const isDirty = useSelector(selectRecipeIsDirty(recipeId));
 
-  const caretIcon = expanded ? faCaretDown : faCaretRight;
+  const caretIcon = isExpanded ? faCaretDown : faCaretRight;
 
   return (
     <>
-      <ListGroup.Item
+      <Accordion.Toggle
+        eventKey={recipeId}
+        as={ListGroup.Item}
         className={cx(styles.root, "list-group-item-action")}
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
         active={isActive}
         key={`recipe-${recipeId}`}
         onClick={() => dispatch(actions.selectRecipeId(recipeId))}
       >
-        <button
-          className={styles.icon}
-          onClick={(event) => {
-            setExpanded(!expanded);
-            event.stopPropagation();
-          }}
-        >
-          <FontAwesomeIcon icon={caretIcon} />
-        </button>
+        <span className={styles.icon}>
+          <FontAwesomeIcon icon={faFile} /> <FontAwesomeIcon icon={caretIcon} />
+        </span>
         <span className={styles.name}>{name}</span>
         {isDirty && (
           <span className={cx(styles.icon, "text-danger")}>
             <UnsavedChangesIcon />
           </span>
         )}
-      </ListGroup.Item>
-      {expanded && children}
+      </Accordion.Toggle>
+      <Accordion.Collapse eventKey={recipeId}>
+        <>{children}</>
+      </Accordion.Collapse>
     </>
   );
 };

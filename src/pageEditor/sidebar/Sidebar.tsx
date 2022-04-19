@@ -23,6 +23,7 @@ import { PageEditorTabContext } from "@/pageEditor/context";
 import { sortBy } from "lodash";
 import { sleep } from "@/utils";
 import {
+  Accordion,
   Badge,
   Button,
   Dropdown,
@@ -60,6 +61,7 @@ import {
   selectActiveElementId,
   selectActiveRecipeId,
   selectElements,
+  selectExpandedRecipeId,
   selectIsAddToRecipeModalVisible,
 } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
@@ -169,6 +171,7 @@ const SidebarExpanded: React.VoidFunctionComponent<{
   );
   const activeElementId = useSelector(selectActiveElementId);
   const activeRecipeId = useSelector(selectActiveRecipeId);
+  const expandedRecipeId = useSelector(selectExpandedRecipeId);
   const installed = useSelector(selectExtensions);
   const elements = useSelector(selectElements);
 
@@ -377,7 +380,13 @@ const SidebarExpanded: React.VoidFunctionComponent<{
         ) : null}
       </div>
       <div className={styles.extensions}>
-        {isLoadingRecipes ? <Loader /> : <ListGroup>{listItems}</ListGroup>}
+        {isLoadingRecipes ? (
+          <Loader />
+        ) : (
+          <Accordion defaultActiveKey={expandedRecipeId}>
+            <ListGroup>{listItems}</ListGroup>
+          </Accordion>
+        )}
       </div>
       <Footer />
     </div>

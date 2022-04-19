@@ -162,3 +162,6 @@ export const selectNewRecipeIds = (state: RootState) =>
 
 export const selectKeepLocalCopyOnCreateRecipe = (state: RootState) =>
   state.editor.keepLocalCopyOnCreateRecipe;
+
+export const selectExpandedRecipeId = (state: RootState) =>
+  state.editor.expandedRecipeId;

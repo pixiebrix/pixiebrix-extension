@@ -71,6 +71,11 @@ export interface EditorState {
    */
   activeRecipeId: RegistryId | null;
 
+  /**
+   * Which recipe is 'expanded' in the sidebar UI?
+   */
+  expandedRecipeId: RegistryId | null;
+
   error: string | null;
 
   dirty: Record<string, boolean>;
