@@ -77,7 +77,7 @@ const RemoveFromRecipeModal: React.VFC = () => {
   );
 
   const renderBody: RenderBody = ({ values }) => (
-    <>
+    <Modal.Body>
       <ConnectedFieldTemplate
         name="keepLocalCopy"
         label="Keep a local copy of the extension?"
@@ -91,7 +91,7 @@ const RemoveFromRecipeModal: React.VFC = () => {
           button.
         </Alert>
       )}
-    </>
+    </Modal.Body>
   );
 
   const renderSubmit: RenderSubmit = ({ isSubmitting, isValid, values }) => (
@@ -117,15 +117,13 @@ const RemoveFromRecipeModal: React.VFC = () => {
           <em>{activeElement?.recipe?.name}</em>?
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        <Form
-          initialValues={initialFormState}
-          validationSchema={formStateSchema}
-          onSubmit={onSubmit}
-          renderBody={renderBody}
-          renderSubmit={renderSubmit}
-        />
-      </Modal.Body>
+      <Form
+        initialValues={initialFormState}
+        validationSchema={formStateSchema}
+        onSubmit={onSubmit}
+        renderBody={renderBody}
+        renderSubmit={renderSubmit}
+      />
     </Modal>
   );
 };

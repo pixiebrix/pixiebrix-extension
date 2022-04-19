@@ -125,7 +125,7 @@ const AddToRecipeModal: React.VFC = () => {
   ];
 
   const renderBody: RenderBody = () => (
-    <>
+    <Modal.Body>
       <ConnectedFieldTemplate
         name="recipeId"
         hideLabel
@@ -141,7 +141,7 @@ const AddToRecipeModal: React.VFC = () => {
         as={SwitchButtonWidget}
         widerLabel
       />
-    </>
+    </Modal.Body>
   );
 
   const renderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
@@ -166,15 +166,13 @@ const AddToRecipeModal: React.VFC = () => {
           Add <em>{activeElement?.label}</em> to a blueprint
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        <Form
-          validationSchema={formStateSchema}
-          initialValues={initialFormState}
-          onSubmit={onSubmit}
-          renderBody={renderBody}
-          renderSubmit={renderSubmit}
-        />
-      </Modal.Body>
+      <Form
+        validationSchema={formStateSchema}
+        initialValues={initialFormState}
+        onSubmit={onSubmit}
+        renderBody={renderBody}
+        renderSubmit={renderSubmit}
+      />
     </Modal>
   );
 };

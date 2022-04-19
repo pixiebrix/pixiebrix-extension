@@ -136,7 +136,7 @@ const CreateRecipeModal: React.VFC = () => {
   );
 
   const renderBody: RenderBody = () => (
-    <>
+    <Modal.Body>
       <ConnectedFieldTemplate
         name="id"
         label="Blueprint ID"
@@ -161,7 +161,7 @@ const CreateRecipeModal: React.VFC = () => {
         widerLabel
         description={FieldDescriptions.BLUEPRINT_DESCRIPTION}
       />
-    </>
+    </Modal.Body>
   );
 
   const renderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
@@ -184,17 +184,15 @@ const CreateRecipeModal: React.VFC = () => {
       <Modal.Header closeButton>
         <Modal.Title>Create new blueprint</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        <RequireScope scopeSettingsDescription="To create a blueprint, you must first set an account alias for your PixieBrix account">
-          <Form
-            validationSchema={createRecipeSchema}
-            initialValues={initialFormState}
-            onSubmit={onSubmit}
-            renderBody={renderBody}
-            renderSubmit={renderSubmit}
-          />
-        </RequireScope>
-      </Modal.Body>
+      <RequireScope scopeSettingsDescription="To create a blueprint, you must first set an account alias for your PixieBrix account">
+        <Form
+          validationSchema={createRecipeSchema}
+          initialValues={initialFormState}
+          onSubmit={onSubmit}
+          renderBody={renderBody}
+          renderSubmit={renderSubmit}
+        />
+      </RequireScope>
     </Modal>
   );
 };
