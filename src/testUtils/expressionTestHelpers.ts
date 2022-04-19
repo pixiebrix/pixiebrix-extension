@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,19 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: flex;
-  align-items: center;
-  justify-content: start;
-}
+import { TemplateEngine, Expression } from "@/core";
 
-.textStatus {
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  margin-left: 0.5rem;
-}
-
-.versionNumber {
-  font-size: 0.7rem;
+export function makeTemplateExpression(
+  template: TemplateEngine,
+  value: string
+): Expression {
+  return {
+    __type__: template,
+    __value__: value,
+  };
 }

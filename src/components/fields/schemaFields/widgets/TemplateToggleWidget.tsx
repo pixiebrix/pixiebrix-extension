@@ -46,6 +46,7 @@ export function getOptionForInputMode(
 const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
   inputModeOptions,
   setFieldDescription,
+  defaultType,
   ...schemaFieldProps
 }) => {
   const [{ value }, , { setValue }] = useField(schemaFieldProps.name);
@@ -94,17 +95,28 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
       ? {
           ...schemaFieldProps,
           onClick() {
-            if (inputModeOptions.some((option) => option.value === "var")) {
-              onModeChange("var");
-            }
-
-            if (inputModeOptions.some((option) => option.value === "string")) {
+            if (defaultType != null) {
+              onModeChange(defaultType);
+            } else if (
+              inputModeOptions.some((option) => option.value === "string")
+            ) {
               onModeChange("string");
+            } else if (
+              inputModeOptions.some((option) => option.value === "var")
+            ) {
+              onModeChange("var");
             }
           },
         }
       : schemaFieldProps;
-  }, [focusInput, inputMode, inputModeOptions, onModeChange, schemaFieldProps]);
+  }, [
+    focusInput,
+    inputMode,
+    inputModeOptions,
+    onModeChange,
+    schemaFieldProps,
+    defaultType,
+  ]);
 
   return (
     <div className={styles.root}>

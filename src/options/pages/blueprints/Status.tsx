@@ -20,23 +20,23 @@ import styles from "./Status.module.scss";
 import React from "react";
 import { Button } from "react-bootstrap";
 import { InstallableViewItem } from "./blueprintsTypes";
-import useInstallableActions from "./useInstallableActions";
+import useInstallableViewItemActions from "./useInstallableViewItemActions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
+  faPause,
   faShieldAlt,
   faSync,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 
-const Status: React.VoidFunctionComponent<InstallableViewItem> = ({
-  status,
-  installable,
-  hasUpdate,
-  installedVersionNumber,
-}) => {
+const Status: React.VoidFunctionComponent<{
+  installableViewItem: InstallableViewItem;
+}> = ({ installableViewItem }) => {
   const { activate, reinstall, requestPermissions } =
-    useInstallableActions(installable);
+    useInstallableViewItemActions(installableViewItem);
+
+  const { hasUpdate, status, installedVersionNumber } = installableViewItem;
 
   if (status === "Inactive") {
     return (
@@ -63,11 +63,29 @@ const Status: React.VoidFunctionComponent<InstallableViewItem> = ({
     );
   }
 
+  if (status === "Paused") {
+    return (
+      <div className="text-muted w-100">
+        <div className={styles.root}>
+          <FontAwesomeIcon icon={faPause} />
+          <span className={styles.textStatus}>
+            Paused
+            {installedVersionNumber && (
+              <span className={styles.versionNumber}>
+                version {installedVersionNumber}
+              </span>
+            )}
+          </span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="text-success w-100">
       <div className={styles.root}>
         <FontAwesomeIcon icon={faCheck} />
-        <span className={styles.activeStatus}>
+        <span className={styles.textStatus}>
           Active
           {installedVersionNumber && (
             <span className={styles.versionNumber}>
