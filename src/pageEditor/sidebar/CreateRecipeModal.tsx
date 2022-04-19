@@ -16,8 +16,7 @@
  */
 
 import React, { useCallback } from "react";
-import * as yup from "yup";
-import { PACKAGE_REGEX, uuidv4 } from "@/types/helpers";
+import { PACKAGE_REGEX, uuidv4, validateSemVerString } from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveElement,
@@ -47,6 +46,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
 import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import { FieldDescriptions } from "@/utils/strings";
+import { object, string } from "yup";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -58,17 +58,22 @@ const CreateRecipeModal: React.VFC = () => {
   const create = useCreate();
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
 
-  // TODO: This should be yup.SchemaOf<RecipeConfiguration> but we can't set the `id` property to `RegistryId`
+  // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
   // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
-  const createRecipeSchema = yup.object().shape({
-    id: yup
-      .string()
+  const createRecipeSchema = object({
+    id: string()
       .matches(PACKAGE_REGEX, "Invalid registry id")
       .notOneOf(newRecipeIds, "This id is already in use")
       .required(),
-    name: yup.string().required(),
-    version: yup.string().required(),
-    description: yup.string(),
+    name: string().required(),
+    version: string()
+      .test(
+        "semver",
+        "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
+        (value: string) => validateSemVerString(value, false)
+      )
+      .required(),
+    description: string(),
   });
 
   const dispatch = useDispatch();
@@ -131,7 +136,7 @@ const CreateRecipeModal: React.VFC = () => {
   );
 
   const renderBody: RenderBody = () => (
-    <>
+    <Modal.Body>
       <ConnectedFieldTemplate
         name="id"
         label="Blueprint ID"
@@ -156,7 +161,7 @@ const CreateRecipeModal: React.VFC = () => {
         widerLabel
         description={FieldDescriptions.BLUEPRINT_DESCRIPTION}
       />
-    </>
+    </Modal.Body>
   );
 
   const renderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
@@ -179,17 +184,15 @@ const CreateRecipeModal: React.VFC = () => {
       <Modal.Header closeButton>
         <Modal.Title>Create new blueprint</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        <RequireScope scopeSettingsDescription="To create a blueprint, you must first set an account alias for your PixieBrix account">
-          <Form
-            validationSchema={createRecipeSchema}
-            initialValues={initialFormState}
-            onSubmit={onSubmit}
-            renderBody={renderBody}
-            renderSubmit={renderSubmit}
-          />
-        </RequireScope>
-      </Modal.Body>
+      <RequireScope scopeSettingsDescription="To create a blueprint, you must first set an account alias for your PixieBrix account">
+        <Form
+          validationSchema={createRecipeSchema}
+          initialValues={initialFormState}
+          onSubmit={onSubmit}
+          renderBody={renderBody}
+          renderSubmit={renderSubmit}
+        />
+      </RequireScope>
     </Modal>
   );
 };

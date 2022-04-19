@@ -19,6 +19,5 @@ export const FieldDescriptions = {
   BLUEPRINT_ID: "A unique id for the blueprint",
   BLUEPRINT_NAME: "A display name for the blueprint",
   BLUEPRINT_DESCRIPTION: "A short description of the blueprint",
-  BLUEPRINT_VERSION:
-    "The current blueprint version; must follow the X.Y.Z semantic version format",
+  BLUEPRINT_VERSION: "The current blueprint version",
 };
