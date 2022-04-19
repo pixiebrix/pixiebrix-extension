@@ -306,20 +306,20 @@ exports[`requires user scope 1`] = `
             class="container"
           >
             <form
-              class="mt-2"
+              class=""
               novalidate=""
             >
               <div
                 class="formGroup form-group row"
               >
                 <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
+                  class="label form-label col-form-label col-lg-auto"
                   for="scope"
                 >
                   Account Alias
                 </label>
                 <div
-                  class="col-xl-10 col-lg-9"
+                  class="col-lg"
                 >
                   <input
                     class="form-control"
@@ -331,16 +331,20 @@ exports[`requires user scope 1`] = `
                   <small
                     class="text-muted form-text"
                   >
-                    Your @alias for publishing bricks, e.g., @peter-parker
+                    Your @alias for publishing bricks
                   </small>
                 </div>
               </div>
-              <button
-                class="btn btn-primary"
-                type="submit"
+              <div
+                class="submitDiv"
               >
-                Set My Account Alias
-              </button>
+                <button
+                  class="submit btn btn-primary"
+                  type="submit"
+                >
+                  Set My Account Alias
+                </button>
+              </div>
             </form>
           </div>
         </div>
