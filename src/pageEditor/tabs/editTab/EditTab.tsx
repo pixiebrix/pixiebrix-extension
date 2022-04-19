@@ -144,7 +144,8 @@ const EditTab: React.FC<{
         extensionId: elementId,
       });
     }
-  }, [blockPipelineErrors, runId, elementId]);
+    // Do not include the blockPipelineErrors in the dependency list, because it changes when the pipeline changes.
+  }, [runId, elementId, sessionId]);
 
   const {
     addBlock,
