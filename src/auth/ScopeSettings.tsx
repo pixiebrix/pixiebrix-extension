@@ -109,7 +109,7 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
       label="Account Alias"
       fitLabelWidth
       placeholder="@peter-parker"
-      description="Your @alias for publishing bricks"
+      description="Your @alias for publishing bricks, e.g. @peter-parker"
     />
   );
 
