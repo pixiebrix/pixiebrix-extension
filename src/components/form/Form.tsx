@@ -46,6 +46,7 @@ type FormProps = {
   initialValues: FormikValues;
   validationSchema: yup.AnyObjectSchema;
   validateOnMount?: boolean;
+  enableReinitialize?: boolean;
   renderBody?: RenderBody;
   renderSubmit?: RenderSubmit;
   renderStatus?: RenderStatus;
@@ -66,6 +67,7 @@ const Form: React.FC<FormProps> = ({
   initialValues,
   validationSchema,
   validateOnMount,
+  enableReinitialize,
   children,
   renderBody,
   renderSubmit = defaultRenderSubmit,
@@ -76,6 +78,7 @@ const Form: React.FC<FormProps> = ({
     initialValues={initialValues}
     validationSchema={validationSchema}
     validateOnMount={validateOnMount}
+    enableReinitialize={enableReinitialize}
     onSubmit={onSubmit}
   >
     {({

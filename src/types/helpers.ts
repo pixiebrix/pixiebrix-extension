@@ -18,6 +18,7 @@
 import { validate, v4 as uuidFactory } from "uuid";
 import { RegistryId, SemVerString, Timestamp, UUID } from "@/core";
 import { valid as semVerValid } from "semver";
+import { startsWith } from "lodash";
 
 export const PACKAGE_REGEX =
   /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
@@ -90,6 +91,13 @@ export function validateTimestamp(value: string): Timestamp {
   throw new TypeError("Invalid timestamp");
 }
 
-export function validateSemVerString(value: string): value is SemVerString {
-  return semVerValid(value) != null;
+export function validateSemVerString(
+  value: string,
+  allowLeadingV = true
+): value is SemVerString {
+  if (semVerValid(value) != null) {
+    return allowLeadingV || !startsWith(value, "v");
+  }
+
+  return false;
 }
