@@ -18,8 +18,7 @@
 import styles from "./ScopeSettings.module.scss";
 
 import React, { useCallback } from "react";
-import { Formik, FormikBag, FormikValues } from "formik";
-import { Alert, Button, Container, Form } from "react-bootstrap";
+import { Alert, Button, Container } from "react-bootstrap";
 import * as Yup from "yup";
 import { castArray, mapValues } from "lodash";
 import { faEyeSlash, faInfo } from "@fortawesome/free-solid-svg-icons";
@@ -31,6 +30,11 @@ import reportError from "@/telemetry/reportError";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { appApi } from "@/services/api";
+import Form, {
+  OnSubmit,
+  RenderBody,
+  RenderSubmit,
+} from "@/components/form/Form";
 
 interface Profile {
   scope: string | null;
@@ -47,6 +51,8 @@ const VALIDATION_SCHEMA = Yup.object({
     .required(),
 });
 
+const INITIAL_VALUES: Profile = { scope: "" };
+
 type ScopeSettingsProps = {
   title?: string;
   description: string;
@@ -58,11 +64,8 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
 }) => {
   const [refetchMe] = appApi.useLazyGetMeQuery();
 
-  const submit = useCallback(
-    async (
-      values: FormikValues,
-      { setErrors }: FormikBag<unknown, Profile>
-    ) => {
+  const onSubmit = useCallback<OnSubmit<Profile>>(
+    async (values, helpers) => {
       try {
         await (await getLinkedApiClient()).patch("/api/settings/", values);
       } catch (error) {
@@ -81,7 +84,9 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
           }
 
           case StatusCodes.BAD_REQUEST: {
-            setErrors(mapValues(error.response.data, (xs) => castArray(xs)[0]));
+            helpers.setErrors(
+              mapValues(error.response.data, (xs) => castArray(xs)[0])
+            );
             return;
           }
 
@@ -96,6 +101,28 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
       await refetchMe();
     },
     [refetchMe]
+  );
+
+  const renderBody: RenderBody = () => (
+    <ConnectedFieldTemplate
+      name="scope"
+      label="Account Alias"
+      fitLabelWidth
+      placeholder="@peter-parker"
+      description="Your @alias for publishing bricks"
+    />
+  );
+
+  const renderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
+    <div className={styles.submitDiv}>
+      <Button
+        type="submit"
+        disabled={isSubmitting || !isValid}
+        className={styles.submit}
+      >
+        Set My Account Alias
+      </Button>
+    </div>
   );
 
   return (
@@ -119,28 +146,16 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
         </p>
       </Alert>
 
-      <Formik
-        onSubmit={submit}
-        enableReinitialize
-        initialValues={{ scope: "" }}
-        validationSchema={VALIDATION_SCHEMA}
-      >
-        {({ handleSubmit, isSubmitting, isValid }) => (
-          <Container>
-            <Form noValidate onSubmit={handleSubmit} className="mt-2">
-              <ConnectedFieldTemplate
-                name="scope"
-                label="Account Alias"
-                placeholder="@peter-parker"
-                description="Your @alias for publishing bricks, e.g., @peter-parker"
-              />
-              <Button type="submit" disabled={isSubmitting || !isValid}>
-                Set My Account Alias
-              </Button>
-            </Form>
-          </Container>
-        )}
-      </Formik>
+      <Container>
+        <Form
+          validationSchema={VALIDATION_SCHEMA}
+          initialValues={INITIAL_VALUES}
+          enableReinitialize
+          onSubmit={onSubmit}
+          renderBody={renderBody}
+          renderSubmit={renderSubmit}
+        />
+      </Container>
     </div>
   );
 };
