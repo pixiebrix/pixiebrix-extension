@@ -28,7 +28,7 @@ import {
   PIXIEBRIX_READY_ATTRIBUTE,
 } from "@/common";
 import { guessUsefulness } from "@/utils/detectRandomString";
-import { getAttributeSelector, NO_SELECTOR } from "@/utils/selectorGenerator";
+import { getAttributeSelector } from "@/utils/selectorGenerator";
 
 const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
@@ -67,13 +67,11 @@ export const UNIQUE_ATTRIBUTES_SELECTOR = UNIQUE_ATTRIBUTES.map(
 ).join(",");
 
 function getUniqueAttributeSelectors(element: HTMLElement): string[] {
-  return UNIQUE_ATTRIBUTES.map((attribute) => {
-    if (element.hasAttribute(attribute)) {
-      return getAttributeSelector(attribute, element.getAttribute(attribute));
-    }
-
-    return NO_SELECTOR;
-  });
+  return compact(
+    UNIQUE_ATTRIBUTES.map((attribute) =>
+      getAttributeSelector(attribute, element.getAttribute(attribute))
+    )
+  );
 }
 
 /**

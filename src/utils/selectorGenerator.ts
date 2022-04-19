@@ -16,17 +16,22 @@
  */
 
 import { UNIQUE_ATTRIBUTES } from "@/contentScript/nativeEditor/infer";
+import { compact } from "lodash";
 import { isRandomString } from "./detectRandomString";
-
-// Symbol to use when a selector was not found, easily filterable
-export const NO_SELECTOR = "";
 
 /**
  * @param name   Like "id", "data-test"
  * @param value  Like "main-nav", "user-sidebar"
  * @return  Like "#main-nav", "[data-test='user-sidebar']"
  */
-export function getAttributeSelector(name: string, value: string): string {
+export function getAttributeSelector(
+  name: string,
+  value: string | null
+): string | null {
+  if (!value) {
+    return;
+  }
+
   // Must be specified here or else the next condition creates `[id="something"]
   if (name === "id") {
     return "#" + value;
@@ -39,16 +44,12 @@ export function getAttributeSelector(name: string, value: string): string {
   ) {
     return `[${name}="${value}"]`;
   }
-
-  return NO_SELECTOR;
 }
 
-function getClassSelector(className: string): string {
+function getClassSelector(className: string): string | null {
   if (!isRandomString(className)) {
     return "." + className;
   }
-
-  return NO_SELECTOR;
 }
 
 /**
@@ -64,11 +65,11 @@ function getElementSelectors(target: Element): string[] {
     getClassSelector(className)
   );
 
-  return [
+  return compact([
     ...attributeSelectors,
     ...classSelectors,
     target.tagName.toLowerCase(),
-  ].filter(Boolean);
+  ]);
 }
 
 /**
