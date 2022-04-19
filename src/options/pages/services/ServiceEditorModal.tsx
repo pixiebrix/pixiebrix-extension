@@ -19,10 +19,9 @@ import styles from "./ServiceEditorModal.module.scss";
 
 import optionsRegistry from "@/components/fields/optionsRegistry";
 import React, { useCallback, useMemo } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 import AsyncButton from "@/components/AsyncButton";
 import { IService, RawServiceConfiguration, UUID } from "@/core";
-import { Formik, FormikHelpers } from "formik";
 import { dereference } from "@/validators/generic";
 import { cloneDeep, truncate } from "lodash";
 import { useAsyncState } from "@/hooks/common";
@@ -37,6 +36,11 @@ import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/options/constants";
+import Form, {
+  OnSubmit,
+  RenderBody,
+  RenderSubmit,
+} from "@/components/form/Form";
 
 export type OwnProps = {
   configuration: RawServiceConfiguration;
@@ -60,12 +64,9 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
 }) => {
   useTitle(`Configure ${truncate(service.name, { length: 15 })}`);
 
-  const handleSave = useCallback(
-    async (
-      values: RawServiceConfiguration,
-      actions: FormikHelpers<RawServiceConfiguration>
-    ) => {
-      actions.setSubmitting(true);
+  const onSubmit = useCallback<OnSubmit<RawServiceConfiguration>>(
+    async (values, helpers) => {
+      helpers.setSubmitting(true);
       await onSave(values);
     },
     [onSave]
@@ -121,6 +122,59 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
     return null;
   }
 
+  const renderBody: RenderBody = () => (
+    <Modal.Body>
+      <FieldRuntimeContext.Provider value={FORM_RUNTIME_CONTEXT}>
+        <ConnectedFieldTemplate
+          name="label"
+          label="Label"
+          description="A label to help identify this integration"
+          blankValue=""
+        />
+        <FieldTemplate
+          label="Integration"
+          name="service"
+          type="text"
+          plaintext
+          readOnly
+          value={service.id}
+        />
+        <Editor name="config" />
+      </FieldRuntimeContext.Provider>
+    </Modal.Body>
+  );
+
+  const renderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
+    <Modal.Footer>
+      <div className="d-flex w-100">
+        <div className="flex-grow-1">
+          {onDelete && (
+            <AsyncButton
+              variant="outline-danger"
+              onClick={() => {
+                onDelete(originalConfiguration.id);
+              }}
+            >
+              Delete
+            </AsyncButton>
+          )}
+        </div>
+        <div>
+          <Button variant="default" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={isSubmitting || !isValid}
+          >
+            Save
+          </Button>
+        </div>
+      </div>
+    </Modal.Footer>
+  );
+
   return (
     <Modal
       show
@@ -133,63 +187,13 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
         <Modal.Title>Configure Private Integration: {service.name}</Modal.Title>
       </Modal.Header>
 
-      <Formik
-        onSubmit={handleSave}
-        initialValues={originalConfiguration}
+      <Form
         validationSchema={validationSchema}
-      >
-        {({ handleSubmit, isValid, isSubmitting }) => (
-          <Form noValidate onSubmit={handleSubmit}>
-            <Modal.Body>
-              <FieldRuntimeContext.Provider value={FORM_RUNTIME_CONTEXT}>
-                <ConnectedFieldTemplate
-                  name="label"
-                  label="Label"
-                  description="A label to help identify this integration"
-                  blankValue=""
-                />
-                <FieldTemplate
-                  label="Integration"
-                  name="service"
-                  type="text"
-                  plaintext
-                  readOnly
-                  value={service.id}
-                />
-                <Editor name="config" />
-              </FieldRuntimeContext.Provider>
-            </Modal.Body>
-            <Modal.Footer>
-              <div className="d-flex w-100">
-                <div className="flex-grow-1">
-                  {onDelete && (
-                    <AsyncButton
-                      variant="outline-danger"
-                      onClick={() => {
-                        onDelete(originalConfiguration.id);
-                      }}
-                    >
-                      Delete
-                    </AsyncButton>
-                  )}
-                </div>
-                <div>
-                  <Button variant="default" onClick={onClose}>
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    disabled={isSubmitting || !isValid}
-                  >
-                    Save
-                  </Button>
-                </div>
-              </div>
-            </Modal.Footer>
-          </Form>
-        )}
-      </Formik>
+        initialValues={originalConfiguration}
+        onSubmit={onSubmit}
+        renderBody={renderBody}
+        renderSubmit={renderSubmit}
+      />
     </Modal>
   );
 };
