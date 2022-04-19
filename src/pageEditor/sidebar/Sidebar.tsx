@@ -20,7 +20,7 @@ import styles from "./Sidebar.module.scss";
 import React, { FormEvent, useContext, useMemo, useState } from "react";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { PageEditorTabContext } from "@/pageEditor/context";
-import { sortBy } from "lodash";
+import { lowerCase, sortBy } from "lodash";
 import { sleep } from "@/utils";
 import {
   Accordion,
@@ -286,10 +286,10 @@ const SidebarExpanded: React.VoidFunctionComponent<{
         const recipe = recipes.find(
           (recipe) => recipe.metadata.id === recipeId
         );
-        return recipe?.metadata?.name ?? "";
+        return lowerCase(recipe?.metadata?.name ?? "");
       }
 
-      return item.label;
+      return lowerCase(item.label);
     }
   ).map((item) => {
     if (Array.isArray(item)) {
