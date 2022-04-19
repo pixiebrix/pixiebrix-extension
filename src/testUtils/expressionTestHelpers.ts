@@ -15,31 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { Col, Container, Row } from "react-bootstrap";
-import cx from "classnames";
+import { TemplateEngine, Expression } from "@/core";
 
-const Centered: React.FunctionComponent<{
-  isScrollable?: boolean;
-  vertically?: boolean;
-}> = ({ isScrollable = false, vertically = false, children }) => (
-  <Container
-    fluid
-    className={cx({
-      "h-100 pb-2 overflow-auto": isScrollable,
-      "h-100": vertically,
-    })}
-  >
-    <Row
-      className={cx({
-        "h-100 align-items-center": vertically,
-      })}
-    >
-      <Col className="mx-auto mt-4 text-center" sm={11} md={9} lg={6} xl={5}>
-        {children}
-      </Col>
-    </Row>
-  </Container>
-);
-
-export default Centered;
+export function makeTemplateExpression(
+  template: TemplateEngine,
+  value: string
+): Expression {
+  return {
+    __type__: template,
+    __value__: value,
+  };
+}

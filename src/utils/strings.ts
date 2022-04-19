@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,19 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: flex;
-  align-items: center;
-  justify-content: start;
-}
-
-.textStatus {
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  margin-left: 0.5rem;
-}
-
-.versionNumber {
-  font-size: 0.7rem;
-}
+export const FieldDescriptions = {
+  BLUEPRINT_ID: "A unique id for the blueprint",
+  BLUEPRINT_NAME: "A display name for the blueprint",
+  BLUEPRINT_DESCRIPTION: "A short description of the blueprint",
+  BLUEPRINT_VERSION:
+    "The current blueprint version; must follow the X.Y.Z semantic version format",
+};

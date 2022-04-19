@@ -52,7 +52,7 @@ exports[`renders modal 1`] = `
                 <small
                   class="text-muted form-text"
                 >
-                  A name for the blueprint
+                  A display name for the blueprint
                 </small>
               </div>
             </div>
@@ -63,7 +63,7 @@ exports[`renders modal 1`] = `
                 class="label form-label col-form-label col-xl-2 col-lg-3"
                 for="blueprintId"
               >
-                Registry Id
+                Blueprint Id
               </label>
               <div
                 class="col-xl-10 col-lg-9"
@@ -78,7 +78,8 @@ exports[`renders modal 1`] = `
                   class="text-muted form-text"
                 >
                   <span>
-                    A unique id for the blueprint.
+                    A unique id for the blueprint
+                    .
                      
                     <i>
                       Cannot be modified once shared.

@@ -28,7 +28,12 @@ import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 describe("getSharingType", () => {
   test("personal extension", () => {
     const installable: Installable = extensionFactory() as any;
-    const { type, label } = getSharingType(installable, [], "test_scope");
+    const { type, label } = getSharingType({
+      installable,
+      organizations: [],
+      scope: "test_scope",
+      installedExtensions: [],
+    });
 
     expect(type).toBe("Personal");
     expect(label).toBe("Personal");
@@ -42,7 +47,12 @@ describe("getSharingType", () => {
         timestamp: new Date().toISOString(),
       },
     }) as any;
-    const { type, label } = getSharingType(installable, [], "test_scope");
+    const { type, label } = getSharingType({
+      installable,
+      organizations: [],
+      scope: "test_scope",
+      installedExtensions: [],
+    });
 
     expect(type).toBe("Deployment");
     expect(label).toBe("Deployment");
@@ -74,11 +84,12 @@ describe("getSharingType", () => {
       },
     ];
 
-    const { type, label } = getSharingType(
+    const { type, label } = getSharingType({
       installable,
-      testOrganizations,
-      "test_scope"
-    );
+      organizations: testOrganizations,
+      scope: "test_scope",
+      installedExtensions: [],
+    });
 
     expect(type).toBe("Deployment");
     expect(label).toBe("test_org");
@@ -99,11 +110,12 @@ describe("getSharingType", () => {
       },
     ];
 
-    const { type, label } = getSharingType(
+    const { type, label } = getSharingType({
       installable,
-      testOrganizations,
-      "test_scope"
-    );
+      organizations: testOrganizations,
+      scope: "test_scope",
+      installedExtensions: [],
+    });
 
     expect(type).toBe("Team");
     expect(label).toBe("test_org");
@@ -114,7 +126,12 @@ describe("getSharingType", () => {
       sharing: sharingDefinitionFactory({ public: true }),
     }) as any;
 
-    const { type, label } = getSharingType(installable, [], "test_scope");
+    const { type, label } = getSharingType({
+      installable,
+      organizations: [],
+      scope: "test_scope",
+      installedExtensions: [],
+    });
 
     expect(type).toBe("Public");
     expect(label).toBe("Public");

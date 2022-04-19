@@ -48,6 +48,9 @@ import DatabasePutOptions, {
 import DocumentOptions, {
   DOCUMENT_ID,
 } from "@/pageEditor/fields/DocumentOptions";
+import RemoteMethodOptions, {
+  REMOTE_METHOD_ID,
+} from "@/pageEditor/fields/RemoteMethodOptions";
 
 /**
  * Custom BlockConfiguration pageEditor components.
@@ -67,6 +70,7 @@ export default function registerEditors() {
   optionsRegistry.set(FORM_RENDERER_ID, FormRendererOptions);
   optionsRegistry.set(DATABASE_GET_ID, DatabaseGetOptions);
   optionsRegistry.set(DATABASE_PUT_ID, DatabasePutOptions);
+  optionsRegistry.set(REMOTE_METHOD_ID, RemoteMethodOptions);
   optionsRegistry.set(COMPONENT_READER_ID, ComponentReaderOptions);
   optionsRegistry.set(DOCUMENT_ID, DocumentOptions);
 }

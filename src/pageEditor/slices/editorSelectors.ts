@@ -24,7 +24,7 @@ import { isEmpty, uniqBy } from "lodash";
 type RootState = { editor: EditorState };
 
 export const selectActiveElementId = ({ editor }: RootState) =>
-  editor.activeElement;
+  editor.activeElementId;
 
 export const selectElements = ({ editor }: RootState) => editor.elements;
 
@@ -73,6 +73,10 @@ const dirtyMetadataForRecipeIdSelector = createSelector(
     // eslint-disable-next-line security/detect-object-injection
     dirtyRecipeMetadataById[recipeId]
 );
+
+export const selectDirtyMetadataForRecipeId =
+  (recipeId: RegistryId) => (state: RootState) =>
+    dirtyMetadataForRecipeIdSelector(state, recipeId);
 
 export const selectDeletedElements = (state: RootState) =>
   state.editor.deletedElementsByRecipeId;
@@ -129,6 +133,9 @@ export const selectIsAddToRecipeModalVisible = (state: RootState) =>
 export const selectIsRemoveFromRecipeModalVisible = (state: RootState) =>
   state.editor.isRemoveFromRecipeModalVisible;
 
+export const selectIsCreateRecipeModalVisible = (state: RootState) =>
+  state.editor.isCreateRecipeModalVisible;
+
 export const selectInstalledRecipeMetadatas = createSelector(
   selectElements,
   selectExtensions,
@@ -146,3 +153,12 @@ export const selectInstalledRecipeMetadatas = createSelector(
     );
   }
 );
+
+export const selectSelectionSeq = (state: RootState) =>
+  state.editor.selectionSeq;
+
+export const selectNewRecipeIds = (state: RootState) =>
+  state.editor.newRecipeIds;
+
+export const selectKeepLocalCopyOnCreateRecipe = (state: RootState) =>
+  state.editor.keepLocalCopyOnCreateRecipe;

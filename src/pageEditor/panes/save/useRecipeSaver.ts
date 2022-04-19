@@ -32,7 +32,7 @@ import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { replaceRecipeContent } from "@/pageEditor/panes/save/saveHelpers";
+import { buildRecipe } from "@/pageEditor/panes/save/saveHelpers";
 import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
 import useCreate from "@/pageEditor/hooks/useCreate";
@@ -48,7 +48,7 @@ type RecipeSaver = {
 function useRecipeSaver(): RecipeSaver {
   const dispatch = useDispatch();
   const create = useCreate();
-  const { data: recipes } = useGetRecipesQuery();
+  const { data: recipes, isLoading } = useGetRecipesQuery();
   const { data: editablePackages } = useGetEditablePackagesQuery();
   const [updateRecipe] = useUpdateRecipeMutation();
   const editorFormElements = useSelector(selectElements);
@@ -73,11 +73,17 @@ function useRecipeSaver(): RecipeSaver {
 
     const dirtyRecipeElements = editorFormElements.filter(
       (element) =>
-        element.recipe?.id === recipe.metadata.id &&
-        isDirtyByElementId[element.uuid]
+        element.recipe?.id === recipeId && isDirtyByElementId[element.uuid]
     );
-    const newOptions = dirtyRecipeOptions[recipe.metadata.id];
-    const newMetadata = dirtyRecipeMetadata[recipe.metadata.id];
+    const cleanRecipeExtensions = installedExtensions.filter(
+      (extension) =>
+        extension._recipe?.id === recipeId &&
+        !dirtyRecipeElements.some((element) => element.uuid === extension.id)
+    );
+    // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
+    const newOptions = dirtyRecipeOptions[recipeId];
+    // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
+    const newMetadata = dirtyRecipeMetadata[recipeId];
 
     const confirm = await showConfirmation({
       title: "Save Blueprint?",
@@ -90,9 +96,9 @@ function useRecipeSaver(): RecipeSaver {
       return;
     }
 
-    const newRecipe = replaceRecipeContent({
+    const newRecipe = buildRecipe({
       sourceRecipe: recipe,
-      installedExtensions,
+      cleanRecipeExtensions,
       dirtyRecipeElements,
       options: newOptions,
       metadata: newMetadata,
@@ -103,15 +109,12 @@ function useRecipeSaver(): RecipeSaver {
       (x) => x.name === newRecipe.metadata.id
     )?.id;
 
-    const updateRecipeResponse = await updateRecipe({
+    const response = await updateRecipe({
       packageId,
       recipe: newRecipe,
     }).unwrap();
 
-    const newRecipeMetadata = selectRecipeMetadata(
-      newRecipe,
-      updateRecipeResponse
-    );
+    const newRecipeMetadata = selectRecipeMetadata(newRecipe, response);
 
     // Don't push to cloud since we're saving it with the recipe
     await Promise.all(
@@ -136,6 +139,10 @@ function useRecipeSaver(): RecipeSaver {
   }
 
   async function safeSave(recipeId: RegistryId) {
+    if (isLoading) {
+      return;
+    }
+
     setIsSaving(true);
     try {
       await save(recipeId);

@@ -64,7 +64,7 @@ export interface EditorState {
   /**
    * The uuid of the active element, if an extension is selected
    */
-  activeElement: UUID | null;
+  activeElementId: UUID | null;
 
   /**
    * The registry id of the active recipe, if a recipe is selected
@@ -132,9 +132,24 @@ export interface EditorState {
   isRemoveFromRecipeModalVisible: boolean;
 
   /**
+   * Are we showing the "create blueprint" modal?
+   */
+  isCreateRecipeModalVisible: boolean;
+
+  /**
+   * When creating a new blueprint from an existing extension, should we keep a separate copy of the extension?
+   */
+  keepLocalCopyOnCreateRecipe: boolean;
+
+  /**
    * Unsaved extensions that have been deleted from a recipe
    */
   deletedElementsByRecipeId: Record<RegistryId, FormState[]>;
+
+  /**
+   * Newly created recipes that have not been saved yet
+   */
+  newRecipeIds: RegistryId[];
 }
 
 export type RootState = AuthRootState &

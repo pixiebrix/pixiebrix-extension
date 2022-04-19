@@ -38,13 +38,13 @@ const EMPTY_TRACE: TraceRecord[] = Object.freeze([]) as TraceRecord[];
 export const selectExtensionTrace: EditorSelector<TraceRecord[]> = ({
   runtime,
   editor,
-}) => runtime.extensionTraces[editor.activeElement] ?? EMPTY_TRACE;
+}) => runtime.extensionTraces[editor.activeElementId] ?? EMPTY_TRACE;
 
 export function makeSelectBlockTrace(
   blockInstanceId: UUID
 ): EditorSelector<{ record: TraceRecord }> {
   return ({ runtime, editor }: RootState) => ({
-    record: runtime.extensionTraces[editor.activeElement]?.find(
+    record: runtime.extensionTraces[editor.activeElementId]?.find(
       (x) => x.blockInstanceId === blockInstanceId
     ),
   });
