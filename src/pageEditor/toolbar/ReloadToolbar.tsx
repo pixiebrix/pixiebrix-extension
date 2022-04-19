@@ -24,6 +24,9 @@ import { Button } from "react-bootstrap";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { reportEvent } from "@/telemetry/events";
+import { useSelector } from "react-redux";
+import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 
@@ -58,6 +61,8 @@ const ReloadToolbar: React.FunctionComponent<{
   disabled: boolean;
   refreshMillis?: number;
 }> = ({ element, refreshMillis = DEFAULT_RELOAD_MILLIS, disabled }) => {
+  const sessionId = useSelector(selectSessionId);
+
   const run = useCallback(async () => {
     const { asDynamicElement: factory } = ADAPTERS.get(element.type);
     if (disabled) {
@@ -68,6 +73,15 @@ const ReloadToolbar: React.FunctionComponent<{
 
     await updateDynamicElement(thisTab, factory(element));
   }, [element, disabled]);
+
+  const manualRun = async () => {
+    await run();
+
+    reportEvent("PageEditorManualRun", {
+      sessionId,
+      extensionId: element.uuid,
+    });
+  };
 
   const debouncedRun = useDebouncedCallback(run, refreshMillis, {
     // If we could distinguish between types of edits, it might be reasonable to set leading: true. But in
@@ -111,7 +125,7 @@ const ReloadToolbar: React.FunctionComponent<{
         disabled={disabled}
         size="sm"
         variant="info"
-        onClick={run}
+        onClick={manualRun}
       >
         {isPanel ? "Render Panel" : "Run Trigger"}
       </Button>
