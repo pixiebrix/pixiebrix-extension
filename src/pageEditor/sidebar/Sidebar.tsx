@@ -317,7 +317,7 @@ const SidebarExpanded: React.VoidFunctionComponent<{
 
   return (
     <div className={cx(styles.root, styles.expanded)}>
-      <div>
+      <div className={styles.header}>
         <div className={styles.actions}>
           <div className={styles.actionsLeft}>
             <a

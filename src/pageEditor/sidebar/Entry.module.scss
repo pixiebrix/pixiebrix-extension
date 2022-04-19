@@ -19,6 +19,8 @@
   display: flex;
   gap: 0.5em;
   padding: 0.8em 0.6em !important;
+  border-top-width: 0;
+  border-bottom-width: 1px;
 }
 .icon {
   width: 1.5rem;
