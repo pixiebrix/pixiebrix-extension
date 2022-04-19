@@ -39,9 +39,11 @@
   margin-left: 0.75rem;
 }
 .recipeBackground {
-  background: rgba(135, 206, 250, 0.4);
+  // lightskyblue, 20% alpha
+  background: rgba(135, 206, 250, 0.2);
 
   &:hover {
-    background: lightskyblue;
+    // lightskyblue, 70% alpha
+    background: rgba(135, 206, 250, 0.7);
   }
 }
