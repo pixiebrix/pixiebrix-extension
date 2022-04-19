@@ -134,7 +134,7 @@ export const editorSlice = createSlice({
       state.dirty[element.uuid] = true;
       state.beta = false;
       state.activeElementId = element.uuid;
-      state.expandedRecipeId = element.recipe?.id;
+      state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
       state.selectionSeq++;
       state.elementUIStates[element.uuid] = makeInitialElementUIState();
     },
@@ -163,7 +163,7 @@ export const editorSlice = createSlice({
       state.beta = null;
       state.activeElementId = element.uuid;
       state.activeRecipeId = null;
-      state.expandedRecipeId = element.recipe?.id;
+      state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
       state.selectionSeq++;
       ensureElementUIState(state, element.uuid);
     },
@@ -196,7 +196,7 @@ export const editorSlice = createSlice({
       state.error = null;
       state.beta = null;
       state.activeElementId = elementId;
-      state.expandedRecipeId = element.recipe?.id;
+      state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
       state.activeRecipeId = null;
       state.selectionSeq++;
       ensureElementUIState(state, elementId);

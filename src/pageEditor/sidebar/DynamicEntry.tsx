@@ -33,7 +33,11 @@ import cx from "classnames";
 import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { FormState } from "@/pageEditor/pageEditorTypes";
-import { selectElementIsDirty } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveElement,
+  selectActiveRecipeId,
+  selectElementIsDirty,
+} from "@/pageEditor/slices/editorSelectors";
 
 /**
  * A sidebar menu entry corresponding to an extension that is new or is currently being edited.
@@ -47,7 +51,13 @@ const DynamicEntry: React.FunctionComponent<{
 }> = ({ item, available, active, isNested = false }) => {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
-
+  const activeRecipeId = useSelector(selectActiveRecipeId);
+  const activeElement = useSelector(selectActiveElement);
+  // Get the selected recipe id, or the recipe id of the selected item
+  const recipeId = activeRecipeId ?? activeElement?.recipe?.id;
+  // Set the alternate background if this item isn't active, but either its recipe or another item in its recipe is active
+  const hasRecipeBackground =
+    !active && recipeId && item.recipe?.id === recipeId;
   const isDirty = useSelector(selectElementIsDirty(item.uuid));
 
   const isButton = item.type === "menuItem";
@@ -62,7 +72,9 @@ const DynamicEntry: React.FunctionComponent<{
 
   return (
     <ListGroup.Item
-      className={styles.root}
+      className={cx(styles.root, {
+        [styles.recipeBackground]: hasRecipeBackground,
+      })}
       action
       active={active}
       key={`dynamic-${item.uuid}`}

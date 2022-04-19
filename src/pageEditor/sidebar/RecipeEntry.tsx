@@ -30,6 +30,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import {
+  selectActiveElement,
   selectDirtyMetadataForRecipeId,
   selectExpandedRecipeId,
   selectRecipeIsDirty,
@@ -47,7 +48,9 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
   children,
 }) => {
   const expandedRecipeId = useSelector(selectExpandedRecipeId);
-  const isExpanded = expandedRecipeId === recipeId;
+  const activeElement = useSelector(selectActiveElement);
+  // Set the alternate background if an extension in this recipe is active
+  const hasRecipeBackground = activeElement?.recipe?.id === recipeId;
   const dispatch = useDispatch();
   const { data: recipes } = useGetRecipesQuery();
   const savedName = recipes?.find((recipe) => recipe.metadata.id === recipeId)
@@ -56,14 +59,16 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
   const name = dirtyName ?? savedName ?? "Loading...";
   const isDirty = useSelector(selectRecipeIsDirty(recipeId));
 
-  const caretIcon = isExpanded ? faCaretDown : faCaretRight;
+  const caretIcon = expandedRecipeId === recipeId ? faCaretDown : faCaretRight;
 
   return (
     <>
       <Accordion.Toggle
         eventKey={recipeId}
         as={ListGroup.Item}
-        className={cx(styles.root, "list-group-item-action")}
+        className={cx(styles.root, "list-group-item-action", {
+          [styles.recipeBackground]: hasRecipeBackground,
+        })}
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
         active={isActive}
         key={`recipe-${recipeId}`}
