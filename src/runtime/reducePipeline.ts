@@ -231,6 +231,10 @@ async function execute(
       return requestRun.inTarget(request);
     }
 
+    case "top": {
+      return requestRun.inTop(request);
+    }
+
     case "broadcast": {
       return requestRun.inAll(request);
     }

@@ -35,6 +35,7 @@ import {
   requestRunInTarget,
   requestRunInBroadcast,
   waitForTargetByUrl,
+  requestRunInTop,
 } from "@/background/executor";
 import * as registry from "@/registry/localRegistry";
 import { ensureContentScript } from "@/background/util";
@@ -105,6 +106,7 @@ declare global {
     REQUEST_RUN_ON_SERVER: typeof requestRunOnServer;
     REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
     REQUEST_RUN_IN_TARGET: typeof requestRunInTarget;
+    REQUEST_RUN_IN_TOP: typeof requestRunInTop;
     REQUEST_RUN_IN_ALL: typeof requestRunInBroadcast;
 
     HTTP_REQUEST: typeof serializableAxiosRequest;
@@ -174,6 +176,7 @@ export default function registerMessenger(): void {
     REQUEST_RUN_ON_SERVER: requestRunOnServer,
     REQUEST_RUN_IN_OPENER: requestRunInOpener,
     REQUEST_RUN_IN_TARGET: requestRunInTarget,
+    REQUEST_RUN_IN_TOP: requestRunInTop,
     REQUEST_RUN_IN_ALL: requestRunInBroadcast,
 
     HTTP_REQUEST: serializableAxiosRequest,
