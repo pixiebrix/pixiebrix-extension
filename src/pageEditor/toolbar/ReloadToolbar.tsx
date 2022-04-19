@@ -75,12 +75,13 @@ const ReloadToolbar: React.FunctionComponent<{
   }, [element, disabled]);
 
   const manualRun = async () => {
-    await run();
-
+    // Report before the run to report even if the run errors
     reportEvent("PageEditorManualRun", {
       sessionId,
       extensionId: element.uuid,
     });
+
+    await run();
   };
 
   const debouncedRun = useDebouncedCallback(run, refreshMillis, {
