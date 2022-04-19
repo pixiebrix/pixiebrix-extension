@@ -331,7 +331,7 @@ exports[`requires user scope 1`] = `
                   <small
                     class="text-muted form-text"
                   >
-                    Your @alias for publishing bricks
+                    Your @alias for publishing bricks, e.g. @peter-parker
                   </small>
                 </div>
               </div>
