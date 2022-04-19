@@ -18,7 +18,7 @@
 import { Framework } from "@/messaging/constants";
 import adapters from "@/frameworks/adapters";
 import { isEmpty, uniq } from "lodash";
-import { inferSelectors } from "@/contentScript/nativeEditor/infer";
+import { inferSelectorsIncludingStableAncestors } from "@/contentScript/nativeEditor/infer";
 import { ElementInfo } from "@/contentScript/nativeEditor/types";
 
 export async function elementInfo(
@@ -38,7 +38,7 @@ export async function elementInfo(
 
   const inferredSelectors = uniq([
     ...(selectors ?? []),
-    ...inferSelectors(element),
+    ...inferSelectorsIncludingStableAncestors(element),
   ]);
 
   console.debug(`elementInfo: inferred selectors for ${element.tagName}`, {
