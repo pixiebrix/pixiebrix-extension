@@ -74,7 +74,7 @@ export interface EditorState {
   /**
    * The registry id of the 'expanded' recipe in the sidebar, if one is expanded
    */
-  expandedRecipeId?: RegistryId;
+  expandedRecipeId: RegistryId | null;
 
   error: string | null;
 
