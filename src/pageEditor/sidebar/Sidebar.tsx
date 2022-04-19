@@ -383,7 +383,7 @@ const SidebarExpanded: React.VoidFunctionComponent<{
         {isLoadingRecipes ? (
           <Loader />
         ) : (
-          <Accordion defaultActiveKey={expandedRecipeId}>
+          <Accordion activeKey={expandedRecipeId}>
             <ListGroup>{listItems}</ListGroup>
           </Accordion>
         )}

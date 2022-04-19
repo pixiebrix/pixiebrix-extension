@@ -280,8 +280,13 @@ export const editorSlice = createSlice({
       state.beta = null;
       state.activeElementId = null;
       state.activeRecipeId = recipeId;
-      state.expandedRecipeId = recipeId;
       state.selectionSeq++;
+      if (state.expandedRecipeId === recipeId) {
+        // "un-toggle" the recipe, if it's already selected
+        state.expandedRecipeId = undefined;
+      } else {
+        state.expandedRecipeId = recipeId;
+      }
     },
     setBetaUIEnabled(state, action: PayloadAction<boolean>) {
       state.isBetaUI = action.payload;
