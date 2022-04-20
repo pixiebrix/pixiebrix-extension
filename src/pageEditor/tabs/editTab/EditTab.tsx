@@ -57,11 +57,13 @@ import { BlockType } from "@/runtime/runtimeTypes";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
+import useReportTraceError from "./useReportTraceError";
 
 const EditTab: React.FC<{
   eventKey: string;
 }> = ({ eventKey }) => {
   useExtensionTrace();
+  useReportTraceError();
 
   const { values, setValues: setFormValues } = useFormikContext<FormState>();
   const { extensionPoint, type: extensionPointType } = values;

@@ -31,7 +31,7 @@ import { thisTab } from "@/pageEditor/utils";
 import { checkAvailable } from "@/contentScript/messenger/api";
 import EditTab from "@/pageEditor/tabs/editTab/EditTab";
 import useSavingWizard from "./panes/save/useSavingWizard";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { produce } from "immer";
 import { useAsyncEffect } from "use-async-effect";
 import { upgradePipelineToV3 } from "@/pageEditor/extensionPoints/upgrade";
@@ -41,6 +41,8 @@ import LogNavItemBadge from "./tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
 import useRecipeSaver from "@/pageEditor/panes/save/useRecipeSaver";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { reportEvent } from "@/telemetry/events";
+import { selectSessionId } from "./slices/sessionSelectors";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
@@ -85,6 +87,8 @@ const ElementWizard: React.FunctionComponent<{
   const { save: saveRecipe, isSaving: isSavingRecipe } = useRecipeSaver();
   const isSaving = isSavingRecipe || isSavingWizard;
 
+  const sessionId = useSelector(selectSessionId);
+
   const onSave = async () => {
     try {
       if (element.recipe) {
@@ -92,6 +96,11 @@ const ElementWizard: React.FunctionComponent<{
       } else {
         await save();
       }
+
+      reportEvent("PageEditorSave", {
+        sessionId,
+        extensionId: element.uuid,
+      });
     } catch (error) {
       setStatus(error);
     }

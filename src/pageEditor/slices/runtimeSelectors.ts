@@ -19,19 +19,11 @@ import { UUID } from "@/core";
 import { RuntimeState } from "@/pageEditor/slices/runtimeSlice";
 import { TraceError, TraceRecord } from "@/telemetry/trace";
 import { EditorState } from "@/pageEditor/pageEditorTypes";
+import { createSelector } from "reselect";
 
 type RootState = { runtime: RuntimeState; editor: EditorState };
 
 type EditorSelector<T> = (state: RootState) => T;
-
-/**
- * The trace record corresponding to an error in the latest run, or null if there is no trace or the previous
- * run executed successfully
- */
-export const selectTraceError: EditorSelector<TraceError> = (state) => {
-  const records = selectExtensionTrace(state);
-  return records.find((x) => "error" in x && x.error) as TraceError;
-};
 
 const EMPTY_TRACE: TraceRecord[] = Object.freeze([]) as TraceRecord[];
 
@@ -39,6 +31,15 @@ export const selectExtensionTrace: EditorSelector<TraceRecord[]> = ({
   runtime,
   editor,
 }) => runtime.extensionTraces[editor.activeElementId] ?? EMPTY_TRACE;
+
+/**
+ * The trace record corresponding to an error in the latest run, or null if there is no trace or the previous
+ * run executed successfully
+ */
+export const selectTraceError = createSelector(
+  selectExtensionTrace,
+  (records) => records.find((x) => "error" in x && x.error) as TraceError
+);
 
 export function makeSelectBlockTrace(
   blockInstanceId: UUID
