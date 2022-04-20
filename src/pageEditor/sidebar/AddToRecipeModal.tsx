@@ -158,7 +158,11 @@ const AddToRecipeModal: React.VFC = () => {
     </Modal.Body>
   );
 
-  const renderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
+  const renderSubmit: RenderSubmit = ({
+    isSubmitting,
+    isValid,
+    values: { moveOrCopy },
+  }) => (
     <Modal.Footer>
       <Button variant="info" onClick={hideModal}>
         Cancel
@@ -168,7 +172,7 @@ const AddToRecipeModal: React.VFC = () => {
         type="submit"
         disabled={!isValid || isSubmitting}
       >
-        Add
+        {moveOrCopy === "move" ? "Move" : "Copy"}
       </Button>
     </Modal.Footer>
   );

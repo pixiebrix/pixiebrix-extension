@@ -120,7 +120,7 @@ const RemoveFromRecipeModal: React.VFC = () => {
         type="submit"
         disabled={!isValid || isSubmitting}
       >
-        {values.keepLocalCopy ? "Remove" : "Delete"}
+        {values.moveOrRemove === "move" ? "Move" : "Remove"}
       </Button>
     </Modal.Footer>
   );
