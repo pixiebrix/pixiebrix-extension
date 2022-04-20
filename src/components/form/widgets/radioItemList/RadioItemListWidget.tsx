@@ -24,6 +24,7 @@ import { useField } from "formik";
 const RadioItemListWidget: React.FC<RadioItemListWidgetProps> = ({
   name,
   items,
+  header,
 }) => {
   if (isEmpty(items)) {
     throw new Error("No items received for RadioItemList");
@@ -37,25 +38,28 @@ const RadioItemListWidget: React.FC<RadioItemListWidgetProps> = ({
   const [{ value }, , { setValue }] = useField<string>(name);
 
   return (
-    <form className={styles.root}>
-      {items.map((item) => (
-        <div key={item.value} className={styles.item}>
-          <label className={styles.label}>
-            <input
-              type="radio"
-              name="radio-item-list"
-              className={styles.input}
-              value={item.value}
-              checked={item.value === value}
-              onChange={() => {
-                setValue(item.value);
-              }}
-            />
-            {item.label}
-          </label>
-        </div>
-      ))}
-    </form>
+    <>
+      {header && <h6>{header}</h6>}
+      <form className={styles.root}>
+        {items.map((item) => (
+          <div key={item.value} className={styles.item}>
+            <label className={styles.label}>
+              <input
+                type="radio"
+                name="radio-item-list"
+                className={styles.input}
+                value={item.value}
+                checked={item.value === value}
+                onChange={() => {
+                  setValue(item.value);
+                }}
+              />
+              {item.label}
+            </label>
+          </div>
+        ))}
+      </form>
+    </>
   );
 };
 

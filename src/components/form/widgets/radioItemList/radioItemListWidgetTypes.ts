@@ -23,4 +23,5 @@ export type RadioItem = {
 export type RadioItemListWidgetProps = {
   name: string;
   items: RadioItem[];
+  header?: string;
 };
