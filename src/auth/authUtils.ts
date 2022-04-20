@@ -18,21 +18,31 @@
 import { Me } from "@/types/contract";
 import { UserDataUpdate, AuthState } from "@/auth/authTypes";
 
-export function selectUserDataUpdate({
-  email,
-  organization,
-  telemetry_organization: telemetryOrganization,
-  organization_memberships = [],
-  group_memberships = [],
-  flags = [],
-}: Me): UserDataUpdate {
-  const organizations = organization_memberships.map(
+export function selectOrganizations(
+  organizationMemberships: Me["organization_memberships"]
+): AuthState["organizations"] {
+  if (organizationMemberships == null) {
+    return [];
+  }
+
+  return organizationMemberships.map(
     ({ organization, organization_name, role }) => ({
       id: organization,
       name: organization_name,
       role,
     })
   );
+}
+
+export function selectUserDataUpdate({
+  email,
+  organization,
+  telemetry_organization: telemetryOrganization,
+  organization_memberships: organizationMemberships = [],
+  group_memberships = [],
+  flags = [],
+}: Me): UserDataUpdate {
+  const organizations = selectOrganizations(organizationMemberships);
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
 
   return {
@@ -52,16 +62,10 @@ export function selectExtensionAuthState({
   organization,
   is_onboarded: isOnboarded,
   flags = [],
-  organization_memberships = [],
+  organization_memberships: organizationMemberships = [],
   group_memberships = [],
 }: Me): AuthState {
-  const organizations = organization_memberships.map(
-    ({ organization, organization_name, role }) => ({
-      id: organization,
-      name: organization_name,
-      role,
-    })
-  );
+  const organizations = selectOrganizations(organizationMemberships);
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
 
   return {
