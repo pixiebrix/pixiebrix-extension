@@ -40,7 +40,7 @@ const RadioItemListWidget: React.FC<RadioItemListWidgetProps> = ({
   return (
     <>
       {header && <h6>{header}</h6>}
-      <form className={styles.root}>
+      <div className={styles.itemContainer}>
         {items.map((item) => (
           <div key={item.value} className={styles.item}>
             <label className={styles.label}>
@@ -58,7 +58,7 @@ const RadioItemListWidget: React.FC<RadioItemListWidgetProps> = ({
             </label>
           </div>
         ))}
-      </form>
+      </div>
     </>
   );
 };
