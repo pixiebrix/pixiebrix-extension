@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { useFormikContext } from "formik";
@@ -57,16 +57,16 @@ import { BlockType } from "@/runtime/runtimeTypes";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
-import { reportEvent } from "@/telemetry/events";
-import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import useReportTraceError from "./useReportTraceError";
 
 const EditTab: React.FC<{
   eventKey: string;
 }> = ({ eventKey }) => {
   useExtensionTrace();
+  useReportTraceError();
 
   const { values, setValues: setFormValues } = useFormikContext<FormState>();
-  const { extensionPoint, type: extensionPointType, uuid: elementId } = values;
+  const { extensionPoint, type: extensionPointType } = values;
 
   // For now, don't allow modifying extensionPoint packages via the Page Editor.
   const isLocked = useMemo(
@@ -133,20 +133,6 @@ const EditTab: React.FC<{
     false
   );
 
-  const sessionId = useSelector(selectSessionId);
-  const traces = useSelector(selectExtensionTrace);
-  const runId = traces[0]?.runId ?? null;
-
-  useEffect(() => {
-    if (blockPipelineErrors != null) {
-      reportEvent("PageEditorExtensionError", {
-        sessionId,
-        extensionId: elementId,
-      });
-    }
-    // Do not include the blockPipelineErrors in the dependency list, because it changes when the pipeline changes.
-  }, [runId, elementId, sessionId]);
-
   const {
     addBlock,
     removeBlock,
@@ -160,6 +146,8 @@ const EditTab: React.FC<{
     setFormValues,
     setActiveNodeId
   );
+
+  const traces = useSelector(selectExtensionTrace);
 
   const nodes = useMemo<EditorNodeProps[]>(() => {
     // A flag that shows if there are trace records related to any of the current nodes.

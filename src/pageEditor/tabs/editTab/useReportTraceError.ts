@@ -15,15 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { recordEvent } from "@/background/messenger/api";
-import { JsonObject } from "type-fest";
+import { selectTraceError } from "@/pageEditor/slices/runtimeSelectors";
+import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { reportEvent } from "@/telemetry/events";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-/**
- * Report an event to the PixieBrix telemetry service, if the user doesn't have DNT set.
- * @see selectEventData
- */
-export function reportEvent(event: string, data: JsonObject = {}): void {
-  console.debug(event, data);
-  console.warn(event, data);
-  recordEvent({ event, data });
+function useReportTraceError() {
+  const sessionId = useSelector(selectSessionId);
+  const errorTraceEntry = useSelector(selectTraceError);
+  const runId = errorTraceEntry?.runId ?? null;
+
+  useEffect(() => {
+    if (errorTraceEntry) {
+      reportEvent("PageEditorExtensionError", {
+        sessionId,
+        extensionId: errorTraceEntry.extensionId,
+      });
+    }
+  }, [runId]);
 }
+
+export default useReportTraceError;
