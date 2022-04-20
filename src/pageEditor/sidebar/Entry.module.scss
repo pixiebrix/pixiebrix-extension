@@ -19,14 +19,17 @@
   display: flex;
   gap: 0.5em;
   padding: 0.8em 0.6em !important;
+  border-top-width: 0;
+  border-bottom-width: 1px;
 }
 .icon {
-  width: 1.5em;
-  text-align: center;
+  width: 1.5rem;
+  margin-left: 0.25rem;
   flex-shrink: 0;
   border: none;
   background: none;
   color: inherit;
+  white-space: nowrap;
 }
 .name {
   flex-grow: 1;
@@ -34,4 +37,13 @@
 }
 .nested {
   margin-left: 0.75rem;
+}
+.recipeBackground {
+  // lightskyblue, 20% alpha
+  background: rgba(135, 206, 250, 0.2);
+
+  &:hover {
+    // lightskyblue, 70% alpha
+    background: rgba(135, 206, 250, 0.7);
+  }
 }

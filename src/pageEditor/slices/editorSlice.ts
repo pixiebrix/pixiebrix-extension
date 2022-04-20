@@ -41,6 +41,7 @@ export const initialState: EditorState = {
   selectionSeq: 0,
   activeElementId: null,
   activeRecipeId: null,
+  expandedRecipeId: null,
   error: null,
   beta: false,
   elements: [],
@@ -134,6 +135,7 @@ export const editorSlice = createSlice({
       state.dirty[element.uuid] = true;
       state.beta = false;
       state.activeElementId = element.uuid;
+      state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
       state.selectionSeq++;
       state.elementUIStates[element.uuid] = makeInitialElementUIState();
     },
@@ -150,20 +152,21 @@ export const editorSlice = createSlice({
       state.selectionSeq++;
     },
     selectInstalled(state, action: PayloadAction<FormState>) {
-      const { uuid } = action.payload;
-      const index = state.elements.findIndex((x) => x.uuid === uuid);
+      const element = action.payload;
+      const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index >= 0) {
         state.elements[index] = action.payload;
       } else {
-        state.elements.push(action.payload);
+        state.elements.push(element);
       }
 
       state.error = null;
       state.beta = null;
-      state.activeElementId = uuid;
+      state.activeElementId = element.uuid;
       state.activeRecipeId = null;
+      state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
       state.selectionSeq++;
-      ensureElementUIState(state, uuid);
+      ensureElementUIState(state, element.uuid);
     },
     resetInstalled(state, actions: PayloadAction<FormState>) {
       const element = actions.payload;
@@ -186,13 +189,15 @@ export const editorSlice = createSlice({
     },
     selectElement(state, action: PayloadAction<UUID>) {
       const elementId = action.payload;
-      if (!state.elements.some((x) => x.uuid === elementId)) {
+      const element = state.elements.find((x) => x.uuid === elementId);
+      if (!element) {
         throw new Error(`Unknown dynamic element: ${action.payload}`);
       }
 
       state.error = null;
       state.beta = null;
       state.activeElementId = elementId;
+      state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
       state.activeRecipeId = null;
       state.selectionSeq++;
       ensureElementUIState(state, elementId);
@@ -275,6 +280,17 @@ export const editorSlice = createSlice({
       state.error = null;
       state.beta = null;
       state.activeElementId = null;
+
+      if (
+        state.expandedRecipeId === recipeId &&
+        state.activeRecipeId === recipeId
+      ) {
+        // "un-toggle" the recipe, if it's already selected
+        state.expandedRecipeId = null;
+      } else {
+        state.expandedRecipeId = recipeId;
+      }
+
       state.activeRecipeId = recipeId;
       state.selectionSeq++;
     },
@@ -399,6 +415,8 @@ export const editorSlice = createSlice({
         recipe: recipeMetadata,
       });
       state.dirty[newId] = true;
+
+      state.expandedRecipeId = recipeMetadata.id;
 
       if (!keepLocalCopy) {
         ensureElementUIState(state, newId);

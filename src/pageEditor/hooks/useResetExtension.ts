@@ -60,9 +60,13 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
 
       try {
         const extension = installed.find((x) => x.id === element.uuid);
-        const state = await extensionToFormState(extension);
-        initRecipeOptionsIfNeeded(state, recipes);
-        dispatch(actions.resetInstalled(state));
+        if (extension == null) {
+          dispatch(actions.removeElement(element.uuid));
+        } else {
+          const formState = await extensionToFormState(extension);
+          initRecipeOptionsIfNeeded(formState, recipes);
+          dispatch(actions.resetInstalled(formState));
+        }
       } catch (error) {
         reportError(error);
         dispatch(actions.adapterError({ uuid: element.uuid, error }));
