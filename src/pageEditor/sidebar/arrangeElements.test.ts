@@ -122,6 +122,7 @@ describe("arrangeElements()", () => {
       availableDynamicIds: new Set([dynamicOrphanC.uuid]),
       showAll: false,
       activeElementId: dynamicOrphanC.uuid,
+      expandedRecipeId: null,
     });
 
     expect(elementsByRecipeId).toStrictEqual([]);
@@ -145,6 +146,7 @@ describe("arrangeElements()", () => {
       availableDynamicIds: new Set([dynamicBarE.uuid, dynamicFooB.uuid]),
       showAll: false,
       activeElementId: dynamicBarE.uuid,
+      expandedRecipeId: null,
     });
 
     expect(elementsByRecipeId).toStrictEqual([
@@ -163,6 +165,7 @@ describe("arrangeElements()", () => {
       availableDynamicIds: new Set([dynamicBarE.uuid]),
       showAll: true,
       activeElementId: dynamicBarE.uuid,
+      expandedRecipeId: null,
     });
 
     expect(elementsByRecipeId).toStrictEqual([
@@ -181,9 +184,28 @@ describe("arrangeElements()", () => {
       availableDynamicIds: new Set([]),
       showAll: false,
       activeElementId: dynamicOrphanC.uuid,
+      expandedRecipeId: null,
     });
 
     expect(elementsByRecipeId).toStrictEqual([]);
     expect(orphanedElements).toStrictEqual([dynamicOrphanC]);
+  });
+
+  test("show element if its recipe is expanded", () => {
+    const { elementsByRecipeId, orphanedElements } = arrangeElements({
+      elements: [dynamicFooB],
+      installed: [installedFooA],
+      recipes: [recipeFoo],
+      availableInstalledIds: new Set([installedFooA.id]),
+      availableDynamicIds: new Set([]),
+      showAll: false,
+      activeElementId: dynamicOrphanC.uuid,
+      expandedRecipeId: recipeFoo.metadata.id,
+    });
+
+    expect(elementsByRecipeId).toStrictEqual([
+      [recipeFoo.metadata.id, [installedFooA, dynamicFooB]],
+    ]);
+    expect(orphanedElements).toStrictEqual([]);
   });
 });

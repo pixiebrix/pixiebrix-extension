@@ -28,6 +28,7 @@ type ArrangeElementsArgs = {
   availableDynamicIds: Set<UUID>;
   showAll: boolean;
   activeElementId: UUID;
+  expandedRecipeId: RegistryId | null;
 };
 
 type ArrangeElementsResult = {
@@ -43,6 +44,7 @@ function arrangeElements({
   availableDynamicIds,
   showAll,
   activeElementId,
+  expandedRecipeId,
 }: ArrangeElementsArgs): ArrangeElementsResult {
   const elementIds = new Set(elements.map((formState) => formState.uuid));
   const elementsByRecipeId: Map<
@@ -53,12 +55,15 @@ function arrangeElements({
   const filteredExtensions: IExtension[] = installed.filter(
     (extension) =>
       !elementIds.has(extension.id) &&
-      (showAll || availableInstalledIds?.has(extension.id))
+      (showAll ||
+        availableInstalledIds?.has(extension.id) ||
+        extension._recipe?.id === expandedRecipeId)
   );
   const filteredDynamicElements: FormState[] = elements.filter(
     (formState) =>
       showAll ||
       availableDynamicIds?.has(formState.uuid) ||
+      formState.recipe?.id === expandedRecipeId ||
       activeElementId === formState.uuid
   );
 
