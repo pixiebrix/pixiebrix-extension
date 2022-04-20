@@ -17,9 +17,8 @@
 
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
-import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
 import { Alert, Button, Modal } from "react-bootstrap";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -33,8 +32,6 @@ import Form, {
 } from "@/components/form/Form";
 import { RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
 import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioItemListWidget";
-
-const { actions: optionsActions } = extensionsSlice;
 
 type FormState = {
   moveOrRemove: "move" | "remove";
@@ -52,9 +49,9 @@ const RemoveFromRecipeModal: React.VFC = () => {
   const activeElement = useSelector(selectActiveElement);
 
   const dispatch = useDispatch();
-  const hideModal = () => {
-    dispatch(editorActions.hideRemoveFromRecipeModal());
-  };
+  const hideModal = useCallback(() => {
+    dispatch(actions.hideRemoveFromRecipeModal());
+  }, [dispatch]);
 
   const onSubmit = useCallback<OnSubmit<FormState>>(
     async ({ moveOrRemove }, helpers) => {
@@ -62,10 +59,7 @@ const RemoveFromRecipeModal: React.VFC = () => {
 
       try {
         const elementId = activeElement.uuid;
-        dispatch(
-          editorActions.removeElementFromRecipe({ elementId, keepLocalCopy })
-        );
-        dispatch(optionsActions.removeExtension({ extensionId: elementId }));
+        dispatch(actions.removeElementFromRecipe({ elementId, keepLocalCopy }));
         hideModal();
       } catch (error: unknown) {
         notify.error({

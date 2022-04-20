@@ -60,6 +60,7 @@ import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import {
   selectActiveElementId,
   selectActiveRecipeId,
+  selectAllDeletedElementIds,
   selectElements,
   selectExpandedRecipeId,
   selectIsAddToRecipeModalVisible,
@@ -172,8 +173,17 @@ const SidebarExpanded: React.VoidFunctionComponent<{
   const activeElementId = useSelector(selectActiveElementId);
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const expandedRecipeId = useSelector(selectExpandedRecipeId);
-  const installed = useSelector(selectExtensions);
-  const elements = useSelector(selectElements);
+  const deletedElementIds = useSelector(selectAllDeletedElementIds);
+  const allInstalled = useSelector(selectExtensions);
+  const installed = useMemo(
+    () => allInstalled.filter(({ id }) => !deletedElementIds.has(id)),
+    [allInstalled, deletedElementIds]
+  );
+  const allElements = useSelector(selectElements);
+  const elements = useMemo(
+    () => allElements.filter(({ uuid }) => !deletedElementIds.has(uuid)),
+    [allElements, deletedElementIds]
+  );
 
   const recipes = useMemo(
     () =>
