@@ -21,7 +21,7 @@ import { UserDataUpdate, AuthState } from "@/auth/authTypes";
 export function selectOrganizations(
   organizationMemberships: Me["organization_memberships"]
 ): AuthState["organizations"] {
-  if (!Array.isArray(organizationMemberships)) {
+  if (organizationMemberships == null) {
     return [];
   }
 
