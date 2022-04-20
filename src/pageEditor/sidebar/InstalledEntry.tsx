@@ -44,6 +44,10 @@ import { resolveDefinitions } from "@/registry/internal";
 import cx from "classnames";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
+import {
+  selectActiveElement,
+  selectActiveRecipeId,
+} from "@/pageEditor/slices/editorSelectors";
 
 /**
  * A sidebar menu entry corresponding to an installed/saved extension point
@@ -62,6 +66,14 @@ const InstalledEntry: React.FunctionComponent<{
     async () => selectType(extension),
     [extension.extensionPointId]
   );
+
+  const activeRecipeId = useSelector(selectActiveRecipeId);
+  const activeElement = useSelector(selectActiveElement);
+  // Get the selected recipe id, or the recipe id of the selected item
+  const recipeId = activeRecipeId ?? activeElement?.recipe?.id;
+  // Set the alternate background if this item isn't active, but either its recipe or another item in its recipe is active
+  const hasRecipeBackground =
+    !active && recipeId && extension._recipe?.id === recipeId;
 
   const selectHandler = useCallback(
     async (extension: IExtension) => {
@@ -102,7 +114,9 @@ const InstalledEntry: React.FunctionComponent<{
 
   return (
     <ListGroup.Item
-      className={styles.root}
+      className={cx(styles.root, {
+        [styles.recipeBackground]: hasRecipeBackground,
+      })}
       action
       active={active}
       key={`installed-${extension.id}`}
