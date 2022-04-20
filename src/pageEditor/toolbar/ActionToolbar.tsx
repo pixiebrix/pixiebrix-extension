@@ -56,7 +56,7 @@ const ActionToolbar: React.FunctionComponent<{
       <Button disabled={disabled} size="sm" variant="primary" onClick={onSave}>
         <FontAwesomeIcon icon={faSave} /> Save
       </Button>
-      {element.installed && (
+      {(element.installed || element.recipe != null) && (
         <Button
           disabled={disabled}
           size="sm"
