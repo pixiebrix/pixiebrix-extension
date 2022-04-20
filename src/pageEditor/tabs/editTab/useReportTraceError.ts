@@ -33,7 +33,8 @@ function useReportTraceError() {
         extensionId: errorTraceEntry.extensionId,
       });
     }
-  }, [runId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- errorTraceEntry is not required, runId is sufficient
+  }, [runId, sessionId]);
 }
 
 export default useReportTraceError;

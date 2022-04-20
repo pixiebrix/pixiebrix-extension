@@ -31,7 +31,7 @@ import {
   RecipeMetadata,
   UUID,
 } from "@/core";
-import { TraceError } from "@/telemetry/trace";
+import { TraceError, TraceRecord } from "@/telemetry/trace";
 import { uuidv4, validateRegistryId, validateTimestamp } from "@/types/helpers";
 import { Permissions } from "webextension-polyfill";
 import { BaseExtensionState } from "@/pageEditor/extensionPoints/elementConfig";
@@ -138,17 +138,12 @@ export const extensionFactory: (
 
 export const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
 
-export const traceErrorFactory: (
-  traceErrorProps?: Partial<TraceError>
-) => TraceError = (traceErrorProps) => ({
+export const traceRecordFactory = define<TraceRecord>({
   timestamp: "2021-10-07T12:52:16.189Z",
   extensionId: uuidv4(),
   runId: uuidv4(),
   blockInstanceId: uuidv4(),
   blockId: TEST_BLOCK_ID,
-  error: {
-    message: "Trace error for tests",
-  },
   templateContext: {},
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- nominal typing
   renderedArgs: {} as RenderedArgs,
@@ -157,8 +152,15 @@ export const traceErrorFactory: (
     id: TEST_BLOCK_ID,
     config: {},
   },
-  ...traceErrorProps,
 });
+
+export const traceErrorFactory = (config?: FactoryConfig<TraceError>) =>
+  traceRecordFactory({
+    error: {
+      message: "Trace error for tests",
+    },
+    ...config,
+  }) as TraceError;
 
 export const blockFactory = define<IBlock>({
   id: (i: number) => validateRegistryId(`${TEST_BLOCK_ID}_${i}`),
