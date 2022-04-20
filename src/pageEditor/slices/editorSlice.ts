@@ -135,6 +135,7 @@ export const editorSlice = createSlice({
       state.dirty[element.uuid] = true;
       state.beta = false;
       state.activeElementId = element.uuid;
+      state.activeRecipeId = null;
       state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
       state.selectionSeq++;
       state.elementUIStates[element.uuid] = makeInitialElementUIState();
