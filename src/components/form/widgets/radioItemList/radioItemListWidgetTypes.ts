@@ -17,13 +17,10 @@
 
 export type RadioItem = {
   label: string;
-  id?: string;
+  value: string;
 };
 
-export type OnSelectRadioItem = (item: RadioItem) => void;
-
-export type RadioItemListProps = {
+export type RadioItemListWidgetProps = {
+  name: string;
   items: RadioItem[];
-  onSelectItem: OnSelectRadioItem;
-  defaultSelectedItemId?: string;
 };

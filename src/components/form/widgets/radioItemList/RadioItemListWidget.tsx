@@ -15,49 +15,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
-import { RadioItemListProps } from "@/components/radioItemList/radioItemListTypes";
-import { isEmpty, isEqual, uniqBy } from "lodash";
-import styles from "./RadioItemList.module.scss";
+import React from "react";
+import { RadioItemListWidgetProps } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
+import { isEmpty, uniqBy } from "lodash";
+import styles from "./RadioItemListWidget.module.scss";
+import { useField } from "formik";
 
-const RadioItemList: React.FC<RadioItemListProps> = ({
+const RadioItemListWidget: React.FC<RadioItemListWidgetProps> = ({
+  name,
   items,
-  onSelectItem,
-  defaultSelectedItemId,
 }) => {
   if (isEmpty(items)) {
     throw new Error("No items received for RadioItemList");
   }
 
-  const uqItems = uniqBy(items, (item) => item.id);
+  const uqItems = uniqBy(items, (item) => item.value);
   if (uqItems.length !== items.length) {
     throw new Error("RadioItemList items have duplicate ids");
   }
 
-  const defaultItem = items.find((item) => item.id === defaultSelectedItemId);
-  if (defaultItem == null) {
-    throw new Error("Invalid defaultSelectedItemId");
-  }
-
-  const [selectedItem, setSelectedItem] = useState(defaultItem);
+  const [{ value }, , { setValue }] = useField<string>(name);
 
   return (
     <form className={styles.root}>
       {items.map((item) => (
-        <div key={item.id} className={styles.item}>
+        <div key={item.value} className={styles.item}>
           <label className={styles.label}>
             <input
               type="radio"
               name="radio-item-list"
               className={styles.input}
-              value={item.id}
-              checked={isEqual(item, selectedItem)}
+              value={item.value}
+              checked={item.value === value}
               onChange={() => {
-                setSelectedItem(item);
-                onSelectItem(item);
+                setValue(item.value);
               }}
             />
-            {item.label ?? item.id}
+            {item.label}
           </label>
         </div>
       ))}
@@ -65,4 +59,4 @@ const RadioItemList: React.FC<RadioItemListProps> = ({
   );
 };
 
-export default RadioItemList;
+export default RadioItemListWidget;
