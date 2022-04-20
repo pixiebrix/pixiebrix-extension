@@ -16,11 +16,13 @@
  */
 
 import React from "react";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import {
+  editorSlice,
+  initialState as editorInitialState,
+} from "@/pageEditor/slices/editorSlice";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import { configureStore, Store } from "@reduxjs/toolkit";
-import { initialState as editorInitialState } from "@/pageEditor/slices/editorSlice";
 import { TraceRecord } from "@/telemetry/trace";
 import { uuidv4 } from "@/types/helpers";
 import { reportEvent } from "@/telemetry/events";
