@@ -19,7 +19,7 @@ import React, { useCallback, useState } from "react";
 import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
-import { Col, Container, Nav, Row, Tab } from "react-bootstrap";
+import { Card, Col, Container, Nav, Row, Tab } from "react-bootstrap";
 import Loader from "@/components/Loader";
 import { isEmpty } from "lodash";
 import styles from "./RecipeOptions.module.scss";
@@ -33,7 +33,6 @@ import { FIELD_TYPE_OPTIONS } from "@/components/formBuilder/formBuilderHelpers"
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveRecipeId,
-  selectDirtyMetadataForRecipeId,
   selectDirtyOptionsForRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
@@ -59,9 +58,7 @@ const RecipeOptions: React.VFC = () => {
   const { data: recipes, isLoading, error } = useGetRecipesQuery();
   const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
   const savedOptions = recipe?.options;
-  const savedMetadata = recipe?.metadata;
   const dirtyOptions = useSelector(selectDirtyOptionsForRecipeId(recipeId));
-  const dirtyMetadata = useSelector(selectDirtyMetadataForRecipeId(recipeId));
 
   const options = dirtyOptions ??
     savedOptions ?? {
@@ -70,9 +67,6 @@ const RecipeOptions: React.VFC = () => {
     };
 
   const initialValues = { optionsDefinition: options };
-
-  const recipeName =
-    dirtyMetadata?.name ?? savedMetadata?.name ?? "Unknown blueprint";
 
   const dispatch = useDispatch();
   const updateRedux = useCallback(
@@ -120,26 +114,26 @@ const RecipeOptions: React.VFC = () => {
               />
 
               <div className={styles.configPanel}>
-                <h5 className="mb-3">
-                  Editing Options for Blueprint &quot;{recipeName}
-                  &quot;
-                </h5>
+                <Card>
+                  <Card.Header>Advanced: Blueprint Options</Card.Header>
+                  <Card.Body>
+                    {noOptions && (
+                      <div className="mb-3">
+                        No options defined for this Blueprint
+                      </div>
+                    )}
 
-                {noOptions && (
-                  <div className="mb-3">
-                    No options defined for this Blueprint
-                  </div>
-                )}
-
-                <FieldRuntimeContext.Provider value={formRuntimeContext}>
-                  <FormEditor
-                    name="optionsDefinition"
-                    showFormTitle={false}
-                    activeField={activeField}
-                    setActiveField={setActiveField}
-                    fieldTypes={fieldTypes}
-                  />
-                </FieldRuntimeContext.Provider>
+                    <FieldRuntimeContext.Provider value={formRuntimeContext}>
+                      <FormEditor
+                        name="optionsDefinition"
+                        showFormTitle={false}
+                        activeField={activeField}
+                        setActiveField={setActiveField}
+                        fieldTypes={fieldTypes}
+                      />
+                    </FieldRuntimeContext.Provider>
+                  </Card.Body>
+                </Card>
               </div>
               <div className={styles.dataPanel}>
                 <Tab.Container activeKey="preview">
