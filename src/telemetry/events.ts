@@ -24,6 +24,5 @@ import { JsonObject } from "type-fest";
  */
 export function reportEvent(event: string, data: JsonObject = {}): void {
   console.debug(event, data);
-  console.warn(event, data);
   recordEvent({ event, data });
 }
