@@ -18,7 +18,6 @@
 import React, { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
-import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -35,25 +34,27 @@ import Form, {
   RenderSubmit,
 } from "@/components/form/Form";
 import { isAxiosError } from "@/errors";
-import { boolean, object, string } from "yup";
+import { object, string } from "yup";
+import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioItemListWidget";
+import { RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
 
 const { actions: optionsActions } = extensionsSlice;
 
 type FormState = {
   recipeId: RegistryId;
-  keepLocalCopy: boolean;
+  moveOrCopy: "move" | "copy";
 };
 
 const initialFormState: FormState = {
   recipeId: null,
-  keepLocalCopy: false,
+  moveOrCopy: "move",
 };
 
 const NEW_RECIPE_ID = "@new" as RegistryId;
 
 const formStateSchema = object({
   recipeId: string().required(),
-  keepLocalCopy: boolean().required(),
+  moveOrCopy: string().oneOf(["move", "copy"]).required(),
 });
 
 const AddToRecipeModal: React.VFC = () => {
@@ -76,7 +77,9 @@ const AddToRecipeModal: React.VFC = () => {
   }, [dispatch]);
 
   const onSubmit = useCallback<OnSubmit<FormState>>(
-    async ({ recipeId, keepLocalCopy }, helpers) => {
+    async ({ recipeId, moveOrCopy }, helpers) => {
+      const keepLocalCopy = moveOrCopy === "copy";
+
       if (recipeId === NEW_RECIPE_ID) {
         dispatch(editorActions.transitionToCreateRecipeModal(keepLocalCopy));
         return;
@@ -124,6 +127,17 @@ const AddToRecipeModal: React.VFC = () => {
     })),
   ];
 
+  const radioItems: RadioItem[] = [
+    {
+      label: "Move - move the extension into the blueprint",
+      value: "move",
+    },
+    {
+      label: "Copy - create a copy of the extension in the blueprint",
+      value: "copy",
+    },
+  ];
+
   const renderBody: RenderBody = () => (
     <Modal.Body>
       <ConnectedFieldTemplate
@@ -135,16 +149,20 @@ const AddToRecipeModal: React.VFC = () => {
         widerLabel
       />
       <ConnectedFieldTemplate
-        name="keepLocalCopy"
-        label="Keep a local copy of the extension?"
-        fitLabelWidth
-        as={SwitchButtonWidget}
-        widerLabel
+        name="moveOrCopy"
+        hideLabel
+        as={RadioItemListWidget}
+        items={radioItems}
+        header="Move or copy the extension?"
       />
     </Modal.Body>
   );
 
-  const renderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
+  const renderSubmit: RenderSubmit = ({
+    isSubmitting,
+    isValid,
+    values: { moveOrCopy },
+  }) => (
     <Modal.Footer>
       <Button variant="info" onClick={hideModal}>
         Cancel
@@ -154,7 +172,7 @@ const AddToRecipeModal: React.VFC = () => {
         type="submit"
         disabled={!isValid || isSubmitting}
       >
-        Add
+        {moveOrCopy === "move" ? "Move" : "Copy"}
       </Button>
     </Modal.Footer>
   );
@@ -168,6 +186,7 @@ const AddToRecipeModal: React.VFC = () => {
       </Modal.Header>
       <Form
         validationSchema={formStateSchema}
+        validateOnMount
         initialValues={initialFormState}
         onSubmit={onSubmit}
         renderBody={renderBody}

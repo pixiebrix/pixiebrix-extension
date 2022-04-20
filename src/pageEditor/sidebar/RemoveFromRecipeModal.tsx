@@ -23,28 +23,29 @@ import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
 import { Alert, Button, Modal } from "react-bootstrap";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import { boolean, object } from "yup";
+import { object, string } from "yup";
 import Form, {
   OnSubmit,
   RenderBody,
   RenderSubmit,
 } from "@/components/form/Form";
+import { RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
+import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioItemListWidget";
 
 const { actions: optionsActions } = extensionsSlice;
 
 type FormState = {
-  keepLocalCopy: boolean;
+  moveOrRemove: "move" | "remove";
 };
 
 const initialFormState: FormState = {
-  keepLocalCopy: true,
+  moveOrRemove: "move",
 };
 
 const formStateSchema = object({
-  keepLocalCopy: boolean().required(),
+  moveOrRemove: string().oneOf(["move", "remove"]).required(),
 });
 
 const RemoveFromRecipeModal: React.VFC = () => {
@@ -56,7 +57,9 @@ const RemoveFromRecipeModal: React.VFC = () => {
   };
 
   const onSubmit = useCallback<OnSubmit<FormState>>(
-    async ({ keepLocalCopy }, helpers) => {
+    async ({ moveOrRemove }, helpers) => {
+      const keepLocalCopy = moveOrRemove === "move";
+
       try {
         const elementId = activeElement.uuid;
         dispatch(
@@ -76,15 +79,28 @@ const RemoveFromRecipeModal: React.VFC = () => {
     [activeElement?.uuid, dispatch, hideModal]
   );
 
+  const radioItems: RadioItem[] = [
+    {
+      label:
+        "Move - move the extension outside the blueprint to a stand-alone extension",
+      value: "move",
+    },
+    {
+      label:
+        "Remove - remove the extension from the blueprint and the page editor",
+      value: "remove",
+    },
+  ];
+
   const renderBody: RenderBody = ({ values }) => (
     <Modal.Body>
       <ConnectedFieldTemplate
-        name="keepLocalCopy"
-        label="Keep a local copy of the extension?"
-        fitLabelWidth
-        as={SwitchButtonWidget}
+        name="moveOrRemove"
+        as={RadioItemListWidget}
+        items={radioItems}
+        header="Move or remove the extension?"
       />
-      {!values.keepLocalCopy && (
+      {values.moveOrRemove === "remove" && (
         <Alert variant="warning">
           <FontAwesomeIcon icon={faExclamationTriangle} />
           &nbsp;This will delete the extension. To restore it, use the reset
@@ -104,7 +120,7 @@ const RemoveFromRecipeModal: React.VFC = () => {
         type="submit"
         disabled={!isValid || isSubmitting}
       >
-        {values.keepLocalCopy ? "Remove" : "Delete"}
+        {values.moveOrRemove === "move" ? "Move" : "Remove"}
       </Button>
     </Modal.Footer>
   );
