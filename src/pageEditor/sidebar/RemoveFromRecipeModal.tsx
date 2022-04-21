@@ -81,13 +81,11 @@ const RemoveFromRecipeModal: React.VFC = () => {
 
   const radioItems: RadioItem[] = [
     {
-      label:
-        "Move - move the extension outside the blueprint to a stand-alone extension",
+      label: "Move the extension to a stand-alone extension",
       value: "move",
     },
     {
-      label:
-        "Remove - remove the extension from the blueprint and the page editor",
+      label: "Remove the extension from the blueprint",
       value: "remove",
     },
   ];

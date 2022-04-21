@@ -129,11 +129,11 @@ const AddToRecipeModal: React.VFC = () => {
 
   const radioItems: RadioItem[] = [
     {
-      label: "Move - move the extension into the blueprint",
+      label: "Move the extension into the blueprint",
       value: "move",
     },
     {
-      label: "Copy - create a copy of the extension in the blueprint",
+      label: "Create a copy of the extension in the blueprint",
       value: "copy",
     },
   ];
