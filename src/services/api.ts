@@ -372,6 +372,17 @@ export const appApi = createApi({
         { type: "PackageVersion", id: `PACKAGE-${id}-LIST` },
       ],
     }),
+    updateScope: builder.mutation<
+      unknown, // Not using the result yet, need to refine this type if the future if that changes
+      Required<Pick<components["schemas"]["Settings"], "scope">>
+    >({
+      query: ({ scope }) => ({
+        url: "api/settings/",
+        method: "patch",
+        data: { scope },
+      }),
+      invalidatesTags: ["Me"],
+    }),
   }),
 });
 
@@ -394,4 +405,5 @@ export const {
   useGetInvitationsQuery,
   useGetPackageQuery,
   useListPackageVersionsQuery,
+  useUpdateScopeMutation,
 } = appApi;
