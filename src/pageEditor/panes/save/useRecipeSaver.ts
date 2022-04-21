@@ -73,14 +73,21 @@ function useRecipeSaver(): RecipeSaver {
       );
     }
 
+    // eslint-disable-next-line security/detect-object-injection -- recipeId
+    const deletedElements = deletedElementsByRecipeId[recipeId] ?? [];
+    const deletedElementIds = new Set(deletedElements.map(({ uuid }) => uuid));
+
     const dirtyRecipeElements = editorFormElements.filter(
       (element) =>
-        element.recipe?.id === recipeId && isDirtyByElementId[element.uuid]
+        element.recipe?.id === recipeId &&
+        isDirtyByElementId[element.uuid] &&
+        !deletedElementIds.has(element.uuid)
     );
     const cleanRecipeExtensions = installedExtensions.filter(
       (extension) =>
         extension._recipe?.id === recipeId &&
-        !dirtyRecipeElements.some((element) => element.uuid === extension.id)
+        !dirtyRecipeElements.some((element) => element.uuid === extension.id) &&
+        !deletedElementIds.has(extension.id)
     );
     // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
     const newOptions = dirtyRecipeOptions[recipeId];
@@ -134,12 +141,8 @@ function useRecipeSaver(): RecipeSaver {
     dispatch(editorActions.updateRecipeMetadataForElements(newRecipeMetadata));
 
     // Remove any deleted elements from the extensions slice
-    const deletedElements =
-      deletedElementsByRecipeId[newRecipeMetadata.id] ?? [];
-    for (const deletedElement of deletedElements) {
-      dispatch(
-        optionsActions.removeExtension({ extensionId: deletedElement.uuid })
-      );
+    for (const extensionId of deletedElementIds) {
+      dispatch(optionsActions.removeExtension({ extensionId }));
     }
 
     // Clear the dirty states
