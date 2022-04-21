@@ -19,7 +19,8 @@ import React from "react";
 import { useSelector } from "react-redux";
 import ScopeSettings from "./ScopeSettings";
 import { SettingsState } from "@/store/settingsTypes";
-import { selectScope } from "./authSelectors";
+import { useGetMeQuery } from "@/services/api";
+import Loader from "@/components/Loader";
 
 type RootStateWithSettings = {
   settings: SettingsState;
@@ -42,13 +43,18 @@ export const RequireScope: React.FunctionComponent<RequireScopeProps> = ({
   scopeSettingsDescription,
   children,
 }) => {
-  const scope = useSelector(selectScope);
+  const { data: me, isLoading } = useGetMeQuery();
+  const needsScope = me != null && me.scope == null;
 
   const mode = useSelector<RootStateWithSettings, string>(
     ({ settings }) => settings.mode
   );
 
-  if (isRequired && mode !== "local" && scope == null) {
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (isRequired && mode !== "local" && needsScope) {
     return (
       <ScopeSettings
         title={scopeSettingsTitle}
