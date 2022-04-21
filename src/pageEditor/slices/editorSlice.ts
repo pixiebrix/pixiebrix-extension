@@ -486,7 +486,7 @@ export const editorSlice = createSlice({
         for (const elementId of deletedElements.map(
           (element) => element.uuid
         )) {
-          state.dirty[elementId] = true;
+          state.dirty[elementId] = false;
           ensureElementUIState(state, elementId);
         }
 

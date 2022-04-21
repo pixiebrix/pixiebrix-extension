@@ -19,7 +19,7 @@ import { RecipeMetadata, RegistryId, UUID } from "@/core";
 import { createSelector } from "reselect";
 import { EditorState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { isEmpty, uniqBy } from "lodash";
+import { flatMap, isEmpty, uniqBy } from "lodash";
 
 type RootState = { editor: EditorState };
 
@@ -80,6 +80,13 @@ export const selectDirtyMetadataForRecipeId =
 
 export const selectDeletedElements = (state: RootState) =>
   state.editor.deletedElementsByRecipeId;
+
+export const selectAllDeletedElementIds = (state: RootState) =>
+  new Set(
+    flatMap(state.editor.deletedElementsByRecipeId).map(
+      (formState) => formState.uuid
+    )
+  );
 
 const elementIsDirtySelector = createSelector(
   selectDirty,

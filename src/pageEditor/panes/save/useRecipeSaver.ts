@@ -18,6 +18,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  selectDeletedElements,
   selectDirty,
   selectDirtyRecipeMetadata,
   selectDirtyRecipeOptions,
@@ -56,6 +57,7 @@ function useRecipeSaver(): RecipeSaver {
   const installedExtensions = useSelector(selectExtensions);
   const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptions);
   const dirtyRecipeMetadata = useSelector(selectDirtyRecipeMetadata);
+  const deletedElementsByRecipeId = useSelector(selectDeletedElements);
   const { showConfirmation } = useModals();
   const [isSaving, setIsSaving] = useState(false);
 
@@ -130,6 +132,15 @@ function useRecipeSaver(): RecipeSaver {
 
     // Update the recipe metadata on elements in the page editor slice
     dispatch(editorActions.updateRecipeMetadataForElements(newRecipeMetadata));
+
+    // Remove any deleted elements from the extensions slice
+    const deletedElements =
+      deletedElementsByRecipeId[newRecipeMetadata.id] ?? [];
+    for (const deletedElement of deletedElements) {
+      dispatch(
+        optionsActions.removeExtension({ extensionId: deletedElement.uuid })
+      );
+    }
 
     // Clear the dirty states
     dispatch(
