@@ -40,6 +40,7 @@ jest.mock("./useSavingWizard");
 
 jest.mock("@/services/api", () => ({
   appApi: {
+    useUpdateScopeMutation: () => [jest.fn()],
     useLazyGetMeQuery: () => [jest.fn()],
   },
   useGetRecipesQuery: jest.fn(),

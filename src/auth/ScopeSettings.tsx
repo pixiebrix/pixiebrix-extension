@@ -24,7 +24,6 @@ import { castArray, mapValues } from "lodash";
 import { faEyeSlash, faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { StatusCodes } from "http-status-codes";
-import { getLinkedApiClient } from "@/services/apiClient";
 import { isAxiosError } from "@/errors";
 import reportError from "@/telemetry/reportError";
 import notify from "@/utils/notify";
@@ -62,12 +61,13 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
   title,
   description,
 }) => {
+  const [updateScope] = appApi.useUpdateScopeMutation();
   const [refetchMe] = appApi.useLazyGetMeQuery();
 
   const onSubmit = useCallback<OnSubmit<Profile>>(
     async (values, helpers) => {
       try {
-        await (await getLinkedApiClient()).patch("/api/settings/", values);
+        await updateScope(values).unwrap();
       } catch (error) {
         if (!isAxiosError(error)) {
           notify.error({ message: "Error updating account alias", error });
@@ -100,7 +100,7 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
 
       await refetchMe();
     },
-    [refetchMe]
+    [refetchMe, updateScope]
   );
 
   const renderBody: RenderBody = () => (
