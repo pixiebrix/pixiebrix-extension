@@ -32,6 +32,7 @@ jest.unmock("react-redux");
 jest.mock("@/utils/notify");
 jest.mock("@/services/api", () => ({
   appApi: {
+    useUpdateScopeMutation: () => [jest.fn()],
     useLazyGetMeQuery: () => [jest.fn()],
   },
   useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
