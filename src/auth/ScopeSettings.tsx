@@ -67,7 +67,7 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
   const onSubmit = useCallback<OnSubmit<Profile>>(
     async (values, helpers) => {
       try {
-        await updateScope(values);
+        await updateScope(values).unwrap();
       } catch (error) {
         if (!isAxiosError(error)) {
           notify.error({ message: "Error updating account alias", error });
