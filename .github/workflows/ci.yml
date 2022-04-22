@@ -18,15 +18,20 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run test -- --coverage
-      - name: Run codacy-coverage-reporter
-        uses: codacy/codacy-coverage-reporter-action@v1
-        # Skip step for dependabot: https://github.com/pixiebrix/pixiebrix-app/issues/231
-        # @see https://dev.to/github/conditional-workflows-and-failures-in-github-actions-2okk
-        if: ${{ github.actor != 'dependabot[bot]' }}
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
         with:
-          # https://github.com/codacy/codacy-coverage-reporter-action
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: coverage/lcov.info
+          fail_ci_if_error: true
+          verbose: true
+      # - name: Run codacy-coverage-reporter
+      #   uses: codacy/codacy-coverage-reporter-action@v1
+      #   # Skip step for dependabot: https://github.com/pixiebrix/pixiebrix-app/issues/231
+      #   # @see https://dev.to/github/conditional-workflows-and-failures-in-github-actions-2okk
+      #   if: ${{ github.actor != 'dependabot[bot]' }}
+      #   with:
+      #     # https://github.com/codacy/codacy-coverage-reporter-action
+      #     project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+      #     coverage-reports: coverage/lcov.info
 
   build-stage:
     runs-on: ubuntu-latest
