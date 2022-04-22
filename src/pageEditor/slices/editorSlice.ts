@@ -36,6 +36,7 @@ import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
 import { isEmpty } from "lodash";
+import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -331,6 +332,19 @@ export const editorSlice = createSlice({
       const nodeUIState =
         elementUIState.nodeUIStates[elementUIState.activeNodeId];
       nodeUIState.dataPanel.tabQueries[tabKey] = query;
+    },
+    setNodeDataPanelTabExpandedState(
+      state,
+      action: PayloadAction<{
+        tabKey: string;
+        expandedState: TreeExpandedState;
+      }>
+    ) {
+      const { tabKey, expandedState } = action.payload;
+      const elementUIState = state.elementUIStates[state.activeElementId];
+      const nodeUIState =
+        elementUIState.nodeUIStates[elementUIState.activeNodeId];
+      nodeUIState.dataPanel.tabTreeExpandedState[tabKey] = expandedState;
     },
     copyBlockConfig(state, action: PayloadAction<BlockConfig>) {
       const copy = { ...action.payload };

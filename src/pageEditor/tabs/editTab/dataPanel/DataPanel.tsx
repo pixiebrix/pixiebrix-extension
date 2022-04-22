@@ -23,7 +23,7 @@ import { useFormikContext } from "formik";
 import formBuilderSelectors from "@/pageEditor/slices/formBuilderSelectors";
 import { actions } from "@/pageEditor/slices/formBuilderSlice";
 import { Alert, Button, Nav, Tab } from "react-bootstrap";
-import JsonTree from "@/components/jsonTree/JsonTree";
+import JsonTree, { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -37,7 +37,7 @@ import {
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { JsonObject } from "type-fest";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
@@ -50,8 +50,10 @@ import { actions as documentBuilderActions } from "@/pageEditor/slices/documentB
 import copy from "copy-to-clipboard";
 import useFlags from "@/hooks/useFlags";
 import ErrorDisplay from "./ErrorDisplay";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
 import PageStateTab from "./PageStateTab";
+import { selectNodeDataPanelTabExpandedState } from "@/pageEditor/uiState/uiState";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -165,6 +167,18 @@ const DataPanel: React.FC<{
     ? document.querySelector(`.${dataPanelStyles.tabContent}`)
     : undefined;
 
+  const initialFormikExpandedState = useSelector((state: RootState) =>
+    selectNodeDataPanelTabExpandedState(state, "formik")
+  );
+  const dispatch = useDispatch();
+  const setFormikExpandedState = (expandedState: TreeExpandedState) =>
+    dispatch(
+      editorActions.setNodeDataPanelTabExpandedState({
+        tabKey: "formik",
+        expandedState,
+      })
+    );
+
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
       <div className={dataPanelStyles.tabContainer}>
@@ -210,7 +224,7 @@ const DataPanel: React.FC<{
               copyable
               searchable
               initialSearchQuery={contextQuery}
-              onSearchQueryChanged={setContextQuery}
+              onSearchQueryChange={setContextQuery}
               shouldExpandNode={(keyPath) =>
                 keyPath.length === 1 && startsWith(keyPath[0].toString(), "@")
               }
@@ -232,7 +246,9 @@ const DataPanel: React.FC<{
                   data={formikData ?? {}}
                   searchable
                   initialSearchQuery={formikQuery}
-                  onSearchQueryChanged={setFormikQuery}
+                  onSearchQueryChange={setFormikQuery}
+                  initialExpandedState={initialFormikExpandedState}
+                  onExpandedStateChange={setFormikExpandedState}
                 />
               </DataTab>
               <DataTab eventKey="blockConfig">
@@ -282,7 +298,7 @@ const DataPanel: React.FC<{
                   copyable
                   searchable
                   initialSearchQuery={renderedQuery}
-                  onSearchQueryChanged={setRenderedQuery}
+                  onSearchQueryChange={setRenderedQuery}
                   label="Rendered Inputs"
                 />
               </>
@@ -312,7 +328,7 @@ const DataPanel: React.FC<{
                   copyable
                   searchable
                   initialSearchQuery={outputQuery}
-                  onSearchQueryChanged={setOutputQuery}
+                  onSearchQueryChange={setOutputQuery}
                   label="Data"
                   shouldExpandNode={(keyPath) =>
                     keyPath.length === 1 &&

@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 
 export interface NodeUIState {
@@ -33,6 +34,8 @@ export interface NodeUIState {
      * Data tab search filter query, indexed by tabKey
      */
     tabQueries: Record<string, string>;
+
+    tabTreeExpandedState: Record<string, TreeExpandedState>;
   };
 }
 

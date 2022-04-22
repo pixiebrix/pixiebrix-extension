@@ -29,7 +29,7 @@ import { get, reverse, set } from "lodash";
 
 const SEARCH_DEBOUNCE_MS = 100;
 
-type TreeExpandedState = {
+export type TreeExpandedState = {
   [key: string | number]: boolean | TreeExpandedState;
 };
 
@@ -52,7 +52,7 @@ export type JsonTreeProps = Partial<JSONTree["props"]> & {
   /**
    * Change listener for the search input text
    */
-  onSearchQueryChanged?: (query: string) => void;
+  onSearchQueryChange?: (query: string) => void;
 
   /**
    * A label to show above the tree when no search query is active
@@ -68,7 +68,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   copyable = false,
   searchable = false,
   initialSearchQuery = "",
-  onSearchQueryChanged,
+  onSearchQueryChange,
   label,
   data,
   initialExpandedState = {},
@@ -95,14 +95,17 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   const onChangeQuery = useCallback(
     ({ target }: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(target.value);
-      onSearchQueryChanged?.(target.value);
+      onSearchQueryChange?.(target.value);
     },
-    [onSearchQueryChanged]
+    [onSearchQueryChange]
   );
 
   const [nodeState, setNodeState] = useState(initialExpandedState);
 
-  const setExpanded = (keyPath: (string | number)[], isExpanded: boolean) => {
+  const setExpanded = (
+    keyPath: Array<string | number>,
+    isExpanded: boolean
+  ) => {
     const newNodeState = set(
       { ...nodeState },
       reverse([...keyPath]),
@@ -112,11 +115,9 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
     if (onExpandedStateChange) {
       onExpandedStateChange(newNodeState);
     }
-
-    console.log("Node state", nodeState);
   };
 
-  const getExpanded = (keyPath: (string | number)[]) =>
+  const getExpanded = (keyPath: Array<string | number>) =>
     Boolean(get(nodeState, reverse([...keyPath])));
 
   const labelText = query ? `Search Results: ${query}` : label;
@@ -143,7 +144,12 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
             if (expandable && getExpanded(keyPath) !== expanded) {
               setExpanded(keyPath, expanded);
             }
-            return copyable ? copyLabelRenderer : <span>{keyPath[0]}:</span>;
+
+            return copyable ? (
+              copyLabelRenderer(keyPath, nodeType, expanded)
+            ) : (
+              <span>{keyPath[0]}:</span>
+            );
           }}
           hideRoot
           theme={{
@@ -156,10 +162,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
             }),
           }}
           invertTheme
-          shouldExpandNode={(keyPath, data, level) => {
-            console.log("JsonTree", { keyPath, data, level });
-            return getExpanded(keyPath);
-          }}
+          shouldExpandNode={(keyPath) => getExpanded(keyPath)}
           {...restProps}
         />
       )}

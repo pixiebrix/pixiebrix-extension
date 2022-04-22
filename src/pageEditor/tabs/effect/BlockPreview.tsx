@@ -286,7 +286,7 @@ const BlockPreview: React.FunctionComponent<{
           searchable
           copyable
           initialSearchQuery={previewQuery}
-          onSearchQueryChanged={setPreviewQuery}
+          onSearchQueryChange={setPreviewQuery}
           shouldExpandNode={(keyPath) =>
             keyPath.length === 1 && keyPath[0] === `@${outputKey}`
           }

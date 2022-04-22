@@ -100,7 +100,7 @@ const FoundationDataPanel: React.FC<{
                 data={formState ?? {}}
                 searchable
                 initialSearchQuery={formikQuery}
-                onSearchQueryChanged={setFormikQuery}
+                onSearchQueryChange={setFormikQuery}
               />
             </Tab.Pane>
             <Tab.Pane
@@ -128,7 +128,7 @@ const FoundationDataPanel: React.FC<{
               copyable
               searchable
               initialSearchQuery={outputQuery}
-              onSearchQueryChanged={setOutputQuery}
+              onSearchQueryChange={setOutputQuery}
               label="Data"
               shouldExpandNode={(keyPath) =>
                 keyPath.length === 1 && keyPath[0] === "@input"
