@@ -37,6 +37,11 @@ $colors: (
   black: #000000,
 );
 
+:root {
+  --theme-primary: red;
+  --theme-secondary: orange;
+}
+
 $theme-colors: (
   primary: #b66dff,
   secondary: #d8d8d8,

@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import styles from "./SelectorListItem.module.css";
+import styles from "./SelectorListItem.module.scss";
 import { Badge } from "react-bootstrap";
 
 export interface Props {

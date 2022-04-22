@@ -370,6 +370,23 @@ module.exports = (env, options) =>
             MiniCssExtractPlugin.loader,
             "css-loader",
             {
+              loader: "string-replace-loader",
+              options: {
+                multiple: [
+                  {
+                    search: "#b66dff",
+                    replace: "var(--theme-primary)",
+                    flags: "g",
+                  },
+                  {
+                    search: "#d8d8d8",
+                    replace: "var(--theme-secondary)",
+                    flags: "g",
+                  },
+                ],
+              },
+            },
+            {
               loader: "sass-loader",
               options: {
                 // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
