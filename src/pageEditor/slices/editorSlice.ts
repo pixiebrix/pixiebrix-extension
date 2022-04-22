@@ -37,6 +37,7 @@ import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
 import { isEmpty } from "lodash";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -325,26 +326,26 @@ export const editorSlice = createSlice({
     },
     setNodeDataPanelTabSearchQuery(
       state,
-      action: PayloadAction<{ tabKey: string; query: string }>
+      action: PayloadAction<{ tabKey: DataPanelTabKey; query: string }>
     ) {
       const { tabKey, query } = action.payload;
       const elementUIState = state.elementUIStates[state.activeElementId];
-      const nodeUIState =
-        elementUIState.nodeUIStates[elementUIState.activeNodeId];
-      nodeUIState.dataPanel.tabQueries[tabKey] = query;
+      elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
+        tabKey
+      ].query = query;
     },
     setNodeDataPanelTabExpandedState(
       state,
       action: PayloadAction<{
-        tabKey: string;
+        tabKey: DataPanelTabKey;
         expandedState: TreeExpandedState;
       }>
     ) {
       const { tabKey, expandedState } = action.payload;
       const elementUIState = state.elementUIStates[state.activeElementId];
-      const nodeUIState =
-        elementUIState.nodeUIStates[elementUIState.activeNodeId];
-      nodeUIState.dataPanel.tabTreeExpandedState[tabKey] = expandedState;
+      elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
+        tabKey
+      ].treeExpandedState = expandedState;
     },
     copyBlockConfig(state, action: PayloadAction<BlockConfig>) {
       const copy = { ...action.payload };

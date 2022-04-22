@@ -20,6 +20,7 @@ import { UUID } from "@/core";
 import { RootState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState, NodeUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 export const FOUNDATION_NODE_ID = "foundation" as UUID;
 
@@ -28,9 +29,13 @@ export function makeInitialNodeUIState(nodeId: NodeId): NodeUIState {
     nodeId,
     dataPanel: {
       activeTabKey: null,
-      tabQueries: {},
-      tabTreeExpandedState: {},
-      tabStates: {},
+      [DataPanelTabKey.Context]: {},
+      [DataPanelTabKey.PageState]: {},
+      [DataPanelTabKey.Formik]: {},
+      [DataPanelTabKey.RawBlock]: {},
+      [DataPanelTabKey.Rendered]: {},
+      [DataPanelTabKey.Output]: {},
+      [DataPanelTabKey.Preview]: {},
     },
   };
 }
@@ -67,18 +72,18 @@ export function selectNodeDataPanelTabSelected(rootState: RootState): string {
 
 export function selectNodeDataPanelTabSearchQuery(
   rootState: RootState,
-  tabKey: string
+  tabKey: DataPanelTabKey
 ): string {
   const nodeUIState = selectActiveNodeUIState(rootState);
   // eslint-disable-next-line security/detect-object-injection -- tabKeys will be hard-coded strings
-  return nodeUIState.dataPanel.tabQueries[tabKey];
+  return nodeUIState.dataPanel[tabKey].query ?? "";
 }
 
 export function selectNodeDataPanelTabExpandedState(
   rootState: RootState,
-  tabKey: string
+  tabKey: DataPanelTabKey
 ): TreeExpandedState {
   const nodeUIState = selectActiveNodeUIState(rootState);
   // eslint-disable-next-line security/detect-object-injection -- tabKeys will be hard-coded strings
-  return nodeUIState.dataPanel.tabTreeExpandedState[tabKey];
+  return nodeUIState.dataPanel[tabKey].treeExpandedState ?? {};
 }

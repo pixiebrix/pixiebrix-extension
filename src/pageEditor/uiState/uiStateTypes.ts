@@ -17,11 +17,11 @@
 
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
-import { DataPanelTabKey } from "../tabs/editTab/dataPanel/dataPanelTypes";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 export type TabUIState = {
-  query: string | null;
-  treeExpandedState: TreeExpandedState;
+  query?: string;
+  treeExpandedState?: TreeExpandedState;
 };
 
 export type NodeUIState = {
@@ -30,20 +30,14 @@ export type NodeUIState = {
    */
   nodeId: NodeId;
 
-  dataPanel: {
+  /**
+   * UI state of the Tabs in the data panel
+   */
+  dataPanel: Record<DataPanelTabKey, TabUIState> & {
     /**
      * Which tab is active in the data panel of the editor UI
      */
     activeTabKey: string | null;
-
-    tabStates: Record<DataPanelTabKey, TabUIState>;
-
-    /**
-     * Data tab search filter query, indexed by tabKey
-     */
-    tabQueries: Record<string, string>;
-
-    tabTreeExpandedState: Record<string, TreeExpandedState>;
   };
 };
 
