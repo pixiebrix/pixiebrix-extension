@@ -23,7 +23,6 @@ import {
   NodeUIState,
   TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
-import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 export const FOUNDATION_NODE_ID = "foundation" as UUID;
@@ -79,23 +78,6 @@ export function selectNodeDataPanelTabState(
   tabKey: DataPanelTabKey
 ): TabUIState {
   const nodeUIState = selectActiveNodeUIState(rootState);
+  // eslint-disable-next-line security/detect-object-injection -- tabKeys will be hard-coded strings
   return nodeUIState.dataPanel[tabKey];
-}
-
-export function selectNodeDataPanelTabSearchQuery(
-  rootState: RootState,
-  tabKey: DataPanelTabKey
-): string {
-  const nodeUIState = selectActiveNodeUIState(rootState);
-  // eslint-disable-next-line security/detect-object-injection -- tabKeys will be hard-coded strings
-  return nodeUIState.dataPanel[tabKey].query ?? "";
-}
-
-export function selectNodeDataPanelTabExpandedState(
-  rootState: RootState,
-  tabKey: DataPanelTabKey
-): TreeExpandedState {
-  const nodeUIState = selectActiveNodeUIState(rootState);
-  // eslint-disable-next-line security/detect-object-injection -- tabKeys will be hard-coded strings
-  return nodeUIState.dataPanel[tabKey].treeExpandedState ?? {};
 }
