@@ -338,14 +338,14 @@ export const editorSlice = createSlice({
       state,
       action: PayloadAction<{
         tabKey: DataPanelTabKey;
-        expandedState: TreeExpandedState;
+        treeExpandedState: TreeExpandedState;
       }>
     ) {
-      const { tabKey, expandedState } = action.payload;
+      const { tabKey, treeExpandedState } = action.payload;
       const elementUIState = state.elementUIStates[state.activeElementId];
       elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
         tabKey
-      ].treeExpandedState = expandedState;
+      ].treeExpandedState = treeExpandedState;
     },
     copyBlockConfig(state, action: PayloadAction<BlockConfig>) {
       const copy = { ...action.payload };

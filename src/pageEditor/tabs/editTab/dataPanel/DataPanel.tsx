@@ -18,12 +18,12 @@
 
 import React, { useMemo } from "react";
 import { UUID } from "@/core";
-import { isEmpty, isEqual, pickBy, startsWith } from "lodash";
+import { isEmpty, isEqual, pickBy } from "lodash";
 import { useFormikContext } from "formik";
 import formBuilderSelectors from "@/pageEditor/slices/formBuilderSelectors";
 import { actions } from "@/pageEditor/slices/formBuilderSlice";
 import { Alert, Button, Nav, Tab } from "react-bootstrap";
-import JsonTree, { TreeExpandedState } from "@/components/jsonTree/JsonTree";
+import JsonTree from "@/components/jsonTree/JsonTree";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -37,24 +37,22 @@ import {
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { JsonObject } from "type-fest";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DataTab from "./DataTab";
 import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
-import useDataPanelTabSearchQuery from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 import DocumentPreview from "@/components/documentBuilder/preview/DocumentPreview";
 import documentBuilderSelectors from "@/pageEditor/slices/documentBuilderSelectors";
 import { actions as documentBuilderActions } from "@/pageEditor/slices/documentBuilderSlice";
 import copy from "copy-to-clipboard";
 import useFlags from "@/hooks/useFlags";
 import ErrorDisplay from "./ErrorDisplay";
-import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 import PageStateTab from "./PageStateTab";
-import { selectNodeDataPanelTabExpandedState } from "@/pageEditor/uiState/uiState";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { DataPanelTabKey } from "./dataPanelTypes";
+import useDataPanelTabState from "./useDataPanelTabState";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -160,34 +158,34 @@ const DataPanel: React.FC<{
       : DataPanelTabKey.Output
   );
 
-  const [contextQuery, setContextQuery] = useDataPanelTabSearchQuery(
-    DataPanelTabKey.Context
-  );
-  const [formikQuery, setFormikQuery] = useDataPanelTabSearchQuery(
-    DataPanelTabKey.Formik
-  );
-  const [renderedQuery, setRenderedQuery] = useDataPanelTabSearchQuery(
-    DataPanelTabKey.Rendered
-  );
-  const [outputQuery, setOutputQuery] = useDataPanelTabSearchQuery(
-    DataPanelTabKey.Output
-  );
+  const {
+    query: contextQuery,
+    setQuery: setContextQuery,
+    treeExpandedState: contextExpandedState,
+    setTreeExpandedState: setContextTreeExpandedState,
+  } = useDataPanelTabState(DataPanelTabKey.Context);
+  const {
+    query: formikQuery,
+    setQuery: setFormikQuery,
+    treeExpandedState: formikExpandedState,
+    setTreeExpandedState: setFormikTreeExpandedState,
+  } = useDataPanelTabState(DataPanelTabKey.Formik);
+  const {
+    query: renderedQuery,
+    setQuery: setRenderedQuery,
+    treeExpandedState: renderedExpandedState,
+    setTreeExpandedState: setRenderedTreeExpandedState,
+  } = useDataPanelTabState(DataPanelTabKey.Rendered);
+  const {
+    query: outputQuery,
+    setQuery: setOutputQuery,
+    treeExpandedState: outputExpandedState,
+    setTreeExpandedState: setOutputTreeExpandedState,
+  } = useDataPanelTabState(DataPanelTabKey.Output);
 
   const popupBoundary = showDocumentPreview
     ? document.querySelector(`.${dataPanelStyles.tabContent}`)
     : undefined;
-
-  const initialFormikExpandedState = useSelector((state: RootState) =>
-    selectNodeDataPanelTabExpandedState(state, DataPanelTabKey.Formik)
-  );
-  const dispatch = useDispatch();
-  const setFormikExpandedState = (expandedState: TreeExpandedState) =>
-    dispatch(
-      editorActions.setNodeDataPanelTabExpandedState({
-        tabKey: DataPanelTabKey.Formik,
-        expandedState,
-      })
-    );
 
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
@@ -209,7 +207,7 @@ const DataPanel: React.FC<{
                 <Nav.Link eventKey={DataPanelTabKey.Formik}>Formik</Nav.Link>
               </Nav.Item>
               <Nav.Item className={dataPanelStyles.tabNav}>
-                <Nav.Link eventKey={DataPanelTabKey.RawBlock}>
+                <Nav.Link eventKey={DataPanelTabKey.BlockConfig}>
                   Raw Block
                 </Nav.Link>
               </Nav.Item>
@@ -239,9 +237,8 @@ const DataPanel: React.FC<{
               searchable
               initialSearchQuery={contextQuery}
               onSearchQueryChange={setContextQuery}
-              shouldExpandNode={(keyPath) =>
-                keyPath.length === 1 && startsWith(keyPath[0].toString(), "@")
-              }
+              initialExpandedState={contextExpandedState}
+              onExpandedStateChange={setContextTreeExpandedState}
             />
           </DataTab>
           {showPageState && (
@@ -261,11 +258,11 @@ const DataPanel: React.FC<{
                   searchable
                   initialSearchQuery={formikQuery}
                   onSearchQueryChange={setFormikQuery}
-                  initialExpandedState={initialFormikExpandedState}
-                  onExpandedStateChange={setFormikExpandedState}
+                  initialExpandedState={formikExpandedState}
+                  onExpandedStateChange={setFormikTreeExpandedState}
                 />
               </DataTab>
-              <DataTab eventKey={DataPanelTabKey.RawBlock}>
+              <DataTab eventKey={DataPanelTabKey.BlockConfig}>
                 <div className="text-info">
                   <FontAwesomeIcon icon={faInfoCircle} /> This tab is only
                   visible to developers
@@ -313,6 +310,8 @@ const DataPanel: React.FC<{
                   searchable
                   initialSearchQuery={renderedQuery}
                   onSearchQueryChange={setRenderedQuery}
+                  initialExpandedState={renderedExpandedState}
+                  onExpandedStateChange={setRenderedTreeExpandedState}
                   label="Rendered Inputs"
                 />
               </>
@@ -343,12 +342,9 @@ const DataPanel: React.FC<{
                   searchable
                   initialSearchQuery={outputQuery}
                   onSearchQueryChange={setOutputQuery}
+                  initialExpandedState={outputExpandedState}
+                  onExpandedStateChange={setOutputTreeExpandedState}
                   label="Data"
-                  shouldExpandNode={(keyPath) =>
-                    keyPath.length === 1 &&
-                    "outputKey" in record &&
-                    keyPath[0] === `@${record.outputKey}`
-                  }
                 />
               </>
             )}

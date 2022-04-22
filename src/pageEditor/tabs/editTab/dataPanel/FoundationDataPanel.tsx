@@ -27,10 +27,11 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import ExtensionPointPreview from "@/pageEditor/tabs/effect/ExtensionPointPreview";
 import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
-import useDataPanelTabSearchQuery from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 import useFlags from "@/hooks/useFlags";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import PageStateTab from "./PageStateTab";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import useDataPanelTabState from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabState";
 
 const FoundationDataPanel: React.FC<{
   firstBlockInstanceId?: UUID;
@@ -50,40 +51,59 @@ const FoundationDataPanel: React.FC<{
     firstBlockTraceRecord ? "output" : "preview"
   );
 
-  const [formikQuery, setFormikQuery] = useDataPanelTabSearchQuery("formik");
-  const [outputQuery, setOutputQuery] = useDataPanelTabSearchQuery("output");
+  const {
+    query: formikQuery,
+    setQuery: setFormikQuery,
+    treeExpandedState: formikExpandedState,
+    setTreeExpandedState: setFormikTreeExpandedState,
+  } = useDataPanelTabState(DataPanelTabKey.Formik);
+  const {
+    treeExpandedState: blockConfigExpandedState,
+    setTreeExpandedState: setBlockConfigTreeExpandedState,
+  } = useDataPanelTabState(DataPanelTabKey.BlockConfig);
+  const {
+    query: outputQuery,
+    setQuery: setOutputQuery,
+    treeExpandedState: outputExpandedState,
+    setTreeExpandedState: setOutputTreeExpandedState,
+  } = useDataPanelTabState(DataPanelTabKey.Output);
 
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
       <Nav variant="tabs">
         <Nav.Item className={dataPanelStyles.tabNav}>
-          <Nav.Link eventKey="context">Context</Nav.Link>
+          <Nav.Link eventKey={DataPanelTabKey.Context}>Context</Nav.Link>
         </Nav.Item>
         {showDeveloperTabs && (
           <>
             <Nav.Item className={dataPanelStyles.tabNav}>
-              <Nav.Link eventKey="formik">Formik</Nav.Link>
+              <Nav.Link eventKey={DataPanelTabKey.Formik}>Formik</Nav.Link>
             </Nav.Item>
             <Nav.Item className={dataPanelStyles.tabNav}>
-              <Nav.Link eventKey="blockConfig">Raw Foundation</Nav.Link>
+              <Nav.Link eventKey={DataPanelTabKey.BlockConfig}>
+                Raw Foundation
+              </Nav.Link>
             </Nav.Item>
           </>
         )}
         <Nav.Item className={dataPanelStyles.tabNav}>
-          <Nav.Link eventKey="rendered">Rendered</Nav.Link>
+          <Nav.Link eventKey={DataPanelTabKey.Rendered}>Rendered</Nav.Link>
         </Nav.Item>
         <Nav.Item className={dataPanelStyles.tabNav}>
-          <Nav.Link eventKey="output">Output</Nav.Link>
+          <Nav.Link eventKey={DataPanelTabKey.Output}>Output</Nav.Link>
         </Nav.Item>
         <Nav.Item className={dataPanelStyles.tabNav}>
-          <Nav.Link eventKey="preview">Preview</Nav.Link>
+          <Nav.Link eventKey={DataPanelTabKey.Preview}>Preview</Nav.Link>
         </Nav.Item>
         <Nav.Item className={dataPanelStyles.tabNav}>
-          <Nav.Link eventKey="pageState">Page State</Nav.Link>
+          <Nav.Link eventKey={DataPanelTabKey.PageState}>Page State</Nav.Link>
         </Nav.Item>
       </Nav>
       <Tab.Content>
-        <Tab.Pane eventKey="context" className={dataPanelStyles.tabPane}>
+        <Tab.Pane
+          eventKey={DataPanelTabKey.Context}
+          className={dataPanelStyles.tabPane}
+        >
           <div className="text-muted">
             A foundation is the first step in the execution flow, they do not
             receive inputs
@@ -91,7 +111,10 @@ const FoundationDataPanel: React.FC<{
         </Tab.Pane>
         {showDeveloperTabs && (
           <>
-            <Tab.Pane eventKey="formik" className={dataPanelStyles.tabPane}>
+            <Tab.Pane
+              eventKey={DataPanelTabKey.Formik}
+              className={dataPanelStyles.tabPane}
+            >
               <div className="text-info">
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
                 to developers
@@ -101,27 +124,39 @@ const FoundationDataPanel: React.FC<{
                 searchable
                 initialSearchQuery={formikQuery}
                 onSearchQueryChange={setFormikQuery}
+                initialExpandedState={formikExpandedState}
+                onExpandedStateChange={setFormikTreeExpandedState}
               />
             </Tab.Pane>
             <Tab.Pane
-              eventKey="blockConfig"
+              eventKey={DataPanelTabKey.BlockConfig}
               className={dataPanelStyles.tabPane}
             >
               <div className="text-info">
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
                 to developers
               </div>
-              <JsonTree data={extensionPoint} />
+              <JsonTree
+                data={extensionPoint}
+                initialExpandedState={blockConfigExpandedState}
+                onExpandedStateChange={setBlockConfigTreeExpandedState}
+              />
             </Tab.Pane>
           </>
         )}
-        <Tab.Pane eventKey="rendered" className={dataPanelStyles.tabPane}>
+        <Tab.Pane
+          eventKey={DataPanelTabKey.Rendered}
+          className={dataPanelStyles.tabPane}
+        >
           <div className="text-muted">
             A foundation is the first step in the execution flow, they do not
             receive inputs
           </div>
         </Tab.Pane>
-        <Tab.Pane eventKey="output" className={dataPanelStyles.tabPane}>
+        <Tab.Pane
+          eventKey={DataPanelTabKey.Output}
+          className={dataPanelStyles.tabPane}
+        >
           {firstBlockTraceRecord ? (
             <JsonTree
               data={firstBlockTraceRecord.templateContext}
@@ -129,10 +164,9 @@ const FoundationDataPanel: React.FC<{
               searchable
               initialSearchQuery={outputQuery}
               onSearchQueryChange={setOutputQuery}
+              initialExpandedState={outputExpandedState}
+              onExpandedStateChange={setOutputTreeExpandedState}
               label="Data"
-              shouldExpandNode={(keyPath) =>
-                keyPath.length === 1 && keyPath[0] === "@input"
-              }
             />
           ) : (
             <div className="text-muted">
@@ -141,10 +175,16 @@ const FoundationDataPanel: React.FC<{
             </div>
           )}
         </Tab.Pane>
-        <Tab.Pane eventKey="preview" className={dataPanelStyles.tabPane}>
+        <Tab.Pane
+          eventKey={DataPanelTabKey.Preview}
+          className={dataPanelStyles.tabPane}
+        >
           <ExtensionPointPreview element={formState} />
         </Tab.Pane>
-        <Tab.Pane eventKey="pageState" className={dataPanelStyles.tabPane}>
+        <Tab.Pane
+          eventKey={DataPanelTabKey.PageState}
+          className={dataPanelStyles.tabPane}
+        >
           <PageStateTab />
         </Tab.Pane>
       </Tab.Content>

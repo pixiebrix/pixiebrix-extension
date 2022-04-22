@@ -45,12 +45,13 @@ import { runBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { useField } from "formik";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import useDataPanelTabSearchQuery from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 import { makeServiceContext } from "@/services/serviceUtils";
 import getType from "@/runtime/getType";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
 import { isTriggerExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import useDataPanelTabState from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabState";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -145,13 +146,10 @@ const BlockPreview: React.FunctionComponent<{
   previewRefreshMillis?: 250;
   // eslint-disable-next-line complexity
 }> = ({ blockConfig, extensionPoint, traceRecord, previewRefreshMillis }) => {
-  const [{ isRunning, output, outputKey }, dispatch] = useReducer(
-    previewSlice.reducer,
-    {
-      ...initialState,
-      outputKey: blockConfig.outputKey,
-    }
-  );
+  const [{ isRunning, output }, dispatch] = useReducer(previewSlice.reducer, {
+    ...initialState,
+    outputKey: blockConfig.outputKey,
+  });
 
   const [{ value: apiVersion }] = useField<ApiVersion>("apiVersion");
   const [{ value: services }] = useField<ServiceDependency[]>("services");
@@ -210,7 +208,12 @@ const BlockPreview: React.FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, blockConfig, blockInfo, objectHash(context ?? {})]);
 
-  const [previewQuery, setPreviewQuery] = useDataPanelTabSearchQuery("preview");
+  const {
+    query: previewQuery,
+    setQuery: setPreviewQuery,
+    treeExpandedState: previewExpandedState,
+    setTreeExpandedState: setPreviewTreeExpandedState,
+  } = useDataPanelTabState(DataPanelTabKey.Preview);
 
   if (blockInfo?.type === "renderer") {
     return (
@@ -287,9 +290,8 @@ const BlockPreview: React.FunctionComponent<{
           copyable
           initialSearchQuery={previewQuery}
           onSearchQueryChange={setPreviewQuery}
-          shouldExpandNode={(keyPath) =>
-            keyPath.length === 1 && keyPath[0] === `@${outputKey}`
-          }
+          initialExpandedState={previewExpandedState}
+          onExpandedStateChange={setPreviewTreeExpandedState}
         />
       )}
 

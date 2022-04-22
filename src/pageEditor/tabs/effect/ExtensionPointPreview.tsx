@@ -28,9 +28,10 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AsyncButton from "@/components/AsyncButton";
-import useDataPanelTabSearchQuery from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import useDataPanelTabState from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabState";
 
 type PreviewState = {
   isRunning: boolean;
@@ -110,7 +111,12 @@ const ExtensionPointPreview: React.FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, element.extensionPoint]);
 
-  const [previewQuery, setPreviewQuery] = useDataPanelTabSearchQuery("preview");
+  const {
+    query: previewQuery,
+    setQuery: setPreviewQuery,
+    treeExpandedState: previewExpandedState,
+    setTreeExpandedState: setPreviewTreeExpandedState,
+  } = useDataPanelTabState(DataPanelTabKey.Preview);
 
   if (isRunning) {
     return (
@@ -171,9 +177,8 @@ const ExtensionPointPreview: React.FunctionComponent<{
         copyable
         initialSearchQuery={previewQuery}
         onSearchQueryChange={setPreviewQuery}
-        shouldExpandNode={(keyPath) =>
-          keyPath.length === 1 && keyPath[0] === "@input"
-        }
+        initialExpandedState={previewExpandedState}
+        onExpandedStateChange={setPreviewTreeExpandedState}
       />
     </div>
   );

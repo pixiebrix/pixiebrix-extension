@@ -18,7 +18,11 @@
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { UUID } from "@/core";
 import { RootState } from "@/pageEditor/pageEditorTypes";
-import { ElementUIState, NodeUIState } from "@/pageEditor/uiState/uiStateTypes";
+import {
+  ElementUIState,
+  NodeUIState,
+  TabUIState,
+} from "@/pageEditor/uiState/uiStateTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
@@ -32,7 +36,7 @@ export function makeInitialNodeUIState(nodeId: NodeId): NodeUIState {
       [DataPanelTabKey.Context]: {},
       [DataPanelTabKey.PageState]: {},
       [DataPanelTabKey.Formik]: {},
-      [DataPanelTabKey.RawBlock]: {},
+      [DataPanelTabKey.BlockConfig]: {},
       [DataPanelTabKey.Rendered]: {},
       [DataPanelTabKey.Output]: {},
       [DataPanelTabKey.Preview]: {},
@@ -68,6 +72,14 @@ export function selectActiveNodeId(rootState: RootState): NodeId {
 export function selectNodeDataPanelTabSelected(rootState: RootState): string {
   const nodeUIState = selectActiveNodeUIState(rootState);
   return nodeUIState.dataPanel.activeTabKey;
+}
+
+export function selectNodeDataPanelTabState(
+  rootState: RootState,
+  tabKey: DataPanelTabKey
+): TabUIState {
+  const nodeUIState = selectActiveNodeUIState(rootState);
+  return nodeUIState.dataPanel[tabKey];
 }
 
 export function selectNodeDataPanelTabSearchQuery(
