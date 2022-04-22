@@ -385,6 +385,16 @@ export function buildRecipe({
         extension.definitions ?? {}
       )) {
         const innerKeys = Object.keys(recipeInnerDefinitions);
+
+        // eslint-disable-next-line security/detect-object-injection
+        if (
+          innerKeys.includes(innerId) &&
+          isEqual(definition, recipeInnerDefinitions[innerId])
+        ) {
+          // This definition has already been added to the recipe
+          continue;
+        }
+
         const newInnerId =
           innerKeys.includes(innerId) || isInnerExtensionPoint(innerId)
             ? freshIdentifier(
