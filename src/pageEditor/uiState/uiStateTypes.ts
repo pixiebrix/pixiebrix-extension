@@ -17,8 +17,14 @@
 
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
+import { DataPanelTabKey } from "../tabs/editTab/dataPanel/dataPanelTypes";
 
-export interface NodeUIState {
+export type TabUIState = {
+  query: string | null;
+  treeExpandedState: TreeExpandedState;
+};
+
+export type NodeUIState = {
   /**
    * Identifier for the node in the editor, either the foundation or a block uuid
    */
@@ -30,6 +36,8 @@ export interface NodeUIState {
      */
     activeTabKey: string | null;
 
+    tabStates: Record<DataPanelTabKey, TabUIState>;
+
     /**
      * Data tab search filter query, indexed by tabKey
      */
@@ -37,9 +45,9 @@ export interface NodeUIState {
 
     tabTreeExpandedState: Record<string, TreeExpandedState>;
   };
-}
+};
 
-export interface ElementUIState {
+export type ElementUIState = {
   /**
    * The instanceId of the active node in the editor,
    *  or:
@@ -51,4 +59,4 @@ export interface ElementUIState {
    * UI state of foundation and blocks in the extension pipeline
    */
   nodeUIStates: Record<NodeId, NodeUIState>;
-}
+};

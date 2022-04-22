@@ -54,6 +54,7 @@ import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
 import PageStateTab from "./PageStateTab";
 import { selectNodeDataPanelTabExpandedState } from "@/pageEditor/uiState/uiState";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { DataPanelTabKey } from "./dataPanelTypes";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -154,27 +155,36 @@ const DataPanel: React.FC<{
   const showPageState = pageStateBlockIds.includes(block.id);
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
-    showFormPreview || showDocumentPreview ? "preview" : "output"
+    showFormPreview || showDocumentPreview
+      ? DataPanelTabKey.Preview
+      : DataPanelTabKey.Output
   );
 
-  const [contextQuery, setContextQuery] = useDataPanelTabSearchQuery("context");
-  const [formikQuery, setFormikQuery] = useDataPanelTabSearchQuery("formik");
-  const [renderedQuery, setRenderedQuery] =
-    useDataPanelTabSearchQuery("rendered");
-  const [outputQuery, setOutputQuery] = useDataPanelTabSearchQuery("output");
+  const [contextQuery, setContextQuery] = useDataPanelTabSearchQuery(
+    DataPanelTabKey.Context
+  );
+  const [formikQuery, setFormikQuery] = useDataPanelTabSearchQuery(
+    DataPanelTabKey.Formik
+  );
+  const [renderedQuery, setRenderedQuery] = useDataPanelTabSearchQuery(
+    DataPanelTabKey.Rendered
+  );
+  const [outputQuery, setOutputQuery] = useDataPanelTabSearchQuery(
+    DataPanelTabKey.Output
+  );
 
   const popupBoundary = showDocumentPreview
     ? document.querySelector(`.${dataPanelStyles.tabContent}`)
     : undefined;
 
   const initialFormikExpandedState = useSelector((state: RootState) =>
-    selectNodeDataPanelTabExpandedState(state, "formik")
+    selectNodeDataPanelTabExpandedState(state, DataPanelTabKey.Formik)
   );
   const dispatch = useDispatch();
   const setFormikExpandedState = (expandedState: TreeExpandedState) =>
     dispatch(
       editorActions.setNodeDataPanelTabExpandedState({
-        tabKey: "formik",
+        tabKey: DataPanelTabKey.Formik,
         expandedState,
       })
     );
@@ -184,35 +194,39 @@ const DataPanel: React.FC<{
       <div className={dataPanelStyles.tabContainer}>
         <Nav variant="tabs">
           <Nav.Item className={dataPanelStyles.tabNav}>
-            <Nav.Link eventKey="context">Context</Nav.Link>
+            <Nav.Link eventKey={DataPanelTabKey.Context}>Context</Nav.Link>
           </Nav.Item>
           {showPageState && (
             <Nav.Item className={dataPanelStyles.tabNav}>
-              <Nav.Link eventKey="pageState">Page State</Nav.Link>
+              <Nav.Link eventKey={DataPanelTabKey.PageState}>
+                Page State
+              </Nav.Link>
             </Nav.Item>
           )}
           {showDeveloperTabs && (
             <>
               <Nav.Item className={dataPanelStyles.tabNav}>
-                <Nav.Link eventKey="formik">Formik</Nav.Link>
+                <Nav.Link eventKey={DataPanelTabKey.Formik}>Formik</Nav.Link>
               </Nav.Item>
               <Nav.Item className={dataPanelStyles.tabNav}>
-                <Nav.Link eventKey="blockConfig">Raw Block</Nav.Link>
+                <Nav.Link eventKey={DataPanelTabKey.RawBlock}>
+                  Raw Block
+                </Nav.Link>
               </Nav.Item>
             </>
           )}
           <Nav.Item className={dataPanelStyles.tabNav}>
-            <Nav.Link eventKey="rendered">Rendered</Nav.Link>
+            <Nav.Link eventKey={DataPanelTabKey.Rendered}>Rendered</Nav.Link>
           </Nav.Item>
           <Nav.Item className={dataPanelStyles.tabNav}>
-            <Nav.Link eventKey="output">Output</Nav.Link>
+            <Nav.Link eventKey={DataPanelTabKey.Output}>Output</Nav.Link>
           </Nav.Item>
           <Nav.Item className={dataPanelStyles.tabNav}>
-            <Nav.Link eventKey="preview">Preview</Nav.Link>
+            <Nav.Link eventKey={DataPanelTabKey.Preview}>Preview</Nav.Link>
           </Nav.Item>
         </Nav>
         <Tab.Content className={dataPanelStyles.tabContent}>
-          <DataTab eventKey="context" isTraceEmpty={!record}>
+          <DataTab eventKey={DataPanelTabKey.Context} isTraceEmpty={!record}>
             {isInputStale && (
               <Alert variant="warning">
                 <FontAwesomeIcon icon={faExclamationTriangle} /> A previous
@@ -231,13 +245,13 @@ const DataPanel: React.FC<{
             />
           </DataTab>
           {showPageState && (
-            <DataTab eventKey="pageState">
+            <DataTab eventKey={DataPanelTabKey.PageState}>
               <PageStateTab />
             </DataTab>
           )}
           {showDeveloperTabs && (
             <>
-              <DataTab eventKey="formik">
+              <DataTab eventKey={DataPanelTabKey.Formik}>
                 <div className="text-info">
                   <FontAwesomeIcon icon={faInfoCircle} /> This tab is only
                   visible to developers
@@ -251,7 +265,7 @@ const DataPanel: React.FC<{
                   onExpandedStateChange={setFormikExpandedState}
                 />
               </DataTab>
-              <DataTab eventKey="blockConfig">
+              <DataTab eventKey={DataPanelTabKey.RawBlock}>
                 <div className="text-info">
                   <FontAwesomeIcon icon={faInfoCircle} /> This tab is only
                   visible to developers
@@ -268,7 +282,7 @@ const DataPanel: React.FC<{
               </DataTab>
             </>
           )}
-          <DataTab eventKey="rendered" isTraceEmpty={!record}>
+          <DataTab eventKey={DataPanelTabKey.Rendered} isTraceEmpty={!record}>
             {record?.renderError ? (
               <>
                 {record.skippedRun ? (
@@ -305,7 +319,7 @@ const DataPanel: React.FC<{
             )}
           </DataTab>
           <DataTab
-            eventKey="output"
+            eventKey={DataPanelTabKey.Output}
             isTraceEmpty={!record}
             isTraceOptional={previewInfo?.traceOptional}
           >
@@ -343,7 +357,7 @@ const DataPanel: React.FC<{
             )}
           </DataTab>
           <DataTab
-            eventKey="preview"
+            eventKey={DataPanelTabKey.Preview}
             isTraceEmpty={false}
             // Only mount if the user is viewing it, because output previews take up resources to run
             mountOnEnter

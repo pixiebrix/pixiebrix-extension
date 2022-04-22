@@ -30,6 +30,7 @@ export function makeInitialNodeUIState(nodeId: NodeId): NodeUIState {
       activeTabKey: null,
       tabQueries: {},
       tabTreeExpandedState: {},
+      tabStates: {},
     },
   };
 }

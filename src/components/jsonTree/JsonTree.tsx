@@ -16,16 +16,24 @@
  */
 
 import styles from "./JsonTree.module.scss";
-
 import { JSONTree } from "react-json-tree";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import React, { useCallback, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import Loader from "@/components/Loader";
-import { searchData } from "@/pageEditor/utils";
 import { useLabelRenderer } from "./treeHooks";
-import { get, reverse, set } from "lodash";
+import {
+  get,
+  reverse,
+  set,
+  compact,
+  includes,
+  isEmpty,
+  mapValues,
+  pickBy,
+} from "lodash";
+import { Primitive } from "type-fest";
 
 const SEARCH_DEBOUNCE_MS = 100;
 
@@ -63,6 +71,45 @@ export type JsonTreeProps = Partial<JSONTree["props"]> & {
 
   onExpandedStateChange?: (expandedState: TreeExpandedState) => void;
 };
+
+function normalize(value: Primitive): string {
+  return value.toString().toLowerCase();
+}
+
+/**
+ * Search data for query, matching both keys and values.
+ * @see normalize
+ */
+function searchData(query: string, data: unknown): unknown {
+  const normalizedQuery = normalize(query);
+  if (data == null) {
+    return null;
+  }
+
+  if (typeof data === "object") {
+    const values = mapValues(data, (value, key) =>
+      includes(normalize(key), normalizedQuery)
+        ? value
+        : searchData(query, value)
+    );
+    return pickBy(values, (value, key) => {
+      const keyMatch = includes(normalize(key), normalizedQuery);
+      const valueMatch =
+        typeof value === "object" || Array.isArray(value)
+          ? !isEmpty(value)
+          : value != null;
+      return keyMatch || valueMatch;
+    });
+  }
+
+  if (Array.isArray(data)) {
+    return compact(data.map((d) => searchData(query, d)));
+  }
+
+  return includes(normalize(data as Primitive), normalizedQuery)
+    ? data
+    : undefined;
+}
 
 const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   copyable = false,
