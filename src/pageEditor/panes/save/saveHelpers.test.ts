@@ -628,11 +628,28 @@ describe("buildRecipe", () => {
     expect(newRecipe).toStrictEqual(recipe);
   });
 
-  // TODO: write more cases
-  // test("three clean extensions", () => {
-  //
-  // });
-  //
+  test("three clean extensions", () => {
+    const recipe = versionedRecipeWithResolvedExtensions(3)();
+
+    const state = extensionsSlice.reducer(
+      { extensions: [] },
+      extensionsSlice.actions.installRecipe({
+        recipe,
+        services: {},
+        extensionPoints: recipe.extensionPoints,
+      })
+    );
+
+    const newRecipe = buildRecipe({
+      sourceRecipe: recipe,
+      cleanRecipeExtensions: state.extensions,
+      dirtyRecipeElements: [],
+    });
+
+    expect(newRecipe).toStrictEqual(recipe);
+  });
+
+  // TODO: write more test cases
   // test("one dirty element", () => {
   //
   // });
