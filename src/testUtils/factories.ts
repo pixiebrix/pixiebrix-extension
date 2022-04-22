@@ -30,6 +30,8 @@ import {
   Metadata,
   RecipeMetadata,
   UUID,
+  InnerDefinitions,
+  SafeString,
 } from "@/core";
 import { TraceError, TraceRecord } from "@/telemetry/trace";
 import { uuidv4, validateRegistryId, validateTimestamp } from "@/types/helpers";
@@ -59,6 +61,7 @@ import { Deployment } from "@/types/contract";
 import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
 import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { freshIdentifier } from "@/utils";
 
 export const recipeMetadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),
@@ -286,6 +289,45 @@ export const versionedExtensionPointRecipeFactory = ({
       },
     ],
   });
+
+/**
+ * Factory to create a RecipeDefinition with a definitions section and resolved extensions
+ * @param extensionCount
+ */
+export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
+  const rawExtensionPoints = array(
+    extensionPointConfigFactory,
+    extensionCount
+  )();
+  const extensionPoints: ExtensionPointConfig[] = [];
+  const definitions: InnerDefinitions = {};
+  for (const extensionPoint of rawExtensionPoints) {
+    const keys = Object.keys(definitions);
+    const oldId: string = extensionPoint.id;
+    const id = keys.includes(extensionPoint.id)
+      ? freshIdentifier(oldId as SafeString, keys)
+      : oldId;
+    // eslint-disable-next-line security/detect-object-injection -- we just generated the id
+    definitions[id] = extensionPoint.config;
+    extensionPoints.push({ ...extensionPoint, id: id as InnerDefinitionRef });
+  }
+
+  return define<RecipeDefinition>({
+    kind: "recipe",
+    apiVersion: "v3",
+    metadata: (n: number) => ({
+      id: validateRegistryId(`test/recipe-${n}`),
+      name: `Recipe ${n}`,
+      description: "Recipe generated from factory",
+      version: "1.0.0",
+    }),
+    sharing: sharingDefinitionFactory,
+    updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
+    definitions,
+    options: undefined,
+    extensionPoints,
+  });
+};
 
 type InnerExtensionPointParams = {
   extensionPointRef?: InnerDefinitionRef;

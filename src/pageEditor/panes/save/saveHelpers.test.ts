@@ -16,6 +16,7 @@
  */
 
 import {
+  buildRecipe,
   generateScopeBrickId,
   isRecipeEditable,
   replaceRecipeExtension,
@@ -27,6 +28,7 @@ import {
   versionedExtensionPointRecipeFactory,
   extensionPointConfigFactory,
   recipeFactory,
+  versionedRecipeWithResolvedExtensions,
 } from "@/testUtils/factories";
 import menuItemExtensionAdapter from "@/pageEditor/extensionPoints/menuItem";
 import { UnknownObject } from "@/types";
@@ -581,4 +583,81 @@ describe("isRecipeEditable", () => {
 
     expect(isRecipeEditable(editablePackages, null)).toBe(false);
   });
+});
+
+describe("buildRecipe", () => {
+  test("one clean extension", () => {
+    const recipe = versionedRecipeWithResolvedExtensions(1)();
+
+    const state = extensionsSlice.reducer(
+      { extensions: [] },
+      extensionsSlice.actions.installRecipe({
+        recipe,
+        services: {},
+        extensionPoints: recipe.extensionPoints,
+      })
+    );
+
+    const newRecipe = buildRecipe({
+      sourceRecipe: recipe,
+      cleanRecipeExtensions: state.extensions,
+      dirtyRecipeElements: [],
+    });
+
+    expect(newRecipe).toStrictEqual(recipe);
+  });
+
+  test("two clean extensions", () => {
+    const recipe = versionedRecipeWithResolvedExtensions(2)();
+
+    const state = extensionsSlice.reducer(
+      { extensions: [] },
+      extensionsSlice.actions.installRecipe({
+        recipe,
+        services: {},
+        extensionPoints: recipe.extensionPoints,
+      })
+    );
+
+    const newRecipe = buildRecipe({
+      sourceRecipe: recipe,
+      cleanRecipeExtensions: state.extensions,
+      dirtyRecipeElements: [],
+    });
+
+    expect(newRecipe).toStrictEqual(recipe);
+  });
+
+  // TODO: write more cases
+  // test("three clean extensions", () => {
+  //
+  // });
+  //
+  // test("one dirty element", () => {
+  //
+  // });
+  //
+  // test("two dirty elements", () => {
+  //
+  // });
+  //
+  // test("three dirty elements", () => {
+  //
+  // });
+  //
+  // test("one dirty element and one clean extension", () => {
+  //
+  // });
+  //
+  // test("one dirty element and two clean extensions", () => {
+  //
+  // });
+  //
+  // test("two dirty elements and one clean extension", () => {
+  //
+  // });
+  //
+  // test("one extension with changed options and metadata", () => {
+  //
+  // });
 });

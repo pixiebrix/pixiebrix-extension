@@ -363,7 +363,7 @@ export function buildRecipe({
           const extensionPointConfig = adapter.selectExtensionPoint(element);
           partialExtension.definitions = {
             [extensionPointId]: {
-              kind: "extensionPoint",
+              kind: "extensionPoint1",
               definition: extensionPointConfig.definition,
             },
           };
@@ -410,11 +410,18 @@ export function buildRecipe({
         ...rest
       } = extension;
 
-      extensionPoints.push({
+      const extensionPoint: ExtensionPointConfig = {
         ...pick(rest, ["label", "config", "permissions", "templateEngine"]),
         id: extensionPointId ?? oldExtensionPointId,
-        services: Object.fromEntries(services.map((x) => [x.outputKey, x.id])),
-      });
+      };
+
+      if (!isEmpty(services)) {
+        extensionPoint.services = Object.fromEntries(
+          services.map((x) => [x.outputKey, x.id])
+        );
+      }
+
+      extensionPoints.push(extensionPoint);
     }
 
     draft.extensionPoints = extensionPoints;
