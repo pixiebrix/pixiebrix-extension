@@ -42,6 +42,11 @@ $colors: (
   --theme-secondary: orange;
 }
 
+:root.blue {
+  --theme-primary: blue;
+  --theme-secondary: teal;
+}
+
 $theme-colors: (
   primary: #b66dff,
   secondary: #d8d8d8,
