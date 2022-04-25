@@ -64,6 +64,7 @@ import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { freshIdentifier } from "@/utils";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
+import { padStart } from "lodash";
 
 export const recipeMetadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),
@@ -89,7 +90,7 @@ export const installedRecipeMetadataFactory = define<RecipeMetadata>({
 const tabStateFactory = define<FrameConnectionState>({
   frameId: 0,
   hasPermissions: true,
-  navSequence: uuidv4(),
+  navSequence: () => uuidv4(),
   meta: null,
 });
 
@@ -99,7 +100,7 @@ export const activeDevToolContextFactory = define<PageEditorTabContextType>({
 });
 
 export const extensionFactory = define<IExtension>({
-  id: uuidv4(),
+  id: () => uuidv4(),
   apiVersion: "v2" as ApiVersion,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/extension-point-${n}`),
@@ -138,9 +139,9 @@ export const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
 
 export const traceRecordFactory = define<TraceRecord>({
   timestamp: "2021-10-07T12:52:16.189Z",
-  extensionId: uuidv4(),
-  runId: uuidv4(),
-  blockInstanceId: uuidv4(),
+  extensionId: () => uuidv4(),
+  runId: () => uuidv4(),
+  blockInstanceId: () => uuidv4(),
   blockId: TEST_BLOCK_ID,
   templateContext: {},
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- nominal typing
@@ -378,7 +379,7 @@ export const recipeFactory = innerExtensionPointRecipeFactory();
 const deploymentPackageFactory = define<Deployment["package"]>({
   id: validateRegistryId("@test/recipe"),
   name: "Deployment Package",
-  package_id: uuidv4(),
+  package_id: () => uuidv4(),
   version: "1.0.0",
   config: recipeDefinitionFactory as any,
 });
