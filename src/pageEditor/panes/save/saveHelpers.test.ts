@@ -49,6 +49,7 @@ import {
 import {
   EditablePackage,
   OptionsDefinition,
+  RecipeDefinition,
   UnsavedRecipeDefinition,
 } from "@/types/definitions";
 import {
@@ -57,6 +58,7 @@ import {
 } from "@/extensionPoints/types";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { ExtensionOptionsState } from "@/store/extensionsTypes";
 
 jest.mock("@/background/contextMenus");
 jest.mock("@/background/messenger/api");
@@ -602,18 +604,29 @@ function selectExtensionPoints(
   });
 }
 
+type InstalledRecipe = {
+  recipe: RecipeDefinition;
+  state: ExtensionOptionsState;
+};
+
+function installRecipe(extensionCount = 1): InstalledRecipe {
+  const recipe = versionedRecipeWithResolvedExtensions(extensionCount)();
+
+  const state = extensionsSlice.reducer(
+    { extensions: [] },
+    extensionsSlice.actions.installRecipe({
+      recipe,
+      services: {},
+      extensionPoints: recipe.extensionPoints,
+    })
+  );
+
+  return { recipe, state };
+}
+
 describe("buildRecipe", () => {
   test("one clean extension", () => {
-    const recipe = versionedRecipeWithResolvedExtensions(1)();
-
-    const state = extensionsSlice.reducer(
-      { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        services: {},
-        extensionPoints: recipe.extensionPoints,
-      })
-    );
+    const { recipe, state } = installRecipe(1);
 
     const newRecipe = buildRecipe({
       sourceRecipe: recipe,
@@ -625,16 +638,7 @@ describe("buildRecipe", () => {
   });
 
   test("two clean extensions", () => {
-    const recipe = versionedRecipeWithResolvedExtensions(2)();
-
-    const state = extensionsSlice.reducer(
-      { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        services: {},
-        extensionPoints: recipe.extensionPoints,
-      })
-    );
+    const { recipe, state } = installRecipe(2);
 
     const newRecipe = buildRecipe({
       sourceRecipe: recipe,
@@ -646,16 +650,7 @@ describe("buildRecipe", () => {
   });
 
   test("three clean extensions", () => {
-    const recipe = versionedRecipeWithResolvedExtensions(3)();
-
-    const state = extensionsSlice.reducer(
-      { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        services: {},
-        extensionPoints: recipe.extensionPoints,
-      })
-    );
+    const { recipe, state } = installRecipe(3);
 
     const newRecipe = buildRecipe({
       sourceRecipe: recipe,
@@ -667,16 +662,7 @@ describe("buildRecipe", () => {
   });
 
   test("one dirty element", async () => {
-    const recipe = versionedRecipeWithResolvedExtensions(1)();
-
-    const state = extensionsSlice.reducer(
-      { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        services: {},
-        extensionPoints: recipe.extensionPoints,
-      })
-    );
+    const { recipe, state } = installRecipe(1);
 
     const [extensionPoint] = selectExtensionPoints(recipe);
     (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
@@ -702,16 +688,7 @@ describe("buildRecipe", () => {
   });
 
   test("two dirty elements", async () => {
-    const recipe = versionedRecipeWithResolvedExtensions(2)();
-
-    const state = extensionsSlice.reducer(
-      { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        services: {},
-        extensionPoints: recipe.extensionPoints,
-      })
-    );
+    const { recipe, state } = installRecipe(2);
 
     const extensionPoints = selectExtensionPoints(recipe);
 
@@ -743,16 +720,7 @@ describe("buildRecipe", () => {
   });
 
   test("three dirty elements", async () => {
-    const recipe = versionedRecipeWithResolvedExtensions(3)();
-
-    const state = extensionsSlice.reducer(
-      { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        services: {},
-        extensionPoints: recipe.extensionPoints,
-      })
-    );
+    const { recipe, state } = installRecipe(3);
 
     const extensionPoints = selectExtensionPoints(recipe);
 
@@ -774,26 +742,17 @@ describe("buildRecipe", () => {
       dirtyRecipeElements: elements,
     });
 
-    expect(newRecipe).toStrictEqual(
-      produce(recipe, (draft) => {
-        for (const [index, extensionPoint] of draft.extensionPoints.entries()) {
-          extensionPoint.label = `New Label ${index}`;
-        }
-      })
-    );
+    const updated = produce(recipe, (draft) => {
+      for (const [index, extensionPoint] of draft.extensionPoints.entries()) {
+        extensionPoint.label = `New Label ${index}`;
+      }
+    });
+
+    expect(newRecipe).toStrictEqual(updated);
   });
 
   test("one dirty element and one clean extension", async () => {
-    const recipe = versionedRecipeWithResolvedExtensions(2)();
-
-    const state = extensionsSlice.reducer(
-      { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        services: {},
-        extensionPoints: recipe.extensionPoints,
-      })
-    );
+    const { recipe, state } = installRecipe(2);
 
     const [extensionPoint] = selectExtensionPoints(recipe);
     (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
@@ -821,16 +780,7 @@ describe("buildRecipe", () => {
   });
 
   test("one dirty element and two clean extensions", async () => {
-    const recipe = versionedRecipeWithResolvedExtensions(3)();
-
-    const state = extensionsSlice.reducer(
-      { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        services: {},
-        extensionPoints: recipe.extensionPoints,
-      })
-    );
+    const { recipe, state } = installRecipe(3);
 
     const [extensionPoint] = selectExtensionPoints(recipe);
     (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
@@ -858,16 +808,7 @@ describe("buildRecipe", () => {
   });
 
   test("two dirty elements and one clean extension", async () => {
-    const recipe = versionedRecipeWithResolvedExtensions(3)();
-
-    const state = extensionsSlice.reducer(
-      { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        services: {},
-        extensionPoints: recipe.extensionPoints,
-      })
-    );
+    const { recipe, state } = installRecipe(3);
 
     const extensionPoints = selectExtensionPoints(recipe);
 
@@ -903,16 +844,7 @@ describe("buildRecipe", () => {
   });
 
   test("two dirty elements and two clean extensions", async () => {
-    const recipe = versionedRecipeWithResolvedExtensions(4)();
-
-    const state = extensionsSlice.reducer(
-      { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        services: {},
-        extensionPoints: recipe.extensionPoints,
-      })
-    );
+    const { recipe, state } = installRecipe(4);
 
     const extensionPoints = selectExtensionPoints(recipe);
 
