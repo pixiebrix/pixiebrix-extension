@@ -29,17 +29,19 @@ import {
   extensionPointConfigFactory,
   recipeFactory,
   versionedRecipeWithResolvedExtensions,
+  extensionFactory,
 } from "@/testUtils/factories";
 import menuItemExtensionAdapter from "@/pageEditor/extensionPoints/menuItem";
 import { UnknownObject } from "@/types";
 import {
   internalExtensionPointMetaFactory,
   lookupExtensionPoint,
+  PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
 } from "@/pageEditor/extensionPoints/base";
 import { produce } from "immer";
 import { makeInternalId } from "@/registry/internal";
-import { cloneDeep } from "lodash";
-import { InnerDefinitionRef } from "@/core";
+import { cloneDeep, range, uniq } from "lodash";
+import { InnerDefinitionRef, UnresolvedExtension } from "@/core";
 import { MenuDefinition } from "@/extensionPoints/menuItemExtension";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
@@ -57,6 +59,7 @@ import {
 } from "@/extensionPoints/types";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 jest.mock("@/background/contextMenus");
 jest.mock("@/background/messenger/api");
@@ -603,6 +606,132 @@ function selectExtensionPoints(
 }
 
 describe("buildRecipe", () => {
+  test("Clean extension referencing extensionPoint registry package", async () => {
+    const extension = extensionFactory({
+      apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+    }) as UnresolvedExtension;
+
+    // Call the function under test
+    const newRecipe = buildRecipe({
+      sourceRecipe: null,
+      cleanRecipeExtensions: [extension],
+      dirtyRecipeElements: [],
+    });
+
+    expect(newRecipe.extensionPoints).toHaveLength(1);
+    expect(newRecipe.extensionPoints[0].id).toBe(extension.extensionPointId);
+  });
+
+  test("Dirty extension with services", async () => {
+    const serviceId = validateRegistryId("@pixiebrix/api");
+    const outputKey = validateOutputKey("pixiebrix");
+
+    const extension = extensionFactory({
+      apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+      services: [{ id: serviceId, outputKey, config: null }],
+    }) as UnresolvedExtension;
+
+    // Load the adapter for this extension
+    const extensionPoint = extensionPointDefinitionFactory();
+    const adapter = ADAPTERS.get(extensionPoint.definition.type);
+
+    // Mock this lookup for the adapter call that follows
+    (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
+
+    // Use the adapter to convert to FormState
+    const element = (await adapter.fromExtension(extension)) as FormState;
+
+    // Call the function under test
+    const newRecipe = buildRecipe({
+      sourceRecipe: null,
+      cleanRecipeExtensions: [],
+      dirtyRecipeElements: [element],
+    });
+
+    expect(newRecipe.extensionPoints).toHaveLength(1);
+    expect(newRecipe.extensionPoints[0].id).toBe(extension.extensionPointId);
+    expect(newRecipe.extensionPoints[0].services).toStrictEqual({
+      [outputKey]: serviceId,
+    });
+  });
+
+  test("Preserve distinct extensionPoint definitions", async () => {
+    // Load the adapter for this extension
+    const extensionPoints = [
+      extensionPointDefinitionFactory().definition,
+      extensionPointDefinitionFactory().definition,
+    ];
+
+    const extensions = extensionPoints.map((extensionPoint) => {
+      const extension = extensionFactory({
+        apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+      }) as UnresolvedExtension;
+
+      extension.definitions = {
+        extensionPoint: {
+          kind: "extensionPoint",
+          definition: extensionPoint,
+        },
+      };
+
+      extension.extensionPointId = "extensionPoint" as InnerDefinitionRef;
+
+      return extension;
+    });
+
+    // Call the function under test
+    const newRecipe = buildRecipe({
+      sourceRecipe: null,
+      cleanRecipeExtensions: extensions,
+      dirtyRecipeElements: [],
+    });
+
+    expect(Object.keys(newRecipe.definitions)).toStrictEqual([
+      "extensionPoint",
+      "extensionPoint2",
+    ]);
+    expect(newRecipe.extensionPoints).toHaveLength(2);
+    expect(newRecipe.extensionPoints[0].id).toBe("extensionPoint");
+    expect(newRecipe.extensionPoints[1].id).toBe("extensionPoint2");
+  });
+
+  test("Coalesce duplicate extensionPoint definitions", async () => {
+    // Load the adapter for this extension
+    const extensionPoint = extensionPointDefinitionFactory().definition;
+
+    const extensions = range(0, 2).map(() => {
+      const extension = extensionFactory({
+        apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+      }) as UnresolvedExtension;
+
+      extension.definitions = {
+        extensionPoint: {
+          kind: "extensionPoint",
+          definition: extensionPoint,
+        },
+      };
+
+      extension.extensionPointId = "extensionPoint" as InnerDefinitionRef;
+
+      return extension;
+    });
+
+    // Call the function under test
+    const newRecipe = buildRecipe({
+      sourceRecipe: null,
+      cleanRecipeExtensions: extensions,
+      dirtyRecipeElements: [],
+    });
+
+    expect(Object.keys(newRecipe.definitions)).toStrictEqual([
+      "extensionPoint",
+    ]);
+    expect(newRecipe.extensionPoints).toHaveLength(extensions.length);
+    expect(uniq(newRecipe.extensionPoints.map((x) => x.id))).toStrictEqual([
+      "extensionPoint",
+    ]);
+  });
+
   test.each`
     cleanExtensionCount | dirtyExtensionCount
     ${1}                | ${0}
