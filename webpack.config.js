@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+//import variables from "src/vendors/theme/assets/styles/_variables.scss";
 
 const path = require("path");
 const dotenv = require("dotenv");
@@ -28,6 +29,8 @@ const CopyPlugin = require("copy-webpack-plugin");
 const { uniq, compact } = require("lodash");
 const Policy = require("csp-parse");
 const mergeWithShared = require("./webpack.sharedConfig.js");
+
+//console.log("HELLO VARIABLES", variables);
 
 function parseEnv(value) {
   switch (String(value).toLowerCase()) {
@@ -379,8 +382,8 @@ module.exports = (env, options) =>
                     flags: "g",
                   },
                   {
-                    search: "#d8d8d8",
-                    replace: "var(--theme-secondary)",
+                    search: "#a347ff",
+                    replace: "var(--theme-primary-5)",
                     flags: "g",
                   },
                 ],

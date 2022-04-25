@@ -37,14 +37,38 @@ $colors: (
   black: #000000,
 );
 
+$darken-levels: (
+  5: 5%,
+  10: 10%,
+  15: 15%,
+  20: 20%,
+  30: 30%,
+);
+
 :root {
   --theme-primary: red;
-  --theme-secondary: orange;
+  @each $level, $darkness in $darken-levels {
+    --theme-primary-#{$level}: #{darken(red, $darkness)};
+  }
+}
+
+$theme-css-variables: ();
+
+@each $level, $darkness in $darken-levels {
+  $theme-css-variables: map-merge(
+    $theme-css-variables,
+    (#{darken(#b66dff, $darkness)}: --theme-primary-#{$level})
+  );
+}
+
+@each $hex, $css-variable in $theme-css-variables {
+  :export {
+    $hex: variable;
+  }
 }
 
 :root.blue {
   --theme-primary: blue;
-  --theme-secondary: teal;
 }
 
 $theme-colors: (
