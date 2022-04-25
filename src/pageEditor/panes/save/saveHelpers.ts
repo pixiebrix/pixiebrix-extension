@@ -201,7 +201,8 @@ export function replaceRecipeExtension(
     };
 
     // The services field is optional, so only add it to the config if the raw
-    // extension has a value. Normalizing here causes more confusion than it helps.
+    // extension has a value. Normalizing here makes testing harder because we
+    // then have to account for the normalized value in assertions.
     if (rawExtension.services) {
       commonExtensionConfig.services = Object.fromEntries(
         rawExtension.services.map((x) => [x.outputKey, x.id])

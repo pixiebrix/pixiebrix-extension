@@ -169,7 +169,7 @@ const extensionsSlice = createSlice({
         };
 
         // Set optional fields only if the source extension has a value. Normalizing the values
-        // here causes more confusion than it helps.
+        // here makes testing harder because we then have to account for the normalized value in assertions.
         if (services) {
           extension.services = Object.entries(services).map(
             ([outputKey, id]: [OutputKey, RegistryId]) => ({
