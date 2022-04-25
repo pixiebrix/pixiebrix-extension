@@ -226,6 +226,9 @@ export function selectIsAvailable(
 
   const availability: NormalizedAvailability = {};
 
+  // All 3 fields in NormalizedAvailability are optional, so we should only set each one if
+  // the ExtensionPointConfig has a value set for that field. Normalizing here causes more
+  // confusion than it helps.
   const { isAvailable } = extensionPoint.definition;
 
   if (isAvailable.matchPatterns) {

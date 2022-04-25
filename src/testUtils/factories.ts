@@ -295,6 +295,9 @@ export const versionedExtensionPointRecipeFactory = ({
 export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
   const extensionPoints: ExtensionPointConfig[] = [];
   for (let n = 1; n <= extensionCount; n++) {
+    // Don't use array(factory, count) here, because it will keep incrementing
+    // the modifier number across multiple test runs and cause non-deterministic
+    // test execution behavior.
     const extensionPoint = extensionPointConfigFactory();
     const ids = extensionPoints.map((x) => x.id);
     const id = freshIdentifier(DEFAULT_EXTENSION_POINT_VAR as SafeString, ids);

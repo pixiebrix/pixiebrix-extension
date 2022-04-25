@@ -168,6 +168,8 @@ const extensionsSlice = createSlice({
           updateTimestamp: timestamp,
         };
 
+        // Set optional fields only if the source extension has a value. Normalizing the values
+        // here causes more confusion than it helps.
         if (services) {
           extension.services = Object.entries(services).map(
             ([outputKey, id]: [OutputKey, RegistryId]) => ({
