@@ -304,7 +304,7 @@ export const versionedExtensionPointRecipeFactory = ({
  */
 export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
   const extensionPoints: ExtensionPointConfig[] = [];
-  for (let i = 1; i <= extensionCount; i++) {
+  for (let i = 0; i < extensionCount; i++) {
     // Don't use array(factory, count) here, because it will keep incrementing
     // the modifier number across multiple test runs and cause non-deterministic
     // test execution behavior.
