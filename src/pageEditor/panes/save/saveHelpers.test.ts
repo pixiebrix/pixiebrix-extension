@@ -32,7 +32,10 @@ import {
 } from "@/testUtils/factories";
 import menuItemExtensionAdapter from "@/pageEditor/extensionPoints/menuItem";
 import { UnknownObject } from "@/types";
-import { lookupExtensionPoint } from "@/pageEditor/extensionPoints/base";
+import {
+  internalExtensionPointMetaFactory,
+  lookupExtensionPoint,
+} from "@/pageEditor/extensionPoints/base";
 import { produce } from "immer";
 import { makeInternalId } from "@/registry/internal";
 import { cloneDeep } from "lodash";
@@ -43,10 +46,21 @@ import {
   MINIMAL_SCHEMA,
   MINIMAL_UI_SCHEMA,
 } from "@/components/formBuilder/formBuilderHelpers";
-import { EditablePackage, OptionsDefinition } from "@/types/definitions";
+import {
+  EditablePackage,
+  OptionsDefinition,
+  UnsavedRecipeDefinition,
+} from "@/types/definitions";
+import {
+  ExtensionPointConfig,
+  ExtensionPointDefinition,
+} from "@/extensionPoints/types";
+import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 jest.mock("@/background/contextMenus");
 jest.mock("@/background/messenger/api");
+jest.mock("@/telemetry/events");
 
 jest.mock("@/pageEditor/extensionPoints/base", () => ({
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Wrong
@@ -87,7 +101,7 @@ describe("replaceRecipeExtension round trip", () => {
       })
     );
 
-    (lookupExtensionPoint as any).mockResolvedValue(extensionPoint);
+    (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
 
     const element = await menuItemExtensionAdapter.fromExtension(
       state.extensions[0]
@@ -105,8 +119,6 @@ describe("replaceRecipeExtension round trip", () => {
     expect(newRecipe).toStrictEqual(
       produce(recipe, (draft) => {
         draft.metadata.id = newId;
-        // `services` gets normalized from undefined to {}
-        draft.extensionPoints[0].services = {};
         draft.extensionPoints[0].label = "New Label";
       })
     );
@@ -133,7 +145,7 @@ describe("replaceRecipeExtension round trip", () => {
       })
     );
 
-    (lookupExtensionPoint as any).mockResolvedValue(extensionPoint);
+    (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
 
     const element = await menuItemExtensionAdapter.fromExtension(
       state.extensions[0]
@@ -151,8 +163,6 @@ describe("replaceRecipeExtension round trip", () => {
     expect(newRecipe).toStrictEqual(
       produce(recipe, (draft) => {
         draft.metadata.id = newId;
-        // `services` gets normalized from undefined to {}
-        draft.extensionPoints[0].services = {};
         draft.extensionPoints[0].label = "New Label";
       })
     );
@@ -171,7 +181,7 @@ describe("replaceRecipeExtension round trip", () => {
     );
 
     // Mimic what would come back via internal.ts:resolveRecipe
-    (lookupExtensionPoint as any).mockResolvedValue({
+    (lookupExtensionPoint as jest.Mock).mockResolvedValue({
       ...recipe.definitions.extensionPoint,
       metadata: {
         id: makeInternalId(recipe.definitions.extensionPoint),
@@ -198,8 +208,6 @@ describe("replaceRecipeExtension round trip", () => {
     expect(newRecipe).toStrictEqual(
       produce(recipe, (draft) => {
         draft.metadata.id = newId;
-        // `services` gets normalized from undefined to {}
-        draft.extensionPoints[0].services = {};
         draft.extensionPoints[0].label = "New Label";
       })
     );
@@ -223,7 +231,7 @@ describe("replaceRecipeExtension round trip", () => {
     );
 
     // Mimic what would come back via internal.ts:resolveRecipe
-    (lookupExtensionPoint as any).mockResolvedValue({
+    (lookupExtensionPoint as jest.Mock).mockResolvedValue({
       ...recipe.definitions.extensionPoint,
       metadata: {
         id: makeInternalId(recipe.definitions.extensionPoint),
@@ -260,8 +268,6 @@ describe("replaceRecipeExtension round trip", () => {
           draft.definitions.extensionPoint2.definition as MenuDefinition
         ).template = newTemplate;
         draft.extensionPoints[0].id = "extensionPoint2" as InnerDefinitionRef;
-        // `services` gets normalized from undefined to {}
-        draft.extensionPoints[0].services = {};
         draft.extensionPoints[0].label = "New Label";
       })
     );
@@ -285,7 +291,7 @@ describe("replaceRecipeExtension round trip", () => {
     );
 
     // Mimic what would come back via internal.ts:resolveRecipe
-    (lookupExtensionPoint as any).mockResolvedValue({
+    (lookupExtensionPoint as jest.Mock).mockResolvedValue({
       ...recipe.definitions.extensionPoint,
       metadata: {
         id: makeInternalId(recipe.definitions.extensionPoint),
@@ -312,8 +318,6 @@ describe("replaceRecipeExtension round trip", () => {
     expect(newRecipe).toStrictEqual(
       produce(recipe, (draft) => {
         draft.metadata.id = newId;
-        // `services` gets normalized from undefined to {}
-        draft.extensionPoints[0].services = {};
         draft.extensionPoints[0].label = "New Label";
       })
     );
@@ -343,7 +347,7 @@ describe("replaceRecipeExtension round trip", () => {
       })
     );
 
-    (lookupExtensionPoint as any).mockResolvedValue(extensionPoint);
+    (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
 
     const element = await menuItemExtensionAdapter.fromExtension({
       ...state.extensions[0],
@@ -364,8 +368,6 @@ describe("replaceRecipeExtension round trip", () => {
         draft.apiVersion = "v3";
         draft.metadata.id = newId;
         draft.definitions[extensionPoint.metadata.id].apiVersion = "v3";
-        // `services` gets normalized from undefined to {}
-        draft.extensionPoints[0].services = {};
         draft.extensionPoints[0].label = "New Label";
       })
     );
@@ -394,7 +396,7 @@ describe("replaceRecipeExtension round trip", () => {
       })
     );
 
-    (lookupExtensionPoint as any).mockResolvedValue(extensionPoint);
+    (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
 
     const element = await menuItemExtensionAdapter.fromExtension({
       ...state.extensions[0],
@@ -585,6 +587,21 @@ describe("isRecipeEditable", () => {
   });
 });
 
+function selectExtensionPoints(
+  recipe: UnsavedRecipeDefinition
+): ExtensionPointConfig[] {
+  return recipe.extensionPoints.map(({ id }) => {
+    const definition = recipe.definitions[id]
+      .definition as ExtensionPointDefinition;
+    return {
+      apiVersion: recipe.apiVersion,
+      metadata: internalExtensionPointMetaFactory(),
+      definition,
+      kind: "extensionPoint",
+    };
+  });
+}
+
 describe("buildRecipe", () => {
   test("one clean extension", () => {
     const recipe = versionedRecipeWithResolvedExtensions(1)();
@@ -649,32 +666,284 @@ describe("buildRecipe", () => {
     expect(newRecipe).toStrictEqual(recipe);
   });
 
-  // TODO: write more test cases
-  // test("one dirty element", () => {
-  //
-  // });
-  //
-  // test("two dirty elements", () => {
-  //
-  // });
-  //
-  // test("three dirty elements", () => {
-  //
-  // });
-  //
-  // test("one dirty element and one clean extension", () => {
-  //
-  // });
-  //
-  // test("one dirty element and two clean extensions", () => {
-  //
-  // });
-  //
-  // test("two dirty elements and one clean extension", () => {
-  //
-  // });
-  //
-  // test("one extension with changed options and metadata", () => {
-  //
-  // });
+  test("one dirty element", async () => {
+    const recipe = versionedRecipeWithResolvedExtensions(1)();
+
+    const state = extensionsSlice.reducer(
+      { extensions: [] },
+      extensionsSlice.actions.installRecipe({
+        recipe,
+        services: {},
+        extensionPoints: recipe.extensionPoints,
+      })
+    );
+
+    const [extensionPoint] = selectExtensionPoints(recipe);
+    (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
+
+    const extension = state.extensions[0];
+    const adapter = ADAPTERS.get(extensionPoint.definition.type);
+    const element = (await adapter.fromExtension(extension)) as FormState;
+
+    const newLabel = "New Label";
+    element.label = newLabel;
+
+    const newRecipe = buildRecipe({
+      sourceRecipe: recipe,
+      cleanRecipeExtensions: [],
+      dirtyRecipeElements: [element],
+    });
+
+    const updated = produce(recipe, (draft) => {
+      draft.extensionPoints[0].label = newLabel;
+    });
+
+    expect(newRecipe).toStrictEqual(updated);
+  });
+
+  test("two dirty elements", async () => {
+    const recipe = versionedRecipeWithResolvedExtensions(2)();
+
+    const state = extensionsSlice.reducer(
+      { extensions: [] },
+      extensionsSlice.actions.installRecipe({
+        recipe,
+        services: {},
+        extensionPoints: recipe.extensionPoints,
+      })
+    );
+
+    const extensionPoints = selectExtensionPoints(recipe);
+
+    const elements: FormState[] = [];
+
+    for (const [index, extensionPoint] of extensionPoints.entries()) {
+      (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
+      const extension = state.extensions[index];
+      const adapter = ADAPTERS.get(extensionPoint.definition.type);
+      // eslint-disable-next-line no-await-in-loop
+      const element = (await adapter.fromExtension(extension)) as FormState;
+      element.label = `New Label ${index}`;
+      elements.push(element);
+    }
+
+    const newRecipe = buildRecipe({
+      sourceRecipe: recipe,
+      cleanRecipeExtensions: [],
+      dirtyRecipeElements: elements,
+    });
+
+    const updated = produce(recipe, (draft) => {
+      for (const [index, extensionPoint] of draft.extensionPoints.entries()) {
+        extensionPoint.label = `New Label ${index}`;
+      }
+    });
+
+    expect(newRecipe).toStrictEqual(updated);
+  });
+
+  test("three dirty elements", async () => {
+    const recipe = versionedRecipeWithResolvedExtensions(3)();
+
+    const state = extensionsSlice.reducer(
+      { extensions: [] },
+      extensionsSlice.actions.installRecipe({
+        recipe,
+        services: {},
+        extensionPoints: recipe.extensionPoints,
+      })
+    );
+
+    const extensionPoints = selectExtensionPoints(recipe);
+
+    const elements: FormState[] = [];
+
+    for (const [index, extensionPoint] of extensionPoints.entries()) {
+      (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
+      const extension = state.extensions[0];
+      const adapter = ADAPTERS.get(extensionPoint.definition.type);
+      // eslint-disable-next-line no-await-in-loop
+      const element = (await adapter.fromExtension(extension)) as FormState;
+      element.label = `New Label ${index}`;
+      elements.push(element);
+    }
+
+    const newRecipe = buildRecipe({
+      sourceRecipe: recipe,
+      cleanRecipeExtensions: [],
+      dirtyRecipeElements: elements,
+    });
+
+    expect(newRecipe).toStrictEqual(
+      produce(recipe, (draft) => {
+        for (const [index, extensionPoint] of draft.extensionPoints.entries()) {
+          extensionPoint.label = `New Label ${index}`;
+        }
+      })
+    );
+  });
+
+  test("one dirty element and one clean extension", async () => {
+    const recipe = versionedRecipeWithResolvedExtensions(2)();
+
+    const state = extensionsSlice.reducer(
+      { extensions: [] },
+      extensionsSlice.actions.installRecipe({
+        recipe,
+        services: {},
+        extensionPoints: recipe.extensionPoints,
+      })
+    );
+
+    const [extensionPoint] = selectExtensionPoints(recipe);
+    (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
+    const extension = state.extensions[0];
+    const adapter = ADAPTERS.get(extensionPoint.definition.type);
+    const element = (await adapter.fromExtension(extension)) as FormState;
+    const newLabel = "New Label";
+    const oldLabel = element.label;
+    element.label = newLabel;
+
+    const newRecipe = buildRecipe({
+      sourceRecipe: recipe,
+      cleanRecipeExtensions: [state.extensions[1]],
+      dirtyRecipeElements: [element],
+    });
+
+    const updated = produce(recipe, (draft) => {
+      const extensionPoint = draft.extensionPoints.find(
+        (x) => x.label === oldLabel
+      );
+      extensionPoint.label = newLabel;
+    });
+
+    expect(newRecipe).toStrictEqual(updated);
+  });
+
+  test("one dirty element and two clean extensions", async () => {
+    const recipe = versionedRecipeWithResolvedExtensions(3)();
+
+    const state = extensionsSlice.reducer(
+      { extensions: [] },
+      extensionsSlice.actions.installRecipe({
+        recipe,
+        services: {},
+        extensionPoints: recipe.extensionPoints,
+      })
+    );
+
+    const [extensionPoint] = selectExtensionPoints(recipe);
+    (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
+    const extension = state.extensions[0];
+    const adapter = ADAPTERS.get(extensionPoint.definition.type);
+    const element = (await adapter.fromExtension(extension)) as FormState;
+    const newLabel = "New Label";
+    const oldLabel = element.label;
+    element.label = newLabel;
+
+    const newRecipe = buildRecipe({
+      sourceRecipe: recipe,
+      cleanRecipeExtensions: [state.extensions[1], state.extensions[2]],
+      dirtyRecipeElements: [element],
+    });
+
+    const updated = produce(recipe, (draft) => {
+      const extensionPoint = draft.extensionPoints.find(
+        (x) => x.label === oldLabel
+      );
+      extensionPoint.label = newLabel;
+    });
+
+    expect(newRecipe).toStrictEqual(updated);
+  });
+
+  test("two dirty elements and one clean extension", async () => {
+    const recipe = versionedRecipeWithResolvedExtensions(3)();
+
+    const state = extensionsSlice.reducer(
+      { extensions: [] },
+      extensionsSlice.actions.installRecipe({
+        recipe,
+        services: {},
+        extensionPoints: recipe.extensionPoints,
+      })
+    );
+
+    const extensionPoints = selectExtensionPoints(recipe);
+
+    const elements: FormState[] = [];
+
+    for (const [index, extensionPoint] of extensionPoints
+      .slice(0, 2)
+      .entries()) {
+      (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
+      const extension = state.extensions[index];
+      const adapter = ADAPTERS.get(extensionPoint.definition.type);
+      // eslint-disable-next-line no-await-in-loop
+      const element = (await adapter.fromExtension(extension)) as FormState;
+      element.label = `New Label ${index}`;
+      elements.push(element);
+    }
+
+    const newRecipe = buildRecipe({
+      sourceRecipe: recipe,
+      cleanRecipeExtensions: [state.extensions[2]],
+      dirtyRecipeElements: elements,
+    });
+
+    const updated = produce(recipe, (draft) => {
+      for (const [index, extensionPoint] of draft.extensionPoints
+        .slice(0, 2)
+        .entries()) {
+        extensionPoint.label = `New Label ${index}`;
+      }
+    });
+
+    expect(newRecipe).toStrictEqual(updated);
+  });
+
+  test("two dirty elements and two clean extensions", async () => {
+    const recipe = versionedRecipeWithResolvedExtensions(4)();
+
+    const state = extensionsSlice.reducer(
+      { extensions: [] },
+      extensionsSlice.actions.installRecipe({
+        recipe,
+        services: {},
+        extensionPoints: recipe.extensionPoints,
+      })
+    );
+
+    const extensionPoints = selectExtensionPoints(recipe);
+
+    const elements: FormState[] = [];
+
+    for (const [index, extensionPoint] of extensionPoints
+      .slice(0, 2)
+      .entries()) {
+      (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
+      const extension = state.extensions[index];
+      const adapter = ADAPTERS.get(extensionPoint.definition.type);
+      // eslint-disable-next-line no-await-in-loop
+      const element = (await adapter.fromExtension(extension)) as FormState;
+      element.label = `New Label ${index}`;
+      elements.push(element);
+    }
+
+    const newRecipe = buildRecipe({
+      sourceRecipe: recipe,
+      cleanRecipeExtensions: [state.extensions[2], state.extensions[3]],
+      dirtyRecipeElements: elements,
+    });
+
+    const updated = produce(recipe, (draft) => {
+      for (const [index, extensionPoint] of draft.extensionPoints
+        .slice(0, 2)
+        .entries()) {
+        extensionPoint.label = `New Label ${index}`;
+      }
+    });
+
+    expect(newRecipe).toStrictEqual(updated);
+  });
 });

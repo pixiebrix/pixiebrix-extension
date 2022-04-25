@@ -49,6 +49,7 @@ import {
   SharingDefinition,
 } from "@/types/definitions";
 import {
+  ExtensionPointDefinition as ExtensionPointConfigDefinition,
   ExtensionPointConfig as ExtensionPointDefinition,
   ExtensionPointType,
 } from "@/extensionPoints/types";
@@ -62,6 +63,7 @@ import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
 import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { freshIdentifier } from "@/utils";
+import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
 
 export const recipeMetadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),
@@ -96,26 +98,20 @@ export const activeDevToolContextFactory = define<PageEditorTabContextType>({
   tabState: tabStateFactory,
 });
 
-export const extensionFactory: (
-  extensionProps?: Partial<IExtension>
-) => IExtension = (extensionProps) => ({
+export const extensionFactory = define<IExtension>({
   id: uuidv4(),
   apiVersion: "v2" as ApiVersion,
-  extensionPointId: validateRegistryId("test/extension-point"),
-  _deployment: null,
-  _recipe: null,
+  extensionPointId: (n: number) =>
+    validateRegistryId(`test/extension-point-${n}`),
+  _recipe: undefined,
   label: "Test label",
-  templateEngine: null,
-  permissions: null,
-  definitions: null,
   services: [],
-  optionsArgs: null,
-  config: {
+  config: (n: number) => ({
     apiVersion: "v2" as ApiVersion,
     kind: "component",
     metadata: recipeMetadataFactory({
-      id: validateRegistryId("test/component-1"),
-      name: "Text config",
+      id: validateRegistryId(`test/component-${n}`),
+      name: "Test config",
     }),
     inputSchema: {
       $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -134,9 +130,8 @@ export const extensionFactory: (
         },
       },
     ],
-  },
+  }),
   active: true,
-  ...extensionProps,
 });
 
 export const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
@@ -244,12 +239,15 @@ export const extensionPointDefinitionFactory = define<ExtensionPointDefinition>(
         id: validateRegistryId(`test/extension-point-${n}`),
         name: `Extension Point ${n}`,
       }),
-    definition: {
-      type: "menuItem",
-      isAvailable: {
-        matchPatterns: ["https://*/*"],
-      },
-      reader: validateRegistryId("@pixiebrix/document-context"),
+    definition(n: number) {
+      const definition: ExtensionPointConfigDefinition = {
+        type: "menuItem",
+        isAvailable: {
+          matchPatterns: [`https://www.mySite${n}.com/*`],
+        },
+        reader: validateRegistryId("@pixiebrix/document-context"),
+      };
+      return definition;
     },
   }
 );
@@ -295,21 +293,24 @@ export const versionedExtensionPointRecipeFactory = ({
  * @param extensionCount
  */
 export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
-  const rawExtensionPoints = array(
-    extensionPointConfigFactory,
-    extensionCount
-  )();
   const extensionPoints: ExtensionPointConfig[] = [];
+  for (let n = 1; n <= extensionCount; n++) {
+    const extensionPoint = extensionPointConfigFactory();
+    const ids = extensionPoints.map((x) => x.id);
+    const id = freshIdentifier(DEFAULT_EXTENSION_POINT_VAR as SafeString, ids);
+    extensionPoints.push({
+      ...extensionPoint,
+      id: id as InnerDefinitionRef,
+    });
+  }
+
   const definitions: InnerDefinitions = {};
-  for (const extensionPoint of rawExtensionPoints) {
-    const keys = Object.keys(definitions);
-    const oldId: string = extensionPoint.id;
-    const id = keys.includes(extensionPoint.id)
-      ? freshIdentifier(oldId as SafeString, keys)
-      : oldId;
-    // eslint-disable-next-line security/detect-object-injection -- we just generated the id
-    definitions[id] = extensionPoint.config;
-    extensionPoints.push({ ...extensionPoint, id: id as InnerDefinitionRef });
+
+  for (const extensionPoint of extensionPoints) {
+    definitions[extensionPoint.id] = {
+      kind: "extensionPoint",
+      definition: extensionPointDefinitionFactory().definition,
+    };
   }
 
   return define<RecipeDefinition>({

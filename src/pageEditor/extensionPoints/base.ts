@@ -224,16 +224,23 @@ export function selectIsAvailable(
 ): NormalizedAvailability {
   assertExtensionPointConfig(extensionPoint);
 
-  const { isAvailable } = extensionPoint.definition;
-  const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
-  const urlPatterns = castArray(isAvailable.urlPatterns ?? []);
-  const selectors = castArray(isAvailable.selectors ?? []);
+  const availability: NormalizedAvailability = {};
 
-  return {
-    matchPatterns,
-    urlPatterns,
-    selectors,
-  };
+  const { isAvailable } = extensionPoint.definition;
+
+  if (isAvailable.matchPatterns) {
+    availability.matchPatterns = castArray(isAvailable.matchPatterns);
+  }
+
+  if (isAvailable.urlPatterns) {
+    availability.urlPatterns = castArray(isAvailable.urlPatterns);
+  }
+
+  if (isAvailable.selectors) {
+    availability.selectors = castArray(isAvailable.selectors);
+  }
+
+  return availability;
 }
 
 /**

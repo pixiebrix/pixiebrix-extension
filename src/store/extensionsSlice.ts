@@ -116,10 +116,14 @@ const extensionsSlice = createSlice({
       } = payload;
 
       for (const {
+        // Required
         id: extensionPointId,
         label,
-        services = {},
         config,
+        // Optional
+        services,
+        permissions,
+        templateEngine,
       } of extensionPoints) {
         const extensionId = uuidv4();
 
@@ -156,13 +160,6 @@ const extensionsSlice = createSlice({
           // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary
           definitions: recipe.definitions ?? {},
           optionsArgs,
-          services: Object.entries(services).map(
-            ([outputKey, id]: [OutputKey, RegistryId]) => ({
-              outputKey,
-              config: auths[id], // eslint-disable-line security/detect-object-injection -- type-checked as RegistryId
-              id,
-            })
-          ),
           label,
           extensionPointId,
           config,
@@ -170,6 +167,24 @@ const extensionsSlice = createSlice({
           createTimestamp: timestamp,
           updateTimestamp: timestamp,
         };
+
+        if (services) {
+          extension.services = Object.entries(services).map(
+            ([outputKey, id]: [OutputKey, RegistryId]) => ({
+              outputKey,
+              config: auths[id], // eslint-disable-line security/detect-object-injection -- type-checked as RegistryId
+              id,
+            })
+          );
+        }
+
+        if (permissions) {
+          extension.permissions = permissions;
+        }
+
+        if (templateEngine) {
+          extension.templateEngine = templateEngine;
+        }
 
         assertExtensionNotResolved(extension);
 

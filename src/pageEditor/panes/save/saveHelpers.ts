@@ -33,18 +33,18 @@ import {
   UnsavedRecipeDefinition,
 } from "@/types/definitions";
 import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
-import { compact, isEmpty, isEqual, pick } from "lodash";
+import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
 import { produce } from "immer";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { freshIdentifier } from "@/utils";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
-import { Except } from "type-fest";
 import {
   DEFAULT_EXTENSION_POINT_VAR,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
 } from "@/pageEditor/extensionPoints/base";
 import slugify from "slugify";
+import { Except } from "type-fest";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -191,17 +191,20 @@ export function replaceRecipeExtension(
     const extensionPointId = element.extensionPoint.metadata.id;
     const hasInnerExtensionPoint = isInnerExtensionPoint(extensionPointId);
 
-    const commonExtensionConfig = {
+    const commonExtensionConfig: Except<ExtensionPointConfig, "id"> = {
       ...pick(rawExtension, [
         "label",
         "config",
         "permissions",
         "templateEngine",
       ]),
-      services: Object.fromEntries(
-        rawExtension.services.map((x) => [x.outputKey, x.id])
-      ),
     };
+
+    if (rawExtension.services) {
+      commonExtensionConfig.services = Object.fromEntries(
+        rawExtension.services.map((x) => [x.outputKey, x.id])
+      );
+    }
 
     if (hasInnerExtensionPoint) {
       const extensionPointConfig = adapter.selectExtensionPoint(element);
@@ -268,6 +271,21 @@ export function replaceRecipeExtension(
   });
 }
 
+function selectExtensionPoint(extension: IExtension): ExtensionPointConfig {
+  const extensionPoint: ExtensionPointConfig = {
+    ...pick(extension, ["label", "config", "permissions", "templateEngine"]),
+    id: extension.extensionPointId,
+  };
+
+  if (!isEmpty(extension.services)) {
+    extensionPoint.services = Object.fromEntries(
+      extension.services.map((x) => [x.outputKey, x.id])
+    );
+  }
+
+  return extensionPoint;
+}
+
 type RecipeParts = {
   sourceRecipe?: RecipeDefinition;
   cleanRecipeExtensions: UnresolvedExtension[];
@@ -324,7 +342,7 @@ export function buildRecipe({
     }
 
     const versionedItems = [...cleanRecipeExtensions, ...dirtyRecipeElements];
-    const { apiVersion: itemsApiVersion } = versionedItems[0];
+    const itemsApiVersion = versionedItems[0]?.apiVersion ?? recipe.apiVersion;
     const badApiVersion = versionedItems.find(
       (item) => item.apiVersion !== itemsApiVersion
     )?.apiVersion;
@@ -341,36 +359,24 @@ export function buildRecipe({
       );
     }
 
-    const dirtyRecipeExtensions: Array<Except<IExtension, "id" | "_recipe">> =
-      dirtyRecipeElements.map((element) => {
+    const dirtyRecipeExtensions: IExtension[] = dirtyRecipeElements.map(
+      (element) => {
         const adapter = ADAPTERS.get(element.type);
         const extension = adapter.selectExtension(element);
-        const extensionPointId = element.extensionPoint.metadata.id;
 
-        const partialExtension: Except<IExtension, "id" | "_recipe"> = {
-          ...pick(extension, [
-            "apiVersion",
-            "label",
-            "config",
-            "permissions",
-            "templateEngine",
-            "services",
-          ]),
-          extensionPointId,
-        };
-
-        if (isInnerExtensionPoint(extensionPointId)) {
+        if (isInnerExtensionPoint(extension.extensionPointId)) {
           const extensionPointConfig = adapter.selectExtensionPoint(element);
-          partialExtension.definitions = {
-            [extensionPointId]: {
-              kind: "extensionPoint1",
+          extension.definitions = {
+            [extension.extensionPointId]: {
+              kind: "extensionPoint",
               definition: extensionPointConfig.definition,
             },
           };
         }
 
-        return partialExtension;
-      });
+        return extension;
+      }
+    );
 
     const recipeInnerDefinitions: InnerDefinitions = {};
     const extensionPoints: ExtensionPointConfig[] = [];
@@ -386,27 +392,43 @@ export function buildRecipe({
       )) {
         const innerKeys = Object.keys(recipeInnerDefinitions);
 
-        // eslint-disable-next-line security/detect-object-injection
-        if (
-          innerKeys.includes(innerId) &&
-          isEqual(definition, recipeInnerDefinitions[innerId])
-        ) {
+        let found = false;
+        let needsFreshId = false;
+        if (isInnerExtensionPoint(innerId)) {
+          needsFreshId = true;
+          for (const [id, innerDefinition] of Object.entries(
+            recipeInnerDefinitions
+          )) {
+            if (isEqual(definition, innerDefinition)) {
+              if (extension.extensionPointId === innerId) {
+                extensionPointId = id as InnerDefinitionRef;
+              }
+
+              found = true;
+              break;
+            }
+          }
+        } else if (innerKeys.includes(innerId)) {
+          needsFreshId = true;
+          // eslint-disable-next-line security/detect-object-injection
+          if (isEqual(definition, recipeInnerDefinitions[innerId])) {
+            found = true;
+          }
+        }
+
+        if (found) {
           // This definition has already been added to the recipe
           continue;
         }
 
-        const newInnerId =
-          innerKeys.includes(innerId) || isInnerExtensionPoint(innerId)
-            ? freshIdentifier(
-                DEFAULT_EXTENSION_POINT_VAR as SafeString,
-                innerKeys
-              )
-            : innerId;
-        if (extension.extensionPointId === innerId) {
-          // We're tracking this with a separate variable here because
-          // re-assigning extension.extensionPointId directly was sometimes
-          // throwing "Cannot assign to read only property 'extensionPointId'
-          // of object '#<Object>'" errors
+        const newInnerId = needsFreshId
+          ? freshIdentifier(
+              DEFAULT_EXTENSION_POINT_VAR as SafeString,
+              innerKeys
+            )
+          : innerId;
+
+        if (needsFreshId && extension.extensionPointId === innerId) {
           extensionPointId = newInnerId as InnerDefinitionRef;
         }
 
@@ -414,27 +436,15 @@ export function buildRecipe({
         recipeInnerDefinitions[newInnerId] = definition;
       }
 
-      const {
-        extensionPointId: oldExtensionPointId,
-        services,
-        ...rest
-      } = extension;
+      const extensionPoint = selectExtensionPoint(extension);
 
-      const extensionPoint: ExtensionPointConfig = {
-        ...pick(rest, ["label", "config", "permissions", "templateEngine"]),
-        id: extensionPointId ?? oldExtensionPointId,
-      };
-
-      if (!isEmpty(services)) {
-        extensionPoint.services = Object.fromEntries(
-          services.map((x) => [x.outputKey, x.id])
-        );
-      }
-
-      extensionPoints.push(extensionPoint);
+      extensionPoints.push({
+        ...extensionPoint,
+        id: extensionPointId ?? extensionPoint.id,
+      });
     }
 
-    draft.extensionPoints = extensionPoints;
+    draft.extensionPoints = sortBy(extensionPoints, (x) => x.id);
     draft.definitions = recipeInnerDefinitions;
   });
 }
