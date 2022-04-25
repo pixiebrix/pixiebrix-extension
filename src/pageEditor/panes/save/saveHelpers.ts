@@ -382,76 +382,118 @@ export function buildRecipe({
       }
     );
 
-    const recipeInnerDefinitions: InnerDefinitions = {};
-    const extensionPoints: ExtensionPointConfig[] = [];
-
-    // Loop through all the IExtensions, pull out the definitions object, put it into the recipe definitions
-    for (const extension of [
+    const { innerDefinitions, extensionPoints } = buildExtensionPoints([
       ...cleanRecipeExtensions,
       ...dirtyRecipeExtensions,
-    ]) {
-      let extensionPointId: RegistryId | InnerDefinitionRef = null;
-      for (const [innerId, definition] of Object.entries(
-        extension.definitions ?? {}
-      )) {
-        const innerKeys = Object.keys(recipeInnerDefinitions);
-
-        let found = false;
-        let needsFreshId = false;
-        if (isInnerExtensionPoint(innerId)) {
-          needsFreshId = true;
-          for (const [id, innerDefinition] of Object.entries(
-            recipeInnerDefinitions
-          )) {
-            if (isEqual(definition, innerDefinition)) {
-              if (extension.extensionPointId === innerId) {
-                extensionPointId = id as InnerDefinitionRef;
-              }
-
-              found = true;
-              break;
-            }
-          }
-        } else if (innerKeys.includes(innerId)) {
-          needsFreshId = true;
-          // eslint-disable-next-line security/detect-object-injection
-          if (isEqual(definition, recipeInnerDefinitions[innerId])) {
-            found = true;
-          }
-        }
-
-        if (found) {
-          // This definition has already been added to the recipe
-          continue;
-        }
-
-        const newInnerId = needsFreshId
-          ? freshIdentifier(
-              DEFAULT_EXTENSION_POINT_VAR as SafeString,
-              innerKeys
-            )
-          : innerId;
-
-        if (needsFreshId && extension.extensionPointId === innerId) {
-          extensionPointId = newInnerId as InnerDefinitionRef;
-        }
-
-        // eslint-disable-next-line security/detect-object-injection -- we just constructed the id
-        recipeInnerDefinitions[newInnerId] = definition;
-      }
-
-      const extensionPoint = selectExtensionPoint(extension);
-
-      extensionPoints.push({
-        ...extensionPoint,
-        id: extensionPointId ?? extensionPoint.id,
-      });
-    }
+    ]);
 
     // This sorting is mostly for test ergonomics for easier equality assertions when
     // things stay in the same order in this array. The clean/dirty elements
     // split/recombination logic causes things to get out of order in the result.
     draft.extensionPoints = sortBy(extensionPoints, (x) => x.id);
-    draft.definitions = recipeInnerDefinitions;
+    draft.definitions = innerDefinitions;
   });
+}
+
+type BuildExtensionPointsResult = {
+  innerDefinitions: InnerDefinitions;
+  extensionPoints: ExtensionPointConfig[];
+};
+
+function buildExtensionPoints(
+  extensions: IExtension[]
+): BuildExtensionPointsResult {
+  const innerDefinitions: InnerDefinitions = {};
+  const extensionPoints: ExtensionPointConfig[] = [];
+
+  for (const extension of extensions) {
+    // When an extensionPointId is an @inner/* style reference, or if the
+    // id has already been used in the recipe, we need to generate a new
+    // extensionPointId to use instead. If we are changing the extensionPointId
+    // of the current extension, then we need to keep track of this change
+    // so that we can build the extensionPoint with the correct id.
+    let newExtensionPointId: RegistryId | InnerDefinitionRef = null;
+
+    for (const [extensionPointId, definition] of Object.entries(
+      extension.definitions ?? {}
+    )) {
+      const usedExtensionPointIds = Object.keys(innerDefinitions);
+
+      let isDefinitionAlreadyAdded = false;
+      let needsFreshExtensionPointId = false;
+
+      if (isInnerExtensionPoint(extensionPointId)) {
+        // Always replace inner ids
+        needsFreshExtensionPointId = true;
+
+        // Check to see if the definition has already been added under a different id
+        for (const [id, innerDefinition] of Object.entries(innerDefinitions)) {
+          if (isEqual(definition, innerDefinition)) {
+            // We found a match in the definitions we've already built
+            isDefinitionAlreadyAdded = true;
+
+            // If this definition matches the extension's extensionPointId, track
+            // the id change with our variable declared above.
+            if (extension.extensionPointId === extensionPointId) {
+              newExtensionPointId = id as InnerDefinitionRef;
+            }
+
+            // If we found a matching definition, we don't need to keep searching
+            break;
+          }
+        }
+      } else if (usedExtensionPointIds.includes(extensionPointId)) {
+        // We already used this extensionPointId, need to generate a fresh one
+        needsFreshExtensionPointId = true;
+
+        // eslint-disable-next-line security/detect-object-injection
+        if (isEqual(definition, innerDefinitions[extensionPointId])) {
+          // Not only has the id been used before, but the definition deeply matches
+          // the one being added as well
+          isDefinitionAlreadyAdded = true;
+        }
+      }
+
+      if (isDefinitionAlreadyAdded) {
+        // This definition has already been added to the recipe, so we can move on
+        continue;
+      }
+
+      const newInnerId = needsFreshExtensionPointId
+        ? freshIdentifier(
+            DEFAULT_EXTENSION_POINT_VAR as SafeString,
+            usedExtensionPointIds
+          )
+        : extensionPointId;
+
+      // If the definition being added had the same extensionPointId as the extension,
+      // and if we generated a new extensionPointId for the definition, then we also
+      // need to update the id for the extensionPoint we're going to add that references
+      // this definition.
+      if (
+        needsFreshExtensionPointId &&
+        extension.extensionPointId === extensionPointId
+      ) {
+        newExtensionPointId = newInnerId as InnerDefinitionRef;
+      }
+
+      // eslint-disable-next-line security/detect-object-injection -- we just constructed the id
+      innerDefinitions[newInnerId] = definition;
+    }
+
+    // Construct the extension point config from the extension
+    const extensionPoint = selectExtensionPoint(extension);
+
+    // Add the extensionPoint, replacing the id with our updated
+    // extensionPointId, if we've tracked a change in newExtensionPointId
+    extensionPoints.push({
+      ...extensionPoint,
+      id: newExtensionPointId ?? extensionPoint.id,
+    });
+  }
+
+  return {
+    innerDefinitions,
+    extensionPoints,
+  };
 }
