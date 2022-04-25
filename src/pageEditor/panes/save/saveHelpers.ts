@@ -345,6 +345,7 @@ export function buildRecipe({
     }
 
     const versionedItems = [...cleanRecipeExtensions, ...dirtyRecipeElements];
+    // We need to handle the unlikely edge-case of zero extensions here, hence the null-coalesce
     const itemsApiVersion = versionedItems[0]?.apiVersion ?? recipe.apiVersion;
     const badApiVersion = versionedItems.find(
       (item) => item.apiVersion !== itemsApiVersion
