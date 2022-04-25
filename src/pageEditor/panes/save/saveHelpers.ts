@@ -448,6 +448,9 @@ export function buildRecipe({
       });
     }
 
+    // This sorting is mostly for test ergonomics for easier equality assertions when
+    // things stay in the same order in this array. The clean/dirty elements
+    // split/recombination logic causes things to get out of order in the result.
     draft.extensionPoints = sortBy(extensionPoints, (x) => x.id);
     draft.definitions = recipeInnerDefinitions;
   });
