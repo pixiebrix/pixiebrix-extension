@@ -49,7 +49,6 @@ import {
 import {
   EditablePackage,
   OptionsDefinition,
-  RecipeDefinition,
   UnsavedRecipeDefinition,
 } from "@/types/definitions";
 import {
@@ -58,7 +57,6 @@ import {
 } from "@/extensionPoints/types";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { FormState } from "@/pageEditor/pageEditorTypes";
-import { ExtensionOptionsState } from "@/store/extensionsTypes";
 
 jest.mock("@/background/contextMenus");
 jest.mock("@/background/messenger/api");
@@ -604,278 +602,90 @@ function selectExtensionPoints(
   });
 }
 
-type InstalledRecipe = {
-  recipe: RecipeDefinition;
-  state: ExtensionOptionsState;
-};
-
-function installRecipe(extensionCount = 1): InstalledRecipe {
-  const recipe = versionedRecipeWithResolvedExtensions(extensionCount)();
-
-  const state = extensionsSlice.reducer(
-    { extensions: [] },
-    extensionsSlice.actions.installRecipe({
-      recipe,
-      services: {},
-      extensionPoints: recipe.extensionPoints,
-    })
-  );
-
-  return { recipe, state };
-}
-
 describe("buildRecipe", () => {
-  test("one clean extension", () => {
-    const { recipe, state } = installRecipe(1);
+  test.each`
+    cleanExtensionCount | dirtyExtensionCount
+    ${1}                | ${0}
+    ${2}                | ${0}
+    ${3}                | ${0}
+    ${0}                | ${1}
+    ${0}                | ${2}
+    ${0}                | ${3}
+    ${1}                | ${1}
+    ${2}                | ${1}
+    ${1}                | ${2}
+    ${2}                | ${2}
+  `(
+    "Test recipe with $cleanExtensionCount clean, and $dirtyExtensionCount changed/dirty extensions",
+    async ({
+      cleanExtensionCount,
+      dirtyExtensionCount,
+    }: {
+      cleanExtensionCount: number;
+      dirtyExtensionCount: number;
+    }) => {
+      const extensionCount = cleanExtensionCount + dirtyExtensionCount;
 
-    const newRecipe = buildRecipe({
-      sourceRecipe: recipe,
-      cleanRecipeExtensions: state.extensions,
-      dirtyRecipeElements: [],
-    });
+      // Create a recipe
+      const recipe = versionedRecipeWithResolvedExtensions(extensionCount)();
 
-    expect(newRecipe).toStrictEqual(recipe);
-  });
-
-  test("two clean extensions", () => {
-    const { recipe, state } = installRecipe(2);
-
-    const newRecipe = buildRecipe({
-      sourceRecipe: recipe,
-      cleanRecipeExtensions: state.extensions,
-      dirtyRecipeElements: [],
-    });
-
-    expect(newRecipe).toStrictEqual(recipe);
-  });
-
-  test("three clean extensions", () => {
-    const { recipe, state } = installRecipe(3);
-
-    const newRecipe = buildRecipe({
-      sourceRecipe: recipe,
-      cleanRecipeExtensions: state.extensions,
-      dirtyRecipeElements: [],
-    });
-
-    expect(newRecipe).toStrictEqual(recipe);
-  });
-
-  test("one dirty element", async () => {
-    const { recipe, state } = installRecipe(1);
-
-    const [extensionPoint] = selectExtensionPoints(recipe);
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
-
-    const extension = state.extensions[0];
-    const adapter = ADAPTERS.get(extensionPoint.definition.type);
-    const element = (await adapter.fromExtension(extension)) as FormState;
-
-    const newLabel = "New Label";
-    element.label = newLabel;
-
-    const newRecipe = buildRecipe({
-      sourceRecipe: recipe,
-      cleanRecipeExtensions: [],
-      dirtyRecipeElements: [element],
-    });
-
-    const updated = produce(recipe, (draft) => {
-      draft.extensionPoints[0].label = newLabel;
-    });
-
-    expect(newRecipe).toStrictEqual(updated);
-  });
-
-  test("two dirty elements", async () => {
-    const { recipe, state } = installRecipe(2);
-
-    const extensionPoints = selectExtensionPoints(recipe);
-
-    const elements: FormState[] = [];
-
-    for (const [index, extensionPoint] of extensionPoints.entries()) {
-      (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
-      const extension = state.extensions[index];
-      const adapter = ADAPTERS.get(extensionPoint.definition.type);
-      // eslint-disable-next-line no-await-in-loop
-      const element = (await adapter.fromExtension(extension)) as FormState;
-      element.label = `New Label ${index}`;
-      elements.push(element);
-    }
-
-    const newRecipe = buildRecipe({
-      sourceRecipe: recipe,
-      cleanRecipeExtensions: [],
-      dirtyRecipeElements: elements,
-    });
-
-    const updated = produce(recipe, (draft) => {
-      for (const [index, extensionPoint] of draft.extensionPoints.entries()) {
-        extensionPoint.label = `New Label ${index}`;
-      }
-    });
-
-    expect(newRecipe).toStrictEqual(updated);
-  });
-
-  test("three dirty elements", async () => {
-    const { recipe, state } = installRecipe(3);
-
-    const extensionPoints = selectExtensionPoints(recipe);
-
-    const elements: FormState[] = [];
-
-    for (const [index, extensionPoint] of extensionPoints.entries()) {
-      (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
-      const extension = state.extensions[0];
-      const adapter = ADAPTERS.get(extensionPoint.definition.type);
-      // eslint-disable-next-line no-await-in-loop
-      const element = (await adapter.fromExtension(extension)) as FormState;
-      element.label = `New Label ${index}`;
-      elements.push(element);
-    }
-
-    const newRecipe = buildRecipe({
-      sourceRecipe: recipe,
-      cleanRecipeExtensions: [],
-      dirtyRecipeElements: elements,
-    });
-
-    const updated = produce(recipe, (draft) => {
-      for (const [index, extensionPoint] of draft.extensionPoints.entries()) {
-        extensionPoint.label = `New Label ${index}`;
-      }
-    });
-
-    expect(newRecipe).toStrictEqual(updated);
-  });
-
-  test("one dirty element and one clean extension", async () => {
-    const { recipe, state } = installRecipe(2);
-
-    const [extensionPoint] = selectExtensionPoints(recipe);
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
-    const extension = state.extensions[0];
-    const adapter = ADAPTERS.get(extensionPoint.definition.type);
-    const element = (await adapter.fromExtension(extension)) as FormState;
-    const newLabel = "New Label";
-    const oldLabel = element.label;
-    element.label = newLabel;
-
-    const newRecipe = buildRecipe({
-      sourceRecipe: recipe,
-      cleanRecipeExtensions: [state.extensions[1]],
-      dirtyRecipeElements: [element],
-    });
-
-    const updated = produce(recipe, (draft) => {
-      const extensionPoint = draft.extensionPoints.find(
-        (x) => x.label === oldLabel
+      // Install the recipe
+      const state = extensionsSlice.reducer(
+        { extensions: [] },
+        extensionsSlice.actions.installRecipe({
+          recipe,
+          services: {},
+          extensionPoints: recipe.extensionPoints,
+        })
       );
-      extensionPoint.label = newLabel;
-    });
 
-    expect(newRecipe).toStrictEqual(updated);
-  });
+      // Collect the dirty form states for any changed extensions
+      const elements: FormState[] = [];
 
-  test("one dirty element and two clean extensions", async () => {
-    const { recipe, state } = installRecipe(3);
+      if (dirtyExtensionCount > 0) {
+        const extensionPoints = selectExtensionPoints(recipe);
 
-    const [extensionPoint] = selectExtensionPoints(recipe);
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
-    const extension = state.extensions[0];
-    const adapter = ADAPTERS.get(extensionPoint.definition.type);
-    const element = (await adapter.fromExtension(extension)) as FormState;
-    const newLabel = "New Label";
-    const oldLabel = element.label;
-    element.label = newLabel;
+        for (let i = 0; i < dirtyExtensionCount; i++) {
+          const extensionPoint = extensionPoints[i];
+          // Mock this lookup for the adapter call that follows
+          (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
 
-    const newRecipe = buildRecipe({
-      sourceRecipe: recipe,
-      cleanRecipeExtensions: [state.extensions[1], state.extensions[2]],
-      dirtyRecipeElements: [element],
-    });
+          // Recipe was installed, so get the extension from state
+          const extension = state.extensions[i];
 
-    const updated = produce(recipe, (draft) => {
-      const extensionPoint = draft.extensionPoints.find(
-        (x) => x.label === oldLabel
-      );
-      extensionPoint.label = newLabel;
-    });
+          // Load the adapter for this extension
+          const adapter = ADAPTERS.get(extensionPoint.definition.type);
 
-    expect(newRecipe).toStrictEqual(updated);
-  });
+          // Use the adapter to convert to FormState
+          // eslint-disable-next-line no-await-in-loop -- This is much easier to read than a large Promise.all() block
+          const element = (await adapter.fromExtension(extension)) as FormState;
 
-  test("two dirty elements and one clean extension", async () => {
-    const { recipe, state } = installRecipe(3);
+          // Edit the label
+          element.label = `New Label ${i}`;
 
-    const extensionPoints = selectExtensionPoints(recipe);
-
-    const elements: FormState[] = [];
-
-    for (const [index, extensionPoint] of extensionPoints
-      .slice(0, 2)
-      .entries()) {
-      (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
-      const extension = state.extensions[index];
-      const adapter = ADAPTERS.get(extensionPoint.definition.type);
-      // eslint-disable-next-line no-await-in-loop
-      const element = (await adapter.fromExtension(extension)) as FormState;
-      element.label = `New Label ${index}`;
-      elements.push(element);
-    }
-
-    const newRecipe = buildRecipe({
-      sourceRecipe: recipe,
-      cleanRecipeExtensions: [state.extensions[2]],
-      dirtyRecipeElements: elements,
-    });
-
-    const updated = produce(recipe, (draft) => {
-      for (const [index, extensionPoint] of draft.extensionPoints
-        .slice(0, 2)
-        .entries()) {
-        extensionPoint.label = `New Label ${index}`;
+          elements.push(element);
+        }
       }
-    });
 
-    expect(newRecipe).toStrictEqual(updated);
-  });
+      // Call the function under test
+      const newRecipe = buildRecipe({
+        sourceRecipe: recipe,
+        // Only pass in the unchanged clean extensions
+        cleanRecipeExtensions: state.extensions.slice(dirtyExtensionCount),
+        dirtyRecipeElements: elements,
+      });
 
-  test("two dirty elements and two clean extensions", async () => {
-    const { recipe, state } = installRecipe(4);
+      // Update the source recipe with the expected label changes
+      const updated = produce(recipe, (draft) => {
+        for (const [index, extensionPoint] of draft.extensionPoints
+          .slice(0, dirtyExtensionCount)
+          .entries()) {
+          extensionPoint.label = `New Label ${index}`;
+        }
+      });
 
-    const extensionPoints = selectExtensionPoints(recipe);
-
-    const elements: FormState[] = [];
-
-    for (const [index, extensionPoint] of extensionPoints
-      .slice(0, 2)
-      .entries()) {
-      (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
-      const extension = state.extensions[index];
-      const adapter = ADAPTERS.get(extensionPoint.definition.type);
-      // eslint-disable-next-line no-await-in-loop
-      const element = (await adapter.fromExtension(extension)) as FormState;
-      element.label = `New Label ${index}`;
-      elements.push(element);
+      // Compare results
+      expect(newRecipe).toStrictEqual(updated);
     }
-
-    const newRecipe = buildRecipe({
-      sourceRecipe: recipe,
-      cleanRecipeExtensions: [state.extensions[2], state.extensions[3]],
-      dirtyRecipeElements: elements,
-    });
-
-    const updated = produce(recipe, (draft) => {
-      for (const [index, extensionPoint] of draft.extensionPoints
-        .slice(0, 2)
-        .entries()) {
-        extensionPoint.label = `New Label ${index}`;
-      }
-    });
-
-    expect(newRecipe).toStrictEqual(updated);
-  });
+  );
 });
