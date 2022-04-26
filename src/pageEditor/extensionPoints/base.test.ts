@@ -16,10 +16,7 @@
  */
 
 import { removeEmptyValues, selectIsAvailable } from "./base";
-import {
-  extensionPointConfigFactory,
-  extensionPointDefinitionFactory,
-} from "@/testUtils/factories";
+import { extensionPointDefinitionFactory } from "@/testUtils/factories";
 
 describe("removeEmptyValues()", () => {
   test("removes empty non-expression values", () => {
