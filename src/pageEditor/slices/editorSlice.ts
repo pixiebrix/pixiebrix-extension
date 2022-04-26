@@ -35,7 +35,7 @@ import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
-import { isEmpty } from "lodash";
+import { isEmpty, reverse, set } from "lodash";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
@@ -338,14 +338,22 @@ export const editorSlice = createSlice({
       state,
       action: PayloadAction<{
         tabKey: DataPanelTabKey;
-        treeExpandedState: TreeExpandedState;
+        keyPath: Array<string | number>;
+        isExpanded: boolean;
       }>
     ) {
-      const { tabKey, treeExpandedState } = action.payload;
+      const { tabKey, keyPath, isExpanded } = action.payload;
       const elementUIState = state.elementUIStates[state.activeElementId];
-      elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
-        tabKey
-      ].treeExpandedState = treeExpandedState;
+      const tabState =
+        elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
+          tabKey
+        ];
+
+      if (tabState.treeExpandedState == null) {
+        tabState.treeExpandedState = {};
+      }
+
+      set(tabState.treeExpandedState, reverse([...keyPath]), isExpanded);
     },
     copyBlockConfig(state, action: PayloadAction<BlockConfig>) {
       const copy = { ...action.payload };

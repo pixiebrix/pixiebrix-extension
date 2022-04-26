@@ -18,7 +18,7 @@
 import styles from "./JsonTree.module.scss";
 import { JSONTree } from "react-json-tree";
 import { jsonTreeTheme as theme } from "@/themes/light";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useDebounce } from "use-debounce";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import Loader from "@/components/Loader";
@@ -67,9 +67,18 @@ export type JsonTreeProps = Partial<JSONTree["props"]> & {
    */
   label?: string;
 
+  /**
+   * Nodes to expand on first render
+   */
   initialExpandedState?: TreeExpandedState;
 
-  onExpandedStateChange?: (expandedState: TreeExpandedState) => void;
+  /**
+   * Change listener for the expanded state
+   */
+  onExpandedStateChange?: (
+    keyPath: Array<string | number>,
+    isExpanded: boolean
+  ) => void;
 };
 
 function normalize(value: Primitive): string {
@@ -147,25 +156,19 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
     [onSearchQueryChange]
   );
 
-  const [nodeState, setNodeState] = useState(initialExpandedState);
-
+  // The initialExpandedState is only used for initialization. The actual expanded state is handled by JSONTree internally.
+  const initialExpanded = useRef(initialExpandedState).current;
   const setExpanded = (
     keyPath: Array<string | number>,
     isExpanded: boolean
   ) => {
-    const newNodeState = set(
-      { ...nodeState },
-      reverse([...keyPath]),
-      isExpanded
-    );
-    setNodeState(newNodeState);
     if (onExpandedStateChange) {
-      onExpandedStateChange(newNodeState);
+      onExpandedStateChange(keyPath, isExpanded);
     }
   };
 
   const getExpanded = (keyPath: Array<string | number>) =>
-    Boolean(get(nodeState, reverse([...keyPath])));
+    Boolean(get(initialExpanded, reverse([...keyPath])));
 
   const labelText = query ? `Search Results: ${query}` : label;
 
