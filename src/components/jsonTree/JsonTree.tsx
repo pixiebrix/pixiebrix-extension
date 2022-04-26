@@ -26,7 +26,6 @@ import { useLabelRenderer } from "./treeHooks";
 import {
   get,
   reverse,
-  set,
   compact,
   includes,
   isEmpty,

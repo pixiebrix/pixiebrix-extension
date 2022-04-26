@@ -36,7 +36,6 @@ import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
 import { isEmpty, reverse, set } from "lodash";
-import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 export const initialState: EditorState = {
