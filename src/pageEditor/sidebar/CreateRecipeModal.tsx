@@ -56,74 +56,21 @@ import { object, string } from "yup";
 import LoadingDataModal from "@/pageEditor/panes/save/LoadingDataModal";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
+import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 
 const { actions: optionsActions } = extensionsSlice;
 
-const CreateRecipeModal: React.VFC = () => {
-  const newRecipeIds = useSelector(selectNewRecipeIds);
-  const activeElement = useSelector(selectActiveElement);
-  const activeRecipeId = useSelector(selectActiveRecipeId);
-  const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
-  const activeRecipe = recipes.find(
-    (recipe) => recipe.metadata.id === activeRecipeId
-  );
+function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
+  const dispatch = useDispatch();
+  const [createRecipe] = useCreateRecipeMutation();
+  const createExtension = useCreate();
+
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
   const installedExtensions = useSelector(selectExtensions);
   const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptions);
   const deletedElementsByRecipeId = useSelector(selectDeletedElements);
-  const scope = useSelector(selectScope);
-  const [createRecipe] = useCreateRecipeMutation();
-  const create = useCreate();
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
-
-  // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
-  // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
-  const createRecipeSchema = object({
-    id: string()
-      .matches(PACKAGE_REGEX, "Invalid registry id")
-      .notOneOf(newRecipeIds, "This id is already in use")
-      .required(),
-    name: string().required(),
-    version: string()
-      .test(
-        "semver",
-        "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
-        (value: string) => validateSemVerString(value, false)
-      )
-      .required(),
-    description: string(),
-  });
-
-  const dispatch = useDispatch();
-  const hideModal = useCallback(() => {
-    dispatch(editorActions.hideCreateRecipeModal());
-  }, [dispatch]);
-
-  let initialFormState: RecipeMetadataFormState = null;
-
-  if (activeRecipe) {
-    // Handle the "Save As New" case, where an existing recipe is selected
-    initialFormState = {
-      id: generateScopeBrickId(scope, activeRecipeId),
-      name: activeRecipe.metadata.name,
-      version: "1.0.0",
-      description: activeRecipe.metadata.description,
-    };
-  } else if (activeElement) {
-    // Handle creating a new blueprint from a selected extension
-    initialFormState = {
-      id: generateRecipeId(scope, activeElement.label),
-      name: activeElement.label,
-      version: "1.0.0",
-      description: "Created with the PixieBrix Page Editor",
-    };
-  } else {
-    // XXX: The render loop contains useGetRecipesQuery. So, there's a state where activeRecipe won't be set yet even
-    // if there is a recipe selected. To simplify this in the future, we may want to wrap the core logic behind a
-    // loader to avoid handling intermediate loading states.
-    initialFormState = null;
-  }
 
   const createRecipeFromElement = useCallback(
     async (element: FormState, metadata: RecipeMetadataFormState) => {
@@ -145,7 +92,7 @@ const CreateRecipeModal: React.VFC = () => {
       });
       dispatch(editorActions.addElement(recipeElement));
       // Don't push to cloud since we're saving it with the recipe
-      await create({ element: recipeElement, pushToCloud: false });
+      await createExtension({ element: recipeElement, pushToCloud: false });
       if (!keepLocalCopy) {
         dispatch(editorActions.removeElement(activeElement.uuid));
         dispatch(
@@ -153,7 +100,7 @@ const CreateRecipeModal: React.VFC = () => {
         );
       }
     },
-    [activeElement, create, createRecipe, dispatch, keepLocalCopy]
+    [activeElement, createExtension, createRecipe, dispatch, keepLocalCopy]
   );
 
   const createRecipeFromRecipe = useCallback(
@@ -196,14 +143,6 @@ const CreateRecipeModal: React.VFC = () => {
         public: false,
       }).unwrap();
 
-      // Uninstall the previous recipe's extensions
-      for (const { id: extensionId } of installedExtensions.filter(
-        (extension) => extension._recipe?.id === recipeId
-      )) {
-        dispatch(optionsActions.removeExtension({ extensionId }));
-      }
-
-      // Install the new recipe
       const savedRecipe: RecipeDefinition = {
         ...newRecipe,
         sharing: {
@@ -212,10 +151,22 @@ const CreateRecipeModal: React.VFC = () => {
         },
         updated_at: response.updated_at,
       };
+
+      // Replace the old recipe with the new recipe locally. The logic here is similar to what's in useReinstall.ts
+
+      dispatch(optionsActions.removeRecipeById(recipeId));
+
       dispatch(
         optionsActions.installRecipe({
           recipe: savedRecipe,
-          services: {},
+          services: inferRecipeAuths([
+            ...dirtyRecipeElements,
+            ...cleanRecipeExtensions,
+          ]),
+          optionsArgs: inferRecipeOptions([
+            ...dirtyRecipeElements,
+            ...cleanRecipeExtensions,
+          ]),
           extensionPoints: savedRecipe.extensionPoints,
         })
       );
@@ -240,38 +191,126 @@ const CreateRecipeModal: React.VFC = () => {
     ]
   );
 
-  const onSubmit = useCallback<OnSubmit<RecipeMetadataFormState>>(
-    async (values, helpers) => {
-      try {
-        if (activeElement) {
-          await createRecipeFromElement(activeElement, values);
-        } else if (activeRecipe) {
-          await createRecipeFromRecipe(activeRecipe, values);
-        }
+  return {
+    createRecipeFromElement,
+    createRecipeFromRecipe,
+  };
+}
 
-        hideModal();
-      } catch (error) {
-        if (isAxiosError(error) && error.response.data.config) {
-          helpers.setStatus(error.response.data.config);
-          return;
-        }
+function useInitialFormState({
+  activeRecipe,
+  activeElement,
+}: {
+  activeElement: FormState;
+  activeRecipe: RecipeDefinition | null;
+}): RecipeMetadataFormState | null {
+  const scope = useSelector(selectScope);
 
-        notify.error({
-          message: "Error creating blueprint",
-          error,
-        });
-      } finally {
-        helpers.setSubmitting(false);
-      }
-    },
-    [
-      activeElement,
-      activeRecipe,
-      createRecipeFromElement,
-      createRecipeFromRecipe,
-      hideModal,
-    ]
+  if (activeRecipe) {
+    // Handle the "Save As New" case, where an existing recipe is selected
+    return {
+      id: generateScopeBrickId(scope, activeRecipe.metadata.id),
+      name: activeRecipe.metadata.name,
+      version: "1.0.0",
+      description: activeRecipe.metadata.description,
+    };
+  }
+
+  if (activeElement) {
+    // Handle creating a new blueprint from a selected extension
+    return {
+      id: generateRecipeId(scope, activeElement.label),
+      name: activeElement.label,
+      version: "1.0.0",
+      description: "Created with the PixieBrix Page Editor",
+    };
+  }
+
+  // XXX: The Modal render loop contains useGetRecipesQuery. So, there's a state where activeRecipe won't be set yet
+  // even if there is a recipe selected. To simplify this in the future, we may want to wrap the core logic behind a
+  // loader to avoid handling intermediate loading states.
+  return null;
+}
+
+function useFormSchema() {
+  const newRecipeIds = useSelector(selectNewRecipeIds);
+
+  // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
+  // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
+  return object({
+    id: string()
+      .matches(PACKAGE_REGEX, "Invalid registry id")
+      .notOneOf(newRecipeIds, "This id is already in use")
+      .required(),
+    name: string().required(),
+    version: string()
+      .test(
+        "semver",
+        "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
+        (value: string) => validateSemVerString(value, false)
+      )
+      .required(),
+    description: string(),
+  });
+}
+
+const CreateRecipeModal: React.VFC = () => {
+  const dispatch = useDispatch();
+
+  const activeElement = useSelector(selectActiveElement);
+
+  const activeRecipeId = useSelector(selectActiveRecipeId);
+  const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
+  const activeRecipe = recipes.find(
+    (recipe) => recipe.metadata.id === activeRecipeId
   );
+
+  const formSchema = useFormSchema();
+
+  const hideModal = useCallback(() => {
+    dispatch(editorActions.hideCreateRecipeModal());
+  }, [dispatch]);
+
+  const initialFormState = useInitialFormState({ activeElement, activeRecipe });
+  const { createRecipeFromElement, createRecipeFromRecipe } = useSaveCallbacks({
+    activeElement,
+  });
+
+  // Loading state -- could consider refactoring into two components: 1) modal with loading state, 2) form
+  if (activeRecipeId && isRecipesLoading) {
+    return <LoadingDataModal onClose={hideModal} />;
+  }
+
+  const onSubmit: OnSubmit<RecipeMetadataFormState> = async (
+    values,
+    helpers
+  ) => {
+    try {
+      if (activeElement) {
+        await createRecipeFromElement(activeElement, values);
+      } else if (activeRecipe) {
+        await createRecipeFromRecipe(activeRecipe, values);
+      } else {
+        // Should not happen in practice
+        // noinspection ExceptionCaughtLocallyJS
+        throw new Error("Expected either active element or blueprint");
+      }
+
+      hideModal();
+    } catch (error) {
+      if (isAxiosError(error) && error.response.data.config) {
+        helpers.setStatus(error.response.data.config);
+        return;
+      }
+
+      notify.error({
+        message: "Error creating blueprint",
+        error,
+      });
+    } finally {
+      helpers.setSubmitting(false);
+    }
+  };
 
   const renderBody: RenderBody = () => (
     <Modal.Body>
@@ -317,10 +356,6 @@ const CreateRecipeModal: React.VFC = () => {
     </Modal.Footer>
   );
 
-  if (activeRecipeId && isRecipesLoading) {
-    return <LoadingDataModal onClose={hideModal} />;
-  }
-
   return (
     <Modal show onHide={hideModal}>
       <Modal.Header closeButton>
@@ -328,7 +363,7 @@ const CreateRecipeModal: React.VFC = () => {
       </Modal.Header>
       <RequireScope scopeSettingsDescription="To create a blueprint, you must first set an account alias for your PixieBrix account">
         <Form
-          validationSchema={createRecipeSchema}
+          validationSchema={formSchema}
           initialValues={initialFormState}
           onSubmit={onSubmit}
           renderBody={renderBody}

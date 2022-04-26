@@ -126,6 +126,8 @@ export interface EditorState {
    */
   dirtyRecipeMetadataById: Record<RegistryId, RecipeMetadataFormState>;
 
+  // XXX: refactor the is<Modal>Visible state: https://github.com/pixiebrix/pixiebrix-extension/issues/3264
+
   /**
    * Are we showing the "add extension to blueprint" modal?
    */
@@ -149,6 +151,8 @@ export interface EditorState {
   /**
    * When creating a new blueprint from an existing extension, should we keep a separate copy of the extension?
    */
+  // XXX: refactor & remove from top-level Redux state. This is a property of the create recipe workflow:
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/3264
   keepLocalCopyOnCreateRecipe: boolean;
 
   /**
