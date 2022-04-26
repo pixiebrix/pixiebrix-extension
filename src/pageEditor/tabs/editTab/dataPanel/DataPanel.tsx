@@ -53,7 +53,6 @@ import { selectNodePreviewActiveElement } from "@/pageEditor/uiState/uiState";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 // TODO
-// - Simplify selector/action to always use Preview tab
 // - Update the usage of JsonTree for DataTabJsonTree in other components
 // - Fix the rendering error: Cannot update a component (`SidebarExpanded`) while rendering a different component (`JSONNestedNode`).
 
@@ -156,12 +155,8 @@ const DataPanel: React.FC<{
   );
 
   const [activeElement, setActiveElement] = useReduxState(
-    (state: RootState) => selectNodePreviewActiveElement(state, activeTabKey),
-    (activeElement) =>
-      editorActions.setNodePreviewActiveElement({
-        tabKey: activeTabKey,
-        activeElement,
-      })
+    selectNodePreviewActiveElement,
+    editorActions.setNodePreviewActiveElement
   );
 
   const popupBoundary = showDocumentPreview

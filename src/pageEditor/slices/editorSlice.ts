@@ -366,14 +366,11 @@ export const editorSlice = createSlice({
     /**
      * Updates the active element of a Document or Form builder on the Preview tab
      */
-    setNodePreviewActiveElement(
-      state,
-      action: PayloadAction<{ tabKey: DataPanelTabKey; activeElement: string }>
-    ) {
-      const { tabKey, activeElement } = action.payload;
+    setNodePreviewActiveElement(state, action: PayloadAction<string>) {
+      const activeElement = action.payload;
       const elementUIState = state.elementUIStates[state.activeElementId];
       elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
-        tabKey
+        DataPanelTabKey.Preview
       ].activeElement = activeElement;
     },
     copyBlockConfig(state, action: PayloadAction<BlockConfig>) {

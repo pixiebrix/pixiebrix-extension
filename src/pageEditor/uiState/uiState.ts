@@ -84,9 +84,10 @@ export function selectNodeDataPanelTabState(
   return nodeUIState.dataPanel[tabKey];
 }
 
-export function selectNodePreviewActiveElement(
-  rootState: RootState,
-  tabKey: DataPanelTabKey
-): string {
-  return selectNodeDataPanelTabState(rootState, tabKey).activeElement;
+/**
+ * Selects the activeElement of the Document or Form builder on the Preview tab
+ */
+export function selectNodePreviewActiveElement(rootState: RootState): string {
+  return selectNodeDataPanelTabState(rootState, DataPanelTabKey.Preview)
+    .activeElement;
 }

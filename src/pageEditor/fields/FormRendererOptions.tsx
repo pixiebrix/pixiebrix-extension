@@ -22,10 +22,8 @@ import { validateRegistryId } from "@/types/helpers";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
-import { RootState } from "@/pageEditor/pageEditorTypes";
 import { selectNodePreviewActiveElement } from "@/pageEditor/uiState/uiState";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
@@ -39,13 +37,8 @@ const FormRendererOptions: React.FC<{
   configKey: string;
 }> = ({ name, configKey }) => {
   const [activeElement, setActiveElement] = useReduxState(
-    (state: RootState) =>
-      selectNodePreviewActiveElement(state, DataPanelTabKey.Preview),
-    (activeElement) =>
-      editorActions.setNodePreviewActiveElement({
-        tabKey: DataPanelTabKey.Preview,
-        activeElement,
-      })
+    selectNodePreviewActiveElement,
+    editorActions.setNodePreviewActiveElement
   );
 
   const configName = `${name}.${configKey}`;

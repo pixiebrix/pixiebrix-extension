@@ -23,10 +23,8 @@ import DocumentEditor from "@/components/documentBuilder/edit/DocumentEditor";
 import useReduxState from "@/hooks/useReduxState";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
-import { RootState } from "@/pageEditor/pageEditorTypes";
 import { selectNodePreviewActiveElement } from "@/pageEditor/uiState/uiState";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 export const DOCUMENT_ID = validateRegistryId("@pixiebrix/document");
 
@@ -35,13 +33,8 @@ const DocumentOptions: React.FC<{
   configKey: string;
 }> = ({ name, configKey }) => {
   const [activeElement, setActiveElement] = useReduxState(
-    (state: RootState) =>
-      selectNodePreviewActiveElement(state, DataPanelTabKey.Preview),
-    (activeElement) =>
-      editorActions.setNodePreviewActiveElement({
-        tabKey: DataPanelTabKey.Preview,
-        activeElement,
-      })
+    selectNodePreviewActiveElement,
+    editorActions.setNodePreviewActiveElement
   );
 
   const bodyName = joinName(name, configKey, "body");
