@@ -30,9 +30,15 @@ import {
   Metadata,
   RecipeMetadata,
   UUID,
+  InnerDefinitions,
+  SafeString,
 } from "@/core";
 import { TraceError, TraceRecord } from "@/telemetry/trace";
-import { uuidv4, validateRegistryId, validateTimestamp } from "@/types/helpers";
+import {
+  validateRegistryId,
+  validateTimestamp,
+  validateUUID,
+} from "@/types/helpers";
 import { Permissions } from "webextension-polyfill";
 import { BaseExtensionState } from "@/pageEditor/extensionPoints/elementConfig";
 import trigger from "@/pageEditor/extensionPoints/trigger";
@@ -47,6 +53,7 @@ import {
   SharingDefinition,
 } from "@/types/definitions";
 import {
+  ExtensionPointDefinition as ExtensionPointConfigDefinition,
   ExtensionPointConfig as ExtensionPointDefinition,
   ExtensionPointType,
 } from "@/extensionPoints/types";
@@ -59,6 +66,14 @@ import { Deployment } from "@/types/contract";
 import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
 import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { freshIdentifier } from "@/utils";
+import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
+import { padStart } from "lodash";
+
+// UUID sequence generator that's predictable across runs. A couple characters can't be 0
+// https://stackoverflow.com/a/19989922/402560
+const uuidSequence = (n: number) =>
+  validateUUID(`${padStart(String(n), 8, "0")}-0000-4000-A000-000000000000`);
 
 export const recipeMetadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),
@@ -84,7 +99,7 @@ export const installedRecipeMetadataFactory = define<RecipeMetadata>({
 const tabStateFactory = define<FrameConnectionState>({
   frameId: 0,
   hasPermissions: true,
-  navSequence: uuidv4(),
+  navSequence: uuidSequence,
   meta: null,
 });
 
@@ -93,26 +108,20 @@ export const activeDevToolContextFactory = define<PageEditorTabContextType>({
   tabState: tabStateFactory,
 });
 
-export const extensionFactory: (
-  extensionProps?: Partial<IExtension>
-) => IExtension = (extensionProps) => ({
-  id: uuidv4(),
+export const extensionFactory = define<IExtension>({
+  id: uuidSequence,
   apiVersion: "v2" as ApiVersion,
-  extensionPointId: validateRegistryId("test/extension-point"),
-  _deployment: null,
-  _recipe: null,
+  extensionPointId: (n: number) =>
+    validateRegistryId(`test/extension-point-${n}`),
+  _recipe: undefined,
   label: "Test label",
-  templateEngine: null,
-  permissions: null,
-  definitions: null,
   services: [],
-  optionsArgs: null,
-  config: {
+  config: (n: number) => ({
     apiVersion: "v2" as ApiVersion,
     kind: "component",
     metadata: recipeMetadataFactory({
-      id: validateRegistryId("test/component-1"),
-      name: "Text config",
+      id: validateRegistryId(`test/component-${n}`),
+      name: "Test config",
     }),
     inputSchema: {
       $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -131,18 +140,17 @@ export const extensionFactory: (
         },
       },
     ],
-  },
+  }),
   active: true,
-  ...extensionProps,
 });
 
 export const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
 
 export const traceRecordFactory = define<TraceRecord>({
   timestamp: "2021-10-07T12:52:16.189Z",
-  extensionId: uuidv4(),
-  runId: uuidv4(),
-  blockInstanceId: uuidv4(),
+  extensionId: uuidSequence,
+  runId: uuidSequence,
+  blockInstanceId: uuidSequence,
   blockId: TEST_BLOCK_ID,
   templateContext: {},
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- nominal typing
@@ -192,7 +200,7 @@ export const blocksMapFactory: (
 };
 
 export const blockConfigFactory = define<BlockConfig>({
-  instanceId: () => uuidv4(),
+  instanceId: uuidSequence,
   id: (i: number) => validateRegistryId(`${TEST_BLOCK_ID}_${i}`),
   config: () => ({}),
 });
@@ -241,12 +249,15 @@ export const extensionPointDefinitionFactory = define<ExtensionPointDefinition>(
         id: validateRegistryId(`test/extension-point-${n}`),
         name: `Extension Point ${n}`,
       }),
-    definition: {
-      type: "menuItem",
-      isAvailable: {
-        matchPatterns: ["https://*/*"],
-      },
-      reader: validateRegistryId("@pixiebrix/document-context"),
+    definition(n: number) {
+      const definition: ExtensionPointConfigDefinition = {
+        type: "menuItem",
+        isAvailable: {
+          matchPatterns: [`https://www.mySite${n}.com/*`],
+        },
+        reader: validateRegistryId("@pixiebrix/document-context"),
+      };
+      return definition;
     },
   }
 );
@@ -286,6 +297,51 @@ export const versionedExtensionPointRecipeFactory = ({
       },
     ],
   });
+
+/**
+ * Factory to create a RecipeDefinition with a definitions section and resolved extensions
+ * @param extensionCount
+ */
+export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
+  const extensionPoints: ExtensionPointConfig[] = [];
+  for (let i = 0; i < extensionCount; i++) {
+    // Don't use array(factory, count) here, because it will keep incrementing
+    // the modifier number across multiple test runs and cause non-deterministic
+    // test execution behavior.
+    const extensionPoint = extensionPointConfigFactory();
+    const ids = extensionPoints.map((x) => x.id);
+    const id = freshIdentifier(DEFAULT_EXTENSION_POINT_VAR as SafeString, ids);
+    extensionPoints.push({
+      ...extensionPoint,
+      id: id as InnerDefinitionRef,
+    });
+  }
+
+  const definitions: InnerDefinitions = {};
+
+  for (const extensionPoint of extensionPoints) {
+    definitions[extensionPoint.id] = {
+      kind: "extensionPoint",
+      definition: extensionPointDefinitionFactory().definition,
+    };
+  }
+
+  return define<RecipeDefinition>({
+    kind: "recipe",
+    apiVersion: "v3",
+    metadata: (n: number) => ({
+      id: validateRegistryId(`test/recipe-${n}`),
+      name: `Recipe ${n}`,
+      description: "Recipe generated from factory",
+      version: "1.0.0",
+    }),
+    sharing: sharingDefinitionFactory,
+    updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
+    definitions,
+    options: undefined,
+    extensionPoints,
+  });
+};
 
 type InnerExtensionPointParams = {
   extensionPointRef?: InnerDefinitionRef;
@@ -332,13 +388,13 @@ export const recipeFactory = innerExtensionPointRecipeFactory();
 const deploymentPackageFactory = define<Deployment["package"]>({
   id: validateRegistryId("@test/recipe"),
   name: "Deployment Package",
-  package_id: uuidv4(),
+  package_id: uuidSequence,
   version: "1.0.0",
   config: recipeDefinitionFactory as any,
 });
 
 export const deploymentFactory = define<Deployment>({
-  id: () => uuidv4(),
+  id: uuidSequence,
   name: (n: number) => `Deployment ${n}`,
   created_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
   updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
@@ -351,7 +407,7 @@ export const deploymentFactory = define<Deployment>({
 
 const internalFormStateFactory = define<FormState>({
   apiVersion: "v3" as ApiVersion,
-  uuid: () => uuidv4(),
+  uuid: uuidSequence,
   installed: true,
   optionsArgs: null as UserOptions,
   services: [] as ServiceDependency[],
