@@ -626,13 +626,15 @@ describe("buildRecipe", () => {
     const serviceId = validateRegistryId("@pixiebrix/api");
     const outputKey = validateOutputKey("pixiebrix");
 
+    // Load the adapter for this extension
+    const extensionPoint = extensionPointDefinitionFactory();
+
     const extension = extensionFactory({
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
       services: [{ id: serviceId, outputKey, config: null }],
+      extensionPointId: extensionPoint.metadata.id,
     }) as UnresolvedExtension;
 
-    // Load the adapter for this extension
-    const extensionPoint = extensionPointDefinitionFactory();
     const adapter = ADAPTERS.get(extensionPoint.definition.type);
 
     // Mock this lookup for the adapter call that follows
