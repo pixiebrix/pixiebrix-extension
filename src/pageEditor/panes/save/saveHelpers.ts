@@ -274,13 +274,16 @@ export function replaceRecipeExtension(
   });
 }
 
-function selectExtensionPoint(extension: IExtension): ExtensionPointConfig {
+function selectExtensionPointConfig(
+  extension: IExtension
+): ExtensionPointConfig {
   const extensionPoint: ExtensionPointConfig = {
     ...pick(extension, ["label", "config", "permissions", "templateEngine"]),
     id: extension.extensionPointId,
   };
 
-  if (!isEmpty(extension.services)) {
+  // To make round-trip testing easier, don't add a `services` property if it didn't already exist
+  if (extension.services != null) {
     extensionPoint.services = Object.fromEntries(
       extension.services.map((x) => [x.outputKey, x.id])
     );
@@ -484,7 +487,7 @@ function buildExtensionPoints(
     }
 
     // Construct the extension point config from the extension
-    const extensionPoint = selectExtensionPoint(extension);
+    const extensionPoint = selectExtensionPointConfig(extension);
 
     // Add the extensionPoint, replacing the id with our updated
     // extensionPointId, if we've tracked a change in newExtensionPointId

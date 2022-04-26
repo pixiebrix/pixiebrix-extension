@@ -221,6 +221,7 @@ export const baseExtensionStateFactory = define<BaseExtensionState>({
 export const extensionPointConfigFactory = define<ExtensionPointConfig>({
   id: "extensionPoint" as InnerDefinitionRef,
   label: (n: number) => `Test Extension ${n}`,
+  services: {},
   config: () => ({
     caption: "Button",
     action: [] as BlockPipeline,
@@ -290,6 +291,7 @@ export const versionedExtensionPointRecipeFactory = ({
       {
         id: extensionPointId ?? validateRegistryId("test/extension-point"),
         label: `Test Extension for Recipe ${n}`,
+        services: {},
         config: {
           caption: "Button",
           action: [] as BlockPipeline,
