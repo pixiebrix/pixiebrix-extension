@@ -70,7 +70,7 @@
     "hex-rgb": "^5.0.0",
     "history": "^4.10.1",
     "htmlmetaparser": "^2.1.1",
-    "htmlparser2": "^7.1.1",
+    "htmlparser2": "^8.0.0",
     "http-status-codes": "^2.1.4",
     "idb": "^7.0.0",
     "immer": "^9.0.5",
