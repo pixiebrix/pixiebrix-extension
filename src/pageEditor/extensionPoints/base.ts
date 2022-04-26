@@ -127,6 +127,7 @@ export function baseFromExtension<T extends ExtensionPointType>(
     apiVersion: config.apiVersion,
     installed: true,
     label: config.label,
+    // Normalize here because the fields aren't optional/nullable on the BaseFormState destination type.
     services: config.services ?? [],
     optionsArgs: config.optionsArgs ?? {},
     type,
