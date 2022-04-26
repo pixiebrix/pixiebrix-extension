@@ -127,8 +127,8 @@ export function baseFromExtension<T extends ExtensionPointType>(
     apiVersion: config.apiVersion,
     installed: true,
     label: config.label,
-    services: config.services,
-    optionsArgs: config.optionsArgs,
+    services: config.services ?? [],
+    optionsArgs: config.optionsArgs ?? {},
     type,
     recipe: config._recipe,
   };
