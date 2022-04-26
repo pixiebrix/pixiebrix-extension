@@ -24,6 +24,10 @@ import { actions as elementWizardActions } from "@/pageEditor/slices/formBuilder
 import formBuilderSelectors from "@/pageEditor/slices/formBuilderSelectors";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
+import { RootState } from "@/pageEditor/pageEditorTypes";
+import { selectNodePreviewActiveElement } from "@/pageEditor/uiState/uiState";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
@@ -36,28 +40,25 @@ const FormRendererOptions: React.FC<{
   name: string;
   configKey: string;
 }> = ({ name, configKey }) => {
-  const [activeField, setActiveField] = useReduxState(
-    formBuilderSelectors.activeField,
-    elementWizardActions.setActiveField
+  const [activeElement, setActiveElement] = useReduxState(
+    (state: RootState) =>
+      selectNodePreviewActiveElement(state, DataPanelTabKey.Preview),
+    (activeElement) =>
+      editorActions.setNodePreviewActiveElement({
+        tabKey: DataPanelTabKey.Preview,
+        activeElement,
+      })
   );
 
   const configName = `${name}.${configKey}`;
-
-  useEffect(
-    () => () => {
-      // Clean up selected field on destroy
-      setActiveField(null);
-    },
-    [configName]
-  );
 
   return (
     <div>
       <ConfigErrorBoundary>
         <FormEditor
           name={configName}
-          activeField={activeField}
-          setActiveField={setActiveField}
+          activeField={activeElement}
+          setActiveField={setActiveElement}
         />
       </ConfigErrorBoundary>
 

@@ -21,10 +21,12 @@ import { joinName } from "@/utils";
 import { useField } from "formik";
 import DocumentEditor from "@/components/documentBuilder/edit/DocumentEditor";
 import useReduxState from "@/hooks/useReduxState";
-import { actions as documentBuilderActions } from "@/pageEditor/slices/documentBuilderSlice";
-import documentBuilderSelectors from "@/pageEditor/slices/documentBuilderSelectors";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
+import { RootState } from "@/pageEditor/pageEditorTypes";
+import { selectNodePreviewActiveElement } from "@/pageEditor/uiState/uiState";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 export const DOCUMENT_ID = validateRegistryId("@pixiebrix/document");
 
@@ -33,20 +35,17 @@ const DocumentOptions: React.FC<{
   configKey: string;
 }> = ({ name, configKey }) => {
   const [activeElement, setActiveElement] = useReduxState(
-    documentBuilderSelectors.activeElement,
-    documentBuilderActions.setActiveElement
+    (state: RootState) =>
+      selectNodePreviewActiveElement(state, DataPanelTabKey.Preview),
+    (activeElement) =>
+      editorActions.setNodePreviewActiveElement({
+        tabKey: DataPanelTabKey.Preview,
+        activeElement,
+      })
   );
 
   const bodyName = joinName(name, configKey, "body");
   const [{ value }, , { setValue }] = useField<DocumentElement[]>(bodyName);
-
-  useEffect(
-    () => () => {
-      // Clean up selected element on destroy
-      setActiveElement(null);
-    },
-    [bodyName]
-  );
 
   useEffect(() => {
     if (!Array.isArray(value)) {

@@ -68,7 +68,9 @@ export function selectActiveNodeId(rootState: RootState): NodeId {
   return elementUIState.activeNodeId;
 }
 
-export function selectNodeDataPanelTabSelected(rootState: RootState): string {
+export function selectNodeDataPanelTabSelected(
+  rootState: RootState
+): DataPanelTabKey {
   const nodeUIState = selectActiveNodeUIState(rootState);
   return nodeUIState.dataPanel.activeTabKey;
 }
@@ -80,4 +82,11 @@ export function selectNodeDataPanelTabState(
   const nodeUIState = selectActiveNodeUIState(rootState);
   // eslint-disable-next-line security/detect-object-injection -- tabKeys will be hard-coded strings
   return nodeUIState.dataPanel[tabKey];
+}
+
+export function selectNodePreviewActiveElement(
+  rootState: RootState,
+  tabKey: DataPanelTabKey
+): string {
+  return selectNodeDataPanelTabState(rootState, tabKey).activeElement;
 }

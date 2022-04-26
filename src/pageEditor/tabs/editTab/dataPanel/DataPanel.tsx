@@ -18,10 +18,9 @@
 
 import React, { useMemo } from "react";
 import { UUID } from "@/core";
+import { RootState, FormState } from "@/pageEditor/pageEditorTypes";
 import { isEmpty, isEqual, pickBy } from "lodash";
 import { useFormikContext } from "formik";
-import formBuilderSelectors from "@/pageEditor/slices/formBuilderSelectors";
-import { actions } from "@/pageEditor/slices/formBuilderSlice";
 import { Alert, Button, Nav, Tab } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
@@ -44,19 +43,25 @@ import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DataTab from "./DataTab";
 import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import DocumentPreview from "@/components/documentBuilder/preview/DocumentPreview";
-import documentBuilderSelectors from "@/pageEditor/slices/documentBuilderSelectors";
-import { actions as documentBuilderActions } from "@/pageEditor/slices/documentBuilderSlice";
 import copy from "copy-to-clipboard";
 import useFlags from "@/hooks/useFlags";
 import ErrorDisplay from "./ErrorDisplay";
-import { FormState } from "@/pageEditor/pageEditorTypes";
 import PageStateTab from "./PageStateTab";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
+import { selectNodePreviewActiveElement } from "@/pageEditor/uiState/uiState";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 // TODO
+// - Fix the form builder selector
+// - Simplify selector/action to always use Preview tab
 // - Update the usage of JsonTree for DataTabJsonTree in other components
 // - Fix the rendering error: Cannot update a component (`SidebarExpanded`) while rendering a different component (`JSONNestedNode`).
+
+// TODO Tests
+// - Test the active element of Document builder (select, switch node, get back, assert)
+// - Test the active element of Form builder (select, switch node, get back, assert)
+// - Test the active element on node order change (select element, move element up, assert)
 
 /**
  * Exclude irrelevant top-level keys.
@@ -129,17 +134,6 @@ const DataPanel: React.FC<{
     [record?.templateContext]
   );
 
-  const [formBuilderActiveField, setFormBuilderActiveField] = useReduxState(
-    formBuilderSelectors.activeField,
-    actions.setActiveField
-  );
-
-  const [documentBuilderActiveElement, setDocumentBuilderActiveElement] =
-    useReduxState(
-      documentBuilderSelectors.activeElement,
-      documentBuilderActions.setActiveElement
-    );
-
   const documentBodyName = `extension.blockPipeline.${blockIndex}.config.body`;
 
   const outputObj: JsonObject =
@@ -160,6 +154,15 @@ const DataPanel: React.FC<{
     showFormPreview || showDocumentPreview
       ? DataPanelTabKey.Preview
       : DataPanelTabKey.Output
+  );
+
+  const [activeElement, setActiveElement] = useReduxState(
+    (state: RootState) => selectNodePreviewActiveElement(state, activeTabKey),
+    (activeElement) =>
+      editorActions.setNodePreviewActiveElement({
+        tabKey: activeTabKey,
+        activeElement,
+      })
   );
 
   const popupBoundary = showDocumentPreview
@@ -340,15 +343,15 @@ const DataPanel: React.FC<{
                   <div className={dataPanelStyles.selectablePreviewContainer}>
                     <FormPreview
                       rjsfSchema={block.config as RJSFSchema}
-                      activeField={formBuilderActiveField}
-                      setActiveField={setFormBuilderActiveField}
+                      activeField={activeElement}
+                      setActiveField={setActiveElement}
                     />
                   </div>
                 ) : (
                   <DocumentPreview
                     name={documentBodyName}
-                    activeElement={documentBuilderActiveElement}
-                    setActiveElement={setDocumentBuilderActiveElement}
+                    activeElement={activeElement}
+                    setActiveElement={setActiveElement}
                     menuBoundary={popupBoundary}
                   />
                 )}

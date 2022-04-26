@@ -20,8 +20,20 @@ import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 export type TabUIState = {
+  /**
+   * The filter query of the JsonTree component
+   */
   query?: string;
+
+  /**
+   * The expanded state of the JsonTree component
+   */
   treeExpandedState?: TreeExpandedState;
+
+  /**
+   * The active element of a Document or Form builder on the Preview tab
+   */
+  activeElement?: string;
 };
 
 export type NodeUIState = {
@@ -37,7 +49,7 @@ export type NodeUIState = {
     /**
      * Which tab is active in the data panel of the editor UI
      */
-    activeTabKey: string | null;
+    activeTabKey: DataPanelTabKey | null;
   };
 };
 

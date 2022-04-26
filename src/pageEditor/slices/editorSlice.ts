@@ -317,12 +317,16 @@ export const editorSlice = createSlice({
     setElementActiveNodeId(state, action: PayloadAction<NodeId>) {
       setActiveNodeId(state, action.payload);
     },
-    setNodeDataPanelTabSelected(state, action: PayloadAction<string>) {
+    setNodeDataPanelTabSelected(state, action: PayloadAction<DataPanelTabKey>) {
       const elementUIState = state.elementUIStates[state.activeElementId];
       const nodeUIState =
         elementUIState.nodeUIStates[elementUIState.activeNodeId];
       nodeUIState.dataPanel.activeTabKey = action.payload;
     },
+
+    /**
+     * Updates the query on a DataPane tab with the JsonTree component
+     */
     setNodeDataPanelTabSearchQuery(
       state,
       action: PayloadAction<{ tabKey: DataPanelTabKey; query: string }>
@@ -333,6 +337,10 @@ export const editorSlice = createSlice({
         tabKey
       ].query = query;
     },
+
+    /**
+     * Updates the expanded state of the JsonTree component on a DataPanel tab
+     */
     setNodeDataPanelTabExpandedState(
       state,
       action: PayloadAction<{
@@ -353,6 +361,20 @@ export const editorSlice = createSlice({
       }
 
       set(tabState.treeExpandedState, reverse([...keyPath]), isExpanded);
+    },
+
+    /**
+     * Updates the active element of a Document or Form builder on the Preview tab
+     */
+    setNodePreviewActiveElement(
+      state,
+      action: PayloadAction<{ tabKey: DataPanelTabKey; activeElement: string }>
+    ) {
+      const { tabKey, activeElement } = action.payload;
+      const elementUIState = state.elementUIStates[state.activeElementId];
+      elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
+        tabKey
+      ].activeElement = activeElement;
     },
     copyBlockConfig(state, action: PayloadAction<BlockConfig>) {
       const copy = { ...action.payload };
