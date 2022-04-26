@@ -21,7 +21,6 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import { Button, Modal } from "react-bootstrap";
 import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
 import { useGetRecipesQuery } from "@/services/api";
-import Loader from "@/components/Loader";
 import LoadingDataModal from "@/pageEditor/panes/save/LoadingDataModal";
 
 const SaveAsNewRecipeModal: React.VFC = () => {
