@@ -137,6 +137,11 @@ export interface EditorState {
   isRemoveFromRecipeModalVisible: boolean;
 
   /**
+   * Are we showing the "save as new blueprint" modal?
+   */
+  isSaveAsNewRecipeModalVisible: boolean;
+
+  /**
    * Are we showing the "create blueprint" modal?
    */
   isCreateRecipeModalVisible: boolean;
