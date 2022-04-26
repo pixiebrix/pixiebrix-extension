@@ -17,6 +17,7 @@
 
 import { IExtension, RegistryId, UserOptions, UUID } from "@/core";
 import { groupBy, uniq } from "lodash";
+import { traces, uninstallContextMenu } from "@/background/messenger/api";
 
 /**
  * Infer options from existing extension-like instances for reinstalling a recipe
@@ -63,4 +64,15 @@ export function inferRecipeAuths(
   }
 
   return result;
+}
+
+/**
+ * Cleanup native extension data/registrations
+ */
+// XXX: where does this method belong?
+export async function uninstallNativeExtension(
+  extensionId: UUID
+): Promise<void> {
+  await uninstallContextMenu({ extensionId });
+  await traces.clear(extensionId);
 }

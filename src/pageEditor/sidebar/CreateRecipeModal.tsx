@@ -152,8 +152,10 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
         updated_at: response.updated_at,
       };
 
-      // Replace the old recipe with the new recipe locally
+      // Replace the old recipe with the new recipe locally. The logic here is similar to what's in useReinstall.ts
+
       dispatch(optionsActions.removeRecipeById(recipeId));
+
       dispatch(
         optionsActions.installRecipe({
           recipe: savedRecipe,

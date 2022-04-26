@@ -19,11 +19,10 @@ import { RecipeDefinition } from "@/types/definitions";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useCallback } from "react";
-import { uninstallContextMenu } from "@/background/messenger/api";
 import extensionsSlice from "@/store/extensionsSlice";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 
-const { installRecipe, removeExtension } = extensionsSlice.actions;
+const { installRecipe, removeRecipeById } = extensionsSlice.actions;
 
 type Reinstall = (recipe: RecipeDefinition) => Promise<void>;
 
@@ -41,20 +40,13 @@ function useReinstall(): Reinstall {
         throw new Error(`No bricks to re-activate for ${recipe.metadata.id}`);
       }
 
+      const currentOptions = inferRecipeOptions(recipeExtensions);
+
       const currentAuths = inferRecipeAuths(recipeExtensions, {
         optional: false,
       });
-      const currentOptions = inferRecipeOptions(recipeExtensions);
 
-      // Uninstall first to avoid duplicates. Use a loop instead of Promise.all to ensure the sequence that each pair
-      // of calls that uninstallContextMenu + dispatch occur in. We were having problems with the context menu not
-      // unregistered from some of the tabs
-      for (const extension of recipeExtensions) {
-        const extensionRef = { extensionId: extension.id };
-        // eslint-disable-next-line no-await-in-loop -- see comment above
-        await uninstallContextMenu(extensionRef);
-        dispatch(removeExtension(extensionRef));
-      }
+      dispatch(removeRecipeById(recipe.metadata.id));
 
       dispatch(
         installRecipe({

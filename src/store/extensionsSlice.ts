@@ -18,7 +18,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CloudExtension, Deployment } from "@/types/contract";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
-import { contextMenus, traces } from "@/background/messenger/api";
+import { contextMenus } from "@/background/messenger/api";
 import {
   DeploymentContext,
   IExtension,
@@ -41,6 +41,7 @@ import {
 } from "@/store/extensionsTypes";
 import { Except } from "type-fest";
 import { assertExtensionNotResolved } from "@/runtime/runtimeUtils";
+import { uninstallNativeExtension } from "@/store/extensionsUtils";
 
 const initialExtensionsState: ExtensionOptionsState = {
   extensions: [],
@@ -320,11 +321,9 @@ const extensionsSlice = createSlice({
 
       state.extensions = extensions;
 
-      // Make sure we're not keeping any private data around from Page Editor sessions
+      // XXX: this should be in an action creator, not the reducer
       void Promise.all(
-        recipeExtension.map(async ({ id }) => {
-          await traces.clear(id);
-        })
+        recipeExtension.map(async ({ id }) => uninstallNativeExtension(id))
       );
     },
 
@@ -334,11 +333,11 @@ const extensionsSlice = createSlice({
     ) {
       requireLatestState(state);
 
-      // Make sure we're not keeping any private data around from Page Editor sessions
-      void traces.clear(extensionId);
-
       // NOTE: We aren't deleting the extension on the server. The user must do that separately from the dashboard
       state.extensions = state.extensions.filter((x) => x.id !== extensionId);
+
+      // XXX: this should be in an action creator, not the reducer
+      void uninstallNativeExtension(extensionId);
     },
   },
 });
