@@ -297,6 +297,21 @@ type RecipeParts = {
   metadata?: RecipeMetadataFormState;
 };
 
+const emptyRecipe: UnsavedRecipeDefinition = {
+  apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+  kind: "recipe",
+  metadata: {
+    id: "" as RegistryId,
+    name: "",
+  },
+  extensionPoints: [],
+  definitions: {},
+  options: {
+    schema: {},
+    uiSchema: {},
+  },
+};
+
 /**
  * Create a copy of `sourceRecipe` (if provided) with `metadata` and `elements`.
  *
@@ -318,20 +333,7 @@ export function buildRecipe({
 }: RecipeParts): UnsavedRecipeDefinition {
   // If there's no source recipe, then we're creating a new one, so we
   // start with an empty recipe definition that will be filled in
-  const recipe: UnsavedRecipeDefinition = sourceRecipe ?? {
-    apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-    kind: "recipe",
-    metadata: {
-      id: "" as RegistryId,
-      name: "",
-    },
-    extensionPoints: [],
-    definitions: {},
-    options: {
-      schema: {},
-      uiSchema: {},
-    },
-  };
+  const recipe: UnsavedRecipeDefinition = sourceRecipe ?? emptyRecipe;
 
   return produce(recipe, (draft) => {
     // Options dirty state is only populated if a change is made
