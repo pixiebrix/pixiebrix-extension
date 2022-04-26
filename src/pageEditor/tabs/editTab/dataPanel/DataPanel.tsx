@@ -18,7 +18,7 @@
 
 import React, { useMemo } from "react";
 import { UUID } from "@/core";
-import { RootState, FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isEmpty, isEqual, pickBy } from "lodash";
 import { useFormikContext } from "formik";
 import { Alert, Button, Nav, Tab } from "react-bootstrap";
