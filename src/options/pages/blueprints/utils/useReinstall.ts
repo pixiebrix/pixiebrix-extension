@@ -29,7 +29,7 @@ const { installRecipe, removeExtension } = extensionsSlice.actions;
 type Reinstall = (recipe: RecipeDefinition) => Promise<void>;
 
 function selectOptions(extensions: IExtension[]): UserOptions {
-  // For a given recipe, all of the extensions receive the same options during the install process (even if they don't
+  // For a given recipe, all the extensions receive the same options during the install process (even if they don't
   // use the options), so we can just take the optionsArgs for any of the extensions
   return extensions[0]?.optionsArgs ?? {};
 }
@@ -43,7 +43,7 @@ function selectAuths(
   // inconsistent for a given service key, but guard against that case anyway.
 
   const serviceAuths = groupBy(
-    extensions.flatMap((x) => x.services),
+    extensions.flatMap((x) => x.services ?? []),
     (x) => x.id
   );
   const result: Record<RegistryId, UUID> = {};

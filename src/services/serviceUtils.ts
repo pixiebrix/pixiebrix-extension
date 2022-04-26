@@ -52,7 +52,10 @@ export function extractServiceIds(schema: Schema): RegistryId[] {
 
 /** Build the service context by locating the dependencies */
 export async function makeServiceContext(
-  dependencies: ServiceDependency[]
+  // `IExtension.services` is an optional field. Since we don't have strict-nullness checking on, calls to this method
+  // are error-prone. So just be defensive in the signature
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/3262
+  dependencies: ServiceDependency[] | null = []
 ): Promise<ServiceContext> {
   const dependencyContext = async ({ id, config }: ServiceDependency) => {
     const configuredService = await services.locate(id, config);
