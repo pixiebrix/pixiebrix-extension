@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { removeEmptyValues } from "./base";
+import { removeEmptyValues, selectIsAvailable } from "./base";
+import {
+  extensionPointConfigFactory,
+  extensionPointDefinitionFactory,
+} from "@/testUtils/factories";
 
 describe("removeEmptyValues()", () => {
   test("removes empty non-expression values", () => {
@@ -60,5 +64,23 @@ describe("removeEmptyValues()", () => {
         action: [{ id: "@pixiebrix/jq", config: { filter: "." } }],
       },
     });
+  });
+});
+
+describe("selectIsAvailable", () => {
+  it("normalizes matchPatterns", () => {
+    const extensionPoint = extensionPointDefinitionFactory();
+    extensionPoint.definition.isAvailable.matchPatterns =
+      "https://www.example.com";
+    delete extensionPoint.definition.isAvailable.selectors;
+    delete extensionPoint.definition.isAvailable.urlPatterns;
+
+    const normalized = selectIsAvailable(extensionPoint);
+
+    expect(normalized.matchPatterns).toStrictEqual(["https://www.example.com"]);
+
+    // Don't add properties that were undefined as part of normalization
+    expect(normalized.selectors).toBeUndefined();
+    expect(normalized.urlPatterns).toBeUndefined();
   });
 });
