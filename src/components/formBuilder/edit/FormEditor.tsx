@@ -83,18 +83,20 @@ const FormEditor: React.FC<FormEditorProps> = ({
   // Select the active field when FormEditor field changes
   useEffect(
     () => {
+      // Trust that activeField changes properly with the schema name
+      if (activeField != null) {
+        return;
+      }
+
+      // eslint-disable-next-line security/detect-object-injection -- UI_ORDER is a known field
       const firstInOrder = uiSchema?.[UI_ORDER]?.[0];
-      if (
-        firstInOrder &&
-        firstInOrder !== "*" &&
-        firstInOrder !== activeField
-      ) {
+      if (firstInOrder && firstInOrder !== "*") {
         setActiveField(firstInOrder);
         return;
       }
 
       const firstInProperties = Object.keys(schema?.properties ?? {})[0];
-      if (firstInProperties && firstInProperties !== activeField) {
+      if (firstInProperties) {
         setActiveField(firstInProperties);
       }
     },

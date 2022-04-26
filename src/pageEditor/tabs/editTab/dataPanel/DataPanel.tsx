@@ -53,7 +53,6 @@ import { selectNodePreviewActiveElement } from "@/pageEditor/uiState/uiState";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 // TODO
-// - Fix the form builder selector
 // - Simplify selector/action to always use Preview tab
 // - Update the usage of JsonTree for DataTabJsonTree in other components
 // - Fix the rendering error: Cannot update a component (`SidebarExpanded`) while rendering a different component (`JSONNestedNode`).

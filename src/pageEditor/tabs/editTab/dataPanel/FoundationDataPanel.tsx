@@ -48,7 +48,7 @@ const FoundationDataPanel: React.FC<{
   );
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
-    firstBlockTraceRecord ? "output" : "preview"
+    firstBlockTraceRecord ? DataPanelTabKey.Output : DataPanelTabKey.Preview
   );
 
   const {

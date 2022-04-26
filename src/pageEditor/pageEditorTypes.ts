@@ -19,8 +19,6 @@ import { AuthRootState } from "@/auth/authTypes";
 import { LogRootState } from "@/components/logViewer/logViewerTypes";
 import { OptionsState } from "@/store/extensionsTypes";
 import { SavingExtensionState } from "@/pageEditor/panes/save/savingExtensionSlice";
-import { FormBuilderState } from "@/pageEditor/slices/formBuilderSlice";
-import { DocumentBuilderState } from "@/pageEditor/slices/documentBuilderSlice";
 import { SettingsState } from "@/store/settingsTypes";
 import { RuntimeState } from "@/pageEditor/slices/runtimeSlice";
 import { ExtensionPointType } from "@/extensionPoints/types";
@@ -162,8 +160,6 @@ export type RootState = AuthRootState &
     options: OptionsState;
     editor: EditorState;
     savingExtension: SavingExtensionState;
-    formBuilder: FormBuilderState;
-    documentBuilder: DocumentBuilderState;
     settings: SettingsState;
     runtime: RuntimeState;
   };
