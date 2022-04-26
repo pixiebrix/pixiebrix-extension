@@ -48,15 +48,20 @@ import useFlags from "@/hooks/useFlags";
 
 const { removeExtension } = extensionsSlice.actions;
 
+type ActionCallback = () => void;
+
 export type InstallableViewItemActions = {
-  reinstall: () => void;
-  activate: () => void;
-  viewShare: () => void;
-  deleteExtension: () => void;
-  uninstall: () => void;
-  viewLogs: () => void;
-  exportBlueprint: () => void;
-  requestPermissions: () => void;
+  reinstall: ActionCallback | null;
+  activate: ActionCallback | null;
+  viewShare: ActionCallback | null;
+  deleteExtension: ActionCallback | null;
+  uninstall: ActionCallback | null;
+  viewLogs: ActionCallback | null;
+  requestPermissions: ActionCallback | null;
+
+  // XXX: this is one is not implemented like the others for some reason. It will always be defined but will show
+  // an error if the action is not available
+  exportBlueprint: ActionCallback;
 };
 
 function useInstallableViewItemActions(

@@ -38,7 +38,7 @@ const Status: React.VoidFunctionComponent<{
 
   const { hasUpdate, status, installedVersionNumber } = installableViewItem;
 
-  if (status === "Inactive") {
+  if (activate) {
     return (
       <Button size="sm" variant="outline-info" onClick={activate}>
         Activate
@@ -46,7 +46,8 @@ const Status: React.VoidFunctionComponent<{
     );
   }
 
-  if (hasUpdate) {
+  // XXX: https://github.com/pixiebrix/pixiebrix-extension/issues/3269
+  if (hasUpdate && reinstall) {
     return (
       <Button size="sm" variant="info" onClick={reinstall}>
         <FontAwesomeIcon icon={faSync} /> Update
