@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-//import variables from "src/vendors/theme/assets/styles/_variables.scss";
-
 const path = require("path");
 const dotenv = require("dotenv");
 const webpack = require("webpack");
@@ -29,8 +27,30 @@ const CopyPlugin = require("copy-webpack-plugin");
 const { uniq, compact } = require("lodash");
 const Policy = require("csp-parse");
 const mergeWithShared = require("./webpack.sharedConfig.js");
+const sass = require("sass");
 
-//console.log("HELLO VARIABLES", variables);
+let hexCssVariableMap = [];
+
+const result = sass.compile("src/vendors/theme/assets/styles/_variables.scss", {
+  logger: {
+    debug(message, options) {
+        hexCssVariableMap = message
+          .replace("(", " ")
+          .replace(")", " ")
+          .split(",")
+          .map((rawString) => {
+            const [hexString, cssVariable] = rawString.split(":");
+            return ({
+              search: hexString.trim(),
+              replace: `var(${cssVariable.trim()})`,
+              flags: "g"
+            })
+          });
+    }
+  }
+});
+
+console.log("hex map:", hexCssVariableMap);
 
 function parseEnv(value) {
   switch (String(value).toLowerCase()) {
@@ -375,18 +395,8 @@ module.exports = (env, options) =>
             {
               loader: "string-replace-loader",
               options: {
-                multiple: [
-                  {
-                    search: "#b66dff",
-                    replace: "var(--theme-primary)",
-                    flags: "g",
-                  },
-                  {
-                    search: "#a347ff",
-                    replace: "var(--theme-primary-5)",
-                    flags: "g",
-                  },
-                ],
+                multiple: hexCssVariableMap,
+                strict: true
               },
             },
             {
