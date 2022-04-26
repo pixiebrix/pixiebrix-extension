@@ -102,22 +102,27 @@ const CreateRecipeModal: React.VFC = () => {
 
   let initialFormState: RecipeMetadataFormState = null;
 
-  if (activeElement) {
-    initialFormState = {
-      id: generateRecipeId(scope, activeElement.label),
-      name: activeElement.label,
-      version: "1.0.0",
-      description: "Created with the PixieBrix Page Editor",
-    };
-  }
-
   if (activeRecipe) {
+    // Handle the "Save As New" case, where an existing recipe is selected
     initialFormState = {
       id: generateScopeBrickId(scope, activeRecipeId),
       name: activeRecipe.metadata.name,
       version: "1.0.0",
       description: activeRecipe.metadata.description,
     };
+  } else if (activeElement) {
+    // Handle creating a new blueprint from a selected extension
+    initialFormState = {
+      id: generateRecipeId(scope, activeElement.label),
+      name: activeElement.label,
+      version: "1.0.0",
+      description: "Created with the PixieBrix Page Editor",
+    };
+  } else {
+    // XXX: The render loop contains useGetRecipesQuery. So, there's a state where activeRecipe won't be set yet even
+    // if there is a recipe selected. To simplify this in the future, we may want to wrap the core logic behind a
+    // loader to avoid handling intermediate loading states.
+    initialFormState = null;
   }
 
   const createRecipeFromElement = useCallback(
