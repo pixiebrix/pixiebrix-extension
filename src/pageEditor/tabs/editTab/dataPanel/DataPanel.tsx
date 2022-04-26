@@ -54,6 +54,10 @@ import PageStateTab from "./PageStateTab";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 
+// TODO
+// - Update the usage of JsonTree for DataTabJsonTree in other components
+// - Fix the rendering error: Cannot update a component (`SidebarExpanded`) while rendering a different component (`JSONNestedNode`).
+
 /**
  * Exclude irrelevant top-level keys.
  */
