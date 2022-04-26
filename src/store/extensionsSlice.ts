@@ -31,7 +31,7 @@ import {
 } from "@/core";
 import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import { uuidv4 } from "@/types/helpers";
-import { pick } from "lodash";
+import { partition, pick } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import {
@@ -296,6 +296,7 @@ const extensionsSlice = createSlice({
         ...extensionUpdate,
       };
     },
+
     updateRecipeMetadataForExtensions(
       state,
       action: PayloadAction<RecipeMetadata>
@@ -308,6 +309,25 @@ const extensionsSlice = createSlice({
         extension._recipe = metadata;
       }
     },
+
+    removeRecipeById(state, { payload: recipeId }: PayloadAction<RegistryId>) {
+      requireLatestState(state);
+
+      const [recipeExtension, extensions] = partition(
+        state.extensions,
+        (x) => x._recipe?.id === recipeId
+      );
+
+      state.extensions = extensions;
+
+      // Make sure we're not keeping any private data around from Page Editor sessions
+      void Promise.all(
+        recipeExtension.map(async ({ id }) => {
+          await traces.clear(id);
+        })
+      );
+    },
+
     removeExtension(
       state,
       { payload: { extensionId } }: PayloadAction<{ extensionId: UUID }>

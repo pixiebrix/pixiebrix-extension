@@ -56,19 +56,20 @@ import { object, string } from "yup";
 import LoadingDataModal from "@/pageEditor/panes/save/LoadingDataModal";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
+import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 
 const { actions: optionsActions } = extensionsSlice;
 
 function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
   const dispatch = useDispatch();
+  const [createRecipe] = useCreateRecipeMutation();
+  const createExtension = useCreate();
 
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
   const installedExtensions = useSelector(selectExtensions);
   const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptions);
   const deletedElementsByRecipeId = useSelector(selectDeletedElements);
-  const [createRecipe] = useCreateRecipeMutation();
-  const create = useCreate();
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
 
   const createRecipeFromElement = useCallback(
@@ -91,7 +92,7 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
       });
       dispatch(editorActions.addElement(recipeElement));
       // Don't push to cloud since we're saving it with the recipe
-      await create({ element: recipeElement, pushToCloud: false });
+      await createExtension({ element: recipeElement, pushToCloud: false });
       if (!keepLocalCopy) {
         dispatch(editorActions.removeElement(activeElement.uuid));
         dispatch(
@@ -99,7 +100,7 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
         );
       }
     },
-    [activeElement, create, createRecipe, dispatch, keepLocalCopy]
+    [activeElement, createExtension, createRecipe, dispatch, keepLocalCopy]
   );
 
   const createRecipeFromRecipe = useCallback(
@@ -136,21 +137,12 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
         metadata,
       });
 
-      // Currently, user cannot share from the Page Editor, so just pass unshared options
       const response = await createRecipe({
         recipe: newRecipe,
         organizations: [],
         public: false,
       }).unwrap();
 
-      // Uninstall the previous recipe's extensions
-      for (const { id: extensionId } of installedExtensions.filter(
-        (extension) => extension._recipe?.id === recipeId
-      )) {
-        dispatch(optionsActions.removeExtension({ extensionId }));
-      }
-
-      // Install the new recipe
       const savedRecipe: RecipeDefinition = {
         ...newRecipe,
         sharing: {
@@ -159,10 +151,20 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
         },
         updated_at: response.updated_at,
       };
+
+      // Replace the old recipe with the new recipe locally
+      dispatch(optionsActions.removeRecipeById(recipeId));
       dispatch(
         optionsActions.installRecipe({
           recipe: savedRecipe,
-          services: {},
+          services: inferRecipeAuths([
+            ...dirtyRecipeElements,
+            ...cleanRecipeExtensions,
+          ]),
+          optionsArgs: inferRecipeOptions([
+            ...dirtyRecipeElements,
+            ...cleanRecipeExtensions,
+          ]),
           extensionPoints: savedRecipe.extensionPoints,
         })
       );
@@ -199,35 +201,33 @@ function useInitialFormState({
 }: {
   activeElement: FormState;
   activeRecipe: RecipeDefinition | null;
-}) {
+}): RecipeMetadataFormState | null {
   const scope = useSelector(selectScope);
-
-  let initialFormState: RecipeMetadataFormState;
 
   if (activeRecipe) {
     // Handle the "Save As New" case, where an existing recipe is selected
-    initialFormState = {
+    return {
       id: generateScopeBrickId(scope, activeRecipe.metadata.id),
       name: activeRecipe.metadata.name,
       version: "1.0.0",
       description: activeRecipe.metadata.description,
     };
-  } else if (activeElement) {
+  }
+
+  if (activeElement) {
     // Handle creating a new blueprint from a selected extension
-    initialFormState = {
+    return {
       id: generateRecipeId(scope, activeElement.label),
       name: activeElement.label,
       version: "1.0.0",
       description: "Created with the PixieBrix Page Editor",
     };
-  } else {
-    // XXX: The render loop contains useGetRecipesQuery. So, there's a state where activeRecipe won't be set yet even
-    // if there is a recipe selected. To simplify this in the future, we may want to wrap the core logic behind a
-    // loader to avoid handling intermediate loading states.
-    initialFormState = null;
   }
 
-  return initialFormState;
+  // XXX: The Modal render loop contains useGetRecipesQuery. So, there's a state where activeRecipe won't be set yet
+  // even if there is a recipe selected. To simplify this in the future, we may want to wrap the core logic behind a
+  // loader to avoid handling intermediate loading states.
+  return null;
 }
 
 function useFormSchema() {
@@ -274,38 +274,41 @@ const CreateRecipeModal: React.VFC = () => {
     activeElement,
   });
 
-  const onSubmit = useCallback<OnSubmit<RecipeMetadataFormState>>(
-    async (values, helpers) => {
-      try {
-        if (activeElement) {
-          await createRecipeFromElement(activeElement, values);
-        } else if (activeRecipe) {
-          await createRecipeFromRecipe(activeRecipe, values);
-        }
+  // Loading state -- could consider refactoring into two components: 1) modal with loading state, 2) form
+  if (activeRecipeId && isRecipesLoading) {
+    return <LoadingDataModal onClose={hideModal} />;
+  }
 
-        hideModal();
-      } catch (error) {
-        if (isAxiosError(error) && error.response.data.config) {
-          helpers.setStatus(error.response.data.config);
-          return;
-        }
-
-        notify.error({
-          message: "Error creating blueprint",
-          error,
-        });
-      } finally {
-        helpers.setSubmitting(false);
+  const onSubmit: OnSubmit<RecipeMetadataFormState> = async (
+    values,
+    helpers
+  ) => {
+    try {
+      if (activeElement) {
+        await createRecipeFromElement(activeElement, values);
+      } else if (activeRecipe) {
+        await createRecipeFromRecipe(activeRecipe, values);
+      } else {
+        // Should not happen in practice
+        // noinspection ExceptionCaughtLocallyJS
+        throw new Error("Expected either active element or blueprint");
       }
-    },
-    [
-      activeElement,
-      activeRecipe,
-      createRecipeFromElement,
-      createRecipeFromRecipe,
-      hideModal,
-    ]
-  );
+
+      hideModal();
+    } catch (error) {
+      if (isAxiosError(error) && error.response.data.config) {
+        helpers.setStatus(error.response.data.config);
+        return;
+      }
+
+      notify.error({
+        message: "Error creating blueprint",
+        error,
+      });
+    } finally {
+      helpers.setSubmitting(false);
+    }
+  };
 
   const renderBody: RenderBody = () => (
     <Modal.Body>
@@ -350,10 +353,6 @@ const CreateRecipeModal: React.VFC = () => {
       </Button>
     </Modal.Footer>
   );
-
-  if (activeRecipeId && isRecipesLoading) {
-    return <LoadingDataModal onClose={hideModal} />;
-  }
 
   return (
     <Modal show onHide={hideModal}>
