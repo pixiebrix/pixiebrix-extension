@@ -16,8 +16,9 @@
  */
 
 import { IExtension, RegistryId, UserOptions, UUID } from "@/core";
-import { groupBy, uniq } from "lodash";
+import { compact, groupBy, uniq } from "lodash";
 import { traces, uninstallContextMenu } from "@/background/messenger/api";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 /**
  * Infer options from existing extension-like instances for reinstalling a recipe
@@ -49,8 +50,9 @@ export function inferRecipeAuths(
   );
   const result: Record<RegistryId, UUID> = {};
   for (const [id, auths] of Object.entries(serviceAuths)) {
-    const configs = uniq(auths.map(({ config }) => config));
-    if (configs.length === 0 && !optional) {
+    const configs = uniq(compact(auths.map(({ config }) => config)));
+    if (id !== PIXIEBRIX_SERVICE_ID && configs.length === 0 && !optional) {
+      // PIXIEBRIX_SERVICE_ID gets the implicit configuration
       throw new Error(`Service ${id} is not configured`);
     }
 
