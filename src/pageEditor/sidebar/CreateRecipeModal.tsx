@@ -59,71 +59,17 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 
 const { actions: optionsActions } = extensionsSlice;
 
-const CreateRecipeModal: React.VFC = () => {
-  const newRecipeIds = useSelector(selectNewRecipeIds);
-  const activeElement = useSelector(selectActiveElement);
-  const activeRecipeId = useSelector(selectActiveRecipeId);
-  const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
-  const activeRecipe = recipes.find(
-    (recipe) => recipe.metadata.id === activeRecipeId
-  );
+function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
+  const dispatch = useDispatch();
+
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
   const installedExtensions = useSelector(selectExtensions);
   const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptions);
   const deletedElementsByRecipeId = useSelector(selectDeletedElements);
-  const scope = useSelector(selectScope);
   const [createRecipe] = useCreateRecipeMutation();
   const create = useCreate();
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
-
-  // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
-  // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
-  const createRecipeSchema = object({
-    id: string()
-      .matches(PACKAGE_REGEX, "Invalid registry id")
-      .notOneOf(newRecipeIds, "This id is already in use")
-      .required(),
-    name: string().required(),
-    version: string()
-      .test(
-        "semver",
-        "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
-        (value: string) => validateSemVerString(value, false)
-      )
-      .required(),
-    description: string(),
-  });
-
-  const dispatch = useDispatch();
-  const hideModal = useCallback(() => {
-    dispatch(editorActions.hideCreateRecipeModal());
-  }, [dispatch]);
-
-  let initialFormState: RecipeMetadataFormState = null;
-
-  if (activeRecipe) {
-    // Handle the "Save As New" case, where an existing recipe is selected
-    initialFormState = {
-      id: generateScopeBrickId(scope, activeRecipeId),
-      name: activeRecipe.metadata.name,
-      version: "1.0.0",
-      description: activeRecipe.metadata.description,
-    };
-  } else if (activeElement) {
-    // Handle creating a new blueprint from a selected extension
-    initialFormState = {
-      id: generateRecipeId(scope, activeElement.label),
-      name: activeElement.label,
-      version: "1.0.0",
-      description: "Created with the PixieBrix Page Editor",
-    };
-  } else {
-    // XXX: The render loop contains useGetRecipesQuery. So, there's a state where activeRecipe won't be set yet even
-    // if there is a recipe selected. To simplify this in the future, we may want to wrap the core logic behind a
-    // loader to avoid handling intermediate loading states.
-    initialFormState = null;
-  }
 
   const createRecipeFromElement = useCallback(
     async (element: FormState, metadata: RecipeMetadataFormState) => {
@@ -190,6 +136,7 @@ const CreateRecipeModal: React.VFC = () => {
         metadata,
       });
 
+      // Currently, user cannot share from the Page Editor, so just pass unshared options
       const response = await createRecipe({
         recipe: newRecipe,
         organizations: [],
@@ -239,6 +186,93 @@ const CreateRecipeModal: React.VFC = () => {
       isDirtyByElementId,
     ]
   );
+
+  return {
+    createRecipeFromElement,
+    createRecipeFromRecipe,
+  };
+}
+
+function useInitialFormState({
+  activeRecipe,
+  activeElement,
+}: {
+  activeElement: FormState;
+  activeRecipe: RecipeDefinition | null;
+}) {
+  const scope = useSelector(selectScope);
+
+  let initialFormState: RecipeMetadataFormState;
+
+  if (activeRecipe) {
+    // Handle the "Save As New" case, where an existing recipe is selected
+    initialFormState = {
+      id: generateScopeBrickId(scope, activeRecipe.metadata.id),
+      name: activeRecipe.metadata.name,
+      version: "1.0.0",
+      description: activeRecipe.metadata.description,
+    };
+  } else if (activeElement) {
+    // Handle creating a new blueprint from a selected extension
+    initialFormState = {
+      id: generateRecipeId(scope, activeElement.label),
+      name: activeElement.label,
+      version: "1.0.0",
+      description: "Created with the PixieBrix Page Editor",
+    };
+  } else {
+    // XXX: The render loop contains useGetRecipesQuery. So, there's a state where activeRecipe won't be set yet even
+    // if there is a recipe selected. To simplify this in the future, we may want to wrap the core logic behind a
+    // loader to avoid handling intermediate loading states.
+    initialFormState = null;
+  }
+
+  return initialFormState;
+}
+
+function useFormSchema() {
+  const newRecipeIds = useSelector(selectNewRecipeIds);
+
+  // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
+  // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
+  return object({
+    id: string()
+      .matches(PACKAGE_REGEX, "Invalid registry id")
+      .notOneOf(newRecipeIds, "This id is already in use")
+      .required(),
+    name: string().required(),
+    version: string()
+      .test(
+        "semver",
+        "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
+        (value: string) => validateSemVerString(value, false)
+      )
+      .required(),
+    description: string(),
+  });
+}
+
+const CreateRecipeModal: React.VFC = () => {
+  const dispatch = useDispatch();
+
+  const activeElement = useSelector(selectActiveElement);
+
+  const activeRecipeId = useSelector(selectActiveRecipeId);
+  const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
+  const activeRecipe = recipes.find(
+    (recipe) => recipe.metadata.id === activeRecipeId
+  );
+
+  const formSchema = useFormSchema();
+
+  const hideModal = useCallback(() => {
+    dispatch(editorActions.hideCreateRecipeModal());
+  }, [dispatch]);
+
+  const initialFormState = useInitialFormState({ activeElement, activeRecipe });
+  const { createRecipeFromElement, createRecipeFromRecipe } = useSaveCallbacks({
+    activeElement,
+  });
 
   const onSubmit = useCallback<OnSubmit<RecipeMetadataFormState>>(
     async (values, helpers) => {
@@ -328,7 +362,7 @@ const CreateRecipeModal: React.VFC = () => {
       </Modal.Header>
       <RequireScope scopeSettingsDescription="To create a blueprint, you must first set an account alias for your PixieBrix account">
         <Form
-          validationSchema={createRecipeSchema}
+          validationSchema={formSchema}
           initialValues={initialFormState}
           onSubmit={onSubmit}
           renderBody={renderBody}
