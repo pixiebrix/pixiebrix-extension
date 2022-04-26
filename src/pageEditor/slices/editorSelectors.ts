@@ -140,6 +140,9 @@ export const selectIsAddToRecipeModalVisible = (state: RootState) =>
 export const selectIsRemoveFromRecipeModalVisible = (state: RootState) =>
   state.editor.isRemoveFromRecipeModalVisible;
 
+export const selectIsSaveAsNewRecipeModalVisible = (state: RootState) =>
+  state.editor.isSaveAsNewRecipeModalVisible;
+
 export const selectIsCreateRecipeModalVisible = (state: RootState) =>
   state.editor.isCreateRecipeModalVisible;
 

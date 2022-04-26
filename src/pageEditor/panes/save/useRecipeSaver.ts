@@ -33,7 +33,10 @@ import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { buildRecipe } from "@/pageEditor/panes/save/saveHelpers";
+import {
+  buildRecipe,
+  isRecipeEditable,
+} from "@/pageEditor/panes/save/saveHelpers";
 import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
 import useCreate from "@/pageEditor/hooks/useCreate";
@@ -49,8 +52,9 @@ type RecipeSaver = {
 function useRecipeSaver(): RecipeSaver {
   const dispatch = useDispatch();
   const create = useCreate();
-  const { data: recipes, isLoading } = useGetRecipesQuery();
-  const { data: editablePackages } = useGetEditablePackagesQuery();
+  const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
+  const { data: editablePackages, isLoading: isEditablePackagesLoading } =
+    useGetEditablePackagesQuery();
   const [updateRecipe] = useUpdateRecipeMutation();
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
@@ -72,6 +76,11 @@ function useRecipeSaver(): RecipeSaver {
       throw new Error(
         "You no longer have edit permissions for the blueprint. Please reload the Editor."
       );
+    }
+
+    if (!isRecipeEditable(editablePackages, recipe)) {
+      dispatch(editorActions.showSaveAsNewRecipeModal());
+      return false;
     }
 
     // eslint-disable-next-line security/detect-object-injection -- recipeId
@@ -156,7 +165,7 @@ function useRecipeSaver(): RecipeSaver {
   }
 
   async function safeSave(recipeId: RegistryId) {
-    if (isLoading) {
+    if (isRecipesLoading || isEditablePackagesLoading) {
       return;
     }
 

@@ -55,6 +55,7 @@ export const initialState: EditorState = {
   dirtyRecipeMetadataById: {},
   isAddToRecipeModalVisible: false,
   isRemoveFromRecipeModalVisible: false,
+  isSaveAsNewRecipeModalVisible: false,
   isCreateRecipeModalVisible: false,
   keepLocalCopyOnCreateRecipe: false,
   deletedElementsByRecipeId: {},
@@ -474,6 +475,12 @@ export const editorSlice = createSlice({
         state.activeElementId = newId;
       }
     },
+    showSaveAsNewRecipeModal(state) {
+      state.isSaveAsNewRecipeModalVisible = true;
+    },
+    hideSaveAsNewRecipeModal(state) {
+      state.isSaveAsNewRecipeModalVisible = false;
+    },
     clearDeletedElementsForRecipe(state, action: PayloadAction<RegistryId>) {
       const recipeId = action.payload;
       delete state.deletedElementsByRecipeId[recipeId];
@@ -496,7 +503,12 @@ export const editorSlice = createSlice({
     clearActiveRecipe(state) {
       state.activeRecipeId = null;
     },
-    transitionToCreateRecipeModal(state, action: PayloadAction<boolean>) {
+    transitionSaveAsNewToCreateRecipeModal(state) {
+      state.isSaveAsNewRecipeModalVisible = false;
+      state.keepLocalCopyOnCreateRecipe = false;
+      state.isCreateRecipeModalVisible = true;
+    },
+    transitionAddToCreateRecipeModal(state, action: PayloadAction<boolean>) {
       state.isAddToRecipeModalVisible = false;
       state.keepLocalCopyOnCreateRecipe = action.payload;
       state.isCreateRecipeModalVisible = true;
