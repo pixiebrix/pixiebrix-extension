@@ -52,7 +52,7 @@ import ErrorDisplay from "./ErrorDisplay";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import PageStateTab from "./PageStateTab";
 import { DataPanelTabKey } from "./dataPanelTypes";
-import useDataPanelTabState from "./useDataPanelTabState";
+import DataTabJsonTree from "./DataTabJsonTree";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -158,31 +158,6 @@ const DataPanel: React.FC<{
       : DataPanelTabKey.Output
   );
 
-  const {
-    query: contextQuery,
-    setQuery: setContextQuery,
-    treeExpandedState: contextExpandedState,
-    setTreeExpandedState: setContextTreeExpandedState,
-  } = useDataPanelTabState(DataPanelTabKey.Context);
-  const {
-    query: formikQuery,
-    setQuery: setFormikQuery,
-    treeExpandedState: formikExpandedState,
-    setTreeExpandedState: setFormikTreeExpandedState,
-  } = useDataPanelTabState(DataPanelTabKey.Formik);
-  const {
-    query: renderedQuery,
-    setQuery: setRenderedQuery,
-    treeExpandedState: renderedExpandedState,
-    setTreeExpandedState: setRenderedTreeExpandedState,
-  } = useDataPanelTabState(DataPanelTabKey.Rendered);
-  const {
-    query: outputQuery,
-    setQuery: setOutputQuery,
-    treeExpandedState: outputExpandedState,
-    setTreeExpandedState: setOutputTreeExpandedState,
-  } = useDataPanelTabState(DataPanelTabKey.Output);
-
   const popupBoundary = showDocumentPreview
     ? document.querySelector(`.${dataPanelStyles.tabContent}`)
     : undefined;
@@ -231,14 +206,11 @@ const DataPanel: React.FC<{
                 block has changed, input context may be out of date
               </Alert>
             )}
-            <JsonTree
+            <DataTabJsonTree
               data={relevantContext}
               copyable
               searchable
-              initialSearchQuery={contextQuery}
-              onSearchQueryChange={setContextQuery}
-              initialExpandedState={contextExpandedState}
-              onExpandedStateChange={setContextTreeExpandedState}
+              tabKey={DataPanelTabKey.Context}
             />
           </DataTab>
           {showPageState && (
@@ -253,13 +225,10 @@ const DataPanel: React.FC<{
                   <FontAwesomeIcon icon={faInfoCircle} /> This tab is only
                   visible to developers
                 </div>
-                <JsonTree
+                <DataTabJsonTree
                   data={formikData ?? {}}
                   searchable
-                  initialSearchQuery={formikQuery}
-                  onSearchQueryChange={setFormikQuery}
-                  initialExpandedState={formikExpandedState}
-                  onExpandedStateChange={setFormikTreeExpandedState}
+                  tabKey={DataPanelTabKey.Formik}
                 />
               </DataTab>
               <DataTab eventKey={DataPanelTabKey.BlockConfig}>
@@ -304,14 +273,11 @@ const DataPanel: React.FC<{
                     block has changed, input context may be out of date
                   </Alert>
                 )}
-                <JsonTree
+                <DataTabJsonTree
                   data={record?.renderedArgs}
                   copyable
                   searchable
-                  initialSearchQuery={renderedQuery}
-                  onSearchQueryChange={setRenderedQuery}
-                  initialExpandedState={renderedExpandedState}
-                  onExpandedStateChange={setRenderedTreeExpandedState}
+                  tabKey={DataPanelTabKey.Rendered}
                   label="Rendered Inputs"
                 />
               </>
@@ -336,14 +302,11 @@ const DataPanel: React.FC<{
                     previous brick has changed, output may be out of date
                   </Alert>
                 )}
-                <JsonTree
+                <DataTabJsonTree
                   data={outputObj}
                   copyable
                   searchable
-                  initialSearchQuery={outputQuery}
-                  onSearchQueryChange={setOutputQuery}
-                  initialExpandedState={outputExpandedState}
-                  onExpandedStateChange={setOutputTreeExpandedState}
+                  tabKey={DataPanelTabKey.Output}
                   label="Data"
                 />
               </>
