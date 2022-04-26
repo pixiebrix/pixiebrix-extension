@@ -64,8 +64,9 @@ function useRecipeSaver(): RecipeSaver {
   /**
    * Save a recipe's extensions, options, and metadata
    * Throws errors for various bad states
+   * @return boolean indicating successful save
    */
-  async function save(recipeId: RegistryId) {
+  async function save(recipeId: RegistryId): Promise<boolean> {
     const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
     if (recipe == null) {
       throw new Error(
@@ -102,7 +103,7 @@ function useRecipeSaver(): RecipeSaver {
     });
 
     if (!confirm) {
-      return;
+      return false;
     }
 
     const newRecipe = buildRecipe({
@@ -150,6 +151,8 @@ function useRecipeSaver(): RecipeSaver {
       editorActions.resetMetadataAndOptionsForRecipe(newRecipeMetadata.id)
     );
     dispatch(editorActions.clearDeletedElementsForRecipe(newRecipeMetadata.id));
+
+    return true;
   }
 
   async function safeSave(recipeId: RegistryId) {
@@ -159,8 +162,10 @@ function useRecipeSaver(): RecipeSaver {
 
     setIsSaving(true);
     try {
-      await save(recipeId);
-      notify.success("Saved blueprint");
+      const success = await save(recipeId);
+      if (success) {
+        notify.success("Saved blueprint");
+      }
     } catch (error: unknown) {
       notify.error({
         message: "Failed saving blueprint",
