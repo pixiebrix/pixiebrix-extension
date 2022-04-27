@@ -33,7 +33,10 @@ import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { buildRecipe } from "@/pageEditor/panes/save/saveHelpers";
+import {
+  buildRecipe,
+  isRecipeEditable,
+} from "@/pageEditor/panes/save/saveHelpers";
 import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
 import useCreate from "@/pageEditor/hooks/useCreate";
@@ -49,8 +52,9 @@ type RecipeSaver = {
 function useRecipeSaver(): RecipeSaver {
   const dispatch = useDispatch();
   const create = useCreate();
-  const { data: recipes, isLoading } = useGetRecipesQuery();
-  const { data: editablePackages } = useGetEditablePackagesQuery();
+  const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
+  const { data: editablePackages, isLoading: isEditablePackagesLoading } =
+    useGetEditablePackagesQuery();
   const [updateRecipe] = useUpdateRecipeMutation();
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
@@ -64,13 +68,19 @@ function useRecipeSaver(): RecipeSaver {
   /**
    * Save a recipe's extensions, options, and metadata
    * Throws errors for various bad states
+   * @return boolean indicating successful save
    */
-  async function save(recipeId: RegistryId) {
+  async function save(recipeId: RegistryId): Promise<boolean> {
     const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
     if (recipe == null) {
       throw new Error(
         "You no longer have edit permissions for the blueprint. Please reload the Editor."
       );
+    }
+
+    if (!isRecipeEditable(editablePackages, recipe)) {
+      dispatch(editorActions.showSaveAsNewRecipeModal());
+      return false;
     }
 
     // eslint-disable-next-line security/detect-object-injection -- recipeId
@@ -102,7 +112,7 @@ function useRecipeSaver(): RecipeSaver {
     });
 
     if (!confirm) {
-      return;
+      return false;
     }
 
     const newRecipe = buildRecipe({
@@ -150,17 +160,21 @@ function useRecipeSaver(): RecipeSaver {
       editorActions.resetMetadataAndOptionsForRecipe(newRecipeMetadata.id)
     );
     dispatch(editorActions.clearDeletedElementsForRecipe(newRecipeMetadata.id));
+
+    return true;
   }
 
   async function safeSave(recipeId: RegistryId) {
-    if (isLoading) {
+    if (isRecipesLoading || isEditablePackagesLoading) {
       return;
     }
 
     setIsSaving(true);
     try {
-      await save(recipeId);
-      notify.success("Saved blueprint");
+      const success = await save(recipeId);
+      if (success) {
+        notify.success("Saved blueprint");
+      }
     } catch (error: unknown) {
       notify.error({
         message: "Failed saving blueprint",

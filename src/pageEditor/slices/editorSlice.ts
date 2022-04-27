@@ -56,6 +56,7 @@ export const initialState: EditorState = {
   dirtyRecipeMetadataById: {},
   isAddToRecipeModalVisible: false,
   isRemoveFromRecipeModalVisible: false,
+  isSaveAsNewRecipeModalVisible: false,
   isCreateRecipeModalVisible: false,
   keepLocalCopyOnCreateRecipe: false,
   deletedElementsByRecipeId: {},
@@ -114,6 +115,72 @@ function setActiveNodeId(state: WritableDraft<EditorState>, nodeId: NodeId) {
   const elementUIState = state.elementUIStates[state.activeElementId];
   ensureNodeUIState(elementUIState, nodeId);
   elementUIState.activeNodeId = nodeId;
+}
+
+function removeElement(state: WritableDraft<EditorState>, uuid: UUID) {
+  if (state.activeElementId === uuid) {
+    state.activeElementId = null;
+  }
+
+  // This is called from the remove-recipe logic. When removing all extensions
+  // in a recipe, some of them may not have been selected by the user in the UI yet,
+  // and so may not have been moved into state.elements yet.
+  const index = state.elements.findIndex((x) => x.uuid === uuid);
+  if (index > -1) {
+    state.elements.splice(index, 1);
+  }
+
+  delete state.dirty[uuid];
+  delete state.elementUIStates[uuid];
+
+  // Make sure we're not keeping any private data around from Page Editor sessions
+  void clearExtensionTraces(uuid);
+}
+
+function selectRecipeId(
+  state: WritableDraft<EditorState>,
+  recipeId: RegistryId
+) {
+  state.error = null;
+  state.beta = null;
+  state.activeElementId = null;
+
+  if (
+    state.expandedRecipeId === recipeId &&
+    state.activeRecipeId === recipeId
+  ) {
+    // "un-toggle" the recipe, if it's already selected
+    state.expandedRecipeId = null;
+  } else {
+    state.expandedRecipeId = recipeId;
+  }
+
+  state.activeRecipeId = recipeId;
+  state.selectionSeq++;
+}
+
+function editRecipeMetadata(
+  state: WritableDraft<EditorState>,
+  metadata: RecipeMetadataFormState
+) {
+  const recipeId = state.activeRecipeId;
+  if (recipeId == null) {
+    return;
+  }
+
+  state.dirtyRecipeMetadataById[recipeId] = metadata;
+}
+
+function editRecipeOptions(
+  state: WritableDraft<EditorState>,
+  options: OptionsDefinition
+) {
+  const recipeId = state.activeRecipeId;
+  if (recipeId == null) {
+    return;
+  }
+
+  state.dirtyRecipeOptionsById[recipeId] = options;
 }
 
 export const editorSlice = createSlice({
@@ -259,42 +326,11 @@ export const editorSlice = createSlice({
     },
     removeElement(state, action: PayloadAction<UUID>) {
       const uuid = action.payload;
-      if (state.activeElementId === uuid) {
-        state.activeElementId = null;
-      }
-
-      // This is called from the remove-recipe logic. When removing all extensions
-      // in a recipe, some of them may not have been selected by the user in the UI yet,
-      // and so may not have been moved into state.elements yet.
-      const index = state.elements.findIndex((x) => x.uuid === uuid);
-      if (index > -1) {
-        state.elements.splice(index, 1);
-      }
-
-      delete state.dirty[uuid];
-      delete state.elementUIStates[uuid];
-
-      // Make sure we're not keeping any private data around from Page Editor sessions
-      void clearExtensionTraces(uuid);
+      removeElement(state, uuid);
     },
     selectRecipeId(state, action: PayloadAction<RegistryId>) {
       const recipeId = action.payload;
-      state.error = null;
-      state.beta = null;
-      state.activeElementId = null;
-
-      if (
-        state.expandedRecipeId === recipeId &&
-        state.activeRecipeId === recipeId
-      ) {
-        // "un-toggle" the recipe, if it's already selected
-        state.expandedRecipeId = null;
-      } else {
-        state.expandedRecipeId = recipeId;
-      }
-
-      state.activeRecipeId = recipeId;
-      state.selectionSeq++;
+      selectRecipeId(state, recipeId);
     },
     setBetaUIEnabled(state, action: PayloadAction<boolean>) {
       state.isBetaUI = action.payload;
@@ -388,22 +424,12 @@ export const editorSlice = createSlice({
       state.showV3UpgradeMessageByElement[state.activeElementId] = false;
     },
     editRecipeOptions(state, action: PayloadAction<OptionsDefinition>) {
-      const recipeId = state.activeRecipeId;
-      if (recipeId == null) {
-        return;
-      }
-
       const { payload: options } = action;
-      state.dirtyRecipeOptionsById[recipeId] = options;
+      editRecipeOptions(state, options);
     },
     editRecipeMetadata(state, action: PayloadAction<RecipeMetadataFormState>) {
-      const recipeId = state.activeRecipeId;
-      if (recipeId == null) {
-        return;
-      }
-
       const { payload: metadata } = action;
-      state.dirtyRecipeMetadataById[recipeId] = metadata;
+      editRecipeMetadata(state, metadata);
     },
     resetMetadataAndOptionsForRecipe(state, action: PayloadAction<RegistryId>) {
       const { payload: recipeId } = action;
@@ -515,6 +541,12 @@ export const editorSlice = createSlice({
         state.activeElementId = newId;
       }
     },
+    showSaveAsNewRecipeModal(state) {
+      state.isSaveAsNewRecipeModalVisible = true;
+    },
+    hideSaveAsNewRecipeModal(state) {
+      state.isSaveAsNewRecipeModalVisible = false;
+    },
     clearDeletedElementsForRecipe(state, action: PayloadAction<RegistryId>) {
       const recipeId = action.payload;
       delete state.deletedElementsByRecipeId[recipeId];
@@ -537,13 +569,51 @@ export const editorSlice = createSlice({
     clearActiveRecipe(state) {
       state.activeRecipeId = null;
     },
-    transitionToCreateRecipeModal(state, action: PayloadAction<boolean>) {
+    // XXX:
+    transitionSaveAsNewToCreateRecipeModal(state) {
+      state.isSaveAsNewRecipeModalVisible = false;
+      state.keepLocalCopyOnCreateRecipe = false;
+      state.isCreateRecipeModalVisible = true;
+    },
+    transitionAddToCreateRecipeModal(state, action: PayloadAction<boolean>) {
       state.isAddToRecipeModalVisible = false;
       state.keepLocalCopyOnCreateRecipe = action.payload;
       state.isCreateRecipeModalVisible = true;
     },
     hideCreateRecipeModal(state) {
       state.isCreateRecipeModalVisible = false;
+    },
+    finishSaveAsNewRecipe(
+      state,
+      action: PayloadAction<{
+        oldRecipeId: RegistryId;
+        newRecipeId: RegistryId;
+        metadata: RecipeMetadataFormState;
+        options: OptionsDefinition;
+      }>
+    ) {
+      const { oldRecipeId, newRecipeId, metadata, options } = action.payload;
+
+      // Remove old recipe extension form states
+      for (const element of state.elements.filter(
+        (element) => element.recipe?.id === oldRecipeId
+      )) {
+        removeElement(state, element.uuid);
+      }
+
+      // Clear deleted elements
+      delete state.deletedElementsByRecipeId[oldRecipeId];
+
+      // Select the new recipe
+      selectRecipeId(state, newRecipeId);
+
+      // Set the metadata and options
+      editRecipeMetadata(state, metadata);
+      editRecipeOptions(state, options);
+
+      // Clean up the old metadata and options
+      delete state.dirtyRecipeMetadataById[oldRecipeId];
+      delete state.dirtyRecipeOptionsById[oldRecipeId];
     },
   },
 });

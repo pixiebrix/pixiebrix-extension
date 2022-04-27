@@ -42,6 +42,7 @@ import {
   selectIsAddToRecipeModalVisible,
   selectIsCreateRecipeModalVisible,
   selectIsRemoveFromRecipeModalVisible,
+  selectIsSaveAsNewRecipeModalVisible,
 } from "@/pageEditor/slices/editorSelectors";
 import RecipePane from "@/pageEditor/panes/RecipePane";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
@@ -50,6 +51,7 @@ import { RootState } from "@/pageEditor/pageEditorTypes";
 import AddToRecipeModal from "@/pageEditor/sidebar/AddToRecipeModal";
 import RemoveFromRecipeModal from "@/pageEditor/sidebar/RemoveFromRecipeModal";
 import CreateRecipeModal from "@/pageEditor/sidebar/CreateRecipeModal";
+import SaveAsNewRecipeModal from "@/pageEditor/sidebar/SaveAsNewRecipeModal";
 
 const selectEditor = ({ editor }: RootState) => editor;
 
@@ -100,6 +102,9 @@ const Editor: React.FunctionComponent = () => {
   );
   const isRemoveFromRecipeModalVisible = useSelector(
     selectIsRemoveFromRecipeModalVisible
+  );
+  const isSaveAsNewRecipeModalVisible = useSelector(
+    selectIsSaveAsNewRecipeModalVisible
   );
   const isCreateRecipeModalVisible = useSelector(
     selectIsCreateRecipeModalVisible
@@ -175,6 +180,8 @@ const Editor: React.FunctionComponent = () => {
       {isAddToRecipeModalVisible && <AddToRecipeModal />}
 
       {isRemoveFromRecipeModalVisible && <RemoveFromRecipeModal />}
+
+      {isSaveAsNewRecipeModalVisible && <SaveAsNewRecipeModal />}
 
       {isCreateRecipeModalVisible && <CreateRecipeModal />}
     </>

@@ -410,19 +410,17 @@ async function validateExtension(
   const notConfigured = [];
   const missingConfiguration = [];
 
-  if (extension.services?.length) {
-    for (const service of extension.services) {
-      console.debug(`Validating ${extension.id} service ${service.id}`);
-      try {
-        await services.locate(service.id, service.config);
-      } catch (error) {
-        if (error instanceof MissingConfigurationError) {
-          missingConfiguration.push(error);
-        } else if (error instanceof NotConfiguredError) {
-          notConfigured.push(error);
-        } else {
-          console.debug(error);
-        }
+  for (const service of extension.services ?? []) {
+    console.debug(`Validating ${extension.id} service ${service.id}`);
+    try {
+      await services.locate(service.id, service.config);
+    } catch (error) {
+      if (error instanceof MissingConfigurationError) {
+        missingConfiguration.push(error);
+      } else if (error instanceof NotConfiguredError) {
+        notConfigured.push(error);
+      } else {
+        console.debug(error);
       }
     }
   }

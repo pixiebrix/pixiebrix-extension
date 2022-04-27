@@ -81,7 +81,7 @@ const AddToRecipeModal: React.VFC = () => {
       const keepLocalCopy = moveOrCopy === "copy";
 
       if (recipeId === NEW_RECIPE_ID) {
-        dispatch(editorActions.transitionToCreateRecipeModal(keepLocalCopy));
+        dispatch(editorActions.transitionAddToCreateRecipeModal(keepLocalCopy));
         return;
       }
 

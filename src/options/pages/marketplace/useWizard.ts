@@ -7,8 +7,8 @@ import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import React, { useMemo } from "react";
 import {
-  selectAuths,
-  selectOptions,
+  inferRecipeAuths,
+  inferRecipeOptions,
 } from "@/options/pages/blueprints/utils/useReinstall";
 import { isEmpty, mapValues, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
@@ -44,8 +44,8 @@ function useWizard(blueprint: RecipeDefinition): [WizardStep[], WizardValues] {
       (extension) => extension._recipe?.id === blueprint?.metadata.id
     );
 
-    const installedOptions = selectOptions(installedBlueprintExtensions);
-    const installedServices = selectAuths(installedBlueprintExtensions, {
+    const installedOptions = inferRecipeOptions(installedBlueprintExtensions);
+    const installedServices = inferRecipeAuths(installedBlueprintExtensions, {
       optional: true,
     });
 

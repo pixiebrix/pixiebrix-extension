@@ -56,11 +56,6 @@ import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 // - Update the usage of JsonTree for DataTabJsonTree in other components
 // - Fix the rendering error: Cannot update a component (`SidebarExpanded`) while rendering a different component (`JSONNestedNode`).
 
-// TODO Tests
-// - Test the active element of Document builder (select, switch node, get back, assert)
-// - Test the active element of Form builder (select, switch node, get back, assert)
-// - Test the active element on node order change (select element, move element up, assert)
-
 /**
  * Exclude irrelevant top-level keys.
  */

@@ -67,6 +67,8 @@ jest.mock("@/background/messenger/api", () => ({
     // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
     clear: jest.fn().mockResolvedValue(undefined),
   },
+  // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
+  uninstallContextMenu: jest.fn().mockResolvedValue(undefined),
   contextMenus: {
     preload: jest.fn(),
   },
