@@ -259,9 +259,11 @@ const CreateRecipeModal: React.VFC = () => {
 
   const activeElement = useSelector(selectActiveElement);
 
+  // `selectActiveRecipeId` returns the recipe id _if the recipe element is selected_. Assumption: if the CreateModal
+  // is open an extension element is active, then we're performing a "Save a New" on that recipe.
   const directlyActiveRecipeId = useSelector(selectActiveRecipeId);
-
   const activeRecipeId = directlyActiveRecipeId ?? activeElement.recipe?.id;
+
   const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
   const activeRecipe = recipes?.find(
     (recipe) => recipe.metadata.id === activeRecipeId
@@ -288,6 +290,8 @@ const CreateRecipeModal: React.VFC = () => {
     helpers
   ) => {
     try {
+      // `activeRecipe` must come first. It's possible that both activeElement and activeRecipe are set because
+      // activeRecipe will be the recipe of the active element if in a "Save as New" workflow for an existing recipe
       if (activeRecipe) {
         await createRecipeFromRecipe(activeRecipe, values);
       } else if (activeElement) {
