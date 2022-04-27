@@ -30,7 +30,6 @@ import {
   faSync,
 } from "@fortawesome/free-solid-svg-icons";
 import objectHash from "object-hash";
-import JsonTree from "@/components/jsonTree/JsonTree";
 import { isEmpty } from "lodash";
 import { TraceRecord } from "@/telemetry/trace";
 import { removeEmptyValues } from "@/pageEditor/extensionPoints/base";
@@ -51,7 +50,7 @@ import { BlockType } from "@/runtime/runtimeTypes";
 import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
 import { isTriggerExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import useDataPanelTabState from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabState";
+import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -208,13 +207,6 @@ const BlockPreview: React.FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, blockConfig, blockInfo, objectHash(context ?? {})]);
 
-  const {
-    query: previewQuery,
-    setQuery: setPreviewQuery,
-    treeExpandedState: previewExpandedState,
-    setTreeExpandedState: setPreviewTreeExpandedState,
-  } = useDataPanelTabState(DataPanelTabKey.Preview);
-
   if (blockInfo?.type === "renderer") {
     return (
       <div className="text-muted">
@@ -284,14 +276,11 @@ const BlockPreview: React.FunctionComponent<{
       )}
 
       {output && !isError && !isEmpty(output) && (
-        <JsonTree
+        <DataTabJsonTree
           data={output}
           searchable
           copyable
-          initialSearchQuery={previewQuery}
-          onSearchQueryChange={setPreviewQuery}
-          initialExpandedState={previewExpandedState}
-          onExpandedStateChange={setPreviewTreeExpandedState}
+          tabKey={DataPanelTabKey.Preview}
         />
       )}
 

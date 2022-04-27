@@ -19,7 +19,6 @@ import React, { useCallback, useEffect, useReducer } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors";
-import JsonTree from "@/components/jsonTree/JsonTree";
 import { UnknownObject } from "@/types";
 import { runExtensionPointReader } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
@@ -31,7 +30,7 @@ import AsyncButton from "@/components/AsyncButton";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import useDataPanelTabState from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabState";
+import DataTabJsonTree from "../editTab/dataPanel/DataTabJsonTree";
 
 type PreviewState = {
   isRunning: boolean;
@@ -111,13 +110,6 @@ const ExtensionPointPreview: React.FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, element.extensionPoint]);
 
-  const {
-    query: previewQuery,
-    setQuery: setPreviewQuery,
-    treeExpandedState: previewExpandedState,
-    setTreeExpandedState: setPreviewTreeExpandedState,
-  } = useDataPanelTabState(DataPanelTabKey.Preview);
-
   if (isRunning) {
     return (
       <div>
@@ -171,14 +163,11 @@ const ExtensionPointPreview: React.FunctionComponent<{
     <div>
       {reloadTrigger}
       {reloadContextMenu}
-      <JsonTree
+      <DataTabJsonTree
         data={output ?? {}}
         searchable
         copyable
-        initialSearchQuery={previewQuery}
-        onSearchQueryChange={setPreviewQuery}
-        initialExpandedState={previewExpandedState}
-        onExpandedStateChange={setPreviewTreeExpandedState}
+        tabKey={DataPanelTabKey.Preview}
       />
     </div>
   );

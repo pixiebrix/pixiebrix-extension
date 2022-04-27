@@ -37,10 +37,6 @@ const DataTabJsonTree: React.FunctionComponent<DataTabJsonTreeProps> = ({
 }) => {
   const state = useDataPanelTabState(tabKey);
 
-  console.log("DataTabJsonTree", {
-    tabKey,
-    frozen: Object.isFrozen(state.treeExpandedState),
-  });
   return (
     <JsonTree
       {...jsonTreeProps}

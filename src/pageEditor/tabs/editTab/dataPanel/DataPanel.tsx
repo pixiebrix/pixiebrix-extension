@@ -22,7 +22,6 @@ import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isEmpty, isEqual, pickBy } from "lodash";
 import { useFormikContext } from "formik";
 import { Alert, Button, Nav, Tab } from "react-bootstrap";
-import JsonTree from "@/components/jsonTree/JsonTree";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -197,7 +196,12 @@ const DataPanel: React.FC<{
           </Nav.Item>
         </Nav>
         <Tab.Content className={dataPanelStyles.tabContent}>
-          <DataTab eventKey={DataPanelTabKey.Context} isTraceEmpty={!record}>
+          <DataTab
+            eventKey={DataPanelTabKey.Context}
+            isTraceEmpty={!record}
+            mountOnEnter
+            unmountOnExit
+          >
             {isInputStale && (
               <Alert variant="warning">
                 <FontAwesomeIcon icon={faExclamationTriangle} /> A previous
@@ -212,13 +216,21 @@ const DataPanel: React.FC<{
             />
           </DataTab>
           {showPageState && (
-            <DataTab eventKey={DataPanelTabKey.PageState}>
+            <DataTab
+              eventKey={DataPanelTabKey.PageState}
+              mountOnEnter
+              unmountOnExit
+            >
               <PageStateTab />
             </DataTab>
           )}
           {showDeveloperTabs && (
             <>
-              <DataTab eventKey={DataPanelTabKey.Formik}>
+              <DataTab
+                eventKey={DataPanelTabKey.Formik}
+                mountOnEnter
+                unmountOnExit
+              >
                 <div className="text-info">
                   <FontAwesomeIcon icon={faInfoCircle} /> This tab is only
                   visible to developers
@@ -229,12 +241,19 @@ const DataPanel: React.FC<{
                   tabKey={DataPanelTabKey.Formik}
                 />
               </DataTab>
-              <DataTab eventKey={DataPanelTabKey.BlockConfig}>
+              <DataTab
+                eventKey={DataPanelTabKey.BlockConfig}
+                mountOnEnter
+                unmountOnExit
+              >
                 <div className="text-info">
                   <FontAwesomeIcon icon={faInfoCircle} /> This tab is only
                   visible to developers
                 </div>
-                <JsonTree data={block ?? {}} />
+                <DataTabJsonTree
+                  data={block ?? {}}
+                  tabKey={DataPanelTabKey.BlockConfig}
+                />
                 <Button
                   onClick={() => {
                     copy(JSON.stringify(block, undefined, 2));
@@ -246,7 +265,12 @@ const DataPanel: React.FC<{
               </DataTab>
             </>
           )}
-          <DataTab eventKey={DataPanelTabKey.Rendered} isTraceEmpty={!record}>
+          <DataTab
+            eventKey={DataPanelTabKey.Rendered}
+            isTraceEmpty={!record}
+            mountOnEnter
+            unmountOnExit
+          >
             {record?.renderError ? (
               <>
                 {record.skippedRun ? (
@@ -285,6 +309,8 @@ const DataPanel: React.FC<{
             eventKey={DataPanelTabKey.Output}
             isTraceEmpty={!record}
             isTraceOptional={previewInfo?.traceOptional}
+            mountOnEnter
+            unmountOnExit
           >
             {record?.skippedRun && (
               <Alert variant="info">

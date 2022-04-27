@@ -96,6 +96,8 @@ const FoundationDataPanel: React.FC<{
             <Tab.Pane
               eventKey={DataPanelTabKey.Formik}
               className={dataPanelStyles.tabPane}
+              mountOnEnter
+              unmountOnExit
             >
               <div className="text-info">
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
@@ -110,6 +112,8 @@ const FoundationDataPanel: React.FC<{
             <Tab.Pane
               eventKey={DataPanelTabKey.BlockConfig}
               className={dataPanelStyles.tabPane}
+              mountOnEnter
+              unmountOnExit
             >
               <div className="text-info">
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
@@ -134,6 +138,8 @@ const FoundationDataPanel: React.FC<{
         <Tab.Pane
           eventKey={DataPanelTabKey.Output}
           className={dataPanelStyles.tabPane}
+          mountOnEnter
+          unmountOnExit
         >
           {firstBlockTraceRecord ? (
             <DataTabJsonTree
@@ -153,12 +159,16 @@ const FoundationDataPanel: React.FC<{
         <Tab.Pane
           eventKey={DataPanelTabKey.Preview}
           className={dataPanelStyles.tabPane}
+          mountOnEnter
+          unmountOnExit
         >
           <ExtensionPointPreview element={formState} />
         </Tab.Pane>
         <Tab.Pane
           eventKey={DataPanelTabKey.PageState}
           className={dataPanelStyles.tabPane}
+          mountOnEnter
+          unmountOnExit
         >
           <PageStateTab />
         </Tab.Pane>

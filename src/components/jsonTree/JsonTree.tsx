@@ -136,8 +136,6 @@ const jsonTreeTheme: Theme = {
   }),
 };
 
-let r = 0;
-let l = 0;
 const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   copyable = false,
   searchable = false,
@@ -178,49 +176,43 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   // The actual expanded state is handled by the JSONTree internally
   const expandedStateRef = useRef(initialExpandedState);
 
-  const getExpanded = useCallback(
-    (keyPath: Array<string | number>) =>
-      Boolean(get(expandedStateRef.current, reverse([...keyPath]))),
-    []
-  );
+  const getExpanded = (keyPath: Array<string | number>) =>
+    Boolean(get(expandedStateRef.current, reverse([...keyPath])));
 
-  const labelRenderer = useCallback(
-    (
-      keyPath: Array<string | number>,
-      nodeType: string,
-      isExpanded: boolean,
-      expandable: boolean
-    ): ReactNode => {
-      if (expandable && getExpanded(keyPath) !== isExpanded) {
-        // Using Immer allows to work with immutable objects
-        const nextExpandedState = produce(expandedStateRef.current, (draft) => {
-          set(draft, reverse([...keyPath]), isExpanded);
+  const labelRenderer = (
+    keyPath: Array<string | number>,
+    nodeType: string,
+    isExpanded: boolean,
+    expandable: boolean
+  ): ReactNode => {
+    if (expandable && getExpanded(keyPath) !== isExpanded) {
+      // Using Immer allows to work with immutable objects
+      const nextExpandedState = produce(expandedStateRef.current, (draft) => {
+        set(draft, reverse([...keyPath]), isExpanded);
+      });
+
+      expandedStateRef.current = nextExpandedState;
+
+      if (onExpandedStateChange) {
+        console.log("expanding", {
+          keyPath,
         });
-
-        expandedStateRef.current = nextExpandedState;
-
-        if (onExpandedStateChange) {
-          console.log("expanding", {
-            keyPath,
-          });
-          onExpandedStateChange(nextExpandedState);
-        }
+        onExpandedStateChange(nextExpandedState);
       }
+    }
 
-      console.log("labelRenderer", keyPath[0], l++);
+    console.log("labelRenderer", keyPath[0]);
 
-      return copyable ? (
-        copyLabelRenderer(keyPath, nodeType, isExpanded)
-      ) : (
-        <span>{keyPath[0]}:</span>
-      );
-    },
-    []
-  );
+    return copyable ? (
+      copyLabelRenderer(keyPath, nodeType, isExpanded)
+    ) : (
+      <span>{keyPath[0]}:</span>
+    );
+  };
 
   const labelText = query ? `Search Results: ${query}` : label;
 
-  console.log("rendering JsonTree", r++);
+  console.log("rendering JsonTree");
 
   return (
     <div className={styles.root}>
@@ -238,7 +230,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
       {searchResults === undefined ? (
         <Loader />
       ) : (
-        <MemoizedJsonTree
+        <JSONTree
           data={searchResults}
           labelRenderer={labelRenderer}
           hideRoot
