@@ -27,20 +27,27 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 
 export const FOUNDATION_NODE_ID = "foundation" as UUID;
 
-export function makeInitialNodeUIState(nodeId: NodeId): NodeUIState {
+function makeInitialDataTabState(): TabUIState {
   return {
+    query: "",
+    treeExpandedState: {},
+    activeElement: null,
+  };
+}
+
+export function makeInitialNodeUIState(nodeId: NodeId): NodeUIState {
+  const nodeUIState: NodeUIState = {
     nodeId,
     dataPanel: {
       activeTabKey: null,
-      [DataPanelTabKey.Context]: {},
-      [DataPanelTabKey.PageState]: {},
-      [DataPanelTabKey.Formik]: {},
-      [DataPanelTabKey.BlockConfig]: {},
-      [DataPanelTabKey.Rendered]: {},
-      [DataPanelTabKey.Output]: {},
-      [DataPanelTabKey.Preview]: {},
     },
   };
+
+  for (const tab of Object.values(DataPanelTabKey)) {
+    nodeUIState.dataPanel[tab] = makeInitialDataTabState();
+  }
+
+  return nodeUIState;
 }
 
 export function makeInitialElementUIState(): ElementUIState {

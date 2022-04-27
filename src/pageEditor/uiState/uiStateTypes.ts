@@ -23,17 +23,17 @@ export type TabUIState = {
   /**
    * The filter query of the JsonTree component
    */
-  query?: string;
+  query: string;
 
   /**
    * The expanded state of the JsonTree component
    */
-  treeExpandedState?: TreeExpandedState;
+  treeExpandedState: TreeExpandedState;
 
   /**
    * The active element of a Document or Form builder on the Preview tab
    */
-  activeElement?: string;
+  activeElement: string | null;
 };
 
 export type NodeUIState = {

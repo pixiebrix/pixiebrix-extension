@@ -175,11 +175,8 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
 
   // This component doesn't react to state changes, only setting the initial expanded state
   // The actual expanded state is handled by the JSONTree internally
-  console.log("JsonTree", {
-    frozen: Object.isFrozen(initialExpandedState),
-  });
   const expandedStateRef = useRef(initialExpandedState);
-  const expandedState = expandedStateRef.current;
+
   const getExpanded = useCallback(
     (keyPath: Array<string | number>) =>
       Boolean(get(expandedStateRef.current, reverse([...keyPath]))),
@@ -194,12 +191,18 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
       expandable: boolean
     ): ReactNode => {
       if (expandable && getExpanded(keyPath) !== isExpanded) {
-        set(expandedStateRef.current, reverse([...keyPath]), isExpanded);
+        // Using Immer allows to work with immutable objects
+        const nextExpandedState = produce(expandedStateRef.current, (draft) => {
+          set(draft, reverse([...keyPath]), isExpanded);
+        });
+
+        expandedStateRef.current = nextExpandedState;
+
         if (onExpandedStateChange) {
           console.log("expanding", {
             keyPath,
           });
-          onExpandedStateChange(expandedStateRef.current);
+          onExpandedStateChange(nextExpandedState);
         }
       }
 
