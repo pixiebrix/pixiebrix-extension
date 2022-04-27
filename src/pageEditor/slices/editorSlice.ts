@@ -392,6 +392,15 @@ export const editorSlice = createSlice({
       ].treeExpandedState = expandedState;
     },
 
+    updateNodeDataPanelTabExpandedState(
+      state,
+      action: PayloadAction<{
+        tabKey: DataPanelTabKey;
+        keyPath: Array<string | number>;
+        isExpanded: boolean;
+      }>
+    ) {},
+
     /**
      * Updates the active element of a Document or Form builder on the Preview tab
      */

@@ -31,8 +31,8 @@ type DataTabJsonTreeProps = Except<
   tabKey: DataPanelTabKey;
 };
 
-function unfreezeObject(obj: any) {
-  return JSON.parse(JSON.stringify(obj));
+function unfreezeObject<TObject>(obj: TObject) {
+  return JSON.parse(JSON.stringify(obj)) as TObject;
 }
 
 const DataTabJsonTree: React.FunctionComponent<DataTabJsonTreeProps> = ({
@@ -41,6 +41,10 @@ const DataTabJsonTree: React.FunctionComponent<DataTabJsonTreeProps> = ({
 }) => {
   const state = useDataPanelTabState(tabKey);
 
+  console.log("DataTabJsonTree", {
+    tabKey,
+    frozen: Object.isFrozen(state.treeExpandedState),
+  });
   return (
     <JsonTree
       {...jsonTreeProps}
@@ -54,7 +58,7 @@ const DataTabJsonTree: React.FunctionComponent<DataTabJsonTreeProps> = ({
         // If we skip the current cycle, React feels ok.
         setTimeout(() => {
           state.setTreeExpandedState(nextExpandedState);
-        }, 50);
+        }, 500);
       }}
     />
   );

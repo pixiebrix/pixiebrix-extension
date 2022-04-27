@@ -124,6 +124,17 @@ function searchData(query: string, data: unknown): unknown {
     : undefined;
 }
 
+const MemoizedJsonTree = React.memo(JSONTree);
+const jsonTreeTheme = {
+  extend: theme,
+  value: ({ style }) => ({
+    style: {
+      ...style,
+      whiteSpace: "pre-wrap",
+    },
+  }),
+};
+
 let r = 0;
 let l = 0;
 const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
@@ -164,34 +175,44 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
 
   // This component doesn't react to state changes, only setting the initial expanded state
   // The actual expanded state is handled by the JSONTree internally
-  const expandedState = useRef(initialExpandedState).current;
-  const getExpanded = (keyPath: Array<string | number>) =>
-    Boolean(get(expandedState, reverse([...keyPath])));
+  console.log("JsonTree", {
+    frozen: Object.isFrozen(initialExpandedState),
+  });
+  const expandedStateRef = useRef(initialExpandedState);
+  const expandedState = expandedStateRef.current;
+  const getExpanded = useCallback(
+    (keyPath: Array<string | number>) =>
+      Boolean(get(expandedStateRef.current, reverse([...keyPath]))),
+    []
+  );
 
-  const labelRenderer = (
-    keyPath: Array<string | number>,
-    nodeType: string,
-    isExpanded: boolean,
-    expandable: boolean
-  ): ReactNode => {
-    if (expandable && getExpanded(keyPath) !== isExpanded) {
-      set(expandedState, reverse([...keyPath]), isExpanded);
-      if (onExpandedStateChange) {
-        console.log("expanding", {
-          keyPath,
-        });
-        onExpandedStateChange(expandedState);
+  const labelRenderer = useCallback(
+    (
+      keyPath: Array<string | number>,
+      nodeType: string,
+      isExpanded: boolean,
+      expandable: boolean
+    ): ReactNode => {
+      if (expandable && getExpanded(keyPath) !== isExpanded) {
+        set(expandedStateRef.current, reverse([...keyPath]), isExpanded);
+        if (onExpandedStateChange) {
+          console.log("expanding", {
+            keyPath,
+          });
+          onExpandedStateChange(expandedStateRef.current);
+        }
       }
-    }
 
-    console.log("labelRenderer", keyPath[0], l++);
+      console.log("labelRenderer", keyPath[0], l++);
 
-    return copyable ? (
-      copyLabelRenderer(keyPath, nodeType, isExpanded)
-    ) : (
-      <span>{keyPath[0]}:</span>
-    );
-  };
+      return copyable ? (
+        copyLabelRenderer(keyPath, nodeType, isExpanded)
+      ) : (
+        <span>{keyPath[0]}:</span>
+      );
+    },
+    []
+  );
 
   const labelText = query ? `Search Results: ${query}` : label;
 
@@ -213,19 +234,11 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
       {searchResults === undefined ? (
         <Loader />
       ) : (
-        <JSONTree
+        <MemoizedJsonTree
           data={searchResults}
           labelRenderer={labelRenderer}
           hideRoot
-          theme={{
-            extend: theme,
-            value: ({ style }) => ({
-              style: {
-                ...style,
-                whiteSpace: "pre-wrap",
-              },
-            }),
-          }}
+          theme={jsonTreeTheme}
           invertTheme
           shouldExpandNode={getExpanded}
           {...restProps}

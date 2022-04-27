@@ -21,7 +21,6 @@ import { UUID } from "@/core";
 import { useSelector } from "react-redux";
 import { makeSelectBlockTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { Nav, Tab } from "react-bootstrap";
-import JsonTree from "@/components/jsonTree/JsonTree";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
@@ -31,7 +30,7 @@ import useFlags from "@/hooks/useFlags";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import PageStateTab from "./PageStateTab";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import useDataPanelTabState from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabState";
+import DataTabJsonTree from "./DataTabJsonTree";
 
 const FoundationDataPanel: React.FC<{
   firstBlockInstanceId?: UUID;
@@ -50,23 +49,6 @@ const FoundationDataPanel: React.FC<{
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
     firstBlockTraceRecord ? DataPanelTabKey.Output : DataPanelTabKey.Preview
   );
-
-  const {
-    query: formikQuery,
-    setQuery: setFormikQuery,
-    treeExpandedState: formikExpandedState,
-    setTreeExpandedState: setFormikTreeExpandedState,
-  } = useDataPanelTabState(DataPanelTabKey.Formik);
-  const {
-    treeExpandedState: blockConfigExpandedState,
-    setTreeExpandedState: setBlockConfigTreeExpandedState,
-  } = useDataPanelTabState(DataPanelTabKey.BlockConfig);
-  const {
-    query: outputQuery,
-    setQuery: setOutputQuery,
-    treeExpandedState: outputExpandedState,
-    setTreeExpandedState: setOutputTreeExpandedState,
-  } = useDataPanelTabState(DataPanelTabKey.Output);
 
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
@@ -119,13 +101,10 @@ const FoundationDataPanel: React.FC<{
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
                 to developers
               </div>
-              <JsonTree
+              <DataTabJsonTree
                 data={formState ?? {}}
                 searchable
-                initialSearchQuery={formikQuery}
-                onSearchQueryChange={setFormikQuery}
-                initialExpandedState={formikExpandedState}
-                onExpandedStateChange={setFormikTreeExpandedState}
+                tabKey={DataPanelTabKey.Formik}
               />
             </Tab.Pane>
             <Tab.Pane
@@ -136,10 +115,9 @@ const FoundationDataPanel: React.FC<{
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
                 to developers
               </div>
-              <JsonTree
+              <DataTabJsonTree
                 data={extensionPoint}
-                initialExpandedState={blockConfigExpandedState}
-                onExpandedStateChange={setBlockConfigTreeExpandedState}
+                tabKey={DataPanelTabKey.BlockConfig}
               />
             </Tab.Pane>
           </>
@@ -158,14 +136,11 @@ const FoundationDataPanel: React.FC<{
           className={dataPanelStyles.tabPane}
         >
           {firstBlockTraceRecord ? (
-            <JsonTree
+            <DataTabJsonTree
               data={firstBlockTraceRecord.templateContext}
               copyable
               searchable
-              initialSearchQuery={outputQuery}
-              onSearchQueryChange={setOutputQuery}
-              initialExpandedState={outputExpandedState}
-              onExpandedStateChange={setOutputTreeExpandedState}
+              tabKey={DataPanelTabKey.Output}
               label="Data"
             />
           ) : (
