@@ -37,25 +37,29 @@ $colors: (
   black: #000000,
 );
 
-:root {
-  --theme-primary-color: 0, 100%; /*the base color*/
-  --l: 50%; /*the initial lightness*/
+$variable-theme-colors: (
+  primary: --theme-primary,
+  info: --theme-info,
+);
 
-  --theme-primary: hsl(var(--theme-primary-color), var(--l));
+:root {
+  --theme-primary-hs: 0, 100%; /*the base color*/
+  --theme-primary-l: 50%; /*the initial lightness*/
+  --theme-primary: hsl(var(--theme-primary-hs), var(--theme-primary-l));
+
+  --theme-info-hs: 180, 100%; /*the base color*/
+  --theme-info-l: 50%; /*the initial lightness*/
+  --theme-info: hsl(var(--theme-info-hs), var(--theme-info-l));
 }
 
 :root.default {
-  --theme-primary-color: 270, 100%; /*the base color*/
-  --l: 71%; /*the initial lightness*/
+  --theme-primary-hs: 270, 100%; /*the base color*/
+  --theme-primary-l: 71%; /*the initial lightness*/
+  --theme-primary: hsl(var(--theme-primary-hs), var(--theme-primary-l));
 
-  --theme-primary: hsl(var(--theme-primary-color), var(--l));
-}
-
-:root.cyan {
-  --theme-primary-color: 180, 100%; /*the base color*/
-  --l: 50%; /*the initial lightness*/
-
-  --theme-primary: hsl(var(--theme-primary-color), var(--l));
+  --theme-info-hs: 206, 80%;
+  --theme-info-l: 49%;
+  --theme-info: hsl(var(--theme-info-hs), var(--theme-info-l));
 }
 
 $theme-colors: (
