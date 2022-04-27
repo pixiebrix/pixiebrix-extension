@@ -125,7 +125,6 @@ function searchData(query: string, data: unknown): unknown {
     : undefined;
 }
 
-const MemoizedJsonTree = React.memo(JSONTree);
 const jsonTreeTheme: Theme = {
   extend: theme,
   value: ({ style }: Styling) => ({
@@ -136,6 +135,9 @@ const jsonTreeTheme: Theme = {
   }),
 };
 
+/**
+ * Internally a memoised component is used, be mindful about the reference equality of the props
+ */
 const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   copyable = false,
   searchable = false,
@@ -176,39 +178,45 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   // The actual expanded state is handled by the JSONTree internally
   const expandedStateRef = useRef(initialExpandedState);
 
-  const getExpanded = (keyPath: Array<string | number>) =>
-    Boolean(get(expandedStateRef.current, reverse([...keyPath])));
+  const getExpanded = useCallback(
+    (keyPath: Array<string | number>) =>
+      Boolean(get(expandedStateRef.current, reverse([...keyPath]))),
+    []
+  );
 
-  const labelRenderer = (
-    keyPath: Array<string | number>,
-    nodeType: string,
-    isExpanded: boolean,
-    expandable: boolean
-  ): ReactNode => {
-    if (expandable && getExpanded(keyPath) !== isExpanded) {
-      // Using Immer allows to work with immutable objects
-      const nextExpandedState = produce(expandedStateRef.current, (draft) => {
-        set(draft, reverse([...keyPath]), isExpanded);
-      });
-
-      expandedStateRef.current = nextExpandedState;
-
-      if (onExpandedStateChange) {
-        console.log("expanding", {
-          keyPath,
+  const labelRenderer = useCallback(
+    (
+      keyPath: Array<string | number>,
+      nodeType: string,
+      isExpanded: boolean,
+      expandable: boolean
+    ): ReactNode => {
+      if (expandable && getExpanded(keyPath) !== isExpanded) {
+        // Using Immer allows to work with immutable objects
+        const nextExpandedState = produce(expandedStateRef.current, (draft) => {
+          set(draft, reverse([...keyPath]), isExpanded);
         });
-        onExpandedStateChange(nextExpandedState);
+
+        expandedStateRef.current = nextExpandedState;
+
+        if (onExpandedStateChange) {
+          console.log("expanding", {
+            keyPath,
+          });
+          onExpandedStateChange(nextExpandedState);
+        }
       }
-    }
 
-    console.log("labelRenderer", keyPath[0]);
+      console.log("labelRenderer", keyPath[0]);
 
-    return copyable ? (
-      copyLabelRenderer(keyPath, nodeType, isExpanded)
-    ) : (
-      <span>{keyPath[0]}:</span>
-    );
-  };
+      return copyable ? (
+        copyLabelRenderer(keyPath, nodeType, isExpanded)
+      ) : (
+        <span>{keyPath[0]}:</span>
+      );
+    },
+    [onExpandedStateChange, getExpanded, copyLabelRenderer, copyable]
+  );
 
   const labelText = query ? `Search Results: ${query}` : label;
 
