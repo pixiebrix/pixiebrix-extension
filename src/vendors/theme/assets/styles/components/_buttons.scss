@@ -1,5 +1,11 @@
 /* Buttons */
 
+@each $color, $value in $theme-colors {
+  .btn-#{$color} {
+    @include button-variant($value, $value);
+  }
+}
+
 .btn {
   font-size: $btn-font-size;
   line-height: 1;

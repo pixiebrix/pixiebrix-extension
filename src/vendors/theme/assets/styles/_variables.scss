@@ -37,6 +37,13 @@ $colors: (
   black: #000000,
 );
 
+:root {
+  --theme-primary-color: 0, 100%; /*the base color*/
+  --l: 50%; /*the initial lightness*/
+
+  --theme-primary: hsl(var(--color),var(--l));
+}
+
 $theme-colors: (
   primary: #b66dff,
   secondary: #d8d8d8,

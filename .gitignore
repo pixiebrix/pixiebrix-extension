@@ -23,6 +23,7 @@ staticfiles
 .idea/uiDesigner.xml
 .idea/misc.xml
 .idea/runConfigurations.xml
+.idea/GitLink.xml
 *.log
 
 # MacOS files
