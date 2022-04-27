@@ -53,28 +53,27 @@ describe("PataPanel state", () => {
       })
     );
 
-    expect(getTabState(editorState)).toEqual({
-      query: "test query",
-    });
+    expect(getTabState(editorState).query).toEqual("test query");
   });
 
   test("should set the expanded state", () => {
+    const nextExpandedState = {
+      foo: {
+        bar: true,
+      },
+    };
+
     const editorState = editorSlice.reducer(
       state,
       actions.setNodeDataPanelTabExpandedState({
         tabKey: DataPanelTabKey.Context,
-        keyPath: ["foo", "bar"],
-        isExpanded: true,
+        expandedState: nextExpandedState,
       })
     );
 
-    expect(getTabState(editorState)).toEqual({
-      treeExpandedState: {
-        bar: {
-          foo: true,
-        },
-      },
-    });
+    expect(getTabState(editorState).treeExpandedState).toEqual(
+      nextExpandedState
+    );
   });
 
   test("should set the active element", () => {
@@ -83,8 +82,8 @@ describe("PataPanel state", () => {
       actions.setNodePreviewActiveElement("test-field")
     );
 
-    expect(getTabState(editorState, DataPanelTabKey.Preview)).toEqual({
-      activeElement: "test-field",
-    });
+    expect(
+      getTabState(editorState, DataPanelTabKey.Preview).activeElement
+    ).toEqual("test-field");
   });
 });

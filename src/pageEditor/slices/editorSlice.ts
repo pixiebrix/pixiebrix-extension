@@ -35,7 +35,7 @@ import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
-import { isEmpty, reverse, set } from "lodash";
+import { isEmpty } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 
@@ -391,15 +391,6 @@ export const editorSlice = createSlice({
         tabKey
       ].treeExpandedState = expandedState;
     },
-
-    updateNodeDataPanelTabExpandedState(
-      state,
-      action: PayloadAction<{
-        tabKey: DataPanelTabKey;
-        keyPath: Array<string | number>;
-        isExpanded: boolean;
-      }>
-    ) {},
 
     /**
      * Updates the active element of a Document or Form builder on the Preview tab

@@ -38,12 +38,14 @@ function makeInitialDataTabState(): TabUIState {
 export function makeInitialNodeUIState(nodeId: NodeId): NodeUIState {
   const nodeUIState: NodeUIState = {
     nodeId,
+    // @ts-expect-error -- initializing the Tab states down below
     dataPanel: {
       activeTabKey: null,
     },
   };
 
   for (const tab of Object.values(DataPanelTabKey)) {
+    // eslint-disable-next-line security/detect-object-injection -- tab comes from a known enum
     nodeUIState.dataPanel[tab] = makeInitialDataTabState();
   }
 

@@ -41,6 +41,7 @@ import {
 } from "lodash";
 import { Primitive } from "type-fest";
 import { produce } from "immer";
+import { Styling, Theme } from "react-base16-styling";
 
 const SEARCH_DEBOUNCE_MS = 100;
 
@@ -125,9 +126,9 @@ function searchData(query: string, data: unknown): unknown {
 }
 
 const MemoizedJsonTree = React.memo(JSONTree);
-const jsonTreeTheme = {
+const jsonTreeTheme: Theme = {
   extend: theme,
-  value: ({ style }) => ({
+  value: ({ style }: Styling) => ({
     style: {
       ...style,
       whiteSpace: "pre-wrap",
