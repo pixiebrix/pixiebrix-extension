@@ -18,7 +18,13 @@
 import styles from "./JsonTree.module.scss";
 import { JSONTree } from "react-json-tree";
 import { jsonTreeTheme as theme } from "@/themes/light";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  ReactNode,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useDebounce } from "use-debounce";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import Loader from "@/components/Loader";
@@ -31,8 +37,10 @@ import {
   isEmpty,
   mapValues,
   pickBy,
+  set,
 } from "lodash";
 import { Primitive } from "type-fest";
+import { produce } from "immer";
 
 const SEARCH_DEBOUNCE_MS = 100;
 
@@ -74,10 +82,7 @@ export type JsonTreeProps = Partial<JSONTree["props"]> & {
   /**
    * Change listener for the expanded state
    */
-  onExpandedStateChange?: (
-    keyPath: Array<string | number>,
-    isExpanded: boolean
-  ) => void;
+  onExpandedStateChange?: (nextExpandedState: TreeExpandedState) => void;
 };
 
 function normalize(value: Primitive): string {
@@ -119,6 +124,8 @@ function searchData(query: string, data: unknown): unknown {
     : undefined;
 }
 
+let r = 0;
+let l = 0;
 const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   copyable = false,
   searchable = false,
@@ -131,6 +138,8 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   ...restProps
 }) => {
   const [query, setQuery] = useState(initialSearchQuery);
+  const expandedStateRef = useRef(initialExpandedState);
+  const expandedState = expandedStateRef.current;
 
   const [debouncedQuery] = useDebounce(query, SEARCH_DEBOUNCE_MS, {
     trailing: true,
@@ -155,21 +164,42 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
     [onSearchQueryChange]
   );
 
-  // The initialExpandedState is only used for initialization. The actual expanded state is handled by JSONTree internally.
-  const initialExpanded = useRef(initialExpandedState).current;
-  const setExpanded = (
+  const getExpanded = (keyPath: Array<string | number>) =>
+    Boolean(get(expandedState, reverse([...keyPath])));
+
+  const labelRenderer = (
     keyPath: Array<string | number>,
-    isExpanded: boolean
-  ) => {
-    if (onExpandedStateChange) {
-      onExpandedStateChange(keyPath, isExpanded);
+    nodeType: string,
+    isExpanded: boolean,
+    expandable: boolean
+  ): ReactNode => {
+    if (expandable && getExpanded(keyPath) !== isExpanded) {
+      const nextExpandedState = produce(expandedState, (draft) => {
+        set(draft, reverse([...keyPath]), isExpanded);
+      });
+      expandedStateRef.current = nextExpandedState;
+      if (onExpandedStateChange) {
+        console.log("expanding", {
+          keyPath,
+        });
+        setTimeout(() => {
+          onExpandedStateChange(expandedStateRef.current);
+        }, 50);
+      }
     }
+
+    console.log("labelRenderer", keyPath[0], l++);
+
+    return copyable ? (
+      copyLabelRenderer(keyPath, nodeType, isExpanded)
+    ) : (
+      <span>{keyPath[0]}:</span>
+    );
   };
 
-  const getExpanded = (keyPath: Array<string | number>) =>
-    Boolean(get(initialExpanded, reverse([...keyPath])));
-
   const labelText = query ? `Search Results: ${query}` : label;
+
+  console.log("rendering JsonTree", r++);
 
   return (
     <div className={styles.root}>
@@ -189,17 +219,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
       ) : (
         <JSONTree
           data={searchResults}
-          labelRenderer={(keyPath, nodeType, expanded, expandable) => {
-            if (expandable && getExpanded(keyPath) !== expanded) {
-              setExpanded(keyPath, expanded);
-            }
-
-            return copyable ? (
-              copyLabelRenderer(keyPath, nodeType, expanded)
-            ) : (
-              <span>{keyPath[0]}:</span>
-            );
-          }}
+          labelRenderer={labelRenderer}
           hideRoot
           theme={{
             extend: theme,
@@ -211,7 +231,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
             }),
           }}
           invertTheme
-          shouldExpandNode={(keyPath) => getExpanded(keyPath)}
+          shouldExpandNode={getExpanded}
           {...restProps}
         />
       )}

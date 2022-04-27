@@ -37,6 +37,7 @@ import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
 import { isEmpty, reverse, set } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -381,22 +382,14 @@ export const editorSlice = createSlice({
       state,
       action: PayloadAction<{
         tabKey: DataPanelTabKey;
-        keyPath: Array<string | number>;
-        isExpanded: boolean;
+        expandedState: TreeExpandedState;
       }>
     ) {
-      const { tabKey, keyPath, isExpanded } = action.payload;
+      const { tabKey, expandedState } = action.payload;
       const elementUIState = state.elementUIStates[state.activeElementId];
-      const tabState =
-        elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
-          tabKey
-        ];
-
-      if (tabState.treeExpandedState == null) {
-        tabState.treeExpandedState = {};
-      }
-
-      set(tabState.treeExpandedState, reverse([...keyPath]), isExpanded);
+      elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
+        tabKey
+      ].treeExpandedState = expandedState;
     },
 
     /**

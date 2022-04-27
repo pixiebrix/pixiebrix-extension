@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { RootState } from "@/pageEditor/pageEditorTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { selectNodeDataPanelTabState } from "@/pageEditor/uiState/uiState";
@@ -32,12 +33,9 @@ export default function useDataPanelTabState(tabKey: DataPanelTabKey) {
     dispatch(actions.setNodeDataPanelTabSearchQuery({ tabKey, query }));
   };
 
-  const setTreeExpandedState = (
-    keyPath: Array<string | number>,
-    isExpanded: boolean
-  ) => {
+  const setTreeExpandedState = (expandedState: TreeExpandedState) => {
     dispatch(
-      actions.setNodeDataPanelTabExpandedState({ tabKey, keyPath, isExpanded })
+      actions.setNodeDataPanelTabExpandedState({ tabKey, expandedState })
     );
   };
 
