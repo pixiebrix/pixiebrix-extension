@@ -23,6 +23,7 @@ import {
   selectActiveRecipeId,
   selectDeletedElements,
   selectDirty,
+  selectDirtyMetadataForRecipeId,
   selectDirtyRecipeOptions,
   selectElements,
   selectKeepLocalCopyOnCreateRecipe,
@@ -206,13 +207,21 @@ function useInitialFormState({
 }): RecipeMetadataFormState | null {
   const scope = useSelector(selectScope);
 
-  if (activeRecipe) {
-    // Handle the "Save As New" case, where an existing recipe is selected
+  const activeRecipeId =
+    activeElement?.recipe?.id ?? activeRecipe?.metadata?.id;
+  const dirtyMetadata = useSelector(
+    selectDirtyMetadataForRecipeId(activeRecipeId)
+  );
+  const recipeMetadata = dirtyMetadata ?? activeRecipe?.metadata;
+
+  if (recipeMetadata) {
+    // Handle the "Save As New" case, where an existing recipe, or an
+    // extension within an existing recipe, is selected
     return {
-      id: generateScopeBrickId(scope, activeRecipe.metadata.id),
-      name: activeRecipe.metadata.name,
+      id: generateScopeBrickId(scope, recipeMetadata.id),
+      name: recipeMetadata.name,
       version: "1.0.0",
-      description: activeRecipe.metadata.description,
+      description: recipeMetadata.description,
     };
   }
 
@@ -259,9 +268,13 @@ const CreateRecipeModal: React.VFC = () => {
 
   const activeElement = useSelector(selectActiveElement);
 
-  const activeRecipeId = useSelector(selectActiveRecipeId);
+  // `selectActiveRecipeId` returns the recipe id _if the recipe element is selected_. Assumption: if the CreateModal
+  // is open an extension element is active, then we're performing a "Save a New" on that recipe.
+  const directlyActiveRecipeId = useSelector(selectActiveRecipeId);
+  const activeRecipeId = directlyActiveRecipeId ?? activeElement.recipe?.id;
+
   const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
-  const activeRecipe = recipes.find(
+  const activeRecipe = recipes?.find(
     (recipe) => recipe.metadata.id === activeRecipeId
   );
 
@@ -286,10 +299,12 @@ const CreateRecipeModal: React.VFC = () => {
     helpers
   ) => {
     try {
-      if (activeElement) {
-        await createRecipeFromElement(activeElement, values);
-      } else if (activeRecipe) {
+      // `activeRecipe` must come first. It's possible that both activeElement and activeRecipe are set because
+      // activeRecipe will be the recipe of the active element if in a "Save as New" workflow for an existing recipe
+      if (activeRecipe) {
         await createRecipeFromRecipe(activeRecipe, values);
+      } else if (activeElement) {
+        await createRecipeFromElement(activeElement, values);
       } else {
         // Should not happen in practice
         // noinspection ExceptionCaughtLocallyJS
