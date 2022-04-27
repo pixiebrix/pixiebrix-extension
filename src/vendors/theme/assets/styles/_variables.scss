@@ -41,7 +41,21 @@ $colors: (
   --theme-primary-color: 0, 100%; /*the base color*/
   --l: 50%; /*the initial lightness*/
 
-  --theme-primary: hsl(var(--color),var(--l));
+  --theme-primary: hsl(var(--theme-primary-color), var(--l));
+}
+
+:root.default {
+  --theme-primary-color: 270, 100%; /*the base color*/
+  --l: 71%; /*the initial lightness*/
+
+  --theme-primary: hsl(var(--theme-primary-color), var(--l));
+}
+
+:root.cyan {
+  --theme-primary-color: 180, 100%; /*the base color*/
+  --l: 50%; /*the initial lightness*/
+
+  --theme-primary: hsl(var(--theme-primary-color), var(--l));
 }
 
 $theme-colors: (

@@ -1,19 +1,28 @@
 @import "bootstrap";
 
-@mixin button-variant($background, $border, $hover-background: darken($background, 7.5%), $hover-border: darken($border, 10%), $active-background: darken($background, 10%), $active-border: darken($border, 12.5%)) {
+@mixin button-variant(
+  $background,
+  $border,
+  $hover-background: darken($background, 7.5%),
+  $hover-border: darken($border, 10%),
+  $active-background: darken($background, 10%),
+  $active-border: darken($border, 12.5%)
+) {
   color: color-yiq($background);
-  @include gradient-bg($background);
-  border-color: $border;
+  border-color: var(--theme-primary);
   @include box-shadow($btn-box-shadow);
 
-  @include hover() {
-    color: color-yiq($hover-background);
-    @include gradient-bg($hover-background);
-    border-color: $hover-border;
-  }
+  //@include hover() {
+  //  color: color-yiq($hover-background);
+  //  @include gradient-bg($hover-background);
+  //  border-color: $hover-border;
+  //}
+
+  background-color: var(--theme-primary);
 
   &:hover {
-    background-color: #{"hsl(var(--theme-primary-color), calc(var(--l) - 5%))"};
+    background-color: #{"hsl(var(--theme-primary-color), calc(var(--l) - 7.5%))"};
+    border-color: #{"hsl(var(--theme-primary-color), calc(var(--l) - 10%))"};
   }
 
   &:focus,
@@ -22,10 +31,18 @@
     @include gradient-bg($hover-background);
     border-color: $hover-border;
     @if $enable-shadows {
-      @include box-shadow($btn-box-shadow, 0 0 0 $btn-focus-width rgba(mix(color-yiq($background), $border, 15%), .5));
+      @include box-shadow(
+        $btn-box-shadow,
+        0 0 0 $btn-focus-width
+          rgba(mix(color-yiq($background), $border, 15%), 0.5)
+      );
     } @else {
       // Avoid using mixin so we can pass custom focus shadow properly
-      box-shadow: 0 0 0 $btn-focus-width rgba(mix(color-yiq($background), $border, 15%), .5);
+      box-shadow: 0
+        0
+        0
+        $btn-focus-width
+        rgba(mix(color-yiq($background), $border, 15%), 0.5);
     }
   }
 
@@ -53,15 +70,22 @@
 
     &:focus {
       @if $enable-shadows and $btn-active-box-shadow != none {
-        @include box-shadow($btn-active-box-shadow, 0 0 0 $btn-focus-width rgba(mix(color-yiq($background), $border, 15%), .5));
+        @include box-shadow(
+          $btn-active-box-shadow,
+          0 0 0 $btn-focus-width
+            rgba(mix(color-yiq($background), $border, 15%), 0.5)
+        );
       } @else {
         // Avoid using mixin so we can pass custom focus shadow properly
-        box-shadow: 0 0 0 $btn-focus-width rgba(mix(color-yiq($background), $border, 15%), .5);
+        box-shadow: 0
+          0
+          0
+          $btn-focus-width
+          rgba(mix(color-yiq($background), $border, 15%), 0.5);
       }
     }
   }
 }
-
 
 @mixin social-button($color) {
   background: $color;
