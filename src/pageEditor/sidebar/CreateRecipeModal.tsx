@@ -259,9 +259,11 @@ const CreateRecipeModal: React.VFC = () => {
 
   const activeElement = useSelector(selectActiveElement);
 
-  const activeRecipeId = useSelector(selectActiveRecipeId);
+  const directlyActiveRecipeId = useSelector(selectActiveRecipeId);
+
+  const activeRecipeId = directlyActiveRecipeId ?? activeElement.recipe?.id;
   const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
-  const activeRecipe = recipes.find(
+  const activeRecipe = recipes?.find(
     (recipe) => recipe.metadata.id === activeRecipeId
   );
 
@@ -286,10 +288,10 @@ const CreateRecipeModal: React.VFC = () => {
     helpers
   ) => {
     try {
-      if (activeElement) {
-        await createRecipeFromElement(activeElement, values);
-      } else if (activeRecipe) {
+      if (activeRecipe) {
         await createRecipeFromRecipe(activeRecipe, values);
+      } else if (activeElement) {
+        await createRecipeFromElement(activeElement, values);
       } else {
         // Should not happen in practice
         // noinspection ExceptionCaughtLocallyJS
