@@ -23,6 +23,7 @@ import {
   selectActiveRecipeId,
   selectDeletedElements,
   selectDirty,
+  selectDirtyMetadataForRecipeId,
   selectDirtyRecipeOptions,
   selectElements,
   selectKeepLocalCopyOnCreateRecipe,
@@ -206,13 +207,21 @@ function useInitialFormState({
 }): RecipeMetadataFormState | null {
   const scope = useSelector(selectScope);
 
-  if (activeRecipe) {
-    // Handle the "Save As New" case, where an existing recipe is selected
+  const activeRecipeId =
+    activeElement?.recipe?.id ?? activeRecipe?.metadata?.id;
+  const dirtyMetadata = useSelector(
+    selectDirtyMetadataForRecipeId(activeRecipeId)
+  );
+  const recipeMetadata = dirtyMetadata ?? activeRecipe?.metadata;
+
+  if (recipeMetadata) {
+    // Handle the "Save As New" case, where an existing recipe, or an
+    // extension within an existing recipe, is selected
     return {
-      id: generateScopeBrickId(scope, activeRecipe.metadata.id),
-      name: activeRecipe.metadata.name,
+      id: generateScopeBrickId(scope, recipeMetadata.id),
+      name: recipeMetadata.name,
       version: "1.0.0",
-      description: activeRecipe.metadata.description,
+      description: recipeMetadata.description,
     };
   }
 
