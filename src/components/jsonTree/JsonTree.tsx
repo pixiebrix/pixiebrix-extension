@@ -200,14 +200,9 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
         expandedStateRef.current = nextExpandedState;
 
         if (onExpandedStateChange) {
-          console.log("expanding", {
-            keyPath,
-          });
           onExpandedStateChange(nextExpandedState);
         }
       }
-
-      console.log("labelRenderer", keyPath[0]);
 
       return copyable ? (
         copyLabelRenderer(keyPath, nodeType, isExpanded)
@@ -219,8 +214,6 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   );
 
   const labelText = query ? `Search Results: ${query}` : label;
-
-  console.log("rendering JsonTree");
 
   return (
     <div className={styles.root}>

@@ -51,12 +51,6 @@ import DataTabJsonTree from "./DataTabJsonTree";
 import { selectNodePreviewActiveElement } from "@/pageEditor/uiState/uiState";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
-// TODO
-// - Update the usage of JsonTree for DataTabJsonTree in other components
-// - Play with the rendering error: Cannot update a component (`SidebarExpanded`) while rendering a different component (`JSONNestedNode`).
-// - Add JsonTree tests
-// - Mount Tabs on view only
-
 /**
  * Exclude irrelevant top-level keys.
  */
