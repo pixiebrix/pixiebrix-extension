@@ -138,8 +138,6 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   ...restProps
 }) => {
   const [query, setQuery] = useState(initialSearchQuery);
-  const expandedStateRef = useRef(initialExpandedState);
-  const expandedState = expandedStateRef.current;
 
   const [debouncedQuery] = useDebounce(query, SEARCH_DEBOUNCE_MS, {
     trailing: true,
@@ -164,6 +162,9 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
     [onSearchQueryChange]
   );
 
+  // This component doesn't react to state changes, only setting the initial expanded state
+  // The actual expanded state is handled by the JSONTree internally
+  const expandedState = useRef(initialExpandedState).current;
   const getExpanded = (keyPath: Array<string | number>) =>
     Boolean(get(expandedState, reverse([...keyPath])));
 
@@ -174,17 +175,12 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
     expandable: boolean
   ): ReactNode => {
     if (expandable && getExpanded(keyPath) !== isExpanded) {
-      const nextExpandedState = produce(expandedState, (draft) => {
-        set(draft, reverse([...keyPath]), isExpanded);
-      });
-      expandedStateRef.current = nextExpandedState;
+      set(expandedState, reverse([...keyPath]), isExpanded);
       if (onExpandedStateChange) {
         console.log("expanding", {
           keyPath,
         });
-        setTimeout(() => {
-          onExpandedStateChange(expandedStateRef.current);
-        }, 50);
+        onExpandedStateChange(expandedState);
       }
     }
 

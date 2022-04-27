@@ -31,6 +31,10 @@ type DataTabJsonTreeProps = Except<
   tabKey: DataPanelTabKey;
 };
 
+function unfreezeObject(obj: any) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
 const DataTabJsonTree: React.FunctionComponent<DataTabJsonTreeProps> = ({
   tabKey,
   ...jsonTreeProps
@@ -42,8 +46,16 @@ const DataTabJsonTree: React.FunctionComponent<DataTabJsonTreeProps> = ({
       {...jsonTreeProps}
       initialSearchQuery={state.query}
       onSearchQueryChange={state.setQuery}
-      initialExpandedState={state.treeExpandedState}
-      onExpandedStateChange={state.setTreeExpandedState}
+      // The state received from RTK store is immutable, unfreezing it
+      initialExpandedState={unfreezeObject(state.treeExpandedState)}
+      onExpandedStateChange={(nextExpandedState) => {
+        // Setting the state for the first time causes an error:
+        // Cannot update a component (`SidebarExpanded`) while rendering a different component (`JSONNestedNode`).
+        // If we skip the current cycle, React feels ok.
+        setTimeout(() => {
+          state.setTreeExpandedState(nextExpandedState);
+        }, 50);
+      }}
     />
   );
 };
