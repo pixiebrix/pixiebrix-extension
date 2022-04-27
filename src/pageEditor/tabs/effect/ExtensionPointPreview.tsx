@@ -30,7 +30,7 @@ import AsyncButton from "@/components/AsyncButton";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import DataTabJsonTree from "../editTab/dataPanel/DataTabJsonTree";
+import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 
 type PreviewState = {
   isRunning: boolean;
