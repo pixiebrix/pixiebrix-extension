@@ -3,9 +3,11 @@
  * https://github.com/facebook/react/blob/master/packages/shared/ReactSymbols.js
  */
 
-export type ReactSymbol = Symbol | number;
+export type ReactSymbol = symbol | number;
 
+// eslint-disable-next-line unicorn/number-literal-case, unicorn/numeric-separators-style
 export let REACT_MEMO_TYPE: ReactSymbol = 0xead3;
+// eslint-disable-next-line unicorn/number-literal-case, unicorn/numeric-separators-style
 export let REACT_FORWARD_REF_TYPE: ReactSymbol = 0xead0;
 
 const symbolFor = typeof Symbol === "function" && Symbol.for;
