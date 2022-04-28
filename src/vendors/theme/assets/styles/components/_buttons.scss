@@ -1,5 +1,3 @@
-/* Buttons */
-
 .btn {
   font-size: $btn-font-size;
   line-height: 1;
@@ -45,6 +43,13 @@
     padding: 0;
   }
 }
+
+@each $color, $value in $variable-theme-colors {
+  .btn-#{$color} {
+    @include button-variant($color, $value);
+  }
+}
+
 @media (min-width: 576px) {
   .btn-group {
     .btn {

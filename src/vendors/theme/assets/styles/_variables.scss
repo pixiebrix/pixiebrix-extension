@@ -37,6 +37,21 @@ $colors: (
   black: #000000,
 );
 
+/*
+* Used for dynamic theming of components with css variables,
+* shadows the structure of $theme-colors
+*/
+$variable-theme-colors: (
+  primary: --theme-primary,
+  secondary: --theme-secondary,
+  success: --theme-success,
+  info: --theme-info,
+  warning: --theme-warning,
+  danger: --theme-danger,
+  light: --theme-light,
+  dark: --theme-dark,
+);
+
 $theme-colors: (
   primary: #b66dff,
   secondary: #d8d8d8,

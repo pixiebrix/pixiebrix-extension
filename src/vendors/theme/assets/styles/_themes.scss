@@ -1,0 +1,99 @@
+/*!
+ * Copyright (C) 2022 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+* Default PixieBrix colors - these correspond to the hex codes defined in $theme-colors
+*
+* We break down hsl values into parts in order to use css variables
+* with bootstrap component overrides for dynamic theming
+*/
+:root {
+  --theme-primary-hs: 270, 100%;
+  --theme-primary-l: 71%;
+  --theme-primary: hsl(270, 100%, 71%);
+  // --theme-primary: hsl(var(--theme-primary-hs), var(--theme-primary-l));
+
+  --theme-secondary-hs: 0, 0%;
+  --theme-secondary-l: 85%;
+  --theme-secondary: hsl(0, 0%, 85%);
+
+  --theme-success-hs: 171, 77%;
+  --theme-success-l: 46%;
+  --theme-success: hsl(171, 77%, 46%);
+
+  --theme-info-hs: 206, 80%;
+  --theme-info-l: 49%;
+  --theme-info: hsl(206, 80%, 49%);
+
+  --theme-warning-hs: 50, 99%;
+  --theme-warning-l: 54%;
+  --theme-warning: hsl(50, 99%, 54%);
+
+  --theme-danger-hs: 348, 98%;
+  --theme-danger-l: 74%;
+  --theme-danger: hsl(348, 98%, 74%);
+
+  --theme-light-hs: 210, 17%;
+  --theme-light-l: 98%;
+  --theme-light: hsl(210, 17%, 98%);
+
+  --theme-dark-hs: 213, 19%;
+  --theme-dark-l: 30%;
+  --theme-dark: hsl(213, 19%, 30%);
+}
+
+:root.automation-anywhere {
+  // #4e6b8c -- from aa app
+  --theme-primary-hs: 212, 28%;
+  --theme-primary-l: 43%;
+  --theme-primary: hsl(212, 28%, 43%);
+
+  // B5CEE0 -- from aa app
+  --theme-secondary-hs: 205, 41%;
+  --theme-secondary-l: 79%;
+  --theme-secondary: hsl(205, 41%, 79%);
+
+  // B4BE69 -- from style guide
+  --theme-success-hs: 67, 40%;
+  --theme-success-l: 58%;
+  --theme-success: hsl(67, 40%, 58%);
+
+  // 7BA8C7 -- from style guide
+  --theme-info-hs: 204, 40%;
+  --theme-info-l: 63%;
+  --theme-info: hsl(204, 40%, 63%);
+
+  // rgb(255, 188, 3) -- from aa app
+  --theme-warning-hs: 44, 100%;
+  --theme-warning-l: 51%;
+  --theme-warning: hsl(44, 100%, 51%);
+
+  // CF4022 -- from style guide
+  --theme-danger-hs: 10, 72%;
+  --theme-danger-l: 47%;
+  --theme-danger: hsl(10, 72%, 47%);
+
+  // F2F2F2 -- from style guide
+  --theme-light-hs: 0, 0%;
+  --theme-light-l: 95%;
+  --theme-light: hsl(0, 0%, 95%);
+
+  // 333333 -- from style guide
+  --theme-dark-hs: 0, 0%;
+  --theme-dark-l: 20%;
+  --theme-dark: hsl(0, 0%, 20%);
+}
