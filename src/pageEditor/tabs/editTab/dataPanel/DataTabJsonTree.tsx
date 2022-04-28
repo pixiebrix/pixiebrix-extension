@@ -54,7 +54,7 @@ const DataTabJsonTree: React.FunctionComponent<DataTabJsonTreeProps> = ({
     [dispatch, tabKey]
   );
 
-  const onExpandedStateChange = useCallback(
+  const onExpandedStateChange_ = useCallback(
     (nextExpandedState: TreeExpandedState) => {
       // Setting the state for the first time causes an error:
       // Cannot update a component (`SidebarExpanded`) while rendering a different component (`JSONNestedNode`).
@@ -70,6 +70,20 @@ const DataTabJsonTree: React.FunctionComponent<DataTabJsonTreeProps> = ({
     },
     [dispatch, tabKey]
   );
+
+  const onExpandedStateChange = (nextExpandedState: TreeExpandedState) => {
+    // Setting the state for the first time causes an error:
+    // Cannot update a component (`SidebarExpanded`) while rendering a different component (`JSONNestedNode`).
+    // If we skip the current cycle, React feels ok.
+    setTimeout(() => {
+      dispatch(
+        actions.setNodeDataPanelTabExpandedState({
+          tabKey,
+          expandedState: nextExpandedState,
+        })
+      );
+    }, 50);
+  };
 
   return (
     <JsonTree
