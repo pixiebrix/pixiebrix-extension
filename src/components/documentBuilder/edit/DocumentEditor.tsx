@@ -21,11 +21,13 @@ import ElementEditor from "./ElementEditor";
 import { Row, Col } from "react-bootstrap";
 
 type DocumentEditorProps = {
+  name: string;
   activeElement: string;
   setActiveElement: (activeElement: string) => void;
 };
 
 const DocumentEditor: React.FC<DocumentEditorProps> = ({
+  name,
   activeElement,
   setActiveElement,
 }) =>

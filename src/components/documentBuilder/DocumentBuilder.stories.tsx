@@ -49,6 +49,7 @@ const DocumentBuilder: React.FC = () => {
             <Row>
               <Col>
                 <DocumentEditor
+                  name="body"
                   activeElement={activeElement}
                   setActiveElement={setActiveElement}
                 />

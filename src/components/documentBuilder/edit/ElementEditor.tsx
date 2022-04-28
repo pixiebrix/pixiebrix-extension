@@ -28,11 +28,13 @@ import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import useElementOptions from "@/components/documentBuilder/edit/useElementOptions";
 
 type ElementEditorProps = {
+  name: string;
   elementName: string;
   setActiveElement: (activeElement: string) => void;
 };
 
 const ElementEditor: React.FC<ElementEditorProps> = ({
+  name,
   elementName,
   setActiveElement,
 }) => {
