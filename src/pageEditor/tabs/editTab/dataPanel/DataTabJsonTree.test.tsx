@@ -16,19 +16,19 @@
  */
 
 import React from "react";
-import { perf, RenderCountField } from "react-performance-testing";
-import "core-js";
 import {
   actions,
   editorSlice,
   initialState,
 } from "@/pageEditor/slices/editorSlice";
 import { formStateFactory } from "@/testUtils/factories";
-import { createRenderFunction } from "@/testUtils/testHelpers";
+import { createRenderFunction, waitForEffect } from "@/testUtils/testHelpers";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import userEvent from "@testing-library/user-event";
-import { act } from "react-dom/test-utils";
+import { cleanup, perf } from "@/testUtils/performanceTesting/perf";
+import { RenderCountField } from "@/testUtils/performanceTesting/perfTypes";
+import { act } from "@testing-library/react";
 
 jest.unmock("react-redux");
 
@@ -60,20 +60,35 @@ const renderJsonTree = createRenderFunction({
   defaultProps: { data, tabKey: DataPanelTabKey.Context },
 });
 
+afterEach(() => {
+  cleanup();
+});
+
 test("renders the DataTabJsonTree component", () => {
   const rendered = renderJsonTree();
   expect(rendered.asFragment()).toMatchSnapshot();
 });
 
 test("doesn't re-render internal JSONTree on expand", async () => {
+  jest.useFakeTimers();
   const { renderCount } = perf(React);
   const rendered = renderJsonTree();
 
   // Get the element to expand the tree
   const bullet = rendered.container.querySelector("li > div > div");
 
-  await userEvent.click(bullet);
+  await userEvent.click(bullet, {
+    // No delay to run the click without setTimeout. Otherwise the test timeouts
+    // See: https://onestepcode.com/testing-library-user-event-with-fake-timers/?utm_source=rss&utm_medium=rss&utm_campaign=testing-library-user-event-with-fake-timers
+    delay: null,
+  });
+
+  act(() => {
+    // The redux action to update the expanded state is async, resolving all timeouts for it to fire
+    jest.runAllTimers();
+  });
 
   // Ensure the JSONTree was rendered only once
   expect((renderCount.current.JSONTree as RenderCountField).value).toBe(1);
+  jest.useRealTimers();
 });
