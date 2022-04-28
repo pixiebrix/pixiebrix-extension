@@ -22,7 +22,7 @@ import {
   initialState,
 } from "@/pageEditor/slices/editorSlice";
 import { formStateFactory } from "@/testUtils/factories";
-import { createRenderFunction, waitForEffect } from "@/testUtils/testHelpers";
+import { createRenderFunction } from "@/testUtils/testHelpers";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import userEvent from "@testing-library/user-event";
