@@ -17,6 +17,7 @@
     // color: color-yiq($color-name);
     background-color: #{"hsl(var(--theme-#{$color-name}-hs), calc(var(--theme-#{$color-name}-l) - 7.5%))"};
     border-color: #{"hsl(var(--theme-#{$color-name}-hs), calc(var(--theme-#{$color-name}-l) - 10%))"};
+    box-shadow: 0 0 0 $btn-focus-width #{"hsla(var(--theme-#{$color-name}-hs), var(--theme-#{$color-name}-l), .5)"};
   }
 
   &.disabled,
@@ -34,6 +35,10 @@
     // color: color-yiq($color-name);
     background-color: #{"hsl(var(--theme-#{$color-name}-hs), calc(var(--theme-#{$color-name}-l) - 10%))"};
     border-color: #{"hsl(var(--theme-#{$color-name}-hs), calc(var(--theme-#{$color-name}-l) - 10%))"};
+
+    &:focus {
+      box-shadow: 0 0 0 $btn-focus-width #{"hsla(var(--theme-#{$color-name}-hs), var(--theme-#{$color-name}-l), .5)"};
+    }
   }
 }
 

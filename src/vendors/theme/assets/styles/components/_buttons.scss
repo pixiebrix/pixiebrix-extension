@@ -44,12 +44,6 @@
   }
 }
 
-@each $color, $value in $variable-theme-colors {
-  .btn-#{$color} {
-    @include button-variant($color, $value);
-  }
-}
-
 @media (min-width: 576px) {
   .btn-group {
     .btn {
@@ -108,24 +102,31 @@
     @include social-outline-button(social-color($color));
   }
 }
+
+@each $color, $value in $variable-theme-colors {
+  .btn-#{$color} {
+    @include button-variant($color, $value);
+  }
+}
+
 /* inverse buttons */
 @each $color, $value in $theme-colors {
   .btn-inverse-#{$color} {
     @include button-inverse-variant($value);
   }
-  .btn-#{$color}:not(.btn-light) {
-    color: $white;
-    &:hover,
-    &:focus,
-    &:active {
-      color: $white;
-    }
-    &:focus,
-    &:active {
-      background: $value;
-      border-color: $value;
-    }
-  }
+  //.btn-#{$color}:not(.btn-light) {
+  //  color: $white;
+  //  &:hover,
+  //  &:focus,
+  //  &:active {
+  //    color: $white;
+  //  }
+  //  &:focus,
+  //  &:active {
+  //    background: $value;
+  //    border-color: $value;
+  //  }
+  //}
   .btn-outline-#{$color} {
     &:hover,
     &:focus,
