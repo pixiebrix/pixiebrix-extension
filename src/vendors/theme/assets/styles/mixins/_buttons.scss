@@ -3,6 +3,8 @@
   // color: color-yiq($color-name);
   background-color: var($color-variable);
   border-color: var($color-variable);
+  color: #{"hsl(0, 0%, calc((#{" var(--theme-#{$color-name}-l)
+    "} - 67%) * -100))"};
 
   &:hover {
     // TODO: implement high contrast yiq equivalent for hsl colors
