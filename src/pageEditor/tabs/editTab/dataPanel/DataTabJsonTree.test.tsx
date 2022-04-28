@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
+import { perf, RenderCountField } from "react-performance-testing";
+import "core-js";
 import {
   actions,
   editorSlice,
@@ -25,6 +28,7 @@ import { createRenderFunction } from "@/testUtils/testHelpers";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import userEvent from "@testing-library/user-event";
+import { act } from "react-dom/test-utils";
 
 jest.unmock("react-redux");
 
@@ -62,9 +66,14 @@ test("renders the DataTabJsonTree component", () => {
 });
 
 test("doesn't re-render internal JSONTree on expand", async () => {
+  const { renderCount } = perf(React);
   const rendered = renderJsonTree();
+
+  // Get the element to expand the tree
   const bullet = rendered.container.querySelector("li > div > div");
+
   await userEvent.click(bullet);
 
-  expect(rendered.asFragment()).toMatchSnapshot();
+  // Ensure the JSONTree was rendered only once
+  expect((renderCount.current.JSONTree as RenderCountField).value).toBe(1);
 });
