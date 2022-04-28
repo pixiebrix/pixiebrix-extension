@@ -42,6 +42,43 @@
   }
 }
 
+@mixin button-outline-variant($color-name, $color-variable) {
+  color: var($color-variable);
+  border-color: var($color-variable);
+
+  @include hover() {
+    color: white;
+    // TODO: implement high contrast yiq equivalent for hsl colors
+    // color: color-yiq($color-name);
+    background-color: var($color-variable);
+    border-color: var($color-variable);
+  }
+
+  &:focus,
+  &.focus {
+    box-shadow: 0 0 0 $btn-focus-width #{"hsla(var(--theme-#{$color-name}-hs), var(--theme-#{$color-name}-l), .5)"};
+  }
+
+  &.disabled,
+  &:disabled {
+    color: var($color-variable);
+    background-color: transparent;
+  }
+
+  &:not(:disabled):not(.disabled):active,
+  &:not(:disabled):not(.disabled).active,
+  .show > &.dropdown-toggle {
+    // TODO: implement high contrast yiq equivalent for hsl colors
+    // color: color-yiq($color-name);
+    background-color: var($color-variable);
+    border-color: var($color-variable);
+
+    &:focus {
+      box-shadow: 0 0 0 $btn-focus-width #{"hsla(var(--theme-#{$color-name}-hs), var(--theme-#{$color-name}-l), .5)"};
+    }
+  }
+}
+
 @mixin social-button($color) {
   background: $color;
   color: $white;
