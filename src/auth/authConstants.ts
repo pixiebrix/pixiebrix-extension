@@ -16,7 +16,6 @@
  */
 
 import { AuthState } from "./authTypes";
-import { useAsyncState } from "@/hooks/common";
 
 export const anonAuth: AuthState = Object.freeze({
   userId: undefined,

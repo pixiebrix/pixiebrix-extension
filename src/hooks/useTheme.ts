@@ -35,7 +35,7 @@ const useTheme = () => {
   );
 
   useEffect(() => {
-    if (permit("partner-theming")) {
+    if (!permit("partner-theming")) {
       return;
     }
 

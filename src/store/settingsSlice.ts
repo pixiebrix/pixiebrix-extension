@@ -17,7 +17,6 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { SettingsState, SkunkworksSettings } from "@/store/settingsTypes";
-import { ManualStorageKey, readStorage } from "@/chrome";
 
 const initialSettingsState: SettingsState = {
   mode: "remote",

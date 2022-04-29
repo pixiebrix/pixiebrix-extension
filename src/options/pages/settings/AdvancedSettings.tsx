@@ -97,7 +97,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
               The PixieBrix service URL
             </Form.Text>
           </Form.Group>
-          {restrict("partner-theming") && (
+          {!restrict("partner-theming") && (
             <Form.Group controlId="partnerId">
               <Form.Label>Partner ID</Form.Label>
               <Form.Control
