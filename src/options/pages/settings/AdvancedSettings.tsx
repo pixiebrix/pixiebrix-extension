@@ -25,22 +25,14 @@ import chromeP from "webext-polyfill-kinda";
 import { isEmpty } from "lodash";
 import notify from "@/utils/notify";
 import useFlags from "@/hooks/useFlags";
-import { ManualStorageKey, readStorage } from "@/chrome";
-import { useAsyncState } from "@/hooks/common";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
 
-const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
-
 const AdvancedSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { restrict, permit } = useFlags();
-  const [partnerId] = useAsyncState(
-    readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed")
-  );
-  const { partnerId: settingsPartnerId } = useSelector(selectSettings);
-  console.log("settings partner id", settingsPartnerId);
+  const { theme } = useSelector(selectSettings);
 
   const [serviceURL, setServiceURL] = useConfiguredHost();
 
@@ -70,7 +62,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
   }, []);
 
   const handleUpdate = useCallback(
-    async (event) => {
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
       const newURL = event.target.value;
       console.debug("Update service URL", { newURL, serviceURL });
       if (newURL === serviceURL || (isEmpty(newURL) && isEmpty(serviceURL))) {
@@ -105,21 +97,20 @@ const AdvancedSettings: React.FunctionComponent = () => {
               The PixieBrix service URL
             </Form.Text>
           </Form.Group>
-          {permit("partner-theming") && (
+          {restrict("partner-theming") && (
             <Form.Group controlId="partnerId">
               <Form.Label>Partner ID</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="my-company"
-                defaultValue={partnerId ?? settingsPartnerId}
-                onBlur={(event) => {
+                defaultValue={theme}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                   dispatch(
-                    settingsSlice.actions.setPartnerId({
-                      partnerId: event.target.value,
+                    settingsSlice.actions.setTheme({
+                      theme: event.target.value,
                     })
                   );
                 }}
-                // disabled={restrict("service-url")}
               />
               <Form.Text className="text-muted">
                 The partner id of a PixieBrix partner

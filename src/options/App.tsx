@@ -51,7 +51,6 @@ import BrowserBanner from "./pages/BrowserBanner";
 import useFlags from "@/hooks/useFlags";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import RequireAuth from "@/auth/RequireAuth";
-import { selectSettings } from "@/store/settingsSelectors";
 import useTheme from "@/hooks/useTheme";
 
 // Register the built-in bricks

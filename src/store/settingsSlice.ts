@@ -17,13 +17,14 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { SettingsState, SkunkworksSettings } from "@/store/settingsTypes";
+import { ManualStorageKey, readStorage } from "@/chrome";
 
 const initialSettingsState: SettingsState = {
   mode: "remote",
   nextUpdate: null as number,
   suggestElements: false,
   browserWarningDismissed: false,
-  partnerId: undefined,
+  theme: undefined,
 };
 
 const settingsSlice = createSlice({
@@ -51,9 +52,8 @@ const settingsSlice = createSlice({
     dismissBrowserWarning(state) {
       state.browserWarningDismissed = true;
     },
-    setPartnerId(state, { payload: { partnerId } }) {
-      console.log("hello partner id:", partnerId);
-      state.partnerId = partnerId;
+    setTheme(state, { payload: { theme } }) {
+      state.theme = theme;
     },
   },
 });
