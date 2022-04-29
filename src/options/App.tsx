@@ -17,7 +17,7 @@
 
 import React, { useEffect } from "react";
 import store, { hashHistory, persistor } from "./store";
-import { Provider } from "react-redux";
+import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import Loader from "@/components/Loader";
 import { Container } from "react-bootstrap";
@@ -51,6 +51,8 @@ import BrowserBanner from "./pages/BrowserBanner";
 import useFlags from "@/hooks/useFlags";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import RequireAuth from "@/auth/RequireAuth";
+import { selectSettings } from "@/store/settingsSelectors";
+import useTheme from "@/hooks/useTheme";
 
 // Register the built-in bricks
 registerEditors();
@@ -67,6 +69,7 @@ const RefreshBricks: React.VFC = () => {
 };
 
 const Layout = () => {
+  useTheme();
   const { permit } = useFlags();
 
   return (

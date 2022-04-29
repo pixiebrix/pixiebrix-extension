@@ -30,6 +30,7 @@ export type RestrictedFeature =
   | "marketplace"
   | "uninstall"
   | "clear-token"
+  | "partner-theming"
   | "service-url";
 
 type Restrict = {

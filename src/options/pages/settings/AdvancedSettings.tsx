@@ -25,9 +25,22 @@ import chromeP from "webext-polyfill-kinda";
 import { isEmpty } from "lodash";
 import notify from "@/utils/notify";
 import useFlags from "@/hooks/useFlags";
+import { ManualStorageKey, readStorage } from "@/chrome";
+import { useAsyncState } from "@/hooks/common";
+import settingsSlice from "@/store/settingsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { selectSettings } from "@/store/settingsSelectors";
+
+const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
 
 const AdvancedSettings: React.FunctionComponent = () => {
+  const dispatch = useDispatch();
   const { restrict, permit } = useFlags();
+  const [partnerId] = useAsyncState(
+    readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed")
+  );
+  const { partnerId: settingsPartnerId } = useSelector(selectSettings);
+  console.log("settings partner id", settingsPartnerId);
 
   const [serviceURL, setServiceURL] = useConfiguredHost();
 
@@ -92,6 +105,27 @@ const AdvancedSettings: React.FunctionComponent = () => {
               The PixieBrix service URL
             </Form.Text>
           </Form.Group>
+          {permit("partner-theming") && (
+            <Form.Group controlId="partnerId">
+              <Form.Label>Partner ID</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="my-company"
+                defaultValue={partnerId ?? settingsPartnerId}
+                onBlur={(event) => {
+                  dispatch(
+                    settingsSlice.actions.setPartnerId({
+                      partnerId: event.target.value,
+                    })
+                  );
+                }}
+                // disabled={restrict("service-url")}
+              />
+              <Form.Text className="text-muted">
+                The partner id of a PixieBrix partner
+              </Form.Text>
+            </Form.Group>
+          )}
         </Form>
       </Card.Body>
       <Card.Footer className={styles.cardFooter}>

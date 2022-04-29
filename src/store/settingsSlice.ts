@@ -23,6 +23,7 @@ const initialSettingsState: SettingsState = {
   nextUpdate: null as number,
   suggestElements: false,
   browserWarningDismissed: false,
+  partnerId: undefined,
 };
 
 const settingsSlice = createSlice({
@@ -49,6 +50,10 @@ const settingsSlice = createSlice({
     },
     dismissBrowserWarning(state) {
       state.browserWarningDismissed = true;
+    },
+    setPartnerId(state, { payload: { partnerId } }) {
+      console.log("hello partner id:", partnerId);
+      state.partnerId = partnerId;
     },
   },
 });

@@ -15,17 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AuthState } from "./authTypes";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { selectSettings } from "@/store/settingsSelectors";
 
-export const anonAuth: AuthState = Object.freeze({
-  userId: undefined,
-  email: undefined,
-  isLoggedIn: false,
-  isOnboarded: false,
-  extension: true,
-  scope: null,
-  flags: [],
-  organizations: [],
-  groups: [],
-  partnerId: undefined,
-});
+const THEMES = ["automation-anywhere"];
+
+const useTheme = () => {
+  const { partnerId } = useSelector(selectSettings);
+
+  useEffect(() => {
+    if (partnerId && THEMES.includes(partnerId)) {
+      document.documentElement.classList.add(partnerId);
+    } else {
+      for (const theme of THEMES) {
+        document.documentElement.classList.remove(theme);
+      }
+    }
+  }, [partnerId]);
+};
+
+export default useTheme;

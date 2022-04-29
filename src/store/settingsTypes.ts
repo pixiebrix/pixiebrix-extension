@@ -36,6 +36,11 @@ export type SettingsState = SkunkworksSettings & {
    * Whether the non-Chrome browser warning has been dismissed.
    */
   browserWarningDismissed: boolean;
+
+  /**
+   * The partnerId, if any, associated with the user's account
+   */
+  partnerId: string;
 };
 
 export type SkunkworksSettings = {
