@@ -55,7 +55,9 @@ const ElementEditor: React.FC<ElementEditorProps> = ({
         <Col xl>
           <RemoveElement
             elementName={elementName}
-            resetActiveElement={() => setActiveElement(null)}
+            resetActiveElement={() => {
+              setActiveElement(null);
+            }}
           />
         </Col>
         <Col xl>

@@ -25,7 +25,6 @@ import {
 import AddElementAction from "./AddElementAction";
 import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
 import getPreviewComponentDefinition from "./getPreviewComponentDefinition";
-import { joinName } from "@/utils";
 
 export type ElementPreviewProps = {
   /**
@@ -122,7 +121,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
         ))}
       {isContainer && (
         <AddElementAction
-          elementsCollectionName={joinName(name, elementName, "children")}
+          elementsCollectionName={`${name}.${elementName}.children`}
           allowedTypes={getAllowedChildTypes(previewElement)}
           className={styles.addElement}
           menuBoundary={menuBoundary}
