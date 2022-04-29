@@ -49,6 +49,7 @@ const DocumentOptions: React.FC<{
   return (
     <ConfigErrorBoundary>
       <DocumentEditor
+        name={bodyName}
         activeElement={activeElement}
         setActiveElement={setActiveElement}
       />

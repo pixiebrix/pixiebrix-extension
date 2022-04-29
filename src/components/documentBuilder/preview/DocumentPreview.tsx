@@ -82,7 +82,8 @@ const DocumentPreview = ({
       {bodyPreview.map((childElement, i) => (
         <ElementPreview
           key={`${name}.${i}`}
-          elementName={`${name}.${i}`}
+          name={name}
+          elementName={String(i)}
           previewElement={childElement}
           activeElement={activeElement}
           setActiveElement={setActiveElement}

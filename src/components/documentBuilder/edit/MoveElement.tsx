@@ -23,18 +23,22 @@ import { DocumentElement } from "@/components/documentBuilder/documentBuilderTyp
 import LayoutWidget from "@/components/LayoutWidget";
 
 type MoveElementProps = {
-  elementName: string;
+  name: string;
+  activeElement: string;
   setActiveElement: (activeElement: string) => void;
 };
 
 const MoveElement: React.FC<MoveElementProps> = ({
-  elementName,
+  name,
+  activeElement,
   setActiveElement,
 }) => {
   const { collectionName, elementIndex } =
-    getElementCollectionName(elementName);
+    getElementCollectionName(activeElement);
+
+  const fullCollectionName = `${name}.${collectionName}`;
   const [{ value: elementsCollection }, , { setValue }] =
-    useField<DocumentElement[]>(collectionName);
+    useField<DocumentElement[]>(fullCollectionName);
 
   const canMoveUp = elementIndex > 0;
   const canMoveDown = elementIndex < elementsCollection.length - 1;

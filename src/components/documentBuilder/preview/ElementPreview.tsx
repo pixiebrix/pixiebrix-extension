@@ -25,11 +25,24 @@ import {
 import AddElementAction from "./AddElementAction";
 import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
 import getPreviewComponentDefinition from "./getPreviewComponentDefinition";
+import { joinName } from "@/utils";
 
 export type ElementPreviewProps = {
+  /**
+   * Formik name of the root element
+   */
+  name: string;
+
+  /**
+   * The name of the element relative to the root element (i.e. "name" is not included)
+   */
   elementName: string;
   // An element config having all expressions unwrapped, different from what is stored in Formik
   previewElement: DocumentElement;
+
+  /**
+   * The active element relative to the root element (i.e. "name" is not included)
+   */
   activeElement: string | null;
   setActiveElement: (name: string | null) => void;
   hoveredElement: string | null;
@@ -38,6 +51,7 @@ export type ElementPreviewProps = {
 };
 
 const ElementPreview: React.FC<ElementPreviewProps> = ({
+  name,
   elementName,
   previewElement,
   activeElement,
@@ -96,6 +110,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
         previewElement.children.map((childElement, i) => (
           <ElementPreview
             key={`${elementName}.children.${i}`}
+            name={name}
             elementName={`${elementName}.children.${i}`}
             previewElement={childElement}
             activeElement={activeElement}
@@ -107,7 +122,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
         ))}
       {isContainer && (
         <AddElementAction
-          elementsCollectionName={`${elementName}.children`}
+          elementsCollectionName={joinName(name, elementName, "children")}
           allowedTypes={getAllowedChildTypes(previewElement)}
           className={styles.addElement}
           menuBoundary={menuBoundary}
@@ -115,6 +130,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
       )}
       {isList && (
         <ElementPreview
+          name={name}
           elementName={`${elementName}.config.element.__value__`}
           previewElement={previewElement.config.element.__value__}
           activeElement={activeElement}

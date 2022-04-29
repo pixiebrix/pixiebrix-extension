@@ -29,15 +29,16 @@ import useElementOptions from "@/components/documentBuilder/edit/useElementOptio
 
 type ElementEditorProps = {
   name: string;
-  elementName: string;
+  activeElement: string;
   setActiveElement: (activeElement: string) => void;
 };
 
 const ElementEditor: React.FC<ElementEditorProps> = ({
   name,
-  elementName,
+  activeElement,
   setActiveElement,
 }) => {
+  const elementName = `${name}.${activeElement}`;
   const [{ value: documentElement }] = useField<DocumentElement>(elementName);
 
   const ElementOptions = useElementOptions(documentElement, elementName);
@@ -54,7 +55,7 @@ const ElementEditor: React.FC<ElementEditorProps> = ({
         <Col xl>
           <RemoveElement
             elementName={elementName}
-            setActiveElement={setActiveElement}
+            resetActiveElement={() => setActiveElement(null)}
           />
         </Col>
         <Col xl>
@@ -72,7 +73,8 @@ const ElementEditor: React.FC<ElementEditorProps> = ({
       <Row>
         <Col>
           <MoveElement
-            elementName={elementName}
+            name={name}
+            activeElement={activeElement}
             setActiveElement={setActiveElement}
           />
         </Col>
