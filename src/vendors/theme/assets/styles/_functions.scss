@@ -7,3 +7,7 @@
 @function theme-gradient-color($key: "primary") {
   @return map-get($theme-gradient-colors, $key);
 }
+
+@function color-contrast($color-name, $darkness: 0%, $threshold: 72%) {
+  @return #{"hsl(0, 0%, calc((var(--theme-#{$color-name}-l) - #{$darkness} - #{$threshold}) * -100))"};
+}
