@@ -23,7 +23,7 @@ import { isNullOrBlank } from "@/utils";
 
 // Methods imported async in the brick
 import type { ParsedDomain } from "psl";
-import { BusinessError } from "@/errors";
+import { BusinessError, getErrorMessage } from "@/errors";
 
 const URL_PROPERTIES = [
   "port",
@@ -101,11 +101,9 @@ export class UrlParser extends Transformer {
     try {
       parsed = new URL(url, base);
     } catch (error) {
-      if (error instanceof TypeError) {
-        throw new BusinessError(error.message);
-      }
-
-      throw error;
+      // URL throws a TypeError on an invalid URL. However, for some reason instance TypeError and instanceof Error
+      // both fail for the thrown error. Therefore, just check for an error-like object
+      throw new BusinessError(getErrorMessage(error));
     }
 
     let publicSuffix: string;

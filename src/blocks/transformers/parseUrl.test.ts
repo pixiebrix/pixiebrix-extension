@@ -73,8 +73,10 @@ describe("parseUrl", () => {
   });
 
   it("throws BusinessError for malformed URL", async () => {
-    expect(async () => {
-      await new UrlParser().transform(unsafeAssumeValidArg({ url: "42" }));
-    }).rejects.toThrowError(new BusinessError("Invalid URL: 42"));
+    const promise = new UrlParser().transform(
+      unsafeAssumeValidArg({ url: "42" })
+    );
+    expect(promise).rejects.toThrowError(BusinessError);
+    expect(promise).rejects.toThrowError("Invalid URL: 42");
   });
 });

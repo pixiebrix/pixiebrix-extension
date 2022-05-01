@@ -17,6 +17,7 @@
 
 import { RegexTransformer } from "./regex";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { BusinessError } from "@/errors";
 
 const transformer = new RegexTransformer();
 
@@ -48,4 +49,21 @@ test("handle multiple", async () => {
     })
   );
   expect(result).toEqual([{ name: "ABC" }, {}]);
+});
+
+test("invalid regex is business error", async () => {
+  // https://stackoverflow.com/a/61232874/402560
+
+  const promise = transformer.transform(
+    unsafeAssumeValidArg({
+      regex: "BOOM\\",
+    })
+  );
+
+  expect(promise).rejects.toThrowError(BusinessError);
+  expect(promise).rejects.toThrowError(
+    new BusinessError(
+      "Invalid regular expression: /BOOM\\/: \\ at end of pattern"
+    )
+  );
 });
