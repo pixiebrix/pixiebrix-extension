@@ -60,8 +60,8 @@ test("invalid regex is business error", async () => {
     })
   );
 
-  expect(promise).rejects.toThrowError(BusinessError);
-  expect(promise).rejects.toThrowError(
+  await expect(promise).rejects.toThrowError(BusinessError);
+  await expect(promise).rejects.toThrowError(
     new BusinessError(
       "Invalid regular expression: /BOOM\\/: \\ at end of pattern"
     )
