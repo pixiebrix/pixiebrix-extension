@@ -398,7 +398,7 @@ function selectNetworkErrorMessage(error: unknown): string | null {
  * enrichBusinessRequestError is a related method which wraps an AxiosError in an Error subclass that encodes information
  * about why the request failed.
  *
- * @param Response from the server. May not be null
+ * @param response Response from the server. May not be null
  *
  * @deprecated DO NOT CALL DIRECTLY. Call getErrorMessage
  * @see getErrorMessage
@@ -497,18 +497,67 @@ export function getErrorMessage(
 }
 
 /**
+ * Handle ErrorEvents, i.e., generated from window.onerror
+ * @param event the error event
+ */
+function selectErrorFromEvent(event: ErrorEvent): Error {
+  // https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onerror
+  // https://developer.mozilla.org/en-US/docs/Web/API/ErrorEvent
+
+  // ErrorEvents have some information about the location of the error, so we use it as a single-level stack.
+  // The format follows Chrome’s. `unknown` is the function name
+  const stackFactory = (message: string) =>
+    `Error: ${message}\n    at unknown (${event.filename}:${event.lineno}:${event.colno})`;
+
+  if (event.error) {
+    const error = selectError(event.error);
+    // If the originalError didn't have a stack, generate a selected error for the stack. Otherwise the stack will be
+    // the stack of the call to selectError
+    if (event.error.stack == null) {
+      error.stack = stackFactory(error.message);
+    }
+
+    return error;
+  }
+
+  // WARNING: don't prefix the error message, e.g., with "Synchronous error:" because that breaks
+  // message-based error filtering via IGNORED_ERROR_PATTERNS
+  const message = event.message ?? "Unknown error event";
+  const error = new Error(message);
+  error.stack = stackFactory(message);
+
+  return error;
+}
+
+/**
+ * Handle unhandled promise rejections
+ * @param event the promise rejection event
+ */
+function selectErrorFromRejectionEvent(event: PromiseRejectionEvent): Error {
+  // WARNING: don't prefix the error message, e.g., with "Asynchronous error:" because that breaks
+  // message-based error filtering via IGNORED_ERROR_PATTERNS
+  if (typeof event.reason === "string" || event.reason == null) {
+    return new Error(event.reason ?? "Unknown promise rejection");
+  }
+
+  return selectError(event.reason);
+}
+
+/**
  * Finds or creates an Error starting from strings, error event, or real Errors.
  *
  * The result is suitable for passing to Rollbar (which treats Errors and objects differently.)
  */
 export function selectError(originalError: unknown): Error {
-  // Extract thrown error from event
-  const error: unknown =
-    originalError instanceof ErrorEvent
-      ? originalError.error
-      : originalError instanceof PromiseRejectionEvent
-      ? originalError.reason
-      : originalError; // Or use the received object/error as is
+  if (originalError instanceof ErrorEvent) {
+    return selectErrorFromEvent(originalError);
+  }
+
+  if (originalError instanceof PromiseRejectionEvent) {
+    return selectErrorFromRejectionEvent(originalError);
+  }
+
+  const error = originalError;
 
   if (error instanceof Error) {
     return error;
@@ -520,7 +569,7 @@ export function selectError(originalError: unknown): Error {
   }
 
   console.warn("A non-Error was thrown", {
-    originalError,
+    error,
   });
 
   // Wrap error if an unknown primitive or object
@@ -529,22 +578,6 @@ export function selectError(originalError: unknown): Error {
     ? // Use safeJsonStringify vs. JSON.stringify because it handles circular references
       safeJsonStringify(error)
     : String(error);
-
-  // Refactor beware: Keep the "primitive error event wrapper" logic separate from the
-  // "extract error from event" logic to avoid duplicating or missing the rest of the selectError’s logic
-  if (originalError instanceof ErrorEvent) {
-    const syncErrorMessage = `Synchronous error: ${errorMessage}`;
-    const errorError = new Error(syncErrorMessage);
-
-    // ErrorEvents have some information about the location of the error, so we use it as a single-level stack.
-    // The format follows Chrome’s. `unknown` is the function name
-    errorError.stack = `Error: ${syncErrorMessage}\n    at unknown (${originalError.filename}:${originalError.lineno}:${originalError.colno})`;
-    return errorError;
-  }
-
-  if (originalError instanceof PromiseRejectionEvent) {
-    return new Error(`Asynchronous error: ${errorMessage}`);
-  }
 
   return new Error(errorMessage);
 }

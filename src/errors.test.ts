@@ -207,6 +207,21 @@ describe("selectError", () => {
     expect(selectError(errorEvent)).toBe(error);
   });
 
+  it("handles error event with message but no error object", () => {
+    // Seen on Chrome 100.0.4896.127. The message is provided, but there's no error object
+    const errorEvent = new ErrorEvent("error", {
+      filename: "https://dashboard.brex.com/card/transactions/yours",
+      lineno: 0,
+      colno: 10,
+      error: null,
+      message: "ResizeObserver loop exceeded",
+    });
+
+    const selectedError = selectError(errorEvent);
+
+    expect(selectedError.message).toBe("ResizeObserver loop exceeded");
+  });
+
   it("wraps primitive from ErrorEvent and creates stack", () => {
     const error = "It’s a non-error";
     const errorEvent = new ErrorEvent("error", {
@@ -217,11 +232,9 @@ describe("selectError", () => {
     });
 
     const selectedError = selectError(errorEvent);
-    expect(selectedError).toMatchInlineSnapshot(
-      "[Error: Synchronous error: It’s a non-error]"
-    );
+    expect(selectedError).toMatchInlineSnapshot("[Error: It’s a non-error]");
     expect(selectedError.stack).toMatchInlineSnapshot(`
-      "Error: Synchronous error: It’s a non-error
+      "Error: It’s a non-error
           at unknown (yoshi://mushroom-kingdom/bowser.js:2:10)"
     `);
   });
@@ -243,7 +256,7 @@ describe("selectError", () => {
     );
 
     expect(selectError(errorEvent)).toMatchInlineSnapshot(
-      "[Error: Asynchronous error: It’s a non-error]"
+      "[Error: It’s a non-error]"
     );
   });
 });
