@@ -522,7 +522,11 @@ function selectErrorFromEvent(event: ErrorEvent): Error {
 
   // WARNING: don't prefix the error message, e.g., with "Synchronous error:" because that breaks
   // message-based error filtering via IGNORED_ERROR_PATTERNS
-  const message = event.message ?? "Unknown error event";
+  // Oddly, if you pass null to ErrorEvent's constructor, it stringifies it (at least on Node)
+  const message =
+    event.message && event.message !== "null"
+      ? String(event.message)
+      : "Unknown error event";
   const error = new Error(message);
   error.stack = stackFactory(message);
 
