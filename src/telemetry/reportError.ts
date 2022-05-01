@@ -29,9 +29,9 @@ expectContext(
 
 /**
  * Report an error for local logs, remote telemetry, etc.
- * @param errorLike the error object, error event, or promise rejection
+ * @param errorLike the error object
  * @param context optional context for error telemetry
- * @param logToConsole log the error to the browser console (default=true)
+ * @param logToConsole additionally log error to the browser console (default=true)
  */
 export default function reportError(
   errorLike: unknown, // It might also be an ErrorEvent
@@ -42,19 +42,13 @@ export default function reportError(
     console.error(errorLike, { context });
   }
 
-  let errorIsNull = false;
-
   try {
-    const error = selectError(errorLike);
-
-    errorIsNull = error == null || errorLike == null;
-
     messenger(
       // Low-level direct API call to avoid calls outside reportError
       "RECORD_ERROR",
       { isNotification: true },
       bg,
-      serializeError(error),
+      serializeError(selectError(errorLike)),
       {
         ...context,
         // Add on the reporter side of the message. On the receiving side it would always be `background`
@@ -69,10 +63,5 @@ export default function reportError(
       originalError: errorLike,
       reportingError,
     });
-  }
-
-  if (process.env.DEBUG && errorIsNull) {
-    // In DEBUG, make enough noise that the developer will know something is broken
-    throw new Error("reportError received nullish error");
   }
 }
