@@ -23,6 +23,7 @@ import { isNullOrBlank } from "@/utils";
 
 // Methods imported async in the brick
 import type { ParsedDomain } from "psl";
+import { BusinessError } from "@/errors";
 
 const URL_PROPERTIES = [
   "port",
@@ -95,7 +96,17 @@ export class UrlParser extends Transformer {
       /* webpackChunkName: "psl" */ "psl"
     );
 
-    const parsed = new URL(url, base);
+    let parsed: URL;
+
+    try {
+      parsed = new URL(url, base);
+    } catch (error) {
+      if (error instanceof TypeError) {
+        throw new BusinessError(error.message);
+      }
+
+      throw error;
+    }
 
     let publicSuffix: string;
 
