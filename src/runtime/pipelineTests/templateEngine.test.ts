@@ -183,3 +183,30 @@ describe("apiVersion: v3", () => {
     expect(result).toStrictEqual({ message: "hello" });
   });
 });
+
+describe("Error handling", () => {
+  test("throws InvalidTemplateError on malformed template", async () => {
+    const pipeline = {
+      id: echoBlock.id,
+      config: {
+        message: {
+          __type__: "nunjucks",
+          __value__: "{{@input}",
+        },
+      },
+    };
+    try {
+      await reducePipeline(
+        pipeline as BlockConfig,
+        simpleInput({ inputArg: "hello" }),
+        testOptions("v3")
+      );
+      throw new Error("reducePipeline should have thrown");
+    } catch (error: any) {
+      expect(error.message).toEqual(
+        `Template rendering error: (unknown path) [Line 1, Column 9]
+  expected variable end. Template: "{{@input}"`
+      );
+    }
+  });
+});

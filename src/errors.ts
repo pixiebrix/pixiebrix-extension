@@ -176,6 +176,17 @@ export class PropError extends BusinessError {
   }
 }
 
+export class InvalidTemplateError extends BusinessError {
+  override name = "InvalidTemplateError";
+  readonly template: string;
+
+  constructor(message: string, template: string) {
+    super(`Template rendering error: ${message}. Template: "${template}"`);
+
+    this.template = template;
+  }
+}
+
 type ContextErrorDetails = ErrorOptions & {
   context?: MessageContext;
 };
@@ -281,6 +292,7 @@ const BUSINESS_ERROR_CLASSES = new Set([
   MultipleElementsFoundError,
   InvalidSelectorError,
   PropError,
+  InvalidTemplateError,
 ]);
 // Name classes from other modules separately, because otherwise we'll get a circular dependency with this module
 const BUSINESS_ERROR_NAMES = new Set([
@@ -298,6 +310,7 @@ const BUSINESS_ERROR_NAMES = new Set([
   "ClientNetworkError",
   "ProxiedRemoteServiceError",
   "RemoteExecutionError",
+  "InvalidTemplateError",
 ]);
 
 /**

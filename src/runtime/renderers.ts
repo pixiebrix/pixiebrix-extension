@@ -20,6 +20,7 @@ import Mustache from "mustache";
 import { mapKeys, identity, once } from "lodash";
 import { getPropByPath } from "@/runtime/pathHelpers";
 import { UnknownObject } from "@/types";
+import { InvalidTemplateError, isErrorObject } from "@/errors";
 
 const hyphenRegex = /-/gi;
 
@@ -68,7 +69,16 @@ export async function engineRenderer(
         const snakeCased = mapKeys(ctxt as UnknownObject, (value, key) =>
           key.replace(hyphenRegex, "_")
         );
-        return nunjucks.renderString(template, snakeCased);
+
+        try {
+          return nunjucks.renderString(template, snakeCased);
+        } catch (error) {
+          if (isErrorObject(error) && error.name === "Template render error") {
+            throw new InvalidTemplateError(error.message, template);
+          }
+
+          throw error;
+        }
       };
     }
 
