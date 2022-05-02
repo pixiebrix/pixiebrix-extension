@@ -69,7 +69,7 @@ export const makeUpdatedFilter =
     const blueprintMatch = installed.find(
       (extension) =>
         extension._deployment == null &&
-        extension._recipe.id === deployment.package.package_id
+        extension._recipe?.id === deployment.package.package_id
     );
 
     if (!deploymentMatch && !blueprintMatch) {
