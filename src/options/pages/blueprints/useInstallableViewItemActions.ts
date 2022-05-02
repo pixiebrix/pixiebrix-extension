@@ -88,9 +88,10 @@ function useInstallableViewItemActions(
   const hasBlueprint =
     isExtensionFromRecipe(installable) || isBlueprint(installable);
 
+  const isDeployment = sharing.source.type === "Deployment";
+
   // TODO: double-check how team role factors into the uninstall flag. Do we need to check for team role?
-  const isManaged =
-    sharing.source.type === "Deployment" && restrict("uninstall");
+  const isManaged = isDeployment && restrict("uninstall");
 
   const extensionsFromInstallable = useSelector(
     (state: { options: OptionsState }) =>
@@ -245,7 +246,7 @@ function useInstallableViewItemActions(
   );
 
   return {
-    viewShare: isCloudExtension ? null : viewShare,
+    viewShare: isCloudExtension || isDeployment ? null : viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,
     uninstall: isInstalled && !isManaged ? uninstall : null,
     // Only blueprints/deployments can be reinstalled. (Because there's no reason to reinstall an extension... there's
@@ -253,7 +254,7 @@ function useInstallableViewItemActions(
     reinstall: hasBlueprint && isInstalled && !isManaged ? reinstall : null,
     viewLogs: status === "Inactive" ? null : viewLogs,
     activate: status === "Inactive" ? activate : null,
-    exportBlueprint,
+    exportBlueprint: isDeployment ? null : exportBlueprint,
     requestPermissions: hasPermissions ? null : requestPermissions,
   };
 }

@@ -182,3 +182,5 @@ interface ChromeifiedBrowser extends Browser {
 }
 
 declare const browser: ChromeifiedBrowser;
+
+import "jest-extended";
