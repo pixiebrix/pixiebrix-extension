@@ -8,7 +8,7 @@
   @return map-get($theme-gradient-colors, $key);
 }
 
-@function contrast-theme-color($color-name, $darkness: 0%, $threshold: 72%) {
+@function contrast-theme-color($color-name, $darkness: 0%, $threshold: 75%) {
   @return #{"hsl(0, 0%, calc((var(--theme-#{$color-name}-l) - #{$darkness} - #{$threshold}) * -100))"};
 }
 

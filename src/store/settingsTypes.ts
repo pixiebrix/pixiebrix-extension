@@ -40,7 +40,7 @@ export type SettingsState = SkunkworksSettings & {
   /**
    * Theme name for the extension
    */
-  theme: string;
+  theme: string | null;
 };
 
 export type SkunkworksSettings = {

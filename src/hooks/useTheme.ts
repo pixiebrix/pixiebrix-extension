@@ -17,45 +17,42 @@
 
 import { useEffect } from "react";
 import { selectSettings } from "@/store/settingsSelectors";
-import useFlags from "@/hooks/useFlags";
 import { useAsyncState } from "@/hooks/common";
 import { ManualStorageKey, readStorage } from "@/chrome";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
-const THEMES = ["automation-anywhere"];
+export const DEFAULT_THEME = "default";
+export const THEMES = [DEFAULT_THEME, "automation-anywhere"];
 
-const useTheme = () => {
+const useTheme = (): void => {
   const { theme } = useSelector(selectSettings);
   const dispatch = useDispatch();
-  const { permit } = useFlags();
-  const [partnerId] = useAsyncState(
-    readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed")
+  const [partnerId, isLoading] = useAsyncState(
+    readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed"),
+    [],
+    null
   );
 
   useEffect(() => {
-    if (permit("partner-theming")) {
-      return;
-    }
-
-    // Initial state
-    if (theme === undefined) {
+    // Initialize initial theme state with the user's partner theme, if any
+    if (theme === null && !isLoading) {
       dispatch(
         settingsSlice.actions.setTheme({
-          partnerId,
+          theme: partnerId ?? DEFAULT_THEME,
         })
       );
     }
 
-    if (theme && THEMES.includes(theme)) {
-      document.documentElement.classList.add(theme);
-    } else {
-      for (const theme of THEMES) {
-        document.documentElement.classList.remove(theme);
-      }
+    for (const theme of THEMES) {
+      document.documentElement.classList.remove(theme);
     }
-  }, [dispatch, partnerId, theme, permit]);
+
+    if (theme && theme !== DEFAULT_THEME && THEMES.includes(theme)) {
+      document.documentElement.classList.add(theme);
+    }
+  }, [isLoading, dispatch, partnerId, theme]);
 };
 
 export default useTheme;

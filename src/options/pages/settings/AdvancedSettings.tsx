@@ -28,10 +28,11 @@ import useFlags from "@/hooks/useFlags";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
+import { DEFAULT_THEME } from "@/hooks/useTheme";
 
 const AdvancedSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { restrict, permit } = useFlags();
+  const { restrict, permit, flagOn } = useFlags();
   const { theme } = useSelector(selectSettings);
 
   const [serviceURL, setServiceURL] = useConfiguredHost();
@@ -97,17 +98,20 @@ const AdvancedSettings: React.FunctionComponent = () => {
               The PixieBrix service URL
             </Form.Text>
           </Form.Group>
-          {restrict("partner-theming") && (
+          {flagOn("partner-theming") && (
             <Form.Group controlId="partnerId">
               <Form.Label>Partner ID</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="my-company"
-                defaultValue={theme}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                defaultValue={theme === DEFAULT_THEME ? "" : theme}
+                onBlur={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  console.log("event target value", event.target.value === "");
                   dispatch(
                     settingsSlice.actions.setTheme({
-                      theme: event.target.value,
+                      theme: event.target.value
+                        ? event.target.value
+                        : DEFAULT_THEME,
                     })
                   );
                 }}
