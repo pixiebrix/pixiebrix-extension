@@ -398,7 +398,7 @@ function selectNetworkErrorMessage(error: unknown): string | null {
  * enrichBusinessRequestError is a related method which wraps an AxiosError in an Error subclass that encodes information
  * about why the request failed.
  *
- * @param response Response from the server. May not be null
+ * @param response Response from the server. Must not be null
  *
  * @deprecated DO NOT CALL DIRECTLY. Call getErrorMessage
  * @see getErrorMessage
