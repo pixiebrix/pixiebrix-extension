@@ -19,6 +19,7 @@ import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { unary } from "lodash";
+import { PropError } from "@/errors";
 
 export class RegexTransformer extends Transformer {
   override async isPure(): Promise<boolean> {
@@ -60,8 +61,18 @@ export class RegexTransformer extends Transformer {
   }: BlockArg): Promise<
     Record<string, string> | Array<Record<string, string>>
   > {
-    // eslint-disable-next-line security/detect-non-literal-regexp -- It's what the brick is about
-    const compiled = new RegExp(regex);
+    let compiled: RegExp;
+
+    try {
+      // eslint-disable-next-line security/detect-non-literal-regexp -- It's what the brick is about
+      compiled = new RegExp(regex);
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        throw new PropError(error.message, this.id, "regex", regex);
+      }
+
+      throw error;
+    }
 
     const extract = (x: string | null) => {
       if (x == null) {

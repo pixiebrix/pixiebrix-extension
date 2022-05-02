@@ -25,7 +25,10 @@
     "jest-webextension-mock",
     "fake-indexeddb/auto"
   ],
-  "setupFilesAfterEnv": ["<rootDir>/src/testUtils/testAfterEnv.js"],
+  "setupFilesAfterEnv": [
+    "<rootDir>/src/testUtils/testAfterEnv.js",
+    "jest-extended/all"
+  ],
   "collectCoverageFrom": [
     "src/**/*.{ts,tsx}",
     "!src/**/*.stories.tsx",
