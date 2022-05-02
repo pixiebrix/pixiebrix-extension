@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { makeUpdatedFilter } from "@/hooks/useDeployments";
+import { checkExtensionUpdateRequired, makeUpdatedFilter } from "./deployment";
 import { deploymentFactory, extensionFactory } from "@/testUtils/factories";
 import { validateTimestamp } from "@/types/helpers";
 
@@ -105,5 +105,26 @@ describe("makeUpdatedFilter", () => {
 
     const filter = makeUpdatedFilter(extensions, { restricted: false });
     expect(filter(deployment)).toBeFalse();
+  });
+});
+
+describe("checkExtensionUpdateRequired", () => {
+  test("no deployments", () => {
+    expect(checkExtensionUpdateRequired([])).toBeFalse();
+  });
+
+  test("update required", () => {
+    const deployment = deploymentFactory();
+    (deployment.package.config.metadata.extensionVersion as any) = ">=99.99.99";
+
+    expect(checkExtensionUpdateRequired([deployment])).toBeTrue();
+  });
+
+  test("update not required", () => {
+    const deployment = deploymentFactory();
+    (deployment.package.config.metadata.extensionVersion as any) = `>=${
+      browser.runtime.getManifest().version
+    }`;
+    expect(checkExtensionUpdateRequired([deployment])).toBeFalse();
   });
 });
