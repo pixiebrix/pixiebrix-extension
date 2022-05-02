@@ -24,8 +24,9 @@ describe("parseUrl", () => {
     const url = new URL("https://www.example.com");
 
     // Use `toMatchInlineSnapshot` since we can't spread the URL instance to get its properties
-    expect(new UrlParser().transform(unsafeAssumeValidArg({ url: url.href })))
-      .resolves.toMatchInlineSnapshot(`
+    await expect(
+      new UrlParser().transform(unsafeAssumeValidArg({ url: url.href }))
+    ).resolves.toMatchInlineSnapshot(`
       Object {
         "hash": "",
         "host": "www.example.com",
@@ -45,7 +46,7 @@ describe("parseUrl", () => {
 
   it("parses relative URL with search params", async () => {
     // Use `toMatchInlineSnapshot` since we can't spread the URL instance to get its properties
-    expect(
+    await expect(
       new UrlParser().transform(
         unsafeAssumeValidArg({
           url: "/api/foo/?bar=42",

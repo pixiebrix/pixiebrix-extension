@@ -99,6 +99,8 @@ export class UrlParser extends Transformer {
     let parsed: URL;
 
     try {
+      // NOTE: this is a transform brick and can support any URL, not just https: URLs. Therefore, we don't need to
+      // call our assertHttpsUrl helper method or another method
       parsed = new URL(url, base);
     } catch (error) {
       // URL throws a TypeError on an invalid URL. However, for some reason instance TypeError and instanceof Error
