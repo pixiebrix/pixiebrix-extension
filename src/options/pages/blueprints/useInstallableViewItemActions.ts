@@ -75,7 +75,7 @@ function useInstallableViewItemActions(
   const scope = useSelector(selectScope);
   const { restrict } = useFlags();
 
-  // NOTE: paused deployments are installed, but they are not executed. See isDeploymentActive
+  // NOTE: paused deployments are installed, but they are not executed. See deployments.ts:isDeploymentActive
   const isInstalled = status === "Active" || status === "Paused";
 
   const isCloudExtension =
@@ -90,8 +90,10 @@ function useInstallableViewItemActions(
 
   const isDeployment = sharing.source.type === "Deployment";
 
-  // TODO: double-check how team role factors into the uninstall flag. Do we need to check for team role?
-  const isManaged = isDeployment && restrict("uninstall");
+  // Restricted users aren't allowed to uninstall/reinstall deployments. They are controlled by the admin from the
+  // Admin Console. See restricted flag logic here:
+  // https://github.com/pixiebrix/pixiebrix-app/blob/5b30c50d7f9ca7def79fd53ba8f78e0f800a0dcb/api/serializers/account.py#L198-L198
+  const isRestricted = isDeployment && restrict("uninstall");
 
   const extensionsFromInstallable = useSelector(
     (state: { options: OptionsState }) =>
@@ -246,14 +248,16 @@ function useInstallableViewItemActions(
   );
 
   return {
+    // Deployment sharing is controlled via the Admin Console
     viewShare: isCloudExtension || isDeployment ? null : viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,
-    uninstall: isInstalled && !isManaged ? uninstall : null,
+    uninstall: isInstalled && !isRestricted ? uninstall : null,
     // Only blueprints/deployments can be reinstalled. (Because there's no reason to reinstall an extension... there's
     // no activation-time integrations/options associated with them.)
-    reinstall: hasBlueprint && isInstalled && !isManaged ? reinstall : null,
+    reinstall: hasBlueprint && isInstalled && !isRestricted ? reinstall : null,
     viewLogs: status === "Inactive" ? null : viewLogs,
     activate: status === "Inactive" ? activate : null,
+    // If a developer needs to access the underlying blueprint, they can access it in the workshop
     exportBlueprint: isDeployment ? null : exportBlueprint,
     requestPermissions: hasPermissions ? null : requestPermissions,
   };

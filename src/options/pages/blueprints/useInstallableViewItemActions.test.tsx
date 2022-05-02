@@ -259,6 +259,9 @@ describe("useInstallableViewItemActions", () => {
     const {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(deploymentItem));
+
+    // Unrestricted users (e.g., developers) need to be able to uninstall/reactivate a deployment to use a later
+    // version of the blueprint for development/testing.
     expectActions(["viewLogs", "uninstall", "reinstall"], actions);
   });
 
