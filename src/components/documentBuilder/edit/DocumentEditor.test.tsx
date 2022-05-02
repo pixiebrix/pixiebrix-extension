@@ -17,8 +17,7 @@
 
 import { render } from "@testing-library/react";
 import { Formik } from "formik";
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import DocumentEditor from "./DocumentEditor";
