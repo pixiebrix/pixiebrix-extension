@@ -54,22 +54,25 @@ describe("makeUpdatedFilter", () => {
     }
   );
 
-  test("matched stale deployment", () => {
-    const deployment = deploymentFactory();
+  test.each([[{ restricted: true }, { restricted: false }]])(
+    "matched stale deployment",
+    ({ restricted }) => {
+      const deployment = deploymentFactory();
 
-    const extensions = [
-      extensionFactory({
-        _deployment: {
-          id: deployment.id,
-          timestamp: "2020-10-07T12:52:16.189Z",
-          active: true,
-        },
-      }),
-    ];
+      const extensions = [
+        extensionFactory({
+          _deployment: {
+            id: deployment.id,
+            timestamp: "2020-10-07T12:52:16.189Z",
+            active: true,
+          },
+        }),
+      ];
 
-    const filter = makeUpdatedFilter(extensions, { restricted: true });
-    expect(filter(deployment)).toBeTrue();
-  });
+      const filter = makeUpdatedFilter(extensions, { restricted });
+      expect(filter(deployment)).toBeTrue();
+    }
+  );
 
   test("matched blueprint for restricted user", () => {
     const deployment = deploymentFactory();
