@@ -28,7 +28,7 @@ import useFlags from "@/hooks/useFlags";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
-import { DEFAULT_THEME } from "@/hooks/useTheme";
+import { DEFAULT_THEME } from "@/options/constants";
 
 const AdvancedSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
