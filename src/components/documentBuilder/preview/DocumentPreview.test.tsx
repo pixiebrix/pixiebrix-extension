@@ -26,33 +26,33 @@ import DocumentPreview from "@/components/documentBuilder/preview/DocumentPrevie
 import { Formik } from "formik";
 import userEvent from "@testing-library/user-event";
 
+function renderDocumentPreview(documentElement: DocumentElement) {
+  const document = {
+    body: [documentElement],
+  };
+
+  const PreviewContainer = () => {
+    const [activeElement, setActiveElement] = useState<string | null>(null);
+    return (
+      <Formik
+        initialValues={{
+          document,
+        }}
+        onSubmit={jest.fn()}
+      >
+        <DocumentPreview
+          name="document.body"
+          activeElement={activeElement}
+          setActiveElement={setActiveElement}
+        />
+      </Formik>
+    );
+  };
+
+  return render(<PreviewContainer />);
+}
+
 describe("Add new element", () => {
-  function renderDocumentPreview(documentElement: DocumentElement) {
-    const document = {
-      body: [documentElement],
-    };
-
-    const PreviewContainer = () => {
-      const [activeElement, setActiveElement] = useState<string | null>(null);
-      return (
-        <Formik
-          initialValues={{
-            document,
-          }}
-          onSubmit={jest.fn()}
-        >
-          <DocumentPreview
-            name="document.body"
-            activeElement={activeElement}
-            setActiveElement={setActiveElement}
-          />
-        </Formik>
-      );
-    };
-
-    return render(<PreviewContainer />);
-  }
-
   test("Dropdown 'Add new element' stays open on hovering different elements", async () => {
     // Create a container with a list with a container inside
     const listElement = createNewElement("list") as ListDocumentElement;

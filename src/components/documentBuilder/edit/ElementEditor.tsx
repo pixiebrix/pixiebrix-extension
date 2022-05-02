@@ -41,6 +41,7 @@ const ElementEditor: React.FC<ElementEditorProps> = ({
   const elementName = `${name}.${activeElement}`;
   const [{ value: documentElement }] = useField<DocumentElement>(elementName);
 
+  console.log("ElementEditor", { documentElement, elementName });
   const ElementOptions = useElementOptions(documentElement, elementName);
 
   return (

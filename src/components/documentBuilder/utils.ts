@@ -15,22 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const elementsCollectionRegexp =
-  /((?<collectionName>.*)\.)?(?<elementIndex>\d+)/;
-
-/**
- * Returns the name of the collection of a document element.
- * Ex. for a given elementName `body.0.children.3` returns `body.0.children`
- */
-function getElementCollectionName(elementName: string): {
-  collectionName: string;
-  elementIndex: number;
-} {
-  const {
-    groups: { collectionName, elementIndex },
-  } = elementsCollectionRegexp.exec(elementName);
-
-  return { collectionName, elementIndex: Number(elementIndex) };
+export function joinElementName(...nameParts: Array<string | number>): string {
+  // Don't use lodash.compact since it treats 0 as falsy
+  return nameParts.filter((x) => x != null).join(".");
 }
-
-export default getElementCollectionName;

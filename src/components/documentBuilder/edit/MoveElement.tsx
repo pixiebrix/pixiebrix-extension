@@ -21,6 +21,7 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import getElementCollectionName from "./getElementCollectionName";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import LayoutWidget from "@/components/LayoutWidget";
+import { joinElementName } from "@/components/documentBuilder/utils";
 
 type MoveElementProps = {
   name: string;
@@ -36,7 +37,15 @@ const MoveElement: React.FC<MoveElementProps> = ({
   const { collectionName, elementIndex } =
     getElementCollectionName(activeElement);
 
-  const fullCollectionName = `${name}.${collectionName}`;
+  const fullCollectionName = joinElementName(name, collectionName);
+
+  console.log("move element", {
+    name,
+    activeElement,
+    fullCollectionName,
+    collectionName,
+    elementIndex,
+  });
   const [{ value: elementsCollection }, , { setValue }] =
     useField<DocumentElement[]>(fullCollectionName);
 
@@ -52,7 +61,7 @@ const MoveElement: React.FC<MoveElementProps> = ({
       newElementsCollection[elementIndex],
     ];
     setValue(newElementsCollection);
-    setActiveElement(`${collectionName}.${toIndex}`);
+    setActiveElement(joinElementName(collectionName, toIndex));
   };
 
   return (
