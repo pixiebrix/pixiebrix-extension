@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { define, array, FactoryConfig } from "cooky-cutter";
+import { define, array, FactoryConfig, derive } from "cooky-cutter";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import {
   ApiVersion,
@@ -114,6 +114,7 @@ export const extensionFactory = define<IExtension>({
   extensionPointId: (n: number) =>
     validateRegistryId(`test/extension-point-${n}`),
   _recipe: undefined,
+  _deployment: undefined,
   label: "Test label",
   services: [],
   config: (n: number) => ({
@@ -233,8 +234,8 @@ export const recipeDefinitionFactory = define<RecipeDefinition>({
   apiVersion: "v3",
   metadata: (n: number) =>
     recipeMetadataFactory({
-      id: validateRegistryId(`test/extension-point-${n}`),
-      name: `Extension Point ${n}`,
+      id: validateRegistryId(`test/blueprint-${n}`),
+      name: `Blueprint ${n}`,
     }),
   updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
   sharing: sharingDefinitionFactory,
@@ -388,10 +389,19 @@ export const innerExtensionPointRecipeFactory = ({
 export const recipeFactory = innerExtensionPointRecipeFactory();
 
 const deploymentPackageFactory = define<Deployment["package"]>({
-  id: validateRegistryId("@test/recipe"),
-  name: "Deployment Package",
-  package_id: uuidSequence,
-  version: "1.0.0",
+  id: uuidSequence,
+  name: derive<Deployment["package"], string>(
+    ({ config }) => config.metadata.name,
+    "config"
+  ),
+  version: derive<Deployment["package"], string>(
+    ({ config }) => config.metadata.version,
+    "config"
+  ),
+  package_id: derive<Deployment["package"], RegistryId>(
+    ({ config }) => config.metadata.id,
+    "config"
+  ),
   config: recipeDefinitionFactory as any,
 });
 
@@ -401,9 +411,12 @@ export const deploymentFactory = define<Deployment>({
   created_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
   updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
   active: true,
-  package_version: "1.0.0",
   bindings: () => [] as Deployment["bindings"],
   services: () => [] as Deployment["services"],
+  package_version: derive<Deployment, string>(
+    ({ package: deploymentPackage }) => deploymentPackage.version,
+    "package"
+  ),
   package: deploymentPackageFactory,
 });
 
