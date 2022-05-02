@@ -21,10 +21,9 @@ import { useAsyncState } from "@/hooks/common";
 import { ManualStorageKey, readStorage } from "@/chrome";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { DEFAULT_THEME, THEMES } from "@/options/constants";
 
 const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
-export const DEFAULT_THEME = "default";
-export const THEMES = [DEFAULT_THEME, "automation-anywhere"];
 
 const useTheme = (): void => {
   const { theme } = useSelector(selectSettings);
