@@ -45,6 +45,7 @@ import useInstallablePermissions from "@/options/pages/blueprints/useInstallable
 import { selectScope } from "@/auth/authSelectors";
 import { OptionsState } from "@/store/extensionsTypes";
 import useFlags from "@/hooks/useFlags";
+import notify from "@/utils/notify";
 
 const { removeExtension } = extensionsSlice.actions;
 
@@ -72,12 +73,24 @@ function useInstallableViewItemActions(
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
   const scope = useSelector(selectScope);
-  const { permit } = useFlags();
+  const { restrict } = useFlags();
+
+  // NOTE: paused deployments are installed, but they are not executed. See isDeploymentActive
+  const isInstalled = status === "Active" || status === "Paused";
 
   const isCloudExtension =
     isExtension(installable) &&
     sharing.source.type === "Personal" &&
-    status !== "Active";
+    // If the status is active, there is still likely a copy of the extension saved on our server. But the point
+    // this check is for extensions that aren't also installed locally
+    !isInstalled;
+
+  const hasBlueprint =
+    isExtensionFromRecipe(installable) || isBlueprint(installable);
+
+  // TODO: double-check how team role factors into the uninstall flag. Do we need to check for team role?
+  const isManaged =
+    sharing.source.type === "Deployment" && restrict("uninstall");
 
   const extensionsFromInstallable = useSelector(
     (state: { options: OptionsState }) =>
@@ -89,7 +102,7 @@ function useInstallableViewItemActions(
   );
 
   const reinstall = () => {
-    if (isExtensionFromRecipe(installable) || isBlueprint(installable)) {
+    if (hasBlueprint) {
       dispatch(
         push(
           `marketplace/activate/${encodeURIComponent(
@@ -99,6 +112,12 @@ function useInstallableViewItemActions(
           )}?reinstall=1`
         )
       );
+    } else {
+      // This should never happen, because the hook will return `reinstall: null` for installables with no
+      // associated blueprint
+      notify.error({
+        error: new Error("Cannot reinstall item with no associated blueprint"),
+      });
     }
   };
 
@@ -227,24 +246,15 @@ function useInstallableViewItemActions(
 
   return {
     viewShare: isCloudExtension ? null : viewShare,
-    uninstall:
-      status === "Active" &&
-      ((sharing.source.type === "Deployment" && permit("uninstall")) ||
-        sharing.source.type !== "Deployment")
-        ? uninstall
-        : null,
-    viewLogs: status === "Inactive" ? null : viewLogs,
-    exportBlueprint,
-    activate: status === "Inactive" ? activate : null,
     deleteExtension: isCloudExtension ? deleteExtension : null,
+    uninstall: isInstalled && !isManaged ? uninstall : null,
+    // Only blueprints/deployments can be reinstalled. (Because there's no reason to reinstall an extension... there's
+    // no activation-time integrations/options associated with them.)
+    reinstall: hasBlueprint && isInstalled && !isManaged ? reinstall : null,
+    viewLogs: status === "Inactive" ? null : viewLogs,
+    activate: status === "Inactive" ? activate : null,
+    exportBlueprint,
     requestPermissions: hasPermissions ? null : requestPermissions,
-    reinstall:
-      (isExtensionFromRecipe(installable) || isBlueprint(installable)) &&
-      // Managed extensions are updated via the deployment banner
-      sharing.source.type !== "Deployment" &&
-      status === "Active"
-        ? reinstall
-        : null,
   };
 }
 
