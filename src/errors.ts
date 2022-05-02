@@ -510,9 +510,11 @@ function selectErrorFromEvent(event: ErrorEvent): Error {
     `Error: ${message}\n    at unknown (${event.filename}:${event.lineno}:${event.colno})`;
 
   if (event.error) {
+    // `selectError` will always return an Error. If event.error isn't an Error instance, it will wrap it in an error
+    // instance, but that Error instance will have an uninformative stack. (The stack will be the stack of the call
+    // to selectError, which will be our error handling code). Therefore, if the original event error didn't have
+    // a stack, create a stack for it from the event.
     const error = selectError(event.error);
-    // If the originalError didn't have a stack, generate a selected error for the stack. Otherwise the stack will be
-    // the stack of the call to selectError
     if (event.error.stack == null) {
       error.stack = stackFactory(error.message);
     }
