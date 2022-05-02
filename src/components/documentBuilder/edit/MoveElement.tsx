@@ -39,13 +39,6 @@ const MoveElement: React.FC<MoveElementProps> = ({
 
   const fullCollectionName = joinElementName(name, collectionName);
 
-  console.log("move element", {
-    name,
-    activeElement,
-    fullCollectionName,
-    collectionName,
-    elementIndex,
-  });
   const [{ value: elementsCollection }, , { setValue }] =
     useField<DocumentElement[]>(fullCollectionName);
 
