@@ -263,7 +263,7 @@
     "webpack-merge": "^5.8.0",
     "webpack-target-webextension": "^1.0.0",
     "yaml-jest-transform": "^1.0.0",
-    "yaml-loader": "^0.7.0",
+    "yaml-loader": "^0.8.0",
     "zip-dir": "^2.0.0"
   },
   "webExt": {
