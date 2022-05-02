@@ -29,16 +29,17 @@ expectContext(
 
 /**
  * Report an error for local logs, remote telemetry, etc.
- * @param error the error object
+ * @param errorLike the error object
  * @param context optional context for error telemetry
+ * @param logToConsole additionally log error to the browser console (default=true)
  */
 export default function reportError(
-  error: unknown, // It might also be an ErrorEvent
+  errorLike: unknown, // It might also be an ErrorEvent
   context?: MessageContext,
   { logToConsole = true } = {}
 ): void {
   if (logToConsole) {
-    console.error(error, { context });
+    console.error(errorLike, { context });
   }
 
   try {
@@ -47,7 +48,7 @@ export default function reportError(
       "RECORD_ERROR",
       { isNotification: true },
       bg,
-      serializeError(selectError(error)),
+      serializeError(selectError(errorLike)),
       {
         ...context,
         // Add on the reporter side of the message. On the receiving side it would always be `background`
@@ -59,7 +60,7 @@ export default function reportError(
     // called in the background the call will be executed directly and it could
     // theoretically throw a synchronous error
     console.error("An error occurred when reporting an error", {
-      originalError: error,
+      originalError: errorLike,
       reportingError,
     });
   }

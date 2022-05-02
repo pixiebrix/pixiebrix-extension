@@ -23,6 +23,7 @@ import { isNullOrBlank } from "@/utils";
 
 // Methods imported async in the brick
 import type { ParsedDomain } from "psl";
+import { BusinessError, getErrorMessage } from "@/errors";
 
 const URL_PROPERTIES = [
   "port",
@@ -95,7 +96,17 @@ export class UrlParser extends Transformer {
       /* webpackChunkName: "psl" */ "psl"
     );
 
-    const parsed = new URL(url, base);
+    let parsed: URL;
+
+    try {
+      // NOTE: this is a transform brick and can support any URL, not just https: URLs. Therefore, we don't need to
+      // call our assertHttpsUrl helper method or another method
+      parsed = new URL(url, base);
+    } catch (error) {
+      // URL throws a TypeError on an invalid URL. However, for some reason instance TypeError and instanceof Error
+      // both fail for the thrown error. Therefore, just check for an error-like object
+      throw new BusinessError(getErrorMessage(error));
+    }
 
     let publicSuffix: string;
 

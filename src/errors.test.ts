@@ -22,6 +22,7 @@ import {
   getErrorMessage,
   hasBusinessRootCause,
   hasCancelRootCause,
+  IGNORED_ERROR_PATTERNS,
   isErrorObject,
   MultipleElementsFoundError,
   NoElementsFoundError,
@@ -30,6 +31,7 @@ import {
 import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
+import { matchesAnyPattern } from "@/utils";
 
 const TEST_MESSAGE = "Test message";
 
@@ -207,6 +209,38 @@ describe("selectError", () => {
     expect(selectError(errorEvent)).toBe(error);
   });
 
+  it("handles ErrorEvent with null message and error", () => {
+    const errorEvent = new ErrorEvent("error", {
+      error: null,
+      message: null,
+    });
+
+    const selectedError = selectError(errorEvent);
+    expect(selectedError).toMatchInlineSnapshot("[Error: Unknown error event]");
+  });
+
+  it("handles error event with message but no error object", () => {
+    const eventMessage = "ResizeObserver loop limit exceeded";
+
+    // Seen on Chrome 100.0.4896.127. The message is provided, but there's no error object
+    const errorEvent = new ErrorEvent("error", {
+      filename: "https://dashboard.brex.com/card/transactions/yours",
+      lineno: 0,
+      colno: 10,
+      error: null,
+      message: eventMessage,
+    });
+
+    const selectedError = selectError(errorEvent);
+
+    expect(selectedError.message).toBe(eventMessage);
+
+    // This particular error should be ignored by recordError because it's in the IGNORED_ERROR_PATTERNS. Check here
+    // that the error message matches one of the ignored patterns.
+    const message = getErrorMessage(selectedError);
+    expect(matchesAnyPattern(message, IGNORED_ERROR_PATTERNS)).toBeTruthy();
+  });
+
   it("wraps primitive from ErrorEvent and creates stack", () => {
     const error = "It’s a non-error";
     const errorEvent = new ErrorEvent("error", {
@@ -217,11 +251,9 @@ describe("selectError", () => {
     });
 
     const selectedError = selectError(errorEvent);
-    expect(selectedError).toMatchInlineSnapshot(
-      "[Error: Synchronous error: It’s a non-error]"
-    );
+    expect(selectedError).toMatchInlineSnapshot("[Error: It’s a non-error]");
     expect(selectedError.stack).toMatchInlineSnapshot(`
-      "Error: Synchronous error: It’s a non-error
+      "Error: It’s a non-error
           at unknown (yoshi://mushroom-kingdom/bowser.js:2:10)"
     `);
   });
@@ -236,6 +268,18 @@ describe("selectError", () => {
     expect(selectError(errorEvent)).toBe(error);
   });
 
+  it("handles PromiseRejectionEvent with null reason", () => {
+    const errorEvent = new PromiseRejectionEvent(
+      "error",
+      createUncaughtRejection(null)
+    );
+
+    const selectedError = selectError(errorEvent);
+    expect(selectedError).toMatchInlineSnapshot(
+      "[Error: Unknown promise rejection]"
+    );
+  });
+
   it("wraps primitive from PromiseRejectionEvent", () => {
     const errorEvent = new PromiseRejectionEvent(
       "error",
@@ -243,7 +287,7 @@ describe("selectError", () => {
     );
 
     expect(selectError(errorEvent)).toMatchInlineSnapshot(
-      "[Error: Asynchronous error: It’s a non-error]"
+      "[Error: It’s a non-error]"
     );
   });
 });
