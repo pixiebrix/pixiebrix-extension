@@ -20,7 +20,7 @@ import { deserializeError, ErrorObject } from "serialize-error";
 import { AxiosError, AxiosResponse } from "axios";
 import { isObject, matchesAnyPattern } from "@/utils";
 import safeJsonStringify from "json-stringify-safe";
-import { isEmpty } from "lodash";
+import { isEmpty, truncate } from "lodash";
 import {
   isBadRequestResponse,
   isClientErrorResponse,
@@ -181,7 +181,12 @@ export class InvalidTemplateError extends BusinessError {
   readonly template: string;
 
   constructor(message: string, template: string) {
-    super(`Template rendering error: ${message}. Template: "${template}"`);
+    // Remove excess whitespace/newlines and truncate to ensure the message isn't too long. The main point of including
+    // the template is to identify which expression generated the problem
+    const normalized = truncate(template.replace(/\s+/g, " ").trim(), {
+      length: 32,
+    });
+    super(`Invalid template: ${message}. Template: "${normalized}"`);
 
     this.template = template;
   }
