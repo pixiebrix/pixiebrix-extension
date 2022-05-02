@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 // This cannot be a regular import because it turns `globals.d.ts` in a "module definition", which it isn't
 type Browser = import("webextension-polyfill").Browser;
 
@@ -182,5 +181,3 @@ interface ChromeifiedBrowser extends Browser {
 }
 
 declare const browser: ChromeifiedBrowser;
-
-import "jest-extended";

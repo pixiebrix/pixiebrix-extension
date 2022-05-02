@@ -16,6 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference -- test file
+/// <reference types="jest-extended" />
+
 import { renderHook } from "@testing-library/react-hooks";
 import { extensionFactory, recipeFactory } from "@/testUtils/factories";
 import useInstallableViewItemActions, {
@@ -39,6 +42,7 @@ const expectActions = (
   expectedActions: string[],
   actualActions: InstallableViewItemActions
 ) => {
+  // Union both set of keys to ensure all possible keys are covered
   const allActions = uniq([...Object.keys(actualActions), ...expectedActions]);
   const expected = Object.fromEntries(
     allActions.map((action) => [
