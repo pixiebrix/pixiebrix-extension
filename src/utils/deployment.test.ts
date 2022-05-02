@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { checkExtensionUpdateRequired, makeUpdatedFilter } from "./deployment";
+import {
+  checkExtensionUpdateRequired,
+  isDeploymentActive,
+  makeUpdatedFilter,
+} from "./deployment";
 import { deploymentFactory, extensionFactory } from "@/testUtils/factories";
 import { validateTimestamp } from "@/types/helpers";
 
@@ -127,4 +131,41 @@ describe("checkExtensionUpdateRequired", () => {
     }`;
     expect(checkExtensionUpdateRequired([deployment])).toBeFalse();
   });
+});
+
+describe("isDeploymentActive", () => {
+  test("not a deployment", () => {
+    expect(isDeploymentActive(extensionFactory())).toBeTrue();
+  });
+
+  test("legacy deployment", () => {
+    const deployment = deploymentFactory();
+
+    const extension = extensionFactory({
+      _deployment: {
+        id: deployment.id,
+        timestamp: deployment.updated_at,
+        // Legacy deployments don't have an `active` field
+      },
+    });
+
+    expect(isDeploymentActive(extension)).toBeTrue();
+  });
+
+  test.each([[{ active: true }, { active: false }]])(
+    "deployment",
+    ({ active }) => {
+      const deployment = deploymentFactory();
+
+      const extension = extensionFactory({
+        _deployment: {
+          id: deployment.id,
+          timestamp: deployment.updated_at,
+          active,
+        },
+      });
+
+      expect(isDeploymentActive(extension)).toBe(active);
+    }
+  );
 });

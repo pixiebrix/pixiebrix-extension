@@ -29,6 +29,7 @@ export function isDeploymentActive(extensionLike: {
   _deployment?: DeploymentContext;
 }): boolean {
   return (
+    // Prior to extension version 1.4.0, there was no `active` field, because there was no ability to pause deployments
     extensionLike._deployment?.active == null ||
     extensionLike._deployment.active
   );
