@@ -17,6 +17,7 @@
 
 import {
   buildRecipe,
+  generateRecipeId,
   generateScopeBrickId,
   isRecipeEditable,
   replaceRecipeExtension,
@@ -819,4 +820,28 @@ describe("buildRecipe", () => {
       expect(newRecipe).toStrictEqual(updated);
     }
   );
+});
+
+describe("generateRecipeId", () => {
+  test("no special chars", () => {
+    expect(generateRecipeId("@test", "This Is a Test")).toEqual(
+      "@test/this-is-a-test"
+    );
+  });
+
+  test("handle colon", () => {
+    expect(generateRecipeId("@test", "This: Is a Test")).toEqual(
+      "@test/this-is-a-test"
+    );
+  });
+
+  test("collapse spaces", () => {
+    expect(generateRecipeId("@test", "This   Is a Test")).toEqual(
+      "@test/this-is-a-test"
+    );
+  });
+
+  test("return empty on invalid", () => {
+    expect(generateRecipeId("", "This   Is a Test")).toBe(null);
+  });
 });

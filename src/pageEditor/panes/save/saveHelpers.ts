@@ -61,13 +61,22 @@ export function generateScopeBrickId(
   );
 }
 
+/**
+ * Return a valid recipe id, or return null
+ * @param userScope a user scope, with the leading @
+ * @param extensionLabel the extension label
+ */
 export function generateRecipeId(
   userScope: string,
   extensionLabel: string
-): RegistryId {
-  return validateRegistryId(
-    `${userScope}/${slugify(extensionLabel).toLowerCase()}`
-  );
+): RegistryId | null {
+  try {
+    return validateRegistryId(
+      `${userScope}/${slugify(extensionLabel, { lower: true, strict: true })}`
+    );
+  } catch {
+    return null;
+  }
 }
 
 export function isRecipeEditable(

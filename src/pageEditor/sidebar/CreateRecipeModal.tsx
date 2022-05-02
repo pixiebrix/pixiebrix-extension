@@ -58,6 +58,7 @@ import LoadingDataModal from "@/pageEditor/panes/save/LoadingDataModal";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
+import { RegistryId } from "@/core";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -228,7 +229,7 @@ function useInitialFormState({
   if (activeElement) {
     // Handle creating a new blueprint from a selected extension
     return {
-      id: generateRecipeId(scope, activeElement.label),
+      id: generateRecipeId(scope, activeElement.label) ?? ("" as RegistryId),
       name: activeElement.label,
       version: "1.0.0",
       description: "Created with the PixieBrix Page Editor",
