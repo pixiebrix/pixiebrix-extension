@@ -238,6 +238,7 @@
     "jest": "^27.0.6",
     "jest-environment-jsdom": "^27.0.6",
     "jest-environment-jsdom-global": "^3.0.0",
+    "jest-extended": "^2.0.0",
     "jest-raw-loader": "^1.0.1",
     "jest-webextension-mock": "^3.7.17",
     "min-document": "^2.19.0",
