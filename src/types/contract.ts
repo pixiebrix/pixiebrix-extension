@@ -31,6 +31,7 @@ import {
   EmptyConfig,
   PersistedExtension,
   Timestamp,
+  RegistryId,
 } from "@/core";
 
 import { components } from "@/types/swagger";
@@ -124,7 +125,14 @@ export type SanitizedAuth = components["schemas"]["SanitizedAuth"] & {
 
 export type Deployment = components["schemas"]["DeploymentDetail"] & {
   id: UUID;
-  package: { config: RecipeDefinition };
+  package: Except<
+    components["schemas"]["DeploymentDetail"]["package"],
+    "config" | "id" | "package_id"
+  > & {
+    id: UUID;
+    package_id: RegistryId;
+    config: RecipeDefinition;
+  };
 };
 
 export type Brick = components["schemas"]["PackageMeta"] & {

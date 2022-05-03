@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.6.1-alpha.1",
+  "version": "1.6.2-alpha.1",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "jest",
@@ -142,7 +142,7 @@
     "url-join": "^5.0.0",
     "urlpattern-polyfill": "^4.0.3",
     "use-async-effect": "^2.2.3",
-    "use-debounce": "^7.0.0",
+    "use-debounce": "^8.0.0",
     "use-immer": "^0.7.0",
     "uuid": "^8.3.2",
     "webext-additional-permissions": "^2.3.0",
@@ -219,7 +219,7 @@
     "@types/webpack-env": "^1.16.2",
     "@types/yup": "^0.29.13",
     "axios-mock-adapter": "^1.19.0",
-    "chromedriver": "^100.0.0",
+    "chromedriver": "^101.0.0",
     "compass-mixins": "^0.12.10",
     "concurrently": "^6.2.1",
     "cooky-cutter": "^1.5.4",
@@ -238,6 +238,7 @@
     "jest": "^27.0.6",
     "jest-environment-jsdom": "^27.0.6",
     "jest-environment-jsdom-global": "^3.0.0",
+    "jest-extended": "^2.0.0",
     "jest-raw-loader": "^1.0.1",
     "jest-webextension-mock": "^3.7.17",
     "min-document": "^2.19.0",

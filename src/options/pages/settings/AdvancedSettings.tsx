@@ -25,9 +25,15 @@ import chromeP from "webext-polyfill-kinda";
 import { isEmpty } from "lodash";
 import notify from "@/utils/notify";
 import useFlags from "@/hooks/useFlags";
+import settingsSlice from "@/store/settingsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { selectSettings } from "@/store/settingsSelectors";
+import { DEFAULT_THEME } from "@/options/constants";
 
 const AdvancedSettings: React.FunctionComponent = () => {
-  const { restrict, permit } = useFlags();
+  const dispatch = useDispatch();
+  const { restrict, permit, flagOn } = useFlags();
+  const { theme } = useSelector(selectSettings);
 
   const [serviceURL, setServiceURL] = useConfiguredHost();
 
@@ -57,7 +63,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
   }, []);
 
   const handleUpdate = useCallback(
-    async (event) => {
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
       const newURL = event.target.value;
       console.debug("Update service URL", { newURL, serviceURL });
       if (newURL === serviceURL || (isEmpty(newURL) && isEmpty(serviceURL))) {
@@ -92,6 +98,28 @@ const AdvancedSettings: React.FunctionComponent = () => {
               The PixieBrix service URL
             </Form.Text>
           </Form.Group>
+          {flagOn("partner-theming") && (
+            <Form.Group controlId="partnerId">
+              <Form.Label>Partner ID</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="my-company"
+                defaultValue={theme === DEFAULT_THEME ? "" : theme}
+                onBlur={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  dispatch(
+                    settingsSlice.actions.setTheme({
+                      theme: event.target.value
+                        ? event.target.value
+                        : DEFAULT_THEME,
+                    })
+                  );
+                }}
+              />
+              <Form.Text className="text-muted">
+                The partner id of a PixieBrix partner
+              </Form.Text>
+            </Form.Group>
+          )}
         </Form>
       </Card.Body>
       <Card.Footer className={styles.cardFooter}>

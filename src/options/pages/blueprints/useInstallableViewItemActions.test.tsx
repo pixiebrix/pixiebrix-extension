@@ -1,3 +1,4 @@
+/* eslint-disable jest/expect-expect -- assertions in expectActions helper function */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -15,6 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference -- test file
+/// <reference types="jest-extended" />
+
 import { renderHook } from "@testing-library/react-hooks";
 import { extensionFactory, recipeFactory } from "@/testUtils/factories";
 import useInstallableViewItemActions, {
@@ -27,6 +31,7 @@ import {
   SharingType,
 } from "@/options/pages/blueprints/blueprintsTypes";
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
+import { uniq } from "lodash";
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
 jest.mock("@/options/pages/blueprints/useInstallablePermissions", () =>
@@ -37,13 +42,17 @@ const expectActions = (
   expectedActions: string[],
   actualActions: InstallableViewItemActions
 ) => {
-  for (const [action, fn] of Object.entries(actualActions)) {
-    if (expectedActions.includes(action)) {
-      expect(fn).not.toBeNull();
-    } else {
-      expect(fn).toBeNull();
-    }
-  }
+  // Union both set of keys to ensure all possible keys are covered
+  const allActions = uniq([...Object.keys(actualActions), ...expectedActions]);
+  const expected = Object.fromEntries(
+    allActions.map((action) => [
+      action,
+      expectedActions.includes(action)
+        ? expect.toBeFunction()
+        : expect.toBeNil(),
+    ])
+  );
+  expect(actualActions).toStrictEqual(expected);
 };
 
 const mockHooks = ({
@@ -52,6 +61,7 @@ const mockHooks = ({
 }: { restricted?: boolean; hasPermissions?: boolean } = {}) => {
   (useFlags as jest.Mock).mockImplementation(() => ({
     permit: () => !restricted,
+    restrict: () => restricted,
   }));
 
   (useInstallablePermissions as jest.Mock).mockImplementation(() => ({
@@ -80,7 +90,6 @@ const installableItemFactory = ({
   } as InstallableViewItem);
 
 describe("useInstallableViewItemActions", () => {
-  // eslint-disable-next-line jest/expect-expect -- assertions in expectActions helper function
   test("cloud extension", () => {
     mockHooks();
     const cloudExtensionItem = installableItemFactory({
@@ -95,7 +104,6 @@ describe("useInstallableViewItemActions", () => {
     expectActions(["activate", "deleteExtension", "exportBlueprint"], actions);
   });
 
-  // eslint-disable-next-line jest/expect-expect -- assertions in expectActions helper function
   test("active personal extension", () => {
     mockHooks();
     const personalExtensionItem = installableItemFactory({
@@ -113,7 +121,6 @@ describe("useInstallableViewItemActions", () => {
     );
   });
 
-  // eslint-disable-next-line jest/expect-expect -- assertions in expectActions helper function
   test("active personal blueprint", () => {
     mockHooks();
     const personalBlueprintItem = installableItemFactory({
@@ -131,7 +138,6 @@ describe("useInstallableViewItemActions", () => {
     );
   });
 
-  // eslint-disable-next-line jest/expect-expect -- assertions in expectActions helper function
   test("inactive personal blueprint", () => {
     mockHooks();
     const personalBlueprintItem = installableItemFactory({
@@ -146,7 +152,6 @@ describe("useInstallableViewItemActions", () => {
     expectActions(["activate", "viewShare", "exportBlueprint"], actions);
   });
 
-  // eslint-disable-next-line jest/expect-expect -- assertions in expectActions helper function
   test("active team blueprint", () => {
     mockHooks();
     const teamBlueprintItem = installableItemFactory({
@@ -164,7 +169,6 @@ describe("useInstallableViewItemActions", () => {
     );
   });
 
-  // eslint-disable-next-line jest/expect-expect -- assertions in expectActions helper function
   test("inactive team blueprint", () => {
     mockHooks();
     const teamBlueprintItem = installableItemFactory({
@@ -179,7 +183,6 @@ describe("useInstallableViewItemActions", () => {
     expectActions(["activate", "viewShare", "exportBlueprint"], actions);
   });
 
-  // eslint-disable-next-line jest/expect-expect -- assertions in expectActions helper function
   test("public blueprint", () => {
     mockHooks();
     const publicBlueprintItem = installableItemFactory({
@@ -197,9 +200,8 @@ describe("useInstallableViewItemActions", () => {
     );
   });
 
-  // eslint-disable-next-line jest/expect-expect -- assertions in expectActions helper function
-  test("team deployment", () => {
-    mockHooks();
+  test("team deployment for unrestricted user", () => {
+    mockHooks({ restricted: false });
     const deploymentItem = installableItemFactory({
       isExtension: false,
       sharingType: "Deployment",
@@ -209,13 +211,9 @@ describe("useInstallableViewItemActions", () => {
     const {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(deploymentItem));
-    expectActions(
-      ["viewShare", "uninstall", "viewLogs", "exportBlueprint"],
-      actions
-    );
+    expectActions(["reinstall", "uninstall", "viewLogs"], actions);
   });
 
-  // eslint-disable-next-line jest/expect-expect -- assertions in expectActions helper function
   test("restricted team deployment", () => {
     mockHooks({ restricted: true });
     const deploymentItem = installableItemFactory({
@@ -227,10 +225,9 @@ describe("useInstallableViewItemActions", () => {
     const {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(deploymentItem));
-    expectActions(["viewShare", "viewLogs", "exportBlueprint"], actions);
+    expectActions(["viewLogs"], actions);
   });
 
-  // eslint-disable-next-line jest/expect-expect -- assertions in expectActions helper function
   test("blueprint with missing permissions", () => {
     mockHooks({ hasPermissions: false });
     const deploymentItem = installableItemFactory({
@@ -255,9 +252,8 @@ describe("useInstallableViewItemActions", () => {
     );
   });
 
-  // eslint-disable-next-line jest/expect-expect -- assertions in expectActions helper function
-  test("paused deployment", () => {
-    mockHooks();
+  test("paused deployment with unrestricted user", () => {
+    mockHooks({ restricted: false });
     const deploymentItem = installableItemFactory({
       isExtension: false,
       sharingType: "Deployment",
@@ -267,6 +263,24 @@ describe("useInstallableViewItemActions", () => {
     const {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(deploymentItem));
-    expectActions(["viewShare", "viewLogs", "exportBlueprint"], actions);
+
+    // Unrestricted users (e.g., developers) need to be able to uninstall/reactivate a deployment to use a later
+    // version of the blueprint for development/testing.
+    expectActions(["viewLogs", "uninstall", "reinstall"], actions);
+  });
+
+  test("paused deployment with restricted user", () => {
+    mockHooks({ restricted: true });
+    const deploymentItem = installableItemFactory({
+      isExtension: false,
+      sharingType: "Deployment",
+      status: "Paused",
+    });
+
+    const {
+      result: { current: actions },
+    } = renderHook(() => useInstallableViewItemActions(deploymentItem));
+
+    expectActions(["viewLogs"], actions);
   });
 });
