@@ -33,7 +33,8 @@ export function getAttributeSelector(
   }
 
   // Must be specified here or else the next condition creates `[id="something"]
-  if (name === "id") {
+  // Exclude emberjs component tracking
+  if (name === "id" && !value.startsWith("ember")) {
     return "#" + value;
   }
 
