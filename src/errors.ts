@@ -287,22 +287,22 @@ export function getRootCause(error: ErrorObject): ErrorObject {
 // - because not all of our errors can be deserialized with the right class:
 //   https://github.com/sindresorhus/serialize-error/issues/72
 const BUSINESS_ERROR_NAMES = new Set([
+  "PropError",
   "BusinessError",
-  "ClientNetworkError",
-  "ClientNetworkPermissionError",
-  "InputValidationError",
-  "InvalidSelectorError",
-  "InvalidTemplateError",
-  "MissingConfigurationError",
-  "MultipleElementsFoundError",
   "NoElementsFoundError",
-  "NotConfiguredError",
+  "MultipleElementsFoundError",
+  "InputValidationError",
   "OutputValidationError",
   "PipelineConfigurationError",
-  "PropError",
+  "MissingConfigurationError",
+  "NotConfiguredError",
+  "RemoteServiceError",
+  "ClientNetworkPermissionError",
+  "ClientNetworkError",
   "ProxiedRemoteServiceError",
   "RemoteExecutionError",
-  "RemoteServiceError",
+  "InvalidTemplateError",
+  "InvalidSelectorError",
 ]);
 
 /**
