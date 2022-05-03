@@ -33,7 +33,8 @@ export function getAttributeSelector(
   }
 
   // Must be specified here or else the next condition creates `[id="something"]
-  // Exclude emberjs component tracking
+  // Exclude emberjs component tracking.
+  // NOTE: if you add an id pre-fix here, you should also add it to infer.ts:safeCssSelector's denylist
   if (name === "id" && !value.startsWith("ember")) {
     return "#" + value;
   }
