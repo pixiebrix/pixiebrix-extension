@@ -38,6 +38,7 @@ import sidebarSlice, { SidebarState } from "./sidebarSlice";
 import { AnyAction } from "redux";
 import { hideSidebar } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
+import useTheme from "@/hooks/useTheme";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -59,6 +60,7 @@ function getConnectedListener(dispatch: Dispatch<AnyAction>): SidebarListener {
 const selectState = ({ sidebar }: { sidebar: SidebarState }) => sidebar;
 
 const ConnectedSidebar: React.VFC = () => {
+  useTheme();
   const dispatch = useDispatch();
   const sidebarState = useSelector(selectState);
 

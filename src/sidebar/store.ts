@@ -24,6 +24,8 @@ import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import sidebarSlice from "@/sidebar/sidebarSlice";
+import { persistSettingsConfig } from "@/store/settingsStorage";
+import settingsSlice from "@/store/settingsSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -45,6 +47,7 @@ const store = configureStore({
       extensionsSlice.reducer
     ),
     sidebar: sidebarSlice.reducer,
+    settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
   },
   middleware(getDefaultMiddleware) {
     /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */

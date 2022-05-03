@@ -7,3 +7,15 @@
 @function theme-gradient-color($key: "primary") {
   @return map-get($theme-gradient-colors, $key);
 }
+
+@function contrast-theme-color($color-name, $darkness: 0%, $threshold: 75%) {
+  @return #{"hsl(0, 0%, calc((var(--theme-#{$color-name}-l) - #{$darkness} - #{$threshold}) * -100))"};
+}
+
+@function darken-theme-color($color-name, $darkness-level) {
+  @return #{"hsl(var(--theme-#{$color-name}-hs), calc(var(--theme-#{$color-name}-l) - #{$darkness-level}))"};
+}
+
+@function adjust-theme-color-opacity($color-name, $alpha) {
+  @return #{"hsla(var(--theme-#{$color-name}-hs), var(--theme-#{$color-name}-l), #{$alpha})"};
+}
