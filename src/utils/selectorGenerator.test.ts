@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import generateSelector from "./selectorGenerator";
+import generateSelector, { getAttributeSelector } from "./selectorGenerator";
 import { JSDOM } from "jsdom";
 import { html } from "@/utils";
 
@@ -55,5 +55,29 @@ describe("generateSelector", () => {
         <div><h1></h1></div>
       </div>`
     ).toFindSelector("h1");
+  });
+});
+
+describe("getAttributeSelector", () => {
+  test("find ID selectors", () => {
+    expect(getAttributeSelector("id", "hello")).toBe("#hello");
+    expect(getAttributeSelector("id", "example.com")).toBe("#example\\.com");
+  });
+  test("find title selectors", () => {
+    expect(getAttributeSelector("title", "Book")).toBe('[title="Book"]');
+    expect(getAttributeSelector("title", "Book name")).toBe(
+      '[title="Book name"]'
+    );
+    expect(getAttributeSelector("title", 'The "Great" Gatsby')).toBe(
+      '[title="The \\"Great\\" Gatsby"]'
+    );
+  });
+  test("find aria attribute selectors", () => {
+    expect(getAttributeSelector("aria-title", "Your email")).toBe(
+      '[aria-title="Your email"]'
+    );
+  });
+  test("exclude non-unique selectors", () => {
+    expect(getAttributeSelector("class", "bold italic")).toBe(undefined);
   });
 });

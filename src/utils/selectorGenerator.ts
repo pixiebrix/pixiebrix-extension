@@ -33,8 +33,10 @@ export function getAttributeSelector(
   }
 
   // Must be specified here or else the next condition creates `[id="something"]
-  if (name === "id") {
-    return "#" + value;
+  // Exclude emberjs component tracking.
+  // NOTE: if you add an id pre-fix here, you should also add it to infer.ts:safeCssSelector's denylist
+  if (name === "id" && !value.startsWith("ember")) {
+    return "#" + CSS.escape(value);
   }
 
   if (
@@ -42,13 +44,15 @@ export function getAttributeSelector(
     name.startsWith("aria-") ||
     UNIQUE_ATTRIBUTES.includes(name)
   ) {
-    return `[${name}="${value}"]`;
+    // Don't use CSS.escape because it also escapes spaces, which isn't necessary here.
+    // It would break our deduplication logic.
+    return `[${name}="${value.replaceAll('"', '\\"')}"]`;
   }
 }
 
 function getClassSelector(className: string): string | null {
   if (!isRandomString(className)) {
-    return "." + className;
+    return "." + CSS.escape(className);
   }
 }
 

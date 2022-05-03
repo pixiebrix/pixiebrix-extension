@@ -46,7 +46,6 @@ const Status: React.VoidFunctionComponent<{
     );
   }
 
-  // XXX: https://github.com/pixiebrix/pixiebrix-extension/issues/3269
   if (hasUpdate && reinstall) {
     return (
       <Button size="sm" variant="info" onClick={reinstall}>
