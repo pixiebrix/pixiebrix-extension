@@ -26,6 +26,7 @@ import { NOTIFICATIONS_Z_INDEX } from "@/common";
 import reportError from "@/telemetry/reportError";
 import { Except, RequireAtLeastOne } from "type-fest";
 import { getErrorMessage } from "@/errors";
+import { truncate } from "lodash";
 
 const MINIMUM_NOTIFICATION_DURATION = 2000;
 
@@ -123,6 +124,9 @@ export function showNotification({
       message = message.replace(/[\s.:]$/, "") + ": " + getErrorMessage(error);
     }
   }
+
+  // Avoid excessively-long notification messages
+  message = truncate(message, { length: 400 });
 
   duration ??= getMessageDisplayTime(message);
 
