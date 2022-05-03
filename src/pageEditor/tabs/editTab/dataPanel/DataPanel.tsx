@@ -190,12 +190,7 @@ const DataPanel: React.FC<{
           </Nav.Item>
         </Nav>
         <Tab.Content className={dataPanelStyles.tabContent}>
-          <DataTab
-            eventKey={DataPanelTabKey.Context}
-            isTraceEmpty={!record}
-            mountOnEnter
-            unmountOnExit
-          >
+          <DataTab eventKey={DataPanelTabKey.Context} isTraceEmpty={!record}>
             {isInputStale && (
               <Alert variant="warning">
                 <FontAwesomeIcon icon={faExclamationTriangle} /> A previous
@@ -210,21 +205,13 @@ const DataPanel: React.FC<{
             />
           </DataTab>
           {showPageState && (
-            <DataTab
-              eventKey={DataPanelTabKey.PageState}
-              mountOnEnter
-              unmountOnExit
-            >
+            <DataTab eventKey={DataPanelTabKey.PageState}>
               <PageStateTab />
             </DataTab>
           )}
           {showDeveloperTabs && (
             <>
-              <DataTab
-                eventKey={DataPanelTabKey.Formik}
-                mountOnEnter
-                unmountOnExit
-              >
+              <DataTab eventKey={DataPanelTabKey.Formik}>
                 <div className="text-info">
                   <FontAwesomeIcon icon={faInfoCircle} /> This tab is only
                   visible to developers
@@ -235,11 +222,7 @@ const DataPanel: React.FC<{
                   tabKey={DataPanelTabKey.Formik}
                 />
               </DataTab>
-              <DataTab
-                eventKey={DataPanelTabKey.BlockConfig}
-                mountOnEnter
-                unmountOnExit
-              >
+              <DataTab eventKey={DataPanelTabKey.BlockConfig}>
                 <div className="text-info">
                   <FontAwesomeIcon icon={faInfoCircle} /> This tab is only
                   visible to developers
@@ -259,12 +242,7 @@ const DataPanel: React.FC<{
               </DataTab>
             </>
           )}
-          <DataTab
-            eventKey={DataPanelTabKey.Rendered}
-            isTraceEmpty={!record}
-            mountOnEnter
-            unmountOnExit
-          >
+          <DataTab eventKey={DataPanelTabKey.Rendered} isTraceEmpty={!record}>
             {record?.renderError ? (
               <>
                 {record.skippedRun ? (
@@ -303,8 +281,6 @@ const DataPanel: React.FC<{
             eventKey={DataPanelTabKey.Output}
             isTraceEmpty={!record}
             isTraceOptional={previewInfo?.traceOptional}
-            mountOnEnter
-            unmountOnExit
           >
             {record?.skippedRun && (
               <Alert variant="info">
@@ -333,13 +309,7 @@ const DataPanel: React.FC<{
               <ErrorDisplay error={record.error} />
             )}
           </DataTab>
-          <DataTab
-            eventKey={DataPanelTabKey.Preview}
-            isTraceEmpty={false}
-            // Only mount if the user is viewing it, because output previews take up resources to run
-            mountOnEnter
-            unmountOnExit
-          >
+          <DataTab eventKey={DataPanelTabKey.Preview} isTraceEmpty={false}>
             {/* The value of block.if can be `false`, in this case we also need to show the warning */}
             {block.if != null && (
               <Alert variant="info">
