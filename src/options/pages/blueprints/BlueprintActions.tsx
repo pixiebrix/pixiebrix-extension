@@ -54,6 +54,7 @@ const BlueprintActions: React.FunctionComponent<{
           </>
         ),
         action: actions.exportBlueprint,
+        hide: !actions.exportBlueprint,
       },
       {
         title: (

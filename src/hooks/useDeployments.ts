@@ -30,12 +30,15 @@ import { refreshRegistries } from "@/hooks/useRefresh";
 import { Dispatch } from "redux";
 import { mergePermissions } from "@/utils/permissions";
 import { Permissions } from "webextension-polyfill";
-import { IExtension, UUID, RegistryId } from "@/core";
+import { IExtension, RegistryId, UUID } from "@/core";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
-import { satisfies } from "semver";
-import { compact } from "lodash";
 import chromeP from "webext-polyfill-kinda";
 import extensionsSlice from "@/store/extensionsSlice";
+import useFlags from "@/hooks/useFlags";
+import {
+  checkExtensionUpdateRequired,
+  makeUpdatedFilter,
+} from "@/utils/deployment";
 
 const { actions } = extensionsSlice;
 
@@ -74,17 +77,6 @@ async function fetchDeployments(
 
   return deployments;
 }
-
-const makeUpdatedFilter =
-  (installed: IExtension[]) => (deployment: Deployment) => {
-    const match = installed.find(
-      (extension) => extension._deployment?.id === deployment.id
-    );
-    return (
-      !match ||
-      new Date(match._deployment.timestamp) < new Date(deployment.updated_at)
-    );
-  };
 
 function activateDeployments(
   dispatch: Dispatch,
@@ -156,33 +148,10 @@ export type DeploymentState = {
   error: unknown | undefined;
 };
 
-/**
- * Returns `true` if the user needs to update their browser extension to install the deployments.
- *
- * For now assumes only minimum version requirements. (I.e., this method also returns true if there's a maximum version
- * violation).
- */
-function checkExtensionUpdateRequired(deployments: Deployment[]): boolean {
-  // Check that the user's extension van run the deployment
-  const { version: extensionVersion } = browser.runtime.getManifest();
-  const versionRanges = compact(
-    deployments.map((x) => x.package.config.metadata.extensionVersion)
-  );
-
-  console.debug("Checking deployment version requirements", {
-    versionRanges,
-    extensionVersion,
-  });
-
-  // For now assume the only version restrictions will be that the version must be greater than a certain number
-  return versionRanges.some(
-    (versionRange) => !satisfies(extensionVersion, versionRange)
-  );
-}
-
 function useDeployments(): DeploymentState {
   const dispatch = useDispatch();
   const installedExtensions = useSelector(selectExtensions);
+  const { restrict } = useFlags();
 
   const [deployments, isLoading, fetchError] = useAsyncState(
     async () => fetchDeployments(installedExtensions),
@@ -190,13 +159,15 @@ function useDeployments(): DeploymentState {
   );
 
   const [updatedDeployments, extensionUpdateRequired] = useMemo(() => {
-    const isUpdated = makeUpdatedFilter(installedExtensions);
+    const isUpdated = makeUpdatedFilter(installedExtensions, {
+      restricted: restrict("uninstall"),
+    });
     const updatedDeployments = (deployments ?? []).filter((x) => isUpdated(x));
     return [
       updatedDeployments,
       checkExtensionUpdateRequired(updatedDeployments),
     ];
-  }, [installedExtensions, deployments]);
+  }, [restrict, installedExtensions, deployments]);
 
   const handleUpdate = useCallback(async () => {
     if (deployments == null) {

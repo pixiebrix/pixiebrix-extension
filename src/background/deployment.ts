@@ -38,6 +38,7 @@ import { getSettingsState } from "@/store/settingsStorage";
 import { isUpdateAvailable } from "@/background/installer";
 import { selectUserDataUpdate } from "@/auth/authUtils";
 import { uninstallContextMenu } from "@/background/contextMenus";
+import { makeUpdatedFilter } from "@/utils/deployment";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -208,23 +209,6 @@ async function installDeployments(deployments: Deployment[]): Promise<void> {
   await setExtensionsState(state);
 }
 
-function makeDeploymentTimestampLookup(
-  extensions: IExtension[]
-): Map<string, Date> {
-  const timestamps = new Map<string, Date>();
-
-  for (const extension of extensions) {
-    if (extension._deployment?.id) {
-      timestamps.set(
-        extension._deployment?.id,
-        new Date(extension._deployment?.timestamp)
-      );
-    }
-  }
-
-  return timestamps;
-}
-
 type DeploymentConstraint = {
   deployment: Deployment;
   hasPermissions: boolean;
@@ -247,21 +231,19 @@ function canAutomaticallyInstall({
   return !requiredRange || satisfies(extensionVersion, requiredRange);
 }
 
+/**
+ * Return the deployments that need to be installed because they have an update
+ * @param deployments the deployments
+ * @param restricted `true` if the user is a restricted user, e.g., as opposed to a developer
+ */
 async function selectUpdatedDeployments(
-  deployments: Deployment[]
+  deployments: Deployment[],
+  { restricted }: { restricted: boolean }
 ): Promise<Deployment[]> {
   // Always get the freshest options slice from the local storage
   const { extensions } = await loadOptions();
-
-  const timestamps = makeDeploymentTimestampLookup(extensions);
-
-  // This check also detects changes to the `active` flag of the deployment, because the updated_at is bumped whenever
-  // the active flag changes
-  return deployments.filter(
-    (deployment) =>
-      !timestamps.has(deployment.id) ||
-      new Date(deployment.updated_at) > timestamps.get(deployment.id)
-  );
+  const updatePredicate = makeUpdatedFilter(extensions, { restricted });
+  return deployments.filter((deployment) => updatePredicate(deployment));
 }
 
 /**
@@ -408,7 +390,11 @@ export async function updateDeployments(): Promise<void> {
     return;
   }
 
-  const updatedDeployments = await selectUpdatedDeployments(deployments);
+  // Using the restricted-uninstall flag as a proxy for whether the user is a restricted user. The flag generally
+  // corresponds to whether the user is a restricted user or developer
+  const updatedDeployments = await selectUpdatedDeployments(deployments, {
+    restricted: profile.flags.includes("restricted-uninstall"),
+  });
 
   if (updatedDeployments.length === 0) {
     console.debug("No deployment updates found");
