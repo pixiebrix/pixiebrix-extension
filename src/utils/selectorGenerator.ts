@@ -36,7 +36,7 @@ export function getAttributeSelector(
   // Exclude emberjs component tracking.
   // NOTE: if you add an id pre-fix here, you should also add it to infer.ts:safeCssSelector's denylist
   if (name === "id" && !value.startsWith("ember")) {
-    return "#" + value;
+    return "#" + CSS.escape(value);
   }
 
   if (
@@ -44,13 +44,13 @@ export function getAttributeSelector(
     name.startsWith("aria-") ||
     UNIQUE_ATTRIBUTES.includes(name)
   ) {
-    return `[${name}="${value}"]`;
+    return `[${name}="${CSS.escape(value)}"]`;
   }
 }
 
 function getClassSelector(className: string): string | null {
   if (!isRandomString(className)) {
-    return "." + className;
+    return "." + CSS.escape(className);
   }
 }
 
