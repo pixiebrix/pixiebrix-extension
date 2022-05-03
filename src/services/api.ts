@@ -26,7 +26,6 @@ import {
 } from "@/types/definitions";
 import { AxiosRequestConfig } from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
-import { isAxiosError } from "@/errors";
 import {
   CloudExtension,
   Database,
@@ -92,14 +91,9 @@ const appBaseQuery: BaseQueryFn<QueryArgs> = async ({
 
     return { data: result.data, meta };
   } catch (error) {
-    if (isAxiosError(error)) {
-      // Axios offers its own serialization method, but it reshapes the Error object (doesn't include the response, puts the status on the root level).
-      // By deleting toJSON, the serialize-error library will use its default serialization
-      delete error.toJSON;
-    }
-
+    // Axios offers its own serialization method, but it reshapes the Error object (doesn't include the response, puts the status on the root level). `useToJSON: false` skips that.
     return {
-      error: serializeError(error),
+      error: serializeError(error, { useToJSON: false }),
     };
   }
 };
