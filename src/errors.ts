@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MessageContext, SerializedError } from "@/core";
+import { MessageContext } from "@/core";
 import { deserializeError, ErrorObject } from "serialize-error";
 import { AxiosError, AxiosResponse } from "axios";
 import { isObject, matchesAnyPattern } from "@/utils";
