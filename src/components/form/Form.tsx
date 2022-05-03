@@ -18,9 +18,11 @@
 import styles from "./Form.module.scss";
 
 import React, { ReactElement } from "react";
-import { Button, Form as BootstrapForm } from "react-bootstrap";
+import { Alert, Button, Form as BootstrapForm } from "react-bootstrap";
 import { Formik, FormikHelpers, FormikValues } from "formik";
 import * as yup from "yup";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 export type OnSubmit<TValues = FormikValues> = (
   values: TValues,
@@ -60,7 +62,9 @@ const defaultRenderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
 );
 
 const defaultRenderStatus: RenderStatus = ({ status }) => (
-  <div className={styles.status}>{status}</div>
+  <Alert variant="danger" className={styles.status}>
+    <FontAwesomeIcon icon={faExclamationTriangle} /> {status}
+  </Alert>
 );
 
 const Form: React.FC<FormProps> = ({
