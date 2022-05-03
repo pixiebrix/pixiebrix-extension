@@ -142,7 +142,7 @@
     "url-join": "^5.0.0",
     "urlpattern-polyfill": "^4.0.3",
     "use-async-effect": "^2.2.3",
-    "use-debounce": "^7.0.0",
+    "use-debounce": "^8.0.0",
     "use-immer": "^0.7.0",
     "uuid": "^8.3.2",
     "webext-additional-permissions": "^2.3.0",
