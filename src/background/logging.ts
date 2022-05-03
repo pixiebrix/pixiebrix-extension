@@ -252,7 +252,7 @@ async function selectExtraContext(
   return { extensionVersion };
 }
 
-const warnAboutDisableDNT = once(() => {
+const warnAboutDisabledDNT = once(() => {
   console.warn("Rollbar telemetry is disabled because DNT is turned on");
 });
 
@@ -269,7 +269,7 @@ async function reportToRollbar(
   }
 
   if (!(await allowsTrack())) {
-    warnAboutDisableDNT();
+    warnAboutDisabledDNT();
     return;
   }
 

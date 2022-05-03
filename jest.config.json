@@ -1,6 +1,6 @@
 {
   "silent": true,
-  "testEnvironment": "jest-environment-jsdom-global",
+  "testEnvironment": "jsdom",
   "modulePaths": ["/src"],
   "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "yaml", "yml", "json"],
   "testPathIgnorePatterns": ["<rootDir>/selenium/"],
@@ -14,11 +14,11 @@
       }
     ],
     "^.+\\.ya?ml$": "yaml-jest-transform",
-    "^.+\\.ya?ml\\?loadAsText$": "jest-raw-loader",
-    "^.+\\.txt$": "jest-raw-loader"
+    "^.+\\.ya?ml\\?loadAsText$": "<rootDir>/src/testUtils/rawJestTransformer.mjs",
+    "^.+\\.txt$": "<rootDir>/src/testUtils/rawJestTransformer.mjs"
   },
   "transformIgnorePatterns": [
-    "node_modules/(?!@cfworker|escape-string-regex|filename-reserved-regex|filenamify|idb|webext-|p-timeout|p-retry|p-defer|p-memoize|serialize-error|strip-outer|trim-repeated|mimic-fn|urlpattern-polyfill|url-join)"
+    "node_modules/(?!@cfworker|escape-string-regex|filename-reserved-regex|filenamify|idb|webext-|p-timeout|p-retry|p-defer|p-memoize|serialize-error|strip-outer|trim-repeated|mimic-fn|urlpattern-polyfill|url-join|uuid|nanoid|use-debounce)"
   ],
   "setupFiles": [
     "<rootDir>/src/testUtils/testEnv.js",

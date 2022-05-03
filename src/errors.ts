@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MessageContext, SerializedError } from "@/core";
+import { MessageContext } from "@/core";
 import { deserializeError, ErrorObject } from "serialize-error";
 import { AxiosError, AxiosResponse } from "axios";
 import { isObject, matchesAnyPattern } from "@/utils";
@@ -202,17 +202,10 @@ type ContextErrorDetails = ErrorOptions & {
 export class ContextError extends Error {
   override name = "ContextError";
 
-  // Super important until https://github.com/sindresorhus/serialize-error/issues/50
-  // This overrides the native property making it enumerable and thus serializable
-  override cause: unknown = undefined;
-
   public readonly context?: MessageContext;
   constructor(message: string, { cause, context }: ContextErrorDetails) {
-    super(getErrorMessage(cause, message));
+    super(getErrorMessage(cause, message), { cause });
     this.context = context;
-
-    // Required until https://github.com/sindresorhus/serialize-error/issues/50
-    this.cause = cause;
   }
 }
 
@@ -289,17 +282,10 @@ export function getRootCause(error: ErrorObject): ErrorObject {
   return error;
 }
 
-// Manually list subclasses because the prototype chain is lost in serialization/deserialization
-// See https://github.com/sindresorhus/serialize-error/issues/48
-const BUSINESS_ERROR_CLASSES = new Set([
-  BusinessError,
-  NoElementsFoundError,
-  MultipleElementsFoundError,
-  InvalidSelectorError,
-  PropError,
-  InvalidTemplateError,
-]);
-// Name classes from other modules separately, because otherwise we'll get a circular dependency with this module
+// List all BusinessError subclasses as text:
+// - to avoid circular reference issues
+// - because not all of our errors can be deserialized with the right class:
+//   https://github.com/sindresorhus/serialize-error/issues/72
 const BUSINESS_ERROR_NAMES = new Set([
   "PropError",
   "BusinessError",
@@ -316,6 +302,7 @@ const BUSINESS_ERROR_NAMES = new Set([
   "ProxiedRemoteServiceError",
   "RemoteExecutionError",
   "InvalidTemplateError",
+  "InvalidSelectorError",
 ]);
 
 /**
@@ -323,32 +310,11 @@ const BUSINESS_ERROR_NAMES = new Set([
  * @param error the error object
  * @see BUSINESS_ERROR_CLASSES
  */
-export function hasBusinessRootCause(
-  error: SerializedError | unknown
-): boolean {
-  if (error == null) {
-    return false;
-  }
-
-  if (!isErrorObject(error)) {
-    return false;
-  }
-
-  for (const errorClass of BUSINESS_ERROR_CLASSES) {
-    if (error instanceof errorClass) {
-      return true;
-    }
-  }
-
-  if (BUSINESS_ERROR_NAMES.has(error.name)) {
-    return true;
-  }
-
-  if (error instanceof ContextError || error.name === "ContextError") {
-    return hasBusinessRootCause(error.cause);
-  }
-
-  return false;
+export function hasBusinessRootCause(error: unknown): boolean {
+  return (
+    isErrorObject(error) &&
+    (BUSINESS_ERROR_NAMES.has(error.name) || hasBusinessRootCause(error.cause))
+  );
 }
 
 // Copy of axios.isAxiosError, without risking to import the whole untreeshakeable axios library
@@ -603,5 +569,6 @@ export function selectError(originalError: unknown): Error {
       safeJsonStringify(error)
     : String(error);
 
-  return new Error(errorMessage);
+  // Truncate error message in case it's an excessively-long JSON string
+  return new Error(truncate(errorMessage, { length: 2000 }));
 }
