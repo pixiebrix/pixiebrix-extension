@@ -22,6 +22,8 @@ import { isNullOrBlank } from "@/utils";
 import { InputValidationError } from "@/blocks/errors";
 import { isErrorObject } from "@/errors";
 
+const jqStacktraceRegexp = /jq: error \(at \<stdin\>:0\): (?<message>.*)/;
+
 export class JQTransformer extends Transformer {
   override async isPure(): Promise<boolean> {
     return true;
@@ -66,13 +68,28 @@ export class JQTransformer extends Transformer {
       // eslint-disable-next-line @typescript-eslint/return-await -- Type is `any`, it throws the rule off
       return await jq.promised.json(input, filter);
     } catch (error) {
-      if (!isErrorObject(error) || !error.message.includes("compile error")) {
+      // The message length check is there because the JQ error message sometimes is cut and if it is we try to parse the stacktrace
+      // See https://github.com/pixiebrix/pixiebrix-extension/issues/3216
+      if (
+        !isErrorObject(error) ||
+        (error.message.length > 13 && !error.message.includes("compile error"))
+      ) {
         throw error;
       }
 
-      const message = error.stack.includes("unexpected $end")
-        ? "Unexpected end of jq filter, are you missing a parentheses, brace, and/or quote mark?"
-        : "Invalid jq filter, see error log for details";
+      let message: string;
+      if (error.stack.includes("unexpected $end")) {
+        message =
+          "Unexpected end of jq filter, are you missing a parentheses, brace, and/or quote mark?";
+      } else {
+        const jqMessageFromStack = jqStacktraceRegexp.exec(error.stack)?.groups
+          ?.message;
+        if (jqMessageFromStack == null) {
+          message = "Invalid jq filter, see error log for details";
+        } else {
+          message = jqMessageFromStack.trim();
+        }
+      }
 
       throw new InputValidationError(
         message,
