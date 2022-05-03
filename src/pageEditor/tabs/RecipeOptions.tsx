@@ -52,6 +52,13 @@ const formRuntimeContext: RuntimeContext = {
   allowExpressions: false,
 };
 
+const emptyOptions: OptionsDefinition = {
+  schema: {},
+  uiSchema: {
+    "ui:order": ["*"],
+  },
+};
+
 const RecipeOptions: React.VFC = () => {
   const [activeField, setActiveField] = useState<string>();
   const recipeId = useSelector(selectActiveRecipeId);
@@ -60,13 +67,9 @@ const RecipeOptions: React.VFC = () => {
   const savedOptions = recipe?.options;
   const dirtyOptions = useSelector(selectDirtyOptionsForRecipeId(recipeId));
 
-  const options = dirtyOptions ??
-    savedOptions ?? {
-      schema: {},
-      uiSchema: {},
-    };
+  const optionsDefinition = dirtyOptions ?? savedOptions ?? emptyOptions;
 
-  const initialValues = { optionsDefinition: options };
+  const initialValues = { optionsDefinition };
 
   const dispatch = useDispatch();
   const updateRedux = useCallback(

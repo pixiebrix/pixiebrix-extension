@@ -30,9 +30,9 @@ import {
   DEFAULT_FIELD_TYPE,
   generateNewPropertyName,
   moveStringInArray,
+  normalizeSchema,
   normalizeUiOrder,
   replaceStringInArray,
-  updateRjsfSchemaWithDefaultsIfNeeded,
 } from "@/components/formBuilder/formBuilderHelpers";
 import { UI_ORDER } from "@/components/formBuilder/schemaFieldNames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -72,17 +72,10 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
   const { schema, uiSchema } = rjsfSchema;
 
-  useEffect(() => {
-    // Set default values if needed
-    const nextRjsfSchema = updateRjsfSchemaWithDefaultsIfNeeded(rjsfSchema);
-    if (nextRjsfSchema !== null) {
-      setRjsfSchema(nextRjsfSchema);
-    }
-  }, [rjsfSchema, setRjsfSchema]);
-
   // Select the active field when FormEditor field changes
   useEffect(
     () => {
+      // eslint-disable-next-line security/detect-object-injection -- prop name is a constant
       const firstInOrder = uiSchema?.[UI_ORDER]?.[0];
       if (
         firstInOrder &&
@@ -143,11 +136,10 @@ const FormEditor: React.FC<FormEditorProps> = ({
         );
 
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
+      // eslint-disable-next-line security/detect-object-injection -- prop name is a constant
       draft.uiSchema[UI_ORDER] = nextUiOrder;
-      if (!draft.schema.properties) {
-        draft.schema.properties = {};
-      }
-
+      draft.schema = normalizeSchema(schema);
+      // eslint-disable-next-line security/detect-object-injection -- prop name is generated
       draft.schema.properties[propertyName] = newProperty;
     });
     setRjsfSchema(nextRjsfSchema);
@@ -174,6 +166,8 @@ const FormEditor: React.FC<FormEditorProps> = ({
     setActiveField(nextActiveField);
 
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
+      draft.schema = normalizeSchema(schema);
+
       if (schema.required?.length > 0) {
         draft.schema.required = replaceStringInArray(
           schema.required,
@@ -181,10 +175,11 @@ const FormEditor: React.FC<FormEditorProps> = ({
         );
       }
 
+      // eslint-disable-next-line security/detect-object-injection -- prop name is a constant
       draft.uiSchema[UI_ORDER] = nextUiOrder;
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
       delete draft.schema.properties[propertyToRemove];
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
       delete draft.uiSchema[propertyToRemove];
     });
 
