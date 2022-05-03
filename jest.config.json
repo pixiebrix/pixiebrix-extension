@@ -14,8 +14,8 @@
       }
     ],
     "^.+\\.ya?ml$": "yaml-jest-transform",
-    "^.+\\.ya?ml\\?loadAsText$": "jest-raw-loader",
-    "^.+\\.txt$": "jest-raw-loader"
+    "^.+\\.ya?ml\\?loadAsText$": "<rootDir>/src/testUtils/rawLoader.mjs",
+    "^.+\\.txt$": "<rootDir>/src/testUtils/rawLoader.mjs"
   },
   "transformIgnorePatterns": [
     "node_modules/(?!@cfworker|escape-string-regex|filename-reserved-regex|filenamify|idb|webext-|p-timeout|p-retry|p-defer|p-memoize|serialize-error|strip-outer|trim-repeated|mimic-fn|urlpattern-polyfill|url-join|uuid|nanoid)"
