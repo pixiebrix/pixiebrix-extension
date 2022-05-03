@@ -44,7 +44,7 @@ export function getAttributeSelector(
     name.startsWith("aria-") ||
     UNIQUE_ATTRIBUTES.includes(name)
   ) {
-    return `[${name}="${CSS.escape(value)}"]`;
+    return `[${name}="${value.replaceAll('"', '\\"')}"]`;
   }
 }
 
