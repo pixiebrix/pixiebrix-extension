@@ -113,11 +113,6 @@ interface HTMLDialogElement extends HTMLElement {
   showModal(): void;
 }
 
-// Made available via: "jest-environment-jsdom-global" for jest tests
-declare const jsdom: {
-  reconfigure: (options: { url: string }) => void;
-};
-
 // `useUnknownInCatchVariables` for .catch method https://github.com/microsoft/TypeScript/issues/45602
 interface Promise<T> {
   /**
