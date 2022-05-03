@@ -44,6 +44,8 @@ export function getAttributeSelector(
     name.startsWith("aria-") ||
     UNIQUE_ATTRIBUTES.includes(name)
   ) {
+    // Don't use CSS.escape because it also escapes spaces, which isn't necessary here.
+    // It would break our deduplication logic.
     return `[${name}="${value.replaceAll('"', '\\"')}"]`;
   }
 }
