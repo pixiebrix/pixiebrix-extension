@@ -566,6 +566,8 @@ export function safeCssSelector(
   // https://github.com/fczbkk/css-selector-generator
 
   const selector = getCssSelector(element, {
+    // NOTE: if you add an id pattern to the blacklist, you also need to add it to
+    // selectorGenerator.ts:getAttributeSelector
     blacklist: [
       // Emberjs component tracking
       "#ember*",
