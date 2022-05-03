@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import $ from "jquery";
 import "@testing-library/jest-dom";
+import $ from "jquery";
+import crypto from "crypto";
 
 global.$ = $;
 global.jQuery = $;
@@ -32,3 +33,8 @@ browser.permissions = {
 browser.runtime.getManifest = jest.fn().mockReturnValue({
   version: "1.5.2",
 });
+
+// https://stackoverflow.com/q/52612122/288906
+globalThis.crypto = {
+  getRandomValues: (array) => crypto.randomBytes(array.length),
+};
