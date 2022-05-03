@@ -45,13 +45,46 @@ export type RenderSubmit = (state: {
 export type RenderStatus = (state: { status: string }) => ReactElement;
 
 type FormProps = {
+  /**
+   * The starting formik field values for the form
+   */
   initialValues: FormikValues;
+
+  /**
+   * The yup validation schema for the form
+   */
   validationSchema: yup.AnyObjectSchema;
+
+  /**
+   * Should the form be validated on component mount?
+   */
   validateOnMount?: boolean;
+
+  /**
+   * (from Formik): Should Formik reset the form when new initialValues change?
+   */
   enableReinitialize?: boolean;
+
+  /**
+   * The render function for the body of the form
+   */
   renderBody?: RenderBody;
+
+  /**
+   * The render function for the submit button (and any other co-located buttons)
+   */
   renderSubmit?: RenderSubmit;
+
+  /**
+   * The render function for the top-level form status message
+   *
+   * Note: This currently defaults to an "error" style layout
+   */
   renderStatus?: RenderStatus;
+
+  /**
+   * The submission handler for the form
+   */
   onSubmit: OnSubmit;
 };
 
