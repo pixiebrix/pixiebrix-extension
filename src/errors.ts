@@ -603,5 +603,6 @@ export function selectError(originalError: unknown): Error {
       safeJsonStringify(error)
     : String(error);
 
-  return new Error(errorMessage);
+  // Truncate error message in case it's an excessively-long JSON string
+  return new Error(truncate(errorMessage, { length: 2000 }));
 }
