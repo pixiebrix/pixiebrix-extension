@@ -106,7 +106,6 @@ const AdvancedSettings: React.FunctionComponent = () => {
                 placeholder="my-company"
                 defaultValue={theme === DEFAULT_THEME ? "" : theme}
                 onBlur={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  console.log("event target value", event.target.value === "");
                   dispatch(
                     settingsSlice.actions.setTheme({
                       theme: event.target.value
