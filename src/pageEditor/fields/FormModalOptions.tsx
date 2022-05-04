@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { Schema } from "@/core";
-import React, { useEffect } from "react";
 import { validateRegistryId } from "@/types/helpers";
-import { actions as formBuilderActions } from "@/pageEditor/slices/formBuilderSlice";
-import formBuilderSelectors from "@/pageEditor/slices/formBuilderSelectors";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
+import { selectNodePreviewActiveElement } from "@/pageEditor/uiState/uiState";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 export const FORM_MODAL_ID = validateRegistryId("@pixiebrix/form-modal");
 
@@ -50,28 +50,20 @@ const FormModalOptions: React.FC<{
   name: string;
   configKey: string;
 }> = ({ name, configKey }) => {
-  const [activeField, setActiveField] = useReduxState(
-    formBuilderSelectors.activeField,
-    formBuilderActions.setActiveField
+  const [activeElement, setActiveElement] = useReduxState(
+    selectNodePreviewActiveElement,
+    editorActions.setNodePreviewActiveElement
   );
 
   const configName = `${name}.${configKey}`;
-
-  useEffect(
-    () => () => {
-      // Clean up selected field on destroy
-      setActiveField(null);
-    },
-    [configName]
-  );
 
   return (
     <div>
       <ConfigErrorBoundary>
         <FormEditor
           name={configName}
-          activeField={activeField}
-          setActiveField={setActiveField}
+          activeField={activeElement}
+          setActiveField={setActiveElement}
         />
       </ConfigErrorBoundary>
 

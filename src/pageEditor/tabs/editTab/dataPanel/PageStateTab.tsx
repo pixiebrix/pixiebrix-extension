@@ -27,6 +27,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "react-bootstrap";
 import { useSelector } from "react-redux";
 
+const alwaysExpandNode = () => true;
+
 const PageStateTab: React.VFC = () => {
   const activeElement = useSelector(selectActiveElement);
 
@@ -86,7 +88,11 @@ const PageStateTab: React.VFC = () => {
           <p>{getErrorMessage(error)}</p>
         </div>
       ) : (
-        <JsonTree data={state} copyable={false} shouldExpandNode={() => true} />
+        <JsonTree
+          data={state}
+          copyable={false}
+          shouldExpandNode={alwaysExpandNode}
+        />
       )}
     </div>
   );

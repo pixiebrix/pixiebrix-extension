@@ -17,13 +17,13 @@
 
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { Schema } from "@/core";
-import React, { useEffect } from "react";
+import React from "react";
 import { validateRegistryId } from "@/types/helpers";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
-import { actions as elementWizardActions } from "@/pageEditor/slices/formBuilderSlice";
-import formBuilderSelectors from "@/pageEditor/slices/formBuilderSelectors";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
+import { selectNodePreviewActiveElement } from "@/pageEditor/uiState/uiState";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
@@ -36,28 +36,20 @@ const FormRendererOptions: React.FC<{
   name: string;
   configKey: string;
 }> = ({ name, configKey }) => {
-  const [activeField, setActiveField] = useReduxState(
-    formBuilderSelectors.activeField,
-    elementWizardActions.setActiveField
+  const [activeElement, setActiveElement] = useReduxState(
+    selectNodePreviewActiveElement,
+    editorActions.setNodePreviewActiveElement
   );
 
   const configName = `${name}.${configKey}`;
-
-  useEffect(
-    () => () => {
-      // Clean up selected field on destroy
-      setActiveField(null);
-    },
-    [configName]
-  );
 
   return (
     <div>
       <ConfigErrorBoundary>
         <FormEditor
           name={configName}
-          activeField={activeField}
-          setActiveField={setActiveField}
+          activeField={activeElement}
+          setActiveField={setActiveElement}
         />
       </ConfigErrorBoundary>
 

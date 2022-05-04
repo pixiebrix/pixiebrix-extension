@@ -30,7 +30,6 @@ import {
   faSync,
 } from "@fortawesome/free-solid-svg-icons";
 import objectHash from "object-hash";
-import JsonTree from "@/components/jsonTree/JsonTree";
 import { isEmpty } from "lodash";
 import { TraceRecord } from "@/telemetry/trace";
 import { removeEmptyValues } from "@/pageEditor/extensionPoints/base";
@@ -45,12 +44,13 @@ import { runBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { useField } from "formik";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import useDataPanelTabSearchQuery from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 import { makeServiceContext } from "@/services/serviceUtils";
 import getType from "@/runtime/getType";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
 import { isTriggerExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -145,13 +145,10 @@ const BlockPreview: React.FunctionComponent<{
   previewRefreshMillis?: 250;
   // eslint-disable-next-line complexity
 }> = ({ blockConfig, extensionPoint, traceRecord, previewRefreshMillis }) => {
-  const [{ isRunning, output, outputKey }, dispatch] = useReducer(
-    previewSlice.reducer,
-    {
-      ...initialState,
-      outputKey: blockConfig.outputKey,
-    }
-  );
+  const [{ isRunning, output }, dispatch] = useReducer(previewSlice.reducer, {
+    ...initialState,
+    outputKey: blockConfig.outputKey,
+  });
 
   const [{ value: apiVersion }] = useField<ApiVersion>("apiVersion");
   const [{ value: services }] = useField<ServiceDependency[]>("services");
@@ -209,8 +206,6 @@ const BlockPreview: React.FunctionComponent<{
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, blockConfig, blockInfo, objectHash(context ?? {})]);
-
-  const [previewQuery, setPreviewQuery] = useDataPanelTabSearchQuery("preview");
 
   if (blockInfo?.type === "renderer") {
     return (
@@ -281,15 +276,11 @@ const BlockPreview: React.FunctionComponent<{
       )}
 
       {output && !isError && !isEmpty(output) && (
-        <JsonTree
+        <DataTabJsonTree
           data={output}
           searchable
           copyable
-          initialSearchQuery={previewQuery}
-          onSearchQueryChanged={setPreviewQuery}
-          shouldExpandNode={(keyPath) =>
-            keyPath.length === 1 && keyPath[0] === `@${outputKey}`
-          }
+          tabKey={DataPanelTabKey.Preview}
         />
       )}
 
