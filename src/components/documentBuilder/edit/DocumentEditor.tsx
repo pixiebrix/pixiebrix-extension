@@ -21,17 +21,27 @@ import ElementEditor from "./ElementEditor";
 import { Row, Col } from "react-bootstrap";
 
 type DocumentEditorProps = {
+  /**
+   * Formik name of the root element
+   */
+  name: string;
+
+  /**
+   * The active element relative to the root element (i.e. "name" is not included)
+   */
   activeElement: string;
   setActiveElement: (activeElement: string) => void;
 };
 
 const DocumentEditor: React.FC<DocumentEditorProps> = ({
+  name,
   activeElement,
   setActiveElement,
 }) =>
   activeElement ? (
     <ElementEditor
-      elementName={activeElement}
+      name={name}
+      activeElement={activeElement}
       setActiveElement={setActiveElement}
     />
   ) : (

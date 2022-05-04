@@ -25,12 +25,12 @@ import getElementCollectionName from "./getElementCollectionName";
 
 type RemoveElementProps = {
   elementName: string;
-  setActiveElement: (activeElement: string) => void;
+  resetActiveElement: () => void;
 };
 
 const RemoveElement: React.FC<RemoveElementProps> = ({
   elementName,
-  setActiveElement,
+  resetActiveElement,
 }) => {
   // Gives the name of the elements's collection
   // In case of a list item element point to the collection of the list element,
@@ -45,7 +45,7 @@ const RemoveElement: React.FC<RemoveElementProps> = ({
     const newElementsCollection = [...elementsCollection];
     newElementsCollection.splice(Number(elementIndex), 1);
 
-    setActiveElement(null);
+    resetActiveElement();
 
     setValue(newElementsCollection);
   };
