@@ -23,10 +23,8 @@ import { createLogger } from "redux-logger";
 import { boolean } from "@/utils";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 import { appApi } from "@/services/api";
-import { formBuilderSlice } from "@/pageEditor/slices/formBuilderSlice";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSlice";
-import { documentBuilderSlice } from "./slices/documentBuilderSlice";
 import settingsSlice from "@/store/settingsSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
@@ -67,8 +65,6 @@ const store = configureStore({
     session: sessionSlice.reducer,
     savingExtension: savingExtensionSlice.reducer,
     runtime: runtimeSlice.reducer,
-    formBuilder: formBuilderSlice.reducer,
-    documentBuilder: documentBuilderSlice.reducer,
     logs: logSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },

@@ -18,7 +18,6 @@
 import previewStyles from "./ElementPreview.module.scss";
 import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
 import styles from "./DocumentPreview.module.scss";
-
 import { useField } from "formik";
 import React, { MouseEventHandler, useMemo, useState } from "react";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
@@ -82,7 +81,8 @@ const DocumentPreview = ({
       {bodyPreview.map((childElement, i) => (
         <ElementPreview
           key={`${name}.${i}`}
-          elementName={`${name}.${i}`}
+          name={name}
+          elementName={String(i)}
           previewElement={childElement}
           activeElement={activeElement}
           setActiveElement={setActiveElement}

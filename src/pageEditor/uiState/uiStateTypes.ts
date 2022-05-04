@@ -15,28 +15,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
-export interface NodeUIState {
+export type TabUIState = {
+  /**
+   * The filter query of the JsonTree component
+   */
+  query: string;
+
+  /**
+   * The expanded state of the JsonTree component
+   */
+  treeExpandedState: TreeExpandedState;
+
+  /**
+   * The active element of a Document or Form builder on the Preview tab
+   */
+  activeElement: string | null;
+};
+
+export type NodeUIState = {
   /**
    * Identifier for the node in the editor, either the foundation or a block uuid
    */
   nodeId: NodeId;
 
-  dataPanel: {
+  /**
+   * UI state of the Tabs in the data panel
+   */
+  dataPanel: Record<DataPanelTabKey, TabUIState> & {
     /**
      * Which tab is active in the data panel of the editor UI
      */
-    activeTabKey: string | null;
-
-    /**
-     * Data tab search filter query, indexed by tabKey
-     */
-    tabQueries: Record<string, string>;
+    activeTabKey: DataPanelTabKey | null;
   };
-}
+};
 
-export interface ElementUIState {
+export type ElementUIState = {
   /**
    * The instanceId of the active node in the editor,
    *  or:
@@ -48,4 +65,4 @@ export interface ElementUIState {
    * UI state of foundation and blocks in the extension pipeline
    */
   nodeUIStates: Record<NodeId, NodeUIState>;
-}
+};

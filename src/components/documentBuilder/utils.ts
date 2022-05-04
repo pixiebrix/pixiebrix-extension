@@ -15,27 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-export interface DocumentBuilderState {
-  /**
-   * The currently active field in the Form Builder
-   */
-  activeElement: string | null;
+export function joinElementName(...nameParts: Array<string | number>): string {
+  // Don't use lodash.compact since it treats 0 as falsy
+  return nameParts.filter((x) => x != null).join(".");
 }
-
-export const initialState: DocumentBuilderState = {
-  activeElement: null,
-};
-
-export const documentBuilderSlice = createSlice({
-  name: "documentBuilder",
-  initialState,
-  reducers: {
-    setActiveElement(state, action: PayloadAction<string>) {
-      state.activeElement = action.payload;
-    },
-  },
-});
-
-export const { actions } = documentBuilderSlice;

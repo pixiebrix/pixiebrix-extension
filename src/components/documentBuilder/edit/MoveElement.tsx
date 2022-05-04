@@ -21,20 +21,26 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import getElementCollectionName from "./getElementCollectionName";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import LayoutWidget from "@/components/LayoutWidget";
+import { joinElementName } from "@/components/documentBuilder/utils";
 
 type MoveElementProps = {
-  elementName: string;
+  name: string;
+  activeElement: string;
   setActiveElement: (activeElement: string) => void;
 };
 
 const MoveElement: React.FC<MoveElementProps> = ({
-  elementName,
+  name,
+  activeElement,
   setActiveElement,
 }) => {
   const { collectionName, elementIndex } =
-    getElementCollectionName(elementName);
+    getElementCollectionName(activeElement);
+
+  const fullCollectionName = joinElementName(name, collectionName);
+
   const [{ value: elementsCollection }, , { setValue }] =
-    useField<DocumentElement[]>(collectionName);
+    useField<DocumentElement[]>(fullCollectionName);
 
   const canMoveUp = elementIndex > 0;
   const canMoveDown = elementIndex < elementsCollection.length - 1;
@@ -48,7 +54,7 @@ const MoveElement: React.FC<MoveElementProps> = ({
       newElementsCollection[elementIndex],
     ];
     setValue(newElementsCollection);
-    setActiveElement(`${collectionName}.${toIndex}`);
+    setActiveElement(joinElementName(collectionName, toIndex));
   };
 
   return (

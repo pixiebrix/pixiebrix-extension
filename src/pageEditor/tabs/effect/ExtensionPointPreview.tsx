@@ -19,7 +19,6 @@ import React, { useCallback, useEffect, useReducer } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors";
-import JsonTree from "@/components/jsonTree/JsonTree";
 import { UnknownObject } from "@/types";
 import { runExtensionPointReader } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
@@ -28,9 +27,10 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AsyncButton from "@/components/AsyncButton";
-import useDataPanelTabSearchQuery from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 
 type PreviewState = {
   isRunning: boolean;
@@ -110,8 +110,6 @@ const ExtensionPointPreview: React.FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, element.extensionPoint]);
 
-  const [previewQuery, setPreviewQuery] = useDataPanelTabSearchQuery("preview");
-
   if (isRunning) {
     return (
       <div>
@@ -165,15 +163,11 @@ const ExtensionPointPreview: React.FunctionComponent<{
     <div>
       {reloadTrigger}
       {reloadContextMenu}
-      <JsonTree
+      <DataTabJsonTree
         data={output ?? {}}
         searchable
         copyable
-        initialSearchQuery={previewQuery}
-        onSearchQueryChanged={setPreviewQuery}
-        shouldExpandNode={(keyPath) =>
-          keyPath.length === 1 && keyPath[0] === "@input"
-        }
+        tabKey={DataPanelTabKey.Preview}
       />
     </div>
   );

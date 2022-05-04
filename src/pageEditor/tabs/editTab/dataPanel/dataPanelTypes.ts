@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RootState } from "@/pageEditor/pageEditorTypes";
-
-const formBuilderSelectors = {
-  activeField: ({ formBuilder }: RootState) => formBuilder.activeField,
-};
-
-export default formBuilderSelectors;
+export enum DataPanelTabKey {
+  Context = "context",
+  PageState = "pageState",
+  Formik = "formik",
+  BlockConfig = "blockConfig",
+  Rendered = "rendered",
+  Output = "output",
+  Preview = "preview",
+}

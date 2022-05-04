@@ -18,18 +18,38 @@
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { UUID } from "@/core";
 import { RootState } from "@/pageEditor/pageEditorTypes";
-import { ElementUIState, NodeUIState } from "@/pageEditor/uiState/uiStateTypes";
+import {
+  ElementUIState,
+  NodeUIState,
+  TabUIState,
+} from "@/pageEditor/uiState/uiStateTypes";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 export const FOUNDATION_NODE_ID = "foundation" as UUID;
 
-export function makeInitialNodeUIState(nodeId: NodeId): NodeUIState {
+function makeInitialDataTabState(): TabUIState {
   return {
+    query: "",
+    treeExpandedState: {},
+    activeElement: null,
+  };
+}
+
+export function makeInitialNodeUIState(nodeId: NodeId): NodeUIState {
+  const nodeUIState: NodeUIState = {
     nodeId,
+    // @ts-expect-error -- initializing the Tab states down below
     dataPanel: {
       activeTabKey: null,
-      tabQueries: {},
     },
   };
+
+  for (const tab of Object.values(DataPanelTabKey)) {
+    // eslint-disable-next-line security/detect-object-injection -- tab comes from a known enum
+    nodeUIState.dataPanel[tab] = makeInitialDataTabState();
+  }
+
+  return nodeUIState;
 }
 
 export function makeInitialElementUIState(): ElementUIState {
@@ -57,16 +77,26 @@ export function selectActiveNodeId(rootState: RootState): NodeId {
   return elementUIState.activeNodeId;
 }
 
-export function selectNodeDataPanelTabSelected(rootState: RootState): string {
+export function selectNodeDataPanelTabSelected(
+  rootState: RootState
+): DataPanelTabKey {
   const nodeUIState = selectActiveNodeUIState(rootState);
   return nodeUIState.dataPanel.activeTabKey;
 }
 
-export function selectNodeDataPanelTabSearchQuery(
+export function selectNodeDataPanelTabState(
   rootState: RootState,
-  tabKey: string
-): string {
+  tabKey: DataPanelTabKey
+): TabUIState {
   const nodeUIState = selectActiveNodeUIState(rootState);
   // eslint-disable-next-line security/detect-object-injection -- tabKeys will be hard-coded strings
-  return nodeUIState.dataPanel.tabQueries[tabKey];
+  return nodeUIState.dataPanel[tabKey];
+}
+
+/**
+ * Selects the activeElement of the Document or Form builder on the Preview tab
+ */
+export function selectNodePreviewActiveElement(rootState: RootState): string {
+  return selectNodeDataPanelTabState(rootState, DataPanelTabKey.Preview)
+    .activeElement;
 }

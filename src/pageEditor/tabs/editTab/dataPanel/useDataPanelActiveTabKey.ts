@@ -19,15 +19,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectNodeDataPanelTabSelected } from "@/pageEditor/uiState/uiState";
 import { useCallback, useEffect, useMemo } from "react";
 import { actions } from "@/pageEditor/slices/editorSlice";
+import { DataPanelTabKey } from "./dataPanelTypes";
 
 export default function useDataPanelActiveTabKey(
-  defaultTabKey: string
-): [activeKey: string, onSelectTab: (eventKey: string) => void] {
+  defaultTabKey: DataPanelTabKey
+): [
+  activeKey: DataPanelTabKey,
+  onSelectTab: (eventKey: DataPanelTabKey) => void
+] {
   const dispatch = useDispatch();
 
   const savedActiveKey = useSelector(selectNodeDataPanelTabSelected);
   const onSelectTab = useCallback(
-    (eventKey: string) => {
+    (eventKey: DataPanelTabKey) => {
       dispatch(actions.setNodeDataPanelTabSelected(eventKey));
     },
     [dispatch]

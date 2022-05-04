@@ -36,6 +36,8 @@ import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
 import { isEmpty } from "lodash";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -352,21 +354,53 @@ export const editorSlice = createSlice({
     setElementActiveNodeId(state, action: PayloadAction<NodeId>) {
       setActiveNodeId(state, action.payload);
     },
-    setNodeDataPanelTabSelected(state, action: PayloadAction<string>) {
+    setNodeDataPanelTabSelected(state, action: PayloadAction<DataPanelTabKey>) {
       const elementUIState = state.elementUIStates[state.activeElementId];
       const nodeUIState =
         elementUIState.nodeUIStates[elementUIState.activeNodeId];
       nodeUIState.dataPanel.activeTabKey = action.payload;
     },
+
+    /**
+     * Updates the query on a DataPane tab with the JsonTree component
+     */
     setNodeDataPanelTabSearchQuery(
       state,
-      action: PayloadAction<{ tabKey: string; query: string }>
+      action: PayloadAction<{ tabKey: DataPanelTabKey; query: string }>
     ) {
       const { tabKey, query } = action.payload;
       const elementUIState = state.elementUIStates[state.activeElementId];
-      const nodeUIState =
-        elementUIState.nodeUIStates[elementUIState.activeNodeId];
-      nodeUIState.dataPanel.tabQueries[tabKey] = query;
+      elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
+        tabKey
+      ].query = query;
+    },
+
+    /**
+     * Updates the expanded state of the JsonTree component on a DataPanel tab
+     */
+    setNodeDataPanelTabExpandedState(
+      state,
+      action: PayloadAction<{
+        tabKey: DataPanelTabKey;
+        expandedState: TreeExpandedState;
+      }>
+    ) {
+      const { tabKey, expandedState } = action.payload;
+      const elementUIState = state.elementUIStates[state.activeElementId];
+      elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
+        tabKey
+      ].treeExpandedState = expandedState;
+    },
+
+    /**
+     * Updates the active element of a Document or Form builder on the Preview tab
+     */
+    setNodePreviewActiveElement(state, action: PayloadAction<string>) {
+      const activeElement = action.payload;
+      const elementUIState = state.elementUIStates[state.activeElementId];
+      elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
+        DataPanelTabKey.Preview
+      ].activeElement = activeElement;
     },
     copyBlockConfig(state, action: PayloadAction<BlockConfig>) {
       const copy = { ...action.payload };

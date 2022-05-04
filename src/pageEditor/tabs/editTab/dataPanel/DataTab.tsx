@@ -59,7 +59,12 @@ const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
   }
 
   return (
-    <Tab.Pane {...tabProps} className={dataPanelStyles.tabPane}>
+    <Tab.Pane
+      mountOnEnter
+      unmountOnExit
+      {...tabProps}
+      className={dataPanelStyles.tabPane}
+    >
       {contents}
     </Tab.Pane>
   );
