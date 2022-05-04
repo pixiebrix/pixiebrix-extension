@@ -59,6 +59,7 @@ import { FormState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 import { RegistryId } from "@/core";
+import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -66,6 +67,7 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
   const dispatch = useDispatch();
   const [createRecipe] = useCreateRecipeMutation();
   const createExtension = useCreate();
+  const removeExtension = useRemoveExtension();
 
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
@@ -96,13 +98,20 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
       // Don't push to cloud since we're saving it with the recipe
       await createExtension({ element: recipeElement, pushToCloud: false });
       if (!keepLocalCopy) {
-        dispatch(editorActions.removeElement(activeElement.uuid));
-        dispatch(
-          optionsActions.removeExtension({ extensionId: activeElement.uuid })
-        );
+        await removeExtension({
+          extensionId: activeElement.uuid,
+          shouldShowConfirmation: false,
+        });
       }
     },
-    [activeElement, createExtension, createRecipe, dispatch, keepLocalCopy]
+    [
+      activeElement,
+      createExtension,
+      createRecipe,
+      dispatch,
+      keepLocalCopy,
+      removeExtension,
+    ]
   );
 
   const createRecipeFromRecipe = useCallback(
