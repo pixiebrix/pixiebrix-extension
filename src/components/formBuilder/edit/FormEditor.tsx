@@ -110,11 +110,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
     return { titleFieldProps, descriptionFieldProps };
   }, [name]);
 
-  if (!schema || !uiSchema) {
-    return null;
-  }
-
-  const propertyKeys = Object.keys(schema.properties ?? {});
+  const propertyKeys = Object.keys(schema?.properties ?? {});
 
   const addProperty = () => {
     const propertyName = generateNewPropertyName(propertyKeys);
@@ -137,6 +133,10 @@ const FormEditor: React.FC<FormEditorProps> = ({
         );
 
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
+      if (!uiSchema) {
+        draft.uiSchema = {};
+      }
+
       // eslint-disable-next-line security/detect-object-injection -- prop name is a constant
       draft.uiSchema[UI_ORDER] = nextUiOrder;
       draft.schema = normalizeSchema(schema);
@@ -174,6 +174,10 @@ const FormEditor: React.FC<FormEditorProps> = ({
           schema.required,
           propertyToRemove
         );
+      }
+
+      if (!uiSchema) {
+        draft.uiSchema = {};
       }
 
       // eslint-disable-next-line security/detect-object-injection -- prop name is a constant
@@ -236,7 +240,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
         </Col>
       </Row>
 
-      {activeField && Boolean(schema.properties?.[activeField]) && (
+      {activeField && Boolean(schema?.properties?.[activeField]) && (
         <FieldEditor
           name={name}
           propertyName={activeField}
