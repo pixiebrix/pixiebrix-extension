@@ -16,7 +16,7 @@
  */
 
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
-import { SanitizedServiceConfiguration, ServiceConfig } from "@/core";
+import { IService, SanitizedServiceConfiguration, ServiceConfig } from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
 import { ProxiedRemoteServiceError } from "@/services/errors";
 import serviceRegistry from "@/services/registry";
@@ -242,10 +242,19 @@ export async function proxyService<TData>(
       requestConfig
     )) as RemoteResponse<TData>;
   } catch (error) {
-    throw new ContextError("Error while performing request", {
+    // Try resolving the service to get metadata to include with the error
+    let resolvedService: IService;
+    try {
+      resolvedService = await serviceRegistry.lookup(serviceConfig.serviceId);
+    } catch {
+      // NOP
+    }
+
+    throw new ContextError("Error performing request", {
       cause: error,
       context: {
         serviceId: serviceConfig.serviceId,
+        serviceVersion: resolvedService?.version,
         authId: serviceConfig.id,
       },
     });

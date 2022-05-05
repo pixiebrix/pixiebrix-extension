@@ -79,7 +79,13 @@ interface LogDB extends DBSchema {
 
 type IndexKey = keyof Except<
   MessageContext,
-  "deploymentId" | "label" | "pageName"
+  | "deploymentId"
+  | "label"
+  | "pageName"
+  | "blueprintVersion"
+  | "blockVersion"
+  | "serviceVersion"
+  | "extensionLabel"
 >;
 const indexKeys: IndexKey[] = [
   "extensionId",

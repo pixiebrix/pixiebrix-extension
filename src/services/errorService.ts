@@ -107,7 +107,7 @@ export async function reportToErrorService(
   }
 
   if (!(await allowsTrack())) {
-    // We warn that tracking is disabled in the analogous call to report to Rollbar
+    // We warn that tracking is disabled in the analogous call to report to Rollbar. See reportToRollbar
     return;
   }
 
@@ -121,17 +121,17 @@ export async function reportToErrorService(
     //  instance? Or we can just index the field on the backend but not enforce the FK constraint
     user_extension: flatContext.extensionId,
     extension_uuid: flatContext.extensionId,
-    // FIXME: we need to track step/extension label separately in MessageContext
-    extension_label: flatContext.label,
+    extension_label: flatContext.extensionLabel,
     step_label: flatContext.label,
     user_agent: window.navigator.userAgent,
     user_agent_extension_version: extensionVersion,
     is_application_error: !hasBusinessRootCause(error),
     blueprint_id: flatContext.blueprintId,
-    // FIXME: track blueprint version in the MessageContext
-    blueprint_version: null,
-    brick_id: flatContext.blockId ?? flatContext.serviceId,
-    brick_version: null,
+    blueprint_version: flatContext.blueprintVersion,
+    // FIXME: if/when do we want to use service here instead of brick? We probably want to expose entries for both
+    //  because a brick might be broken only for particular versions of the service.
+    brick_id: flatContext.blockId,
+    brick_version: flatContext.blockVersion,
     // Already capturing extension version in user_agent_extension_version
     error_data: data,
   });

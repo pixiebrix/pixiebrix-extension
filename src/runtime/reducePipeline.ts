@@ -264,9 +264,11 @@ async function renderBlockArg(
 ): Promise<RenderedArgs> {
   const { config, type } = resolvedConfig;
 
+  const globalLoggingConfig = await getLoggingConfig();
+
   const {
     // If logValues not provided explicitly, default to the global setting
-    logValues = (await getLoggingConfig()).logValues ?? false,
+    logValues = globalLoggingConfig.logValues ?? false,
     logger,
     explicitArg,
     explicitDataFlow,
@@ -396,6 +398,8 @@ async function applyReduceDefaults({
   logger,
   ...overrides
 }: Partial<ReduceOptions>): Promise<ReduceOptions> {
+  const globalLoggingConfig = await getLoggingConfig();
+
   return {
     validateInput: true,
     headless: false,
@@ -408,7 +412,7 @@ async function applyReduceDefaults({
     // If logValues not provided explicitly, default to the global setting
     logValues:
       logValues === undefined
-        ? (await getLoggingConfig()).logValues ?? false
+        ? globalLoggingConfig.logValues ?? false
         : logValues,
     // For stylistic consistency, default here instead of destructured parameters
     runId: runId ?? uuidv4(),
@@ -642,7 +646,7 @@ export async function reducePipeline(
   const { explicitDataFlow, logger: pipelineLogger } = options;
 
   let context: BlockArgContext = {
-    // Put serviceContext first so they can't override the input/options
+    // Put serviceContext first to prevent overriding the input/options
     ...serviceContext,
     "@input": input,
     "@options": optionsArgs ?? {},
@@ -662,14 +666,19 @@ export async function reducePipeline(
       context,
     };
 
-    const stageLogger = pipelineLogger.childLogger({
-      blockId: blockConfig.id,
-      label: blockConfig.label,
-    });
-
     let nextValues: BlockOutput;
 
     try {
+      // Don't parallelize resolveBlockConfig because we want to throw the error when we reach the block
+      // eslint-disable-next-line no-await-in-loop -- see comment above
+      const resolvedConfig = await resolveBlockConfig(blockConfig);
+
+      const stageLogger = pipelineLogger.childLogger({
+        blockId: blockConfig.id,
+        blockVersion: resolvedConfig.block.version,
+        label: blockConfig.label,
+      });
+
       // eslint-disable-next-line no-await-in-loop -- can't parallelize because each step depends on previous step
       nextValues = await blockReducer(blockConfig, state, {
         ...options,
