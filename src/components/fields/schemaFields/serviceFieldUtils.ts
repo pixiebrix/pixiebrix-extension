@@ -30,7 +30,7 @@ import { castArray, flatMap } from "lodash";
  */
 const SERVICE_VAR_REGEX = /^@\w+$/;
 
-function selectPipelines(obj: UnknownObject): PipelineExpression[] {
+function selectPipelines(obj: unknown): PipelineExpression[] {
   if (typeof obj !== "object" || obj == null) {
     return [];
   }
