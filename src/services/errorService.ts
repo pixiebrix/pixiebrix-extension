@@ -16,7 +16,7 @@
  */
 
 import { JsonObject } from "type-fest";
-import { debounce, omit } from "lodash";
+import { debounce } from "lodash";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { MessageContext, SerializedError } from "@/core";
 import {
@@ -111,6 +111,8 @@ export async function reportToErrorService(
     return;
   }
 
+  const { extensionVersion, ...data } = await selectExtraContext(error);
+
   buffer.push({
     uuid: uuidv4(),
     error_name: error.name,
@@ -123,7 +125,7 @@ export async function reportToErrorService(
     extension_label: flatContext.label,
     step_label: flatContext.label,
     user_agent: window.navigator.userAgent,
-    user_agent_extension_version: browser.runtime.getManifest().version,
+    user_agent_extension_version: extensionVersion,
     is_application_error: !hasBusinessRootCause(error),
     blueprint_id: flatContext.blueprintId,
     // FIXME: track blueprint version in the MessageContext
@@ -131,7 +133,7 @@ export async function reportToErrorService(
     brick_id: flatContext.blockId ?? flatContext.serviceId,
     brick_version: null,
     // Already capturing extension version in user_agent_extension_version
-    error_data: omit(await selectExtraContext(error), ["extensionVersion"]),
+    error_data: data,
   });
 
   await debouncedFlush();

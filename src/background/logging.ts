@@ -26,23 +26,13 @@ import { allowsTrack } from "@/telemetry/dnt";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
   getErrorMessage,
-  getRootCause,
   hasBusinessRootCause,
   hasCancelRootCause,
   IGNORED_ERROR_PATTERNS,
-  isAxiosError,
   isContextError,
 } from "@/errors";
 import { expectContext, forbidContext } from "@/utils/expectContext";
-import { isAppRequest, selectAbsoluteUrl } from "@/services/requestErrorUtils";
-import { readAuthData } from "@/auth/token";
-import { UnknownObject } from "@/types";
-import { isObject, matchesAnyPattern } from "@/utils";
-import axios from "axios";
-import {
-  getLinkedApiClient,
-  maybeGetLinkedApiClient,
-} from "@/services/apiClient";
+import { matchesAnyPattern } from "@/utils";
 import {
   reportToErrorService,
   selectExtraContext,
