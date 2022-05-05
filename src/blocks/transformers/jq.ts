@@ -22,7 +22,7 @@ import { isNullOrBlank } from "@/utils";
 import { InputValidationError } from "@/blocks/errors";
 import { isErrorObject } from "@/errors";
 
-const jqStacktraceRegexp = /jq: error \(at \<stdin\>:0\): (?<message>.*)/;
+const jqStacktraceRegexp = /jq: error \(at <stdin>:0\): (?<message>.*)/;
 
 export class JQTransformer extends Transformer {
   override async isPure(): Promise<boolean> {
