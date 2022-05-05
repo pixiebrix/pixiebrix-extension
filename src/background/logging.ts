@@ -38,6 +38,15 @@ import { isAppRequest, selectAbsoluteUrl } from "@/services/requestErrorUtils";
 import { readAuthData } from "@/auth/token";
 import { UnknownObject } from "@/types";
 import { isObject, matchesAnyPattern } from "@/utils";
+import axios from "axios";
+import {
+  getLinkedApiClient,
+  maybeGetLinkedApiClient,
+} from "@/services/apiClient";
+import {
+  reportToErrorService,
+  selectExtraContext,
+} from "@/services/errorService";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -218,40 +227,6 @@ function flattenContext(
   return context;
 }
 
-/**
- * Select extra error context for:
- * - Extension version, so we don't have to maintain a separate mapping of commit SHAs to versions for reporting
- * - Requests to PixieBrix API to detect network problems client side
- * - Any service request if enterprise has enabled `enterprise-telemetry`
- */
-async function selectExtraContext(
-  error: Error | SerializedError
-): Promise<UnknownObject> {
-  const { version: extensionVersion } = browser.runtime.getManifest();
-
-  if (!isObject(error)) {
-    return { extensionVersion };
-  }
-
-  const cause = getRootCause(error);
-
-  // Handle base classes of ClientRequestError
-  if ("error" in cause && isAxiosError(cause.error)) {
-    const { flags = [] } = await readAuthData();
-    if (
-      (await isAppRequest(cause.error)) ||
-      flags.includes("enterprise-telemetry")
-    ) {
-      return {
-        extensionVersion,
-        url: selectAbsoluteUrl(cause.error.config),
-      };
-    }
-  }
-
-  return { extensionVersion };
-}
-
 const warnAboutDisabledDNT = once(() => {
   console.warn("Rollbar telemetry is disabled because DNT is turned on");
 });
@@ -323,7 +298,7 @@ export async function recordError(
 
     await Promise.all([
       reportToRollbar(error, flatContext, message),
-
+      reportToErrorService(error, flatContext, message),
       appendEntry({
         uuid: uuidv4(),
         timestamp: Date.now().toString(),
