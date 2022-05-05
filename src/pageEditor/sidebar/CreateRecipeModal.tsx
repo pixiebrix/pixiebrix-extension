@@ -262,7 +262,7 @@ function useFormSchema() {
       .test(
         "semver",
         "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
-        (value: string) => testIsSemVerString(value, false)
+        (value: string) => testIsSemVerString(value, { allowLeadingV: false })
       )
       .required(),
     description: string(),

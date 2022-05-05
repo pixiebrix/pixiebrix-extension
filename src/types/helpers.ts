@@ -102,7 +102,7 @@ export function validateSemVerString(
     return value as SemVerString;
   }
 
-  if (testIsSemVerString(value, allowLeadingV)) {
+  if (testIsSemVerString(value, { allowLeadingV })) {
     return value;
   }
 
@@ -113,8 +113,9 @@ export function validateSemVerString(
 
 export function testIsSemVerString(
   value: string,
-  allowLeadingV = true
-  // FIXME: the SemVerString type doesn't support a leading v. See documentation
+  // FIXME: the SemVerString type wasn't intended to support a leading `v`. See documentation
+  // Default to `false` to be stricter.
+  { allowLeadingV = false }: { allowLeadingV?: boolean } = {}
 ): value is SemVerString {
   if (semVerValid(value) != null) {
     return allowLeadingV || !startsWith(value, "v");
