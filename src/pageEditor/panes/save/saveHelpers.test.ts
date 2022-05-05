@@ -22,7 +22,7 @@ import {
   isRecipeEditable,
   replaceRecipeExtension,
 } from "@/pageEditor/panes/save/saveHelpers";
-import { validateRegistryId } from "@/types/helpers";
+import { validateRegistryId, validateSemVerString } from "@/types/helpers";
 import {
   extensionPointDefinitionFactory,
   innerExtensionPointRecipeFactory,
@@ -190,7 +190,7 @@ describe("replaceRecipeExtension round trip", () => {
       metadata: {
         id: makeInternalId(recipe.definitions.extensionPoint),
         name: "Internal Extension Point",
-        version: "1.0.0",
+        version: validateSemVerString("1.0.0"),
       },
     });
 
@@ -240,7 +240,7 @@ describe("replaceRecipeExtension round trip", () => {
       metadata: {
         id: makeInternalId(recipe.definitions.extensionPoint),
         name: "Internal Extension Point",
-        version: "1.0.0",
+        version: validateSemVerString("1.0.0"),
       },
     });
 
@@ -300,7 +300,7 @@ describe("replaceRecipeExtension round trip", () => {
       metadata: {
         id: makeInternalId(recipe.definitions.extensionPoint),
         name: "Internal Extension Point",
-        version: "1.0.0",
+        version: validateSemVerString("1.0.0"),
       },
     });
 

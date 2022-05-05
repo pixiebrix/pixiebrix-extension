@@ -33,6 +33,7 @@ import { isNullOrBlank } from "@/utils";
 import GenerateSchema from "generate-schema";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import filenamify from "filenamify";
+import { validateSemVerString } from "@/types/helpers";
 
 /**
  * Infer optionsSchema from the options provided to the extension.
@@ -100,7 +101,7 @@ export function exportBlueprint(extension: UnresolvedExtension): void {
     id: "" as RegistryId,
     name: extension.label,
     description: "Blueprint exported from PixieBrix",
-    version: "1.0.0",
+    version: validateSemVerString("1.0.0"),
   });
 
   const blueprintYAML = objToYaml(blueprint);

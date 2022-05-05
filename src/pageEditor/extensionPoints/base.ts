@@ -41,7 +41,11 @@ import {
   SingleLayerReaderConfig,
 } from "@/pageEditor/extensionPoints/elementConfig";
 import { Except } from "type-fest";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
+import {
+  uuidv4,
+  validateRegistryId,
+  validateSemVerString,
+} from "@/types/helpers";
 import {
   BlockPipeline,
   NormalizedAvailability,
@@ -330,7 +334,7 @@ export function baseSelectExtensionPoint(
       id: metadata.id,
       // The server requires the version to save the brick, even though it's not marked as required
       // in the front-end schemas
-      version: metadata.version ?? "1.0.0",
+      version: metadata.version ?? validateSemVerString("1.0.0"),
       name: metadata.name,
       // The server requires the description to save the brick, even though it's not marked as required
       // in the front-end schemas

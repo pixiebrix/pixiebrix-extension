@@ -33,7 +33,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import styles from "./EditRecipe.module.scss";
 import { FieldDescriptions } from "@/utils/strings";
 import { object, string } from "yup";
-import { validateSemVerString } from "@/types/helpers";
+import { testIsSemVerString } from "@/types/helpers";
 import Form, { RenderBody } from "@/components/form/Form";
 
 const EditRecipe: React.VoidFunctionComponent = () => {
@@ -54,7 +54,7 @@ const EditRecipe: React.VoidFunctionComponent = () => {
       .test(
         "semver",
         "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
-        (value: string) => validateSemVerString(value, false)
+        (value: string) => testIsSemVerString(value, false)
       )
       .required(),
     description: string(),

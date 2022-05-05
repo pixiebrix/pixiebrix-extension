@@ -93,7 +93,28 @@ export function validateTimestamp(value: string): Timestamp {
 
 export function validateSemVerString(
   value: string,
+  // Default to `false` to be stricter.
+  { allowLeadingV = false }: { allowLeadingV?: boolean } = {}
+): SemVerString {
+  if (value == null) {
+    // We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually
+    // we can remove this check as strictNullChecks will check the call site
+    return value as SemVerString;
+  }
+
+  if (testIsSemVerString(value, allowLeadingV)) {
+    return value;
+  }
+
+  console.debug("Invalid semver %s", value);
+
+  throw new TypeError("Invalid semantic version");
+}
+
+export function testIsSemVerString(
+  value: string,
   allowLeadingV = true
+  // FIXME: the SemVerString type doesn't support a leading v. See documentation
 ): value is SemVerString {
   if (semVerValid(value) != null) {
     return allowLeadingV || !startsWith(value, "v");

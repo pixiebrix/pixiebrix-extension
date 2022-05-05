@@ -32,6 +32,7 @@ import {
   PersistedExtension,
   RecipeMetadata,
   RegistryId,
+  SemVerString,
 } from "@/core";
 import { UnsavedRecipeDefinition } from "@/types/definitions";
 import notify from "@/utils/notify";
@@ -54,7 +55,7 @@ const { actions: optionsActions } = extensionsSlice;
 export type RecipeConfiguration = {
   id: RegistryId;
   name: string;
-  version?: string;
+  version?: SemVerString;
   description?: string;
 };
 
