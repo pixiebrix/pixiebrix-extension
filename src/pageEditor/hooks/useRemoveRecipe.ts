@@ -39,7 +39,7 @@ function useRemoveRecipe(): (useRemoveConfig: Config) => Promise<void> {
   const { showConfirmation } = useModals();
 
   return useCallback(
-    async ({ recipeId, shouldShowConfirmation }) => {
+    async ({ recipeId, shouldShowConfirmation = true }) => {
       if (shouldShowConfirmation) {
         const confirmed = await showConfirmation({
           title: "Remove Blueprint?",
