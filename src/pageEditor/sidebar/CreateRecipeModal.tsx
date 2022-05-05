@@ -60,6 +60,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 import { RegistryId } from "@/core";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
+import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -68,6 +69,7 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
   const [createRecipe] = useCreateRecipeMutation();
   const createExtension = useCreate();
   const removeExtension = useRemoveExtension();
+  const removeRecipe = useRemoveRecipe();
 
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
@@ -165,7 +167,7 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
 
       // Replace the old recipe with the new recipe locally. The logic here is similar to what's in useReinstall.ts
 
-      dispatch(optionsActions.removeRecipeById(recipeId));
+      await removeRecipe({ recipeId, shouldShowConfirmation: false });
 
       dispatch(
         optionsActions.installRecipe({
@@ -281,11 +283,11 @@ const CreateRecipeModal: React.VFC = () => {
   // `selectActiveRecipeId` returns the recipe id _if the recipe element is selected_. Assumption: if the CreateModal
   // is open an extension element is active, then we're performing a "Save a New" on that recipe.
   const directlyActiveRecipeId = useSelector(selectActiveRecipeId);
-  const activeRecipeId = directlyActiveRecipeId ?? activeElement.recipe?.id;
+  const activeRecipeId = directlyActiveRecipeId ?? activeElement?.recipe?.id;
 
   const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
   const activeRecipe = recipes?.find(
-    (recipe) => recipe.metadata.id === activeRecipeId
+    (recipe) => activeRecipeId && recipe.metadata.id === activeRecipeId
   );
 
   const formSchema = useFormSchema();
