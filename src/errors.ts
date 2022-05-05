@@ -16,7 +16,7 @@
  */
 
 import { MessageContext } from "@/core";
-import { deserializeError, ErrorObject } from "serialize-error";
+import { deserializeError, ErrorObject, serializeError } from "serialize-error";
 import { AxiosError, AxiosResponse } from "axios";
 import { isObject, matchesAnyPattern } from "@/utils";
 import safeJsonStringify from "json-stringify-safe";
@@ -248,6 +248,16 @@ export function isContextError(error: unknown): error is ContextError {
     error instanceof ContextError ||
     (isErrorObject(error) && error.name === "ContextError")
   );
+}
+
+// The serializeError preserves custom properties that effectively means the "cause" is skipped by the serializer
+export function serializePixiebrixError(error: Error): ErrorObject {
+  const serializedError = serializeError(error);
+  if ("cause" in error) {
+    serializedError.cause = serializePixiebrixError(error.cause as Error);
+  }
+
+  return serializedError;
 }
 
 /**

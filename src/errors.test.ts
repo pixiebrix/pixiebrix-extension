@@ -27,11 +27,13 @@ import {
   MultipleElementsFoundError,
   NoElementsFoundError,
   selectError,
+  serializePixiebrixError,
 } from "@/errors";
 import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
 import { matchesAnyPattern } from "@/utils";
+import { isPlainObject } from "@reduxjs/toolkit";
 
 const TEST_MESSAGE = "Test message";
 
@@ -289,5 +291,24 @@ describe("selectError", () => {
     expect(selectError(errorEvent)).toMatchInlineSnapshot(
       "[Error: It’s a non-error]"
     );
+  });
+});
+
+describe("serializatin", () => {
+  test("serializes error cause", () => {
+    const inputValidationError = new InputValidationError(
+      "test input validation error",
+      null,
+      null,
+      []
+    );
+    const contextError = new ContextError("text context error", {
+      cause: inputValidationError,
+    });
+
+    const serializedError = serializePixiebrixError(contextError);
+
+    expect(isPlainObject(serializedError)).toBeTruthy();
+    expect(isPlainObject(serializedError.cause)).toBeTruthy();
   });
 });
