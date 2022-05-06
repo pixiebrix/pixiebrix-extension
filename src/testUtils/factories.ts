@@ -72,7 +72,7 @@ import { padStart } from "lodash";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
-const uuidSequence = (n: number) =>
+export const uuidSequence = (n: number) =>
   validateUUID(`${padStart(String(n), 8, "0")}-0000-4000-A000-000000000000`);
 
 export const recipeMetadataFactory = define<Metadata>({
