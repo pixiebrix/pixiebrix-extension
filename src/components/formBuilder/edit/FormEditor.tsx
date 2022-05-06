@@ -194,18 +194,20 @@ const FormEditor: React.FC<FormEditorProps> = ({
   };
 
   // The uiOrder field may not be initialized yet
-  const order = uiOrder ?? ["*"];
   const canMoveUp =
     Boolean(activeField) &&
-    (order.length > 2
-      ? order[0] !== activeField
+    uiOrder != null &&
+    (uiOrder.length > 2
+      ? uiOrder[0] !== activeField
       : propertyKeys[0] !== activeField);
   const canMoveDown =
     Boolean(activeField) &&
-    (order.length === propertyKeys.length + 1
-      ? order[order.length - 2] !== activeField
-      : Array.isArray(order) &&
-        findLast(propertyKeys, (key) => !order.includes(key)) !== activeField);
+    uiOrder != null &&
+    (uiOrder.length === propertyKeys.length + 1
+      ? uiOrder[uiOrder.length - 2] !== activeField
+      : Array.isArray(uiOrder) &&
+        findLast(propertyKeys, (key) => !uiOrder.includes(key)) !==
+          activeField);
 
   return (
     <>
