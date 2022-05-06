@@ -23,50 +23,62 @@ import {
   PipelineExpression,
 } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
-import { castArray, flatMap } from "lodash";
+import { castArray, uniq } from "lodash";
 
 /**
  * Regex matching identifiers generated via defaultOutputKey
  */
 const SERVICE_VAR_REGEX = /^@\w+$/;
 
-function selectPipelines(obj: unknown): PipelineExpression[] {
+/**
+ * Return the next level of pipeline expressions. Does not recurse inside the pipeline expression.
+ */
+export function selectPipelines(obj: unknown): PipelineExpression[] {
   if (typeof obj !== "object" || obj == null) {
     return [];
   }
 
+  // NOTE: not recursing insides the pipeline expression. The caller is responsible for calling recursively
   if (isPipelineExpression(obj)) {
     return [obj];
   }
 
+  // This works on Arrays too, since arrays are objects
   return Object.values(obj).flatMap((x) => selectPipelines(x));
 }
 
-function selectVarsFromConfig(config: UnknownObject): string[] {
+function selectVariablesFromConfig(config: UnknownObject): string[] {
   const configValues = Object.values(config);
-  const expressions = configValues.filter(
+
+  const variableExpressions = configValues.filter(
     (x) => isExpression(x) && x.__type__ === "var"
   ) as Expression[];
 
-  const values = expressions.map((x) => x.__value__);
-  const servicesFromExpression = values.filter((value) =>
-    SERVICE_VAR_REGEX.test(value)
+  // Service variables and any other variable expressions without `.` path separators
+  const directVariables = variableExpressions
+    .map((x) => x.__value__)
+    .filter((value) => SERVICE_VAR_REGEX.test(value));
+
+  // Get the next level of !pipeline expressions and recurse to get the variables they reference
+  const pipelines: PipelineExpression[] = configValues.flatMap((value) =>
+    selectPipelines(value)
+  );
+  const nestedPipelineVariables = pipelines.flatMap(({ __value__: configs }) =>
+    configs.flatMap(({ config }) => selectVariablesFromConfig(config))
   );
 
-  const pipelines: PipelineExpression[] = flatMap(
-    configValues,
-    selectPipelines
-  );
-  const servicesFromPipeline = pipelines.flatMap((x) =>
-    x.__value__.flatMap((y) => selectVarsFromConfig(y.config))
-  );
-
-  return [...servicesFromExpression, ...servicesFromPipeline];
+  return uniq([...directVariables, ...nestedPipelineVariables]);
 }
 
-export function selectVars(state: Pick<FormState, "extension">): Set<string> {
+/**
+ * Return set of service variables referenced by the extension. Variables include the `@`-prefix
+ */
+export function selectVariables(
+  state: Pick<FormState, "extension">
+): Set<string> {
   const pipeline = castArray(state.extension.blockPipeline ?? []);
-  const identifiers = pipeline.flatMap((x) => selectVarsFromConfig(x.config));
-
+  const identifiers = pipeline.flatMap((x) =>
+    selectVariablesFromConfig(x.config)
+  );
   return new Set(identifiers);
 }

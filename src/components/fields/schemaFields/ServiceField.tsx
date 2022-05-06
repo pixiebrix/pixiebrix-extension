@@ -48,7 +48,7 @@ import {
 } from "@/services/serviceUtils";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import { FormState } from "@/pageEditor/pageEditorTypes";
-import { selectVars } from "./serviceFieldUtils";
+import { selectVariables } from "./serviceFieldUtils";
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
 
@@ -116,7 +116,7 @@ function lookupAuthId(
 export function produceExcludeUnusedDependencies<
   T extends ServiceSlice = ServiceSlice
 >(state: T): T {
-  const used = selectVars(state);
+  const used = selectVariables(state);
   return produce(state, (draft) => {
     draft.services = draft.services.filter((x) =>
       used.has(keyToFieldValue(x.outputKey).__value__)
@@ -210,10 +210,6 @@ const ServiceField: React.FunctionComponent<
 
   const { serviceIds, options } = useMemo(() => {
     const serviceIds = extractServiceIds(schema);
-    console.log("serviceIds", {
-      schema,
-      serviceIds,
-    });
     return {
       serviceIds,
       options: isEmpty(serviceIds)

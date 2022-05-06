@@ -21,9 +21,44 @@ import {
   uuidSequence,
   baseExtensionStateFactory,
 } from "@/testUtils/factories";
-import { selectVars } from "./serviceFieldUtils";
+import { selectPipelines, selectVariables } from "./serviceFieldUtils";
+import { Expression, ExpressionType } from "@/core";
 
-describe("select service vars from pipeline", () => {
+function expr<T>(type: ExpressionType, value: T): Expression<T> {
+  return {
+    __type__: type,
+    __value__: value,
+  };
+}
+
+describe("selectPipelines", () => {
+  test("handle blank", () => {
+    expect(selectPipelines([])).toStrictEqual([]);
+  });
+
+  test("handle top-level pipeline", () => {
+    const value = expr("pipeline", [blockConfigFactory()]);
+
+    expect(selectPipelines([value, { foo: 42 }])).toStrictEqual([value]);
+  });
+
+  test("do not select nested pipeline", () => {
+    // The caller is responsible for recursing into the pipelines
+
+    const innerPipeline = expr("pipeline", [blockConfigFactory()]);
+    const outerPipeline = expr("pipeline", [
+      blockConfigFactory({
+        config: {
+          pipelineArg: innerPipeline,
+        },
+      }),
+    ]);
+
+    expect(selectPipelines([outerPipeline])).toStrictEqual([outerPipeline]);
+  });
+});
+
+describe("selectVariables", () => {
   test("selects nothing when no services used", () => {
     const formState = formStateFactory({
       extension: baseExtensionStateFactory({
@@ -35,17 +70,14 @@ describe("select service vars from pipeline", () => {
           }),
           blockConfigFactory({
             config: {
-              input: {
-                __type__: "nunjucks",
-                __value__: "foo: {{ @foo }}",
-              },
+              input: expr("nunjucks", "foo: {{ @foo }}"),
             },
           }),
         ],
       }),
     });
 
-    const actual = selectVars(formState);
+    const actual = selectVariables(formState);
     expect(actual).toEqual(new Set());
   });
 
@@ -53,11 +85,7 @@ describe("select service vars from pipeline", () => {
     const serviceConfig = {
       id: "@test/service",
       instanceId: uuidSequence(1),
-      input: {
-        __type__: "var",
-        __value__: "@foo",
-      },
-      outputKey: "transformed",
+      input: expr("var", "@foo"),
     };
 
     const formState = formStateFactory(
@@ -67,8 +95,22 @@ describe("select service vars from pipeline", () => {
       })
     );
 
-    const actual = selectVars(formState);
+    const actual = selectVariables(formState);
     expect(actual).toEqual(new Set(["@foo"]));
+  });
+
+  test("do not select variable with path seperator", () => {
+    const formState = formStateFactory(
+      undefined,
+      blockConfigFactory({
+        config: {
+          foo: expr("var", "@foo.bar"),
+        },
+      })
+    );
+
+    const actual = selectVariables(formState);
+    expect(actual).toEqual(new Set([]));
   });
 
   test("selects nested vars", () => {
@@ -80,21 +122,15 @@ describe("select service vars from pipeline", () => {
             type: "button",
             config: {
               title: "Action",
-              onClick: {
-                __type__: "pipeline",
-                __value__: [
-                  {
-                    id: "@test/service",
-                    instanceId: uuidSequence(2),
-                    config: {
-                      input: {
-                        __type__: "var",
-                        __value__: "@foo",
-                      },
-                    },
+              onClick: expr("pipeline", [
+                {
+                  id: "@test/service",
+                  instanceId: uuidSequence(2),
+                  config: {
+                    input: expr("var", "@foo"),
                   },
-                ],
-              },
+                },
+              ]),
             },
           },
         ],
@@ -109,7 +145,55 @@ describe("select service vars from pipeline", () => {
       })
     );
 
-    const actual = selectVars(formState);
+    const actual = selectVariables(formState);
     expect(actual).toEqual(new Set(["@foo"]));
+  });
+
+  test("selects nested pipelines", () => {
+    const documentWithButtonConfig = {
+      id: "@test/document",
+      config: {
+        body: [
+          {
+            type: "button",
+            config: {
+              title: "Action",
+              onClick: expr("pipeline", [
+                {
+                  id: "@test/brick",
+                  config: {
+                    input: expr("var", "@foo"),
+                  },
+                },
+                {
+                  id: "@test/if",
+                  config: {
+                    if: expr("pipeline", [
+                      {
+                        id: "@test/brick",
+                        config: {
+                          input: expr("var", "@bar"),
+                        },
+                      },
+                    ]),
+                  },
+                },
+              ]),
+            },
+          },
+        ],
+      },
+      instanceId: uuidSequence(1),
+    };
+
+    const formState = formStateFactory(
+      undefined,
+      blockConfigFactory({
+        config: documentWithButtonConfig,
+      })
+    );
+
+    const actual = selectVariables(formState);
+    expect(actual).toEqual(new Set(["@foo", "@bar"]));
   });
 });
