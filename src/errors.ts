@@ -251,10 +251,12 @@ export function isContextError(error: unknown): error is ContextError {
 }
 
 // The serializeError preserves custom properties that effectively means the "cause" is skipped by the serializer
-export function serializePixiebrixError(error: Error): ErrorObject {
+export function serializePixiebrixError(error: unknown): ErrorObject {
   const serializedError = serializeError(error);
-  if ("cause" in error) {
-    serializedError.cause = serializePixiebrixError(error.cause as Error);
+  if (typeof error === "object" && "cause" in error) {
+    serializedError.cause = serializePixiebrixError(
+      (error as { cause: unknown }).cause
+    );
   }
 
   return serializedError;

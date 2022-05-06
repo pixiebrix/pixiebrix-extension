@@ -77,19 +77,10 @@ export class JQTransformer extends Transformer {
         throw error;
       }
 
-      let message: string;
-      if (error.stack.includes("unexpected $end")) {
-        message =
-          "Unexpected end of jq filter, are you missing a parentheses, brace, and/or quote mark?";
-      } else {
-        const jqMessageFromStack = jqStacktraceRegexp.exec(error.stack)?.groups
-          ?.message;
-        if (jqMessageFromStack == null) {
-          message = "Invalid jq filter, see error log for details";
-        } else {
-          message = jqMessageFromStack.trim();
-        }
-      }
+      const message = error.stack.includes("unexpected $end")
+        ? "Unexpected end of jq filter, are you missing a parentheses, brace, and/or quote mark?"
+        : jqStacktraceRegexp.exec(error.stack)?.groups?.message?.trim() ??
+          "Invalid jq filter, see error log for details";
 
       throw new InputValidationError(
         message,

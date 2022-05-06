@@ -285,16 +285,16 @@ describe("selectError", () => {
   it("wraps primitive from PromiseRejectionEvent", () => {
     const errorEvent = new PromiseRejectionEvent(
       "error",
-      createUncaughtRejection("It’s a non-error")
+      createUncaughtRejection("It's a non-error")
     );
 
     expect(selectError(errorEvent)).toMatchInlineSnapshot(
-      "[Error: It’s a non-error]"
+      "[Error: It's a non-error]"
     );
   });
 });
 
-describe("serializatin", () => {
+describe("serialization", () => {
   test("serializes error cause", () => {
     const inputValidationError = new InputValidationError(
       "test input validation error",
