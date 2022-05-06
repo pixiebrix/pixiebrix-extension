@@ -291,9 +291,9 @@ const CreateRecipeModal: React.VFC = () => {
   const activeRecipeId = directlyActiveRecipeId ?? activeElement?.recipe?.id;
 
   const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
-  const activeRecipe = recipes?.find(
-    (recipe) => activeRecipeId && recipe.metadata.id === activeRecipeId
-  );
+  const activeRecipe = activeRecipeId
+    ? recipes?.find((recipe) => recipe.metadata.id === activeRecipeId)
+    : undefined;
 
   const formSchema = useFormSchema();
 
