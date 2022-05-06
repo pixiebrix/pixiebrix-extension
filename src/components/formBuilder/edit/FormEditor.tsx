@@ -30,9 +30,9 @@ import {
   DEFAULT_FIELD_TYPE,
   generateNewPropertyName,
   moveStringInArray,
+  normalizeSchema,
   normalizeUiOrder,
   replaceStringInArray,
-  updateRjsfSchemaWithDefaultsIfNeeded,
 } from "@/components/formBuilder/formBuilderHelpers";
 import { UI_ORDER } from "@/components/formBuilder/schemaFieldNames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -72,14 +72,6 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
   const { schema, uiSchema } = rjsfSchema;
 
-  useEffect(() => {
-    // Set default values if needed
-    const nextRjsfSchema = updateRjsfSchemaWithDefaultsIfNeeded(rjsfSchema);
-    if (nextRjsfSchema !== null) {
-      setRjsfSchema(nextRjsfSchema);
-    }
-  }, [rjsfSchema, setRjsfSchema]);
-
   // Select the active field when FormEditor field changes
   useEffect(
     () => {
@@ -118,11 +110,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
     return { titleFieldProps, descriptionFieldProps };
   }, [name]);
 
-  if (!schema || !uiSchema) {
-    return null;
-  }
-
-  const propertyKeys = Object.keys(schema.properties ?? {});
+  const propertyKeys = Object.keys(schema?.properties ?? {});
 
   const addProperty = () => {
     const propertyName = generateNewPropertyName(propertyKeys);
@@ -145,12 +133,16 @@ const FormEditor: React.FC<FormEditorProps> = ({
         );
 
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
-      draft.uiSchema[UI_ORDER] = nextUiOrder;
-      if (!draft.schema.properties) {
-        draft.schema.properties = {};
+      draft.schema = normalizeSchema(schema);
+      // eslint-disable-next-line security/detect-object-injection -- prop name is generated
+      draft.schema.properties[propertyName] = newProperty;
+
+      if (!uiSchema) {
+        draft.uiSchema = {};
       }
 
-      draft.schema.properties[propertyName] = newProperty;
+      // eslint-disable-next-line security/detect-object-injection -- prop name is a constant
+      draft.uiSchema[UI_ORDER] = nextUiOrder;
     });
     setRjsfSchema(nextRjsfSchema);
     setActiveField(propertyName);
@@ -176,6 +168,8 @@ const FormEditor: React.FC<FormEditorProps> = ({
     setActiveField(nextActiveField);
 
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
+      draft.schema = normalizeSchema(schema);
+
       if (schema.required?.length > 0) {
         draft.schema.required = replaceStringInArray(
           schema.required,
@@ -183,29 +177,35 @@ const FormEditor: React.FC<FormEditorProps> = ({
         );
       }
 
-      draft.uiSchema[UI_ORDER] = nextUiOrder;
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
       delete draft.schema.properties[propertyToRemove];
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+
+      if (!uiSchema) {
+        draft.uiSchema = {};
+      }
+
+      // eslint-disable-next-line security/detect-object-injection -- prop name is a constant
+      draft.uiSchema[UI_ORDER] = nextUiOrder;
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
       delete draft.uiSchema[propertyToRemove];
     });
 
     setRjsfSchema(nextRjsfSchema);
   };
 
-  // There's always at least 1 item in uiOrder array, "*".
+  // The uiOrder field may not be initialized yet
+  const order = uiOrder ?? ["*"];
   const canMoveUp =
     Boolean(activeField) &&
-    (uiOrder?.length > 2
-      ? uiOrder[0] !== activeField
+    (order.length > 2
+      ? order[0] !== activeField
       : propertyKeys[0] !== activeField);
   const canMoveDown =
     Boolean(activeField) &&
-    (uiOrder?.length === propertyKeys.length + 1
-      ? uiOrder[uiOrder.length - 2] !== activeField
-      : Array.isArray(uiOrder) &&
-        findLast(propertyKeys, (key) => !uiOrder.includes(key)) !==
-          activeField);
+    (order.length === propertyKeys.length + 1
+      ? order[order.length - 2] !== activeField
+      : Array.isArray(order) &&
+        findLast(propertyKeys, (key) => !order.includes(key)) !== activeField);
 
   return (
     <>
@@ -242,7 +242,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
         </Col>
       </Row>
 
-      {activeField && Boolean(schema.properties?.[activeField]) && (
+      {activeField && Boolean(schema?.properties?.[activeField]) && (
         <FieldEditor
           name={name}
           propertyName={activeField}

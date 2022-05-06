@@ -255,13 +255,18 @@ function useInitialFormState({
 
 function useFormSchema() {
   const newRecipeIds = useSelector(selectNewRecipeIds);
+  const { data: recipes } = useGetRecipesQuery();
+  const savedRecipeIds: RegistryId[] = (recipes ?? []).map(
+    (x) => x.metadata.id
+  );
+  const allRecipeIds = [...newRecipeIds, ...savedRecipeIds];
 
   // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
   // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
   return object({
     id: string()
       .matches(PACKAGE_REGEX, "Invalid registry id")
-      .notOneOf(newRecipeIds, "This id is already in use")
+      .notOneOf(allRecipeIds, "This id is already in use")
       .required(),
     name: string().required(),
     version: string()
