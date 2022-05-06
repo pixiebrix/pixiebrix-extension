@@ -111,7 +111,15 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   return (
     <Formik initialValues={initialValues} onSubmit={install}>
       {({ handleSubmit }) => (
-        <Form id="activate-wizard" noValidate onSubmit={handleSubmit}>
+        <Form
+          id="activate-wizard"
+          noValidate
+          onKeyDown={(event) => {
+            // Don't submit form on "enter" key. Only submit on using "activate"
+            event.preventDefault();
+          }}
+          onSubmit={handleSubmit}
+        >
           <Tab.Container activeKey={stepKey}>
             <Nav
               variant="pills"
