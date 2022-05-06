@@ -16,18 +16,20 @@
  */
 
 import { UnknownObject } from "@/types";
-import { IBlock } from "@/core";
+import { RegistryId } from "@/core";
 import { COMPONENT_READER_ID } from "@/blocks/transformers/component/ComponentReader";
 
-export function getExampleBlockConfig(block: IBlock): UnknownObject | null {
-  if (block.id === COMPONENT_READER_ID) {
+export function getExampleBlockConfig(
+  blockId: RegistryId
+): UnknownObject | null {
+  if (blockId === COMPONENT_READER_ID) {
     return {
       selector: "",
       optional: false,
     };
   }
 
-  if (block.id === "@pixiebrix/jquery-reader") {
+  if (blockId === "@pixiebrix/jquery-reader") {
     return {
       selectors: {
         property: "",
@@ -35,7 +37,7 @@ export function getExampleBlockConfig(block: IBlock): UnknownObject | null {
     };
   }
 
-  if (block.id === "@pixiebrix/form-modal") {
+  if (blockId === "@pixiebrix/form-modal") {
     return {
       schema: {
         title: "Example Form",
@@ -55,7 +57,7 @@ export function getExampleBlockConfig(block: IBlock): UnknownObject | null {
     };
   }
 
-  if (block.id === "@pixiebrix/form") {
+  if (blockId === "@pixiebrix/form") {
     return {
       schema: {
         title: "Example Form",
@@ -76,7 +78,7 @@ export function getExampleBlockConfig(block: IBlock): UnknownObject | null {
     };
   }
 
-  if (block.id === "@pixiebrix/document") {
+  if (blockId === "@pixiebrix/document") {
     return {
       body: [
         {

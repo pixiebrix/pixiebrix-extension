@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IBlock } from "@/core";
 import { getExampleBlockConfig } from "@/pageEditor/tabs/editTab/exampleBlockConfigs";
 import {
   createFormikTemplate,
@@ -37,9 +36,9 @@ let defaultFieldName: string;
 
 beforeAll(() => {
   registerDefaultWidgets();
-  const { schema, uiSchema } = getExampleBlockConfig({
-    id: validateRegistryId("@pixiebrix/form"),
-  } as IBlock);
+  const { schema, uiSchema } = getExampleBlockConfig(
+    validateRegistryId("@pixiebrix/form")
+  );
   exampleFormSchema = {
     schema,
     uiSchema,

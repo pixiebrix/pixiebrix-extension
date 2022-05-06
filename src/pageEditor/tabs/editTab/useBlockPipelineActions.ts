@@ -67,7 +67,8 @@ function useBlockPipelineActions(
         id: block.id,
         instanceId: uuidv4(),
         config:
-          getExampleBlockConfig(block) ?? defaultBlockConfig(block.inputSchema),
+          getExampleBlockConfig(block.id) ??
+          defaultBlockConfig(block.inputSchema),
       };
       if (outputKey) {
         newBlock.outputKey = outputKey;

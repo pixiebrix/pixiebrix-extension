@@ -37,6 +37,7 @@ import {
   updateDynamicElement,
 } from "@/contentScript/messenger/api";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { getExampleBlockPipeline } from "./exampleExtensionConfig";
 
 const { addElement } = editorSlice.actions;
 
@@ -92,10 +93,18 @@ const GenericInsertPane: React.FunctionComponent<{
       const url = await getCurrentURL();
 
       const metadata = internalExtensionPointMetaFactory();
+      const formState = config.fromNativeElement(
+        url,
+        metadata,
+        undefined,
+        []
+      ) as FormState;
 
-      await start(
-        config.fromNativeElement(url, metadata, undefined, []) as FormState
+      formState.extension.blockPipeline = getExampleBlockPipeline(
+        formState.type
       );
+
+      await start(formState);
     } catch (error) {
       notify.error({ message: "Error using adding new element", error });
     }
