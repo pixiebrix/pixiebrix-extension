@@ -133,15 +133,16 @@ const FormEditor: React.FC<FormEditorProps> = ({
         );
 
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
+      draft.schema = normalizeSchema(schema);
+      // eslint-disable-next-line security/detect-object-injection -- prop name is generated
+      draft.schema.properties[propertyName] = newProperty;
+
       if (!uiSchema) {
         draft.uiSchema = {};
       }
 
       // eslint-disable-next-line security/detect-object-injection -- prop name is a constant
       draft.uiSchema[UI_ORDER] = nextUiOrder;
-      draft.schema = normalizeSchema(schema);
-      // eslint-disable-next-line security/detect-object-injection -- prop name is generated
-      draft.schema.properties[propertyName] = newProperty;
     });
     setRjsfSchema(nextRjsfSchema);
     setActiveField(propertyName);
@@ -176,14 +177,15 @@ const FormEditor: React.FC<FormEditorProps> = ({
         );
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
+      delete draft.schema.properties[propertyToRemove];
+
       if (!uiSchema) {
         draft.uiSchema = {};
       }
 
       // eslint-disable-next-line security/detect-object-injection -- prop name is a constant
       draft.uiSchema[UI_ORDER] = nextUiOrder;
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
-      delete draft.schema.properties[propertyToRemove];
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
       delete draft.uiSchema[propertyToRemove];
     });
