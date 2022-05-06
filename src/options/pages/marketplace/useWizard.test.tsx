@@ -14,11 +14,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-// import {extensionFactory, versionedExtensionPointRecipeFactory} from "@/tests/factories";
-// import useWizard from "@/options/pages/marketplace/useWizard";
-// import * as redux from "react-redux";
-
-import React from "react";
 import * as redux from "react-redux";
 import { recipeDefinitionFactory } from "@/testUtils/factories";
 import useWizard from "@/options/pages/marketplace/useWizard";
@@ -28,41 +23,6 @@ import { renderHook } from "@testing-library/react-hooks";
 jest.mock("@/options/pages/marketplace/AuthWidget", () => {});
 jest.mock("react-redux");
 jest.mock("connected-react-router");
-
-// describe("useWizard reinstall", () => {
-//   test("prefills existing options", () => {
-//     const blueprint = versionedExtensionPointRecipeFactory()({
-//       options: {
-//         schema: {
-//           properties: {
-//             textField: {
-//               type: "string",
-//             },
-//             newField: {
-//               type: "string",
-//               default: "new field default",
-//             }
-//           }
-//         },
-//       }
-//     });
-//
-//     (redux.useSelector as any).mockReturnValue([
-//       extensionFactory({
-//         optionsArgs: {
-//           textField: "hello, world!",
-//         }
-//       }),
-//     ])
-//
-//     const [, initialValues] = useWizard(blueprint);
-//
-//     expect(initialValues.optionsArgs).toStrictEqual({
-//       textField: "hello, world!",
-//       newField: "new field default",
-//     });
-//   });
-// });
 
 describe("useWizard", () => {
   test("show personalized tab", () => {
