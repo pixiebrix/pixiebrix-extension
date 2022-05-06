@@ -18,11 +18,17 @@
 // import useWizard from "@/options/pages/marketplace/useWizard";
 // import * as redux from "react-redux";
 
-jest.mock("@/options/store");
-jest.mock("@/options/pages/marketplace/AuthWidget");
+import React from "react";
+import * as redux from "react-redux";
+import { recipeDefinitionFactory } from "@/testUtils/factories";
+import useWizard from "@/options/pages/marketplace/useWizard";
+import { OptionsDefinition } from "@/types/definitions";
+import { renderHook } from "@testing-library/react-hooks";
+
+jest.mock("@/options/pages/marketplace/AuthWidget", () => {});
 jest.mock("react-redux");
 jest.mock("connected-react-router");
-//
+
 // describe("useWizard reinstall", () => {
 //   test("prefills existing options", () => {
 //     const blueprint = versionedExtensionPointRecipeFactory()({
@@ -58,6 +64,38 @@ jest.mock("connected-react-router");
 //   });
 // });
 
-test("dummy test", () => {
-  // NOP: dummy test so that Jest doesn't complain about a test module without any tests
+describe("useWizard", () => {
+  test("hide personalized tab for empty schema", () => {
+    const spy = jest.spyOn(redux, "useSelector");
+    spy.mockReturnValue([]);
+
+    const { result } = renderHook(() =>
+      useWizard(
+        recipeDefinitionFactory({
+          // Page Editor produces normalized form
+          options: { schema: { properties: {} } } as OptionsDefinition,
+        })
+      )
+    );
+
+    const [steps] = result.current;
+    expect(steps).toHaveLength(2);
+  });
+
+  test("hide personalized tab for empty shorthand schema", () => {
+    const spy = jest.spyOn(redux, "useSelector");
+    spy.mockReturnValue([]);
+
+    const { result } = renderHook(() =>
+      useWizard(
+        recipeDefinitionFactory({
+          // Shorthand manually written
+          options: { schema: {} } as OptionsDefinition,
+        })
+      )
+    );
+
+    const [steps] = result.current;
+    expect(steps).toHaveLength(2);
+  });
 });
