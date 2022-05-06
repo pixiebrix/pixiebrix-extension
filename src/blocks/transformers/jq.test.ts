@@ -21,11 +21,41 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { InputValidationError } from "@/blocks/errors";
 import { BusinessError } from "@/errors";
 
+describe("smoke tests", () => {
+  test("passes input to filter", async () => {
+    const promise = new JQTransformer().transform(
+      unsafeAssumeValidArg({ filter: ".foo", data: { foo: 42 } }),
+      {
+        ctxt: {},
+        root: null,
+        logger: new ConsoleLogger(),
+      }
+    );
+
+    await expect(promise).resolves.toStrictEqual(42);
+  });
+});
+
+describe("ctxt", () => {
+  test.each([[null], [""]])("pass context if data is %s", async (data) => {
+    const promise = new JQTransformer().transform(
+      unsafeAssumeValidArg({ filter: ".foo", data }),
+      {
+        ctxt: { foo: 42 },
+        root: null,
+        logger: new ConsoleLogger(),
+      }
+    );
+
+    await expect(promise).resolves.toStrictEqual(42);
+  });
+});
+
 describe("parse compile error", () => {
   test("invalid fromdate", async () => {
     // https://github.com/pixiebrix/pixiebrix-extension/issues/3216
     const promise = new JQTransformer().transform(
-      unsafeAssumeValidArg({ filter: '"" | fromdate', input: {} }),
+      unsafeAssumeValidArg({ filter: '"" | fromdate', data: {} }),
       {
         ctxt: {},
         root: null,
@@ -42,7 +72,7 @@ describe("parse compile error", () => {
   test("missing brace", async () => {
     // https://github.com/pixiebrix/pixiebrix-extension/issues/3216
     const promise = new JQTransformer().transform(
-      unsafeAssumeValidArg({ filter: "{", input: {} }),
+      unsafeAssumeValidArg({ filter: "{", data: {} }),
       {
         ctxt: {},
         root: null,
@@ -59,7 +89,7 @@ describe("parse compile error", () => {
   test("null iteration", async () => {
     // https://github.com/pixiebrix/pixiebrix-extension/issues/3216
     const promise = new JQTransformer().transform(
-      unsafeAssumeValidArg({ filter: ".foo[]", input: {} }),
+      unsafeAssumeValidArg({ filter: ".foo[]", data: {} }),
       {
         ctxt: {},
         root: null,
