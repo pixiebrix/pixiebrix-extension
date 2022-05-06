@@ -114,11 +114,17 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
         <Form
           id="activate-wizard"
           noValidate
-          onKeyDown={(event) => {
-            // Don't submit form on "enter" key. Only submit on using "activate"
-            event.preventDefault();
-          }}
           onSubmit={handleSubmit}
+          onKeyDown={(event) => {
+            if (
+              event.key === "Enter" &&
+              (event.nativeEvent.target as HTMLElement).tagName !== "TEXTAREA"
+            ) {
+              // Don't submit form on "enter" key. Only submit on using "Activate" button
+              event.preventDefault();
+              return false;
+            }
+          }}
         >
           <Tab.Container activeKey={stepKey}>
             <Nav
