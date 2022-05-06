@@ -15,20 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlockPipeline } from "@/blocks/types";
-import { ExtensionPointType } from "@/extensionPoints/types";
-import { createNewBlock } from "@/pageEditor/tabs/editTab/createNewBlock";
-import { validateRegistryId } from "@/types/helpers";
+import { BlockConfig } from "@/blocks/types";
+import { defaultBlockConfig } from "@/blocks/util";
+import { RegistryId, Schema } from "@/core";
+import { uuidv4 } from "@/types/helpers";
+import { getExampleBlockConfig } from "./exampleBlockConfigs";
 
-const documentBlockId = validateRegistryId("@pixiebrix/document");
-
-export function getExampleBlockPipeline(
-  type: ExtensionPointType
-): BlockPipeline {
-  if (type === "actionPanel") {
-    const documentBuilderBlock = createNewBlock(documentBlockId);
-    return [documentBuilderBlock];
-  }
-
-  return [];
+export function createNewBlock(
+  blockId: RegistryId,
+  blockInputSchema?: Schema
+): BlockConfig {
+  return {
+    id: blockId,
+    instanceId: uuidv4(),
+    config:
+      getExampleBlockConfig(blockId) ??
+      (blockInputSchema == null ? {} : defaultBlockConfig(blockInputSchema)),
+  };
 }
