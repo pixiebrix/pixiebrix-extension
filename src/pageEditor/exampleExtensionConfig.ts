@@ -15,7 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.status {
-  border: none;
-  border-radius: 0;
+import { BlockPipeline } from "@/blocks/types";
+import { ExtensionPointType } from "@/extensionPoints/types";
+import { createNewBlock } from "@/pageEditor/createNewBlock";
+import { validateRegistryId } from "@/types/helpers";
+
+const documentBlockId = validateRegistryId("@pixiebrix/document");
+
+export function getExampleBlockPipeline(
+  type: ExtensionPointType
+): BlockPipeline {
+  if (type === "actionPanel") {
+    const documentBuilderBlock = createNewBlock(documentBlockId);
+    return [documentBuilderBlock];
+  }
+
+  return [];
 }
