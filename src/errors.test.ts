@@ -27,11 +27,13 @@ import {
   MultipleElementsFoundError,
   NoElementsFoundError,
   selectError,
+  serializeErrorAndProperties,
 } from "@/errors";
 import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
 import { matchesAnyPattern } from "@/utils";
+import { isPlainObject } from "@reduxjs/toolkit";
 
 const TEST_MESSAGE = "Test message";
 
@@ -283,11 +285,32 @@ describe("selectError", () => {
   it("wraps primitive from PromiseRejectionEvent", () => {
     const errorEvent = new PromiseRejectionEvent(
       "error",
-      createUncaughtRejection("It’s a non-error")
+      createUncaughtRejection("It's a non-error")
     );
 
     expect(selectError(errorEvent)).toMatchInlineSnapshot(
-      "[Error: It’s a non-error]"
+      "[Error: It's a non-error]"
     );
+  });
+});
+
+describe("serialization", () => {
+  test("serializes error cause", () => {
+    const inputValidationError = new InputValidationError(
+      "test input validation error",
+      null,
+      null,
+      []
+    );
+    const contextError = new ContextError("text context error", {
+      cause: inputValidationError,
+    });
+
+    const serializedError = serializeErrorAndProperties(contextError);
+
+    // Use the isPlainObject from "@reduxjs/toolkit" because it's Redux that requires the object in the state to be
+    // serializable. We want it to be serializable and especially serializable for redux.
+    expect(isPlainObject(serializedError)).toBeTruthy();
+    expect(isPlainObject(serializedError.cause)).toBeTruthy();
   });
 });

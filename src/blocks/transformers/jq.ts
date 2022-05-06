@@ -20,7 +20,9 @@ import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
 import { InputValidationError } from "@/blocks/errors";
-import { isErrorObject } from "@/errors";
+import { BusinessError, isErrorObject } from "@/errors";
+
+const jqStacktraceRegexp = /jq: error \(at <stdin>:0\): (?<message>.*)/;
 
 export class JQTransformer extends Transformer {
   override async isPure(): Promise<boolean> {
@@ -66,13 +68,24 @@ export class JQTransformer extends Transformer {
       // eslint-disable-next-line @typescript-eslint/return-await -- Type is `any`, it throws the rule off
       return await jq.promised.json(input, filter);
     } catch (error) {
-      if (!isErrorObject(error) || !error.message.includes("compile error")) {
+      // The message length check is there because the JQ error message sometimes is cut and if it is we try to parse the stacktrace
+      // See https://github.com/pixiebrix/pixiebrix-extension/issues/3216
+      if (
+        !isErrorObject(error) ||
+        (error.message.length > 13 && !error.message.includes("compile error"))
+      ) {
+        // Unless there's bug in jq itself, if there's an error at this point, it's business error
+        if (isErrorObject(error)) {
+          throw new BusinessError(error.message, { cause: error });
+        }
+
         throw error;
       }
 
       const message = error.stack.includes("unexpected $end")
         ? "Unexpected end of jq filter, are you missing a parentheses, brace, and/or quote mark?"
-        : "Invalid jq filter, see error log for details";
+        : jqStacktraceRegexp.exec(error.stack)?.groups?.message?.trim() ??
+          "Invalid jq filter, see error log for details";
 
       throw new InputValidationError(
         message,
