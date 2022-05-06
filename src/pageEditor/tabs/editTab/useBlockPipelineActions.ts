@@ -30,7 +30,7 @@ import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import { createNewBlock } from "./createNewBlock";
+import { createNewBlock } from "@/pageEditor/createNewBlock";
 
 type BlockPipelineActions = {
   addBlock: (block: IBlock, pipelineIndex: number) => void;

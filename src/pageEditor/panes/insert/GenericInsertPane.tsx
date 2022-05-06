@@ -37,7 +37,7 @@ import {
   updateDynamicElement,
 } from "@/contentScript/messenger/api";
 import { FormState } from "@/pageEditor/pageEditorTypes";
-import { getExampleBlockPipeline } from "./exampleExtensionConfig";
+import { getExampleBlockPipeline } from "@/pageEditor/exampleExtensionConfig";
 
 const { addElement } = editorSlice.actions;
 
