@@ -65,6 +65,25 @@ jest.mock("connected-react-router");
 // });
 
 describe("useWizard", () => {
+  test("show personalized tab", () => {
+    const spy = jest.spyOn(redux, "useSelector");
+    spy.mockReturnValue([]);
+
+    const { result } = renderHook(() =>
+      useWizard(
+        recipeDefinitionFactory({
+          // Page Editor produces normalized form
+          options: {
+            schema: { properties: { foo: { type: "string" } } },
+          } as OptionsDefinition,
+        })
+      )
+    );
+
+    const [steps] = result.current;
+    expect(steps).toHaveLength(3);
+  });
+
   test("hide personalized tab for empty schema", () => {
     const spy = jest.spyOn(redux, "useSelector");
     spy.mockReturnValue([]);
