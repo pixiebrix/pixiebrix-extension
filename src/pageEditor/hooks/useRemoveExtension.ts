@@ -24,7 +24,7 @@ import { reportEvent } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
-import { uninstallContextMenu } from "@/background/messenger/api";
+import { traces, uninstallContextMenu } from "@/background/messenger/api";
 import {
   clearDynamicElements,
   removeSidebar,
@@ -72,6 +72,7 @@ function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
         await Promise.allSettled([
           uninstallContextMenu({ extensionId }),
           removeSidebar(thisTab, extensionId),
+          traces.clear(extensionId),
         ]);
 
         // Remove from page editor

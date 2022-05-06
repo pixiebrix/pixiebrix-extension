@@ -124,7 +124,7 @@ const RecipePane: React.VFC = () => {
       // Remove
       variant: "danger",
       onClick() {
-        void removeRecipe(activeRecipeId);
+        void removeRecipe({ recipeId: activeRecipeId });
         forceRefreshLayout();
       },
       caption: "Remove",
