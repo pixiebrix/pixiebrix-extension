@@ -20,7 +20,7 @@ import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
 import { InputValidationError } from "@/blocks/errors";
-import { isErrorObject } from "@/errors";
+import { BusinessError, isErrorObject } from "@/errors";
 
 const jqStacktraceRegexp = /jq: error \(at <stdin>:0\): (?<message>.*)/;
 
@@ -74,6 +74,11 @@ export class JQTransformer extends Transformer {
         !isErrorObject(error) ||
         (error.message.length > 13 && !error.message.includes("compile error"))
       ) {
+        // Unless there's bug in jq itself, if there's an error at this point, it's business error
+        if (isErrorObject(error)) {
+          throw new BusinessError(error.message, { cause: error });
+        }
+
         throw error;
       }
 

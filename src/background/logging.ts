@@ -32,7 +32,7 @@ import {
   IGNORED_ERROR_PATTERNS,
   isAxiosError,
   isContextError,
-  serializePixiebrixError,
+  serializeErrorAndProperties,
 } from "@/errors";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { isAppRequest, selectAbsoluteUrl } from "@/services/requestErrorUtils";
@@ -332,9 +332,9 @@ export async function recordError(
         context: flatContext,
         message,
         data,
-
-        // Ensure it's serialized
-        error: serializePixiebrixError(maybeSerializedError as Error),
+        // Ensure the object is fully serialized. Required because it will be stored in IDB and flow through the Redux
+        // state. Can be converted to serializeError after https://github.com/sindresorhus/serialize-error/issues/74
+        error: serializeErrorAndProperties(maybeSerializedError),
       }),
     ]);
   } catch (recordError) {

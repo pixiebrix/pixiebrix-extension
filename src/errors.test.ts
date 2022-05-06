@@ -27,7 +27,7 @@ import {
   MultipleElementsFoundError,
   NoElementsFoundError,
   selectError,
-  serializePixiebrixError,
+  serializeErrorAndProperties,
 } from "@/errors";
 import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
@@ -306,8 +306,10 @@ describe("serialization", () => {
       cause: inputValidationError,
     });
 
-    const serializedError = serializePixiebrixError(contextError);
+    const serializedError = serializeErrorAndProperties(contextError);
 
+    // Use the isPlainObject from "@reduxjs/toolkit" because it's Redux that requires the object in the state to be
+    // serializable. We want it to be serializable and especially serializable for redux.
     expect(isPlainObject(serializedError)).toBeTruthy();
     expect(isPlainObject(serializedError.cause)).toBeTruthy();
   });
