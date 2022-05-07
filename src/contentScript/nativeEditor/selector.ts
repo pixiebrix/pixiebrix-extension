@@ -18,7 +18,7 @@ import Overlay from "@/vendors/Overlay";
 import {
   findContainer,
   safeCssSelector,
-} from "@/contentScript/nativeEditor/infer";
+} from "@/contentScript/nativeEditor/selectorInference";
 import { Framework } from "@/messaging/constants";
 import { uniq } from "lodash";
 import * as pageScript from "@/pageScript/protocol";
