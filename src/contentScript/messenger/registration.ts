@@ -62,7 +62,7 @@ import { runBrick } from "@/contentScript/executor";
 import {
   cancelSelect,
   selectElement,
-} from "@/contentScript/nativeEditor/selector";
+} from "@/contentScript/nativeEditor/elementPicker";
 import {
   runEffectPipeline,
   runMapArgs,
