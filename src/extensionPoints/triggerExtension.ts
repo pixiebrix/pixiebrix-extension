@@ -36,7 +36,7 @@ import {
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { Permissions } from "webextension-polyfill";
-import { castArray, cloneDeep, compact, debounce, noop } from "lodash";
+import { castArray, cloneDeep, compact, debounce, noop, pick } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
@@ -57,6 +57,9 @@ import { $safeFind } from "@/helpers";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import pluralize from "@/utils/pluralize";
 import { PromiseCancelled } from "@/errors";
+import { UnknownObject } from "@/types";
+
+const NO_NATIVE_EVENT: Event = null;
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -91,6 +94,7 @@ export type Trigger =
   | "mouseover"
   | "keydown"
   | "keyup"
+  | "keypress"
   | "change";
 
 type IntervalArgs = {
@@ -155,6 +159,22 @@ async function interval({
   console.debug("interval:completed");
 }
 
+function pickEventProperties(nativeEvent: Event): UnknownObject {
+  if (nativeEvent instanceof KeyboardEvent) {
+    // Can't use Object.entries because they're on the prototype
+    return pick(nativeEvent, [
+      "key",
+      "keyCode",
+      "metaKey",
+      "altKey",
+      "shiftKey",
+      "ctrlKey",
+    ]);
+  }
+
+  return {};
+}
+
 export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig> {
   abstract get trigger(): Trigger;
 
@@ -196,6 +216,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
    */
   // Can't set in constructor because the constructor doesn't have access to debounceOptions
   private debouncedRunTriggersAndNotify?: (
+    nativeEvent: Event | null,
     ...roots: ReaderRoot[]
   ) => Promise<void>;
 
@@ -329,7 +350,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       event,
     });
 
-    let element = event.target;
+    let element: HTMLElement | Document = event.target;
 
     if (this.targetMode === "root") {
       element = $(event.target).closest(this.triggerSelector).get(0);
@@ -339,7 +360,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       );
     }
 
-    await this.debouncedRunTriggersAndNotify(element);
+    await this.debouncedRunTriggersAndNotify(event.originalEvent, element);
   };
 
   /**
@@ -350,9 +371,18 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
    * @return array of errors from the extensions
    * @throws Error on non-extension error, e.g., reader error for the default reader
    */
-  private async _runTrigger(root: ReaderRoot): Promise<unknown[]> {
+  private async _runTrigger(
+    nativeEvent: Event | null,
+    root: ReaderRoot
+  ): Promise<unknown[]> {
     const reader = await this.defaultReader();
-    const readerContext = await reader.read(root);
+
+    console.log("event", nativeEvent);
+
+    const readerContext = {
+      event: nativeEvent ? pickEventProperties(nativeEvent) : null,
+      ...(await reader.read(root)),
+    };
     const errors = await Promise.all(
       this.extensions.map(async (extension) => {
         const extensionLogger = this.logger.childLogger(
@@ -374,8 +404,13 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   /**
    * DO NOT CALL DIRECTLY: should call debouncedRunTriggersAndNotify.
    */
-  private async _runTriggersAndNotify(...roots: ReaderRoot[]): Promise<void> {
-    const promises = roots.map(async (root) => this._runTrigger(root));
+  private async _runTriggersAndNotify(
+    nativeEvent: Event | null,
+    ...roots: ReaderRoot[]
+  ): Promise<void> {
+    const promises = roots.map(async (root) =>
+      this._runTrigger(nativeEvent, root)
+    );
     const results = await Promise.allSettled(promises);
     const errors = results.flatMap((x) =>
       // `runTrigger` fulfills with list of extension error from extension, or rejects on other error, e.g., reader
@@ -442,7 +477,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
       const intervalEffect = async () => {
         const $root = await this.getRoot();
-        await this.debouncedRunTriggersAndNotify(...$root);
+        await this.debouncedRunTriggersAndNotify(NO_NATIVE_EVENT, ...$root);
       };
 
       void interval({
@@ -469,14 +504,14 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     // The caller will have already waited for the element. So $element will contain at least one element
     if (this.attachMode === "once") {
-      void this.debouncedRunTriggersAndNotify(...$element);
+      void this.debouncedRunTriggersAndNotify(NO_NATIVE_EVENT, ...$element);
       return;
     }
 
     const observer = initialize(
       this.triggerSelector,
       (index, element: HTMLElement) => {
-        void this.debouncedRunTriggersAndNotify(element);
+        void this.debouncedRunTriggersAndNotify(NO_NATIVE_EVENT, element);
       },
       // `target` is a required option
       { target: document }
@@ -496,7 +531,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         const roots = entries
           .filter((x) => x.isIntersecting)
           .map((x) => x.target as HTMLElement);
-        void this.debouncedRunTriggersAndNotify(...roots);
+        void this.debouncedRunTriggersAndNotify(NO_NATIVE_EVENT, ...roots);
       },
       {
         root: null,
@@ -597,7 +632,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     switch (this.trigger) {
       case "load": {
-        await this.debouncedRunTriggersAndNotify(...$root);
+        await this.debouncedRunTriggersAndNotify(NO_NATIVE_EVENT, ...$root);
         break;
       }
 
