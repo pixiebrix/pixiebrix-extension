@@ -377,12 +377,12 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   ): Promise<unknown[]> {
     const reader = await this.defaultReader();
 
-    console.log("event", nativeEvent);
-
     const readerContext = {
+      // The default reader overrides the event property
       event: nativeEvent ? pickEventProperties(nativeEvent) : null,
       ...(await reader.read(root)),
     };
+
     const errors = await Promise.all(
       this.extensions.map(async (extension) => {
         const extensionLogger = this.logger.childLogger(
