@@ -18,6 +18,7 @@ import ConfigureBody from "@/options/pages/marketplace/ConfigureBody";
 import OptionsBody from "@/options/pages/marketplace/OptionsBody";
 import ServicesBody from "@/options/pages/marketplace/ServicesBody";
 import ActivateBody from "@/options/pages/marketplace/ActivateBody";
+import { inputProperties } from "@/helpers";
 
 const STEPS: WizardStep[] = [
   { key: "review", label: "Select Bricks", Component: ConfigureBody },
@@ -62,7 +63,7 @@ function useWizard(blueprint: RecipeDefinition): [WizardStep[], WizardValues] {
         }
 
         case "options": {
-          return !isEmpty(blueprint.options?.schema);
+          return !isEmpty(inputProperties(blueprint.options?.schema ?? {}));
         }
 
         default: {
