@@ -16,16 +16,18 @@
  */
 
 import LazyLocatorFactory from "@/services/locator";
-import { forbidContext } from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 
 export const locator = new LazyLocatorFactory();
 
 export default async function initLocator() {
-  // Service locator cannot run in contentScript due to CSP and wanting to isolate local secrets
-  forbidContext(
-    "contentScript",
-    "The service locator cannot run in the contentScript"
+  // Service locator cannot run in contentScript due to CSP and wanting to isolate local secrets.
+  // Force use of background page to ensure there's a singleton locator instance across all frames/pages.
+  expectContext(
+    "background",
+    "The service locator must run in the background worker"
   );
+
   console.debug("Eagerly initializing service locator");
   await locator.refresh();
 }
@@ -34,10 +36,11 @@ export async function refreshServices({
   local = true,
   remote = true,
 } = {}): Promise<void> {
-  // Service locator cannot run in contentScript due to CSP and wanting to isolate local secrets
-  forbidContext(
-    "contentScript",
-    "The service locator cannot run in the contentScript"
+  // Service locator cannot run in contentScript due to CSP and wanting to isolate local secrets.
+  // Force use of background page to ensure there's a singleton locator instance across all frames/pages.
+  expectContext(
+    "background",
+    "The service locator must run in the background worker"
   );
 
   if (remote && local) {

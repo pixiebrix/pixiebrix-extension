@@ -35,7 +35,7 @@ import { PACKAGE_REGEX } from "@/types/helpers";
 import { freshIdentifier } from "@/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
-import SelectWidget, {
+import {
   SelectLike,
   SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
@@ -49,6 +49,7 @@ import {
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { selectVariables } from "./serviceFieldUtils";
+import ServiceSelectWidget from "@/components/fields/schemaFields/widgets/ServiceSelectWidget";
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
 
@@ -202,7 +203,7 @@ const ServiceField: React.FunctionComponent<
   }
 > = ({ detectDefault = true, ...props }) => {
   const { schema } = props;
-  const [authOptions] = useAuthOptions();
+  const [authOptions, refreshOptions] = useAuthOptions();
   const { values: root, setValues: setRootValues } =
     useFormikContext<ServiceSlice>();
   const [{ value, ...field }, meta, helpers] =
@@ -313,9 +314,10 @@ const ServiceField: React.FunctionComponent<
           </span>
         </>
       }
-      as={SelectWidget}
+      as={ServiceSelectWidget}
       isClearable
       options={options}
+      refreshOptions={refreshOptions}
       value={selectedValue}
       onChange={onChange}
       error={meta.error}
