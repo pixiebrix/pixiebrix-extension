@@ -64,10 +64,6 @@ const RegistryIdWidget: React.VFC<{ name: string }> = ({ name }) => {
         isClearable={false}
         onChange={onChangeScope}
         options={options}
-        components={{
-          DropdownIndicator: () => null,
-          IndicatorSeparator: () => null,
-        }}
         className={styles.select}
       />
       <span> / </span>

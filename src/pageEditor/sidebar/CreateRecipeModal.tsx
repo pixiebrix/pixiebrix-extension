@@ -202,6 +202,7 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
       editorFormElements,
       installedExtensions,
       isDirtyByElementId,
+      removeRecipe,
     ]
   );
 

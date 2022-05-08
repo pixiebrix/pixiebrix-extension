@@ -60,6 +60,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { RequireScope } from "@/auth/RequireScope";
 import { selectScope } from "@/auth/authSelectors";
 import { FieldDescriptions } from "@/utils/strings";
+import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 
 const { attachExtension } = extensionsSlice.actions;
 
@@ -198,6 +199,8 @@ const ShareExtensionModal: React.FC<{
             <i>Cannot be modified once shared.</i>
           </span>
         }
+        as={RegistryIdWidget}
+        className={styles.idScopeSelect}
       />
       <ConnectedFieldTemplate
         name="description"
