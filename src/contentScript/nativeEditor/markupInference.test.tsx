@@ -15,73 +15,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { $safeFind } from "@/helpers";
 import {
-  getSelectorPreference,
   inferButtonHTML,
   inferPanelHTML,
-  inferSelectors,
-  safeCssSelector,
-} from "@/contentScript/nativeEditor/infer";
-import { PIXIEBRIX_DATA_ATTR, EXTENSION_POINT_DATA_ATTR } from "@/common";
-import { html } from "@/utils";
-import { uniq } from "lodash";
+} from "@/contentScript/nativeEditor/markupInference";
 
 test("infer basic button", () => {
   document.body.innerHTML = "<div><button>More</button></div>";
 
-  const inferred = inferButtonHTML(
-    $safeFind("div").get(0),
-    $safeFind("button").get()
-  );
+  const inferred = inferButtonHTML($("div").get(0), $("button").get());
   expect(inferred).toBe("<button>{{{ caption }}}</button>");
 });
 
 test("infer button with icon", () => {
   document.body.innerHTML = "<div><button><svg></svg>More</button></div>";
 
-  const inferred = inferButtonHTML(
-    $safeFind("div").get(0),
-    $safeFind("button").get()
-  );
+  const inferred = inferButtonHTML($("div").get(0), $("button").get());
   expect(inferred).toBe("<button>{{{ icon }}}{{{ caption }}}</button>");
 });
 
 test("infer submit button", () => {
   document.body.innerHTML = '<div><input type="submit" value="Submit" /></div>';
-  const inferred = inferButtonHTML(
-    $safeFind("div").get(0),
-    $safeFind("input").get()
-  );
+  const inferred = inferButtonHTML($("div").get(0), $("input").get());
   expect(inferred).toBe('<input type="button" value="{{{ caption }}}" />');
 });
 
 test("infer button", () => {
   document.body.innerHTML = '<div><input type="button" value="Action" /></div>';
-  const inferred = inferButtonHTML(
-    $safeFind("div").get(0),
-    $safeFind("input").get()
-  );
+  const inferred = inferButtonHTML($("div").get(0), $("input").get());
   expect(inferred).toBe('<input type="button" value="{{{ caption }}}" />');
 });
 
 test("ignore chevron down in key", () => {
   document.body.innerHTML =
     '<div><button>More <icon key="chevron-down"></icon></button></div>';
-  const inferred = inferButtonHTML(
-    $safeFind("div").get(0),
-    $safeFind("button").get()
-  );
+  const inferred = inferButtonHTML($("div").get(0), $("button").get());
   expect(inferred).toBe("<button>{{{ caption }}}</button>");
 });
 
 test("ignore chevron down in class name", () => {
   document.body.innerHTML =
     '<div><button>More <i class="fas fa-chevron-down"></i></button></div>';
-  const inferred = inferButtonHTML(
-    $safeFind("div").get(0),
-    $safeFind("button").get()
-  );
+  const inferred = inferButtonHTML($("div").get(0), $("button").get());
   expect(inferred).toBe("<button>{{{ caption }}}</button>");
 });
 
@@ -99,10 +74,7 @@ test("infer anchor with button sibling", () => {
     "</a>" +
     "</div>";
 
-  const inferred = inferButtonHTML(
-    $safeFind("div").get(0),
-    $safeFind("a").get()
-  );
+  const inferred = inferButtonHTML($("div").get(0), $("a").get());
   expect(inferred).toBe(
     '<a href="#" class="org-top-card-primary-actions__action"><span class="org-top-card-primary-actions__action-inner artdeco-button artdeco-button--secondary">{{{ caption }}}<li-icon>{{{ icon }}}</li-icon></span></a>'
   );
@@ -111,10 +83,7 @@ test("infer anchor with button sibling", () => {
 test("infer bootstrap anchor button", () => {
   document.body.innerHTML =
     '<div><a href="/docs/5.0/getting-started/download/" class="btn btn-lg btn-outline-secondary mb-3">Download</a></div>';
-  const inferred = inferButtonHTML(
-    $safeFind("div").get(0),
-    $safeFind("a").get()
-  );
+  const inferred = inferButtonHTML($("div").get(0), $("a").get());
   expect(inferred).toBe(
     '<a href="#" class="btn btn-lg btn-outline-secondary mb-3">{{{ caption }}}</a>'
   );
@@ -130,10 +99,7 @@ test("infer list item mixed elements", () => {
     "<li><a>Item 3</a></li>" +
     "</ul>";
 
-  const inferred = inferButtonHTML(
-    $safeFind("ul").get(0),
-    $safeFind("button").toArray()
-  );
+  const inferred = inferButtonHTML($("ul").get(0), $("button").toArray());
   expect(inferred).toBe("<li><button>{{{ caption }}}</button></li>");
 });
 
@@ -147,10 +113,7 @@ test("infer list item mixed elements with icons", () => {
     "<li><a><li-icon><svg></svg></li-icon>Item 3</a></li>" +
     "</ul>";
 
-  const inferred = inferButtonHTML(
-    $safeFind("ul").get(0),
-    $safeFind("button").toArray()
-  );
+  const inferred = inferButtonHTML($("ul").get(0), $("button").toArray());
   expect(inferred).toBe(
     "<li><button><li-icon>{{{ icon }}}</li-icon>{{{ caption }}}</button></li>"
   );
@@ -163,10 +126,7 @@ test("ignore blank surrounding div", () => {
     "<li>  \n<div>  <button>Item 2</button></div></li>" +
     "</ul>";
 
-  const inferred = inferButtonHTML(
-    $safeFind("ul").get(0),
-    $safeFind("button").toArray()
-  );
+  const inferred = inferButtonHTML($("ul").get(0), $("button").toArray());
   expect(inferred).toBe("<li><button>{{{ caption }}}</button></li>");
 });
 
@@ -178,10 +138,7 @@ test("infer list item mixed elements with surrounding div", () => {
     "<li><a>Item 3</a></li>" +
     "</ul>";
 
-  const inferred = inferButtonHTML(
-    $safeFind("ul").get(0),
-    $safeFind("button").toArray()
-  );
+  const inferred = inferButtonHTML($("ul").get(0), $("button").toArray());
   expect(inferred).toBe("<li><button>{{{ caption }}}</button></li>");
 });
 
@@ -191,10 +148,7 @@ test("do not duplicate button caption", () => {
     '<span class="artdeco-button__text">\n' +
     "    View in Sales Navigator\n" +
     "</span></button></div>";
-  const inferred = inferButtonHTML(
-    $safeFind("div").get(0),
-    $safeFind("button").get()
-  );
+  const inferred = inferButtonHTML($("div").get(0), $("button").get());
   expect(inferred).toBe(
     '<button type="button"><span class="artdeco-button__text">{{{ caption }}}</span></button>'
   );
@@ -207,10 +161,7 @@ test("infer ember button", () => {
     ' class="ember-view artdeco-button"' +
     ' type="button" tabIndex="0">More<!----></button></div>';
 
-  const inferred = inferButtonHTML(
-    $safeFind("div").get(0),
-    $safeFind("button").get()
-  );
+  const inferred = inferButtonHTML($("div").get(0), $("button").get());
 
   expect(inferred).toBe(
     "<button" +
@@ -226,10 +177,7 @@ test("infer multiple buttons", () => {
     '<button class="a c">Bar</button>' +
     "</div>";
 
-  const inferred = inferButtonHTML(
-    $safeFind("div").get(0),
-    $safeFind("button").get()
-  );
+  const inferred = inferButtonHTML($("div").get(0), $("button").get());
 
   expect(inferred).toBe('<button class="a">{{{ caption }}}</button>');
 });
@@ -237,10 +185,7 @@ test("infer multiple buttons", () => {
 test("infer list items", () => {
   document.body.innerHTML = "<div><ul><li>Foo</li><li>Bar</li></ul></div>";
 
-  const inferred = inferButtonHTML(
-    $safeFind("ul").get(0),
-    $safeFind("li").get()
-  );
+  const inferred = inferButtonHTML($("ul").get(0), $("li").get());
 
   expect(inferred).toBe("<li>{{{ caption }}}</li>");
 });
@@ -252,10 +197,7 @@ test("infer list item from inside div", () => {
     '<li><div class="y">Bar</div></li>' +
     "</ul></div>";
 
-  const inferred = inferButtonHTML(
-    $safeFind("ul").get(0),
-    $safeFind("li div").get()
-  );
+  const inferred = inferButtonHTML($("ul").get(0), $("li div").get());
 
   expect(inferred).toBe("<li><div>{{{ caption }}}</div></li>");
 });
@@ -266,10 +208,7 @@ test("infer single panel", () => {
     "<section><header><h2>Bar</h2></header><div><p>This is some other text</p></div></section>" +
     "</div>";
 
-  const inferred = inferPanelHTML(
-    $safeFind("div").get(0),
-    $safeFind("section").get()
-  );
+  const inferred = inferPanelHTML($("div").get(0), $("section").get());
 
   expect(inferred).toBe(
     "<section><header><h2>{{{ heading }}}</h2></header><div>{{{ body }}}</div></section>"
@@ -283,10 +222,7 @@ test("infer basic panel structure with header", () => {
     "<section><header><h2>Bar</h2></header><div><p>This is some other text</p></div></section>" +
     "</div>";
 
-  const inferred = inferPanelHTML(
-    $safeFind("div").get(0),
-    $safeFind("section").get()
-  );
+  const inferred = inferPanelHTML($("div").get(0), $("section").get());
 
   expect(inferred).toBe(
     "<section><header><h2>{{{ heading }}}</h2></header><div>{{{ body }}}</div></section>"
@@ -300,10 +236,7 @@ test("infer basic panel structure with div header", () => {
     "<section><div><h2>Bar</h2></div><div><p>This is some other text</p></div></section>" +
     "</div>";
 
-  const inferred = inferPanelHTML(
-    $safeFind("div").get(0),
-    $safeFind("section").get()
-  );
+  const inferred = inferPanelHTML($("div").get(0), $("section").get());
 
   expect(inferred).toBe(
     "<section><div><h2>{{{ heading }}}</h2></div><div>{{{ body }}}</div></section>"
@@ -317,164 +250,9 @@ test("infer header structure mismatch", () => {
     "<section><header><h2>Bar</h2></header><div><p>This is some other text</p></div></section>" +
     "</div>";
 
-  const inferred = inferPanelHTML(
-    $safeFind("div").get(0),
-    $safeFind("section").get()
-  );
+  const inferred = inferPanelHTML($("div").get(0), $("section").get());
 
   expect(inferred).toBe(
     "<section><h2>{{{ heading }}}</h2><div>{{{ body }}}</div></section>"
-  );
-});
-
-describe("safeCssSelector", () => {
-  const expectSelector = (selector: string, body: string) => {
-    document.body.innerHTML = body;
-
-    const inferredSelector = safeCssSelector(
-      document.body.querySelector(selector),
-      {
-        excludeRandomClasses: true,
-      }
-    );
-
-    expect(inferredSelector).toBe(selector);
-  };
-
-  test("infer aria-label", () => {
-    expectSelector(
-      "[aria-label='foo']",
-      html`
-        <div>
-          <input aria-label="foo" />
-          <input aria-label="bar" />
-        </div>
-      `
-    );
-  });
-  test("infer class", () => {
-    expectSelector(
-      ".contacts",
-      html`
-        <ul>
-          <li><a class="navItem about" href="/about">About</a></li>
-          <li><a class="navItem contacts" href="/contacts">Contacts</a></li>
-        </ul>
-      `
-    );
-  });
-
-  test("infer preferring class over aria-label", () => {
-    expectSelector(
-      ".foo",
-      html`
-        <div>
-          <input class="foo" aria-label="foo" />
-          <input class="bar" aria-label="bar" />
-        </div>
-      `
-    );
-  });
-
-  test("infer preferring aria-label over random classes", () => {
-    expectSelector(
-      "[aria-label='foo']",
-      html`
-        <div>
-          <input class="asij340snlslnakdi9" aria-label="foo" />
-          <input class="aksjhd93rqansld00s" aria-label="bar" />
-        </div>
-      `
-    );
-  });
-
-  test("infer class discarding random ones", () => {
-    expectSelector(
-      ".contacts",
-      html`
-        <ul>
-          <li><a class="i3349fj9 about" href="/about">About</a></li>
-          <li><a class="iauoff23 contacts" href="/contacts">Contacts</a></li>
-        </ul>
-      `
-    );
-  });
-});
-
-test("getSelectorPreference: matches expected sorting", () => {
-  expect(getSelectorPreference("#best-link-on-the-page")).toBe(0);
-  expect(getSelectorPreference('[data-cy="b4da55"]')).toBe(1);
-  expect(getSelectorPreference(".navItem")).toBe(2);
-  expect(getSelectorPreference(".birdsArentReal")).toBe(2);
-  const selector = '[aria-label="Click elsewhere"]';
-  expect(getSelectorPreference(selector)).toBe(selector.length);
-
-  // Even if it contains an ID, the selector is low quality
-  const selector2 = "#name > :nth-child(2)";
-  expect(getSelectorPreference(selector2)).toBe(selector2.length);
-});
-
-describe("inferSelectors", () => {
-  const expectSelectors = (selectors: string[], body: string) => {
-    document.body.innerHTML = body;
-
-    // The provided selector list should only match one element
-    const userSelectedElements = selectors.map((selector) =>
-      document.body.querySelector<HTMLElement>(selector)
-    );
-    expect(uniq(userSelectedElements)).toHaveLength(1);
-
-    // The provided selector list should match the inferred list
-    const inferredSelectors = inferSelectors(userSelectedElements[0]);
-    expect(inferredSelectors).toEqual(selectors);
-  };
-
-  test("infer aria-label", () => {
-    expectSelectors(
-      ["[aria-label='foo']"],
-      html`
-        <div>
-          <input aria-label="foo" />
-          <input aria-label="bar" />
-        </div>
-      `
-    );
-  });
-
-  test("prefer unique selectors", () => {
-    expectSelectors(
-      ["[data-cy='baz']", ".zoolander"],
-      html`
-        <div>
-          <input aria-label="foo" data-cy="baz" class="zoolander" />
-          <input aria-label="bar" data-cy="zan" />
-        </div>
-      `
-    );
-  });
-
-  test.each([["data-testid"], ["data-cy"], ["data-test"]])(
-    "infer test attribute: %s",
-    (attribute: string) => {
-      expectSelectors(
-        [`[${attribute}='a']`],
-        html`<div><input ${attribute}="a" /><input ${attribute}="b" /></div>`
-      );
-    }
-  );
-
-  test.each([[PIXIEBRIX_DATA_ATTR], [EXTENSION_POINT_DATA_ATTR]])(
-    "don't infer pixiebrix attribute: %s",
-    (attribute: string) => {
-      expectSelectors(
-        ["[aria-label='foo']"],
-        html`
-          <div>
-            <input ${attribute}="foo" aria-label="foo" />
-            <input ${attribute}="bar" aria-label="bar" />
-          </div>
-        `
-      );
-    }
   );
 });
