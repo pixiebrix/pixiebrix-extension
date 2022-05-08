@@ -51,7 +51,18 @@ type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
     error?: unknown;
     disabled?: boolean;
     components?: SelectComponentsConfig<TOption, boolean, GroupBase<TOption>>;
+    className?: string;
   };
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+export const makeStringOptions = (...items: string[]) =>
+  items.map(
+    (item) =>
+      ({
+        label: item,
+        value: item,
+      } as Option)
+  );
 
 const SelectWidget = <TOption extends Option<TOption["value"]>>({
   id,
@@ -64,6 +75,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
   onChange,
   name,
   components,
+  className,
 }: SelectWidgetProps<TOption>) => {
   if (loadError) {
     return (
@@ -86,6 +98,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
 
   return (
     <Select
+      className={className}
       menuPlacement="auto"
       inputId={id}
       name={name}

@@ -61,6 +61,7 @@ import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 import { RegistryId } from "@/core";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
+import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -351,6 +352,7 @@ const CreateRecipeModal: React.VFC = () => {
         label="Blueprint ID"
         description={FieldDescriptions.BLUEPRINT_ID}
         widerLabel
+        as={RegistryIdWidget}
       />
       <ConnectedFieldTemplate
         name="name"
