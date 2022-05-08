@@ -175,7 +175,7 @@ describe("proxy service requests", () => {
     expect(JSON.parse(axiosMock.history.post[0].data)).toEqual({
       ...requestConfig,
       service_id: EXAMPLE_SERVICE_API,
-      auth_id: "123",
+      auth_id: proxiedServiceConfig.id,
     });
     expect(status).toEqual(200);
     expect(data).toEqual({ foo: 42 });
