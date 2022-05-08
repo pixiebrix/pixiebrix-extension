@@ -15,11 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  RawServiceConfiguration,
-  SanitizedServiceConfiguration,
-  ServiceConfig,
-} from "@/core";
+import { RawServiceConfiguration, ServiceConfig } from "@/core";
 import serviceRegistry from "@/services/registry";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
@@ -32,6 +28,7 @@ import * as locator from "@/services/locator";
 import { RemoteServiceError } from "@/services/errors";
 import { validateRegistryId } from "@/types/helpers";
 import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
+import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories";
 
 const axiosMock = new MockAdapter(axios);
 const mockIsBackground = isBackground as jest.MockedFunction<
@@ -89,19 +86,15 @@ const requestConfig: AxiosRequestConfig = {
   method: "get",
 };
 
-const directServiceConfig = {
-  id: "124",
+const directServiceConfig = sanitizedServiceConfigurationFactory({
   proxy: false,
   serviceId: EXAMPLE_SERVICE_API,
-  config: {},
-} as SanitizedServiceConfiguration;
+});
 
-const proxiedServiceConfig = {
-  id: "123",
+const proxiedServiceConfig = sanitizedServiceConfigurationFactory({
   proxy: true,
   serviceId: EXAMPLE_SERVICE_API,
-  config: {},
-} as SanitizedServiceConfiguration;
+});
 
 describe("unauthenticated direct requests", () => {
   it("makes an unauthenticated request", async () => {
@@ -143,6 +136,14 @@ describe("authenticated direct requests", () => {
     axiosMock.onAny().reply(200, {});
     const response = await proxyService(directServiceConfig, requestConfig);
     expect(response.status).toEqual(200);
+  });
+
+  it("throws on missing local config", async () => {
+    jest.spyOn(Locator.prototype, "getLocalConfig").mockResolvedValue(null);
+
+    await expect(async () =>
+      proxyService(directServiceConfig, requestConfig)
+    ).rejects.toThrow("Local integration configuration not found:");
   });
 
   it("throws error on bad request", async () => {

@@ -80,7 +80,7 @@ async function authenticate(
 
   if (config.proxy) {
     throw new Error(
-      `Integration configuration is not a local configuration: ${config.id}`
+      `Integration configuration for service ${config.serviceId} is not a local configuration: ${config.id}`
     );
   }
 
