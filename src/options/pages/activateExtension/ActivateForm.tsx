@@ -26,17 +26,19 @@ import ServicesCard from "@/options/pages/activateExtension/ServicesCard";
 import { FormState } from "@/options/pages/activateExtension/activateTypes";
 import ActivateCard from "@/options/pages/activateExtension/ActivateCard";
 import extensionsSlice from "@/store/extensionsSlice";
+import { UUID } from "@/core";
 
 const { actions } = extensionsSlice;
 
 const ActivateForm: React.FunctionComponent<{
   extension: CloudExtension;
   authOptions: AuthOption[];
-}> = ({ extension, authOptions }) => {
+  refreshAuthOptions: () => void;
+}> = ({ extension, authOptions, refreshAuthOptions }) => {
   const dispatch = useDispatch();
 
   const initialValues: FormState = useMemo(() => {
-    const uuids = new Set<string>(authOptions.map((x) => x.value));
+    const uuids = new Set<UUID>(authOptions.map((x) => x.value));
     return {
       services: extension.services.map((service) => ({
         ...service,
@@ -53,10 +55,10 @@ const ActivateForm: React.FunctionComponent<{
             extension: { ...extension, ...values },
           })
         );
-        notify.success("Activated brick");
+        notify.success("Activated extension");
         dispatch(push("/blueprints"));
       } catch (error) {
-        notify.error({ message: "Error activating brick", error });
+        notify.error({ message: "Error activating extension", error });
       } finally {
         helpers.setSubmitting(false);
       }
@@ -68,7 +70,10 @@ const ActivateForm: React.FunctionComponent<{
     <Formik initialValues={initialValues} onSubmit={onSubmit}>
       {() => (
         <Form id="activate-wizard" noValidate>
-          <ServicesCard authOptions={authOptions} />
+          <ServicesCard
+            authOptions={authOptions}
+            refreshAuthOptions={refreshAuthOptions}
+          />
           <ActivateCard extension={extension} />
         </Form>
       )}
