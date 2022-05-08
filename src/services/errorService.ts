@@ -18,7 +18,7 @@
 import { JsonObject } from "type-fest";
 import { debounce } from "lodash";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
-import { MessageContext, SerializedError } from "@/core";
+import { MessageContext, SemVerString, SerializedError } from "@/core";
 import {
   getRootCause,
   hasBusinessRootCause,
@@ -26,16 +26,16 @@ import {
   isAxiosError,
 } from "@/errors";
 import { allowsTrack } from "@/telemetry/dnt";
-import { uuidv4 } from "@/types/helpers";
+import { uuidv4, validateSemVerString } from "@/types/helpers";
 import { isObject } from "@/utils";
-import { readAuthData } from "@/auth/token";
+import { getUserData, readAuthData } from "@/auth/token";
 import { isAppRequest, selectAbsoluteUrl } from "@/services/requestErrorUtils";
+import { ErrorItem } from "@/types/contract";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
 
-// FIXME: this type should be pulled from Swagger
-const buffer: JsonObject[] = [];
+const buffer: ErrorItem[] = [];
 
 const debouncedFlush = debounce(flush, EVENT_BUFFER_DEBOUNCE_MS, {
   trailing: true,
@@ -61,8 +61,10 @@ async function flush(): Promise<void> {
  */
 export async function selectExtraContext(
   error: Error | SerializedError
-): Promise<JsonObject> {
-  const { version: extensionVersion } = browser.runtime.getManifest();
+): Promise<JsonObject & { extensionVersion: SemVerString }> {
+  const { version } = browser.runtime.getManifest();
+
+  const extensionVersion = validateSemVerString(version);
 
   if (!isObject(error)) {
     return { extensionVersion };
@@ -112,26 +114,39 @@ export async function reportToErrorService(
   }
 
   const { extensionVersion, ...data } = await selectExtraContext(error);
+  const { telemetryOrganizationId, organizationId } = await getUserData();
 
   buffer.push({
     uuid: uuidv4(),
-    error_name: error.name,
+    organization: telemetryOrganizationId ?? organizationId,
+    class_name: error.name,
     message,
-    // FIXME: this is redundant. The backend should take a single id which it attempts to match to a UserExtension
-    //  instance? Or we can just index the field on the backend but not enforce the FK constraint
-    user_extension: flatContext.extensionId,
     extension_uuid: flatContext.extensionId,
     extension_label: flatContext.extensionLabel,
     step_label: flatContext.label,
     user_agent: window.navigator.userAgent,
     user_agent_extension_version: extensionVersion,
     is_application_error: !hasBusinessRootCause(error),
-    blueprint_id: flatContext.blueprintId,
-    blueprint_version: flatContext.blueprintVersion,
-    // FIXME: if/when do we want to use service here instead of brick? We probably want to expose entries for both
-    //  because a brick might be broken only for particular versions of the service.
-    brick_id: flatContext.blockId,
-    brick_version: flatContext.blockVersion,
+    blueprint_version: flatContext.blueprintId
+      ? {
+          id: flatContext.blueprintId,
+          version: flatContext.blueprintVersion,
+        }
+      : null,
+    brick_version: flatContext.blockId
+      ? {
+          id: flatContext.blockId,
+          version: flatContext.blockVersion,
+        }
+      : null,
+    timestamp: new Date().toISOString(),
+    service_version: flatContext.serviceId
+      ? {
+          id: flatContext.serviceId,
+          version: flatContext.serviceVersion,
+        }
+      : null,
+    deployment: flatContext.deploymentId,
     // Already capturing extension version in user_agent_extension_version
     error_data: data,
   });

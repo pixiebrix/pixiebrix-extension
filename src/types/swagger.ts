@@ -52,6 +52,14 @@ export interface paths {
     put: operations["updateRecordDetail"];
     delete: operations["destroyRecordDetail"];
   };
+  "/api/databases/{database_pk}/references/": {
+    /** List bricks that use a database. */
+    get: operations["listDatabaseReferences"];
+  };
+  "/api/databases/{database_pk}/deployments/": {
+    /** List deployments that use a database. */
+    get: operations["listDatabaseDeployments"];
+  };
   "/api/organizations/{organization_pk}/campaigns/": {
     get: operations["listCampaignSummarys"];
     post: operations["createCampaign"];
@@ -209,13 +217,10 @@ export interface paths {
   };
   "/api/organizations/{organization_pk}/": {
     get: operations["retrieveOrganization"];
+    patch: operations["partialUpdateOrganization"];
   };
   "/api/organizations/{organization_pk}/members/{id}/": {
     get: operations["retrieveUserDetail"];
-  };
-  "/api/organizations/{organization_pk}/members/{id}/errors/": {
-    /** View to show Rollbar errors for an organization's team member. */
-    get: operations["listOrganizationMemberErrors"];
   };
   "/api/organizations/{organization_pk}/groups/": {
     get: operations["listGroups"];
@@ -246,6 +251,10 @@ export interface paths {
     delete: operations["destroyDatabaseStatistics"];
     patch: operations["partialUpdateDatabaseStatistics"];
   };
+  "/api/organizations/{organization_pk}/databases/{database_pk}/schema/": {
+    get: operations["retrieveDatabaseSchema"];
+    put: operations["updateDatabaseSchema"];
+  };
   "/api/organizations/{organization_pk}/databases/": {
     get: operations["listDatabaseStatistics"];
     post: operations["createDatabaseStatistics"];
@@ -255,6 +264,23 @@ export interface paths {
   };
   "/api/organizations/{organization_pk}/backup/": {
     get: operations["exportOrganizationBackup"];
+  };
+  "/api/organizations/{organization_pk}/errors/": {
+    /** View to return most recent Rollbar error report for an organization. */
+    get: operations["retrieveErrorOccurrence"];
+  };
+  "/api/organizations/{organization_pk}/events/": {
+    get: operations["retrieveEventInterval"];
+  };
+  "/api/organizations/{organization_pk}/contacts/": {
+    get: operations["listOrganizationContacts"];
+    post: operations["createOrganizationContact"];
+  };
+  "/api/organizations/{organization_pk}/contacts/{id}/": {
+    get: operations["retrieveOrganizationContact"];
+    put: operations["updateOrganizationContact"];
+    delete: operations["destroyOrganizationContact"];
+    patch: operations["partialUpdateOrganizationContact"];
   };
   "/api/permissions/{id}/": {
     get: operations["retrieveGroupPackagePermission"];
@@ -287,6 +313,41 @@ export interface paths {
     get: operations["retrieveSettings"];
     put: operations["updateSettings"];
     patch: operations["partialUpdateSettings"];
+  };
+  "/api/support/users/": {
+    get: operations["listSupportUsers"];
+  };
+  "/api/support/users/{id}/": {
+    get: operations["retrieveSupportUsers"];
+  };
+  "/api/support/users/{user_pk}/events/": {
+    get: operations["retrieveSupportUserEvents"];
+  };
+  "/api/support/users/{user_pk}/errors/": {
+    get: operations["retrieveUserError"];
+  };
+  "/api/support/users/{user_pk}/errors/jobs/{job_pk}/": {
+    get: operations["retrieveUserErrorJob"];
+  };
+  "/api/support/users/{user_pk}/extensions/": {
+    get: operations["listSupportUserExtensions"];
+  };
+  "/api/support/users/{user_pk}/extensions/{extension_pk}/": {
+    get: operations["retrieveSupportUserExtensions"];
+  };
+  "/api/support/users/{user_pk}/bricks/": {
+    get: operations["listSupportUserBricks"];
+  };
+  "/api/support/users/{user_pk}/bricks/{brick_pk}/": {
+    get: operations["retrieveSupportUserBricks"];
+  };
+  "/api/databases/{database_pk}/queue/assign/": {
+    /**
+     * Get the next available item in a queue.
+     *
+     * Runs as an atomic operation so multiple clients don't get assigned the same task.
+     */
+    post: operations["createQueueAssign"];
   };
   "/api/campaigns/{campaign_pk}/jobs/": {
     post: operations["createCampaignEngagementJob"];
@@ -324,6 +385,12 @@ export interface paths {
   };
   "/api/run/": {
     post: operations["executeBrick"];
+  };
+  "/api/support/users/{user_pk}/errors/jobs/": {
+    post: operations["createUserErrorJob"];
+  };
+  "/api/telemetry/errors/": {
+    post: operations["createErrorItem"];
   };
   "/api/deployments/{deployment_pk}/groups/{id}/": {
     delete: operations["destroyDeploymentPermission"];
@@ -402,6 +469,8 @@ export interface components {
       organizations?: string[];
       /** Format: date-time */
       updated_at?: string;
+      /** @description Human-readable name */
+      verbose_name?: string | null;
     };
     PackageVersion: {
       /** Format: uuid */
@@ -437,9 +506,28 @@ export interface components {
        * @default replace
        * @enum {string}
        */
-      merge_strategy?: "replace" | "deep" | "deep_append" | "shallow";
+      merge_strategy?: "replace" | "deep" | "deep_append" | "shallow" | "";
       /** Format: date-time */
       created_at?: string;
+    };
+    Deployment: {
+      /** Format: uuid */
+      id?: string;
+      name: string;
+      active?: boolean;
+      /** Format: date-time */
+      created_at?: string;
+      package?: {
+        /** Format: uuid */
+        id: string;
+        version?: string;
+        package_id: string;
+        name: string;
+      };
+      package_version: string;
+      services: {
+        auth: string;
+      }[];
     };
     CampaignSummary: {
       /** Format: uuid */
@@ -642,6 +730,8 @@ export interface components {
     ErrorOccurrence: {
       /** Format: uuid */
       id?: string;
+      /** Format: uuid */
+      deployment: string;
       title: string;
       label?: string | null;
       /** Format: date-time */
@@ -776,7 +866,7 @@ export interface components {
       /** Format: email */
       email: string;
       /** @enum {integer} */
-      role?: 1 | 2 | 3 | 4;
+      role?: 1 | 2 | 3 | 4 | 5;
       inviter?: {
         /** Format: uuid */
         id?: string;
@@ -952,7 +1042,7 @@ export interface components {
         /** Format: email */
         email: string;
         /** @enum {integer} */
-        role?: 1 | 2 | 3 | 4;
+        role?: 1 | 2 | 3 | 4 | 5;
         inviter?: {
           /** Format: uuid */
           id?: string;
@@ -967,7 +1057,9 @@ export interface components {
         /** @enum {integer} */
         status?: 1 | 2 | 3 | 4;
       }[];
-      scope?: string;
+      scope?: string | null;
+      /** @enum {integer} */
+      default_role?: 1 | 2 | 3 | 4 | 5;
     };
     UserDetail: {
       /** Format: uuid */
@@ -1001,24 +1093,6 @@ export interface components {
       /** Format: date-time */
       created_at?: string;
     };
-    Deployment: {
-      /** Format: uuid */
-      id?: string;
-      name: string;
-      /** Format: date-time */
-      created_at?: string;
-      package?: {
-        /** Format: uuid */
-        id: string;
-        version?: string;
-        package_id: string;
-        name: string;
-      };
-      package_version: string;
-      services: {
-        auth: string;
-      }[];
-    };
     DeployableBlueprint: {
       /** Format: uuid */
       id?: string;
@@ -1046,6 +1120,14 @@ export interface components {
       /** Format: date-time */
       last_write_at?: string;
       num_records?: number;
+      /** @description Enforce the JSON Schema for database records */
+      enforce_schema?: boolean;
+      /** @description Field indicating the record owner */
+      owner_field?: string | null;
+    };
+    DatabaseSchema: {
+      database_id?: string;
+      schema_text: string;
     };
     Subscription: {
       /** Format: uuid */
@@ -1060,6 +1142,26 @@ export interface components {
       /** Format: date-time */
       updated_at?: string;
       utilization?: string;
+    };
+    EventInterval: {
+      /** Format: uuid */
+      deployment_id: string;
+      end_timestamp: number;
+      event_count: number;
+    };
+    OrganizationContact: {
+      /** Format: uuid */
+      id?: string;
+      /** Format: email */
+      email: string;
+      /** @description Notify when a new user joins your organization */
+      notify_install?: boolean;
+      /** @description Notify when a deployment has new errors */
+      notify_error?: boolean;
+      /** Format: date-time */
+      created_at?: string;
+      /** Format: date-time */
+      updated_at?: string;
     };
     PackageConfig: {
       /**
@@ -1120,6 +1222,43 @@ export interface components {
     };
     Settings: {
       scope?: string | null;
+    };
+    SupportUser: {
+      /** Format: uuid */
+      id?: string;
+      /** Format: email */
+      email?: string;
+      first_name?: string;
+      last_name?: string;
+    };
+    SupportUserDetail: {
+      /** Format: uuid */
+      id?: string;
+      /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
+      username: string;
+      first_name?: string;
+      last_name?: string;
+      /** Format: email */
+      email?: string;
+      organizations?: string;
+      /** Format: date-time */
+      date_joined?: string;
+    };
+    SupportUserEvent: {
+      name: string;
+      /** Format: date-time */
+      time: string;
+      id: string;
+      blueprintId?: string;
+      blueprintVersion?: string;
+      extensionPointId?: string;
+      label?: string;
+    };
+    SupportUserError: {
+      id: string;
+      timestamp: number;
+      description: string;
+      message: string;
     };
     UserDatabase: {
       /** Format: uuid */
@@ -1194,6 +1333,67 @@ export interface components {
       id: string;
       args?: { [key: string]: unknown };
     };
+    ErrorItem: {
+      id?: number;
+      user?: {
+        /** Format: uuid */
+        id?: string;
+        name?: string;
+        /** Format: email */
+        email?: string;
+        service_account?: boolean;
+        /** Format: date-time */
+        date_joined?: string;
+      };
+      user_extension?: {
+        /** Format: uuid */
+        id: string;
+        /** Format: date-time */
+        createTimestamp: string;
+        /** Format: date-time */
+        updateTimestamp: string;
+      };
+      blueprint_version?: {
+        id: string;
+        version: string;
+      };
+      brick_version?: {
+        id: string;
+        version: string;
+      };
+      service_version?: {
+        id: string;
+        version: string;
+      };
+      /** Format: uuid */
+      uuid: string;
+      /** @description JavaScript error class name */
+      class_name: string;
+      /** @description Just the error message, not the complete traceback */
+      message: string;
+      /** @description True if the extension author/maintainer can't fix the error on their own */
+      is_application_error: boolean;
+      /**
+       * Format: date-time
+       * @description Timestamp the error occurred, not the time the record is added to the db
+       */
+      timestamp: string;
+      /**
+       * Format: uuid
+       * @description UUID of the user-defined extension, not the Pixiebrix extension. Same value as UserExtension.extension_id
+       */
+      extension_uuid: string;
+      /** @description Label of the extension, depends on the extension's telemetry settings */
+      extension_label?: string | null;
+      /** @description Step of the extension, depends on the extension's telemetry settings */
+      step_label?: string | null;
+      user_agent: string;
+      /** @description Browser extension semantic version */
+      user_agent_extension_version: string;
+      error_data?: { [key: string]: unknown } | null;
+      organization?: string | null;
+      deployment?: string | null;
+    };
   };
 }
 
@@ -1206,6 +1406,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -1226,6 +1428,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -1245,6 +1449,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -1262,6 +1468,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -1279,6 +1487,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -1364,6 +1574,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -1381,6 +1593,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -1416,6 +1630,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -1485,6 +1701,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -1494,6 +1712,7 @@ export interface operations {
           "application/json; version=2.0": components["schemas"]["Record"][];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Record"][];
           "text/csv; version=2.0": components["schemas"]["Record"][];
+          "application/vnd.pixiebrix.api.flat+json; version=2.0": components["schemas"]["Record"][];
         };
       };
     };
@@ -1510,6 +1729,7 @@ export interface operations {
           "application/json; version=2.0": components["schemas"]["Record"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Record"];
           "text/csv; version=2.0": components["schemas"]["Record"];
+          "application/vnd.pixiebrix.api.flat+json; version=2.0": components["schemas"]["Record"];
         };
       };
     };
@@ -1533,6 +1753,7 @@ export interface operations {
           "application/json; version=2.0": components["schemas"]["Record"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Record"];
           "text/csv; version=2.0": components["schemas"]["Record"];
+          "application/vnd.pixiebrix.api.flat+json; version=2.0": components["schemas"]["Record"];
         };
       };
     };
@@ -1567,6 +1788,7 @@ export interface operations {
           "application/json; version=2.0": components["schemas"]["Record"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Record"];
           "text/csv; version=2.0": components["schemas"]["Record"];
+          "application/vnd.pixiebrix.api.flat+json; version=2.0": components["schemas"]["Record"];
         };
       };
     };
@@ -1584,6 +1806,7 @@ export interface operations {
           "application/json; version=2.0": components["schemas"]["Record"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Record"];
           "text/csv; version=2.0": components["schemas"]["Record"];
+          "application/vnd.pixiebrix.api.flat+json; version=2.0": components["schemas"]["Record"];
         };
       };
     };
@@ -1606,6 +1829,52 @@ export interface operations {
       204: never;
     };
   };
+  /** List bricks that use a database. */
+  listDatabaseReferences: {
+    parameters: {
+      path: {
+        database_pk: string;
+      };
+      query: {
+        /** A page number within the paginated result set. */
+        page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
+      };
+    };
+    responses: {
+      200: {
+        headers: {};
+        content: {
+          "application/json; version=2.0": components["schemas"]["PackageVersion"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PackageVersion"][];
+        };
+      };
+    };
+  };
+  /** List deployments that use a database. */
+  listDatabaseDeployments: {
+    parameters: {
+      path: {
+        database_pk: string;
+      };
+      query: {
+        /** A page number within the paginated result set. */
+        page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
+      };
+    };
+    responses: {
+      200: {
+        headers: {};
+        content: {
+          "application/json; version=2.0": components["schemas"]["Deployment"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Deployment"][];
+        };
+      };
+    };
+  };
   listCampaignSummarys: {
     parameters: {
       path: {
@@ -1614,6 +1883,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -1722,6 +1993,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -1740,6 +2013,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -1915,6 +2190,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -1927,11 +2204,11 @@ export interface operations {
       };
     };
   };
-  /** View to return most recent Rollbar error report for a deployment. */
+  /** View to return most recent Rollbar error report for an organization. */
   retrieveErrorOccurrence: {
     parameters: {
       path: {
-        deployment_pk: string;
+        organization_pk: string;
       };
     };
     responses: {
@@ -1951,6 +2228,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -2101,6 +2380,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -2129,6 +2410,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -2262,6 +2545,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -2304,6 +2589,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -2492,6 +2779,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -2581,6 +2870,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -2598,6 +2889,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -2634,6 +2927,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -2650,6 +2945,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -2682,6 +2979,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -2793,6 +3092,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -2838,6 +3139,28 @@ export interface operations {
       };
     };
   };
+  partialUpdateOrganization: {
+    parameters: {
+      path: {
+        organization_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=2.0": components["schemas"]["Organization"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Organization"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Organization"];
+        "application/x-www-form-urlencoded": components["schemas"]["Organization"];
+        "multipart/form-data": components["schemas"]["Organization"];
+      };
+    };
+  };
   retrieveUserDetail: {
     parameters: {
       path: {
@@ -2854,23 +3177,6 @@ export interface operations {
       };
     };
   };
-  /** View to show Rollbar errors for an organization's team member. */
-  listOrganizationMemberErrors: {
-    parameters: {
-      path: {
-        organization_pk: string;
-        id: string;
-      };
-    };
-    responses: {
-      200: {
-        content: {
-          "application/json; version=1.0": unknown[];
-          "application/vnd.pixiebrix.api+json; version=1.0": unknown[];
-        };
-      };
-    };
-  };
   listGroups: {
     parameters: {
       path: {
@@ -2879,6 +3185,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -2922,6 +3230,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -2965,6 +3275,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -2984,6 +3296,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -3004,6 +3318,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -3025,6 +3341,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -3110,6 +3428,45 @@ export interface operations {
       };
     };
   };
+  retrieveDatabaseSchema: {
+    parameters: {
+      path: {
+        organization_pk: string;
+        database_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["DatabaseSchema"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DatabaseSchema"];
+        };
+      };
+    };
+  };
+  updateDatabaseSchema: {
+    parameters: {
+      path: {
+        organization_pk: string;
+        database_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["DatabaseSchema"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DatabaseSchema"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DatabaseSchema"];
+        "application/x-www-form-urlencoded": components["schemas"]["DatabaseSchema"];
+        "multipart/form-data": components["schemas"]["DatabaseSchema"];
+      };
+    };
+  };
   listDatabaseStatistics: {
     parameters: {
       path: {
@@ -3118,6 +3475,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -3179,6 +3538,138 @@ export interface operations {
           "application/json; version=1.0": unknown;
           "application/vnd.pixiebrix.api+json; version=1.0": unknown;
         };
+      };
+    };
+  };
+  retrieveEventInterval: {
+    parameters: {
+      path: {
+        organization_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["EventInterval"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["EventInterval"];
+        };
+      };
+    };
+  };
+  listOrganizationContacts: {
+    parameters: {
+      path: {
+        organization_pk: string;
+      };
+      query: {
+        /** A page number within the paginated result set. */
+        page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
+      };
+    };
+    responses: {
+      200: {
+        headers: {};
+        content: {
+          "application/json; version=2.0": components["schemas"]["OrganizationContact"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["OrganizationContact"][];
+        };
+      };
+    };
+  };
+  createOrganizationContact: {
+    parameters: {
+      path: {
+        organization_pk: string;
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          "application/json; version=2.0": components["schemas"]["OrganizationContact"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["OrganizationContact"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["OrganizationContact"];
+        "application/x-www-form-urlencoded": components["schemas"]["OrganizationContact"];
+        "multipart/form-data": components["schemas"]["OrganizationContact"];
+      };
+    };
+  };
+  retrieveOrganizationContact: {
+    parameters: {
+      path: {
+        organization_pk: string;
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=2.0": components["schemas"]["OrganizationContact"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["OrganizationContact"];
+        };
+      };
+    };
+  };
+  updateOrganizationContact: {
+    parameters: {
+      path: {
+        organization_pk: string;
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=2.0": components["schemas"]["OrganizationContact"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["OrganizationContact"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["OrganizationContact"];
+        "application/x-www-form-urlencoded": components["schemas"]["OrganizationContact"];
+        "multipart/form-data": components["schemas"]["OrganizationContact"];
+      };
+    };
+  };
+  destroyOrganizationContact: {
+    parameters: {
+      path: {
+        organization_pk: string;
+        id: string;
+      };
+    };
+    responses: {
+      204: never;
+    };
+  };
+  partialUpdateOrganizationContact: {
+    parameters: {
+      path: {
+        organization_pk: string;
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=2.0": components["schemas"]["OrganizationContact"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["OrganizationContact"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["OrganizationContact"];
+        "application/x-www-form-urlencoded": components["schemas"]["OrganizationContact"];
+        "multipart/form-data": components["schemas"]["OrganizationContact"];
       };
     };
   };
@@ -3257,6 +3748,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -3288,6 +3781,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -3393,6 +3888,8 @@ export interface operations {
       query: {
         /** A page number within the paginated result set. */
         page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
       };
     };
     responses: {
@@ -3448,6 +3945,167 @@ export interface operations {
         "application/json": components["schemas"]["Settings"];
         "application/x-www-form-urlencoded": components["schemas"]["Settings"];
         "multipart/form-data": components["schemas"]["Settings"];
+      };
+    };
+  };
+  listSupportUsers: {
+    parameters: {};
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["SupportUser"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["SupportUser"][];
+        };
+      };
+    };
+  };
+  retrieveSupportUsers: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["SupportUserDetail"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["SupportUserDetail"];
+        };
+      };
+    };
+  };
+  retrieveSupportUserEvents: {
+    parameters: {
+      path: {
+        user_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["SupportUserEvent"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["SupportUserEvent"];
+        };
+      };
+    };
+  };
+  retrieveUserError: {
+    parameters: {
+      path: {
+        user_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["SupportUserError"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["SupportUserError"];
+        };
+      };
+    };
+  };
+  retrieveUserErrorJob: {
+    parameters: {
+      path: {
+        user_pk: string;
+        job_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["Job"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Job"];
+        };
+      };
+    };
+  };
+  listSupportUserExtensions: {
+    parameters: {
+      path: {
+        user_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["UserExtension"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["UserExtension"][];
+        };
+      };
+    };
+  };
+  retrieveSupportUserExtensions: {
+    parameters: {
+      path: {
+        user_pk: string;
+        extension_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["UserExtension"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["UserExtension"];
+        };
+      };
+    };
+  };
+  listSupportUserBricks: {
+    parameters: {
+      path: {
+        user_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["Package"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Package"][];
+        };
+      };
+    };
+  };
+  retrieveSupportUserBricks: {
+    parameters: {
+      path: {
+        user_pk: string;
+        brick_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["Package"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Package"];
+        };
+      };
+    };
+  };
+  /**
+   * Get the next available item in a queue.
+   *
+   * Runs as an atomic operation so multiple clients don't get assigned the same task.
+   */
+  createQueueAssign: {
+    parameters: {
+      path: {
+        database_pk: string;
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          "application/json; version=1.0": unknown;
+          "application/vnd.pixiebrix.api+json; version=1.0": unknown;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": unknown;
+        "application/x-www-form-urlencoded": unknown;
+        "multipart/form-data": unknown;
       };
     };
   };
@@ -3694,6 +4352,46 @@ export interface operations {
         "application/json": components["schemas"]["ExecutableBrick"];
         "application/x-www-form-urlencoded": components["schemas"]["ExecutableBrick"];
         "multipart/form-data": components["schemas"]["ExecutableBrick"];
+      };
+    };
+  };
+  createUserErrorJob: {
+    parameters: {
+      path: {
+        user_pk: string;
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["Job"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Job"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Job"];
+        "application/x-www-form-urlencoded": components["schemas"]["Job"];
+        "multipart/form-data": components["schemas"]["Job"];
+      };
+    };
+  };
+  createErrorItem: {
+    parameters: {};
+    responses: {
+      201: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["ErrorItem"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ErrorItem"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ErrorItem"];
+        "application/x-www-form-urlencoded": components["schemas"]["ErrorItem"];
+        "multipart/form-data": components["schemas"]["ErrorItem"];
       };
     };
   };

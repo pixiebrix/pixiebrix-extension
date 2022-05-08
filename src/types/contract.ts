@@ -32,6 +32,7 @@ import {
   PersistedExtension,
   Timestamp,
   RegistryId,
+  SemVerString,
 } from "@/core";
 
 import { components } from "@/types/swagger";
@@ -47,27 +48,32 @@ type MeGroup = components["schemas"]["Me"]["group_memberships"][number] & {
   id: UUID;
 };
 
-type MeOrganization =
+type MeMembershipOrganization =
   components["schemas"]["Me"]["organization_memberships"][number] & {
     organization: UUID;
   };
+
+type MeOrganization = Required<components["schemas"]["Me"]["organization"]> & {
+  id: UUID;
+};
 
 export type Me = Except<
   components["schemas"]["Me"],
   | "flags"
   | "is_onboarded"
   | "organization"
+  | "telemetry_organization"
   | "organization_memberships"
   | "group_memberships"
 > & {
   // Serializer method fields
   flags: string[];
   is_onboarded: boolean;
-  // Swagger type lists id as optional
-  organization: Required<components["schemas"]["Me"]["organization"]> | null;
 
   // Fix UUID types
-  organization_memberships: MeOrganization[];
+  organization: MeOrganization | null;
+  telemetry_organization: MeOrganization | null;
+  organization_memberships: MeMembershipOrganization[];
   group_memberships: MeGroup[];
 };
 
@@ -208,3 +214,15 @@ export type RemoteResponse<T = unknown> = Pick<
 > & {
   $$proxied?: boolean;
 };
+
+// Exclude fields assigned by the server. (And in the future might not be included on the response)
+export type ErrorItem = Required<
+  Except<
+    components["schemas"]["ErrorItem"],
+    "id" | "user" | "user_extension"
+  > & {
+    deployment: UUID | null;
+    organization: UUID | null;
+    user_agent_extension_version: SemVerString;
+  }
+>;
