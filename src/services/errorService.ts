@@ -31,6 +31,7 @@ import { isObject } from "@/utils";
 import { getUserData, readAuthData } from "@/auth/token";
 import { isAppRequest, selectAbsoluteUrl } from "@/services/requestErrorUtils";
 import { ErrorItem } from "@/types/contract";
+import { expectContext } from "@/utils/expectContext";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -99,9 +100,15 @@ export async function reportToErrorService(
   flatContext: MessageContext,
   message: string
 ): Promise<void> {
+  expectContext(
+    "background",
+    // The buffer/flush call is local to the background page
+    "reportToErrorService should only be called from the background page"
+  );
+
   if (flatContext.extensionId == null) {
-    // Only report errors that occurred within a user-defined extension/blueprint. Other errors only got to Rollbar
-    // because they're problems with our software.
+    // Only report errors that occurred within a user-defined extension/blueprint. Other errors only go to Rollbar.
+    // (They're problems with our software.)
     return;
   }
 
@@ -122,19 +129,20 @@ export async function reportToErrorService(
     organization: telemetryOrganizationId ?? organizationId,
     class_name: error.name,
     message,
+    deployment: flatContext.deploymentId,
     extension_uuid: flatContext.extensionId,
     extension_label: flatContext.extensionLabel,
     step_label: flatContext.label,
     user_agent: window.navigator.userAgent,
     user_agent_extension_version: extensionVersion,
     is_application_error: !hasBusinessRootCause(error),
-    deployment: flatContext.deploymentId,
     // Already capturing extension version in user_agent_extension_version
     error_data: data,
     timestamp: new Date().toISOString(),
   };
 
-  // For blueprint_version/service_version/brick_version the server expects the key to be left off or null
+  // For blueprint_version/service_version/brick_version the server can't handle null value. Must leave the property
+  // off completely.
 
   if (flatContext.blueprintId) {
     payload.blueprint_version = {

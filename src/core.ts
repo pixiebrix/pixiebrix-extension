@@ -330,6 +330,7 @@ export interface Metadata {
    * PixieBrix extension version required to install the brick/run the extension
    * @since 1.4.0
    */
+  // FIXME: this type is wrong. In practice, the value should be a semantic version range, e.g., >=1.4.0
   readonly extensionVersion?: SemVerString;
 }
 

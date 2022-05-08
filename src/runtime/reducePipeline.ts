@@ -40,7 +40,7 @@ import { HeadlessModeError } from "@/blocks/errors";
 import { engineRenderer } from "@/runtime/renderers";
 import { TraceExitData, TraceRecordMeta } from "@/telemetry/trace";
 import { JsonObject } from "type-fest";
-import { uuidv4 } from "@/types/helpers";
+import { uuidv4, validateSemVerString } from "@/types/helpers";
 import { mapArgs } from "@/runtime/mapArgs";
 import {
   ApiVersionOptions,
@@ -200,7 +200,10 @@ type RunBlockOptions = CommonOptions & {
   trace: TraceMetadata | null;
 };
 
-async function execute(
+/**
+ * Execute/run the resolved block in the target (self, etc.) with the validated args.
+ */
+async function executeBlockWithValidatedProps(
   { config, block }: ResolvedBlockConfig,
   { args, context, root, previousOutput }: BlockProps<BlockArg>,
   options: RunBlockOptions
@@ -384,7 +387,11 @@ export async function runBlock(
   try {
     // Inputs validated in throwIfInvalidInput
     const validatedProps = props as unknown as BlockProps<BlockArg>;
-    return await execute(resolvedConfig, validatedProps, options);
+    return await executeBlockWithValidatedProps(
+      resolvedConfig,
+      validatedProps,
+      options
+    );
   } finally {
     if (stage.notifyProgress) {
       hideNotification(notification);
@@ -616,6 +623,37 @@ function throwBlockError(
   );
 }
 
+async function getStepLogger(
+  blockConfig: BlockConfig,
+  pipelineLogger: Logger
+): Promise<Logger> {
+  let resolvedConfig: ResolvedBlockConfig;
+
+  try {
+    resolvedConfig = await resolveBlockConfig(blockConfig);
+  } catch {
+    // NOP
+  }
+
+  let version = resolvedConfig?.block.version;
+
+  if (resolvedConfig && !version) {
+    // Built-in bricks don't have a version number. Use the browser extension version to identify bugs introduced
+    // during browser extension releases
+    version = validateSemVerString(browser.runtime.getManifest().version);
+  }
+
+  return pipelineLogger.childLogger({
+    blockId: blockConfig.id,
+    blockVersion: version,
+    // Use the most customized name for the step
+    label:
+      blockConfig.label ??
+      resolvedConfig?.block.name ??
+      pipelineLogger.context.label,
+  });
+}
+
 /** Execute all the blocks of an extension. */
 export async function reduceExtensionPipeline(
   pipeline: BlockConfig | BlockPipeline,
@@ -668,24 +706,18 @@ export async function reducePipeline(
 
     let nextValues: BlockOutput;
 
-    try {
-      // Don't parallelize resolveBlockConfig because we want to throw the error when we reach the block
+    const stepOptions = {
+      ...options,
+      // Could actually parallelize. But performance benefit won't be significant vs. readability impact
       // eslint-disable-next-line no-await-in-loop -- see comment above
-      const resolvedConfig = await resolveBlockConfig(blockConfig);
+      logger: await getStepLogger(blockConfig, pipelineLogger),
+    };
 
-      const stageLogger = pipelineLogger.childLogger({
-        blockId: blockConfig.id,
-        blockVersion: resolvedConfig.block.version,
-        label: blockConfig.label,
-      });
-
+    try {
       // eslint-disable-next-line no-await-in-loop -- can't parallelize because each step depends on previous step
-      nextValues = await blockReducer(blockConfig, state, {
-        ...options,
-        logger: stageLogger,
-      });
+      nextValues = await blockReducer(blockConfig, state, stepOptions);
     } catch (error) {
-      throwBlockError(blockConfig, state, error, options);
+      throwBlockError(blockConfig, state, error, stepOptions);
     }
 
     output = nextValues.output;
