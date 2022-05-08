@@ -17,7 +17,11 @@
 
 import React, { ChangeEvent } from "react";
 import { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
-import Select, { GroupBase, SelectComponentsConfig } from "react-select";
+import Select, {
+  GroupBase,
+  SelectComponentsConfig,
+  StylesConfig,
+} from "react-select";
 import { getErrorMessage } from "@/errors";
 
 // Type of the Select options
@@ -52,12 +56,13 @@ type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
     disabled?: boolean;
     components?: SelectComponentsConfig<TOption, boolean, GroupBase<TOption>>;
     className?: string;
+    styles?: StylesConfig;
   };
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 export const makeStringOptions = (...items: string[]) =>
   items.map(
     (item) =>
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       ({
         label: item,
         value: item,
@@ -76,6 +81,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
   name,
   components,
   className,
+  styles,
 }: SelectWidgetProps<TOption>) => {
   if (loadError) {
     return (
@@ -109,6 +115,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
       value={selectValue}
       onChange={patchedOnChange}
       components={components}
+      styles={styles}
     />
   );
 };

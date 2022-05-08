@@ -61,6 +61,7 @@ import { RequireScope } from "@/auth/RequireScope";
 import { selectScope } from "@/auth/authSelectors";
 import { FieldDescriptions } from "@/utils/strings";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
+import { StylesConfig } from "react-select";
 
 const { attachExtension } = extensionsSlice.actions;
 
@@ -109,6 +110,32 @@ async function convertAndShare(
     ...pick(data, ["updated_at"]),
   };
 }
+
+const selectStylesOverride: StylesConfig = {
+  control: (base) => ({
+    ...base,
+    borderRadius: 0,
+    border: "none",
+  }),
+  valueContainer: (base) => ({
+    ...base,
+    padding: "0.875rem 1.375rem",
+  }),
+  singleValue: (base) => ({
+    ...base,
+    marginTop: 0,
+    marginBottom: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
+  }),
+  input: (base) => ({
+    ...base,
+    marginTop: 0,
+    marginBottom: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
+  }),
+};
 
 // XXX: this is a connected component. To simplify testing split out the presentational component
 const ShareExtensionModal: React.FC<{
@@ -200,7 +227,7 @@ const ShareExtensionModal: React.FC<{
           </span>
         }
         as={RegistryIdWidget}
-        className={styles.idScopeSelect}
+        selectStyles={selectStylesOverride}
       />
       <ConnectedFieldTemplate
         name="description"

@@ -28,8 +28,12 @@ import { RegistryId } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import { Form } from "react-bootstrap";
 import styles from "./RegistryIdWidget.module.scss";
+import { StylesConfig } from "react-select";
 
-const RegistryIdWidget: React.VFC<{ name: string }> = ({ name }) => {
+const RegistryIdWidget: React.VFC<{
+  name: string;
+  selectStyles: StylesConfig;
+}> = ({ name, selectStyles }) => {
   const [{ value }, , { setValue }] = useField<RegistryId>(name);
   const { scope: userScope, organization } = useSelector(selectAuth);
   const orgScope = organization?.scope;
@@ -65,6 +69,7 @@ const RegistryIdWidget: React.VFC<{ name: string }> = ({ name }) => {
         onChange={onChangeScope}
         options={options}
         className={styles.select}
+        styles={selectStyles}
       />
       <span> / </span>
       <Form.Control
