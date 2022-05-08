@@ -32,6 +32,8 @@ import {
   UUID,
   InnerDefinitions,
   SafeString,
+  SanitizedServiceConfiguration,
+  SanitizedConfig,
 } from "@/core";
 import { TraceError, TraceRecord } from "@/telemetry/trace";
 import {
@@ -497,3 +499,12 @@ export const menuItemFormStateFactory = (
     blockConfigOverride
   ) as ActionFormState;
 };
+
+export const sanitizedServiceConfigurationFactory =
+  define<SanitizedServiceConfiguration>({
+    id: uuidSequence,
+    proxy: false,
+    serviceId: (n: number) => validateRegistryId(`test/service-${n}`),
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- object literal
+    config: () => ({} as SanitizedConfig),
+  } as unknown as SanitizedServiceConfiguration);
