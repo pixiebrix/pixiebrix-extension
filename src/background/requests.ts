@@ -226,7 +226,7 @@ async function performConfiguredRequest(
   }
 }
 
-async function getServiceContext(
+async function getServiceMessageContext(
   config: SanitizedServiceConfiguration
 ): Promise<MessageContext> {
   // Try resolving the service to get metadata to include with the error
@@ -278,7 +278,7 @@ export async function proxyService<TData>(
   } catch (error) {
     throw new ContextError("Error performing request", {
       cause: error,
-      context: await getServiceContext(serviceConfig),
+      context: await getServiceMessageContext(serviceConfig),
     });
   }
 }

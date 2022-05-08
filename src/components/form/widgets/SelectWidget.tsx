@@ -41,7 +41,7 @@ export type SelectWidgetOnChange<
 > = React.ChangeEventHandler<SelectLike<TOption>>;
 
 // Type of the SelectWidget props
-type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
+export type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
   CustomFieldWidgetProps<TOption["value"], SelectLike<TOption>> & {
     isClearable?: boolean;
     options: TOption[];

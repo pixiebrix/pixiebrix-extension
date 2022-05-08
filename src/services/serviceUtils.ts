@@ -15,10 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId, Schema, ServiceContext, ServiceDependency } from "@/core";
+import {
+  RegistryId,
+  SanitizedServiceConfiguration,
+  Schema,
+  ServiceContext,
+  ServiceDependency,
+  UUID,
+} from "@/core";
 import { services } from "@/background/messenger/api";
 import { pickBy } from "lodash";
 import { resolveObj } from "@/utils";
+import { isErrorLike } from "serialize-error";
 
 export const SERVICE_FIELD_REFS = [
   "https://app.pixiebrix.com/schemas/service#/definitions/configuredServiceOrVar",
@@ -50,6 +58,31 @@ export function extractServiceIds(schema: Schema): RegistryId[] {
   throw new Error("Expected $ref or anyOf in schema for service");
 }
 
+async function locateWithRetry(
+  serviceId: RegistryId,
+  authId: UUID,
+  { retry = true }: { retry: boolean }
+): Promise<SanitizedServiceConfiguration> {
+  try {
+    return await services.locate(serviceId, authId);
+  } catch (error) {
+    if (
+      retry &&
+      isErrorLike(error) &&
+      error.name === "MissingConfigurationError"
+    ) {
+      // Retry
+    } else {
+      throw error;
+    }
+  }
+
+  // Ensure the locator has the latest configurations (remote and local)
+  await services.refresh();
+
+  return services.locate(serviceId, authId);
+}
+
 /** Build the service context by locating the dependencies */
 export async function makeServiceContext(
   // `IExtension.services` is an optional field. Since we don't have strict-nullness checking on, calls to this method
@@ -58,7 +91,11 @@ export async function makeServiceContext(
   dependencies: ServiceDependency[] | null = []
 ): Promise<ServiceContext> {
   const dependencyContext = async ({ id, config }: ServiceDependency) => {
-    const configuredService = await services.locate(id, config);
+    // Should be safe to call locateWithRetry in parallel b/c the locator.refresh() method debounces/coalesces
+    // the promise
+    const configuredService = await locateWithRetry(id, config, {
+      retry: true,
+    });
     return {
       // Our JSON validator gets mad at undefined values
       ...pickBy(configuredService.config, (x) => x !== undefined),
