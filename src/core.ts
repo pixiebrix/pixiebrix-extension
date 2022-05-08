@@ -197,16 +197,27 @@ export type ContextName = keyof typeof contextNames | "unknown";
  */
 export type MessageContext = {
   /**
-   * A human-readable label, e.g., provided via a `label:` directive to help identify the context when there's multiple
-   * blocks with the same id being used.
+   * A human-readable label, e.g., provided via a `label:` directive to help identify the step context when there's
+   * multiple blocks with the same id being used.
+   *
+   * @see MessageContext.extensionLabel
    */
   readonly label?: string;
   readonly deploymentId?: UUID;
   readonly blueprintId?: RegistryId;
+  readonly blueprintVersion?: SemVerString;
   readonly extensionPointId?: RegistryId;
   readonly blockId?: RegistryId;
+  readonly blockVersion?: SemVerString;
   readonly extensionId?: UUID;
+  /**
+   * The human-readable label for the extension. Used to identify the extension when reporting telemetry from a
+   * blueprint. (Each extension install has a different UUID)
+   * @since 1.6.2
+   */
+  readonly extensionLabel?: string;
   readonly serviceId?: RegistryId;
+  readonly serviceVersion?: SemVerString;
   readonly authId?: UUID;
   readonly pageName?: ContextName;
 };
@@ -302,7 +313,7 @@ export type BlockIcon = string;
 export interface Metadata {
   readonly id: RegistryId;
   readonly name: string;
-  readonly version?: string;
+  readonly version?: SemVerString;
   readonly description?: string;
 
   /**
@@ -319,6 +330,7 @@ export interface Metadata {
    * PixieBrix extension version required to install the brick/run the extension
    * @since 1.4.0
    */
+  // FIXME: this type is wrong. In practice, the value should be a semantic version range, e.g., >=1.4.0
   readonly extensionVersion?: SemVerString;
 }
 
@@ -387,7 +399,7 @@ export type DeploymentContext = {
   timestamp: string;
 
   /**
-   * Whether or not the deployment is temporarily disabled.
+   * True iff the deployment is temporarily disabled.
    *
    * If undefined, is considered active for backward compatability
    *

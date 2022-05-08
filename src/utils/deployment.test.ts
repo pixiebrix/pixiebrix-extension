@@ -21,7 +21,7 @@ import {
   makeUpdatedFilter,
 } from "./deployment";
 import { deploymentFactory, extensionFactory } from "@/testUtils/factories";
-import { validateTimestamp } from "@/types/helpers";
+import { validateSemVerString, validateTimestamp } from "@/types/helpers";
 
 describe("makeUpdatedFilter", () => {
   test.each([[{ restricted: true }, { restricted: false }]])(
@@ -102,7 +102,7 @@ describe("makeUpdatedFilter", () => {
         _recipe: {
           ...deployment.package.config.metadata,
           // The factory produces version "1.0.1"
-          version: "1.0.1",
+          version: validateSemVerString("1.0.1"),
           updated_at: validateTimestamp(deployment.updated_at),
           // `sharing` doesn't impact the predicate. Pass an arbitrary value
           sharing: undefined,

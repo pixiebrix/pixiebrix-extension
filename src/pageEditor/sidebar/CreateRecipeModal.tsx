@@ -16,7 +16,12 @@
  */
 
 import React, { useCallback } from "react";
-import { PACKAGE_REGEX, uuidv4, validateSemVerString } from "@/types/helpers";
+import {
+  PACKAGE_REGEX,
+  uuidv4,
+  testIsSemVerString,
+  validateSemVerString,
+} from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveElement,
@@ -232,7 +237,7 @@ function useInitialFormState({
     return {
       id: generateScopeBrickId(scope, recipeMetadata.id),
       name: recipeMetadata.name,
-      version: "1.0.0",
+      version: validateSemVerString("1.0.0"),
       description: recipeMetadata.description,
     };
   }
@@ -242,7 +247,7 @@ function useInitialFormState({
     return {
       id: generateRecipeId(scope, activeElement.label) ?? ("" as RegistryId),
       name: activeElement.label,
-      version: "1.0.0",
+      version: validateSemVerString("1.0.0"),
       description: "Created with the PixieBrix Page Editor",
     };
   }
@@ -273,7 +278,7 @@ function useFormSchema() {
       .test(
         "semver",
         "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
-        (value: string) => validateSemVerString(value, false)
+        (value: string) => testIsSemVerString(value, { allowLeadingV: false })
       )
       .required(),
     description: string(),

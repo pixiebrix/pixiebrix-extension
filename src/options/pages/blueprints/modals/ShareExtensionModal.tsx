@@ -29,7 +29,7 @@ import { FormikHelpers } from "formik";
 import { compact, isEmpty, pick, sortBy, uniq } from "lodash";
 import { RegistryId, UnresolvedExtension, UUID } from "@/core";
 import * as Yup from "yup";
-import { PACKAGE_REGEX } from "@/types/helpers";
+import { PACKAGE_REGEX, validateSemVerString } from "@/types/helpers";
 import { appApi, useGetOrganizationsQuery } from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import slugify from "slugify";
@@ -91,7 +91,7 @@ async function convertAndShare(
     id: form.blueprintId,
     name: form.name,
     description: form.description,
-    version: "1.0.0",
+    version: validateSemVerString("1.0.0"),
   });
 
   const { data } = await client.post<PackageUpsertResponse>("api/bricks/", {

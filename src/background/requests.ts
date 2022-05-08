@@ -16,7 +16,12 @@
  */
 
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
-import { SanitizedServiceConfiguration, ServiceConfig } from "@/core";
+import {
+  IService,
+  MessageContext,
+  SanitizedServiceConfiguration,
+  ServiceConfig,
+} from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
 import { ProxiedRemoteServiceError } from "@/services/errors";
 import serviceRegistry from "@/services/registry";
@@ -221,6 +226,24 @@ async function performConfiguredRequest(
   }
 }
 
+async function getServiceContext(
+  config: SanitizedServiceConfiguration
+): Promise<MessageContext> {
+  // Try resolving the service to get metadata to include with the error
+  let resolvedService: IService;
+  try {
+    resolvedService = await serviceRegistry.lookup(config.serviceId);
+  } catch {
+    // NOP
+  }
+
+  return {
+    serviceId: config.serviceId,
+    serviceVersion: resolvedService?.version,
+    authId: config.id,
+  };
+}
+
 /**
  * Perform a request either directly, or via the PixieBrix authentication proxy
  * @param serviceConfig the PixieBrix service configuration (used to locate the full configuration)
@@ -253,12 +276,9 @@ export async function proxyService<TData>(
       requestConfig
     )) as RemoteResponse<TData>;
   } catch (error) {
-    throw new ContextError("Error while performing request", {
+    throw new ContextError("Error performing request", {
       cause: error,
-      context: {
-        serviceId: serviceConfig.serviceId,
-        authId: serviceConfig.id,
-      },
+      context: await getServiceContext(serviceConfig),
     });
   }
 }

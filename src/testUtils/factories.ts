@@ -38,6 +38,7 @@ import {
 import { TraceError, TraceRecord } from "@/telemetry/trace";
 import {
   validateRegistryId,
+  validateSemVerString,
   validateTimestamp,
   validateUUID,
 } from "@/types/helpers";
@@ -81,7 +82,7 @@ export const recipeMetadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),
   name: (n: number) => `Recipe ${n}`,
   description: "Recipe generated from factory",
-  version: "1.0.0",
+  version: validateSemVerString("1.0.0"),
 });
 
 export const sharingDefinitionFactory = define<SharingDefinition>({
@@ -93,7 +94,7 @@ export const installedRecipeMetadataFactory = define<RecipeMetadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),
   name: (n: number) => `Recipe ${n}`,
   description: "Recipe generated from factory",
-  version: "1.0.0",
+  version: validateSemVerString("1.0.0"),
   updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
   sharing: sharingDefinitionFactory,
 });
@@ -284,7 +285,7 @@ export const versionedExtensionPointRecipeFactory = ({
       id: validateRegistryId(`test/recipe-${n}`),
       name: `Recipe ${n}`,
       description: "Recipe generated from factory",
-      version: "1.0.0",
+      version: validateSemVerString("1.0.0"),
     }),
     sharing: sharingDefinitionFactory,
     updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
@@ -338,7 +339,7 @@ export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
       id: validateRegistryId(`test/recipe-${n}`),
       name: `Recipe ${n}`,
       description: "Recipe generated from factory",
-      version: "1.0.0",
+      version: validateSemVerString("1.0.0"),
     }),
     sharing: sharingDefinitionFactory,
     updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),

@@ -43,11 +43,11 @@ export type UserData = Partial<{
   /**
    * The user's primary organization.
    */
-  organizationId: string;
+  organizationId: UUID;
   /**
    * The user's organization for engagement and error attribution
    */
-  telemetryOrganizationId: string;
+  telemetryOrganizationId: UUID;
   /**
    * Feature flags
    */
