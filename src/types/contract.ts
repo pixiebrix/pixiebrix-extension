@@ -42,8 +42,6 @@ import { AxiosResponse } from "axios";
 
 export type Kind = "block" | "foundation" | "service" | "blueprint" | "reader";
 
-export type Invitation = components["schemas"]["Invitation"];
-
 type MeGroup = components["schemas"]["Me"]["group_memberships"][number] & {
   id: UUID;
 };
@@ -215,14 +213,13 @@ export type RemoteResponse<T = unknown> = Pick<
   $$proxied?: boolean;
 };
 
-// Exclude fields assigned by the server. (And in the future might not be included on the response)
-export type ErrorItem = Required<
-  Except<
-    components["schemas"]["ErrorItem"],
-    "id" | "user" | "user_extension"
-  > & {
-    deployment: UUID | null;
-    organization: UUID | null;
-    user_agent_extension_version: SemVerString;
-  }
->;
+// Exclude fields assigned by the server. (And in the future might not be included on the response).
+// Can't use Required. For blueprint_version, etc. the backend expects the property to be excluded or to have a value
+export type ErrorItem = Except<
+  components["schemas"]["ErrorItem"],
+  "id" | "user" | "user_extension"
+> & {
+  deployment: UUID | null;
+  organization: UUID | null;
+  user_agent_extension_version: SemVerString;
+};

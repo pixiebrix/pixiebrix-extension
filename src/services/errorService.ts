@@ -48,7 +48,8 @@ async function flush(): Promise<void> {
     const client = await maybeGetLinkedApiClient();
     if (client) {
       const events = buffer.splice(0, buffer.length);
-      await client.post("/api/errors/", { events });
+      // Pass as list, the request payload is not in an envelope
+      await client.post("/api/telemetry/errors/", events);
     }
   }
 }
@@ -116,7 +117,7 @@ export async function reportToErrorService(
   const { extensionVersion, ...data } = await selectExtraContext(error);
   const { telemetryOrganizationId, organizationId } = await getUserData();
 
-  buffer.push({
+  const payload: ErrorItem = {
     uuid: uuidv4(),
     organization: telemetryOrganizationId ?? organizationId,
     class_name: error.name,
@@ -127,29 +128,36 @@ export async function reportToErrorService(
     user_agent: window.navigator.userAgent,
     user_agent_extension_version: extensionVersion,
     is_application_error: !hasBusinessRootCause(error),
-    blueprint_version: flatContext.blueprintId
-      ? {
-          id: flatContext.blueprintId,
-          version: flatContext.blueprintVersion,
-        }
-      : null,
-    brick_version: flatContext.blockId
-      ? {
-          id: flatContext.blockId,
-          version: flatContext.blockVersion,
-        }
-      : null,
-    timestamp: new Date().toISOString(),
-    service_version: flatContext.serviceId
-      ? {
-          id: flatContext.serviceId,
-          version: flatContext.serviceVersion,
-        }
-      : null,
     deployment: flatContext.deploymentId,
     // Already capturing extension version in user_agent_extension_version
     error_data: data,
-  });
+    timestamp: new Date().toISOString(),
+  };
+
+  // For blueprint_version/service_version/brick_version the server expects the key to be left off or null
+
+  if (flatContext.blueprintId) {
+    payload.blueprint_version = {
+      id: flatContext.blueprintId,
+      version: flatContext.blueprintVersion,
+    };
+  }
+
+  if (flatContext.serviceId) {
+    payload.service_version = {
+      id: flatContext.serviceId,
+      version: flatContext.serviceVersion,
+    };
+  }
+
+  if (flatContext.blockId) {
+    payload.brick_version = {
+      id: flatContext.blockId,
+      version: flatContext.blockVersion,
+    };
+  }
+
+  buffer.push(payload);
 
   await debouncedFlush();
 }
