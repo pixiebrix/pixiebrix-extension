@@ -20,17 +20,17 @@ import {
   DEFAULT_FIELD_TYPE,
   MINIMAL_SCHEMA,
   MINIMAL_UI_SCHEMA,
+  normalizeSchema,
   normalizeUiOrder,
   produceSchemaOnPropertyNameChange,
   produceSchemaOnUiTypeChange,
   replaceStringInArray,
   stringifyUiType,
-  updateRjsfSchemaWithDefaultsIfNeeded,
   validateNextPropertyName,
 } from "./formBuilderHelpers";
 import { RJSFSchema } from "./formBuilderTypes";
 import { initRenamingCases } from "./formEditor.testCases";
-import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
+import { UI_WIDGET } from "./schemaFieldNames";
 
 describe("replaceStringInArray", () => {
   let array: string[];
@@ -64,58 +64,6 @@ describe("replaceStringInArray", () => {
       array
     );
   });
-});
-
-describe("updateRjsfSchemaWithDefaultsIfNeeded", () => {
-  test("accepts the minimal schema", () => {
-    const rjsfSchema: RJSFSchema = {
-      schema: MINIMAL_SCHEMA,
-      uiSchema: MINIMAL_UI_SCHEMA,
-    };
-
-    const nextRjsfSchema = updateRjsfSchemaWithDefaultsIfNeeded(rjsfSchema);
-    expect(nextRjsfSchema).toBeNull();
-  });
-
-  test("init schema and ui schema", () => {
-    const nextRjsfSchema = updateRjsfSchemaWithDefaultsIfNeeded(
-      {} as RJSFSchema
-    );
-    expect(nextRjsfSchema.schema).toEqual(MINIMAL_SCHEMA);
-    expect(nextRjsfSchema.uiSchema).toEqual(MINIMAL_UI_SCHEMA);
-  });
-
-  test("accepts the schema it created", () => {
-    const rjsfSchema = updateRjsfSchemaWithDefaultsIfNeeded({} as RJSFSchema);
-    const nextRjsfSchema = updateRjsfSchemaWithDefaultsIfNeeded(rjsfSchema);
-    expect(nextRjsfSchema).toBeNull();
-  });
-
-  test("init ui order", () => {
-    const rjsfSchema: RJSFSchema = {
-      schema: MINIMAL_SCHEMA,
-      uiSchema: {},
-    };
-
-    const nextRjsfSchema = updateRjsfSchemaWithDefaultsIfNeeded(rjsfSchema);
-    expect(nextRjsfSchema.uiSchema[UI_ORDER]).toEqual(["*"]);
-  });
-
-  test.each([null, false, true, "firstName"])(
-    "fixes required field when it's %s",
-    (requiredFieldValue: any) => {
-      const rjsfSchema: RJSFSchema = {
-        schema: {
-          ...MINIMAL_SCHEMA,
-          required: requiredFieldValue,
-        },
-        uiSchema: MINIMAL_UI_SCHEMA,
-      };
-
-      const nextRjsfSchema = updateRjsfSchemaWithDefaultsIfNeeded(rjsfSchema);
-      expect(nextRjsfSchema.schema.required).toEqual([]);
-    }
-  );
 });
 
 describe("produceSchemaOnPropertyNameChange", () => {
@@ -182,6 +130,45 @@ describe("validateNextPropertyName", () => {
   ])("Don't allow special names [%s]", (nextPropertyName) => {
     const actual = validateNextPropertyName(schema, "field1", nextPropertyName);
     expect(actual).toBe("Such property name is forbidden.");
+  });
+});
+
+describe("normalizeSchema", () => {
+  test("init schema", () => {
+    // eslint-disable-next-line unicorn/no-useless-undefined
+    const actual = normalizeSchema(undefined);
+    expect(actual).toStrictEqual(MINIMAL_SCHEMA);
+  });
+
+  test("add properties", () => {
+    const actual = normalizeSchema({
+      type: "object",
+    });
+    expect(actual).toStrictEqual({
+      type: "object",
+      properties: {},
+    });
+  });
+
+  test("fix required", () => {
+    const actual = normalizeSchema({
+      type: "object",
+      properties: {
+        foo: {
+          type: "string",
+        },
+      },
+      required: null,
+    });
+    expect(actual).toStrictEqual({
+      type: "object",
+      properties: {
+        foo: {
+          type: "string",
+        },
+      },
+      required: [],
+    });
   });
 });
 

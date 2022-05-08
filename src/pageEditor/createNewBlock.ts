@@ -15,7 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.status {
-  border: none;
-  border-radius: 0;
+import { BlockConfig } from "@/blocks/types";
+import { defaultBlockConfig } from "@/blocks/util";
+import { RegistryId, Schema } from "@/core";
+import { uuidv4 } from "@/types/helpers";
+import { getExampleBlockConfig } from "./exampleBlockConfigs";
+
+export function createNewBlock(
+  blockId: RegistryId,
+  blockInputSchema?: Schema
+): BlockConfig {
+  return {
+    id: blockId,
+    instanceId: uuidv4(),
+    config:
+      getExampleBlockConfig(blockId) ??
+      (blockInputSchema == null ? {} : defaultBlockConfig(blockInputSchema)),
+  };
 }

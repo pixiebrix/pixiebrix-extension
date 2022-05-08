@@ -64,6 +64,8 @@ import { FormState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 import { RegistryId } from "@/core";
+import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
+import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -71,6 +73,8 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
   const dispatch = useDispatch();
   const [createRecipe] = useCreateRecipeMutation();
   const createExtension = useCreate();
+  const removeExtension = useRemoveExtension();
+  const removeRecipe = useRemoveRecipe();
 
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
@@ -101,13 +105,20 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
       // Don't push to cloud since we're saving it with the recipe
       await createExtension({ element: recipeElement, pushToCloud: false });
       if (!keepLocalCopy) {
-        dispatch(editorActions.removeElement(activeElement.uuid));
-        dispatch(
-          optionsActions.removeExtension({ extensionId: activeElement.uuid })
-        );
+        await removeExtension({
+          extensionId: activeElement.uuid,
+          shouldShowConfirmation: false,
+        });
       }
     },
-    [activeElement, createExtension, createRecipe, dispatch, keepLocalCopy]
+    [
+      activeElement,
+      createExtension,
+      createRecipe,
+      dispatch,
+      keepLocalCopy,
+      removeExtension,
+    ]
   );
 
   const createRecipeFromRecipe = useCallback(
@@ -161,7 +172,7 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
 
       // Replace the old recipe with the new recipe locally. The logic here is similar to what's in useReinstall.ts
 
-      dispatch(optionsActions.removeRecipeById(recipeId));
+      await removeRecipe({ recipeId, shouldShowConfirmation: false });
 
       dispatch(
         optionsActions.installRecipe({
@@ -249,13 +260,18 @@ function useInitialFormState({
 
 function useFormSchema() {
   const newRecipeIds = useSelector(selectNewRecipeIds);
+  const { data: recipes } = useGetRecipesQuery();
+  const savedRecipeIds: RegistryId[] = (recipes ?? []).map(
+    (x) => x.metadata.id
+  );
+  const allRecipeIds = [...newRecipeIds, ...savedRecipeIds];
 
   // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
   // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
   return object({
     id: string()
       .matches(PACKAGE_REGEX, "Invalid registry id")
-      .notOneOf(newRecipeIds, "This id is already in use")
+      .notOneOf(allRecipeIds, "This id is already in use")
       .required(),
     name: string().required(),
     version: string()
@@ -277,12 +293,12 @@ const CreateRecipeModal: React.VFC = () => {
   // `selectActiveRecipeId` returns the recipe id _if the recipe element is selected_. Assumption: if the CreateModal
   // is open an extension element is active, then we're performing a "Save a New" on that recipe.
   const directlyActiveRecipeId = useSelector(selectActiveRecipeId);
-  const activeRecipeId = directlyActiveRecipeId ?? activeElement.recipe?.id;
+  const activeRecipeId = directlyActiveRecipeId ?? activeElement?.recipe?.id;
 
   const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
-  const activeRecipe = recipes?.find(
-    (recipe) => recipe.metadata.id === activeRecipeId
-  );
+  const activeRecipe = activeRecipeId
+    ? recipes?.find((recipe) => recipe.metadata.id === activeRecipeId)
+    : undefined;
 
   const formSchema = useFormSchema();
 

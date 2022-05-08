@@ -21,8 +21,6 @@ import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import { compact } from "lodash";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { uuidv4 } from "@/types/helpers";
-import { getExampleBlockConfig } from "@/pageEditor/tabs/editTab/exampleBlockConfigs";
-import { defaultBlockConfig } from "@/blocks/util";
 import { produce } from "immer";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
@@ -32,6 +30,7 @@ import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
+import { createNewBlock } from "@/pageEditor/createNewBlock";
 
 type BlockPipelineActions = {
   addBlock: (block: IBlock, pipelineIndex: number) => void;
@@ -63,12 +62,7 @@ function useBlockPipelineActions(
           ...blockPipeline.map((x) => x.outputKey),
         ])
       );
-      const newBlock: BlockConfig = {
-        id: block.id,
-        instanceId: uuidv4(),
-        config:
-          getExampleBlockConfig(block) ?? defaultBlockConfig(block.inputSchema),
-      };
+      const newBlock = createNewBlock(block.id, block.inputSchema);
       if (outputKey) {
         newBlock.outputKey = outputKey;
       }
