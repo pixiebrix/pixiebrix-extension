@@ -19,7 +19,7 @@ import { uuidv4 } from "@/types/helpers";
 import { getRollbar } from "@/telemetry/initRollbar";
 import { MessageContext, SerializedError, UUID } from "@/core";
 import { Except, JsonObject } from "type-fest";
-import { deserializeError } from "serialize-error";
+import { deserializeError, serializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
 import { isEmpty, once, sortBy } from "lodash";
 import { allowsTrack } from "@/telemetry/dnt";
@@ -30,7 +30,6 @@ import {
   hasCancelRootCause,
   IGNORED_ERROR_PATTERNS,
   isContextError,
-  serializeErrorAndProperties,
 } from "@/errors";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { matchesAnyPattern } from "@/utils";
@@ -303,9 +302,8 @@ export async function recordError(
         context: flatContext,
         message,
         data,
-        // Ensure the object is fully serialized. Required because it will be stored in IDB and flow through the Redux
-        // state. Can be converted to serializeError after https://github.com/sindresorhus/serialize-error/issues/74
-        error: serializeErrorAndProperties(maybeSerializedError),
+        // Ensure the object is fully serialized. Required because it will be stored in IDB and flow through the Redux state
+        error: serializeError(maybeSerializedError),
       }),
     ]);
   } catch (recordError) {
