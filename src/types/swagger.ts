@@ -978,6 +978,7 @@ export interface components {
         organization_name: string;
         /** @enum {integer} */
         role: 1 | 2 | 3 | 4 | 5;
+        scope?: string | null;
       }[];
       group_memberships?: {
         /** Format: uuid */

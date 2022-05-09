@@ -17,7 +17,11 @@
 
 import React, { ChangeEvent } from "react";
 import { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
-import Select, { GroupBase, SelectComponentsConfig } from "react-select";
+import Select, {
+  GroupBase,
+  SelectComponentsConfig,
+  StylesConfig,
+} from "react-select";
 import { getErrorMessage } from "@/errors";
 
 // Type of the Select options
@@ -51,7 +55,15 @@ export type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
     error?: unknown;
     disabled?: boolean;
     components?: SelectComponentsConfig<TOption, boolean, GroupBase<TOption>>;
+    className?: string;
+    styles?: StylesConfig;
   };
+
+export const makeStringOptions = (...items: string[]): Option[] =>
+  items.map((item) => ({
+    label: item,
+    value: item,
+  }));
 
 const SelectWidget = <TOption extends Option<TOption["value"]>>({
   id,
@@ -64,6 +76,8 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
   onChange,
   name,
   components,
+  className,
+  styles,
 }: SelectWidgetProps<TOption>) => {
   if (loadError) {
     return (
@@ -86,6 +100,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
 
   return (
     <Select
+      className={className}
       menuPlacement="auto"
       inputId={id}
       name={name}
@@ -96,6 +111,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
       value={selectValue}
       onChange={patchedOnChange}
       components={components}
+      styles={styles}
     />
   );
 };
