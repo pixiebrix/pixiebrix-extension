@@ -24,6 +24,15 @@ import { MarketplaceListing } from "@/types/contract";
 import { waitForEffect } from "@/testUtils/testHelpers";
 
 jest.mock("@/services/api", () => ({
+  appApi: {
+    endpoints: {
+      getMarketplaceListings: {
+        useQueryState: jest
+          .fn()
+          .mockReturnValue({ data: [] as MarketplaceListing[] }),
+      },
+    },
+  },
   useGetMarketplaceListingsQuery: () => ({ data: [] as MarketplaceListing[] }),
 }));
 
