@@ -20,9 +20,10 @@ import {
   deploymentFactory,
   extensionFactory,
   installedRecipeMetadataFactory,
+  sharingDefinitionFactory,
 } from "@/testUtils/factories";
-import { uuidv4 } from "@/types/helpers";
-import { PersistedExtension } from "@/core";
+import { uuidv4, validateSemVerString } from "@/types/helpers";
+import { PersistedExtension, Timestamp } from "@/core";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { updateDeployments } from "@/background/deployment";
@@ -196,7 +197,7 @@ describe("updateDeployments", () => {
     expect(extensions.length).toBe(1);
   });
 
-  test("ignore user extensions", async () => {
+  test("ignore other user extensions", async () => {
     isLinkedMock.mockResolvedValue(true);
     containsPermissionsMock.mockResolvedValue(true);
 
@@ -222,6 +223,42 @@ describe("updateDeployments", () => {
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(2);
+  });
+
+  test("uninstall existing recipe extension", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    containsPermissionsMock.mockResolvedValue(true);
+
+    const deployment = deploymentFactory();
+
+    // An extension without a recipe. Exclude _recipe entirely to handle the case where the property is missing
+    const extension = extensionFactory({
+      _recipe: {
+        id: deployment.package.package_id,
+        name: deployment.package.name,
+        version: validateSemVerString("0.0.1"),
+        updated_at: deployment.updated_at as Timestamp,
+        sharing: sharingDefinitionFactory(),
+      },
+    }) as PersistedExtension;
+    delete extension._deployment;
+
+    await saveOptions({
+      extensions: [extension],
+    });
+
+    axiosMock.onGet().reply(200, {
+      flags: [],
+    });
+
+    axiosMock.onPost().reply(201, [deployment]);
+
+    await updateDeployments();
+
+    const { extensions } = await loadOptions();
+
+    expect(extensions.length).toBe(1);
+    expect(extensions[0]._recipe.version).toBe(deployment.package.version);
   });
 
   test("opens options page if deployment does not have necessary permissions", async () => {

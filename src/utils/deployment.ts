@@ -84,6 +84,10 @@ export const makeUpdatedFilter =
       return false;
     }
 
+    if (!deploymentMatch) {
+      return true;
+    }
+
     return (
       new Date(deploymentMatch._deployment.timestamp) <
       new Date(deployment.updated_at)
