@@ -113,8 +113,13 @@ const refreshRegistriesMock = refreshRegistries as jest.Mock;
 const isUpdateAvailableMock = isUpdateAvailable as jest.Mock;
 const getSettingsStateMock = getSettingsState as jest.Mock;
 
-beforeEach(() => {
+beforeEach(async () => {
   jest.resetModules();
+
+  // Reset local options state
+  await saveOptions({
+    extensions: [],
+  });
 
   isLinkedMock.mockClear();
   readAuthDataMock.mockClear();
