@@ -71,11 +71,6 @@ exports[`renders modal 1`] = `
                 <div
                   class="root"
                 >
-                  <input
-                    hidden=""
-                    id="backingInput"
-                    value="@test/testextension"
-                  />
                   <div
                     class="select css-b62m3t-container"
                   >
