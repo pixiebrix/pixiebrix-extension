@@ -42,7 +42,6 @@ import InstalledEntry from "@/pageEditor/sidebar/InstalledEntry";
 import DynamicEntry from "@/pageEditor/sidebar/DynamicEntry";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import useAddElement from "@/pageEditor/hooks/useAddElement";
-import Footer from "@/pageEditor/sidebar/Footer";
 import {
   faAngleDoubleLeft,
   faAngleDoubleRight,
@@ -400,7 +399,6 @@ const SidebarExpanded: React.VoidFunctionComponent<{
           </Accordion>
         )}
       </div>
-      <Footer />
     </div>
   );
 };
