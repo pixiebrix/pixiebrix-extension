@@ -113,8 +113,13 @@ const refreshRegistriesMock = refreshRegistries as jest.Mock;
 const isUpdateAvailableMock = isUpdateAvailable as jest.Mock;
 const getSettingsStateMock = getSettingsState as jest.Mock;
 
-beforeEach(() => {
+beforeEach(async () => {
   jest.resetModules();
+
+  // Reset local options state
+  await saveOptions({
+    extensions: [],
+  });
 
   isLinkedMock.mockClear();
   readAuthDataMock.mockClear();
@@ -189,6 +194,34 @@ describe("updateDeployments", () => {
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(1);
+  });
+
+  test("ignore user extensions", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    containsPermissionsMock.mockResolvedValue(true);
+
+    // An extension without a recipe. Exclude _recipe entirely to handle the case where the property is missing
+    const extension = extensionFactory() as PersistedExtension;
+    delete extension._recipe;
+    delete extension._deployment;
+
+    await saveOptions({
+      extensions: [extension],
+    });
+
+    const deployment = deploymentFactory();
+
+    axiosMock.onGet().reply(200, {
+      flags: [],
+    });
+
+    axiosMock.onPost().reply(201, [deployment]);
+
+    await updateDeployments();
+
+    const { extensions } = await loadOptions();
+
+    expect(extensions.length).toBe(2);
   });
 
   test("opens options page if deployment does not have necessary permissions", async () => {
