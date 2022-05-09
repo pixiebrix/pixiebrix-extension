@@ -16,7 +16,7 @@
  */
 
 import { useField } from "formik";
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
 import SelectWidget, {
@@ -25,47 +25,74 @@ import SelectWidget, {
 } from "@/components/form/widgets/SelectWidget";
 import { split } from "lodash";
 import { RegistryId } from "@/core";
-import { validateRegistryId } from "@/types/helpers";
 import { Form } from "react-bootstrap";
 import styles from "./RegistryIdWidget.module.scss";
 import { StylesConfig } from "react-select";
 import { UserRole } from "@/types/contract";
 
+const editorRoles = new Set<number>([
+  UserRole.admin,
+  UserRole.developer,
+  UserRole.manager,
+]);
+
+/**
+ * Splits a value into a scope and id, based on scope starting with @ and id
+ *  as everything following the first / character
+ * @param value the full RegistryId
+ */
+export function getScopeAndId(
+  value: RegistryId
+): [string | undefined, string | undefined] {
+  // Scope needs to start with @
+  if (!value.startsWith("@")) {
+    return [undefined, value];
+  }
+
+  // If the value starts with @ and doesn't have a slash, interpret it as a scope
+  if (!value.includes("/")) {
+    return [value, undefined];
+  }
+
+  const [scope, ...idParts] = split(value, "/");
+  return [scope, idParts.join("/")];
+}
+
 const RegistryIdWidget: React.VFC<{
   name: string;
   selectStyles: StylesConfig;
 }> = ({ name, selectStyles }) => {
-  const [{ value }, , { setValue }] = useField<RegistryId>(name);
+  const [{ value }, , { setValue, setTouched }] = useField<RegistryId>(name);
   const { scope: userScope, organizations } = useSelector(selectAuth);
-  const orgScopes = organizations
-    .filter(
-      (organization) =>
-        organization.role === UserRole.admin ||
-        organization.role === UserRole.developer ||
-        organization.role === UserRole.manager
-    )
+  const organizationScopes = organizations
+    .filter((organization) => editorRoles.has(organization.role))
     .map((organization) => organization.scope);
 
-  const options = makeStringOptions(userScope, ...orgScopes);
+  const options = makeStringOptions(userScope, ...organizationScopes);
 
-  const [scope, id] = split(value, "/", 2);
+  const [scopeValue = userScope, idValue] = getScopeAndId(value);
 
-  const scopeValue = scope ?? userScope;
-
-  const idValue = id ?? scope ?? "";
+  useEffect(() => {
+    const fullValue = `${scopeValue}/${idValue}` as RegistryId;
+    if (value !== fullValue) {
+      setValue(fullValue, true);
+    }
+  }, [scopeValue, idValue, setValue, value]);
 
   const onChangeScope: SelectWidgetOnChange = (event) => {
     const newScope =
       options.find((option) => option.value === event.target.value)?.value ??
       scopeValue;
-    const newValue = validateRegistryId(`${newScope}/${idValue}`);
+    const newValue = `${newScope}/${idValue}` as RegistryId;
     setValue(newValue);
+    setTouched(true);
   };
 
   const onChangeId: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     const newId = event.target.value;
-    const newValue = validateRegistryId(`${scopeValue}/${newId}`);
+    const newValue = `${scopeValue}/${newId}` as RegistryId;
     setValue(newValue);
+    setTouched(true);
   };
 
   return (

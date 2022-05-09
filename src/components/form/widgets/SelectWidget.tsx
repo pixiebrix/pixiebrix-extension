@@ -59,15 +59,11 @@ type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
     styles?: StylesConfig;
   };
 
-export const makeStringOptions = (...items: string[]) =>
-  items.map(
-    (item) =>
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      ({
-        label: item,
-        value: item,
-      } as Option)
-  );
+export const makeStringOptions = (...items: string[]): Option[] =>
+  items.map((item) => ({
+    label: item,
+    value: item,
+  }));
 
 const SelectWidget = <TOption extends Option<TOption["value"]>>({
   id,
