@@ -121,7 +121,7 @@ export type AuthState = {
     id: UUID;
     name: string;
     role: Me["organization_memberships"][number]["role"];
-    scope?: string | null;
+    scope: string | null;
   }>;
 
   readonly groups: Array<{
