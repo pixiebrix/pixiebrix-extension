@@ -80,6 +80,7 @@ export enum UserRole {
   admin = 2,
   developer = 3,
   restricted = 4,
+  manager = 5,
 }
 
 export type Organization = components["schemas"]["Organization"] & {

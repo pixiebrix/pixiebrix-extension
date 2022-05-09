@@ -114,10 +114,14 @@ export type AuthState = {
    */
   readonly organization?: OrganizationAuthState | null;
 
+  /**
+   * Organizations the user is a member of
+   */
   readonly organizations: Array<{
     id: UUID;
     name: string;
     role: Me["organization_memberships"][number]["role"];
+    scope?: string | null;
   }>;
 
   readonly groups: Array<{
