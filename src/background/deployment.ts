@@ -168,10 +168,7 @@ function installDeployment(
   let returnState = state;
 
   // Uninstall existing versions of the extensions
-  returnState = uninstallRecipe(
-    returnState,
-    deployment.package.package_id as RegistryId
-  );
+  returnState = uninstallRecipe(returnState, deployment.package.package_id);
 
   // Install the deployment's blueprint with the service definition
   returnState = reducer(
