@@ -29,16 +29,24 @@ import { validateRegistryId } from "@/types/helpers";
 import { Form } from "react-bootstrap";
 import styles from "./RegistryIdWidget.module.scss";
 import { StylesConfig } from "react-select";
+import { UserRole } from "@/types/contract";
 
 const RegistryIdWidget: React.VFC<{
   name: string;
   selectStyles: StylesConfig;
 }> = ({ name, selectStyles }) => {
   const [{ value }, , { setValue }] = useField<RegistryId>(name);
-  const { scope: userScope, organization } = useSelector(selectAuth);
-  const orgScope = organization?.scope;
+  const { scope: userScope, organizations } = useSelector(selectAuth);
+  const orgScopes = organizations
+    .filter(
+      (organization) =>
+        organization.role === UserRole.admin ||
+        organization.role === UserRole.developer ||
+        organization.role === UserRole.manager
+    )
+    .map((organization) => organization.scope);
 
-  const options = makeStringOptions(userScope, orgScope);
+  const options = makeStringOptions(userScope, ...orgScopes);
 
   const [scope, id] = split(value, "/", 2);
 
