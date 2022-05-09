@@ -37,7 +37,7 @@ import { MenuItemExtensionPoint } from "@/extensionPoints/menuItemExtension";
 import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
 import { PanelExtensionPoint } from "@/extensionPoints/panelExtension";
 import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
+import { appApi } from "@/services/api";
 import { useAsyncState } from "@/hooks/common";
 import { useAsyncEffect } from "use-async-effect";
 import { fetchFortAwesomeIcon } from "@/components/AsyncIcon";
@@ -103,7 +103,8 @@ const BrickIcon: React.FunctionComponent<{
    */
   faIconClass?: string;
 }> = ({ brick, size = "1x", faIconClass = "" }) => {
-  const { data: listings = {} } = useGetMarketplaceListingsQuery();
+  const { data: listings = {} } =
+    appApi.endpoints.getMarketplaceListings.useQueryState();
   const listing: MarketplaceListing | null = listings[brick.id];
 
   const [type] = useAsyncState(async () => getType(brick), [brick]);
