@@ -22,10 +22,25 @@ import { ManualStorageKey, readStorage } from "@/chrome";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { DEFAULT_THEME, THEMES } from "@/options/constants";
+import logo from "@img/logo.svg";
+import logoSmall from "@img/logo-small-rounded.svg";
+import aaLogo from "@img/aa-logo.svg";
+import aaLogoSmall from "@img/aa-logo-small.svg";
 
 const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
 
-const useTheme = (): void => {
+const THEME_LOGOS = {
+  default: {
+    regular: logo,
+    small: logoSmall,
+  },
+  "automation-anywhere": {
+    regular: aaLogo,
+    small: aaLogoSmall,
+  },
+};
+
+const useTheme = (): { logo: string; logoSmall: string } => {
   const { theme } = useSelector(selectSettings);
   const dispatch = useDispatch();
   const [partnerId, isLoading] = useAsyncState(
@@ -52,6 +67,12 @@ const useTheme = (): void => {
       document.documentElement.classList.add(theme);
     }
   }, [isLoading, dispatch, partnerId, theme]);
+
+  return {
+    logo: theme && THEME_LOGOS[theme] ? THEME_LOGOS[theme].regular : logo,
+    logoSmall:
+      theme && THEME_LOGOS[theme] ? THEME_LOGOS[theme].small : logoSmall,
+  };
 };
 
 export default useTheme;

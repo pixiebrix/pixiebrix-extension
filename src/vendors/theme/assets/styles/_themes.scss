@@ -21,6 +21,16 @@
 * We break down hsl values into parts in order to use css variables
 * with bootstrap component overrides for dynamic theming
 */
+$theme-logos: (
+  automation-anywhere:
+    "https://apeople.automationanywhere.com/sso/resource/1633415511000/IDP_Resources/logo.png",
+);
+
+$small-theme-logos: (
+  automation-anywhere:
+    "https://community.cloud.automationanywhere.digital/asset/pathfinder-logo-04dd75198bba23611af4.svg",
+);
+
 :root {
   --theme-primary-hs: 270, 100%;
   --theme-primary-l: 71%;
@@ -54,6 +64,8 @@
   --theme-dark-hs: 213, 19%;
   --theme-dark-l: 30%;
   --theme-dark: hsl(213, 19%, 30%);
+
+  --logo-height: 28px;
 }
 
 :root.automation-anywhere {
@@ -96,4 +108,6 @@
   --theme-dark-hs: 0, 0%;
   --theme-dark-l: 20%;
   --theme-dark: hsl(0, 0%, 20%);
+
+  --logo-height: 40px;
 }
