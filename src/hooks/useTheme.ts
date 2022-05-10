@@ -34,13 +34,13 @@ type ThemeLogo = {
   small: string;
 };
 
-type ThemeLogos = {
+type ThemeLogoMap = {
   [key in Theme]: ThemeLogo;
 };
 
 export type Theme = typeof THEMES[number];
 
-const THEME_LOGOS: ThemeLogos = {
+const THEME_LOGOS: ThemeLogoMap = {
   default: {
     regular: logo,
     small: logoSmall,
@@ -51,7 +51,7 @@ const THEME_LOGOS: ThemeLogos = {
   },
 };
 
-const getLogos = (theme: string): ThemeLogo => {
+const getThemeLogo = (theme: string): ThemeLogo | null => {
   if (theme in THEME_LOGOS) {
     // eslint-disable-next-line security/detect-object-injection -- theme is user defined, but restricted to themes
     return THEME_LOGOS[theme];
@@ -60,7 +60,7 @@ const getLogos = (theme: string): ThemeLogo => {
   return null;
 };
 
-const useTheme = (): { logo: string; logoSmall: string } => {
+const useTheme = (): { logo: ThemeLogo } => {
   const { theme } = useSelector(selectSettings);
   const dispatch = useDispatch();
   const [partnerId, isLoading] = useAsyncState(
@@ -68,7 +68,7 @@ const useTheme = (): { logo: string; logoSmall: string } => {
     [],
     null
   );
-  const themeLogos = getLogos(theme);
+  const themeLogo = getThemeLogo(theme);
 
   useEffect(() => {
     // Initialize initial theme state with the user's partner theme, if any
@@ -90,8 +90,7 @@ const useTheme = (): { logo: string; logoSmall: string } => {
   }, [isLoading, dispatch, partnerId, theme]);
 
   return {
-    logo: themeLogos ? themeLogos.regular : logo,
-    logoSmall: themeLogos ? themeLogos.small : logoSmall,
+    logo: themeLogo,
   };
 };
 

@@ -93,7 +93,11 @@ const ConnectedSidebar: React.VFC = () => {
           <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
         </Button>
         <div className="align-self-center">
-          <img src={logo} alt="PixieBrix logo" className={styles.logo} />
+          <img
+            src={logo.regular}
+            alt="PixieBrix logo"
+            className={styles.logo}
+          />
         </div>
         <Button
           href="/options.html"
