@@ -29,7 +29,18 @@ import aaLogoSmall from "@img/aa-logo-small.svg";
 
 const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
 
-const THEME_LOGOS = {
+type ThemeLogo = {
+  regular: string;
+  small: string;
+};
+
+type ThemeLogos = {
+  [key in Theme]: ThemeLogo;
+};
+
+export type Theme = typeof THEMES[number];
+
+const THEME_LOGOS: ThemeLogos = {
   default: {
     regular: logo,
     small: logoSmall,
@@ -40,6 +51,14 @@ const THEME_LOGOS = {
   },
 };
 
+const getLogos = (theme: string): ThemeLogo => {
+  if (theme in THEME_LOGOS) {
+    return THEME_LOGOS[theme as Theme];
+  }
+
+  return null;
+};
+
 const useTheme = (): { logo: string; logoSmall: string } => {
   const { theme } = useSelector(selectSettings);
   const dispatch = useDispatch();
@@ -48,6 +67,7 @@ const useTheme = (): { logo: string; logoSmall: string } => {
     [],
     null
   );
+  const themeLogos = getLogos(theme);
 
   useEffect(() => {
     // Initialize initial theme state with the user's partner theme, if any
@@ -69,9 +89,8 @@ const useTheme = (): { logo: string; logoSmall: string } => {
   }, [isLoading, dispatch, partnerId, theme]);
 
   return {
-    logo: theme && THEME_LOGOS[theme] ? THEME_LOGOS[theme].regular : logo,
-    logoSmall:
-      theme && THEME_LOGOS[theme] ? THEME_LOGOS[theme].small : logoSmall,
+    logo: themeLogos ? themeLogos.regular : logo,
+    logoSmall: themeLogos ? themeLogos.small : logoSmall,
   };
 };
 

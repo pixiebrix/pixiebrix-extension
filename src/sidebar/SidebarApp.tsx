@@ -19,7 +19,6 @@ import styles from "./SidebarApp.module.scss";
 
 import React, { Dispatch, useEffect, useMemo } from "react";
 import { Button } from "react-bootstrap";
-import logo from "@img/logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -60,7 +59,7 @@ function getConnectedListener(dispatch: Dispatch<AnyAction>): SidebarListener {
 const selectState = ({ sidebar }: { sidebar: SidebarState }) => sidebar;
 
 const ConnectedSidebar: React.VFC = () => {
-  useTheme();
+  const { logo } = useTheme();
   const dispatch = useDispatch();
   const sidebarState = useSelector(selectState);
 
@@ -94,7 +93,12 @@ const ConnectedSidebar: React.VFC = () => {
           <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
         </Button>
         <div className="align-self-center">
-          <img src={logo} alt="PixieBrix logo" height={20} className="px-4" />
+          <img
+            src={logo}
+            alt="PixieBrix logo"
+            height={20}
+            className={styles.logo}
+          />
         </div>
         <Button
           href="/options.html"
