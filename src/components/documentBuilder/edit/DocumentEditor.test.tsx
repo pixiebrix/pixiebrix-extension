@@ -16,50 +16,54 @@
  */
 
 import { render } from "@testing-library/react";
-import { Formik } from "formik";
+import { Formik, useFormikContext } from "formik";
 import React, { useState } from "react";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import DocumentEditor from "./DocumentEditor";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
-
-function renderDocumentEditor(
-  documentElements: DocumentElement[],
-  initialActiveElement: string = null
-) {
-  const document = {
-    body: documentElements,
-  };
-
-  const PreviewContainer = () => {
-    const [activeElement, setActiveElement] = useState<string | null>(
-      initialActiveElement
-    );
-    return (
-      <Formik
-        initialValues={{
-          document,
-        }}
-        onSubmit={jest.fn()}
-      >
-        <DocumentEditor
-          name="document.body"
-          activeElement={activeElement}
-          setActiveElement={setActiveElement}
-        />
-      </Formik>
-    );
-  };
-
-  return render(<PreviewContainer />);
-}
+import {
+  blockConfigFactory,
+  formStateFactory,
+  uuidSequence,
+  baseExtensionStateFactory,
+} from "@/testUtils/factories";
+import { toExpression } from "@/testUtils/testHelpers";
+import { ServiceDependency } from "@/core";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 beforeAll(() => {
   registerDefaultWidgets();
 });
 
 describe("move element", () => {
+  function renderDocumentEditor(
+    documentElements: DocumentElement[],
+    initialActiveElement: string = null
+  ) {
+    const document = {
+      body: documentElements,
+    };
+
+    const PreviewContainer = () => {
+      const [activeElement, setActiveElement] = useState<string | null>(
+        initialActiveElement
+      );
+      return (
+        <Formik initialValues={{ document }} onSubmit={jest.fn()}>
+          <DocumentEditor
+            name="document.body"
+            activeElement={activeElement}
+            setActiveElement={setActiveElement}
+          />
+        </Formik>
+      );
+    };
+
+    return render(<PreviewContainer />);
+  }
+
   test("can move text element down", async () => {
     const documentElements = [
       createNewElement("text"),
@@ -111,5 +115,107 @@ describe("move element", () => {
     expect(
       rendered.getByText("Move down", { selector: "button" })
     ).not.toBeDisabled();
+  });
+});
+
+describe("remove element", () => {
+  function renderDocumentEditor(
+    formState: FormState,
+    initialActiveElement: string = null
+  ) {
+    const formikStateRef = {
+      current: formState,
+    };
+
+    const WrappedEditor = ({
+      activeElement,
+      setActiveElement,
+    }: {
+      activeElement: string;
+      setActiveElement: (activeElement: string) => void;
+    }) => {
+      const { values } = useFormikContext<FormState>();
+      formikStateRef.current = values;
+
+      return (
+        <DocumentEditor
+          name="extension.blockPipeline.0.config.config.body"
+          activeElement={activeElement}
+          setActiveElement={setActiveElement}
+        />
+      );
+    };
+
+    const PreviewContainer = () => {
+      const [activeElement, setActiveElement] = useState<string | null>(
+        initialActiveElement
+      );
+      return (
+        <Formik initialValues={formState} onSubmit={jest.fn()}>
+          <WrappedEditor
+            activeElement={activeElement}
+            setActiveElement={setActiveElement}
+          />
+        </Formik>
+      );
+    };
+
+    const rendered = render(<PreviewContainer />);
+
+    return {
+      rendered,
+      formikStateRef,
+    };
+  }
+
+  test("removes service dependency", async () => {
+    const services: ServiceDependency[] = [
+      {
+        id: "@test/service",
+        outputKey: "serviceOutput",
+        config: "6faefd8a-abf4-46b9-81d4-4205e8c03762",
+      },
+    ];
+
+    const documentWithButtonConfig = {
+      id: "@test/document",
+      config: {
+        body: [
+          {
+            type: "button",
+            config: {
+              title: "Action",
+              onClick: toExpression("pipeline", [
+                {
+                  id: "@test/action",
+                  instanceId: uuidSequence(2),
+                  config: {
+                    input: toExpression("var", "@serviceOutput"),
+                  },
+                },
+              ]),
+            },
+          },
+        ],
+      },
+      instanceId: uuidSequence(1),
+    };
+
+    const formState = formStateFactory({
+      services,
+      extension: baseExtensionStateFactory({
+        blockPipeline: [
+          blockConfigFactory({
+            config: documentWithButtonConfig,
+          }),
+        ],
+      }),
+    });
+
+    const { rendered, formikStateRef } = renderDocumentEditor(formState, "0");
+
+    await userEvent.click(rendered.getByText("Remove element"));
+
+    expect(formikStateRef.current.services).toStrictEqual([]);
   });
 });
