@@ -25,7 +25,6 @@
   --theme-primary-hs: 270, 100%;
   --theme-primary-l: 71%;
   --theme-primary: hsl(270, 100%, 71%);
-  // --theme-primary: hsl(var(--theme-primary-hs), var(--theme-primary-l));
 
   --theme-secondary-hs: 0, 0%;
   --theme-secondary-l: 85%;
@@ -59,42 +58,34 @@
 }
 
 :root.automation-anywhere {
-  // #4e6b8c -- from aa app
   --theme-primary-hs: 212, 28%;
   --theme-primary-l: 43%;
   --theme-primary: hsl(212, 28%, 43%);
 
-  // B5CEE0 -- from aa app
   --theme-secondary-hs: 205, 41%;
   --theme-secondary-l: 79%;
   --theme-secondary: hsl(205, 41%, 79%);
 
-  // B4BE69 -- from style guide
   --theme-success-hs: 67, 40%;
   --theme-success-l: 58%;
   --theme-success: hsl(67, 40%, 58%);
 
-  // 7BA8C7 -- from style guide
   --theme-info-hs: 204, 40%;
   --theme-info-l: 63%;
   --theme-info: hsl(204, 40%, 63%);
 
-  // rgb(255, 188, 3) -- from aa app
   --theme-warning-hs: 44, 100%;
   --theme-warning-l: 51%;
   --theme-warning: hsl(44, 100%, 51%);
 
-  // CF4022 -- from style guide
   --theme-danger-hs: 10, 72%;
   --theme-danger-l: 47%;
   --theme-danger: hsl(10, 72%, 47%);
 
-  // F2F2F2 -- from style guide
   --theme-light-hs: 0, 0%;
   --theme-light-l: 95%;
   --theme-light: hsl(0, 0%, 95%);
 
-  // 333333 -- from style guide
   --theme-dark-hs: 0, 0%;
   --theme-dark-l: 20%;
   --theme-dark: hsl(0, 0%, 20%);
