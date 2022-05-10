@@ -53,7 +53,8 @@ const THEME_LOGOS: ThemeLogos = {
 
 const getLogos = (theme: string): ThemeLogo => {
   if (theme in THEME_LOGOS) {
-    return THEME_LOGOS[theme as Theme];
+    // eslint-disable-next-line security/detect-object-injection -- theme is user defined, but restricted to themes
+    return THEME_LOGOS[theme];
   }
 
   return null;
