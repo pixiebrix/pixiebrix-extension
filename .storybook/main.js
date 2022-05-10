@@ -102,6 +102,10 @@ module.exports = {
         new webpack.ProvidePlugin({
           $: "jquery",
           jQuery: "jquery",
+          browser: [
+            path.resolve(rootDir, "src/__mocks__/browserMock.mjs"),
+            "default",
+          ],
         }),
       ]
     );
