@@ -104,7 +104,7 @@ const BrickIcon: React.FunctionComponent<{
   faIconClass?: string;
 }> = ({ brick, size = "1x", faIconClass = "" }) => {
   const { data: listings = {} } =
-    // BrickIcon only gets the data from the store. The API query must be issues by a parent component.
+    // BrickIcon only gets the data from the store. The API query must be issued by a parent component.
     appApi.endpoints.getMarketplaceListings.useQueryState();
 
   const listing: MarketplaceListing | null = listings[brick.id];
