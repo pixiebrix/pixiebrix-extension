@@ -30,8 +30,11 @@ import {
   baseExtensionStateFactory,
 } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
-import { ServiceDependency } from "@/core";
+import { OutputKey, ServiceDependency } from "@/core";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { validateRegistryId } from "@/types/helpers";
+
+jest.mock("@/blocks/registry");
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -119,7 +122,11 @@ describe("move element", () => {
 });
 
 describe("remove element", () => {
-  function renderDocumentEditor(
+  /**
+   * Renders the DocumentEditor inside Formik context.
+   * @returns Rendered result and reference to the current Formik state.
+   */
+  function renderDocumentEditorWithFormState(
     formState: FormState,
     initialActiveElement: string = null
   ) {
@@ -169,14 +176,16 @@ describe("remove element", () => {
   }
 
   test("removes service dependency", async () => {
+    // Services included in the form state
     const services: ServiceDependency[] = [
       {
-        id: "@test/service",
-        outputKey: "serviceOutput",
-        config: "6faefd8a-abf4-46b9-81d4-4205e8c03762",
+        id: validateRegistryId("@test/service"),
+        outputKey: "serviceOutput" as OutputKey,
+        config: uuidSequence(1),
       },
     ];
 
+    // Document brick definition
     const documentWithButtonConfig = {
       id: "@test/document",
       config: {
@@ -198,9 +207,10 @@ describe("remove element", () => {
           },
         ],
       },
-      instanceId: uuidSequence(1),
+      instanceId: uuidSequence(3),
     };
 
+    // Form state for the test
     const formState = formStateFactory({
       services,
       extension: baseExtensionStateFactory({
@@ -212,7 +222,10 @@ describe("remove element", () => {
       }),
     });
 
-    const { rendered, formikStateRef } = renderDocumentEditor(formState, "0");
+    const { rendered, formikStateRef } = renderDocumentEditorWithFormState(
+      formState,
+      "0"
+    );
 
     await userEvent.click(rendered.getByText("Remove element"));
 
