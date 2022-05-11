@@ -60,8 +60,8 @@ export function getScopeAndId(
 
 const RegistryIdWidget: React.VFC<{
   name: string;
-  selectStyles: StylesConfig;
-}> = ({ name, selectStyles }) => {
+  selectStyles?: StylesConfig;
+}> = ({ name, selectStyles = {} }) => {
   const [{ value }, , { setValue, setTouched }] = useField<RegistryId>(name);
   const { scope: userScope, organizations } = useSelector(selectAuth);
   const organizationScopes = organizations
@@ -98,7 +98,7 @@ const RegistryIdWidget: React.VFC<{
   return (
     <div className={styles.root}>
       <SelectWidget
-        name={name}
+        name={`${name}-scope`}
         value={scopeValue}
         isClearable={false}
         onChange={onChangeScope}
@@ -108,6 +108,7 @@ const RegistryIdWidget: React.VFC<{
       />
       <span> / </span>
       <Form.Control
+        name={`${name}-id`}
         value={idValue}
         onChange={onChangeId}
         className={styles.idInput}

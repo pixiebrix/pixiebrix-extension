@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render } from "@testing-library/react";
+import { render, RenderOptions, RenderResult } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import {
@@ -28,6 +28,17 @@ import {
   Reducer,
   ReducersMapObject,
 } from "@reduxjs/toolkit";
+import { Formik, FormikValues } from "formik";
+import { Dispatch } from "redux";
+import { authSlice } from "@/auth/authSlice";
+import extensionsSlice from "@/store/extensionsSlice";
+import servicesSlice from "@/store/servicesSlice";
+import settingsSlice from "@/store/settingsSlice";
+import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import sessionSlice from "@/pageEditor/slices/sessionSlice";
+import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSlice";
+import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
+import { logSlice } from "@/components/logViewer/logSlice";
 
 export const waitForEffect = async () =>
   act(async () => {
@@ -85,3 +96,48 @@ export function createRenderFunction<
     );
   };
 }
+
+type SetupRedux = (dispatch: Dispatch) => void;
+
+type WrapperOptions = Omit<RenderOptions, "wrapper"> & {
+  initialValues?: FormikValues;
+  setupRedux?: SetupRedux;
+};
+
+function renderWithWrappers(
+  ui: React.ReactElement,
+  { initialValues, setupRedux, ...renderOptions }: WrapperOptions
+): RenderResult {
+  const Wrapper: React.FC = ({ children }) => {
+    const store = configureStore({
+      reducer: {
+        auth: authSlice.reducer,
+        options: extensionsSlice.reducer,
+        services: servicesSlice.reducer,
+        settings: settingsSlice.reducer,
+        editor: editorSlice.reducer,
+        session: sessionSlice.reducer,
+        savingExtension: savingExtensionSlice.reducer,
+        runtime: runtimeSlice.reducer,
+        logs: logSlice.reducer,
+      },
+    });
+
+    setupRedux?.(store.dispatch);
+
+    return (
+      <Provider store={store}>
+        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+          {children}
+        </Formik>
+      </Provider>
+    );
+  };
+
+  return render(ui, { wrapper: Wrapper, ...renderOptions });
+}
+
+// eslint-disable-next-line import/export -- re-export RTL
+export * from "@testing-library/react";
+// eslint-disable-next-line import/export -- override render
+export { renderWithWrappers as render };

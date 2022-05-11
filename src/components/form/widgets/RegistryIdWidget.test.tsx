@@ -15,8 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getScopeAndId } from "@/components/form/widgets/RegistryIdWidget";
+import React from "react";
+import RegistryIdWidget, {
+  getScopeAndId,
+} from "@/components/form/widgets/RegistryIdWidget";
 import { RegistryId } from "@/core";
+import { render, screen } from "@/testUtils/testHelpers";
+import { authActions } from "@/auth/authSlice";
+import testFactory from "@/testUtils/testFactory";
 
 describe("getScopeAndId", () => {
   test("normal id", () => {
@@ -38,5 +44,35 @@ describe("getScopeAndId", () => {
   test("scope without id", () => {
     const id = "@foo" as RegistryId;
     expect(getScopeAndId(id)).toStrictEqual(["@foo", undefined]);
+  });
+});
+
+jest.unmock("react-redux");
+
+describe("RegistryIdWidget", () => {
+  test("renders with user id value", async () => {
+    const testUserScope = "@userFoo";
+    const testIdValue = "test-identifier";
+    const id = `${testUserScope}/${testIdValue}` as RegistryId;
+
+    const { container } = render(<RegistryIdWidget name="testField" />, {
+      initialValues: { testField: id },
+      setupRedux(dispatch) {
+        dispatch(
+          authActions.setAuth(
+            testFactory.authState({
+              scope: testUserScope,
+            })
+          )
+        );
+      },
+    });
+
+    expect(
+      container.querySelector("input[name='testField-scope']")
+    ).toHaveValue(testUserScope);
+    expect(container.querySelector("input[name='testField-id']")).toHaveValue(
+      testIdValue
+    );
   });
 });
