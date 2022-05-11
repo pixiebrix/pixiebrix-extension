@@ -288,36 +288,28 @@ export function hasCancelRootCause(error: unknown): boolean {
 }
 
 export function isSpecificError<
-  ErrorConstructor extends new (...args: unknown[]) => Error,
-  ErrorType extends ErrorConstructor | "AxiosError",
-  ReturnErrorType extends ErrorType extends "AxiosError"
-    ? AxiosError
-    : InstanceType<ErrorConstructor>
->(error: unknown, errorType: ErrorType): error is ReturnErrorType {
-  // This check only exists here so that `selectSpecificError` can support AxiosError.
-  // Prefer direct `isAxiosError` when possible instead of `isSpecificError`.
-  // AxiosError requires its own special treatment because it doesn't extend Error.
-  if (errorType === "AxiosError") {
-    return isAxiosError(error);
+  ErrorType extends new (...args: unknown[]) => Error
+>(error: unknown, errorType: ErrorType): error is InstanceType<ErrorType> {
+  if (errorType.name === "ClientRequestError" && isObject(error)) {
+    // `ClientRequestError` is the AxiosError wrapper thanks to `enrichAxiosErrors`.
+    // We should never actually want to find the AxiosError because `ClientRequestError` is
+    // already more specific and includes more information about what the error is.
+    // Additionally AxiosErrors are not real Error class instances, so they're awkward to catch.
+    return isAxiosError(error.cause);
   }
 
   return isErrorObject(error) && error.name === errorType.name;
 }
 
 export function selectSpecificError<
-  ErrorType extends (new (...args: unknown[]) => Error) | "AxiosError",
-  ReturnErrorType extends ErrorType extends string
-    ? AxiosError
-    : // @ts-expect-error I give up. `extends string` isn't filtering the string out, but
-      //   the expected type still works
-      InstanceType<ErrorType>
->(error: unknown, errorType: ErrorType): ReturnErrorType | null {
+  ErrorType extends new (...args: unknown[]) => Error
+>(error: unknown, errorType: ErrorType): InstanceType<ErrorType> | null {
   if (!isObject(error)) {
     return;
   }
 
   if (isSpecificError(error, errorType)) {
-    return error as ReturnErrorType;
+    return error;
   }
 
   return selectSpecificError(error.cause, errorType);

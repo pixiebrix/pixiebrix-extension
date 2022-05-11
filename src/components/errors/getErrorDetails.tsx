@@ -24,6 +24,7 @@ import NetworkErrorDetail from "./NetworkErrorDetail";
 import OutputValidationErrorDetail from "./OutputValidationErrorDetail";
 import { Col, Row } from "react-bootstrap";
 import { UnknownObject } from "@/types";
+import { ClientRequestError } from "@/services/errors";
 
 type ErrorDetails = {
   title: string;
@@ -54,11 +55,11 @@ export default function getErrorDetails(error: ErrorObject): ErrorDetails {
     };
   }
 
-  const networkError = selectSpecificError(error, "AxiosError");
+  const networkError = selectSpecificError(error, ClientRequestError);
   if (networkError) {
     return {
       title: "Network error",
-      detailsElement: <NetworkErrorDetail error={networkError} />,
+      detailsElement: <NetworkErrorDetail error={networkError.cause} />,
     };
   }
 
