@@ -77,9 +77,9 @@ export class ProxiedRemoteServiceError extends BusinessError {
 }
 
 /**
- * Abstract base class for request errors from client to 3rd-party service.
+ * Base class for request errors from client to 3rd-party service.
  */
-export abstract class ClientRequestError extends BusinessError {
+export class ClientRequestError extends BusinessError {
   override name = "ClientRequestError";
   override readonly cause: SerializableAxiosError;
   constructor(message: string, options: { cause: AxiosError }) {
