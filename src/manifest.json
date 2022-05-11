@@ -57,6 +57,7 @@
     "ephemeralForm.css",
     "audio/*",
     "user-icons/*"
+    // "img/*" ?
   ],
   "browser_action": {
     "default_title": "PixieBrix",

@@ -113,6 +113,8 @@ const AdvancedSettings: React.FunctionComponent = () => {
                         : DEFAULT_THEME,
                     })
                   );
+                  // might need to use redux-persist flush
+                  // send message via messenger to updateTheme
                 }}
               />
               <Form.Text className="text-muted">

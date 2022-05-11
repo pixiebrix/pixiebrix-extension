@@ -58,3 +58,4 @@ initDeploymentUpdater();
 initFirefoxCompat();
 activateBrowserActionIcon();
 initActiveTabTracking();
+// initPartnerTheme();

@@ -149,6 +149,7 @@ export default function registerMessenger(): void {
     GOOGLE_SHEETS_APPEND_ROWS: sheets.appendRows,
     GOOGLE_SHEETS_BATCH_UPDATE: sheets.batchUpdate,
     GOOGLE_SHEETS_BATCH_GET: sheets.batchGet,
+    // ACTIVATE_THEME
 
     GET_AVAILABLE_VERSION: getAvailableVersion,
     INJECT_SCRIPT: ensureContentScript,
