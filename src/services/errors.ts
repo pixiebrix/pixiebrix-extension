@@ -81,17 +81,13 @@ export class ProxiedRemoteServiceError extends BusinessError {
  */
 export abstract class ClientRequestError extends BusinessError {
   override name = "ClientRequestError";
-
-  readonly error: SerializableAxiosError;
-
-  constructor(message: string, error: AxiosError) {
-    super(message);
+  override readonly cause: SerializableAxiosError;
+  constructor(message: string, options: { cause: AxiosError }) {
+    super(message, options);
 
     // Axios offers its own serialization method, but it doesn't include the response.
     // By deleting toJSON, the serialize-error library will use its default serialization
-    delete error.toJSON;
-
-    this.error = error;
+    delete options.cause.toJSON;
   }
 }
 

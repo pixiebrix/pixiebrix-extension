@@ -68,7 +68,7 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
   }
 
   if (!navigator.onLine) {
-    throw new ClientNetworkError(NO_INTERNET_MESSAGE, error);
+    throw new ClientNetworkError(NO_INTERNET_MESSAGE, { cause: error });
   }
 
   const hasPermissions = await browser.permissions.contains({

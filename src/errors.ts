@@ -43,7 +43,7 @@ export class BusinessError extends Error {
 
 export class PromiseCancelled extends Error {
   override name = "PromiseCancelled";
-  constructor(message: string, options: ErrorOptions) {
+  constructor(message?: string, options?: ErrorOptions) {
     super(message ?? "Promise was cancelled", options);
   }
 }
@@ -294,23 +294,23 @@ export function isSpecificError<
     ? AxiosError
     : InstanceType<ErrorConstructor>
 >(error: unknown, errorType: ErrorType): error is ReturnErrorType {
-  // This check only exists here so that `findSpecificError` can support AxiosError.
+  // This check only exists here so that `selectSpecificError` can support AxiosError.
   // Prefer direct `isAxiosError` when possible instead of `isSpecificError`.
+  // AxiosError requires its own special treatment because it doesn't extend Error.
   if (errorType === "AxiosError") {
     return isAxiosError(error);
   }
 
-  // Please don't remove `instanceof Error`, we should expect real Errors to be passed around.
-  // The second condition is only because the exact constructor might not be used when
-  // deserializing errors, but they'll still be instances of Error.
-  return error instanceof Error && error.name === errorType.name;
+  return isErrorObject(error) && error.name === errorType.name;
 }
 
-export function findSpecificError<
+export function selectSpecificError<
   ErrorType extends (new (...args: unknown[]) => Error) | "AxiosError",
   ReturnErrorType extends ErrorType extends string
     ? AxiosError
-    : InstanceType<ErrorType>
+    : // @ts-expect-error I give up. `extends string` isn't filtering the string out, but
+      //   the expected type still works
+      InstanceType<ErrorType>
 >(error: unknown, errorType: ErrorType): ReturnErrorType | null {
   if (!isObject(error)) {
     return;
@@ -320,11 +320,12 @@ export function findSpecificError<
     return error as ReturnErrorType;
   }
 
-  return findSpecificError(error.cause, errorType);
+  return selectSpecificError(error.cause, errorType);
 }
 
 /**
  * Find the root cause
+ * @deprecated Look for specific errors via selectSpecificError
  */
 export function getRootCause(error: unknown): unknown {
   while (isObject(error) && "cause" in error) {

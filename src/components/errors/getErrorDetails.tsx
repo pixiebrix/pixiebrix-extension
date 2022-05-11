@@ -17,7 +17,7 @@
 
 import React from "react";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
-import { findSpecificError, getRootCause } from "@/errors";
+import { selectSpecificError, getRootCause } from "@/errors";
 import { ErrorObject } from "serialize-error";
 import InputValidationErrorDetail from "./InputValidationErrorDetail";
 import NetworkErrorDetail from "./NetworkErrorDetail";
@@ -31,7 +31,7 @@ type ErrorDetails = {
 };
 
 export default function getErrorDetails(error: ErrorObject): ErrorDetails {
-  const inputValidationError = findSpecificError(error, InputValidationError);
+  const inputValidationError = selectSpecificError(error, InputValidationError);
   if (inputValidationError) {
     return {
       title: "Invalid inputs for block",
@@ -41,7 +41,10 @@ export default function getErrorDetails(error: ErrorObject): ErrorDetails {
     };
   }
 
-  const outputValidationError = findSpecificError(error, OutputValidationError);
+  const outputValidationError = selectSpecificError(
+    error,
+    OutputValidationError
+  );
   if (outputValidationError) {
     return {
       title: "Invalid output for block",
@@ -51,7 +54,7 @@ export default function getErrorDetails(error: ErrorObject): ErrorDetails {
     };
   }
 
-  const networkError = findSpecificError(error, "AxiosError");
+  const networkError = selectSpecificError(error, "AxiosError");
   if (networkError) {
     return {
       title: "Network error",
@@ -59,6 +62,7 @@ export default function getErrorDetails(error: ErrorObject): ErrorDetails {
     };
   }
 
+  // TODO: Use getErrorMessage instead, or something that combines the whole error cause stack
   const { name = "Error", message = "Unknown error" } = (getRootCause(error) ??
     {}) as UnknownObject;
 
