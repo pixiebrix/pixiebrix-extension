@@ -15,69 +15,78 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
-import { IExtension, RegistryId } from "@/core";
-import { RecipeDefinition } from "@/types/definitions";
+import React from "react";
+import { RegistryId } from "@/core";
 import styles from "./Entry.module.scss";
 import { UnsavedChangesIcon } from "@/pageEditor/sidebar/ExtensionIcons";
-import { ListGroup } from "react-bootstrap";
+import { Accordion, ListGroup } from "react-bootstrap";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCaretDown,
+  faCaretRight,
+  faFile,
+} from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
-import { selectRecipeIsDirty } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveElement,
+  selectDirtyMetadataForRecipeId,
+  selectExpandedRecipeId,
+  selectRecipeIsDirty,
+} from "@/pageEditor/slices/editorSelectors";
+import { useGetRecipesQuery } from "@/services/api";
 
 type RecipeEntryProps = {
   recipeId: RegistryId;
-  recipes?: RecipeDefinition[];
-  elements: Array<IExtension | FormState>;
-  activeRecipeId: RegistryId | null;
+  isActive?: boolean;
 };
 
 const RecipeEntry: React.FC<RecipeEntryProps> = ({
   recipeId,
-  recipes,
-  elements,
-  activeRecipeId,
+  isActive,
   children,
 }) => {
-  const [expanded, setExpanded] = useState(false);
+  const expandedRecipeId = useSelector(selectExpandedRecipeId);
+  const activeElement = useSelector(selectActiveElement);
+  // Set the alternate background if an extension in this recipe is active
+  const hasRecipeBackground = activeElement?.recipe?.id === recipeId;
   const dispatch = useDispatch();
-  const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
-  const isDirty = useSelector((state: RootState) =>
-    selectRecipeIsDirty(state, recipeId, elements)
-  );
+  const { data: recipes } = useGetRecipesQuery();
+  const savedName = recipes?.find((recipe) => recipe.metadata.id === recipeId)
+    ?.metadata?.name;
+  const dirtyName = useSelector(selectDirtyMetadataForRecipeId(recipeId))?.name;
+  const name = dirtyName ?? savedName ?? "Loading...";
+  const isDirty = useSelector(selectRecipeIsDirty(recipeId));
 
-  const caretIcon = expanded ? faCaretDown : faCaretRight;
+  const caretIcon = expandedRecipeId === recipeId ? faCaretDown : faCaretRight;
 
   return (
     <>
-      <ListGroup.Item
-        className={cx(styles.root, "list-group-item-action")}
+      <Accordion.Toggle
+        eventKey={recipeId}
+        as={ListGroup.Item}
+        className={cx(styles.root, "list-group-item-action", {
+          [styles.recipeBackground]: hasRecipeBackground,
+        })}
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
-        active={recipeId === activeRecipeId}
+        active={isActive}
         key={`recipe-${recipeId}`}
-        onClick={() => dispatch(actions.selectRecipe(recipe))}
+        onClick={() => dispatch(actions.selectRecipeId(recipeId))}
       >
-        <button
-          className={styles.icon}
-          onClick={(event) => {
-            setExpanded(!expanded);
-            event.stopPropagation();
-          }}
-        >
-          <FontAwesomeIcon icon={caretIcon} />
-        </button>
-        <span className={styles.name}>{recipe?.metadata?.name}</span>
+        <span className={styles.icon}>
+          <FontAwesomeIcon icon={faFile} /> <FontAwesomeIcon icon={caretIcon} />
+        </span>
+        <span className={styles.name}>{name}</span>
         {isDirty && (
           <span className={cx(styles.icon, "text-danger")}>
             <UnsavedChangesIcon />
           </span>
         )}
-      </ListGroup.Item>
-      {expanded && children}
+      </Accordion.Toggle>
+      <Accordion.Collapse eventKey={recipeId}>
+        <>{children}</>
+      </Accordion.Collapse>
     </>
   );
 };

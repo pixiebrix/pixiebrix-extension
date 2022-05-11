@@ -29,11 +29,12 @@ import { services } from "@/background/messenger/api";
 import { Button } from "react-bootstrap";
 import ServiceEditorModal from "@/options/pages/services/ServiceEditorModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faSync } from "@fortawesome/free-solid-svg-icons";
 import servicesSlice from "@/store/servicesSlice";
 import notify from "@/utils/notify";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
+import styles from "./AuthWidget.module.scss";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -67,6 +68,12 @@ const AuthWidget: React.FunctionComponent<{
     () => authOptions.filter((x) => x.serviceId === serviceId),
     [authOptions, serviceId]
   );
+
+  const refreshAuthOptions = () => {
+    // `onRefresh` is not awaitable. Indicate that clicking the button did something
+    notify.info("Refreshing integration configurations");
+    onRefresh();
+  };
 
   const save = useCallback(
     async (values: RawServiceConfiguration) => {
@@ -144,22 +151,36 @@ const AuthWidget: React.FunctionComponent<{
       )}
 
       <div className="d-inline-flex">
-        {options.length > 0 && (
-          <div style={{ minWidth: "300px" }} className="mr-2">
-            <ServiceAuthSelector
-              name={name}
-              serviceId={serviceId}
-              authOptions={options}
-              CustomMenuList={CustomMenuList}
-            />
-          </div>
-        )}
-        <div>
-          {options.length === 0 && (
+        {options.length > 0 ? (
+          <>
+            <div className={styles.selector}>
+              <ServiceAuthSelector
+                name={name}
+                serviceId={serviceId}
+                authOptions={options}
+                CustomMenuList={CustomMenuList}
+              />
+            </div>
+            {onRefresh && (
+              <div>
+                <Button
+                  size="sm"
+                  variant="info"
+                  className={styles.actionButton}
+                  onClick={refreshAuthOptions}
+                  title="Refresh integration configurations"
+                >
+                  <FontAwesomeIcon icon={faSync} />
+                </Button>
+              </div>
+            )}
+          </>
+        ) : (
+          <>
             <Button
-              variant={options.length > 0 ? "info" : "primary"}
+              variant="info"
               size="sm"
-              style={{ height: "36px", marginTop: "1px" }}
+              className={styles.actionButton}
               onClick={() => {
                 if (serviceDefinition.isAuthorizationGrant) {
                   void launchAuthorizationGrantFlow(serviceDefinition, {
@@ -174,8 +195,20 @@ const AuthWidget: React.FunctionComponent<{
             >
               <FontAwesomeIcon icon={faPlus} /> Configure
             </Button>
-          )}
-        </div>
+
+            {onRefresh && (
+              <Button
+                size="sm"
+                variant="info"
+                className={styles.actionButton}
+                onClick={refreshAuthOptions}
+                title="Refresh integration configurations"
+              >
+                <FontAwesomeIcon icon={faSync} /> Refresh
+              </Button>
+            )}
+          </>
+        )}
       </div>
     </>
   );

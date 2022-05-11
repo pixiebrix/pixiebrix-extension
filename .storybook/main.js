@@ -58,7 +58,6 @@ module.exports = {
       {
         test: /\.ya?ml$/,
         resourceQuery: { not: [/loadAsText/] },
-        type: "json",
         use: "yaml-loader",
       },
       {
@@ -103,6 +102,10 @@ module.exports = {
         new webpack.ProvidePlugin({
           $: "jquery",
           jQuery: "jquery",
+          browser: [
+            path.resolve(rootDir, "src/__mocks__/browserMock.mjs"),
+            "default",
+          ],
         }),
       ]
     );

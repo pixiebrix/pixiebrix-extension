@@ -26,7 +26,6 @@ import {
 } from "@/types/definitions";
 import { AxiosRequestConfig } from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
-import { isAxiosError } from "@/errors";
 import {
   CloudExtension,
   Database,
@@ -46,28 +45,44 @@ import { dumpBrickYaml } from "@/runtime/brickYaml";
 import { propertiesToSchema } from "@/validators/generic";
 import { produce } from "immer";
 import { sortBy } from "lodash";
+import { serializeError } from "serialize-error";
 
-// Temporary type for RTK query errors. Matches the example from
-// https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery.
-// A future PR will have appBaseQuery return the AxiosError or enriched request error
-// See errorContract
-export type ApiError = {
-  status: number;
-  data: unknown | undefined;
+type QueryArgs = {
+  /**
+   * The relative PixieBrix URL. The client will apply the configured base service URL.
+   */
+  url: string;
+
+  /**
+   * The REST method
+   */
+  method: AxiosRequestConfig["method"];
+
+  /**
+   * The REST JSON data
+   */
+  data?: AxiosRequestConfig["data"];
+
+  /**
+   * True if a Token is required to make the request.
+   * @see isLinked
+   */
+  requireLinked?: boolean;
+
+  /**
+   * Optional additional metadata to pass through to the result.
+   */
+  meta?: unknown;
 };
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
-const appBaseQuery: BaseQueryFn<
-  {
-    url: string;
-    method: AxiosRequestConfig["method"];
-    data?: AxiosRequestConfig["data"];
-    requireLinked?: boolean;
-    meta?: unknown;
-  },
-  unknown,
-  ApiError
-> = async ({ url, method, data, requireLinked = false, meta }) => {
+const appBaseQuery: BaseQueryFn<QueryArgs> = async ({
+  url,
+  method,
+  data,
+  requireLinked = true,
+  meta,
+}) => {
   try {
     const client = await (requireLinked
       ? getLinkedApiClient()
@@ -76,13 +91,10 @@ const appBaseQuery: BaseQueryFn<
 
     return { data: result.data, meta };
   } catch (error) {
-    if (isAxiosError(error)) {
-      return {
-        error: { status: error.response?.status, data: error.response?.data },
-      };
-    }
-
-    throw error;
+    // Axios offers its own serialization method, but it reshapes the Error object (doesn't include the response, puts the status on the root level). `useToJSON: false` skips that.
+    return {
+      error: serializeError(error, { useToJSON: false }),
+    };
   }
 };
 
@@ -144,10 +156,14 @@ export const appApi = createApi({
   ],
   endpoints: (builder) => ({
     getMe: builder.query<Me, void>({
-      query: () => ({ url: "/api/me/", method: "get" }),
+      query: () => ({
+        url: "/api/me/",
+        method: "get",
+        // The /api/me/ endpoint returns a blank result if not authenticated
+        requireLinked: false,
+      }),
       providesTags: ["Me"],
     }),
-
     getDatabases: builder.query<Database[], void>({
       query: () => ({ url: "/api/databases/", method: "get" }),
       providesTags: ["Databases"],
@@ -179,7 +195,12 @@ export const appApi = createApi({
       invalidatesTags: ["Databases"],
     }),
     getServices: builder.query<ServiceDefinition[], void>({
-      query: () => ({ url: "/api/services/", method: "get" }),
+      query: () => ({
+        url: "/api/services/",
+        method: "get",
+        // Returns public service definitions if not authenticated
+        requireLinked: false,
+      }),
       providesTags: ["Services"],
     }),
     getServiceAuths: builder.query<SanitizedAuth[], void>({
@@ -237,6 +258,8 @@ export const appApi = createApi({
       query: () => ({
         url: "/api/marketplace/listings/?show_detail=true",
         method: "get",
+        // Returns public marketplace
+        requireLinked: false,
       }),
       providesTags: ["MarketplaceListings"],
       transformResponse(
@@ -314,8 +337,13 @@ export const appApi = createApi({
           url: `api/bricks/${packageId}/`,
           method: "put",
           data: {
+            id: packageId,
+            name: recipe.metadata.id,
             config: recipeConfig,
             kind: "recipe" as RecipeDefinition["kind"],
+            public: Boolean((recipe as RecipeDefinition).sharing?.public),
+            organizations:
+              (recipe as RecipeDefinition).sharing?.organizations ?? [],
           },
         };
       },
@@ -337,6 +365,17 @@ export const appApi = createApi({
       providesTags: (result, error, { id }) => [
         { type: "PackageVersion", id: `PACKAGE-${id}-LIST` },
       ],
+    }),
+    updateScope: builder.mutation<
+      unknown, // Not using the result yet, need to refine this type if the future if that changes
+      Required<Pick<components["schemas"]["Settings"], "scope">>
+    >({
+      query: ({ scope }) => ({
+        url: "api/settings/",
+        method: "patch",
+        data: { scope },
+      }),
+      invalidatesTags: ["Me"],
     }),
   }),
 });
@@ -360,4 +399,5 @@ export const {
   useGetInvitationsQuery,
   useGetPackageQuery,
   useListPackageVersionsQuery,
+  useUpdateScopeMutation,
 } = appApi;

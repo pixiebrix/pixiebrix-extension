@@ -20,7 +20,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
 import { Alert } from "react-bootstrap";
-import { RecipeDefinition } from "@/types/definitions";
 import Centered from "@/pageEditor/components/Centered";
 import EditorTabLayout, {
   ActionButton,
@@ -41,16 +40,10 @@ import { MessageContext } from "@/core";
 import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
 import RecipeOptions from "@/pageEditor/tabs/RecipeOptions";
-import { useGetRecipesQuery } from "@/services/api";
-import { useModals } from "@/components/ConfirmationModal";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 
-const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
-  const { data: recipes } = useGetRecipesQuery();
+const RecipePane: React.VFC = () => {
   const activeRecipeId = useSelector(selectActiveRecipeId);
-  const recipe = recipes.find(
-    (recipe) => recipe.metadata.id === activeRecipeId
-  );
   const [showQuestionModal, setShowQuestionModal] = useState(false);
 
   // We need to force the component to re-render when the recipe is reset
@@ -64,32 +57,16 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
   };
 
   const { save: saveRecipe, isSaving: isSavingRecipe } = useRecipeSaver();
-  const { showConfirmation } = useModals();
   const dispatch = useDispatch();
-
-  async function resetRecipe() {
-    const confirmed = await showConfirmation({
-      title: "Reset Blueprint?",
-      message:
-        "Unsaved changes to extensions within this blueprint, or to blueprint options, will be lost",
-      submitCaption: "Reset",
-    });
-    if (!confirmed) {
-      return;
-    }
-
-    dispatch(actions.resetRecipeMetadataAndOptions(recipe.metadata.id));
-    forceRefreshLayout();
-  }
-
+  const resetRecipe = useResetRecipe();
   const removeRecipe = useRemoveRecipe();
 
   useEffect(() => {
     const messageContext: MessageContext = {
-      blueprintId: recipe.metadata.id,
+      blueprintId: activeRecipeId,
     };
     dispatch(logActions.setContext(messageContext));
-  }, [dispatch, recipe.metadata.id]);
+  }, [dispatch, activeRecipeId]);
 
   const [unreadLogsCount, logsBadgeVariant] = useLogsBadgeState();
 
@@ -135,7 +112,10 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
     {
       // Reset
       variant: "warning",
-      onClick: resetRecipe,
+      async onClick() {
+        await resetRecipe(activeRecipeId);
+        forceRefreshLayout();
+      },
       caption: "Reset",
       disabled: isSavingRecipe,
       icon: faHistory,
@@ -144,14 +124,15 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
       // Remove
       variant: "danger",
       onClick() {
-        removeRecipe(recipe);
+        void removeRecipe({ recipeId: activeRecipeId });
+        forceRefreshLayout();
       },
       caption: "Remove",
       icon: faTrash,
     },
   ];
 
-  if (!recipe) {
+  if (!activeRecipeId) {
     return (
       <Centered>
         <Alert variant="danger">Recipe not found</Alert>

@@ -47,6 +47,7 @@ const targetOptions: Array<Option<BlockWindow>> = [
   { label: "Current Tab (self)", value: "self" },
   { label: "Opener Tab (opener)", value: "opener" },
   { label: "Target Tab (target)", value: "target" },
+  { label: "Top-level Frame (top)", value: "top" },
   { label: "All Tabs (broadcast)", value: "broadcast" },
   { label: "Server (remote)", value: "remote" },
 ];
@@ -134,7 +135,7 @@ const BlockConfiguration: React.FunctionComponent<{
 
           {showIfAndTarget && (
             <>
-              <SchemaField {...ifSchemaProps} />
+              <SchemaField {...ifSchemaProps} omitIfEmpty />
 
               <ConnectedFieldTemplate
                 name={configName("window")}

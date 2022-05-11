@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const elementsCollectionRegexp = /(?<collectionName>.*)\.(?<elementIndex>\d+)/;
+const elementsCollectionRegexp =
+  /((?<collectionName>.*)\.)?(?<elementIndex>\d+)/;
 
 /**
  * Returns the name of the collection of a document element.

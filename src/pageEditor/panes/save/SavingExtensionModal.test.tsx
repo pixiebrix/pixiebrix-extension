@@ -24,8 +24,9 @@ import {
   installedRecipeMetadataFactory,
   recipeFactory,
   recipeMetadataFactory,
-} from "@/tests/factories";
+} from "@/testUtils/factories";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { validateSemVerString } from "@/types/helpers";
 
 const simpleElementFactory = define<FormState>({
   apiVersion: "v2",
@@ -86,7 +87,7 @@ test("renders all buttons when Recipe is editable", () => {
 test("doesn't render recipe buttons when recipe is editable and not latest version", () => {
   const recipe = recipeFactory({
     metadata: installedRecipeMetadataFactory({
-      version: "2.0.0",
+      version: validateSemVerString("2.0.0"),
     }),
   });
   const element = simpleElementFactory();

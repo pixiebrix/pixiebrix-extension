@@ -15,11 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  RawServiceConfiguration,
-  SanitizedServiceConfiguration,
-  ServiceConfig,
-} from "@/core";
+import { RawServiceConfiguration, ServiceConfig } from "@/core";
 import serviceRegistry from "@/services/registry";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
@@ -32,6 +28,7 @@ import * as locator from "@/services/locator";
 import { RemoteServiceError } from "@/services/errors";
 import { validateRegistryId } from "@/types/helpers";
 import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
+import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories";
 
 const axiosMock = new MockAdapter(axios);
 const mockIsBackground = isBackground as jest.MockedFunction<
@@ -89,19 +86,15 @@ const requestConfig: AxiosRequestConfig = {
   method: "get",
 };
 
-const directServiceConfig = {
-  id: "124",
+const directServiceConfig = sanitizedServiceConfigurationFactory({
   proxy: false,
   serviceId: EXAMPLE_SERVICE_API,
-  config: {},
-} as SanitizedServiceConfiguration;
+});
 
-const proxiedServiceConfig = {
-  id: "123",
+const proxiedServiceConfig = sanitizedServiceConfigurationFactory({
   proxy: true,
   serviceId: EXAMPLE_SERVICE_API,
-  config: {},
-} as SanitizedServiceConfiguration;
+});
 
 describe("unauthenticated direct requests", () => {
   it("makes an unauthenticated request", async () => {
@@ -121,14 +114,9 @@ describe("unauthenticated direct requests", () => {
   it("handles remote internal server error", async () => {
     axiosMock.onAny().reply(500);
 
-    try {
-      await proxyService(null, requestConfig);
-      fail("Expected proxyService to throw a RemoteServiceError error");
-    } catch (error) {
-      expect(error).toBeInstanceOf(RemoteServiceError);
-      const { status } = (error as RemoteServiceError).error.response;
-      expect(status).toEqual(500);
-    }
+    const request = proxyService(null, requestConfig);
+    await expect(request).rejects.toThrow(RemoteServiceError);
+    await expect(request).rejects.toHaveProperty("error.response.status", 500);
   });
 });
 
@@ -148,6 +136,14 @@ describe("authenticated direct requests", () => {
     axiosMock.onAny().reply(200, {});
     const response = await proxyService(directServiceConfig, requestConfig);
     expect(response.status).toEqual(200);
+  });
+
+  it("throws on missing local config", async () => {
+    jest.spyOn(Locator.prototype, "getLocalConfig").mockResolvedValue(null);
+
+    await expect(async () =>
+      proxyService(directServiceConfig, requestConfig)
+    ).rejects.toThrow("Local integration configuration not found:");
   });
 
   it("throws error on bad request", async () => {
@@ -179,7 +175,7 @@ describe("proxy service requests", () => {
     expect(JSON.parse(axiosMock.history.post[0].data)).toEqual({
       ...requestConfig,
       service_id: EXAMPLE_SERVICE_API,
-      auth_id: "123",
+      auth_id: proxiedServiceConfig.id,
     });
     expect(status).toEqual(200);
     expect(data).toEqual({ foo: 42 });
@@ -197,17 +193,17 @@ describe("proxy service requests", () => {
           status_code: statusCode,
         });
 
-        try {
-          await proxyService(proxiedServiceConfig, requestConfig);
-          fail("Expected proxyService to throw an error");
-        } catch (error) {
-          expect(error).toBeInstanceOf(ContextError);
-          const { status, statusText } = (
-            (error as ContextError).cause as AxiosError
-          ).response;
-          expect(status).toEqual(statusCode);
-          expect(statusText).toEqual(reason);
-        }
+        const request = proxyService(proxiedServiceConfig, requestConfig);
+
+        await expect(request).rejects.toThrow(ContextError);
+        await expect(request).rejects.toMatchObject({
+          cause: {
+            response: {
+              status: statusCode,
+              statusText: reason,
+            },
+          },
+        });
       });
     }
   );

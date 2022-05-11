@@ -59,7 +59,7 @@ export async function getCachedAuthData(
 ): Promise<AuthData | undefined> {
   expectContext(
     "background",
-    "Only the background page can access oauth2 information"
+    "Only the background page can access token and oauth2 data"
   );
 
   const current = await readStorage<Record<UUID, AuthData>>(
@@ -67,7 +67,7 @@ export async function getCachedAuthData(
     {}
   );
   if (Object.prototype.hasOwnProperty.call(current, serviceAuthId)) {
-    // eslint-disable-next-line security/detect-object-injection -- Just checked with `hasOwnProperty`
+    // eslint-disable-next-line security/detect-object-injection -- just checked with `hasOwnProperty`
     return current[serviceAuthId];
   }
 }

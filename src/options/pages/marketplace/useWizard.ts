@@ -7,8 +7,8 @@ import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import React, { useMemo } from "react";
 import {
-  selectAuths,
-  selectOptions,
+  inferRecipeAuths,
+  inferRecipeOptions,
 } from "@/options/pages/blueprints/utils/useReinstall";
 import { isEmpty, mapValues, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
@@ -18,10 +18,11 @@ import ConfigureBody from "@/options/pages/marketplace/ConfigureBody";
 import OptionsBody from "@/options/pages/marketplace/OptionsBody";
 import ServicesBody from "@/options/pages/marketplace/ServicesBody";
 import ActivateBody from "@/options/pages/marketplace/ActivateBody";
+import { inputProperties } from "@/helpers";
 
 const STEPS: WizardStep[] = [
   { key: "review", label: "Select Bricks", Component: ConfigureBody },
-  // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for Typescript
+  // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for TypeScript
   // to realize it's OK to pass in a whole RecipeDefinition for something that just needs the options prop
   {
     key: "options",
@@ -44,8 +45,8 @@ function useWizard(blueprint: RecipeDefinition): [WizardStep[], WizardValues] {
       (extension) => extension._recipe?.id === blueprint?.metadata.id
     );
 
-    const installedOptions = selectOptions(installedBlueprintExtensions);
-    const installedServices = selectAuths(installedBlueprintExtensions, {
+    const installedOptions = inferRecipeOptions(installedBlueprintExtensions);
+    const installedServices = inferRecipeAuths(installedBlueprintExtensions, {
       optional: true,
     });
 
@@ -62,7 +63,7 @@ function useWizard(blueprint: RecipeDefinition): [WizardStep[], WizardValues] {
         }
 
         case "options": {
-          return !isEmpty(blueprint.options?.schema);
+          return !isEmpty(inputProperties(blueprint.options?.schema ?? {}));
         }
 
         default: {

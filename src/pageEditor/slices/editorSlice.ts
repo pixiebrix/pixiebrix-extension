@@ -29,18 +29,21 @@ import { BlockConfig } from "@/blocks/types";
 import { ExtensionPointType } from "@/extensionPoints/types";
 import {
   OptionsDefinition,
-  RecipeDefinition,
   RecipeMetadataFormState,
 } from "@/types/definitions";
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
+import { isEmpty } from "lodash";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
-  activeElement: null,
+  activeElementId: null,
   activeRecipeId: null,
+  expandedRecipeId: null,
   error: null,
   beta: false,
   elements: [],
@@ -53,6 +56,12 @@ export const initialState: EditorState = {
   dirtyRecipeOptionsById: {},
   dirtyRecipeMetadataById: {},
   isAddToRecipeModalVisible: false,
+  isRemoveFromRecipeModalVisible: false,
+  isSaveAsNewRecipeModalVisible: false,
+  isCreateRecipeModalVisible: false,
+  keepLocalCopyOnCreateRecipe: false,
+  deletedElementsByRecipeId: {},
+  newRecipeIds: [],
 };
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
@@ -104,9 +113,75 @@ function syncElementNodeUIStates(
 }
 
 function setActiveNodeId(state: WritableDraft<EditorState>, nodeId: NodeId) {
-  const elementUIState = state.elementUIStates[state.activeElement];
+  const elementUIState = state.elementUIStates[state.activeElementId];
   ensureNodeUIState(elementUIState, nodeId);
   elementUIState.activeNodeId = nodeId;
+}
+
+function removeElement(state: WritableDraft<EditorState>, uuid: UUID) {
+  if (state.activeElementId === uuid) {
+    state.activeElementId = null;
+  }
+
+  // This is called from the remove-recipe logic. When removing all extensions
+  // in a recipe, some of them may not have been selected by the user in the UI yet,
+  // and so may not have been moved into state.elements yet.
+  const index = state.elements.findIndex((x) => x.uuid === uuid);
+  if (index > -1) {
+    state.elements.splice(index, 1);
+  }
+
+  delete state.dirty[uuid];
+  delete state.elementUIStates[uuid];
+
+  // Make sure we're not keeping any private data around from Page Editor sessions
+  void clearExtensionTraces(uuid);
+}
+
+function selectRecipeId(
+  state: WritableDraft<EditorState>,
+  recipeId: RegistryId
+) {
+  state.error = null;
+  state.beta = null;
+  state.activeElementId = null;
+
+  if (
+    state.expandedRecipeId === recipeId &&
+    state.activeRecipeId === recipeId
+  ) {
+    // "un-toggle" the recipe, if it's already selected
+    state.expandedRecipeId = null;
+  } else {
+    state.expandedRecipeId = recipeId;
+  }
+
+  state.activeRecipeId = recipeId;
+  state.selectionSeq++;
+}
+
+function editRecipeMetadata(
+  state: WritableDraft<EditorState>,
+  metadata: RecipeMetadataFormState
+) {
+  const recipeId = state.activeRecipeId;
+  if (recipeId == null) {
+    return;
+  }
+
+  state.dirtyRecipeMetadataById[recipeId] = metadata;
+}
+
+function editRecipeOptions(
+  state: WritableDraft<EditorState>,
+  options: OptionsDefinition
+) {
+  const recipeId = state.activeRecipeId;
+  if (recipeId == null) {
+    return;
+  }
+
+  state.dirtyRecipeOptionsById[recipeId] = options;
 }
 
 export const editorSlice = createSlice({
@@ -128,37 +203,40 @@ export const editorSlice = createSlice({
       state.error = null;
       state.dirty[element.uuid] = true;
       state.beta = false;
-      state.activeElement = element.uuid;
+      state.activeElementId = element.uuid;
+      state.activeRecipeId = null;
+      state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
       state.selectionSeq++;
       state.elementUIStates[element.uuid] = makeInitialElementUIState();
     },
     betaError(state, action: PayloadAction<{ error: string }>) {
       state.error = action.payload.error;
       state.beta = true;
-      state.activeElement = null;
+      state.activeElementId = null;
     },
     adapterError(state, action: PayloadAction<{ uuid: UUID; error: unknown }>) {
       const { uuid, error } = action.payload;
       state.error = getErrorMessage(error);
       state.beta = false;
-      state.activeElement = uuid;
+      state.activeElementId = uuid;
       state.selectionSeq++;
     },
     selectInstalled(state, action: PayloadAction<FormState>) {
-      const { uuid } = action.payload;
-      const index = state.elements.findIndex((x) => x.uuid === uuid);
+      const element = action.payload;
+      const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index >= 0) {
         state.elements[index] = action.payload;
       } else {
-        state.elements.push(action.payload);
+        state.elements.push(element);
       }
 
       state.error = null;
       state.beta = null;
-      state.activeElement = uuid;
+      state.activeElementId = element.uuid;
       state.activeRecipeId = null;
+      state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
       state.selectionSeq++;
-      ensureElementUIState(state, uuid);
+      ensureElementUIState(state, element.uuid);
     },
     resetInstalled(state, actions: PayloadAction<FormState>) {
       const element = actions.payload;
@@ -181,13 +259,15 @@ export const editorSlice = createSlice({
     },
     selectElement(state, action: PayloadAction<UUID>) {
       const elementId = action.payload;
-      if (!state.elements.some((x) => x.uuid === elementId)) {
+      const element = state.elements.find((x) => x.uuid === elementId);
+      if (!element) {
         throw new Error(`Unknown dynamic element: ${action.payload}`);
       }
 
       state.error = null;
       state.beta = null;
-      state.activeElement = elementId;
+      state.activeElementId = elementId;
+      state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
       state.activeRecipeId = null;
       state.selectionSeq++;
       ensureElementUIState(state, elementId);
@@ -247,28 +327,11 @@ export const editorSlice = createSlice({
     },
     removeElement(state, action: PayloadAction<UUID>) {
       const uuid = action.payload;
-      if (state.activeElement === uuid) {
-        state.activeElement = null;
-      }
-
-      state.elements.splice(
-        state.elements.findIndex((x) => x.uuid === uuid),
-        1
-      );
-
-      delete state.dirty[uuid];
-      delete state.elementUIStates[uuid];
-
-      // Make sure we're not keeping any private data around from Page Editor sessions
-      void clearExtensionTraces(uuid);
+      removeElement(state, uuid);
     },
-    selectRecipe(state, action: PayloadAction<RecipeDefinition>) {
-      const recipe = action.payload;
-      state.error = null;
-      state.beta = null;
-      state.activeElement = null;
-      state.activeRecipeId = recipe.metadata.id;
-      state.selectionSeq++;
+    selectRecipeId(state, action: PayloadAction<RegistryId>) {
+      const recipeId = action.payload;
+      selectRecipeId(state, recipeId);
     },
     setBetaUIEnabled(state, action: PayloadAction<boolean>) {
       state.isBetaUI = action.payload;
@@ -280,7 +343,7 @@ export const editorSlice = createSlice({
         newActiveNodeId?: NodeId;
       }>
     ) {
-      const elementUIState = state.elementUIStates[state.activeElement];
+      const elementUIState = state.elementUIStates[state.activeElementId];
       const { nodeIdToRemove, newActiveNodeId } = action.payload;
 
       const activeNodeId = newActiveNodeId ?? FOUNDATION_NODE_ID;
@@ -291,21 +354,53 @@ export const editorSlice = createSlice({
     setElementActiveNodeId(state, action: PayloadAction<NodeId>) {
       setActiveNodeId(state, action.payload);
     },
-    setNodeDataPanelTabSelected(state, action: PayloadAction<string>) {
-      const elementUIState = state.elementUIStates[state.activeElement];
+    setNodeDataPanelTabSelected(state, action: PayloadAction<DataPanelTabKey>) {
+      const elementUIState = state.elementUIStates[state.activeElementId];
       const nodeUIState =
         elementUIState.nodeUIStates[elementUIState.activeNodeId];
       nodeUIState.dataPanel.activeTabKey = action.payload;
     },
+
+    /**
+     * Updates the query on a DataPane tab with the JsonTree component
+     */
     setNodeDataPanelTabSearchQuery(
       state,
-      action: PayloadAction<{ tabKey: string; query: string }>
+      action: PayloadAction<{ tabKey: DataPanelTabKey; query: string }>
     ) {
       const { tabKey, query } = action.payload;
-      const elementUIState = state.elementUIStates[state.activeElement];
-      const nodeUIState =
-        elementUIState.nodeUIStates[elementUIState.activeNodeId];
-      nodeUIState.dataPanel.tabQueries[tabKey] = query;
+      const elementUIState = state.elementUIStates[state.activeElementId];
+      elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
+        tabKey
+      ].query = query;
+    },
+
+    /**
+     * Updates the expanded state of the JsonTree component on a DataPanel tab
+     */
+    setNodeDataPanelTabExpandedState(
+      state,
+      action: PayloadAction<{
+        tabKey: DataPanelTabKey;
+        expandedState: TreeExpandedState;
+      }>
+    ) {
+      const { tabKey, expandedState } = action.payload;
+      const elementUIState = state.elementUIStates[state.activeElementId];
+      elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
+        tabKey
+      ].treeExpandedState = expandedState;
+    },
+
+    /**
+     * Updates the active element of a Document or Form builder on the Preview tab
+     */
+    setNodePreviewActiveElement(state, action: PayloadAction<string>) {
+      const activeElement = action.payload;
+      const elementUIState = state.elementUIStates[state.activeElementId];
+      elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
+        DataPanelTabKey.Preview
+      ].activeElement = activeElement;
     },
     copyBlockConfig(state, action: PayloadAction<BlockConfig>) {
       const copy = { ...action.payload };
@@ -316,30 +411,20 @@ export const editorSlice = createSlice({
       delete state.copiedBlock;
     },
     showV3UpgradeMessage(state) {
-      state.showV3UpgradeMessageByElement[state.activeElement] = true;
+      state.showV3UpgradeMessageByElement[state.activeElementId] = true;
     },
     hideV3UpgradeMessage(state) {
-      state.showV3UpgradeMessageByElement[state.activeElement] = false;
+      state.showV3UpgradeMessageByElement[state.activeElementId] = false;
     },
     editRecipeOptions(state, action: PayloadAction<OptionsDefinition>) {
-      const recipeId = state.activeRecipeId;
-      if (recipeId == null) {
-        return;
-      }
-
       const { payload: options } = action;
-      state.dirtyRecipeOptionsById[recipeId] = options;
+      editRecipeOptions(state, options);
     },
     editRecipeMetadata(state, action: PayloadAction<RecipeMetadataFormState>) {
-      const recipeId = state.activeRecipeId;
-      if (recipeId == null) {
-        return;
-      }
-
       const { payload: metadata } = action;
-      state.dirtyRecipeMetadataById[recipeId] = metadata;
+      editRecipeMetadata(state, metadata);
     },
-    resetRecipeMetadataAndOptions(state, action: PayloadAction<RegistryId>) {
+    resetMetadataAndOptionsForRecipe(state, action: PayloadAction<RegistryId>) {
       const { payload: recipeId } = action;
       delete state.dirtyRecipeMetadataById[recipeId];
       delete state.dirtyRecipeOptionsById[recipeId];
@@ -392,13 +477,136 @@ export const editorSlice = createSlice({
       });
       state.dirty[newId] = true;
 
+      state.expandedRecipeId = recipeMetadata.id;
+
       if (!keepLocalCopy) {
         ensureElementUIState(state, newId);
-        state.activeElement = newId;
+        state.activeElementId = newId;
         state.elements.splice(elementIndex, 1);
         delete state.dirty[element.uuid];
         delete state.elementUIStates[element.uuid];
       }
+    },
+    showRemoveFromRecipeModal(state) {
+      state.isRemoveFromRecipeModalVisible = true;
+    },
+    hideRemoveFromRecipeModal(state) {
+      state.isRemoveFromRecipeModalVisible = false;
+    },
+    removeElementFromRecipe(
+      state,
+      action: PayloadAction<{
+        elementId: UUID;
+        keepLocalCopy: boolean;
+      }>
+    ) {
+      const { elementId, keepLocalCopy } = action.payload;
+      const elementIndex = state.elements.findIndex(
+        (element) => element.uuid === elementId
+      );
+      if (elementIndex < 0) {
+        throw new Error(
+          "Unable to remove extension from blueprint, extension form state not found"
+        );
+      }
+
+      const element = state.elements[elementIndex];
+      const recipeId = element.recipe.id;
+      if (!state.deletedElementsByRecipeId[recipeId]) {
+        state.deletedElementsByRecipeId[recipeId] = [];
+      }
+
+      state.deletedElementsByRecipeId[recipeId].push(element);
+      state.elements.splice(elementIndex, 1);
+      delete state.dirty[elementId];
+      delete state.elementUIStates[elementId];
+      state.activeElementId = undefined;
+
+      if (keepLocalCopy) {
+        const newId = uuidv4();
+        state.elements.push({
+          ...element,
+          uuid: newId,
+          recipe: undefined,
+        });
+        state.dirty[newId] = true;
+        ensureElementUIState(state, newId);
+        state.activeElementId = newId;
+      }
+    },
+    showSaveAsNewRecipeModal(state) {
+      state.isSaveAsNewRecipeModalVisible = true;
+    },
+    hideSaveAsNewRecipeModal(state) {
+      state.isSaveAsNewRecipeModalVisible = false;
+    },
+    clearDeletedElementsForRecipe(state, action: PayloadAction<RegistryId>) {
+      const recipeId = action.payload;
+      delete state.deletedElementsByRecipeId[recipeId];
+    },
+    restoreDeletedElementsForRecipe(state, action: PayloadAction<RegistryId>) {
+      const recipeId = action.payload;
+      const deletedElements = state.deletedElementsByRecipeId[recipeId];
+      if (!isEmpty(deletedElements)) {
+        state.elements.push(...deletedElements);
+        for (const elementId of deletedElements.map(
+          (element) => element.uuid
+        )) {
+          state.dirty[elementId] = false;
+          ensureElementUIState(state, elementId);
+        }
+
+        delete state.deletedElementsByRecipeId[recipeId];
+      }
+    },
+    clearActiveRecipe(state) {
+      state.activeRecipeId = null;
+    },
+    // XXX:
+    transitionSaveAsNewToCreateRecipeModal(state) {
+      state.isSaveAsNewRecipeModalVisible = false;
+      state.keepLocalCopyOnCreateRecipe = false;
+      state.isCreateRecipeModalVisible = true;
+    },
+    transitionAddToCreateRecipeModal(state, action: PayloadAction<boolean>) {
+      state.isAddToRecipeModalVisible = false;
+      state.keepLocalCopyOnCreateRecipe = action.payload;
+      state.isCreateRecipeModalVisible = true;
+    },
+    hideCreateRecipeModal(state) {
+      state.isCreateRecipeModalVisible = false;
+    },
+    finishSaveAsNewRecipe(
+      state,
+      action: PayloadAction<{
+        oldRecipeId: RegistryId;
+        newRecipeId: RegistryId;
+        metadata: RecipeMetadataFormState;
+        options: OptionsDefinition;
+      }>
+    ) {
+      const { oldRecipeId, newRecipeId, metadata, options } = action.payload;
+
+      // Remove old recipe extension form states
+      for (const element of state.elements.filter(
+        (element) => element.recipe?.id === oldRecipeId
+      )) {
+        removeElement(state, element.uuid);
+      }
+
+      // Clear deleted elements
+      delete state.deletedElementsByRecipeId[oldRecipeId];
+
+      // Select the new recipe
+      selectRecipeId(state, newRecipeId);
+
+      // Set the metadata and options
+      editRecipeMetadata(state, metadata);
+      editRecipeOptions(state, options);
+
+      // Clean up the old metadata and options
+      delete state.dirtyRecipeMetadataById[oldRecipeId];
+      delete state.dirtyRecipeOptionsById[oldRecipeId];
     },
   },
 });

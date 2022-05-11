@@ -35,6 +35,7 @@ import {
   requestRunInTarget,
   requestRunInBroadcast,
   waitForTargetByUrl,
+  requestRunInTop,
 } from "@/background/executor";
 import * as registry from "@/registry/localRegistry";
 import { ensureContentScript } from "@/background/util";
@@ -47,6 +48,7 @@ import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
 import { reactivateEveryTab } from "@/background/navigation";
 import {
+  clearExtensionDebugLogs,
   clearLogs,
   getLoggingConfig,
   recordError,
@@ -104,6 +106,7 @@ declare global {
     REQUEST_RUN_ON_SERVER: typeof requestRunOnServer;
     REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
     REQUEST_RUN_IN_TARGET: typeof requestRunInTarget;
+    REQUEST_RUN_IN_TOP: typeof requestRunInTop;
     REQUEST_RUN_IN_ALL: typeof requestRunInBroadcast;
 
     HTTP_REQUEST: typeof serializableAxiosRequest;
@@ -121,6 +124,7 @@ declare global {
     GET_LOGGING_CONFIG: typeof getLoggingConfig;
     SET_LOGGING_CONFIG: typeof setLoggingConfig;
     CLEAR_LOGS: typeof clearLogs;
+    CLEAR_EXTENSION_DEBUG_LOGS: typeof clearExtensionDebugLogs;
 
     ADD_TRACE_ENTRY: typeof addTraceEntry;
     ADD_TRACE_EXIT: typeof addTraceExit;
@@ -172,6 +176,7 @@ export default function registerMessenger(): void {
     REQUEST_RUN_ON_SERVER: requestRunOnServer,
     REQUEST_RUN_IN_OPENER: requestRunInOpener,
     REQUEST_RUN_IN_TARGET: requestRunInTarget,
+    REQUEST_RUN_IN_TOP: requestRunInTop,
     REQUEST_RUN_IN_ALL: requestRunInBroadcast,
 
     HTTP_REQUEST: serializableAxiosRequest,
@@ -189,6 +194,7 @@ export default function registerMessenger(): void {
     GET_LOGGING_CONFIG: getLoggingConfig,
     SET_LOGGING_CONFIG: setLoggingConfig,
     CLEAR_LOGS: clearLogs,
+    CLEAR_EXTENSION_DEBUG_LOGS: clearExtensionDebugLogs,
 
     ADD_TRACE_ENTRY: addTraceEntry,
     ADD_TRACE_EXIT: addTraceExit,

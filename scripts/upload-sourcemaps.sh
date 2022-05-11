@@ -43,6 +43,7 @@ sed s/dist\\/// | \
 parallel curl https://api.rollbar.com/api/1/sourcemap/download \
 	--fail \
 	--no-progress-meter \
+  --max-time 10 \
 	-F version="$SOURCE_VERSION" \
 	-F access_token="$ROLLBAR_POST_SERVER_ITEM_TOKEN" \
 	-F minified_url="$SOURCE_MAP_URL_BASE/$SOURCE_MAP_PATH/{}"

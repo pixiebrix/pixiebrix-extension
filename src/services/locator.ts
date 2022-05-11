@@ -199,7 +199,11 @@ class LazyLocatorFactory {
     return LazyLocatorFactory.prototype.locate.bind(this);
   }
 
-  async getLocalConfig(authId: UUID): Promise<RawServiceConfiguration> {
+  /**
+   * Return the raw integration configuration with UUID authId, or return `null` if not available locally.
+   * @param authId UUID of the integration configuration
+   */
+  async getLocalConfig(authId: UUID): Promise<RawServiceConfiguration | null> {
     if (!this.initialized) {
       await this.refresh();
     }

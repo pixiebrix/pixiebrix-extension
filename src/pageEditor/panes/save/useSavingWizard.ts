@@ -25,13 +25,14 @@ import {
 import useCreate from "@/pageEditor/hooks/useCreate";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import useReset from "@/pageEditor/hooks/useReset";
+import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import {
   DeploymentContext,
   Metadata,
   PersistedExtension,
   RecipeMetadata,
   RegistryId,
+  SemVerString,
 } from "@/core";
 import { UnsavedRecipeDefinition } from "@/types/definitions";
 import notify from "@/utils/notify";
@@ -54,7 +55,7 @@ const { actions: optionsActions } = extensionsSlice;
 export type RecipeConfiguration = {
   id: RegistryId;
   name: string;
-  version?: string;
+  version?: SemVerString;
   description?: string;
 };
 
@@ -74,7 +75,7 @@ export function selectRecipeMetadata(
 const useSavingWizard = () => {
   const dispatch = useDispatch();
   const create = useCreate();
-  const reset = useReset();
+  const reset = useResetExtension();
   const isWizardOpen = useSelector(selectIsWizardOpen);
   const isSaving = useSelector(selectIsSaving);
   const extensions = useSelector(selectExtensions);
@@ -133,7 +134,7 @@ const useSavingWizard = () => {
     };
 
     dispatch(editorActions.addElement(personalElement));
-    reset({ element, shouldShowConfirmation: false });
+    await reset({ element, shouldShowConfirmation: false });
     const error = await create({ element: personalElement, pushToCloud: true });
     if (!error) {
       dispatch(editorActions.removeElement(element.uuid));

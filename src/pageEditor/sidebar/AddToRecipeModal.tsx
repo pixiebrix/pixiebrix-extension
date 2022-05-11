@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
-import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -26,62 +25,157 @@ import {
   selectActiveElement,
   selectInstalledRecipeMetadatas,
 } from "@/pageEditor/slices/editorSelectors";
-import { RecipeMetadata } from "@/core";
-import { Form, Formik } from "formik";
+import { RecipeMetadata, RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import notify from "@/utils/notify";
+import Form, {
+  OnSubmit,
+  RenderBody,
+  RenderSubmit,
+} from "@/components/form/Form";
+import { isAxiosError } from "@/errors";
+import { object, string } from "yup";
+import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioItemListWidget";
+import { RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
 
 const { actions: optionsActions } = extensionsSlice;
 
 type FormState = {
-  recipeMetadata: RecipeMetadata;
-  keepLocalCopy: boolean;
+  recipeId: RegistryId;
+  moveOrCopy: "move" | "copy";
 };
 
 const initialFormState: FormState = {
-  recipeMetadata: null,
-  keepLocalCopy: false,
+  recipeId: null,
+  moveOrCopy: "move",
 };
+
+const NEW_RECIPE_ID = "@new" as RegistryId;
+
+const formStateSchema = object({
+  recipeId: string().required(),
+  moveOrCopy: string().oneOf(["move", "copy"]).required(),
+});
 
 const AddToRecipeModal: React.VFC = () => {
   const recipeMetadatas = useSelector(selectInstalledRecipeMetadatas);
   const activeElement = useSelector(selectActiveElement);
 
-  const dispatch = useDispatch();
-  const hideModal = () => {
-    dispatch(editorActions.hideAddToRecipeModal());
-  };
-
-  function onConfirmAddToRecipe(
-    recipeMetadata: RecipeMetadata,
-    keepLocalCopy: boolean
-  ) {
-    try {
-      const elementId = activeElement.uuid;
-      dispatch(
-        editorActions.addElementToRecipe({
-          elementId,
-          recipeMetadata,
-          keepLocalCopy,
-        })
-      );
-      if (!keepLocalCopy) {
-        dispatch(optionsActions.removeExtension({ extensionId: elementId }));
-      }
-    } catch (error: unknown) {
-      notify.error({
-        message: "Problem adding extension to blueprint",
-        error,
-      });
-    } finally {
-      hideModal();
+  const recipeMetadataById = useMemo(() => {
+    const result: Record<RegistryId, RecipeMetadata> = {};
+    for (const metadata of recipeMetadatas) {
+      result[metadata.id] = metadata;
     }
-  }
 
-  const selectOptions = recipeMetadatas.map((metadata) => ({
-    label: metadata.name,
-    value: metadata,
-  }));
+    return result;
+  }, [recipeMetadatas]);
+
+  const dispatch = useDispatch();
+
+  const hideModal = useCallback(() => {
+    dispatch(editorActions.hideAddToRecipeModal());
+  }, [dispatch]);
+
+  const onSubmit = useCallback<OnSubmit<FormState>>(
+    async ({ recipeId, moveOrCopy }, helpers) => {
+      const keepLocalCopy = moveOrCopy === "copy";
+
+      if (recipeId === NEW_RECIPE_ID) {
+        dispatch(editorActions.transitionAddToCreateRecipeModal(keepLocalCopy));
+        return;
+      }
+
+      // eslint-disable-next-line security/detect-object-injection -- recipe id is from select options
+      const recipeMetadata = recipeMetadataById[recipeId];
+
+      try {
+        const elementId = activeElement.uuid;
+        dispatch(
+          editorActions.addElementToRecipe({
+            elementId,
+            recipeMetadata,
+            keepLocalCopy,
+          })
+        );
+        if (!keepLocalCopy) {
+          dispatch(optionsActions.removeExtension({ extensionId: elementId }));
+        }
+
+        hideModal();
+      } catch (error: unknown) {
+        if (isAxiosError(error) && error.response.data.config) {
+          helpers.setStatus(error.response.data.config);
+          return;
+        }
+
+        notify.error({
+          message: "Problem adding extension to blueprint",
+          error,
+        });
+      } finally {
+        helpers.setSubmitting(false);
+      }
+    },
+    [activeElement.uuid, dispatch, hideModal, recipeMetadataById]
+  );
+
+  const selectOptions = [
+    { label: "➕ Create new blueprint...", value: NEW_RECIPE_ID },
+    ...recipeMetadatas.map((metadata) => ({
+      label: metadata.name,
+      value: metadata.id,
+    })),
+  ];
+
+  const radioItems: RadioItem[] = [
+    {
+      label: "Move the extension into the blueprint",
+      value: "move",
+    },
+    {
+      label: "Create a copy of the extension in the blueprint",
+      value: "copy",
+    },
+  ];
+
+  const renderBody: RenderBody = () => (
+    <Modal.Body>
+      <ConnectedFieldTemplate
+        name="recipeId"
+        hideLabel
+        description="Choose a blueprint"
+        as={SelectWidget}
+        options={selectOptions}
+        widerLabel
+      />
+      <ConnectedFieldTemplate
+        name="moveOrCopy"
+        hideLabel
+        as={RadioItemListWidget}
+        items={radioItems}
+        header="Move or copy the extension?"
+      />
+    </Modal.Body>
+  );
+
+  const renderSubmit: RenderSubmit = ({
+    isSubmitting,
+    isValid,
+    values: { moveOrCopy },
+  }) => (
+    <Modal.Footer>
+      <Button variant="info" onClick={hideModal}>
+        Cancel
+      </Button>
+      <Button
+        variant="primary"
+        type="submit"
+        disabled={!isValid || isSubmitting}
+      >
+        {moveOrCopy === "move" ? "Move" : "Copy"}
+      </Button>
+    </Modal.Footer>
+  );
 
   return (
     <Modal show onHide={hideModal}>
@@ -90,40 +184,14 @@ const AddToRecipeModal: React.VFC = () => {
           Add <em>{activeElement?.label}</em> to a blueprint
         </Modal.Title>
       </Modal.Header>
-      <Formik
+      <Form
+        validationSchema={formStateSchema}
+        validateOnMount
         initialValues={initialFormState}
-        onSubmit={({ recipeMetadata, keepLocalCopy }) => {
-          onConfirmAddToRecipe(recipeMetadata, keepLocalCopy);
-        }}
-      >
-        {({ handleSubmit }) => (
-          <Form onSubmit={handleSubmit}>
-            <Modal.Body>
-              <ConnectedFieldTemplate
-                name="recipeMetadata"
-                hideLabel
-                description="Choose a blueprint"
-                as={SelectWidget}
-                options={selectOptions}
-              />
-              <ConnectedFieldTemplate
-                name="keepLocalCopy"
-                label="Keep a local copy of the extension?"
-                fitLabelWidth
-                as={SwitchButtonWidget}
-              />
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="info" onClick={hideModal}>
-                Cancel
-              </Button>
-              <Button variant="primary" type="submit">
-                Add
-              </Button>
-            </Modal.Footer>
-          </Form>
-        )}
-      </Formik>
+        onSubmit={onSubmit}
+        renderBody={renderBody}
+        renderSubmit={renderSubmit}
+      />
     </Modal>
   );
 };

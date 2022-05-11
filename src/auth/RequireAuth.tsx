@@ -18,8 +18,14 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "@/components/Loader";
-import { ApiError, useGetMeQuery } from "@/services/api";
-import { isLinked, updateUserData } from "@/auth/token";
+import { useGetMeQuery } from "@/services/api";
+import {
+  addListener as addAuthListener,
+  removeListener as removeAuthListener,
+  isLinked,
+  updateUserData,
+  clearExtensionAuth,
+} from "@/auth/token";
 import {
   selectExtensionAuthState,
   selectUserDataUpdate,
@@ -29,13 +35,11 @@ import { anonAuth } from "@/auth/authConstants";
 import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Me } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
+import { AxiosError } from "axios";
 
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
   LoginPage: React.VFC;
-
-  /** Rendered request to `/me` fails */
-  ErrorPage?: React.VFC<{ error: unknown }>;
 };
 
 /**
@@ -45,38 +49,63 @@ type RequireAuthProps = {
  *   just the session cookies. However, the server needs an X-CSRFToken token for unsafe methods (e.g., POST, DELETE).
  *   NOTE: the CSRF token for session authentication is _not_ the same as the Authentication header token for
  *   token-based authentication.
- * - Therefore, also check the extension has received the Authentication header token from the server.
+ * - Therefore, also check the extension has the Authentication header token from the server.
  */
-const RequireAuth: React.FC<RequireAuthProps> = ({
-  children,
-  LoginPage,
-  ErrorPage,
-}) => {
+const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
   const dispatch = useDispatch();
 
-  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const hasCachedLoggedIn = useSelector(selectIsLoggedIn);
+
   // See component documentation for why both isLinked and useGetMeQuery are required
-  const [hasToken, tokenLoading, tokenError] = useAsyncState(
+  const [hasToken, tokenLoading, tokenError, refreshToken] = useAsyncState(
     async () => isLinked(),
     []
   );
-  const { isLoading: meLoading, error, data: me } = useGetMeQuery();
+
+  useEffect(() => {
+    // Listen for token invalidation
+    const handler = async () => {
+      console.debug("Auth state changed, checking for token");
+      void refreshToken();
+    };
+
+    addAuthListener(handler);
+
+    return () => {
+      removeAuthListener(handler);
+    };
+  }, [refreshToken]);
+
+  const {
+    isLoading: meLoading,
+    error: meError,
+    data: me,
+    isSuccess: isMeSuccess,
+  } = useGetMeQuery(null, {
+    // Only call /api/me/ if the extension is "linked" is with an Authorization token. If not, the session id will
+    // be passed in the header which leads to inconsistent results depending on whether the session is still valid
+    skip: !hasToken,
+  });
 
   const isLoading = tokenLoading || meLoading;
 
   useEffect(() => {
     // Before we get the first response from API, use the AuthRootState persisted with redux-persist.
-    if (meLoading) {
+
+    // The `Me` call should never error unless there's network connectivity issues or the PixieBrix server is down.
+    // In this case, we should keep whatever was in redux-persist
+    if (!isMeSuccess) {
       return;
     }
 
-    // If me succeeds or errors, update the AuthRootState stored with redux-persist and updateUserData stored directly
+    // If me succeeds, update the AuthRootState stored with redux-persist and updateUserData stored directly
     // in browser.storage (that's used by the background page)
     const setAuth = async (me: Me) => {
       const update = selectUserDataUpdate(me);
       await updateUserData(update);
 
-      // `me` is nullish if the request errored
+      // Because we're waiting to the Authorization token, there should always be a value here. But, defensively, if
+      // not, then reset to the anonymous state
       if (me?.id) {
         const auth = selectExtensionAuthState(me);
         dispatch(authActions.setAuth(auth));
@@ -86,7 +115,13 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     };
 
     void setAuth(me);
-  }, [meLoading, me, dispatch]);
+  }, [isMeSuccess, me, dispatch]);
+
+  const isUnauthenticated = (meError as AxiosError)?.response?.status === 401;
+
+  if (isUnauthenticated) {
+    void clearExtensionAuth();
+  }
 
   // Show SetupPage if there is auth error or user not logged in
   if (
@@ -95,24 +130,22 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     // the user is not authenticated.
     // http://github.com/pixiebrix/pixiebrix-app/blob/0686663bf007cf4b33d547d9f124d1fa2a83ec9a/api/views/site.py#L210-L210
     // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3056
-    (error as ApiError)?.status === 401 ||
-    (!isLoggedIn && !meLoading) ||
+    isUnauthenticated ||
+    (!hasCachedLoggedIn && !meLoading) ||
     (!hasToken && !tokenLoading)
   ) {
     return <LoginPage />;
   }
 
-  if (error ?? tokenError) {
-    if (ErrorPage) {
-      return <ErrorPage error={error ?? tokenError} />;
-    }
-
-    throw error;
+  // Optimistically skip waiting if we have cached auth data
+  if (!hasCachedLoggedIn && isLoading) {
+    return <Loader />;
   }
 
-  // Optimistically skip waiting if we have cached auth data
-  if (!isLoggedIn && isLoading) {
-    return <Loader />;
+  // RequireAuth only knows how to handle auth errors. Rethrow any other errors
+  const error = meError ?? tokenError;
+  if (error != null) {
+    throw error;
   }
 
   return <>{children}</>;

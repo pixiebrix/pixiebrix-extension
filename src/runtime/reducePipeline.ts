@@ -28,6 +28,7 @@ import {
 import { castArray, isPlainObject } from "lodash";
 import { BusinessError, ContextError } from "@/errors";
 import {
+  clearExtensionDebugLogs,
   getLoggingConfig,
   requestRun,
   sendDeploymentAlert,
@@ -37,9 +38,9 @@ import { hideNotification, showNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/blocks/errors";
 import { engineRenderer } from "@/runtime/renderers";
-import { TraceRecordMeta } from "@/telemetry/trace";
+import { TraceExitData, TraceRecordMeta } from "@/telemetry/trace";
 import { JsonObject } from "type-fest";
-import { uuidv4 } from "@/types/helpers";
+import { uuidv4, validateSemVerString } from "@/types/helpers";
 import { mapArgs } from "@/runtime/mapArgs";
 import {
   ApiVersionOptions,
@@ -52,7 +53,7 @@ import {
   shouldRunBlock,
   throwIfInvalidInput,
 } from "@/runtime/runtimeUtils";
-import ConsoleLogger from "@/tests/ConsoleLogger";
+import ConsoleLogger from "@/utils/ConsoleLogger";
 import { ResolvedBlockConfig } from "@/runtime/runtimeTypes";
 import { UnknownObject } from "@/types";
 import { RunBlock } from "@/contentScript/runBlockTypes";
@@ -196,10 +197,13 @@ type RunBlockOptions = CommonOptions & {
   /**
    * Additional context to record with the trace entry/exit records.
    */
-  trace?: TraceMetadata;
+  trace: TraceMetadata | null;
 };
 
-async function execute(
+/**
+ * Execute/run the resolved block in the target (self, etc.) with the validated args.
+ */
+async function executeBlockWithValidatedProps(
   { config, block }: ResolvedBlockConfig,
   { args, context, root, previousOutput }: BlockProps<BlockArg>,
   options: RunBlockOptions
@@ -228,6 +232,10 @@ async function execute(
 
     case "target": {
       return requestRun.inTarget(request);
+    }
+
+    case "top": {
+      return requestRun.inTop(request);
     }
 
     case "broadcast": {
@@ -259,9 +267,11 @@ async function renderBlockArg(
 ): Promise<RenderedArgs> {
   const { config, type } = resolvedConfig;
 
+  const globalLoggingConfig = await getLoggingConfig();
+
   const {
     // If logValues not provided explicitly, default to the global setting
-    logValues = (await getLoggingConfig()).logValues ?? false,
+    logValues = globalLoggingConfig.logValues ?? false,
     logger,
     explicitArg,
     explicitDataFlow,
@@ -329,14 +339,6 @@ async function renderBlockArg(
     );
   }
 
-  traces.addEntry({
-    ...selectTraceRecordMeta(resolvedConfig, options),
-    timestamp: new Date().toISOString(),
-    templateContext: state.context as JsonObject,
-    renderedArgs: blockArgs,
-    blockConfig: config,
-  });
-
   return blockArgs;
 }
 
@@ -385,7 +387,11 @@ export async function runBlock(
   try {
     // Inputs validated in throwIfInvalidInput
     const validatedProps = props as unknown as BlockProps<BlockArg>;
-    return await execute(resolvedConfig, validatedProps, options);
+    return await executeBlockWithValidatedProps(
+      resolvedConfig,
+      validatedProps,
+      options
+    );
   } finally {
     if (stage.notifyProgress) {
       hideNotification(notification);
@@ -399,6 +405,8 @@ async function applyReduceDefaults({
   logger,
   ...overrides
 }: Partial<ReduceOptions>): Promise<ReduceOptions> {
+  const globalLoggingConfig = await getLoggingConfig();
+
   return {
     validateInput: true,
     headless: false,
@@ -411,7 +419,7 @@ async function applyReduceDefaults({
     // If logValues not provided explicitly, default to the global setting
     logValues:
       logValues === undefined
-        ? (await getLoggingConfig()).logValues ?? false
+        ? globalLoggingConfig.logValues ?? false
         : logValues,
     // For stylistic consistency, default here instead of destructured parameters
     runId: runId ?? uuidv4(),
@@ -434,17 +442,9 @@ export async function blockReducer(
       ? context
       : { ...context, ...(previousOutput as UnknownObject) };
 
-  if (
-    !(await shouldRunBlock(blockConfig, contextWithPreviousOutput, options))
-  ) {
-    logger.debug(`Skipping stage ${blockConfig.id} because condition not met`);
-
-    return { output: previousOutput, context };
-  }
-
   const resolvedConfig = await resolveBlockConfig(blockConfig);
 
-  const blockOptions = {
+  const optionsWithTraceRef = {
     ...options,
     trace: {
       runId,
@@ -455,18 +455,67 @@ export async function blockReducer(
   // Adjust the root according to the `root` and `rootMode` props on the blockConfig
   const blockRoot = selectBlockRootElement(blockConfig, root);
 
-  const props: BlockProps = {
-    args: await renderBlockArg(
+  let renderedArgs: RenderedArgs;
+  let renderError: unknown;
+  try {
+    renderedArgs = await renderBlockArg(
       resolvedConfig,
       { ...state, root: blockRoot },
-      blockOptions
-    ),
+      optionsWithTraceRef
+    );
+  } catch (error) {
+    renderError = error;
+  }
+
+  // Always add the trace entry, even if the block didn't run
+  traces.addEntry({
+    // Pass blockOptions because it includes the trace property
+    ...selectTraceRecordMeta(resolvedConfig, optionsWithTraceRef),
+    timestamp: new Date().toISOString(),
+    templateContext: context as JsonObject,
+    renderError: renderError ? serializeError(renderError) : null,
+    // `renderedArgs` will be null if there's an error rendering args
+    renderedArgs,
+    blockConfig,
+  });
+
+  const preconfiguredTraceExit: TraceExitData = {
+    runId,
+    extensionId: logger.context.extensionId,
+    blockId: blockConfig.id,
+    blockInstanceId: blockConfig.instanceId,
+    outputKey: blockConfig.outputKey,
+    output: null,
+    skippedRun: false,
+  };
+
+  if (
+    !(await shouldRunBlock(blockConfig, contextWithPreviousOutput, options))
+  ) {
+    logger.debug(`Skipping stage ${blockConfig.id} because condition not met`);
+
+    traces.addExit({
+      ...preconfiguredTraceExit,
+      output: null,
+      skippedRun: true,
+    });
+
+    return { output: previousOutput, context };
+  }
+
+  // Above we had wrapped the call to renderBlockArg in a try-catch to always have an entry trace entry
+  if (renderError) {
+    throw renderError;
+  }
+
+  const props: BlockProps = {
+    args: renderedArgs,
     root: blockRoot,
     previousOutput,
     context: contextWithPreviousOutput,
   };
 
-  const output = await runBlock(resolvedConfig, props, blockOptions);
+  const output = await runBlock(resolvedConfig, props, optionsWithTraceRef);
 
   if (logValues) {
     console.info(`Output for block #${index + 1}: ${blockConfig.id}`, {
@@ -481,12 +530,9 @@ export async function blockReducer(
   }
 
   traces.addExit({
-    runId,
-    extensionId: logger.context.extensionId,
-    blockId: blockConfig.id,
-    blockInstanceId: blockConfig.instanceId,
-    outputKey: blockConfig.outputKey,
+    ...preconfiguredTraceExit,
     output: output as JsonObject,
+    skippedRun: false,
   });
 
   await logIfInvalidOutput(resolvedConfig.block, output, logger, {
@@ -548,6 +594,7 @@ function throwBlockError(
     blockId: blockConfig.id,
     blockInstanceId: blockConfig.instanceId,
     error: serializeError(error),
+    skippedRun: false,
   });
 
   if (blockConfig.onError?.alert) {
@@ -576,6 +623,54 @@ function throwBlockError(
   );
 }
 
+async function getStepLogger(
+  blockConfig: BlockConfig,
+  pipelineLogger: Logger
+): Promise<Logger> {
+  let resolvedConfig: ResolvedBlockConfig;
+
+  try {
+    resolvedConfig = await resolveBlockConfig(blockConfig);
+  } catch {
+    // NOP
+  }
+
+  let version = resolvedConfig?.block.version;
+
+  if (resolvedConfig && !version) {
+    // Built-in bricks don't have a version number. Use the browser extension version to identify bugs introduced
+    // during browser extension releases
+    version = validateSemVerString(browser.runtime.getManifest().version);
+  }
+
+  return pipelineLogger.childLogger({
+    blockId: blockConfig.id,
+    blockVersion: version,
+    // Use the most customized name for the step
+    label:
+      blockConfig.label ??
+      resolvedConfig?.block.name ??
+      pipelineLogger.context.label,
+  });
+}
+
+/** Execute all the blocks of an extension. */
+export async function reduceExtensionPipeline(
+  pipeline: BlockConfig | BlockPipeline,
+  initialValues: InitialValues,
+  partialOptions: Partial<ReduceOptions> = {}
+): Promise<unknown> {
+  const pipelineLogger = partialOptions.logger ?? new ConsoleLogger();
+
+  // `await` promises to avoid race condition where the calls here delete debug entries from this call to reducePipeline
+  await Promise.allSettled([
+    traces.clear(pipelineLogger.context.extensionId),
+    clearExtensionDebugLogs(pipelineLogger.context.extensionId),
+  ]);
+
+  return reducePipeline(pipeline, initialValues, partialOptions);
+}
+
 /** Execute a pipeline of blocks and return the result. */
 export async function reducePipeline(
   pipeline: BlockConfig | BlockPipeline,
@@ -589,7 +684,7 @@ export async function reducePipeline(
   const { explicitDataFlow, logger: pipelineLogger } = options;
 
   let context: BlockArgContext = {
-    // Put serviceContext first so they can't override the input/options
+    // Put serviceContext first to prevent overriding the input/options
     ...serviceContext,
     "@input": input,
     "@options": optionsArgs ?? {},
@@ -609,21 +704,20 @@ export async function reducePipeline(
       context,
     };
 
-    const stageLogger = pipelineLogger.childLogger({
-      blockId: blockConfig.id,
-      label: blockConfig.label,
-    });
-
     let nextValues: BlockOutput;
+
+    const stepOptions = {
+      ...options,
+      // Could actually parallelize. But performance benefit won't be significant vs. readability impact
+      // eslint-disable-next-line no-await-in-loop -- see comment above
+      logger: await getStepLogger(blockConfig, pipelineLogger),
+    };
 
     try {
       // eslint-disable-next-line no-await-in-loop -- can't parallelize because each step depends on previous step
-      nextValues = await blockReducer(blockConfig, state, {
-        ...options,
-        logger: stageLogger,
-      });
+      nextValues = await blockReducer(blockConfig, state, stepOptions);
     } catch (error) {
-      throwBlockError(blockConfig, state, error, options);
+      throwBlockError(blockConfig, state, error, stepOptions);
     }
 
     output = nextValues.output;

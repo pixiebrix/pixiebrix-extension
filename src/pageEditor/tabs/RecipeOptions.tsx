@@ -19,7 +19,7 @@ import React, { useCallback, useState } from "react";
 import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
-import { Col, Container, Nav, Row, Tab } from "react-bootstrap";
+import { Card, Col, Container, Nav, Row, Tab } from "react-bootstrap";
 import Loader from "@/components/Loader";
 import { isEmpty } from "lodash";
 import styles from "./RecipeOptions.module.scss";
@@ -29,11 +29,15 @@ import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import cx from "classnames";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
-import { FIELD_TYPE_OPTIONS } from "@/components/formBuilder/formBuilderHelpers";
+import {
+  FIELD_TYPE_OPTIONS,
+  MINIMAL_SCHEMA,
+  MINIMAL_UI_SCHEMA,
+} from "@/components/formBuilder/formBuilderHelpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveRecipeId,
-  selectDirtyOptionsForRecipe,
+  selectDirtyOptionsForRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
 import { useGetRecipesQuery } from "@/services/api";
@@ -42,7 +46,6 @@ import { OptionsDefinition } from "@/types/definitions";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/pageEditor/components/Effect";
 import { getErrorMessage } from "@/errors";
-import { RootState } from "@/pageEditor/pageEditorTypes";
 
 const fieldTypes = FIELD_TYPE_OPTIONS.filter(
   (type) => !["File", "Image crop"].includes(type.label)
@@ -53,21 +56,22 @@ const formRuntimeContext: RuntimeContext = {
   allowExpressions: false,
 };
 
-const RecipeOptions: React.VoidFunctionComponent = () => {
+const emptyOptions: OptionsDefinition = {
+  schema: MINIMAL_SCHEMA,
+  uiSchema: MINIMAL_UI_SCHEMA,
+};
+
+const RecipeOptions: React.VFC = () => {
   const [activeField, setActiveField] = useState<string>();
   const recipeId = useSelector(selectActiveRecipeId);
   const { data: recipes, isLoading, error } = useGetRecipesQuery();
   const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
-  const options = recipe?.options ?? {
-    schema: {},
-    uiSchema: {},
-  };
+  const savedOptions = recipe?.options;
+  const dirtyOptions = useSelector(selectDirtyOptionsForRecipeId(recipeId));
 
-  const dirtyOptions = useSelector((state: RootState) =>
-    selectDirtyOptionsForRecipe(state, recipeId)
-  );
+  const optionsDefinition = dirtyOptions ?? savedOptions ?? emptyOptions;
 
-  const initialValues = { optionsDefinition: dirtyOptions ?? options };
+  const initialValues = { optionsDefinition };
 
   const dispatch = useDispatch();
   const updateRedux = useCallback(
@@ -115,26 +119,26 @@ const RecipeOptions: React.VoidFunctionComponent = () => {
               />
 
               <div className={styles.configPanel}>
-                <h5 className="mb-3">
-                  Editing Options for Blueprint &quot;{recipe.metadata.name}
-                  &quot;
-                </h5>
+                <Card>
+                  <Card.Header>Advanced: Blueprint Options</Card.Header>
+                  <Card.Body>
+                    {noOptions && (
+                      <div className="mb-3">
+                        No options defined for this Blueprint
+                      </div>
+                    )}
 
-                {noOptions && (
-                  <div className="mb-3">
-                    No options defined for this Blueprint
-                  </div>
-                )}
-
-                <FieldRuntimeContext.Provider value={formRuntimeContext}>
-                  <FormEditor
-                    name="optionsDefinition"
-                    showFormTitle={false}
-                    activeField={activeField}
-                    setActiveField={setActiveField}
-                    fieldTypes={fieldTypes}
-                  />
-                </FieldRuntimeContext.Provider>
+                    <FieldRuntimeContext.Provider value={formRuntimeContext}>
+                      <FormEditor
+                        name="optionsDefinition"
+                        showFormTitle={false}
+                        activeField={activeField}
+                        setActiveField={setActiveField}
+                        fieldTypes={fieldTypes}
+                      />
+                    </FieldRuntimeContext.Provider>
+                  </Card.Body>
+                </Card>
               </div>
               <div className={styles.dataPanel}>
                 <Tab.Container activeKey="preview">

@@ -1,3 +1,7 @@
+/**
+ * @jest-environment-options { "url": "https://www.example.com/#/foo/42" }
+ */
+
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -19,43 +23,36 @@ import { checkAvailable } from "@/blocks/available";
 
 describe("isAvailable.urlPatterns", () => {
   test("can match hash", async () => {
-    jsdom.reconfigure({ url: "https://www.example.com/#/foo/42" });
     expect(await checkAvailable({ urlPatterns: { hash: "/foo/:id" } })).toBe(
       true
     );
   });
 
   test("invalid baseURL", async () => {
-    jsdom.reconfigure({ url: "https://www.example.com/#/foo/42" });
     await expect(
       checkAvailable({ urlPatterns: { baseURL: "NOTAREALURL" } })
     ).rejects.toThrow("Pattern for baseURL not recognized");
   });
 
   test("can reject hash", async () => {
-    jsdom.reconfigure({ url: "https://www.example.com/#/MISMATCH/42" });
-    expect(await checkAvailable({ urlPatterns: { hash: "/foo/:id" } })).toBe(
-      false
-    );
+    expect(
+      await checkAvailable({ urlPatterns: { hash: "/DIFFERENT/:id" } })
+    ).toBe(false);
   });
 });
 
 describe("isAvailable.matchPatterns", () => {
   test("can match pattern", async () => {
-    jsdom.reconfigure({ url: "https://www.example.com/foo/bar/baz/" });
     expect(
       await checkAvailable({ matchPatterns: "https://www.example.com/*" })
     ).toBe(true);
   });
-});
 
-describe("isAvailable.matchPatterns", () => {
   test("require urlPattern and matchPattern", async () => {
-    jsdom.reconfigure({ url: "https://www.example.com/#/MISMATCH/42" });
     expect(
       await checkAvailable({
         matchPatterns: "https://www.example.com/*",
-        urlPatterns: { hash: "/foo/:id" },
+        urlPatterns: { hash: "/DIFFERENT/:id" },
       })
     ).toBe(false);
   });

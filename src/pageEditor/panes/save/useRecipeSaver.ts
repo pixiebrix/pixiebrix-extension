@@ -18,6 +18,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  selectDeletedElements,
   selectDirty,
   selectDirtyRecipeMetadata,
   selectDirtyRecipeOptions,
@@ -28,12 +29,14 @@ import {
   useGetRecipesQuery,
   useUpdateRecipeMutation,
 } from "@/services/api";
-import { isEmpty } from "lodash";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { replaceRecipeContent } from "@/pageEditor/panes/save/saveHelpers";
+import {
+  buildRecipe,
+  isRecipeEditable,
+} from "@/pageEditor/panes/save/saveHelpers";
 import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
 import useCreate from "@/pageEditor/hooks/useCreate";
@@ -49,22 +52,25 @@ type RecipeSaver = {
 function useRecipeSaver(): RecipeSaver {
   const dispatch = useDispatch();
   const create = useCreate();
-  const { data: recipes } = useGetRecipesQuery();
-  const { data: editablePackages } = useGetEditablePackagesQuery();
+  const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
+  const { data: editablePackages, isLoading: isEditablePackagesLoading } =
+    useGetEditablePackagesQuery();
   const [updateRecipe] = useUpdateRecipeMutation();
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
   const installedExtensions = useSelector(selectExtensions);
   const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptions);
   const dirtyRecipeMetadata = useSelector(selectDirtyRecipeMetadata);
+  const deletedElementsByRecipeId = useSelector(selectDeletedElements);
   const { showConfirmation } = useModals();
   const [isSaving, setIsSaving] = useState(false);
 
   /**
    * Save a recipe's extensions, options, and metadata
    * Throws errors for various bad states
+   * @return boolean indicating successful save
    */
-  async function save(recipeId: RegistryId) {
+  async function save(recipeId: RegistryId): Promise<boolean> {
     const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
     if (recipe == null) {
       throw new Error(
@@ -72,20 +78,31 @@ function useRecipeSaver(): RecipeSaver {
       );
     }
 
+    if (!isRecipeEditable(editablePackages, recipe)) {
+      dispatch(editorActions.showSaveAsNewRecipeModal());
+      return false;
+    }
+
+    // eslint-disable-next-line security/detect-object-injection -- recipeId
+    const deletedElements = deletedElementsByRecipeId[recipeId] ?? [];
+    const deletedElementIds = new Set(deletedElements.map(({ uuid }) => uuid));
+
     const dirtyRecipeElements = editorFormElements.filter(
       (element) =>
-        element.recipe?.id === recipe.metadata.id &&
-        isDirtyByElementId[element.uuid]
+        element.recipe?.id === recipeId &&
+        isDirtyByElementId[element.uuid] &&
+        !deletedElementIds.has(element.uuid)
     );
-    const newOptions = dirtyRecipeOptions[recipe.metadata.id];
-    const newMetadata = dirtyRecipeMetadata[recipe.metadata.id];
-    if (
-      newOptions == null &&
-      newMetadata == null &&
-      isEmpty(dirtyRecipeElements)
-    ) {
-      return;
-    }
+    const cleanRecipeExtensions = installedExtensions.filter(
+      (extension) =>
+        extension._recipe?.id === recipeId &&
+        !dirtyRecipeElements.some((element) => element.uuid === extension.id) &&
+        !deletedElementIds.has(extension.id)
+    );
+    // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
+    const newOptions = dirtyRecipeOptions[recipeId];
+    // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
+    const newMetadata = dirtyRecipeMetadata[recipeId];
 
     const confirm = await showConfirmation({
       title: "Save Blueprint?",
@@ -95,12 +112,12 @@ function useRecipeSaver(): RecipeSaver {
     });
 
     if (!confirm) {
-      return;
+      return false;
     }
 
-    const newRecipe = replaceRecipeContent({
+    const newRecipe = buildRecipe({
       sourceRecipe: recipe,
-      installedExtensions,
+      cleanRecipeExtensions,
       dirtyRecipeElements,
       options: newOptions,
       metadata: newMetadata,
@@ -111,21 +128,19 @@ function useRecipeSaver(): RecipeSaver {
       (x) => x.name === newRecipe.metadata.id
     )?.id;
 
-    const updateRecipeResponse = await updateRecipe({
+    const response = await updateRecipe({
       packageId,
       recipe: newRecipe,
     }).unwrap();
 
-    const newRecipeMetadata = selectRecipeMetadata(
-      newRecipe,
-      updateRecipeResponse
-    );
+    const newRecipeMetadata = selectRecipeMetadata(newRecipe, response);
 
-    for (const element of dirtyRecipeElements) {
-      // Don't push to cloud since we're saving it with the recipe
-      // eslint-disable-next-line no-await-in-loop
-      await create({ element, pushToCloud: false });
-    }
+    // Don't push to cloud since we're saving it with the recipe
+    await Promise.all(
+      dirtyRecipeElements.map(async (element) =>
+        create({ element, pushToCloud: false })
+      )
+    );
 
     // Update the recipe metadata on extensions in the options slice
     dispatch(
@@ -135,15 +150,31 @@ function useRecipeSaver(): RecipeSaver {
     // Update the recipe metadata on elements in the page editor slice
     dispatch(editorActions.updateRecipeMetadataForElements(newRecipeMetadata));
 
-    // Clear the dirty state
-    dispatch(editorActions.resetRecipeMetadataAndOptions(newRecipeMetadata.id));
+    // Remove any deleted elements from the extensions slice
+    for (const extensionId of deletedElementIds) {
+      dispatch(optionsActions.removeExtension({ extensionId }));
+    }
+
+    // Clear the dirty states
+    dispatch(
+      editorActions.resetMetadataAndOptionsForRecipe(newRecipeMetadata.id)
+    );
+    dispatch(editorActions.clearDeletedElementsForRecipe(newRecipeMetadata.id));
+
+    return true;
   }
 
   async function safeSave(recipeId: RegistryId) {
+    if (isRecipesLoading || isEditablePackagesLoading) {
+      return;
+    }
+
     setIsSaving(true);
     try {
-      await save(recipeId);
-      notify.success("Saved blueprint");
+      const success = await save(recipeId);
+      if (success) {
+        notify.success("Saved blueprint");
+      }
     } catch (error: unknown) {
       notify.error({
         message: "Failed saving blueprint",

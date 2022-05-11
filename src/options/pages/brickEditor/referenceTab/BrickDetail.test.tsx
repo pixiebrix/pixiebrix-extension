@@ -21,10 +21,22 @@ import BrickDetail from "./BrickDetail";
 import { TableRenderer } from "@/blocks/renderers/table";
 import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
 import { MarketplaceListing } from "@/types/contract";
-import { waitForEffect } from "@/tests/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { RegistryId } from "@/core";
 
 jest.mock("@/services/api", () => ({
-  useGetMarketplaceListingsQuery: () => ({ data: [] as MarketplaceListing[] }),
+  appApi: {
+    endpoints: {
+      getMarketplaceListings: {
+        useQueryState: jest.fn().mockReturnValue({
+          data: {} as Record<RegistryId, MarketplaceListing>,
+        }),
+      },
+    },
+  },
+  useGetMarketplaceListingsQuery: () => ({
+    data: {} as Record<RegistryId, MarketplaceListing>,
+  }),
 }));
 
 test.each([

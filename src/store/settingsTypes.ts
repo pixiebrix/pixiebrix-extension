@@ -36,6 +36,11 @@ export type SettingsState = SkunkworksSettings & {
    * Whether the non-Chrome browser warning has been dismissed.
    */
   browserWarningDismissed: boolean;
+
+  /**
+   * Theme name for the extension
+   */
+  theme: string | null;
 };
 
 export type SkunkworksSettings = {

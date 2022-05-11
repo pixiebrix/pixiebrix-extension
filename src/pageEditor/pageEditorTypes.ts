@@ -19,8 +19,6 @@ import { AuthRootState } from "@/auth/authTypes";
 import { LogRootState } from "@/components/logViewer/logViewerTypes";
 import { OptionsState } from "@/store/extensionsTypes";
 import { SavingExtensionState } from "@/pageEditor/panes/save/savingExtensionSlice";
-import { FormBuilderState } from "@/pageEditor/slices/formBuilderSlice";
-import { DocumentBuilderState } from "@/pageEditor/slices/documentBuilderSlice";
 import { SettingsState } from "@/store/settingsTypes";
 import { RuntimeState } from "@/pageEditor/slices/runtimeSlice";
 import { ExtensionPointType } from "@/extensionPoints/types";
@@ -64,12 +62,17 @@ export interface EditorState {
   /**
    * The uuid of the active element, if an extension is selected
    */
-  activeElement: UUID | null;
+  activeElementId: UUID | null;
 
   /**
    * The registry id of the active recipe, if a recipe is selected
    */
   activeRecipeId: RegistryId | null;
+
+  /**
+   * The registry id of the 'expanded' recipe in the sidebar, if one is expanded
+   */
+  expandedRecipeId: RegistryId | null;
 
   error: string | null;
 
@@ -121,10 +124,44 @@ export interface EditorState {
    */
   dirtyRecipeMetadataById: Record<RegistryId, RecipeMetadataFormState>;
 
+  // XXX: refactor the is<Modal>Visible state: https://github.com/pixiebrix/pixiebrix-extension/issues/3264
+
   /**
    * Are we showing the "add extension to blueprint" modal?
    */
   isAddToRecipeModalVisible: boolean;
+
+  /**
+   * Are we showing the "remove extension from blueprint" modal?
+   */
+  isRemoveFromRecipeModalVisible: boolean;
+
+  /**
+   * Are we showing the "save as new blueprint" modal?
+   */
+  isSaveAsNewRecipeModalVisible: boolean;
+
+  /**
+   * Are we showing the "create blueprint" modal?
+   */
+  isCreateRecipeModalVisible: boolean;
+
+  /**
+   * When creating a new blueprint from an existing extension, should we keep a separate copy of the extension?
+   */
+  // XXX: refactor & remove from top-level Redux state. This is a property of the create recipe workflow:
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/3264
+  keepLocalCopyOnCreateRecipe: boolean;
+
+  /**
+   * Unsaved extensions that have been deleted from a recipe
+   */
+  deletedElementsByRecipeId: Record<RegistryId, FormState[]>;
+
+  /**
+   * Newly created recipes that have not been saved yet
+   */
+  newRecipeIds: RegistryId[];
 }
 
 export type RootState = AuthRootState &
@@ -132,8 +169,6 @@ export type RootState = AuthRootState &
     options: OptionsState;
     editor: EditorState;
     savingExtension: SavingExtensionState;
-    formBuilder: FormBuilderState;
-    documentBuilder: DocumentBuilderState;
     settings: SettingsState;
     runtime: RuntimeState;
   };

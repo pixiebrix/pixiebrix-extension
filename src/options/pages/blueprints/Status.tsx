@@ -20,25 +20,25 @@ import styles from "./Status.module.scss";
 import React from "react";
 import { Button } from "react-bootstrap";
 import { InstallableViewItem } from "./blueprintsTypes";
-import useInstallableActions from "./useInstallableActions";
+import useInstallableViewItemActions from "./useInstallableViewItemActions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
+  faPause,
   faShieldAlt,
   faSync,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 
-const Status: React.VoidFunctionComponent<InstallableViewItem> = ({
-  status,
-  installable,
-  hasUpdate,
-  installedVersionNumber,
-}) => {
+const Status: React.VoidFunctionComponent<{
+  installableViewItem: InstallableViewItem;
+}> = ({ installableViewItem }) => {
   const { activate, reinstall, requestPermissions } =
-    useInstallableActions(installable);
+    useInstallableViewItemActions(installableViewItem);
 
-  if (status === "Inactive") {
+  const { hasUpdate, status, installedVersionNumber } = installableViewItem;
+
+  if (activate) {
     return (
       <Button size="sm" variant="outline-info" onClick={activate}>
         Activate
@@ -46,7 +46,7 @@ const Status: React.VoidFunctionComponent<InstallableViewItem> = ({
     );
   }
 
-  if (hasUpdate) {
+  if (hasUpdate && reinstall) {
     return (
       <Button size="sm" variant="info" onClick={reinstall}>
         <FontAwesomeIcon icon={faSync} /> Update
@@ -63,11 +63,29 @@ const Status: React.VoidFunctionComponent<InstallableViewItem> = ({
     );
   }
 
+  if (status === "Paused") {
+    return (
+      <div className="text-muted w-100">
+        <div className={styles.root}>
+          <FontAwesomeIcon icon={faPause} />
+          <span className={styles.textStatus}>
+            Paused
+            {installedVersionNumber && (
+              <span className={styles.versionNumber}>
+                version {installedVersionNumber}
+              </span>
+            )}
+          </span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="text-success w-100">
       <div className={styles.root}>
         <FontAwesomeIcon icon={faCheck} />
-        <span className={styles.activeStatus}>
+        <span className={styles.textStatus}>
           Active
           {installedVersionNumber && (
             <span className={styles.versionNumber}>

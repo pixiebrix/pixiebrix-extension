@@ -99,7 +99,6 @@ const shared = {
       },
       {
         test: /\.ya?ml$/,
-        type: "json",
         use: "yaml-loader",
       },
       {

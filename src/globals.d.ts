@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 // This cannot be a regular import because it turns `globals.d.ts` in a "module definition", which it isn't
 type Browser = import("webextension-polyfill").Browser;
 
@@ -113,11 +112,6 @@ declare module "@/vendors/initialize" {
 interface HTMLDialogElement extends HTMLElement {
   showModal(): void;
 }
-
-// Made available via: "jest-environment-jsdom-global" for jest tests
-declare const jsdom: {
-  reconfigure: (options: { url: string }) => void;
-};
 
 // `useUnknownInCatchVariables` for .catch method https://github.com/microsoft/TypeScript/issues/45602
 interface Promise<T> {

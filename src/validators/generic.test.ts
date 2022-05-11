@@ -18,8 +18,6 @@
 import { validateKind } from "@/validators/generic";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { UnknownObject } from "@/types";
-
-// Having problems getting ?loadAsText to work in jest.config.json
 import serviceText from "@contrib/raw/hunter.txt";
 
 describe("validateKind", () => {

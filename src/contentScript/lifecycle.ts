@@ -20,7 +20,7 @@ import extensionPointRegistry from "@/extensionPoints/registry";
 import { ResolvedExtension, IExtensionPoint, RegistryId, UUID } from "@/core";
 import * as context from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebar";
-import { PromiseCancelled, sleep } from "@/utils";
+import { sleep } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";
 import reportError from "@/telemetry/reportError";
@@ -29,6 +29,7 @@ import { resolveDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deployment";
 import { $safeFind } from "@/helpers";
+import { PromiseCancelled } from "@/errors";
 
 let _scriptPromise: Promise<void> | undefined;
 const _dynamic: Map<UUID, IExtensionPoint> = new Map();
@@ -101,8 +102,8 @@ async function runExtensionPoint(
   await extensionPoint.run();
 }
 
-export function getInstalledIds(): RegistryId[] {
-  return _installedExtensionPoints.map((x) => x.id);
+export function getInstalled(): IExtensionPoint[] {
+  return _installedExtensionPoints;
 }
 
 /**
@@ -163,7 +164,7 @@ export function clearDynamic(
     }
 
     if (clearTrace) {
-      traces.clear(extensionId);
+      void traces.clear(extensionId);
     }
   } else {
     for (const extensionPoint of _dynamic.values()) {

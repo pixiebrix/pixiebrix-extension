@@ -25,7 +25,7 @@ import {
 } from "./authTypes";
 import { isExtensionContext } from "webext-detect-page";
 import { expectContext } from "@/utils/expectContext";
-import { omit } from "lodash";
+import { omit, remove } from "lodash";
 
 const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
 
@@ -36,6 +36,10 @@ const listeners: AuthListener[] = [];
 // Use listeners to allow inversion of control and avoid circular dependency with rollbar.
 export function addListener(handler: AuthListener): void {
   listeners.push(handler);
+}
+
+export function removeListener(handler: AuthListener): void {
+  remove(listeners, (x) => x === handler);
 }
 
 export async function readAuthData(): Promise<

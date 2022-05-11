@@ -321,48 +321,31 @@ export const produceSchemaOnUiTypeChange = (
   });
 };
 
-export const updateRjsfSchemaWithDefaultsIfNeeded = (
-  rjsfSchema: RJSFSchema = {} as RJSFSchema
-) => {
-  const { schema, uiSchema } = rjsfSchema;
-
-  // eslint-disable-next-line security/detect-object-injection -- UI_ORDER is a known property
-  const uiOrder = uiSchema?.[UI_ORDER];
-  const needToUpdateRequired =
-    Boolean(schema) &&
-    typeof schema.required !== "undefined" &&
-    !Array.isArray(schema.required);
-
-  if (!schema || !uiSchema || !uiOrder?.includes("*") || needToUpdateRequired) {
-    return produce(rjsfSchema, (draft) => {
-      if (!draft.schema) {
-        draft.schema = MINIMAL_SCHEMA;
-      }
-
-      if (!draft.uiSchema) {
-        draft.uiSchema = MINIMAL_UI_SCHEMA;
-      }
-
-      // Relying on Immer to protect against object injections
-      /* eslint-disable security/detect-object-injection */
-      if (!draft.uiSchema[UI_ORDER]) {
-        const propertyKeys = Object.keys(draft.schema.properties || {});
-        draft.uiSchema[UI_ORDER] = [...propertyKeys, "*"];
-      } else if (!draft.uiSchema[UI_ORDER].includes("*")) {
-        draft.uiSchema[UI_ORDER].push("*");
-      }
-      /* eslint-enable security/detect-object-injection */
-
-      if (needToUpdateRequired) {
-        draft.schema.required = [];
-      }
-    });
+export const normalizeSchema = (schema: Schema | undefined) => {
+  if (!schema) {
+    return MINIMAL_SCHEMA;
   }
 
-  return null;
+  return produce(schema, (draft) => {
+    // Should we initialize the 'required' field?
+    if (
+      Boolean(schema) &&
+      typeof schema.required !== "undefined" &&
+      !Array.isArray(schema.required)
+    ) {
+      draft.required = [];
+    }
+
+    if (!draft.properties) {
+      draft.properties = {};
+    }
+  });
 };
 
-export const normalizeUiOrder = (propertyKeys: string[], uiOrder: string[]) => {
+export const normalizeUiOrder = (
+  propertyKeys: string[],
+  uiOrder: string[] = []
+) => {
   // A naive check to see if all property keys are presenter in uiOrder
   if (
     propertyKeys.length === uiOrder.length - 1 &&

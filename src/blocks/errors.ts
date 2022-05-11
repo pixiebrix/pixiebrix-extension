@@ -23,11 +23,11 @@ import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { JsonObject } from "type-fest";
 
 export class PipelineConfigurationError extends BusinessError {
+  override name = "PipelineConfigurationError";
   readonly config: BlockPipeline;
 
   constructor(message: string, config: BlockConfig | BlockPipeline) {
     super(message);
-    this.name = "PipelineConfigurationError";
     this.config = castArray(config);
   }
 }
@@ -39,6 +39,8 @@ export class PipelineConfigurationError extends BusinessError {
  * different browser context (e.g., the PixieBrix sidebar)
  */
 export class HeadlessModeError extends Error {
+  override name = "HeadlessModeError";
+
   public readonly blockId: RegistryId;
 
   public readonly args: unknown;
@@ -54,7 +56,6 @@ export class HeadlessModeError extends Error {
     loggerContext: MessageContext
   ) {
     super(`${blockId} is a renderer`);
-    this.name = "HeadlessModeError";
     this.blockId = blockId;
     this.args = args;
     this.ctxt = ctxt;

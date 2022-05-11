@@ -17,7 +17,10 @@
 
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveRecipeId,
+  selectDirtyMetadataForRecipeId,
+} from "@/pageEditor/slices/editorSelectors";
 import { useGetRecipesQuery } from "@/services/api";
 import { RecipeMetadataFormState } from "@/types/definitions";
 import { Card, Col, Container, Row } from "react-bootstrap";
@@ -25,25 +28,44 @@ import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { Formik } from "formik";
 import Effect from "@/pageEditor/components/Effect";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import styles from "./EditRecipe.module.scss";
+import { FieldDescriptions } from "@/utils/strings";
+import { object, string } from "yup";
+import { testIsSemVerString } from "@/types/helpers";
+import Form, { RenderBody } from "@/components/form/Form";
 
 const EditRecipe: React.VoidFunctionComponent = () => {
   const recipeId = useSelector(selectActiveRecipeId);
   const { data: recipes, isLoading, error } = useGetRecipesQuery();
-  const metadata = recipes?.find(
+  const dirtyMetadata = useSelector(selectDirtyMetadataForRecipeId(recipeId));
+  const savedMetadata = recipes?.find(
     (recipe) => recipe.metadata.id === recipeId
   )?.metadata;
-  const formState: RecipeMetadataFormState = {
+  const metadata = dirtyMetadata ?? savedMetadata;
+
+  // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
+  // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
+  const editRecipeSchema = object({
+    id: string().required(), // Recipe id is readonly here
+    name: string().required(),
+    version: string()
+      .test(
+        "semver",
+        "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
+        (value: string) => testIsSemVerString(value, { allowLeadingV: false })
+      )
+      .required(),
+    description: string(),
+  });
+
+  const initialFormState: RecipeMetadataFormState = {
     id: metadata?.id,
     name: metadata?.name,
     version: metadata?.version,
     description: metadata?.description,
   };
-
-  const initialValues = { metadata: formState };
 
   const dispatch = useDispatch();
   const updateRedux = useCallback(
@@ -69,53 +91,56 @@ const EditRecipe: React.VoidFunctionComponent = () => {
     );
   }
 
+  const renderBody: RenderBody = ({ values }) => (
+    <>
+      <Effect values={values} onChange={updateRedux} delayMillis={100} />
+
+      <Card>
+        <Card.Header>Blueprint Metadata</Card.Header>
+        <Card.Body>
+          <ConnectedFieldTemplate
+            name="id"
+            label="Blueprint ID"
+            description={FieldDescriptions.BLUEPRINT_ID}
+            // Blueprint IDs may not be changed after creation
+            readOnly
+          />
+          <ConnectedFieldTemplate
+            name="name"
+            label="Name"
+            description={FieldDescriptions.BLUEPRINT_NAME}
+          />
+          <ConnectedFieldTemplate
+            name="version"
+            label="Version"
+            description={FieldDescriptions.BLUEPRINT_VERSION}
+          />
+          <ConnectedFieldTemplate
+            name="description"
+            label="Description"
+            description={FieldDescriptions.BLUEPRINT_DESCRIPTION}
+          />
+        </Card.Body>
+      </Card>
+    </>
+  );
+
   return (
     <Container fluid className={styles.root}>
       <Row className={styles.row}>
         <Col sm={11} md={10} lg={9} xl={8}>
           <ErrorBoundary>
-            <Formik
-              initialValues={initialValues}
+            <Form
+              validationSchema={editRecipeSchema}
+              initialValues={initialFormState}
               onSubmit={() => {
                 console.error(
-                  "Formik's submit should not be called to save recipe metadata. Use 'saveRecipe' from 'useRecipeSaver' instead."
+                  "The form's submit should not be called to save recipe metadata. Use 'saveRecipe' from 'useRecipeSaver' instead."
                 );
               }}
-            >
-              {({ values }) => (
-                <>
-                  <Effect
-                    values={values.metadata}
-                    onChange={updateRedux}
-                    delayMillis={100}
-                  />
-
-                  <Card>
-                    <Card.Header>Blueprint Metadata</Card.Header>
-                    <Card.Body>
-                      <ConnectedFieldTemplate
-                        name="metadata.id"
-                        label="Blueprint ID"
-                        description="The registry ID of this blueprint"
-                        readOnly
-                      />
-                      <ConnectedFieldTemplate
-                        name="metadata.name"
-                        label="Name"
-                      />
-                      <ConnectedFieldTemplate
-                        name="metadata.version"
-                        label="Version"
-                      />
-                      <ConnectedFieldTemplate
-                        name="metadata.description"
-                        label="Description"
-                      />
-                    </Card.Body>
-                  </Card>
-                </>
-              )}
-            </Formik>
+              renderBody={renderBody}
+              renderSubmit={() => null}
+            />
           </ErrorBoundary>
         </Col>
       </Row>

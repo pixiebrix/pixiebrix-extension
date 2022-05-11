@@ -65,6 +65,41 @@ describe("renderExplicit", () => {
   );
 });
 
+// This is stupid implicit behavior, with prevent passing null to APIs. Capturing here to clarify how to work around.
+// it if it becomes a blocker in practice.
+// https://github.com/pixiebrix/pixiebrix-extension/issues/3282
+describe("exclude null", () => {
+  test("exclude null literal", async () => {
+    const rendered = await renderExplicit(
+      { foo: null },
+      {},
+      apiVersionOptions("v3")
+    );
+
+    expect(rendered).toEqual({});
+  });
+
+  test("convert null nunjucks template to string", async () => {
+    const rendered = await renderExplicit(
+      { foo: { __type__: "nunjucks", __value__: undefined } },
+      {},
+      apiVersionOptions("v3")
+    );
+
+    expect(rendered).toEqual({ foo: "" });
+  });
+
+  test("remove null var value", async () => {
+    const rendered = await renderExplicit(
+      { foo: { __type__: "var", __value__: undefined } },
+      {},
+      apiVersionOptions("v3")
+    );
+
+    expect(rendered).toEqual({});
+  });
+});
+
 describe("renderImplicit", () => {
   test("prefer path to renderer", () => {
     expect(

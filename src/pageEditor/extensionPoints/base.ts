@@ -41,7 +41,11 @@ import {
   SingleLayerReaderConfig,
 } from "@/pageEditor/extensionPoints/elementConfig";
 import { Except } from "type-fest";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
+import {
+  uuidv4,
+  validateRegistryId,
+  validateSemVerString,
+} from "@/types/helpers";
 import {
   BlockPipeline,
   NormalizedAvailability,
@@ -127,8 +131,9 @@ export function baseFromExtension<T extends ExtensionPointType>(
     apiVersion: config.apiVersion,
     installed: true,
     label: config.label,
-    services: config.services,
-    optionsArgs: config.optionsArgs,
+    // Normalize here because the fields aren't optional/nullable on the BaseFormState destination type.
+    services: config.services ?? [],
+    optionsArgs: config.optionsArgs ?? {},
     type,
     recipe: config._recipe,
   };
@@ -224,16 +229,26 @@ export function selectIsAvailable(
 ): NormalizedAvailability {
   assertExtensionPointConfig(extensionPoint);
 
-  const { isAvailable } = extensionPoint.definition;
-  const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
-  const urlPatterns = castArray(isAvailable.urlPatterns ?? []);
-  const selectors = castArray(isAvailable.selectors ?? []);
+  const availability: NormalizedAvailability = {};
 
-  return {
-    matchPatterns,
-    urlPatterns,
-    selectors,
-  };
+  // All 3 fields in NormalizedAvailability are optional, so we should only set each one if
+  // the ExtensionPointConfig has a value set for that field. Normalizing here makes testing
+  // harder because we then have to account for the normalized value in assertions.
+  const { isAvailable } = extensionPoint.definition;
+
+  if (isAvailable.matchPatterns) {
+    availability.matchPatterns = castArray(isAvailable.matchPatterns);
+  }
+
+  if (isAvailable.urlPatterns) {
+    availability.urlPatterns = castArray(isAvailable.urlPatterns);
+  }
+
+  if (isAvailable.selectors) {
+    availability.selectors = castArray(isAvailable.selectors);
+  }
+
+  return availability;
 }
 
 /**
@@ -319,7 +334,7 @@ export function baseSelectExtensionPoint(
       id: metadata.id,
       // The server requires the version to save the brick, even though it's not marked as required
       // in the front-end schemas
-      version: metadata.version ?? "1.0.0",
+      version: metadata.version ?? validateSemVerString("1.0.0"),
       name: metadata.name,
       // The server requires the description to save the brick, even though it's not marked as required
       // in the front-end schemas

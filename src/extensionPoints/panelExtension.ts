@@ -16,12 +16,14 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { ExtensionPoint } from "@/types";
 import Mustache from "mustache";
 import { errorBoundary } from "@/blocks/renderers/common";
 import { checkAvailable } from "@/blocks/available";
 import { castArray, cloneDeep } from "lodash";
-import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
+import {
+  InitialValues,
+  reduceExtensionPipeline,
+} from "@/runtime/reducePipeline";
 import { boolean } from "@/utils";
 import {
   awaitElementOnce,
@@ -44,6 +46,7 @@ import {
 import {
   ExtensionPointDefinition,
   ExtensionPointConfig,
+  ExtensionPoint,
 } from "@/extensionPoints/types";
 import { propertiesToSchema } from "@/validators/generic";
 import { render } from "@/extensionPoints/dom";
@@ -380,7 +383,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
           root: document,
         };
 
-        const rendererPromise = reducePipeline(body, initialValues, {
+        const rendererPromise = reduceExtensionPipeline(body, initialValues, {
           logger: extensionLogger,
           ...apiVersionOptions(extension.apiVersion),
         }) as Promise<RendererOutput>;

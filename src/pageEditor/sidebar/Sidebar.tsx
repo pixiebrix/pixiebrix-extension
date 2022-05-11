@@ -20,9 +20,10 @@ import styles from "./Sidebar.module.scss";
 import React, { FormEvent, useContext, useMemo, useState } from "react";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { PageEditorTabContext } from "@/pageEditor/context";
-import { isEmpty, sortBy } from "lodash";
+import { lowerCase, sortBy } from "lodash";
 import { sleep } from "@/utils";
 import {
+  Accordion,
   Badge,
   Button,
   Dropdown,
@@ -41,10 +42,10 @@ import InstalledEntry from "@/pageEditor/sidebar/InstalledEntry";
 import DynamicEntry from "@/pageEditor/sidebar/DynamicEntry";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import useAddElement from "@/pageEditor/hooks/useAddElement";
-import Footer from "@/pageEditor/sidebar/Footer";
 import {
   faAngleDoubleLeft,
   faAngleDoubleRight,
+  faFileExport,
   faFileImport,
   faSync,
 } from "@fortawesome/free-solid-svg-icons";
@@ -56,16 +57,18 @@ import RecipeEntry from "@/pageEditor/sidebar/RecipeEntry";
 import useFlags from "@/hooks/useFlags";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import {
-  getIdForElement,
-  selectActiveExtensionId,
+  selectActiveElementId,
   selectActiveRecipeId,
+  selectAllDeletedElementIds,
   selectElements,
+  selectExpandedRecipeId,
   selectIsAddToRecipeModalVisible,
 } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useGetRecipesQuery } from "@/services/api";
+import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
   <Button
@@ -105,7 +108,28 @@ const AddToRecipeButton: React.VFC<{ disabled: boolean }> = ({ disabled }) => {
       }}
       disabled={disabled}
     >
-      <FontAwesomeIcon icon={faFileImport} />
+      <FontAwesomeIcon icon={faFileImport} size="lg" />
+    </Button>
+  );
+};
+
+const RemoveFromRecipeButton: React.VFC<{ disabled: boolean }> = ({
+  disabled,
+}) => {
+  const dispatch = useDispatch();
+
+  return (
+    <Button
+      type="button"
+      size="sm"
+      variant="light"
+      title="Remove extension from blueprint"
+      onClick={() => {
+        dispatch(actions.showRemoveFromRecipeModal());
+      }}
+      disabled={disabled}
+    >
+      <FontAwesomeIcon icon={faFileExport} size="lg" />
     </Button>
   );
 };
@@ -139,21 +163,41 @@ const SidebarExpanded: React.VoidFunctionComponent<{
 }> = ({ collapseSidebar }) => {
   const context = useContext(PageEditorTabContext);
 
-  const { data: recipes, isLoading: isLoadingRecipes } = useGetRecipesQuery();
+  const { data: allRecipes, isLoading: isLoadingRecipes } =
+    useGetRecipesQuery();
 
   const isInsertingElement = useSelector((state: EditorState) =>
     Boolean(state.inserting)
   );
-  const activeElementId = useSelector(selectActiveExtensionId);
+  const activeElementId = useSelector(selectActiveElementId);
   const activeRecipeId = useSelector(selectActiveRecipeId);
-  const installed = useSelector(selectExtensions);
-  const elements = useSelector(selectElements);
+  const expandedRecipeId = useSelector(selectExpandedRecipeId);
+  const deletedElementIds = useSelector(selectAllDeletedElementIds);
+  const allInstalled = useSelector(selectExtensions);
+  const installed = useMemo(
+    () => allInstalled.filter(({ id }) => !deletedElementIds.has(id)),
+    [allInstalled, deletedElementIds]
+  );
+  const allElements = useSelector(selectElements);
+  const elements = useMemo(
+    () => allElements.filter(({ uuid }) => !deletedElementIds.has(uuid)),
+    [allElements, deletedElementIds]
+  );
+
+  const recipes = useMemo(
+    () =>
+      allRecipes?.filter((recipe) =>
+        [...installed, ...elements].some(
+          (element) => getRecipeIdForElement(element) === recipe.metadata.id
+        )
+      ) ?? [],
+    [allRecipes, elements, installed]
+  );
 
   const { flagOn } = useFlags();
   const showDeveloperUI =
     process.env.ENVIRONMENT === "development" ||
     flagOn("page-editor-developer");
-  const groupByRecipe = flagOn("page-editor-blueprints");
 
   const {
     tabState: { hasPermissions },
@@ -173,9 +217,10 @@ const SidebarExpanded: React.VoidFunctionComponent<{
   );
   const addToRecipeButtonDisabled =
     isAddToRecipeModalVisible ||
-    isEmpty(recipes) ||
     activeElement === undefined ||
     activeElement.recipe != null;
+
+  const removeFromRecipeButtonDisabled = activeElement?.recipe == null;
 
   const elementHash = hash(
     sortBy(
@@ -199,8 +244,8 @@ const SidebarExpanded: React.VoidFunctionComponent<{
         availableInstalledIds,
         availableDynamicIds,
         showAll,
-        groupByRecipe,
         activeElementId,
+        expandedRecipeId,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using elementHash and recipeHash to track changes
     [
@@ -211,6 +256,7 @@ const SidebarExpanded: React.VoidFunctionComponent<{
       showAll,
       availableInstalledIds,
       activeElementId,
+      expandedRecipeId,
     ]
   );
 
@@ -243,9 +289,46 @@ const SidebarExpanded: React.VoidFunctionComponent<{
       />
     );
 
+  const listItems = sortBy(
+    [...elementsByRecipeId, ...orphanedElements],
+    (item) => {
+      if (Array.isArray(item)) {
+        const recipeId = item[0];
+        const recipe = recipes.find(
+          (recipe) => recipe.metadata.id === recipeId
+        );
+        return lowerCase(recipe?.metadata?.name ?? "");
+      }
+
+      return lowerCase(item.label);
+    }
+  ).map((item) => {
+    if (Array.isArray(item)) {
+      const [recipeId, elements] = item;
+      return (
+        <RecipeEntry
+          key={recipeId}
+          recipeId={recipeId}
+          isActive={recipeId === activeRecipeId}
+        >
+          {elements.map((element) => (
+            <ElementListItem
+              key={getIdForElement(element)}
+              element={element}
+              isNested
+            />
+          ))}
+        </RecipeEntry>
+      );
+    }
+
+    const element = item;
+    return <ElementListItem key={getIdForElement(element)} element={element} />;
+  });
+
   return (
     <div className={cx(styles.root, styles.expanded)}>
-      <div>
+      <div className={styles.header}>
         <div className={styles.actions}>
           <div className={styles.actionsLeft}>
             <a
@@ -279,9 +362,9 @@ const SidebarExpanded: React.VoidFunctionComponent<{
 
             {showDeveloperUI && <ReloadButton />}
 
-            {flagOn("page-editor-blueprints") && (
-              <AddToRecipeButton disabled={addToRecipeButtonDisabled} />
-            )}
+            <AddToRecipeButton disabled={addToRecipeButtonDisabled} />
+
+            <RemoveFromRecipeButton disabled={removeFromRecipeButtonDisabled} />
           </div>
           <Button
             variant="light"
@@ -311,35 +394,11 @@ const SidebarExpanded: React.VoidFunctionComponent<{
         {isLoadingRecipes ? (
           <Loader />
         ) : (
-          <ListGroup>
-            {elementsByRecipeId.map(([recipeId, elements]) => (
-              <RecipeEntry
-                key={recipeId}
-                recipeId={recipeId}
-                recipes={recipes}
-                elements={elements}
-                activeRecipeId={activeRecipeId}
-              >
-                {elements.map((element) => (
-                  <ElementListItem
-                    key={getIdForElement(element)}
-                    element={element}
-                    isNested={true}
-                  />
-                ))}
-              </RecipeEntry>
-            ))}
-            {!isEmpty(orphanedElements) &&
-              orphanedElements.map((element) => (
-                <ElementListItem
-                  key={getIdForElement(element)}
-                  element={element}
-                />
-              ))}
-          </ListGroup>
+          <Accordion activeKey={expandedRecipeId}>
+            <ListGroup>{listItems}</ListGroup>
+          </Accordion>
         )}
       </div>
-      <Footer />
     </div>
   );
 };

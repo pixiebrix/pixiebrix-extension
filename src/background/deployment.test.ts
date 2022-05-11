@@ -20,12 +20,14 @@ import {
   deploymentFactory,
   extensionFactory,
   installedRecipeMetadataFactory,
-} from "@/tests/factories";
-import { uuidv4 } from "@/types/helpers";
-import { PersistedExtension } from "@/core";
+  sharingDefinitionFactory,
+} from "@/testUtils/factories";
+import { uuidv4, validateSemVerString } from "@/types/helpers";
+import { PersistedExtension, Timestamp } from "@/core";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { updateDeployments } from "@/background/deployment";
+import { reportEvent } from "@/telemetry/events";
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 
@@ -66,6 +68,8 @@ jest.mock("@/background/messenger/api", () => ({
     // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
     clear: jest.fn().mockResolvedValue(undefined),
   },
+  // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
+  uninstallContextMenu: jest.fn().mockResolvedValue(undefined),
   contextMenus: {
     preload: jest.fn(),
   },
@@ -104,13 +108,19 @@ const isLinkedMock = isLinked as jest.Mock;
 const readAuthDataMock = readAuthData as jest.Mock;
 const getManifestMock = browser.runtime.getManifest as jest.Mock;
 const openOptionsPageMock = browser.runtime.openOptionsPage as jest.Mock;
+const browserManagedStorageMock = browser.storage.managed.get as jest.Mock;
 const containsPermissionsMock = browser.permissions.contains as jest.Mock;
 const refreshRegistriesMock = refreshRegistries as jest.Mock;
 const isUpdateAvailableMock = isUpdateAvailable as jest.Mock;
 const getSettingsStateMock = getSettingsState as jest.Mock;
 
-beforeEach(() => {
+beforeEach(async () => {
   jest.resetModules();
+
+  // Reset local options state
+  await saveOptions({
+    extensions: [],
+  });
 
   isLinkedMock.mockClear();
   readAuthDataMock.mockClear();
@@ -120,6 +130,8 @@ beforeEach(() => {
   getSettingsStateMock.mockResolvedValue({
     nextUpdate: undefined,
   });
+
+  browserManagedStorageMock.mockResolvedValue({});
 
   readAuthDataMock.mockResolvedValue({
     organizationId: "00000000-00000000-00000000-00000000",
@@ -133,6 +145,39 @@ beforeEach(() => {
 });
 
 describe("updateDeployments", () => {
+  test("opens options page if managed enterprise customer not linked", async () => {
+    readAuthDataMock.mockResolvedValue({
+      organizationId: null,
+    });
+
+    browserManagedStorageMock.mockResolvedValue({
+      managedOrganizationId: "00000000-00000000-00000000-00000000",
+    });
+
+    isLinkedMock.mockResolvedValue(false);
+
+    await updateDeployments();
+
+    expect(reportEvent).toHaveBeenCalledWith(
+      "OrganizationExtensionLink",
+      expect.anything()
+    );
+    expect(openOptionsPageMock.mock.calls).toHaveLength(1);
+  });
+
+  test("opens options page if enterprise customer becomes unlinked", async () => {
+    // `readAuthDataMock` already has organizationId "00000000-00000000-00000000-00000000"
+    isLinkedMock.mockResolvedValue(false);
+
+    await updateDeployments();
+
+    expect(reportEvent).toHaveBeenCalledWith(
+      "OrganizationExtensionLink",
+      expect.anything()
+    );
+    expect(openOptionsPageMock.mock.calls).toHaveLength(1);
+  });
+
   test("can add deployment from empty state if deployment has permissions", async () => {
     isLinkedMock.mockResolvedValue(true);
     containsPermissionsMock.mockResolvedValue(true);
@@ -150,6 +195,70 @@ describe("updateDeployments", () => {
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(1);
+  });
+
+  test("ignore other user extensions", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    containsPermissionsMock.mockResolvedValue(true);
+
+    // An extension without a recipe. Exclude _recipe entirely to handle the case where the property is missing
+    const extension = extensionFactory() as PersistedExtension;
+    delete extension._recipe;
+    delete extension._deployment;
+
+    await saveOptions({
+      extensions: [extension],
+    });
+
+    const deployment = deploymentFactory();
+
+    axiosMock.onGet().reply(200, {
+      flags: [],
+    });
+
+    axiosMock.onPost().reply(201, [deployment]);
+
+    await updateDeployments();
+
+    const { extensions } = await loadOptions();
+
+    expect(extensions.length).toBe(2);
+  });
+
+  test("uninstall existing recipe extension", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    containsPermissionsMock.mockResolvedValue(true);
+
+    const deployment = deploymentFactory();
+
+    // An extension without a recipe. Exclude _recipe entirely to handle the case where the property is missing
+    const extension = extensionFactory({
+      _recipe: {
+        id: deployment.package.package_id,
+        name: deployment.package.name,
+        version: validateSemVerString("0.0.1"),
+        updated_at: deployment.updated_at as Timestamp,
+        sharing: sharingDefinitionFactory(),
+      },
+    }) as PersistedExtension;
+    delete extension._deployment;
+
+    await saveOptions({
+      extensions: [extension],
+    });
+
+    axiosMock.onGet().reply(200, {
+      flags: [],
+    });
+
+    axiosMock.onPost().reply(201, [deployment]);
+
+    await updateDeployments();
+
+    const { extensions } = await loadOptions();
+
+    expect(extensions.length).toBe(1);
+    expect(extensions[0]._recipe.version).toBe(deployment.package.version);
   });
 
   test("opens options page if deployment does not have necessary permissions", async () => {

@@ -18,12 +18,10 @@
 
 import React, { useMemo } from "react";
 import { UUID } from "@/core";
-import { isEmpty, isEqual, pickBy, startsWith } from "lodash";
+import { FormState } from "@/pageEditor/pageEditorTypes";
+import { isEmpty, isEqual, pickBy } from "lodash";
 import { useFormikContext } from "formik";
-import formBuilderSelectors from "@/pageEditor/slices/formBuilderSelectors";
-import { actions } from "@/pageEditor/slices/formBuilderSlice";
 import { Alert, Button, Nav, Tab } from "react-bootstrap";
-import JsonTree from "@/components/jsonTree/JsonTree";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -32,6 +30,7 @@ import BlockPreview, {
 } from "@/pageEditor/tabs/effect/BlockPreview";
 import useReduxState from "@/hooks/useReduxState";
 import {
+  faExclamationCircle,
   faExclamationTriangle,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
@@ -42,15 +41,15 @@ import { JsonObject } from "type-fest";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DataTab from "./DataTab";
 import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
-import useDataPanelTabSearchQuery from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 import DocumentPreview from "@/components/documentBuilder/preview/DocumentPreview";
-import documentBuilderSelectors from "@/pageEditor/slices/documentBuilderSelectors";
-import { actions as documentBuilderActions } from "@/pageEditor/slices/documentBuilderSlice";
 import copy from "copy-to-clipboard";
 import useFlags from "@/hooks/useFlags";
 import ErrorDisplay from "./ErrorDisplay";
-import { FormState } from "@/pageEditor/pageEditorTypes";
 import PageStateTab from "./PageStateTab";
+import { DataPanelTabKey } from "./dataPanelTypes";
+import DataTabJsonTree from "./DataTabJsonTree";
+import { selectNodePreviewActiveElement } from "@/pageEditor/uiState/uiState";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -67,6 +66,8 @@ const contextFilter = (value: unknown, key: string) => {
   // keys. With the introduction of ApiVersion v2, we removed that filter
   return true;
 };
+
+const pageStateBlockIds = ["@pixiebrix/state/set", "@pixiebrix/state/get"];
 
 const DataPanel: React.FC<{
   instanceId: UUID;
@@ -121,17 +122,6 @@ const DataPanel: React.FC<{
     [record?.templateContext]
   );
 
-  const [formBuilderActiveField, setFormBuilderActiveField] = useReduxState(
-    formBuilderSelectors.activeField,
-    actions.setActiveField
-  );
-
-  const [documentBuilderActiveElement, setDocumentBuilderActiveElement] =
-    useReduxState(
-      documentBuilderSelectors.activeElement,
-      documentBuilderActions.setActiveElement
-    );
-
   const documentBodyName = `extension.blockPipeline.${blockIndex}.config.body`;
 
   const outputObj: JsonObject =
@@ -146,16 +136,18 @@ const DataPanel: React.FC<{
   const showFormPreview = block.config?.schema && block.config?.uiSchema;
   const showDocumentPreview = block.config?.body;
   const showBlockPreview = record || previewInfo?.traceOptional;
+  const showPageState = pageStateBlockIds.includes(block.id);
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
-    showFormPreview || showDocumentPreview ? "preview" : "output"
+    showFormPreview || showDocumentPreview
+      ? DataPanelTabKey.Preview
+      : DataPanelTabKey.Output
   );
 
-  const [contextQuery, setContextQuery] = useDataPanelTabSearchQuery("context");
-  const [formikQuery, setFormikQuery] = useDataPanelTabSearchQuery("formik");
-  const [renderedQuery, setRenderedQuery] =
-    useDataPanelTabSearchQuery("rendered");
-  const [outputQuery, setOutputQuery] = useDataPanelTabSearchQuery("output");
+  const [activeElement, setActiveElement] = useReduxState(
+    selectNodePreviewActiveElement,
+    editorActions.setNodePreviewActiveElement
+  );
 
   const popupBoundary = showDocumentPreview
     ? document.querySelector(`.${dataPanelStyles.tabContent}`)
@@ -166,70 +158,79 @@ const DataPanel: React.FC<{
       <div className={dataPanelStyles.tabContainer}>
         <Nav variant="tabs">
           <Nav.Item className={dataPanelStyles.tabNav}>
-            <Nav.Link eventKey="context">Context</Nav.Link>
+            <Nav.Link eventKey={DataPanelTabKey.Context}>Context</Nav.Link>
           </Nav.Item>
+          {showPageState && (
+            <Nav.Item className={dataPanelStyles.tabNav}>
+              <Nav.Link eventKey={DataPanelTabKey.PageState}>
+                Page State
+              </Nav.Link>
+            </Nav.Item>
+          )}
           {showDeveloperTabs && (
             <>
               <Nav.Item className={dataPanelStyles.tabNav}>
-                <Nav.Link eventKey="formik">Formik</Nav.Link>
+                <Nav.Link eventKey={DataPanelTabKey.Formik}>Formik</Nav.Link>
               </Nav.Item>
               <Nav.Item className={dataPanelStyles.tabNav}>
-                <Nav.Link eventKey="blockConfig">Raw Block</Nav.Link>
+                <Nav.Link eventKey={DataPanelTabKey.BlockConfig}>
+                  Raw Block
+                </Nav.Link>
               </Nav.Item>
             </>
           )}
           <Nav.Item className={dataPanelStyles.tabNav}>
-            <Nav.Link eventKey="rendered">Rendered</Nav.Link>
+            <Nav.Link eventKey={DataPanelTabKey.Rendered}>Rendered</Nav.Link>
           </Nav.Item>
           <Nav.Item className={dataPanelStyles.tabNav}>
-            <Nav.Link eventKey="output">Output</Nav.Link>
+            <Nav.Link eventKey={DataPanelTabKey.Output}>Output</Nav.Link>
           </Nav.Item>
           <Nav.Item className={dataPanelStyles.tabNav}>
-            <Nav.Link eventKey="preview">Preview</Nav.Link>
-          </Nav.Item>
-          <Nav.Item className={dataPanelStyles.tabNav}>
-            <Nav.Link eventKey="pageState">Page State</Nav.Link>
+            <Nav.Link eventKey={DataPanelTabKey.Preview}>Preview</Nav.Link>
           </Nav.Item>
         </Nav>
         <Tab.Content className={dataPanelStyles.tabContent}>
-          <DataTab eventKey="context" isTraceEmpty={!record}>
+          <DataTab eventKey={DataPanelTabKey.Context} isTraceEmpty={!record}>
             {isInputStale && (
               <Alert variant="warning">
                 <FontAwesomeIcon icon={faExclamationTriangle} /> A previous
                 block has changed, input context may be out of date
               </Alert>
             )}
-            <JsonTree
+            <DataTabJsonTree
               data={relevantContext}
               copyable
               searchable
-              initialSearchQuery={contextQuery}
-              onSearchQueryChanged={setContextQuery}
-              shouldExpandNode={(keyPath) =>
-                keyPath.length === 1 && startsWith(keyPath[0].toString(), "@")
-              }
+              tabKey={DataPanelTabKey.Context}
             />
           </DataTab>
+          {showPageState && (
+            <DataTab eventKey={DataPanelTabKey.PageState}>
+              <PageStateTab />
+            </DataTab>
+          )}
           {showDeveloperTabs && (
             <>
-              <DataTab eventKey="formik">
+              <DataTab eventKey={DataPanelTabKey.Formik}>
                 <div className="text-info">
                   <FontAwesomeIcon icon={faInfoCircle} /> This tab is only
                   visible to developers
                 </div>
-                <JsonTree
+                <DataTabJsonTree
                   data={formikData ?? {}}
                   searchable
-                  initialSearchQuery={formikQuery}
-                  onSearchQueryChanged={setFormikQuery}
+                  tabKey={DataPanelTabKey.Formik}
                 />
               </DataTab>
-              <DataTab eventKey="blockConfig">
+              <DataTab eventKey={DataPanelTabKey.BlockConfig}>
                 <div className="text-info">
                   <FontAwesomeIcon icon={faInfoCircle} /> This tab is only
                   visible to developers
                 </div>
-                <JsonTree data={block ?? {}} />
+                <DataTabJsonTree
+                  data={block ?? {}}
+                  tabKey={DataPanelTabKey.BlockConfig}
+                />
                 <Button
                   onClick={() => {
                     copy(JSON.stringify(block, undefined, 2));
@@ -241,8 +242,24 @@ const DataPanel: React.FC<{
               </DataTab>
             </>
           )}
-          <DataTab eventKey="rendered" isTraceEmpty={!record}>
-            {record && (
+          <DataTab eventKey={DataPanelTabKey.Rendered} isTraceEmpty={!record}>
+            {record?.renderError ? (
+              <>
+                {record.skippedRun ? (
+                  <Alert variant="info">
+                    <FontAwesomeIcon icon={faInfoCircle} /> Error rendering
+                    input arguments, but brick was skipped because condition was
+                    not met
+                  </Alert>
+                ) : (
+                  <Alert variant="danger">
+                    <FontAwesomeIcon icon={faExclamationCircle} /> Error
+                    rendering input arguments
+                  </Alert>
+                )}
+                <ErrorDisplay error={record.renderError} />
+              </>
+            ) : (
               <>
                 {isInputStale && (
                   <Alert variant="warning">
@@ -250,42 +267,41 @@ const DataPanel: React.FC<{
                     block has changed, input context may be out of date
                   </Alert>
                 )}
-                <JsonTree
-                  data={record.renderedArgs}
+                <DataTabJsonTree
+                  data={record?.renderedArgs}
                   copyable
                   searchable
-                  initialSearchQuery={renderedQuery}
-                  onSearchQueryChanged={setRenderedQuery}
+                  tabKey={DataPanelTabKey.Rendered}
                   label="Rendered Inputs"
                 />
               </>
             )}
           </DataTab>
           <DataTab
-            eventKey="output"
+            eventKey={DataPanelTabKey.Output}
             isTraceEmpty={!record}
             isTraceOptional={previewInfo?.traceOptional}
           >
-            {outputObj && (
+            {record?.skippedRun && (
+              <Alert variant="info">
+                <FontAwesomeIcon icon={faInfoCircle} /> The brick did not run
+                because the condition was not met
+              </Alert>
+            )}
+            {!record?.skippedRun && outputObj && (
               <>
                 {isCurrentStale && (
                   <Alert variant="warning">
                     <FontAwesomeIcon icon={faExclamationTriangle} /> This or a
-                    previous block has changed, output may be out of date
+                    previous brick has changed, output may be out of date
                   </Alert>
                 )}
-                <JsonTree
+                <DataTabJsonTree
                   data={outputObj}
                   copyable
                   searchable
-                  initialSearchQuery={outputQuery}
-                  onSearchQueryChanged={setOutputQuery}
+                  tabKey={DataPanelTabKey.Output}
                   label="Data"
-                  shouldExpandNode={(keyPath) =>
-                    keyPath.length === 1 &&
-                    "outputKey" in record &&
-                    keyPath[0] === `@${record.outputKey}`
-                  }
                 />
               </>
             )}
@@ -293,28 +309,30 @@ const DataPanel: React.FC<{
               <ErrorDisplay error={record.error} />
             )}
           </DataTab>
-          <DataTab
-            eventKey="preview"
-            isTraceEmpty={false}
-            // Only mount if the user is viewing it, because output previews take up resources to run
-            mountOnEnter
-            unmountOnExit
-          >
+          <DataTab eventKey={DataPanelTabKey.Preview} isTraceEmpty={false}>
+            {/* The value of block.if can be `false`, in this case we also need to show the warning */}
+            {block.if != null && (
+              <Alert variant="info">
+                <FontAwesomeIcon icon={faInfoCircle} /> This brick has a
+                condition. The brick will not execute if the condition is not
+                met
+              </Alert>
+            )}
             {showFormPreview || showDocumentPreview ? (
               <ErrorBoundary>
                 {showFormPreview ? (
                   <div className={dataPanelStyles.selectablePreviewContainer}>
                     <FormPreview
                       rjsfSchema={block.config as RJSFSchema}
-                      activeField={formBuilderActiveField}
-                      setActiveField={setFormBuilderActiveField}
+                      activeField={activeElement}
+                      setActiveField={setActiveElement}
                     />
                   </div>
                 ) : (
                   <DocumentPreview
                     name={documentBodyName}
-                    activeElement={documentBuilderActiveElement}
-                    setActiveElement={setDocumentBuilderActiveElement}
+                    activeElement={activeElement}
+                    setActiveElement={setActiveElement}
                     menuBoundary={popupBoundary}
                   />
                 )}
@@ -332,9 +350,6 @@ const DataPanel: React.FC<{
                 Run the extension once to enable live preview
               </div>
             )}
-          </DataTab>
-          <DataTab eventKey="pageState">
-            <PageStateTab />
           </DataTab>
         </Tab.Content>
       </div>

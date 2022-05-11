@@ -16,7 +16,7 @@
  */
 
 import { MessageContext } from "@/core";
-import { recordError } from "@/background/messenger/api";
+import { backgroundTarget as bg, messenger } from "webext-messenger";
 import { serializeError } from "serialize-error";
 import { selectError } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
@@ -29,33 +29,39 @@ expectContext(
 
 /**
  * Report an error for local logs, remote telemetry, etc.
- * @param error the error object
+ * @param errorLike the error object
  * @param context optional context for error telemetry
+ * @param logToConsole additionally log error to the browser console (default=true)
  */
-function reportError(
-  error: unknown, // It might also be an ErrorEvent
+export default function reportError(
+  errorLike: unknown, // It might also be an ErrorEvent
   context?: MessageContext,
   { logToConsole = true } = {}
 ): void {
   if (logToConsole) {
-    console.error(error);
+    console.error(errorLike, { context });
   }
 
   try {
-    recordError(serializeError(selectError(error)), {
-      ...context,
-      // Add on the reporter side of the message. On the receiving side it would always be `background`
-      pageName: getContextName(),
-    });
+    messenger(
+      // Low-level direct API call to avoid calls outside reportError
+      "RECORD_ERROR",
+      { isNotification: true },
+      bg,
+      serializeError(selectError(errorLike)),
+      {
+        ...context,
+        // Add on the reporter side of the message. On the receiving side it would always be `background`
+        pageName: getContextName(),
+      }
+    );
   } catch (reportingError) {
     // The messenger does not throw async errors on "notifiers" but if this is
     // called in the background the call will be executed directly and it could
     // theoretically throw a synchronous error
     console.error("An error occurred when reporting an error", {
-      originalError: error,
+      originalError: errorLike,
       reportingError,
     });
   }
 }
-
-export default reportError;

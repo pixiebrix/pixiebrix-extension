@@ -1,0 +1,73 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders the DataTabJsonTree component 1`] = `
+<DocumentFragment>
+  <div
+    class="root"
+  >
+    <ul
+      style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(253, 255, 255);"
+    >
+      <li
+        style="padding: 0px; margin: 0px;"
+      >
+        <ul
+          style="padding: 0px; margin: 0px; list-style: none;"
+        >
+          <li
+            style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+          >
+            <label
+              style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+            >
+              <span>
+                name:
+              </span>
+            </label>
+            <span
+              style="color: rgb(64, 175, 108);"
+            >
+              "test"
+            </span>
+          </li>
+          <li
+            style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 0px;"
+          >
+            <div
+              style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
+            >
+              <div
+                style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+              >
+                ▶
+              </div>
+            </div>
+            <label
+              style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
+            >
+              <span>
+                foo:
+              </span>
+            </label>
+            <span
+              style="padding-left: 0.5em; cursor: default; color: rgb(64, 175, 108);"
+            >
+              <span>
+                <span
+                  style="margin-left: 0.3em; margin-right: 0.3em;"
+                >
+                  []
+                </span>
+                 2 items
+              </span>
+            </span>
+            <ul
+              style="padding: 0px; margin: 0px; list-style: none; display: block;"
+            />
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</DocumentFragment>
+`;

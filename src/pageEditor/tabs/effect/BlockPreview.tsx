@@ -30,7 +30,6 @@ import {
   faSync,
 } from "@fortawesome/free-solid-svg-icons";
 import objectHash from "object-hash";
-import JsonTree from "@/components/jsonTree/JsonTree";
 import { isEmpty } from "lodash";
 import { TraceRecord } from "@/telemetry/trace";
 import { removeEmptyValues } from "@/pageEditor/extensionPoints/base";
@@ -45,12 +44,13 @@ import { runBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { useField } from "formik";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import useDataPanelTabSearchQuery from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 import { makeServiceContext } from "@/services/serviceUtils";
 import getType from "@/runtime/getType";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
 import { isTriggerExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -71,6 +71,7 @@ type PreviewInfo = {
   block: IBlock;
   type: BlockType;
   isPure: boolean;
+  isRootAware: boolean;
   traceOptional: boolean;
 };
 
@@ -84,6 +85,7 @@ export function usePreviewInfo(blockId: RegistryId): AsyncState<PreviewInfo> {
     return {
       block,
       isPure: await block.isPure(),
+      isRootAware: block.isRootAware ? await block.isRootAware() : false,
       type,
       traceOptional: isTraceOptional(blockId, { type }),
     };
@@ -143,13 +145,10 @@ const BlockPreview: React.FunctionComponent<{
   previewRefreshMillis?: 250;
   // eslint-disable-next-line complexity
 }> = ({ blockConfig, extensionPoint, traceRecord, previewRefreshMillis }) => {
-  const [{ isRunning, output, outputKey }, dispatch] = useReducer(
-    previewSlice.reducer,
-    {
-      ...initialState,
-      outputKey: blockConfig.outputKey,
-    }
-  );
+  const [{ isRunning, output }, dispatch] = useReducer(previewSlice.reducer, {
+    ...initialState,
+    outputKey: blockConfig.outputKey,
+  });
 
   const [{ value: apiVersion }] = useField<ApiVersion>("apiVersion");
   const [{ value: services }] = useField<ServiceDependency[]>("services");
@@ -158,6 +157,10 @@ const BlockPreview: React.FunctionComponent<{
 
   // This defaults to "inherit" as described in the doc, see BlockConfig.rootMode
   const blockRootMode = blockConfig.rootMode ?? "inherit";
+  const shouldUseExtensionPointRoot =
+    blockInfo?.isRootAware &&
+    blockRootMode === "inherit" &&
+    isTriggerExtensionPoint(extensionPoint);
 
   const debouncedRun = useDebouncedCallback(
     async (blockConfig: BlockConfig, context: BlockArgContext) => {
@@ -170,15 +173,17 @@ const BlockPreview: React.FunctionComponent<{
       // Note: this is not possible when extensionPoint's targetMode equals "targetElement",
       // in this case a special message will be shown instead of the brick output (see the code later in the component)
       const rootSelector =
-        blockRootMode === "inherit" &&
-        isTriggerExtensionPoint(extensionPoint) &&
+        shouldUseExtensionPointRoot &&
         extensionPoint.definition.targetMode === "root"
           ? extensionPoint.definition.rootSelector
           : undefined;
       try {
         const output = await runBlock(thisTab, {
           apiVersion,
-          blockConfig: removeEmptyValues(blockConfig),
+          blockConfig: {
+            ...removeEmptyValues(blockConfig),
+            if: undefined,
+          },
           context: { ...context, ...(await makeServiceContext(services)) },
           rootSelector,
         });
@@ -202,8 +207,6 @@ const BlockPreview: React.FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, blockConfig, blockInfo, objectHash(context ?? {})]);
 
-  const [previewQuery, setPreviewQuery] = useDataPanelTabSearchQuery("preview");
-
   if (blockInfo?.type === "renderer") {
     return (
       <div className="text-muted">
@@ -212,9 +215,18 @@ const BlockPreview: React.FunctionComponent<{
     );
   }
 
+  if (blockLoading || isRunning) {
+    return (
+      <div>
+        {showTraceWarning && traceWarning}
+        <Loader />
+      </div>
+    );
+  }
+
+  // Can't use the root element from extension point because it is not static.
   if (
-    blockRootMode === "inherit" &&
-    isTriggerExtensionPoint(extensionPoint) &&
+    shouldUseExtensionPointRoot &&
     extensionPoint.definition.targetMode !== "root"
   ) {
     return (
@@ -231,15 +243,6 @@ const BlockPreview: React.FunctionComponent<{
       <div className="text-danger">
         Error loading brick from registry
         {getErrorMessage(blockError)}
-      </div>
-    );
-  }
-
-  if (blockLoading || isRunning) {
-    return (
-      <div>
-        {showTraceWarning && traceWarning}
-        <Loader />
       </div>
     );
   }
@@ -273,15 +276,11 @@ const BlockPreview: React.FunctionComponent<{
       )}
 
       {output && !isError && !isEmpty(output) && (
-        <JsonTree
+        <DataTabJsonTree
           data={output}
           searchable
           copyable
-          initialSearchQuery={previewQuery}
-          onSearchQueryChanged={setPreviewQuery}
-          shouldExpandNode={(keyPath) =>
-            keyPath.length === 1 && keyPath[0] === `@${outputKey}`
-          }
+          tabKey={DataPanelTabKey.Preview}
         />
       )}
 

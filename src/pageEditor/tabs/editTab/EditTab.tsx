@@ -56,11 +56,14 @@ import useFlags from "@/hooks/useFlags";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
+import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
+import useReportTraceError from "./useReportTraceError";
 
 const EditTab: React.FC<{
   eventKey: string;
 }> = ({ eventKey }) => {
   useExtensionTrace();
+  useReportTraceError();
 
   const { values, setValues: setFormValues } = useFormikContext<FormState>();
   const { extensionPoint, type: extensionPointType } = values;
@@ -144,11 +147,21 @@ const EditTab: React.FC<{
     setActiveNodeId
   );
 
+  const traces = useSelector(selectExtensionTrace);
+
   const nodes = useMemo<EditorNodeProps[]>(() => {
+    // A flag that shows if there are trace records related to any of the current nodes.
+    let blockNodesHaveTraces = false;
     const blockNodes: EditorNodeProps[] = blockPipeline.map(
       (blockConfig, index) => {
         const block = allBlocks.get(blockConfig.id)?.block;
         const nodeId = blockConfig.instanceId;
+        const traceRecord = traces.find(
+          (trace) => trace.blockInstanceId === nodeId
+        );
+        if (traceRecord != null) {
+          blockNodesHaveTraces = true;
+        }
 
         if (!block) {
           return {
@@ -180,6 +193,8 @@ const EditTab: React.FC<{
             Boolean(blockPipelineErrors?.[index]),
           hasWarning:
             errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
+          skippedRun: traceRecord?.skippedRun,
+          ran: traceRecord != null,
           onClick() {
             setActiveNodeId(blockConfig.instanceId);
           },
@@ -198,6 +213,8 @@ const EditTab: React.FC<{
       outputKey: "input",
       title: label,
       icon,
+      // Foundation Node doesn't have its own trace record, so we use the traces flag.
+      ran: blockNodesHaveTraces,
       onClick() {
         setActiveNodeId(FOUNDATION_NODE_ID);
       },
@@ -212,6 +229,7 @@ const EditTab: React.FC<{
     icon,
     label,
     setActiveNodeId,
+    traces,
   ]);
 
   const [relevantBlocksToAdd] = useAsyncState(

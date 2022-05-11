@@ -19,7 +19,7 @@ import { Deployment, Me } from "@/types/contract";
 import { isEmpty, partition, uniqBy } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { getUID } from "@/background/telemetry";
-import { getExtensionVersion } from "@/chrome";
+import { getExtensionVersion, ManualStorageKey, readStorage } from "@/chrome";
 import { isLinked, readAuthData, updateUserData } from "@/auth/token";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
@@ -38,10 +38,15 @@ import { getSettingsState } from "@/store/settingsStorage";
 import { isUpdateAvailable } from "@/background/installer";
 import { selectUserDataUpdate } from "@/auth/authUtils";
 import { uninstallContextMenu } from "@/background/contextMenus";
+import { makeUpdatedFilter } from "@/utils/deployment";
 
 const { reducer, actions } = extensionsSlice;
 
 const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
+
+// See managedStorageSchema.json
+const MANAGED_CAMPAIGN_IDS_KEY = "campaignIds" as ManualStorageKey;
+const MANAGED_ORGANIZATION_ID_KEY = "managedOrganizationId" as ManualStorageKey;
 
 /**
  * Deployment installed on the client. A deployment may be installed but not active (see DeploymentContext.active)
@@ -121,7 +126,7 @@ export async function uninstallUnmatchedDeployments(
   );
   const toUninstall = installed.filter(
     (extension) =>
-      !isEmpty(extension._deployment) && !recipeIds.has(extension._recipe.id)
+      !isEmpty(extension._deployment) && !recipeIds.has(extension._recipe?.id)
   );
 
   if (toUninstall.length === 0) {
@@ -148,7 +153,7 @@ function uninstallRecipe(
 
   // Uninstall existing versions of the extensions
   for (const extension of installed) {
-    if (extension._recipe.id === recipeId) {
+    if (extension._recipe?.id === recipeId) {
       returnState = uninstallExtension(returnState, extension.id);
     }
   }
@@ -163,10 +168,7 @@ function installDeployment(
   let returnState = state;
 
   // Uninstall existing versions of the extensions
-  returnState = uninstallRecipe(
-    returnState,
-    deployment.package.package_id as RegistryId
-  );
+  returnState = uninstallRecipe(returnState, deployment.package.package_id);
 
   // Install the deployment's blueprint with the service definition
   returnState = reducer(
@@ -204,23 +206,6 @@ async function installDeployments(deployments: Deployment[]): Promise<void> {
   await setExtensionsState(state);
 }
 
-function makeDeploymentTimestampLookup(
-  extensions: IExtension[]
-): Map<string, Date> {
-  const timestamps = new Map<string, Date>();
-
-  for (const extension of extensions) {
-    if (extension._deployment?.id) {
-      timestamps.set(
-        extension._deployment?.id,
-        new Date(extension._deployment?.timestamp)
-      );
-    }
-  }
-
-  return timestamps;
-}
-
 type DeploymentConstraint = {
   deployment: Deployment;
   hasPermissions: boolean;
@@ -243,21 +228,19 @@ function canAutomaticallyInstall({
   return !requiredRange || satisfies(extensionVersion, requiredRange);
 }
 
+/**
+ * Return the deployments that need to be installed because they have an update
+ * @param deployments the deployments
+ * @param restricted `true` if the user is a restricted user, e.g., as opposed to a developer
+ */
 async function selectUpdatedDeployments(
-  deployments: Deployment[]
+  deployments: Deployment[],
+  { restricted }: { restricted: boolean }
 ): Promise<Deployment[]> {
   // Always get the freshest options slice from the local storage
   const { extensions } = await loadOptions();
-
-  const timestamps = makeDeploymentTimestampLookup(extensions);
-
-  // This check also detects changes to the `active` flag of the deployment, because the updated_at is bumped whenever
-  // the active flag changes
-  return deployments.filter(
-    (deployment) =>
-      !timestamps.has(deployment.id) ||
-      new Date(deployment.updated_at) > timestamps.get(deployment.id)
-  );
+  const updatePredicate = makeUpdatedFilter(extensions, { restricted });
+  return deployments.filter((deployment) => updatePredicate(deployment));
 }
 
 /**
@@ -278,9 +261,45 @@ export async function updateDeployments(): Promise<void> {
   ]);
 
   if (!linked) {
-    // If the Browser extension is unlinked (it doesn't have the API key), just NOP. If it's an enterprise user, it's
-    // likely they just need to reconnect their extension. If it's a non-enterprise user, they shouldn't have any
-    // deployments installed anyway.
+    const [campaignIds = [], managedOrganizationId] = await Promise.all([
+      readStorage(MANAGED_CAMPAIGN_IDS_KEY, undefined, "managed"),
+      readStorage(MANAGED_ORGANIZATION_ID_KEY, undefined, "managed"),
+    ]);
+
+    // If the Browser extension is unlinked (it doesn't have the API key), one of the following must be true:
+    // - The user has managed install, and they have not linked their extension yet
+    // - The user is part of an organization, and somehow lost their token: 1) the token is no longer valid
+    //   so PixieBrix cleared it out, 2) something removed the local storage entry
+    // - If the user is not an enterprise user (or has not linked their extension yet), just NOP. They likely they just
+    //   need to reconnect their extension. If it's a non-enterprise user, they shouldn't have any deployments
+    //   installed anyway.
+
+    if (organizationId != null) {
+      reportEvent("OrganizationExtensionLink", {
+        organizationId,
+        managedOrganizationId,
+        initial: false,
+        campaignIds,
+      });
+
+      void browser.runtime.openOptionsPage();
+
+      return;
+    }
+
+    if (managedOrganizationId != null) {
+      reportEvent("OrganizationExtensionLink", {
+        organizationId,
+        managedOrganizationId,
+        initial: true,
+        campaignIds,
+      });
+
+      void browser.runtime.openOptionsPage();
+
+      return;
+    }
+
     return;
   }
 
@@ -306,7 +325,7 @@ export async function updateDeployments(): Promise<void> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
-      "Skipping  deployments update because the extension is not linked to the PixieBrix service"
+      "Skipping deployments update because the extension is not linked to the PixieBrix service"
     );
     return;
   }
@@ -320,6 +339,7 @@ export async function updateDeployments(): Promise<void> {
     console.debug(
       "Skipping deployments update because /api/me/ request failed"
     );
+
     return;
   }
 
@@ -331,6 +351,11 @@ export async function updateDeployments(): Promise<void> {
       uid: await getUID(),
       version: await getExtensionVersion(),
       active: selectInstalledDeployments(extensions),
+      campaignIds: await readStorage(
+        MANAGED_CAMPAIGN_IDS_KEY,
+        undefined,
+        "managed"
+      ),
     });
 
   if (deploymentResponseStatus >= 400) {
@@ -362,7 +387,11 @@ export async function updateDeployments(): Promise<void> {
     return;
   }
 
-  const updatedDeployments = await selectUpdatedDeployments(deployments);
+  // Using the restricted-uninstall flag as a proxy for whether the user is a restricted user. The flag generally
+  // corresponds to whether the user is a restricted user or developer
+  const updatedDeployments = await selectUpdatedDeployments(deployments, {
+    restricted: profile.flags.includes("restricted-uninstall"),
+  });
 
   if (updatedDeployments.length === 0) {
     console.debug("No deployment updates found");

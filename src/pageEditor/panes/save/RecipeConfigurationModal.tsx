@@ -20,14 +20,14 @@ import { Button, Modal } from "react-bootstrap";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import Form, { OnSubmit } from "@/components/form/Form";
 import * as yup from "yup";
-import { RegistryId } from "@/core";
+import { RegistryId, SemVerString } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { RequireScope } from "@/auth/RequireScope";
 
 export type RecipeConfiguration = {
   id: RegistryId;
   name: string;
-  version?: string;
+  version?: SemVerString;
   description?: string;
 };
 

@@ -28,11 +28,11 @@ export interface RegistryItem<T extends RegistryId = RegistryId> {
 }
 
 export class DoesNotExistError extends Error {
+  override name = "DoesNotExistError";
   public readonly id: string;
 
   constructor(id: string) {
     super("Registry item does not exist");
-    this.name = "DoesNotExistError";
     this.id = id;
   }
 }

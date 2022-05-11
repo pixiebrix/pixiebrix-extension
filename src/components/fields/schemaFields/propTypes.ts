@@ -18,6 +18,7 @@
 import * as PropTypes from "prop-types";
 import { Schema, UiSchema } from "@/core";
 import React from "react";
+import { FieldInputMode } from "./fieldInputMode";
 
 // https://json-schema.org/understanding-json-schema/reference/generic.html
 
@@ -90,4 +91,15 @@ export interface SchemaFieldProps {
    * Set this input to be focused
    */
   focusInput?: boolean;
+
+  /**
+   * If on blur the field is blank, the mode will be changed to Omit.
+   */
+  omitIfEmpty?: boolean;
+
+  /**
+   * The type to choose from the ToggleWidget by default
+   * E.g. if the field was omitted and then added
+   */
+  defaultType?: FieldInputMode;
 }

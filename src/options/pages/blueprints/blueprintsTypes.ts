@@ -31,7 +31,7 @@ export type SharingSource = {
   organization: Organization;
 };
 
-export type InstallableStatus = "Active" | "Inactive";
+export type InstallableStatus = "Active" | "Inactive" | "Paused";
 
 // Reshaped Installable to easily filter, sort, and group Installables
 export type InstallableViewItem = {

@@ -15,14 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IBlock } from "@/core";
-import { getExampleBlockConfig } from "@/pageEditor/tabs/editTab/exampleBlockConfigs";
+import { getExampleBlockConfig } from "@/pageEditor/exampleBlockConfigs";
 import {
   createFormikTemplate,
   fireTextInput,
   selectSchemaFieldType,
-} from "@/tests/formHelpers";
-import { waitForEffect } from "@/tests/testHelpers";
+} from "@/testUtils/formHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { render, RenderResult, screen } from "@testing-library/react";
 import React from "react";
@@ -37,9 +36,9 @@ let defaultFieldName: string;
 
 beforeAll(() => {
   registerDefaultWidgets();
-  const { schema, uiSchema } = getExampleBlockConfig({
-    id: validateRegistryId("@pixiebrix/form"),
-  } as IBlock);
+  const { schema, uiSchema } = getExampleBlockConfig(
+    validateRegistryId("@pixiebrix/form")
+  );
   exampleFormSchema = {
     schema,
     uiSchema,

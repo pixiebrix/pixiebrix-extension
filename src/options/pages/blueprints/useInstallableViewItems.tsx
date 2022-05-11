@@ -32,17 +32,18 @@ import {
   getPackageId,
   getSharingType,
   getUpdatedAt,
+  isDeployment,
   isExtension,
   updateAvailable,
 } from "@/options/pages/blueprints/utils/installableUtils";
 import {
   useGetMarketplaceListingsQuery,
-  useGetOrganizationsQuery,
   useGetRecipesQuery,
 } from "@/services/api";
 import { MarketplaceListing } from "@/types/contract";
 import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
-import { selectScope } from "@/auth/authSelectors";
+import { selectOrganizations, selectScope } from "@/auth/authSelectors";
+import { isDeploymentActive } from "@/utils/deployment";
 
 function useInstallableViewItems(installables: Installable[]): {
   installableViewItems: InstallableViewItem[];
@@ -50,9 +51,9 @@ function useInstallableViewItems(installables: Installable[]): {
 } {
   const scope = useSelector(selectScope);
   const installedExtensions = useSelector(selectExtensions);
-  const organizations = useGetOrganizationsQuery();
-  const listings = useGetMarketplaceListingsQuery();
-  const recipes = useGetRecipesQuery();
+  const organizations = useSelector(selectOrganizations);
+  const listingsQuery = useGetMarketplaceListingsQuery();
+  const recipesQuery = useGetRecipesQuery();
 
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({
@@ -77,22 +78,43 @@ function useInstallableViewItems(installables: Installable[]): {
     [installedExtensionIds, installedRecipeIds]
   );
 
+  const getStatus = useCallback(
+    (installable: Installable): InstallableStatus => {
+      if (isDeployment(installable, installedExtensions)) {
+        if (isExtension(installable)) {
+          return isDeploymentActive(installable) ? "Active" : "Paused";
+        }
+
+        const deploymentExtension = installedExtensions.find(
+          (installedExtension) =>
+            installedExtension._recipe?.id === getPackageId(installable) &&
+            installedExtension._deployment
+        );
+
+        return isDeploymentActive(deploymentExtension) ? "Active" : "Paused";
+      }
+
+      return isActive(installable) ? "Active" : "Inactive";
+    },
+    [installedExtensions, isActive]
+  );
+
   const installableIcon = useCallback(
     (installable: Installable) => {
-      const listing: MarketplaceListing | null = listings.isLoading
+      const listing: MarketplaceListing | null = listingsQuery.isLoading
         ? null
-        : listings.data[getPackageId(installable)];
+        : listingsQuery.data[getPackageId(installable)];
 
       return (
         <InstallableIcon
           listing={listing}
           installable={installable}
-          isLoading={listings.isLoading}
+          isLoading={listingsQuery.isLoading}
           size={"2x"}
         />
       );
     },
-    [listings]
+    [listingsQuery]
   );
 
   const installableViewItems = useMemo(
@@ -102,14 +124,17 @@ function useInstallableViewItems(installables: Installable[]): {
         description: getDescription(installable),
         sharing: {
           packageId: getPackageId(installable),
-          source: getSharingType(installable, organizations.data ?? [], scope),
+          source: getSharingType({
+            installable,
+            organizations,
+            scope,
+            installedExtensions,
+          }),
         },
         updatedAt: getUpdatedAt(installable),
-        status:
-          // Cast needed because otherwise Typescript types as "string"
-          (isActive(installable) ? "Active" : "Inactive") as InstallableStatus,
+        status: getStatus(installable),
         hasUpdate: updateAvailable(
-          recipes.data,
+          recipesQuery.data,
           installedExtensions,
           installable
         ),
@@ -121,20 +146,19 @@ function useInstallableViewItems(installables: Installable[]): {
         installable,
       })),
     [
+      getStatus,
       installableIcon,
       installables,
       installedExtensions,
-      isActive,
-      organizations.data,
-      recipes.data,
+      organizations,
+      recipesQuery.data,
       scope,
     ]
   );
 
   return {
     installableViewItems,
-    isLoading:
-      organizations.isLoading || recipes.isLoading || listings.isLoading,
+    isLoading: recipesQuery.isLoading || listingsQuery.isLoading,
   };
 }
 

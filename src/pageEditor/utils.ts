@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Primitive } from "type-fest";
-import { compact, includes, isEmpty, mapValues, pickBy } from "lodash";
 import { Target } from "@/types";
+import { IExtension, RegistryId, UUID } from "@/core";
+import { FormState } from "@/pageEditor/pageEditorTypes";
+import { isExtension } from "@/pageEditor/sidebar/common";
 
 export async function getCurrentURL(): Promise<string> {
   if (!browser.devtools) {
@@ -26,45 +27,6 @@ export async function getCurrentURL(): Promise<string> {
 
   const tab = await browser.tabs.get(chrome.devtools.inspectedWindow.tabId);
   return tab.url;
-}
-
-function normalize(value: Primitive): string {
-  return value.toString().toLowerCase();
-}
-
-/**
- * Search data for query, matching both keys and values.
- * @see normalize
- */
-export function searchData(query: string, data: unknown): unknown {
-  const normalizedQuery = normalize(query);
-  if (data == null) {
-    return null;
-  }
-
-  if (typeof data === "object") {
-    const values = mapValues(data, (value, key) =>
-      includes(normalize(key), normalizedQuery)
-        ? value
-        : searchData(query, value)
-    );
-    return pickBy(values, (value, key) => {
-      const keyMatch = includes(normalize(key), normalizedQuery);
-      const valueMatch =
-        typeof value === "object" || Array.isArray(value)
-          ? !isEmpty(value)
-          : value != null;
-      return keyMatch || valueMatch;
-    });
-  }
-
-  if (Array.isArray(data)) {
-    return compact(data.map((d) => searchData(query, d)));
-  }
-
-  return includes(normalize(data as Primitive), normalizedQuery)
-    ? data
-    : undefined;
 }
 
 /**
@@ -78,3 +40,13 @@ export const thisTab: Target = {
   // The top-level frame
   frameId: 0,
 };
+
+export function getIdForElement(element: IExtension | FormState): UUID {
+  return isExtension(element) ? element.id : element.uuid;
+}
+
+export function getRecipeIdForElement(
+  element: IExtension | FormState
+): RegistryId {
+  return isExtension(element) ? element._recipe?.id : element.recipe?.id;
+}

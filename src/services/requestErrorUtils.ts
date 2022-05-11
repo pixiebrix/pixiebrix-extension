@@ -66,7 +66,7 @@ export async function isAppRequest(
 
 /**
  * Return the AxiosError associated with an error, or null if error is not associated with an AxiosError
- * @param error
+ * @deprecated use `findSpecificError` instead
  */
 export function selectAxiosError(error: unknown): Except<AxiosError, "toJSON"> {
   if (isAxiosError(error)) {

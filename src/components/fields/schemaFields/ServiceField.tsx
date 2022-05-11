@@ -35,11 +35,11 @@ import { PACKAGE_REGEX } from "@/types/helpers";
 import { freshIdentifier } from "@/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
-import SelectWidget, {
+import {
   SelectLike,
   SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
-import { castArray, isEmpty, isEqual } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import {
   extractServiceIds,
@@ -47,15 +47,11 @@ import {
   SERVICE_FIELD_REFS,
 } from "@/services/serviceUtils";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
-import { isExpression } from "@/runtime/mapArgs";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { selectVariables } from "./serviceFieldUtils";
+import ServiceSelectWidget from "@/components/fields/schemaFields/widgets/ServiceSelectWidget";
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
-
-/**
- * Regex matching identifiers generated via defaultOutputKey
- */
-const SERVICE_VAR_REGEX = /^@\w+$/;
 
 export const isServiceField = createTypePredicate(
   (x) =>
@@ -114,19 +110,6 @@ function lookupAuthId(
     : authOptions.find((x) => x.value === dependency.config)?.value;
 }
 
-function selectTopLevelVars(state: Pick<FormState, "extension">): Set<string> {
-  const pipeline = castArray(state.extension.blockPipeline ?? []);
-  const identifiers = pipeline.flatMap((blockConfig) => {
-    const expressions = Object.values(blockConfig.config).filter(
-      (x) => isExpression(x) && x.__type__ === "var"
-    ) as Expression[];
-    const values = expressions.map((x) => x.__value__);
-    return values.filter((value) => SERVICE_VAR_REGEX.test(value));
-  });
-
-  return new Set(identifiers);
-}
-
 /**
  * Return a new copy of state with unused dependencies excluded
  * @param state the form state
@@ -134,7 +117,7 @@ function selectTopLevelVars(state: Pick<FormState, "extension">): Set<string> {
 export function produceExcludeUnusedDependencies<
   T extends ServiceSlice = ServiceSlice
 >(state: T): T {
-  const used = selectTopLevelVars(state);
+  const used = selectVariables(state);
   return produce(state, (draft) => {
     draft.services = draft.services.filter((x) =>
       used.has(keyToFieldValue(x.outputKey).__value__)
@@ -220,7 +203,7 @@ const ServiceField: React.FunctionComponent<
   }
 > = ({ detectDefault = true, ...props }) => {
   const { schema } = props;
-  const [authOptions] = useAuthOptions();
+  const [authOptions, refreshOptions] = useAuthOptions();
   const { values: root, setValues: setRootValues } =
     useFormikContext<ServiceSlice>();
   const [{ value, ...field }, meta, helpers] =
@@ -311,21 +294,30 @@ const ServiceField: React.FunctionComponent<
       name={field.name}
       label={makeLabelForSchemaField(props)}
       description={
-        <span>
-          A configured integration.{" "}
-          <a
-            href={`${browser.runtime.getURL("options.html")}#/services`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FontAwesomeIcon icon={faCloud} />
-            &nbsp;Configure additional integrations on the Integrations page
-          </a>
-        </span>
+        <>
+          {schema.description && (
+            <>
+              <span>{schema.description}</span>
+              <br />
+            </>
+          )}
+          <span>
+            A configured integration.{" "}
+            <a
+              href={`${browser.runtime.getURL("options.html")}#/services`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FontAwesomeIcon icon={faCloud} />
+              &nbsp;Configure additional integrations on the Integrations page
+            </a>
+          </span>
+        </>
       }
-      as={SelectWidget}
+      as={ServiceSelectWidget}
       isClearable
       options={options}
+      refreshOptions={refreshOptions}
       value={selectedValue}
       onChange={onChange}
       error={meta.error}

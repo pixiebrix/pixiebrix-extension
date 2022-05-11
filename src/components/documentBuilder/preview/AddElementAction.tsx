@@ -28,6 +28,9 @@ import { createNewElement } from "@/components/documentBuilder/createNewElement"
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 
 type AddElementActionProps = {
+  /**
+   * Formik field name for the collection to add the element to (including the path of the Document root)
+   */
   elementsCollectionName: string;
   allowedTypes?: DocumentElementType[];
   className?: string;

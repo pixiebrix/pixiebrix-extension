@@ -17,23 +17,19 @@
 
 import React, { useContext } from "react";
 import { PageEditorTabContext } from "@/pageEditor/context";
-import { getErrorMessage } from "@/errors";
 import { Button } from "react-bootstrap";
-import { useGetMeQuery } from "@/services/api";
-import { isClientErrorData } from "@/types/errorContract";
 
+/**
+ * Error banner for Page Editor browser connection errors.
+ *
+ * Errors contacting the PixieBrix server are handled via `RequireAuth` and `ErrorBoundary`s
+ *
+ * @see RequireAuth
+ */
 const ErrorBanner: React.VFC = () => {
   const context = useContext(PageEditorTabContext);
-  const { error: accountError } = useGetMeQuery();
 
-  // HACK: this logic is necessary because our RTK API base query currently returns an object with data/status instead
-  // of an error-like object that getErrorMessage can extract an error message from
-  const data: unknown = (accountError as any)?.data;
-  const error = accountError
-    ? `Authentication error: ${
-        isClientErrorData(data) ? data.detail : getErrorMessage(accountError)
-      }`
-    : context.tabState.error;
+  const { error } = context.tabState;
 
   if (!error) {
     return null;

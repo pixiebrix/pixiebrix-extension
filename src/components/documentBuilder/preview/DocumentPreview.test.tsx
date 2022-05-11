@@ -17,21 +17,18 @@
 
 import React, { useState } from "react";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
-import { ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import {
+  DocumentElement,
+  ListDocumentElement,
+} from "@/components/documentBuilder/documentBuilderTypes";
 import { fireEvent, render } from "@testing-library/react";
 import DocumentPreview from "@/components/documentBuilder/preview/DocumentPreview";
 import { Formik } from "formik";
-import { act } from "react-dom/test-utils";
+import userEvent from "@testing-library/user-event";
 
-test("Dropdown 'Add new element' stays open on hovering different elements", async () => {
-  // Create a container with a list with a container inside
-  const listElement = createNewElement("list") as ListDocumentElement;
-  listElement.config.element.__value__ = createNewElement("container");
-  const containerElement = createNewElement("container");
-  // There's a row in the container and a column in the row.
-  containerElement.children[0].children[0].children[0] = listElement;
+function renderDocumentPreview(documentElement: DocumentElement) {
   const document = {
-    body: [containerElement],
+    body: [documentElement],
   };
 
   const PreviewContainer = () => {
@@ -52,26 +49,52 @@ test("Dropdown 'Add new element' stays open on hovering different elements", asy
     );
   };
 
-  const rendered = render(<PreviewContainer />);
-  const { container } = rendered;
+  return render(<PreviewContainer />);
+}
 
-  // Select a dropdown inside a Col in List and open it
-  await act(async () => {
-    fireEvent.click(container.querySelector(".col .col .addElement button"));
+describe("Add new element", () => {
+  test("Dropdown 'Add new element' stays open on hovering different elements", async () => {
+    // Create a container with a list with a container inside
+    const listElement = createNewElement("list") as ListDocumentElement;
+    listElement.config.element.__value__ = createNewElement("container");
+    const containerElement = createNewElement("container");
+    // There's a row in the container and a column in the row.
+    containerElement.children[0].children[0].children[0] = listElement;
+
+    const rendered = renderDocumentPreview(containerElement);
+    const { container } = rendered;
+
+    // Select a dropdown inside a Col in List and open it
+    await userEvent.click(
+      container.querySelector(".col .col .addElement button")
+    );
+    expect(
+      container.querySelector(".col .col .addElement button")
+    ).toHaveAttribute("aria-expanded", "true");
+
+    // Hover over the Col in the list
+    fireEvent.mouseOver(container.querySelector(".col .col"));
+    expect(
+      container.querySelector(".col .col .addElement button")
+    ).toHaveAttribute("aria-expanded", "true");
+
+    // Hover over the Container of the List, .root.root - is the Document root element
+    fireEvent.mouseOver(container.querySelector(".root.root > .container"));
+    expect(
+      container.querySelector(".col .col .addElement button")
+    ).toHaveAttribute("aria-expanded", "true");
   });
-  expect(
-    container.querySelector(".col .col .addElement button")
-  ).toHaveAttribute("aria-expanded", "true");
 
-  // Hover over the Col in the list
-  fireEvent.mouseOver(container.querySelector(".col .col"));
-  expect(
-    container.querySelector(".col .col .addElement button")
-  ).toHaveAttribute("aria-expanded", "true");
+  test("can add an element to a container", async () => {
+    const rendered = renderDocumentPreview(createNewElement("container"));
+    const { container } = rendered;
 
-  // Hover over the Container of the List, .root.root - is the Document root element
-  fireEvent.mouseOver(container.querySelector(".root.root > .container"));
-  expect(
-    container.querySelector(".col .col .addElement button")
-  ).toHaveAttribute("aria-expanded", "true");
+    await userEvent.click(container.querySelector(".col .addElement button"));
+    await userEvent.click(rendered.getByText("Header 1", { selector: "a" }));
+
+    const header = container.querySelector("h1");
+
+    expect(header).toBeInTheDocument();
+    expect(header).toHaveTextContent("Header");
+  });
 });

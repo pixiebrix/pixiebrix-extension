@@ -18,7 +18,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CloudExtension, Deployment } from "@/types/contract";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
-import { contextMenus, traces } from "@/background/messenger/api";
+import { contextMenus } from "@/background/messenger/api";
 import {
   DeploymentContext,
   IExtension,
@@ -31,7 +31,7 @@ import {
 } from "@/core";
 import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import { uuidv4 } from "@/types/helpers";
-import { pick } from "lodash";
+import { partition, pick } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import {
@@ -116,10 +116,14 @@ const extensionsSlice = createSlice({
       } = payload;
 
       for (const {
+        // Required
         id: extensionPointId,
         label,
-        services = {},
         config,
+        // Optional
+        services,
+        permissions,
+        templateEngine,
       } of extensionPoints) {
         const extensionId = uuidv4();
 
@@ -156,13 +160,6 @@ const extensionsSlice = createSlice({
           // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary
           definitions: recipe.definitions ?? {},
           optionsArgs,
-          services: Object.entries(services).map(
-            ([outputKey, id]: [OutputKey, RegistryId]) => ({
-              outputKey,
-              config: auths[id], // eslint-disable-line security/detect-object-injection -- type-checked as RegistryId
-              id,
-            })
-          ),
           label,
           extensionPointId,
           config,
@@ -170,6 +167,26 @@ const extensionsSlice = createSlice({
           createTimestamp: timestamp,
           updateTimestamp: timestamp,
         };
+
+        // Set optional fields only if the source extension has a value. Normalizing the values
+        // here makes testing harder because we then have to account for the normalized value in assertions.
+        if (services) {
+          extension.services = Object.entries(services).map(
+            ([outputKey, id]: [OutputKey, RegistryId]) => ({
+              outputKey,
+              config: auths[id], // eslint-disable-line security/detect-object-injection -- type-checked as RegistryId
+              id,
+            })
+          );
+        }
+
+        if (permissions) {
+          extension.permissions = permissions;
+        }
+
+        if (templateEngine) {
+          extension.templateEngine = templateEngine;
+        }
 
         assertExtensionNotResolved(extension);
 
@@ -279,6 +296,7 @@ const extensionsSlice = createSlice({
         ...extensionUpdate,
       };
     },
+
     updateRecipeMetadataForExtensions(
       state,
       action: PayloadAction<RecipeMetadata>
@@ -291,14 +309,23 @@ const extensionsSlice = createSlice({
         extension._recipe = metadata;
       }
     },
+
+    removeRecipeById(state, { payload: recipeId }: PayloadAction<RegistryId>) {
+      requireLatestState(state);
+
+      const [, extensions] = partition(
+        state.extensions,
+        (x) => x._recipe?.id === recipeId
+      );
+
+      state.extensions = extensions;
+    },
+
     removeExtension(
       state,
       { payload: { extensionId } }: PayloadAction<{ extensionId: UUID }>
     ) {
       requireLatestState(state);
-
-      // Make sure we're not keeping any private data around from Page Editor sessions
-      traces.clear(extensionId);
 
       // NOTE: We aren't deleting the extension on the server. The user must do that separately from the dashboard
       state.extensions = state.extensions.filter((x) => x.id !== extensionId);

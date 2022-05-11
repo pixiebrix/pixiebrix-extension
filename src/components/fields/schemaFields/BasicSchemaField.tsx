@@ -32,8 +32,13 @@ import cx from "classnames";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { getToggleOptions } from "./getToggleOptions";
 import widgetsRegistry from "./widgets/widgetsRegistry";
+import useToggleFormField from "@/pageEditor/hooks/useToggleFormField";
+import { isExpression } from "@/runtime/mapArgs";
 
-const BasicSchemaField: SchemaFieldComponent = (props) => {
+const BasicSchemaField: SchemaFieldComponent = ({
+  omitIfEmpty = false,
+  ...restProps
+}) => {
   const {
     name,
     schema,
@@ -42,8 +47,8 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
     isObjectProperty = false,
     isArrayItem = false,
     hideLabel,
-  } = props;
-  const fieldLabel = makeLabelForSchemaField(props);
+  } = restProps;
+  const fieldLabel = makeLabelForSchemaField(restProps);
   const defaultDescription = useMemo(
     () => description ?? schema.description,
     [description, schema.description]
@@ -103,7 +108,8 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
     ]
   );
 
-  const [{ value }, { error, touched }, { setValue }] = useField(name);
+  const [{ value, onBlur: formikOnBlur }, { error, touched }, { setValue }] =
+    useField(name);
 
   useEffect(() => {
     // Initialize any undefined required fields to prevent inferring an "omit" input
@@ -115,6 +121,8 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
     // See: https://github.com/pixiebrix/pixiebrix-extension/issues/2269
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setValue]);
+
+  const { onOmitField } = useToggleFormField(name, normalizedSchema);
 
   if (isEmpty(inputModeOptions)) {
     return (
@@ -129,6 +137,15 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
     );
   }
 
+  const onBlur = () => {
+    if (
+      omitIfEmpty &&
+      (isEmpty(value) || (isExpression(value) && isEmpty(value.__value__)))
+    ) {
+      onOmitField();
+    }
+  };
+
   return (
     <FieldTemplate
       name={name}
@@ -140,7 +157,11 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
       as={widgetsRegistry.TemplateToggleWidget}
       inputModeOptions={inputModeOptions}
       setFieldDescription={updateFieldDescription}
-      {...props}
+      onBlur={(event: React.FocusEvent) => {
+        formikOnBlur(event);
+        onBlur();
+      }}
+      {...restProps}
       // Pass in schema after spreading props to override the non-normalized schema in props
       schema={normalizedSchema}
     />

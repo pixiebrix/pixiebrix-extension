@@ -16,6 +16,11 @@
  */
 
 import { Schema, SchemaProperties } from "@/core";
+import {
+  getErrorMessage,
+  InvalidSelectorError,
+  JQUERY_INVALID_SELECTOR_ERROR,
+} from "@/errors";
 
 /**
  * Return the names of top-level required properties that are missing
@@ -53,14 +58,23 @@ export const IS_BROWSER =
   typeof window !== "undefined" && typeof window.document !== "undefined";
 
 /**
- * Find an element(s) by its JQuery selector. A safe alternative to $(selector), which constructs an element it it's
+ * Find an element(s) by its jQuery selector. A safe alternative to $(selector), which constructs an element it it's
  * passed HTML.
- * @param selector a JQuery selector
+ * @param selector a jQuery selector
  * @param parent parent element to search (default=document)
  */
 export function $safeFind<Element extends HTMLElement>(
   selector: string,
   parent: Document | HTMLElement | JQuery<HTMLElement | Document> = document
 ): JQuery<Element> {
-  return $(parent).find<Element>(selector);
+  try {
+    return $(parent).find<Element>(selector);
+  } catch (error) {
+    const message = getErrorMessage(error);
+    if (message.startsWith(JQUERY_INVALID_SELECTOR_ERROR)) {
+      throw new InvalidSelectorError(message, selector);
+    }
+
+    throw error;
+  }
 }

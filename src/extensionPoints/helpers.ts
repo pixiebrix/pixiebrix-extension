@@ -105,13 +105,6 @@ export function isNativeCssSelector(selector: string): boolean {
   }
 }
 
-export class PromiseCancelled extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "PromiseCancelled";
-  }
-}
-
 function mutationSelector(
   selector: string,
   target?: HTMLElement | Document
@@ -135,7 +128,7 @@ function mutationSelector(
 }
 
 /**
- * Recursively await an element using one or more JQuery selectors.
+ * Recursively await an element using one or more jQuery selectors.
  * @param selector selector, or an array of selectors to
  * @param $rootElement the root element, defaults to `document`
  * @returns [promise, cancel] the element promise and a callback for cancelling the promise
@@ -149,7 +142,7 @@ export function awaitElementOnce(
   }
 
   const selectors = castArray(selector);
-  // Safe to pass rootElement to $ constructor since it's already a JQuery object
+  // Safe to pass rootElement to $ constructor since it's already a jQuery object
   const $root = $rootElement ? $($rootElement) : $(document);
 
   if (selectors.length === 0) {
@@ -226,14 +219,20 @@ export function acquireElement(
   return onNodeRemoved(element, onRemove);
 }
 
+/**
+ * Returns the MessageContext associated with `extension`.
+ */
 export function selectExtensionContext(
   extension: ResolvedExtension
 ): MessageContext {
   return {
+    // The step label will be re-assigned later in reducePipeline
     label: extension.label,
+    extensionLabel: extension.label,
     extensionId: extension.id,
     extensionPointId: extension.extensionPointId,
     deploymentId: extension._deployment?.id,
     blueprintId: extension._recipe?.id,
+    blueprintVersion: extension._recipe?.version,
   };
 }

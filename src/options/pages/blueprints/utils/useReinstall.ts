@@ -19,51 +19,12 @@ import { RecipeDefinition } from "@/types/definitions";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useCallback } from "react";
-import { uninstallContextMenu } from "@/background/messenger/api";
-import { groupBy, uniq } from "lodash";
-import { IExtension, UUID, RegistryId, UserOptions } from "@/core";
 import extensionsSlice from "@/store/extensionsSlice";
+import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 
-const { installRecipe, removeExtension } = extensionsSlice.actions;
+const { installRecipe, removeRecipeById } = extensionsSlice.actions;
 
 type Reinstall = (recipe: RecipeDefinition) => Promise<void>;
-
-function selectOptions(extensions: IExtension[]): UserOptions {
-  // For a given recipe, all of the extensions receive the same options during the install process (even if they don't
-  // use the options), so we can just take the optionsArgs for any of the extensions
-  return extensions[0]?.optionsArgs ?? {};
-}
-
-function selectAuths(
-  extensions: IExtension[],
-  { optional = false }: { optional?: boolean } = {}
-): Record<RegistryId, UUID> {
-  // The extensions for the recipe will only have the services that are declared on each extension. So we have to take
-  // the union of the service credentials. There's currently no way in the UX that the service auths could become
-  // inconsistent for a given service key, but guard against that case anyway.
-
-  const serviceAuths = groupBy(
-    extensions.flatMap((x) => x.services),
-    (x) => x.id
-  );
-  const result: Record<RegistryId, UUID> = {};
-  for (const [id, auths] of Object.entries(serviceAuths)) {
-    const configs = uniq(auths.map(({ config }) => config));
-    if (configs.length === 0 && !optional) {
-      throw new Error(`Service ${id} is not configured`);
-    }
-
-    // If optional is passed in, we know that the user is being given an opportunity to switch which config is applied,
-    // so the user can always switch to a different configuration if they want.
-    if (configs.length > 1 && !optional) {
-      throw new Error(`Service ${id} has multiple configurations`);
-    }
-
-    result[id as RegistryId] = configs[0];
-  }
-
-  return result;
-}
 
 function useReinstall(): Reinstall {
   const dispatch = useDispatch();
@@ -79,18 +40,13 @@ function useReinstall(): Reinstall {
         throw new Error(`No bricks to re-activate for ${recipe.metadata.id}`);
       }
 
-      const currentAuths = selectAuths(recipeExtensions, { optional: false });
-      const currentOptions = selectOptions(recipeExtensions);
+      const currentOptions = inferRecipeOptions(recipeExtensions);
 
-      // Uninstall first to avoid duplicates. Use a loop instead of Promise.all to ensure the sequence that each pair
-      // of calls that uninstallContextMenu + dispatch occur in. We were having problems with the context menu not
-      // unregistered from some of the tabs
-      for (const extension of recipeExtensions) {
-        const extensionRef = { extensionId: extension.id };
-        // eslint-disable-next-line no-await-in-loop -- see comment above
-        await uninstallContextMenu(extensionRef);
-        dispatch(removeExtension(extensionRef));
-      }
+      const currentAuths = inferRecipeAuths(recipeExtensions, {
+        optional: false,
+      });
+
+      dispatch(removeRecipeById(recipe.metadata.id));
 
       dispatch(
         installRecipe({
@@ -105,5 +61,5 @@ function useReinstall(): Reinstall {
   );
 }
 
-export { selectAuths, selectOptions };
+export { inferRecipeAuths, inferRecipeOptions };
 export default useReinstall;

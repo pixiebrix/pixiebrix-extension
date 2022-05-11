@@ -41,7 +41,7 @@ import {
 import { Primitive } from "type-fest";
 import { ApiVersion, SafeString } from "@/core";
 import { UnknownObject } from "@/types";
-import { BusinessError } from "@/errors";
+import { BusinessError, PromiseCancelled } from "@/errors";
 
 const specialCharsRegex = /[.[\]]/;
 
@@ -144,10 +144,7 @@ export const sleep = async (milliseconds: number): Promise<void> =>
   });
 
 export class TimeoutError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "TimeoutError";
-  }
+  override name = "TimeoutError";
 }
 
 export async function awaitValue<T>(
@@ -304,13 +301,14 @@ export function cleanValue(
  * Error indicating input elements to a block did not match the schema.
  */
 export class InvalidPathError extends Error {
+  override name = "InvalidPathError";
+
   public readonly path: string;
 
   readonly input: unknown;
 
   constructor(message: string, path: string) {
     super(message);
-    this.name = "InvalidPathError";
     this.path = path;
   }
 }
@@ -334,13 +332,6 @@ export function excludeUndefined(obj: unknown): unknown {
   return obj;
 }
 
-export class PromiseCancelled extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "PromiseCancelled";
-  }
-}
-
 /**
  * Creates a new promise that's rejected if isCancelled returns true.
  * @throws PromiseCancelled
@@ -354,14 +345,14 @@ export async function rejectOnCancelled<T>(
     rv = await promise;
   } catch (error) {
     if (isCancelled()) {
-      throw new PromiseCancelled("Promise was cancelled");
+      throw new PromiseCancelled();
     }
 
     throw error ?? new Error("Undefined error awaiting promise");
   }
 
   if (isCancelled()) {
-    throw new PromiseCancelled("Promise was cancelled");
+    throw new PromiseCancelled();
   }
 
   return rv;
@@ -397,29 +388,31 @@ export function isAbsoluteUrl(url: string): boolean {
 
 export const SPACE_ENCODED_VALUE = "%20";
 
+// Preserve the previous default for backwards compatibility
+// https://github.com/pixiebrix/pixiebrix-extension/pull/3076#discussion_r844564894
+export const LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT = "plus";
+export const URL_INPUT_SPACE_ENCODING_DEFAULT = "percent";
+
 export function makeURL(
   url: string,
-  params: Record<string, string | number | boolean> | undefined = {},
-  spaceEncoding: "plus" | "percent" = "plus"
+  params: Record<string, string | number | boolean> = {},
+  spaceEncoding: "plus" | "percent" = URL_INPUT_SPACE_ENCODING_DEFAULT
 ): string {
   // https://javascript.info/url#searchparams
-  const result = new URL(url);
-  for (const [name, value] of Object.entries(params ?? {})) {
-    if ((value ?? "") !== "") {
-      result.searchParams.append(name, String(value));
+  const result = new URL(url, location.origin);
+  for (const [key, value] of Object.entries(params)) {
+    if (isNullOrBlank(value)) {
+      result.searchParams.delete(key);
+    } else {
+      result.searchParams.set(key, String(value));
     }
   }
 
-  const fullURL = result.toString();
-
-  if (spaceEncoding === "plus" || result.search.length === 0) {
-    return fullURL;
+  if (spaceEncoding === "percent" && result.search.length > 0) {
+    result.search = result.search.replaceAll("+", SPACE_ENCODED_VALUE);
   }
 
-  return fullURL.replace(
-    result.search,
-    result.search.replaceAll("+", SPACE_ENCODED_VALUE)
-  );
+  return result.href;
 }
 
 export async function allSettledValues<T = unknown>(
@@ -472,29 +465,42 @@ export function safeParseUrl(url: string, baseUrl?: string): URL {
   }
 }
 
+/**
+ * Returns an https: schema URL, or throws a BusinessError
+ * @param url an absolute or relative URL
+ * @param baseUrl the baseUrl to use if url is relative
+ * @return the URL instance
+ * @throws BusinessError if the URL is invalid
+ */
 export function assertHttpsUrl(
   url: string,
-  baseUrl: string = location.href
+  // Don't default baseUrl to location.href here. API calls are always routed through a chrome-extension:// page (e.g.,
+  // the background page. So they would always be flagged as having an invalid schema)
+  baseUrl?: string
 ): URL {
   const parsedUrl = safeParseUrl(url, baseUrl);
 
   // Allow local non-HTTPS URLs when testing locally
-  if (process.env.DEBUG && parsedUrl.protocol === "http") {
+  if (process.env.DEBUG && parsedUrl.protocol === "http:") {
     return parsedUrl;
   }
 
   switch (parsedUrl.protocol) {
-    case "https:":
+    case "https:": {
       return parsedUrl;
+    }
 
-    case "invalid-url:":
-      baseUrl = isAbsoluteUrl(url) ? "" : ` (base URL: ${baseUrl})`;
+    case "invalid-url:": {
+      baseUrl =
+        isAbsoluteUrl(url) || isEmpty(baseUrl) ? "" : ` (base URL: ${baseUrl})`;
       throw new BusinessError(`Invalid URL: ${url}${baseUrl}`);
+    }
 
-    default:
+    default: {
       throw new BusinessError(
         `Unsupported protocol: ${parsedUrl.protocol}. Use https:`
       );
+    }
   }
 }
 

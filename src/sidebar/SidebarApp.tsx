@@ -19,7 +19,6 @@ import styles from "./SidebarApp.module.scss";
 
 import React, { Dispatch, useEffect, useMemo } from "react";
 import { Button } from "react-bootstrap";
-import logo from "@img/logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -38,6 +37,7 @@ import sidebarSlice, { SidebarState } from "./sidebarSlice";
 import { AnyAction } from "redux";
 import { hideSidebar } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
+import useTheme from "@/hooks/useTheme";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -59,6 +59,7 @@ function getConnectedListener(dispatch: Dispatch<AnyAction>): SidebarListener {
 const selectState = ({ sidebar }: { sidebar: SidebarState }) => sidebar;
 
 const ConnectedSidebar: React.VFC = () => {
+  const { logo } = useTheme();
   const dispatch = useDispatch();
   const sidebarState = useSelector(selectState);
 
@@ -92,7 +93,11 @@ const ConnectedSidebar: React.VFC = () => {
           <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
         </Button>
         <div className="align-self-center">
-          <img src={logo} alt="PixieBrix logo" height={20} className="px-4" />
+          <img
+            src={logo.regular}
+            alt="PixieBrix logo"
+            className={styles.logo}
+          />
         </div>
         <Button
           href="/options.html"

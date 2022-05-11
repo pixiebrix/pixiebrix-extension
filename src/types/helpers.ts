@@ -18,6 +18,7 @@
 import { validate, v4 as uuidFactory } from "uuid";
 import { RegistryId, SemVerString, Timestamp, UUID } from "@/core";
 import { valid as semVerValid } from "semver";
+import { startsWith } from "lodash";
 
 export const PACKAGE_REGEX =
   /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
@@ -90,6 +91,35 @@ export function validateTimestamp(value: string): Timestamp {
   throw new TypeError("Invalid timestamp");
 }
 
-export function validateSemVerString(value: string): value is SemVerString {
-  return semVerValid(value) != null;
+export function validateSemVerString(
+  value: string,
+  // Default to `false` to be stricter.
+  { allowLeadingV = false }: { allowLeadingV?: boolean } = {}
+): SemVerString {
+  if (value == null) {
+    // We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually
+    // we can remove this check as strictNullChecks will check the call site
+    return value as SemVerString;
+  }
+
+  if (testIsSemVerString(value, { allowLeadingV })) {
+    return value;
+  }
+
+  console.debug("Invalid semver %s", value);
+
+  throw new TypeError("Invalid semantic version");
+}
+
+export function testIsSemVerString(
+  value: string,
+  // FIXME: the SemVerString type wasn't intended to support a leading `v`. See documentation
+  // Default to `false` to be stricter.
+  { allowLeadingV = false }: { allowLeadingV?: boolean } = {}
+): value is SemVerString {
+  if (semVerValid(value) != null) {
+    return allowLeadingV || !startsWith(value, "v");
+  }
+
+  return false;
 }

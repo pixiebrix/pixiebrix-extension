@@ -17,71 +17,59 @@
 
 import React from "react";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
-import { getRootCause, isAxiosError } from "@/errors";
-import { AxiosError } from "axios";
+import { findSpecificError, getRootCause } from "@/errors";
 import { ErrorObject } from "serialize-error";
 import InputValidationErrorDetail from "./InputValidationErrorDetail";
 import NetworkErrorDetail from "./NetworkErrorDetail";
 import OutputValidationErrorDetail from "./OutputValidationErrorDetail";
 import { Col, Row } from "react-bootstrap";
+import { UnknownObject } from "@/types";
 
 type ErrorDetails = {
   title: string;
   detailsElement: React.ReactElement;
 };
 
-const getErrorDetails: (error: ErrorObject) => ErrorDetails = (error) => {
-  const rootError = getRootCause(error);
-  const { name, message } = rootError;
-
-  let errorDetails: ErrorDetails;
-
-  switch (name) {
-    case "InputValidationError":
-      errorDetails = {
-        title: "Invalid inputs for block",
-        detailsElement: (
-          <InputValidationErrorDetail
-            error={rootError as unknown as InputValidationError}
-          />
-        ),
-      };
-      break;
-    case "OutputValidationError":
-      errorDetails = {
-        title: "Invalid output for block",
-        detailsElement: (
-          <OutputValidationErrorDetail
-            error={rootError as unknown as OutputValidationError}
-          />
-        ),
-      };
-      break;
-    case "ClientNetworkError": {
-      const networkError: AxiosError = isAxiosError(rootError.error)
-        ? rootError.error
-        : (rootError as unknown as AxiosError);
-      errorDetails = {
-        title: "Network error",
-        detailsElement: <NetworkErrorDetail error={networkError} />,
-      };
-      break;
-    }
-
-    default:
-      errorDetails = {
-        title: "Error",
-        detailsElement: (
-          <Row>
-            <Col>
-              {name}: {message}
-            </Col>
-          </Row>
-        ),
-      };
+export default function getErrorDetails(error: ErrorObject): ErrorDetails {
+  const inputValidationError = findSpecificError(error, InputValidationError);
+  if (inputValidationError) {
+    return {
+      title: "Invalid inputs for block",
+      detailsElement: (
+        <InputValidationErrorDetail error={inputValidationError} />
+      ),
+    };
   }
 
-  return errorDetails;
-};
+  const outputValidationError = findSpecificError(error, OutputValidationError);
+  if (outputValidationError) {
+    return {
+      title: "Invalid output for block",
+      detailsElement: (
+        <OutputValidationErrorDetail error={outputValidationError} />
+      ),
+    };
+  }
 
-export default getErrorDetails;
+  const networkError = findSpecificError(error, "AxiosError");
+  if (networkError) {
+    return {
+      title: "Network error",
+      detailsElement: <NetworkErrorDetail error={networkError} />,
+    };
+  }
+
+  const { name = "Error", message = "Unknown error" } = (getRootCause(error) ??
+    {}) as UnknownObject;
+
+  return {
+    title: "Error",
+    detailsElement: (
+      <Row>
+        <Col>
+          {name}: {message}
+        </Col>
+      </Row>
+    ),
+  };
+}

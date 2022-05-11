@@ -23,6 +23,7 @@ import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { getErrorMessage } from "@/errors";
 import reportError from "@/telemetry/reportError";
 import { UnknownObject } from "@/types";
+import { isEmpty } from "lodash";
 
 interface Props {
   /**
@@ -64,9 +65,11 @@ class ErrorBoundary extends Component<Props, State> {
         <div className="p-3">
           <h1>Something went wrong.</h1>
           {this.props.errorContext && <h2>{this.props.errorContext}</h2>}
-          <div>
-            <p>{this.state.errorMessage}</p>
-          </div>
+          {!isEmpty(this.state.errorMessage) && (
+            <div>
+              <p>{this.state.errorMessage}</p>
+            </div>
+          )}
           <div>
             <Button
               onClick={() => {
@@ -76,16 +79,18 @@ class ErrorBoundary extends Component<Props, State> {
               <FontAwesomeIcon icon={faRedo} /> Reload the Page
             </Button>
           </div>
-          <pre className="mt-2 small text-secondary">
-            {this.state.stack
-              // In the app
-              .replaceAll(location.origin + "/", "")
-              // In the content script
-              .replaceAll(
-                `chrome-extension://${process.env.CHROME_EXTENSION_ID}/`,
-                ""
-              )}
-          </pre>
+          {this.state.stack && (
+            <pre className="mt-2 small text-secondary">
+              {this.state.stack
+                // In the app
+                .replaceAll(location.origin + "/", "")
+                // In the content script
+                .replaceAll(
+                  `chrome-extension://${process.env.CHROME_EXTENSION_ID}/`,
+                  ""
+                )}
+            </pre>
+          )}
         </div>
       );
     }

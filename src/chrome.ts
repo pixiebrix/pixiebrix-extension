@@ -40,11 +40,11 @@ export type ReduxStorageKey = string & {
 };
 
 export class RequestError extends Error {
+  override name = "RequestError";
   readonly response: unknown;
 
   constructor(message: string, response: unknown) {
     super(message);
-    this.name = "RequestError";
     this.response = response;
   }
 }
@@ -77,19 +77,17 @@ export async function getExtensionVersion() {
 }
 
 export class RuntimeNotFoundError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "RuntimeNotFoundError";
-  }
+  override name = "RuntimeNotFoundError";
 }
 
 export async function readStorage<T = unknown>(
   storageKey: ManualStorageKey,
-  defaultValue?: T
+  defaultValue?: T,
+  area: "local" | "managed" = "local"
 ): Promise<T | undefined> {
   // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
   // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
-  const result = await browser.storage.local.get(storageKey);
+  const result = await browser.storage[area].get(storageKey);
 
   if (Object.prototype.hasOwnProperty.call(result, storageKey)) {
     // eslint-disable-next-line security/detect-object-injection -- Just checked with hasOwnProperty
