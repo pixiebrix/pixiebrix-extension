@@ -21,7 +21,7 @@ import { UUID } from "@/core";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isEmpty, isEqual, pickBy } from "lodash";
 import { useFormikContext } from "formik";
-import { Alert, Button, Nav, Tab } from "react-bootstrap";
+import { Button, Nav, Tab } from "react-bootstrap";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -48,8 +48,10 @@ import ErrorDisplay from "./ErrorDisplay";
 import PageStateTab from "./PageStateTab";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
-import { selectNodePreviewActiveElement } from "@/pageEditor/uiState/uiState";
+import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import StalePreview from "./StalePreview";
+import Alert from "@/components/Alert";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -193,8 +195,7 @@ const DataPanel: React.FC<{
           <DataTab eventKey={DataPanelTabKey.Context} isTraceEmpty={!record}>
             {isInputStale && (
               <Alert variant="warning">
-                <FontAwesomeIcon icon={faExclamationTriangle} /> A previous
-                block has changed, input context may be out of date
+                A previous block has changed, input context may be out of date
               </Alert>
             )}
             <DataTabJsonTree
@@ -247,14 +248,12 @@ const DataPanel: React.FC<{
               <>
                 {record.skippedRun ? (
                   <Alert variant="info">
-                    <FontAwesomeIcon icon={faInfoCircle} /> Error rendering
-                    input arguments, but brick was skipped because condition was
-                    not met
+                    Error rendering input arguments, but brick was skipped
+                    because condition was not met
                   </Alert>
                 ) : (
                   <Alert variant="danger">
-                    <FontAwesomeIcon icon={faExclamationCircle} /> Error
-                    rendering input arguments
+                    Error rendering input arguments
                   </Alert>
                 )}
                 <ErrorDisplay error={record.renderError} />
@@ -263,8 +262,8 @@ const DataPanel: React.FC<{
               <>
                 {isInputStale && (
                   <Alert variant="warning">
-                    <FontAwesomeIcon icon={faExclamationTriangle} /> A previous
-                    block has changed, input context may be out of date
+                    A previous block has changed, input context may be out of
+                    date
                   </Alert>
                 )}
                 <DataTabJsonTree
@@ -284,16 +283,15 @@ const DataPanel: React.FC<{
           >
             {record?.skippedRun && (
               <Alert variant="info">
-                <FontAwesomeIcon icon={faInfoCircle} /> The brick did not run
-                because the condition was not met
+                The brick did not run because the condition was not met
               </Alert>
             )}
             {!record?.skippedRun && outputObj && (
               <>
                 {isCurrentStale && (
                   <Alert variant="warning">
-                    <FontAwesomeIcon icon={faExclamationTriangle} /> This or a
-                    previous brick has changed, output may be out of date
+                    This or a previous brick has changed, output may be out of
+                    date
                   </Alert>
                 )}
                 <DataTabJsonTree
@@ -313,13 +311,13 @@ const DataPanel: React.FC<{
             {/* The value of block.if can be `false`, in this case we also need to show the warning */}
             {block.if != null && (
               <Alert variant="info">
-                <FontAwesomeIcon icon={faInfoCircle} /> This brick has a
-                condition. The brick will not execute if the condition is not
-                met
+                This brick has a condition. The brick will not execute if the
+                condition is not met
               </Alert>
             )}
             {showFormPreview || showDocumentPreview ? (
               <ErrorBoundary>
+                <StalePreview />
                 {showFormPreview ? (
                   <div className={dataPanelStyles.selectablePreviewContainer}>
                     <FormPreview

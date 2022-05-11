@@ -19,7 +19,7 @@ import JsonTree, {
   JsonTreeProps,
   TreeExpandedState,
 } from "@/components/jsonTree/JsonTree";
-import { selectNodeDataPanelTabState } from "@/pageEditor/uiState/uiState";
+import { selectNodeDataPanelTabState } from "@/pageEditor/slices/editorSelectors";
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Except } from "type-fest";
