@@ -29,11 +29,7 @@ import BlockPreview, {
   usePreviewInfo,
 } from "@/pageEditor/tabs/effect/BlockPreview";
 import useReduxState from "@/hooks/useReduxState";
-import {
-  faExclamationCircle,
-  faExclamationTriangle,
-  faInfoCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
@@ -50,7 +46,7 @@ import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import StalePreview from "./StalePreview";
+import StalePanelAlert from "./StalePanelAlert";
 import Alert from "@/components/Alert";
 
 /**
@@ -317,7 +313,7 @@ const DataPanel: React.FC<{
             )}
             {showFormPreview || showDocumentPreview ? (
               <ErrorBoundary>
-                <StalePreview />
+                <StalePanelAlert />
                 {showFormPreview ? (
                   <div className={dataPanelStyles.selectablePreviewContainer}>
                     <FormPreview

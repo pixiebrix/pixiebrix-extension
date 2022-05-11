@@ -18,17 +18,31 @@
 import React from "react";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { useSelector } from "react-redux";
-import { selectActiveNode } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveElement,
+  selectActiveNode,
+} from "@/pageEditor/slices/editorSelectors";
 import { isEqual } from "lodash";
 import Alert from "@/components/Alert";
 
-const StalePreview: React.FunctionComponent = () => {
+const StalePanelAlert: React.FunctionComponent = () => {
+  const activeElement = useSelector(selectActiveElement);
   const traces = useSelector(selectExtensionTrace);
   const activeNode = useSelector(selectActiveNode);
+
+  // Only show alert for Panel and Side Panel extensions
+  if (
+    activeElement?.type !== "panel" &&
+    activeElement?.type !== "actionPanel"
+  ) {
+    return null;
+  }
+
   const trace = traces.find(
     (trace) => trace.blockInstanceId === activeNode?.instanceId
   );
 
+  // No traces or no changes since the last render, we are good, no alert
   if (
     traces.length === 0 ||
     trace == null ||
@@ -39,9 +53,10 @@ const StalePreview: React.FunctionComponent = () => {
 
   return (
     <Alert variant="info">
-      The rendered sidebar is out of date with the preview
+      The rendered {activeElement.type === "panel" ? "Panel" : "Sidebar Panel"}{" "}
+      is out of date with the preview
     </Alert>
   );
 };
 
-export default StalePreview;
+export default StalePanelAlert;
