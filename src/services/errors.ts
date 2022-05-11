@@ -82,12 +82,9 @@ export class ProxiedRemoteServiceError extends BusinessError {
 export class ClientRequestError extends BusinessError {
   override name = "ClientRequestError";
   override readonly cause: SerializableAxiosError;
-  constructor(message: string, options: { cause: AxiosError }) {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor -- Required to make the types stricter
+  constructor(message: string, options: { cause: SerializableAxiosError }) {
     super(message, options);
-
-    // Axios offers its own serialization method, but it doesn't include the response.
-    // By deleting toJSON, the serialize-error library will use its default serialization
-    delete options.cause.toJSON;
   }
 }
 

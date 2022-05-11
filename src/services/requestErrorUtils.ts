@@ -17,7 +17,7 @@
 
 import { isAxiosError, isErrorObject } from "@/errors";
 import { SerializableAxiosError } from "@/services/errors";
-import { AxiosError, AxiosRequestConfig } from "axios";
+import { AxiosRequestConfig } from "axios";
 import { testMatchPatterns } from "@/blocks/available";
 import {
   DEFAULT_SERVICE_URL,
@@ -26,7 +26,6 @@ import {
 } from "@/services/baseService";
 import { isAbsoluteUrl } from "@/utils";
 import urljoin from "url-join";
-import { Except } from "type-fest";
 
 /**
  * Get the absolute URL from a request configuration. Does NOT include the query params from the request unless
@@ -67,7 +66,7 @@ export async function isAppRequest(
 /**
  * Return the AxiosError associated with an error, or null if error is not associated with an AxiosError
  */
-export function selectAxiosError(error: unknown): Except<AxiosError, "toJSON"> {
+export function selectAxiosError(error: unknown): SerializableAxiosError {
   if (isAxiosError(error)) {
     return error;
   }
