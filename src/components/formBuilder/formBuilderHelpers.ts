@@ -244,12 +244,14 @@ export const produceSchemaOnPropertyNameChange = (
       );
     }
 
-    const nextUiOrder = replaceStringInArray(
-      draft.uiSchema[UI_ORDER],
-      propertyName,
-      nextPropertyName
-    );
-    draft.uiSchema[UI_ORDER] = nextUiOrder;
+    if (draft.uiSchema[UI_ORDER] != null) {
+      const nextUiOrder = replaceStringInArray(
+        draft.uiSchema[UI_ORDER],
+        propertyName,
+        nextPropertyName
+      );
+      draft.uiSchema[UI_ORDER] = nextUiOrder;
+    }
 
     if (draft.uiSchema[propertyName]) {
       draft.uiSchema[nextPropertyName] = draft.uiSchema[propertyName];
@@ -321,12 +323,8 @@ export const produceSchemaOnUiTypeChange = (
   });
 };
 
-export const normalizeSchema = (schema: Schema | undefined) => {
-  if (!schema) {
-    return MINIMAL_SCHEMA;
-  }
-
-  return produce(schema, (draft) => {
+export const normalizeSchema = (schema: Schema | undefined) =>
+  produce(schema ?? MINIMAL_SCHEMA, (draft) => {
     // Should we initialize the 'required' field?
     if (
       Boolean(schema) &&
@@ -340,7 +338,6 @@ export const normalizeSchema = (schema: Schema | undefined) => {
       draft.properties = {};
     }
   });
-};
 
 export const normalizeUiOrder = (
   propertyKeys: string[],

@@ -137,7 +137,10 @@ describe("normalizeSchema", () => {
   test("init schema", () => {
     // eslint-disable-next-line unicorn/no-useless-undefined
     const actual = normalizeSchema(undefined);
-    expect(actual).toStrictEqual(MINIMAL_SCHEMA);
+    expect(actual).toStrictEqual({
+      type: "object",
+      properties: {},
+    });
   });
 
   test("add properties", () => {

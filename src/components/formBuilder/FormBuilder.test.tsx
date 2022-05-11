@@ -19,6 +19,7 @@ import { getExampleBlockConfig } from "@/pageEditor/exampleBlockConfigs";
 import {
   createFormikTemplate,
   fireTextInput,
+  RJSF_SCHEMA_PROPERTY_NAME,
   selectSchemaFieldType,
 } from "@/testUtils/formHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
@@ -30,6 +31,7 @@ import selectEvent from "react-select-event";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import FormBuilder from "./FormBuilder";
 import { RJSFSchema } from "./formBuilderTypes";
+import userEvent from "@testing-library/user-event";
 
 let exampleFormSchema: RJSFSchema;
 let defaultFieldName: string;
@@ -65,6 +67,12 @@ async function selectUiType(uiType: string) {
   await act(async () =>
     selectEvent.select(screen.getByLabelText("Input Type"), uiType)
   );
+}
+
+async function renameField(newName: string) {
+  const fieldNameInput = screen.getByLabelText("Name");
+  fireTextInput(fieldNameInput, newName);
+  await waitForEffect();
 }
 
 describe("Dropdown field", () => {
@@ -274,5 +282,97 @@ describe("Dropdown with labels field", () => {
       );
       expect(firstOptionInput).toBeNull();
     });
+  });
+});
+
+describe("rename a field", () => {
+  test("can add and rename a text field", async () => {
+    const FormikTemplate = createFormikTemplate(
+      {
+        [RJSF_SCHEMA_PROPERTY_NAME]: {},
+      },
+      jest.fn()
+    );
+
+    const rendered = render(
+      <FormikTemplate>
+        <FormBuilder name={RJSF_SCHEMA_PROPERTY_NAME} />
+      </FormikTemplate>
+    );
+
+    // Add a field
+    await userEvent.click(
+      rendered.getByRole("button", {
+        name: /add new field/i,
+      })
+    );
+
+    const newFieldName = "test";
+    await renameField(newFieldName);
+
+    const previewInput = rendered.container.querySelector(
+      `#root_${newFieldName}`
+    );
+
+    expect(previewInput).toBeInTheDocument();
+  });
+
+  test("can add and rename date field", async () => {
+    const FormikTemplate = createFormikTemplate(
+      {
+        [RJSF_SCHEMA_PROPERTY_NAME]: {},
+      },
+      jest.fn()
+    );
+
+    const rendered = render(
+      <FormikTemplate>
+        <FormBuilder name={RJSF_SCHEMA_PROPERTY_NAME} />
+      </FormikTemplate>
+    );
+
+    // Add a field
+    await userEvent.click(
+      rendered.getByRole("button", {
+        name: /add new field/i,
+      })
+    );
+
+    await selectUiType("Date");
+
+    const newFieldName = "test";
+    await renameField(newFieldName);
+
+    const previewInput = rendered.container.querySelector(
+      `#root_${newFieldName}`
+    );
+
+    expect(previewInput).toBeInTheDocument();
+  });
+
+  test("can rename a field with example block config", async () => {
+    const FormikTemplate = createFormikTemplate(
+      {
+        [RJSF_SCHEMA_PROPERTY_NAME]: getExampleBlockConfig(
+          validateRegistryId("@pixiebrix/form")
+        ),
+      },
+      jest.fn()
+    );
+
+    const rendered = render(
+      <FormikTemplate>
+        <FormBuilder name={RJSF_SCHEMA_PROPERTY_NAME} />
+      </FormikTemplate>
+    );
+
+    const newFieldName = "test";
+    await renameField(newFieldName);
+
+    const previewInput = rendered.container.querySelector(
+      `#root_${newFieldName}`
+    );
+
+    expect(previewInput).toBeInTheDocument();
   });
 });

@@ -86,6 +86,7 @@ export const initRenamingCases = () => {
   const newFieldName = "newFieldName";
 
   const renamingCases: RJSFSchema[][] = [
+    // Renaming a required field
     [
       {
         schema: {
@@ -128,6 +129,8 @@ export const initRenamingCases = () => {
         },
       },
     ],
+
+    // Simple text field
     [
       {
         schema: {
@@ -168,6 +171,52 @@ export const initRenamingCases = () => {
         },
       },
     ],
+
+    // Date field
+    [
+      {
+        schema: {
+          title: "A form",
+          type: "object",
+          properties: {
+            [fieldName]: {
+              type: "string",
+              title: "First name",
+              format: "date",
+            },
+            anotherFieldName: {
+              type: "string",
+              title: "Another field name",
+            },
+          },
+        },
+        uiSchema: {
+          "ui:order": [fieldName, "*"],
+        },
+      },
+      {
+        schema: {
+          title: "A form",
+          type: "object",
+          properties: {
+            [newFieldName]: {
+              type: "string",
+              title: "First name",
+              format: "date",
+            },
+            anotherFieldName: {
+              type: "string",
+              title: "Another field name",
+            },
+          },
+        },
+        uiSchema: {
+          "ui:order": [newFieldName, "*"],
+        },
+      },
+    ],
+
+    // Renaming text area
     [
       {
         schema: {
