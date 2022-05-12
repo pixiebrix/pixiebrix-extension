@@ -23,6 +23,9 @@ import { RegistryId } from "@/core";
 import { render, screen } from "@/testUtils/testHelpers";
 import { authActions } from "@/auth/authSlice";
 import testFactory from "@/testUtils/testFactory";
+import userEvent from "@testing-library/user-event";
+import { partition } from "lodash";
+import { UserRole } from "@/types/contract";
 
 describe("getScopeAndId", () => {
   test("normal id", () => {
@@ -68,11 +71,53 @@ describe("RegistryIdWidget", () => {
       },
     });
 
-    expect(
-      container.querySelector("input[name='testField-scope']")
-    ).toHaveValue(testUserScope);
-    expect(container.querySelector("input[name='testField-id']")).toHaveValue(
-      testIdValue
+    const scopeInput = container.querySelector("input[name='testField-scope']");
+    const idInput = container.querySelector("input[name='testField-id']");
+
+    expect(scopeInput).toHaveValue(testUserScope);
+    expect(idInput).toHaveValue(testIdValue);
+  });
+
+  test("shows the right organization scopes", async () => {
+    const testUserScope = "@userFoo";
+    const testIdValue = "test-identifier";
+    const id = `${testUserScope}/${testIdValue}` as RegistryId;
+    const authState = testFactory.authState({
+      scope: testUserScope,
+    });
+
+    const editorRoles = new Set<number>([
+      UserRole.admin,
+      UserRole.developer,
+      UserRole.manager,
+    ]);
+    const [validOrganizations, invalidOrganizations] = partition(
+      authState.organizations,
+      (organization) => editorRoles.has(organization.role)
     );
+
+    render(<RegistryIdWidget name="testField" />, {
+      initialValues: { testField: id },
+      setupRedux(dispatch) {
+        dispatch(authActions.setAuth(authState));
+      },
+    });
+
+    const selected = screen.getByText(testUserScope);
+    expect(selected).toBeVisible();
+    await userEvent.click(selected);
+
+    // Ensure the user scope is shown, should appear twice in selected value and option list item
+    expect(screen.getAllByText(testUserScope)).toBeArrayOfSize(2);
+
+    // Ensure all valid options are shown
+    for (const organization of validOrganizations) {
+      expect(screen.getByText(organization.scope)).toBeVisible();
+    }
+
+    // Ensure invalid options are not shown
+    for (const organization of invalidOrganizations) {
+      expect(screen.queryByText(organization.scope)).toBeNull();
+    }
   });
 });
