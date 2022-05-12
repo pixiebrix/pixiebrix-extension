@@ -29,9 +29,7 @@ function renderDocumentEditor(
   initialActiveElement: string = null
 ) {
   const FormikTemplate = createFormikTemplate({
-    document: {
-      body: documentElements,
-    },
+    documentElements,
   });
 
   const DocumentEditorContainer = () => {
@@ -40,7 +38,7 @@ function renderDocumentEditor(
     );
     return (
       <DocumentEditor
-        name="document.body"
+        name="documentElements"
         activeElement={activeElement}
         setActiveElement={setActiveElement}
       />
