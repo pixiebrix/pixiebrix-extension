@@ -118,7 +118,11 @@ type WrapperResult = RenderResult & {
 
 function renderWithWrappers(
   ui: React.ReactElement,
-  { initialValues, setupRedux = noop, ...renderOptions }: WrapperOptions
+  {
+    initialValues = {},
+    setupRedux = noop,
+    ...renderOptions
+  }: WrapperOptions = {}
 ): WrapperResult {
   let submitHandler: (values: FormikValues) => void = jest.fn();
 
