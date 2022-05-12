@@ -318,12 +318,9 @@ describe("rename a field", () => {
   });
 
   test("can add and rename date field", async () => {
-    const FormikTemplate = createFormikTemplate(
-      {
-        [RJSF_SCHEMA_PROPERTY_NAME]: {},
-      },
-      jest.fn()
-    );
+    const FormikTemplate = createFormikTemplate({
+      [RJSF_SCHEMA_PROPERTY_NAME]: {},
+    });
 
     const rendered = render(
       <FormikTemplate>
