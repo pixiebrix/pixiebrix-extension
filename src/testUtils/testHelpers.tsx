@@ -45,6 +45,7 @@ import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSli
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import userEvent from "@testing-library/user-event";
+import { Expression, ExpressionType } from "@/core";
 
 export const waitForEffect = async () =>
   act(async () => {
@@ -179,3 +180,10 @@ function renderWithWrappers(
 export * from "@testing-library/react";
 // eslint-disable-next-line import/export -- override render
 export { renderWithWrappers as render };
+
+export function toExpression<T>(type: ExpressionType, value: T): Expression<T> {
+  return {
+    __type__: type,
+    __value__: value,
+  };
+}

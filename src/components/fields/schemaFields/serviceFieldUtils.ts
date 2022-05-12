@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Expression } from "@/core";
+import { Expression, OutputKey, ServiceKeyVar } from "@/core";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import {
   isExpression,
@@ -23,7 +23,10 @@ import {
   PipelineExpression,
 } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
+import { produce } from "immer";
 import { castArray, uniq } from "lodash";
+
+export type ServiceSlice = Pick<FormState, "services" | "extension">;
 
 /**
  * Regex matching identifiers generated via defaultOutputKey
@@ -81,4 +84,27 @@ export function selectVariables(
     selectVariablesFromConfig(x.config)
   );
   return new Set(identifiers);
+}
+
+export function keyToFieldValue(key: OutputKey): Expression<ServiceKeyVar> {
+  const value = key == null ? null : (`@${key}` as ServiceKeyVar);
+  return {
+    __type__: "var",
+    __value__: value,
+  };
+}
+
+/**
+ * Return a new copy of state with unused dependencies excluded
+ * @param state the form state
+ */
+export function produceExcludeUnusedDependencies<
+  T extends ServiceSlice = ServiceSlice
+>(state: T): T {
+  const used = selectVariables(state);
+  return produce(state, (draft) => {
+    draft.services = draft.services.filter((x) =>
+      used.has(keyToFieldValue(x.outputKey).__value__)
+    );
+  });
 }

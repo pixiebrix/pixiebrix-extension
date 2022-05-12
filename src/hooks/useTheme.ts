@@ -22,10 +22,45 @@ import { ManualStorageKey, readStorage } from "@/chrome";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { DEFAULT_THEME, THEMES } from "@/options/constants";
+import logo from "@img/logo.svg";
+import logoSmall from "@img/logo-small-rounded.svg";
+import aaLogo from "@img/aa-logo.svg";
+import aaLogoSmall from "@img/aa-logo-small.svg";
 
 const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
 
-const useTheme = (): void => {
+type ThemeLogo = {
+  regular: string;
+  small: string;
+};
+
+type ThemeLogoMap = {
+  [key in Theme]: ThemeLogo;
+};
+
+export type Theme = typeof THEMES[number];
+
+const THEME_LOGOS: ThemeLogoMap = {
+  default: {
+    regular: logo,
+    small: logoSmall,
+  },
+  "automation-anywhere": {
+    regular: aaLogo,
+    small: aaLogoSmall,
+  },
+};
+
+const getThemeLogo = (theme: string): ThemeLogo | null => {
+  if (theme in THEME_LOGOS) {
+    // eslint-disable-next-line security/detect-object-injection -- theme is user defined, but restricted to themes
+    return THEME_LOGOS[theme];
+  }
+
+  return null;
+};
+
+const useTheme = (): { logo: ThemeLogo } => {
   const { theme } = useSelector(selectSettings);
   const dispatch = useDispatch();
   const [partnerId, isLoading] = useAsyncState(
@@ -33,6 +68,7 @@ const useTheme = (): void => {
     [],
     null
   );
+  const themeLogo = getThemeLogo(theme);
 
   useEffect(() => {
     // Initialize initial theme state with the user's partner theme, if any
@@ -52,6 +88,10 @@ const useTheme = (): void => {
       document.documentElement.classList.add(theme);
     }
   }, [isLoading, dispatch, partnerId, theme]);
+
+  return {
+    logo: themeLogo,
+  };
 };
 
 export default useTheme;
