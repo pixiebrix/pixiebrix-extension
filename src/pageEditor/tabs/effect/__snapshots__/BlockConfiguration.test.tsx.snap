@@ -11,7 +11,7 @@ exports[`renders 1`] = `
       <div
         class="cardHeader card-header"
       >
-        Input
+        Input: Echo Block
       </div>
       <div
         class="cardBody card-body"
