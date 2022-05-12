@@ -47,8 +47,11 @@ import {
   SERVICE_FIELD_REFS,
 } from "@/services/serviceUtils";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
-import { FormState } from "@/pageEditor/pageEditorTypes";
-import { selectVariables } from "./serviceFieldUtils";
+import {
+  keyToFieldValue,
+  produceExcludeUnusedDependencies,
+  ServiceSlice,
+} from "./serviceFieldUtils";
 import ServiceSelectWidget from "@/components/fields/schemaFields/widgets/ServiceSelectWidget";
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
@@ -78,16 +81,6 @@ function defaultOutputKey(
   ) as OutputKey;
 }
 
-export function keyToFieldValue(key: OutputKey): Expression<ServiceKeyVar> {
-  const value = key == null ? null : (`@${key}` as ServiceKeyVar);
-  return {
-    __type__: "var",
-    __value__: value,
-  };
-}
-
-export type ServiceSlice = Pick<FormState, "services" | "extension">;
-
 /**
  * Return the auth id corresponding to a service variable usage
  * @see AuthOption.value
@@ -108,21 +101,6 @@ function lookupAuthId(
   return dependency == null
     ? null
     : authOptions.find((x) => x.value === dependency.config)?.value;
-}
-
-/**
- * Return a new copy of state with unused dependencies excluded
- * @param state the form state
- */
-export function produceExcludeUnusedDependencies<
-  T extends ServiceSlice = ServiceSlice
->(state: T): T {
-  const used = selectVariables(state);
-  return produce(state, (draft) => {
-    draft.services = draft.services.filter((x) =>
-      used.has(keyToFieldValue(x.outputKey).__value__)
-    );
-  });
 }
 
 /**
