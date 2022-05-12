@@ -20,6 +20,14 @@ import { createSelector } from "reselect";
 import { EditorState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { flatMap, isEmpty, uniqBy } from "lodash";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import {
+  ElementUIState,
+  NodeUIState,
+  TabUIState,
+} from "@/pageEditor/uiState/uiStateTypes";
+import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
+import { BlockConfig } from "@/blocks/types";
 
 type RootState = { editor: EditorState };
 
@@ -175,3 +183,51 @@ export const selectKeepLocalCopyOnCreateRecipe = (state: RootState) =>
 
 export const selectExpandedRecipeId = (state: RootState) =>
   state.editor.expandedRecipeId;
+
+// UI state
+export function selectActiveElementUIState(
+  rootState: RootState
+): ElementUIState {
+  return rootState.editor.elementUIStates[rootState.editor.activeElementId];
+}
+
+export const selectActiveNodeUIState: (rootState: RootState) => NodeUIState =
+  createSelector(
+    selectActiveElementUIState,
+    (elementUIState) => elementUIState.nodeUIStates[elementUIState.activeNodeId]
+  );
+
+export const selectActiveNodeId: (rootState: RootState) => NodeId =
+  createSelector(
+    selectActiveElementUIState,
+    (elementUIState) => elementUIState.activeNodeId
+  );
+
+export const selectActiveNode: (rootState: RootState) => BlockConfig =
+  createSelector(selectActiveElement, selectActiveNodeId, (element, nodeId) =>
+    element.extension.blockPipeline.find((node) => node.instanceId === nodeId)
+  );
+
+export const selectNodeDataPanelTabSelected: (
+  rootState: RootState
+) => DataPanelTabKey = createSelector(
+  selectActiveNodeUIState,
+  (nodeUIState) => nodeUIState.dataPanel.activeTabKey
+);
+
+export function selectNodeDataPanelTabState(
+  rootState: RootState,
+  tabKey: DataPanelTabKey
+): TabUIState {
+  const nodeUIState = selectActiveNodeUIState(rootState);
+  // eslint-disable-next-line security/detect-object-injection -- tabKeys will be hard-coded strings
+  return nodeUIState.dataPanel[tabKey];
+}
+
+/**
+ * Selects the activeElement of the Document or Form builder on the Preview tab
+ */
+export function selectNodePreviewActiveElement(rootState: RootState): string {
+  return selectNodeDataPanelTabState(rootState, DataPanelTabKey.Preview)
+    .activeElement;
+}
