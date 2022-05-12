@@ -46,7 +46,6 @@ import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import StalePanelAlert from "./StalePanelAlert";
 import Alert from "@/components/Alert";
 
 /**
@@ -150,6 +149,28 @@ const DataPanel: React.FC<{
   const popupBoundary = showDocumentPreview
     ? document.querySelector(`.${dataPanelStyles.tabContent}`)
     : undefined;
+
+  const isRenderedPanelStale = useMemo(() => {
+    // Only show alert for Panel and Side Panel extensions
+    if (formState.type !== "panel" && formState.type !== "actionPanel") {
+      return false;
+    }
+
+    const trace = traces.find(
+      (trace) => trace.blockInstanceId === block?.instanceId
+    );
+
+    // No traces or no changes since the last render, we are good, no alert
+    if (
+      traces.length === 0 ||
+      trace == null ||
+      isEqual(trace.blockConfig, block)
+    ) {
+      return false;
+    }
+
+    return true;
+  }, [formState, traces, block]);
 
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
@@ -313,7 +334,13 @@ const DataPanel: React.FC<{
             )}
             {showFormPreview || showDocumentPreview ? (
               <ErrorBoundary>
-                <StalePanelAlert />
+                {isRenderedPanelStale && (
+                  <Alert variant="info">
+                    The rendered{" "}
+                    {formState.type === "panel" ? "Panel" : "Sidebar Panel"} is
+                    out of date with the preview
+                  </Alert>
+                )}
                 {showFormPreview ? (
                   <div className={dataPanelStyles.selectablePreviewContainer}>
                     <FormPreview
