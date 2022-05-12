@@ -21,15 +21,8 @@ import {
   uuidSequence,
   baseExtensionStateFactory,
 } from "@/testUtils/factories";
+import { toExpression } from "@/testUtils/testHelpers";
 import { selectPipelines, selectVariables } from "./serviceFieldUtils";
-import { Expression, ExpressionType } from "@/core";
-
-function expr<T>(type: ExpressionType, value: T): Expression<T> {
-  return {
-    __type__: type,
-    __value__: value,
-  };
-}
 
 describe("selectPipelines", () => {
   test("handle blank", () => {
@@ -37,7 +30,7 @@ describe("selectPipelines", () => {
   });
 
   test("handle top-level pipeline", () => {
-    const value = expr("pipeline", [blockConfigFactory()]);
+    const value = toExpression("pipeline", [blockConfigFactory()]);
 
     expect(selectPipelines([value, { foo: 42 }])).toStrictEqual([value]);
   });
@@ -45,8 +38,8 @@ describe("selectPipelines", () => {
   test("do not select nested pipeline", () => {
     // The caller is responsible for recursing into the pipelines
 
-    const innerPipeline = expr("pipeline", [blockConfigFactory()]);
-    const outerPipeline = expr("pipeline", [
+    const innerPipeline = toExpression("pipeline", [blockConfigFactory()]);
+    const outerPipeline = toExpression("pipeline", [
       blockConfigFactory({
         config: {
           pipelineArg: innerPipeline,
@@ -70,7 +63,7 @@ describe("selectVariables", () => {
           }),
           blockConfigFactory({
             config: {
-              input: expr("nunjucks", "foo: {{ @foo }}"),
+              input: toExpression("nunjucks", "foo: {{ @foo }}"),
             },
           }),
         ],
@@ -85,7 +78,7 @@ describe("selectVariables", () => {
     const serviceConfig = {
       id: "@test/service",
       instanceId: uuidSequence(1),
-      input: expr("var", "@foo"),
+      input: toExpression("var", "@foo"),
     };
 
     const formState = formStateFactory(
@@ -104,7 +97,7 @@ describe("selectVariables", () => {
       undefined,
       blockConfigFactory({
         config: {
-          foo: expr("var", "@foo.bar"),
+          foo: toExpression("var", "@foo.bar"),
         },
       })
     );
@@ -122,12 +115,12 @@ describe("selectVariables", () => {
             type: "button",
             config: {
               title: "Action",
-              onClick: expr("pipeline", [
+              onClick: toExpression("pipeline", [
                 {
                   id: "@test/service",
                   instanceId: uuidSequence(2),
                   config: {
-                    input: expr("var", "@foo"),
+                    input: toExpression("var", "@foo"),
                   },
                 },
               ]),
@@ -158,21 +151,21 @@ describe("selectVariables", () => {
             type: "button",
             config: {
               title: "Action",
-              onClick: expr("pipeline", [
+              onClick: toExpression("pipeline", [
                 {
                   id: "@test/brick",
                   config: {
-                    input: expr("var", "@foo"),
+                    input: toExpression("var", "@foo"),
                   },
                 },
                 {
                   id: "@test/if",
                   config: {
-                    if: expr("pipeline", [
+                    if: toExpression("pipeline", [
                       {
                         id: "@test/brick",
                         config: {
-                          input: expr("var", "@bar"),
+                          input: toExpression("var", "@bar"),
                         },
                       },
                     ]),

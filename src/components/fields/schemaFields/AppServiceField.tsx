@@ -20,14 +20,11 @@ import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField, useFormikContext } from "formik";
 import { Expression, OutputKey, ServiceKeyVar } from "@/core";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import {
-  keyToFieldValue,
-  ServiceSlice,
-} from "@/components/fields/schemaFields/ServiceField";
 import { produce } from "immer";
 import { createTypePredicate } from "@/components/fields/fieldUtils";
 import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
 import { isEqual } from "lodash";
+import { keyToFieldValue, ServiceSlice } from "./serviceFieldUtils";
 
 const PIXIEBRIX_OUTPUT_KEY = "pixiebrix" as OutputKey;
 
