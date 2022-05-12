@@ -16,43 +16,42 @@
  */
 
 import { render } from "@testing-library/react";
-import { Formik } from "formik";
 import React, { useState } from "react";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import DocumentEditor from "./DocumentEditor";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
+import { createFormikTemplate } from "@/testUtils/formHelpers";
 
 function renderDocumentEditor(
   documentElements: DocumentElement[],
   initialActiveElement: string = null
 ) {
-  const document = {
-    body: documentElements,
-  };
+  const FormikTemplate = createFormikTemplate({
+    document: {
+      body: documentElements,
+    },
+  });
 
-  const PreviewContainer = () => {
+  const DocumentEditorContainer = () => {
     const [activeElement, setActiveElement] = useState<string | null>(
       initialActiveElement
     );
     return (
-      <Formik
-        initialValues={{
-          document,
-        }}
-        onSubmit={jest.fn()}
-      >
-        <DocumentEditor
-          name="document.body"
-          activeElement={activeElement}
-          setActiveElement={setActiveElement}
-        />
-      </Formik>
+      <DocumentEditor
+        name="document.body"
+        activeElement={activeElement}
+        setActiveElement={setActiveElement}
+      />
     );
   };
 
-  return render(<PreviewContainer />);
+  return render(
+    <FormikTemplate>
+      <DocumentEditorContainer />
+    </FormikTemplate>
+  );
 }
 
 beforeAll(() => {
