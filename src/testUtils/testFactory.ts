@@ -22,7 +22,7 @@ import { UserRole } from "@/types/contract";
 
 const testFactory = {
   authState: define<AuthState>({
-    userId: (n: number) => `test-user-${n}`,
+    userId: uuidSequence,
     email: (n: number) => `user${n}@test.com`,
     scope: (n: number) => `@user${n}`,
     isLoggedIn: true,

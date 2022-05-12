@@ -46,6 +46,7 @@ import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import userEvent from "@testing-library/user-event";
 import { Expression, ExpressionType } from "@/core";
+import { noop } from "lodash";
 
 export const waitForEffect = async () =>
   act(async () => {
@@ -117,7 +118,7 @@ type WrapperResult = RenderResult & {
 
 function renderWithWrappers(
   ui: React.ReactElement,
-  { initialValues, setupRedux, ...renderOptions }: WrapperOptions
+  { initialValues, setupRedux = noop, ...renderOptions }: WrapperOptions
 ): WrapperResult {
   let submitHandler: (values: FormikValues) => void = jest.fn();
 
@@ -136,7 +137,7 @@ function renderWithWrappers(
       },
     });
 
-    setupRedux?.(store.dispatch);
+    setupRedux(store.dispatch);
 
     return (
       <Provider store={store}>

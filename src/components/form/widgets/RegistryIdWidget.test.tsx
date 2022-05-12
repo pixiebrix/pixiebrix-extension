@@ -26,6 +26,7 @@ import testFactory from "@/testUtils/testFactory";
 import userEvent from "@testing-library/user-event";
 import { partition } from "lodash";
 import { UserRole } from "@/types/contract";
+import { validateRegistryId } from "@/types/helpers";
 
 describe("getScopeAndId", () => {
   test("normal id", () => {
@@ -59,9 +60,10 @@ const editorRoles = new Set<number>([
 ]);
 
 describe("RegistryIdWidget", () => {
+  const testUserScope = "@user-foo";
+  const testIdValue = "test-identifier";
+
   test("renders with user id value", async () => {
-    const testUserScope = "@userFoo";
-    const testIdValue = "test-identifier";
     const id = `${testUserScope}/${testIdValue}` as RegistryId;
 
     const { container } = render(<RegistryIdWidget name="testField" />, {
@@ -85,8 +87,6 @@ describe("RegistryIdWidget", () => {
   });
 
   test("shows the right organization scopes", async () => {
-    const testUserScope = "@userFoo";
-    const testIdValue = "test-identifier";
     const id = `${testUserScope}/${testIdValue}` as RegistryId;
     const authState = testFactory.authState({
       scope: testUserScope,
@@ -123,16 +123,14 @@ describe("RegistryIdWidget", () => {
   });
 
   test("sets the id properly", async () => {
-    const testUserScope = "@userFoo";
-    const testIdValue = "test-identifier";
-    const id = `${testUserScope}/${testIdValue}` as RegistryId;
+    const id = validateRegistryId(`${testUserScope}/${testIdValue}`);
     const authState = testFactory.authState({
       scope: testUserScope,
     });
 
     const anotherOrganization = authState.organizations.find(
-      (organization) =>
-        (organization.id as string) !== authState.organization.id &&
+      (organization: { id: string; role: number }) =>
+        organization.id !== authState.organization.id &&
         editorRoles.has(organization.role)
     );
 

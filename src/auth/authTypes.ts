@@ -91,7 +91,7 @@ type OrganizationAuthState = {
 };
 
 export type AuthState = {
-  readonly userId?: string | null;
+  readonly userId?: UUID | null;
 
   readonly email?: string | null;
 
