@@ -112,6 +112,7 @@ const RegistryIdWidget: React.VFC<{
         value={idValue}
         onChange={onChangeId}
         className={styles.idInput}
+        data-testid={`registryId-${name}-id`}
       />
     </div>
   );

@@ -16,7 +16,12 @@
  */
 
 import React from "react";
-import { render, RenderOptions, RenderResult } from "@testing-library/react";
+import {
+  render,
+  RenderOptions,
+  RenderResult,
+  screen,
+} from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import {
@@ -28,7 +33,7 @@ import {
   Reducer,
   ReducersMapObject,
 } from "@reduxjs/toolkit";
-import { Formik, FormikValues } from "formik";
+import { Form, Formik, FormikValues } from "formik";
 import { Dispatch } from "redux";
 import { authSlice } from "@/auth/authSlice";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -39,6 +44,7 @@ import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSlice";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
+import userEvent from "@testing-library/user-event";
 
 export const waitForEffect = async () =>
   act(async () => {
@@ -104,10 +110,16 @@ type WrapperOptions = Omit<RenderOptions, "wrapper"> & {
   setupRedux?: SetupRedux;
 };
 
+type WrapperResult = RenderResult & {
+  getFormState: () => Promise<FormikValues>;
+};
+
 function renderWithWrappers(
   ui: React.ReactElement,
   { initialValues, setupRedux, ...renderOptions }: WrapperOptions
-): RenderResult {
+): WrapperResult {
+  let submitHandler: (values: FormikValues) => void = jest.fn();
+
   const Wrapper: React.FC = ({ children }) => {
     const store = configureStore({
       reducer: {
@@ -127,14 +139,40 @@ function renderWithWrappers(
 
     return (
       <Provider store={store}>
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
-          {children}
+        <Formik
+          initialValues={initialValues}
+          onSubmit={(values) => {
+            submitHandler?.(values);
+          }}
+        >
+          {({ handleSubmit }) => (
+            <Form onSubmit={handleSubmit}>
+              {children}
+              <button type="submit">Submit</button>
+            </Form>
+          )}
         </Formik>
       </Provider>
     );
   };
 
-  return render(ui, { wrapper: Wrapper, ...renderOptions });
+  const renderResult = render(ui, { wrapper: Wrapper, ...renderOptions });
+
+  return {
+    ...renderResult,
+    async getFormState() {
+      // Wire-up a handler to grab the form state
+      let formState: FormikValues = null;
+      submitHandler = (values) => {
+        formState = values;
+      };
+
+      // Submit the form
+      await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      return formState;
+    },
+  };
 }
 
 // eslint-disable-next-line import/export -- re-export RTL

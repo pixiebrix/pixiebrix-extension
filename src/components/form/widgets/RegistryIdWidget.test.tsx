@@ -52,6 +52,12 @@ describe("getScopeAndId", () => {
 
 jest.unmock("react-redux");
 
+const editorRoles = new Set<number>([
+  UserRole.admin,
+  UserRole.developer,
+  UserRole.manager,
+]);
+
 describe("RegistryIdWidget", () => {
   test("renders with user id value", async () => {
     const testUserScope = "@userFoo";
@@ -86,11 +92,6 @@ describe("RegistryIdWidget", () => {
       scope: testUserScope,
     });
 
-    const editorRoles = new Set<number>([
-      UserRole.admin,
-      UserRole.developer,
-      UserRole.manager,
-    ]);
     const [validOrganizations, invalidOrganizations] = partition(
       authState.organizations,
       (organization) => editorRoles.has(organization.role)
@@ -119,5 +120,44 @@ describe("RegistryIdWidget", () => {
     for (const organization of invalidOrganizations) {
       expect(screen.queryByText(organization.scope)).toBeNull();
     }
+  });
+
+  test("sets the id properly", async () => {
+    const testUserScope = "@userFoo";
+    const testIdValue = "test-identifier";
+    const id = `${testUserScope}/${testIdValue}` as RegistryId;
+    const authState = testFactory.authState({
+      scope: testUserScope,
+    });
+
+    const anotherOrganization = authState.organizations.find(
+      (organization) =>
+        (organization.id as string) !== authState.organization.id &&
+        editorRoles.has(organization.role)
+    );
+
+    const { getFormState } = render(<RegistryIdWidget name="testField" />, {
+      initialValues: { testField: id },
+      setupRedux(dispatch) {
+        dispatch(authActions.setAuth(authState));
+      },
+    });
+
+    const selected = screen.getByText(testUserScope);
+    expect(selected).toBeVisible();
+    await userEvent.click(selected);
+
+    await userEvent.click(screen.getByText(anotherOrganization.scope));
+
+    const newTestId = "new-identifier";
+    const idInput = screen.getByTestId("registryId-testField-id");
+
+    await userEvent.clear(idInput);
+    await userEvent.type(idInput, newTestId);
+
+    const formState = await getFormState();
+    expect(formState).toStrictEqual({
+      testField: `${anotherOrganization.scope}/${newTestId}`,
+    });
   });
 });
