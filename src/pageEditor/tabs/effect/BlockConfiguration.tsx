@@ -19,7 +19,7 @@ import React, { useMemo, useRef } from "react";
 import { RegistryId } from "@/core";
 import { getIn, useFormikContext } from "formik";
 import useBlockOptions from "@/hooks/useBlockOptions";
-import { Card } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import Loader from "@/components/Loader";
@@ -37,6 +37,9 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { useGetMarketplaceListingsQuery } from "@/services/api";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
 const rootModeOptions = [
   { label: "Inherit", value: "inherit" },
@@ -63,6 +66,35 @@ const BlockConfiguration: React.FunctionComponent<{
   const blockErrors = getIn(context.errors, name);
 
   const [{ block, error }, BlockOptions] = useBlockOptions(blockId);
+  const { data: listings = {} } = useGetMarketplaceListingsQuery();
+  const listing = listings[blockId];
+
+  console.log("configuration", {
+    blockId,
+    block,
+    listing,
+  });
+  const configurationTitle = (
+    <span>
+      Input: <span className="text-muted">{block?.name}</span>
+    </span>
+  );
+  const configurationHeader =
+    (listing?.instructions != null && listing?.instructions != "") ||
+    listing?.assets?.length > 0 ? (
+      <div className="d-flex justify-content-between">
+        {configurationTitle}
+        <a
+          href={`https://www.pixiebrix.com/marketplace/${listing.id}/`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <FontAwesomeIcon icon={faExternalLinkAlt} /> View Documentation
+        </a>
+      </div>
+    ) : (
+      configurationTitle
+    );
 
   // Conditionally show Advanced options "Condition" and "Target" depending on the value of blockType.
   // If blockType is undefined, don't show the options.
@@ -104,7 +136,7 @@ const BlockConfiguration: React.FunctionComponent<{
       <AdvancedLinks name={name} scrollToRef={advancedOptionsRef} />
 
       <Card>
-        <FieldSection title={`Input: ${block?.name}`}>
+        <FieldSection title={configurationHeader}>
           <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
             {blockErrors?.id && (
               <div className="invalid-feedback d-block mb-4">

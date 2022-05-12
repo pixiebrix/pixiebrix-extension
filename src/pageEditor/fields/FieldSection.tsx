@@ -22,7 +22,7 @@ import styles from "./FieldSection.module.scss";
  * A Page Editor edit tab field section.
  */
 const FieldSection: React.FC<{
-  title: string;
+  title: React.ReactNode;
   bodyRef?: React.MutableRefObject<HTMLDivElement>;
 }> = ({ title, bodyRef, children }) => (
   <>
