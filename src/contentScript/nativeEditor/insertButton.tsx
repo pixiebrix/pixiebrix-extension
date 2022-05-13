@@ -18,12 +18,13 @@
 // https://github.com/facebook/react/blob/7559722a865e89992f75ff38c1015a865660c3cd/packages/react-devtools-shared/src/backend/views/Highlighter/index.js
 
 import { uuidv4 } from "@/types/helpers";
-import { userSelectElement } from "./selector";
+import { userSelectElement } from "./elementPicker";
 import * as pageScript from "@/pageScript/protocol";
-import { findContainer, inferButtonHTML } from "./infer";
+import { findContainer } from "./selectorInference";
 import { html as beautifyHTML } from "js-beautify";
 import { PRIVATE_ATTRIBUTES_SELECTOR } from "@/common";
 import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
+import { inferButtonHTML } from "@/contentScript/nativeEditor/markupInference";
 
 export const DEFAULT_ACTION_CAPTION = "Action";
 

@@ -29,7 +29,7 @@ import { FormikHelpers } from "formik";
 import { compact, isEmpty, pick, sortBy, uniq } from "lodash";
 import { RegistryId, UnresolvedExtension, UUID } from "@/core";
 import * as Yup from "yup";
-import { PACKAGE_REGEX } from "@/types/helpers";
+import { PACKAGE_REGEX, validateSemVerString } from "@/types/helpers";
 import { appApi, useGetOrganizationsQuery } from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import slugify from "slugify";
@@ -60,6 +60,8 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { RequireScope } from "@/auth/RequireScope";
 import { selectScope } from "@/auth/authSelectors";
 import { FieldDescriptions } from "@/utils/strings";
+import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
+import { StylesConfig } from "react-select";
 
 const { attachExtension } = extensionsSlice.actions;
 
@@ -91,7 +93,7 @@ async function convertAndShare(
     id: form.blueprintId,
     name: form.name,
     description: form.description,
-    version: "1.0.0",
+    version: validateSemVerString("1.0.0"),
   });
 
   const { data } = await client.post<PackageUpsertResponse>("api/bricks/", {
@@ -108,6 +110,32 @@ async function convertAndShare(
     ...pick(data, ["updated_at"]),
   };
 }
+
+const selectStylesOverride: StylesConfig = {
+  control: (base) => ({
+    ...base,
+    borderRadius: 0,
+    border: "none",
+  }),
+  valueContainer: (base) => ({
+    ...base,
+    padding: "0.875rem 1.375rem",
+  }),
+  singleValue: (base) => ({
+    ...base,
+    marginTop: 0,
+    marginBottom: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
+  }),
+  input: (base) => ({
+    ...base,
+    marginTop: 0,
+    marginBottom: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
+  }),
+};
 
 // XXX: this is a connected component. To simplify testing split out the presentational component
 const ShareExtensionModal: React.FC<{
@@ -198,6 +226,8 @@ const ShareExtensionModal: React.FC<{
             <i>Cannot be modified once shared.</i>
           </span>
         }
+        as={RegistryIdWidget}
+        selectStyles={selectStylesOverride}
       />
       <ConnectedFieldTemplate
         name="description"

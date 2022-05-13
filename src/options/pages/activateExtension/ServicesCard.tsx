@@ -27,9 +27,10 @@ import ServiceDescriptor from "@/options/pages/marketplace/ServiceDescriptor";
 import AuthWidget from "@/options/pages/marketplace/AuthWidget";
 import { joinName } from "@/utils";
 
-const ServicesCard: React.FunctionComponent<{ authOptions: AuthOption[] }> = ({
-  authOptions,
-}) => {
+const ServicesCard: React.FunctionComponent<{
+  authOptions: AuthOption[];
+  refreshAuthOptions: () => void;
+}> = ({ authOptions, refreshAuthOptions }) => {
   const [field] = useField<ServiceDependency[]>("services");
 
   const { data: serviceConfigs } =
@@ -50,7 +51,7 @@ const ServicesCard: React.FunctionComponent<{ authOptions: AuthOption[] }> = ({
 
   return (
     <Card className="mb-3">
-      <Card.Header>Configure Services</Card.Header>
+      <Card.Header>Configure Integrations</Card.Header>
       <Table>
         <thead>
           <tr>
@@ -60,7 +61,7 @@ const ServicesCard: React.FunctionComponent<{ authOptions: AuthOption[] }> = ({
         </thead>
         <tbody>
           {configurable.map(({ dependency, valueIndex }) => (
-            <tr key={`dependency.outputKey-${valueIndex}`}>
+            <tr key={`${dependency.outputKey}-${valueIndex}`}>
               <td>
                 <ServiceDescriptor
                   serviceId={dependency.id}
@@ -72,6 +73,7 @@ const ServicesCard: React.FunctionComponent<{ authOptions: AuthOption[] }> = ({
                   authOptions={authOptions}
                   serviceId={dependency.id}
                   name={joinName(field.name, String(valueIndex), "config")}
+                  onRefresh={refreshAuthOptions}
                 />
               </td>
             </tr>

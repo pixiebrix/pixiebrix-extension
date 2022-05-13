@@ -25,6 +25,7 @@ import { ServiceDefinition } from "@/types/definitions";
 
 import pipedriveYaml from "@contrib/services/pipedrive.yaml?loadAsText";
 import automationAnywhereYaml from "@contrib/services/automation-anywhere.yaml?loadAsText";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 const FIXTURES = {
   pipedrive: pipedriveYaml,
@@ -44,10 +45,11 @@ const Template: Story<StoryType> = ({ fixture, ...args }) => {
   // eslint-disable-next-line security/detect-object-injection -- type checked from fixture object
   const service = fromJS(loadBrickYaml(FIXTURES[fixture]) as ServiceDefinition);
 
+  // Cheap call, just call in the render function
+  registerDefaultWidgets();
+
   return <ServiceEditorModal {...args} service={service} />;
 };
-
-// FIXME: the modals get rendered behind their own overlay so you can't interact with them on the page
 
 export const Pipedrive = Template.bind({});
 Pipedrive.args = {

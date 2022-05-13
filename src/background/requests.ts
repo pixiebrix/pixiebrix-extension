@@ -16,7 +16,12 @@
  */
 
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
-import { SanitizedServiceConfiguration, ServiceConfig } from "@/core";
+import {
+  IService,
+  MessageContext,
+  SanitizedServiceConfiguration,
+  ServiceConfig,
+} from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
 import { ProxiedRemoteServiceError } from "@/services/errors";
 import serviceRegistry from "@/services/registry";
@@ -75,11 +80,18 @@ async function authenticate(
   expectContext("background");
 
   if (config == null) {
-    throw new Error("service configuration is required to authenticate");
+    throw new Error("Integration configuration is required to authenticate");
+  }
+
+  if (config.proxy) {
+    throw new Error(
+      `Integration configuration for service ${config.serviceId} is not a local configuration: ${config.id}`
+    );
   }
 
   const service = await serviceRegistry.lookup(config.serviceId);
 
+  // The PixieBrix API doesn't use integration configurations
   if (service.id === PIXIEBRIX_SERVICE_ID) {
     const apiKey = await getExtensionToken();
     if (!apiKey) {
@@ -92,8 +104,14 @@ async function authenticate(
     });
   }
 
+  const localConfig = await locator.getLocalConfig(config.id);
+
+  if (!localConfig) {
+    // Is an application error because PixieBrix should not have reached here in the first place.
+    throw new Error(`Local integration configuration not found: ${config.id}`);
+  }
+
   if (service.isOAuth2) {
-    const localConfig = await locator.getLocalConfig(config.id);
     let data = await getCachedAuthData(config.id);
     if (isEmpty(data)) {
       data = await launchOAuth2Flow(service, localConfig);
@@ -103,7 +121,6 @@ async function authenticate(
   }
 
   if (service.isToken) {
-    const localConfig = await locator.getLocalConfig(config.id);
     let data = await getCachedAuthData(config.id);
     if (isEmpty(data)) {
       console.debug(`Fetching token for ${config.id}`);
@@ -117,7 +134,6 @@ async function authenticate(
     return service.authenticateRequest(localConfig.config, request, data);
   }
 
-  const localConfig = await locator.getLocalConfig(config.id);
   return service.authenticateRequest(localConfig.config, request);
 }
 
@@ -210,6 +226,24 @@ async function performConfiguredRequest(
   }
 }
 
+async function getServiceMessageContext(
+  config: SanitizedServiceConfiguration
+): Promise<MessageContext> {
+  // Try resolving the service to get metadata to include with the error
+  let resolvedService: IService;
+  try {
+    resolvedService = await serviceRegistry.lookup(config.serviceId);
+  } catch {
+    // NOP
+  }
+
+  return {
+    serviceId: config.serviceId,
+    serviceVersion: resolvedService?.version,
+    authId: config.id,
+  };
+}
+
 /**
  * Perform a request either directly, or via the PixieBrix authentication proxy
  * @param serviceConfig the PixieBrix service configuration (used to locate the full configuration)
@@ -242,12 +276,9 @@ export async function proxyService<TData>(
       requestConfig
     )) as RemoteResponse<TData>;
   } catch (error) {
-    throw new ContextError("Error while performing request", {
+    throw new ContextError("Error performing request", {
       cause: error,
-      context: {
-        serviceId: serviceConfig.serviceId,
-        authId: serviceConfig.id,
-      },
+      context: await getServiceMessageContext(serviceConfig),
     });
   }
 }

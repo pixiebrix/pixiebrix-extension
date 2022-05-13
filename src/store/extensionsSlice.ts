@@ -41,7 +41,6 @@ import {
 } from "@/store/extensionsTypes";
 import { Except } from "type-fest";
 import { assertExtensionNotResolved } from "@/runtime/runtimeUtils";
-import { uninstallNativeExtension } from "@/store/extensionsUtils";
 
 const initialExtensionsState: ExtensionOptionsState = {
   extensions: [],
@@ -314,17 +313,12 @@ const extensionsSlice = createSlice({
     removeRecipeById(state, { payload: recipeId }: PayloadAction<RegistryId>) {
       requireLatestState(state);
 
-      const [recipeExtension, extensions] = partition(
+      const [, extensions] = partition(
         state.extensions,
         (x) => x._recipe?.id === recipeId
       );
 
       state.extensions = extensions;
-
-      // XXX: this should be in an action creator, not the reducer
-      void Promise.all(
-        recipeExtension.map(async ({ id }) => uninstallNativeExtension(id))
-      );
     },
 
     removeExtension(
@@ -335,9 +329,6 @@ const extensionsSlice = createSlice({
 
       // NOTE: We aren't deleting the extension on the server. The user must do that separately from the dashboard
       state.extensions = state.extensions.filter((x) => x.id !== extensionId);
-
-      // XXX: this should be in an action creator, not the reducer
-      void uninstallNativeExtension(extensionId);
     },
   },
 });

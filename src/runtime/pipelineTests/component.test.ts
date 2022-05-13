@@ -29,6 +29,7 @@ import {
 // them with `void` instead of awaiting them in the reducePipeline methods
 import * as logging from "@/background/messenger/api";
 import { fromJS } from "@/blocks/transformers/blockFactory";
+import { validateSemVerString } from "@/types/helpers";
 
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
@@ -45,7 +46,7 @@ const componentBlock = fromJS({
   metadata: {
     id: "test/component",
     name: "Component Block",
-    version: "1.0.0",
+    version: validateSemVerString("1.0.0"),
     description: "Component block using v1 runtime",
   },
   inputSchema: {

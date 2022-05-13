@@ -38,17 +38,17 @@ const ActivatePage: React.FunctionComponent = () => {
     error,
   } = useFetch<CloudExtension>(`/api/extensions/${extensionId}`);
 
-  const [authOptions] = useAuthOptions();
+  const [authOptions, refreshAuthOptions] = useAuthOptions();
 
   return (
     <Page
       title={
         extension
           ? `Activate: ${extension.label ?? extension.id}`
-          : "Activate Brick"
+          : "Activate Extension"
       }
       icon={faCloudDownloadAlt}
-      description="Activate a personal brick from the cloud"
+      description="Activate a personal extension from the cloud"
       error={error}
       isPending={isLoading || authOptions == null}
     >
@@ -56,7 +56,11 @@ const ActivatePage: React.FunctionComponent = () => {
         <Col xl={8} lg={10} md={12}>
           <ErrorBoundary>
             {extension && authOptions && (
-              <ActivateForm extension={extension} authOptions={authOptions} />
+              <ActivateForm
+                extension={extension}
+                authOptions={authOptions}
+                refreshAuthOptions={refreshAuthOptions}
+              />
             )}
           </ErrorBoundary>
         </Col>

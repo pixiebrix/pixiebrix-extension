@@ -126,7 +126,7 @@ export async function uninstallUnmatchedDeployments(
   );
   const toUninstall = installed.filter(
     (extension) =>
-      !isEmpty(extension._deployment) && !recipeIds.has(extension._recipe.id)
+      !isEmpty(extension._deployment) && !recipeIds.has(extension._recipe?.id)
   );
 
   if (toUninstall.length === 0) {
@@ -153,7 +153,7 @@ function uninstallRecipe(
 
   // Uninstall existing versions of the extensions
   for (const extension of installed) {
-    if (extension._recipe.id === recipeId) {
+    if (extension._recipe?.id === recipeId) {
       returnState = uninstallExtension(returnState, extension.id);
     }
   }
@@ -168,10 +168,7 @@ function installDeployment(
   let returnState = state;
 
   // Uninstall existing versions of the extensions
-  returnState = uninstallRecipe(
-    returnState,
-    deployment.package.package_id as RegistryId
-  );
+  returnState = uninstallRecipe(returnState, deployment.package.package_id);
 
   // Install the deployment's blueprint with the service definition
   returnState = reducer(

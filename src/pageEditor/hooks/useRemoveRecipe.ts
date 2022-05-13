@@ -26,7 +26,12 @@ import { useModals } from "@/components/ConfirmationModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
 
-function useRemoveRecipe(): (recipeId: RegistryId) => Promise<void> {
+type Config = {
+  recipeId: RegistryId;
+  shouldShowConfirmation?: boolean;
+};
+
+function useRemoveRecipe(): (useRemoveConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const removeExtension = useRemoveExtension();
   const extensions = useSelector(selectExtensions);
@@ -34,16 +39,18 @@ function useRemoveRecipe(): (recipeId: RegistryId) => Promise<void> {
   const { showConfirmation } = useModals();
 
   return useCallback(
-    async (recipeId: RegistryId) => {
-      const confirmed = await showConfirmation({
-        title: "Remove Blueprint?",
-        message:
-          "You can reactivate extensions and blueprints from the PixieBrix Options page",
-        submitCaption: "Remove",
-      });
+    async ({ recipeId, shouldShowConfirmation = true }) => {
+      if (shouldShowConfirmation) {
+        const confirmed = await showConfirmation({
+          title: "Remove Blueprint?",
+          message:
+            "You can reactivate extensions and blueprints from the PixieBrix Options page",
+          submitCaption: "Remove",
+        });
 
-      if (!confirmed) {
-        return;
+        if (!confirmed) {
+          return;
+        }
       }
 
       const extensionIds = uniq(

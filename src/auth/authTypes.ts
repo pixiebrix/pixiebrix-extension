@@ -43,11 +43,11 @@ export type UserData = Partial<{
   /**
    * The user's primary organization.
    */
-  organizationId: string;
+  organizationId: UUID;
   /**
    * The user's organization for engagement and error attribution
    */
-  telemetryOrganizationId: string;
+  telemetryOrganizationId: UUID;
   /**
    * Feature flags
    */
@@ -114,10 +114,14 @@ export type AuthState = {
    */
   readonly organization?: OrganizationAuthState | null;
 
+  /**
+   * Organizations the user is a member of
+   */
   readonly organizations: Array<{
     id: UUID;
     name: string;
     role: Me["organization_memberships"][number]["role"];
+    scope?: string | null;
   }>;
 
   readonly groups: Array<{

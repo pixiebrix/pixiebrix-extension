@@ -17,7 +17,6 @@
 
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { UUID } from "@/core";
-import { RootState } from "@/pageEditor/pageEditorTypes";
 import {
   ElementUIState,
   NodeUIState,
@@ -59,44 +58,4 @@ export function makeInitialElementUIState(): ElementUIState {
       [FOUNDATION_NODE_ID]: makeInitialNodeUIState(FOUNDATION_NODE_ID),
     },
   };
-}
-
-export function selectActiveElementUIState(
-  rootState: RootState
-): ElementUIState {
-  return rootState.editor.elementUIStates[rootState.editor.activeElementId];
-}
-
-export function selectActiveNodeUIState(rootState: RootState): NodeUIState {
-  const elementUIState = selectActiveElementUIState(rootState);
-  return elementUIState.nodeUIStates[elementUIState.activeNodeId];
-}
-
-export function selectActiveNodeId(rootState: RootState): NodeId {
-  const elementUIState = selectActiveElementUIState(rootState);
-  return elementUIState.activeNodeId;
-}
-
-export function selectNodeDataPanelTabSelected(
-  rootState: RootState
-): DataPanelTabKey {
-  const nodeUIState = selectActiveNodeUIState(rootState);
-  return nodeUIState.dataPanel.activeTabKey;
-}
-
-export function selectNodeDataPanelTabState(
-  rootState: RootState,
-  tabKey: DataPanelTabKey
-): TabUIState {
-  const nodeUIState = selectActiveNodeUIState(rootState);
-  // eslint-disable-next-line security/detect-object-injection -- tabKeys will be hard-coded strings
-  return nodeUIState.dataPanel[tabKey];
-}
-
-/**
- * Selects the activeElement of the Document or Form builder on the Preview tab
- */
-export function selectNodePreviewActiveElement(rootState: RootState): string {
-  return selectNodeDataPanelTabState(rootState, DataPanelTabKey.Preview)
-    .activeElement;
 }

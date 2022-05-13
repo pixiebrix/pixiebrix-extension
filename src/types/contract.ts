@@ -32,6 +32,7 @@ import {
   PersistedExtension,
   Timestamp,
   RegistryId,
+  SemVerString,
 } from "@/core";
 
 import { components } from "@/types/swagger";
@@ -41,33 +42,36 @@ import { AxiosResponse } from "axios";
 
 export type Kind = "block" | "foundation" | "service" | "blueprint" | "reader";
 
-export type Invitation = components["schemas"]["Invitation"];
-
 type MeGroup = components["schemas"]["Me"]["group_memberships"][number] & {
   id: UUID;
 };
 
-type MeOrganization =
+type MeMembershipOrganization =
   components["schemas"]["Me"]["organization_memberships"][number] & {
     organization: UUID;
   };
+
+type MeOrganization = Required<components["schemas"]["Me"]["organization"]> & {
+  id: UUID;
+};
 
 export type Me = Except<
   components["schemas"]["Me"],
   | "flags"
   | "is_onboarded"
   | "organization"
+  | "telemetry_organization"
   | "organization_memberships"
   | "group_memberships"
 > & {
   // Serializer method fields
   flags: string[];
   is_onboarded: boolean;
-  // Swagger type lists id as optional
-  organization: Required<components["schemas"]["Me"]["organization"]> | null;
 
   // Fix UUID types
-  organization_memberships: MeOrganization[];
+  organization: MeOrganization | null;
+  telemetry_organization: MeOrganization | null;
+  organization_memberships: MeMembershipOrganization[];
   group_memberships: MeGroup[];
 };
 
@@ -76,6 +80,7 @@ export enum UserRole {
   admin = 2,
   developer = 3,
   restricted = 4,
+  manager = 5,
 }
 
 export type Organization = components["schemas"]["Organization"] & {
@@ -207,4 +212,15 @@ export type RemoteResponse<T = unknown> = Pick<
   "data" | "status" | "statusText"
 > & {
   $$proxied?: boolean;
+};
+
+// Exclude fields assigned by the server. (And in the future might not be included on the response).
+// Can't use Required. For blueprint_version, etc. the backend expects the property to be excluded or to have a value
+export type ErrorItem = Except<
+  components["schemas"]["ErrorItem"],
+  "id" | "user" | "user_extension"
+> & {
+  deployment: UUID | null;
+  organization: UUID | null;
+  user_agent_extension_version: SemVerString;
 };

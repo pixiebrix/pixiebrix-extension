@@ -37,7 +37,7 @@ const ActionToolbar: React.FunctionComponent<{
 
   const removeElement = async () => {
     if (element.recipe) {
-      await removeRecipe(element.recipe.id);
+      await removeRecipe({ recipeId: element.recipe.id });
     } else {
       await removeExtension({ extensionId: element.uuid });
     }

@@ -98,6 +98,7 @@ const TriggerConfiguration: React.FC<{
           <option value="mouseover">Mouseover</option>
           <option value="keydown">Keydown</option>
           <option value="keyup">Keyup</option>
+          <option value="keypress">Keypress</option>
           <option value="change">Change</option>
         </ConnectedFieldTemplate>
 

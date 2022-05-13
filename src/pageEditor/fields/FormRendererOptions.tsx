@@ -22,7 +22,7 @@ import { validateRegistryId } from "@/types/helpers";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
-import { selectNodePreviewActiveElement } from "@/pageEditor/uiState/uiState";
+import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");

@@ -15,28 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./Footer.module.scss";
-
-import React, { useContext } from "react";
-import { PageEditorTabContext } from "@/pageEditor/context";
-import BeatLoader from "react-spinners/BeatLoader";
-import { selectScope } from "@/auth/authSelectors";
-import { useSelector } from "react-redux";
-
-const Footer: React.FunctionComponent = () => {
-  const scope = useSelector(selectScope);
-  const { connecting } = useContext(PageEditorTabContext);
-
-  return (
-    <div className={styles.root}>
-      {scope && (
-        <div className={styles.scope}>
-          Scope: <code>{scope}</code>
-        </div>
-      )}
-      {connecting && <BeatLoader size={7} />}
-    </div>
-  );
-};
-
-export default Footer;
+export function escapeDoubleQuotes(str: string): string {
+  // https://gist.github.com/getify/3667624
+  return str.replace(/\\([\S\s])|(")/g, "\\$1$2");
+}

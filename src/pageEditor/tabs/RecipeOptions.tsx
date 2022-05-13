@@ -29,7 +29,11 @@ import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import cx from "classnames";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
-import { FIELD_TYPE_OPTIONS } from "@/components/formBuilder/formBuilderHelpers";
+import {
+  FIELD_TYPE_OPTIONS,
+  MINIMAL_SCHEMA,
+  MINIMAL_UI_SCHEMA,
+} from "@/components/formBuilder/formBuilderHelpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveRecipeId,
@@ -52,6 +56,11 @@ const formRuntimeContext: RuntimeContext = {
   allowExpressions: false,
 };
 
+const emptyOptions: OptionsDefinition = {
+  schema: MINIMAL_SCHEMA,
+  uiSchema: MINIMAL_UI_SCHEMA,
+};
+
 const RecipeOptions: React.VFC = () => {
   const [activeField, setActiveField] = useState<string>();
   const recipeId = useSelector(selectActiveRecipeId);
@@ -60,13 +69,9 @@ const RecipeOptions: React.VFC = () => {
   const savedOptions = recipe?.options;
   const dirtyOptions = useSelector(selectDirtyOptionsForRecipeId(recipeId));
 
-  const options = dirtyOptions ??
-    savedOptions ?? {
-      schema: {},
-      uiSchema: {},
-    };
+  const optionsDefinition = dirtyOptions ?? savedOptions ?? emptyOptions;
 
-  const initialValues = { optionsDefinition: options };
+  const initialValues = { optionsDefinition };
 
   const dispatch = useDispatch();
   const updateRedux = useCallback(

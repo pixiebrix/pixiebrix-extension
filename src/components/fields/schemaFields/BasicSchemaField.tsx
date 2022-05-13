@@ -108,7 +108,8 @@ const BasicSchemaField: SchemaFieldComponent = ({
     ]
   );
 
-  const [{ value }, { error, touched }, { setValue }] = useField(name);
+  const [{ value, onBlur: formikOnBlur }, { error, touched }, { setValue }] =
+    useField(name);
 
   useEffect(() => {
     // Initialize any undefined required fields to prevent inferring an "omit" input
@@ -156,7 +157,10 @@ const BasicSchemaField: SchemaFieldComponent = ({
       as={widgetsRegistry.TemplateToggleWidget}
       inputModeOptions={inputModeOptions}
       setFieldDescription={updateFieldDescription}
-      onBlur={onBlur}
+      onBlur={(event: React.FocusEvent) => {
+        formikOnBlur(event);
+        onBlur();
+      }}
       {...restProps}
       // Pass in schema after spreading props to override the non-normalized schema in props
       schema={normalizedSchema}

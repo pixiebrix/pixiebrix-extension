@@ -219,14 +219,20 @@ export function acquireElement(
   return onNodeRemoved(element, onRemove);
 }
 
+/**
+ * Returns the MessageContext associated with `extension`.
+ */
 export function selectExtensionContext(
   extension: ResolvedExtension
 ): MessageContext {
   return {
+    // The step label will be re-assigned later in reducePipeline
     label: extension.label,
+    extensionLabel: extension.label,
     extensionId: extension.id,
     extensionPointId: extension.extensionPointId,
     deploymentId: extension._deployment?.id,
     blueprintId: extension._recipe?.id,
+    blueprintVersion: extension._recipe?.version,
   };
 }
