@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ComponentProps, useEffect } from "react";
+import React, { ComponentProps } from "react";
 import { ComponentMeta, Story } from "@storybook/react";
 import ServiceEditorModal from "./ServiceEditorModal";
 import { action } from "@storybook/addon-actions";
