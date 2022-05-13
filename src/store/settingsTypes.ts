@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Theme } from "@/hooks/useTheme";
+import { Theme } from "@/options/constants";
 
 export type InstallMode = "local" | "remote";
 

@@ -19,7 +19,7 @@ import { useEffect } from "react";
 import { selectSettings } from "@/store/settingsSelectors";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { DEFAULT_THEME, THEMES } from "@/options/constants";
+import { DEFAULT_THEME, Theme, THEMES } from "@/options/constants";
 import logo from "@img/logo.svg";
 import logoSmall from "@img/logo-small-rounded.svg";
 import aaLogo from "@img/aa-logo.svg";
@@ -35,8 +35,6 @@ type ThemeLogo = {
 type ThemeLogoMap = {
   [key in Theme]: ThemeLogo;
 };
-
-export type Theme = typeof THEMES[number];
 
 const THEME_LOGOS: ThemeLogoMap = {
   default: {

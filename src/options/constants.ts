@@ -20,3 +20,4 @@ import { ApiVersion } from "@/core";
 export const OPTIONS_DEFAULT_RUNTIME_API_VERSION: ApiVersion = "v3";
 export const DEFAULT_THEME = "default";
 export const THEMES = [DEFAULT_THEME, "automation-anywhere"];
+export type Theme = typeof THEMES[number];
