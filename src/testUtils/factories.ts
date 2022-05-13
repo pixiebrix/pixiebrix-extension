@@ -65,18 +65,78 @@ import {
   FrameConnectionState,
 } from "@/pageEditor/context";
 import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
-import { Deployment } from "@/types/contract";
+import { Deployment, UserRole } from "@/types/contract";
 import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
 import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { freshIdentifier } from "@/utils";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
 import { padStart } from "lodash";
+import { AuthState } from "@/auth/authTypes";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
 export const uuidSequence = (n: number) =>
   validateUUID(`${padStart(String(n), 8, "0")}-0000-4000-A000-000000000000`);
+
+export const authStateFactory = define<AuthState>({
+  userId: uuidSequence,
+  email: (n: number) => `user${n}@test.com`,
+  scope: (n: number) => `@user${n}`,
+  isLoggedIn: true,
+  isOnboarded: true,
+  extension: true,
+  organization(n: number) {
+    const id = (1000 + n).toString();
+    return {
+      id,
+      name: `Test Organization ${n}`,
+      scope: `@organization-${n}`,
+    };
+  },
+  organizations(n: number) {
+    return [
+      {
+        id: uuidSequence(n),
+        name: `Test Organization ${n}`,
+        role: UserRole.developer,
+        scope: `@organization-${n}`,
+      },
+      {
+        id: uuidSequence(n * 100),
+        name: `Test Admin Organization ${n * 100}`,
+        role: UserRole.admin,
+        scope: `@organization-${n * 100}`,
+      },
+      {
+        id: uuidSequence(n * 100 + 1),
+        name: `Test Member Organization ${n * 100 + 1}`,
+        role: UserRole.member,
+        scope: `@organization-${n * 100 + 1}`,
+      },
+      {
+        id: uuidSequence(n * 100 + 2),
+        name: `Test Restricted Organization ${n * 100 + 2}`,
+        role: UserRole.restricted,
+        scope: `@organization-${n * 100 + 2}`,
+      },
+      {
+        id: uuidSequence(n * 100 + 3),
+        name: `Test Manager Organization ${n * 100 + 3}`,
+        role: UserRole.manager,
+        scope: `@organization-${n * 100 + 3}`,
+      },
+    ];
+  },
+  groups() {
+    const groups: AuthState["groups"] = [];
+    return groups;
+  },
+  flags() {
+    const flags: AuthState["flags"] = [];
+    return flags;
+  },
+});
 
 export const recipeMetadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),

@@ -22,11 +22,11 @@ import RegistryIdWidget, {
 import { RegistryId } from "@/core";
 import { render, screen } from "@/testUtils/testHelpers";
 import { authActions } from "@/auth/authSlice";
-import testFactory from "@/testUtils/testFactory";
 import userEvent from "@testing-library/user-event";
 import { partition } from "lodash";
 import { UserRole } from "@/types/contract";
 import { validateRegistryId } from "@/types/helpers";
+import { authStateFactory } from "@/testUtils/factories";
 
 describe("getScopeAndId", () => {
   test("normal id", () => {
@@ -71,7 +71,7 @@ describe("RegistryIdWidget", () => {
       setupRedux(dispatch) {
         dispatch(
           authActions.setAuth(
-            testFactory.authState({
+            authStateFactory({
               scope: testUserScope,
             })
           )
@@ -88,7 +88,7 @@ describe("RegistryIdWidget", () => {
 
   test("shows the right organization scopes", async () => {
     const id = `${testUserScope}/${testIdValue}` as RegistryId;
-    const authState = testFactory.authState({
+    const authState = authStateFactory({
       scope: testUserScope,
     });
 
@@ -124,7 +124,7 @@ describe("RegistryIdWidget", () => {
 
   test("sets the id properly", async () => {
     const id = validateRegistryId(`${testUserScope}/${testIdValue}`);
-    const authState = testFactory.authState({
+    const authState = authStateFactory({
       scope: testUserScope,
     });
 
