@@ -148,7 +148,10 @@ describe("normalizeSchema", () => {
       }
     );
 
-    expect(actual.schema).toStrictEqual(getMinimalSchema());
+    expect(actual.schema).toStrictEqual({
+      type: "object",
+      properties: {},
+    });
   });
 
   test("add properties", () => {
