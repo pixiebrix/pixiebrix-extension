@@ -59,7 +59,6 @@ const settingsSlice = createSlice({
       state,
       { payload: { partnerId } }: { payload: { partnerId: string } }
     ) {
-      console.log("setting partnerId:", partnerId);
       state.partnerId = partnerId;
     },
     setTheme(state, { payload: { theme } }: { payload: { theme: string } }) {
