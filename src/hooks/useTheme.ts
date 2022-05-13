@@ -17,8 +17,6 @@
 
 import { useEffect } from "react";
 import { selectSettings } from "@/store/settingsSelectors";
-import { useAsyncState } from "@/hooks/common";
-import { ManualStorageKey, readStorage } from "@/chrome";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { DEFAULT_THEME, THEMES } from "@/options/constants";
@@ -27,8 +25,7 @@ import logoSmall from "@img/logo-small-rounded.svg";
 import aaLogo from "@img/aa-logo.svg";
 import aaLogoSmall from "@img/aa-logo-small.svg";
 import { activatePartnerTheme } from "@/background/messenger/api";
-
-const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
+import { persistor } from "@/options/store";
 
 type ThemeLogo = {
   regular: string;
@@ -63,35 +60,28 @@ export const getThemeLogo = (theme: string): ThemeLogo => {
 };
 
 const useTheme = (): { logo: ThemeLogo } => {
-  const { theme } = useSelector(selectSettings);
+  const { theme, partnerId } = useSelector(selectSettings);
   const dispatch = useDispatch();
-  const [partnerId, isLoading] = useAsyncState(
-    readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed"),
-    [],
-    null
-  );
   const themeLogo = getThemeLogo(theme);
 
   useEffect(() => {
-    // Initialize initial theme state with the user's partner theme, if any
-    if (theme === null && !isLoading) {
-      dispatch(
-        settingsSlice.actions.setTheme({
-          theme: partnerId ?? DEFAULT_THEME,
-        })
-      );
-    }
+    dispatch(
+      settingsSlice.actions.setTheme({
+        theme: partnerId ?? DEFAULT_THEME,
+      })
+    );
 
     for (const theme of THEMES) {
       document.documentElement.classList.remove(theme);
     }
 
     void activatePartnerTheme();
+    void persistor.flush();
 
     if (theme && theme !== DEFAULT_THEME && THEMES.includes(theme)) {
       document.documentElement.classList.add(theme);
     }
-  }, [isLoading, dispatch, partnerId, theme]);
+  }, [dispatch, partnerId, theme]);
 
   return {
     logo: themeLogo,

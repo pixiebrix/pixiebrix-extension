@@ -19,7 +19,7 @@ import styles from "./AdvancedSettings.module.scss";
 
 import { Button, Card, Form } from "react-bootstrap";
 import { DEFAULT_SERVICE_URL, useConfiguredHost } from "@/services/baseService";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { clearExtensionAuth } from "@/auth/token";
 import chromeP from "webext-polyfill-kinda";
 import { isEmpty } from "lodash";
@@ -28,12 +28,29 @@ import useFlags from "@/hooks/useFlags";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
-import { DEFAULT_THEME } from "@/options/constants";
+import { useAsyncState } from "@/hooks/common";
+import { ManualStorageKey, readStorage } from "@/chrome";
+
+const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
 
 const AdvancedSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { restrict, permit, flagOn } = useFlags();
-  const { theme } = useSelector(selectSettings);
+  const { partnerId: configuredPartnerId } = useSelector(selectSettings);
+  const [partnerId, isLoading] = useAsyncState(
+    readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed"),
+    [],
+    null
+  );
+
+  useEffect(() => {
+    if (partnerId === null && !isLoading) {
+      // Initialize initial partner id with the one in managed storage, if any
+      dispatch(
+        settingsSlice.actions.setPartnerId({ partnerId: partnerId ?? "" })
+      );
+    }
+  }, [dispatch, isLoading, partnerId]);
 
   const [serviceURL, setServiceURL] = useConfiguredHost();
 
@@ -104,17 +121,13 @@ const AdvancedSettings: React.FunctionComponent = () => {
               <Form.Control
                 type="text"
                 placeholder="my-company"
-                defaultValue={theme === DEFAULT_THEME ? "" : theme}
+                defaultValue={configuredPartnerId ?? ""}
                 onBlur={(event: React.ChangeEvent<HTMLInputElement>) => {
                   dispatch(
-                    settingsSlice.actions.setTheme({
-                      theme: event.target.value
-                        ? event.target.value
-                        : DEFAULT_THEME,
+                    settingsSlice.actions.setPartnerId({
+                      partnerId: event.target.value,
                     })
                   );
-                  // might need to use redux-persist flush
-                  // send message via messenger to updateTheme
                 }}
               />
               <Form.Text className="text-muted">
