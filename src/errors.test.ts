@@ -35,7 +35,7 @@ import { deserializeError, serializeError } from "serialize-error";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
 import { matchesAnyPattern } from "@/utils";
 import { isPlainObject } from "@reduxjs/toolkit";
-import { ClientRequestError, RemoteServiceError } from "./services/errors";
+import { ClientRequestError, RemoteServiceError } from "@/services/errors";
 import { AxiosError } from "axios";
 
 const TEST_MESSAGE = "Test message";
