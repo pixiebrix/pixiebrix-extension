@@ -51,9 +51,13 @@ const THEME_LOGOS: ThemeLogoMap = {
   },
 };
 
+const isValidTheme = (theme: string): theme is Theme =>
+  THEMES.includes(theme as Theme);
+
 export const getThemeLogo = (theme: string): ThemeLogo => {
-  if (theme in THEME_LOGOS) {
-    return THEME_LOGOS[theme as Theme];
+  if (isValidTheme(theme)) {
+    // eslint-disable-next-line security/detect-object-injection -- theme is type Theme, a union type of string literal
+    return THEME_LOGOS[theme];
   }
 
   // eslint-disable-next-line security/detect-object-injection -- theme not user defined
