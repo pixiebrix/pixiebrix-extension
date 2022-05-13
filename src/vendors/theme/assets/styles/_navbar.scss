@@ -32,10 +32,6 @@
     :host-context(.sidebar-dark) & {
       background: $sidebar-dark-bg;
     }
-
-    @media (max-width: 991px) {
-      width: 55px;
-    }
     .navbar-brand {
       color: lighten(color(gray-dark), 20%);
       font-size: 1.5rem;
@@ -97,9 +93,6 @@
       padding-right: 20px;
       &:not(.navbar-toggler-right) {
         font-size: 1.5rem;
-        @media (max-width: 991px) {
-          display: none;
-        }
       }
       &.navbar-toggler-right {
         @media (max-width: 991px) {
@@ -312,36 +305,13 @@
         }
       }
       &.navbar-nav-right {
-        @media (min-width: 992px) {
-          margin-left: auto;
-          .rtl & {
-            margin-left: 0;
-            margin-right: auto;
-          }
+        margin-left: auto;
+        .rtl & {
+          margin-left: 0;
+          margin-right: auto;
         }
       }
     }
-  }
-}
-@media (max-width: 991px) {
-  .navbar {
-    flex-direction: row;
-    .navbar-brand-wrapper {
-      width: 75px;
-      .navbar-brand {
-        &.brand-logo {
-          display: none;
-        }
-        &.brand-logo-mini {
-          display: inline-block;
-        }
-      }
-    }
-  }
-
-  .navbar-collapse {
-    display: flex;
-    margin-top: 0.5rem;
   }
 }
 

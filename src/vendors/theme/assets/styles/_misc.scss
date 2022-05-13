@@ -48,15 +48,11 @@ body {
   transition: width $action-transition-duration
       $action-transition-timing-function,
     margin $action-transition-duration $action-transition-timing-function;
-
-  @media (min-width: 992px) {
-    width: calc(100% - #{$sidebar-width-lg});
-    margin-left: $sidebar-width-lg;
-    .sidebar-icon-only & {
-      margin-left: $sidebar-width-icon;
-    }
+  width: calc(100% - #{$sidebar-width-lg});
+  margin-left: $sidebar-width-lg;
+  .sidebar-icon-only & {
+    margin-left: $sidebar-width-icon;
   }
-
   &.main-panel-only {
     transition: none;
   }
