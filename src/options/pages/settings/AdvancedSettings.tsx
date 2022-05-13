@@ -44,7 +44,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
   );
 
   useEffect(() => {
-    if (partnerId === null && !isLoading) {
+    if (configuredPartnerId === null && !isLoading) {
       // Initialize initial partner id with the one in managed storage, if any
       dispatch(
         settingsSlice.actions.setPartnerId({ partnerId: partnerId ?? "" })

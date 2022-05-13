@@ -63,6 +63,7 @@ const useTheme = (): { logo: ThemeLogo } => {
   const themeLogo = getThemeLogo(theme);
 
   useEffect(() => {
+    // console.log("hi theme:", theme, partnerId);
     dispatch(
       settingsSlice.actions.setTheme({
         theme: partnerId ?? DEFAULT_THEME,
@@ -76,7 +77,7 @@ const useTheme = (): { logo: ThemeLogo } => {
     void activatePartnerTheme();
     void persistor.flush();
 
-    if (theme && theme !== DEFAULT_THEME && THEMES.includes(theme)) {
+    if (theme && theme !== DEFAULT_THEME) {
       document.documentElement.classList.add(theme);
     }
   }, [dispatch, partnerId, theme]);
