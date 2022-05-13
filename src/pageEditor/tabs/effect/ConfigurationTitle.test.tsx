@@ -30,6 +30,7 @@ test("renders block name", () => {
 
 test("renders document link when How To is not empty", () => {
   const listing = {
+    id: "test_listing_id",
     instructions: "Test how to",
   } as MarketplaceListing;
   const rendered = render(
@@ -40,6 +41,7 @@ test("renders document link when How To is not empty", () => {
 
 test("renders document link when Additional resources is not empty", () => {
   const listing = {
+    id: "test_listing_id",
     assets: [
       {
         url: "https://example.com/test.pdf",

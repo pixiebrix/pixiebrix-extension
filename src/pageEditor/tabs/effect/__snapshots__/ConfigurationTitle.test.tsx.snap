@@ -27,7 +27,7 @@ exports[`renders document link when Additional resources is not empty 1`] = `
       </span>
     </span>
     <a
-      href="https://www.pixiebrix.com/marketplace/undefined/"
+      href="https://www.pixiebrix.com/marketplace/test_listing_id/"
       rel="noreferrer"
       target="_blank"
     >
@@ -66,7 +66,7 @@ exports[`renders document link when How To is not empty 1`] = `
       </span>
     </span>
     <a
-      href="https://www.pixiebrix.com/marketplace/undefined/"
+      href="https://www.pixiebrix.com/marketplace/test_listing_id/"
       rel="noreferrer"
       target="_blank"
     >
