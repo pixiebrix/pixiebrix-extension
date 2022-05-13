@@ -290,12 +290,14 @@ export function hasCancelRootCause(error: unknown): boolean {
 export function isSpecificError<
   ErrorType extends new (...args: unknown[]) => Error
 >(error: unknown, errorType: ErrorType): error is InstanceType<ErrorType> {
-  if (errorType.name === "ClientRequestError" && isObject(error)) {
-    // `ClientRequestError` is the AxiosError wrapper thanks to `enrichAxiosErrors`.
-    // We should never actually want to find the AxiosError because `ClientRequestError` is
-    // already more specific and includes more information about what the error is.
-    // Additionally AxiosErrors are not real Error class instances, so they're awkward to catch.
-    return isAxiosError(error.cause);
+  // Catch 2 common error subclass groups. Necessary until we drop support for serialized errors:
+  // https://github.com/sindresorhus/serialize-error/issues/72
+  if (errorType.name === "ClientRequestError") {
+    return isClientRequestError(error);
+  }
+
+  if (errorType.name === "BusinessError") {
+    return isBusinessError(error);
   }
 
   return isErrorObject(error) && error.name === errorType.name;
@@ -352,14 +354,32 @@ const BUSINESS_ERROR_NAMES = new Set([
 
 /**
  * Returns true iff the root cause of the error was a BusinessError.
- * @param error the error object
- * @see BUSINESS_ERROR_CLASSES
+ * @see BUSINESS_ERROR_NAMES
+ * @deprecated Prefer `selectSpecificError(error, BusinessError)`
  */
 export function hasBusinessRootCause(error: unknown): boolean {
-  return (
-    isErrorObject(error) &&
-    (BUSINESS_ERROR_NAMES.has(error.name) || hasBusinessRootCause(error.cause))
-  );
+  return Boolean(selectSpecificError(error, BusinessError));
+}
+
+export function isBusinessError(error: unknown): boolean {
+  return isErrorObject(error) && BUSINESS_ERROR_NAMES.has(error.name);
+}
+
+// List all ClientRequestError subclasses as text:
+// - because not all of our errors can be deserialized with the right class:
+//   https://github.com/sindresorhus/serialize-error/issues/72
+const CLIENT_REQUEST_ERROR_NAMES = new Set([
+  "RemoteServiceError",
+  "ClientNetworkPermissionError",
+  "ClientNetworkError",
+]);
+
+/**
+ * Returns true if the error was a ClientRequestError
+ * @see CLIENT_REQUEST_ERROR_NAMES
+ */
+export function isClientRequestError(error: unknown): boolean {
+  return isErrorObject(error) && CLIENT_REQUEST_ERROR_NAMES.has(error.name);
 }
 
 // Copy of axios.isAxiosError, without risking to import the whole untreeshakeable axios library
