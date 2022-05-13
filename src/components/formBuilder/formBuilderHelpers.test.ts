@@ -19,8 +19,8 @@ import { KEYS_OF_UI_SCHEMA, Schema } from "@/core";
 import { produce } from "immer";
 import {
   DEFAULT_FIELD_TYPE,
-  MINIMAL_SCHEMA,
-  MINIMAL_UI_SCHEMA,
+  getMinimalSchema,
+  getMinimalUiSchema,
   normalizeSchema,
   getNormalizedUiOrder,
   produceSchemaOnPropertyNameChange,
@@ -87,7 +87,7 @@ describe("produceSchemaOnPropertyNameChange", () => {
 
 describe("validateNextPropertyName", () => {
   const schema: Schema = {
-    ...MINIMAL_SCHEMA,
+    ...getMinimalSchema(),
     properties: {
       field1: {
         title: "Field 1",
@@ -141,14 +141,14 @@ describe("normalizeSchema", () => {
     const actual = produce(
       {
         schema,
-        uiSchema: MINIMAL_UI_SCHEMA,
+        uiSchema: getMinimalUiSchema(),
       } as RJSFSchema,
       (draft) => {
         normalizeSchema(draft);
       }
     );
 
-    expect(actual.schema).toStrictEqual(MINIMAL_SCHEMA);
+    expect(actual.schema).toStrictEqual(getMinimalSchema());
   });
 
   test("add properties", () => {
@@ -159,7 +159,7 @@ describe("normalizeSchema", () => {
     const actual = produce(
       {
         schema,
-        uiSchema: MINIMAL_UI_SCHEMA,
+        uiSchema: getMinimalUiSchema(),
       } as RJSFSchema,
       (draft) => {
         normalizeSchema(draft);
@@ -186,7 +186,7 @@ describe("normalizeSchema", () => {
     const actual = produce(
       {
         schema,
-        uiSchema: MINIMAL_UI_SCHEMA,
+        uiSchema: getMinimalUiSchema(),
       } as RJSFSchema,
       (draft) => {
         normalizeSchema(draft);
@@ -242,7 +242,7 @@ describe("produceSchemaOnUiTypeChange", () => {
   test("converts Dropdown to Dropdown with labels", () => {
     const schema: RJSFSchema = {
       schema: {
-        ...MINIMAL_SCHEMA,
+        ...getMinimalSchema(),
         properties: {
           field1: {
             title: "Field 1",
@@ -252,7 +252,7 @@ describe("produceSchemaOnUiTypeChange", () => {
         },
       },
       uiSchema: {
-        ...MINIMAL_UI_SCHEMA,
+        ...getMinimalUiSchema(),
         field1: {
           [UI_WIDGET]: "select",
         },
@@ -288,7 +288,7 @@ describe("produceSchemaOnUiTypeChange", () => {
   test("converts Dropdown with labels to Dropdown", () => {
     const schema: RJSFSchema = {
       schema: {
-        ...MINIMAL_SCHEMA,
+        ...getMinimalSchema(),
         properties: {
           field1: {
             title: "Field 1",
@@ -311,7 +311,7 @@ describe("produceSchemaOnUiTypeChange", () => {
         },
       },
       uiSchema: {
-        ...MINIMAL_UI_SCHEMA,
+        ...getMinimalUiSchema(),
         field1: {
           [UI_WIDGET]: "select",
         },

@@ -1,4 +1,4 @@
-import { MINIMAL_SCHEMA, MINIMAL_UI_SCHEMA } from "./formBuilderHelpers";
+import { getMinimalSchema, getMinimalUiSchema } from "./formBuilderHelpers";
 import { RJSFSchema } from "./formBuilderTypes";
 
 export const initOneFieldSchemaCase: (fieldName: string) => RJSFSchema = (
@@ -15,7 +15,7 @@ export const initOneFieldSchemaCase: (fieldName: string) => RJSFSchema = (
         },
       },
     },
-    uiSchema: MINIMAL_UI_SCHEMA,
+    uiSchema: getMinimalUiSchema(),
   } as RJSFSchema);
 
 export const initAddingFieldCases: () => Array<
@@ -24,8 +24,8 @@ export const initAddingFieldCases: () => Array<
   [
     null,
     {
-      schema: MINIMAL_SCHEMA,
-      uiSchema: MINIMAL_UI_SCHEMA,
+      schema: getMinimalSchema(),
+      uiSchema: getMinimalUiSchema(),
     },
     {
       schema: {

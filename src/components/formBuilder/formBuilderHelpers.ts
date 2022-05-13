@@ -28,16 +28,14 @@ import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 import { freshIdentifier } from "@/utils";
 import { produce } from "immer";
 import { WritableDraft } from "immer/dist/types/types-external";
-import { cloneDeep } from "lodash";
 
-export const MINIMAL_SCHEMA: Schema = {
+export const getMinimalSchema: () => Schema = () => ({
   type: "object",
-  properties: {},
-};
+});
 
-export const MINIMAL_UI_SCHEMA: UiSchema = {
+export const getMinimalUiSchema: () => UiSchema = () => ({
   [UI_ORDER]: ["*"],
-};
+});
 
 export const DEFAULT_FIELD_TYPE = "string";
 
@@ -332,13 +330,9 @@ export const produceSchemaOnUiTypeChange = (
  */
 export const normalizeSchema = (rjsfSchemaDraft: WritableDraft<RJSFSchema>) => {
   if (rjsfSchemaDraft.schema == null) {
-    // Always create a deep copy of the MINIMAL_SCHEMA
-    // because this object will be mutated in the produce function that called for normalization
-    rjsfSchemaDraft.schema = cloneDeep(MINIMAL_SCHEMA);
-    return;
+    rjsfSchemaDraft.schema = getMinimalSchema();
   }
 
-  // Should we initialize the 'required' field?
   if (
     typeof rjsfSchemaDraft.schema.required !== "undefined" &&
     !Array.isArray(rjsfSchemaDraft.schema.required)

@@ -56,8 +56,8 @@ import { UnknownObject } from "@/types";
 import { isExpression } from "@/runtime/mapArgs";
 import { RecipeDefinition } from "@/types/definitions";
 import {
-  MINIMAL_SCHEMA,
-  MINIMAL_UI_SCHEMA,
+  getMinimalSchema,
+  getMinimalUiSchema,
 } from "@/components/formBuilder/formBuilderHelpers";
 import {
   hasInnerExtensionPoint,
@@ -149,8 +149,8 @@ export function initRecipeOptionsIfNeeded<TElement extends BaseFormState>(
 
     if (recipe?.options == null) {
       element.optionsDefinition = {
-        schema: MINIMAL_SCHEMA,
-        uiSchema: MINIMAL_UI_SCHEMA,
+        schema: getMinimalSchema(),
+        uiSchema: getMinimalUiSchema(),
       };
     } else {
       element.optionsDefinition = {
