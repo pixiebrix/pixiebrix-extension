@@ -19,6 +19,7 @@ import { IBlock } from "@/core";
 import { MarketplaceListing } from "@/types/contract";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { isEmpty } from "lodash";
 import React from "react";
 
 type ConfigurationTitleProps = {
@@ -36,8 +37,9 @@ const ConfigurationTitle: React.FunctionComponent<ConfigurationTitleProps> = ({
     </span>
   );
 
-  return (listing?.instructions != null && listing?.instructions != "") ||
-    listing?.assets?.length > 0 ? (
+  return isEmpty(listing?.instructions) && isEmpty(listing?.assets) ? (
+    configurationTitle
+  ) : (
     <div className="d-flex justify-content-between">
       {configurationTitle}
       <a
@@ -48,8 +50,6 @@ const ConfigurationTitle: React.FunctionComponent<ConfigurationTitleProps> = ({
         <FontAwesomeIcon icon={faExternalLinkAlt} /> View Documentation
       </a>
     </div>
-  ) : (
-    configurationTitle
   );
 };
 
