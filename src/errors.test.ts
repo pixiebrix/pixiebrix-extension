@@ -341,10 +341,12 @@ describe("selectSpecificError", () => {
         message: "fourth",
       });
 
-      // Even though `RemoteServiceError` is a `BusinessError`, it isn't caught because we only
-      // match errors via `name` property. This is specifically because we must support
-      // serialized errors. Ideally this test should pass once we drop support for serialized errors.
-      expect(selectSpecificError(error, BusinessError)).toBeUndefined();
+      // All BusinessErrors can be caught with this thanks to dedicated detection code,
+      // even if we do not currently have `instanceof`-based detection
+      expect(selectSpecificError(error, BusinessError)).toMatchObject({
+        name: "RemoteServiceError",
+        message: "fourth",
+      });
     }
   });
 });
