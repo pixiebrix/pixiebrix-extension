@@ -26,6 +26,10 @@ import aaLogo from "@img/aa-logo.svg";
 import aaLogoSmall from "@img/aa-logo-small.svg";
 import { activatePartnerTheme } from "@/background/messenger/api";
 import { persistor } from "@/options/store";
+import { useAsyncState } from "@/hooks/common";
+import { ManualStorageKey, readStorage } from "@/chrome";
+
+const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
 
 type ThemeLogo = {
   regular: string;
@@ -62,8 +66,24 @@ const useTheme = (): { logo: ThemeLogo } => {
   const dispatch = useDispatch();
   const themeLogo = getThemeLogo(theme);
 
+  const [managedPartnerId, isLoading] = useAsyncState(
+    readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed"),
+    [],
+    null
+  );
+
   useEffect(() => {
-    // console.log("hi theme:", theme, partnerId);
+    if (partnerId === null && !isLoading) {
+      // Initialize initial partner id with the one in managed storage, if any
+      dispatch(
+        settingsSlice.actions.setPartnerId({
+          partnerId: managedPartnerId ?? "",
+        })
+      );
+    }
+  }, [partnerId, dispatch, isLoading, managedPartnerId]);
+
+  useEffect(() => {
     dispatch(
       settingsSlice.actions.setTheme({
         theme: partnerId ?? DEFAULT_THEME,
@@ -80,7 +100,7 @@ const useTheme = (): { logo: ThemeLogo } => {
     if (theme && theme !== DEFAULT_THEME) {
       document.documentElement.classList.add(theme);
     }
-  }, [dispatch, partnerId, theme]);
+  }, [dispatch, managedPartnerId, partnerId, theme]);
 
   return {
     logo: themeLogo,
