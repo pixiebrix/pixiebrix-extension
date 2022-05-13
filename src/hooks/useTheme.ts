@@ -26,6 +26,7 @@ import logo from "@img/logo.svg";
 import logoSmall from "@img/logo-small-rounded.svg";
 import aaLogo from "@img/aa-logo.svg";
 import aaLogoSmall from "@img/aa-logo-small.svg";
+import { activatePartnerTheme } from "@/background/messenger/api";
 
 const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
 
@@ -51,13 +52,14 @@ const THEME_LOGOS: ThemeLogoMap = {
   },
 };
 
-const getThemeLogo = (theme: string): ThemeLogo | null => {
+export const getThemeLogo = (theme: string): ThemeLogo => {
   if (theme in THEME_LOGOS) {
     // eslint-disable-next-line security/detect-object-injection -- theme is user defined, but restricted to themes
     return THEME_LOGOS[theme];
   }
 
-  return null;
+  // eslint-disable-next-line security/detect-object-injection -- theme not user defined
+  return THEME_LOGOS[DEFAULT_THEME];
 };
 
 const useTheme = (): { logo: ThemeLogo } => {
@@ -83,6 +85,8 @@ const useTheme = (): { logo: ThemeLogo } => {
     for (const theme of THEMES) {
       document.documentElement.classList.remove(theme);
     }
+
+    void activatePartnerTheme();
 
     if (theme && theme !== DEFAULT_THEME && THEMES.includes(theme)) {
       document.documentElement.classList.add(theme);

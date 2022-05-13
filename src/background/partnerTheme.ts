@@ -15,8 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// init/update partner theme
+import { getSettingsState } from "@/store/settingsStorage";
+import { getThemeLogo } from "@/hooks/useTheme";
 
-// getSettingsState()
-// if partner theme
-// setIcon
+async function setToolbarIcon(): Promise<void> {
+  const { theme } = await getSettingsState();
+  const logo = getThemeLogo(theme);
+  (chrome.browserAction ?? chrome.action).setIcon({ path: logo.small });
+}
+
+export default function initPartnerTheme() {
+  void setToolbarIcon();
+}

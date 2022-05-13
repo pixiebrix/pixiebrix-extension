@@ -36,6 +36,8 @@ export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT", bg);
 export const whoAmI = getMethod("ECHO_SENDER", bg);
 export const waitForTargetByUrl = getMethod("WAIT_FOR_TARGET_BY_URL", bg);
 
+export const activatePartnerTheme = getMethod("ACTIVATE_PARTNER_THEME", bg);
+
 export const activateTab = getMethod("ACTIVATE_TAB", bg);
 export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);
 
@@ -43,7 +45,6 @@ export const closeTab = getMethod("CLOSE_TAB", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
 export const readGoogleBigQuery = getMethod("GOOGLE_BIGQUERY_READ", bg);
-// updateTheme - put me somewhere nice
 
 export const sheets = {
   getTabNames: getMethod("GOOGLE_SHEETS_GET_TAB_NAMES", bg),

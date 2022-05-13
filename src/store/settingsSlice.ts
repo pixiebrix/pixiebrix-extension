@@ -26,6 +26,7 @@ const initialSettingsState: SettingsState = {
   nextUpdate: null as number,
   suggestElements: false,
   browserWarningDismissed: false,
+  partnerId: null,
   theme: null,
 };
 

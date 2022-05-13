@@ -47,6 +47,8 @@ import { getRecord, setRecord } from "@/background/dataStore";
 import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
 import { reactivateEveryTab } from "@/background/navigation";
+import initPartnerTheme from "@/background/partnerTheme";
+
 import {
   clearExtensionDebugLogs,
   clearLogs,
@@ -88,6 +90,8 @@ declare global {
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
     OPEN_POPUP_PROMPT: typeof openPopupPrompt;
+
+    ACTIVATE_PARTNER_THEME: typeof initPartnerTheme;
 
     ECHO_SENDER: typeof whoAmI;
     WAIT_FOR_TARGET_BY_URL: typeof waitForTargetByUrl;
@@ -149,7 +153,8 @@ export default function registerMessenger(): void {
     GOOGLE_SHEETS_APPEND_ROWS: sheets.appendRows,
     GOOGLE_SHEETS_BATCH_UPDATE: sheets.batchUpdate,
     GOOGLE_SHEETS_BATCH_GET: sheets.batchGet,
-    // ACTIVATE_THEME
+
+    ACTIVATE_PARTNER_THEME: initPartnerTheme,
 
     GET_AVAILABLE_VERSION: getAvailableVersion,
     INJECT_SCRIPT: ensureContentScript,

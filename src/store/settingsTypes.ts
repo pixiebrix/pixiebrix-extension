@@ -38,6 +38,11 @@ export type SettingsState = SkunkworksSettings & {
   browserWarningDismissed: boolean;
 
   /**
+   * Partner id for the user, if any
+   */
+  partnerId: string | null;
+
+  /**
    * Theme name for the extension
    */
   theme: string | null;
