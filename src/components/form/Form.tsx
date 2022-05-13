@@ -101,7 +101,8 @@ const defaultRenderStatus: RenderStatus = ({ status }) => (
 );
 
 const Form: React.FC<FormProps> = ({
-  initialValues,
+  // Default to {} to be defensive against callers that pass through null/undefined form state when uninitialized
+  initialValues = {},
   validationSchema,
   validateOnMount,
   enableReinitialize,

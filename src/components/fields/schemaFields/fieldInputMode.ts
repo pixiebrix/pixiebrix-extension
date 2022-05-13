@@ -30,6 +30,12 @@ export type FieldInputMode =
   | "select"
   | "omit"; // An input option to remove a property
 
+/**
+ * Try to infer the field toggle input mode from the current value of the field.
+ * @param fieldConfig the current state/configuration of the field
+ * @param fieldName the name of the field in the configuration
+ * @param fieldSchema the JSON Schema for the field
+ */
 export function inferInputMode(
   fieldConfig: UnknownObject,
   fieldName: string,
