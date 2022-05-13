@@ -53,8 +53,7 @@ const THEME_LOGOS: ThemeLogoMap = {
 
 export const getThemeLogo = (theme: string): ThemeLogo => {
   if (theme in THEME_LOGOS) {
-    // eslint-disable-next-line security/detect-object-injection -- theme is user defined, but restricted to themes
-    return THEME_LOGOS[theme];
+    return THEME_LOGOS[theme as Theme];
   }
 
   // eslint-disable-next-line security/detect-object-injection -- theme not user defined
