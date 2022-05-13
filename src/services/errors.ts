@@ -103,6 +103,30 @@ export class RemoteServiceError extends ClientRequestError {
 }
 
 /**
+ * An error caused by a strict CSP policy.
+ */
+export class CSPPolicyError extends ClientRequestError {
+  override name = "CSPPolicyError";
+  readonly blockedURI: string;
+  readonly policy: string;
+
+  constructor(
+    message: string,
+    { blockedURI, policy, cause }: CSPPolicyErrorOptions
+  ) {
+    super(message, cause);
+    this.blockedURI = blockedURI;
+    this.policy = policy;
+  }
+}
+
+interface CSPPolicyErrorOptions {
+  blockedURI: string;
+  policy: string;
+  cause: AxiosError;
+}
+
+/**
  * An error triggered by a failed network request due to missing permissions
  *
  * - Blocked by browser due to CORS

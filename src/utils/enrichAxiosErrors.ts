@@ -27,8 +27,10 @@ import { assertHttpsUrl } from "@/utils";
 import {
   ClientNetworkError,
   ClientNetworkPermissionError,
+  CSPPolicyError,
   RemoteServiceError,
 } from "@/services/errors";
+import { getLastCspViolation } from "./cspCatcher";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const SERVICE_URL = process.env.SERVICE_URL;
@@ -80,6 +82,15 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
       "Insufficient browser permissions to make request.",
       error
     );
+  }
+
+  const cspEvent = await getLastCspViolation(url.href);
+  if (cspEvent) {
+    throw new CSPPolicyError("HTTP request blocked by site’s CSP", {
+      cause: error,
+      blockedURI: cspEvent.blockedURI,
+      policy: cspEvent.originalPolicy,
+    });
   }
 
   throw new ClientNetworkError(NO_RESPONSE_MESSAGE, error);
