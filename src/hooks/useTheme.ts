@@ -28,6 +28,7 @@ import { activatePartnerTheme } from "@/background/messenger/api";
 import { persistor } from "@/options/store";
 import { useAsyncState } from "@/hooks/common";
 import { ManualStorageKey, readStorage } from "@/chrome";
+import { isValidTheme } from "@/utils/themeUtils";
 
 const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
 
@@ -51,9 +52,6 @@ const THEME_LOGOS: ThemeLogoMap = {
   },
 };
 
-const isValidTheme = (theme: string): theme is Theme =>
-  THEMES.includes(theme as Theme);
-
 export const getThemeLogo = (theme: string): ThemeLogo => {
   if (isValidTheme(theme)) {
     // eslint-disable-next-line security/detect-object-injection -- theme is type Theme, a union type of string literal
@@ -64,10 +62,9 @@ export const getThemeLogo = (theme: string): ThemeLogo => {
   return THEME_LOGOS[DEFAULT_THEME];
 };
 
-const useTheme = (): { logo: ThemeLogo } => {
+export const useGetTheme = (): Theme => {
   const { theme, partnerId } = useSelector(selectSettings);
   const dispatch = useDispatch();
-  const themeLogo = getThemeLogo(theme);
 
   const [managedPartnerId, isLoading] = useAsyncState(
     readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed"),
@@ -92,7 +89,15 @@ const useTheme = (): { logo: ThemeLogo } => {
         theme: partnerId ?? DEFAULT_THEME,
       })
     );
+  }, [dispatch, managedPartnerId, partnerId, theme]);
 
+  return theme;
+};
+
+const useTheme = (theme: Theme): { logo: ThemeLogo } => {
+  const themeLogo = getThemeLogo(theme);
+
+  useEffect(() => {
     for (const theme of THEMES) {
       document.documentElement.classList.remove(theme);
     }
@@ -103,7 +108,7 @@ const useTheme = (): { logo: ThemeLogo } => {
     if (theme && theme !== DEFAULT_THEME) {
       document.documentElement.classList.add(theme);
     }
-  }, [dispatch, managedPartnerId, partnerId, theme]);
+  }, [theme]);
 
   return {
     logo: themeLogo,

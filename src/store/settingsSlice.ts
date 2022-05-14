@@ -19,7 +19,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { SettingsState, SkunkworksSettings } from "@/store/settingsTypes";
 import reportError from "@/telemetry/reportError";
 import { once } from "lodash";
-import { DEFAULT_THEME, Theme, THEMES } from "@/options/constants";
+import { DEFAULT_THEME } from "@/options/constants";
+import { isValidTheme } from "@/utils/themeUtils";
 
 const initialSettingsState: SettingsState = {
   mode: "remote",
@@ -62,8 +63,8 @@ const settingsSlice = createSlice({
       state.partnerId = partnerId;
     },
     setTheme(state, { payload: { theme } }: { payload: { theme: string } }) {
-      if (THEMES.includes(theme)) {
-        state.theme = theme as Theme;
+      if (isValidTheme(theme)) {
+        state.theme = theme;
         return;
       }
 
