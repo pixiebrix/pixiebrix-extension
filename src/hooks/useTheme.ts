@@ -51,9 +51,9 @@ const THEME_LOGOS: ThemeLogoMap = {
   },
 };
 
-const getThemeLogo = (theme: string): ThemeLogo | null =>
+const getThemeLogo = (theme: string): ThemeLogo | undefined =>
   // eslint-disable-next-line security/detect-object-injection -- theme is user defined, but restricted to themes
-  THEME_LOGOS[theme] ?? THEME_LOGOS.default;
+  THEME_LOGOS[theme];
 
 const useTheme = (): { logo: ThemeLogo } => {
   const { theme } = useSelector(selectSettings);
@@ -67,7 +67,7 @@ const useTheme = (): { logo: ThemeLogo } => {
 
   useEffect(() => {
     // Initialize initial theme state with the user's partner theme, if any
-    if (theme === null && !isLoading) {
+    if (theme == null && !isLoading) {
       dispatch(
         settingsSlice.actions.setTheme({
           theme: partnerId ?? DEFAULT_THEME,
@@ -83,7 +83,8 @@ const useTheme = (): { logo: ThemeLogo } => {
   }, [isLoading, dispatch, partnerId, theme]);
 
   return {
-    logo: themeLogo,
+    // eslint-disable-next-line security/detect-object-injection -- Not user-provided
+    logo: themeLogo ?? THEME_LOGOS[DEFAULT_THEME],
   };
 };
 
