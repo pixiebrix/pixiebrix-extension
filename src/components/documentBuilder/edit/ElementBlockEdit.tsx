@@ -18,7 +18,7 @@
 import React from "react";
 import { BlockConfig } from "@/blocks/types";
 import useBlockOptions from "@/hooks/useBlockOptions";
-import { Col, Row } from "react-bootstrap";
+import { Col, Row, Form as BootstrapForm } from "react-bootstrap";
 import BrickModal from "@/components/brickModal/BrickModal";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
@@ -79,7 +79,7 @@ const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
 
   return (
     <>
-      <Row>
+      <BootstrapForm.Group as={Row}>
         <Col>
           <BrickModal
             bricks={renderBlocks}
@@ -87,7 +87,7 @@ const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
           />
         </Col>
         <Col>{blockId}</Col>
-      </Row>
+      </BootstrapForm.Group>
       {BlockOptions && (
         <BlockOptions name={blockConfigName} configKey={"config"} />
       )}

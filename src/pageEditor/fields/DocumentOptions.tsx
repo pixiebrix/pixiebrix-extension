@@ -23,7 +23,7 @@ import DocumentEditor from "@/components/documentBuilder/edit/DocumentEditor";
 import useReduxState from "@/hooks/useReduxState";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
-import { selectNodePreviewActiveElement } from "@/pageEditor/uiState/uiState";
+import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 export const DOCUMENT_ID = validateRegistryId("@pixiebrix/document");

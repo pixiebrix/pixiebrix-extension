@@ -28,8 +28,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import logo from "@img/logo.svg";
-import logoSmall from "@img/logo-small-rounded.svg";
 import { DEFAULT_SERVICE_URL, getBaseURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
 import { isLinked } from "@/auth/token";
@@ -38,6 +36,7 @@ import { toggleSidebar } from "./toggleSidebar";
 import { SettingsState } from "@/store/settingsTypes";
 import cx from "classnames";
 import { selectAuth } from "@/auth/authSelectors";
+import useTheme from "@/hooks/useTheme";
 
 const Navbar: React.FunctionComponent = () => {
   const { email, extension } = useSelector(selectAuth);
@@ -46,6 +45,7 @@ const Navbar: React.FunctionComponent = () => {
   const mode = useSelector<{ settings: SettingsState }, string>(
     ({ settings }) => settings.mode
   );
+  const { logo } = useTheme();
 
   // Use `connectedPending` to optimistically show the toggle
   const showNavbarToggle = mode === "local" || connected || connectedPending;
@@ -54,10 +54,10 @@ const Navbar: React.FunctionComponent = () => {
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
       <div className={cx(styles.collapsedWrapper, "navbar-brand-wrapper")}>
         <Link className="navbar-brand brand-logo" to="/">
-          <img src={logo} alt="PixieBrix logo" />
+          <img src={logo.regular} alt="PixieBrix logo" />
         </Link>
         <Link className="navbar-brand brand-logo-mini" to="/">
-          <img src={logoSmall} alt="PixieBrix mini logo" />
+          <img src={logo.small} alt="PixieBrix mini logo" />
         </Link>
         {showNavbarToggle && (
           <button

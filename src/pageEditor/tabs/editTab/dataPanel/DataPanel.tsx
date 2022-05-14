@@ -21,7 +21,7 @@ import { UUID } from "@/core";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isEmpty, isEqual, pickBy } from "lodash";
 import { useFormikContext } from "formik";
-import { Alert, Button, Nav, Tab } from "react-bootstrap";
+import { Button, Nav, Tab } from "react-bootstrap";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -29,11 +29,7 @@ import BlockPreview, {
   usePreviewInfo,
 } from "@/pageEditor/tabs/effect/BlockPreview";
 import useReduxState from "@/hooks/useReduxState";
-import {
-  faExclamationCircle,
-  faExclamationTriangle,
-  faInfoCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
@@ -48,8 +44,9 @@ import ErrorDisplay from "./ErrorDisplay";
 import PageStateTab from "./PageStateTab";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
-import { selectNodePreviewActiveElement } from "@/pageEditor/uiState/uiState";
+import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import Alert from "@/components/Alert";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -153,6 +150,28 @@ const DataPanel: React.FC<{
     ? document.querySelector(`.${dataPanelStyles.tabContent}`)
     : undefined;
 
+  const isRenderedPanelStale = useMemo(() => {
+    // Only show alert for Panel and Side Panel extensions
+    if (formState.type !== "panel" && formState.type !== "actionPanel") {
+      return false;
+    }
+
+    const trace = traces.find(
+      (trace) => trace.blockInstanceId === block?.instanceId
+    );
+
+    // No traces or no changes since the last render, we are good, no alert
+    if (
+      traces.length === 0 ||
+      trace == null ||
+      isEqual(trace.blockConfig, block)
+    ) {
+      return false;
+    }
+
+    return true;
+  }, [formState, traces, block]);
+
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
       <div className={dataPanelStyles.tabContainer}>
@@ -193,8 +212,7 @@ const DataPanel: React.FC<{
           <DataTab eventKey={DataPanelTabKey.Context} isTraceEmpty={!record}>
             {isInputStale && (
               <Alert variant="warning">
-                <FontAwesomeIcon icon={faExclamationTriangle} /> A previous
-                block has changed, input context may be out of date
+                A previous block has changed, input context may be out of date
               </Alert>
             )}
             <DataTabJsonTree
@@ -247,14 +265,12 @@ const DataPanel: React.FC<{
               <>
                 {record.skippedRun ? (
                   <Alert variant="info">
-                    <FontAwesomeIcon icon={faInfoCircle} /> Error rendering
-                    input arguments, but brick was skipped because condition was
-                    not met
+                    Error rendering input arguments, but brick was skipped
+                    because condition was not met
                   </Alert>
                 ) : (
                   <Alert variant="danger">
-                    <FontAwesomeIcon icon={faExclamationCircle} /> Error
-                    rendering input arguments
+                    Error rendering input arguments
                   </Alert>
                 )}
                 <ErrorDisplay error={record.renderError} />
@@ -263,8 +279,8 @@ const DataPanel: React.FC<{
               <>
                 {isInputStale && (
                   <Alert variant="warning">
-                    <FontAwesomeIcon icon={faExclamationTriangle} /> A previous
-                    block has changed, input context may be out of date
+                    A previous block has changed, input context may be out of
+                    date
                   </Alert>
                 )}
                 <DataTabJsonTree
@@ -284,16 +300,15 @@ const DataPanel: React.FC<{
           >
             {record?.skippedRun && (
               <Alert variant="info">
-                <FontAwesomeIcon icon={faInfoCircle} /> The brick did not run
-                because the condition was not met
+                The brick did not run because the condition was not met
               </Alert>
             )}
             {!record?.skippedRun && outputObj && (
               <>
                 {isCurrentStale && (
                   <Alert variant="warning">
-                    <FontAwesomeIcon icon={faExclamationTriangle} /> This or a
-                    previous brick has changed, output may be out of date
+                    This or a previous brick has changed, output may be out of
+                    date
                   </Alert>
                 )}
                 <DataTabJsonTree
@@ -313,13 +328,19 @@ const DataPanel: React.FC<{
             {/* The value of block.if can be `false`, in this case we also need to show the warning */}
             {block.if != null && (
               <Alert variant="info">
-                <FontAwesomeIcon icon={faInfoCircle} /> This brick has a
-                condition. The brick will not execute if the condition is not
-                met
+                This brick has a condition. The brick will not execute if the
+                condition is not met
               </Alert>
             )}
             {showFormPreview || showDocumentPreview ? (
               <ErrorBoundary>
+                {isRenderedPanelStale && (
+                  <Alert variant="info">
+                    The rendered{" "}
+                    {formState.type === "panel" ? "Panel" : "Sidebar Panel"} is
+                    out of date with the preview
+                  </Alert>
+                )}
                 {showFormPreview ? (
                   <div className={dataPanelStyles.selectablePreviewContainer}>
                     <FormPreview

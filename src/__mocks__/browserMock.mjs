@@ -15,20 +15,4 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.button {
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-  color: #6562aa;
-
-  &:hover {
-    color: #4d4b8b;
-    background-color: #d1c2d7;
-  }
-}
-
-.logo {
-  // see _themes.scss
-  height: var(--logo-height);
-  padding: 0 1.5rem;
-}
+export default {};

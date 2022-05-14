@@ -26,10 +26,11 @@ export function selectOrganizations(
   }
 
   return organizationMemberships.map(
-    ({ organization, organization_name, role }) => ({
+    ({ organization, organization_name, role, scope }) => ({
       id: organization,
       name: organization_name,
       role,
+      scope,
     })
   );
 }

@@ -24,7 +24,7 @@ import { uuidv4 } from "@/types/helpers";
 import { produce } from "immer";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
-import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
+import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";

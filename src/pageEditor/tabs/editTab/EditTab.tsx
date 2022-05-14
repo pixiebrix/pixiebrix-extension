@@ -40,10 +40,8 @@ import {
   NodeId,
 } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  FOUNDATION_NODE_ID,
-  selectActiveNodeId,
-} from "@/pageEditor/uiState/uiState";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
+import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
 import ApiVersionField from "@/pageEditor/fields/ApiVersionField";
 import useBlockPipelineActions from "@/pageEditor/tabs/editTab/useBlockPipelineActions";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
