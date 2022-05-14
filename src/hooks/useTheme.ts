@@ -57,7 +57,7 @@ const getThemeLogo = (theme: string): ThemeLogo | null => {
     return THEME_LOGOS[theme];
   }
 
-  return null;
+  return THEME_LOGOS.default;
 };
 
 const useTheme = (): { logo: ThemeLogo } => {
