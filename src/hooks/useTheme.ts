@@ -51,14 +51,9 @@ const THEME_LOGOS: ThemeLogoMap = {
   },
 };
 
-const getThemeLogo = (theme: string): ThemeLogo | null => {
-  if (theme in THEME_LOGOS) {
-    // eslint-disable-next-line security/detect-object-injection -- theme is user defined, but restricted to themes
-    return THEME_LOGOS[theme];
-  }
-
-  return THEME_LOGOS.default;
-};
+const getThemeLogo = (theme: string): ThemeLogo | null =>
+  // eslint-disable-next-line security/detect-object-injection -- theme is user defined, but restricted to themes
+  THEME_LOGOS[theme] ?? THEME_LOGOS.default;
 
 const useTheme = (): { logo: ThemeLogo } => {
   const { theme } = useSelector(selectSettings);
@@ -80,9 +75,7 @@ const useTheme = (): { logo: ThemeLogo } => {
       );
     }
 
-    for (const theme of THEMES) {
-      document.documentElement.classList.remove(theme);
-    }
+    document.documentElement.classList.remove(...THEMES);
 
     if (theme && theme !== DEFAULT_THEME && THEMES.includes(theme)) {
       document.documentElement.classList.add(theme);
