@@ -62,9 +62,10 @@ export const getThemeLogo = (theme: string): ThemeLogo => {
   return THEME_LOGOS[DEFAULT_THEME];
 };
 
-export const useGetTheme = (): Theme => {
+const useTheme = (): { logo: ThemeLogo } => {
   const { theme, partnerId } = useSelector(selectSettings);
   const dispatch = useDispatch();
+  const themeLogo = getThemeLogo(theme);
 
   const [managedPartnerId, isLoading] = useAsyncState(
     readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed"),
@@ -89,15 +90,7 @@ export const useGetTheme = (): Theme => {
         theme: partnerId ?? DEFAULT_THEME,
       })
     );
-  }, [dispatch, managedPartnerId, partnerId, theme]);
 
-  return theme;
-};
-
-const useTheme = (theme: Theme): { logo: ThemeLogo } => {
-  const themeLogo = getThemeLogo(theme);
-
-  useEffect(() => {
     for (const theme of THEMES) {
       document.documentElement.classList.remove(theme);
     }
