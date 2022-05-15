@@ -62,6 +62,12 @@ export const getThemeLogo = (theme: string): ThemeLogo => {
   return THEME_LOGOS[DEFAULT_THEME];
 };
 
+const activateBackgroundTheme = async (): Promise<void> => {
+  // Flush the Redux state to localStorage to ensure the background page sees the latest state
+  await persistor.flush();
+  await activatePartnerTheme();
+};
+
 const useTheme = (): { logo: ThemeLogo } => {
   const { theme, partnerId } = useSelector(selectSettings);
   const dispatch = useDispatch();
@@ -91,17 +97,16 @@ const useTheme = (): { logo: ThemeLogo } => {
       })
     );
 
+    void activateBackgroundTheme();
+
     for (const theme of THEMES) {
       document.documentElement.classList.remove(theme);
     }
 
-    void activatePartnerTheme();
-    void persistor.flush();
-
     if (theme && theme !== DEFAULT_THEME) {
       document.documentElement.classList.add(theme);
     }
-  }, [theme]);
+  }, [dispatch, partnerId, theme]);
 
   return {
     logo: themeLogo,
