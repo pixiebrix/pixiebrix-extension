@@ -188,6 +188,8 @@ export type MarketplaceListing = {
     url: string;
     alt_text: string;
   };
+  instructions: string;
+  assets: unknown[];
 };
 
 export type ProxyResponseSuccessData = {
