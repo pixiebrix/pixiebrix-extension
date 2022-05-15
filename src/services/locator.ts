@@ -56,7 +56,6 @@ export function excludeSecrets(
   service: IService,
   config: KeyedConfig
 ): SanitizedConfig {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- cast required for nominal typing
   const result: SanitizedConfig = {} as SanitizedConfig;
   for (const [key, type] of Object.entries(inputProperties(service.schema))) {
     // @ts-expect-error: ts doesn't think $ref can be on SchemaDefinition
@@ -71,13 +70,11 @@ export function excludeSecrets(
 }
 
 export async function pixieServiceFactory(): Promise<SanitizedServiceConfiguration> {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- cast required for nominal subtyping
   return {
     id: undefined,
     serviceId: PIXIEBRIX_SERVICE_ID,
     // Don't need to proxy requests to our own service
     proxy: false,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- cast required for nominal subtyping
     config: {} as SanitizedConfig,
   } as SanitizedServiceConfiguration;
 }

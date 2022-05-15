@@ -39,14 +39,14 @@ class CompositeReader extends Reader {
     const availability = await Promise.all(
       readerArray.map(async (x) => x.isAvailable())
     );
-    return availability.every((x) => x);
+    return availability.every(Boolean);
   }
 
   override async isPure(): Promise<boolean> {
     const readerArray = Object.values(this._readers);
     // PERFORMANCE: could return quicker if any came back false using Promise.any
     const purity = await Promise.all(readerArray.map(async (x) => x.isPure()));
-    return purity.every((x) => x);
+    return purity.every(Boolean);
   }
 
   override async isRootAware(): Promise<boolean> {
@@ -55,7 +55,7 @@ class CompositeReader extends Reader {
     const awareness = await Promise.all(
       readerArray.map(async (x) => x.isRootAware())
     );
-    return awareness.some((x) => x);
+    return awareness.some(Boolean);
   }
 
   async read(root: HTMLElement | Document): Promise<ReaderOutput> {

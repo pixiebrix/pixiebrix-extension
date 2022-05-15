@@ -25,7 +25,6 @@ type DocumentState = {
 
 const initialValue: DocumentState = {
   options: {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- have to cast to BlockArgContext explicitly
     ctxt: {
       "@input": {},
       "@options": {},

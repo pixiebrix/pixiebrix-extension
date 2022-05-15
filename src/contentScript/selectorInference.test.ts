@@ -59,9 +59,11 @@ describe("generateSelector", () => {
   test("find simple selectors", () => {
     expect(html`<h1><span>Text</span></h1>`).toFindSelector("h1 > span");
     expect(
-      html`<div>
-        <div><h1></h1></div>
-      </div>`
+      html`
+        <div>
+          <div><h1></h1></div>
+        </div>
+      `
     ).toFindSelector("h1");
   });
 });

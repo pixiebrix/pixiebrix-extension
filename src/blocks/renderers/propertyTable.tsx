@@ -123,15 +123,13 @@ export class PropertyTableRenderer extends Renderer {
   );
 
   async render({ data }: BlockArg, { ctxt }: BlockOptions): Promise<SafeHTML> {
-    const PropertyTree = (
-      await import(
-        /* webpackChunkName: "widgets" */
-        "./PropertyTree"
-      )
-    ).default;
+    const PropertyTree = await import(
+      /* webpackChunkName: "widgets" */
+      "./PropertyTree"
+    );
 
     return {
-      Component: PropertyTree,
+      Component: PropertyTree.default,
       props: {
         value: shapeData(data ?? ctxt),
       },
