@@ -75,7 +75,6 @@ export async function pixieServiceFactory(): Promise<SanitizedServiceConfigurati
     serviceId: PIXIEBRIX_SERVICE_ID,
     // Don't need to proxy requests to our own service
     proxy: false,
-
     config: {} as SanitizedConfig,
   } as SanitizedServiceConfiguration;
 }
