@@ -121,7 +121,6 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
         return;
       }
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- nominal tying
       const config = {
         id: uuidv4(),
         label: undefined,

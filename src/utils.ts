@@ -444,7 +444,7 @@ export function freshIdentifier(
       identifier === root ? startNumber : regexp.exec(identifier)?.groups.number
     )
     .filter((x) => x != null)
-    .map((x) => Number(x));
+    .map(Number);
   const next = Math.max(startNumber - 1, ...used) + 1;
 
   if (next === startNumber && !includeFirstNumber) {

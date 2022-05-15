@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/consistent-function-scoping -- Keep consistency with other inline functions */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *

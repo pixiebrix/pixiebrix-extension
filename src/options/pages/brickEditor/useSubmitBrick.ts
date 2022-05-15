@@ -69,7 +69,8 @@ function useSubmitBrick({
 
   const remove = useCallback(async () => {
     try {
-      await (await getLinkedApiClient()).delete(url);
+      const client = await getLinkedApiClient();
+      await client.delete(url);
     } catch (error) {
       notify.error({ message: "Error deleting brick", error });
       return;
