@@ -35,7 +35,7 @@ import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
-import { isEmpty, unset } from "lodash";
+import { isEmpty, set, unset } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 
@@ -64,13 +64,13 @@ export const initialState: EditorState = {
   newRecipeIds: [],
 };
 
-/* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
+/* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 function ensureElementUIState(
   state: WritableDraft<EditorState>,
   elementId: UUID
 ) {
   if (!state.elementUIStates[elementId]) {
-    state.elementUIStates[elementId] = makeInitialElementUIState();
+    set(state.elementUIStates, elementId, makeInitialElementUIState());
   }
 }
 
@@ -79,7 +79,7 @@ function ensureNodeUIState(
   nodeId: NodeId
 ) {
   if (!state.nodeUIStates[nodeId]) {
-    state.nodeUIStates[nodeId] = makeInitialNodeUIState(nodeId);
+    set(state.nodeUIStates, nodeId, makeInitialNodeUIState(nodeId));
   }
 }
 
@@ -169,7 +169,7 @@ function editRecipeMetadata(
     return;
   }
 
-  state.dirtyRecipeMetadataById[recipeId] = metadata;
+  set(state.dirtyRecipeMetadataById, recipeId, metadata);
 }
 
 function editRecipeOptions(
@@ -181,7 +181,7 @@ function editRecipeOptions(
     return;
   }
 
-  state.dirtyRecipeOptionsById[recipeId] = options;
+  set(state.dirtyRecipeOptionsById, recipeId, options);
 }
 
 export const editorSlice = createSlice({
@@ -201,13 +201,13 @@ export const editorSlice = createSlice({
       state.inserting = null;
       state.elements.push(element);
       state.error = null;
-      state.dirty[element.uuid] = true;
+      set(state.dirty, element.uuid, true);
       state.beta = false;
       state.activeElementId = element.uuid;
       state.activeRecipeId = null;
       state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
       state.selectionSeq++;
-      state.elementUIStates[element.uuid] = makeInitialElementUIState();
+      set(state.elementUIStates, element.uuid, makeInitialElementUIState());
     },
     betaError(state, action: PayloadAction<{ error: string }>) {
       state.error = action.payload.error;
@@ -225,7 +225,7 @@ export const editorSlice = createSlice({
       const element = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index >= 0) {
-        state.elements[index] = action.payload;
+        set(state.elements, index, action.payload);
       } else {
         state.elements.push(element);
       }
@@ -242,12 +242,12 @@ export const editorSlice = createSlice({
       const element = actions.payload;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index >= 0) {
-        state.elements[index] = element;
+        set(state.elements, index, element);
       } else {
         state.elements.push(element);
       }
 
-      state.dirty[element.uuid] = false;
+      set(state.dirty, element.uuid, false);
       state.error = null;
       state.beta = null;
       state.selectionSeq++;
@@ -283,7 +283,7 @@ export const editorSlice = createSlice({
       }
 
       element.installed = true;
-      state.dirty[element.uuid] = false;
+      set(state.dirty, element.uuid, false);
       // Force a reload so the _new flags are correct on the readers
       state.selectionSeq++;
     },
@@ -298,8 +298,8 @@ export const editorSlice = createSlice({
         throw new Error(`Unknown dynamic element: ${element.uuid}`);
       }
 
-      state.elements[index] = element;
-      state.dirty[element.uuid] = true;
+      set(state.elements, index, element);
+      set(state.dirty, element.uuid, true);
 
       syncElementNodeUIStates(state, element);
     },
@@ -316,11 +316,10 @@ export const editorSlice = createSlice({
         throw new Error(`Unknown dynamic element: ${uuid}`);
       }
 
-      // @ts-expect-error -- Concrete variants of FromState are not mutually assignable.
-      state.elements[index] = {
+      set(state.elements, index, {
         ...state.elements[index],
         ...elementUpdate,
-      };
+      });
 
       // Force reload of Formik state
       state.selectionSeq++;
@@ -411,10 +410,10 @@ export const editorSlice = createSlice({
       delete state.copiedBlock;
     },
     showV3UpgradeMessage(state) {
-      state.showV3UpgradeMessageByElement[state.activeElementId] = true;
+      set(state.showV3UpgradeMessageByElement, state.activeElementId, true);
     },
     hideV3UpgradeMessage(state) {
-      state.showV3UpgradeMessageByElement[state.activeElementId] = false;
+      set(state.showV3UpgradeMessageByElement, state.activeElementId, false);
     },
     editRecipeOptions(state, action: PayloadAction<OptionsDefinition>) {
       const { payload: options } = action;
@@ -475,7 +474,7 @@ export const editorSlice = createSlice({
         uuid: newId,
         recipe: recipeMetadata,
       });
-      state.dirty[newId] = true;
+      set(state.dirty, newId, true);
 
       state.expandedRecipeId = recipeMetadata.id;
 
@@ -513,7 +512,7 @@ export const editorSlice = createSlice({
       const element = state.elements[elementIndex];
       const recipeId = element.recipe.id;
       if (!state.deletedElementsByRecipeId[recipeId]) {
-        state.deletedElementsByRecipeId[recipeId] = [];
+        set(state.deletedElementsByRecipeId, recipeId, []);
       }
 
       state.deletedElementsByRecipeId[recipeId].push(element);
@@ -529,7 +528,7 @@ export const editorSlice = createSlice({
           uuid: newId,
           recipe: undefined,
         });
-        state.dirty[newId] = true;
+        set(state.dirty, newId, true);
         ensureElementUIState(state, newId);
         state.activeElementId = newId;
       }
@@ -552,7 +551,7 @@ export const editorSlice = createSlice({
         for (const elementId of deletedElements.map(
           (element) => element.uuid
         )) {
-          state.dirty[elementId] = false;
+          set(state.dirty, elementId, false);
           ensureElementUIState(state, elementId);
         }
 

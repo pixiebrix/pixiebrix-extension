@@ -32,6 +32,7 @@ import {
 import { Availability, ReaderConfig } from "@/blocks/types";
 import { Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "@/types/helpers";
+import { set } from "lodash";
 
 export type ExtensionPointType =
   | "panel"
@@ -171,9 +172,7 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
       console.warn(
         `Extension ${extension.id} already registered for the extension point ${this.id}`
       );
-      // Index is guaranteed to be a number, and this.extensions is an array
-      // eslint-disable-next-line security/detect-object-injection
-      this.extensions[index] = extension;
+      set(this.extensions, index, extension);
     } else {
       this.extensions.push(extension);
     }

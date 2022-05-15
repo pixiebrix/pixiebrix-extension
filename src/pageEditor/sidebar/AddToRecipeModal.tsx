@@ -37,6 +37,7 @@ import { isAxiosError } from "@/errors";
 import { object, string } from "yup";
 import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioItemListWidget";
 import { RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
+import { set } from "lodash";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -64,7 +65,7 @@ const AddToRecipeModal: React.VFC = () => {
   const recipeMetadataById = useMemo(() => {
     const result: Record<RegistryId, RecipeMetadata> = {};
     for (const metadata of recipeMetadatas) {
-      result[metadata.id] = metadata;
+      set(result, metadata.id, metadata);
     }
 
     return result;

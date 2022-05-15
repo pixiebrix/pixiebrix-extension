@@ -2,6 +2,7 @@ import { BlockPipeline } from "@/blocks/types";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { TypedBlockMap } from "@/blocks/registry";
 import { ExtensionPointType } from "@/extensionPoints/types";
+import { set } from "lodash";
 
 export const MULTIPLE_RENDERERS_ERROR_MESSAGE =
   "A panel can only have one renderer. There are one or more renderers configured after this brick.";
@@ -39,8 +40,7 @@ function validateRenderers(
     }
 
     if (blockErrors.length > 0) {
-      // eslint-disable-next-line security/detect-object-injection
-      pipelineErrors[blockIndex] = blockErrors.join(" ");
+      set(pipelineErrors, blockIndex, blockErrors.join(" "));
     }
   }
 }

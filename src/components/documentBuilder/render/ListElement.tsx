@@ -32,6 +32,7 @@ import { runMapArgs } from "@/contentScript/messenger/api";
 import { isNullOrBlank } from "@/utils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { whoAmI } from "@/background/messenger/api";
+import { set } from "lodash";
 
 type DocumentListProps = {
   array: UnknownObject[];
@@ -68,8 +69,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
     return Promise.all(
       array.map(async (itemData) => {
         const elementContext = produce(documentContext, (draft) => {
-          // eslint-disable-next-line security/detect-object-injection -- we appended a @ to the front of key and are using immer
-          draft.options.ctxt[key] = itemData;
+          set(draft.options.ctxt, key, itemData);
         });
 
         let documentElement: unknown;

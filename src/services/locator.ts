@@ -27,7 +27,7 @@ import {
   RegistryId,
   UUID,
 } from "@/core";
-import { sortBy, isEmpty } from "lodash";
+import { sortBy, isEmpty, set } from "lodash";
 import registry, { readRawConfigurations } from "@/services/registry";
 import { inputProperties } from "@/helpers";
 import {
@@ -63,7 +63,7 @@ export function excludeSecrets(
     if (!REF_SECRETS.includes(type.$ref)) {
       // Safe because we're getting from Object.entries
       // eslint-disable-next-line security/detect-object-injection
-      result[key] = config[key];
+      set(result, key, config[key]);
     }
   }
 

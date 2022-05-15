@@ -1,5 +1,6 @@
 import { PerfTools, PerfState, DefaultPerfToolsField } from "./perfTypes";
 import { globalOption } from "./constants/globalOption";
+import { set } from "lodash";
 
 const checkRenderTimeDeclaring = (prop: keyof PerfTools) => {
   if (prop === "renderTime" && globalOption.isDeclaredRenderTime) {
@@ -51,7 +52,7 @@ export const getPerfTools = <T extends DefaultPerfToolsField>() =>
   new Proxy(store.tools, {
     get(target, prop: keyof PerfTools) {
       checkRenderTimeDeclaring(prop);
-      store.perfState[prop] = true;
+      set(store.perfState, prop, true);
       return target[prop];
     },
   }) as PerfTools<T>;

@@ -17,6 +17,7 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { PIXIEBRIX_READY_ATTRIBUTE } from "@/common";
+import { set } from "lodash";
 
 export const sessionId = uuidv4();
 export const sessionTimestamp = new Date();
@@ -51,8 +52,7 @@ export function getNavigationId(): string {
 }
 
 export function markReady(): void {
-  // eslint-disable-next-line security/detect-object-injection -- Static symbol
-  window[PIXIEBRIX_READY_SYMBOL] = true;
+  set(window, PIXIEBRIX_READY_SYMBOL, true);
 
   document.documentElement.setAttribute(PIXIEBRIX_READY_ATTRIBUTE, "");
 }

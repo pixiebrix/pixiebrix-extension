@@ -17,6 +17,7 @@
 
 import { TraceError } from "@/telemetry/trace";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
+import { set } from "lodash";
 
 function applyTraceBlockError(
   pipelineErrors: FormikErrorTree,
@@ -25,8 +26,7 @@ function applyTraceBlockError(
 ) {
   // eslint-disable-next-line security/detect-object-injection
   if (!pipelineErrors[blockIndex]) {
-    // eslint-disable-next-line security/detect-object-injection
-    pipelineErrors[blockIndex] = errorTraceEntry.error.message as string;
+    set(pipelineErrors, blockIndex, errorTraceEntry.error.message as string);
   }
 }
 

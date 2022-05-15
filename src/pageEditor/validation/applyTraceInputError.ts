@@ -79,8 +79,7 @@ function applyTraceInputError(
 
   // eslint-disable-next-line security/detect-object-injection -- accessing the error tree by index
   if (typeof pipelineErrors[blockIndex] === "undefined" && errors.length > 0) {
-    // eslint-disable-next-line security/detect-object-injection -- accessing the error tree by index
-    pipelineErrors[blockIndex] = errors.join(" ");
+    set(pipelineErrors, blockIndex, errors.join(" "));
   }
 }
 

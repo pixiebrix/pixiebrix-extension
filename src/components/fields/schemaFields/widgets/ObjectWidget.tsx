@@ -20,7 +20,7 @@ import React, { useCallback, useMemo, useRef } from "react";
 import { Button, Form, Table } from "react-bootstrap";
 import { SafeString, Schema } from "@/core";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { isEmpty } from "lodash";
+import { isEmpty, set } from "lodash";
 import { useField, useFormikContext } from "formik";
 import { produce } from "immer";
 import { freshIdentifier, joinName } from "@/utils";
@@ -228,7 +228,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
         setFieldValue(
           name,
           produce(previousValue, (draft) => {
-            draft[newProp] = draft[oldProp] ?? "";
+            set(draft, newProp, draft[oldProp] ?? "");
             delete draft[oldProp];
           })
         );
@@ -244,7 +244,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
         const prop = freshIdentifier("property" as SafeString, [
           ...Object.keys(draft),
         ]);
-        draft[prop] = "";
+        set(draft, prop, "");
       })
     );
   }, [name, setFieldValue, valueRef]);

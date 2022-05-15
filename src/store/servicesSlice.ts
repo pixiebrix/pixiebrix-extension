@@ -17,7 +17,7 @@
 import { RawServiceConfiguration, UUID } from "@/core";
 import { localStorage } from "redux-persist-webextension-storage";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { unset } from "lodash";
+import { set, unset } from "lodash";
 
 export interface ServicesState {
   configured: Record<string, RawServiceConfiguration>;
@@ -46,13 +46,12 @@ const servicesSlice = createSlice({
       return state;
     },
     updateServiceConfig(state, { payload: { id, serviceId, label, config } }) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- branding with nominal type
-      state.configured[id] = {
+      set(state.configured, id, {
         id,
         serviceId,
         label,
         config,
-      } as RawServiceConfiguration;
+      } as RawServiceConfiguration);
     },
     resetServices(state) {
       state.configured = {};

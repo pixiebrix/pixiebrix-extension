@@ -71,7 +71,7 @@ import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { freshIdentifier } from "@/utils";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
-import { padStart } from "lodash";
+import { padStart, set } from "lodash";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -326,10 +326,10 @@ export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
   const definitions: InnerDefinitions = {};
 
   for (const extensionPoint of extensionPoints) {
-    definitions[extensionPoint.id] = {
+    set(definitions, extensionPoint.id, {
       kind: "extensionPoint",
       definition: extensionPointDefinitionFactory().definition,
-    };
+    });
   }
 
   return define<RecipeDefinition>({
@@ -506,6 +506,5 @@ export const sanitizedServiceConfigurationFactory =
     id: uuidSequence,
     proxy: false,
     serviceId: (n: number) => validateRegistryId(`test/service-${n}`),
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- object literal
     config: () => ({} as SanitizedConfig),
   } as unknown as SanitizedServiceConfiguration);

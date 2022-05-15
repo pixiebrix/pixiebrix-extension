@@ -25,7 +25,7 @@ import {
 } from "./authTypes";
 import { isExtensionContext } from "webext-detect-page";
 import { expectContext } from "@/utils/expectContext";
-import { omit, remove } from "lodash";
+import { omit, remove, set } from "lodash";
 
 const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
 
@@ -110,8 +110,7 @@ export async function updateUserData(update: UserDataUpdate): Promise<void> {
 
   for (const key of USER_DATA_UPDATE_KEYS) {
     // Intentionally overwrite values with null/undefined from the update
-    // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-explicit-any -- keys from compile-time constant
-    updated[key] = update[key] as any;
+    set(updated, key, update[key] as any);
   }
 
   await setStorage(STORAGE_EXTENSION_KEY, updated);

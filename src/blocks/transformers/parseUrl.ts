@@ -18,7 +18,7 @@
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { pick } from "lodash";
+import { pick, set } from "lodash";
 import { isNullOrBlank } from "@/utils";
 
 // Methods imported async in the brick
@@ -123,9 +123,7 @@ export class UrlParser extends Transformer {
 
     const searchParams: Record<string, string> = {};
     for (const [key, value] of parsed.searchParams.entries()) {
-      // Fine because value will always be a string
-      // eslint-disable-next-line security/detect-object-injection
-      searchParams[key] = value;
+      set(searchParams, key, value);
     }
 
     return {

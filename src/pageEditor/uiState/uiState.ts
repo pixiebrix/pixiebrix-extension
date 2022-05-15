@@ -23,6 +23,7 @@ import {
   TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { set } from "lodash";
 
 export const FOUNDATION_NODE_ID = "foundation" as UUID;
 
@@ -44,8 +45,7 @@ export function makeInitialNodeUIState(nodeId: NodeId): NodeUIState {
   };
 
   for (const tab of Object.values(DataPanelTabKey)) {
-    // eslint-disable-next-line security/detect-object-injection -- tab comes from a known enum
-    nodeUIState.dataPanel[tab] = makeInitialDataTabState();
+    set(nodeUIState.dataPanel, tab, makeInitialDataTabState());
   }
 
   return nodeUIState;

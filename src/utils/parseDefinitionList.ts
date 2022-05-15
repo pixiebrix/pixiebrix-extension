@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { set } from "lodash";
 import { describeTable, ParsedTable, TableRecord } from "./parseDomTable";
 
 /** Normalized data extracted from definition list */
@@ -60,8 +61,7 @@ export function parseDefinitionList(list: HTMLDListElement): ParsedTable {
 
   for (const { terms, definitions } of flattenListContent(list)) {
     for (const term of terms) {
-      // TODO: Possible injection with `<dt>__proto__</dt>`
-      record[term] = definitions.join("\n");
+      set(record, term, definitions.join("\n"));
     }
   }
 

@@ -134,15 +134,13 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
       draft.schema = normalizeSchema(schema);
-      // eslint-disable-next-line security/detect-object-injection -- prop name is generated
-      draft.schema.properties[propertyName] = newProperty;
+      set(draft.schema.properties, propertyName, newProperty);
 
       if (!uiSchema) {
         draft.uiSchema = {};
       }
 
-      // eslint-disable-next-line security/detect-object-injection -- prop name is a constant
-      draft.uiSchema[UI_ORDER] = nextUiOrder;
+      set(draft.uiSchema, UI_ORDER, nextUiOrder);
     });
     setRjsfSchema(nextRjsfSchema);
     setActiveField(propertyName);

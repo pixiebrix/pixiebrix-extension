@@ -33,7 +33,7 @@ import {
   UnsavedRecipeDefinition,
 } from "@/types/definitions";
 import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
-import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
+import { compact, isEmpty, isEqual, pick, set, sortBy } from "lodash";
 import { produce } from "immer";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { freshIdentifier } from "@/utils";
@@ -249,34 +249,30 @@ export function replaceRecipeExtension(
             Object.keys(sourceRecipe.definitions)
           ) as InnerDefinitionRef;
           newInnerId = freshId;
-          // eslint-disable-next-line security/detect-object-injection -- generated with freshIdentifier
-          draft.definitions[freshId] = {
+          set(draft.definitions, freshId, {
             kind: "extensionPoint",
             definition: extensionPointConfig.definition,
-          };
+          });
         }
       } else {
         // There's only one, can re-use without breaking the other definition
-        // eslint-disable-next-line security/detect-object-injection -- existing id
-        draft.definitions[originalInnerId] = {
+        set(draft.definitions, originalInnerId, {
           kind: "extensionPoint",
           definition: extensionPointConfig.definition,
-        };
+        });
       }
 
-      // eslint-disable-next-line security/detect-object-injection -- false positive for number
-      draft.extensionPoints[index] = {
+      set(draft.extensionPoints, index, {
         id: newInnerId,
         ...commonExtensionConfig,
-      };
+      });
     } else {
       // It's not currently possible to switch from using an extensionPoint package to an inner extensionPoint
       // definition in the Page Editor. Therefore we can just use the rawExtension.extensionPointId directly here.
-      // eslint-disable-next-line security/detect-object-injection -- false positive for number
-      draft.extensionPoints[index] = {
+      set(draft.extensionPoints, index, {
         id: rawExtension.extensionPointId,
         ...commonExtensionConfig,
-      };
+      });
     }
 
     return draft;
@@ -491,8 +487,7 @@ function buildExtensionPoints(
         newExtensionPointId = newInnerId as InnerDefinitionRef;
       }
 
-      // eslint-disable-next-line security/detect-object-injection -- we just constructed the id
-      innerDefinitions[newInnerId] = definition;
+      set(innerDefinitions, newInnerId, definition);
     }
 
     // Construct the extension point config from the extension

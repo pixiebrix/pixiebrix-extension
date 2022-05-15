@@ -6,6 +6,7 @@ import { ReactSymbol } from "./utils/symbols";
 import { isForwardRefComponent } from "./utils/isForwardRefComponent";
 import { isFunctionComponent } from "./utils/isFunctionComponent";
 import { pushTask } from "./utils/pushTask";
+import { set } from "lodash";
 
 const setArray = (
   displayName: string,
@@ -15,9 +16,11 @@ const setArray = (
   const obj = state.current[displayName];
   let currentIndex = -1;
   if (obj) {
-    state.current[displayName] = Array.isArray(obj)
-      ? [...obj, initialValue]
-      : [{ ...obj }, initialValue];
+    set(
+      state.current,
+      displayName,
+      Array.isArray(obj) ? [...obj, initialValue] : [{ ...obj }, initialValue]
+    );
 
     currentIndex = Array.isArray(obj) ? obj.length : 1;
   }
@@ -36,7 +39,7 @@ const updateRenderCount = (
 
   const obj = renderCount.current;
   if (!obj[displayName]) {
-    obj[displayName] = { value: 0 };
+    set(obj, displayName, { value: 0 });
   }
 
   pushTask(() => {
@@ -64,7 +67,7 @@ const startMeasureRenderTime = (
 
   const obj = renderTime.current;
   if (!obj[displayName]) {
-    obj[displayName] = { mount: null as any, updates: [] };
+    set(obj, displayName, { mount: null as any, updates: [] });
   }
 
   const startTime = performance.now();
@@ -78,17 +81,17 @@ const startMeasureRenderTime = (
       if (Array.isArray(field)) {
         const formattedIndex = index === -1 ? 0 : index;
         const fieldValues = field[formattedIndex];
-        field[formattedIndex] = {
+        set(field, formattedIndex, {
           mount: fieldValues.mount || duration,
           updates: fieldValues.mount ? [...fieldValues.updates, duration] : [],
-        };
+        });
         return;
       }
 
-      obj[displayName] = {
+      set(obj, displayName, {
         mount: field.mount || duration,
         updates: field.mount ? [...field.updates, duration] : [],
-      };
+      });
     });
   };
 };

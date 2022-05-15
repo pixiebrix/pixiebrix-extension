@@ -18,7 +18,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { SettingsState, SkunkworksSettings } from "@/store/settingsTypes";
 import reportError from "@/telemetry/reportError";
-import { once } from "lodash";
+import { once, set } from "lodash";
 import { THEMES } from "@/options/constants";
 
 const initialSettingsState: SettingsState = {
@@ -44,8 +44,7 @@ const settingsSlice = createSlice({
       }>
     ) {
       const { flag, value } = action.payload;
-      // eslint-disable-next-line security/detect-object-injection -- type checked
-      state[flag] = value;
+      set(state, flag, value);
     },
     snoozeUpdates(state, action: PayloadAction<{ durationMillis: number }>) {
       const { durationMillis } = action.payload;

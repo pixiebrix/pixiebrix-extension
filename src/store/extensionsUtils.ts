@@ -16,7 +16,7 @@
  */
 
 import { IExtension, RegistryId, UserOptions, UUID } from "@/core";
-import { compact, groupBy, uniq } from "lodash";
+import { compact, groupBy, set, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 /**
@@ -61,7 +61,7 @@ export function inferRecipeAuths(
       throw new Error(`Service ${id} has multiple configurations`);
     }
 
-    result[id as RegistryId] = configs[0];
+    set(result, id as RegistryId, configs[0]);
   }
 
   return result;
