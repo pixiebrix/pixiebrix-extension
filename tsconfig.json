@@ -16,7 +16,6 @@
     "strictFunctionTypes": false,
     "noPropertyAccessFromIndexSignature": false,
     "noImplicitReturns": false,
-    "noUnusedParameters": false,
     "paths": {
       "@/*": ["src/*"],
       "@img/*": ["img/*"],

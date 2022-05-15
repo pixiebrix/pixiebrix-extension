@@ -100,8 +100,8 @@ const getFormattedType = (definition: Schema) => {
 
   if (type === "array") {
     const items = definition.items ?? { type: "unknown" };
-    const itemType = ((items as Schema) ?? {}).type as string;
-    return itemType ? `array of ${itemType}s` : "array";
+    const itemType = (items as Schema)?.type;
+    return itemType ? `array of ${itemType as string}s` : "array";
   }
 
   let formatted_type = "";

@@ -45,7 +45,6 @@ function useEnsurePermissions(
     const permissions = await collectPermissions(
       [resolved].map(
         (extension) =>
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- inline nominal typing
           ({
             id: extension.extensionPointId,
             config: extension.config,

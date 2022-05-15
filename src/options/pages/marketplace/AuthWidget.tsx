@@ -128,7 +128,6 @@ const AuthWidget: React.FunctionComponent<{
 
   const initialConfiguration: RawServiceConfiguration = useMemo(
     () =>
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- inline nominal typing
       ({
         serviceId,
         label: "New Configuration",

@@ -96,7 +96,7 @@ class ExternalBlock extends Block {
       })
     );
 
-    return purity.every((x) => x);
+    return purity.every(Boolean);
   }
 
   override async isRootAware(): Promise<boolean> {
@@ -109,7 +109,7 @@ class ExternalBlock extends Block {
       })
     );
 
-    return awareness.some((x) => x);
+    return awareness.some(Boolean);
   }
 
   async inferType(): Promise<BlockType | null> {

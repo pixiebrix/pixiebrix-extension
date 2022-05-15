@@ -50,6 +50,7 @@ function useInstallState(
     async () => {
       if (meta && !error) {
         const installedExtensionPoints = new Map(
+          // eslint-disable-next-line unicorn/no-await-expression-member
           (await getInstalledExtensionPoints(thisTab)).map((extensionPoint) => [
             extensionPoint.id,
             extensionPoint,

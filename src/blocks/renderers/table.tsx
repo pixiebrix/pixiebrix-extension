@@ -28,6 +28,23 @@ import makeDataTable, { Row } from "@/blocks/renderers/dataTable";
 //   href: string;
 // };
 
+function makeLinkRenderer(href: string) {
+  return (value: unknown, row: Row) => {
+    // Currently for TableRenderer we only support directly accessing the href. This matches the behavior in
+    // makeDataTable's renderValue
+    const anchorHref = Object.prototype.hasOwnProperty.call(row, href)
+      ? // eslint-disable-next-line security/detect-object-injection -- checked with hasOwnProperty
+        row[href]
+      : null;
+
+    return typeof anchorHref === "string" && !isNullOrBlank(anchorHref)
+      ? `<a href="${anchorHref}" target="_blank" rel="noopener noreferrer">${String(
+          value
+        )}</a>`
+      : String(value);
+  };
+}
+
 export class TableRenderer extends Renderer {
   constructor() {
     super(
@@ -85,22 +102,6 @@ export class TableRenderer extends Renderer {
         `Expected data to be an array, actual: ${typeof data}`
       );
     }
-
-    const makeLinkRenderer = (href: string) => (value: unknown, row: Row) => {
-      // Currently for TableRenderer we only support directly accessing the href. This matches the behavior in
-      // makeDataTable's renderValue
-
-      const anchorHref = Object.prototype.hasOwnProperty.call(row, href)
-        ? // eslint-disable-next-line security/detect-object-injection -- checked with hasOwnProperty
-          row[href]
-        : null;
-
-      return typeof anchorHref === "string" && !isNullOrBlank(anchorHref)
-        ? `<a href="${anchorHref}" target="_blank" rel="noopener noreferrer">${String(
-            value
-          )}</a>`
-        : String(value);
-    };
 
     const table = makeDataTable(
       columns.map(({ label, property, href }: any) => ({

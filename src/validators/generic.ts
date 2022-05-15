@@ -279,7 +279,7 @@ export function configSchemaFactory(
         );
       }
 
-      const items = schema.items as Schema;
+      const { items } = schema;
       return Yup.lazy((x) =>
         Array.isArray(x)
           ? // TODO: Drop `any` after https://github.com/jquense/yup/issues/1190
@@ -413,6 +413,7 @@ async function validateExtension(
   for (const service of extension.services ?? []) {
     console.debug(`Validating ${extension.id} service ${service.id}`);
     try {
+      // eslint-disable-next-line no-await-in-loop -- TODO: Make it run in parallel if possible
       await services.locate(service.id, service.config);
     } catch (error) {
       if (error instanceof MissingConfigurationError) {

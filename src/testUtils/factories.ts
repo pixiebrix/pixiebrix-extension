@@ -157,7 +157,7 @@ export const traceRecordFactory = define<TraceRecord>({
   blockInstanceId: uuidSequence,
   blockId: TEST_BLOCK_ID,
   templateContext: {},
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- nominal typing
+
   renderedArgs: {} as RenderedArgs,
   renderError: null,
   blockConfig: {
@@ -179,7 +179,7 @@ export const blockFactory = define<IBlock>({
   name: (i: number) => `${TEST_BLOCK_ID} ${i}`,
   inputSchema: null as Schema,
   defaultOptions: null,
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
   permissions: {} as Permissions.Permissions,
   run: jest.fn(),
 });
@@ -506,6 +506,6 @@ export const sanitizedServiceConfigurationFactory =
     id: uuidSequence,
     proxy: false,
     serviceId: (n: number) => validateRegistryId(`test/service-${n}`),
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- object literal
+
     config: () => ({} as SanitizedConfig),
   } as unknown as SanitizedServiceConfiguration);

@@ -35,7 +35,7 @@ function renderValue<TRow extends Row>(
   column: ColumnDefinition<TRow>,
   row: TRow
 ) {
-  const renderer = column.renderer ?? ((value) => String(value));
+  const renderer = column.renderer ?? String;
   const value = Object.prototype.hasOwnProperty.call(row, column.property)
     ? row[column.property]
     : null;
