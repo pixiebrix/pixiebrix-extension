@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -64,7 +65,6 @@ export const initialState: EditorState = {
   newRecipeIds: [],
 };
 
-/* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 function ensureElementUIState(
   state: WritableDraft<EditorState>,
   elementId: UUID
@@ -609,6 +609,5 @@ export const editorSlice = createSlice({
     },
   },
 });
-/* eslint-enable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- re-enable rule */
 
 export const { actions } = editorSlice;
