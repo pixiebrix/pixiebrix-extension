@@ -10,7 +10,8 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
-      time: "08:42" # UTC
+      time: "08:42"
+      timezone: "Etc/UTC"
     open-pull-requests-limit: 20
     reviewers:
       - "fregante"
