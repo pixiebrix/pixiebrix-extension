@@ -15,9 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiVersion } from "@/core";
+import { Theme, THEMES } from "@/options/constants";
 
-export const OPTIONS_DEFAULT_RUNTIME_API_VERSION: ApiVersion = "v3";
-export const DEFAULT_THEME = "default";
-export const THEMES = [DEFAULT_THEME, "automation-anywhere"] as const;
-export type Theme = typeof THEMES[number];
+export const isValidTheme = (theme: string): theme is Theme =>
+  THEMES.includes(theme as Theme);
