@@ -28,6 +28,7 @@ import {
   Reducer,
   ReducersMapObject,
 } from "@reduxjs/toolkit";
+import { Expression, ExpressionType } from "@/core";
 
 export const waitForEffect = async () =>
   act(async () => {
@@ -83,5 +84,12 @@ export function createRenderFunction<
         <ComponentUnderTest {...props} />
       </Provider>
     );
+  };
+}
+
+export function toExpression<T>(type: ExpressionType, value: T): Expression<T> {
+  return {
+    __type__: type,
+    __value__: value,
   };
 }

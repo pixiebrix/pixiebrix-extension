@@ -28,7 +28,6 @@ import {
   NoElementsFoundError,
   selectError,
   selectSpecificError,
-  serializeErrorAndProperties,
 } from "@/errors";
 import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
@@ -315,7 +314,7 @@ describe("selectSpecificError", () => {
 
     // Test both real errors and serialized errors, even though we do not
     // want serialized errors to be flowing around #3372
-    const testedErrors = [instances, serializeErrorAndProperties(instances)];
+    const testedErrors = [instances, serializeError(instances)];
     for (const error of testedErrors) {
       expect(selectSpecificError(error, SyntaxError)).toBeUndefined();
 
@@ -363,7 +362,7 @@ describe("serialization", () => {
       cause: inputValidationError,
     });
 
-    const serializedError = serializeErrorAndProperties(contextError);
+    const serializedError = serializeError(contextError);
 
     // Use the isPlainObject from "@reduxjs/toolkit" because it's Redux that requires the object in the state to be
     // serializable. We want it to be serializable and especially serializable for redux.

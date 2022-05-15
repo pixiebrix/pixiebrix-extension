@@ -213,8 +213,7 @@ export const validateNextPropertyName = (
   if (
     // Checked Own Properties already.
     // If the property with nextPropertyName is defined nevertheless, there's something wrong with the new name.
-    typeof (schema.properties ?? {})[String(nextPropertyName)] !==
-      "undefined" ||
+    typeof schema.properties?.[nextPropertyName] !== "undefined" ||
     // Will break the UI Schema
     KEYS_OF_UI_SCHEMA.includes(nextPropertyName)
   ) {

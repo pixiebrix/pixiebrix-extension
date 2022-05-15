@@ -46,7 +46,6 @@ const servicesSlice = createSlice({
       return state;
     },
     updateServiceConfig(state, { payload: { id, serviceId, label, config } }) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- branding with nominal type
       state.configured[id] = {
         id,
         serviceId,

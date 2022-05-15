@@ -98,8 +98,8 @@ function apiVersionOptions(version: ApiVersion): ApiVersionOptions {
       };
     }
 
-    case "v1":
     default: {
+      // It defaults to v1
       return {
         explicitDataFlow: false,
         explicitArg: false,
