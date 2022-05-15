@@ -50,6 +50,7 @@ function useServiceDefinitions(): ServiceDefinitions {
   const [serviceDefinitions, isPending, error] = useAsyncState(
     async () =>
       sortBy(
+        // eslint-disable-next-line unicorn/no-await-expression-member
         (await registry.all()).filter((x) => x.id !== PIXIEBRIX_SERVICE_ID),
         (x) => x.id
       ),
