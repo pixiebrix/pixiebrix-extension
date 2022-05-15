@@ -26,14 +26,14 @@ import { isObject } from "@/utils";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 import { Schema } from "@/core";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { unset } from "lodash";
 
 export function removeField(parent: unknown, fieldName: string): void {
   if (Array.isArray(parent)) {
     const index = Number(fieldName);
     parent.splice(index, 1);
   } else if (isObject(parent)) {
-    // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-dynamic-delete
-    delete parent[fieldName];
+    unset(parent, fieldName);
   } else {
     // Can't remove a field from something that isn't an array or object
     console.warn(

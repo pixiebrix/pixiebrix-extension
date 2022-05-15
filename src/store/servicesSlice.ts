@@ -17,6 +17,7 @@
 import { RawServiceConfiguration, UUID } from "@/core";
 import { localStorage } from "redux-persist-webextension-storage";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { unset } from "lodash";
 
 export interface ServicesState {
   configured: Record<string, RawServiceConfiguration>;
@@ -41,8 +42,7 @@ const servicesSlice = createSlice({
         throw new Error(`Service configuration ${id} does not exist`);
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- type-checked as UUID
-      delete state.configured[id];
+      unset(state.configured, id);
       return state;
     },
     updateServiceConfig(state, { payload: { id, serviceId, label, config } }) {

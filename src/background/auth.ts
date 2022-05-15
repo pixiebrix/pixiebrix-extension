@@ -32,6 +32,7 @@ import {
 import { BusinessError, getErrorMessage } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
 import { UnknownObject } from "@/types";
+import { get, unset } from "lodash";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2" as ManualStorageKey;
 
@@ -66,10 +67,7 @@ export async function getCachedAuthData(
     OAUTH2_STORAGE_KEY,
     {}
   );
-  if (Object.prototype.hasOwnProperty.call(current, serviceAuthId)) {
-    // eslint-disable-next-line security/detect-object-injection -- just checked with `hasOwnProperty`
-    return current[serviceAuthId];
-  }
+  return get(current, serviceAuthId);
 }
 
 export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
@@ -86,9 +84,7 @@ export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
     console.debug(
       `deleteCachedAuthData: removed data for auth ${serviceAuthId}`
     );
-    // OK because we're guarding with hasOwnProperty
-    // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-dynamic-delete
-    delete current[serviceAuthId];
+    unset(current, serviceAuthId);
     await setStorage(OAUTH2_STORAGE_KEY, current);
   } else {
     console.warn(

@@ -35,7 +35,7 @@ import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
-import { isEmpty } from "lodash";
+import { isEmpty, unset } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 
@@ -102,7 +102,7 @@ function syncElementNodeUIStates(
     const nodeId = key as NodeId;
     // Don't remove the foundation NodeUIState
     if (nodeId !== FOUNDATION_NODE_ID && !blockPipelineIds.includes(nodeId)) {
-      delete elementUIState.nodeUIStates[nodeId];
+      unset(elementUIState.nodeUIStates, nodeId);
     }
   }
 
@@ -131,8 +131,8 @@ function removeElement(state: WritableDraft<EditorState>, uuid: UUID) {
     state.elements.splice(index, 1);
   }
 
-  delete state.dirty[uuid];
-  delete state.elementUIStates[uuid];
+  unset(state.dirty, uuid);
+  unset(state.elementUIStates, uuid);
 
   // Make sure we're not keeping any private data around from Page Editor sessions
   void clearExtensionTraces(uuid);
@@ -349,7 +349,7 @@ export const editorSlice = createSlice({
       const activeNodeId = newActiveNodeId ?? FOUNDATION_NODE_ID;
       setActiveNodeId(state, activeNodeId);
 
-      delete elementUIState.nodeUIStates[nodeIdToRemove];
+      unset(elementUIState.nodeUIStates, nodeIdToRemove);
     },
     setElementActiveNodeId(state, action: PayloadAction<NodeId>) {
       setActiveNodeId(state, action.payload);
@@ -426,8 +426,8 @@ export const editorSlice = createSlice({
     },
     resetMetadataAndOptionsForRecipe(state, action: PayloadAction<RegistryId>) {
       const { payload: recipeId } = action;
-      delete state.dirtyRecipeMetadataById[recipeId];
-      delete state.dirtyRecipeOptionsById[recipeId];
+      unset(state.dirtyRecipeMetadataById, recipeId);
+      unset(state.dirtyRecipeOptionsById, recipeId);
     },
     updateRecipeMetadataForElements(
       state,
@@ -483,8 +483,8 @@ export const editorSlice = createSlice({
         ensureElementUIState(state, newId);
         state.activeElementId = newId;
         state.elements.splice(elementIndex, 1);
-        delete state.dirty[element.uuid];
-        delete state.elementUIStates[element.uuid];
+        unset(state.dirty, element.uuid);
+        unset(state.elementUIStates, element.uuid);
       }
     },
     showRemoveFromRecipeModal(state) {
@@ -518,8 +518,8 @@ export const editorSlice = createSlice({
 
       state.deletedElementsByRecipeId[recipeId].push(element);
       state.elements.splice(elementIndex, 1);
-      delete state.dirty[elementId];
-      delete state.elementUIStates[elementId];
+      unset(state.dirty, elementId);
+      unset(state.elementUIStates, elementId);
       state.activeElementId = undefined;
 
       if (keepLocalCopy) {
@@ -542,7 +542,7 @@ export const editorSlice = createSlice({
     },
     clearDeletedElementsForRecipe(state, action: PayloadAction<RegistryId>) {
       const recipeId = action.payload;
-      delete state.deletedElementsByRecipeId[recipeId];
+      unset(state.deletedElementsByRecipeId, recipeId);
     },
     restoreDeletedElementsForRecipe(state, action: PayloadAction<RegistryId>) {
       const recipeId = action.payload;
@@ -556,7 +556,7 @@ export const editorSlice = createSlice({
           ensureElementUIState(state, elementId);
         }
 
-        delete state.deletedElementsByRecipeId[recipeId];
+        unset(state.deletedElementsByRecipeId, recipeId);
       }
     },
     clearActiveRecipe(state) {
@@ -595,7 +595,7 @@ export const editorSlice = createSlice({
       }
 
       // Clear deleted elements
-      delete state.deletedElementsByRecipeId[oldRecipeId];
+      unset(state.deletedElementsByRecipeId, oldRecipeId);
 
       // Select the new recipe
       selectRecipeId(state, newRecipeId);
@@ -605,8 +605,8 @@ export const editorSlice = createSlice({
       editRecipeOptions(state, options);
 
       // Clean up the old metadata and options
-      delete state.dirtyRecipeMetadataById[oldRecipeId];
-      delete state.dirtyRecipeOptionsById[oldRecipeId];
+      unset(state.dirtyRecipeMetadataById, oldRecipeId);
+      unset(state.dirtyRecipeOptionsById, oldRecipeId);
     },
   },
 });

@@ -18,7 +18,7 @@
 import yaml from "js-yaml";
 import { UnknownObject } from "@/types";
 import { produce } from "immer";
-import { isPlainObject } from "lodash";
+import { isPlainObject, unset } from "lodash";
 
 /**
  * @param tag the tag name, without the leading `!`
@@ -104,8 +104,7 @@ function stripNonSchemaProps(brick: any) {
   return produce(brick, (draft: any) => {
     for (const prop of ["sharing", "updated_at"]) {
       if (prop in draft) {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection -- constant above
-        delete draft[prop];
+        unset(draft, prop);
       }
 
       if (
@@ -113,8 +112,7 @@ function stripNonSchemaProps(brick: any) {
         typeof draft.metadata === "object" &&
         prop in draft.metadata
       ) {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection -- constant above
-        delete draft.metadata[prop];
+        unset(draft.metadata, prop);
       }
     }
 

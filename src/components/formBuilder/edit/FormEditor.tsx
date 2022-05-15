@@ -44,7 +44,7 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import LayoutWidget from "@/components/LayoutWidget";
-import { findLast } from "lodash";
+import { findLast, set, unset } from "lodash";
 
 export type FormEditorProps = {
   name: string;
@@ -177,17 +177,14 @@ const FormEditor: React.FC<FormEditorProps> = ({
         );
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
-      delete draft.schema.properties[propertyToRemove];
+      unset(draft.schema.properties, propertyToRemove);
 
       if (!uiSchema) {
         draft.uiSchema = {};
       }
 
-      // eslint-disable-next-line security/detect-object-injection -- prop name is a constant
-      draft.uiSchema[UI_ORDER] = nextUiOrder;
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
-      delete draft.uiSchema[propertyToRemove];
+      set(draft.uiSchema, UI_ORDER, nextUiOrder);
+      unset(draft.uiSchema, propertyToRemove);
     });
 
     setRjsfSchema(nextRjsfSchema);

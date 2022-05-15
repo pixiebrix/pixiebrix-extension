@@ -36,6 +36,7 @@ import {
   partialRight,
   pickBy,
   unary,
+  unset,
   zip,
 } from "lodash";
 import { Primitive } from "type-fest";
@@ -243,12 +244,9 @@ export function isObject(value: unknown): value is Record<string, unknown> {
 }
 
 export function clearObject(obj: Record<string, unknown>): void {
+  // eslint-disable-next-line guard-for-in -- Part of `_.unset`
   for (const member in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, member)) {
-      // Checking to ensure own property
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
-      delete obj[member];
-    }
+    unset(obj, member);
   }
 }
 
