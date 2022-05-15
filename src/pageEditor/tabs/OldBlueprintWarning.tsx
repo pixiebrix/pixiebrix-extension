@@ -16,18 +16,37 @@
  */
 
 import Alert from "@/components/Alert";
+import { appApi } from "@/services/api";
 import React from "react";
+import { useSelector } from "react-redux";
+import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 
-type OldBlueprintWarningProps = {};
+const OldBlueprintWarning: React.FunctionComponent = () => {
+  const activeElement = useSelector(selectActiveElement);
+  if (activeElement.recipe == null) {
+    return null;
+  }
 
-const OldBlueprintWarning: React.FunctionComponent<OldBlueprintWarningProps> = (
-  props
-) => {
+  const { data: recipes = [] } = appApi.endpoints.getRecipes.useQueryState();
+  const recipe = recipes.find((x) => x.metadata.id === activeElement.recipe.id);
+
+  const installedRecipeVersion = activeElement.recipe.version;
+  const latestRecipeVersion = recipe?.metadata?.version;
+
+  if (installedRecipeVersion === latestRecipeVersion) {
+    return null;
+  }
+
   return (
     <Alert variant="warning">
-      You are editing version X.X.X of this blueprint, the latest version is
-      X.X.X. To get the latest version,{" "}
-      <a href="/options.html" target="_blank" title="Re-activate the blueprint">
+      You are editing version {installedRecipeVersion} of this blueprint, the
+      latest version is
+      {latestRecipeVersion}. To get the latest version,{" "}
+      <a
+        href="/options.html#/blueprints"
+        target="_blank"
+        title="Re-activate the blueprint"
+      >
         re-activate the blueprint
       </a>
     </Alert>

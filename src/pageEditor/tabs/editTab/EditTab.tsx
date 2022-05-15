@@ -56,6 +56,7 @@ import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import useReportTraceError from "./useReportTraceError";
+import OldBlueprintWarning from "../OldBlueprintWarning";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -303,35 +304,42 @@ const EditTab: React.FC<{
           </div>
         </div>
         <div className={styles.configPanel}>
-          <ErrorBoundary
-            key={
-              // Pass key to error boundary so that switching the node can potentially avoid the bad state without
-              // having to reload the whole page editor frame
-              activeNodeId
-            }
-          >
-            {isApiAtLeastV2 ? (
-              activeNodeId === FOUNDATION_NODE_ID ? (
-                <Col>
-                  <ConnectedFieldTemplate name="label" label="Extension Name" />
-                  {showVersionField && <ApiVersionField />}
-                  <UpgradedToApiV3 />
-                  <EditorNode isLocked={isLocked} />
-                </Col>
+          <Col>
+            <OldBlueprintWarning />
+            <ErrorBoundary
+              key={
+                // Pass key to error boundary so that switching the node can potentially avoid the bad state without
+                // having to reload the whole page editor frame
+                activeNodeId
+              }
+            >
+              {isApiAtLeastV2 ? (
+                activeNodeId === FOUNDATION_NODE_ID ? (
+                  <>
+                    <ConnectedFieldTemplate
+                      name="label"
+                      label="Extension Name"
+                    />
+                    {showVersionField && <ApiVersionField />}
+                    <UpgradedToApiV3 />
+                    <EditorNode isLocked={isLocked} />
+                  </>
+                ) : (
+                  <EditorNodeConfigPanel
+                    key={activeNodeId}
+                    blockFieldName={blockFieldName}
+                    blockId={
+                      blockPipeline.find((x) => x.instanceId === activeNodeId)
+                        ?.id
+                    }
+                    blockError={blockError}
+                  />
+                )
               ) : (
-                <EditorNodeConfigPanel
-                  key={activeNodeId}
-                  blockFieldName={blockFieldName}
-                  blockId={
-                    blockPipeline.find((x) => x.instanceId === activeNodeId)?.id
-                  }
-                  blockError={blockError}
-                />
-              )
-            ) : (
-              <UnsupportedApiV1 />
-            )}
-          </ErrorBoundary>
+                <UnsupportedApiV1 />
+              )}
+            </ErrorBoundary>
+          </Col>
         </div>
         <div className={styles.dataPanel}>
           {activeNodeId === FOUNDATION_NODE_ID ? (
