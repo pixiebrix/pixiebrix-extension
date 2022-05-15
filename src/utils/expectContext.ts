@@ -28,18 +28,17 @@ import {
 type ErrorBaseType = string | Error | (new (message?: string) => Error);
 function createError(
   defaultMessage: string,
-  error: ErrorBaseType = Error
+  ErrorConstructor: ErrorBaseType = Error
 ): Error {
-  if (typeof error === "string") {
-    return new Error(error);
+  if (typeof ErrorConstructor === "string") {
+    return new Error(ErrorConstructor);
   }
 
-  if (error instanceof Error) {
-    return error;
+  if (ErrorConstructor instanceof Error) {
+    return ErrorConstructor;
   }
 
-  // eslint-disable-next-line new-cap -- ctor passed in as argument
-  return new error(defaultMessage);
+  return new ErrorConstructor(defaultMessage);
 }
 
 const contexts = [
