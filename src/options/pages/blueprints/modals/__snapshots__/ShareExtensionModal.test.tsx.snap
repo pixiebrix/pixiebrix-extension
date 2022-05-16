@@ -154,7 +154,6 @@ exports[`renders modal 1`] = `
                   <input
                     class="idInput form-control"
                     data-testid="registryId-blueprintId-id"
-                    name="blueprintId-id"
                     value="testextension"
                   />
                 </div>
