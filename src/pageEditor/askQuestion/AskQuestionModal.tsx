@@ -32,7 +32,7 @@ const buttons: ButtonConfig[] = [
   {
     logo: slack,
     label: "Join Slack, get answers now",
-    link: "https://join.slack.com/t/pixiebrixworkspace/shared_invite/zt-11jzgaxqq-BkvBJyRcyPHctXs5wqCGhw",
+    link: "https://slack.pixiebrix.com",
   },
   {
     logo: discourse,
@@ -66,6 +66,7 @@ const AskQuestionModal: React.FC<AskQuestionModalProps> = ({
       {buttons.map(({ logo, label, link }) => (
         <a
           key={label}
+          role="button"
           className={styles.button}
           href={link}
           target="_blank"

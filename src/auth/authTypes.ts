@@ -84,14 +84,21 @@ export interface TokenAuthData extends UserData {
   token: string;
 }
 
-type OrganizationAuthState = {
+export type OrganizationAuthState = {
   readonly id: string;
   readonly name: string;
   readonly scope?: string;
 };
 
+export type AuthUserOrganization = {
+  id: UUID;
+  name: string;
+  role: Me["organization_memberships"][number]["role"];
+  scope?: string | null;
+};
+
 export type AuthState = {
-  readonly userId?: string | null;
+  readonly userId?: UUID | null;
 
   readonly email?: string | null;
 
@@ -117,12 +124,7 @@ export type AuthState = {
   /**
    * Organizations the user is a member of
    */
-  readonly organizations: Array<{
-    id: UUID;
-    name: string;
-    role: Me["organization_memberships"][number]["role"];
-    scope?: string | null;
-  }>;
+  readonly organizations: AuthUserOrganization[];
 
   readonly groups: Array<{
     id: UUID;
