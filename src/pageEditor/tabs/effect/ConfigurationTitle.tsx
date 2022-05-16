@@ -15,26 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import { IBlock } from "@/core";
 import { MarketplaceListing } from "@/types/contract";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { isEmpty } from "lodash";
-import React from "react";
+import styles from "./ConfigurationTitle.module.scss";
 
 type ConfigurationTitleProps = {
   block: IBlock | null;
   listing: MarketplaceListing | null;
+  showBlockLabel?: boolean;
 };
 
 const ConfigurationTitle: React.FunctionComponent<ConfigurationTitleProps> = ({
   block,
   listing,
+  showBlockLabel = false,
 }) => {
-  const configurationTitle = (
-    <span>
-      Input: <span className="text-muted">{block?.name}</span>
+  const configurationTitle = showBlockLabel ? (
+    <span className={styles.title}>
+      Input: <span className={styles.blockName}>{block?.name}</span>
     </span>
+  ) : (
+    <span>Input</span>
   );
 
   return isEmpty(listing?.instructions) && isEmpty(listing?.assets) ? (
@@ -46,6 +51,7 @@ const ConfigurationTitle: React.FunctionComponent<ConfigurationTitleProps> = ({
         href={`https://www.pixiebrix.com/marketplace/${listing.id}/`}
         target="_blank"
         rel="noreferrer"
+        className={styles.documentationLink}
       >
         <FontAwesomeIcon icon={faExternalLinkAlt} /> View Documentation
       </a>

@@ -2,10 +2,12 @@
 
 exports[`renders block name 1`] = `
 <DocumentFragment>
-  <span>
+  <span
+    class="title"
+  >
     Input: 
     <span
-      class="text-muted"
+      class="blockName"
     >
       Echo Block
     </span>
@@ -18,15 +20,18 @@ exports[`renders document link when Additional resources is not empty 1`] = `
   <div
     class="d-flex justify-content-between"
   >
-    <span>
+    <span
+      class="title"
+    >
       Input: 
       <span
-        class="text-muted"
+        class="blockName"
       >
         Echo Block
       </span>
     </span>
     <a
+      class="documentationLink"
       href="https://www.pixiebrix.com/marketplace/test_listing_id/"
       rel="noreferrer"
       target="_blank"
@@ -57,15 +62,18 @@ exports[`renders document link when How To is not empty 1`] = `
   <div
     class="d-flex justify-content-between"
   >
-    <span>
+    <span
+      class="title"
+    >
       Input: 
       <span
-        class="text-muted"
+        class="blockName"
       >
         Echo Block
       </span>
     </span>
     <a
+      class="documentationLink"
       href="https://www.pixiebrix.com/marketplace/test_listing_id/"
       rel="noreferrer"
       target="_blank"
@@ -88,5 +96,13 @@ exports[`renders document link when How To is not empty 1`] = `
        View Documentation
     </a>
   </div>
+</DocumentFragment>
+`;
+
+exports[`renders plain 'Input' title 1`] = `
+<DocumentFragment>
+  <span>
+    Input
+  </span>
 </DocumentFragment>
 `;
