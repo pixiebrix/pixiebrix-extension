@@ -16,9 +16,12 @@
  */
 
 import React from "react";
-import { RegistryId } from "@/core";
+import { SemVerString } from "@/core";
 import styles from "./Entry.module.scss";
-import { UnsavedChangesIcon } from "@/pageEditor/sidebar/ExtensionIcons";
+import {
+  RecipeHasUpdateIcon,
+  UnsavedChangesIcon,
+} from "@/pageEditor/sidebar/ExtensionIcons";
 import { Accordion, ListGroup } from "react-bootstrap";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -35,29 +38,32 @@ import {
   selectExpandedRecipeId,
   selectRecipeIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
-import { useGetRecipesQuery } from "@/services/api";
+import { RecipeDefinition } from "@/types/definitions";
 
 type RecipeEntryProps = {
-  recipeId: RegistryId;
+  recipe: RecipeDefinition;
   isActive?: boolean;
+  installedVersion: SemVerString;
 };
 
 const RecipeEntry: React.FC<RecipeEntryProps> = ({
-  recipeId,
+  recipe,
   isActive,
   children,
+  installedVersion,
 }) => {
   const expandedRecipeId = useSelector(selectExpandedRecipeId);
   const activeElement = useSelector(selectActiveElement);
+  const recipeId = recipe?.metadata?.id;
   // Set the alternate background if an extension in this recipe is active
   const hasRecipeBackground = activeElement?.recipe?.id === recipeId;
   const dispatch = useDispatch();
-  const { data: recipes } = useGetRecipesQuery();
-  const savedName = recipes?.find((recipe) => recipe.metadata.id === recipeId)
-    ?.metadata?.name;
+  const savedName = recipe?.metadata?.name;
   const dirtyName = useSelector(selectDirtyMetadataForRecipeId(recipeId))?.name;
   const name = dirtyName ?? savedName ?? "Loading...";
   const isDirty = useSelector(selectRecipeIsDirty(recipeId));
+  const latestRecipeVersion = recipe?.metadata?.version;
+  const hasUpdate = latestRecipeVersion !== installedVersion;
 
   const caretIcon = expandedRecipeId === recipeId ? faCaretDown : faCaretRight;
 
@@ -81,6 +87,13 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
         {isDirty && (
           <span className={cx(styles.icon, "text-danger")}>
             <UnsavedChangesIcon />
+          </span>
+        )}
+        {hasUpdate && (
+          <span className={cx(styles.icon, "text-warning")}>
+            <RecipeHasUpdateIcon
+              title={`You are editing version ${installedVersion} of this blueprint, the latest version is ${latestRecipeVersion}.`}
+            />
           </span>
         )}
       </Accordion.Toggle>

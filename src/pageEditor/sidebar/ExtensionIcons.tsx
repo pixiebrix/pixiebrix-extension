@@ -19,6 +19,7 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import {
+  faExclamationTriangle,
   faEyeSlash,
   faPuzzlePiece,
   faSave,
@@ -37,4 +38,10 @@ export const NotAvailableIcon: React.FunctionComponent = () => (
 
 export const UnsavedChangesIcon: React.FunctionComponent = () => (
   <FontAwesomeIcon icon={faSave} title="Unsaved changes" />
+);
+
+export const RecipeHasUpdateIcon: React.FunctionComponent<{
+  title: string;
+}> = ({ title }) => (
+  <FontAwesomeIcon icon={faExclamationTriangle} title={title} />
 );

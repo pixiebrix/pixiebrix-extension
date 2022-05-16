@@ -68,7 +68,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useGetRecipesQuery } from "@/services/api";
-import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
+import {
+  getIdForElement,
+  getRecipeById,
+  getRecipeIdForElement,
+} from "@/pageEditor/utils";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
   <Button
@@ -294,9 +298,7 @@ const SidebarExpanded: React.VoidFunctionComponent<{
     (item) => {
       if (Array.isArray(item)) {
         const recipeId = item[0];
-        const recipe = recipes.find(
-          (recipe) => recipe.metadata.id === recipeId
-        );
+        const recipe = getRecipeById(recipes, recipeId);
         return lowerCase(recipe?.metadata?.name ?? "");
       }
 
@@ -305,11 +307,22 @@ const SidebarExpanded: React.VoidFunctionComponent<{
   ).map((item) => {
     if (Array.isArray(item)) {
       const [recipeId, elements] = item;
+      const recipe = getRecipeById(recipes, recipeId);
+      const firstElement = elements[0];
+      const installedVersion =
+        firstElement == null
+          ? // If there's no extensions in the Blueprint (empty Blueprint?), use the Blueprint's version
+            recipe.metadata.version
+          : isExtension(firstElement)
+          ? firstElement._recipe.version
+          : firstElement.recipe.version;
+
       return (
         <RecipeEntry
           key={recipeId}
-          recipeId={recipeId}
+          recipe={recipe}
           isActive={recipeId === activeRecipeId}
+          installedVersion={installedVersion}
         >
           {elements.map((element) => (
             <ElementListItem
