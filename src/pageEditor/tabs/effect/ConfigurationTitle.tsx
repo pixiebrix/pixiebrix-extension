@@ -48,7 +48,7 @@ const ConfigurationTitle: React.FunctionComponent<ConfigurationTitleProps> = ({
     <div className="d-flex justify-content-between">
       {configurationTitle}
       <a
-        href={`https://www.pixiebrix.com/marketplace/${listing.id}/`}
+        href={`https://www.pixiebrix.com/marketplace/${listing.id}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}
         target="_blank"
         rel="noreferrer"
         className={styles.documentationLink}
