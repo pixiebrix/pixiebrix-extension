@@ -361,36 +361,4 @@ module.exports = (env, options) =>
         ],
       }),
     ]),
-    module: {
-      rules: [
-        {
-          test: /\.s?css$/,
-          resourceQuery: { not: [/loadAsUrl/] },
-          use: [
-            MiniCssExtractPlugin.loader,
-            "css-loader",
-            {
-              loader: "sass-loader",
-              options: {
-                // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
-                implementation: require("node-sass"),
-              },
-            },
-          ],
-        },
-        {
-          test: /\.svg$/,
-          resourceQuery: /loadAsComponent/,
-          use: [
-            {
-              loader: "@svgr/webpack",
-              options: {
-                typescript: true,
-                ext: "tsx",
-              },
-            },
-          ],
-        },
-      ],
-    },
   });

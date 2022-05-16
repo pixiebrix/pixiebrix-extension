@@ -69,7 +69,7 @@ module.exports = {
       files: [
         "webpack.*.js",
         "*.config.js",
-        "test-env.js",
+        "**/testUtils/**",
         "**/__mocks__/**",
         "*.test.js",
         "*.test.ts",
