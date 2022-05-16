@@ -18,7 +18,6 @@
 const fs = require("fs");
 const path = require("path");
 const JSON5 = require("json5");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { mergeWithCustomize, customizeObject } = require("webpack-merge");
 
 const merge = mergeWithCustomize({
@@ -60,6 +59,7 @@ const shared = {
   },
   module: {
     rules: [
+      // CSS/SCSS is missing from this configuration because it conflicts with Storybook’s config, etc
       {
         test: /\.tsx?$/,
         loader: "ts-loader",
@@ -67,21 +67,6 @@ const shared = {
         options: {
           transpileOnly: true,
         },
-      },
-      {
-        test: /\.s?css$/,
-        resourceQuery: { not: [/loadAsUrl/] },
-        use: [
-          MiniCssExtractPlugin.loader,
-          "css-loader",
-          {
-            loader: "sass-loader",
-            options: {
-              // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
-              implementation: require("node-sass"),
-            },
-          },
-        ],
       },
       {
         test: /\.svg$/,
@@ -152,6 +137,6 @@ for (const [from, [to]] of Object.entries(tsconfig.compilerOptions.paths)) {
 }
 
 /**
- * @param {import("webpack").Configuration} baseConfig
+ * @param {import("webpack").Configuration[]} configs
  */
-module.exports = (baseConfig) => merge(shared, baseConfig);
+module.exports = (...configs) => merge(shared, ...configs);
