@@ -19,18 +19,24 @@ import Alert from "@/components/Alert";
 import { appApi } from "@/services/api";
 import React from "react";
 import { useSelector } from "react-redux";
-import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { RootState } from "@/pageEditor/pageEditorTypes";
+import { selectExtensions } from "@/store/extensionsSelectors";
 
 const OldBlueprintWarning: React.FunctionComponent = () => {
-  const activeElement = useSelector(selectActiveElement);
-  if (activeElement.recipe == null) {
-    return null;
-  }
+  const recipeId = useSelector<RootState>(
+    ({ editor }) => editor.activeRecipeId
+  );
 
   const { data: recipes = [] } = appApi.endpoints.getRecipes.useQueryState();
-  const recipe = recipes.find((x) => x.metadata.id === activeElement.recipe.id);
+  const recipe = recipes.find((x) => x.metadata.id === recipeId);
 
-  const installedRecipeVersion = activeElement.recipe.version;
+  // Select a single extension for the recipe to check the installed version.
+  // We rely on the assumption that every extension in the recipe has the same version.
+  const recipeExtension = useSelector(selectExtensions).find(
+    (x) => x._recipe?.id === recipeId
+  );
+
+  const installedRecipeVersion = recipeExtension?._recipe.version;
   const latestRecipeVersion = recipe?.metadata?.version;
 
   if (installedRecipeVersion === latestRecipeVersion) {
@@ -40,8 +46,7 @@ const OldBlueprintWarning: React.FunctionComponent = () => {
   return (
     <Alert variant="warning">
       You are editing version {installedRecipeVersion} of this blueprint, the
-      latest version is
-      {latestRecipeVersion}. To get the latest version,{" "}
+      latest version is {latestRecipeVersion}. To get the latest version,{" "}
       <a
         href="/options.html#/blueprints"
         target="_blank"

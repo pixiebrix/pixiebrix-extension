@@ -56,7 +56,6 @@ import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import useReportTraceError from "./useReportTraceError";
-import OldBlueprintWarning from "../OldBlueprintWarning";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -305,7 +304,6 @@ const EditTab: React.FC<{
         </div>
         <div className={styles.configPanel}>
           <Col>
-            <OldBlueprintWarning />
             <ErrorBoundary
               key={
                 // Pass key to error boundary so that switching the node can potentially avoid the bad state without

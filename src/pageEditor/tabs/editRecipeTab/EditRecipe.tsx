@@ -35,6 +35,22 @@ import { FieldDescriptions } from "@/utils/strings";
 import { object, string } from "yup";
 import { testIsSemVerString } from "@/types/helpers";
 import Form, { RenderBody } from "@/components/form/Form";
+import OldBlueprintWarning from "../OldBlueprintWarning";
+
+// TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
+// see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
+const editRecipeSchema = object({
+  id: string().required(), // Recipe id is readonly here
+  name: string().required(),
+  version: string()
+    .test(
+      "semver",
+      "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
+      (value: string) => testIsSemVerString(value, { allowLeadingV: false })
+    )
+    .required(),
+  description: string(),
+});
 
 const EditRecipe: React.VoidFunctionComponent = () => {
   const recipeId = useSelector(selectActiveRecipeId);
@@ -44,21 +60,6 @@ const EditRecipe: React.VoidFunctionComponent = () => {
     (recipe) => recipe.metadata.id === recipeId
   )?.metadata;
   const metadata = dirtyMetadata ?? savedMetadata;
-
-  // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
-  // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
-  const editRecipeSchema = object({
-    id: string().required(), // Recipe id is readonly here
-    name: string().required(),
-    version: string()
-      .test(
-        "semver",
-        "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
-        (value: string) => testIsSemVerString(value, { allowLeadingV: false })
-      )
-      .required(),
-    description: string(),
-  });
 
   const initialFormState: RecipeMetadataFormState = {
     id: metadata?.id,
@@ -98,6 +99,7 @@ const EditRecipe: React.VoidFunctionComponent = () => {
       <Card>
         <Card.Header>Blueprint Metadata</Card.Header>
         <Card.Body>
+          <OldBlueprintWarning />
           <ConnectedFieldTemplate
             name="id"
             label="Blueprint ID"
