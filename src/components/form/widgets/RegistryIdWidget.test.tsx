@@ -64,7 +64,7 @@ describe("RegistryIdWidget", () => {
   const testIdValue = "test-identifier";
 
   test("renders with user id value", async () => {
-    const id = `${testUserScope}/${testIdValue}` as RegistryId;
+    const id = validateRegistryId(`${testUserScope}/${testIdValue}`);
 
     const { container } = render(<RegistryIdWidget name="testField" />, {
       initialValues: { testField: id },
@@ -80,14 +80,14 @@ describe("RegistryIdWidget", () => {
     });
 
     const scopeInput = container.querySelector("input[name='testField-scope']");
-    const idInput = container.querySelector("input[name='testField-id']");
+    const idInput = screen.getByTestId("registryId-testField-id");
 
     expect(scopeInput).toHaveValue(testUserScope);
     expect(idInput).toHaveValue(testIdValue);
   });
 
   test("shows the right organization scopes", async () => {
-    const id = `${testUserScope}/${testIdValue}` as RegistryId;
+    const id = validateRegistryId(`${testUserScope}/${testIdValue}`);
     const authState = authStateFactory({
       scope: testUserScope,
     });

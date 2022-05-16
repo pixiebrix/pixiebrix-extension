@@ -98,6 +98,9 @@ const RegistryIdWidget: React.VFC<{
   return (
     <div className={styles.root}>
       <SelectWidget
+        // This doesn't impact formik because these widgets aren't connected to formik directly;
+        // we need it for testing because the react-select element is hard to identify in tests - it
+        // doesn't accept a top-level data-testid prop
         name={`${name}-scope`}
         value={scopeValue}
         isClearable={false}
@@ -108,7 +111,6 @@ const RegistryIdWidget: React.VFC<{
       />
       <span> / </span>
       <Form.Control
-        name={`${name}-id`}
         value={idValue}
         onChange={onChangeId}
         className={styles.idInput}
