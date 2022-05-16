@@ -72,12 +72,27 @@ import { FormState } from "@/pageEditor/pageEditorTypes";
 import { freshIdentifier } from "@/utils";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
 import { padStart } from "lodash";
-import { AuthState } from "@/auth/authTypes";
+import {
+  AuthState,
+  AuthUserOrganization,
+  OrganizationAuthState,
+} from "@/auth/authTypes";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
 export const uuidSequence = (n: number) =>
   validateUUID(`${padStart(String(n), 8, "0")}-0000-4000-A000-000000000000`);
+
+const organizationFactory = define<AuthUserOrganization>({
+  id: uuidSequence,
+  name(n: number): string {
+    return `Test Organization ${n}`;
+  },
+  role: UserRole.developer,
+  scope(n: number): string {
+    return `@organization-${n}`;
+  },
+});
 
 export const authStateFactory = define<AuthState>({
   userId: uuidSequence,
@@ -86,48 +101,41 @@ export const authStateFactory = define<AuthState>({
   isLoggedIn: true,
   isOnboarded: true,
   extension: true,
-  organization(n: number) {
-    const id = (1000 + n).toString();
-    return {
-      id,
-      name: `Test Organization ${n}`,
-      scope: `@organization-${n}`,
-    };
-  },
-  organizations(n: number) {
+  organizations() {
     return [
-      {
-        id: uuidSequence(n),
-        name: `Test Organization ${n}`,
+      organizationFactory({
         role: UserRole.developer,
-        scope: `@organization-${n}`,
-      },
-      {
-        id: uuidSequence(n * 100),
-        name: `Test Admin Organization ${n * 100}`,
+      }),
+      organizationFactory({
+        name(n: number): string {
+          return `Test Admin Organization ${n}`;
+        },
         role: UserRole.admin,
-        scope: `@organization-${n * 100}`,
-      },
-      {
-        id: uuidSequence(n * 100 + 1),
-        name: `Test Member Organization ${n * 100 + 1}`,
+      }),
+      organizationFactory({
+        name(n: number): string {
+          return `Test Member Organization ${n}`;
+        },
         role: UserRole.member,
-        scope: `@organization-${n * 100 + 1}`,
-      },
-      {
-        id: uuidSequence(n * 100 + 2),
-        name: `Test Restricted Organization ${n * 100 + 2}`,
+      }),
+      organizationFactory({
+        name(n: number): string {
+          return `Test Restricted Organization ${n}`;
+        },
         role: UserRole.restricted,
-        scope: `@organization-${n * 100 + 2}`,
-      },
-      {
-        id: uuidSequence(n * 100 + 3),
-        name: `Test Manager Organization ${n * 100 + 3}`,
+      }),
+      organizationFactory({
+        name(n: number): string {
+          return `Test Manager Organization ${n}`;
+        },
         role: UserRole.manager,
-        scope: `@organization-${n * 100 + 3}`,
-      },
+      }),
     ];
   },
+  organization: derive<AuthState, OrganizationAuthState>(
+    ({ organizations }) => organizations[0],
+    "organizations"
+  ),
   groups() {
     const groups: AuthState["groups"] = [];
     return groups;
