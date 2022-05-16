@@ -35,7 +35,9 @@ import { FieldDescriptions } from "@/utils/strings";
 import { object, string } from "yup";
 import { testIsSemVerString } from "@/types/helpers";
 import Form, { RenderBody } from "@/components/form/Form";
-import OldBlueprintWarning from "../OldBlueprintWarning";
+import { selectExtensions } from "@/store/extensionsSelectors";
+import { getRecipeById } from "@/pageEditor/utils";
+import Alert from "@/components/Alert";
 
 // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
@@ -55,10 +57,19 @@ const editRecipeSchema = object({
 const EditRecipe: React.VoidFunctionComponent = () => {
   const recipeId = useSelector(selectActiveRecipeId);
   const { data: recipes, isLoading, error } = useGetRecipesQuery();
+  const recipe = getRecipeById(recipes ?? [], recipeId);
+
+  // Select a single extension for the recipe to check the installed version.
+  // We rely on the assumption that every extension in the recipe has the same version.
+  const recipeExtension = useSelector(selectExtensions).find(
+    (x) => x._recipe?.id === recipeId
+  );
+
+  const installedRecipeVersion = recipeExtension?._recipe.version;
+  const latestRecipeVersion = recipe?.metadata?.version;
+
   const dirtyMetadata = useSelector(selectDirtyMetadataForRecipeId(recipeId));
-  const savedMetadata = recipes?.find(
-    (recipe) => recipe.metadata.id === recipeId
-  )?.metadata;
+  const savedMetadata = recipe?.metadata;
   const metadata = dirtyMetadata ?? savedMetadata;
 
   const initialFormState: RecipeMetadataFormState = {
@@ -99,7 +110,20 @@ const EditRecipe: React.VoidFunctionComponent = () => {
       <Card>
         <Card.Header>Blueprint Metadata</Card.Header>
         <Card.Body>
-          <OldBlueprintWarning />
+          {installedRecipeVersion !== latestRecipeVersion && (
+            <Alert variant="warning">
+              You are editing version {installedRecipeVersion} of this
+              blueprint, the latest version is {latestRecipeVersion}. To get the
+              latest version,{" "}
+              <a
+                href="/options.html#/blueprints"
+                target="_blank"
+                title="Re-activate the blueprint"
+              >
+                re-activate the blueprint
+              </a>
+            </Alert>
+          )}
           <ConnectedFieldTemplate
             name="id"
             label="Blueprint ID"
