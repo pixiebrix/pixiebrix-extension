@@ -38,6 +38,7 @@ import Form, { RenderBody } from "@/components/form/Form";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { getRecipeById } from "@/pageEditor/utils";
 import Alert from "@/components/Alert";
+import { createSelector } from "reselect";
 
 // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
@@ -54,6 +55,13 @@ const editRecipeSchema = object({
   description: string(),
 });
 
+const selectFirstExtension = createSelector(
+  selectExtensions,
+  selectActiveRecipeId,
+  (extensions, activeRecipeId) =>
+    extensions.find((x) => x._recipe?.id === activeRecipeId)
+);
+
 const EditRecipe: React.VoidFunctionComponent = () => {
   const recipeId = useSelector(selectActiveRecipeId);
   const { data: recipes, isLoading, error } = useGetRecipesQuery();
@@ -61,9 +69,7 @@ const EditRecipe: React.VoidFunctionComponent = () => {
 
   // Select a single extension for the recipe to check the installed version.
   // We rely on the assumption that every extension in the recipe has the same version.
-  const recipeExtension = useSelector(selectExtensions).find(
-    (x) => x._recipe?.id === recipeId
-  );
+  const recipeExtension = useSelector(selectFirstExtension);
 
   const installedRecipeVersion = recipeExtension?._recipe.version;
   const latestRecipeVersion = recipe?.metadata?.version;

@@ -52,6 +52,9 @@ export function getRecipeIdForElement(
   return isExtension(element) ? element._recipe?.id : element.recipe?.id;
 }
 
-export function getRecipeById(recipes: RecipeDefinition[], id: RegistryId) {
+export function getRecipeById(
+  recipes: RecipeDefinition[],
+  id: RegistryId
+): RecipeDefinition | null {
   return recipes.find((recipe) => recipe.metadata.id === id);
 }

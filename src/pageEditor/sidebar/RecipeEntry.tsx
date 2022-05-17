@@ -41,7 +41,7 @@ import {
 import { RecipeDefinition } from "@/types/definitions";
 
 type RecipeEntryProps = {
-  recipe: RecipeDefinition;
+  recipe: RecipeDefinition | null;
   isActive?: boolean;
   installedVersion: SemVerString;
 };
@@ -52,17 +52,23 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
   children,
   installedVersion,
 }) => {
+  const dispatch = useDispatch();
+
   const expandedRecipeId = useSelector(selectExpandedRecipeId);
   const activeElement = useSelector(selectActiveElement);
-  const recipeId = recipe?.metadata?.id;
+  const {
+    id: recipeId,
+    name: savedName,
+    version: latestRecipeVersion,
+  } = recipe?.metadata ?? {};
+
   // Set the alternate background if an extension in this recipe is active
   const hasRecipeBackground = activeElement?.recipe?.id === recipeId;
-  const dispatch = useDispatch();
-  const savedName = recipe?.metadata?.name;
+
   const dirtyName = useSelector(selectDirtyMetadataForRecipeId(recipeId))?.name;
   const name = dirtyName ?? savedName ?? "Loading...";
   const isDirty = useSelector(selectRecipeIsDirty(recipeId));
-  const latestRecipeVersion = recipe?.metadata?.version;
+
   const hasUpdate = latestRecipeVersion !== installedVersion;
 
   const caretIcon = expandedRecipeId === recipeId ? faCaretDown : faCaretRight;
