@@ -19,48 +19,14 @@ import { useEffect } from "react";
 import { selectSettings } from "@/store/settingsSelectors";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { DEFAULT_THEME, Theme, THEMES } from "@/options/constants";
-import logo from "@img/logo.svg";
-import logoSmall from "@img/logo-small-rounded.svg";
-import aaLogo from "@img/aa-logo.svg";
-import aaLogoSmall from "@img/aa-logo-small.svg";
+import { DEFAULT_THEME, THEMES } from "@/options/constants";
 import { activatePartnerTheme } from "@/background/messenger/api";
 import { persistor } from "@/options/store";
 import { useAsyncState } from "@/hooks/common";
 import { ManualStorageKey, readStorage } from "@/chrome";
-import { isValidTheme } from "@/utils/themeUtils";
+import { getThemeLogo, ThemeLogo } from "@/utils/themeUtils";
 
 const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
-
-type ThemeLogo = {
-  regular: string;
-  small: string;
-};
-
-type ThemeLogoMap = {
-  [key in Theme]: ThemeLogo;
-};
-
-const THEME_LOGOS: ThemeLogoMap = {
-  default: {
-    regular: logo,
-    small: logoSmall,
-  },
-  "automation-anywhere": {
-    regular: aaLogo,
-    small: aaLogoSmall,
-  },
-};
-
-export const getThemeLogo = (theme: string): ThemeLogo => {
-  if (isValidTheme(theme)) {
-    // eslint-disable-next-line security/detect-object-injection -- theme is type Theme, a union type of string literal
-    return THEME_LOGOS[theme];
-  }
-
-  // eslint-disable-next-line security/detect-object-injection -- theme not user defined
-  return THEME_LOGOS[DEFAULT_THEME];
-};
 
 const activateBackgroundTheme = async (): Promise<void> => {
   // Flush the Redux state to localStorage to ensure the background page sees the latest state

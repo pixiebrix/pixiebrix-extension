@@ -16,7 +16,7 @@
  */
 
 import { getSettingsState } from "@/store/settingsStorage";
-import { getThemeLogo } from "@/hooks/useTheme";
+import { getThemeLogo } from "@/utils/themeUtils";
 
 async function setToolbarIcon(): Promise<void> {
   const { theme } = await getSettingsState();
