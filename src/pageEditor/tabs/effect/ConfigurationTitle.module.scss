@@ -15,15 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getSettingsState } from "@/store/settingsStorage";
-import { getThemeLogo } from "@/utils/themeUtils";
-
-async function setToolbarIcon(): Promise<void> {
-  const { theme } = await getSettingsState();
-  const logo = getThemeLogo(theme);
-  (chrome.browserAction ?? chrome.action).setIcon({ path: logo.small });
+.title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 0 1 50%;
 }
 
-export default function initPartnerTheme() {
-  void setToolbarIcon();
+.blockName {
+  color: var(--gray);
+}
+
+.documentationLink {
+  // TODO move this color to a variable; need to settle on how to use variables with Page Editor
+  color: #7abbef;
 }

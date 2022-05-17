@@ -19,17 +19,16 @@ import { JsonObject } from "type-fest";
 import { debounce } from "lodash";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { MessageContext, SemVerString, SerializedError } from "@/core";
-import {
-  getRootCause,
-  hasBusinessRootCause,
-  hasCancelRootCause,
-  isAxiosError,
-} from "@/errors";
+import { hasBusinessRootCause, hasCancelRootCause } from "@/errors";
 import { allowsTrack } from "@/telemetry/dnt";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
 import { isObject } from "@/utils";
-import { getUserData, readAuthData } from "@/auth/token";
-import { isAppRequest, selectAbsoluteUrl } from "@/services/requestErrorUtils";
+import { flagOn, getUserData } from "@/auth/token";
+import {
+  isAppRequest,
+  selectAbsoluteUrl,
+  selectAxiosError,
+} from "@/services/requestErrorUtils";
 import { ErrorItem } from "@/types/contract";
 import { expectContext } from "@/utils/expectContext";
 
@@ -72,20 +71,16 @@ export async function selectExtraContext(
     return { extensionVersion };
   }
 
-  const cause = getRootCause(error);
+  const axiosError = selectAxiosError(error);
 
-  // Handle base classes of ClientRequestError
-  if ("error" in cause && isAxiosError(cause.error)) {
-    const { flags = [] } = await readAuthData();
-    if (
-      (await isAppRequest(cause.error)) ||
-      flags.includes("enterprise-telemetry")
-    ) {
-      return {
-        extensionVersion,
-        url: selectAbsoluteUrl(cause.error.config),
-      };
-    }
+  if (
+    axiosError &&
+    ((await flagOn("enterprise-telemetry")) || (await isAppRequest(axiosError)))
+  ) {
+    return {
+      extensionVersion,
+      url: selectAbsoluteUrl(axiosError.config),
+    };
   }
 
   return { extensionVersion };

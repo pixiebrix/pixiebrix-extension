@@ -16,12 +16,13 @@
  */
 
 import { KEYS_OF_UI_SCHEMA, Schema } from "@/core";
+import { produce } from "immer";
 import {
   DEFAULT_FIELD_TYPE,
-  MINIMAL_SCHEMA,
-  MINIMAL_UI_SCHEMA,
+  getMinimalSchema,
+  getMinimalUiSchema,
   normalizeSchema,
-  normalizeUiOrder,
+  getNormalizedUiOrder,
   produceSchemaOnPropertyNameChange,
   produceSchemaOnUiTypeChange,
   replaceStringInArray,
@@ -86,7 +87,7 @@ describe("produceSchemaOnPropertyNameChange", () => {
 
 describe("validateNextPropertyName", () => {
   const schema: Schema = {
-    ...MINIMAL_SCHEMA,
+    ...getMinimalSchema(),
     properties: {
       field1: {
         title: "Field 1",
@@ -135,23 +136,47 @@ describe("validateNextPropertyName", () => {
 
 describe("normalizeSchema", () => {
   test("init schema", () => {
-    // eslint-disable-next-line unicorn/no-useless-undefined
-    const actual = normalizeSchema(undefined);
-    expect(actual).toStrictEqual(MINIMAL_SCHEMA);
+    const schema: Schema = undefined;
+
+    const actual = produce(
+      {
+        schema,
+        uiSchema: getMinimalUiSchema(),
+      } as RJSFSchema,
+      (draft) => {
+        normalizeSchema(draft);
+      }
+    );
+
+    expect(actual.schema).toStrictEqual({
+      type: "object",
+      properties: {},
+    });
   });
 
   test("add properties", () => {
-    const actual = normalizeSchema({
+    const schema: Schema = {
       type: "object",
-    });
-    expect(actual).toStrictEqual({
+    };
+
+    const actual = produce(
+      {
+        schema,
+        uiSchema: getMinimalUiSchema(),
+      } as RJSFSchema,
+      (draft) => {
+        normalizeSchema(draft);
+      }
+    );
+
+    expect(actual.schema).toStrictEqual({
       type: "object",
       properties: {},
     });
   });
 
   test("fix required", () => {
-    const actual = normalizeSchema({
+    const schema: Schema = {
       type: "object",
       properties: {
         foo: {
@@ -159,8 +184,19 @@ describe("normalizeSchema", () => {
         },
       },
       required: null,
-    });
-    expect(actual).toStrictEqual({
+    };
+
+    const actual = produce(
+      {
+        schema,
+        uiSchema: getMinimalUiSchema(),
+      } as RJSFSchema,
+      (draft) => {
+        normalizeSchema(draft);
+      }
+    );
+
+    expect(actual.schema).toStrictEqual({
       type: "object",
       properties: {
         foo: {
@@ -174,22 +210,22 @@ describe("normalizeSchema", () => {
 
 describe("normalizeUiOrder", () => {
   test("init uiOrder", () => {
-    const actual = normalizeUiOrder(["propA", "propB"], []);
+    const actual = getNormalizedUiOrder(["propA", "propB"], []);
     expect(actual).toEqual(["propA", "propB", "*"]);
   });
 
   test("adds * at the end", () => {
-    const actual = normalizeUiOrder(["propA", "propB"], ["propA", "propB"]);
+    const actual = getNormalizedUiOrder(["propA", "propB"], ["propA", "propB"]);
     expect(actual).toEqual(["propA", "propB", "*"]);
   });
 
   test("adds a missing property", () => {
-    const actual = normalizeUiOrder(["propA", "propB"], ["propB", "*"]);
+    const actual = getNormalizedUiOrder(["propA", "propB"], ["propB", "*"]);
     expect(actual).toEqual(["propB", "propA", "*"]);
   });
 
   test("normalize the position of *", () => {
-    const actual = normalizeUiOrder(
+    const actual = getNormalizedUiOrder(
       ["propA", "propB"],
       ["propA", "*", "propB"]
     );
@@ -197,7 +233,7 @@ describe("normalizeUiOrder", () => {
   });
 
   test("removes missing props", () => {
-    const actual = normalizeUiOrder(
+    const actual = getNormalizedUiOrder(
       ["propA", "propC"],
       ["propA", "propB", "propC", "*"]
     );
@@ -209,7 +245,7 @@ describe("produceSchemaOnUiTypeChange", () => {
   test("converts Dropdown to Dropdown with labels", () => {
     const schema: RJSFSchema = {
       schema: {
-        ...MINIMAL_SCHEMA,
+        ...getMinimalSchema(),
         properties: {
           field1: {
             title: "Field 1",
@@ -219,7 +255,7 @@ describe("produceSchemaOnUiTypeChange", () => {
         },
       },
       uiSchema: {
-        ...MINIMAL_UI_SCHEMA,
+        ...getMinimalUiSchema(),
         field1: {
           [UI_WIDGET]: "select",
         },
@@ -255,7 +291,7 @@ describe("produceSchemaOnUiTypeChange", () => {
   test("converts Dropdown with labels to Dropdown", () => {
     const schema: RJSFSchema = {
       schema: {
-        ...MINIMAL_SCHEMA,
+        ...getMinimalSchema(),
         properties: {
           field1: {
             title: "Field 1",
@@ -278,7 +314,7 @@ describe("produceSchemaOnUiTypeChange", () => {
         },
       },
       uiSchema: {
-        ...MINIMAL_UI_SCHEMA,
+        ...getMinimalUiSchema(),
         field1: {
           [UI_WIDGET]: "select",
         },

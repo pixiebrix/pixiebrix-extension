@@ -27,14 +27,15 @@ import { RJSFSchema, SelectStringOption } from "./formBuilderTypes";
 import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 import { freshIdentifier } from "@/utils";
 import { produce } from "immer";
+import { WritableDraft } from "immer/dist/types/types-external";
 
-export const MINIMAL_SCHEMA: Schema = {
+export const getMinimalSchema: () => Schema = () => ({
   type: "object",
-};
+});
 
-export const MINIMAL_UI_SCHEMA: UiSchema = {
+export const getMinimalUiSchema: () => UiSchema = () => ({
   [UI_ORDER]: ["*"],
-};
+});
 
 export const DEFAULT_FIELD_TYPE = "string";
 
@@ -243,12 +244,14 @@ export const produceSchemaOnPropertyNameChange = (
       );
     }
 
-    const nextUiOrder = replaceStringInArray(
-      draft.uiSchema[UI_ORDER],
-      propertyName,
-      nextPropertyName
-    );
-    draft.uiSchema[UI_ORDER] = nextUiOrder;
+    if (draft.uiSchema[UI_ORDER] != null) {
+      const nextUiOrder = replaceStringInArray(
+        draft.uiSchema[UI_ORDER],
+        propertyName,
+        nextPropertyName
+      );
+      draft.uiSchema[UI_ORDER] = nextUiOrder;
+    }
 
     if (draft.uiSchema[propertyName]) {
       draft.uiSchema[nextPropertyName] = draft.uiSchema[propertyName];
@@ -320,28 +323,28 @@ export const produceSchemaOnUiTypeChange = (
   });
 };
 
-export const normalizeSchema = (schema: Schema | undefined) => {
-  if (!schema) {
-    return MINIMAL_SCHEMA;
+/**
+ * Normalizes the schema property of the RJSF schema.
+ * @param rjsfSchemaDraft The mutable draft of the RJSF schema
+ */
+export const normalizeSchema = (rjsfSchemaDraft: WritableDraft<RJSFSchema>) => {
+  if (rjsfSchemaDraft.schema == null) {
+    rjsfSchemaDraft.schema = getMinimalSchema();
   }
 
-  return produce(schema, (draft) => {
-    // Should we initialize the 'required' field?
-    if (
-      Boolean(schema) &&
-      typeof schema.required !== "undefined" &&
-      !Array.isArray(schema.required)
-    ) {
-      draft.required = [];
-    }
+  if (
+    typeof rjsfSchemaDraft.schema.required !== "undefined" &&
+    !Array.isArray(rjsfSchemaDraft.schema.required)
+  ) {
+    rjsfSchemaDraft.schema.required = [];
+  }
 
-    if (!draft.properties) {
-      draft.properties = {};
-    }
-  });
+  if (rjsfSchemaDraft.schema.properties == null) {
+    rjsfSchemaDraft.schema.properties = {};
+  }
 };
 
-export const normalizeUiOrder = (
+export const getNormalizedUiOrder = (
   propertyKeys: string[],
   uiOrder: string[] = []
 ) => {

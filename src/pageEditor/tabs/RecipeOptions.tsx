@@ -31,8 +31,8 @@ import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import {
   FIELD_TYPE_OPTIONS,
-  MINIMAL_SCHEMA,
-  MINIMAL_UI_SCHEMA,
+  getMinimalSchema,
+  getMinimalUiSchema,
 } from "@/components/formBuilder/formBuilderHelpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -57,8 +57,8 @@ const formRuntimeContext: RuntimeContext = {
 };
 
 const emptyOptions: OptionsDefinition = {
-  schema: MINIMAL_SCHEMA,
-  uiSchema: MINIMAL_UI_SCHEMA,
+  schema: getMinimalSchema(),
+  uiSchema: getMinimalUiSchema(),
 };
 
 const RecipeOptions: React.VFC = () => {

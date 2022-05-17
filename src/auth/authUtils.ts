@@ -17,6 +17,7 @@
 
 import { Me } from "@/types/contract";
 import { UserDataUpdate, AuthState } from "@/auth/authTypes";
+import { UUID } from "@/core";
 
 export function selectOrganizations(
   organizationMemberships: Me["organization_memberships"]
@@ -70,7 +71,7 @@ export function selectExtensionAuthState({
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
 
   return {
-    userId: id,
+    userId: id as UUID,
     email,
     scope,
     isLoggedIn: true,
