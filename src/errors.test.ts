@@ -27,12 +27,15 @@ import {
   MultipleElementsFoundError,
   NoElementsFoundError,
   selectError,
+  selectSpecificError,
 } from "@/errors";
 import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
 import { matchesAnyPattern } from "@/utils";
 import { isPlainObject } from "@reduxjs/toolkit";
+import { ClientRequestError, RemoteServiceError } from "@/services/errors";
+import { AxiosError } from "axios";
 
 const TEST_MESSAGE = "Test message";
 
@@ -290,6 +293,60 @@ describe("selectError", () => {
     expect(selectError(errorEvent)).toMatchInlineSnapshot(
       "[Error: It's a non-error]"
     );
+  });
+});
+
+describe("selectSpecificError", () => {
+  test("selects the first matching instance", () => {
+    const instances = new Error("first", {
+      cause: new TypeError("second", {
+        cause: new Error("third", {
+          cause: new RemoteServiceError("fourth", {
+            cause: {
+              name: "AxiosError",
+              message: "fifth",
+              isAxiosError: true,
+            } as AxiosError,
+          }),
+        }),
+      }),
+    });
+
+    // Test both real errors and serialized errors, even though we do not
+    // want serialized errors to be flowing around #3372
+    const testedErrors = [instances, serializeError(instances)];
+    for (const error of testedErrors) {
+      expect(selectSpecificError(error, SyntaxError)).toBeNull();
+
+      expect(selectSpecificError(error, TypeError)).toMatchObject({
+        name: "TypeError",
+        message: "second",
+      });
+
+      expect(selectSpecificError(error, Error)).toMatchObject({
+        name: "Error",
+        message: "first",
+      });
+
+      expect(selectSpecificError(error, RemoteServiceError)).toMatchObject({
+        name: "RemoteServiceError",
+        message: "fourth",
+      });
+
+      // All ClientRequestErrors can be caught with this thanks to dedicated detection code,
+      // even if we do not currently have `instanceof`-based detection
+      expect(selectSpecificError(error, ClientRequestError)).toMatchObject({
+        name: "RemoteServiceError",
+        message: "fourth",
+      });
+
+      // All BusinessErrors can be caught with this thanks to dedicated detection code,
+      // even if we do not currently have `instanceof`-based detection
+      expect(selectSpecificError(error, BusinessError)).toMatchObject({
+        name: "RemoteServiceError",
+        message: "fourth",
+      });
+    }
   });
 });
 
