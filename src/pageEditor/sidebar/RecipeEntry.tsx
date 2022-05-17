@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { PropsWithChildren, PropsWithChildren } from "react";
 import { SemVerString } from "@/core";
 import styles from "./Entry.module.scss";
 import {
@@ -40,11 +40,11 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { RecipeDefinition } from "@/types/definitions";
 
-type RecipeEntryProps = {
+export type RecipeEntryProps = PropsWithChildren<{
   recipe: RecipeDefinition;
   isActive?: boolean;
   installedVersion: SemVerString;
-};
+}>;
 
 const RecipeEntry: React.FC<RecipeEntryProps> = ({
   recipe,
@@ -69,7 +69,10 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
   const name = dirtyName ?? savedName ?? "Loading...";
   const isDirty = useSelector(selectRecipeIsDirty(recipeId));
 
-  const hasUpdate = latestRecipeVersion !== installedVersion;
+  const hasUpdate =
+    latestRecipeVersion != null &&
+    installedVersion != null &&
+    latestRecipeVersion !== installedVersion;
 
   const caretIcon = expandedRecipeId === recipeId ? faCaretDown : faCaretRight;
 
@@ -84,7 +87,9 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
         active={isActive}
         key={`recipe-${recipeId}`}
-        onClick={() => dispatch(actions.selectRecipeId(recipeId))}
+        onClick={() =>
+          recipeId != null && dispatch(actions.selectRecipeId(recipeId))
+        }
       >
         <span className={styles.icon}>
           <FontAwesomeIcon icon={faFile} /> <FontAwesomeIcon icon={caretIcon} />
