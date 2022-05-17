@@ -310,7 +310,7 @@ export function selectSpecificError<
  * @deprecated Look for specific errors via selectSpecificError
  */
 export function getRootCause(error: unknown): unknown {
-  while (isObject(error) && "cause" in error) {
+  while (isObject(error) && error.cause != null) {
     error = error.cause;
   }
 
