@@ -55,10 +55,6 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
 
   console.trace("enrichBusinessRequestError", { error });
 
-  if (!navigator.onLine) {
-    throw new ClientNetworkError(NO_INTERNET_MESSAGE, { cause: error });
-  }
-
   // This should have already been called before attempting the request because Axios does not actually catch invalid URLs
   const url = assertHttpsUrl(error.config.url, error.config.baseURL);
 
@@ -73,6 +69,10 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
     }
 
     throw new RemoteServiceError(getErrorMessage(error), { cause: error });
+  }
+
+  if (!navigator.onLine) {
+    throw new ClientNetworkError(NO_INTERNET_MESSAGE, { cause: error });
   }
 
   const hasPermissions = await browser.permissions.contains({

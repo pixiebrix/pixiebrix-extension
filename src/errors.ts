@@ -294,7 +294,7 @@ export function selectSpecificError<
   ErrorType extends new (...args: unknown[]) => Error
 >(error: unknown, errorType: ErrorType): InstanceType<ErrorType> | null {
   if (!isObject(error)) {
-    return;
+    return null;
   }
 
   if (isSpecificError(error, errorType)) {

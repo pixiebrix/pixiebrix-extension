@@ -55,8 +55,10 @@ export class NotConfiguredError extends BusinessError {
   }
 }
 
-// Axios offers its own serialization method, but it doesn't include the response.
-// By deleting toJSON, the serialize-error library will use its default serialization
+/**
+ * Axios offers its own serialization method, but it doesn't include the response.
+ * By deleting toJSON, the serialize-error library will use its default serialization
+ */
 export type SerializableAxiosError = Except<AxiosError, "toJSON">;
 
 type ProxiedResponse = Pick<AxiosResponse, "data" | "status" | "statusText">;

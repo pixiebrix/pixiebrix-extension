@@ -66,7 +66,9 @@ export async function isAppRequest(
 /**
  * Return the AxiosError associated with an error, or null if error is not associated with an AxiosError
  */
-export function selectAxiosError(error: unknown): SerializableAxiosError {
+export function selectAxiosError(
+  error: unknown
+): SerializableAxiosError | null {
   if (isAxiosError(error)) {
     return error;
   }
