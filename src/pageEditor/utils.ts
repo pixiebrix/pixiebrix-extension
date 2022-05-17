@@ -55,6 +55,6 @@ export function getRecipeIdForElement(
 export function getRecipeById(
   recipes: RecipeDefinition[],
   id: RegistryId
-): RecipeDefinition | null {
+): RecipeDefinition | undefined {
   return recipes.find((recipe) => recipe.metadata.id === id);
 }

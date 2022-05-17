@@ -41,7 +41,7 @@ import {
 import { RecipeDefinition } from "@/types/definitions";
 
 type RecipeEntryProps = {
-  recipe: RecipeDefinition | null;
+  recipe: RecipeDefinition;
   isActive?: boolean;
   installedVersion: SemVerString;
 };
@@ -60,7 +60,7 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
     id: recipeId,
     name: savedName,
     version: latestRecipeVersion,
-  } = recipe?.metadata ?? {};
+  } = recipe.metadata ?? {};
 
   // Set the alternate background if an extension in this recipe is active
   const hasRecipeBackground = activeElement?.recipe?.id === recipeId;

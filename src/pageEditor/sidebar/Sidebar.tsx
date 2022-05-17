@@ -73,6 +73,7 @@ import {
   getRecipeById,
   getRecipeIdForElement,
 } from "@/pageEditor/utils";
+import reportError from "@/telemetry/reportError";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
   <Button
@@ -308,6 +309,13 @@ const SidebarExpanded: React.VoidFunctionComponent<{
     if (Array.isArray(item)) {
       const [recipeId, elements] = item;
       const recipe = getRecipeById(recipes, recipeId);
+      if (recipe == null) {
+        reportError(
+          new Error(`Recipe ${recipeId} for Editor Sidebar not found`)
+        );
+        return null;
+      }
+
       const firstElement = elements[0];
       const installedVersion =
         firstElement == null
