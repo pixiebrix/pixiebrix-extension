@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, PropsWithChildren } from "react";
+import React, { PropsWithChildren } from "react";
 import { SemVerString } from "@/core";
 import styles from "./Entry.module.scss";
 import {

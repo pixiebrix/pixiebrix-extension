@@ -27,7 +27,6 @@ import {
   initialState as editorInitialState,
 } from "@/pageEditor/slices/editorSlice";
 import RecipeEntry, { RecipeEntryProps } from "./RecipeEntry";
-import { SemVerString } from "@/core";
 import { EditorState } from "@/pageEditor/pageEditorTypes";
 import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import { validateSemVerString } from "@/types/helpers";
