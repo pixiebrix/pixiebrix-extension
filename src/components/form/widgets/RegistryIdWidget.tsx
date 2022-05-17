@@ -60,8 +60,8 @@ export function getScopeAndId(
 
 const RegistryIdWidget: React.VFC<{
   name: string;
-  selectStyles: StylesConfig;
-}> = ({ name, selectStyles }) => {
+  selectStyles?: StylesConfig;
+}> = ({ name, selectStyles = {} }) => {
   const [{ value }, , { setValue, setTouched }] = useField<RegistryId>(name);
   const { scope: userScope, organizations } = useSelector(selectAuth);
   const organizationScopes = organizations
@@ -98,7 +98,10 @@ const RegistryIdWidget: React.VFC<{
   return (
     <div className={styles.root}>
       <SelectWidget
-        name={name}
+        // This doesn't impact formik because these widgets aren't connected to formik directly;
+        // we need it for testing because the react-select element is hard to identify in tests - it
+        // doesn't accept a top-level data-testid prop
+        name={`${name}-scope`}
         value={scopeValue}
         isClearable={false}
         onChange={onChangeScope}
@@ -111,6 +114,7 @@ const RegistryIdWidget: React.VFC<{
         value={idValue}
         onChange={onChangeId}
         className={styles.idInput}
+        data-testid={`registryId-${name}-id`}
       />
     </div>
   );

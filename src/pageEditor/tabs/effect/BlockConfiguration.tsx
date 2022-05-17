@@ -27,7 +27,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { joinName } from "@/utils";
 import { useAsyncState } from "@/hooks/common";
 import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
-import { partial } from "lodash";
+import { isEmpty, partial } from "lodash";
 import { BlockWindow } from "@/blocks/types";
 import AdvancedLinks, {
   DEFAULT_WINDOW_VALUE,
@@ -61,7 +61,7 @@ const BlockConfiguration: React.FunctionComponent<{
   const configName = partial(joinName, name);
 
   const context = useFormikContext<FormState>();
-
+  const blockLabel = getIn(context.values, configName("label"));
   const blockErrors = getIn(context.errors, name);
 
   const [{ block, error }, BlockOptions] = useBlockOptions(blockId);
@@ -109,7 +109,13 @@ const BlockConfiguration: React.FunctionComponent<{
 
       <Card>
         <FieldSection
-          title={<ConfigurationTitle block={block} listing={listing} />}
+          title={
+            <ConfigurationTitle
+              block={block}
+              listing={listing}
+              showBlockLabel={!isEmpty(blockLabel)}
+            />
+          }
         >
           <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
             {blockErrors?.id && (

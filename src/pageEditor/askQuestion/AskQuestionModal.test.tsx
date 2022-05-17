@@ -15,15 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getSettingsState } from "@/store/settingsStorage";
-import { getThemeLogo } from "@/utils/themeUtils";
+import React from "react";
+import AskQuestionModal from "@/pageEditor/askQuestion/AskQuestionModal";
+import { render, screen } from "@testing-library/react";
 
-async function setToolbarIcon(): Promise<void> {
-  const { theme } = await getSettingsState();
-  const logo = getThemeLogo(theme);
-  (chrome.browserAction ?? chrome.action).setIcon({ path: logo.small });
-}
+describe("AskQuestionModal", () => {
+  test("it renders", () => {
+    render(<AskQuestionModal showModal={true} setShowModal={jest.fn()} />);
 
-export default function initPartnerTheme() {
-  void setToolbarIcon();
-}
+    expect(screen.getByRole("button", { name: /join slack/i })).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: /start a new discussion/i })
+    ).toBeVisible();
+    expect(screen.getByRole("button", { name: /schedule/i })).toBeVisible();
+  });
+});
