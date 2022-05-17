@@ -44,6 +44,8 @@ const THEME_LOGOS: ThemeLogoMap = {
   },
 };
 
+// Note: this function is re-used in the app. Should not reference
+// anything unavailable in the app environment, e.g. the background page
 export const getThemeLogo = (theme: string): ThemeLogo => {
   if (isValidTheme(theme)) {
     // eslint-disable-next-line security/detect-object-injection -- theme is type Theme, a union type of string literal
@@ -52,4 +54,16 @@ export const getThemeLogo = (theme: string): ThemeLogo => {
 
   // eslint-disable-next-line security/detect-object-injection -- theme not user defined
   return THEME_LOGOS[DEFAULT_THEME];
+};
+
+// Note: this function is re-used in the app. Should not reference
+// anything unavailable in the app environment, e.g. the background page
+export const addThemeClassToDocumentRoot = (theme: Theme): void => {
+  for (const theme of THEMES) {
+    document.documentElement.classList.remove(theme);
+  }
+
+  if (theme && theme !== DEFAULT_THEME) {
+    document.documentElement.classList.add(theme);
+  }
 };
