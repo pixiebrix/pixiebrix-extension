@@ -49,10 +49,6 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
     throw error;
   }
 
-  // Axios offers its own serialization method, but it doesn't include the response.
-  // By deleting toJSON, the serialize-error library will use its default serialization
-  delete error.toJSON;
-
   console.trace("enrichBusinessRequestError", { error });
 
   // This should have already been called before attempting the request because Axios does not actually catch invalid URLs

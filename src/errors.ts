@@ -17,7 +17,7 @@
 
 import { MessageContext } from "@/core";
 import { deserializeError, ErrorObject } from "serialize-error";
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import { isObject, matchesAnyPattern } from "@/utils";
 import safeJsonStringify from "json-stringify-safe";
 import { isEmpty, truncate } from "lodash";
@@ -26,6 +26,7 @@ import {
   isClientErrorResponse,
   safeGuessStatusText,
 } from "@/types/errorContract";
+import { SerializableAxiosError } from "@/services/errors";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
@@ -370,8 +371,15 @@ export function isClientRequestError(error: unknown): boolean {
 }
 
 // Copy of axios.isAxiosError, without risking to import the whole untreeshakeable axios library
-export function isAxiosError(error: unknown): error is AxiosError {
-  return isObject(error) && Boolean(error.isAxiosError);
+export function isAxiosError(error: unknown): error is SerializableAxiosError {
+  if (isObject(error) && Boolean(error.isAxiosError)) {
+    // Axios offers its own serialization method, but it doesn't include the response.
+    // By deleting toJSON, the serialize-error library will use its default serialization
+    delete error.toJSON;
+    return true;
+  }
+
+  return false;
 }
 
 /**
