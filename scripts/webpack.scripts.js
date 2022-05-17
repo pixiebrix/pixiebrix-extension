@@ -16,7 +16,6 @@
  */
 
 const path = require("path");
-const rootDir = path.resolve(__dirname, "../");
 const webpack = require("webpack");
 const mergeWithShared = require("../webpack.sharedConfig.js");
 
@@ -25,10 +24,10 @@ module.exports = mergeWithShared({
   target: "node",
   devtool: "nosources-source-map",
   entry: {
-    headers: path.resolve(rootDir, "src/development/headers"),
+    headers: path.resolve("src/development/headers"),
   },
   output: {
-    path: path.resolve(rootDir, "scripts", "bin"),
+    path: path.resolve("scripts", "bin"),
   },
   externals: {
     // Exclude some troublesome/unnecessary dependencies
@@ -36,10 +35,17 @@ module.exports = mergeWithShared({
     rollbar: "{init(){}}",
   },
   resolve: {
+    // Mock any modules that appear in __mocks__
+    // e.g. src/__mocks__/webextension-polyfill.js
+    modules: [path.resolve("src/__mocks__"), "node_modules"],
+
     alias: {
-      "@/icons/list": path.resolve("src/__mocks__/@/icons/list"),
-      "@uipath/robot": path.resolve("src/__mocks__/@uipath/robot"),
-      "@/telemetry/reportError": path.resolve("src/__mocks__/reportError"),
+      // Mock any LOCAL modules that appear in __mocks__
+      // e.g. src/__mocks__/@/telemetry/reportErrors.ts
+      "@": [
+        path.resolve(rootDir, "src/__mocks__/@"),
+        path.resolve(rootDir, "src"),
+      ],
     },
   },
   plugins: [

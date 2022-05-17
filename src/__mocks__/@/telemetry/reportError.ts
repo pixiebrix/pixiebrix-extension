@@ -15,17 +15,4 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MessageContext } from "@/core";
-import { getErrorMessage } from "@/errors";
-
-// A mock that doesn't call the background page to report the error
-function reportError(error: unknown, context?: MessageContext): void {
-  console.error("Report error: %s", getErrorMessage(error), {
-    error,
-    context,
-  });
-
-  throw new Error(`Unexpected call to reportError: ${getErrorMessage(error)}`);
-}
-
-export default reportError;
+export default () => {};

@@ -33,11 +33,13 @@ module.exports = {
   webpackFinal: async (config) =>
     mergeWithShared(config, {
       resolve: {
-        // Automatically mock any module that appears in __mocks__, e.g. src/__mocks__/webextension-polyfill.js
-        modules: [path.resolve(rootDir, "src/__mocks__")],
+        // Mock any modules that appear in __mocks__
+        // e.g. src/__mocks__/webextension-polyfill.js
+        modules: [path.resolve(rootDir, "src/__mocks__"), "node_modules"],
 
         alias: {
-          // Allow automatic mocks of any local file
+          // Mock any LOCAL modules that appear in __mocks__
+          // e.g. src/__mocks__/@/telemetry/reportErrors.ts
           "@": [
             path.resolve(rootDir, "src/__mocks__/@"),
             path.resolve(rootDir, "src"),

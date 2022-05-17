@@ -18,14 +18,7 @@
 const fs = require("fs");
 const path = require("path");
 const JSON5 = require("json5");
-const { mergeWithCustomize, customizeObject } = require("webpack-merge");
-
-const merge = mergeWithCustomize({
-  // Webpack resolves aliases in order, so the mocks need to be first
-  customizeObject: customizeObject({
-    "resolve.alias": "prepend",
-  }),
-});
+const { merge } = require("webpack-merge");
 
 const tsconfig = JSON5.parse(fs.readFileSync("./tsconfig.json", "utf8"));
 
