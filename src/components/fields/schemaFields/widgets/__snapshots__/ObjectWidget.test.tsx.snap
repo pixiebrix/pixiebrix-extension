@@ -69,6 +69,7 @@ exports[`ObjectWidget renders widget with properties 1`] = `
             <td>
               <input
                 class="form-control"
+                data-testid="testField.foo-name"
                 readonly=""
                 type="text"
                 value="foo"
@@ -129,6 +130,7 @@ exports[`ObjectWidget renders widget with properties 1`] = `
             <td>
               <input
                 class="form-control"
+                data-testid="testField.bar-name"
                 readonly=""
                 type="text"
                 value="bar"
@@ -189,6 +191,7 @@ exports[`ObjectWidget renders widget with properties 1`] = `
             <td>
               <input
                 class="form-control"
+                data-testid="testField.baz-name"
                 readonly=""
                 type="text"
                 value="baz"
