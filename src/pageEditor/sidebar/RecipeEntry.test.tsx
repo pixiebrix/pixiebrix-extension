@@ -70,6 +70,16 @@ test("it renders", () => {
   expect(rendered.asFragment()).toMatchSnapshot();
 });
 
+test("renders with empty recipe", () => {
+  const rendered = renderRecipeEntry({
+    propsOverride: {
+      recipe: undefined,
+    },
+  });
+
+  expect(rendered.asFragment()).toMatchSnapshot();
+});
+
 test("renders with empty metadata", () => {
   const recipe = recipeFactory({ metadata: null });
   const rendered = renderRecipeEntry({

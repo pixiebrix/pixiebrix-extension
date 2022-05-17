@@ -113,3 +113,60 @@ exports[`renders with empty metadata 1`] = `
   </div>
 </DocumentFragment>
 `;
+
+exports[`renders with empty recipe 1`] = `
+<DocumentFragment>
+  <div
+    class="root list-group-item-action recipeBackground list-group-item"
+    tabindex="0"
+  >
+    <span
+      class="icon"
+    >
+      <svg
+        aria-hidden="true"
+        class="svg-inline--fa fa-file fa-w-12 "
+        data-icon="file"
+        data-prefix="fas"
+        focusable="false"
+        role="img"
+        viewBox="0 0 384 512"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M224 136V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H248c-13.2 0-24-10.8-24-24zm160-14.1v6.1H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9z"
+          fill="currentColor"
+        />
+      </svg>
+       
+      <svg
+        aria-hidden="true"
+        class="svg-inline--fa fa-caret-right fa-w-6 "
+        data-icon="caret-right"
+        data-prefix="fas"
+        focusable="false"
+        role="img"
+        viewBox="0 0 192 512"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
+          fill="currentColor"
+        />
+      </svg>
+    </span>
+    <span
+      class="name"
+    >
+      Loading...
+    </span>
+  </div>
+  <div
+    class="collapse"
+  >
+    <div>
+      test children
+    </div>
+  </div>
+</DocumentFragment>
+`;
