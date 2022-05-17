@@ -51,8 +51,6 @@ describe("getScopeAndId", () => {
   });
 });
 
-jest.unmock("react-redux");
-
 const editorRoles = new Set<number>([
   UserRole.admin,
   UserRole.developer,

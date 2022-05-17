@@ -23,8 +23,6 @@ import RecipeConfigurationModal from "./RecipeConfigurationModal";
 import settingsSlice from "@/store/settingsSlice";
 import { createRenderFunctionWithRedux } from "@/testUtils/testHelpers";
 
-jest.unmock("react-redux");
-
 const renderRecipeConfigurationModal = createRenderFunctionWithRedux({
   reducer: {
     auth: authSlice.reducer,
