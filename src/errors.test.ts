@@ -316,7 +316,7 @@ describe("selectSpecificError", () => {
     // want serialized errors to be flowing around #3372
     const testedErrors = [instances, serializeError(instances)];
     for (const error of testedErrors) {
-      expect(selectSpecificError(error, SyntaxError)).toBeUndefined();
+      expect(selectSpecificError(error, SyntaxError)).toBeNull();
 
       expect(selectSpecificError(error, TypeError)).toMatchObject({
         name: "TypeError",
