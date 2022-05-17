@@ -38,8 +38,7 @@
   ],
   "moduleNameMapper": {
     "\\.s?css$": "identity-obj-proxy",
-    "\\.(gif|svg)$|\\?loadAsUrl$": "<rootDir>/src/__mocks__/fileMock.js",
-    "\\.svg\\?loadAsComponent$": "<rootDir>/src/__mocks__/svgAsComponentMock.js",
+    "\\.(gif|svg)$|\\?loadAsUrl$|\\?loadAsComponent$": "<rootDir>/src/__mocks__/stringMock.js",
     "^@contrib/(.*?)(\\?loadAsText)?$": "<rootDir>/contrib/$1",
     "^@schemas/(.*)": "<rootDir>/schemas/$1",
     "^@/(.*)$": ["<rootDir>/src/__mocks__/@/$1", "<rootDir>/src/$1"]

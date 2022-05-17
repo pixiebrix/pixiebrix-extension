@@ -50,8 +50,8 @@ exports[`FormEditor renders empty schema 1`] = `
               <span
                 class="symbol"
               >
-                <svg
-                  class="root"
+                <test-file-stub
+                  classname="root"
                 />
               </span>
             </button>
@@ -104,8 +104,8 @@ exports[`FormEditor renders empty schema 1`] = `
               <span
                 class="symbol"
               >
-                <svg
-                  class="root"
+                <test-file-stub
+                  classname="root"
                 />
               </span>
             </button>
@@ -218,8 +218,8 @@ exports[`FormEditor renders simple schema 1`] = `
               <span
                 class="symbol"
               >
-                <svg
-                  class="root"
+                <test-file-stub
+                  classname="root"
                 />
               </span>
             </button>
@@ -268,8 +268,8 @@ exports[`FormEditor renders simple schema 1`] = `
               <span
                 class="symbol"
               >
-                <svg
-                  class="root"
+                <test-file-stub
+                  classname="root"
                 />
               </span>
             </button>
@@ -422,8 +422,8 @@ exports[`FormEditor renders simple schema 1`] = `
                 <span
                   class="symbol"
                 >
-                  <svg
-                    class="root"
+                  <test-file-stub
+                    classname="root"
                   />
                 </span>
               </button>
@@ -481,8 +481,8 @@ exports[`FormEditor renders simple schema 1`] = `
                 <span
                   class="symbol"
                 >
-                  <svg
-                    class="root"
+                  <test-file-stub
+                    classname="root"
                   />
                 </span>
               </button>
@@ -627,8 +627,8 @@ exports[`FormEditor renders simple schema 1`] = `
                 <span
                   class="symbol"
                 >
-                  <svg
-                    class="root"
+                  <test-file-stub
+                    classname="root"
                   />
                 </span>
               </button>
@@ -793,8 +793,8 @@ exports[`FormEditor renders unknown field format 1`] = `
               <span
                 class="symbol"
               >
-                <svg
-                  class="root"
+                <test-file-stub
+                  classname="root"
                 />
               </span>
             </button>
@@ -843,8 +843,8 @@ exports[`FormEditor renders unknown field format 1`] = `
               <span
                 class="symbol"
               >
-                <svg
-                  class="root"
+                <test-file-stub
+                  classname="root"
                 />
               </span>
             </button>
@@ -997,8 +997,8 @@ exports[`FormEditor renders unknown field format 1`] = `
                 <span
                   class="symbol"
                 >
-                  <svg
-                    class="root"
+                  <test-file-stub
+                    classname="root"
                   />
                 </span>
               </button>
@@ -1056,8 +1056,8 @@ exports[`FormEditor renders unknown field format 1`] = `
                 <span
                   class="symbol"
                 >
-                  <svg
-                    class="root"
+                  <test-file-stub
+                    classname="root"
                   />
                 </span>
               </button>
