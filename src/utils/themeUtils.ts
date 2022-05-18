@@ -69,14 +69,6 @@ export const addThemeClassToDocumentRoot = (theme: Theme): void => {
 };
 
 export const setThemeFavicon = (icon: string): void => {
-  const favicon =
-    document.querySelector("#favicon") ?? document.createElement("link");
-  favicon.setAttribute("rel", "shortcut icon");
-  favicon.setAttribute("type", "image/x-icon");
+  const favicon = document.querySelector("#favicon");
   favicon.setAttribute("href", icon);
-  favicon.setAttribute("id", "favicon");
-
-  if (!document.querySelector("#favicon")) {
-    document.head.append(favicon);
-  }
 };
