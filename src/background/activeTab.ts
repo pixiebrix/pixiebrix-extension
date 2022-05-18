@@ -1,5 +1,6 @@
 /** @file It's possible that some of these tabs might lose the permission in the meantime, we can't track that exactly */
 
+import { Tabs } from "webextension-polyfill";
 import { updatePageEditor } from "@/pageEditor/messenger/api";
 import { canReceiveContentScript } from "@/utils/permissions";
 
@@ -7,7 +8,7 @@ type TabId = number;
 type Origin = string;
 export const possiblyActiveTabs = new Map<TabId, Origin>();
 
-function track(tab: chrome.tabs.Tab): void {
+function track(tab: Tabs.Tab): void {
   if (tab.url && canReceiveContentScript(tab.url)) {
     console.debug("ActiveTab added:", tab.id, tab.url);
     possiblyActiveTabs.set(tab.id, new URL(tab.url).origin);
@@ -18,17 +19,16 @@ function track(tab: chrome.tabs.Tab): void {
 }
 
 export default function initActiveTabTracking() {
-  // Using the `chrome.*` API because the types are more complete here
-  chrome.browserAction.onClicked.addListener(track);
-  chrome.contextMenus.onClicked.addListener((_, tab) => {
+  browser.browserAction.onClicked.addListener(track);
+  browser.contextMenus.onClicked.addListener((_, tab) => {
     track(tab);
   });
 
-  chrome.commands.onCommand.addListener((_, tab) => {
+  browser.commands.onCommand.addListener((_, tab) => {
     track(tab);
   });
 
-  chrome.tabs.onRemoved.addListener((tabId) => {
+  browser.tabs.onRemoved.addListener((tabId) => {
     console.debug("ActiveTab removed:", tabId);
     possiblyActiveTabs.delete(tabId);
   });

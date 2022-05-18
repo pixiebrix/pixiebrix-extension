@@ -116,7 +116,7 @@ describe("unauthenticated direct requests", () => {
 
     const request = proxyService(null, requestConfig);
     await expect(request).rejects.toThrow(RemoteServiceError);
-    await expect(request).rejects.toHaveProperty("error.response.status", 500);
+    await expect(request).rejects.toHaveProperty("cause.response.status", 500);
   });
 });
 
@@ -153,10 +153,10 @@ describe("authenticated direct requests", () => {
 
     await expect(request).rejects.toThrow(ContextError);
     await expect(request).rejects.toMatchObject({
-      cause: new RemoteServiceError("Forbidden", {} as AxiosError),
+      cause: new RemoteServiceError("Forbidden", { cause: {} as AxiosError }),
     });
     await expect(request).rejects.toHaveProperty(
-      "cause.error.response.status",
+      "cause.cause.response.status",
       403
     );
   });
@@ -217,7 +217,7 @@ describe("proxy service requests", () => {
       cause: {
         name: "RemoteServiceError",
         message: "Internal Server Error",
-        error: {
+        cause: {
           response: {
             status: 500,
           },

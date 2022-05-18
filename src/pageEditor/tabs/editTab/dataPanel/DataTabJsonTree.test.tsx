@@ -22,7 +22,7 @@ import {
   initialState,
 } from "@/pageEditor/slices/editorSlice";
 import { formStateFactory } from "@/testUtils/factories";
-import { createRenderFunction } from "@/testUtils/testHelpers";
+import { createRenderFunctionWithRedux } from "@/testUtils/testHelpers";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import userEvent from "@testing-library/user-event";
@@ -49,7 +49,7 @@ const editorPreloadedState = editorSlice.reducer(
   initialState,
   actions.selectInstalled(formStateFactory())
 );
-const renderJsonTree = createRenderFunction({
+const renderJsonTree = createRenderFunctionWithRedux({
   reducer: {
     editor: editorSlice.reducer,
   },

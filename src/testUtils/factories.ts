@@ -65,18 +65,86 @@ import {
   FrameConnectionState,
 } from "@/pageEditor/context";
 import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
-import { Deployment } from "@/types/contract";
+import { Deployment, UserRole } from "@/types/contract";
 import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
 import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { freshIdentifier } from "@/utils";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
 import { padStart } from "lodash";
+import {
+  AuthState,
+  AuthUserOrganization,
+  OrganizationAuthState,
+} from "@/auth/authTypes";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
 export const uuidSequence = (n: number) =>
   validateUUID(`${padStart(String(n), 8, "0")}-0000-4000-A000-000000000000`);
+
+const organizationFactory = define<AuthUserOrganization>({
+  id: uuidSequence,
+  name(n: number): string {
+    return `Test Organization ${n}`;
+  },
+  role: UserRole.developer,
+  scope(n: number): string {
+    return `@organization-${n}`;
+  },
+});
+
+export const authStateFactory = define<AuthState>({
+  userId: uuidSequence,
+  email: (n: number) => `user${n}@test.com`,
+  scope: (n: number) => `@user${n}`,
+  isLoggedIn: true,
+  isOnboarded: true,
+  extension: true,
+  organizations() {
+    return [
+      organizationFactory({
+        role: UserRole.developer,
+      }),
+      organizationFactory({
+        name(n: number): string {
+          return `Test Admin Organization ${n}`;
+        },
+        role: UserRole.admin,
+      }),
+      organizationFactory({
+        name(n: number): string {
+          return `Test Member Organization ${n}`;
+        },
+        role: UserRole.member,
+      }),
+      organizationFactory({
+        name(n: number): string {
+          return `Test Restricted Organization ${n}`;
+        },
+        role: UserRole.restricted,
+      }),
+      organizationFactory({
+        name(n: number): string {
+          return `Test Manager Organization ${n}`;
+        },
+        role: UserRole.manager,
+      }),
+    ];
+  },
+  organization: derive<AuthState, OrganizationAuthState>(
+    ({ organizations }) => organizations[0],
+    "organizations"
+  ),
+  groups() {
+    const groups: AuthState["groups"] = [];
+    return groups;
+  },
+  flags() {
+    const flags: AuthState["flags"] = [];
+    return flags;
+  },
+});
 
 export const recipeMetadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),
@@ -157,7 +225,6 @@ export const traceRecordFactory = define<TraceRecord>({
   blockInstanceId: uuidSequence,
   blockId: TEST_BLOCK_ID,
   templateContext: {},
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- nominal typing
   renderedArgs: {} as RenderedArgs,
   renderError: null,
   blockConfig: {
@@ -179,7 +246,6 @@ export const blockFactory = define<IBlock>({
   name: (i: number) => `${TEST_BLOCK_ID} ${i}`,
   inputSchema: null as Schema,
   defaultOptions: null,
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   permissions: {} as Permissions.Permissions,
   run: jest.fn(),
 });
@@ -506,6 +572,5 @@ export const sanitizedServiceConfigurationFactory =
     id: uuidSequence,
     proxy: false,
     serviceId: (n: number) => validateRegistryId(`test/service-${n}`),
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- object literal
     config: () => ({} as SanitizedConfig),
   } as unknown as SanitizedServiceConfiguration);

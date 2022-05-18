@@ -262,13 +262,13 @@ const adapter: ReadableComponentAdapter<EmberObject> = {
   getParent: (instance) => instance.parentView,
   getNode: (instance) => instance.element,
   hasData(instance) {
-    const target = targetForComponent(instance) as UnknownObject;
+    const target = targetForComponent(instance);
     return getAllPropertyNames(target).some(
       (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
     );
   },
   getData(instance) {
-    const target = targetForComponent(instance) as UnknownObject;
+    const target = targetForComponent(instance);
     const props = getAllPropertyNames(target).filter(
       (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
     );

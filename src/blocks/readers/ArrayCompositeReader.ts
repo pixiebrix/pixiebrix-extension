@@ -55,21 +55,21 @@ class ArrayCompositeReader extends Reader {
     const availability = await Promise.all(
       this._readers.map(async (x) => x.isAvailable())
     );
-    return availability.every((x) => x);
+    return availability.every(Boolean);
   }
 
   override async isPure(): Promise<boolean> {
     const availability = await Promise.all(
       this._readers.map(async (x) => x.isPure())
     );
-    return availability.every((x) => x);
+    return availability.every(Boolean);
   }
 
   override async isRootAware(): Promise<boolean> {
     const awareness = await Promise.all(
       this._readers.map(async (x) => x.isRootAware())
     );
-    return awareness.some((x) => x);
+    return awareness.some(Boolean);
   }
 
   async read(root: HTMLElement | Document): Promise<ReaderOutput> {

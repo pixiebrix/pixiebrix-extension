@@ -27,7 +27,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { joinName } from "@/utils";
 import { useAsyncState } from "@/hooks/common";
 import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
-import { partial } from "lodash";
+import { isEmpty, partial } from "lodash";
 import { BlockWindow } from "@/blocks/types";
 import AdvancedLinks, {
   DEFAULT_WINDOW_VALUE,
@@ -37,6 +37,8 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { useGetMarketplaceListingsQuery } from "@/services/api";
+import ConfigurationTitle from "./ConfigurationTitle";
 
 const rootModeOptions = [
   { label: "Inherit", value: "inherit" },
@@ -59,10 +61,12 @@ const BlockConfiguration: React.FunctionComponent<{
   const configName = partial(joinName, name);
 
   const context = useFormikContext<FormState>();
-
+  const blockLabel = getIn(context.values, configName("label"));
   const blockErrors = getIn(context.errors, name);
 
   const [{ block, error }, BlockOptions] = useBlockOptions(blockId);
+  const { data: listings = {} } = useGetMarketplaceListingsQuery();
+  const listing = listings[blockId];
 
   // Conditionally show Advanced options "Condition" and "Target" depending on the value of blockType.
   // If blockType is undefined, don't show the options.
@@ -104,7 +108,15 @@ const BlockConfiguration: React.FunctionComponent<{
       <AdvancedLinks name={name} scrollToRef={advancedOptionsRef} />
 
       <Card>
-        <FieldSection title="Input">
+        <FieldSection
+          title={
+            <ConfigurationTitle
+              block={block}
+              listing={listing}
+              showBlockLabel={!isEmpty(blockLabel)}
+            />
+          }
+        >
           <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
             {blockErrors?.id && (
               <div className="invalid-feedback d-block mb-4">

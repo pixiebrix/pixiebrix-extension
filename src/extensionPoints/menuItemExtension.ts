@@ -687,6 +687,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         continue;
       }
 
+      // eslint-disable-next-line no-await-in-loop -- TODO: Make it run in parallel if possible while maintaining the order
       const reader = await this.defaultReader();
 
       let ctxtPromise: Promise<ReaderOutput>;
@@ -715,6 +716,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         }
 
         try {
+          // eslint-disable-next-line no-await-in-loop -- TODO: Make it run in parallel if possible while maintaining the order
           await this.runExtension(menu, ctxtPromise, extension);
         } catch (error) {
           if (error instanceof PromiseCancelled) {

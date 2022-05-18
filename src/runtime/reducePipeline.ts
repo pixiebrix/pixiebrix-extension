@@ -300,7 +300,6 @@ async function renderBlockArg(
       })`
     );
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- nominal type for literal
     return {} as RenderedArgs;
   }
 

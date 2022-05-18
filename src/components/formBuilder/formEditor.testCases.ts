@@ -1,4 +1,4 @@
-import { MINIMAL_SCHEMA, MINIMAL_UI_SCHEMA } from "./formBuilderHelpers";
+import { getMinimalSchema, getMinimalUiSchema } from "./formBuilderHelpers";
 import { RJSFSchema } from "./formBuilderTypes";
 
 export const initOneFieldSchemaCase: (fieldName: string) => RJSFSchema = (
@@ -15,7 +15,7 @@ export const initOneFieldSchemaCase: (fieldName: string) => RJSFSchema = (
         },
       },
     },
-    uiSchema: MINIMAL_UI_SCHEMA,
+    uiSchema: getMinimalUiSchema(),
   } as RJSFSchema);
 
 export const initAddingFieldCases: () => Array<
@@ -24,8 +24,8 @@ export const initAddingFieldCases: () => Array<
   [
     null,
     {
-      schema: MINIMAL_SCHEMA,
-      uiSchema: MINIMAL_UI_SCHEMA,
+      schema: getMinimalSchema(),
+      uiSchema: getMinimalUiSchema(),
     },
     {
       schema: {
@@ -86,6 +86,7 @@ export const initRenamingCases = () => {
   const newFieldName = "newFieldName";
 
   const renamingCases: RJSFSchema[][] = [
+    // Renaming a required field
     [
       {
         schema: {
@@ -128,6 +129,8 @@ export const initRenamingCases = () => {
         },
       },
     ],
+
+    // Simple text field
     [
       {
         schema: {
@@ -168,6 +171,52 @@ export const initRenamingCases = () => {
         },
       },
     ],
+
+    // Date field
+    [
+      {
+        schema: {
+          title: "A form",
+          type: "object",
+          properties: {
+            [fieldName]: {
+              type: "string",
+              title: "First name",
+              format: "date",
+            },
+            anotherFieldName: {
+              type: "string",
+              title: "Another field name",
+            },
+          },
+        },
+        uiSchema: {
+          "ui:order": [fieldName, "*"],
+        },
+      },
+      {
+        schema: {
+          title: "A form",
+          type: "object",
+          properties: {
+            [newFieldName]: {
+              type: "string",
+              title: "First name",
+              format: "date",
+            },
+            anotherFieldName: {
+              type: "string",
+              title: "Another field name",
+            },
+          },
+        },
+        uiSchema: {
+          "ui:order": [newFieldName, "*"],
+        },
+      },
+    ],
+
+    // Renaming text area
     [
       {
         schema: {

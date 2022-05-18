@@ -18,7 +18,10 @@
 import { screen } from "@testing-library/react";
 import ShareExtensionModal from "./ShareExtensionModal";
 import { extensionFactory } from "@/testUtils/factories";
-import { createRenderFunction, waitForEffect } from "@/testUtils/testHelpers";
+import {
+  createRenderFunctionWithRedux,
+  waitForEffect,
+} from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { Organization } from "@/types/contract";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -42,7 +45,7 @@ const extension = extensionFactory({
   label: "testExtension",
 });
 
-const renderShareExtensionModal = createRenderFunction({
+const renderShareExtensionModal = createRenderFunctionWithRedux({
   reducer: {
     auth: authSlice.reducer,
     options: extensionsSlice.reducer,

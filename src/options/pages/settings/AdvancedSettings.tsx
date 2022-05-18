@@ -28,12 +28,11 @@ import useFlags from "@/hooks/useFlags";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
-import { DEFAULT_THEME } from "@/options/constants";
 
 const AdvancedSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { restrict, permit, flagOn } = useFlags();
-  const { theme } = useSelector(selectSettings);
+  const { partnerId } = useSelector(selectSettings);
 
   const [serviceURL, setServiceURL] = useConfiguredHost();
 
@@ -104,13 +103,11 @@ const AdvancedSettings: React.FunctionComponent = () => {
               <Form.Control
                 type="text"
                 placeholder="my-company"
-                defaultValue={theme === DEFAULT_THEME ? "" : theme}
+                defaultValue={partnerId ?? ""}
                 onBlur={(event: React.ChangeEvent<HTMLInputElement>) => {
                   dispatch(
-                    settingsSlice.actions.setTheme({
-                      theme: event.target.value
-                        ? event.target.value
-                        : DEFAULT_THEME,
+                    settingsSlice.actions.setPartnerId({
+                      partnerId: event.target.value,
                     })
                   );
                 }}

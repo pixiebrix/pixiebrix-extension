@@ -29,6 +29,14 @@ import { render, screen } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { RegistryId } from "@/core";
+import { MarketplaceListing } from "@/types/contract";
+
+jest.mock("@/services/api", () => ({
+  useGetMarketplaceListingsQuery: () => ({
+    data: {} as Record<RegistryId, MarketplaceListing>,
+  }),
+}));
 
 beforeAll(() => {
   registerDefaultWidgets();
