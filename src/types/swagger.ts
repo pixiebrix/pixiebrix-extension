@@ -36,6 +36,9 @@ export interface paths {
   "/api/databases/records/": {
     get: operations["listAllRecords"];
   };
+  "/api/databases/records/jobs/{id}/": {
+    get: operations["retrieveDatabaseExportJob"];
+  };
   "/api/databases/{id}/": {
     get: operations["retrieveUserDatabase"];
     delete: operations["destroyUserDatabase"];
@@ -341,6 +344,9 @@ export interface paths {
   "/api/support/users/{user_pk}/bricks/{brick_pk}/": {
     get: operations["retrieveSupportUserBricks"];
   };
+  "/api/databases/records/jobs/": {
+    post: operations["createDatabaseExportJob"];
+  };
   "/api/databases/{database_pk}/queue/assign/": {
     /**
      * Get the next available item in a queue.
@@ -498,6 +504,17 @@ export interface components {
       data: { [key: string]: unknown };
       /** Format: date-time */
       created_at?: string;
+    };
+    DatabaseExportJob: {
+      /** Format: uuid */
+      id: string;
+      /** @enum {string} */
+      status?: "UNKNOWN" | "PENDING" | "STARTED" | "SUCCESS" | "FAILURE";
+      /** Format: date-time */
+      created_at?: string;
+      /** Format: binary */
+      data?: string | null;
+      error_message?: string | null;
     };
     Record: {
       id: string;
@@ -978,7 +995,7 @@ export interface components {
         organization_name: string;
         /** @enum {integer} */
         role: 1 | 2 | 3 | 4 | 5;
-        scope?: string | null;
+        scope: string | null;
       }[];
       group_memberships?: {
         /** Format: uuid */
@@ -989,6 +1006,12 @@ export interface components {
       /** @description True if the account is an organization API service account */
       service_account?: boolean;
       flags?: string;
+      partner?: {
+        /** Format: uuid */
+        id?: string;
+        name: string;
+        theme?: string;
+      };
     };
     Membership: {
       id?: number;
@@ -1270,6 +1293,17 @@ export interface components {
       /** Format: date-time */
       created_at?: string;
     };
+    DatabaseExportRequest: {
+      name: string;
+      databases: string[];
+      /**
+       * @default application/json
+       * @enum {string}
+       */
+      media_type?: "application/xlsx" | "application/json" | "text/csv";
+      /** @default [object Object] */
+      filters?: { [key: string]: unknown };
+    };
     DeploymentMessage: {
       /** Format: email */
       recipient: string;
@@ -1335,37 +1369,6 @@ export interface components {
       args?: { [key: string]: unknown };
     };
     ErrorItem: {
-      id?: number;
-      user?: {
-        /** Format: uuid */
-        id?: string;
-        name?: string;
-        /** Format: email */
-        email?: string;
-        service_account?: boolean;
-        /** Format: date-time */
-        date_joined?: string;
-      };
-      user_extension?: {
-        /** Format: uuid */
-        id: string;
-        /** Format: date-time */
-        createTimestamp: string;
-        /** Format: date-time */
-        updateTimestamp: string;
-      };
-      blueprint_version?: {
-        id: string;
-        version: string;
-      };
-      brick_version?: {
-        id: string;
-        version: string;
-      };
-      service_version?: {
-        id: string;
-        version: string;
-      };
       /** Format: uuid */
       uuid: string;
       /** @description JavaScript error class name */
@@ -1379,6 +1382,38 @@ export interface components {
        * @description Timestamp the error occurred, not the time the record is added to the db
        */
       timestamp: string;
+      user?: {
+        /** Format: uuid */
+        id?: string;
+        name?: string;
+        /** Format: email */
+        email?: string;
+        service_account?: boolean;
+        /** Format: date-time */
+        date_joined?: string;
+      };
+      organization?: string | null;
+      deployment?: string | null;
+      blueprint_version?: {
+        id: string;
+        version: string;
+      };
+      brick_version?: {
+        id: string;
+        version: string;
+      };
+      service_version?: {
+        id: string;
+        version: string;
+      };
+      user_extension?: {
+        /** Format: uuid */
+        id: string;
+        /** Format: date-time */
+        createTimestamp: string;
+        /** Format: date-time */
+        updateTimestamp: string;
+      };
       /**
        * Format: uuid
        * @description UUID of the user-defined extension, not the Pixiebrix extension. Same value as UserExtension.extension_id
@@ -1392,8 +1427,6 @@ export interface components {
       /** @description Browser extension semantic version */
       user_agent_extension_version: string;
       error_data?: { [key: string]: unknown } | null;
-      organization?: string | null;
-      deployment?: string | null;
     };
   };
 }
@@ -1643,6 +1676,22 @@ export interface operations {
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ExportedRecord"][];
           "text/csv; version=1.0": components["schemas"]["ExportedRecord"][];
           "application/xlsx; version=1.0": components["schemas"]["ExportedRecord"][];
+        };
+      };
+    };
+  };
+  retrieveDatabaseExportJob: {
+    parameters: {
+      path: {
+        /** A UUID string identifying this database export job. */
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["DatabaseExportJob"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DatabaseExportJob"];
         };
       };
     };
@@ -4080,6 +4129,24 @@ export interface operations {
           "application/json; version=1.0": components["schemas"]["Package"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Package"];
         };
+      };
+    };
+  };
+  createDatabaseExportJob: {
+    parameters: {};
+    responses: {
+      201: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["DatabaseExportRequest"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DatabaseExportRequest"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DatabaseExportRequest"];
+        "application/x-www-form-urlencoded": components["schemas"]["DatabaseExportRequest"];
+        "multipart/form-data": components["schemas"]["DatabaseExportRequest"];
       };
     };
   };

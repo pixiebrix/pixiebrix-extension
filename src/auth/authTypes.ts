@@ -133,6 +133,8 @@ export type AuthState = {
    * List of feature flags for the user.
    */
   readonly flags: string[];
+  
+  readonly partner?: Me["partner"]
 };
 
 export type AuthRootState = {
