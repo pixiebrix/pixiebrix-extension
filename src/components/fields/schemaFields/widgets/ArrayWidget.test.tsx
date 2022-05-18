@@ -23,8 +23,6 @@ import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import userEvent from "@testing-library/user-event";
 import { stringToExpression } from "@/pageEditor/extensionPoints/upgrade";
 
-jest.unmock("react-redux");
-
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";
 
