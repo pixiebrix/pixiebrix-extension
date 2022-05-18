@@ -34,6 +34,7 @@ import ShareLinkModal from "@/options/pages/blueprints/modals/ShareLinkModal";
 import { useTitle } from "@/hooks/title";
 import Loader from "@/components/Loader";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
+import ShareInstallableModal from "./modals/ShareInstallableModal";
 
 const BlueprintsPage: React.FunctionComponent = () => {
   useTitle("Blueprints");
@@ -65,13 +66,14 @@ const BlueprintsPage: React.FunctionComponent = () => {
           context={showLogsContext.messageContext}
         />
       )}
-      {showShareContext?.extensionId && (
+      {showShareContext && <ShareInstallableModal />}
+      {/* {showShareContext?.extensionId && (
         <ShareExtensionModal extensionId={showShareContext.extensionId} />
       )}
 
       {showShareContext?.blueprintId && (
         <ShareLinkModal blueprintId={showShareContext.blueprintId} />
-      )}
+      )} */}
 
       {body}
     </div>

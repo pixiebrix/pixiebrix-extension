@@ -139,15 +139,25 @@ function useInstallableViewItemActions(
   const viewShare = () => {
     let shareContext = null;
 
-    if (isBlueprint(installable) || isShared(installable)) {
+    if (isBlueprint(installable)) {
       shareContext = {
         blueprintId: getPackageId(installable),
       };
-    } else if (isPersonal(installable, scope) && isExtension(installable)) {
+    } else {
       shareContext = {
         extensionId: installable.id,
       };
     }
+
+    // if (isBlueprint(installable) || isShared(installable)) {
+    //   shareContext = {
+    //     blueprintId: getPackageId(installable),
+    //   };
+    // } else if (isPersonal(installable, scope) && isExtension(installable)) {
+    //   shareContext = {
+    //     extensionId: installable.id,
+    //   };
+    // }
 
     dispatch(blueprintModalsSlice.actions.setShareContext(shareContext));
   };

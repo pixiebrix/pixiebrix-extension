@@ -64,6 +64,7 @@
     "filenamify": "^5.1.0",
     "fit-textarea": "^3.0.0",
     "formik": "^2.2.9",
+    "formik-wizard-form": "^2.1.0",
     "fuse.js": "^6.4.6",
     "generate-schema": "^2.6.0",
     "handlebars": "^4.7.7",
