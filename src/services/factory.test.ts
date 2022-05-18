@@ -15,18 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ExtensionsRootState } from "@/store/extensionsTypes";
-import { UnresolvedExtension } from "@/core";
+import automationAnywhere from "@contrib/services/automation-anywhere.yaml";
+import { fromJS } from "@/services/factory";
 
-export function selectExtensions({
-  options,
-}: ExtensionsRootState): UnresolvedExtension[] {
-  if (!Array.isArray(options.extensions)) {
-    console.warn("state migration has not been applied yet", {
-      options,
-    });
-    throw new TypeError("state migration has not been applied yet");
-  }
-
-  return options.extensions;
-}
+describe("LocalDefinedService", () => {
+  test("includes version", () => {
+    const service = fromJS(automationAnywhere as any);
+    expect(service.version).toBe("1.0.0");
+  });
+});

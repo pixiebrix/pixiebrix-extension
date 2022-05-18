@@ -21,7 +21,7 @@ import { createLogger } from "redux-logger";
 import { connectRouter, routerMiddleware } from "connected-react-router";
 import { createHashHistory } from "history";
 import { boolean } from "@/utils";
-import { OptionsState } from "@/store/extensionsTypes";
+import { ExtensionsRootState } from "@/store/extensionsTypes";
 import servicesSlice, {
   persistServicesConfig,
   ServicesState,
@@ -55,8 +55,8 @@ const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 export const hashHistory = createHashHistory({ hashType: "slash" });
 
 export type RootState = AuthRootState &
-  LogRootState & {
-    options: OptionsState;
+  LogRootState &
+  ExtensionsRootState & {
     blueprints: BlueprintsState;
     services: ServicesState;
     settings: SettingsState;

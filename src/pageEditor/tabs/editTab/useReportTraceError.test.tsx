@@ -31,7 +31,6 @@ import useReportTraceError from "./useReportTraceError";
 import { Provider } from "react-redux";
 import { traceErrorFactory, traceRecordFactory } from "@/testUtils/factories";
 
-jest.unmock("react-redux");
 jest.mock("@/telemetry/events", () => ({
   reportEvent: jest.fn(),
 }));

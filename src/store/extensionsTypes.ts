@@ -26,6 +26,10 @@ export type ExtensionOptionsState = {
   extensions: PersistedExtension[];
 };
 
+export type ExtensionsRootState = {
+  options: OptionsState;
+};
+
 /**
  * @deprecated use PersistedOptionsState - this is only used in the migration
  */
