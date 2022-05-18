@@ -17,12 +17,12 @@
 
 import { searchData } from "@/components/jsonTree/JsonTree";
 
-interface SearchDataTestCase {
+type SearchDataTestCase = {
   name: string;
   query: string;
   data: unknown;
   expected: unknown;
-}
+};
 
 const searchDataCases: SearchDataTestCase[] = [
   {
