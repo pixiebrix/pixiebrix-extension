@@ -23,8 +23,6 @@ import LogCard from "./LogCard";
 import { initialLogState, logSlice } from "./logSlice";
 import { LogState } from "./logViewerTypes";
 
-jest.unmock("react-redux");
-
 function renderLogCard(state?: LogState) {
   // @ts-expect-error -- assigning state with collections of LogEntries is perfectly fine
   const store = configureStore({

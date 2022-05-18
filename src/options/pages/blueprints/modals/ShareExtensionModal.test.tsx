@@ -30,8 +30,6 @@ import settingsSlice from "@/store/settingsSlice";
 import { anonAuth } from "@/auth/authConstants";
 import { authSlice } from "@/auth/authSlice";
 
-jest.unmock("react-redux");
-
 jest.mock("@/utils/notify");
 jest.mock("@/services/api", () => ({
   appApi: {

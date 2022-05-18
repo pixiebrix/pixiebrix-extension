@@ -35,6 +35,10 @@ import { FormState } from "@/pageEditor/pageEditorTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { createFormikTemplate } from "@/testUtils/formHelpers";
 
+jest.mock("react-redux", () => ({
+  useSelector: jest.fn(),
+}));
+
 jest.mock("@/blocks/registry");
 
 beforeAll(() => {

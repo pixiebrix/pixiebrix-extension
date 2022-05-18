@@ -31,8 +31,6 @@ import { EditorState } from "@/pageEditor/pageEditorTypes";
 import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import { validateSemVerString } from "@/types/helpers";
 
-jest.unmock("react-redux");
-
 let renderRecipeEntry: RenderFunctionWithRedux<
   {
     editor: EditorState;
