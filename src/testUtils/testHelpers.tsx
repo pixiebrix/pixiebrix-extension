@@ -136,41 +136,39 @@ function renderWithWrappers(
 ): WrapperResult {
   let submitHandler: (values: FormikValues) => void = jest.fn();
 
-  const Wrapper: React.FC = ({ children }) => {
-    const store = configureStore({
-      reducer: {
-        auth: authSlice.reducer,
-        options: extensionsSlice.reducer,
-        services: servicesSlice.reducer,
-        settings: settingsSlice.reducer,
-        editor: editorSlice.reducer,
-        session: sessionSlice.reducer,
-        savingExtension: savingExtensionSlice.reducer,
-        runtime: runtimeSlice.reducer,
-        logs: logSlice.reducer,
-      },
-    });
+  const store = configureStore({
+    reducer: {
+      auth: authSlice.reducer,
+      options: extensionsSlice.reducer,
+      services: servicesSlice.reducer,
+      settings: settingsSlice.reducer,
+      editor: editorSlice.reducer,
+      session: sessionSlice.reducer,
+      savingExtension: savingExtensionSlice.reducer,
+      runtime: runtimeSlice.reducer,
+      logs: logSlice.reducer,
+    },
+  });
 
-    setupRedux(store.dispatch);
+  setupRedux(store.dispatch);
 
-    return (
-      <Provider store={store}>
-        <Formik
-          initialValues={initialValues}
-          onSubmit={(values) => {
-            submitHandler?.(values);
-          }}
-        >
-          {({ handleSubmit }) => (
-            <Form onSubmit={handleSubmit}>
-              {children}
-              <button type="submit">Submit</button>
-            </Form>
-          )}
-        </Formik>
-      </Provider>
-    );
-  };
+  const Wrapper: React.FC = ({ children }) => (
+    <Provider store={store}>
+      <Formik
+        initialValues={initialValues}
+        onSubmit={(values) => {
+          submitHandler?.(values);
+        }}
+      >
+        {({ handleSubmit }) => (
+          <Form onSubmit={handleSubmit}>
+            {children}
+            <button type="submit">Submit</button>
+          </Form>
+        )}
+      </Formik>
+    </Provider>
+  );
 
   const renderResult = render(ui, { wrapper: Wrapper, ...renderOptions });
 
