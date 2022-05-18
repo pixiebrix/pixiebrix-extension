@@ -24,8 +24,6 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { stringToExpression } from "@/pageEditor/extensionPoints/upgrade";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
 
-jest.unmock("react-redux");
-
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";
 
