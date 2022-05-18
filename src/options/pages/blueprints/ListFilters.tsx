@@ -129,7 +129,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
           </Nav.Item>
         ))}
       </Nav>
-      <Nav>
+      <Nav className={styles.nav}>
         <h5>Explore</h5>
         <Nav.Item>
           <Nav.Link
