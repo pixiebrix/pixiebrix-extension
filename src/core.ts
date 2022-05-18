@@ -313,6 +313,7 @@ export type BlockIcon = string;
 export interface Metadata {
   readonly id: RegistryId;
   readonly name: string;
+  // XXX: why is this optional? Should default to the version of the extension?
   readonly version?: SemVerString;
   readonly description?: string;
 

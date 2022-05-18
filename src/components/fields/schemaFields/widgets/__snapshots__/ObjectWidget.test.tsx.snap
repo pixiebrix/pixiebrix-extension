@@ -1,0 +1,261 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ObjectWidget renders empty widget 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div>
+      <table
+        class="mb-0 table table-sm"
+      >
+        <thead>
+          <tr>
+            <th
+              scope="col"
+            >
+              Property
+            </th>
+            <th
+              scope="col"
+            >
+              Value
+            </th>
+          </tr>
+        </thead>
+        <tbody />
+      </table>
+      <button
+        class="btn btn-primary"
+        type="button"
+      >
+        Add Property
+      </button>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`ObjectWidget renders widget with properties 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div>
+      <table
+        class="mb-0 table table-sm"
+      >
+        <thead>
+          <tr>
+            <th
+              scope="col"
+            >
+              Property
+            </th>
+            <th
+              scope="col"
+            >
+              Value
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <input
+                class="form-control"
+                data-testid="testField.foo-name"
+                readonly=""
+                type="text"
+                value="foo"
+              />
+            </td>
+            <td>
+              <div
+                class="formGroup mb-0 form-group row"
+              >
+                <div
+                  class="col-xl-12 col-lg-12"
+                >
+                  <div
+                    class="root"
+                  >
+                    <div
+                      class="field"
+                    >
+                      <div
+                        role="button"
+                        tabindex="0"
+                      >
+                        <input
+                          class="form-control"
+                          disabled=""
+                          id="testField.foo"
+                          name="testField.foo"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="dropdown dropdown"
+                      data-test-selected="Exclude"
+                      data-testid="toggle-testField.foo"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        class="dropdown-toggle btn btn-link"
+                        type="button"
+                      >
+                        <span
+                          class="symbol"
+                        >
+                          <svg
+                            class="root"
+                          />
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input
+                class="form-control"
+                data-testid="testField.bar-name"
+                readonly=""
+                type="text"
+                value="bar"
+              />
+            </td>
+            <td>
+              <div
+                class="formGroup mb-0 form-group row"
+              >
+                <div
+                  class="col-xl-12 col-lg-12"
+                >
+                  <div
+                    class="root"
+                  >
+                    <div
+                      class="field"
+                    >
+                      <div
+                        role="button"
+                        tabindex="0"
+                      >
+                        <input
+                          class="form-control"
+                          disabled=""
+                          id="testField.bar"
+                          name="testField.bar"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="dropdown dropdown"
+                      data-test-selected="Exclude"
+                      data-testid="toggle-testField.bar"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        class="dropdown-toggle btn btn-link"
+                        type="button"
+                      >
+                        <span
+                          class="symbol"
+                        >
+                          <svg
+                            class="root"
+                          />
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input
+                class="form-control"
+                data-testid="testField.baz-name"
+                readonly=""
+                type="text"
+                value="baz"
+              />
+            </td>
+            <td>
+              <div
+                class="formGroup mb-0 form-group row"
+              >
+                <div
+                  class="col-xl-12 col-lg-12"
+                >
+                  <div
+                    class="root"
+                  >
+                    <div
+                      class="field"
+                    >
+                      <div
+                        role="button"
+                        tabindex="0"
+                      >
+                        <input
+                          class="form-control"
+                          disabled=""
+                          id="testField.baz"
+                          name="testField.baz"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="dropdown dropdown"
+                      data-test-selected="Exclude"
+                      data-testid="toggle-testField.baz"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        class="dropdown-toggle btn btn-link"
+                        type="button"
+                      >
+                        <span
+                          class="symbol"
+                        >
+                          <svg
+                            class="root"
+                          />
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;

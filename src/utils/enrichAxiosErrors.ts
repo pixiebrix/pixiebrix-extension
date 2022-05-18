@@ -64,11 +64,11 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
       throw error;
     }
 
-    throw new RemoteServiceError(getErrorMessage(error), error);
+    throw new RemoteServiceError(getErrorMessage(error), { cause: error });
   }
 
   if (!navigator.onLine) {
-    throw new ClientNetworkError(NO_INTERNET_MESSAGE, error);
+    throw new ClientNetworkError(NO_INTERNET_MESSAGE, { cause: error });
   }
 
   const hasPermissions = await browser.permissions.contains({
@@ -78,9 +78,9 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
   if (!hasPermissions) {
     throw new ClientNetworkPermissionError(
       "Insufficient browser permissions to make request.",
-      error
+      { cause: error }
     );
   }
 
-  throw new ClientNetworkError(NO_RESPONSE_MESSAGE, error);
+  throw new ClientNetworkError(NO_RESPONSE_MESSAGE, { cause: error });
 }

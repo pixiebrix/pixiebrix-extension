@@ -194,7 +194,7 @@ export function updateAvailable(
     installedExtension = installable;
   }
 
-  if (!installedExtension || !installedExtension._recipe) {
+  if (!installedExtension?._recipe) {
     return false;
   }
 

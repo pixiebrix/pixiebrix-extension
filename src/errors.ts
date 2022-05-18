@@ -17,7 +17,7 @@
 
 import { MessageContext } from "@/core";
 import { deserializeError, ErrorObject } from "serialize-error";
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import { isObject, matchesAnyPattern } from "@/utils";
 import safeJsonStringify from "json-stringify-safe";
 import { isEmpty, truncate } from "lodash";
@@ -26,6 +26,7 @@ import {
   isClientErrorResponse,
   safeGuessStatusText,
 } from "@/types/errorContract";
+import { SerializableAxiosError } from "@/services/errors";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
@@ -43,8 +44,8 @@ export class BusinessError extends Error {
 
 export class PromiseCancelled extends Error {
   override name = "PromiseCancelled";
-  constructor(message = "Promise was cancelled") {
-    super(message);
+  constructor(message?: string, options?: ErrorOptions) {
+    super(message ?? "Promise was cancelled", options);
   }
 }
 
@@ -274,9 +275,43 @@ export function hasCancelRootCause(error: unknown): boolean {
   return false;
 }
 
-export function getRootCause(error: ErrorObject): ErrorObject {
-  if (isContextError(error) && error.cause != null) {
-    return getRootCause(error.cause as ErrorObject);
+export function isSpecificError<
+  ErrorType extends new (...args: unknown[]) => Error
+>(error: unknown, errorType: ErrorType): error is InstanceType<ErrorType> {
+  // Catch 2 common error subclass groups. Necessary until we drop support for serialized errors:
+  // https://github.com/sindresorhus/serialize-error/issues/72
+  if (errorType.name === "ClientRequestError") {
+    return isClientRequestError(error);
+  }
+
+  if (errorType.name === "BusinessError") {
+    return isBusinessError(error);
+  }
+
+  return isErrorObject(error) && error.name === errorType.name;
+}
+
+export function selectSpecificError<
+  ErrorType extends new (...args: unknown[]) => Error
+>(error: unknown, errorType: ErrorType): InstanceType<ErrorType> | null {
+  if (!isObject(error)) {
+    return null;
+  }
+
+  if (isSpecificError(error, errorType)) {
+    return error;
+  }
+
+  return selectSpecificError(error.cause, errorType);
+}
+
+/**
+ * Find the root cause
+ * @deprecated Look for specific errors via selectSpecificError
+ */
+export function getRootCause(error: unknown): unknown {
+  while (isObject(error) && error.cause != null) {
+    error = error.cause;
   }
 
   return error;
@@ -307,19 +342,44 @@ const BUSINESS_ERROR_NAMES = new Set([
 
 /**
  * Returns true iff the root cause of the error was a BusinessError.
- * @param error the error object
- * @see BUSINESS_ERROR_CLASSES
+ * @see BUSINESS_ERROR_NAMES
+ * @deprecated Prefer `selectSpecificError(error, BusinessError)`
  */
 export function hasBusinessRootCause(error: unknown): boolean {
-  return (
-    isErrorObject(error) &&
-    (BUSINESS_ERROR_NAMES.has(error.name) || hasBusinessRootCause(error.cause))
-  );
+  return Boolean(selectSpecificError(error, BusinessError));
+}
+
+export function isBusinessError(error: unknown): boolean {
+  return isErrorObject(error) && BUSINESS_ERROR_NAMES.has(error.name);
+}
+
+// List all ClientRequestError subclasses as text:
+// - because not all of our errors can be deserialized with the right class:
+//   https://github.com/sindresorhus/serialize-error/issues/72
+const CLIENT_REQUEST_ERROR_NAMES = new Set([
+  "RemoteServiceError",
+  "ClientNetworkPermissionError",
+  "ClientNetworkError",
+]);
+
+/**
+ * Returns true if the error was a ClientRequestError
+ * @see CLIENT_REQUEST_ERROR_NAMES
+ */
+export function isClientRequestError(error: unknown): boolean {
+  return isErrorObject(error) && CLIENT_REQUEST_ERROR_NAMES.has(error.name);
 }
 
 // Copy of axios.isAxiosError, without risking to import the whole untreeshakeable axios library
-export function isAxiosError(error: unknown): error is AxiosError {
-  return isObject(error) && Boolean(error.isAxiosError);
+export function isAxiosError(error: unknown): error is SerializableAxiosError {
+  if (isObject(error) && Boolean(error.isAxiosError)) {
+    // Axios offers its own serialization method, but it doesn't include the response.
+    // By deleting toJSON, the serialize-error library will use its default serialization
+    delete error.toJSON;
+    return true;
+  }
+
+  return false;
 }
 
 /**

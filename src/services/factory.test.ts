@@ -15,15 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getSettingsState } from "@/store/settingsStorage";
-import { getThemeLogo } from "@/utils/themeUtils";
+import automationAnywhere from "@contrib/services/automation-anywhere.yaml";
+import { fromJS } from "@/services/factory";
 
-async function setToolbarIcon(): Promise<void> {
-  const { theme } = await getSettingsState();
-  const logo = getThemeLogo(theme);
-  (chrome.browserAction ?? chrome.action).setIcon({ path: logo.small });
-}
-
-export default function initPartnerTheme() {
-  void setToolbarIcon();
-}
+describe("LocalDefinedService", () => {
+  test("includes version", () => {
+    const service = fromJS(automationAnywhere as any);
+    expect(service.version).toBe("1.0.0");
+  });
+});

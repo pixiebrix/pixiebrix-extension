@@ -68,7 +68,17 @@ export type CreateRenderFunctionOptions<
   defaultProps?: TProps;
 };
 
-export function createRenderFunction<
+export type RenderFunctionWithRedux<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from Redux typings
+  S = any,
+  // eslint-disable-next-line @typescript-eslint/ban-types -- the type copied from Redux typings
+  P = {}
+> = (overrides?: {
+  propsOverride?: Partial<P>;
+  stateOverride?: Partial<S>;
+}) => RenderResult;
+
+export function createRenderFunctionWithRedux<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from Redux typings
   S = any,
   A extends Action = AnyAction,
@@ -79,7 +89,7 @@ export function createRenderFunction<
   preloadedState,
   ComponentUnderTest,
   defaultProps,
-}: CreateRenderFunctionOptions<S, A, P>) {
+}: CreateRenderFunctionOptions<S, A, P>): RenderFunctionWithRedux<S, P> {
   return (overrides?: {
     propsOverride?: Partial<P>;
     stateOverride?: Partial<S>;
