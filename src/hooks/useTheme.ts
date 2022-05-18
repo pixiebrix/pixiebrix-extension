@@ -19,12 +19,16 @@ import { useEffect } from "react";
 import { selectSettings } from "@/store/settingsSelectors";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { DEFAULT_THEME, Theme, THEMES } from "@/options/constants";
+import { DEFAULT_THEME } from "@/options/constants";
 import { activatePartnerTheme } from "@/background/messenger/api";
 import { persistor } from "@/options/store";
 import { useAsyncState } from "@/hooks/common";
 import { ManualStorageKey, readStorage } from "@/chrome";
-import { getThemeLogo, ThemeLogo } from "@/utils/themeUtils";
+import {
+  addThemeClassToDocumentRoot,
+  getThemeLogo,
+  ThemeLogo,
+} from "@/utils/themeUtils";
 
 const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
 
@@ -32,16 +36,6 @@ const activateBackgroundTheme = async (): Promise<void> => {
   // Flush the Redux state to localStorage to ensure the background page sees the latest state
   await persistor.flush();
   await activatePartnerTheme();
-};
-
-const addThemeClassToDocumentRoot = (theme: Theme): void => {
-  for (const theme of THEMES) {
-    document.documentElement.classList.remove(theme);
-  }
-
-  if (theme && theme !== DEFAULT_THEME) {
-    document.documentElement.classList.add(theme);
-  }
 };
 
 const useTheme = (): { logo: ThemeLogo } => {

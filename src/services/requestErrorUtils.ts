@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContextError, isAxiosError } from "@/errors";
-import { ClientRequestError, SerializableAxiosError } from "@/services/errors";
-import { AxiosError, AxiosRequestConfig } from "axios";
+import { isAxiosError, isErrorObject } from "@/errors";
+import { SerializableAxiosError } from "@/services/errors";
+import { AxiosRequestConfig } from "axios";
 import { testMatchPatterns } from "@/blocks/available";
 import {
   DEFAULT_SERVICE_URL,
@@ -26,7 +26,6 @@ import {
 } from "@/services/baseService";
 import { isAbsoluteUrl } from "@/utils";
 import urljoin from "url-join";
-import { Except } from "type-fest";
 
 /**
  * Get the absolute URL from a request configuration. Does NOT include the query params from the request unless
@@ -67,16 +66,14 @@ export async function isAppRequest(
 /**
  * Return the AxiosError associated with an error, or null if error is not associated with an AxiosError
  */
-export function selectAxiosError(error: unknown): Except<AxiosError, "toJSON"> {
+export function selectAxiosError(
+  error: unknown
+): SerializableAxiosError | null {
   if (isAxiosError(error)) {
     return error;
   }
 
-  if (error instanceof ClientRequestError) {
-    return error.error;
-  }
-
-  if (error instanceof ContextError) {
+  if (isErrorObject(error) && error.cause) {
     return selectAxiosError(error.cause);
   }
 

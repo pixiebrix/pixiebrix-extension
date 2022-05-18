@@ -23,6 +23,13 @@ import ConfigurationTitle from "./ConfigurationTitle";
 
 test("renders block name", () => {
   const rendered = render(
+    <ConfigurationTitle block={echoBlock} listing={null} showBlockLabel />
+  );
+  expect(rendered.asFragment()).toMatchSnapshot();
+});
+
+test("renders plain 'Input' title", () => {
+  const rendered = render(
     <ConfigurationTitle block={echoBlock} listing={null} />
   );
   expect(rendered.asFragment()).toMatchSnapshot();
@@ -34,7 +41,7 @@ test("renders document link when How To is not empty", () => {
     instructions: "Test how to",
   } as MarketplaceListing;
   const rendered = render(
-    <ConfigurationTitle block={echoBlock} listing={listing} />
+    <ConfigurationTitle block={echoBlock} listing={listing} showBlockLabel />
   );
   expect(rendered.asFragment()).toMatchSnapshot();
 });
@@ -49,7 +56,7 @@ test("renders document link when Additional resources is not empty", () => {
     ],
   } as MarketplaceListing;
   const rendered = render(
-    <ConfigurationTitle block={echoBlock} listing={listing} />
+    <ConfigurationTitle block={echoBlock} listing={listing} showBlockLabel />
   );
   expect(rendered.asFragment()).toMatchSnapshot();
 });

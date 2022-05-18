@@ -18,7 +18,10 @@
 import { screen } from "@testing-library/react";
 import ShareExtensionModal from "./ShareExtensionModal";
 import { extensionFactory } from "@/testUtils/factories";
-import { createRenderFunction, waitForEffect } from "@/testUtils/testHelpers";
+import {
+  createRenderFunctionWithRedux,
+  waitForEffect,
+} from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { Organization } from "@/types/contract";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -26,8 +29,6 @@ import { PersistedExtension } from "@/core";
 import settingsSlice from "@/store/settingsSlice";
 import { anonAuth } from "@/auth/authConstants";
 import { authSlice } from "@/auth/authSlice";
-
-jest.unmock("react-redux");
 
 jest.mock("@/utils/notify");
 jest.mock("@/services/api", () => ({
@@ -42,7 +43,7 @@ const extension = extensionFactory({
   label: "testExtension",
 });
 
-const renderShareExtensionModal = createRenderFunction({
+const renderShareExtensionModal = createRenderFunctionWithRedux({
   reducer: {
     auth: authSlice.reducer,
     options: extensionsSlice.reducer,

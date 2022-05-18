@@ -1,0 +1,192 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ArrayWidget renders empty widget 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <ul
+      class="list-group mb-2"
+    />
+    <button
+      class="btn btn-primary"
+      type="button"
+    >
+      Add Item
+    </button>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`ArrayWidget renders widget with items 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <ul
+      class="list-group mb-2"
+    >
+      <li
+        class="list-group-item py-1"
+      >
+        <div
+          class="formGroup mb-0 form-group row"
+        >
+          <div
+            class="col-xl-12 col-lg-12"
+          >
+            <div
+              class="root"
+            >
+              <div
+                class="field"
+              >
+                <textarea
+                  class="form-control"
+                  id="testField.0"
+                  name="testField.0"
+                  rows="1"
+                >
+                  abc
+                </textarea>
+              </div>
+              <div
+                class="dropdown dropdown"
+                data-test-selected="Text"
+                data-testid="toggle-testField.0"
+              >
+                <button
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                  class="dropdown-toggle btn btn-link"
+                  type="button"
+                >
+                  <span
+                    class="symbol"
+                  >
+                    <svg
+                      class="root"
+                    />
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li
+        class="list-group-item py-1"
+      >
+        <div
+          class="formGroup mb-0 form-group row"
+        >
+          <div
+            class="col-xl-12 col-lg-12"
+          >
+            <div
+              class="root"
+            >
+              <div
+                class="field"
+              >
+                <textarea
+                  class="form-control"
+                  id="testField.1"
+                  name="testField.1"
+                  rows="1"
+                >
+                  def
+                </textarea>
+              </div>
+              <div
+                class="dropdown dropdown"
+                data-test-selected="Text"
+                data-testid="toggle-testField.1"
+              >
+                <button
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                  class="dropdown-toggle btn btn-link"
+                  type="button"
+                >
+                  <span
+                    class="symbol"
+                  >
+                    <svg
+                      class="root"
+                    />
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li
+        class="list-group-item py-1"
+      >
+        <div
+          class="formGroup mb-0 form-group row"
+        >
+          <div
+            class="col-xl-12 col-lg-12"
+          >
+            <div
+              class="root"
+            >
+              <div
+                class="field"
+              >
+                <textarea
+                  class="form-control"
+                  id="testField.2"
+                  name="testField.2"
+                  rows="1"
+                >
+                  this is a really long string to see what happens when the array value is long
+                </textarea>
+              </div>
+              <div
+                class="dropdown dropdown"
+                data-test-selected="Text"
+                data-testid="toggle-testField.2"
+              >
+                <button
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                  class="dropdown-toggle btn btn-link"
+                  type="button"
+                >
+                  <span
+                    class="symbol"
+                  >
+                    <svg
+                      class="root"
+                    />
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+    <button
+      class="btn btn-primary"
+      type="button"
+    >
+      Add Item
+    </button>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;

@@ -55,8 +55,10 @@ export class NotConfiguredError extends BusinessError {
   }
 }
 
-// Axios offers its own serialization method, but it doesn't include the response.
-// By deleting toJSON, the serialize-error library will use its default serialization
+/**
+ * Axios offers its own serialization method, but it doesn't include the response.
+ * By deleting toJSON, the serialize-error library will use its default serialization
+ */
 export type SerializableAxiosError = Except<AxiosError, "toJSON">;
 
 type ProxiedResponse = Pick<AxiosResponse, "data" | "status" | "statusText">;
@@ -77,21 +79,14 @@ export class ProxiedRemoteServiceError extends BusinessError {
 }
 
 /**
- * Abstract base class for request errors from client to 3rd-party service.
+ * Base class for request errors from client to 3rd-party service.
  */
-export abstract class ClientRequestError extends BusinessError {
+export class ClientRequestError extends BusinessError {
   override name = "ClientRequestError";
-
-  readonly error: SerializableAxiosError;
-
-  constructor(message: string, error: AxiosError) {
-    super(message);
-
-    // Axios offers its own serialization method, but it doesn't include the response.
-    // By deleting toJSON, the serialize-error library will use its default serialization
-    delete error.toJSON;
-
-    this.error = error;
+  override readonly cause: SerializableAxiosError;
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor -- Required to make the types stricter
+  constructor(message: string, options: { cause: SerializableAxiosError }) {
+    super(message, options);
   }
 }
 

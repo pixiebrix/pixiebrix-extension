@@ -32,14 +32,14 @@ const FormBuilder: React.FC<{
 
   return (
     <div className={styles.root}>
-      <div className={styles.column}>
+      <div className={styles.column} data-testid="editor">
         <FormEditor
           name={name}
           activeField={activeField}
           setActiveField={setActiveField}
         />
       </div>
-      <div className={styles.column}>
+      <div className={styles.column} data-testid="preview">
         <FormPreview
           rjsfSchema={rjsfSchema}
           activeField={activeField}

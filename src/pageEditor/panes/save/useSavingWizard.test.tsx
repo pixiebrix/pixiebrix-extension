@@ -44,10 +44,8 @@ import menuItem from "@/pageEditor/extensionPoints/menuItem";
 import pDefer from "p-defer";
 import { pick } from "lodash";
 import extensionsSlice from "@/store/extensionsSlice";
-import { MINIMAL_UI_SCHEMA } from "@/components/formBuilder/formBuilderHelpers";
+import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
 import { OptionsDefinition } from "@/types/definitions";
-
-jest.unmock("react-redux");
 
 jest.mock("@/telemetry/logging");
 jest.mock("@/pageEditor/hooks/useCreate");
@@ -163,7 +161,7 @@ describe("saving a Recipe Extension", () => {
         },
       },
     },
-    uiSchema: MINIMAL_UI_SCHEMA,
+    uiSchema: getMinimalUiSchema(),
   };
   const setupMocks = () => {
     const recipe = recipeFactory({

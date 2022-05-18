@@ -143,7 +143,7 @@ exports[`renders modal 1`] = `
                       </div>
                     </div>
                     <input
-                      name="blueprintId"
+                      name="blueprintId-scope"
                       type="hidden"
                       value="@test"
                     />
@@ -153,6 +153,7 @@ exports[`renders modal 1`] = `
                   </span>
                   <input
                     class="idInput form-control"
+                    data-testid="registryId-blueprintId-id"
                     value="testextension"
                   />
                 </div>

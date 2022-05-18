@@ -13,13 +13,21 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
-const reactRedux = jest.createMockFromModule("react-redux");
+import testItRenders from "@/testUtils/testItRenders";
+import { RecipeHasUpdateIcon } from "./ExtensionIcons";
 
-export const useDispatch = jest.fn(() => jest.fn());
-export const connect = jest.fn(() => jest.fn());
-export const useSelector = jest.fn();
+beforeAll(() => {
+  // When a FontAwesomeIcon gets a title, it generates a random id, which breaks the snapshot.
+  jest.spyOn(global.Math, "random").mockImplementation(() => 0);
+});
+afterAll(() => {
+  jest.clearAllMocks();
+});
 
-export default reactRedux;
+testItRenders({
+  testName: "RecipeHasUpdateIcon",
+  Component: RecipeHasUpdateIcon,
+  props: { title: "test" },
+});

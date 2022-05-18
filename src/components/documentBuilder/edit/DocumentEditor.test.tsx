@@ -16,7 +16,7 @@
  */
 
 import { render } from "@testing-library/react";
-import { Formik, useFormikContext } from "formik";
+import { useFormikContext } from "formik";
 import React, { useState } from "react";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
@@ -33,6 +33,11 @@ import { toExpression } from "@/testUtils/testHelpers";
 import { OutputKey, ServiceDependency } from "@/core";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { validateRegistryId } from "@/types/helpers";
+import { createFormikTemplate } from "@/testUtils/formHelpers";
+
+jest.mock("react-redux", () => ({
+  useSelector: jest.fn(),
+}));
 
 jest.mock("@/blocks/registry");
 
@@ -45,26 +50,28 @@ describe("move element", () => {
     documentElements: DocumentElement[],
     initialActiveElement: string = null
   ) {
-    const document = {
-      body: documentElements,
-    };
-
-    const PreviewContainer = () => {
+    const DocumentEditorContainer = () => {
       const [activeElement, setActiveElement] = useState<string | null>(
         initialActiveElement
       );
       return (
-        <Formik initialValues={{ document }} onSubmit={jest.fn()}>
-          <DocumentEditor
-            name="document.body"
-            activeElement={activeElement}
-            setActiveElement={setActiveElement}
-          />
-        </Formik>
+        <DocumentEditor
+          name="documentElements"
+          activeElement={activeElement}
+          setActiveElement={setActiveElement}
+        />
       );
     };
 
-    return render(<PreviewContainer />);
+    const FormikTemplate = createFormikTemplate({
+      documentElements,
+    });
+
+    return render(
+      <FormikTemplate>
+        <DocumentEditorContainer />
+      </FormikTemplate>
+    );
   }
 
   test("can move text element down", async () => {
@@ -134,13 +141,11 @@ describe("remove element", () => {
       current: formState,
     };
 
-    const WrappedEditor = ({
-      activeElement,
-      setActiveElement,
-    }: {
-      activeElement: string;
-      setActiveElement: (activeElement: string) => void;
-    }) => {
+    const WrappedEditor = () => {
+      const [activeElement, setActiveElement] = useState<string | null>(
+        initialActiveElement
+      );
+
       const { values } = useFormikContext<FormState>();
       formikStateRef.current = values;
 
@@ -153,21 +158,13 @@ describe("remove element", () => {
       );
     };
 
-    const PreviewContainer = () => {
-      const [activeElement, setActiveElement] = useState<string | null>(
-        initialActiveElement
-      );
-      return (
-        <Formik initialValues={formState} onSubmit={jest.fn()}>
-          <WrappedEditor
-            activeElement={activeElement}
-            setActiveElement={setActiveElement}
-          />
-        </Formik>
-      );
-    };
+    const FormikTemplate = createFormikTemplate(formState);
 
-    const rendered = render(<PreviewContainer />);
+    const rendered = render(
+      <FormikTemplate>
+        <WrappedEditor />
+      </FormikTemplate>
+    );
 
     return {
       rendered,
