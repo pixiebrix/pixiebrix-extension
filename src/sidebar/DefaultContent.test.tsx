@@ -25,8 +25,6 @@ import { PersistedExtension } from "@/core";
 import DefaultPanel from "./DefaultPanel";
 import extensionsSlice from "@/store/extensionsSlice";
 
-jest.unmock("react-redux");
-
 function optionsStore(initialState?: ExtensionOptionsState) {
   return configureStore({
     reducer: { options: extensionsSlice.reducer },

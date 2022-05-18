@@ -29,6 +29,7 @@ import {
   ServiceConfig,
   TokenContext,
   SanitizedConfig,
+  SemVerString,
 } from "@/core";
 import { testMatchPatterns } from "@/blocks/available";
 import { isEmpty, castArray, uniq, compact } from "lodash";
@@ -57,12 +58,15 @@ class LocalDefinedService<
 
   public readonly hasAuth: boolean;
 
+  public readonly version: SemVerString;
+
   constructor(definition: TDefinition) {
-    const { id, name, description, icon } = definition.metadata;
+    const { id, name, description, icon, version } = definition.metadata;
     super(id, name, description, icon);
     this._definition = definition;
     this.schema = this._definition.inputSchema;
     this.hasAuth = !isEmpty(this._definition.authentication);
+    this.version = version;
   }
 
   /**

@@ -68,7 +68,17 @@ export type CreateRenderFunctionOptions<
   defaultProps?: TProps;
 };
 
-export function createRenderFunction<
+export type RenderFunctionWithRedux<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from Redux typings
+  S = any,
+  // eslint-disable-next-line @typescript-eslint/ban-types -- the type copied from Redux typings
+  P = {}
+> = (overrides?: {
+  propsOverride?: Partial<P>;
+  stateOverride?: Partial<S>;
+}) => RenderResult;
+
+export function createRenderFunctionWithRedux<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from Redux typings
   S = any,
   A extends Action = AnyAction,
@@ -79,7 +89,7 @@ export function createRenderFunction<
   preloadedState,
   ComponentUnderTest,
   defaultProps,
-}: CreateRenderFunctionOptions<S, A, P>) {
+}: CreateRenderFunctionOptions<S, A, P>): RenderFunctionWithRedux<S, P> {
   return (overrides?: {
     propsOverride?: Partial<P>;
     stateOverride?: Partial<S>;
@@ -126,41 +136,39 @@ function renderWithWrappers(
 ): WrapperResult {
   let submitHandler: (values: FormikValues) => void = jest.fn();
 
-  const Wrapper: React.FC = ({ children }) => {
-    const store = configureStore({
-      reducer: {
-        auth: authSlice.reducer,
-        options: extensionsSlice.reducer,
-        services: servicesSlice.reducer,
-        settings: settingsSlice.reducer,
-        editor: editorSlice.reducer,
-        session: sessionSlice.reducer,
-        savingExtension: savingExtensionSlice.reducer,
-        runtime: runtimeSlice.reducer,
-        logs: logSlice.reducer,
-      },
-    });
+  const store = configureStore({
+    reducer: {
+      auth: authSlice.reducer,
+      options: extensionsSlice.reducer,
+      services: servicesSlice.reducer,
+      settings: settingsSlice.reducer,
+      editor: editorSlice.reducer,
+      session: sessionSlice.reducer,
+      savingExtension: savingExtensionSlice.reducer,
+      runtime: runtimeSlice.reducer,
+      logs: logSlice.reducer,
+    },
+  });
 
-    setupRedux(store.dispatch);
+  setupRedux(store.dispatch);
 
-    return (
-      <Provider store={store}>
-        <Formik
-          initialValues={initialValues}
-          onSubmit={(values) => {
-            submitHandler?.(values);
-          }}
-        >
-          {({ handleSubmit }) => (
-            <Form onSubmit={handleSubmit}>
-              {children}
-              <button type="submit">Submit</button>
-            </Form>
-          )}
-        </Formik>
-      </Provider>
-    );
-  };
+  const Wrapper: React.FC = ({ children }) => (
+    <Provider store={store}>
+      <Formik
+        initialValues={initialValues}
+        onSubmit={(values) => {
+          submitHandler?.(values);
+        }}
+      >
+        {({ handleSubmit }) => (
+          <Form onSubmit={handleSubmit}>
+            {children}
+            <button type="submit">Submit</button>
+          </Form>
+        )}
+      </Formik>
+    </Provider>
+  );
 
   const renderResult = render(ui, { wrapper: Wrapper, ...renderOptions });
 

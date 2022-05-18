@@ -17,7 +17,7 @@
 
 import { AuthRootState } from "@/auth/authTypes";
 import { LogRootState } from "@/components/logViewer/logViewerTypes";
-import { OptionsState } from "@/store/extensionsTypes";
+import { ExtensionsRootState } from "@/store/extensionsTypes";
 import { SavingExtensionState } from "@/pageEditor/panes/save/savingExtensionSlice";
 import { SettingsState } from "@/store/settingsTypes";
 import { RuntimeState } from "@/pageEditor/slices/runtimeSlice";
@@ -165,8 +165,8 @@ export interface EditorState {
 }
 
 export type RootState = AuthRootState &
-  LogRootState & {
-    options: OptionsState;
+  LogRootState &
+  ExtensionsRootState & {
     editor: EditorState;
     savingExtension: SavingExtensionState;
     settings: SettingsState;

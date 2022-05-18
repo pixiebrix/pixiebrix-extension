@@ -47,8 +47,6 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
 import { OptionsDefinition } from "@/types/definitions";
 
-jest.unmock("react-redux");
-
 jest.mock("@/telemetry/logging");
 jest.mock("@/pageEditor/hooks/useCreate");
 jest.mock("@/pageEditor/hooks/useResetExtension");
