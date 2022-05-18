@@ -15,10 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { RegistryId } from "@/core";
+import React, { PropsWithChildren } from "react";
+import { SemVerString } from "@/core";
 import styles from "./Entry.module.scss";
-import { UnsavedChangesIcon } from "@/pageEditor/sidebar/ExtensionIcons";
+import {
+  RecipeHasUpdateIcon,
+  UnsavedChangesIcon,
+} from "@/pageEditor/sidebar/ExtensionIcons";
 import { Accordion, ListGroup } from "react-bootstrap";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -35,29 +38,42 @@ import {
   selectExpandedRecipeId,
   selectRecipeIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
-import { useGetRecipesQuery } from "@/services/api";
+import { RecipeDefinition } from "@/types/definitions";
+import * as semver from "semver";
 
-type RecipeEntryProps = {
-  recipeId: RegistryId;
+export type RecipeEntryProps = PropsWithChildren<{
+  recipe: RecipeDefinition | undefined;
   isActive?: boolean;
-};
+  installedVersion: SemVerString;
+}>;
 
 const RecipeEntry: React.FC<RecipeEntryProps> = ({
-  recipeId,
+  recipe,
   isActive,
   children,
+  installedVersion,
 }) => {
+  const dispatch = useDispatch();
+
   const expandedRecipeId = useSelector(selectExpandedRecipeId);
   const activeElement = useSelector(selectActiveElement);
+  const {
+    id: recipeId,
+    name: savedName,
+    version: latestRecipeVersion,
+  } = recipe?.metadata ?? {};
+
   // Set the alternate background if an extension in this recipe is active
   const hasRecipeBackground = activeElement?.recipe?.id === recipeId;
-  const dispatch = useDispatch();
-  const { data: recipes } = useGetRecipesQuery();
-  const savedName = recipes?.find((recipe) => recipe.metadata.id === recipeId)
-    ?.metadata?.name;
+
   const dirtyName = useSelector(selectDirtyMetadataForRecipeId(recipeId))?.name;
   const name = dirtyName ?? savedName ?? "Loading...";
   const isDirty = useSelector(selectRecipeIsDirty(recipeId));
+
+  const hasUpdate =
+    latestRecipeVersion != null &&
+    installedVersion != null &&
+    semver.gt(latestRecipeVersion, installedVersion);
 
   const caretIcon = expandedRecipeId === recipeId ? faCaretDown : faCaretRight;
 
@@ -72,7 +88,9 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
         active={isActive}
         key={`recipe-${recipeId}`}
-        onClick={() => dispatch(actions.selectRecipeId(recipeId))}
+        onClick={() =>
+          recipeId != null && dispatch(actions.selectRecipeId(recipeId))
+        }
       >
         <span className={styles.icon}>
           <FontAwesomeIcon icon={faFile} /> <FontAwesomeIcon icon={caretIcon} />
@@ -81,6 +99,13 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
         {isDirty && (
           <span className={cx(styles.icon, "text-danger")}>
             <UnsavedChangesIcon />
+          </span>
+        )}
+        {hasUpdate && (
+          <span className={cx(styles.icon, "text-warning")}>
+            <RecipeHasUpdateIcon
+              title={`You are editing version ${installedVersion} of this blueprint, the latest version is ${latestRecipeVersion}.`}
+            />
           </span>
         )}
       </Accordion.Toggle>

@@ -15,18 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ExtensionsRootState } from "@/store/extensionsTypes";
-import { UnresolvedExtension } from "@/core";
+import testItRenders from "@/testUtils/testItRenders";
+import { RecipeHasUpdateIcon } from "./ExtensionIcons";
 
-export function selectExtensions({
-  options,
-}: ExtensionsRootState): UnresolvedExtension[] {
-  if (!Array.isArray(options.extensions)) {
-    console.warn("state migration has not been applied yet", {
-      options,
-    });
-    throw new TypeError("state migration has not been applied yet");
-  }
+beforeAll(() => {
+  // When a FontAwesomeIcon gets a title, it generates a random id, which breaks the snapshot.
+  jest.spyOn(global.Math, "random").mockImplementation(() => 0);
+});
+afterAll(() => {
+  jest.clearAllMocks();
+});
 
-  return options.extensions;
-}
+testItRenders({
+  testName: "RecipeHasUpdateIcon",
+  Component: RecipeHasUpdateIcon,
+  props: { title: "test" },
+});
