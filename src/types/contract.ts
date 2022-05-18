@@ -217,7 +217,7 @@ export type RemoteResponse<T = unknown> = Pick<
 };
 
 // Exclude fields assigned by the server. (And in the future might not be included on the response).
-// Can't use Required. For blueprint_version, etc. the backend expects the property to be excluded or to have a value
+// Can't use Required. For blueprint_version, etc. the backend expects the property to be excluded or to have a value.
 export type ErrorItem = Except<
   components["schemas"]["ErrorItem"],
   "uuid" | "user" | "user_extension"
