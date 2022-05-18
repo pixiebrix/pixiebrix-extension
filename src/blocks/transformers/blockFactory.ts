@@ -30,6 +30,7 @@ import {
   Metadata,
   RegistryId,
   Schema,
+  SemVerString,
 } from "@/core";
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
@@ -70,6 +71,9 @@ function validateBlockDefinition(
   }
 }
 
+/**
+ * A non-native (i.e., non-JS) Block. Typically defined in YAML/JSON.
+ */
 class ExternalBlock extends Block {
   public readonly component: ComponentConfig;
 
@@ -77,13 +81,16 @@ class ExternalBlock extends Block {
 
   readonly inputSchema: Schema;
 
+  readonly version: SemVerString;
+
   constructor(component: ComponentConfig) {
-    const { id, name, description, icon } = component.metadata;
+    const { id, name, description, icon, version } = component.metadata;
     super(id, name, description, icon);
     this.apiVersion = component.apiVersion ?? "v1";
     this.component = component;
     this.inputSchema = this.component.inputSchema;
     this.outputSchema = this.component.outputSchema;
+    this.version = version;
   }
 
   override async isPure(): Promise<boolean> {
@@ -143,7 +150,7 @@ class ExternalBlock extends Block {
       logger: options.logger,
       headless: options.headless,
       // The component uses its declared version of the runtime API, regardless of what version of the runtime
-      // is used to call the the component
+      // is used to call the component
       ...apiVersionOptions(this.component.apiVersion),
     });
   }

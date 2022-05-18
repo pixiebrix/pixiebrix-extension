@@ -25,6 +25,7 @@ import {
   ReaderOutput,
   ReaderRoot,
   ApiVersion,
+  SemVerString,
 } from "@/core";
 import { Availability } from "@/blocks/types";
 import { Validator } from "@cfworker/json-schema";
@@ -98,7 +99,7 @@ export function readerFactory(component: unknown): IReader {
   const cloned = cloneDeep(component);
 
   const {
-    metadata: { id, name, description },
+    metadata: { id, name, description, version },
     outputSchema = {},
     definition,
   } = cloned;
@@ -113,6 +114,8 @@ export function readerFactory(component: unknown): IReader {
     constructor() {
       super(id, name, description);
     }
+
+    public readonly version: SemVerString = version;
 
     override outputSchema: Schema = outputSchema;
 
