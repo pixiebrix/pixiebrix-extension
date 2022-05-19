@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SchemaSelectWidget renders empty creatable widget 1`] = `
+exports[`SchemaSelectWidget renders creatable widget 1`] = `
 <DocumentFragment>
   <form
     action="#"
@@ -101,7 +101,7 @@ exports[`SchemaSelectWidget renders empty creatable widget 1`] = `
 </DocumentFragment>
 `;
 
-exports[`SchemaSelectWidget renders empty select widget 1`] = `
+exports[`SchemaSelectWidget renders select widget 1`] = `
 <DocumentFragment>
   <form
     action="#"
