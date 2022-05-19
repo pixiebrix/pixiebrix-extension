@@ -77,6 +77,7 @@ import {
   AuthUserOrganization,
   OrganizationAuthState,
 } from "@/auth/authTypes";
+import { JsonObject } from "type-fest";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -219,17 +220,23 @@ export const extensionFactory = define<IExtension>({
 export const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
 
 export const traceRecordFactory = define<TraceRecord>({
-  timestamp: "2021-10-07T12:52:16.189Z",
+  timestamp: new Date().toISOString(),
   extensionId: uuidSequence,
   runId: uuidSequence,
   blockInstanceId: uuidSequence,
   blockId: TEST_BLOCK_ID,
-  templateContext: {},
-  renderedArgs: {} as RenderedArgs,
+  templateContext(): JsonObject {
+    return {};
+  },
+  renderedArgs(): RenderedArgs {
+    return {} as RenderedArgs;
+  },
   renderError: null,
-  blockConfig: {
-    id: TEST_BLOCK_ID,
-    config: {},
+  blockConfig(): BlockConfig {
+    return {
+      id: TEST_BLOCK_ID,
+      config: {},
+    };
   },
 });
 
@@ -494,9 +501,10 @@ const internalFormStateFactory = define<FormState>({
   uuid: uuidSequence,
   installed: true,
   optionsArgs: null as UserOptions,
-  services: [] as ServiceDependency[],
+  services(): ServiceDependency[] {
+    return [];
+  },
   recipe: null,
-
   type: "panel" as ExtensionPointType,
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
@@ -574,3 +582,17 @@ export const sanitizedServiceConfigurationFactory =
     serviceId: (n: number) => validateRegistryId(`test/service-${n}`),
     config: () => ({} as SanitizedConfig),
   } as unknown as SanitizedServiceConfiguration);
+
+export const foundationOutputFactory = define<JsonObject>({
+  "@input": () => ({
+    icon: "",
+    title: "Test website title | test.com",
+    language: "en",
+    url: "https://www.testwebsite.com/",
+    provider: "test",
+  }),
+  "@options": () => ({
+    option1: "test string option",
+    option2: 42,
+  }),
+});
