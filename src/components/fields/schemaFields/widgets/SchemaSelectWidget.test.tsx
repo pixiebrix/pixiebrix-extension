@@ -31,7 +31,8 @@ describe("SchemaSelectWidget", () => {
     registerDefaultWidgets();
   });
 
-  test("renders empty select widget", () => {
+  test("renders select widget", () => {
+    // Pass in schema with enum so that <Select/> is rendered
     const schema: Schema = {
       type: "string",
       enum: ["option1", "option2", "option3"],
@@ -54,7 +55,8 @@ describe("SchemaSelectWidget", () => {
     ).toMatchSnapshot();
   });
 
-  test("renders empty creatable widget", () => {
+  test("renders creatable widget", () => {
+    // Pass in schema with examples so that <Creatable/> is rendered
     const schema: Schema = {
       type: "string",
       examples: ["option1", "option2", "option3"],
