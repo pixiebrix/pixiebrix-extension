@@ -34,7 +34,7 @@
     "!src/**/*.stories.tsx",
     "!**/__mocks__/**",
     "!**/node_modules/**",
-    "!**/vendor/**"
+    "!src/vendors/**"
   ],
   "moduleNameMapper": {
     "\\.module.(css|scss)$": "identity-obj-proxy",
