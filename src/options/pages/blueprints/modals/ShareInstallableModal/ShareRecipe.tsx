@@ -24,6 +24,7 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import { FormikProps, FormikValues } from "formik";
 import { sortBy, uniq } from "lodash";
 import React from "react";
+import ActivationLink from "./ActivationLink";
 
 const ShareRecipe: React.FunctionComponent<FormikProps<FormikValues>> = ({
   values,
@@ -69,6 +70,8 @@ const ShareRecipe: React.FunctionComponent<FormikProps<FormikValues>> = ({
           );
         }
       )}
+
+      <ActivationLink blueprintId={values.blueprintId} />
     </div>
   );
 };

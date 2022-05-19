@@ -65,14 +65,6 @@ const BlueprintsPage: React.FunctionComponent = () => {
         />
       )}
       {showShareContext && <ShareInstallableModal />}
-      {/* {showShareContext?.extensionId && (
-        <ShareExtensionModal extensionId={showShareContext.extensionId} />
-      )}
-
-      {showShareContext?.blueprintId && (
-        <ShareLinkModal blueprintId={showShareContext.blueprintId} />
-      )} */}
-
       {body}
     </div>
   );
