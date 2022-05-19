@@ -99,7 +99,7 @@ export function getSelectorPreference(selector: string): number {
     return LOWEST_ENUM_PREFERENCE;
   }
 
-  // Ensure that even an `a` selector (length=1) has higher number than `.a` (number=LOWEST_ENUM_PREFERENCE)
+  // Ensure that even an `a` selector (length=1) has higher number than `.a` (number=2)
   return LOWEST_ENUM_PREFERENCE + selector.length;
 }
 
