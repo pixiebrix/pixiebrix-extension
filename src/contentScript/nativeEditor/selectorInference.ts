@@ -70,6 +70,7 @@ function isSelectorUsuallyUnique(selector: string): boolean {
   return selector.startsWith("#") || UNIQUE_ATTRIBUTES_REGEX.test(selector);
 }
 
+const LOWEST_ENUM_PREFERENCE = 2;
 /**
  * Prefers unique selectors and classes. A lower number means higher preference. To be used with lodash.sortBy
  * @example
@@ -77,12 +78,13 @@ function isSelectorUsuallyUnique(selector: string): boolean {
  * 1   '[data-cy="b4da55"]'
  * 2   '.navItem'
  * 2   '.birdsArentReal'
+ * 3   'a'
  * 21  '#name > :nth-child(2)'
  * 30  '[aria-label="Click elsewhere"]'
  */
 export function getSelectorPreference(selector: string): number {
   if (selector.includes(":nth-child")) {
-    return selector.length;
+    return LOWEST_ENUM_PREFERENCE + selector.length;
   }
 
   if (selector.startsWith("#")) {
@@ -94,10 +96,11 @@ export function getSelectorPreference(selector: string): number {
   }
 
   if (selector.startsWith(".")) {
-    return 2;
+    return LOWEST_ENUM_PREFERENCE;
   }
 
-  return selector.length;
+  // Ensure that even an `a` selector (length=1) has higher number than `.a` (number=LOWEST_ENUM_PREFERENCE)
+  return LOWEST_ENUM_PREFERENCE + selector.length;
 }
 
 const DEFAULT_SELECTOR_PRIORITIES: Array<keyof typeof CssSelectorType> = [

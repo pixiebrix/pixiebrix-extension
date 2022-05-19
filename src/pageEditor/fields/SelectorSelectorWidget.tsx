@@ -19,7 +19,7 @@ import styles from "./SelectorSelectorWidget.module.scss";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import notify from "@/utils/notify";
-import { compact, isEmpty, sortBy, uniqBy } from "lodash";
+import { isEmpty, sortBy, uniqBy } from "lodash";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
@@ -40,6 +40,9 @@ import { ElementInfo, SelectMode } from "@/contentScript/nativeEditor/types";
 import { useSelector } from "react-redux";
 import { SettingsState } from "@/store/settingsTypes";
 
+// eslint-disable-next-line import/no-restricted-paths -- Not ideal, but webpack should be able to treeshake the file. Maybe move to @/utils ?
+import { getSelectorPreference } from "@/contentScript/nativeEditor/selectorInference";
+
 interface ElementSuggestion extends SuggestionTypeBase {
   value: string;
   elementInfo?: ElementInfo;
@@ -58,22 +61,29 @@ export type SelectorSelectorProps = {
   placeholder?: string;
 };
 
-function getSuggestionsForElement(
-  elementInfo: ElementInfo | undefined
+export function getSuggestionsForElement(
+  elementInfo: ElementInfo | undefined,
+  sort: boolean
 ): ElementSuggestion[] {
   if (!elementInfo) {
     return [];
   }
 
-  return uniqBy(
-    compact([
-      ...(elementInfo.selectors ?? []).map((value) => ({ value, elementInfo })),
-      ...getSuggestionsForElement(elementInfo.parent),
-    ]).filter(
-      (suggestion) => suggestion.value && suggestion.value.trim() !== ""
-    ),
+  const suggestions = uniqBy(
+    [
+      elementInfo.selectors?.map((value) => ({ value, elementInfo })),
+      getSuggestionsForElement(elementInfo.parent, false),
+    ]
+      .flat()
+      .filter((suggestion) => suggestion?.value?.trim()),
     (suggestion) => suggestion.value
   );
+
+  if (sort) {
+    return sortBy(suggestions, (x) => getSelectorPreference(x.value));
+  }
+
+  return suggestions;
 }
 
 function renderSuggestion(suggestion: ElementSuggestion): React.ReactNode {
@@ -93,18 +103,15 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   selectMode = "element",
   traverseUp = 0,
   isClearable = false,
-  // Leave off default here because we dynamically determine default based on `selectMode`
-  sort: rawSort,
   root,
   disabled = false,
   placeholder = "Choose a selector...",
+
+  // By default, sort by preference in `element` selection mode. Don't sort in `container` mode because
+  // the order is based on structure (because selectors for multiple elements are returned).
+  sort = selectMode === "element",
 }) => {
   const [{ value }, , { setValue }] = useField<string>(name);
-
-  // By default, sort by selector length in `element` selection mode. Don't sort in `container` mode because
-  // the order is based on structure (because selectors for multiple elements are returned).
-  const defaultSort = selectMode === "element";
-  const sort = rawSort ?? defaultSort;
 
   const [element, setElement] = useState(initialElement);
   const [isSelecting, setSelecting] = useState(false);
@@ -114,10 +121,10 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
     boolean
   >((x) => x.settings.excludeRandomClasses);
 
-  const suggestions: ElementSuggestion[] = useMemo(() => {
-    const raw = getSuggestionsForElement(element);
-    return sort ? sortBy(raw, (x) => x.value.length) : raw;
-  }, [element, sort]);
+  const suggestions: ElementSuggestion[] = useMemo(
+    () => getSuggestionsForElement(element, sort),
+    [element, sort]
+  );
 
   const enableSelector = useCallback((selector: string) => {
     if (selector.trim()) {
@@ -172,9 +179,9 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
 
       const selectors = selected.selectors ?? [];
 
-      const firstSelector = (
-        sort ? sortBy(selectors, (x) => x.length) : selectors
-      )[0];
+      const [firstSelector] = sort
+        ? sortBy(selectors, getSelectorPreference)
+        : selectors;
 
       console.debug("Setting selector", { selected, firstSelector });
       setValue(firstSelector);
