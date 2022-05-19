@@ -12,7 +12,6 @@ exports[`PageStateTab it renders with orphan extension 1`] = `
         <div>
           <button
             class="btn btn-info btn-sm"
-            disabled=""
             type="button"
           >
             <svg
@@ -75,20 +74,72 @@ exports[`PageStateTab it renders with orphan extension 1`] = `
               style="padding: 0px; margin: 0px; list-style: none;"
             >
               <li
-                style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 0px;"
               >
+                <div
+                  style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
+                >
+                  <div
+                    style="margin-left: 0px; transition: 150ms; transform: rotateZ(90deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                  >
+                    ▶
+                  </div>
+                </div>
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
                 >
                   <span>
                     extension:
                   </span>
                 </label>
                 <span
-                  style="color: rgb(64, 175, 108);"
+                  style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
                 >
-                  "Loading..."
+                  <span>
+                    <span
+                      style="margin-left: 0.3em; margin-right: 0.3em;"
+                    >
+                      {}
+                    </span>
+                     2 keys
+                  </span>
                 </span>
+                <ul
+                  style="padding: 0px; margin: 0px; list-style: none; display: block;"
+                >
+                  <li
+                    style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                  >
+                    <label
+                      style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    >
+                      <span>
+                        foo:
+                      </span>
+                    </label>
+                    <span
+                      style="color: rgb(64, 175, 108);"
+                    >
+                      "bar"
+                    </span>
+                  </li>
+                  <li
+                    style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                  >
+                    <label
+                      style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    >
+                      <span>
+                        baz:
+                      </span>
+                    </label>
+                    <span
+                      style="color: rgb(243, 100, 51);"
+                    >
+                      32
+                    </span>
+                  </li>
+                </ul>
               </li>
               <li
                 style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
@@ -103,24 +154,76 @@ exports[`PageStateTab it renders with orphan extension 1`] = `
                 <span
                   style="color: rgb(64, 175, 108);"
                 >
-                  "Loading..."
+                  "Extension is not in a blueprint"
                 </span>
               </li>
               <li
-                style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 0px;"
               >
+                <div
+                  style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
+                >
+                  <div
+                    style="margin-left: 0px; transition: 150ms; transform: rotateZ(90deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                  >
+                    ▶
+                  </div>
+                </div>
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
                 >
                   <span>
                     shared:
                   </span>
                 </label>
                 <span
-                  style="color: rgb(64, 175, 108);"
+                  style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
                 >
-                  "Loading..."
+                  <span>
+                    <span
+                      style="margin-left: 0.3em; margin-right: 0.3em;"
+                    >
+                      {}
+                    </span>
+                     2 keys
+                  </span>
                 </span>
+                <ul
+                  style="padding: 0px; margin: 0px; list-style: none; display: block;"
+                >
+                  <li
+                    style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                  >
+                    <label
+                      style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    >
+                      <span>
+                        foo:
+                      </span>
+                    </label>
+                    <span
+                      style="color: rgb(64, 175, 108);"
+                    >
+                      "bar"
+                    </span>
+                  </li>
+                  <li
+                    style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                  >
+                    <label
+                      style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    >
+                      <span>
+                        baz:
+                      </span>
+                    </label>
+                    <span
+                      style="color: rgb(243, 100, 51);"
+                    >
+                      32
+                    </span>
+                  </li>
+                </ul>
               </li>
             </ul>
           </li>
@@ -148,7 +251,6 @@ exports[`PageStateTab it renders with recipe extension 1`] = `
         <div>
           <button
             class="btn btn-info btn-sm"
-            disabled=""
             type="button"
           >
             <svg
@@ -211,52 +313,208 @@ exports[`PageStateTab it renders with recipe extension 1`] = `
               style="padding: 0px; margin: 0px; list-style: none;"
             >
               <li
-                style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 0px;"
               >
+                <div
+                  style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
+                >
+                  <div
+                    style="margin-left: 0px; transition: 150ms; transform: rotateZ(90deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                  >
+                    ▶
+                  </div>
+                </div>
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
                 >
                   <span>
                     extension:
                   </span>
                 </label>
                 <span
-                  style="color: rgb(64, 175, 108);"
+                  style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
                 >
-                  "Loading..."
+                  <span>
+                    <span
+                      style="margin-left: 0.3em; margin-right: 0.3em;"
+                    >
+                      {}
+                    </span>
+                     2 keys
+                  </span>
                 </span>
+                <ul
+                  style="padding: 0px; margin: 0px; list-style: none; display: block;"
+                >
+                  <li
+                    style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                  >
+                    <label
+                      style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    >
+                      <span>
+                        foo:
+                      </span>
+                    </label>
+                    <span
+                      style="color: rgb(64, 175, 108);"
+                    >
+                      "bar"
+                    </span>
+                  </li>
+                  <li
+                    style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                  >
+                    <label
+                      style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    >
+                      <span>
+                        baz:
+                      </span>
+                    </label>
+                    <span
+                      style="color: rgb(243, 100, 51);"
+                    >
+                      32
+                    </span>
+                  </li>
+                </ul>
               </li>
               <li
-                style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 0px;"
               >
+                <div
+                  style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
+                >
+                  <div
+                    style="margin-left: 0px; transition: 150ms; transform: rotateZ(90deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                  >
+                    ▶
+                  </div>
+                </div>
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
                 >
                   <span>
                     blueprint:
                   </span>
                 </label>
                 <span
-                  style="color: rgb(64, 175, 108);"
+                  style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
                 >
-                  "Loading..."
+                  <span>
+                    <span
+                      style="margin-left: 0.3em; margin-right: 0.3em;"
+                    >
+                      {}
+                    </span>
+                     2 keys
+                  </span>
                 </span>
+                <ul
+                  style="padding: 0px; margin: 0px; list-style: none; display: block;"
+                >
+                  <li
+                    style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                  >
+                    <label
+                      style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    >
+                      <span>
+                        foo:
+                      </span>
+                    </label>
+                    <span
+                      style="color: rgb(64, 175, 108);"
+                    >
+                      "bar"
+                    </span>
+                  </li>
+                  <li
+                    style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                  >
+                    <label
+                      style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    >
+                      <span>
+                        baz:
+                      </span>
+                    </label>
+                    <span
+                      style="color: rgb(243, 100, 51);"
+                    >
+                      32
+                    </span>
+                  </li>
+                </ul>
               </li>
               <li
-                style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 0px;"
               >
+                <div
+                  style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
+                >
+                  <div
+                    style="margin-left: 0px; transition: 150ms; transform: rotateZ(90deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                  >
+                    ▶
+                  </div>
+                </div>
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
                 >
                   <span>
                     shared:
                   </span>
                 </label>
                 <span
-                  style="color: rgb(64, 175, 108);"
+                  style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
                 >
-                  "Loading..."
+                  <span>
+                    <span
+                      style="margin-left: 0.3em; margin-right: 0.3em;"
+                    >
+                      {}
+                    </span>
+                     2 keys
+                  </span>
                 </span>
+                <ul
+                  style="padding: 0px; margin: 0px; list-style: none; display: block;"
+                >
+                  <li
+                    style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                  >
+                    <label
+                      style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    >
+                      <span>
+                        foo:
+                      </span>
+                    </label>
+                    <span
+                      style="color: rgb(64, 175, 108);"
+                    >
+                      "bar"
+                    </span>
+                  </li>
+                  <li
+                    style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                  >
+                    <label
+                      style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    >
+                      <span>
+                        baz:
+                      </span>
+                    </label>
+                    <span
+                      style="color: rgb(243, 100, 51);"
+                    >
+                      32
+                    </span>
+                  </li>
+                </ul>
               </li>
             </ul>
           </li>

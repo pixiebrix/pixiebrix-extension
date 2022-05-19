@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DataPanel it renders with form state and trace 1`] = `
+exports[`DataPanel it renders with form state and trace data 1`] = `
 <DocumentFragment>
   <form
     action="#"
