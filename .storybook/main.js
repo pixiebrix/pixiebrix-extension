@@ -30,8 +30,8 @@ module.exports = {
     builder: "webpack5",
   },
   // https://storybook.js.org/docs/riot/configure/webpack#extending-storybooks-webpack-config
-  webpackFinal: async (config) =>
-    mergeWithShared(config, {
+  webpackFinal: async (config) => {
+    const mergedConfig = mergeWithShared(config, {
       resolve: {
         // Mock any modules that appear in __mocks__
         // e.g. src/__mocks__/webextension-polyfill.js
@@ -79,5 +79,17 @@ module.exports = {
           ],
         }),
       ],
-    }),
+    });
+
+    // Storybook has a default rule that matches all static resources, so we need to block that
+    // to avoid conflicts that appear at runtime.
+    // https://stackoverflow.com/a/61706308/288906
+    // https://github.com/pixiebrix/pixiebrix-extension/pull/3410#issuecomment-1130414970
+    const fileLoaderRule = config.module.rules.find(
+      (rule) => rule.test && rule.test.test(".apng")
+    );
+    fileLoaderRule.resourceQuery = { not: [/loadAsComponent/] };
+
+    return mergedConfig;
+  },
 };
