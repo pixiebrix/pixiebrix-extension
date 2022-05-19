@@ -98,7 +98,7 @@ export function getSelectorPreference(selector: string): number {
     return 0;
   }
 
-  // Ensure that even an `a` selector (length=1) has higher number than `.a` (number=2)
+  // Pre-defined preferences should not go higher than 0 to avoid conflicting with this length check
   return selector.length;
 }
 
