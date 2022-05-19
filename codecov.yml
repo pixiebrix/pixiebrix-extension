@@ -1,3 +1,5 @@
 # https://docs.codecov.com/docs/ignoring-paths
 ignore:
+  # Exclude testing code
   - "src/vendors/reactPerformanceTesting/**/*"
+  - "src/testUtils/**/*"
