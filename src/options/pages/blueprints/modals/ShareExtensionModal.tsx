@@ -26,13 +26,12 @@ import {
   Row,
 } from "react-bootstrap";
 import { FormikHelpers } from "formik";
-import { compact, isEmpty, pick, sortBy, uniq } from "lodash";
+import { isEmpty, pick, sortBy, uniq } from "lodash";
 import { RegistryId, UnresolvedExtension, UUID } from "@/core";
 import * as Yup from "yup";
 import { PACKAGE_REGEX, validateSemVerString } from "@/types/helpers";
 import { appApi, useGetOrganizationsQuery } from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import slugify from "slugify";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
 import { makeBlueprint } from "@/options/pages/blueprints/utils/exportBlueprint";
@@ -62,10 +61,11 @@ import { selectScope } from "@/auth/authSelectors";
 import { FieldDescriptions } from "@/utils/strings";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { StylesConfig } from "react-select";
+import { generateRecipeId } from "@/utils/recipeUtils";
 
 const { attachExtension } = extensionsSlice.actions;
 
-type FormState = {
+type ShareExtensionFormState = {
   blueprintId: RegistryId;
   name: string;
   description: string;
@@ -85,7 +85,7 @@ const ShareSchema = Yup.object().shape({
 
 async function convertAndShare(
   extension: UnresolvedExtension,
-  form: FormState
+  form: ShareExtensionFormState
 ): Promise<RecipeDefinition> {
   const client = await getLinkedApiClient();
 
@@ -160,10 +160,8 @@ const ShareExtensionModal: React.FC<{
   const scope = useSelector(selectScope);
   const { data: organizations = [] } = useGetOrganizationsQuery();
 
-  const initialValues: FormState = {
-    blueprintId: compact([scope, slugify(extension.label).toLowerCase()]).join(
-      "/"
-    ) as RegistryId,
+  const initialValues: ShareExtensionFormState = {
+    blueprintId: generateRecipeId(scope, extension.label),
     name: extension.label,
     description: "Created with the PixieBrix Page Editor",
     organizations: [],
@@ -171,7 +169,10 @@ const ShareExtensionModal: React.FC<{
   };
 
   const handleShare: OnSubmit = useCallback(
-    async (values: FormState, helpers: FormikHelpers<FormState>) => {
+    async (
+      values: ShareExtensionFormState,
+      helpers: FormikHelpers<ShareExtensionFormState>
+    ) => {
       try {
         const recipe: RecipeDefinition = await convertAndShare(
           extension,

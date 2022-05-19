@@ -21,8 +21,6 @@ import {
   isBlueprint,
   isExtension,
   isExtensionFromRecipe,
-  isPersonal,
-  isShared,
   selectExtensionsFromInstallable,
 } from "@/options/pages/blueprints/utils/installableUtils";
 import { InstallableViewItem } from "./blueprintsTypes";
@@ -148,16 +146,6 @@ function useInstallableViewItemActions(
         extensionId: installable.id,
       };
     }
-
-    // if (isBlueprint(installable) || isShared(installable)) {
-    //   shareContext = {
-    //     blueprintId: getPackageId(installable),
-    //   };
-    // } else if (isPersonal(installable, scope) && isExtension(installable)) {
-    //   shareContext = {
-    //     extensionId: installable.id,
-    //   };
-    // }
 
     dispatch(blueprintModalsSlice.actions.setShareContext(shareContext));
   };
