@@ -48,6 +48,7 @@ const ConfirmationModal: React.FunctionComponent<
   ModalProps & {
     onCancel: () => void;
     onSubmit: () => void;
+    onExited: () => void;
     isVisible: boolean;
   }
 > = ({
@@ -57,10 +58,17 @@ const ConfirmationModal: React.FunctionComponent<
   submitVariant = "danger",
   cancelCaption,
   isVisible,
+  onExited,
   onCancel,
   onSubmit,
 }) => (
-  <Modal show={isVisible} onHide={onCancel} backdrop="static" keyboard={false}>
+  <Modal
+    show={isVisible}
+    onExited={onExited}
+    onHide={onCancel}
+    backdrop="static"
+    keyboard={false}
+  >
     <Modal.Header closeButton>
       <Modal.Title>{title ?? "Confirm?"}</Modal.Title>
     </Modal.Header>
@@ -105,7 +113,6 @@ export const ModalProvider: React.FunctionComponent<{
         setModalProps(modalProps);
         setIsModalVisible(true);
         const newCallback = (submit: boolean) => {
-          setModalProps(null);
           resolve(submit);
           setCallback(null);
         };
@@ -130,6 +137,9 @@ export const ModalProvider: React.FunctionComponent<{
             callback(false);
           }}
           isVisible={isModalVisible}
+          onExited={() => {
+            setModalProps(null);
+          }}
         />
       }
       {children}
