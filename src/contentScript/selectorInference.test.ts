@@ -167,16 +167,16 @@ describe("safeCssSelector", () => {
 });
 
 test("getSelectorPreference: matches expected sorting", () => {
-  expect(getSelectorPreference("#best-link-on-the-page")).toBe(0);
-  expect(getSelectorPreference('[data-cy="b4da55"]')).toBe(1);
-  expect(getSelectorPreference(".navItem")).toBe(2);
-  expect(getSelectorPreference(".birdsArentReal")).toBe(2);
+  expect(getSelectorPreference("#best-link-on-the-page")).toBe(-2);
+  expect(getSelectorPreference('[data-cy="b4da55"]')).toBe(-1);
+  expect(getSelectorPreference(".navItem")).toBe(0);
+  expect(getSelectorPreference(".birdsArentReal")).toBe(0);
   const selector = '[aria-label="Click elsewhere"]';
-  expect(getSelectorPreference(selector)).toBe(2 + selector.length);
+  expect(getSelectorPreference(selector)).toBe(selector.length);
 
   // Even if it contains an ID, the selector is low quality
   const selector2 = "#name > :nth-child(2)";
-  expect(getSelectorPreference(selector2)).toBe(2 + selector2.length);
+  expect(getSelectorPreference(selector2)).toBe(selector2.length);
 });
 
 describe("inferSelectors", () => {
