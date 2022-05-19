@@ -221,7 +221,9 @@ export const extensionFactory = define<IExtension>({
 export const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
 
 export const traceRecordFactory = define<TraceRecord>({
-  timestamp: new Date().toISOString(),
+  timestamp(): string {
+    return new Date().toISOString();
+  },
   extensionId: uuidSequence,
   runId: uuidSequence,
   blockInstanceId: uuidSequence,
