@@ -34,7 +34,13 @@ import {
 import { isEmpty, pick } from "lodash";
 import { OnSubmit } from "@/components/form/Form";
 import { isAxiosError } from "@/errors";
-import { appApi } from "@/services/api";
+import {
+  appApi,
+  useCreateRecipeMutation,
+  useGetEditablePackagesQuery,
+  useGetRecipesQuery,
+  useUpdateRecipeMutation,
+} from "@/services/api";
 import {
   RecipeDefinition,
   selectSourceRecipeMetadata,
@@ -48,6 +54,8 @@ import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
 import ConvertToRecipe from "./ConvertToRecipe";
 import ShareRecipe from "./ShareRecipe";
+import { getRecipeById } from "@/pageEditor/utils";
+import { produce } from "immer";
 
 // TODO:
 // 1. add status line
@@ -93,29 +101,28 @@ const stepShare = {
 
 async function convertAndShare(
   extension: UnresolvedExtension,
-  form: ShareInstallableFormState
+  form: ShareInstallableFormState,
+  createRecipe: any
 ): Promise<RecipeDefinition> {
-  const client = await getLinkedApiClient();
-
+  // TODO Which one to use: exportBlueprint.makeBlueprint vs saveHelpers.buildRecipe
   const blueprint = makeBlueprint(extension, {
     id: form.blueprintId,
     name: form.name,
     description: form.description,
-    version: validateSemVerString("1.0.0"),
+    version: form.version,
   });
 
-  const { data } = await client.post<PackageUpsertResponse>("api/bricks/", {
-    config: objToYaml(blueprint),
-    kind: "recipe",
-    public: form.public,
+  const response = await createRecipe({
+    recipe: blueprint,
     organizations: form.organizations,
-    share_dependencies: true,
-  });
+    public: form.public,
+    shareDependencies: true,
+  }).unwrap();
 
   return {
     ...blueprint,
-    sharing: pick(data, ["public", "organizations"]),
-    ...pick(data, ["updated_at"]),
+    sharing: pick(response, ["public", "organizations"]),
+    ...pick(response, ["updated_at"]),
   };
 }
 
@@ -124,7 +131,11 @@ const ShareInstallableModal: React.FunctionComponent = () => {
 
   const { extensionId, blueprintId } = useSelector(selectShowShareContext);
 
+  const { data: recipes } = useGetRecipesQuery();
   const extensions = useSelector(selectExtensions);
+  const { data: editablePackages } = useGetEditablePackagesQuery();
+  const [createRecipe] = useCreateRecipeMutation();
+  const [updateRecipe] = useUpdateRecipeMutation();
 
   const extension = useMemo(() => {
     if (extensionId == null) {
@@ -141,14 +152,27 @@ const ShareInstallableModal: React.FunctionComponent = () => {
 
   const scope = useSelector(selectScope);
 
-  const initialValues: ShareInstallableFormState = {
-    blueprintId: generateRecipeId(scope, extension.label),
-    name: extension.label,
-    version: validateSemVerString("1.0.0"),
-    description: "Created with the PixieBrix Page Editor",
-    organizations: [],
-    public: false,
-  };
+  let initialValues: ShareInstallableFormState;
+  if (blueprintId == null) {
+    initialValues = {
+      blueprintId: generateRecipeId(scope, extension.label),
+      name: extension.label,
+      version: validateSemVerString("1.0.0"),
+      description: "Created with the PixieBrix Page Editor",
+      organizations: [],
+      public: false,
+    };
+  } else {
+    const recipe = getRecipeById(recipes, blueprintId);
+    initialValues = {
+      blueprintId: recipe.metadata.id,
+      name: recipe.metadata.name,
+      version: recipe.metadata.version,
+      description: recipe.metadata.description,
+      organizations: recipe.sharing.organizations,
+      public: recipe.sharing.public,
+    };
+  }
 
   const onCancel = () => {
     dispatch(blueprintModalsSlice.actions.setShareContext(null));
@@ -159,34 +183,54 @@ const ShareInstallableModal: React.FunctionComponent = () => {
       values: ShareInstallableFormState,
       helpers: FormikHelpers<ShareInstallableFormState>
     ) => {
-      try {
-        const recipe: RecipeDefinition = await convertAndShare(
-          extension,
-          values
-        );
-        dispatch(
-          extensionsSlice.actions.attachExtension({
-            extensionId: extension.id,
-            recipeMetadata: selectSourceRecipeMetadata(recipe),
-          })
-        );
-        notify.success("Converted/shared brick");
+      if (blueprintId == null) {
+        try {
+          const recipe: RecipeDefinition = await convertAndShare(
+            extension,
+            values,
+            createRecipe
+          );
+          dispatch(
+            extensionsSlice.actions.attachExtension({
+              extensionId: extension.id,
+              recipeMetadata: selectSourceRecipeMetadata(recipe),
+            })
+          );
+          notify.success("Converted/shared brick");
 
-        onCancel();
+          onCancel();
 
-        dispatch(appApi.util.invalidateTags(["Recipes"]));
-      } catch (error) {
-        if (isAxiosError(error) && error.response.data.config) {
-          helpers.setStatus(error.response.data.config);
-          return;
+          dispatch(appApi.util.invalidateTags(["Recipes"]));
+        } catch (error) {
+          if (isAxiosError(error) && error.response.data.config) {
+            helpers.setStatus(error.response.data.config);
+            return;
+          }
+
+          notify.error({
+            message: "Error converting/sharing brick",
+            error,
+          });
+        } finally {
+          helpers.setSubmitting(false);
         }
-
-        notify.error({
-          message: "Error converting/sharing brick",
-          error,
+      } else {
+        const recipe = getRecipeById(recipes, blueprintId);
+        const newRecipe = produce(recipe, (draft) => {
+          draft.sharing.organizations = values.organizations;
+          draft.sharing.public = values.public;
         });
-      } finally {
-        helpers.setSubmitting(false);
+        const packageId = editablePackages.find(
+          (x) => x.name === newRecipe.metadata.id
+        )?.id;
+        await updateRecipe({
+          packageId,
+          recipe: newRecipe,
+        }).unwrap();
+
+        notify.success("Shared brick");
+        onCancel();
+        dispatch(appApi.util.invalidateTags(["Recipes"]));
       }
     },
     [dispatch, extension]
