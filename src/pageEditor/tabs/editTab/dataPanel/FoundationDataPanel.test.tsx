@@ -16,32 +16,35 @@
  */
 
 import React from "react";
-import { render, waitForEffect } from "@/testUtils/testHelpers";
-import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
 import { formStateWithTraceDataFactory } from "@/testUtils/factories";
-import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
+import { render, waitForEffect } from "@/testUtils/testHelpers";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationDataPanel";
 
-describe("DataPanel", () => {
+describe("FoundationDataPanel", () => {
   test("it renders with form state and trace data", async () => {
     const { formState, records } = formStateWithTraceDataFactory();
     const extensionId = formState.uuid;
-    const { instanceId } = formState.extension.blockPipeline[1];
-    const rendered = render(<DataPanel instanceId={instanceId} />, {
-      initialValues: formState,
-      setupRedux(dispatch) {
-        dispatch(editorActions.addElement(formState));
-        dispatch(editorActions.selectElement(formState.uuid));
-        dispatch(
-          runtimeSlice.actions.setExtensionTrace({ extensionId, records })
-        );
-        dispatch(editorActions.setElementActiveNodeId(instanceId));
-        dispatch(
-          editorActions.setNodeDataPanelTabSelected(DataPanelTabKey.Context)
-        );
-      },
-    });
+    const { instanceId } = formState.extension.blockPipeline[0];
+    const rendered = render(
+      <FoundationDataPanel firstBlockInstanceId={instanceId} />,
+      {
+        initialValues: formState,
+        setupRedux(dispatch) {
+          dispatch(editorActions.addElement(formState));
+          dispatch(editorActions.selectElement(formState.uuid));
+          dispatch(
+            runtimeSlice.actions.setExtensionTrace({ extensionId, records })
+          );
+          dispatch(editorActions.setElementActiveNodeId(instanceId));
+          dispatch(
+            editorActions.setNodeDataPanelTabSelected(DataPanelTabKey.Output)
+          );
+        },
+      }
+    );
     await waitForEffect();
 
     expect(rendered.asFragment()).toMatchSnapshot();

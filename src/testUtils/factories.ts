@@ -15,25 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { define, array, FactoryConfig, derive } from "cooky-cutter";
+import { array, define, derive, FactoryConfig } from "cooky-cutter";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import {
   ApiVersion,
   IBlock,
   IExtension,
   InnerDefinitionRef,
+  InnerDefinitions,
+  Metadata,
+  OutputKey,
+  RecipeMetadata,
   RegistryId,
   RenderedArgs,
+  SafeString,
+  SanitizedConfig,
+  SanitizedServiceConfiguration,
   Schema,
   ServiceDependency,
   UserOptions,
-  Metadata,
-  RecipeMetadata,
   UUID,
-  InnerDefinitions,
-  SafeString,
-  SanitizedServiceConfiguration,
-  SanitizedConfig,
 } from "@/core";
 import { TraceError, TraceRecord } from "@/telemetry/trace";
 import {
@@ -51,13 +52,13 @@ import {
   TriggerFormState,
 } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
-  RecipeDefinition,
   ExtensionPointConfig,
+  RecipeDefinition,
   SharingDefinition,
 } from "@/types/definitions";
 import {
-  ExtensionPointDefinition as ExtensionPointConfigDefinition,
   ExtensionPointConfig as ExtensionPointDefinition,
+  ExtensionPointDefinition as ExtensionPointConfigDefinition,
   ExtensionPointType,
 } from "@/extensionPoints/types";
 import {
@@ -595,4 +596,45 @@ export const foundationOutputFactory = define<JsonObject>({
     option1: "test string option",
     option2: 42,
   }),
+});
+
+export const formStateWithTraceDataFactory = define<{
+  formState: FormState;
+  records: TraceRecord[];
+}>({
+  formState(): FormState {
+    return formStateFactory();
+  },
+  records: derive<
+    {
+      formState: FormState;
+      records: TraceRecord[];
+    },
+    TraceRecord[]
+  >(({ formState: { uuid: extensionId, extension } }) => {
+    let outputKey = "" as OutputKey;
+    let output: JsonObject = foundationOutputFactory();
+    return extension.blockPipeline.map((block, index) => {
+      const context = output;
+      outputKey = `output${index}` as OutputKey;
+      output = {
+        foo: `bar number ${index}`,
+        baz: index * 3,
+        qux: {
+          thing1: [index * 7, index * 9, index * 11],
+          thing2: false,
+        },
+      };
+
+      return traceRecordFactory({
+        extensionId,
+        blockInstanceId: block.instanceId,
+        blockId: block.id,
+        templateContext: context,
+        blockConfig: block,
+        outputKey,
+        output,
+      });
+    });
+  }, "formState"),
 });
