@@ -29,12 +29,10 @@ import {
   selectShowLogsContext,
   selectShowShareContext,
 } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
-import ShareExtensionModal from "@/options/pages/blueprints/modals/ShareExtensionModal";
-import ShareLinkModal from "@/options/pages/blueprints/modals/ShareLinkModal";
 import { useTitle } from "@/hooks/title";
 import Loader from "@/components/Loader";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
-import ShareInstallableModal from "./modals/ShareInstallableModal";
+import ShareInstallableModal from "./modals/ShareInstallableModal/ShareInstallableModal";
 
 const BlueprintsPage: React.FunctionComponent = () => {
   useTitle("Blueprints");

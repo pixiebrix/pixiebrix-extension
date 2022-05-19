@@ -40,7 +40,6 @@ import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors";
 import { useModals } from "@/components/ConfirmationModal";
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
-import { selectScope } from "@/auth/authSelectors";
 import { OptionsState } from "@/store/extensionsTypes";
 import useFlags from "@/hooks/useFlags";
 import notify from "@/utils/notify";
@@ -70,7 +69,6 @@ function useInstallableViewItemActions(
   const dispatch = useDispatch();
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
-  const scope = useSelector(selectScope);
   const { restrict } = useFlags();
 
   // NOTE: paused deployments are installed, but they are not executed. See deployments.ts:isDeploymentActive

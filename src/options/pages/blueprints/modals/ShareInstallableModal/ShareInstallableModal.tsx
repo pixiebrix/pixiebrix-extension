@@ -16,17 +16,21 @@
  */
 
 import { selectScope } from "@/auth/authSelectors";
-import { RegistryId, UnresolvedExtension, UUID } from "@/core";
+import { RegistryId, SemVerString, UnresolvedExtension, UUID } from "@/core";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { generateRecipeId } from "@/utils/recipeUtils";
 import { FormikWizard, Step } from "formik-wizard-form";
 import React, { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { selectShowShareContext } from "./blueprintModalsSelectors";
-import { blueprintModalsSlice } from "./blueprintModalsSlice";
+import { selectShowShareContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
+import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import * as Yup from "yup";
-import { PACKAGE_REGEX, validateSemVerString } from "@/types/helpers";
+import {
+  PACKAGE_REGEX,
+  testIsSemVerString,
+  validateSemVerString,
+} from "@/types/helpers";
 import { isEmpty, pick } from "lodash";
 import { OnSubmit } from "@/components/form/Form";
 import { isAxiosError } from "@/errors";
@@ -39,96 +43,48 @@ import { FormikHelpers } from "formik";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { PackageUpsertResponse } from "@/types/contract";
 import { objToYaml } from "@/utils/objToYaml";
-import { makeBlueprint } from "../utils/exportBlueprint";
+import { makeBlueprint } from "@/options/pages/blueprints/utils/exportBlueprint";
 import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
-import { StylesConfig } from "react-select";
-import { FieldDescriptions } from "@/utils/strings";
+import ConvertToRecipe from "./ConvertToRecipe";
+import ShareRecipe from "./ShareRecipe";
 
 // TODO:
 // 1. add status line
+// 2. use RTKQ to share recipe
+// 3. Clean up BlueprintsPage
+// 4. Check unique BP id
+// 5. Get back to step 1 in case of error
 
 type ShareInstallableFormState = {
   blueprintId: RegistryId;
   name: string;
+  version: SemVerString;
   description: string;
   public: boolean;
   organizations: UUID[];
 };
 
-const selectStylesOverride: StylesConfig = {
-  control: (base) => ({
-    ...base,
-    borderRadius: 0,
-    border: "none",
-  }),
-  valueContainer: (base) => ({
-    ...base,
-    padding: "0.875rem 1.375rem",
-  }),
-  singleValue: (base) => ({
-    ...base,
-    marginTop: 0,
-    marginBottom: 0,
-    paddingTop: 0,
-    paddingBottom: 0,
-  }),
-  input: (base) => ({
-    ...base,
-    marginTop: 0,
-    marginBottom: 0,
-    paddingTop: 0,
-    paddingBottom: 0,
-  }),
-};
-
 const stepConvertToRecipe = {
-  component: () => (
-    <>
-      <div className="text-info">
-        <FontAwesomeIcon icon={faInfoCircle} /> To share, first give your
-        blueprint a name.
-      </div>
-      <div>
-        <ConnectedFieldTemplate
-          name="name"
-          label="Name"
-          description={FieldDescriptions.BLUEPRINT_NAME}
-        />
-        <ConnectedFieldTemplate
-          name="blueprintId"
-          label="Blueprint Id"
-          description={
-            <span>
-              {FieldDescriptions.BLUEPRINT_ID}.{" "}
-              <i>Cannot be modified once shared.</i>
-            </span>
-          }
-          as={RegistryIdWidget}
-          selectStyles={selectStylesOverride}
-        />
-        <ConnectedFieldTemplate
-          name="description"
-          label="Description"
-          description={FieldDescriptions.BLUEPRINT_DESCRIPTION}
-        />
-      </div>
-    </>
-  ),
+  component: ConvertToRecipe,
   validationSchema: Yup.object().shape({
     blueprintId: Yup.string()
       .matches(PACKAGE_REGEX, "Invalid registry id")
       .required(),
     name: Yup.string().required(),
+    version: Yup.string()
+      .test(
+        "semver",
+        "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
+        (value: string) => testIsSemVerString(value, { allowLeadingV: false })
+      )
+      .required(),
     description: Yup.string().required(),
   }),
 };
+
 const stepShare = {
-  component: () => <div>Second step</div>,
+  component: ShareRecipe,
   validationSchema: Yup.object().shape({
     public: Yup.boolean().required(),
     organizations: Yup.array().of(Yup.string().required()),
@@ -188,6 +144,7 @@ const ShareInstallableModal: React.FunctionComponent = () => {
   const initialValues: ShareInstallableFormState = {
     blueprintId: generateRecipeId(scope, extension.label),
     name: extension.label,
+    version: validateSemVerString("1.0.0"),
     description: "Created with the PixieBrix Page Editor",
     organizations: [],
     public: false,
@@ -215,12 +172,7 @@ const ShareInstallableModal: React.FunctionComponent = () => {
         );
         notify.success("Converted/shared brick");
 
-        // Hide the share modal and show the share link modal
-        dispatch(
-          blueprintModalsSlice.actions.setShareContext({
-            blueprintId: recipe.metadata.id,
-          })
-        );
+        onCancel();
 
         dispatch(appApi.util.invalidateTags(["Recipes"]));
       } catch (error) {
