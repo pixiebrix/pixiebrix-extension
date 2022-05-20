@@ -192,7 +192,7 @@ test("getSelectorPreference: matches expected sorting", () => {
 
   // Even if it contains an ID, the selector is low quality
   const selector2 = "#name > :nth-child(2)";
-  expect(getSelectorPreference(selector2)).toBe(1);
+  expect(getSelectorPreference(selector2)).toBe(2);
 });
 
 describe("inferSelectors", () => {

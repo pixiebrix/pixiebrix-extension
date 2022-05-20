@@ -112,7 +112,8 @@ export function sortBySelector<Item = string>(
  */
 export function getSelectorPreference(selector: string): number {
   if (selector.includes(":nth-child")) {
-    return selector.length;
+    // Structural selectors are fragile to page changes, so give low score
+    return 2;
   }
 
   if (selector.startsWith("#")) {
