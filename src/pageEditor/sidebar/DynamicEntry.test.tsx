@@ -22,6 +22,15 @@ import DynamicEntry from "@/pageEditor/sidebar/DynamicEntry";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { authActions } from "@/auth/authSlice";
 
+beforeAll(() => {
+  // When a FontAwesomeIcon gets a title, it generates a random id, which breaks the snapshot.
+  jest.spyOn(global.Math, "random").mockImplementation(() => 0);
+});
+
+afterAll(() => {
+  jest.clearAllMocks();
+});
+
 describe("DynamicEntry", () => {
   test("it renders with active element", () => {
     const formState = formStateFactory();
