@@ -189,7 +189,9 @@ export const extensionFactory = define<IExtension>({
   _recipe: undefined,
   _deployment: undefined,
   label: "Test label",
-  services: [],
+  services(): ServiceDependency[] {
+    return [];
+  },
   config: (n: number) => ({
     apiVersion: "v2" as ApiVersion,
     kind: "component",
