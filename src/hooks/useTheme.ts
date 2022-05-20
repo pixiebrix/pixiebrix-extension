@@ -19,7 +19,7 @@ import { useEffect } from "react";
 import { selectSettings } from "@/store/settingsSelectors";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { DEFAULT_THEME } from "@/options/constants";
+import { DEFAULT_THEME } from "@/options/types";
 import { activatePartnerTheme } from "@/background/messenger/api";
 import { persistor } from "@/options/store";
 import { useAsyncState } from "@/hooks/common";
