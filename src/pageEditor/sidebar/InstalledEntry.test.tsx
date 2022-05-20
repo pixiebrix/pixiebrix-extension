@@ -34,6 +34,15 @@ jest.mock("@/pageEditor/extensionPoints/adapter", () => {
   };
 });
 
+beforeAll(() => {
+  // When a FontAwesomeIcon gets a title, it generates a random id, which breaks the snapshot.
+  jest.spyOn(global.Math, "random").mockImplementation(() => 0);
+});
+
+afterAll(() => {
+  jest.clearAllMocks();
+});
+
 describe("InstalledEntry", () => {
   test("it renders with active element", async () => {
     const extension = extensionFactory();
