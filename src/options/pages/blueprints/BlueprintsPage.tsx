@@ -32,8 +32,8 @@ import {
 import { useTitle } from "@/hooks/title";
 import Loader from "@/components/Loader";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
-import ConvertToRecipeModal from "./modals/ShareInstallableModal/ConvertToRecipeModal";
-import ShareRecipeModal from "./modals/ShareInstallableModal/ShareRecipeModal";
+import ConvertToRecipeModal from "./modals/ConvertToRecipeModal";
+import ShareRecipeModal from "./modals/ShareRecipeModal/ShareRecipeModal";
 
 const BlueprintsPage: React.FunctionComponent = () => {
   useTitle("Blueprints");

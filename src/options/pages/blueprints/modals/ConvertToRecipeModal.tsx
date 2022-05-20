@@ -190,25 +190,21 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
             name="blueprintId"
             label="Blueprint ID"
             description={FieldDescriptions.BLUEPRINT_ID}
-            widerLabel
             as={RegistryIdWidget}
           />
           <ConnectedFieldTemplate
             name="name"
             label="Name"
-            widerLabel
             description={FieldDescriptions.BLUEPRINT_NAME}
           />
           <ConnectedFieldTemplate
             name="version"
             label="Version"
-            widerLabel
             description={FieldDescriptions.BLUEPRINT_VERSION}
           />
           <ConnectedFieldTemplate
             name="description"
             label="Description"
-            widerLabel
             description={FieldDescriptions.BLUEPRINT_DESCRIPTION}
           />
         </Modal.Body>
