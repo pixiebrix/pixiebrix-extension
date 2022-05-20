@@ -35,6 +35,7 @@ import {
   partial,
   partialRight,
   pickBy,
+  split,
   unary,
   zip,
 } from "lodash";
@@ -599,4 +600,26 @@ export function getRecipeById(
   id: RegistryId
 ): RecipeDefinition | undefined {
   return recipes.find((recipe) => recipe.metadata.id === id);
+}
+
+/**
+ * Splits a value into a scope and id, based on scope starting with @ and id
+ *  as everything following the first / character
+ * @param value the full RegistryId
+ */
+export function getScopeAndId(
+  value: RegistryId
+): [string | undefined, string | undefined] {
+  // Scope needs to start with @
+  if (!value.startsWith("@")) {
+    return [undefined, value];
+  }
+
+  // If the value starts with @ and doesn't have a slash, interpret it as a scope
+  if (!value.includes("/")) {
+    return [value, undefined];
+  }
+
+  const [scope, ...idParts] = split(value, "/");
+  return [scope, idParts.join("/")];
 }

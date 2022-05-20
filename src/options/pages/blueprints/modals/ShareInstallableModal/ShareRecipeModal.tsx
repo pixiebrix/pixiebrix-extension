@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { ReactElement } from "react";
 import { UUID } from "@/core";
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { selectShowShareContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import * as Yup from "yup";
-import { sortBy, uniq } from "lodash";
+import { sortBy } from "lodash";
 import Form from "@/components/form/Form";
 import { getErrorMessage, isAxiosError } from "@/errors";
 import {
@@ -34,16 +34,24 @@ import {
 } from "@/services/api";
 import { FormikHelpers } from "formik";
 import notify from "@/utils/notify";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { getRecipeById } from "@/utils";
+import { getRecipeById, getScopeAndId } from "@/utils";
 import { produce } from "immer";
-import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGlobe } from "@fortawesome/free-solid-svg-icons";
-import FieldTemplate from "@/components/form/FieldTemplate";
+import {
+  faGlobe,
+  faTimes,
+  faUser,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
 import ActivationLink from "./ActivationLink";
 import Loader from "@/components/Loader";
 import { RequireScope } from "@/auth/RequireScope";
+import ReactSelect from "react-select";
+import cx from "classnames";
+import styles from "./ShareRecipeModal.module.scss";
+import BootstrapSwitchButton from "bootstrap-switch-button-react";
+import { selectAuth } from "@/auth/authSelectors";
+import { Organization } from "@/types/contract";
 
 type ShareInstallableFormState = {
   public: boolean;
@@ -55,22 +63,41 @@ const validationSchema = Yup.object().shape({
   organizations: Yup.array().of(Yup.string().required()),
 });
 
+const sortOrganizations = (organizations: Organization[]) =>
+  sortBy(organizations, (organization) => organization.name);
+
 const ShareRecipeModal: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { blueprintId } = useSelector(selectShowShareContext);
+  const { scope: userScope } = useSelector(selectAuth);
   const [updateRecipe] = useUpdateRecipeMutation();
   const { data: organizations = [] } = useGetOrganizationsQuery();
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
     useGetEditablePackagesQuery();
   const { data: recipes, isFetching: isFetchingRecipes } = useGetRecipesQuery();
   const recipe = getRecipeById(recipes, blueprintId);
-  const initialValues: ShareInstallableFormState = {
-    organizations: recipe?.sharing.organizations ?? [],
-    public: recipe?.sharing.public ?? false,
-  };
 
   const closeModal = () => {
     dispatch(blueprintModalsSlice.actions.setShareContext(null));
+  };
+
+  // If the was just converted to a blueprint, the API request is likely be in progress and recipe will be null
+  if (isFetchingRecipes) {
+    return (
+      <Modal show onHide={closeModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Share with Teams</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Loader />
+        </Modal.Body>
+      </Modal>
+    );
+  }
+
+  const initialValues: ShareInstallableFormState = {
+    organizations: recipe.sharing.organizations,
+    public: recipe.sharing.public,
   };
 
   const saveSharing = async (
@@ -113,93 +140,129 @@ const ShareRecipeModal: React.FunctionComponent = () => {
     }
   };
 
+  // Sorting returns new array, so it safe to mutate it
+  const organizationsForSelect = sortOrganizations(organizations);
+  const [recipeScope] = getScopeAndId(recipe?.metadata.id);
+  let ownerLabel: ReactElement;
+  if (recipeScope === userScope) {
+    ownerLabel = (
+      <span>
+        <FontAwesomeIcon icon={faUser} /> You
+      </span>
+    );
+  } else {
+    const ownerOrganizationIndex = organizationsForSelect.findIndex(
+      (x) => x.scope === recipeScope
+    );
+
+    const ownerOrganization = organizationsForSelect.splice(
+      ownerOrganizationIndex,
+      1
+    )[0];
+    ownerLabel = (
+      <span>
+        <FontAwesomeIcon icon={faUsers} /> {ownerOrganization.name}
+      </span>
+    );
+  }
+
   return (
     <Modal show onHide={closeModal}>
       <Modal.Header closeButton>
         <Modal.Title>Share with Teams</Modal.Title>
       </Modal.Header>
       <RequireScope scopeSettingsDescription="To share a blueprint, you must first set an account alias for your PixieBrix account">
-        {isFetchingRecipes ? (
-          <Modal.Body>
-            <Loader />{" "}
-          </Modal.Body>
-        ) : (
-          <Form
-            validationSchema={validationSchema}
-            initialValues={initialValues}
-            onSubmit={saveSharing}
-            renderStatus={({ status }) => (
-              <div className="text-danger p-3">{status}</div>
-            )}
-            renderSubmit={() => null}
-            renderBody={({ values, setFieldValue, isValid, isSubmitting }) => (
-              <>
-                <Modal.Body>
-                  {sortBy(
-                    organizations,
-                    (organization) => organization.name
-                  ).map((organization) => {
-                    const checked = values.organizations.includes(
-                      organization.id
-                    );
-                    return (
-                      <FieldTemplate
-                        key={organization.id}
-                        name={organization.id}
-                        as={SwitchButtonWidget}
-                        label={organization.name}
-                        value={checked}
-                        onChange={() => {
-                          const next = checked
-                            ? values.organizations.filter(
-                                (x: string) => x !== organization.id
-                              )
-                            : uniq([...values.organizations, organization.id]);
+        <Form
+          validationSchema={validationSchema}
+          initialValues={initialValues}
+          onSubmit={saveSharing}
+          renderStatus={({ status }) => (
+            <div className="text-danger p-3">{status}</div>
+          )}
+          renderSubmit={() => null}
+          renderBody={({ values, setFieldValue, isValid, isSubmitting }) => (
+            <>
+              <Modal.Body>
+                <ReactSelect
+                  options={organizationsForSelect
+                    .filter((x) => !values.organizations.includes(x.id))
+                    .map((x) => ({
+                      label: x.name,
+                      value: x.id,
+                    }))}
+                  onChange={(selected) => {
+                    setFieldValue("organizations", [
+                      ...values.organizations,
+                      selected.value,
+                    ]);
+                  }}
+                  value={null}
+                  placeholder="Add a team"
+                />
+
+                <div className={styles.row}>
+                  {ownerLabel}
+                  <span className="text-muted">Owner</span>
+                </div>
+
+                {organizationsForSelect
+                  .filter((x) => values.organizations.includes(x.id))
+                  .map((organization) => (
+                    <div className={styles.row} key={organization.id}>
+                      <span>
+                        <FontAwesomeIcon icon={faUsers} /> {organization.name}
+                      </span>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => {
+                          const next = values.organizations.filter(
+                            (x: string) => x !== organization.id
+                          );
                           setFieldValue("organizations", next);
                         }}
-                      />
-                    );
-                  })}
+                      >
+                        <FontAwesomeIcon icon={faTimes} />
+                      </Button>
+                    </div>
+                  ))}
 
-                  <ConnectedFieldTemplate
-                    name="public"
-                    as={SwitchButtonWidget}
-                    description={
-                      // \u00A0 stands for &nbsp;
-                      values.public ? (
-                        <i>Visible to all PixieBrix users</i>
-                      ) : (
-                        "\u00A0"
-                      )
-                    }
-                    label={
-                      <span>
-                        <FontAwesomeIcon icon={faGlobe} /> Public
-                      </span>
-                    }
+                <div className={styles.row}>
+                  <span className={cx({ "text-muted": !values.public })}>
+                    <FontAwesomeIcon icon={faGlobe} /> Public - toggle to share
+                    with anyone with link
+                  </span>
+
+                  <BootstrapSwitchButton
+                    onlabel=" "
+                    offlabel=" "
+                    checked={values.public}
+                    onChange={(checked: boolean) => {
+                      setFieldValue("public", checked);
+                    }}
                   />
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button variant="link" onClick={closeModal}>
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    disabled={
-                      !isValid || isSubmitting || isFetchingEditablePackages
-                    }
-                  >
-                    Save and Close
-                  </Button>
-                </Modal.Footer>
-                <Modal.Body>
-                  <ActivationLink blueprintId={blueprintId} />
-                </Modal.Body>
-              </>
-            )}
-          />
-        )}
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="link" onClick={closeModal}>
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  type="submit"
+                  disabled={
+                    !isValid || isSubmitting || isFetchingEditablePackages
+                  }
+                >
+                  Save and Close
+                </Button>
+              </Modal.Footer>
+              <Modal.Body>
+                <ActivationLink blueprintId={blueprintId} />
+              </Modal.Body>
+            </>
+          )}
+        />
       </RequireScope>
     </Modal>
   );
