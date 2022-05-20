@@ -20,7 +20,6 @@ import { Button, Modal } from "react-bootstrap";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import extensionsSlice from "@/store/extensionsSlice";
 import {
   selectActiveElement,
   selectInstalledRecipeMetadatas,
@@ -37,8 +36,7 @@ import { isAxiosError } from "@/errors";
 import { object, string } from "yup";
 import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioItemListWidget";
 import { RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
-
-const { actions: optionsActions } = extensionsSlice;
+import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 
 type FormState = {
   recipeId: RegistryId;
@@ -60,6 +58,7 @@ const formStateSchema = object({
 const AddToRecipeModal: React.VFC = () => {
   const recipeMetadatas = useSelector(selectInstalledRecipeMetadatas);
   const activeElement = useSelector(selectActiveElement);
+  const removeExtension = useRemoveExtension();
 
   const recipeMetadataById = useMemo(() => {
     const result: Record<RegistryId, RecipeMetadata> = {};
@@ -98,7 +97,10 @@ const AddToRecipeModal: React.VFC = () => {
           })
         );
         if (!keepLocalCopy) {
-          dispatch(optionsActions.removeExtension({ extensionId: elementId }));
+          await removeExtension({
+            extensionId: elementId,
+            shouldShowConfirmation: false,
+          });
         }
 
         hideModal();
