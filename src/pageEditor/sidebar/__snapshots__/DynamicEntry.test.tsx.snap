@@ -36,7 +36,7 @@ exports[`DynamicEntry it renders with active element 1`] = `
         class="icon text-danger"
       >
         <svg
-          aria-labelledby="svg-inline--fa-title-RPh7PJWmIYBt"
+          aria-labelledby="svg-inline--fa-title-000000000000"
           class="svg-inline--fa fa-save fa-w-14 "
           data-icon="save"
           data-prefix="fas"
@@ -45,7 +45,7 @@ exports[`DynamicEntry it renders with active element 1`] = `
           xmlns="http://www.w3.org/2000/svg"
         >
           <title
-            id="svg-inline--fa-title-RPh7PJWmIYBt"
+            id="svg-inline--fa-title-000000000000"
           >
             Unsaved changes
           </title>
