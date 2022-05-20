@@ -66,11 +66,11 @@ return (
   </ModalProvider>
 )};
 
-export const WithoutProps = Template.bind({});
-WithoutProps.args = null;
+export const DefaultContent = Template.bind({});
+DefaultContent.args = null;
 
-export const WithProps = Template.bind({});
-WithProps.args = {
+export const CustomContent = Template.bind({});
+CustomContent.args = {
     title: "Delete campaign?",
     message: "Are you sure you want to delete campaign? This action cannot be undone.",
     submitCaption: "Yes, delete it",
