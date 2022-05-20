@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React, { useMemo } from "react";
 import { selectScope } from "@/auth/authSelectors";
-import { RegistryId, SemVerString, UnresolvedExtension, UUID } from "@/core";
+import { RegistryId, SemVerString } from "@/core";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { generateRecipeId } from "@/utils/recipeUtils";
-import { FormikWizard, Step } from "formik-wizard-form";
-import React, { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { selectShowShareContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
@@ -31,16 +30,10 @@ import {
   testIsSemVerString,
   validateSemVerString,
 } from "@/types/helpers";
-import { isEmpty, pick } from "lodash";
-import Form, { OnSubmit } from "@/components/form/Form";
+import { pick } from "lodash";
+import Form from "@/components/form/Form";
 import { getErrorMessage, isAxiosError } from "@/errors";
-import {
-  appApi,
-  useCreateRecipeMutation,
-  useGetEditablePackagesQuery,
-  useGetRecipesQuery,
-  useUpdateRecipeMutation,
-} from "@/services/api";
+import { appApi, useCreateRecipeMutation } from "@/services/api";
 import {
   RecipeDefinition,
   selectSourceRecipeMetadata,
@@ -49,10 +42,6 @@ import { FormikHelpers } from "formik";
 import { makeBlueprint } from "@/options/pages/blueprints/utils/exportBlueprint";
 import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
-import ConvertToRecipe from "./ConvertToRecipe";
-import ShareRecipe from "./ShareRecipe";
-import { getRecipeById } from "@/pageEditor/utils";
-import { produce } from "immer";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { FieldDescriptions } from "@/utils/strings";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
@@ -113,15 +102,15 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
   };
 
   const convertToRecipe = async (
-    form: ConvertInstallableFormState,
+    formValues: ConvertInstallableFormState,
     helpers: FormikHelpers<ConvertInstallableFormState>
   ) => {
     try {
       const unsavedRecipe = makeBlueprint(extension, {
-        id: form.blueprintId,
-        name: form.name,
-        description: form.description,
-        version: form.version,
+        id: formValues.blueprintId,
+        name: formValues.name,
+        description: formValues.description,
+        version: formValues.version,
       });
 
       const response = await createRecipe({
@@ -157,8 +146,11 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
         return;
       }
 
+      const message = getErrorMessage(error);
+      helpers.setStatus(message);
+
       notify.error({
-        message: "Error converting brick",
+        message,
         error,
       });
     } finally {
@@ -168,7 +160,7 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
 
   return (
     <Modal show onHide={closeModal}>
-      <Modal.Header>
+      <Modal.Header closeButton>
         <Modal.Title>Name your blueprint</Modal.Title>
       </Modal.Header>
       <Form

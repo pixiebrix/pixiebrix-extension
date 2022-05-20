@@ -55,11 +55,9 @@ import { getRecipeById } from "@/pageEditor/utils";
 import { produce } from "immer";
 
 // TODO:
-// 1. ConvertToRecipeModal adds 2 extensions to the recipe
-// 3. Clean up BlueprintsPage
-// 4. Check unique BP id
-// 5. Get back to step 1 in case of error
-// 6. Throw? when extensionId in convert modal is not defined
+// 1. Check unique BP id
+// 2. Throw? when extensionId in convert modal is not defined
+// 3. Delete old modals
 
 type ShareInstallableFormState = {
   blueprintId: RegistryId;
