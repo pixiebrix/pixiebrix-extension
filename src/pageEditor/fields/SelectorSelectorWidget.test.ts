@@ -25,12 +25,12 @@ test("getSuggestionsForElement", () => {
       selectors: [".a"],
     },
   } as ElementInfo;
-  expect(getSuggestionsForElement(elementInfo, false)).toMatchObject([
+  expect(getSuggestionsForElement(elementInfo, { sort: false })).toMatchObject([
     { value: "a" },
     { value: "#a" },
     { value: ".a" },
   ]);
-  expect(getSuggestionsForElement(elementInfo, true)).toMatchObject([
+  expect(getSuggestionsForElement(elementInfo, { sort: true })).toMatchObject([
     { value: "#a" },
     { value: ".a" },
     { value: "a" },

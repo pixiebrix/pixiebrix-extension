@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { compact, sortBy, uniq } from "lodash";
+import { compact, identity, sortBy, uniq } from "lodash";
 import { getCssSelector } from "css-selector-generator";
 import { CssSelectorType } from "css-selector-generator/types/types";
 import { $safeFind } from "@/helpers";
@@ -71,15 +71,44 @@ function isSelectorUsuallyUnique(selector: string): boolean {
 }
 
 /**
- * Prefers unique selectors and classes. A lower number means higher preference. To be used with lodash.sortBy
+ * Return selectors sorted by quality
+ * - getSelectorPreference
+ * - length (lower is better)
+ * @param selectors an array of selectors, or items with selector properties to sort
+ * @param iteratee a method to select the selector field for an item
+ *
+ * @see getSelectorPreference
+ */
+export function sortBySelector(selectors: string[]): string[];
+export function sortBySelector<Item>(
+  selectors: Item[],
+  iteratee: (selector: Item) => string
+): Item[];
+export function sortBySelector<Item = string>(
+  selectors: Item[],
+  iteratee?: (selector: Item) => string
+): Item[] {
+  const select = iteratee ?? identity;
+  return sortBy(
+    selectors,
+    (x) => getSelectorPreference(select(x)),
+    (x) => select(x).length
+  );
+}
+
+/**
+ * Prefers unique selectors and classes. A lower number means higher preference.
+ *
+ * Do not call directly. Instead, call sortBySelector
+ *
  * @example
  * -2  '#best-link-on-the-page'
  * -1  '[data-cy="b4da55"]'
  *  0  '.navItem'
  *  0  '.birdsArentReal'
  *  1  'a'
- * 21  '#name > :nth-child(2)'
- * 30  '[aria-label="Click elsewhere"]'
+ *
+ * @see sortBySelector
  */
 export function getSelectorPreference(selector: string): number {
   if (selector.includes(":nth-child")) {
@@ -98,8 +127,7 @@ export function getSelectorPreference(selector: string): number {
     return 0;
   }
 
-  // Pre-defined preferences should not go higher than 0 to avoid conflicting with this length check
-  return selector.length;
+  return 1;
 }
 
 const DEFAULT_SELECTOR_PRIORITIES: Array<keyof typeof CssSelectorType> = [
@@ -205,14 +233,13 @@ export function inferSelectorsIncludingStableAncestors(
     )
   );
 
-  return sortBy(
+  return sortBySelector(
     compact(
       uniq([
         ...inferSelectors(element, root, excludeRandomClasses),
         ...stableAncestors,
       ])
-    ),
-    getSelectorPreference
+    )
   );
 }
 
@@ -241,7 +268,7 @@ export function inferSelectors(
     }
   };
 
-  return sortBy(
+  return sortBySelector(
     compact(
       uniq([
         makeSelector(["id", "class", "tag", "attribute", "nthchild"]),
@@ -250,8 +277,7 @@ export function inferSelectors(
         makeSelector(["id", "tag", "attribute"]),
         makeSelector(),
       ])
-    ),
-    getSelectorPreference
+    )
   );
 }
 

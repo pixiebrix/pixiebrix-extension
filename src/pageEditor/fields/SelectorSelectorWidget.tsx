@@ -19,7 +19,7 @@ import styles from "./SelectorSelectorWidget.module.scss";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import notify from "@/utils/notify";
-import { isEmpty, sortBy, uniqBy } from "lodash";
+import { isEmpty, uniqBy } from "lodash";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
@@ -41,7 +41,7 @@ import { useSelector } from "react-redux";
 import { SettingsState } from "@/store/settingsTypes";
 
 // eslint-disable-next-line import/no-restricted-paths -- Not ideal, but webpack should be able to treeshake the file. Maybe move to @/utils ?
-import { getSelectorPreference } from "@/contentScript/nativeEditor/selectorInference";
+import { sortBySelector } from "@/contentScript/nativeEditor/selectorInference";
 
 interface ElementSuggestion extends SuggestionTypeBase {
   value: string;
@@ -61,9 +61,16 @@ export type SelectorSelectorProps = {
   placeholder?: string;
 };
 
+/**
+ * Returns suggestion for the given element to show in the widget dropdown
+ * @param elementInfo the element to generate suggestions for
+ * @param sort true to sort the suggestions by selector preference (quality heuristic)
+ *
+ * @see getSelectorPreference
+ */
 export function getSuggestionsForElement(
   elementInfo: ElementInfo | undefined,
-  sort: boolean
+  { sort }: { sort: boolean }
 ): ElementSuggestion[] {
   if (!elementInfo) {
     return [];
@@ -72,7 +79,7 @@ export function getSuggestionsForElement(
   const suggestions = uniqBy(
     [
       elementInfo.selectors?.map((value) => ({ value, elementInfo })),
-      getSuggestionsForElement(elementInfo.parent, false),
+      getSuggestionsForElement(elementInfo.parent, { sort }),
     ]
       .flat()
       .filter((suggestion) => suggestion?.value?.trim()),
@@ -80,7 +87,7 @@ export function getSuggestionsForElement(
   );
 
   if (sort) {
-    return sortBy(suggestions, (x) => getSelectorPreference(x.value));
+    return sortBySelector(suggestions, (x) => x.value);
   }
 
   return suggestions;
@@ -122,7 +129,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   >((x) => x.settings.excludeRandomClasses);
 
   const suggestions: ElementSuggestion[] = useMemo(
-    () => getSuggestionsForElement(element, sort),
+    () => getSuggestionsForElement(element, { sort }),
     [element, sort]
   );
 
@@ -179,9 +186,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
 
       const selectors = selected.selectors ?? [];
 
-      const [firstSelector] = sort
-        ? sortBy(selectors, getSelectorPreference)
-        : selectors;
+      const [firstSelector] = sort ? sortBySelector(selectors) : selectors;
 
       console.debug("Setting selector", { selected, firstSelector });
       setValue(firstSelector);
