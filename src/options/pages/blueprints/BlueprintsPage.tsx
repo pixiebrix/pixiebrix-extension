@@ -33,6 +33,7 @@ import { useTitle } from "@/hooks/title";
 import Loader from "@/components/Loader";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import ShareInstallableModal from "./modals/ShareInstallableModal/ShareInstallableModal";
+import ConvertToRecipeModal from "./modals/ShareInstallableModal/ConvertToRecipeModal";
 
 const BlueprintsPage: React.FunctionComponent = () => {
   useTitle("Blueprints");
@@ -64,7 +65,7 @@ const BlueprintsPage: React.FunctionComponent = () => {
           context={showLogsContext.messageContext}
         />
       )}
-      {showShareContext && <ShareInstallableModal />}
+      {showShareContext?.extensionId != null && <ConvertToRecipeModal />}
       {body}
     </div>
   );
