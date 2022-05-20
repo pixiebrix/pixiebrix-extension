@@ -55,11 +55,11 @@ import { getRecipeById } from "@/pageEditor/utils";
 import { produce } from "immer";
 
 // TODO:
-// 1. add status line
-// 2. use RTKQ to share recipe
+// 1. ConvertToRecipeModal adds 2 extensions to the recipe
 // 3. Clean up BlueprintsPage
 // 4. Check unique BP id
 // 5. Get back to step 1 in case of error
+// 6. Throw? when extensionId in convert modal is not defined
 
 type ShareInstallableFormState = {
   blueprintId: RegistryId;
@@ -220,7 +220,7 @@ const ShareInstallableModal: React.FunctionComponent = () => {
         const packageId = editablePackages.find(
           (x) => x.name === newRecipe.metadata.id
         )?.id;
-        await updateRecipe({
+        const response = await updateRecipe({
           packageId,
           recipe: newRecipe,
         }).unwrap();

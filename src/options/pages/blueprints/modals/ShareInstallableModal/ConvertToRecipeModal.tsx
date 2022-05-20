@@ -33,7 +33,7 @@ import {
 } from "@/types/helpers";
 import { isEmpty, pick } from "lodash";
 import Form, { OnSubmit } from "@/components/form/Form";
-import { isAxiosError } from "@/errors";
+import { getErrorMessage, isAxiosError } from "@/errors";
 import {
   appApi,
   useCreateRecipeMutation,
@@ -82,6 +82,7 @@ const validationSchema = Yup.object().shape({
 const ConvertToRecipeModal: React.FunctionComponent = () => {
   const dispatch = useDispatch();
 
+  const [createRecipe] = useCreateRecipeMutation();
   const { extensionId } = useSelector(selectShowShareContext);
   const extensions = useSelector(selectExtensions);
 
@@ -111,8 +112,58 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
     dispatch(blueprintModalsSlice.actions.setShareContext(null));
   };
 
-  const convertToRecipe = () => {
-    console.log("Not implemented");
+  const convertToRecipe = async (
+    form: ConvertInstallableFormState,
+    helpers: FormikHelpers<ConvertInstallableFormState>
+  ) => {
+    try {
+      const unsavedRecipe = makeBlueprint(extension, {
+        id: form.blueprintId,
+        name: form.name,
+        description: form.description,
+        version: form.version,
+      });
+
+      const response = await createRecipe({
+        recipe: unsavedRecipe,
+        organizations: [],
+        public: false,
+        shareDependencies: true,
+      }).unwrap();
+
+      const recipe: RecipeDefinition = {
+        ...unsavedRecipe,
+        sharing: pick(response, ["public", "organizations"]),
+        ...pick(response, ["updated_at"]),
+      };
+
+      dispatch(
+        extensionsSlice.actions.attachExtension({
+          extensionId: extension.id,
+          recipeMetadata: selectSourceRecipeMetadata(recipe),
+        })
+      );
+
+      dispatch(appApi.util.invalidateTags(["Recipes"]));
+
+      dispatch(
+        blueprintModalsSlice.actions.setShareContext({
+          blueprintId: recipe.metadata.id,
+        })
+      );
+    } catch (error) {
+      if (isAxiosError(error) && error.response.data.config) {
+        helpers.setStatus(error.response.data.config);
+        return;
+      }
+
+      notify.error({
+        message: "Error converting brick",
+        error,
+      });
+    } finally {
+      helpers.setSubmitting(false);
+    }
   };
 
   return (
@@ -124,6 +175,9 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
         validationSchema={validationSchema}
         initialValues={initialValues}
         onSubmit={convertToRecipe}
+        renderStatus={({ status }) => (
+          <div className="text-danger p-3">{status}</div>
+        )}
         renderSubmit={({ isSubmitting, isValid }) => (
           <Modal.Footer>
             <Button variant="link" onClick={closeModal}>
@@ -141,7 +195,7 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
       >
         <Modal.Body>
           <ConnectedFieldTemplate
-            name="id"
+            name="blueprintId"
             label="Blueprint ID"
             description={FieldDescriptions.BLUEPRINT_ID}
             widerLabel
