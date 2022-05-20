@@ -45,15 +45,13 @@ const ChildComponent = ({
 }: ChildComponentType) => {
   const { showConfirmation } = useModals();
   const buttonAction = useCallback(async () => {
-    const confirm = await showConfirmation({
+    await showConfirmation({
       title,
       message,
       submitCaption,
       cancelCaption,
     });
 
-    if (!confirm) {
-    }
     // Do any action here if confirm === true
   }, [showConfirmation]);
   return <AsyncButton onClick={buttonAction}>Confirm Modal</AsyncButton>;
