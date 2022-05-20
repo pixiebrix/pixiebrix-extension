@@ -21,7 +21,7 @@ import React, { FormEvent, useContext, useMemo, useState } from "react";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { PageEditorTabContext } from "@/pageEditor/context";
 import { lowerCase, sortBy } from "lodash";
-import { sleep } from "@/utils";
+import { sleep, getRecipeById } from "@/utils";
 import {
   Accordion,
   Badge,
@@ -68,11 +68,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useGetRecipesQuery } from "@/services/api";
-import {
-  getIdForElement,
-  getRecipeById,
-  getRecipeIdForElement,
-} from "@/pageEditor/utils";
+import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
   <Button

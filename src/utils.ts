@@ -39,9 +39,10 @@ import {
   zip,
 } from "lodash";
 import { Primitive } from "type-fest";
-import { ApiVersion, SafeString } from "@/core";
+import { ApiVersion, RegistryId, SafeString } from "@/core";
 import { UnknownObject } from "@/types";
 import { BusinessError, PromiseCancelled } from "@/errors";
+import { RecipeDefinition } from "@/types/definitions";
 
 const specialCharsRegex = /[.[\]]/;
 
@@ -592,3 +593,10 @@ function concatenateTemplateLiteralTag(
 
 export const html = concatenateTemplateLiteralTag;
 export const css = concatenateTemplateLiteralTag;
+
+export function getRecipeById(
+  recipes: RecipeDefinition[],
+  id: RegistryId
+): RecipeDefinition | undefined {
+  return recipes.find((recipe) => recipe.metadata.id === id);
+}

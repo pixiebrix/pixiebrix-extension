@@ -35,7 +35,7 @@ import {
 import { FormikHelpers } from "formik";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { getRecipeById } from "@/pageEditor/utils";
+import { getRecipeById } from "@/utils";
 import { produce } from "immer";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -43,6 +43,7 @@ import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import ActivationLink from "./ActivationLink";
 import Loader from "@/components/Loader";
+import { RequireScope } from "@/auth/RequireScope";
 
 type ShareInstallableFormState = {
   public: boolean;
@@ -117,24 +118,27 @@ const ShareRecipeModal: React.FunctionComponent = () => {
       <Modal.Header closeButton>
         <Modal.Title>Share with Teams</Modal.Title>
       </Modal.Header>
-      {isFetchingRecipes ? (
-        <Modal.Body>
-          <Loader />{" "}
-        </Modal.Body>
-      ) : (
-        <Form
-          validationSchema={validationSchema}
-          initialValues={initialValues}
-          onSubmit={saveSharing}
-          renderStatus={({ status }) => (
-            <div className="text-danger p-3">{status}</div>
-          )}
-          renderSubmit={() => null}
-          renderBody={({ values, setFieldValue, isValid, isSubmitting }) => (
-            <>
-              <Modal.Body>
-                {sortBy(organizations, (organization) => organization.name).map(
-                  (organization) => {
+      <RequireScope scopeSettingsDescription="To share a blueprint, you must first set an account alias for your PixieBrix account">
+        {isFetchingRecipes ? (
+          <Modal.Body>
+            <Loader />{" "}
+          </Modal.Body>
+        ) : (
+          <Form
+            validationSchema={validationSchema}
+            initialValues={initialValues}
+            onSubmit={saveSharing}
+            renderStatus={({ status }) => (
+              <div className="text-danger p-3">{status}</div>
+            )}
+            renderSubmit={() => null}
+            renderBody={({ values, setFieldValue, isValid, isSubmitting }) => (
+              <>
+                <Modal.Body>
+                  {sortBy(
+                    organizations,
+                    (organization) => organization.name
+                  ).map((organization) => {
                     const checked = values.organizations.includes(
                       organization.id
                     );
@@ -155,48 +159,48 @@ const ShareRecipeModal: React.FunctionComponent = () => {
                         }}
                       />
                     );
-                  }
-                )}
+                  })}
 
-                <ConnectedFieldTemplate
-                  name="public"
-                  as={SwitchButtonWidget}
-                  description={
-                    // \u00A0 stands for &nbsp;
-                    values.public ? (
-                      <i>Visible to all PixieBrix users</i>
-                    ) : (
-                      "\u00A0"
-                    )
-                  }
-                  label={
-                    <span>
-                      <FontAwesomeIcon icon={faGlobe} /> Public
-                    </span>
-                  }
-                />
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="link" onClick={closeModal}>
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  type="submit"
-                  disabled={
-                    !isValid || isSubmitting || isFetchingEditablePackages
-                  }
-                >
-                  Save and Close
-                </Button>
-              </Modal.Footer>
-              <Modal.Body>
-                <ActivationLink blueprintId={blueprintId} />
-              </Modal.Body>
-            </>
-          )}
-        />
-      )}
+                  <ConnectedFieldTemplate
+                    name="public"
+                    as={SwitchButtonWidget}
+                    description={
+                      // \u00A0 stands for &nbsp;
+                      values.public ? (
+                        <i>Visible to all PixieBrix users</i>
+                      ) : (
+                        "\u00A0"
+                      )
+                    }
+                    label={
+                      <span>
+                        <FontAwesomeIcon icon={faGlobe} /> Public
+                      </span>
+                    }
+                  />
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="link" onClick={closeModal}>
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="primary"
+                    type="submit"
+                    disabled={
+                      !isValid || isSubmitting || isFetchingEditablePackages
+                    }
+                  >
+                    Save and Close
+                  </Button>
+                </Modal.Footer>
+                <Modal.Body>
+                  <ActivationLink blueprintId={blueprintId} />
+                </Modal.Body>
+              </>
+            )}
+          />
+        )}
+      </RequireScope>
     </Modal>
   );
 };
