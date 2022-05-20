@@ -39,19 +39,20 @@ import { produce } from "immer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGlobe,
+  faInfoCircle,
   faTimes,
   faUser,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import ActivationLink from "./ActivationLink";
-import Loader from "@/components/Loader";
 import { RequireScope } from "@/auth/RequireScope";
 import ReactSelect from "react-select";
 import cx from "classnames";
 import styles from "./ShareRecipeModal.module.scss";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { selectAuth } from "@/auth/authSelectors";
-import { Organization } from "@/types/contract";
+import { Organization, UserRole } from "@/types/contract";
+import Loading from "./Loading";
 
 type ShareInstallableFormState = {
   public: boolean;
@@ -69,7 +70,8 @@ const sortOrganizations = (organizations: Organization[]) =>
 const ShareRecipeModal: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { blueprintId } = useSelector(selectShowShareContext);
-  const { scope: userScope } = useSelector(selectAuth);
+  const { scope: userScope, organizations: userOrganizations } =
+    useSelector(selectAuth);
   const [updateRecipe] = useUpdateRecipeMutation();
   const { data: organizations = [] } = useGetOrganizationsQuery();
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
@@ -83,16 +85,7 @@ const ShareRecipeModal: React.FunctionComponent = () => {
 
   // If the was just converted to a blueprint, the API request is likely be in progress and recipe will be null
   if (isFetchingRecipes) {
-    return (
-      <Modal show onHide={closeModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Share with Teams</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Loader />
-        </Modal.Body>
-      </Modal>
-    );
+    return <Loading />;
   }
 
   const initialValues: ShareInstallableFormState = {
@@ -144,26 +137,40 @@ const ShareRecipeModal: React.FunctionComponent = () => {
   const organizationsForSelect = sortOrganizations(organizations);
   const [recipeScope] = getScopeAndId(recipe?.metadata.id);
   let ownerLabel: ReactElement;
+  let hasEditPermissions = false;
   if (recipeScope === userScope) {
     ownerLabel = (
       <span>
         <FontAwesomeIcon icon={faUser} /> You
       </span>
     );
+    hasEditPermissions = true;
   } else {
     const ownerOrganizationIndex = organizationsForSelect.findIndex(
       (x) => x.scope === recipeScope
     );
 
-    const ownerOrganization = organizationsForSelect.splice(
-      ownerOrganizationIndex,
-      1
-    )[0];
-    ownerLabel = (
-      <span>
-        <FontAwesomeIcon icon={faUsers} /> {ownerOrganization.name}
-      </span>
-    );
+    if (ownerOrganizationIndex === -1) {
+      ownerLabel = (
+        <span>
+          <FontAwesomeIcon icon={faUsers} /> Unknown
+        </span>
+      );
+    } else {
+      const ownerOrganization = organizationsForSelect.splice(
+        ownerOrganizationIndex,
+        1
+      )[0];
+      ownerLabel = (
+        <span>
+          <FontAwesomeIcon icon={faUsers} /> {ownerOrganization.name}
+        </span>
+      );
+      const userRole: UserRole =
+        userOrganizations.find((x) => x.id === ownerOrganization.id)?.role ?? 0;
+      hasEditPermissions =
+        userRole === UserRole.admin || userRole === UserRole.developer;
+    }
   }
 
   return (
@@ -172,77 +179,80 @@ const ShareRecipeModal: React.FunctionComponent = () => {
         <Modal.Title>Share with Teams</Modal.Title>
       </Modal.Header>
       <RequireScope scopeSettingsDescription="To share a blueprint, you must first set an account alias for your PixieBrix account">
-        <Form
-          validationSchema={validationSchema}
-          initialValues={initialValues}
-          onSubmit={saveSharing}
-          renderStatus={({ status }) => (
-            <div className="text-danger p-3">{status}</div>
-          )}
-          renderSubmit={() => null}
-          renderBody={({ values, setFieldValue, isValid, isSubmitting }) => (
-            <>
-              <Modal.Body>
-                <ReactSelect
-                  options={organizationsForSelect
-                    .filter((x) => !values.organizations.includes(x.id))
-                    .map((x) => ({
-                      label: x.name,
-                      value: x.id,
-                    }))}
-                  onChange={(selected) => {
-                    setFieldValue("organizations", [
-                      ...values.organizations,
-                      selected.value,
-                    ]);
-                  }}
-                  value={null}
-                  placeholder="Add a team"
-                />
-
-                <div className={styles.row}>
-                  {ownerLabel}
-                  <span className="text-muted">Owner</span>
-                </div>
-
-                {organizationsForSelect
-                  .filter((x) => values.organizations.includes(x.id))
-                  .map((organization) => (
-                    <div className={styles.row} key={organization.id}>
-                      <span>
-                        <FontAwesomeIcon icon={faUsers} /> {organization.name}
-                      </span>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => {
-                          const next = values.organizations.filter(
-                            (x: string) => x !== organization.id
-                          );
-                          setFieldValue("organizations", next);
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faTimes} />
-                      </Button>
-                    </div>
-                  ))}
-
-                <div className={styles.row}>
-                  <span className={cx({ "text-muted": !values.public })}>
-                    <FontAwesomeIcon icon={faGlobe} /> Public - toggle to share
-                    with anyone with link
-                  </span>
-
-                  <BootstrapSwitchButton
-                    onlabel=" "
-                    offlabel=" "
-                    checked={values.public}
-                    onChange={(checked: boolean) => {
-                      setFieldValue("public", checked);
+        {hasEditPermissions ? (
+          <Form
+            validationSchema={validationSchema}
+            initialValues={initialValues}
+            onSubmit={saveSharing}
+            renderStatus={({ status }) => (
+              <div className="text-danger p-3">{status}</div>
+            )}
+            renderBody={({ values, setFieldValue }) => (
+              <>
+                <Modal.Body>
+                  <ReactSelect
+                    options={organizationsForSelect
+                      .filter((x) => !values.organizations.includes(x.id))
+                      .map((x) => ({
+                        label: x.name,
+                        value: x.id,
+                      }))}
+                    onChange={(selected) => {
+                      setFieldValue("organizations", [
+                        ...values.organizations,
+                        selected.value,
+                      ]);
                     }}
+                    value={null}
+                    placeholder="Add a team"
                   />
-                </div>
-              </Modal.Body>
+
+                  <div className={styles.row}>
+                    {ownerLabel}
+                    <span className="text-muted">Owner</span>
+                  </div>
+
+                  {organizationsForSelect
+                    .filter((x) => values.organizations.includes(x.id))
+                    .map((organization) => (
+                      <div className={styles.row} key={organization.id}>
+                        <span>
+                          <FontAwesomeIcon icon={faUsers} /> {organization.name}
+                        </span>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={() => {
+                            const next = values.organizations.filter(
+                              (x: string) => x !== organization.id
+                            );
+                            setFieldValue("organizations", next);
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faTimes} />
+                        </Button>
+                      </div>
+                    ))}
+
+                  <div className={styles.row}>
+                    <span className={cx({ "text-muted": !values.public })}>
+                      <FontAwesomeIcon icon={faGlobe} /> Public - toggle to
+                      share with anyone with link
+                    </span>
+
+                    <BootstrapSwitchButton
+                      onlabel=" "
+                      offlabel=" "
+                      checked={values.public}
+                      onChange={(checked: boolean) => {
+                        setFieldValue("public", checked);
+                      }}
+                    />
+                  </div>
+                </Modal.Body>
+              </>
+            )}
+            renderSubmit={({ isValid, isSubmitting }) => (
               <Modal.Footer>
                 <Button variant="link" onClick={closeModal}>
                   Cancel
@@ -257,12 +267,34 @@ const ShareRecipeModal: React.FunctionComponent = () => {
                   Save and Close
                 </Button>
               </Modal.Footer>
-              <Modal.Body>
-                <ActivationLink blueprintId={blueprintId} />
-              </Modal.Body>
-            </>
-          )}
-        />
+            )}
+          />
+        ) : (
+          <Modal.Body>
+            <div className="text-info my-3">
+              <FontAwesomeIcon icon={faInfoCircle} /> You don&apos;t have
+              permissions to change sharing
+            </div>
+            <div className={styles.row}>
+              {ownerLabel}
+              <span className="text-muted">Owner</span>
+            </div>
+            {organizationsForSelect
+              .filter((x) =>
+                recipe.sharing.organizations.includes(x.id as UUID)
+              )
+              .map((organization) => (
+                <div className={styles.row} key={organization.id}>
+                  <span>
+                    <FontAwesomeIcon icon={faUsers} /> {organization.name}
+                  </span>
+                </div>
+              ))}
+          </Modal.Body>
+        )}
+        <Modal.Body>
+          <ActivationLink blueprintId={blueprintId} />
+        </Modal.Body>
       </RequireScope>
     </Modal>
   );
