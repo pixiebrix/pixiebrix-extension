@@ -45,6 +45,7 @@ import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { FieldDescriptions } from "@/utils/strings";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
+import { StylesConfig } from "react-select";
 
 type ConvertInstallableFormState = {
   blueprintId: RegistryId;
@@ -67,6 +68,32 @@ const validationSchema = Yup.object().shape({
     .required(),
   description: Yup.string().required(),
 });
+
+const selectStylesOverride: StylesConfig = {
+  control: (base) => ({
+    ...base,
+    borderRadius: 0,
+    border: "none",
+  }),
+  valueContainer: (base) => ({
+    ...base,
+    padding: "0.875rem 1.375rem",
+  }),
+  singleValue: (base) => ({
+    ...base,
+    marginTop: 0,
+    marginBottom: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
+  }),
+  input: (base) => ({
+    ...base,
+    marginTop: 0,
+    marginBottom: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
+  }),
+};
 
 const ConvertToRecipeModal: React.FunctionComponent = () => {
   const dispatch = useDispatch();
@@ -191,6 +218,7 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
             label="Blueprint ID"
             description={FieldDescriptions.BLUEPRINT_ID}
             as={RegistryIdWidget}
+            selectStyles={selectStylesOverride}
           />
           <ConnectedFieldTemplate
             name="name"
