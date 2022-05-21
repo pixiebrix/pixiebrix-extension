@@ -29,7 +29,7 @@ module.exports = {
   core: {
     builder: "webpack5",
   },
-  // https://storybook.js.org/docs/riot/configure/webpack#extending-storybooks-webpack-config
+  // https://storybook.js.org/docs/react/builders/webpack#extending-storybooks-webpack-config
   webpackFinal: async (config) => {
     const mergedConfig = mergeWithShared(config, {
       resolve: {
