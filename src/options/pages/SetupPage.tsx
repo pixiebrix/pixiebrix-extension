@@ -31,7 +31,7 @@ import { useTitle } from "@/hooks/title";
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const SERVICE_URL = process.env.SERVICE_URL;
 
-const Step: React.FunctionComponent<{
+export const Step: React.FunctionComponent<{
   number: number;
   completed?: boolean;
   active?: boolean;

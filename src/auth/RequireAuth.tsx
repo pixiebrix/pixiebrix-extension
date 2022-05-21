@@ -36,6 +36,7 @@ import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Me } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
 import { AxiosError } from "axios";
+import PartnerSetupPage from "@/options/pages/PartnerSetupPage";
 
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
@@ -121,6 +122,10 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
 
   if (isUnauthenticated) {
     void clearExtensionAuth();
+  }
+
+  if (!isMeSuccess && me?.partner) {
+    return <PartnerSetupPage />;
   }
 
   // Show SetupPage if there is auth error or user not logged in
