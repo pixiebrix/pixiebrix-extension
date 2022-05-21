@@ -91,6 +91,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
           readOnly={readOnly}
           defaultValue={currentProperty}
           onBlur={updateName}
+          data-testid={`${props.name}-name`}
         />
       </td>
       <td>

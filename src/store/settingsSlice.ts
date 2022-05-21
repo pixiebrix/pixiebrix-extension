@@ -19,7 +19,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { SettingsState, SkunkworksSettings } from "@/store/settingsTypes";
 import reportError from "@/telemetry/reportError";
 import { once } from "lodash";
-import { DEFAULT_THEME } from "@/options/constants";
+import { DEFAULT_THEME } from "@/options/types";
 import { isValidTheme } from "@/utils/themeUtils";
 
 const initialSettingsState: SettingsState = {

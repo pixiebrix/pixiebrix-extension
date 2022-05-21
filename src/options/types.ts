@@ -13,13 +13,8 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
-const reactRedux = jest.createMockFromModule("react-redux");
-
-export const useDispatch = jest.fn(() => jest.fn());
-export const connect = jest.fn(() => jest.fn());
-export const useSelector = jest.fn();
-
-export default reactRedux;
+export const DEFAULT_THEME = "default";
+export const THEMES = [DEFAULT_THEME, "automation-anywhere"] as const;
+export type Theme = typeof THEMES[number];

@@ -38,6 +38,16 @@ test("can read trello reader", async () => {
   expect(block.id).toBe("trello/card");
 });
 
+test("reader includes version", async () => {
+  const block = fromJS(trelloReader);
+  expect(block.version).toBe("0.0.1");
+});
+
+test("block includes version", async () => {
+  const block = fromJS(nytimes);
+  expect(block.version).toBe("0.0.1");
+});
+
 test("reject invalid fixture fixture", async () => {
   try {
     fromJS({ foo: "bar" });

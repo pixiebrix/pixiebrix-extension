@@ -22,15 +22,13 @@ import {
   initialState,
 } from "@/pageEditor/slices/editorSlice";
 import { formStateFactory } from "@/testUtils/factories";
-import { createRenderFunction } from "@/testUtils/testHelpers";
+import { createRenderFunctionWithRedux } from "@/testUtils/testHelpers";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import userEvent from "@testing-library/user-event";
 import { cleanup, perf } from "@/vendors/reactPerformanceTesting/perf";
 import { RenderCountField } from "@/vendors/reactPerformanceTesting/perfTypes";
 import { act } from "@testing-library/react";
-
-jest.unmock("react-redux");
 
 const data = {
   name: "test",
@@ -49,7 +47,7 @@ const editorPreloadedState = editorSlice.reducer(
   initialState,
   actions.selectInstalled(formStateFactory())
 );
-const renderJsonTree = createRenderFunction({
+const renderJsonTree = createRenderFunctionWithRedux({
   reducer: {
     editor: editorSlice.reducer,
   },

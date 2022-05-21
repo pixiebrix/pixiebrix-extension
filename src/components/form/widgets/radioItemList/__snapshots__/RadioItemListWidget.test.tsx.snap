@@ -1,0 +1,68 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RadioItemListWidget it renders 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <h6>
+      This is a test header for radio item select
+    </h6>
+    <div
+      class="itemContainer"
+    >
+      <div
+        class="item"
+      >
+        <label
+          class="label"
+        >
+          <input
+            checked=""
+            class="input"
+            name="radio-item-list"
+            type="radio"
+            value="option1"
+          />
+          This is the label for Option One in the radio items
+        </label>
+      </div>
+      <div
+        class="item"
+      >
+        <label
+          class="label"
+        >
+          <input
+            class="input"
+            name="radio-item-list"
+            type="radio"
+            value="option2"
+          />
+          This is the label for Option Two in the radio items
+        </label>
+      </div>
+      <div
+        class="item"
+      >
+        <label
+          class="label"
+        >
+          <input
+            class="input"
+            name="radio-item-list"
+            type="radio"
+            value="option3"
+          />
+          This is the label for Option Three in the radio items
+        </label>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DEFAULT_THEME, Theme, THEMES } from "@/options/constants";
+import { DEFAULT_THEME, Theme, THEMES } from "@/options/types";
 import logo from "@img/logo.svg";
 import logoSmall from "@img/logo-small-rounded.svg";
 import aaLogo from "@img/aa-logo.svg";
