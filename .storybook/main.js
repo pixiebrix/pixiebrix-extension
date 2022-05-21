@@ -18,6 +18,8 @@
 const path = require("path");
 const webpack = require("webpack");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const mergeWithShared = require("../webpack.sharedConfig.js");
 
 const rootDir = path.resolve(__dirname, "../");
 
@@ -27,77 +29,46 @@ module.exports = {
   core: {
     builder: "webpack5",
   },
-  webpackFinal: async (config, { configType }) => {
-    // https://storybook.js.org/docs/riot/configure/webpack#extending-storybooks-webpack-config
+  // https://storybook.js.org/docs/react/builders/webpack#extending-storybooks-webpack-config
+  webpackFinal: async (config) => {
+    const mergedConfig = mergeWithShared(config, {
+      resolve: {
+        // Mock any modules that appear in __mocks__
+        // e.g. src/__mocks__/webextension-polyfill.js
+        modules: [path.resolve(rootDir, "src/__mocks__"), "node_modules"],
 
-    config.resolve.fallback = {
-      fs: false,
-    };
-
-    // Automatically mock any module that appears in __mocks__, e.g. src/__mocks__/webextension-polyfill.js
-    config.resolve.modules.push(path.resolve(rootDir, "src/__mocks__"));
-
-    config.resolve.alias = {
-      // Allow automatic mocks of any local file
-      "@": [
-        path.resolve(rootDir, "src/__mocks__/@"),
-        path.resolve(rootDir, "src"),
-      ],
-      "@img": path.resolve(rootDir, "img"),
-      "@contrib": path.resolve(rootDir, "contrib"),
-      "@schemas": path.resolve(rootDir, "schemas"),
-      "webextension-polyfill": false,
-    };
-
-    const fileLoaderRule = config.module.rules.find(
-      (rule) => rule.test && rule.test.test(".svg")
-    );
-    fileLoaderRule.resourceQuery = { not: [/loadAsComponent/] };
-
-    config.module.rules.push(
-      {
-        test: /\.ya?ml$/,
-        resourceQuery: { not: [/loadAsText/] },
-        use: "yaml-loader",
+        alias: {
+          // Mock any LOCAL modules that appear in __mocks__
+          // e.g. src/__mocks__/@/telemetry/reportErrors.ts
+          "@": [
+            path.resolve(rootDir, "src/__mocks__/@"),
+            path.resolve(rootDir, "src"),
+          ],
+          "webextension-polyfill": false,
+        },
       },
-      {
-        test: /\.ya?ml$/,
-        resourceQuery: /loadAsText/,
-        use: "raw-loader",
-      },
-      {
-        test: /\.scss$/,
-        use: [
-          // style-loader loads the css into the DOM
-          "style-loader",
-          "css-loader",
+      module: {
+        rules: [
           {
-            loader: "sass-loader",
-            options: {
-              sourceMap: true,
-              // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
-              implementation: require("node-sass"),
-            },
+            test: /\.scss$/,
+            use: [
+              // style-loader loads the css into the DOM
+              "style-loader",
+              "css-loader",
+              {
+                loader: "sass-loader",
+                options: {
+                  sourceMap: true,
+                  // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
+                  implementation: require("node-sass"),
+                },
+              },
+            ],
           },
         ],
       },
-      {
-        test: /\.svg$/,
-        resourceQuery: /loadAsComponent/,
-        use: [
-          {
-            loader: "@svgr/webpack",
-            options: {
-              typescript: true,
-              ext: "tsx",
-            },
-          },
-        ],
-      }
-    );
 
-    config.plugins.push(
-      ...[
+      plugins: [
         new NodePolyfillPlugin(),
         new webpack.ProvidePlugin({
           $: "jquery",
@@ -107,9 +78,18 @@ module.exports = {
             "default",
           ],
         }),
-      ]
-    );
+      ],
+    });
 
-    return config;
+    // Storybook has a default rule that matches all static resources, so we need to block that
+    // to avoid conflicts that appear at runtime.
+    // https://stackoverflow.com/a/61706308/288906
+    // https://github.com/pixiebrix/pixiebrix-extension/pull/3410#issuecomment-1130414970
+    const fileLoaderRule = config.module.rules.find(
+      (rule) => rule.test && rule.test.test(".apng")
+    );
+    fileLoaderRule.resourceQuery = { not: [/loadAsComponent/] };
+
+    return mergedConfig;
   },
 };
