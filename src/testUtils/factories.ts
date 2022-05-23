@@ -19,7 +19,6 @@ import { array, Config, define, derive, FactoryConfig } from "cooky-cutter";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import {
   ApiVersion,
-  EmptyConfig,
   IBlock,
   IExtension,
   InnerDefinitionRef,
@@ -223,11 +222,9 @@ export const extensionFactory = define<IExtension>({
   active: true,
 });
 
-export const cloudExtensionFactory = (
-  override?: Config<CloudExtension<EmptyConfig>>
-) => {
+export const cloudExtensionFactory = (override?: Config<CloudExtension>) => {
   const extension = extensionFactory(
-    override as Config<IExtension<EmptyConfig>>
+    override as Config<IExtension>
   ) as CloudExtension;
 
   // @ts-expect-error -- removing the IExtension property that is not in the CloudExtension type
