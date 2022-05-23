@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.dialog {
-  width: 100%;
-  max-width: 700px;
-}
+import { generateRecipeId } from "./recipeUtils";
+
+describe("generateRecipeId", () => {
+  test("no special chars", () => {
+    expect(generateRecipeId("@test", "This Is a Test")).toEqual(
+      "@test/this-is-a-test"
+    );
+  });
+
+  test("handle colon", () => {
+    expect(generateRecipeId("@test", "This: Is a Test")).toEqual(
+      "@test/this-is-a-test"
+    );
+  });
+
+  test("collapse spaces", () => {
+    expect(generateRecipeId("@test", "This   Is a Test")).toEqual(
+      "@test/this-is-a-test"
+    );
+  });
+
+  test("return empty on invalid", () => {
+    expect(generateRecipeId("", "This   Is a Test")).toBe("");
+  });
+});
