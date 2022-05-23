@@ -40,7 +40,6 @@ import { RecipeDefinition, RecipeMetadataFormState } from "@/types/definitions";
 import { selectScope } from "@/auth/authSelectors";
 import {
   buildRecipe,
-  generateRecipeId,
   generateScopeBrickId,
 } from "@/pageEditor/panes/save/saveHelpers";
 import { RequireScope } from "@/auth/RequireScope";
@@ -67,6 +66,7 @@ import { RegistryId } from "@/core";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
+import { generateRecipeId } from "@/utils/recipeUtils";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -247,7 +247,7 @@ function useInitialFormState({
   if (activeElement) {
     // Handle creating a new blueprint from a selected extension
     return {
-      id: generateRecipeId(scope, activeElement.label) ?? ("" as RegistryId),
+      id: generateRecipeId(scope, activeElement.label),
       name: activeElement.label,
       version: validateSemVerString("1.0.0"),
       description: "Created with the PixieBrix Page Editor",
