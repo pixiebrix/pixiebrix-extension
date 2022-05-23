@@ -25,6 +25,7 @@ import {
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import * as logging from "@/background/messenger/api";
+import { makePipelineExpression } from "@/testUtils/expressionTestHelpers";
 
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
@@ -43,15 +44,8 @@ describe("IfElse", () => {
       id: ifElseBlock.id,
       config: {
         condition: true,
-        if: {
-          __type__: "pipeline",
-          __value__: [{ id: teapotBlock.id }],
-        },
-        else: {
-          __type__: "pipeline",
-          // Throw to make it more obvious if wrong branch taken
-          __value__: [{ id: throwBlock.id }],
-        },
+        if: makePipelineExpression([{ id: teapotBlock.id, config: {} }]),
+        else: makePipelineExpression([{ id: throwBlock.id, config: {} }]),
       },
     };
     const result = await reducePipeline(
@@ -67,15 +61,9 @@ describe("IfElse", () => {
       id: ifElseBlock.id,
       config: {
         condition: false,
-        if: {
-          __type__: "pipeline",
-          // Throw to make it more obvious if wrong branch taken
-          __value__: [{ id: throwBlock.id }],
-        },
-        else: {
-          __type__: "pipeline",
-          __value__: [{ id: teapotBlock.id }],
-        },
+        // Throw to make it more obvious if this branch was taken
+        if: makePipelineExpression([{ id: throwBlock.id, config: {} }]),
+        else: makePipelineExpression([{ id: teapotBlock.id, config: {} }]),
       },
     };
     const result = await reducePipeline(
@@ -91,11 +79,8 @@ describe("IfElse", () => {
       id: ifElseBlock.id,
       config: {
         condition: false,
-        if: {
-          __type__: "pipeline",
-          // Throw to make it more obvious if wrong branch taken
-          __value__: [{ id: throwBlock.id }],
-        },
+        // Throw to make it more obvious if this branch was taken
+        if: makePipelineExpression([{ id: throwBlock.id, config: {} }]),
       },
     };
     const result = await reducePipeline(

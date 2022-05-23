@@ -24,6 +24,10 @@ import {
 import { reducePipeline } from "@/runtime/reducePipeline";
 import * as logging from "@/background/messenger/api";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
+import {
+  makePipelineExpression,
+  makeTemplateExpression,
+} from "@/testUtils/expressionTestHelpers";
 
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
@@ -41,24 +45,18 @@ describe("ForEach", () => {
     const pipeline = {
       id: forEachBlock.id,
       config: {
-        elements: {
-          __type__: "var",
-          __value__: "@input.elements",
-        },
-        body: {
-          __type__: "pipeline",
-          __value__: [
-            {
-              id: echoBlock.id,
-              config: {
-                message: {
-                  __type__: "nunjucks",
-                  __value__: "iteration {{ @element }}",
-                },
+        elements: makeTemplateExpression("var", "@input.elements"),
+        body: makePipelineExpression([
+          {
+            id: echoBlock.id,
+            config: {
+              message: {
+                __type__: "nunjucks",
+                __value__: "iteration {{ @element }}",
               },
             },
-          ],
-        },
+          },
+        ]),
       },
     };
     const result = await reducePipeline(

@@ -25,6 +25,7 @@ import {
 import { reducePipeline } from "@/runtime/reducePipeline";
 import * as logging from "@/background/messenger/api";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
+import { makePipelineExpression } from "@/testUtils/expressionTestHelpers";
 
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
@@ -42,10 +43,7 @@ describe("TryExcept", () => {
     const pipeline = {
       id: tryExceptBlock.id,
       config: {
-        try: {
-          __type__: "pipeline",
-          __value__: [{ id: teapotBlock.id }],
-        },
+        try: makePipelineExpression([{ id: teapotBlock.id, config: {} }]),
       },
     };
     const result = await reducePipeline(
@@ -60,15 +58,8 @@ describe("TryExcept", () => {
     const pipeline = {
       id: tryExceptBlock.id,
       config: {
-        try: {
-          __type__: "pipeline",
-          // Throw to make it more obvious if wrong branch taken
-          __value__: [{ id: throwBlock.id }],
-        },
-        except: {
-          __type__: "pipeline",
-          __value__: [{ id: teapotBlock.id }],
-        },
+        try: makePipelineExpression([{ id: throwBlock.id, config: {} }]),
+        except: makePipelineExpression([{ id: teapotBlock.id, config: {} }]),
       },
     };
     const result = await reducePipeline(
@@ -83,11 +74,8 @@ describe("TryExcept", () => {
     const pipeline = {
       id: tryExceptBlock.id,
       config: {
-        try: {
-          __type__: "pipeline",
-          // Throw to make it more obvious if wrong branch taken
-          __value__: [{ id: throwBlock.id }],
-        },
+        // Throw to make it more obvious if wrong branch taken
+        try: makePipelineExpression([{ id: throwBlock.id, config: {} }]),
       },
     };
     const result = await reducePipeline(

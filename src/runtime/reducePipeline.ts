@@ -734,7 +734,7 @@ export async function reducePipelineExpression(
   context: UnknownObject,
   root: ReaderRoot,
   options: ReduceOptions
-) {
+): Promise<unknown> {
   const { explicitDataFlow, logger: pipelineLogger } = options;
 
   if (!explicitDataFlow) {
