@@ -34,6 +34,7 @@ export type RenderBody = (state: {
   values: FormikValues;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- type from Formik
   setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void;
+  isSubmitting: boolean;
 }) => ReactElement;
 
 export type RenderSubmit = (state: {
@@ -129,7 +130,9 @@ const Form: React.FC<FormProps> = ({
     }) => (
       <BootstrapForm noValidate onSubmit={handleSubmit}>
         {status && renderStatus({ status })}
-        {renderBody ? renderBody({ isValid, values, setFieldValue }) : children}
+        {renderBody
+          ? renderBody({ isValid, values, setFieldValue, isSubmitting })
+          : children}
         {renderSubmit({ isSubmitting, isValid, values })}
       </BootstrapForm>
     )}
