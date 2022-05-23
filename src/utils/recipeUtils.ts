@@ -20,7 +20,7 @@ import { validateRegistryId } from "@/types/helpers";
 import slugify from "slugify";
 
 /**
- * Return a valid recipe id, or return null
+ * Return a valid recipe id, or empty string in case of error.
  * @param userScope a user scope, with the leading @
  * @param extensionLabel the extension label
  */
