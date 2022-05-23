@@ -157,7 +157,7 @@ describe("RegistryIdWidget", () => {
     });
   });
 
-  test("doen't include organizations with empty scope", async () => {
+  test("doesn't include organizations with empty scope", async () => {
     const id = validateRegistryId(`${testUserScope}/${testIdValue}`);
     const authState = authStateFactory({
       scope: testUserScope,
