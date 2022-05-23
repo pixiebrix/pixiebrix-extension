@@ -28,7 +28,6 @@ import { getErrorMessage, isAxiosError } from "@/errors";
 import {
   appApi,
   useGetEditablePackagesQuery,
-  useGetOrganizationsQuery,
   useGetRecipesQuery,
   useUpdateRecipeMutation,
 } from "@/services/api";
@@ -59,6 +58,8 @@ type ShareInstallableFormState = {
   organizations: UUID[];
 };
 
+const editorRoles = new Set<number>([UserRole.admin, UserRole.developer]);
+
 const validationSchema = Yup.object().shape({
   public: Yup.boolean().required(),
   organizations: Yup.array().of(Yup.string().required()),
@@ -73,7 +74,6 @@ const ShareRecipeModal: React.FunctionComponent = () => {
   const { scope: userScope, organizations: userOrganizations } =
     useSelector(selectAuth);
   const [updateRecipe] = useUpdateRecipeMutation();
-  const { data: organizations = [] } = useGetOrganizationsQuery();
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
     useGetEditablePackagesQuery();
   const { data: recipes, isFetching: isFetchingRecipes } = useGetRecipesQuery();
@@ -134,7 +134,7 @@ const ShareRecipeModal: React.FunctionComponent = () => {
   };
 
   // Sorting returns new array, so it safe to mutate it
-  const organizationsForSelect = sortOrganizations(organizations);
+  const organizationsForSelect = sortOrganizations(userOrganizations);
   const [recipeScope] = getScopeAndId(recipe?.metadata.id);
   let ownerLabel: ReactElement;
   let hasEditPermissions = false;
@@ -166,10 +166,7 @@ const ShareRecipeModal: React.FunctionComponent = () => {
           <FontAwesomeIcon icon={faUsers} /> {ownerOrganization.name}
         </span>
       );
-      const userRole: UserRole =
-        userOrganizations.find((x) => x.id === ownerOrganization.id)?.role ?? 0;
-      hasEditPermissions =
-        userRole === UserRole.admin || userRole === UserRole.developer;
+      hasEditPermissions = editorRoles.has(ownerOrganization?.role);
     }
   }
 

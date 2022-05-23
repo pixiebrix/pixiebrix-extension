@@ -46,6 +46,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { FieldDescriptions } from "@/utils/strings";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { StylesConfig } from "react-select";
+import { RequireScope } from "@/auth/RequireScope";
 
 type ConvertInstallableFormState = {
   blueprintId: RegistryId;
@@ -190,53 +191,55 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
       <Modal.Header closeButton>
         <Modal.Title>Name your blueprint</Modal.Title>
       </Modal.Header>
-      <Form
-        validationSchema={validationSchema}
-        initialValues={initialValues}
-        onSubmit={convertToRecipe}
-        renderStatus={({ status }) => (
-          <div className="text-danger p-3">{status}</div>
-        )}
-        renderSubmit={({ isSubmitting, isValid }) => (
-          <Modal.Footer>
-            <Button variant="link" onClick={closeModal}>
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              type="submit"
-              disabled={!isValid || isSubmitting}
-            >
-              Save and Continue
-            </Button>
-          </Modal.Footer>
-        )}
-      >
-        <Modal.Body>
-          <ConnectedFieldTemplate
-            name="blueprintId"
-            label="Blueprint ID"
-            description={FieldDescriptions.BLUEPRINT_ID}
-            as={RegistryIdWidget}
-            selectStyles={selectStylesOverride}
-          />
-          <ConnectedFieldTemplate
-            name="name"
-            label="Name"
-            description={FieldDescriptions.BLUEPRINT_NAME}
-          />
-          <ConnectedFieldTemplate
-            name="version"
-            label="Version"
-            description={FieldDescriptions.BLUEPRINT_VERSION}
-          />
-          <ConnectedFieldTemplate
-            name="description"
-            label="Description"
-            description={FieldDescriptions.BLUEPRINT_DESCRIPTION}
-          />
-        </Modal.Body>
-      </Form>
+      <RequireScope scopeSettingsDescription="To share a blueprint, you must first set an account alias for your PixieBrix account">
+        <Form
+          validationSchema={validationSchema}
+          initialValues={initialValues}
+          onSubmit={convertToRecipe}
+          renderStatus={({ status }) => (
+            <div className="text-danger p-3">{status}</div>
+          )}
+          renderSubmit={({ isSubmitting, isValid }) => (
+            <Modal.Footer>
+              <Button variant="link" onClick={closeModal}>
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={!isValid || isSubmitting}
+              >
+                Save and Continue
+              </Button>
+            </Modal.Footer>
+          )}
+        >
+          <Modal.Body>
+            <ConnectedFieldTemplate
+              name="blueprintId"
+              label="Blueprint ID"
+              description={FieldDescriptions.BLUEPRINT_ID}
+              as={RegistryIdWidget}
+              selectStyles={selectStylesOverride}
+            />
+            <ConnectedFieldTemplate
+              name="name"
+              label="Name"
+              description={FieldDescriptions.BLUEPRINT_NAME}
+            />
+            <ConnectedFieldTemplate
+              name="version"
+              label="Version"
+              description={FieldDescriptions.BLUEPRINT_VERSION}
+            />
+            <ConnectedFieldTemplate
+              name="description"
+              label="Description"
+              description={FieldDescriptions.BLUEPRINT_DESCRIPTION}
+            />
+          </Modal.Body>
+        </Form>
+      </RequireScope>
     </Modal>
   );
 };
