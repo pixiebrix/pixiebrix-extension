@@ -120,6 +120,7 @@ type SetupRedux = (dispatch: Dispatch) => void;
 type WrapperOptions = Omit<RenderOptions, "wrapper"> & {
   initialValues?: FormikValues;
   setupRedux?: SetupRedux;
+  customStore?: any;
 };
 
 type WrapperResult = RenderResult & {
@@ -131,44 +132,49 @@ function renderWithWrappers(
   {
     initialValues = {},
     setupRedux = noop,
+    customStore,
     ...renderOptions
   }: WrapperOptions = {}
 ): WrapperResult {
   let submitHandler: (values: FormikValues) => void = jest.fn();
 
-  const store = configureStore({
-    reducer: {
-      auth: authSlice.reducer,
-      options: extensionsSlice.reducer,
-      services: servicesSlice.reducer,
-      settings: settingsSlice.reducer,
-      editor: editorSlice.reducer,
-      session: sessionSlice.reducer,
-      savingExtension: savingExtensionSlice.reducer,
-      runtime: runtimeSlice.reducer,
-      logs: logSlice.reducer,
-    },
-  });
+  const store =
+    customStore ??
+    configureStore({
+      reducer: {
+        auth: authSlice.reducer,
+        options: extensionsSlice.reducer,
+        services: servicesSlice.reducer,
+        settings: settingsSlice.reducer,
+        editor: editorSlice.reducer,
+        session: sessionSlice.reducer,
+        savingExtension: savingExtensionSlice.reducer,
+        runtime: runtimeSlice.reducer,
+        logs: logSlice.reducer,
+      },
+    });
 
   setupRedux(store.dispatch);
 
-  const Wrapper: React.FC = ({ children }) => (
-    <Provider store={store}>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={(values) => {
-          submitHandler?.(values);
-        }}
-      >
-        {({ handleSubmit }) => (
-          <Form onSubmit={handleSubmit}>
-            {children}
-            <button type="submit">Submit</button>
-          </Form>
-        )}
-      </Formik>
-    </Provider>
-  );
+  const Wrapper: React.FC = initialValues
+    ? ({ children }) => (
+        <Provider store={store}>
+          <Formik
+            initialValues={initialValues}
+            onSubmit={(values) => {
+              submitHandler?.(values);
+            }}
+          >
+            {({ handleSubmit }) => (
+              <Form onSubmit={handleSubmit}>
+                {children}
+                <button type="submit">Submit</button>
+              </Form>
+            )}
+          </Formik>
+        </Provider>
+      )
+    : ({ children }) => <Provider store={store}>{children}</Provider>;
 
   const renderResult = render(ui, { wrapper: Wrapper, ...renderOptions });
 
