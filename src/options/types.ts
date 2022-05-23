@@ -15,6 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// __mocks__/styleMock.js
-
-module.exports = {};
+export const DEFAULT_THEME = "default";
+export const THEMES = [DEFAULT_THEME, "automation-anywhere"] as const;
+export type Theme = typeof THEMES[number];

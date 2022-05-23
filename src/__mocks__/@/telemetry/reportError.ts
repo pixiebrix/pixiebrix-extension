@@ -15,6 +15,4 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// __mocks__/fileMock.js
-
-module.exports = "test-file-stub";
+export default () => {};

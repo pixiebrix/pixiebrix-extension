@@ -115,8 +115,8 @@ exports[`ObjectWidget renders widget with properties 1`] = `
                         <span
                           class="symbol"
                         >
-                          <svg
-                            class="root"
+                          <test-file-stub
+                            classname="root"
                           />
                         </span>
                       </button>
@@ -176,8 +176,8 @@ exports[`ObjectWidget renders widget with properties 1`] = `
                         <span
                           class="symbol"
                         >
-                          <svg
-                            class="root"
+                          <test-file-stub
+                            classname="root"
                           />
                         </span>
                       </button>
@@ -237,8 +237,8 @@ exports[`ObjectWidget renders widget with properties 1`] = `
                         <span
                           class="symbol"
                         >
-                          <svg
-                            class="root"
+                          <test-file-stub
+                            classname="root"
                           />
                         </span>
                       </button>
