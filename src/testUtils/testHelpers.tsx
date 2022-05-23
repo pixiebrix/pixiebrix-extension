@@ -29,24 +29,18 @@ import {
   AnyAction,
   CombinedState,
   configureStore,
+  EnhancedStore,
   PreloadedState,
   Reducer,
   ReducersMapObject,
 } from "@reduxjs/toolkit";
 import { Form, Formik, FormikValues } from "formik";
-import { Dispatch } from "redux";
-import { authSlice } from "@/auth/authSlice";
-import extensionsSlice from "@/store/extensionsSlice";
-import servicesSlice from "@/store/servicesSlice";
-import settingsSlice from "@/store/settingsSlice";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
-import sessionSlice from "@/pageEditor/slices/sessionSlice";
-import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSlice";
-import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
-import { logSlice } from "@/components/logViewer/logSlice";
+import { Dispatch, Middleware } from "redux";
 import userEvent from "@testing-library/user-event";
 import { Expression, ExpressionType } from "@/core";
 import { noop } from "lodash";
+import { ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
+import { UnknownObject } from "@/types";
 
 export const waitForEffect = async () =>
   act(async () => {
@@ -68,7 +62,17 @@ export type CreateRenderFunctionOptions<
   defaultProps?: TProps;
 };
 
-export function createRenderFunction<
+export type RenderFunctionWithRedux<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from Redux typings
+  S = any,
+  // eslint-disable-next-line @typescript-eslint/ban-types -- the type copied from Redux typings
+  P = {}
+> = (overrides?: {
+  propsOverride?: Partial<P>;
+  stateOverride?: Partial<S>;
+}) => RenderResult;
+
+export function createRenderFunctionWithRedux<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from Redux typings
   S = any,
   A extends Action = AnyAction,
@@ -79,7 +83,7 @@ export function createRenderFunction<
   preloadedState,
   ComponentUnderTest,
   defaultProps,
-}: CreateRenderFunctionOptions<S, A, P>) {
+}: CreateRenderFunctionOptions<S, A, P>): RenderFunctionWithRedux<S, P> {
   return (overrides?: {
     propsOverride?: Partial<P>;
     stateOverride?: Partial<S>;
@@ -116,75 +120,68 @@ type WrapperResult = RenderResult & {
   getFormState: () => Promise<FormikValues>;
 };
 
-function renderWithWrappers(
-  ui: React.ReactElement,
-  {
-    initialValues = {},
-    setupRedux = noop,
-    ...renderOptions
-  }: WrapperOptions = {}
-): WrapperResult {
-  let submitHandler: (values: FormikValues) => void = jest.fn();
+type ConfigureStore<
+  S = UnknownObject,
+  A extends Action = AnyAction,
+  M extends ReadonlyArray<Middleware<UnknownObject, S>> = [
+    ThunkMiddlewareFor<S>
+  ]
+> = () => EnhancedStore<S, A, M>;
 
-  const Wrapper: React.FC = ({ children }) => {
-    const store = configureStore({
-      reducer: {
-        auth: authSlice.reducer,
-        options: extensionsSlice.reducer,
-        services: servicesSlice.reducer,
-        settings: settingsSlice.reducer,
-        editor: editorSlice.reducer,
-        session: sessionSlice.reducer,
-        savingExtension: savingExtensionSlice.reducer,
-        runtime: runtimeSlice.reducer,
-        logs: logSlice.reducer,
-      },
-    });
+export function createRenderWithWrappers(configureStore: ConfigureStore) {
+  return (
+    ui: React.ReactElement,
+    {
+      initialValues = {},
+      setupRedux = noop,
+      ...renderOptions
+    }: WrapperOptions = {}
+  ): WrapperResult => {
+    let submitHandler: (values: FormikValues) => void = jest.fn();
+
+    const store = configureStore();
 
     setupRedux(store.dispatch);
 
-    return (
-      <Provider store={store}>
-        <Formik
-          initialValues={initialValues}
-          onSubmit={(values) => {
-            submitHandler?.(values);
-          }}
-        >
-          {({ handleSubmit }) => (
-            <Form onSubmit={handleSubmit}>
-              {children}
-              <button type="submit">Submit</button>
-            </Form>
-          )}
-        </Formik>
-      </Provider>
-    );
-  };
+    const Wrapper: React.FC = initialValues
+      ? ({ children }) => (
+          <Provider store={store}>
+            <Formik
+              initialValues={initialValues}
+              onSubmit={(values) => {
+                submitHandler?.(values);
+              }}
+            >
+              {({ handleSubmit }) => (
+                <Form onSubmit={handleSubmit}>
+                  {children}
+                  <button type="submit">Submit</button>
+                </Form>
+              )}
+            </Formik>
+          </Provider>
+        )
+      : ({ children }) => <Provider store={store}>{children}</Provider>;
 
-  const renderResult = render(ui, { wrapper: Wrapper, ...renderOptions });
+    const renderResult = render(ui, { wrapper: Wrapper, ...renderOptions });
 
-  return {
-    ...renderResult,
-    async getFormState() {
-      // Wire-up a handler to grab the form state
-      let formState: FormikValues = null;
-      submitHandler = (values) => {
-        formState = values;
-      };
+    return {
+      ...renderResult,
+      async getFormState() {
+        // Wire-up a handler to grab the form state
+        let formState: FormikValues = null;
+        submitHandler = (values) => {
+          formState = values;
+        };
 
-      // Submit the form
-      await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+        // Submit the form
+        await userEvent.click(screen.getByRole("button", { name: /submit/i }));
 
-      return formState;
-    },
+        return formState;
+      },
+    };
   };
 }
-
-// eslint-disable-next-line import/export -- re-export RTL
-export * from "@testing-library/react";
-// eslint-disable-next-line import/export -- override render
-export { renderWithWrappers as render };
 
 export function toExpression<T>(type: ExpressionType, value: T): Expression<T> {
   return {

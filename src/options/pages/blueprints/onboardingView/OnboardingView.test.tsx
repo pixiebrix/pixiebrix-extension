@@ -22,6 +22,10 @@ import useDeployments from "@/hooks/useDeployments";
 import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
 import { renderHook } from "@testing-library/react-hooks";
 
+jest.mock("react-redux", () => ({
+  useSelector: jest.fn(),
+}));
+
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: jest.fn(),
   useGetRecipesQuery: jest.fn(),

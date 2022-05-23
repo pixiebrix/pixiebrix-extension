@@ -15,25 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { define, array, FactoryConfig, derive } from "cooky-cutter";
+import { array, Config, define, derive, FactoryConfig } from "cooky-cutter";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import {
   ApiVersion,
   IBlock,
   IExtension,
   InnerDefinitionRef,
+  InnerDefinitions,
+  Metadata,
+  OutputKey,
+  RecipeMetadata,
   RegistryId,
   RenderedArgs,
+  SafeString,
+  SanitizedConfig,
+  SanitizedServiceConfiguration,
   Schema,
   ServiceDependency,
   UserOptions,
-  Metadata,
-  RecipeMetadata,
   UUID,
-  InnerDefinitions,
-  SafeString,
-  SanitizedServiceConfiguration,
-  SanitizedConfig,
 } from "@/core";
 import { TraceError, TraceRecord } from "@/telemetry/trace";
 import {
@@ -51,13 +52,13 @@ import {
   TriggerFormState,
 } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
-  RecipeDefinition,
   ExtensionPointConfig,
+  RecipeDefinition,
   SharingDefinition,
 } from "@/types/definitions";
 import {
-  ExtensionPointDefinition as ExtensionPointConfigDefinition,
   ExtensionPointConfig as ExtensionPointDefinition,
+  ExtensionPointDefinition as ExtensionPointConfigDefinition,
   ExtensionPointType,
 } from "@/extensionPoints/types";
 import {
@@ -65,7 +66,7 @@ import {
   FrameConnectionState,
 } from "@/pageEditor/context";
 import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
-import { Deployment, UserRole } from "@/types/contract";
+import { CloudExtension, Deployment, UserRole } from "@/types/contract";
 import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
 import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/pageEditorTypes";
@@ -77,13 +78,16 @@ import {
   AuthUserOrganization,
   OrganizationAuthState,
 } from "@/auth/authTypes";
+import { JsonObject } from "type-fest";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
 export const uuidSequence = (n: number) =>
   validateUUID(`${padStart(String(n), 8, "0")}-0000-4000-A000-000000000000`);
 
-const organizationFactory = define<AuthUserOrganization>({
+const timestampFactory = () => new Date().toISOString();
+
+export const organizationFactory = define<AuthUserOrganization>({
   id: uuidSequence,
   name(n: number): string {
     return `Test Organization ${n}`;
@@ -187,7 +191,9 @@ export const extensionFactory = define<IExtension>({
   _recipe: undefined,
   _deployment: undefined,
   label: "Test label",
-  services: [],
+  services(): ServiceDependency[] {
+    return [];
+  },
   config: (n: number) => ({
     apiVersion: "v2" as ApiVersion,
     kind: "component",
@@ -216,20 +222,41 @@ export const extensionFactory = define<IExtension>({
   active: true,
 });
 
+export const cloudExtensionFactory = (override?: Config<CloudExtension>) => {
+  const extension = extensionFactory(
+    override as Config<IExtension>
+  ) as CloudExtension;
+
+  // @ts-expect-error -- removing the IExtension property that is not in the CloudExtension type
+  delete extension.active;
+
+  const timestamp = timestampFactory();
+  extension.createTimestamp = timestamp;
+  extension.updateTimestamp = timestamp;
+
+  return extension;
+};
+
 export const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
 
 export const traceRecordFactory = define<TraceRecord>({
-  timestamp: "2021-10-07T12:52:16.189Z",
+  timestamp: timestampFactory,
   extensionId: uuidSequence,
   runId: uuidSequence,
   blockInstanceId: uuidSequence,
   blockId: TEST_BLOCK_ID,
-  templateContext: {},
-  renderedArgs: {} as RenderedArgs,
+  templateContext(): JsonObject {
+    return {};
+  },
+  renderedArgs(): RenderedArgs {
+    return {} as RenderedArgs;
+  },
   renderError: null,
-  blockConfig: {
-    id: TEST_BLOCK_ID,
-    config: {},
+  blockConfig(): BlockConfig {
+    return {
+      id: TEST_BLOCK_ID,
+      config: {},
+    };
   },
 });
 
@@ -494,9 +521,10 @@ const internalFormStateFactory = define<FormState>({
   uuid: uuidSequence,
   installed: true,
   optionsArgs: null as UserOptions,
-  services: [] as ServiceDependency[],
+  services(): ServiceDependency[] {
+    return [];
+  },
   recipe: null,
-
   type: "panel" as ExtensionPointType,
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
@@ -574,3 +602,58 @@ export const sanitizedServiceConfigurationFactory =
     serviceId: (n: number) => validateRegistryId(`test/service-${n}`),
     config: () => ({} as SanitizedConfig),
   } as unknown as SanitizedServiceConfiguration);
+
+export const foundationOutputFactory = define<JsonObject>({
+  "@input": () => ({
+    icon: "",
+    title: "Test website title | test.com",
+    language: "en",
+    url: "https://www.testwebsite.com/",
+    provider: "test",
+  }),
+  "@options": () => ({
+    option1: "test string option",
+    option2: 42,
+  }),
+});
+
+export const formStateWithTraceDataFactory = define<{
+  formState: FormState;
+  records: TraceRecord[];
+}>({
+  formState(): FormState {
+    return formStateFactory();
+  },
+  records: derive<
+    {
+      formState: FormState;
+      records: TraceRecord[];
+    },
+    TraceRecord[]
+  >(({ formState: { uuid: extensionId, extension } }) => {
+    let outputKey = "" as OutputKey;
+    let output: JsonObject = foundationOutputFactory();
+    return extension.blockPipeline.map((block, index) => {
+      const context = output;
+      outputKey = `output${index}` as OutputKey;
+      output = {
+        foo: `bar number ${index}`,
+        baz: index * 3,
+        qux: {
+          thing1: [index * 7, index * 9, index * 11],
+          thing2: false,
+        },
+      };
+
+      return traceRecordFactory({
+        extensionId,
+        blockInstanceId: block.instanceId,
+        blockId: block.id,
+        templateContext: context,
+        blockConfig: block,
+        outputKey,
+        output,
+      });
+    });
+  }, "formState"),
+});

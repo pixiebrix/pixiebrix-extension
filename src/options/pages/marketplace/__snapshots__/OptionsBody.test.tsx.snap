@@ -50,8 +50,8 @@ exports[`Marketplace Activate Wizard OptionsBody renders text field 1`] = `
               <span
                 class="symbol"
               >
-                <svg
-                  class="root"
+                <test-file-stub
+                  classname="root"
                 />
               </span>
             </button>

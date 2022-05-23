@@ -35,30 +35,48 @@ import { FieldDescriptions } from "@/utils/strings";
 import { object, string } from "yup";
 import { testIsSemVerString } from "@/types/helpers";
 import Form, { RenderBody } from "@/components/form/Form";
+import { selectExtensions } from "@/store/extensionsSelectors";
+import { getRecipeById } from "@/utils";
+import Alert from "@/components/Alert";
+import { createSelector } from "reselect";
+
+// TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
+// see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
+const editRecipeSchema = object({
+  id: string().required(), // Recipe id is readonly here
+  name: string().required(),
+  version: string()
+    .test(
+      "semver",
+      "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
+      (value: string) => testIsSemVerString(value, { allowLeadingV: false })
+    )
+    .required(),
+  description: string(),
+});
+
+const selectFirstExtension = createSelector(
+  selectExtensions,
+  selectActiveRecipeId,
+  (extensions, activeRecipeId) =>
+    extensions.find((x) => x._recipe?.id === activeRecipeId)
+);
 
 const EditRecipe: React.VoidFunctionComponent = () => {
   const recipeId = useSelector(selectActiveRecipeId);
   const { data: recipes, isLoading, error } = useGetRecipesQuery();
-  const dirtyMetadata = useSelector(selectDirtyMetadataForRecipeId(recipeId));
-  const savedMetadata = recipes?.find(
-    (recipe) => recipe.metadata.id === recipeId
-  )?.metadata;
-  const metadata = dirtyMetadata ?? savedMetadata;
+  const recipe = getRecipeById(recipes ?? [], recipeId);
 
-  // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
-  // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
-  const editRecipeSchema = object({
-    id: string().required(), // Recipe id is readonly here
-    name: string().required(),
-    version: string()
-      .test(
-        "semver",
-        "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
-        (value: string) => testIsSemVerString(value, { allowLeadingV: false })
-      )
-      .required(),
-    description: string(),
-  });
+  // Select a single extension for the recipe to check the installed version.
+  // We rely on the assumption that every extension in the recipe has the same version.
+  const recipeExtension = useSelector(selectFirstExtension);
+
+  const installedRecipeVersion = recipeExtension?._recipe.version;
+  const latestRecipeVersion = recipe?.metadata?.version;
+
+  const dirtyMetadata = useSelector(selectDirtyMetadataForRecipeId(recipeId));
+  const savedMetadata = recipe?.metadata;
+  const metadata = dirtyMetadata ?? savedMetadata;
 
   const initialFormState: RecipeMetadataFormState = {
     id: metadata?.id,
@@ -98,6 +116,20 @@ const EditRecipe: React.VoidFunctionComponent = () => {
       <Card>
         <Card.Header>Blueprint Metadata</Card.Header>
         <Card.Body>
+          {installedRecipeVersion !== latestRecipeVersion && (
+            <Alert variant="warning">
+              You are editing version {installedRecipeVersion} of this
+              blueprint, the latest version is {latestRecipeVersion}. To get the
+              latest version,{" "}
+              <a
+                href="/options.html#/blueprints"
+                target="_blank"
+                title="Re-activate the blueprint"
+              >
+                re-activate the blueprint
+              </a>
+            </Alert>
+          )}
           <ConnectedFieldTemplate
             name="id"
             label="Blueprint ID"

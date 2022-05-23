@@ -15,14 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { OptionsState } from "@/store/extensionsTypes";
+import { ExtensionsRootState } from "@/store/extensionsTypes";
 import { UnresolvedExtension } from "@/core";
 
 export function selectExtensions({
   options,
-}: {
-  options: OptionsState;
-}): UnresolvedExtension[] {
+}: ExtensionsRootState): UnresolvedExtension[] {
   if (!Array.isArray(options.extensions)) {
     console.warn("state migration has not been applied yet", {
       options,

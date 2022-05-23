@@ -220,7 +220,7 @@ export type RemoteResponse<T = unknown> = Pick<
 // Can't use Required. For blueprint_version, etc. the backend expects the property to be excluded or to have a value
 export type ErrorItem = Except<
   components["schemas"]["ErrorItem"],
-  "id" | "user" | "user_extension"
+  "user" | "user_extension"
 > & {
   deployment: UUID | null;
   organization: UUID | null;

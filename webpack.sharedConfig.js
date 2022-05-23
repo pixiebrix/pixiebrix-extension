@@ -18,14 +18,7 @@
 const fs = require("fs");
 const path = require("path");
 const JSON5 = require("json5");
-const { mergeWithCustomize, customizeObject } = require("webpack-merge");
-
-const merge = mergeWithCustomize({
-  // Webpack resolves aliases in order, so the mocks need to be first
-  customizeObject: customizeObject({
-    "resolve.alias": "prepend",
-  }),
-});
+const { merge } = require("webpack-merge");
 
 const tsconfig = JSON5.parse(fs.readFileSync("./tsconfig.json", "utf8"));
 
@@ -59,6 +52,7 @@ const shared = {
   },
   module: {
     rules: [
+      // CSS/SCSS is missing from this configuration because it conflicts with Storybook’s config, etc
       {
         test: /\.tsx?$/,
         loader: "ts-loader",
@@ -66,6 +60,19 @@ const shared = {
         options: {
           transpileOnly: true,
         },
+      },
+      {
+        test: /\.svg$/,
+        resourceQuery: /loadAsComponent/,
+        use: [
+          {
+            loader: "@svgr/webpack",
+            options: {
+              typescript: true,
+              ext: "tsx",
+            },
+          },
+        ],
       },
       {
         test: /\.(svg|png|jpe?g|gif)?$/,
@@ -123,6 +130,6 @@ for (const [from, [to]] of Object.entries(tsconfig.compilerOptions.paths)) {
 }
 
 /**
- * @param {import("webpack").Configuration} baseConfig
+ * @param {import("webpack").Configuration[]} configs
  */
-module.exports = (baseConfig) => merge(shared, baseConfig);
+module.exports = (...configs) => merge(shared, ...configs);

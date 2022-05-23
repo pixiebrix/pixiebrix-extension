@@ -308,9 +308,10 @@ export const appApi = createApi({
         recipe: UnsavedRecipeDefinition;
         organizations: UUID[];
         public: boolean;
+        shareDependencies?: boolean;
       }
     >({
-      query({ recipe, organizations, public: isPublic }) {
+      query({ recipe, organizations, public: isPublic, shareDependencies }) {
         const recipeConfig = dumpBrickYaml(recipe);
 
         return {
@@ -321,6 +322,7 @@ export const appApi = createApi({
             kind: "recipe" as RecipeDefinition["kind"],
             organizations,
             public: isPublic,
+            share_dependencies: shareDependencies,
           },
         };
       },

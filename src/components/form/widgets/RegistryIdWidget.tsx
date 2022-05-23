@@ -23,40 +23,19 @@ import SelectWidget, {
   makeStringOptions,
   SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
-import { split } from "lodash";
+import { isEmpty } from "lodash";
 import { RegistryId } from "@/core";
 import { Form } from "react-bootstrap";
 import styles from "./RegistryIdWidget.module.scss";
 import { StylesConfig } from "react-select";
 import { UserRole } from "@/types/contract";
+import { getScopeAndId } from "@/utils";
 
 const editorRoles = new Set<number>([
   UserRole.admin,
   UserRole.developer,
   UserRole.manager,
 ]);
-
-/**
- * Splits a value into a scope and id, based on scope starting with @ and id
- *  as everything following the first / character
- * @param value the full RegistryId
- */
-export function getScopeAndId(
-  value: RegistryId
-): [string | undefined, string | undefined] {
-  // Scope needs to start with @
-  if (!value.startsWith("@")) {
-    return [undefined, value];
-  }
-
-  // If the value starts with @ and doesn't have a slash, interpret it as a scope
-  if (!value.includes("/")) {
-    return [value, undefined];
-  }
-
-  const [scope, ...idParts] = split(value, "/");
-  return [scope, idParts.join("/")];
-}
 
 const RegistryIdWidget: React.VFC<{
   name: string;
@@ -65,7 +44,10 @@ const RegistryIdWidget: React.VFC<{
   const [{ value }, , { setValue, setTouched }] = useField<RegistryId>(name);
   const { scope: userScope, organizations } = useSelector(selectAuth);
   const organizationScopes = organizations
-    .filter((organization) => editorRoles.has(organization.role))
+    .filter(
+      (organization) =>
+        !isEmpty(organization.scope) && editorRoles.has(organization.role)
+    )
     .map((organization) => organization.scope);
 
   const options = makeStringOptions(userScope, ...organizationScopes);

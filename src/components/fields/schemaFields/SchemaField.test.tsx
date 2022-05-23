@@ -27,10 +27,10 @@ import { uniq } from "lodash";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
 
-interface SchemaTestCase {
+type SchemaTestCase = {
   name: string;
   schema: Schema;
-}
+};
 
 const sampleSchemas: SchemaTestCase[] = [
   {

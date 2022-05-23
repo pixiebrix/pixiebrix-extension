@@ -23,8 +23,9 @@ import {
   matchesAnyPattern,
   assertHttpsUrl,
   makeURL,
+  getScopeAndId,
 } from "@/utils";
-import type { SafeString } from "@/core";
+import type { RegistryId, SafeString } from "@/core";
 import { BusinessError } from "@/errors";
 
 test("can generate fresh identifier", () => {
@@ -203,5 +204,28 @@ describe("makeURL", () => {
   test("preserve hash and query string", () => {
     const origin = "https://pixiebrix.com?foo=bar#example";
     expect(makeURL(origin)).toBe("https://pixiebrix.com/?foo=bar#example");
+  });
+});
+
+describe("getScopeAndId", () => {
+  test("normal id", () => {
+    const id = "@foo/bar" as RegistryId;
+    expect(getScopeAndId(id)).toStrictEqual(["@foo", "bar"]);
+  });
+  test("id with slash", () => {
+    const id = "@foo/bar/baz" as RegistryId;
+    expect(getScopeAndId(id)).toStrictEqual(["@foo", "bar/baz"]);
+  });
+  test("id without scope", () => {
+    const id = "foobar" as RegistryId;
+    expect(getScopeAndId(id)).toStrictEqual([undefined, "foobar"]);
+  });
+  test("id without scope with slash", () => {
+    const id = "foo/bar/baz" as RegistryId;
+    expect(getScopeAndId(id)).toStrictEqual([undefined, "foo/bar/baz"]);
+  });
+  test("scope without id", () => {
+    const id = "@foo" as RegistryId;
+    expect(getScopeAndId(id)).toStrictEqual(["@foo", undefined]);
   });
 });
