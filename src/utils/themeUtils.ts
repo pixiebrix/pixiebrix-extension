@@ -68,7 +68,29 @@ export const addThemeClassToDocumentRoot = (theme: Theme): void => {
   }
 };
 
-export const setThemeFavicon = (icon: string): void => {
-  const favicon = document.querySelector("#favicon");
+export const setThemeFavicon = (theme: Theme): void => {
+  let favicon = document.querySelector("#favicon");
+
+  if (theme === DEFAULT_THEME) {
+    if (favicon) {
+      favicon.remove();
+    }
+
+    return;
+  }
+
+  const { small: icon } = getThemeLogo(theme);
+
+  if (!favicon) {
+    favicon = document.createElement("link");
+  }
+
+  favicon.setAttribute("rel", "shortcut icon");
+  favicon.setAttribute("type", "image/x-icon");
   favicon.setAttribute("href", icon);
+  favicon.setAttribute("id", "favicon");
+
+  if (!document.querySelector("#favicon")) {
+    document.head.append(favicon);
+  }
 };
