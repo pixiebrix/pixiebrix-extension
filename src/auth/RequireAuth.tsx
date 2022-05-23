@@ -37,11 +37,17 @@ import { Me } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
 import { AxiosError } from "axios";
 import PartnerSetupPage from "@/options/pages/PartnerSetupPage";
+import { RootState } from "@/options/store";
+import { RawServiceConfiguration } from "@/core";
+import { ServicesState } from "@/store/servicesSlice";
 
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
   LoginPage: React.VFC;
 };
+
+const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
+  Object.values(services.configured);
 
 /**
  * Require that the extension is linked to the PixieBrix API (has a token) and that the user is authenticated.
@@ -88,6 +94,14 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     skip: !hasToken,
   });
 
+  const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
+    selectConfiguredServices
+  );
+
+  const configuredAAIntegration = configuredServices.some(
+    (service) => service.serviceId === "automation-anywhere/control-room"
+  );
+
   const isLoading = tokenLoading || meLoading;
 
   useEffect(() => {
@@ -124,9 +138,11 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     void clearExtensionAuth();
   }
 
-  if (!isMeSuccess && me?.partner) {
+  if (!isMeSuccess && me?.partner && !configuredAAIntegration) {
     return <PartnerSetupPage />;
   }
+
+  return <LoginPage />;
 
   // Show SetupPage if there is auth error or user not logged in
   if (

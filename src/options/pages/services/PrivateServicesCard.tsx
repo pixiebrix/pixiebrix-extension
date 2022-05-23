@@ -51,6 +51,8 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
     selectConfiguredServices
   );
 
+  console.log("configured services:", configuredServices);
+
   const resetAuth = useCallback(async (authId: UUID) => {
     try {
       await deleteCachedAuthData(authId);
