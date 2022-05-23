@@ -87,7 +87,7 @@ export const uuidSequence = (n: number) =>
 
 const timestampFactory = () => new Date().toISOString();
 
-const organizationFactory = define<AuthUserOrganization>({
+export const organizationFactory = define<AuthUserOrganization>({
   id: uuidSequence,
   name(n: number): string {
     return `Test Organization ${n}`;

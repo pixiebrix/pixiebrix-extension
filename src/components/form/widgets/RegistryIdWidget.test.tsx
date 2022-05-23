@@ -23,7 +23,7 @@ import userEvent from "@testing-library/user-event";
 import { partition } from "lodash";
 import { UserRole } from "@/types/contract";
 import { validateRegistryId } from "@/types/helpers";
-import { authStateFactory } from "@/testUtils/factories";
+import { authStateFactory, organizationFactory } from "@/testUtils/factories";
 
 const editorRoles = new Set<number>([
   UserRole.admin,
@@ -129,5 +129,33 @@ describe("RegistryIdWidget", () => {
     expect(formState).toStrictEqual({
       testField: `${anotherOrganization.scope}/${newTestId}`,
     });
+  });
+
+  test("doesn't include organizations with empty scope", async () => {
+    const id = validateRegistryId(`${testUserScope}/${testIdValue}`);
+    const authState = authStateFactory({
+      scope: testUserScope,
+      organizations: [
+        organizationFactory({
+          scope: null,
+        }),
+      ],
+    });
+
+    const { container } = render(<RegistryIdWidget name="testField" />, {
+      initialValues: { testField: id },
+      setupRedux(dispatch) {
+        dispatch(authActions.setAuth(authState));
+      },
+    });
+
+    await userEvent.click(screen.getByText(testUserScope));
+    // Using the hardcoded id of the DOM element as the easiest option to access an element within React Select
+    const reactSelectOptionsSelector = "#react-select-5-listbox div";
+    const reactSelectOptions = container.querySelector(
+      reactSelectOptionsSelector
+    );
+
+    expect(reactSelectOptions.children).toHaveLength(1);
   });
 });
