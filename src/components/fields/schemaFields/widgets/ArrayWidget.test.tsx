@@ -18,10 +18,10 @@
 import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { Schema } from "@/core";
-import { render, screen } from "@/testUtils/testHelpers";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import userEvent from "@testing-library/user-event";
 import { stringToExpression } from "@/pageEditor/extensionPoints/upgrade";
+import { render, screen } from "@/pageEditor/testHelpers";
 
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";

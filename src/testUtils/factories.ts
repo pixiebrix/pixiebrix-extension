@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { array, define, derive, FactoryConfig } from "cooky-cutter";
+import { array, Config, define, derive, FactoryConfig } from "cooky-cutter";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import {
   ApiVersion,
@@ -66,7 +66,7 @@ import {
   FrameConnectionState,
 } from "@/pageEditor/context";
 import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
-import { Deployment, UserRole } from "@/types/contract";
+import { CloudExtension, Deployment, UserRole } from "@/types/contract";
 import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
 import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/pageEditorTypes";
@@ -84,6 +84,8 @@ import { JsonObject } from "type-fest";
 // https://stackoverflow.com/a/19989922/402560
 export const uuidSequence = (n: number) =>
   validateUUID(`${padStart(String(n), 8, "0")}-0000-4000-A000-000000000000`);
+
+const timestampFactory = () => new Date().toISOString();
 
 export const organizationFactory = define<AuthUserOrganization>({
   id: uuidSequence,
@@ -220,12 +222,25 @@ export const extensionFactory = define<IExtension>({
   active: true,
 });
 
+export const cloudExtensionFactory = (override?: Config<CloudExtension>) => {
+  const extension = extensionFactory(
+    override as Config<IExtension>
+  ) as CloudExtension;
+
+  // @ts-expect-error -- removing the IExtension property that is not in the CloudExtension type
+  delete extension.active;
+
+  const timestamp = timestampFactory();
+  extension.createTimestamp = timestamp;
+  extension.updateTimestamp = timestamp;
+
+  return extension;
+};
+
 export const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
 
 export const traceRecordFactory = define<TraceRecord>({
-  timestamp(): string {
-    return new Date().toISOString();
-  },
+  timestamp: timestampFactory,
   extensionId: uuidSequence,
   runId: uuidSequence,
   blockInstanceId: uuidSequence,
