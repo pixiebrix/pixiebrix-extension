@@ -21,7 +21,8 @@ import {
   extensionFactory,
   formStateFactory,
 } from "@/testUtils/factories";
-import { render, waitForEffect } from "@/testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { authActions } from "@/auth/authSlice";
 import InstalledEntry from "@/pageEditor/sidebar/InstalledEntry";

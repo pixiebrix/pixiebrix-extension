@@ -16,7 +16,8 @@
  */
 
 import React from "react";
-import { render, waitForEffect } from "@/testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
 import { formStateWithTraceDataFactory } from "@/testUtils/factories";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";

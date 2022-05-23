@@ -17,7 +17,7 @@
 
 import React from "react";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
-import { render, screen } from "@/testUtils/testHelpers";
+import { render, screen } from "@/pageEditor/testHelpers";
 import { authActions } from "@/auth/authSlice";
 import userEvent from "@testing-library/user-event";
 import { partition } from "lodash";

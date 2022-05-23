@@ -17,7 +17,7 @@
 
 import React from "react";
 import { RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
-import { render } from "@/testUtils/testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioItemListWidget";
 
 const sampleItems: RadioItem[] = [
