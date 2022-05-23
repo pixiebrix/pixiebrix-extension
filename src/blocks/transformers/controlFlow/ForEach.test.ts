@@ -50,10 +50,10 @@ describe("ForEach", () => {
           {
             id: echoBlock.id,
             config: {
-              message: {
-                __type__: "nunjucks",
-                __value__: "iteration {{ @element }}",
-              },
+              message: makeTemplateExpression(
+                "nunjucks",
+                "iteration {{ @element }}"
+              ),
             },
           },
         ]),

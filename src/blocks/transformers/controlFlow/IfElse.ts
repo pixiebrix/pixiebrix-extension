@@ -18,10 +18,6 @@
 import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import {
-  ReduceOptions,
-  reducePipelineExpression,
-} from "@/runtime/reducePipeline";
 import { boolean } from "@/utils";
 import { PipelineExpression } from "@/runtime/mapArgs";
 
@@ -39,6 +35,11 @@ class IfElse extends Transformer {
   override async isPure(): Promise<boolean> {
     // Safe default -- need to be able to inspect the inputs to determine if pure
     return false;
+  }
+
+  override async isRootAware(): Promise<boolean> {
+    // Safe default -- need to be able to inspect the inputs to determine if any sub-calls are root aware
+    return true;
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -61,7 +62,7 @@ class IfElse extends Transformer {
 
   async transform(
     {
-      condition,
+      condition: rawCondition,
       if: ifPipeline,
       else: elsePipeline,
     }: BlockArg<{
@@ -71,14 +72,12 @@ class IfElse extends Transformer {
     }>,
     options: BlockOptions
   ): Promise<unknown> {
-    // FIXME: fix the types on here
-    const reduceOptions = options as unknown as ReduceOptions;
+    const condition = boolean(rawCondition);
 
-    return reducePipelineExpression(
-      boolean(condition) ? ifPipeline.__value__ : elsePipeline?.__value__ ?? [],
-      options.ctxt,
-      options.root,
-      reduceOptions
+    options.logger.debug("Condition", { condition, rawCondition });
+
+    return options.runPipeline(
+      condition ? ifPipeline.__value__ : elsePipeline?.__value__ ?? []
     );
   }
 }

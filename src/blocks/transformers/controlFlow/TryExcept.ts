@@ -19,10 +19,6 @@ import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, OutputKey, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import {
-  ReduceOptions,
-  reducePipelineExpression,
-} from "@/runtime/reducePipeline";
 import { serializeError } from "serialize-error";
 import { PipelineExpression } from "@/runtime/mapArgs";
 
@@ -40,6 +36,11 @@ class TryExcept extends Transformer {
   override async isPure(): Promise<boolean> {
     // Safe default -- need to be able to inspect the inputs to determine if pure
     return false;
+  }
+
+  override async isRootAware(): Promise<boolean> {
+    // Safe default -- need to be able to inspect the inputs to determine if any sub-calls are root aware
+    return true;
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -72,28 +73,14 @@ class TryExcept extends Transformer {
     }>,
     options: BlockOptions
   ): Promise<unknown> {
-    // FIXME: fix the types on here
-    const reduceOptions = options as unknown as ReduceOptions;
-
     try {
-      return await reducePipelineExpression(
-        tryPipeline.__value__,
-        options.ctxt,
-        options.root,
-        reduceOptions
-      );
+      return await options.runPipeline(tryPipeline.__value__);
     } catch (error: unknown) {
-      const ctxt = {
-        ...options.ctxt,
-        [`@${errorKey}`]: serializeError(error, { useToJSON: false }),
-      };
+      options.logger.debug("Caught error", { error });
 
-      return reducePipelineExpression(
-        exceptPipeline?.__value__ ?? [],
-        ctxt,
-        options.root,
-        reduceOptions
-      );
+      return options.runPipeline(exceptPipeline?.__value__ ?? [], {
+        [`@${errorKey}`]: serializeError(error, { useToJSON: false }),
+      });
     }
   }
 }

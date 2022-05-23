@@ -19,10 +19,6 @@ import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, OutputKey, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import {
-  ReduceOptions,
-  reducePipelineExpression,
-} from "@/runtime/reducePipeline";
 import { PipelineExpression } from "@/runtime/mapArgs";
 
 class ForEach extends Transformer {
@@ -39,6 +35,11 @@ class ForEach extends Transformer {
   override async isPure(): Promise<boolean> {
     // Safe default -- need to be able to inspect the inputs to determine if pure
     return false;
+  }
+
+  override async isRootAware(): Promise<boolean> {
+    // Safe default -- need to be able to inspect the inputs to determine if any sub-calls are root aware
+    return true;
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -71,24 +72,13 @@ class ForEach extends Transformer {
     }>,
     options: BlockOptions
   ): Promise<unknown> {
-    // FIXME: fix the types on here
-    const reduceOptions = options as unknown as ReduceOptions;
-
     let last: unknown;
 
     for (const element of elements) {
-      const ctxt = {
-        ...options.ctxt,
-        [`@${elementKey}`]: element,
-      };
-
       // eslint-disable-next-line no-await-in-loop -- synchronous for-loop brick
-      last = await reducePipelineExpression(
-        bodyPipeline.__value__,
-        ctxt,
-        options.root,
-        reduceOptions
-      );
+      last = await options.runPipeline(bodyPipeline.__value__, {
+        [`@${elementKey}`]: element,
+      });
     }
 
     return last;

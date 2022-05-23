@@ -48,6 +48,11 @@ import userEvent from "@testing-library/user-event";
 import { Expression, ExpressionType } from "@/core";
 import { noop } from "lodash";
 
+export const neverPromise = async (...args: unknown[]): Promise<never> => {
+  console.error("This method should not have been called", { args });
+  throw new Error("This method should not have been called");
+};
+
 export const waitForEffect = async () =>
   act(async () => {
     // Awaiting the async state update

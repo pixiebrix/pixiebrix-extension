@@ -27,8 +27,9 @@ import type { ErrorObject } from "serialize-error";
 import type { Permissions } from "webextension-polyfill";
 import type React from "react";
 
-import { pick } from "lodash";
 import { contextNames } from "webext-detect-page";
+import { BlockPipeline } from "@/blocks/types";
+import { UnknownObject } from "@/types";
 
 // Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
@@ -245,13 +246,39 @@ export type ReaderRoot = HTMLElement | Document;
 // Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
 // the inputs using yup/jsonschema, so the types should match what's expected.
 export type BlockOptions<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see comment above
   TCtxt extends Record<string, any> = Record<string, any>
 > = {
+  /**
+   * The variable context, e.g., @input, @options, service definitions, and any output keys from other bricks
+   *
+   * @see BlockArgContext
+   */
   ctxt: TCtxt;
+
+  /**
+   * Logger for block messages
+   */
   logger: Logger;
+
+  /**
+   * Implicit root element (or document) for calls the select/read from the DOM
+   */
   root: ReaderRoot;
+
+  /**
+   * True if the brick is executing in headless mode.
+   */
   headless?: boolean;
+
+  /**
+   * Callback to run a sub-pipeline.
+   * @since 1.6.4
+   */
+  runPipeline: (
+    pipeline: BlockPipeline,
+    extraContext?: UnknownObject
+  ) => Promise<unknown>;
 };
 
 /**
@@ -338,10 +365,6 @@ export interface Metadata {
 export interface Sharing {
   readonly public: boolean;
   readonly organizations: UUID[];
-}
-
-export function selectMetadata(metadata: Metadata): Metadata {
-  return pick(metadata, ["id", "name", "version", "description"]);
 }
 
 export type Config = Record<string, unknown>;

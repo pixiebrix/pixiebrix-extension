@@ -58,6 +58,7 @@ import { ResolvedBlockConfig } from "@/runtime/runtimeTypes";
 import { UnknownObject } from "@/types";
 import { RunBlock } from "@/contentScript/runBlockTypes";
 import { resolveBlockConfig } from "@/blocks/registry";
+import { isObject } from "@/utils";
 
 type CommonOptions = ApiVersionOptions & {
   /**
@@ -251,6 +252,24 @@ async function executeBlockWithValidatedProps(
         ...commonOptions,
         ...options,
         root,
+        async runPipeline(pipeline, extraContext) {
+          if (!isObject(commonOptions.ctxt)) {
+            throw new Error("Expected object context for v3+ runtime");
+          }
+
+          return reducePipelineExpression(
+            pipeline,
+            {
+              ...commonOptions.ctxt,
+              ...extraContext,
+            },
+            root,
+            {
+              ...options,
+              runId: options.trace.runId,
+            }
+          );
+        },
       });
     }
 

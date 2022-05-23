@@ -18,6 +18,7 @@
 import { BusinessError } from "@/errors";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ParseJson from "@/blocks/transformers/ParseJson";
+import { neverPromise } from "@/testUtils/testHelpers";
 
 describe("ParseJson block", () => {
   test("Parse object", async () => {
@@ -29,6 +30,7 @@ describe("ParseJson block", () => {
       ctxt: null,
       logger: null,
       root: null,
+      runPipeline: neverPromise,
     });
 
     expect(result).toEqual({
@@ -44,6 +46,7 @@ test("Throw BusinessError on invalid JSON", async () => {
       ctxt: null,
       logger: null,
       root: null,
+      runPipeline: neverPromise,
     });
   }).rejects.toThrowError(BusinessError);
 });
