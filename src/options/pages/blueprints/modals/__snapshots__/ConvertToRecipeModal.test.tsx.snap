@@ -82,7 +82,7 @@ exports[`it renders default state 1`] = `
                       <div
                         class=" css-j966x-singleValue"
                       >
-                        @test
+                        @user1
                       </div>
                       <div
                         class=" css-eefzcu-Input"
@@ -134,7 +134,7 @@ exports[`it renders default state 1`] = `
                   <input
                     name="blueprintId-scope"
                     type="hidden"
-                    value="@test"
+                    value="@user1"
                   />
                 </div>
                 <span>

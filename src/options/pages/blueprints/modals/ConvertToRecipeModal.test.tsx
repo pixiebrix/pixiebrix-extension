@@ -19,7 +19,7 @@ import { anonAuth } from "@/auth/authConstants";
 import { authSlice } from "@/auth/authSlice";
 import { render } from "@/options/testHelpers";
 import extensionsSlice from "@/store/extensionsSlice";
-import { cloudExtensionFactory } from "@/testUtils/factories";
+import { authStateFactory, cloudExtensionFactory } from "@/testUtils/factories";
 import React from "react";
 import { blueprintModalsSlice } from "./blueprintModalsSlice";
 import ConvertToRecipeModal from "./ConvertToRecipeModal";
@@ -30,12 +30,7 @@ describe("it renders", () => {
 
     const rendered = render(<ConvertToRecipeModal />, {
       setupRedux(dispatch) {
-        dispatch(
-          authSlice.actions.setAuth({
-            ...anonAuth,
-            scope: "@test",
-          })
-        );
+        dispatch(authSlice.actions.setAuth(authStateFactory()));
         dispatch(
           extensionsSlice.actions.installCloudExtension({
             extension,
