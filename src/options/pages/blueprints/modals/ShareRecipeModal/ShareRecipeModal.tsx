@@ -46,7 +46,6 @@ import {
 import ActivationLink from "./ActivationLink";
 import { RequireScope } from "@/auth/RequireScope";
 import ReactSelect from "react-select";
-import cx from "classnames";
 import styles from "./ShareRecipeModal.module.scss";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { selectAuth } from "@/auth/authSelectors";
@@ -232,10 +231,17 @@ const ShareRecipeModal: React.FunctionComponent = () => {
                     ))}
 
                   <div className={styles.row}>
-                    <span className={cx({ "text-muted": !values.public })}>
-                      <FontAwesomeIcon icon={faGlobe} /> Public - toggle to
-                      share with anyone with link
-                    </span>
+                    {values.public ? (
+                      <span>
+                        <FontAwesomeIcon icon={faGlobe} /> Public - anyone with
+                        the link can access
+                      </span>
+                    ) : (
+                      <span className="text-muted">
+                        <FontAwesomeIcon icon={faGlobe} /> Public - toggle to
+                        share with anyone with link
+                      </span>
+                    )}
 
                     <BootstrapSwitchButton
                       onlabel=" "
