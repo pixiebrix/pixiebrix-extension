@@ -226,7 +226,7 @@
     "copy-webpack-plugin": "^10.2.1",
     "csp-parse": "0.0.2",
     "css-loader": "^6.2.0",
-    "css-minimizer-webpack-plugin": "^3.4.1",
+    "css-minimizer-webpack-plugin": "^4.0.0",
     "data-urls": "^3.0.0",
     "dotenv": "^15.0.0",
     "eslint": "^8.0.0",
