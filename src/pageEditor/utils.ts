@@ -19,7 +19,6 @@ import { Target } from "@/types";
 import { IExtension, RegistryId, UUID } from "@/core";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isExtension } from "@/pageEditor/sidebar/common";
-import { RecipeDefinition } from "@/types/definitions";
 
 export async function getCurrentURL(): Promise<string> {
   if (!browser.devtools) {
@@ -50,11 +49,4 @@ export function getRecipeIdForElement(
   element: IExtension | FormState
 ): RegistryId {
   return isExtension(element) ? element._recipe?.id : element.recipe?.id;
-}
-
-export function getRecipeById(
-  recipes: RecipeDefinition[],
-  id: RegistryId
-): RecipeDefinition | undefined {
-  return recipes.find((recipe) => recipe.metadata.id === id);
 }

@@ -16,10 +16,7 @@
  */
 
 import React from "react";
-import RegistryIdWidget, {
-  getScopeAndId,
-} from "@/components/form/widgets/RegistryIdWidget";
-import { RegistryId } from "@/core";
+import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { render, screen } from "@/testUtils/testHelpers";
 import { authActions } from "@/auth/authSlice";
 import userEvent from "@testing-library/user-event";
@@ -27,29 +24,6 @@ import { partition } from "lodash";
 import { UserRole } from "@/types/contract";
 import { validateRegistryId } from "@/types/helpers";
 import { authStateFactory } from "@/testUtils/factories";
-
-describe("getScopeAndId", () => {
-  test("normal id", () => {
-    const id = "@foo/bar" as RegistryId;
-    expect(getScopeAndId(id)).toStrictEqual(["@foo", "bar"]);
-  });
-  test("id with slash", () => {
-    const id = "@foo/bar/baz" as RegistryId;
-    expect(getScopeAndId(id)).toStrictEqual(["@foo", "bar/baz"]);
-  });
-  test("id without scope", () => {
-    const id = "foobar" as RegistryId;
-    expect(getScopeAndId(id)).toStrictEqual([undefined, "foobar"]);
-  });
-  test("id without scope with slash", () => {
-    const id = "foo/bar/baz" as RegistryId;
-    expect(getScopeAndId(id)).toStrictEqual([undefined, "foo/bar/baz"]);
-  });
-  test("scope without id", () => {
-    const id = "@foo" as RegistryId;
-    expect(getScopeAndId(id)).toStrictEqual(["@foo", undefined]);
-  });
-});
 
 const editorRoles = new Set<number>([
   UserRole.admin,

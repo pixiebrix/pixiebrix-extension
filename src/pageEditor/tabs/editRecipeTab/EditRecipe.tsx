@@ -36,7 +36,7 @@ import { object, string } from "yup";
 import { testIsSemVerString } from "@/types/helpers";
 import Form, { RenderBody } from "@/components/form/Form";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { getRecipeById } from "@/pageEditor/utils";
+import { getRecipeById } from "@/utils";
 import Alert from "@/components/Alert";
 import { createSelector } from "reselect";
 
