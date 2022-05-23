@@ -23,7 +23,7 @@ import SelectWidget, {
   makeStringOptions,
   SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
-import { split } from "lodash";
+import { isEmpty, split } from "lodash";
 import { RegistryId } from "@/core";
 import { Form } from "react-bootstrap";
 import styles from "./RegistryIdWidget.module.scss";
@@ -65,7 +65,10 @@ const RegistryIdWidget: React.VFC<{
   const [{ value }, , { setValue, setTouched }] = useField<RegistryId>(name);
   const { scope: userScope, organizations } = useSelector(selectAuth);
   const organizationScopes = organizations
-    .filter((organization) => editorRoles.has(organization.role))
+    .filter(
+      (organization) =>
+        !isEmpty(organization.scope) && editorRoles.has(organization.role)
+    )
     .map((organization) => organization.scope);
 
   const options = makeStringOptions(userScope, ...organizationScopes);

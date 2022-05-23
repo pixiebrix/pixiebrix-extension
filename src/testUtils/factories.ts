@@ -85,7 +85,7 @@ import { JsonObject } from "type-fest";
 export const uuidSequence = (n: number) =>
   validateUUID(`${padStart(String(n), 8, "0")}-0000-4000-A000-000000000000`);
 
-const organizationFactory = define<AuthUserOrganization>({
+export const organizationFactory = define<AuthUserOrganization>({
   id: uuidSequence,
   name(n: number): string {
     return `Test Organization ${n}`;
