@@ -73,7 +73,7 @@ describe("ParseDate block", () => {
         iso8601: "2021-12-09T22:00:00.000-05:00",
         date: "12/9/2021",
         time: "10:00:00 PM",
-        humanReadable: "2021-12-10T03:00:00.000Z UTC (MockDate: GMT-0500)",
+        humanReadable: "12/9/2021, 10:00:00 PM",
       },
     });
 
