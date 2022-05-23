@@ -28,8 +28,6 @@ import type { Permissions } from "webextension-polyfill";
 import type React from "react";
 
 import { contextNames } from "webext-detect-page";
-import { BlockPipeline } from "@/blocks/types";
-import { UnknownObject } from "@/types";
 
 // Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
@@ -276,8 +274,12 @@ export type BlockOptions<
    * @since 1.6.4
    */
   runPipeline: (
-    pipeline: BlockPipeline,
-    extraContext?: UnknownObject
+    // This should be BlockPipeline, but our dependencies are too tangled to use
+    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3477
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- brick is responsible for providing shape
+    pipeline: any,
+    // Should be UnknownObject, but can't use to introduce a circular dependency
+    extraContext?: Record<string, unknown>
   ) => Promise<unknown>;
 };
 
