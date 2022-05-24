@@ -70,8 +70,8 @@ const useTheme = (): { logo: ThemeLogo } => {
 
     void activateBackgroundTheme();
     addThemeClassToDocumentRoot(theme);
-    setThemeFavicon(themeLogo.small);
-  }, [dispatch, partnerId, theme, themeLogo.small]);
+    setThemeFavicon(theme);
+  }, [dispatch, partnerId, theme]);
 
   return {
     logo: themeLogo,
