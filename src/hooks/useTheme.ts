@@ -70,7 +70,7 @@ const useTheme = (): { logo: ThemeLogo } => {
 
     void activateBackgroundTheme();
     addThemeClassToDocumentRoot(theme);
-    setThemeFavicon(theme);
+    setThemeFavicon(themeLogo.small);
   }, [dispatch, partnerId, theme, themeLogo.small]);
 
   return {
