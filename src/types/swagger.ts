@@ -274,7 +274,7 @@ export interface paths {
   };
   "/api/organizations/{organization_pk}/errors/": {
     /** View to return most recent Rollbar error report for an organization. */
-    get: operations["retrieveErrorOccurrence"];
+    get: operations["retrieveOrganizationErrors"];
   };
   "/api/organizations/{organization_pk}/events/": {
     get: operations["retrieveEventInterval"];
@@ -2271,11 +2271,11 @@ export interface operations {
       };
     };
   };
-  /** View to return most recent Rollbar error report for an organization. */
+  /** View to return most recent Rollbar error report for a deployment. */
   retrieveErrorOccurrence: {
     parameters: {
       path: {
-        organization_pk: string;
+        deployment_pk: string;
       };
     };
     responses: {
@@ -3648,6 +3648,22 @@ export interface operations {
         content: {
           "application/json; version=1.0": unknown;
           "application/vnd.pixiebrix.api+json; version=1.0": unknown;
+        };
+      };
+    };
+  };
+  /** View to return most recent Rollbar error report for an organization. */
+  retrieveOrganizationErrors: {
+    parameters: {
+      path: {
+        organization_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["ErrorOccurrence"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ErrorOccurrence"];
         };
       };
     };
