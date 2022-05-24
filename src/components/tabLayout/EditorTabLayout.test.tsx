@@ -26,7 +26,7 @@ import {
   faSave,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import { render } from "@/testUtils/testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 
 function getTabItem(name: string, badgeCount?: number): TabItem {
   if (badgeCount) {

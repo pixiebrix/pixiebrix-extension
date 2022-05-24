@@ -17,7 +17,7 @@
 
 import React from "react";
 import { authStateFactory, formStateFactory } from "@/testUtils/factories";
-import { render } from "@/testUtils/testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 import DynamicEntry from "@/pageEditor/sidebar/DynamicEntry";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { authActions } from "@/auth/authSlice";

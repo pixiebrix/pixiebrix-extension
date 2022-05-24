@@ -27,6 +27,7 @@ import { ManualStorageKey, readStorage } from "@/chrome";
 import {
   addThemeClassToDocumentRoot,
   getThemeLogo,
+  setThemeFavicon,
   ThemeLogo,
 } from "@/utils/themeUtils";
 
@@ -69,6 +70,7 @@ const useTheme = (): { logo: ThemeLogo } => {
 
     void activateBackgroundTheme();
     addThemeClassToDocumentRoot(theme);
+    setThemeFavicon(theme);
   }, [dispatch, partnerId, theme]);
 
   return {

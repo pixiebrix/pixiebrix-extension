@@ -29,24 +29,18 @@ import {
   AnyAction,
   CombinedState,
   configureStore,
+  EnhancedStore,
   PreloadedState,
   Reducer,
   ReducersMapObject,
 } from "@reduxjs/toolkit";
 import { Form, Formik, FormikValues } from "formik";
-import { Dispatch } from "redux";
-import { authSlice } from "@/auth/authSlice";
-import extensionsSlice from "@/store/extensionsSlice";
-import servicesSlice from "@/store/servicesSlice";
-import settingsSlice from "@/store/settingsSlice";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
-import sessionSlice from "@/pageEditor/slices/sessionSlice";
-import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSlice";
-import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
-import { logSlice } from "@/components/logViewer/logSlice";
+import { Dispatch, Middleware } from "redux";
 import userEvent from "@testing-library/user-event";
 import { Expression, ExpressionType } from "@/core";
 import { noop } from "lodash";
+import { ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
+import { UnknownObject } from "@/types";
 
 export const neverPromise = async (...args: unknown[]): Promise<never> => {
   console.error("This method should not have been called", { args });
@@ -131,73 +125,68 @@ type WrapperResult = RenderResult & {
   getFormState: () => Promise<FormikValues>;
 };
 
-function renderWithWrappers(
-  ui: React.ReactElement,
-  {
-    initialValues = {},
-    setupRedux = noop,
-    ...renderOptions
-  }: WrapperOptions = {}
-): WrapperResult {
-  let submitHandler: (values: FormikValues) => void = jest.fn();
+type ConfigureStore<
+  S = UnknownObject,
+  A extends Action = AnyAction,
+  M extends ReadonlyArray<Middleware<UnknownObject, S>> = [
+    ThunkMiddlewareFor<S>
+  ]
+> = () => EnhancedStore<S, A, M>;
 
-  const store = configureStore({
-    reducer: {
-      auth: authSlice.reducer,
-      options: extensionsSlice.reducer,
-      services: servicesSlice.reducer,
-      settings: settingsSlice.reducer,
-      editor: editorSlice.reducer,
-      session: sessionSlice.reducer,
-      savingExtension: savingExtensionSlice.reducer,
-      runtime: runtimeSlice.reducer,
-      logs: logSlice.reducer,
-    },
-  });
+export function createRenderWithWrappers(configureStore: ConfigureStore) {
+  return (
+    ui: React.ReactElement,
+    {
+      initialValues = {},
+      setupRedux = noop,
+      ...renderOptions
+    }: WrapperOptions = {}
+  ): WrapperResult => {
+    let submitHandler: (values: FormikValues) => void = jest.fn();
 
-  setupRedux(store.dispatch);
+    const store = configureStore();
 
-  const Wrapper: React.FC = ({ children }) => (
-    <Provider store={store}>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={(values) => {
-          submitHandler?.(values);
-        }}
-      >
-        {({ handleSubmit }) => (
-          <Form onSubmit={handleSubmit}>
-            {children}
-            <button type="submit">Submit</button>
-          </Form>
-        )}
-      </Formik>
-    </Provider>
-  );
+    setupRedux(store.dispatch);
 
-  const renderResult = render(ui, { wrapper: Wrapper, ...renderOptions });
+    const Wrapper: React.FC = initialValues
+      ? ({ children }) => (
+          <Provider store={store}>
+            <Formik
+              initialValues={initialValues}
+              onSubmit={(values) => {
+                submitHandler?.(values);
+              }}
+            >
+              {({ handleSubmit }) => (
+                <Form onSubmit={handleSubmit}>
+                  {children}
+                  <button type="submit">Submit</button>
+                </Form>
+              )}
+            </Formik>
+          </Provider>
+        )
+      : ({ children }) => <Provider store={store}>{children}</Provider>;
 
-  return {
-    ...renderResult,
-    async getFormState() {
-      // Wire-up a handler to grab the form state
-      let formState: FormikValues = null;
-      submitHandler = (values) => {
-        formState = values;
-      };
+    const renderResult = render(ui, { wrapper: Wrapper, ...renderOptions });
 
-      // Submit the form
-      await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+    return {
+      ...renderResult,
+      async getFormState() {
+        // Wire-up a handler to grab the form state
+        let formState: FormikValues = null;
+        submitHandler = (values) => {
+          formState = values;
+        };
 
-      return formState;
-    },
+        // Submit the form
+        await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+        return formState;
+      },
+    };
   };
 }
-
-// eslint-disable-next-line import/export -- re-export RTL
-export * from "@testing-library/react";
-// eslint-disable-next-line import/export -- override render
-export { renderWithWrappers as render };
 
 export function toExpression<T>(type: ExpressionType, value: T): Expression<T> {
   return {

@@ -16,7 +16,8 @@
  */
 
 import React from "react";
-import { render, waitForEffect } from "@/testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 import PageStateTab from "@/pageEditor/tabs/editTab/dataPanel/PageStateTab";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import {
