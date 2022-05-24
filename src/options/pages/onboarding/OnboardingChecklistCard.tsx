@@ -44,7 +44,7 @@ export const OnboardingStep: React.FunctionComponent<{
       )}
     >
       <div
-        className={cx(styles.checklistItemLayout, active ?? styles.inactive)}
+        className={cx(styles.checklistItemLayout, !active && styles.inactive)}
       >
         <div>
           <span className={cx(styles.circleIcon, circleIconStyle)}>
