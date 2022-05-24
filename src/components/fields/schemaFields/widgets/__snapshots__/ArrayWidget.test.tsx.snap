@@ -69,8 +69,8 @@ exports[`ArrayWidget renders widget with items 1`] = `
                   <span
                     class="symbol"
                   >
-                    <svg
-                      class="root"
+                    <test-file-stub
+                      classname="root"
                     />
                   </span>
                 </button>
@@ -117,8 +117,8 @@ exports[`ArrayWidget renders widget with items 1`] = `
                   <span
                     class="symbol"
                   >
-                    <svg
-                      class="root"
+                    <test-file-stub
+                      classname="root"
                     />
                   </span>
                 </button>
@@ -165,8 +165,8 @@ exports[`ArrayWidget renders widget with items 1`] = `
                   <span
                     class="symbol"
                   >
-                    <svg
-                      class="root"
+                    <test-file-stub
+                      classname="root"
                     />
                   </span>
                 </button>

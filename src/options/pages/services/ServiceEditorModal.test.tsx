@@ -34,7 +34,7 @@ describe("ServiceEditorModal", () => {
   test("Can render Pipedrive configuration modal without existing configuration", async () => {
     const service = fromJS(pipedriveYaml as any);
 
-    const rendered = render(
+    render(
       <ServiceEditorModal
         configuration={{ label: "" } as RawServiceConfiguration}
         onDelete={jest.fn()}
@@ -51,6 +51,7 @@ describe("ServiceEditorModal", () => {
     expect(screen.getByText("Delete")).not.toBeNull();
     expect(screen.getByText("Close")).not.toBeNull();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    const dialogRoot = screen.getByRole("dialog");
+    expect(dialogRoot).toMatchSnapshot();
   });
 });

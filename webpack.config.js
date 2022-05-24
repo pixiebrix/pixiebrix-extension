@@ -378,19 +378,6 @@ module.exports = (env, options) =>
             },
           ],
         },
-        {
-          test: /\.svg$/,
-          resourceQuery: /loadAsComponent/,
-          use: [
-            {
-              loader: "@svgr/webpack",
-              options: {
-                typescript: true,
-                ext: "tsx",
-              },
-            },
-          ],
-        },
       ],
     },
   });

@@ -15,6 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// __mocks__/fileMock.js
+import { generateRecipeId } from "./recipeUtils";
 
-module.exports = "test-file-stub";
+describe("generateRecipeId", () => {
+  test("no special chars", () => {
+    expect(generateRecipeId("@test", "This Is a Test")).toEqual(
+      "@test/this-is-a-test"
+    );
+  });
+
+  test("handle colon", () => {
+    expect(generateRecipeId("@test", "This: Is a Test")).toEqual(
+      "@test/this-is-a-test"
+    );
+  });
+
+  test("collapse spaces", () => {
+    expect(generateRecipeId("@test", "This   Is a Test")).toEqual(
+      "@test/this-is-a-test"
+    );
+  });
+
+  test("return empty on invalid", () => {
+    expect(generateRecipeId("", "This   Is a Test")).toBe("");
+  });
+});

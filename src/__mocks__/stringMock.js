@@ -15,4 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export default "svg";
+// This mock works for any `import` that expects a string, whether it
+// would be the file content, the file URL, or a "React component"
+module.exports = "test-file-stub";
