@@ -34,6 +34,8 @@ export const OnboardingStep: React.FunctionComponent<{
     ? styles.circleIconActive
     : styles.circleIconDefault;
 
+  const notStarted = !completed && !active;
+
   return (
     <ListGroup.Item
       className={cx(
@@ -53,7 +55,7 @@ export const OnboardingStep: React.FunctionComponent<{
           <div className={styles.stepNumber}>Step {number}</div>
           <div>
             {title && <h3 className={styles.stepTitle}>{title}</h3>}
-            {children && (
+            {children && !(notStarted || completed) && (
               <div className={title && styles.titlePadding}>{children}</div>
             )}
           </div>

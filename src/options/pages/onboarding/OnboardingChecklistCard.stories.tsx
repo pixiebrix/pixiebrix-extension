@@ -28,7 +28,9 @@ export default {
 
 const Template: ComponentStory<typeof OnboardingChecklistCard> = (args) => (
   <OnboardingChecklistCard>
-    <OnboardingStep number={1} title="PixieBrix account created" completed />
+    <OnboardingStep number={1} title="PixieBrix account created" completed>
+      Let's get started.
+    </OnboardingStep>
     <OnboardingStep
       number={2}
       title="Install the PixieBrix browser extension"
@@ -39,7 +41,9 @@ const Template: ComponentStory<typeof OnboardingChecklistCard> = (args) => (
         permission prompt
       </p>
     </OnboardingStep>
-    <OnboardingStep number={3} title="Celebrate" />
+    <OnboardingStep number={3} title="Celebrate">
+      You did it!
+    </OnboardingStep>
   </OnboardingChecklistCard>
 );
 
