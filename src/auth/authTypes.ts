@@ -91,10 +91,26 @@ export type OrganizationAuthState = {
 };
 
 export type AuthUserOrganization = {
+  /**
+   * ID of the organization. NOT the id of the membership.
+   */
   id: UUID;
+  /**
+   * Name of the organization.
+   */
   name: string;
+  /**
+   * The user's role within the organization.
+   */
   role: Me["organization_memberships"][number]["role"];
+  /**
+   * The organization's brick scope, or null if not set.
+   */
   scope?: string | null;
+  /**
+   * True if the user is a manager of at least one team deployment.
+   */
+  isDeploymentManager: boolean;
 };
 
 export type AuthState = {

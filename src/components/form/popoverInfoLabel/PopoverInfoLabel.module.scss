@@ -17,4 +17,14 @@
 
 .span {
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  min-width: 1px;
+}
+.label {
+  display: inline-block;
+  margin-right: 5px;
+  min-width: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

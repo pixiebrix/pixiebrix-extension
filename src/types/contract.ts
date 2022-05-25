@@ -46,10 +46,14 @@ type MeGroup = components["schemas"]["Me"]["group_memberships"][number] & {
   id: UUID;
 };
 
-type MeMembershipOrganization =
-  components["schemas"]["Me"]["organization_memberships"][number] & {
-    organization: UUID;
-  };
+type MeMembershipOrganization = Except<
+  components["schemas"]["Me"]["organization_memberships"][number],
+  "is_deployment_manager"
+> & {
+  organization: UUID;
+  // The type is wrong in the Swagger
+  is_deployment_manager: boolean;
+};
 
 type MeOrganization = Required<components["schemas"]["Me"]["organization"]> & {
   id: UUID;

@@ -27,11 +27,18 @@ export function selectOrganizations(
   }
 
   return organizationMemberships.map(
-    ({ organization, organization_name, role, scope }) => ({
+    ({
+      organization,
+      organization_name,
+      role,
+      scope,
+      is_deployment_manager,
+    }) => ({
       id: organization,
       name: organization_name,
       role,
       scope,
+      isDeploymentManager: is_deployment_manager,
     })
   );
 }

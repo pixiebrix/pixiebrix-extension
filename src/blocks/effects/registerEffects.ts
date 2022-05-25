@@ -41,6 +41,7 @@ import { ReactivateEffect } from "./reactivate";
 import { SoundEffect } from "./sound";
 import { DisableEffect } from "./disable";
 import { EnableEffect } from "./enable";
+import InsertHtml from "@/blocks/effects/insertHtml";
 
 function registerEffects(): void {
   registerBlock(new LogEffect());
@@ -74,6 +75,7 @@ function registerEffects(): void {
   registerBlock(new SoundEffect());
   registerBlock(new EnableEffect());
   registerBlock(new DisableEffect());
+  registerBlock(new InsertHtml());
 }
 
 export default registerEffects;
