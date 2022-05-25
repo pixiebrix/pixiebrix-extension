@@ -141,7 +141,7 @@ export class ParseDate extends Transformer {
         date: utc.toLocaleDateString(),
         time: utc.toLocaleTimeString(),
         humanReadable: parsed.toUTCString(),
-        unixTimestamp: parsed.valueOf(),
+        unixTimestamp: utc.valueOf(),
       },
       local: {
         iso8601: getLocalISOString(parsed),
