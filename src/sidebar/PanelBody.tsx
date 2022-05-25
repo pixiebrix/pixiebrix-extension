@@ -21,7 +21,7 @@ import blockRegistry from "@/blocks/registry";
 import { useAsyncState } from "@/hooks/common";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import ReactShadowRoot from "react-shadow-root";
-import { getErrorMessage } from "@/errors";
+import { BusinessError, getErrorMessage } from "@/errors";
 import { BlockArg, RendererOutput } from "@/core";
 import { PanelPayload } from "@/sidebar/types";
 import RendererComponent from "@/sidebar/RendererComponent";
@@ -48,6 +48,11 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
       root: null,
       // TODO: use the correct logger here so the errors show up in the logs
       logger: new ConsoleLogger({ blockId }),
+      async runPipeline() {
+        throw new BusinessError(
+          "Support for running pipelines in panels not implemented"
+        );
+      },
     });
     return (
       <div className="full-height" data-block-id={blockId}>

@@ -58,6 +58,7 @@ import { ResolvedBlockConfig } from "@/runtime/runtimeTypes";
 import { UnknownObject } from "@/types";
 import { RunBlock } from "@/contentScript/runBlockTypes";
 import { resolveBlockConfig } from "@/blocks/registry";
+import { isObject } from "@/utils";
 
 type CommonOptions = ApiVersionOptions & {
   /**
@@ -139,7 +140,7 @@ export type IntermediateState = {
 };
 
 /**
- * All of the data that determine the execution behavior of a block
+ * All the data that determine the execution behavior of a block
  * @see IBlock.run
  */
 type BlockProps<TArgs extends RenderedArgs | BlockArg = RenderedArgs> = {
@@ -251,6 +252,24 @@ async function executeBlockWithValidatedProps(
         ...commonOptions,
         ...options,
         root,
+        async runPipeline(pipeline, extraContext) {
+          if (!isObject(commonOptions.ctxt)) {
+            throw new Error("Expected object context for v3+ runtime");
+          }
+
+          return reducePipelineExpression(
+            pipeline,
+            {
+              ...commonOptions.ctxt,
+              ...extraContext,
+            },
+            root,
+            {
+              ...options,
+              runId: options.trace.runId,
+            }
+          );
+        },
       });
     }
 
@@ -701,6 +720,58 @@ export async function reducePipeline(
       isLastBlock: index === pipelineArray.length - 1,
       previousOutput: output,
       context,
+    };
+
+    let nextValues: BlockOutput;
+
+    const stepOptions = {
+      ...options,
+      // Could actually parallelize. But performance benefit won't be significant vs. readability impact
+      // eslint-disable-next-line no-await-in-loop -- see comment above
+      logger: await getStepLogger(blockConfig, pipelineLogger),
+    };
+
+    try {
+      // eslint-disable-next-line no-await-in-loop -- can't parallelize because each step depends on previous step
+      nextValues = await blockReducer(blockConfig, state, stepOptions);
+    } catch (error) {
+      throwBlockError(blockConfig, state, error, stepOptions);
+    }
+
+    output = nextValues.output;
+    context = nextValues.context;
+  }
+
+  return output;
+}
+
+/**
+ * Reduce a pipeline of bricks declared in a !pipeline expression.
+ */
+export async function reducePipelineExpression(
+  pipeline: BlockPipeline,
+  context: UnknownObject,
+  root: ReaderRoot,
+  options: ReduceOptions
+): Promise<unknown> {
+  const { explicitDataFlow, logger: pipelineLogger } = options;
+
+  if (!explicitDataFlow) {
+    throw new Error(
+      "reducePipelineExpression requires explicitDataFlow runtime setting"
+    );
+  }
+
+  let output: unknown = null;
+
+  for (const [index, blockConfig] of pipeline.entries()) {
+    const state: IntermediateState = {
+      root,
+      index,
+      isLastBlock: index === pipeline.length - 1,
+      previousOutput: output,
+      // Assume @input and @options are present
+      context: context as BlockArgContext,
     };
 
     let nextValues: BlockOutput;

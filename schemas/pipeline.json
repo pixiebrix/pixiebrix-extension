@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://app.pixiebrix.com/schemas/pipeline#",
+  "title": "PixieBrix pipeline expression",
+  "description": "A sequence of PixieBrix bricks",
+  "type": "object",
+  "properties": {
+    "__type__": {
+      "type": "string",
+      "const": "pipeline"
+    },
+    "__value__": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "anyOf": [
+              { "type": "string" },
+              { "$ref": "https://app.pixiebrix.com/schemas/ref#/block" }
+            ],
+            "description": "The id of the block, or an inner definition key"
+          },
+          "config": {
+            "type": "object",
+            "description": "The configuration for the block"
+          }
+        },
+        "required": ["id"]
+      }
+    }
+  }
+}

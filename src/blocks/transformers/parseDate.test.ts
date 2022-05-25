@@ -20,6 +20,7 @@ import { register, TimeZone, unregister } from "timezone-mock";
 import { BusinessError } from "@/errors";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { validateOutput } from "@/validators/generic";
+import { neverPromise } from "@/testUtils/testHelpers";
 
 const refDate = "2021-12-07T06:17:09.258Z";
 
@@ -60,6 +61,7 @@ describe("ParseDate block", () => {
       ctxt: null,
       logger: null,
       root: null,
+      runPipeline: neverPromise,
     });
 
     expect(result).toEqual({
@@ -89,6 +91,7 @@ describe("ParseDate block", () => {
         ctxt: null,
         logger: null,
         root: null,
+        runPipeline: neverPromise,
       });
     }).rejects.toThrowError(BusinessError);
   });
@@ -101,6 +104,7 @@ describe("ParseDate block", () => {
         ctxt: null,
         logger: null,
         root: null,
+        runPipeline: neverPromise,
       });
     }).rejects.toThrowError(BusinessError);
   });
@@ -116,6 +120,7 @@ describe("ParseDate block", () => {
       ctxt: null,
       logger: null,
       root: null,
+      runPipeline: neverPromise,
     });
 
     expect(result).toEqual({
