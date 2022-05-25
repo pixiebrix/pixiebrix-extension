@@ -757,7 +757,9 @@ export async function reducePipelineExpression(
   const { explicitDataFlow, logger: pipelineLogger } = options;
 
   if (!explicitDataFlow) {
-    throw new Error("reduceSubPipeline requires explicitDataFlow");
+    throw new Error(
+      "reducePipelineExpression requires explicitDataFlow runtime setting"
+    );
   }
 
   let output: unknown = null;
