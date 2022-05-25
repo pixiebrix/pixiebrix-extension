@@ -21,7 +21,19 @@ import { propertiesToSchema } from "@/validators/generic";
 import { $safeFind } from "@/helpers";
 import { BusinessError } from "@/errors";
 import sanitize from "@/utils/sanitize";
-import { escapeSelector } from "jquery";
+import { PIXIEBRIX_DATA_ATTR } from "@/common";
+import { escape } from "lodash";
+
+type Position = "before" | "prepend" | "append" | "after";
+
+const POSITIONS: Position[] = ["before", "prepend", "append", "after"];
+
+const POSITION_MAP = new Map<Position, InsertPosition>([
+  ["before", "beforebegin"],
+  ["prepend", "afterbegin"],
+  ["append", "beforeend"],
+  ["after", "afterend"],
+]);
 
 class InsertHtml extends Effect {
   constructor() {
@@ -48,13 +60,13 @@ class InsertHtml extends Effect {
         type: "string",
         description:
           "https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML",
-        enum: ["beforebegin", "afterbegin", "beforeend", "afterend"],
-        default: "beforeend",
+        enum: POSITIONS,
+        default: "append",
       },
-      id: {
+      replacementId: {
         type: "string",
         description:
-          "Pass a unique identifier (id) to replace element from previous run",
+          "Optional unique identifier (id) to replace element from previous run",
       },
     },
     ["anchor", "html"]
@@ -68,29 +80,34 @@ class InsertHtml extends Effect {
     {
       anchor,
       html,
-      position = "beforeend",
-      id,
+      position = "append",
+      replacementId,
     }: BlockArg<{
       anchor: string;
       html: string;
-      id: string;
-      position: "beforebegin" | "afterbegin" | "beforeend" | "afterend";
+      replacementId?: string;
+      position?: Position;
     }>,
     { root = document }: BlockOptions
   ): Promise<void> {
     const sanitizedHTML = sanitize(html);
     const sanitizedElement = $(sanitizedHTML).get(0);
 
-    if (id) {
-      $safeFind(`#${escapeSelector(id)}`, root).remove();
-      sanitizedElement.setAttribute("id", id);
+    const escapedId = escape(replacementId);
+    if (replacementId) {
+      // Use PIXIEBRIX_DATA_ATTR instead of id to support semantics of multiple elements on the page
+      $safeFind(`[${PIXIEBRIX_DATA_ATTR}="${escapedId}"]`, root).remove();
+      sanitizedElement.setAttribute(PIXIEBRIX_DATA_ATTR, escapedId);
     }
 
     const anchorElements = $safeFind(anchor, root);
 
     for (const anchorElement of anchorElements.get()) {
       try {
-        anchorElement.insertAdjacentHTML(position, sanitizedElement.outerHTML);
+        anchorElement.insertAdjacentHTML(
+          POSITION_MAP.get(position),
+          sanitizedElement.outerHTML
+        );
       } catch (error) {
         if (error instanceof DOMException) {
           throw new BusinessError("Error inserting element", { cause: error });
