@@ -112,6 +112,7 @@ export async function uninstallAllDeployments(): Promise<void> {
 
   reportEvent("DeploymentDeactivateAll", {
     auto: true,
+    deployments: toUninstall.map((x) => x._deployment.id),
   });
 }
 
@@ -139,8 +140,9 @@ export async function uninstallUnmatchedDeployments(
 
   await setExtensionsState(state);
 
-  reportEvent("DeploymentDeactivateAll", {
+  reportEvent("DeploymentDeactivateUnassigned", {
     auto: true,
+    deployments: toUninstall.map((x) => x._deployment.id),
   });
 }
 
