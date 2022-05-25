@@ -88,6 +88,11 @@ export class ParseDate extends Transformer {
           humanReadable: {
             type: "string",
           },
+          unixTimestamp: {
+            type: "number",
+            description:
+              "The number of milliseconds between 1 January 1970 00:00:00 UTC and the given date.",
+          },
         },
       },
       local: {
@@ -136,6 +141,7 @@ export class ParseDate extends Transformer {
         date: utc.toLocaleDateString(),
         time: utc.toLocaleTimeString(),
         humanReadable: parsed.toUTCString(),
+        unixTimestamp: parsed.valueOf(),
       },
       local: {
         iso8601: getLocalISOString(parsed),

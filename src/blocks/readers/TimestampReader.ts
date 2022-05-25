@@ -25,13 +25,16 @@ class TimestampReader extends Reader {
     super(
       "@pixiebrix/timestamp",
       "Generate a timestamp",
-      "Get the current date-time in ISO format"
+      "Get the current date-time in multiple formats"
     );
   }
 
   async read() {
+    const date = new Date();
+
     return {
-      timestamp: new Date().toISOString(),
+      timestamp: date.toISOString(),
+      unixTimestamp: date.valueOf(),
     };
   }
 
@@ -45,8 +48,14 @@ class TimestampReader extends Reader {
     properties: {
       timestamp: {
         type: "string",
-        description: "Current ISO date-time",
+        description:
+          "Current ISO date-time in simplified extended ISO format (ISO 8601)",
         format: "date-time",
+      },
+      unixTimestamp: {
+        type: "number",
+        description:
+          "The number of milliseconds between 1 January 1970 00:00:00 UTC and the given date",
       },
     },
   };
