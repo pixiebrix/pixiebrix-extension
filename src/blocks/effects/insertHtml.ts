@@ -21,13 +21,14 @@ import { propertiesToSchema } from "@/validators/generic";
 import { $safeFind } from "@/helpers";
 import { BusinessError } from "@/errors";
 import sanitize from "@/utils/sanitize";
+import { escapeSelector } from "jquery";
 
-export class InsertHtml extends Effect {
+class InsertHtml extends Effect {
   constructor() {
     super(
       "@pixiebrix/html/insert",
-      "Insert HTML",
-      "Insert HTML relative to another element on the page"
+      "Insert HTML Element",
+      "Insert HTML Element relative to another element on the page"
     );
   }
 
@@ -78,19 +79,18 @@ export class InsertHtml extends Effect {
     { root = document }: BlockOptions
   ): Promise<void> {
     const sanitizedHTML = sanitize(html);
-
     const sanitizedElement = $(sanitizedHTML).get(0);
 
     if (id) {
-      $safeFind(`#${id}`, root).remove();
+      $safeFind(`#${escapeSelector(id)}`, root).remove();
       sanitizedElement.setAttribute("id", id);
     }
 
-    const elements = $safeFind(anchor, root);
+    const anchorElements = $safeFind(anchor, root);
 
-    for (const element of elements.get()) {
+    for (const anchorElement of anchorElements.get()) {
       try {
-        element.insertAdjacentHTML(position, sanitizedElement.outerHTML);
+        anchorElement.insertAdjacentHTML(position, sanitizedElement.outerHTML);
       } catch (error) {
         if (error instanceof DOMException) {
           throw new BusinessError("Error inserting element", { cause: error });
