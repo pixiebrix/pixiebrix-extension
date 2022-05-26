@@ -41,8 +41,12 @@
   background-color: #f6f6f7 !important;
 }
 
-.titlePadding {
+.stepBody {
   padding-top: 8px;
+
+  :last-child {
+    margin-bottom: 0 !important;
+  }
 }
 
 .stepTitle {
@@ -50,7 +54,7 @@
   font-style: normal;
   font-weight: 700;
   font-size: 16px;
-  color: var(--theme-primary);
+  color: #58538d;
   margin: 0;
 }
 
@@ -59,12 +63,21 @@
 }
 
 .circleIconActive {
-  background-color: var(--theme-primary);
+  background-color: #58538d;
 }
 
 .circleIconDefault {
   background-color: transparent;
-  border: 3px solid var(--theme-primary);
+  border: 3px solid #58538d;
+}
+
+.onboardingTitle {
+  color: #495057;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 25px;
+  text-align: center;
+  margin-bottom: 19px;
 }
 
 .stepNumber {

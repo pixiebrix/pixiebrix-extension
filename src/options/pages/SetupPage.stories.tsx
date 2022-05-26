@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,20 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.onboardingStepStatus {
-  min-width: 50px;
-  color: #00b300;
-  font-size: 1.5rem;
-  line-height: 1.5rem;
-}
+import React from "react";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
+import { SetupCard } from "@/options/pages/SetupPage";
 
-.onboardingStepStep {
-  font-size: 1.25rem;
-  line-height: 1.5rem;
-  min-width: 125px;
-}
+export default {
+  title: "Onboarding/SetupPage",
+  component: SetupCard,
+} as ComponentMeta<typeof SetupCard>;
 
-.onboardingStepContent {
-  flex-grow: 1;
-  font-size: 1.25rem;
-}
+const Template: ComponentStory<typeof SetupCard> = (args) => (
+  <SetupCard {...args} />
+);
+
+export const Default = Template.bind({});

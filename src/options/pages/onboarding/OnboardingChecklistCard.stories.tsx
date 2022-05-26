@@ -27,7 +27,7 @@ export default {
 } as ComponentMeta<typeof OnboardingChecklistCard>;
 
 const Template: ComponentStory<typeof OnboardingChecklistCard> = (args) => (
-  <OnboardingChecklistCard>
+  <OnboardingChecklistCard title="Setup steps">
     <OnboardingStep number={1} title="PixieBrix account created" completed>
       Let's get started.
     </OnboardingStep>

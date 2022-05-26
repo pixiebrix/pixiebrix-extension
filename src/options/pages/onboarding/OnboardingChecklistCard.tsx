@@ -56,7 +56,7 @@ export const OnboardingStep: React.FunctionComponent<{
           <div>
             {title && <h3 className={styles.stepTitle}>{title}</h3>}
             {children && !(notStarted || completed) && (
-              <div className={title && styles.titlePadding}>{children}</div>
+              <div className={title && styles.stepBody}>{children}</div>
             )}
           </div>
         </div>
@@ -65,8 +65,25 @@ export const OnboardingStep: React.FunctionComponent<{
   );
 };
 
-const OnboardingChecklistCard: React.FunctionComponent = ({ children }) => {
-  return <Card className={styles.checklistCard}>{children}</Card>;
+const OnboardingChecklistCard: React.FunctionComponent<{
+  title?: string;
+}> = ({ title, children }) => {
+  const checklistCard = (
+    <Card className={styles.checklistCard}>
+      <ListGroup>{children}</ListGroup>
+    </Card>
+  );
+
+  if (title) {
+    return (
+      <div>
+        <h1 className={styles.onboardingTitle}>{title}</h1>
+        {checklistCard}
+      </div>
+    );
+  }
+
+  return checklistCard;
 };
 
 export default OnboardingChecklistCard;
