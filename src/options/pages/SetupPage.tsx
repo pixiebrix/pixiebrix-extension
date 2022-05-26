@@ -33,30 +33,24 @@ const SERVICE_URL = process.env.SERVICE_URL;
 
 export const SetupCard: React.FunctionComponent<{ installURL: string }> = ({
   installURL,
-}) => {
-  return (
-    <OnboardingChecklistCard title="PixieBrix setup steps">
-      <OnboardingStep
-        number={1}
-        title="Install the PixieBrix browser extension"
-        completed
-      />
-      <OnboardingStep
-        number={2}
-        title="Link the extension to a PixieBrix account"
-        active
-      >
-        <Button
-          role="button"
-          className="btn btn-primary mt-2"
-          href={installURL}
-        >
-          <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
-        </Button>
-      </OnboardingStep>
-    </OnboardingChecklistCard>
-  );
-};
+}) => (
+  <OnboardingChecklistCard title="PixieBrix setup steps">
+    <OnboardingStep
+      number={1}
+      title="Install the PixieBrix browser extension"
+      completed
+    />
+    <OnboardingStep
+      number={2}
+      title="Link the extension to a PixieBrix account"
+      active
+    >
+      <Button role="button" className="btn btn-primary mt-2" href={installURL}>
+        <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
+      </Button>
+    </OnboardingStep>
+  </OnboardingChecklistCard>
+);
 
 const SetupPage: React.FunctionComponent = () => {
   useTitle("Setup");

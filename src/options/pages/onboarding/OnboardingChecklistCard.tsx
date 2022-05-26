@@ -39,6 +39,7 @@ export const OnboardingStep: React.FunctionComponent<{
   return (
     <ListGroup.Item
       className={cx(
+        "w-100",
         styles.checklistItem,
         !active && !completed && styles.futureStep
       )}
@@ -51,7 +52,7 @@ export const OnboardingStep: React.FunctionComponent<{
             {completed && <FontAwesomeIcon icon={faCheck} />}
           </span>
         </div>
-        <div>
+        <div className={styles.stepDescription}>
           <div className={styles.stepNumber}>Step {number}</div>
           <div>
             {title && <h3 className={styles.stepTitle}>{title}</h3>}

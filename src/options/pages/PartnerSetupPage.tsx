@@ -17,49 +17,55 @@
 
 import React from "react";
 import { useTitle } from "@/hooks/title";
-import { Card, Form, Row, Col, Button } from "react-bootstrap";
-import aaLogo from "@img/aa-logo.svg";
+import { Form, Row, Col, Button } from "react-bootstrap";
+import OnboardingChecklistCard, {
+  OnboardingStep,
+} from "@/options/pages/onboarding/OnboardingChecklistCard";
+import { useGetMeQuery } from "@/services/api";
 
 const PartnerSetupPage: React.FunctionComponent = () => {
   useTitle("Connect your Automation Anywhere account");
+  const { data: me } = useGetMeQuery();
 
   return (
     <Row className="w-100 mx-0">
       <Col className="mt-5 col-md-10 col-lg-7 col-sm-12 mx-auto">
-        <Card>
-          <Card.Header>Connect your Automation Anywhere account</Card.Header>
-          <Card.Body>
-            <img src={aaLogo} alt="Automation Anywhere Logo" />
-            <h3>Connect your AARI account</h3>
+        <OnboardingChecklistCard title="Set up your account">
+          <OnboardingStep
+            number={1}
+            title="PixieBrix account created/linked"
+            completed
+          />
+          <OnboardingStep
+            number={2}
+            title="PixieBrix browser extension installed"
+            completed
+          />
+          <OnboardingStep number={3} title="Connect your AARI account" active>
             <Form>
-              <Form.Group as={Row}>
-                <Form.Label column sm={2}>
-                  Control Room
-                </Form.Label>
-                <Col sm={10}>
-                  <Form.Control type="text" />
-                </Col>
+              <Form.Group>
+                <Form.Label>Control Room URL</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={me?.organization?.control_room?.url}
+                />
               </Form.Group>
-              <Form.Group as={Row}>
-                <Form.Label column sm={2}>
-                  Username
-                </Form.Label>
-                <Col sm={10}>
+              <Form.Row>
+                <Form.Group as={Col}>
+                  <Form.Label>Username</Form.Label>
                   <Form.Control type="text" />
-                </Col>
-              </Form.Group>
-              <Form.Group as={Row}>
-                <Form.Label column sm={2}>
-                  Password
-                </Form.Label>
-                <Col sm={10}>
+                </Form.Group>
+                <Form.Group as={Col}>
+                  <Form.Label>Password</Form.Label>
                   <Form.Control type="password" />
-                </Col>
-              </Form.Group>
-              <Button>Connect</Button>
+                </Form.Group>
+              </Form.Row>
+              <div className="text-right">
+                <Button>Connect</Button>
+              </div>
             </Form>
-          </Card.Body>
-        </Card>
+          </OnboardingStep>
+        </OnboardingChecklistCard>
       </Col>
     </Row>
   );

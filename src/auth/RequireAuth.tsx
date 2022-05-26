@@ -138,6 +138,8 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     void clearExtensionAuth();
   }
 
+  return <PartnerSetupPage />;
+
   if (!isMeSuccess && me?.partner && !configuredAAIntegration) {
     return <PartnerSetupPage />;
   }

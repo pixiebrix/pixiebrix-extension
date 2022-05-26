@@ -117,6 +117,10 @@ export interface paths {
     get: operations["listDeploymentPermissions"];
     post: operations["createDeploymentPermission"];
   };
+  "/api/deployments/{deployment_pk}/managers/": {
+    get: operations["listDeploymentManagerPermissions"];
+    post: operations["createDeploymentManagerPermission"];
+  };
   "/api/deployments/{deployment_pk}/contacts/": {
     get: operations["listDeploymentAlertEmails"];
     post: operations["createDeploymentAlertEmail"];
@@ -270,7 +274,7 @@ export interface paths {
   };
   "/api/organizations/{organization_pk}/errors/": {
     /** View to return most recent Rollbar error report for an organization. */
-    get: operations["retrieveErrorOccurrence"];
+    get: operations["retrieveOrganizationErrors"];
   };
   "/api/organizations/{organization_pk}/events/": {
     get: operations["retrieveEventInterval"];
@@ -400,6 +404,9 @@ export interface paths {
   };
   "/api/deployments/{deployment_pk}/groups/{id}/": {
     delete: operations["destroyDeploymentPermission"];
+  };
+  "/api/deployments/{deployment_pk}/managers/{id}/": {
+    delete: operations["destroyDeploymentManagerPermission"];
   };
   "/api/groups/{group_pk}/memberships/{id}/": {
     /** Add, remove, and list users to/from a group */
@@ -767,6 +774,14 @@ export interface components {
       /** Format: date-time */
       created_at?: string;
     };
+    DeploymentManagerPermission: {
+      /** Format: uuid */
+      id?: string;
+      group_id: string;
+      group_name?: string;
+      /** Format: date-time */
+      created_at?: string;
+    };
     DeploymentAlertEmail: {
       /** Format: uuid */
       id?: string;
@@ -982,20 +997,50 @@ export interface components {
         id?: string;
         name: string;
         scope?: string | null;
+        control_room?: {
+          /**
+           * Format: uri
+           * @description The control room url
+           */
+          url: string;
+          service_account_token: string;
+        };
       };
       telemetry_organization?: {
         /** Format: uuid */
         id?: string;
         name: string;
         scope?: string | null;
+        control_room?: {
+          /**
+           * Format: uri
+           * @description The control room url
+           */
+          url: string;
+          service_account_token: string;
+        };
       };
       organization_memberships?: {
-        /** Format: uuid */
-        organization: string;
+        organization: {
+          /** Format: uuid */
+          id?: string;
+          name: string;
+          scope?: string | null;
+          control_room?: {
+            /**
+             * Format: uri
+             * @description The control room url
+             */
+            url: string;
+            service_account_token: string;
+          };
+        };
         organization_name: string;
         /** @enum {integer} */
         role: 1 | 2 | 3 | 4 | 5;
         scope: string | null;
+        /** @description True if user is a manager of one or more team deployments */
+        is_deployment_manager?: string;
       }[];
       group_memberships?: {
         /** Format: uuid */
@@ -2254,11 +2299,11 @@ export interface operations {
       };
     };
   };
-  /** View to return most recent Rollbar error report for an organization. */
+  /** View to return most recent Rollbar error report for a deployment. */
   retrieveErrorOccurrence: {
     parameters: {
       path: {
-        organization_pk: string;
+        deployment_pk: string;
       };
     };
     responses: {
@@ -2311,6 +2356,50 @@ export interface operations {
         "application/json": components["schemas"]["DeploymentPermission"];
         "application/x-www-form-urlencoded": components["schemas"]["DeploymentPermission"];
         "multipart/form-data": components["schemas"]["DeploymentPermission"];
+      };
+    };
+  };
+  listDeploymentManagerPermissions: {
+    parameters: {
+      path: {
+        deployment_pk: string;
+      };
+      query: {
+        /** A page number within the paginated result set. */
+        page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
+      };
+    };
+    responses: {
+      200: {
+        headers: {};
+        content: {
+          "application/json; version=2.0": components["schemas"]["DeploymentManagerPermission"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DeploymentManagerPermission"][];
+        };
+      };
+    };
+  };
+  createDeploymentManagerPermission: {
+    parameters: {
+      path: {
+        deployment_pk: string;
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          "application/json; version=2.0": components["schemas"]["DeploymentManagerPermission"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DeploymentManagerPermission"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DeploymentManagerPermission"];
+        "application/x-www-form-urlencoded": components["schemas"]["DeploymentManagerPermission"];
+        "multipart/form-data": components["schemas"]["DeploymentManagerPermission"];
       };
     };
   };
@@ -3591,6 +3680,22 @@ export interface operations {
       };
     };
   };
+  /** View to return most recent Rollbar error report for an organization. */
+  retrieveOrganizationErrors: {
+    parameters: {
+      path: {
+        organization_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["ErrorOccurrence"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ErrorOccurrence"];
+        };
+      };
+    };
+  };
   retrieveEventInterval: {
     parameters: {
       path: {
@@ -4464,6 +4569,17 @@ export interface operations {
     };
   };
   destroyDeploymentPermission: {
+    parameters: {
+      path: {
+        deployment_pk: string;
+        id: string;
+      };
+    };
+    responses: {
+      204: never;
+    };
+  };
+  destroyDeploymentManagerPermission: {
     parameters: {
       path: {
         deployment_pk: string;
