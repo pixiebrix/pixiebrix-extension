@@ -36,7 +36,6 @@ import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Me } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
 import { AxiosError } from "axios";
-import PartnerSetupPage from "@/options/pages/PartnerSetupPage";
 import { RootState } from "@/options/store";
 import { RawServiceConfiguration } from "@/core";
 import { ServicesState } from "@/store/servicesSlice";
@@ -133,15 +132,11 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
   }, [isMeSuccess, me, dispatch]);
 
   const isUnauthenticated = (meError as AxiosError)?.response?.status === 401;
+  const isPartnerOnboarding =
+    isMeSuccess && me?.organization?.control_room && !configuredAAIntegration;
 
   if (isUnauthenticated) {
     void clearExtensionAuth();
-  }
-
-  // return <PartnerSetupPage />;
-
-  if (isMeSuccess && me?.partner && !configuredAAIntegration) {
-    return <PartnerSetupPage />;
   }
 
   // Show SetupPage if there is auth error or user not logged in
@@ -153,9 +148,14 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3056
     isUnauthenticated ||
     (!hasCachedLoggedIn && !meLoading) ||
-    (!hasToken && !tokenLoading)
+    (!hasToken && !tokenLoading) ||
+    isPartnerOnboarding
   ) {
-    return <LoginPage />;
+    return (
+      <LoginPage
+        onboardingType={isPartnerOnboarding ? "automation-anywhere" : "default"}
+      />
+    );
   }
 
   // Optimistically skip waiting if we have cached auth data

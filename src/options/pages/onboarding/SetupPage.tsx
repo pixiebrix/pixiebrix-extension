@@ -16,43 +16,22 @@
  */
 
 import React from "react";
-import { faLink } from "@fortawesome/free-solid-svg-icons";
-import { Button, Col, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import { getBaseURL } from "@/services/baseService";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAsyncState } from "@/hooks/common";
 import Loader from "@/components/Loader";
 
 import { useTitle } from "@/hooks/title";
-import OnboardingChecklistCard, {
-  OnboardingStep,
-} from "@/options/pages/onboarding/OnboardingChecklistCard";
+import DefaultSetupCard from "@/options/pages/onboarding/DefaultSetupCard";
+import PartnerSetupCard from "@/options/pages/onboarding/PartnerSetupCard";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const SERVICE_URL = process.env.SERVICE_URL;
+type OnboardingType = "default" | "automation-anywhere";
 
-export const SetupCard: React.FunctionComponent<{ installURL: string }> = ({
-  installURL,
-}) => (
-  <OnboardingChecklistCard title="PixieBrix setup steps">
-    <OnboardingStep
-      number={1}
-      title="Install the PixieBrix browser extension"
-      completed
-    />
-    <OnboardingStep
-      number={2}
-      title="Link the extension to a PixieBrix account"
-      active
-    >
-      <Button role="button" className="btn btn-primary mt-2" href={installURL}>
-        <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
-      </Button>
-    </OnboardingStep>
-  </OnboardingChecklistCard>
-);
-
-const SetupPage: React.FunctionComponent = () => {
+const SetupPage: React.FunctionComponent<{
+  onboardingType: OnboardingType;
+}> = ({ onboardingType }) => {
   useTitle("Setup");
 
   const [accountTab, accountPending] = useAsyncState(async () => {
@@ -79,14 +58,17 @@ const SetupPage: React.FunctionComponent = () => {
     return null;
   }
 
+  const setupCard =
+    onboardingType === "automation-anywhere" ? (
+      <PartnerSetupCard />
+    ) : (
+      <DefaultSetupCard installURL={installURL} />
+    );
+
   return (
     <Row className="w-100 mx-0">
       <Col className="mt-5 col-md-10 col-lg-7 col-sm-12 mx-auto">
-        {accountPending || installURLPending ? (
-          <Loader />
-        ) : (
-          <SetupCard installURL={installURL} />
-        )}
+        {accountPending || installURLPending ? <Loader /> : setupCard}
       </Col>
     </Row>
   );

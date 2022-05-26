@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React from "react";
 import { useTitle } from "@/hooks/title";
-import { Form, Row, Col, Button } from "react-bootstrap";
+import { Form, Col, Button } from "react-bootstrap";
 import OnboardingChecklistCard, {
   OnboardingStep,
-} from "@/options/pages/onboarding/OnboardingChecklistCard";
+} from "@/components/onboarding/OnboardingChecklistCard";
 import { useGetMeQuery } from "@/services/api";
 import servicesSlice from "@/store/servicesSlice";
 import { uuidv4 } from "@/types/helpers";
@@ -112,7 +112,7 @@ const AutomationAnywhereControlRoomForm: React.FunctionComponent<{
   );
 };
 
-const PartnerSetupPage: React.FunctionComponent = () => {
+const PartnerSetupCard: React.FunctionComponent = () => {
   useTitle("Connect your Automation Anywhere account");
   const { data: me, isLoading } = useGetMeQuery();
 
@@ -123,32 +123,26 @@ const PartnerSetupPage: React.FunctionComponent = () => {
   };
 
   return (
-    <Row className="w-100 mx-0">
-      <Col className="mt-5 col-md-10 col-lg-7 col-sm-12 mx-auto">
-        <OnboardingChecklistCard title="Set up your account">
-          <OnboardingStep
-            number={1}
-            title="PixieBrix account created/linked"
-            completed
-          />
-          <OnboardingStep
-            number={2}
-            title="PixieBrix browser extension installed"
-            completed
-          />
-          <OnboardingStep number={3} title="Connect your AARI account" active>
-            {isLoading ? (
-              <GridLoader />
-            ) : (
-              <AutomationAnywhereControlRoomForm
-                initialValues={initialValues}
-              />
-            )}
-          </OnboardingStep>
-        </OnboardingChecklistCard>
-      </Col>
-    </Row>
+    <OnboardingChecklistCard title="Set up your account">
+      <OnboardingStep
+        number={1}
+        title="PixieBrix account created/linked"
+        completed
+      />
+      <OnboardingStep
+        number={2}
+        title="PixieBrix browser extension installed"
+        completed
+      />
+      <OnboardingStep number={3} title="Connect your AARI account" active>
+        {isLoading ? (
+          <GridLoader />
+        ) : (
+          <AutomationAnywhereControlRoomForm initialValues={initialValues} />
+        )}
+      </OnboardingStep>
+    </OnboardingChecklistCard>
   );
 };
 
-export default PartnerSetupPage;
+export default PartnerSetupCard;

@@ -17,7 +17,7 @@
 
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { SetupCard } from "@/options/pages/SetupPage";
+import { SetupCard } from "@/options/pages/onboarding/SetupPage";
 
 export default {
   title: "Onboarding/SetupPage",

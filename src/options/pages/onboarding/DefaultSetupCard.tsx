@@ -16,35 +16,32 @@
  */
 
 import React from "react";
-import { ComponentStory, ComponentMeta } from "@storybook/react";
 import OnboardingChecklistCard, {
   OnboardingStep,
-} from "@/options/pages/onboarding/OnboardingChecklistCard";
+} from "@/components/onboarding/OnboardingChecklistCard";
+import { Button } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
 
-export default {
-  title: "Onboarding/OnboardingChecklistCard",
-  component: OnboardingChecklistCard,
-} as ComponentMeta<typeof OnboardingChecklistCard>;
-
-const Template: ComponentStory<typeof OnboardingChecklistCard> = (args) => (
-  <OnboardingChecklistCard title="Setup steps">
-    <OnboardingStep number={1} title="PixieBrix account created" completed>
-      Let's get started.
-    </OnboardingStep>
+const DefaultSetupCard: React.FunctionComponent<{
+  installURL: string;
+}> = ({ installURL }) => (
+  <OnboardingChecklistCard title="PixieBrix setup steps">
+    <OnboardingStep
+      number={1}
+      title="Install the PixieBrix browser extension"
+      completed
+    />
     <OnboardingStep
       number={2}
-      title="Install the PixieBrix browser extension"
+      title="Link the extension to a PixieBrix account"
       active
     >
-      <p>
-        In the Chrome Web Store, click {'"'}Add Extension{'"'} and accept the
-        permission prompt
-      </p>
-    </OnboardingStep>
-    <OnboardingStep number={3} title="Celebrate">
-      You did it!
+      <Button role="button" className="btn btn-primary mt-2" href={installURL}>
+        <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
+      </Button>
     </OnboardingStep>
   </OnboardingChecklistCard>
 );
 
-export const Default = Template.bind({});
+export default DefaultSetupCard;
