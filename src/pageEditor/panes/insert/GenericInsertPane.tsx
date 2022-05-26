@@ -107,9 +107,9 @@ const GenericInsertPane: React.FunctionComponent<{
       await start(formState);
       
       reportEvent("ExtensionAddNew", {
-          type: config.elementType,
-        });
-      
+        type: config.elementType,
+      });
+
     } catch (error) {
       notify.error({ message: "Error using adding new element", error });
     }
