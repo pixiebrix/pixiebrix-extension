@@ -138,13 +138,11 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     void clearExtensionAuth();
   }
 
-  return <PartnerSetupPage />;
+  // return <PartnerSetupPage />;
 
-  if (!isMeSuccess && me?.partner && !configuredAAIntegration) {
+  if (isMeSuccess && me?.partner && !configuredAAIntegration) {
     return <PartnerSetupPage />;
   }
-
-  return <LoginPage />;
 
   // Show SetupPage if there is auth error or user not logged in
   if (
