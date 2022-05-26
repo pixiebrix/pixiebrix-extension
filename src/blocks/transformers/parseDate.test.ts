@@ -70,7 +70,7 @@ describe("ParseDate block", () => {
         date: "12/10/2021",
         time: "3:00:00 AM",
         humanReadable: "Fri, 10 Dec 2021 03:00:00 GMT",
-        unixTimestamp: 1_639_123_200_000,
+        epochMillis: 1_639_105_200_000,
       },
       local: {
         iso8601: "2021-12-09T22:00:00.000-05:00",
@@ -130,8 +130,7 @@ describe("ParseDate block", () => {
         date: "12/9/2021",
         time: "3:00:00 AM",
         humanReadable: "Thu, 09 Dec 2021 03:00:00 GMT",
-        // FIXME: https://www.unixtimestamp.com/ is saying the timestamp is for Thu Dec 09 2021 08:00:00 GMT+0000
-        unixTimestamp: 1_639_036_800_000,
+        epochMillis: 1_639_018_800_000,
       },
       local: {
         iso8601: "2021-12-08T22:00:00.000-05:00",

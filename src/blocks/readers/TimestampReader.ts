@@ -34,7 +34,7 @@ class TimestampReader extends Reader {
 
     return {
       timestamp: date.toISOString(),
-      unixTimestamp: date.valueOf(),
+      epochMillis: date.getTime(),
     };
   }
 
@@ -52,7 +52,7 @@ class TimestampReader extends Reader {
           "Current ISO date-time in simplified extended ISO format (ISO 8601)",
         format: "date-time",
       },
-      unixTimestamp: {
+      epochMillis: {
         type: "number",
         description:
           "The number of milliseconds between 1 January 1970 00:00:00 UTC and the given date",

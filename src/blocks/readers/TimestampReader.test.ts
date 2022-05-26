@@ -19,7 +19,7 @@ import TimestampReader from "@/blocks/readers/TimestampReader";
 
 describe("TimestampReader", () => {
   test("generates equivalent timestamps", async () => {
-    const { timestamp, unixTimestamp } = await new TimestampReader().read();
-    expect(new Date(unixTimestamp).toISOString()).toBe(timestamp);
+    const { timestamp, epochMillis } = await new TimestampReader().read();
+    expect(new Date(epochMillis).toISOString()).toBe(timestamp);
   });
 });
