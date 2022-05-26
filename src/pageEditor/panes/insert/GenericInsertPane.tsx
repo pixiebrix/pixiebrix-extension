@@ -109,7 +109,6 @@ const GenericInsertPane: React.FunctionComponent<{
       reportEvent("ExtensionAddNew", {
         type: config.elementType,
       });
-
     } catch (error) {
       notify.error({ message: "Error using adding new element", error });
     }
