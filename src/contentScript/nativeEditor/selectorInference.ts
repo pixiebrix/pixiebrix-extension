@@ -26,6 +26,7 @@ import {
 } from "@/common";
 import { guessUsefulness, isRandomString } from "@/utils/detectRandomString";
 import { escapeDoubleQuotes } from "@/utils/escape";
+import { matchesAnyPattern } from "@/utils";
 
 export const BUTTON_TAGS: string[] = [
   "li",
