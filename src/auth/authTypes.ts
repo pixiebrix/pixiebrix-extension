@@ -88,6 +88,7 @@ export type OrganizationAuthState = {
   readonly id: string;
   readonly name: string;
   readonly scope?: string;
+  readonly control_room: string;
 };
 
 export type AuthUserOrganization = {

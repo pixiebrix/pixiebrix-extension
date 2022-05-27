@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { useTitle } from "@/hooks/title";
 import { Form, Col, Button } from "react-bootstrap";
 import OnboardingChecklistCard, {
   OnboardingStep,
@@ -30,6 +29,9 @@ import notify from "@/utils/notify";
 import { persistor } from "@/options/store";
 import { services } from "@/background/messenger/api";
 import { useDispatch } from "react-redux";
+import { useRequiredAuth, useRequiredPartnerAuth } from "@/auth/RequireAuth";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
 
 const CONTROL_ROOM_SERVICE_ID = "automation-anywhere/control-room";
 
@@ -112,9 +114,13 @@ const AutomationAnywhereControlRoomForm: React.FunctionComponent<{
   );
 };
 
-const PartnerSetupCard: React.FunctionComponent = () => {
-  useTitle("Connect your Automation Anywhere account");
+const PartnerSetupCard: React.FunctionComponent<{
+  installURL: string;
+}> = ({ installURL }) => {
   const { data: me, isLoading } = useGetMeQuery();
+  const { hasRequiredIntegration, hasConfiguredIntegration } =
+    useRequiredPartnerAuth();
+  const { isAccountUnlinked } = useRequiredAuth();
 
   const initialValues: ControlRoomConfiguration = {
     controlRoomUrl: me?.organization?.control_room?.url ?? "",
@@ -126,15 +132,40 @@ const PartnerSetupCard: React.FunctionComponent = () => {
     <OnboardingChecklistCard title="Set up your account">
       <OnboardingStep
         number={1}
-        title="PixieBrix account created/linked"
-        completed
-      />
+        title={
+          isAccountUnlinked
+            ? "Create or link a PixieBrix account"
+            : "PixieBrix account created/linked"
+        }
+        active={isAccountUnlinked}
+        completed={!isAccountUnlinked}
+      >
+        <Button
+          role="button"
+          className="btn btn-primary mt-2"
+          href={installURL}
+        >
+          <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
+        </Button>
+      </OnboardingStep>
       <OnboardingStep
         number={2}
         title="PixieBrix browser extension installed"
         completed
       />
-      <OnboardingStep number={3} title="Connect your AARI account" active>
+      <OnboardingStep
+        number={3}
+        title="Connect your AARI account"
+        active={
+          !isAccountUnlinked &&
+          hasRequiredIntegration &&
+          !hasConfiguredIntegration
+        }
+        completed={
+          !hasRequiredIntegration ||
+          (hasRequiredIntegration && hasConfiguredIntegration)
+        }
+      >
         {isLoading ? (
           <GridLoader />
         ) : (
