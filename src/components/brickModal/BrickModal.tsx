@@ -22,33 +22,35 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
-import {
-  Button,
-  Col,
-  Container,
-  Form,
-  InputGroup,
-  Modal,
-  Row,
-} from "react-bootstrap";
-import { compact, sortBy } from "lodash";
+import { Button, Col, Container, Modal, Row } from "react-bootstrap";
+import { sortBy } from "lodash";
 import { IBlock, IBrick, RegistryId } from "@/core";
 import { useDebounce } from "use-debounce";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
 import { FixedSizeList as LazyList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import BrickResult from "./BrickResult";
-import BrickDetail from "./BrickDetail";
-import QuickAdd from "@/components/brickModal/QuickAdd";
 import { Except } from "type-fest";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBolt,
+  faEdit,
+  faFileUpload,
+  faKeyboard,
+  faNewspaper,
+  faPlus,
+  faRecycle,
+  faSave,
+  faSyncAlt,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
+import TagSearchInput from "@/components/brickModal/TagSearchInput";
+import TagList from "@/components/brickModal/TagList";
+import { brickHasTag, Tag } from "@/components/brickModal/brickTags";
 
 type BrickOption<T extends IBrick = IBlock> = {
   data: T;
@@ -66,7 +68,8 @@ function makeBlockOption<T extends IBrick>(brick: T): BrickOption<T> {
 
 function useSearch<T extends IBrick>(
   bricks: T[],
-  query: string
+  query: string,
+  searchTag: string | null
 ): Array<BrickOption<T>> {
   const [debouncedQuery] = useDebounce(query, 100, {
     trailing: true,
@@ -78,6 +81,7 @@ function useSearch<T extends IBrick>(
       // We should never show @internal bricks to users. However, they'll sometimes find their way in from the registry
       (bricks ?? [])
         .filter((x) => !x.id.startsWith("@internal/"))
+        .filter((x) => brickHasTag(x, searchTag))
         .map((x) => makeBlockOption(x)),
       (x) => x.label
     );
@@ -86,7 +90,7 @@ function useSearch<T extends IBrick>(
     });
 
     return { brickOptions, fuse };
-  }, [bricks]);
+  }, [bricks, searchTag]);
 
   return useMemo(
     () =>
@@ -177,6 +181,49 @@ const defaultAddCaption = (
   </span>
 );
 
+const defaultTag = Tag.ALL;
+const tagItems = [
+  {
+    tag: Tag.ALL,
+  },
+  {
+    tag: Tag.EXTRACT,
+    icon: faFileUpload,
+  },
+  {
+    tag: Tag.COLLECT,
+    icon: faKeyboard,
+  },
+  {
+    tag: Tag.AUTOMATE,
+    icon: faBolt,
+  },
+  {
+    tag: Tag.TRANSFORM,
+    icon: faRecycle,
+  },
+  {
+    tag: Tag.INTEGRATE,
+    icon: faSyncAlt,
+  },
+  {
+    tag: Tag.COLLABORATE,
+    icon: faUsers,
+  },
+  {
+    tag: Tag.STORE,
+    icon: faSave,
+  },
+  {
+    tag: Tag.MODIFY,
+    icon: faEdit,
+  },
+  {
+    tag: Tag.SHOW,
+    icon: faNewspaper,
+  },
+];
+
 function ActualModal<T extends IBrick>({
   bricks = [],
   close,
@@ -186,31 +233,12 @@ function ActualModal<T extends IBrick>({
   modalClassName,
 }: ModalProps<T>): React.ReactElement<T> {
   const [query, setQuery] = useState("");
+  const [searchTag, setSearchTag] = useState<string>(defaultTag);
   const [detailBrick, setDetailBrick] = useState<T>(null);
-  const searchInput = useRef(null);
   // The react-window library requires exact height
   const brickResultSizePx = 87;
 
-  // Auto-focus search input upon opening Modal
-  useEffect(() => {
-    searchInput.current.focus();
-  }, []);
-
-  const { data: listings = {} } = useGetMarketplaceListingsQuery();
-
-  const searchResults = useSearch(bricks, query);
-
-  const recommendedBricks = useMemo(() => {
-    if (recommendations.length === 0) {
-      return;
-    }
-
-    // Retain the same order that the recommendations were passed in
-    const brickMap = new Map(bricks.map((brick) => [brick.id, brick]));
-    return compact(
-      recommendations.map((registryId) => brickMap.get(registryId))
-    );
-  }, [recommendations, bricks]);
+  const searchResults = useSearch(bricks, query, searchTag);
 
   useEffect(
     () => {
@@ -233,76 +261,67 @@ function ActualModal<T extends IBrick>({
       backdrop
       keyboard={false}
     >
+      <Modal.Header closeButton>
+        <Container fluid>
+          <Row>
+            <Col xs={2}>
+              <Modal.Title className={styles.title}>Add brick</Modal.Title>
+            </Col>
+            <Col xs={10}>
+              <TagSearchInput
+                name={"brickSearch"}
+                value={query}
+                onValueChange={setQuery}
+                placeholder={"Search"}
+                tag={searchTag === defaultTag ? null : searchTag}
+                onClearTag={() => {
+                  setSearchTag(defaultTag);
+                }}
+                focusInput
+                className={styles.searchInput}
+              />
+            </Col>
+          </Row>
+        </Container>
+      </Modal.Header>
       <Modal.Body className={styles.body}>
         <Container fluid>
           <Row>
-            <Col xs={5} className={styles.results}>
-              <Form>
-                <InputGroup>
-                  <InputGroup.Prepend>
-                    <InputGroup.Text>Search</InputGroup.Text>
-                  </InputGroup.Prepend>
-                  <Form.Control
-                    ref={searchInput}
-                    placeholder="Start typing to find results"
-                    value={query}
-                    onChange={({ target }) => {
-                      setQuery(target.value);
-                    }}
-                  />
-                </InputGroup>
-              </Form>
-              <div>
-                <AutoSizer>
-                  {({ height, width }) => (
-                    <LazyList
-                      height={height}
-                      width={width}
-                      itemCount={searchResults.length}
-                      itemSize={brickResultSizePx}
-                      itemKey={itemKey}
-                      itemData={
-                        {
-                          searchResults,
-                          setDetailBrick,
-                          activeBrick: detailBrick,
-                          selectCaption,
-                          onSelect,
-                          close,
-                        } as ItemType
-                      }
-                    >
-                      {ItemRenderer}
-                    </LazyList>
-                  )}
-                </AutoSizer>
-              </div>
+            <Col xs={2}>
+              <TagList
+                tagItems={tagItems}
+                activeTag={searchTag}
+                onSelectTag={setSearchTag}
+              />
             </Col>
             <Col
-              xs={7}
+              xs={10}
               className={cx(styles.brickDetail)}
               key={detailBrick?.id}
             >
-              {detailBrick ? (
-                <BrickDetail
-                  brick={detailBrick}
-                  listing={listings[detailBrick.id]}
-                  selectCaption={selectCaption}
-                  onSelect={() => {
-                    onSelect(detailBrick);
-                    close();
-                  }}
-                />
-              ) : (
-                <QuickAdd
-                  onSelect={(brick) => {
-                    // XXX: need to rewrite the signature of QuickAdd to work with generics
-                    onSelect(brick as T);
-                    close();
-                  }}
-                  recommendations={recommendedBricks}
-                />
-              )}
+              <AutoSizer>
+                {({ height, width }) => (
+                  <LazyList
+                    height={height}
+                    width={width}
+                    itemCount={searchResults.length}
+                    itemSize={brickResultSizePx}
+                    itemKey={itemKey}
+                    itemData={
+                      {
+                        searchResults,
+                        setDetailBrick,
+                        activeBrick: detailBrick,
+                        selectCaption,
+                        onSelect,
+                        close,
+                      } as ItemType
+                    }
+                  >
+                    {ItemRenderer}
+                  </LazyList>
+                )}
+              </AutoSizer>
             </Col>
           </Row>
         </Container>

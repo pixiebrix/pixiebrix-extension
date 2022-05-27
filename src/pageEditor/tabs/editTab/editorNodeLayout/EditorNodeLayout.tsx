@@ -28,7 +28,7 @@ import {
   faPlusCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { IBlock, RegistryId, UUID } from "@/core";
-import BlockModal from "@/components/brickModal/BrickModal";
+import BrickModal from "@/components/brickModal/BrickModal";
 import useBrickRecommendations from "@/pageEditor/tabs/editTab/useBrickRecommendations";
 import cx from "classnames";
 import TooltipIconButton from "@/components/TooltipIconButton";
@@ -107,7 +107,7 @@ const EditorNodeLayout: React.FC<{
                 })}
               >
                 {showAddBlock && (
-                  <BlockModal
+                  <BrickModal
                     bricks={relevantBlocksToAdd}
                     renderButton={(onClick) => (
                       <TooltipIconButton

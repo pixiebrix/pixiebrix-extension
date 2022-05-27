@@ -23,7 +23,7 @@ import { useDispatch } from "react-redux";
 import useAvailableExtensionPoints from "@/pageEditor/hooks/useAvailableExtensionPoints";
 import Centered from "@/pageEditor/components/Centered";
 import { Button, Row } from "react-bootstrap";
-import BlockModal from "@/components/brickModal/BrickModal";
+import BrickModal from "@/components/brickModal/BrickModal";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -125,7 +125,7 @@ const GenericInsertPane: React.FunctionComponent<{
           <FontAwesomeIcon icon={faPlus} /> Create new {config.label}
         </Button>
 
-        <BlockModal
+        <BrickModal
           bricks={extensionPoints ?? []}
           renderButton={(onClick) => (
             <Button

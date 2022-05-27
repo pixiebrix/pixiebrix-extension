@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,48 +15,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$maxHeight: calc(100vh - 50px);
-$bootstrapPadding: 15px;
-
 .root {
-  display: grid;
-  place-content: center center;
-  & > :first-child {
-    margin: 20px auto;
-    width: 89vw;
-    max-width: 1220px; // Fits 3 "recommended bricks" columns
+  border-radius: 4px;
+  border: 1px solid gray;
+  display: flex;
+}
+
+.rootFocused {
+  border: 1px solid #3e66fb !important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.input {
+  width: 100%;
+  padding: 0.25rem 0.5rem;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 120%;
+  border-radius: 4px;
+  border: none;
+  outline: none;
+  :focus {
+    border: none !important;
+    outline: none !important;
   }
 }
 
-.title {
-  font-style: normal;
-  font-weight: 400;
-  font-size: 24px;
-  line-height: 28px;
-  color: #595969;
-  flex-shrink: 0;
-  align-self: center;
-}
-
-.searchInput {
-  width: 50%;
-}
-
-.body {
-  padding: 0;
-}
-
-.results {
-  height: $maxHeight;
-  display: grid;
-  grid-template-rows: min-content 1fr;
-  padding-top: $bootstrapPadding;
-  gap: $bootstrapPadding;
-}
-
-.brickDetail {
-  height: $maxHeight;
-  padding-top: $bootstrapPadding;
-  padding-bottom: $bootstrapPadding;
-  overflow: auto;
+.badge {
+  background: lightgray;
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  margin: 4px;
+  padding-left: 0.5rem;
+  padding-right: 0.25rem;
+  border-radius: 1rem;
+  white-space: nowrap;
 }
