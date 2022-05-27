@@ -20,7 +20,8 @@ import { BlockPipeline } from "@/blocks/types";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
-import { isPipelineExpression } from "@/runtime/mapArgs";
+import { isPipelineExpression, PipelineExpression } from "@/runtime/mapArgs";
+import { produce } from "immer";
 
 // TODO: Support other blocks
 const subPipelineBlocks = new Set([
@@ -38,30 +39,64 @@ export function withInstanceIds(blocks: BlockPipeline): BlockPipeline {
       switch (blockConfig.id) {
         case ForEach.BLOCK_ID:
           if (!isPipelineExpression(blockConfig.config.body)) {
-            throw new Error("ForEach body must be a pipeline");
+            throw new Error('ForEach "body" must be a pipeline');
           }
 
-          // TODO Can not assign to readonly property here
-          blockConfig.config.body.__value__ = withInstanceIds(
-            blockConfig.config.body.__value__
-          );
-          break;
+          return produce(blockConfig, (draft) => {
+            draft.instanceId = uuidv4();
+            // At this point we're sure the body is a pipeline
+            const bodyPipeline = draft.config.body as PipelineExpression;
+            bodyPipeline.__value__ = withInstanceIds(bodyPipeline.__value__);
+          });
 
         case IfElse.BLOCK_ID:
           if (!isPipelineExpression(blockConfig.config.if)) {
-            throw new Error("IfElse if must be a pipeline");
-          }
-          if (!isPipelineExpression(blockConfig.config.else)) {
-            throw new Error("IfElse else must be a pipeline");
+            throw new Error('IfElse "if" must be a pipeline');
           }
 
-          blockConfig.config.if.__value__ = withInstanceIds(
-            blockConfig.config.if.__value__
-          );
-          blockConfig.config.else.__value__ = withInstanceIds(
-            blockConfig.config.else.__value__
-          );
-          break;
+          if (
+            blockConfig.config.else != null &&
+            !isPipelineExpression(blockConfig.config.else)
+          ) {
+            throw new Error('IfElse "else" must be a pipeline');
+          }
+
+          return produce(blockConfig, (draft) => {
+            draft.instanceId = uuidv4();
+            // At this point we're sure the if and else are pipelines
+            const ifPipeline = draft.config.if as PipelineExpression;
+            ifPipeline.__value__ = withInstanceIds(ifPipeline.__value__);
+            if (draft.config.else != null) {
+              const elsePipeline = draft.config.else as PipelineExpression;
+              elsePipeline.__value__ = withInstanceIds(elsePipeline.__value__);
+            }
+          });
+
+        case TryExcept.BLOCK_ID:
+          if (!isPipelineExpression(blockConfig.config.try)) {
+            throw new Error('TryExcept "try" must be a pipeline');
+          }
+
+          if (
+            blockConfig.config.except != null &&
+            !isPipelineExpression(blockConfig.config.except)
+          ) {
+            throw new Error('TryExcept "except" must be a pipeline');
+          }
+
+          return produce(blockConfig, (draft) => {
+            draft.instanceId = uuidv4();
+            // At this point we're sure the try and except are pipelines
+            const tryPipeline = draft.config.try as PipelineExpression;
+            tryPipeline.__value__ = withInstanceIds(tryPipeline.__value__);
+            if (draft.config.except != null) {
+              const exceptPipeline = draft.config.except as PipelineExpression;
+              exceptPipeline.__value__ = withInstanceIds(
+                exceptPipeline.__value__
+              );
+            }
+          });
+
         default:
           throw "not supported";
       }

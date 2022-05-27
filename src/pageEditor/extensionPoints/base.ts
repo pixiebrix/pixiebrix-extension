@@ -427,14 +427,9 @@ export function extensionWithNormalizedPipeline<
   defaults: Partial<T> = {}
 ): BaseExtensionState & Omit<T, Prop> {
   const { [pipelineProp]: pipeline, ...rest } = { ...config };
-  const newLocal = {
+  return {
     blockPipeline: withInstanceIds(castArray(pipeline) as BlockPipeline),
     ...defaults,
     ...rest,
   };
-
-  console.warn("extensionWithNormalizedPipeline", {
-    newLocal,
-  });
-  return newLocal;
 }

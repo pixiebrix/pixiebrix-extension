@@ -17,6 +17,7 @@
 
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
+import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
 import { BlockConfig } from "@/blocks/types";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 import {
@@ -75,7 +76,6 @@ describe("withInstanceIds", () => {
   });
 
   test("should add instance id to If-Else block", () => {
-    // IF-ELSE block with 2 branches
     const pipeline: BlockConfig[] = [
       {
         id: IfElse.BLOCK_ID,
@@ -102,5 +102,82 @@ describe("withInstanceIds", () => {
     for (const config of elseConfig.__value__) {
       expect(config.instanceId).toBeDefined();
     }
+  });
+
+  test("should If-Else block with only if branch", () => {
+    const pipeline: BlockConfig[] = [
+      {
+        id: IfElse.BLOCK_ID,
+        config: {
+          condition: true,
+          if: toExpression("pipeline", [echoBlockConfig, teapotBlock]),
+        },
+      },
+    ];
+
+    const actual = withInstanceIds(pipeline) as any;
+
+    // Checking IF branch
+    const ifConfig = actual[0].config.if;
+    expect(isPipelineExpression(ifConfig)).toBeTrue();
+    for (const config of ifConfig.__value__) {
+      expect(config.instanceId).toBeDefined();
+    }
+
+    // ELSE branch should be undefined
+    const elseConfig = actual[0].config.else;
+    expect(elseConfig).toBeUndefined();
+  });
+
+  test("should add instance id to Try-Except block", () => {
+    const pipeline: BlockConfig[] = [
+      {
+        id: TryExcept.BLOCK_ID,
+        config: {
+          try: toExpression("pipeline", [echoBlockConfig]),
+          except: toExpression("pipeline", [teapotBlock]),
+        },
+      },
+    ];
+
+    const actual = withInstanceIds(pipeline) as any;
+
+    // Checking TRY branch
+    const tryConfig = actual[0].config.try;
+    expect(isPipelineExpression(tryConfig)).toBeTrue();
+    for (const config of tryConfig.__value__) {
+      expect(config.instanceId).toBeDefined();
+    }
+
+    // Checking EXCEPT branch
+    const exceptConfig = actual[0].config.except;
+    expect(isPipelineExpression(exceptConfig)).toBeTrue();
+    for (const config of exceptConfig.__value__) {
+      expect(config.instanceId).toBeDefined();
+    }
+  });
+
+  test("should If-Else block with only if branch", () => {
+    const pipeline: BlockConfig[] = [
+      {
+        id: TryExcept.BLOCK_ID,
+        config: {
+          try: toExpression("pipeline", [echoBlockConfig]),
+        },
+      },
+    ];
+
+    const actual = withInstanceIds(pipeline) as any;
+
+    // Checking TRY branch
+    const tryConfig = actual[0].config.try;
+    expect(isPipelineExpression(tryConfig)).toBeTrue();
+    for (const config of tryConfig.__value__) {
+      expect(config.instanceId).toBeDefined();
+    }
+
+    // EXCEPT branch should be undefined
+    const exceptConfig = actual[0].config.except;
+    expect(exceptConfig).toBeUndefined();
   });
 });
