@@ -54,7 +54,7 @@ describe("withInstanceIds", () => {
     }
   });
 
-  test("should add instance id to For-Each block", () => {
+  test("For-Each block", () => {
     const pipeline: BlockConfig[] = [
       {
         id: ForEach.BLOCK_ID,
@@ -75,7 +75,7 @@ describe("withInstanceIds", () => {
     }
   });
 
-  test("should add instance id to If-Else block", () => {
+  test("If-Else block", () => {
     const pipeline: BlockConfig[] = [
       {
         id: IfElse.BLOCK_ID,
@@ -104,7 +104,7 @@ describe("withInstanceIds", () => {
     }
   });
 
-  test("should If-Else block with only if branch", () => {
+  test("If-Else block with only if branch", () => {
     const pipeline: BlockConfig[] = [
       {
         id: IfElse.BLOCK_ID,
@@ -129,7 +129,7 @@ describe("withInstanceIds", () => {
     expect(elseConfig).toBeUndefined();
   });
 
-  test("should add instance id to Try-Except block", () => {
+  test("Try-Except block", () => {
     const pipeline: BlockConfig[] = [
       {
         id: TryExcept.BLOCK_ID,
@@ -157,7 +157,7 @@ describe("withInstanceIds", () => {
     }
   });
 
-  test("should If-Else block with only if branch", () => {
+  test("Try-Except block with only if branch", () => {
     const pipeline: BlockConfig[] = [
       {
         id: TryExcept.BLOCK_ID,
