@@ -217,6 +217,24 @@ const TriggerConfiguration: React.FC<{
           name={fieldName("isAvailable", "matchPatterns")}
           {...makeLockableFieldProps("Sites", isLocked)}
         />
+
+        <ConnectedFieldTemplate
+          name={fieldName("reportMode")}
+          as="select"
+          title="Report Mode"
+          description={
+            <p>
+              Events/errors to report telemetry. Select &ldquo;User
+              Actions&rdquo; to only report the first event, unless the trigger
+              is for a user action (e.g., click).
+            </p>
+          }
+          {...makeLockableFieldProps("Report Mode", isLocked)}
+        >
+          <option value="action">User Actions</option>
+          <option value="all">All Events</option>
+          <option value="once">Report First Event</option>
+        </ConnectedFieldTemplate>
       </FieldSection>
     </Card>
   );
