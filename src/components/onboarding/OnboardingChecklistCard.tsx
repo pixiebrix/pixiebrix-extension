@@ -39,7 +39,6 @@ export const OnboardingStep: React.FunctionComponent<{
   return (
     <ListGroup.Item
       className={cx(
-        "w-100",
         styles.checklistItem,
         !active && !completed && styles.futureStep
       )}

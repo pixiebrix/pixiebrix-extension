@@ -45,6 +45,8 @@ type RequireAuthProps = {
   LoginPage: React.VFC;
 };
 
+const AA_CONTROL_ROOM_SERVICE_ID = "automation-anywhere/control-room";
+
 export const useRequiredPartnerAuth = () => {
   const { isLoading, data: me } = useGetMeQuery();
   const { partner, organization } = useSelector(selectAuth);
@@ -54,7 +56,7 @@ export const useRequiredPartnerAuth = () => {
   );
 
   const configuredAAIntegration = configuredServices.some(
-    (service) => service.serviceId === "automation-anywhere/control-room"
+    (service) => service.serviceId === AA_CONTROL_ROOM_SERVICE_ID
   );
 
   return {
@@ -62,7 +64,7 @@ export const useRequiredPartnerAuth = () => {
     hasRequiredIntegration:
       Boolean(me?.organization?.control_room) ||
       Boolean(organization?.control_room),
-    hasConfiguredIntegration: Boolean(configuredAAIntegration),
+    hasConfiguredIntegration: configuredAAIntegration,
     isLoading,
   };
 };

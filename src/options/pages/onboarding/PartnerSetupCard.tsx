@@ -52,7 +52,7 @@ const AutomationAnywhereControlRoomForm: React.FunctionComponent<{
       updateServiceConfig({
         id: uuidv4(),
         serviceId: CONTROL_ROOM_SERVICE_ID,
-        label: "My AA Control Room Configuration",
+        label: "My AA Control Room",
         config: formValues,
       })
     );

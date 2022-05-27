@@ -88,7 +88,7 @@ export type OrganizationAuthState = {
   readonly id: string;
   readonly name: string;
   readonly scope?: string;
-  readonly control_room: string;
+  readonly control_room?: Me["organization"]["control_room"];
 };
 
 export type AuthUserOrganization = {
