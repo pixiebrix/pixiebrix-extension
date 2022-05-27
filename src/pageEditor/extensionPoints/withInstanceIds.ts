@@ -23,7 +23,6 @@ import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
 import { isPipelineExpression, PipelineExpression } from "@/runtime/mapArgs";
 import { produce } from "immer";
 
-// TODO: Support other blocks
 const subPipelineBlocks = new Set([
   ForEach.BLOCK_ID,
   IfElse.BLOCK_ID,
