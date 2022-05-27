@@ -76,17 +76,17 @@ describe("getAttributeSelector", () => {
     expect(getAttributeSelector("id", "example.com")).toBe("#example\\.com");
   });
   test("find title selectors", () => {
-    expect(getAttributeSelector("title", "Book")).toBe('[title="Book"]');
+    expect(getAttributeSelector("title", "Book")).toBe("[title='Book']");
     expect(getAttributeSelector("title", "Book name")).toBe(
-      '[title="Book name"]'
+      "[title='Book\\ name']"
     );
     expect(getAttributeSelector("title", 'The "Great" Gatsby')).toBe(
-      '[title="The \\"Great\\" Gatsby"]'
+      "[title='The\\ \\\"Great\\\"\\ Gatsby']"
     );
   });
   test("find aria attribute selectors", () => {
     expect(getAttributeSelector("aria-title", "Your email")).toBe(
-      '[aria-title="Your email"]'
+      "[aria-title='Your\\ email']"
     );
   });
   test("exclude non-unique selectors", () => {
@@ -284,6 +284,7 @@ test("getSelectorPreference: matches expected sorting", () => {
 });
 
 describe("inferSelectors", () => {
+  /* eslint-disable jest/expect-expect -- Custom expectSelectors */
   const expectSelectors = (selectors: string[], body: string) => {
     document.body.innerHTML = body;
 
@@ -346,4 +347,6 @@ describe("inferSelectors", () => {
       );
     }
   );
+
+  /* eslint-enable jest/expect-expect */
 });
