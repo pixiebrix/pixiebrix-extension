@@ -21,6 +21,7 @@ import { Card } from "react-bootstrap";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
+import UrlPatternField from "@/pageEditor/fields/UrlPatternField";
 
 const Configuration: React.FC<{
   isLocked: boolean;
@@ -36,6 +37,11 @@ const Configuration: React.FC<{
       <UrlMatchPatternField
         name="extensionPoint.definition.isAvailable.matchPatterns"
         {...makeLockableFieldProps("Sites", isLocked)}
+      />
+
+      <UrlPatternField
+        name="extensionPoint.definition.isAvailable.urlPatterns"
+        {...makeLockableFieldProps("URL Patterns", isLocked)}
       />
     </FieldSection>
   </Card>

@@ -20,7 +20,7 @@ import { Shortcut } from "@/pageEditor/components/urlMatchPatternWidgetTypes";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import widgetsRegistry from "@/components/fields/schemaFields/widgets/widgetsRegistry";
 
-export type UrlMatchPatternFieldProps = {
+export type UrlPatternFieldProps = {
   name: string;
   disabled?: boolean;
   label?: React.ReactNode;
@@ -30,33 +30,32 @@ export type UrlMatchPatternFieldProps = {
 
 const defaultDescription = (
   <span>
-    URL match patterns for which pages to run the extension on. See{" "}
+    Advanced: URL pattern rules restricting on which pages the extension runs.
+    See{" "}
     <a
-      href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
+      href="https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API"
       target="_blank"
       rel="noreferrer"
     >
-      Patterns Documentation
+      URL Pattern Documentation
     </a>{" "}
-    for examples.
+    for examples
   </span>
 );
 
-const UrlMatchPatternField: React.VFC<UrlMatchPatternFieldProps> = ({
+const UrlPatternField: React.VFC<UrlPatternFieldProps> = ({
   name,
   disabled,
-  label = "Sites",
+  label = "URL Patterns",
   description = defaultDescription,
-  shortcuts,
 }) => (
   <ConnectedFieldTemplate
     name={name}
-    as={widgetsRegistry.UrlMatchPatternWidget}
+    as={widgetsRegistry.UrlPatternWidget}
     disabled={disabled}
     label={label}
     description={description}
-    shortcuts={shortcuts}
   />
 );
 
-export default UrlMatchPatternField;
+export default UrlPatternField;

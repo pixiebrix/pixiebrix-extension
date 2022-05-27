@@ -33,6 +33,7 @@ import { joinName } from "@/utils";
 import SwitchButtonWidget, {
   CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import UrlPatternField from "@/pageEditor/fields/UrlPatternField";
 
 function supportsSelector(trigger: Trigger) {
   return !["load", "interval"].includes(trigger);
@@ -217,6 +218,29 @@ const TriggerConfiguration: React.FC<{
           name={fieldName("isAvailable", "matchPatterns")}
           {...makeLockableFieldProps("Sites", isLocked)}
         />
+
+        <UrlPatternField
+          name={fieldName("isAvailable", "urlPatterns")}
+          {...makeLockableFieldProps("URL Patterns", isLocked)}
+        />
+
+        <ConnectedFieldTemplate
+          name={fieldName("reportMode")}
+          as="select"
+          title="Report Mode"
+          description={
+            <p>
+              Events/errors to report telemetry. Select &ldquo;User
+              Actions&rdquo; to only report the first event, unless the trigger
+              corresponds to a user action (e.g., click).
+            </p>
+          }
+          {...makeLockableFieldProps("Report Mode", isLocked)}
+        >
+          <option value="action">User Actions</option>
+          <option value="all">All Events</option>
+          <option value="once">Report First Event</option>
+        </ConnectedFieldTemplate>
       </FieldSection>
     </Card>
   );
