@@ -19,7 +19,7 @@ import { useEffect } from "react";
 import { selectSettings } from "@/store/settingsSelectors";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { DEFAULT_THEME } from "@/options/types";
+import { DEFAULT_THEME, Theme } from "@/options/types";
 import { activatePartnerTheme } from "@/background/messenger/api";
 import { persistor } from "@/options/store";
 import { useAsyncState } from "@/hooks/common";
@@ -38,10 +38,9 @@ const activateBackgroundTheme = async (): Promise<void> => {
   await activatePartnerTheme();
 };
 
-const useTheme = (): { logo: ThemeLogo } => {
+export const useGetTheme = (): Theme => {
   const { theme, partnerId } = useSelector(selectSettings);
   const dispatch = useDispatch();
-  const themeLogo = getThemeLogo(theme);
 
   const [managedPartnerId, isLoading] = useAsyncState(
     readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed"),
@@ -66,10 +65,18 @@ const useTheme = (): { logo: ThemeLogo } => {
         theme: partnerId ?? DEFAULT_THEME,
       })
     );
+  }, [dispatch, partnerId, theme]);
 
+  return theme;
+};
+
+const useTheme = (theme: Theme): { logo: ThemeLogo } => {
+  const themeLogo = getThemeLogo(theme);
+
+  useEffect(() => {
     void activateBackgroundTheme();
     addThemeClassToDocumentRoot(theme);
-  }, [dispatch, partnerId, theme]);
+  }, [theme]);
 
   return {
     logo: themeLogo,

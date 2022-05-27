@@ -17,15 +17,15 @@
 
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { SetupCard } from "@/options/pages/onboarding/SetupPage";
+import DefaultSetupCard from "@/options/pages/onboarding/DefaultSetupCard";
 
 export default {
-  title: "Onboarding/SetupPage",
-  component: SetupCard,
-} as ComponentMeta<typeof SetupCard>;
+  title: "Onboarding/Setup/DefaultSetupCard",
+  component: DefaultSetupCard,
+} as ComponentMeta<typeof DefaultSetupCard>;
 
-const Template: ComponentStory<typeof SetupCard> = (args) => (
-  <SetupCard {...args} />
+const Template: ComponentStory<typeof DefaultSetupCard> = (args) => (
+  <DefaultSetupCard {...args} />
 );
 
 export const Default = Template.bind({});
