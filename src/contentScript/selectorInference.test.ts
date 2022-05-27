@@ -202,7 +202,7 @@ describe("safeCssSelector", () => {
       html`
         <ul>
           <li><a title='The "Great" Gatsby' href="/about">About</a></li>
-          <li><a title="The Other Gatsby" ] href="/contacts">Contacts</a></li>
+          <li><a title="The Other Gatsby" href="/contacts">Contacts</a></li>
         </ul>
       `
     );
@@ -242,9 +242,9 @@ describe("safeCssSelector", () => {
       html`
         <ul>
           <li>
-            <a data-pb-extension-point aria-label="The link" href="/about"
-              >About</a
-            >
+            <a data-pb-extension-point aria-label="The link" href="/about">
+              About
+            </a>
           </li>
           <li><a href="/contacts" aria-label="The other link">Contacts</a></li>
         </ul>
