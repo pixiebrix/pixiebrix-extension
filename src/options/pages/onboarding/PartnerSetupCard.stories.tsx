@@ -21,7 +21,6 @@ import PartnerSetupCard from "@/options/pages/onboarding/PartnerSetupCard";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { appApi } from "@/services/api";
-import useTheme from "@/hooks/useTheme";
 
 export default {
   title: "Onboarding/Setup/PartnerSetupCard",
@@ -37,14 +36,10 @@ function optionsStore(initialState?: any) {
   });
 }
 
-const Template: ComponentStory<typeof PartnerSetupCard> = (args) => {
-  useTheme("automation-anywhere");
-
-  return (
-    <Provider store={optionsStore()}>
-      <PartnerSetupCard {...args} />
-    </Provider>
-  );
-};
+const Template: ComponentStory<typeof PartnerSetupCard> = (args) => (
+  <Provider store={optionsStore()}>
+    <PartnerSetupCard {...args} />
+  </Provider>
+);
 
 export const Default = Template.bind({});
