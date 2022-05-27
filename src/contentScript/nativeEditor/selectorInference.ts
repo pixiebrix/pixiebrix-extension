@@ -25,7 +25,7 @@ import {
   PIXIEBRIX_READY_ATTRIBUTE,
 } from "@/common";
 import { guessUsefulness, isRandomString } from "@/utils/detectRandomString";
-import { escapeDoubleQuotes } from "@/utils/escape";
+import { escapeSingleQuotes } from "@/utils/escape";
 
 export const BUTTON_TAGS: string[] = [
   "li",
@@ -103,7 +103,7 @@ export function sortBySelector<Item = string>(
  *
  * @example
  * -2  '#best-link-on-the-page'
- * -1  '[data-cy="b4da55"]'
+ * -1  "[data-cy='b4da55']"
  *  0  '.navItem'
  *  0  '.birdsArentReal'
  *  1  'a'
@@ -337,15 +337,15 @@ export function findContainerForElement(element: HTMLElement): {
 
     if (element.tagName === "INPUT") {
       extra.push(
-        `${container.tagName.toLowerCase()}:has(${descendent} input[value="${escapeDoubleQuotes(
+        `${container.tagName.toLowerCase()}:has(${descendent} input[value='${escapeSingleQuotes(
           element.getAttribute("value")
-        )}"])`
+        )}'])`
       );
     } else {
       extra.push(
-        `${container.tagName.toLowerCase()}:has(${descendent} ${element.tagName.toLowerCase()}:contains("${escapeDoubleQuotes(
+        `${container.tagName.toLowerCase()}:has(${descendent} ${element.tagName.toLowerCase()}:contains('${escapeSingleQuotes(
           $(element).text().trim()
-        )}"))`
+        )}'))`
       );
     }
   }
@@ -403,9 +403,8 @@ export function getAttributeSelector(
     name.startsWith("aria-") ||
     UNIQUE_ATTRIBUTES.includes(name)
   ) {
-    // Don't use CSS.escape because it also escapes spaces, which isn't necessary here.
-    // It would break our deduplication logic.
-    return `[${name}="${escapeDoubleQuotes(value)}"]`;
+    //  Must use single quotes to match `css-selector-generator`
+    return `[${name}='${CSS.escape(value)}']`;
   }
 }
 
