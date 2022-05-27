@@ -87,10 +87,10 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
     );
   }
 
-  // Option will be null when the select is "cleared"
+  // Option will be empty string when the select is "cleared"
   const patchedOnChange = (option: TOption | null) => {
     onChange({
-      target: { value: option?.value ?? null, name, options },
+      target: { value: option?.value ?? "", name, options },
     } as ChangeEvent<SelectLike<TOption>>);
   };
 
