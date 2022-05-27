@@ -38,15 +38,8 @@ import { useAsyncState } from "@/hooks/common";
 import { AxiosError } from "axios";
 import { RootState } from "@/options/store";
 import { RawServiceConfiguration } from "@/core";
-import { ServicesState } from "@/store/servicesSlice";
-
-type RequireAuthProps = {
-  /** Rendered in case of 401 response */
-  LoginPage: React.VFC;
-};
-
-const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
-  Object.values(services.configured);
+import SetupPage from "@/options/pages/onboarding/SetupPage";
+import { selectConfiguredServices } from "@/store/servicesSelectors";
 
 /**
  * Require that the extension is linked to the PixieBrix API (has a token) and that the user is authenticated.
@@ -57,7 +50,7 @@ const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
  *   token-based authentication.
  * - Therefore, also check the extension has the Authentication header token from the server.
  */
-const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
+const RequireAuth: React.FC = ({ children }) => {
   const dispatch = useDispatch();
 
   const hasCachedLoggedIn = useSelector(selectIsLoggedIn);
@@ -152,7 +145,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     isPartnerOnboarding
   ) {
     return (
-      <LoginPage
+      <SetupPage
         onboardingType={isPartnerOnboarding ? "automation-anywhere" : "default"}
       />
     );
