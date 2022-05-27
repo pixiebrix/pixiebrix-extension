@@ -66,7 +66,7 @@ const AutomationAnywhereControlRoomForm: React.FunctionComponent<{
     } catch (error) {
       notify.error({
         message:
-          "Error refreshing service configurations, restart the PixieBrix extension",
+          "Error refreshing your account configuration, please restart the PixieBrix extension",
         error,
       });
     }
