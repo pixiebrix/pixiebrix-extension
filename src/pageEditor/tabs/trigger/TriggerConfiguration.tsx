@@ -23,7 +23,11 @@ import FieldSection from "@/pageEditor/fields/FieldSection";
 import LocationWidget from "@/pageEditor/fields/LocationWidget";
 import { useField, useFormikContext } from "formik";
 import { TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { DebounceOptions, Trigger } from "@/extensionPoints/triggerExtension";
+import {
+  DebounceOptions,
+  Trigger,
+  USER_ACTION_TRIGGERS,
+} from "@/extensionPoints/triggerExtension";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget";
@@ -73,6 +77,12 @@ const TriggerConfiguration: React.FC<{
     if (nextTrigger !== "interval") {
       setFieldValue(fieldName("intervalMillis"), null);
       setFieldValue(fieldName("background"), null);
+    }
+
+    if (USER_ACTION_TRIGGERS.includes(nextTrigger)) {
+      setFieldValue(fieldName("action"), null);
+    } else {
+      setFieldValue(fieldName("once"), null);
     }
 
     setFieldValue(fieldName("trigger"), currentTarget.value);
@@ -226,7 +236,7 @@ const TriggerConfiguration: React.FC<{
             <p>
               Events/errors to report telemetry. Select &ldquo;User
               Actions&rdquo; to only report the first event, unless the trigger
-              is for a user action (e.g., click).
+              corresponds to a user action (e.g., click).
             </p>
           }
           {...makeLockableFieldProps("Report Mode", isLocked)}

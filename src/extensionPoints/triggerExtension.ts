@@ -104,7 +104,7 @@ export type Trigger =
   | "keypress"
   | "change";
 
-const USER_ACTION_TRIGGERS: Trigger[] = [
+export const USER_ACTION_TRIGGERS: Trigger[] = [
   "click",
   "blur",
   "dblclick",
@@ -232,9 +232,10 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
    */
   private abortController = new AbortController();
 
-  // Extensions that have errors/events reported
-  private reportedEvents = new Set<UUID>();
-  private reportedErrors = new Set<UUID>();
+  // Extensions that have errors/events reported. NOTE: this tracked per contentScript instance. These are not
+  // reset on Single Page Application navigation events
+  private readonly reportedEvents = new Set<UUID>();
+  private readonly reportedErrors = new Set<UUID>();
 
   /**
    * Run all trigger extensions for all the provided roots.
