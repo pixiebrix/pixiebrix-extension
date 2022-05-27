@@ -26,23 +26,23 @@ export default {
   component: OnboardingChecklistCard,
 } as ComponentMeta<typeof OnboardingChecklistCard>;
 
-const Template: ComponentStory<typeof OnboardingChecklistCard> = (args) => (
-  <OnboardingChecklistCard title="Setup steps">
-    <OnboardingStep number={1} title="PixieBrix account created" completed>
-      Let's get started.
-    </OnboardingStep>
+const Template: ComponentStory<typeof OnboardingChecklistCard> = () => (
+  <OnboardingChecklistCard title="Onboarding checklist demo">
     <OnboardingStep
-      number={2}
-      title="Install the PixieBrix browser extension"
-      active
+      number={1}
+      title="This is a completed task, it collapses"
+      completed
     >
+      <p>The body of this step is hidden when completed</p>
+    </OnboardingStep>
+    <OnboardingStep number={2} title="This is an active step" active>
       <p>
-        In the Chrome Web Store, click {'"'}Add Extension{'"'} and accept the
-        permission prompt
+        You can put whatever you want in me! The content of the completed and
+        future steps will be collapsed.
       </p>
     </OnboardingStep>
-    <OnboardingStep number={3} title="Celebrate">
-      You did it!
+    <OnboardingStep number={3} title="This is a future task, it also collapses">
+      <p>The body of this step is also hidden!</p>
     </OnboardingStep>
   </OnboardingChecklistCard>
 );
