@@ -20,6 +20,7 @@ import { register, TimeZone, unregister } from "timezone-mock";
 import { BusinessError } from "@/errors";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { validateOutput } from "@/validators/generic";
+import { neverPromise } from "@/testUtils/testHelpers";
 
 const refDate = "2021-12-07T06:17:09.258Z";
 
@@ -60,6 +61,7 @@ describe("ParseDate block", () => {
       ctxt: null,
       logger: null,
       root: null,
+      runPipeline: neverPromise,
     });
 
     expect(result).toEqual({
@@ -68,6 +70,7 @@ describe("ParseDate block", () => {
         date: "12/10/2021",
         time: "3:00:00 AM",
         humanReadable: "Fri, 10 Dec 2021 03:00:00 GMT",
+        epochMillis: 1_639_105_200_000,
       },
       local: {
         iso8601: "2021-12-09T22:00:00.000-05:00",
@@ -89,6 +92,7 @@ describe("ParseDate block", () => {
         ctxt: null,
         logger: null,
         root: null,
+        runPipeline: neverPromise,
       });
     }).rejects.toThrowError(BusinessError);
   });
@@ -101,6 +105,7 @@ describe("ParseDate block", () => {
         ctxt: null,
         logger: null,
         root: null,
+        runPipeline: neverPromise,
       });
     }).rejects.toThrowError(BusinessError);
   });
@@ -116,6 +121,7 @@ describe("ParseDate block", () => {
       ctxt: null,
       logger: null,
       root: null,
+      runPipeline: neverPromise,
     });
 
     expect(result).toEqual({
@@ -124,6 +130,7 @@ describe("ParseDate block", () => {
         date: "12/9/2021",
         time: "3:00:00 AM",
         humanReadable: "Thu, 09 Dec 2021 03:00:00 GMT",
+        epochMillis: 1_639_018_800_000,
       },
       local: {
         iso8601: "2021-12-08T22:00:00.000-05:00",

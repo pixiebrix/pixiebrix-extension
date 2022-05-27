@@ -42,6 +42,11 @@ import { noop } from "lodash";
 import { ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
 import { UnknownObject } from "@/types";
 
+export const neverPromise = async (...args: unknown[]): Promise<never> => {
+  console.error("This method should not have been called", { args });
+  throw new Error("This method should not have been called");
+};
+
 export const waitForEffect = async () =>
   act(async () => {
     // Awaiting the async state update

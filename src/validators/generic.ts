@@ -44,6 +44,7 @@ import keySchema from "@schemas/key.json";
 import metadataSchema from "@schemas/metadata.json";
 import refSchema from "@schemas/ref.json";
 import componentSchema from "@schemas/component.json";
+import pipelineSchema from "@schemas/pipeline.json";
 import {
   MissingConfigurationError,
   NotConfiguredError,
@@ -55,8 +56,9 @@ import blockRegistry from "@/blocks/registry";
 import { isUUID, validateRegistryId } from "@/types/helpers";
 import { DoesNotExistError } from "@/baseRegistry";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { UnknownObject } from "@/types";
 
-const SCHEMA_URLS: Record<string, Record<string, unknown>> = {
+const SCHEMA_URLS: Record<string, UnknownObject> = {
   "http://json-schema.org/draft-07/schema": draft07,
   "https://app.pixiebrix.com/schemas/metadata": metadataSchema,
   "https://app.pixiebrix.com/schemas/key": keySchema,
@@ -65,6 +67,7 @@ const SCHEMA_URLS: Record<string, Record<string, unknown>> = {
   "https://app.pixiebrix.com/schemas/icon": iconSchema,
   "https://app.pixiebrix.com/schemas/recipe": recipeSchema,
   "https://app.pixiebrix.com/schemas/reader": readerSchema,
+  "https://app.pixiebrix.com/schemas/pipeline": pipelineSchema,
   "https://app.pixiebrix.com/schemas/component": componentSchema,
   "https://app.pixiebrix.com/schemas/ref": refSchema,
 };
@@ -128,8 +131,10 @@ export async function validateInput(
     ...schema,
   } as ValidatorSchema);
 
-  // @ts-expect-error: loading statically
-  validator.addSchema(serviceSchema);
+  for (const inputArgSchema of [serviceSchema, pipelineSchema, refSchema]) {
+    // @ts-expect-error: loading statically
+    validator.addSchema(inputArgSchema);
+  }
 
   for (const service of await serviceRegistry.all()) {
     validator.addSchema({

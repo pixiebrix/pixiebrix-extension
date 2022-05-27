@@ -96,6 +96,7 @@ export const organizationFactory = define<AuthUserOrganization>({
   scope(n: number): string {
     return `@organization-${n}`;
   },
+  isDeploymentManager: false,
 });
 
 export const authStateFactory = define<AuthState>({

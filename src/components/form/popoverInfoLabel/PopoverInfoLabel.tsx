@@ -40,7 +40,8 @@ const PopoverInfoLabel: React.FC<{
     >
       {({ ref, ...rest }) => (
         <span className={styles.span} {...rest}>
-          {label} <FontAwesomeIcon forwardedRef={ref} icon={faInfoCircle} />
+          <span className={styles.label}>{label}</span>{" "}
+          <FontAwesomeIcon forwardedRef={ref} icon={faInfoCircle} />
         </span>
       )}
     </OverlayTrigger>

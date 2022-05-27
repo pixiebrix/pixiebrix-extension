@@ -18,22 +18,30 @@
 import React from "react";
 import { BlockArgContext, BlockOptions } from "@/core";
 import ConsoleLogger from "@/utils/ConsoleLogger";
+import { BusinessError } from "@/errors";
 
 type DocumentState = {
   options: BlockOptions<BlockArgContext>;
 };
 
+const blankContext = {
+  "@input": {},
+  "@options": {},
+} as BlockArgContext;
+
 const initialValue: DocumentState = {
   options: {
-    ctxt: {
-      "@input": {},
-      "@options": {},
-    } as BlockArgContext,
+    ctxt: blankContext,
     // The root should correspond to the host page's content script. If we passed document here, it would end up being
     // the document what's rendering the document (e.g., the sidebar panel's iframe document)
     root: null,
     logger: new ConsoleLogger(),
     headless: true,
+    async runPipeline() {
+      throw new BusinessError(
+        "Support for running pipelines in documents not implemented"
+      );
+    },
   },
 };
 

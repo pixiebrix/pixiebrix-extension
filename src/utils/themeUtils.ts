@@ -67,3 +67,18 @@ export const addThemeClassToDocumentRoot = (theme: Theme): void => {
     document.documentElement.classList.add(theme);
   }
 };
+
+export const setThemeFavicon = (theme: Theme): void => {
+  const favicon = document.querySelector("link[rel='icon']");
+  if (!favicon) {
+    // Not all pages have favicons
+    return;
+  }
+
+  if (theme === "default") {
+    favicon.removeAttribute("href");
+  } else {
+    const { small: icon } = getThemeLogo(theme);
+    favicon.setAttribute("href", icon);
+  }
+};
