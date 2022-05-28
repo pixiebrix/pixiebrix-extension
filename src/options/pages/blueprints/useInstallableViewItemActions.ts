@@ -37,12 +37,12 @@ import { exportBlueprint as exportBlueprintYaml } from "@/options/pages/blueprin
 import { useDeleteCloudExtensionMutation } from "@/services/api";
 import extensionsSlice from "@/store/extensionsSlice";
 import useUserAction from "@/hooks/useUserAction";
-import { CancelError } from "@/errors";
 import { useModals } from "@/components/ConfirmationModal";
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
 import { OptionsState } from "@/store/extensionsTypes";
 import useFlags from "@/hooks/useFlags";
 import notify from "@/utils/notify";
+import { CancelError } from "@/errors/businessErrors";
 
 const { removeExtension } = extensionsSlice.actions;
 

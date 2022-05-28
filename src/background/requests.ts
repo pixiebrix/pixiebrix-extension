@@ -27,7 +27,7 @@ import { ProxiedRemoteServiceError } from "@/services/errors";
 import serviceRegistry from "@/services/registry";
 import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
-import { BusinessError, ContextError, ExtensionNotLinkedError } from "@/errors";
+import { ContextError, ExtensionNotLinkedError } from "@/errors";
 import { isEmpty } from "lodash";
 import {
   deleteCachedAuthData,
@@ -46,6 +46,7 @@ import {
 } from "@/background/proxyUtils";
 import { selectAxiosError } from "@/services/requestErrorUtils";
 import { safeGuessStatusText } from "@/types/errorContract";
+import { BusinessError } from "@/errors/businessErrors";
 
 type SanitizedResponse<T = unknown> = Pick<
   AxiosResponse<T>,

@@ -26,7 +26,7 @@ import {
   UUID,
 } from "@/core";
 import { castArray, isPlainObject } from "lodash";
-import { BusinessError, ContextError } from "@/errors";
+import { ContextError } from "@/errors";
 import {
   clearExtensionDebugLogs,
   getLoggingConfig,
@@ -59,6 +59,7 @@ import { UnknownObject } from "@/types";
 import { RunBlock } from "@/contentScript/runBlockTypes";
 import { resolveBlockConfig } from "@/blocks/registry";
 import { isObject } from "@/utils";
+import { BusinessError } from "@/errors/businessErrors";
 
 type CommonOptions = ApiVersionOptions & {
   /**

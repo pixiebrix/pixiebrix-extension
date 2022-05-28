@@ -17,7 +17,7 @@
 
 import { RegexTransformer } from "./regex";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { BusinessError } from "@/errors";
+import { BusinessError } from "@/errors/businessErrors";
 
 const transformer = new RegexTransformer();
 

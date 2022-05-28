@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BusinessError } from "@/errors";
 import { UnknownObject } from "@/types";
 import { SafeHTML } from "@/core";
 import sanitize from "@/utils/sanitize";
+import { BusinessError } from "@/errors/businessErrors";
 
 // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
 export interface Row {

@@ -26,7 +26,7 @@ import {
   getScopeAndId,
 } from "@/utils";
 import type { RegistryId, SafeString } from "@/core";
-import { BusinessError } from "@/errors";
+import { BusinessError } from "@/errors/businessErrors";
 
 test("can generate fresh identifier", () => {
   const root = "field" as SafeString;

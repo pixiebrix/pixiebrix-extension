@@ -27,39 +27,17 @@ import {
   safeGuessStatusText,
 } from "@/types/errorContract";
 import { SerializableAxiosError } from "@/services/errors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
 export const JQUERY_INVALID_SELECTOR_ERROR =
   "Syntax error, unrecognized expression: ";
 
-/**
- * Base class for Errors arising from business logic in the brick, not the PixieBrix application/extension itself.
- *
- * Used for blame analysis for reporting and alerting.
- */
-export class BusinessError extends Error {
-  override name = "BusinessError";
-}
-
 export class PromiseCancelled extends Error {
   override name = "PromiseCancelled";
   constructor(message?: string, options?: ErrorOptions) {
     super(message ?? "Promise was cancelled", options);
-  }
-}
-
-/**
- * Error that a registry definition is invalid
- */
-export class InvalidDefinitionError extends BusinessError {
-  override name = "InvalidDefinitionError";
-
-  errors: unknown;
-
-  constructor(message: string, errors: unknown) {
-    super(message);
-    this.errors = errors;
   }
 }
 
@@ -103,94 +81,6 @@ export class SuspiciousOperationError extends Error {
 export class ExtensionNotLinkedError extends Error {
   override name = "ExtensionNotLinkedError";
   override message = "Extension not linked to PixieBrix server";
-}
-
-/**
- * Base class for "Error" of cancelling out of a flow that's in progress
- */
-export class CancelError extends BusinessError {
-  override name = "CancelError";
-  constructor(message?: string) {
-    super(message ?? "User cancelled the operation");
-  }
-}
-
-export class NoElementsFoundError extends BusinessError {
-  override name = "NoElementsFoundError";
-  readonly selector: string;
-
-  constructor(selector: string, message = "No elements found for selector") {
-    super(message);
-    this.selector = selector;
-  }
-}
-
-export class MultipleElementsFoundError extends BusinessError {
-  override name = "MultipleElementsFoundError";
-  readonly selector: string;
-
-  constructor(
-    selector: string,
-    message = "Multiple elements found for selector"
-  ) {
-    super(message);
-    this.selector = selector;
-  }
-}
-
-export class InvalidSelectorError extends BusinessError {
-  override name = "InvalidSelectorError";
-  readonly selector: string;
-
-  /**
-   * @param message The error message jQuery creates, example in https://cs.github.com/jquery/jquery/blob/2525cffc42934c0d5c7aa085bc45dd6a8282e840/src/selector.js#L787
-   */
-  constructor(message: string, selector: string) {
-    // Make the error message more specific than "Syntax error"
-    super(
-      "Invalid selector: " + message.replace(JQUERY_INVALID_SELECTOR_ERROR, "")
-    );
-    this.selector = selector;
-  }
-}
-
-/**
- * An error indicating an invalid input was provided to a brick. Used for checks that cannot be performed as part
- * of JSONSchema input validation
- *
- * @see InputValidationError
- */
-export class PropError extends BusinessError {
-  override name = "PropError";
-
-  public readonly blockId: string;
-
-  public readonly prop: string;
-
-  public readonly value: unknown;
-
-  constructor(message: string, blockId: string, prop: string, value: unknown) {
-    super(message);
-    this.blockId = blockId;
-    this.prop = prop;
-    this.value = value;
-  }
-}
-
-export class InvalidTemplateError extends BusinessError {
-  override name = "InvalidTemplateError";
-  readonly template: string;
-
-  constructor(message: string, template: string) {
-    // Remove excess whitespace/newlines and truncate to ensure the message isn't too long. The main point of including
-    // the template is to identify which expression generated the problem
-    const normalized = truncate(template.replace(/\s+/g, " ").trim(), {
-      length: 32,
-    });
-    super(`Invalid template: ${message}. Template: "${normalized}"`);
-
-    this.template = template;
-  }
 }
 
 type ContextErrorDetails = ErrorOptions & {

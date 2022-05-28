@@ -17,10 +17,10 @@
 
 import { castArray } from "lodash";
 import { MessageContext, RegistryId, Schema } from "@/core";
-import { BusinessError } from "@/errors";
 import { OutputUnit } from "@cfworker/json-schema";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { JsonObject } from "type-fest";
+import { BusinessError } from "@/errors/businessErrors";
 
 export class PipelineConfigurationError extends BusinessError {
   override name = "PipelineConfigurationError";

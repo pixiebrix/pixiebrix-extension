@@ -16,16 +16,12 @@
  */
 
 import {
-  BusinessError,
-  CancelError,
   ContextError,
   getErrorMessage,
   hasBusinessRootCause,
   hasCancelRootCause,
   IGNORED_ERROR_PATTERNS,
   isErrorObject,
-  MultipleElementsFoundError,
-  NoElementsFoundError,
   selectError,
   selectSpecificError,
 } from "@/errors";
@@ -36,6 +32,12 @@ import { matchesAnyPattern } from "@/utils";
 import { isPlainObject } from "@reduxjs/toolkit";
 import { ClientRequestError, RemoteServiceError } from "@/services/errors";
 import { AxiosError } from "axios";
+import {
+  BusinessError,
+  CancelError,
+  MultipleElementsFoundError,
+  NoElementsFoundError,
+} from "@/errors/businessErrors";
 
 const TEST_MESSAGE = "Test message";
 

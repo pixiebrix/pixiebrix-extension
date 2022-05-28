@@ -17,8 +17,8 @@
 
 import nytimes from "@contrib/blocks/nytimes-org.yaml";
 import trelloReader from "@contrib/readers/trello-card-reader.yaml";
-import { InvalidDefinitionError } from "@/errors";
 import { fromJS } from "@/blocks/transformers/blockFactory";
+import { InvalidDefinitionError } from "@/errors/businessErrors";
 
 test("two plus two is four", () => {
   expect(2 + 2).toBe(4);

@@ -23,12 +23,7 @@ import {
   reduceExtensionPipeline,
   reducePipeline,
 } from "@/runtime/reducePipeline";
-import {
-  hasCancelRootCause,
-  MultipleElementsFoundError,
-  NoElementsFoundError,
-  PromiseCancelled,
-} from "@/errors";
+import { hasCancelRootCause, PromiseCancelled } from "@/errors";
 import {
   acquireElement,
   awaitElementOnce,
@@ -77,6 +72,10 @@ import { EXTENSION_POINT_DATA_ATTR } from "@/common";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import reportError from "@/telemetry/reportError";
 import pluralize from "@/utils/pluralize";
+import {
+  MultipleElementsFoundError,
+  NoElementsFoundError,
+} from "@/errors/businessErrors";
 
 interface ShadowDOM {
   mode?: "open" | "closed";

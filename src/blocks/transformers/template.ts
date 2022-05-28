@@ -19,7 +19,7 @@ import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import Mustache from "mustache";
-import { BusinessError } from "@/errors";
+import { BusinessError } from "@/errors/businessErrors";
 
 /**
  * Transformer that fills a template using the current context.

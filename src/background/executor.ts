@@ -16,7 +16,6 @@
  */
 
 import { Runtime, Tabs } from "webextension-polyfill";
-import { BusinessError } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
 import { asyncForEach } from "@/utils";
 import { getLinkedApiClient } from "@/services/apiClient";
@@ -30,6 +29,7 @@ import { canAccessTab } from "webext-tools";
 import { onTabClose } from "@/chrome";
 // eslint-disable-next-line import/no-restricted-paths -- Type only
 import type { RunBlock } from "@/contentScript/runBlockTypes";
+import { BusinessError } from "@/errors/businessErrors";
 
 type TabId = number;
 

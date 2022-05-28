@@ -18,8 +18,8 @@
 import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
 import type { JobResult } from "@uipath/robot/dist/models";
-import { BusinessError } from "@/errors";
 import { validateRegistryId } from "@/types/helpers";
+import { BusinessError } from "@/errors/businessErrors";
 
 export const UIPATH_ID = validateRegistryId("@pixiebrix/uipath/local-process");
 

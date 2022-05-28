@@ -41,7 +41,7 @@ import {
   uninstallContextMenu,
 } from "@/background/messenger/api";
 import { registerHandler } from "@/contentScript/contextMenus";
-import { BusinessError, isErrorObject } from "@/errors";
+import { isErrorObject } from "@/errors";
 import reportError from "@/telemetry/reportError";
 import notify from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
@@ -56,6 +56,7 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import { guessSelectedElement } from "@/utils/selectionController";
 import { ContextMenuReader } from "@/extensionPoints/contextMenuReader";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import { BusinessError } from "@/errors/businessErrors";
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline

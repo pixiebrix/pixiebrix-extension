@@ -18,7 +18,8 @@
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { BusinessError, getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors";
+import { BusinessError } from "@/errors/businessErrors";
 
 class ParseJson extends Transformer {
   constructor() {

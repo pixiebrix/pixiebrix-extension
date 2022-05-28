@@ -37,11 +37,11 @@ import {
   selectBotOutput,
 } from "@/contrib/automationanywhere/aaUtils";
 import { sleep } from "@/utils";
-import { BusinessError } from "@/errors";
 import {
   CommunityBotArgs,
   EnterpriseBotArgs,
 } from "@/contrib/automationanywhere/aaTypes";
+import { BusinessError } from "@/errors/businessErrors";
 
 const MAX_WAIT_MILLIS = 60_000;
 const POLL_MILLIS = 2000;

@@ -17,7 +17,7 @@
 
 import { Effect } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
-import { PropError } from "@/errors";
+import { PropError } from "@/errors/businessErrors";
 
 export class ExportCsv extends Effect {
   constructor() {

@@ -19,7 +19,7 @@ import { Effect } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { awaitElementOnce } from "@/extensionPoints/helpers";
 import { runInMillis, sleep, TimeoutError } from "@/utils";
-import { BusinessError } from "@/errors";
+import { BusinessError } from "@/errors/businessErrors";
 
 export class WaitEffect extends Effect {
   constructor() {

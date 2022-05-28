@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MultipleElementsFoundError, NoElementsFoundError } from "@/errors";
+import {
+  MultipleElementsFoundError,
+  NoElementsFoundError,
+} from "@/errors/businessErrors";
 
 /**
  * Returns exactly one HTMLElement corresponding to the given selector.

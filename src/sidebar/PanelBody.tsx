@@ -21,10 +21,11 @@ import blockRegistry from "@/blocks/registry";
 import { useAsyncState } from "@/hooks/common";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import ReactShadowRoot from "react-shadow-root";
-import { BusinessError, getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors";
 import { BlockArg, RendererOutput } from "@/core";
 import { PanelPayload } from "@/sidebar/types";
 import RendererComponent from "@/sidebar/RendererComponent";
+import { BusinessError } from "@/errors/businessErrors";
 
 const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
   payload,
