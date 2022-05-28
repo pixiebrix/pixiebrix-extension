@@ -17,6 +17,7 @@
 
 import { truncate } from "lodash";
 import { JQUERY_INVALID_SELECTOR_ERROR } from "@/errors";
+import { AxiosResponse } from "axios";
 
 /**
  * Base class for Errors arising from business logic in the brick, not the PixieBrix application/extension itself.
@@ -127,5 +128,54 @@ export class InvalidTemplateError extends BusinessError {
     super(`Invalid template: ${message}. Template: "${normalized}"`);
 
     this.template = template;
+  }
+}
+
+export class MissingConfigurationError extends BusinessError {
+  override name = "MissingConfigurationError";
+
+  serviceId: string;
+
+  id: string;
+
+  constructor(message: string, serviceId: string, id?: string) {
+    super(message);
+    this.serviceId = serviceId;
+    this.id = id;
+  }
+}
+
+export class NotConfiguredError extends BusinessError {
+  override name = "NotConfiguredError";
+
+  serviceId: string;
+
+  missingProperties: string[];
+
+  constructor(
+    message: string,
+    serviceId: string,
+    missingProperties?: string[]
+  ) {
+    super(message);
+    this.serviceId = serviceId;
+    this.missingProperties = missingProperties;
+  }
+}
+
+type ProxiedResponse = Pick<AxiosResponse, "data" | "status" | "statusText">;
+
+/**
+ * An error response from a 3rd party API via the PixieBrix proxy
+ * @see RemoteServiceError
+ */
+export class ProxiedRemoteServiceError extends BusinessError {
+  override name = "ProxiedRemoteServiceError";
+  readonly response: ProxiedResponse;
+
+  constructor(message: string, response: ProxiedResponse) {
+    super(message);
+
+    this.response = response;
   }
 }

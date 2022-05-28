@@ -18,10 +18,7 @@
 import { Service } from "@/types";
 import { produce } from "immer";
 import { renderMustache } from "@/runtime/mapArgs";
-import {
-  IncompatibleServiceError,
-  NotConfiguredError,
-} from "@/services/errors";
+import { IncompatibleServiceError } from "@/services/errors";
 import {
   OAuth2Context,
   AuthData,
@@ -44,6 +41,7 @@ import {
 import { AxiosRequestConfig } from "axios";
 import { isAbsoluteUrl } from "@/utils";
 import { missingProperties } from "@/helpers";
+import { NotConfiguredError } from "@/errors/businessErrors";
 
 /**
  * A service created from a local definition. Has the ability to authenticate requests because it has

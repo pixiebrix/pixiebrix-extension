@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosError } from "axios";
 import { Except } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 import { SuspiciousOperationError } from "@/errors/genericErrors";
@@ -24,60 +24,11 @@ export class IncompatibleServiceError extends SuspiciousOperationError {
   override name = "IncompatibleServiceError";
 }
 
-export class MissingConfigurationError extends BusinessError {
-  override name = "MissingConfigurationError";
-
-  serviceId: string;
-
-  id: string;
-
-  constructor(message: string, serviceId: string, id?: string) {
-    super(message);
-    this.serviceId = serviceId;
-    this.id = id;
-  }
-}
-
-export class NotConfiguredError extends BusinessError {
-  override name = "NotConfiguredError";
-
-  serviceId: string;
-
-  missingProperties: string[];
-
-  constructor(
-    message: string,
-    serviceId: string,
-    missingProperties?: string[]
-  ) {
-    super(message);
-    this.serviceId = serviceId;
-    this.missingProperties = missingProperties;
-  }
-}
-
 /**
  * Axios offers its own serialization method, but it doesn't include the response.
  * By deleting toJSON, the serialize-error library will use its default serialization
  */
 export type SerializableAxiosError = Except<AxiosError, "toJSON">;
-
-type ProxiedResponse = Pick<AxiosResponse, "data" | "status" | "statusText">;
-
-/**
- * An error response from a 3rd party API via the PixieBrix proxy
- * @see RemoteServiceError
- */
-export class ProxiedRemoteServiceError extends BusinessError {
-  override name = "ProxiedRemoteServiceError";
-  readonly response: ProxiedResponse;
-
-  constructor(message: string, response: ProxiedResponse) {
-    super(message);
-
-    this.response = response;
-  }
-}
 
 /**
  * Base class for request errors from client to 3rd-party service.

@@ -23,7 +23,6 @@ import {
   ServiceConfig,
 } from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
-import { ProxiedRemoteServiceError } from "@/services/errors";
 import serviceRegistry from "@/services/registry";
 import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
@@ -45,7 +44,10 @@ import {
 } from "@/background/proxyUtils";
 import { selectAxiosError } from "@/services/requestErrorUtils";
 import { safeGuessStatusText } from "@/types/errorContract";
-import { BusinessError } from "@/errors/businessErrors";
+import {
+  BusinessError,
+  ProxiedRemoteServiceError,
+} from "@/errors/businessErrors";
 import { ContextError, ExtensionNotLinkedError } from "@/errors/genericErrors";
 
 type SanitizedResponse<T = unknown> = Pick<
