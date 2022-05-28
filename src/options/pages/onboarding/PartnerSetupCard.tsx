@@ -29,7 +29,6 @@ import notify from "@/utils/notify";
 import { persistor } from "@/options/store";
 import { services } from "@/background/messenger/api";
 import { useDispatch } from "react-redux";
-import { useRequiredAuth, useRequiredPartnerAuth } from "@/auth/RequireAuth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 
@@ -116,11 +115,10 @@ const AutomationAnywhereControlRoomForm: React.FunctionComponent<{
 
 const PartnerSetupCard: React.FunctionComponent<{
   installURL: string;
-}> = ({ installURL }) => {
+  isAccountUnlinked: boolean;
+  needsConfiguration: boolean;
+}> = ({ installURL, isAccountUnlinked, needsConfiguration }) => {
   const { data: me, isLoading } = useGetMeQuery();
-  const { hasRequiredIntegration, hasConfiguredIntegration } =
-    useRequiredPartnerAuth();
-  const { isAccountUnlinked } = useRequiredAuth();
 
   const initialValues: ControlRoomConfiguration = {
     controlRoomUrl: me?.organization?.control_room?.url ?? "",
@@ -156,15 +154,8 @@ const PartnerSetupCard: React.FunctionComponent<{
       <OnboardingStep
         number={3}
         title="Connect your AARI account"
-        active={
-          !isAccountUnlinked &&
-          hasRequiredIntegration &&
-          !hasConfiguredIntegration
-        }
-        completed={
-          !hasRequiredIntegration ||
-          (hasRequiredIntegration && hasConfiguredIntegration)
-        }
+        active={!isAccountUnlinked && needsConfiguration}
+        completed={!needsConfiguration}
       >
         {isLoading ? (
           <GridLoader />

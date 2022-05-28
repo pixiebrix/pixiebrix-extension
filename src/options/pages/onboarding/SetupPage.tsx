@@ -24,14 +24,20 @@ import Loader from "@/components/Loader";
 import { useTitle } from "@/hooks/title";
 import DefaultSetupCard from "@/options/pages/onboarding/DefaultSetupCard";
 import PartnerSetupCard from "@/options/pages/onboarding/PartnerSetupCard";
-import { useRequiredPartnerAuth } from "@/auth/RequireAuth";
+import { useRequiredAuth, useRequiredPartnerAuth } from "@/auth/RequireAuth";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const SERVICE_URL = process.env.SERVICE_URL;
 
 const SetupPage: React.FunctionComponent = () => {
   useTitle("Setup");
-  const { hasPartner, isLoading: isPartnerLoading } = useRequiredPartnerAuth();
+  const {
+    hasPartner,
+    hasRequiredIntegration,
+    hasConfiguredIntegration,
+    isLoading: isPartnerLoading,
+  } = useRequiredPartnerAuth();
+  const { isAccountUnlinked } = useRequiredAuth();
 
   const [accountTab, accountPending] = useAsyncState(async () => {
     const accountTabs = await browser.tabs.query({
@@ -57,7 +63,18 @@ const SetupPage: React.FunctionComponent = () => {
     return null;
   }
 
-  const SetupCard = hasPartner ? PartnerSetupCard : DefaultSetupCard;
+  const setupCard = hasPartner ? (
+    <PartnerSetupCard
+      installURL={installURL}
+      isAccountUnlinked={isAccountUnlinked}
+      needsConfiguration={
+        !hasRequiredIntegration ||
+        (hasRequiredIntegration && !hasConfiguredIntegration)
+      }
+    />
+  ) : (
+    <DefaultSetupCard installURL={installURL} />
+  );
 
   return (
     <Row className="w-100 mx-0">
@@ -65,7 +82,7 @@ const SetupPage: React.FunctionComponent = () => {
         {accountPending || installURLPending || isPartnerLoading ? (
           <Loader />
         ) : (
-          <SetupCard installURL={installURL} />
+          setupCard
         )}
       </Col>
     </Row>

@@ -42,4 +42,16 @@ const Template: ComponentStory<typeof PartnerSetupCard> = (args) => (
   </Provider>
 );
 
-export const Default = Template.bind({});
+export const Unlinked = Template.bind({});
+Unlinked.args = {
+  isAccountUnlinked: true,
+  installURL: "#",
+  needsConfiguration: true,
+};
+
+export const NeedsConfiguration = Template.bind({});
+NeedsConfiguration.args = {
+  isAccountUnlinked: true,
+  installURL: "#",
+  needsConfiguration: true,
+};
