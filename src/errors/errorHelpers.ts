@@ -25,7 +25,7 @@ import {
   isClientErrorResponse,
   safeGuessStatusText,
 } from "@/types/errorContract";
-import { BusinessError, CancelError } from "@/errors/businessErrors";
+import { CancelError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { Except } from "type-fest";
 
@@ -163,15 +163,6 @@ const BUSINESS_ERROR_NAMES = new Set([
   "InvalidTemplateError",
   "InvalidSelectorError",
 ]);
-
-/**
- * Returns true iff the root cause of the error was a BusinessError.
- * @see BUSINESS_ERROR_NAMES
- * @deprecated Prefer `selectSpecificError(error, BusinessError)`
- */
-export function hasBusinessRootCause(error: unknown): boolean {
-  return Boolean(selectSpecificError(error, BusinessError));
-}
 
 export function isBusinessError(error: unknown): boolean {
   return isErrorObject(error) && BUSINESS_ERROR_NAMES.has(error.name);

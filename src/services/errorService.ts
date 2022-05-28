@@ -19,10 +19,7 @@ import { JsonObject } from "type-fest";
 import { debounce } from "lodash";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { MessageContext, SemVerString, SerializedError } from "@/core";
-import {
-  hasBusinessRootCause,
-  hasCancelRootCause,
-} from "@/errors/errorHelpers";
+import { hasCancelRootCause, selectSpecificError } from "@/errors/errorHelpers";
 import { allowsTrack } from "@/telemetry/dnt";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
 import { isObject } from "@/utils";
@@ -34,6 +31,7 @@ import {
 } from "@/services/requestErrorUtils";
 import { ErrorItem } from "@/types/contract";
 import { expectContext } from "@/utils/expectContext";
+import { BusinessError } from "@/errors/businessErrors";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -133,7 +131,7 @@ export async function reportToErrorService(
     step_label: flatContext.label,
     user_agent: window.navigator.userAgent,
     user_agent_extension_version: extensionVersion,
-    is_application_error: !hasBusinessRootCause(error),
+    is_application_error: !selectSpecificError(error, BusinessError),
     // Already capturing extension version in user_agent_extension_version
     error_data: data,
     timestamp: new Date().toISOString(),

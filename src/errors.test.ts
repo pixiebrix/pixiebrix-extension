@@ -17,7 +17,6 @@
 
 import {
   getErrorMessage,
-  hasBusinessRootCause,
   hasCancelRootCause,
   IGNORED_ERROR_PATTERNS,
   isErrorObject,
@@ -98,7 +97,10 @@ describe("hasCancelRootCause", () => {
   });
 });
 
-describe("hasBusinessRootCause", () => {
+describe("selectSpecificError BusinessError", () => {
+  // Just a helper around a new API to preserve the old BusinessError-specific tests
+  const hasBusinessRootCause = (error: unknown) =>
+    Boolean(selectSpecificError(error, BusinessError));
   const errorTable = [
     new BusinessError(TEST_MESSAGE),
     new NoElementsFoundError("#test"),
