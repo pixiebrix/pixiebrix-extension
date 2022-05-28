@@ -1,5 +1,5 @@
 import { MessageContext } from "@/core";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 // A mock that doesn't call the background page to report the error
 export function reportError(error: unknown, context?: MessageContext): void {

@@ -24,7 +24,7 @@ import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprin
 import * as Yup from "yup";
 import { sortBy } from "lodash";
 import Form from "@/components/form/Form";
-import { getErrorMessage, isAxiosError } from "@/errors";
+import { getErrorMessage, isAxiosError } from "@/errors/errorHelpers";
 import {
   appApi,
   useGetEditablePackagesQuery,

@@ -17,7 +17,7 @@
 
 import React from "react";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
-import { selectSpecificError, getRootCause } from "@/errors";
+import { selectSpecificError, getRootCause } from "@/errors/errorHelpers";
 import { ErrorObject } from "serialize-error";
 import InputValidationErrorDetail from "./InputValidationErrorDetail";
 import NetworkErrorDetail from "./NetworkErrorDetail";

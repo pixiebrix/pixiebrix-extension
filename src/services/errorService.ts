@@ -19,7 +19,10 @@ import { JsonObject } from "type-fest";
 import { debounce } from "lodash";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { MessageContext, SemVerString, SerializedError } from "@/core";
-import { hasBusinessRootCause, hasCancelRootCause } from "@/errors";
+import {
+  hasBusinessRootCause,
+  hasCancelRootCause,
+} from "@/errors/errorHelpers";
 import { allowsTrack } from "@/telemetry/dnt";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
 import { isObject } from "@/utils";

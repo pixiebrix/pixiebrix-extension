@@ -16,7 +16,7 @@
  */
 
 import { identity, toPath } from "lodash";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { cleanValue, InvalidPathError, isObject, joinName } from "@/utils";
 import { UnknownObject } from "@/types";
 

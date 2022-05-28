@@ -16,7 +16,7 @@
  */
 
 import { MessageContext } from "@/core";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 /**
  * Base class for connection errors between browser extension components

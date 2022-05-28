@@ -30,7 +30,7 @@ import useReinstall from "@/options/pages/blueprints/utils/useReinstall";
 import notify from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/services/apiClient";
-import { isAxiosError } from "@/errors";
+import { isAxiosError } from "@/errors/errorHelpers";
 import {
   clearServiceCache,
   reactivateEveryTab,

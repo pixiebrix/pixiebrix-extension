@@ -35,7 +35,7 @@ import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 // eslint-disable-next-line import/no-restricted-paths -- Custom devTools mechanism to transfer data
 import { addListenerForUpdateSelectedElement } from "@/pageEditor/getSelectedElement";
 import { initToaster } from "@/utils/notify";
-import { isConnectionError } from "@/errors";
+import { isConnectionError } from "@/errors/errorHelpers";
 import { showConnectionLost } from "@/contentScript/connection";
 
 const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");

@@ -24,7 +24,7 @@ import { useAsyncEffect } from "use-async-effect";
 import { isEmpty } from "lodash";
 import { thisTab } from "@/pageEditor/utils";
 import { detectFrameworks, searchWindow } from "@/contentScript/messenger/api";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 function useSearchWindow(query: string): [unknown[] | null, unknown | null] {
   const { tabId } = browser.devtools.inspectedWindow;

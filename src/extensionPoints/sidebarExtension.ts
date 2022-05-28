@@ -50,7 +50,7 @@ import {
 } from "@/contentScript/sidebar";
 import Mustache from "mustache";
 import { uuidv4 } from "@/types/helpers";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { HeadlessModeError } from "@/blocks/errors";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { cloneDeep } from "lodash";

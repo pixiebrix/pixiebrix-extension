@@ -23,7 +23,7 @@ import {
   isErrorObject,
   selectError,
   selectSpecificError,
-} from "@/errors";
+} from "@/errors/errorHelpers";
 import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";

@@ -23,7 +23,7 @@ import {
   reduceExtensionPipeline,
   reducePipeline,
 } from "@/runtime/reducePipeline";
-import { hasCancelRootCause } from "@/errors";
+import { hasCancelRootCause } from "@/errors/errorHelpers";
 import {
   acquireElement,
   awaitElementOnce,

@@ -18,7 +18,7 @@
 /**
  * @file This file must be imported as early as possible in each entrypoint, once
  */
-import { isConnectionError } from "@/errors";
+import { isConnectionError } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 
 function ignoreConnectionErrors(

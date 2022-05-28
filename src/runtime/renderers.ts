@@ -20,7 +20,7 @@ import Mustache from "mustache";
 import { mapKeys, identity, once } from "lodash";
 import { getPropByPath } from "@/runtime/pathHelpers";
 import { UnknownObject } from "@/types";
-import { isErrorObject } from "@/errors";
+import { isErrorObject } from "@/errors/errorHelpers";
 import { InvalidTemplateError } from "@/errors/businessErrors";
 
 const hyphenRegex = /-/gi;

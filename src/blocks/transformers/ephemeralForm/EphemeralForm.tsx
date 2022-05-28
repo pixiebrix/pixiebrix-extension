@@ -24,7 +24,7 @@ import {
   cancelForm,
 } from "@/contentScript/messenger/api";
 import Loader from "@/components/Loader";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { Target } from "@/types";
 import { validateUUID } from "@/types/helpers";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";

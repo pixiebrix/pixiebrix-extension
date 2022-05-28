@@ -18,7 +18,7 @@
 import { Transformer } from "@/types";
 import { Schema } from "@/core";
 import { captureTab } from "@/background/messenger/api";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 
 export class ScreenshotTab extends Transformer {

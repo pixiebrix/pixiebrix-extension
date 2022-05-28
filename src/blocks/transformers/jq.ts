@@ -20,7 +20,7 @@ import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
 import { InputValidationError } from "@/blocks/errors";
-import { isErrorObject } from "@/errors";
+import { isErrorObject } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 
 const jqStacktraceRegexp = /jq: error \(at <stdin>:0\): (?<message>.*)/;

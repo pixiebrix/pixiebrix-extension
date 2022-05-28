@@ -51,7 +51,7 @@ import Form, {
 import { useCreateRecipeMutation, useGetRecipesQuery } from "@/services/api";
 import useCreate from "@/pageEditor/hooks/useCreate";
 import extensionsSlice from "@/store/extensionsSlice";
-import { isAxiosError } from "@/errors";
+import { isAxiosError } from "@/errors/errorHelpers";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";

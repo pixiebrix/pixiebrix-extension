@@ -22,7 +22,7 @@ import Loader from "@/components/Loader";
 import { Card, Table } from "react-bootstrap";
 import useReportError from "@/hooks/useReportError";
 import { Permissions } from "webextension-polyfill";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 const PermissionsBody: React.FunctionComponent<{
   enabled: boolean;

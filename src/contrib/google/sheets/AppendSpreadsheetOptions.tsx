@@ -26,7 +26,7 @@ import { isNullOrBlank, joinName } from "@/utils";
 import { SheetMeta } from "@/contrib/google/sheets/types";
 import FileWidget from "@/contrib/google/sheets/FileWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import TabField from "@/contrib/google/sheets/TabField";
 import { isExpression } from "@/runtime/mapArgs";

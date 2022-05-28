@@ -38,7 +38,7 @@ import {
 } from "@/extensionPoints/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/blocks/available";
-import { hasCancelRootCause } from "@/errors";
+import { hasCancelRootCause } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 import notify, { DEFAULT_ACTION_RESULTS, notifyResult } from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";

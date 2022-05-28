@@ -21,7 +21,7 @@ import blockRegistry from "@/blocks/registry";
 import { useAsyncState } from "@/hooks/common";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import ReactShadowRoot from "react-shadow-root";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { BlockArg, RendererOutput } from "@/core";
 import { PanelPayload } from "@/sidebar/types";
 import RendererComponent from "@/sidebar/RendererComponent";

@@ -16,7 +16,7 @@
  */
 
 import chromeP from "webext-polyfill-kinda";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { forbidContext } from "@/utils/expectContext";
 
 export async function ensureAuth(

@@ -23,7 +23,7 @@ import { isNullOrBlank } from "@/utils";
 
 // Methods imported async in the brick
 import type { ParsedDomain } from "psl";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 
 const URL_PROPERTIES = [

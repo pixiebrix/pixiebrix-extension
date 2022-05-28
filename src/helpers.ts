@@ -16,7 +16,10 @@
  */
 
 import { Schema, SchemaProperties } from "@/core";
-import { getErrorMessage, JQUERY_INVALID_SELECTOR_ERROR } from "@/errors";
+import {
+  getErrorMessage,
+  JQUERY_INVALID_SELECTOR_ERROR,
+} from "@/errors/errorHelpers";
 import { InvalidSelectorError } from "@/errors/businessErrors";
 
 /**

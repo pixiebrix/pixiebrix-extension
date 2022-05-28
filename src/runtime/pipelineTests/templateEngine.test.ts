@@ -28,7 +28,7 @@ import {
 // Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandledrejection errors since we call
 // them with `void` instead of awaiting them in the reducePipeline methods
 import * as logging from "@/background/messenger/api";
-import { getRootCause } from "@/errors";
+import { getRootCause } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({

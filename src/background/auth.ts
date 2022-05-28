@@ -29,7 +29,7 @@ import {
   generateVerifier,
   getRandomString,
 } from "@/vendors/pkce";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
 import { UnknownObject } from "@/types";
 import { BusinessError } from "@/errors/businessErrors";

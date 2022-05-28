@@ -21,7 +21,7 @@ import { PageEditorTabContext } from "@/pageEditor/context";
 import notify from "@/utils/notify";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { internalExtensionPointMetaFactory } from "@/pageEditor/extensionPoints/base";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { updateDynamicElement } from "@/contentScript/messenger/api";

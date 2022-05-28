@@ -24,7 +24,7 @@ import { castArray, mapValues } from "lodash";
 import { faEyeSlash, faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { StatusCodes } from "http-status-codes";
-import { isAxiosError } from "@/errors";
+import { isAxiosError } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";

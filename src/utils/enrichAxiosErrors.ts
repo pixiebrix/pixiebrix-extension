@@ -22,7 +22,7 @@ import {
   isAxiosError,
   NO_INTERNET_MESSAGE,
   NO_RESPONSE_MESSAGE,
-} from "@/errors";
+} from "@/errors/errorHelpers";
 import { assertHttpsUrl } from "@/utils";
 import {
   ClientNetworkError,

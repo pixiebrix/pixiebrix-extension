@@ -32,7 +32,7 @@ import Form, {
   RenderBody,
   RenderSubmit,
 } from "@/components/form/Form";
-import { isAxiosError } from "@/errors";
+import { isAxiosError } from "@/errors/errorHelpers";
 import { object, string } from "yup";
 import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioItemListWidget";
 import { RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";

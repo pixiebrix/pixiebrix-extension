@@ -23,7 +23,7 @@ import { isEqual, isPlainObject, unary, uniq } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import { normalizeHeader } from "@/contrib/google/sheets/sheetsHelpers";
 import { sheets } from "@/background/messenger/api";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 
 type CellValue = string | number | null;

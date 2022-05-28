@@ -17,7 +17,7 @@
 
 import { Logger, MessageContext } from "@/core";
 import { JsonObject } from "type-fest";
-import { isConnectionError } from "@/errors";
+import { isConnectionError } from "@/errors/errorHelpers";
 import { isContentScript } from "webext-detect-page";
 import { showConnectionLost } from "@/contentScript/connection";
 import { recordLog } from "@/background/messenger/api";

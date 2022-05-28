@@ -19,7 +19,7 @@ import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import notify from "@/utils/notify";
-import { getErrorMessage, isAxiosError } from "@/errors";
+import { getErrorMessage, isAxiosError } from "@/errors/errorHelpers";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";

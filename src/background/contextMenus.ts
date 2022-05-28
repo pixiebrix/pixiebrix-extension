@@ -17,7 +17,7 @@
 
 import pTimeout from "p-timeout";
 import { Menus, Tabs } from "webextension-polyfill";
-import { getErrorMessage, hasCancelRootCause } from "@/errors";
+import { getErrorMessage, hasCancelRootCause } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 import { noop } from "lodash";
 import { handleMenuAction, notify } from "@/contentScript/messenger/api";

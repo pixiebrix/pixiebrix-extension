@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isAxiosError, isErrorObject } from "@/errors";
+import {
+  isAxiosError,
+  isErrorObject,
+  SerializableAxiosError,
+} from "@/errors/errorHelpers";
 import { AxiosRequestConfig } from "axios";
 import { testMatchPatterns } from "@/blocks/available";
 import {
@@ -25,7 +29,6 @@ import {
 } from "@/services/baseService";
 import { isAbsoluteUrl } from "@/utils";
 import urljoin from "url-join";
-import { SerializableAxiosError } from "@/errors/errorHelpers";
 
 /**
  * Get the absolute URL from a request configuration. Does NOT include the query params from the request unless

@@ -16,7 +16,7 @@
  */
 
 import { Logger, RendererOutput, SafeHTML } from "@/core";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import sanitize from "@/utils/sanitize";
 import { UnknownObject } from "@/types";
 import { escape } from "lodash";
