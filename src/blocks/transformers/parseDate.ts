@@ -88,6 +88,11 @@ export class ParseDate extends Transformer {
           humanReadable: {
             type: "string",
           },
+          epochMillis: {
+            type: "number",
+            description:
+              "The number of milliseconds between 1 January 1970 00:00:00 UTC and the given date.",
+          },
         },
       },
       local: {
@@ -128,6 +133,8 @@ export class ParseDate extends Transformer {
 
     const millisPerMinute = 60 * 1000;
     const offsetInMinutes = parsed.getTimezoneOffset();
+    // `getTime()` always uses UTC for time representation. For example, a client browser in one timezone, getTime()
+    // will be the same as a client browser in any other timezone.
     const utc = new Date(parsed.getTime() + offsetInMinutes * millisPerMinute);
 
     return {
@@ -136,6 +143,7 @@ export class ParseDate extends Transformer {
         date: utc.toLocaleDateString(),
         time: utc.toLocaleTimeString(),
         humanReadable: parsed.toUTCString(),
+        epochMillis: parsed.getTime(),
       },
       local: {
         iso8601: getLocalISOString(parsed),

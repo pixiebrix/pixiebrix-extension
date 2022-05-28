@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function escapeSingleQuotes(str: string): string {
-  // https://gist.github.com/getify/3667624
-  return str.replace(/\\([\S\s])|(')/g, "\\$1$2");
-}
+import TimestampReader from "@/blocks/readers/TimestampReader";
+
+describe("TimestampReader", () => {
+  test("generates equivalent timestamps", async () => {
+    const { timestamp, epochMillis } = await new TimestampReader().read();
+    expect(new Date(epochMillis).toISOString()).toBe(timestamp);
+  });
+});
