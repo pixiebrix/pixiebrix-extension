@@ -998,10 +998,7 @@ export interface components {
         name: string;
         scope?: string | null;
         control_room?: {
-          /**
-           * Format: uri
-           * @description The control room url
-           */
+          /** @description The control room url */
           url: string;
           service_account_token: string;
         };
@@ -1012,10 +1009,7 @@ export interface components {
         name: string;
         scope?: string | null;
         control_room?: {
-          /**
-           * Format: uri
-           * @description The control room url
-           */
+          /** @description The control room url */
           url: string;
           service_account_token: string;
         };
@@ -1027,10 +1021,7 @@ export interface components {
           name: string;
           scope?: string | null;
           control_room?: {
-            /**
-             * Format: uri
-             * @description The control room url
-             */
+            /** @description The control room url */
             url: string;
             service_account_token: string;
           };
