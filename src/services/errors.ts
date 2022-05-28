@@ -16,9 +16,9 @@
  */
 
 import { AxiosError, AxiosResponse } from "axios";
-import { SuspiciousOperationError } from "@/errors";
 import { Except } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
+import { SuspiciousOperationError } from "@/errors/genericErrors";
 
 export class IncompatibleServiceError extends SuspiciousOperationError {
   override name = "IncompatibleServiceError";

@@ -56,8 +56,8 @@ import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import pluralize from "@/utils/pluralize";
-import { PromiseCancelled } from "@/errors";
 import { JsonObject } from "type-fest";
+import { PromiseCancelled } from "@/errors/genericErrors";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;

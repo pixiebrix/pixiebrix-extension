@@ -23,7 +23,7 @@ import {
   reduceExtensionPipeline,
   reducePipeline,
 } from "@/runtime/reducePipeline";
-import { hasCancelRootCause, PromiseCancelled } from "@/errors";
+import { hasCancelRootCause } from "@/errors";
 import {
   acquireElement,
   awaitElementOnce,
@@ -76,6 +76,7 @@ import {
   MultipleElementsFoundError,
   NoElementsFoundError,
 } from "@/errors/businessErrors";
+import { PromiseCancelled } from "@/errors/genericErrors";
 
 interface ShadowDOM {
   mode?: "open" | "closed";

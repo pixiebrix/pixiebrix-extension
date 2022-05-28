@@ -42,9 +42,9 @@ import {
 import { Primitive } from "type-fest";
 import { ApiVersion, RegistryId, SafeString } from "@/core";
 import { UnknownObject } from "@/types";
-import { PromiseCancelled } from "@/errors";
 import { RecipeDefinition } from "@/types/definitions";
 import { BusinessError } from "@/errors/businessErrors";
+import { PromiseCancelled } from "@/errors/genericErrors";
 
 const specialCharsRegex = /[.[\]]/;
 

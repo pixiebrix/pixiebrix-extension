@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MessageContext } from "@/core";
 import { deserializeError, ErrorObject } from "serialize-error";
 import { AxiosResponse } from "axios";
 import { isObject, matchesAnyPattern } from "@/utils";
@@ -28,77 +27,12 @@ import {
 } from "@/types/errorContract";
 import { SerializableAxiosError } from "@/services/errors";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
+import { ContextError } from "@/errors/genericErrors";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
 export const JQUERY_INVALID_SELECTOR_ERROR =
   "Syntax error, unrecognized expression: ";
-
-export class PromiseCancelled extends Error {
-  override name = "PromiseCancelled";
-  constructor(message?: string, options?: ErrorOptions) {
-    super(message ?? "Promise was cancelled", options);
-  }
-}
-
-/**
- * Base class for connection errors between browser extension components
- */
-export class ConnectionError extends Error {
-  override name = "ConnectionError";
-}
-
-/**
- * Error indicating that client made an unauthenticated request to a PixieBrix API that requires authentication.
- *
- * NOTE: do not throw this error for calls where the token is incorrect
- *
- * This indicates an error in the PixieBrix code, of either:
- * - The endpoint is enforcing authentication when it should (e.g., it should return an empty response for
- * unauthenticated users, or
- * - The client should not make the call if the extensions is not linked
- */
-export class EndpointAuthError extends Error {
-  override name = "EndpointAuthError";
-  readonly url: string;
-
-  constructor(url: string) {
-    super(`API endpoint requires authentication: ${url}`);
-    this.url = url;
-  }
-}
-
-/**
- * Error indicating the client performed a suspicious operation
- */
-export class SuspiciousOperationError extends Error {
-  override name = "SuspiciousOperationError";
-}
-
-/**
- * Error indicating the extension is not linked to the PixieBrix API
- */
-export class ExtensionNotLinkedError extends Error {
-  override name = "ExtensionNotLinkedError";
-  override message = "Extension not linked to PixieBrix server";
-}
-
-type ContextErrorDetails = ErrorOptions & {
-  context?: MessageContext;
-};
-
-/**
- * Wrap an error with some additional context about where the error originated.
- */
-export class ContextError extends Error {
-  override name = "ContextError";
-
-  public readonly context?: MessageContext;
-  constructor(message: string, { cause, context }: ContextErrorDetails) {
-    super(getErrorMessage(cause, message), { cause });
-    this.context = context;
-  }
-}
 
 export const NO_TARGET_FOUND_CONNECTION_ERROR =
   "Could not establish connection. Receiving end does not exist.";

@@ -22,13 +22,13 @@ import MockAdapter from "axios-mock-adapter";
 import { isBackground, isExtensionContext } from "webext-detect-page";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { proxyService } from "./requests";
-import { ContextError } from "@/errors";
 import * as token from "@/auth/token";
 import * as locator from "@/services/locator";
 import { RemoteServiceError } from "@/services/errors";
 import { validateRegistryId } from "@/types/helpers";
 import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
 import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories";
+import { ContextError } from "@/errors/genericErrors";
 
 const axiosMock = new MockAdapter(axios);
 const mockIsBackground = isBackground as jest.MockedFunction<

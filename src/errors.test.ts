@@ -16,7 +16,6 @@
  */
 
 import {
-  ContextError,
   getErrorMessage,
   hasBusinessRootCause,
   hasCancelRootCause,
@@ -38,6 +37,7 @@ import {
   MultipleElementsFoundError,
   NoElementsFoundError,
 } from "@/errors/businessErrors";
+import { ContextError } from "@/errors/genericErrors";
 
 const TEST_MESSAGE = "Test message";
 
