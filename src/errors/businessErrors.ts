@@ -20,6 +20,12 @@ import { JQUERY_INVALID_SELECTOR_ERROR } from "@/errors/errorHelpers";
 import { AxiosResponse } from "axios";
 
 /**
+ * @file ONLY KEEP ACTUAL ERRORS IN HERE.
+ * Functions go in errorHelpers.ts
+ * This helps avoids circular references.
+ */
+
+/**
  * Base class for Errors arising from business logic in the brick, not the PixieBrix application/extension itself.
  *
  * Used for blame analysis for reporting and alerting.

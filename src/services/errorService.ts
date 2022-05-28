@@ -19,7 +19,10 @@ import { JsonObject } from "type-fest";
 import { debounce } from "lodash";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { MessageContext, SemVerString, SerializedError } from "@/core";
-import { hasCancelRootCause, selectSpecificError } from "@/errors/errorHelpers";
+import {
+  hasSpecificErrorCause,
+  selectSpecificError,
+} from "@/errors/errorHelpers";
 import { allowsTrack } from "@/telemetry/dnt";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
 import { isObject } from "@/utils";
@@ -31,7 +34,7 @@ import {
 } from "@/services/requestErrorUtils";
 import { ErrorItem } from "@/types/contract";
 import { expectContext } from "@/utils/expectContext";
-import { BusinessError } from "@/errors/businessErrors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -108,7 +111,7 @@ export async function reportToErrorService(
     return;
   }
 
-  if (hasCancelRootCause(error)) {
+  if (hasSpecificErrorCause(error, CancelError)) {
     return;
   }
 

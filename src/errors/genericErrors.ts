@@ -15,6 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file ONLY KEEP ACTUAL ERRORS IN HERE.
+ * Functions go in errorHelpers.ts
+ * This helps avoids circular references.
+ */
+
 import { MessageContext } from "@/core";
 import { getErrorMessage } from "@/errors/errorHelpers";
 

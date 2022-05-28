@@ -19,6 +19,12 @@ import { BusinessError } from "@/errors/businessErrors";
 import { SerializableAxiosError } from "@/errors/errorHelpers";
 
 /**
+ * @file ONLY KEEP ACTUAL ERRORS IN HERE.
+ * Functions go in errorHelpers.ts
+ * This helps avoids circular references.
+ */
+
+/**
  * Base class for request errors from client to 3rd-party service.
  */
 export class ClientRequestError extends BusinessError {

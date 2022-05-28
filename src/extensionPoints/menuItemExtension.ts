@@ -23,7 +23,7 @@ import {
   reduceExtensionPipeline,
   reducePipeline,
 } from "@/runtime/reducePipeline";
-import { hasCancelRootCause } from "@/errors/errorHelpers";
+import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import {
   acquireElement,
   awaitElementOnce,
@@ -72,6 +72,7 @@ import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import reportError from "@/telemetry/reportError";
 import pluralize from "@/utils/pluralize";
 import {
+  CancelError,
   MultipleElementsFoundError,
   NoElementsFoundError,
 } from "@/errors/businessErrors";
@@ -562,7 +563,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           merge({}, onSuccess, DEFAULT_ACTION_RESULTS.success)
         );
       } catch (error) {
-        if (hasCancelRootCause(error)) {
+        if (hasSpecificErrorCause(error, CancelError)) {
           notifyResult(
             extension.id,
             merge({}, onCancel, DEFAULT_ACTION_RESULTS.cancel)

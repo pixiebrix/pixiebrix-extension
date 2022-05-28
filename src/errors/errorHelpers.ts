@@ -25,7 +25,6 @@ import {
   isClientErrorResponse,
   safeGuessStatusText,
 } from "@/types/errorContract";
-import { CancelError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { Except } from "type-fest";
 
@@ -75,30 +74,6 @@ export function isContextError(error: unknown): error is ContextError {
   );
 }
 
-/**
- * Returns true iff the root cause of the error was a CancelError.
- * @param error the error object
- */
-export function hasCancelRootCause(error: unknown): boolean {
-  if (error == null) {
-    return false;
-  }
-
-  if (!isErrorObject(error)) {
-    return false;
-  }
-
-  if (error instanceof CancelError || error.name === "CancelError") {
-    return true;
-  }
-
-  if (isContextError(error)) {
-    return hasCancelRootCause(error.cause);
-  }
-
-  return false;
-}
-
 export function isSpecificError<
   ErrorType extends new (...args: unknown[]) => Error
 >(error: unknown, errorType: ErrorType): error is InstanceType<ErrorType> {
@@ -127,6 +102,12 @@ export function selectSpecificError<
   }
 
   return selectSpecificError(error.cause, errorType);
+}
+
+export function hasSpecificErrorCause<
+  ErrorType extends new (...args: unknown[]) => Error
+>(error: unknown, errorType: ErrorType): boolean {
+  return Boolean(selectSpecificError(error, errorType));
 }
 
 /**

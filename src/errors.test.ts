@@ -17,7 +17,7 @@
 
 import {
   getErrorMessage,
-  hasCancelRootCause,
+  hasSpecificErrorCause,
   IGNORED_ERROR_PATTERNS,
   isErrorObject,
   selectError,
@@ -61,7 +61,11 @@ function nest(error: Error, level = 1): Error {
   );
 }
 
-describe("hasCancelRootCause", () => {
+describe("hasSpecificErrorCause CancelError", () => {
+  // Just a helper around a new API to preserve the old CancelError-specific tests
+  const hasCancelRootCause = (error: unknown) =>
+    hasSpecificErrorCause(error, CancelError);
+
   test("can detect cancel root cause", () => {
     const error = new CancelError(TEST_MESSAGE);
     for (const level of range(3)) {
@@ -97,10 +101,11 @@ describe("hasCancelRootCause", () => {
   });
 });
 
-describe("selectSpecificError BusinessError", () => {
+describe("hasSpecificErrorCause BusinessError", () => {
   // Just a helper around a new API to preserve the old BusinessError-specific tests
   const hasBusinessRootCause = (error: unknown) =>
-    Boolean(selectSpecificError(error, BusinessError));
+    hasSpecificErrorCause(error, BusinessError);
+
   const errorTable = [
     new BusinessError(TEST_MESSAGE),
     new NoElementsFoundError("#test"),

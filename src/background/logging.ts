@@ -26,7 +26,7 @@ import { allowsTrack } from "@/telemetry/dnt";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
   getErrorMessage,
-  hasCancelRootCause,
+  hasSpecificErrorCause,
   IGNORED_ERROR_PATTERNS,
   isContextError,
   selectSpecificError,
@@ -37,7 +37,7 @@ import {
   reportToErrorService,
   selectExtraContext,
 } from "@/services/errorService";
-import { BusinessError } from "@/errors/businessErrors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -236,7 +236,7 @@ async function reportToRollbar(
   flatContext: MessageContext,
   message: string
 ): Promise<void> {
-  if (hasCancelRootCause(error)) {
+  if (hasSpecificErrorCause(error, CancelError)) {
     return;
   }
 
