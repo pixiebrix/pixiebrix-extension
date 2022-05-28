@@ -54,7 +54,6 @@ import notify, {
   notifyResult,
 } from "@/utils/notify";
 import { getNavigationId } from "@/contentScript/context";
-import { rejectOnCancelled } from "@/utils";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { selectEventData } from "@/telemetry/deployments";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
@@ -77,6 +76,7 @@ import {
   NoElementsFoundError,
 } from "@/errors/businessErrors";
 import { PromiseCancelled } from "@/errors/genericErrors";
+import { rejectOnCancelled } from "@/errors/rejectOnCancelled";
 
 interface ShadowDOM {
   mode?: "open" | "closed";

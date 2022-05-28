@@ -43,7 +43,6 @@ import { Primitive } from "type-fest";
 import { ApiVersion, RegistryId, SafeString } from "@/core";
 import { UnknownObject } from "@/types";
 import { RecipeDefinition } from "@/types/definitions";
-import { PromiseCancelled } from "@/errors/genericErrors";
 
 const specialCharsRegex = /[.[\]]/;
 
@@ -332,32 +331,6 @@ export function excludeUndefined(obj: unknown): unknown {
   }
 
   return obj;
-}
-
-/**
- * Creates a new promise that's rejected if isCancelled returns true.
- * @throws PromiseCancelled
- */
-export async function rejectOnCancelled<T>(
-  promise: Promise<T>,
-  isCancelled: () => boolean
-): Promise<T> {
-  let rv: T;
-  try {
-    rv = await promise;
-  } catch (error) {
-    if (isCancelled()) {
-      throw new PromiseCancelled();
-    }
-
-    throw error ?? new Error("Undefined error awaiting promise");
-  }
-
-  if (isCancelled()) {
-    throw new PromiseCancelled();
-  }
-
-  return rv;
 }
 
 export function evaluableFunction(
