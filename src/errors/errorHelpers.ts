@@ -107,18 +107,6 @@ export function hasSpecificErrorCause<
   return Boolean(selectSpecificError(error, errorType));
 }
 
-/**
- * Find the root cause
- * @deprecated Look for specific errors via selectSpecificError
- */
-export function getRootCause(error: unknown): unknown {
-  while (isObject(error) && error.cause != null) {
-    error = error.cause;
-  }
-
-  return error;
-}
-
 // List all BusinessError subclasses as text:
 // - to avoid circular reference issues
 // - because not all of our errors can be deserialized with the right class:
