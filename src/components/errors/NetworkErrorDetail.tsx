@@ -26,7 +26,7 @@ import {
 import JsonTree from "@/components/jsonTree/JsonTree";
 import { safeGuessStatusText } from "@/types/errorContract";
 import { selectAbsoluteUrl } from "@/services/requestErrorUtils";
-import { SerializableAxiosError } from "@/services/errors";
+import { SerializableAxiosError } from "@/errors/errorHelpers";
 
 function tryParse(value: unknown): unknown {
   if (typeof value === "string") {

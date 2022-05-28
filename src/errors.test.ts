@@ -29,7 +29,6 @@ import { deserializeError, serializeError } from "serialize-error";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
 import { matchesAnyPattern } from "@/utils";
 import { isPlainObject } from "@reduxjs/toolkit";
-import { ClientRequestError, RemoteServiceError } from "@/services/errors";
 import { AxiosError } from "axios";
 import {
   BusinessError,
@@ -38,6 +37,10 @@ import {
   NoElementsFoundError,
 } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
+import {
+  ClientRequestError,
+  RemoteServiceError,
+} from "@/errors/clientRequestErrors";
 
 const TEST_MESSAGE = "Test message";
 

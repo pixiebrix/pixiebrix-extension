@@ -85,3 +85,7 @@ export class PromiseCancelled extends Error {
     super(message ?? "Promise was cancelled", options);
   }
 }
+
+export class IncompatibleServiceError extends SuspiciousOperationError {
+  override name = "IncompatibleServiceError";
+}

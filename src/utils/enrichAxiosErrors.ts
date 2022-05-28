@@ -28,7 +28,7 @@ import {
   ClientNetworkError,
   ClientNetworkPermissionError,
   RemoteServiceError,
-} from "@/services/errors";
+} from "@/errors/clientRequestErrors";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const SERVICE_URL = process.env.SERVICE_URL;

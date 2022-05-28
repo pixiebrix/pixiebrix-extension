@@ -14,3 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import { Except } from "type-fest";
+import { AxiosError } from "axios";
+
+/**
+ * Axios offers its own serialization method, but it doesn't include the response.
+ * By deleting toJSON, the serialize-error library will use its default serialization
+ */
+export type SerializableAxiosError = Except<AxiosError, "toJSON">;

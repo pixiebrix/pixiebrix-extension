@@ -25,9 +25,9 @@ import {
   isClientErrorResponse,
   safeGuessStatusText,
 } from "@/types/errorContract";
-import { SerializableAxiosError } from "@/services/errors";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
+import { SerializableAxiosError } from "@/errors/errorHelpers";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 

@@ -24,7 +24,7 @@ import NetworkErrorDetail from "./NetworkErrorDetail";
 import OutputValidationErrorDetail from "./OutputValidationErrorDetail";
 import { Col, Row } from "react-bootstrap";
 import { UnknownObject } from "@/types";
-import { ClientRequestError } from "@/services/errors";
+import { ClientRequestError } from "@/errors/clientRequestErrors";
 
 type ErrorDetails = {
   title: string;
