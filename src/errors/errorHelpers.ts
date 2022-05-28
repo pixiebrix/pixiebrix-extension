@@ -25,7 +25,7 @@ import {
   isClientErrorResponse,
   safeGuessStatusText,
 } from "@/types/errorContract";
-import { ContextError } from "@/errors/genericErrors";
+import type { ContextError } from "@/errors/genericErrors";
 import { Except } from "type-fest";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
@@ -68,10 +68,7 @@ export function isErrorObject(error: unknown): error is ErrorObject {
 }
 
 export function isContextError(error: unknown): error is ContextError {
-  return (
-    error instanceof ContextError ||
-    (isErrorObject(error) && error.name === "ContextError")
-  );
+  return isErrorObject(error) && error.name === "ContextError";
 }
 
 export function isSpecificError<
