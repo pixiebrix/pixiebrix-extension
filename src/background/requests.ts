@@ -33,7 +33,7 @@ import {
   getToken,
   launchOAuth2Flow,
 } from "@/background/auth";
-import { assertHttpsUrl, isAbsoluteUrl } from "@/utils";
+import { isAbsoluteUrl } from "@/utils";
 import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
@@ -49,6 +49,7 @@ import {
   ProxiedRemoteServiceError,
 } from "@/errors/businessErrors";
 import { ContextError, ExtensionNotLinkedError } from "@/errors/genericErrors";
+import { assertHttpsUrl } from "@/errors/assertHttpsUrl";
 
 type SanitizedResponse<T = unknown> = Pick<
   AxiosResponse<T>,

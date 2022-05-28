@@ -21,12 +21,12 @@ import {
   joinName,
   removeUndefined,
   matchesAnyPattern,
-  assertHttpsUrl,
   makeURL,
   getScopeAndId,
 } from "@/utils";
 import type { RegistryId, SafeString } from "@/core";
 import { BusinessError } from "@/errors/businessErrors";
+import { assertHttpsUrl } from "@/errors/assertHttpsUrl";
 
 test("can generate fresh identifier", () => {
   const root = "field" as SafeString;
