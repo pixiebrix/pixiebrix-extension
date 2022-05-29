@@ -20,8 +20,12 @@ import { reportEvent } from "@/telemetry/events";
 import { getUID, initTelemetry } from "@/background/telemetry";
 import { DNT_STORAGE_KEY, allowsTrack } from "@/telemetry/dnt";
 import { gt } from "semver";
+import { getInstallURL } from "@/services/baseService";
 
 const UNINSTALL_URL = "https://www.pixiebrix.com/uninstall/";
+
+// eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
+const SERVICE_URL = process.env.SERVICE_URL;
 
 /**
  * The latest version of PixieBrix available in the Chrome Web Store, or null if the version hasn't been fetched.
@@ -29,7 +33,17 @@ const UNINSTALL_URL = "https://www.pixiebrix.com/uninstall/";
 let _availableVersion: string | null = null;
 
 async function openInstallPage() {
-  await browser.runtime.openOptionsPage();
+  const [accountTab] = await browser.tabs.query({
+    url: new URL("setup", SERVICE_URL).toString(),
+  });
+
+  if (accountTab) {
+    await browser.tabs.update(accountTab.id, {
+      url: await getInstallURL(),
+    });
+  } else {
+    await browser.runtime.openOptionsPage();
+  }
 }
 
 function install({ reason }: Runtime.OnInstalledDetailsType) {
