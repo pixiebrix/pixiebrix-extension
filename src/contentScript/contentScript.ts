@@ -21,11 +21,11 @@ const start = Date.now();
 // Importing for the side effects. Should import as early as possible
 import "@/extensionContext";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
-// eslint-disable-next-line import/no-restricted-paths -- Legacy code, needs https://github.com/pixiebrix/webext-messenger/issues/6
-import "@/background/messenger/external/api";
 
 // Normal imports
 import { uuidv4 } from "@/types/helpers";
+// eslint-disable-next-line import/no-restricted-paths -- Legacy code, needs https://github.com/pixiebrix/webext-messenger/issues/6
+import registerExternalMessenger from "@/background/messenger/external/registration";
 import registerMessenger from "@/contentScript/messenger/registration";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
@@ -43,6 +43,7 @@ const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
 const uuid = uuidv4();
 
 registerMessenger();
+registerExternalMessenger();
 registerBuiltinBlocks();
 registerContribBlocks();
 

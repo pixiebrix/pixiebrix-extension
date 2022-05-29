@@ -16,38 +16,17 @@
  */
 
 /**
- * WARNING: The file isn't loaded yet, it's just a blueprint.
- * TODO: https://github.com/pixiebrix/webext-messenger/issues/6
+ * @file Placeholder file for a future Messenger-based implementation
  */
-
-/* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
-import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
-import {
-  openActivateBlueprint,
-  openExtensionOptions,
-  openMarketplace,
-  setExtensionAuth,
-} from "./_implementation";
+import "@/background/messenger/external/api";
 
 expectContext("background");
 
-declare global {
-  interface MessengerMethods {
-    CONNECT_PAGE: typeof browser.runtime.getManifest;
-    SET_EXTENSION_AUTH: typeof setExtensionAuth;
-    OPEN_MARKETPLACE: typeof openMarketplace;
-    OPEN_ACTIVATE_BLUEPRINT: typeof openActivateBlueprint;
-    OPEN_OPTIONS: typeof openExtensionOptions;
-  }
-}
-
 export default function registerMessenger(): void {
-  registerMethods({
-    CONNECT_PAGE: browser.runtime.getManifest,
-    SET_EXTENSION_AUTH: setExtensionAuth,
-    OPEN_MARKETPLACE: openMarketplace,
-    OPEN_ACTIVATE_BLUEPRINT: openActivateBlueprint,
-    OPEN_OPTIONS: openExtensionOptions,
-  });
+  // TODO: Replace with proper Messenger implementation
+  //  https://github.com/pixiebrix/webext-messenger/issues/6
+
+  // eslint-disable-next-line import/dynamic-import-chunkname -- Needed here to prevent the minifier from dropping this otherwise empty function
+  import("@/background/messenger/external/api");
 }
