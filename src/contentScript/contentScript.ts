@@ -21,7 +21,8 @@ const start = Date.now();
 // Importing for the side effects. Should import as early as possible
 import "@/extensionContext";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
-import "@/messaging/external";
+// eslint-disable-next-line import/no-restricted-paths -- Legacy code, needs https://github.com/pixiebrix/webext-messenger/issues/6
+import "@/background/messenger/external/api";
 
 // Normal imports
 import { uuidv4 } from "@/types/helpers";

@@ -137,11 +137,6 @@ async function callBackground(
       throw error;
     }
 
-    // Console.debug(
-    //   `Content script received response for ${type} (nonce: ${nonce})`,
-    //   response
-    // );
-
     if (isErrorResponse(response)) {
       throw deserializeError(response.$$error);
     }
@@ -155,8 +150,9 @@ async function callBackground(
  * @param type a unique name for the background action
  * @param method the method to lift
  * @param options background action handler options
+ * @deprecated Only use via `liftExternal`. Use `webext-messenger` for in-extension communication
  */
-export function liftBackground<
+export function _liftBackground<
   TArguments extends unknown[],
   R extends SerializableResponse
 >(
@@ -198,6 +194,5 @@ function backgroundListener(
 }
 
 if (isBackground()) {
-  browser.runtime.onMessage.addListener(backgroundListener);
   browser.runtime.onMessageExternal.addListener(backgroundListener);
 }

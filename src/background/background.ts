@@ -27,7 +27,7 @@ import "@/development/errorsBadge";
 
 import "webext-dynamic-content-scripts";
 
-import "@/messaging/external";
+import "@/background/messenger/external/api";
 
 import registerMessenger from "@/background/messenger/registration";
 import initLocator from "@/background/locator";
