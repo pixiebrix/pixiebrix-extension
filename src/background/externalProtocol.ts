@@ -194,5 +194,6 @@ function backgroundListener(
 }
 
 if (isBackground()) {
+  browser.runtime.onMessage.addListener(backgroundListener);
   browser.runtime.onMessageExternal.addListener(backgroundListener);
 }
