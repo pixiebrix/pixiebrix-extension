@@ -18,10 +18,7 @@
 /**
  * @file Placeholder file for a future Messenger-based implementation
  */
-import { expectContext } from "@/utils/expectContext";
 import "@/background/messenger/external/api";
-
-expectContext("background");
 
 export default function registerMessenger(): void {
   // TODO: Replace with proper Messenger implementation
