@@ -27,6 +27,7 @@ import notify from "@/utils/notify";
 import useFlags from "@/hooks/useFlags";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { assertHttpsUrl } from "@/utils";
 import { selectSettings } from "@/store/settingsSelectors";
 
 const AdvancedSettings: React.FunctionComponent = () => {
@@ -63,14 +64,22 @@ const AdvancedSettings: React.FunctionComponent = () => {
 
   const handleUpdate = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newURL = event.target.value;
+      const newURL = event.target.value.trim();
       console.debug("Update service URL", { newURL, serviceURL });
       if (newURL === serviceURL || (isEmpty(newURL) && isEmpty(serviceURL))) {
         return;
       }
 
-      await setServiceURL(newURL);
-      notify.success("Updated the service URL");
+      try {
+        if (newURL) {
+          assertHttpsUrl(newURL);
+        }
+
+        await setServiceURL(newURL);
+        notify.success("Updated the service URL");
+      } catch (error) {
+        notify.error({ error });
+      }
     },
     [serviceURL, setServiceURL]
   );
