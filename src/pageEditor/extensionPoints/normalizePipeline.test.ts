@@ -19,15 +19,20 @@ import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
 import { BlockConfig } from "@/blocks/types";
-import { isPipelineExpression } from "@/runtime/mapArgs";
+import { isPipelineExpression, PipelineExpression } from "@/runtime/mapArgs";
 import {
   echoBlock,
   teapotBlock,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { toExpression } from "@/testUtils/testHelpers";
-import { withInstanceIds } from "./withInstanceIds";
+import { normalizePipeline } from "./normalizePipeline";
 
-describe("withInstanceIds", () => {
+const emptyPipeline: PipelineExpression = Object.freeze({
+  __type__: "pipeline",
+  __value__: [],
+});
+
+describe("normalizePipeline", () => {
   let echoBlockConfig: BlockConfig;
   let teapotBlockConfig: BlockConfig;
 
@@ -48,7 +53,7 @@ describe("withInstanceIds", () => {
   test("should add instance id to every block in pipeline", () => {
     const pipeline = [echoBlockConfig, teapotBlockConfig];
 
-    const actual = withInstanceIds(pipeline);
+    const actual = normalizePipeline(pipeline);
     for (const config of actual) {
       expect(config.instanceId).toBeDefined();
     }
@@ -65,7 +70,7 @@ describe("withInstanceIds", () => {
       },
     ];
 
-    const actual = withInstanceIds(pipeline) as any;
+    const actual = normalizePipeline(pipeline) as any;
 
     // Checking the loop config
     const loopConfig = actual[0].config.body;
@@ -87,7 +92,7 @@ describe("withInstanceIds", () => {
       },
     ];
 
-    const actual = withInstanceIds(pipeline) as any;
+    const actual = normalizePipeline(pipeline) as any;
 
     // Checking IF branch
     const ifConfig = actual[0].config.if;
@@ -104,7 +109,7 @@ describe("withInstanceIds", () => {
     }
   });
 
-  test("If-Else block with only if branch", () => {
+  test("If-Else block with only If branch", () => {
     const pipeline: BlockConfig[] = [
       {
         id: IfElse.BLOCK_ID,
@@ -115,7 +120,7 @@ describe("withInstanceIds", () => {
       },
     ];
 
-    const actual = withInstanceIds(pipeline) as any;
+    const actual = normalizePipeline(pipeline) as any;
 
     // Checking IF branch
     const ifConfig = actual[0].config.if;
@@ -126,7 +131,8 @@ describe("withInstanceIds", () => {
 
     // ELSE branch should be undefined
     const elseConfig = actual[0].config.else;
-    expect(elseConfig).toBeUndefined();
+    expect(isPipelineExpression(elseConfig)).toBeTrue();
+    expect(elseConfig).toEqual(emptyPipeline);
   });
 
   test("Try-Except block", () => {
@@ -140,7 +146,7 @@ describe("withInstanceIds", () => {
       },
     ];
 
-    const actual = withInstanceIds(pipeline) as any;
+    const actual = normalizePipeline(pipeline) as any;
 
     // Checking TRY branch
     const tryConfig = actual[0].config.try;
@@ -157,17 +163,17 @@ describe("withInstanceIds", () => {
     }
   });
 
-  test("Try-Except block with only if branch", () => {
+  test("Try-Except block with only Try branch", () => {
     const pipeline: BlockConfig[] = [
       {
         id: TryExcept.BLOCK_ID,
         config: {
-          try: toExpression("pipeline", [echoBlockConfig]),
+          try: toExpression("pipeline", [echoBlockConfig, teapotBlock]),
         },
       },
     ];
 
-    const actual = withInstanceIds(pipeline) as any;
+    const actual = normalizePipeline(pipeline) as any;
 
     // Checking TRY branch
     const tryConfig = actual[0].config.try;
@@ -178,6 +184,7 @@ describe("withInstanceIds", () => {
 
     // EXCEPT branch should be undefined
     const exceptConfig = actual[0].config.except;
-    expect(exceptConfig).toBeUndefined();
+    expect(isPipelineExpression(exceptConfig)).toBeTrue();
+    expect(exceptConfig).toEqual(emptyPipeline);
   });
 });

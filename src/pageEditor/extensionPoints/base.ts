@@ -64,7 +64,7 @@ import {
   INNER_SCOPE,
   isInnerExtensionPoint,
 } from "@/registry/internal";
-import { withInstanceIds } from "./withInstanceIds";
+import { normalizePipeline } from "./normalizePipeline";
 
 export interface WizardStep {
   step: string;
@@ -428,7 +428,7 @@ export function extensionWithNormalizedPipeline<
 ): BaseExtensionState & Omit<T, Prop> {
   const { [pipelineProp]: pipeline, ...rest } = { ...config };
   return {
-    blockPipeline: withInstanceIds(castArray(pipeline) as BlockPipeline),
+    blockPipeline: normalizePipeline(castArray(pipeline) as BlockPipeline),
     ...defaults,
     ...rest,
   };
