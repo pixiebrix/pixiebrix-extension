@@ -26,12 +26,12 @@ import {
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
+import { omitEditorMetadata } from "./normalizePipeline";
 import { uuidv4 } from "@/types/helpers";
 import {
   TriggerConfig,

@@ -25,7 +25,7 @@ import {
   Schema,
   UUID,
 } from "@/core";
-import { castArray, cloneDeep, isEmpty, omit } from "lodash";
+import { castArray, cloneDeep, isEmpty } from "lodash";
 import {
   assertExtensionPointConfig,
   ExtensionPointConfig,
@@ -92,13 +92,6 @@ export function makeIsAvailable(url: string): NormalizedAvailability {
     urlPatterns: [],
     selectors: [],
   };
-}
-
-/**
- * Remove the automatically generated tracing ids.
- */
-export function omitEditorMetadata(pipeline: BlockPipeline): BlockPipeline {
-  return pipeline.map((blockConfig) => omit(blockConfig, "instanceId"));
 }
 
 /**

@@ -24,8 +24,9 @@ import {
   echoBlock,
   teapotBlock,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { uuidSequence } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
-import { normalizePipeline } from "./normalizePipeline";
+import { normalizePipeline, omitEditorMetadata } from "./normalizePipeline";
 
 const emptyPipeline: PipelineExpression = Object.freeze({
   __type__: "pipeline",
@@ -186,5 +187,107 @@ describe("normalizePipeline", () => {
     const exceptConfig = actual[0].config.except;
     expect(isPipelineExpression(exceptConfig)).toBeTrue();
     expect(exceptConfig).toEqual(emptyPipeline);
+  });
+});
+
+describe("omitEditorMetadata", () => {
+  let echoBlockConfig: BlockConfig;
+  let teapotBlockConfig: BlockConfig;
+
+  beforeEach(() => {
+    echoBlockConfig = {
+      id: echoBlock.id,
+      instanceId: uuidSequence(1),
+      config: {
+        message: toExpression("nunjucks", "test"),
+      },
+    };
+
+    teapotBlockConfig = {
+      id: teapotBlock.id,
+      instanceId: uuidSequence(2),
+      config: {},
+    };
+  });
+
+  test("should remove instance id from every block in pipeline", () => {
+    const pipeline = [echoBlockConfig, teapotBlockConfig];
+
+    const actual = omitEditorMetadata(pipeline);
+    for (const config of actual) {
+      expect(config.instanceId).toBeUndefined();
+    }
+  });
+
+  test("For-Each block", () => {
+    const pipeline: BlockConfig[] = [
+      {
+        id: ForEach.BLOCK_ID,
+        config: {
+          elements: toExpression("var", "@input"),
+          body: toExpression("pipeline", [echoBlockConfig, teapotBlockConfig]),
+        },
+      },
+    ];
+
+    const actual = omitEditorMetadata(pipeline) as any;
+
+    const loopConfig = actual[0].config.body;
+    for (const config of loopConfig.__value__) {
+      expect(config.instanceId).toBeUndefined();
+    }
+  });
+
+  test("If-Else block", () => {
+    const pipeline: BlockConfig[] = [
+      {
+        id: IfElse.BLOCK_ID,
+        config: {
+          condition: true,
+          if: toExpression("pipeline", [echoBlockConfig]),
+          else: toExpression("pipeline", [teapotBlock]),
+        },
+      },
+    ];
+
+    const actual = omitEditorMetadata(pipeline) as any;
+
+    // Checking IF branch
+    const ifConfig = actual[0].config.if;
+    for (const config of ifConfig.__value__) {
+      expect(config.instanceId).toBeUndefined();
+    }
+
+    // Checking ELSE branch
+    const elseConfig = actual[0].config.else;
+    for (const config of elseConfig.__value__) {
+      expect(config.instanceId).toBeUndefined();
+    }
+  });
+
+  test("Try-Except block", () => {
+    const pipeline: BlockConfig[] = [
+      {
+        id: TryExcept.BLOCK_ID,
+        config: {
+          try: toExpression("pipeline", [echoBlockConfig]),
+          except: toExpression("pipeline", [teapotBlock]),
+        },
+      },
+    ];
+
+    const actual = omitEditorMetadata(pipeline) as any;
+
+    // Checking TRY branch
+    const tryConfig = actual[0].config.try;
+    for (const config of tryConfig.__value__) {
+      expect(config.instanceId).toBeUndefined();
+    }
+
+    // Checking EXCEPT branch
+    const exceptConfig = actual[0].config.except;
+    for (const config of exceptConfig.__value__) {
+      expect(config.instanceId).toBeUndefined();
+    }
   });
 });

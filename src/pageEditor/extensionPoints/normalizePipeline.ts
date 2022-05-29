@@ -36,7 +36,7 @@ function normalizeBlockDraft(
   for (const prop of pipelineProps) {
     const pipeline = block.config[prop];
     if (isPipelineExpression(pipeline)) {
-      pipeline.__value__ = normalizePipeline(pipeline.__value__);
+      normalizePipelineDraft(pipeline.__value__);
     } else {
       // Normalizing am empty pipeline
       block.config[prop] = {
@@ -77,4 +77,52 @@ function normalizePipelineDraft(pipeline: WritableDraft<BlockPipeline>) {
  */
 export function normalizePipeline(pipeline: BlockPipeline): BlockPipeline {
   return produce(pipeline, normalizePipelineDraft);
+}
+
+/**
+ * Omit the Block's meta and invoke normalization for the sub pipelines
+ */
+function omitDraftblockMetadata(
+  block: WritableDraft<BlockConfig>,
+  pipelineProps: string[] = []
+) {
+  delete block.instanceId;
+
+  for (const prop of pipelineProps) {
+    const pipeline = block.config[prop];
+    if (isPipelineExpression(pipeline)) {
+      omitDraft(pipeline.__value__);
+    }
+  }
+}
+
+/**
+ * Find the sub pipelines in every block of the given pipeline
+ */
+function omitDraft(pipeline: WritableDraft<BlockPipeline>) {
+  for (const block of pipeline) {
+    switch (block.id) {
+      case ForEach.BLOCK_ID:
+        omitDraftblockMetadata(block, ["body"]);
+        break;
+
+      case IfElse.BLOCK_ID:
+        omitDraftblockMetadata(block, ["if", "else"]);
+        break;
+
+      case TryExcept.BLOCK_ID:
+        omitDraftblockMetadata(block, ["try", "except"]);
+        break;
+
+      default:
+        omitDraftblockMetadata(block);
+    }
+  }
+}
+
+/**
+ * Remove the automatically generated tracing ids.
+ */
+export function omitEditorMetadata(pipeline: BlockPipeline): BlockPipeline {
+  return produce(pipeline, omitDraft);
 }

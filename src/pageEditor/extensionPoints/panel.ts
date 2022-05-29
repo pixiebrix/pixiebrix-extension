@@ -25,12 +25,12 @@ import {
   makeInitialBaseState,
   makeIsAvailable,
   extensionWithNormalizedPipeline,
-  omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
+import { omitEditorMetadata } from "./normalizePipeline";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import {
   PanelConfig,

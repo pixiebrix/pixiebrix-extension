@@ -27,7 +27,6 @@ import {
   makeInitialBaseState,
   makeIsAvailable,
   extensionWithNormalizedPipeline,
-  omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   removeEmptyValues,
   selectIsAvailable,
@@ -49,6 +48,7 @@ import React from "react";
 import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 import { ContextMenuFormState } from "./formStateTypes";
+import { omitEditorMetadata } from "./normalizePipeline";
 
 function fromNativeElement(
   url: string,
