@@ -27,11 +27,11 @@ import {
   makeInitialBaseState,
   makeIsAvailable,
   extensionWithNormalizedPipeline,
-  omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
+import { omitEditorMetadata } from "./pipelineMapping";
 import { uuidv4 } from "@/types/helpers";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { getDomain } from "@/permissions/patterns";
