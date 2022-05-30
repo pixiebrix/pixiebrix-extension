@@ -29,8 +29,7 @@ export type SelectorMatchFieldProps = {
 const defaultDescription = (
   <span>
     Selectors restricting when the extension runs. If provided, at least one of
-    the selectors must match
-    <i>on page load</i> for the extension to run.
+    the selectors must match <i>on page load</i> for the extension to run.
   </span>
 );
 
