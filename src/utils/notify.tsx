@@ -88,7 +88,7 @@ const Message: React.VoidFunctionComponent<{
 
 function getMessageDisplayTime(message: string): number {
   const wpm = 100; // 180 is the average words read per minute, make it slower
-  return Math.min(
+  return Math.max(
     MINIMUM_NOTIFICATION_DURATION,
     (message.split(" ").length / wpm) * 60_000
   );
@@ -115,8 +115,6 @@ export function showNotification({
   /** Only errors are reported by default */
   reportError: willReport = type === "error",
 }: RequireAtLeastOne<Notification, "message" | "error">): string {
-  const options = { id, duration };
-
   if (error) {
     if (!message) {
       message = getErrorMessage(error);
@@ -135,6 +133,8 @@ export function showNotification({
   if (type === "warning") {
     type = "error";
   }
+
+  const options = { id, duration };
 
   switch (type) {
     case "error":
