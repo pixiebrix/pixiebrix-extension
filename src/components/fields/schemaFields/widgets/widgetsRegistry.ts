@@ -38,6 +38,7 @@ type Widgets = {
   UnsupportedWidget: React.VFC<SchemaFieldProps>;
   UrlMatchPatternWidget: React.VFC<SchemaFieldProps & FormControlProps>;
   UrlPatternWidget: React.VFC<SchemaFieldProps>;
+  SelectorMatchWidget: React.VFC<SchemaFieldProps>;
   WorkshopMessageWidget: React.VFC<Partial<SchemaFieldProps>>;
 };
 
@@ -65,6 +66,7 @@ const widgetsRegistry: Widgets = {
   UnsupportedWidget: UnsetWidget,
   UrlMatchPatternWidget: UnsetWidget,
   UrlPatternWidget: UnsetWidget,
+  SelectorMatchWidget: UnsetWidget,
   WorkshopMessageWidget: UnsetWidget,
 };
 

@@ -41,7 +41,7 @@ import {
 import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
-import Configuration from "@/pageEditor/tabs/sidebar/Configuration";
+import SidebarConfiguration from "@/pageEditor/tabs/sidebar/SidebarConfiguration";
 import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import React from "react";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
@@ -192,7 +192,7 @@ const config: ElementConfig<never, SidebarFormState> = {
   selectExtensionPoint,
   selectExtension,
   fromExtension,
-  EditorNode: Configuration,
+  EditorNode: SidebarConfiguration,
   InsertModeHelpText: () => (
     <div>
       <p>

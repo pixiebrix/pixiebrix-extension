@@ -25,7 +25,7 @@ import IconWidget from "@/components/fields/IconWidget";
 import LocationWidget from "@/pageEditor/fields/LocationWidget";
 import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
-import UrlPatternField from "@/pageEditor/fields/UrlPatternField";
+import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 
 const menuSnippets: Snippet[] = [
   { label: "caption", value: "{{{caption}}}" },
@@ -60,14 +60,9 @@ const MenuItemConfiguration: React.FC<{
         name="extensionPoint.definition.isAvailable.matchPatterns"
         {...makeLockableFieldProps("Sites", isLocked)}
       />
-
-      <UrlPatternField
-        name="extensionPoint.definition.isAvailable.urlPatterns"
-        {...makeLockableFieldProps("URL Patterns", isLocked)}
-      />
     </FieldSection>
 
-    <FieldSection title="Advanced">
+    <FieldSection title="Advanced: Item Options">
       <ConnectedFieldTemplate
         name="extension.icon"
         label="Icon"
@@ -92,6 +87,8 @@ const MenuItemConfiguration: React.FC<{
         {...makeLockableFieldProps("Template", isLocked)}
       />
     </FieldSection>
+
+    <MatchRulesSection isLocked={isLocked} />
   </Card>
 );
 
