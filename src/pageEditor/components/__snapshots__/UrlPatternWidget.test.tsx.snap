@@ -1,0 +1,172 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UrlPatternWidget render empty widget 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <ul
+      class="list-group mb-2"
+    />
+    <button
+      class="btn btn-primary"
+      type="button"
+    >
+      Add URL Pattern
+    </button>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`UrlPatternWidget render single pattern 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <ul
+      class="list-group mb-2"
+    >
+      <li
+        class="list-group-item py-1"
+      >
+        <div
+          class="formGroup mb-0 form-group row"
+        >
+          <div
+            class="col-xl-12 col-lg-12"
+          >
+            <div
+              class="root"
+            >
+              <div
+                class="field"
+              >
+                <div>
+                  <table
+                    class="mb-0 table table-sm"
+                  >
+                    <thead>
+                      <tr>
+                        <th
+                          scope="col"
+                        >
+                          Property
+                        </th>
+                        <th
+                          scope="col"
+                        >
+                          Value
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <input
+                            class="form-control"
+                            data-testid="pattern.0.hash-name"
+                            type="text"
+                            value="hash"
+                          />
+                        </td>
+                        <td>
+                          <div
+                            class="formGroup mb-0 form-group row"
+                          >
+                            <div
+                              class="col-xl-12 col-lg-12"
+                            >
+                              <div
+                                class="root"
+                              >
+                                <div
+                                  class="field"
+                                >
+                                  <textarea
+                                    class="form-control"
+                                    id="pattern.0.hash"
+                                    name="pattern.0.hash"
+                                    rows="1"
+                                  >
+                                    /requests/ref/16-2
+                                  </textarea>
+                                </div>
+                                <div
+                                  class="dropdown dropdown"
+                                  data-test-selected="Text"
+                                  data-testid="toggle-pattern.0.hash"
+                                >
+                                  <button
+                                    aria-expanded="false"
+                                    aria-haspopup="true"
+                                    class="dropdown-toggle btn btn-link"
+                                    type="button"
+                                  >
+                                    <span
+                                      class="symbol"
+                                    >
+                                      <test-file-stub
+                                        classname="root"
+                                      />
+                                    </span>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <button
+                    class="btn btn-primary"
+                    type="button"
+                  >
+                    Add Property
+                  </button>
+                </div>
+              </div>
+              <div
+                class="dropdown dropdown"
+                data-test-selected="Object properties"
+                data-testid="toggle-pattern.0"
+              >
+                <button
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                  class="dropdown-toggle btn btn-link"
+                  type="button"
+                >
+                  <span
+                    class="symbol"
+                  >
+                    <test-file-stub
+                      classname="root"
+                    />
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+    <button
+      class="btn btn-primary"
+      type="button"
+    >
+      Add URL Pattern
+    </button>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;

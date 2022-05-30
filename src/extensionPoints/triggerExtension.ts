@@ -57,7 +57,7 @@ import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import pluralize from "@/utils/pluralize";
-import { PromiseCancelled } from "@/errors";
+import { BusinessError, PromiseCancelled } from "@/errors";
 import { JsonObject } from "type-fest";
 
 export type TriggerConfig = {
@@ -271,8 +271,13 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         return !alreadyReported;
       }
 
-      default: {
+      case "all": {
         return true;
+      }
+
+      default: {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
+        throw new BusinessError(`Invalid reportMode: ${this.reportMode}`);
       }
     }
   }

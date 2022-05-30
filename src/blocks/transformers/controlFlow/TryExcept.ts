@@ -21,13 +21,15 @@ import { propertiesToSchema } from "@/validators/generic";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { serializeError } from "serialize-error";
 import { PipelineExpression } from "@/runtime/mapArgs";
+import { validateRegistryId } from "@/types/helpers";
 
 class TryExcept extends Transformer {
+  static BLOCK_ID = validateRegistryId("@pixiebrix/try-catch");
   defaultOutputKey = "result";
 
   constructor() {
     super(
-      "@pixiebrix/try-catch",
+      TryExcept.BLOCK_ID,
       "Try-Except",
       "Try to run a brick, and recover on error"
     );
