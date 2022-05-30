@@ -40,6 +40,9 @@ import { ParseDate } from "./parseDate";
 import { ScreenshotTab } from "./screenshotTab";
 import { TableReader, TablesReader } from "./component/TableReader";
 import ParseJson from "./ParseJson";
+import ForEach from "./controlFlow/ForEach";
+import IfElse from "./controlFlow/IfElse";
+import TryExcept from "./controlFlow/TryExcept";
 
 function registerTransformers() {
   registerBlock(new JQTransformer());
@@ -67,6 +70,11 @@ function registerTransformers() {
   registerBlock(new ParseDataUrl());
   registerBlock(new ParseDate());
   registerBlock(new ScreenshotTab());
+
+  // Control Flow Bricks
+  registerBlock(new ForEach());
+  registerBlock(new IfElse());
+  registerBlock(new TryExcept());
 }
 
 export default registerTransformers;

@@ -33,6 +33,11 @@ import {
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
 import { uniq } from "lodash";
 
+jest.mock("react-redux", () => ({
+  useSelector: jest.fn(),
+  useDispatch: jest.fn(() => jest.fn()),
+}));
+
 jest.mock("@/hooks/useFlags", () => jest.fn());
 jest.mock("@/options/pages/blueprints/useInstallablePermissions", () =>
   jest.fn()

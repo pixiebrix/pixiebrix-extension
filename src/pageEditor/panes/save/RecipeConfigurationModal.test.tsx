@@ -21,11 +21,9 @@ import { recipeMetadataFactory } from "@/testUtils/factories";
 import { screen } from "@testing-library/react";
 import RecipeConfigurationModal from "./RecipeConfigurationModal";
 import settingsSlice from "@/store/settingsSlice";
-import { createRenderFunction } from "@/testUtils/testHelpers";
+import { createRenderFunctionWithRedux } from "@/testUtils/testHelpers";
 
-jest.unmock("react-redux");
-
-const renderRecipeConfigurationModal = createRenderFunction({
+const renderRecipeConfigurationModal = createRenderFunctionWithRedux({
   reducer: {
     auth: authSlice.reducer,
     settings: settingsSlice.reducer,

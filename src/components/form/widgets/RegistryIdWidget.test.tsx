@@ -15,28 +15,147 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getScopeAndId } from "@/components/form/widgets/RegistryIdWidget";
-import { RegistryId } from "@/core";
+import React from "react";
+import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
+import { render, screen } from "@/pageEditor/testHelpers";
+import { authActions } from "@/auth/authSlice";
+import userEvent from "@testing-library/user-event";
+import { partition } from "lodash";
+import { UserRole } from "@/types/contract";
+import { validateRegistryId } from "@/types/helpers";
+import { authStateFactory, organizationFactory } from "@/testUtils/factories";
 
-describe("getScopeAndId", () => {
-  test("normal id", () => {
-    const id = "@foo/bar" as RegistryId;
-    expect(getScopeAndId(id)).toStrictEqual(["@foo", "bar"]);
+const editorRoles = new Set<number>([
+  UserRole.admin,
+  UserRole.developer,
+  UserRole.manager,
+]);
+
+describe("RegistryIdWidget", () => {
+  const testUserScope = "@user-foo";
+  const testIdValue = "test-identifier";
+
+  test("renders with user id value", async () => {
+    const id = validateRegistryId(`${testUserScope}/${testIdValue}`);
+
+    const { container } = render(<RegistryIdWidget name="testField" />, {
+      initialValues: { testField: id },
+      setupRedux(dispatch) {
+        dispatch(
+          authActions.setAuth(
+            authStateFactory({
+              scope: testUserScope,
+            })
+          )
+        );
+      },
+    });
+
+    const scopeInput = container.querySelector("input[name='testField-scope']");
+    const idInput = screen.getByTestId("registryId-testField-id");
+
+    expect(scopeInput).toHaveValue(testUserScope);
+    expect(idInput).toHaveValue(testIdValue);
   });
-  test("id with slash", () => {
-    const id = "@foo/bar/baz" as RegistryId;
-    expect(getScopeAndId(id)).toStrictEqual(["@foo", "bar/baz"]);
+
+  test("shows the right organization scopes", async () => {
+    const id = validateRegistryId(`${testUserScope}/${testIdValue}`);
+    const authState = authStateFactory({
+      scope: testUserScope,
+    });
+
+    const [validOrganizations, invalidOrganizations] = partition(
+      authState.organizations,
+      (organization) => editorRoles.has(organization.role)
+    );
+
+    render(<RegistryIdWidget name="testField" />, {
+      initialValues: { testField: id },
+      setupRedux(dispatch) {
+        dispatch(authActions.setAuth(authState));
+      },
+    });
+
+    const selected = screen.getByText(testUserScope);
+    expect(selected).toBeVisible();
+    await userEvent.click(selected);
+
+    // Ensure the user scope is shown, should appear twice in selected value and option list item
+    expect(screen.getAllByText(testUserScope)).toBeArrayOfSize(2);
+
+    // Ensure all valid options are shown
+    for (const organization of validOrganizations) {
+      expect(screen.getByText(organization.scope)).toBeVisible();
+    }
+
+    // Ensure invalid options are not shown
+    for (const organization of invalidOrganizations) {
+      expect(screen.queryByText(organization.scope)).toBeNull();
+    }
   });
-  test("id without scope", () => {
-    const id = "foobar" as RegistryId;
-    expect(getScopeAndId(id)).toStrictEqual([undefined, "foobar"]);
+
+  test("sets the id properly", async () => {
+    const id = validateRegistryId(`${testUserScope}/${testIdValue}`);
+    const authState = authStateFactory({
+      scope: testUserScope,
+    });
+
+    const anotherOrganization = authState.organizations.find(
+      (organization: { id: string; role: number }) =>
+        organization.id !== authState.organization.id &&
+        editorRoles.has(organization.role)
+    );
+
+    const { getFormState } = render(<RegistryIdWidget name="testField" />, {
+      initialValues: { testField: id },
+      setupRedux(dispatch) {
+        dispatch(authActions.setAuth(authState));
+      },
+    });
+
+    const selected = screen.getByText(testUserScope);
+    expect(selected).toBeVisible();
+    await userEvent.click(selected);
+
+    await userEvent.click(screen.getByText(anotherOrganization.scope));
+
+    const newTestId = "new-identifier";
+    const idInput = screen.getByTestId("registryId-testField-id");
+
+    await userEvent.clear(idInput);
+    await userEvent.type(idInput, newTestId);
+
+    const formState = await getFormState();
+    expect(formState).toStrictEqual({
+      testField: `${anotherOrganization.scope}/${newTestId}`,
+    });
   });
-  test("id without scope with slash", () => {
-    const id = "foo/bar/baz" as RegistryId;
-    expect(getScopeAndId(id)).toStrictEqual([undefined, "foo/bar/baz"]);
-  });
-  test("scope without id", () => {
-    const id = "@foo" as RegistryId;
-    expect(getScopeAndId(id)).toStrictEqual(["@foo", undefined]);
+
+  test("doesn't include organizations with empty scope", async () => {
+    const id = validateRegistryId(`${testUserScope}/${testIdValue}`);
+    const authState = authStateFactory({
+      scope: testUserScope,
+      organizations: [
+        organizationFactory({
+          scope: null,
+        }),
+      ],
+    });
+
+    const { container } = render(<RegistryIdWidget name="testField" />, {
+      initialValues: { testField: id },
+      setupRedux(dispatch) {
+        dispatch(authActions.setAuth(authState));
+      },
+    });
+
+    await userEvent.click(screen.getByText(testUserScope));
+    // Using the hardcoded id of the DOM element as the easiest option to access an element within React Select
+    const reactSelectOptionsSelector = "#react-select-5-listbox div";
+    const reactSelectOptions = container.querySelector(
+      reactSelectOptionsSelector
+    );
+
+    expect(reactSelectOptions.children).toHaveLength(1);
   });
 });

@@ -21,8 +21,6 @@ import {
   isBlueprint,
   isExtension,
   isExtensionFromRecipe,
-  isPersonal,
-  isShared,
   selectExtensionsFromInstallable,
 } from "@/options/pages/blueprints/utils/installableUtils";
 import { InstallableViewItem } from "./blueprintsTypes";
@@ -42,7 +40,6 @@ import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors";
 import { useModals } from "@/components/ConfirmationModal";
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
-import { selectScope } from "@/auth/authSelectors";
 import { OptionsState } from "@/store/extensionsTypes";
 import useFlags from "@/hooks/useFlags";
 import notify from "@/utils/notify";
@@ -72,7 +69,6 @@ function useInstallableViewItemActions(
   const dispatch = useDispatch();
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
-  const scope = useSelector(selectScope);
   const { restrict } = useFlags();
 
   // NOTE: paused deployments are installed, but they are not executed. See deployments.ts:isDeploymentActive
@@ -139,11 +135,11 @@ function useInstallableViewItemActions(
   const viewShare = () => {
     let shareContext = null;
 
-    if (isBlueprint(installable) || isShared(installable)) {
+    if (isBlueprint(installable)) {
       shareContext = {
         blueprintId: getPackageId(installable),
       };
-    } else if (isPersonal(installable, scope) && isExtension(installable)) {
+    } else {
       shareContext = {
         extensionId: installable.id,
       };

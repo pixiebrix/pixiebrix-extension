@@ -17,77 +17,61 @@
 
 import { useEffect } from "react";
 import { selectSettings } from "@/store/settingsSelectors";
-import { useAsyncState } from "@/hooks/common";
-import { ManualStorageKey, readStorage } from "@/chrome";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { DEFAULT_THEME, THEMES } from "@/options/constants";
-import logo from "@img/logo.svg";
-import logoSmall from "@img/logo-small-rounded.svg";
-import aaLogo from "@img/aa-logo.svg";
-import aaLogoSmall from "@img/aa-logo-small.svg";
+import { DEFAULT_THEME } from "@/options/types";
+import { activatePartnerTheme } from "@/background/messenger/api";
+import { persistor } from "@/options/store";
+import { useAsyncState } from "@/hooks/common";
+import { ManualStorageKey, readStorage } from "@/chrome";
+import {
+  addThemeClassToDocumentRoot,
+  getThemeLogo,
+  setThemeFavicon,
+  ThemeLogo,
+} from "@/utils/themeUtils";
 
 const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
 
-type ThemeLogo = {
-  regular: string;
-  small: string;
-};
-
-type ThemeLogoMap = {
-  [key in Theme]: ThemeLogo;
-};
-
-export type Theme = typeof THEMES[number];
-
-const THEME_LOGOS: ThemeLogoMap = {
-  default: {
-    regular: logo,
-    small: logoSmall,
-  },
-  "automation-anywhere": {
-    regular: aaLogo,
-    small: aaLogoSmall,
-  },
-};
-
-const getThemeLogo = (theme: string): ThemeLogo | null => {
-  if (theme in THEME_LOGOS) {
-    // eslint-disable-next-line security/detect-object-injection -- theme is user defined, but restricted to themes
-    return THEME_LOGOS[theme];
-  }
-
-  return null;
+const activateBackgroundTheme = async (): Promise<void> => {
+  // Flush the Redux state to localStorage to ensure the background page sees the latest state
+  await persistor.flush();
+  await activatePartnerTheme();
 };
 
 const useTheme = (): { logo: ThemeLogo } => {
-  const { theme } = useSelector(selectSettings);
+  const { theme, partnerId } = useSelector(selectSettings);
   const dispatch = useDispatch();
-  const [partnerId, isLoading] = useAsyncState(
+  const themeLogo = getThemeLogo(theme);
+
+  const [managedPartnerId, isLoading] = useAsyncState(
     readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed"),
     [],
     null
   );
-  const themeLogo = getThemeLogo(theme);
 
   useEffect(() => {
-    // Initialize initial theme state with the user's partner theme, if any
-    if (theme === null && !isLoading) {
+    if (partnerId === null && !isLoading) {
+      // Initialize initial partner id with the one in managed storage, if any
       dispatch(
-        settingsSlice.actions.setTheme({
-          theme: partnerId ?? DEFAULT_THEME,
+        settingsSlice.actions.setPartnerId({
+          partnerId: managedPartnerId ?? "",
         })
       );
     }
+  }, [partnerId, dispatch, isLoading, managedPartnerId]);
 
-    for (const theme of THEMES) {
-      document.documentElement.classList.remove(theme);
-    }
+  useEffect(() => {
+    dispatch(
+      settingsSlice.actions.setTheme({
+        theme: partnerId ?? DEFAULT_THEME,
+      })
+    );
 
-    if (theme && theme !== DEFAULT_THEME && THEMES.includes(theme)) {
-      document.documentElement.classList.add(theme);
-    }
-  }, [isLoading, dispatch, partnerId, theme]);
+    void activateBackgroundTheme();
+    addThemeClassToDocumentRoot(theme);
+    setThemeFavicon(theme);
+  }, [dispatch, partnerId, theme]);
 
   return {
     logo: themeLogo,

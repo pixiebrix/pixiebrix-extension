@@ -19,14 +19,16 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { SettingsState, SkunkworksSettings } from "@/store/settingsTypes";
 import reportError from "@/telemetry/reportError";
 import { once, set } from "lodash";
-import { THEMES } from "@/options/constants";
+import { DEFAULT_THEME } from "@/options/types";
+import { isValidTheme } from "@/utils/themeUtils";
 
 const initialSettingsState: SettingsState = {
   mode: "remote",
   nextUpdate: null as number,
   suggestElements: false,
   browserWarningDismissed: false,
-  theme: null,
+  partnerId: null,
+  theme: DEFAULT_THEME,
 };
 
 const settingsSlice = createSlice({
@@ -53,14 +55,23 @@ const settingsSlice = createSlice({
     dismissBrowserWarning(state) {
       state.browserWarningDismissed = true;
     },
+    setPartnerId(
+      state,
+      { payload: { partnerId } }: { payload: { partnerId: string } }
+    ) {
+      state.partnerId = partnerId;
+    },
     setTheme(state, { payload: { theme } }: { payload: { theme: string } }) {
-      state.theme = theme;
-
-      if (!THEMES.includes(theme)) {
-        once(() => {
-          reportError(`Selected theme "${theme}" doesn't exist.`);
-        });
+      if (isValidTheme(theme)) {
+        state.theme = theme;
+        return;
       }
+
+      state.theme = DEFAULT_THEME;
+
+      once(() => {
+        reportError(`Selected theme "${theme}" doesn't exist.`);
+      });
     },
   },
 });

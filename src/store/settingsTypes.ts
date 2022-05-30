@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Theme } from "@/options/types";
+
 export type InstallMode = "local" | "remote";
 
 export type SettingsState = SkunkworksSettings & {
@@ -38,9 +40,14 @@ export type SettingsState = SkunkworksSettings & {
   browserWarningDismissed: boolean;
 
   /**
+   * Partner id for the user, if any
+   */
+  partnerId: string | null;
+
+  /**
    * Theme name for the extension
    */
-  theme: string | null;
+  theme: Theme;
 };
 
 export type SkunkworksSettings = {

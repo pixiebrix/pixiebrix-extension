@@ -35,14 +35,16 @@ import {
   partial,
   partialRight,
   pickBy,
+  split,
   unary,
   unset,
   zip,
 } from "lodash";
 import { Primitive } from "type-fest";
-import { ApiVersion, SafeString } from "@/core";
+import { ApiVersion, RegistryId, SafeString } from "@/core";
 import { UnknownObject } from "@/types";
 import { BusinessError, PromiseCancelled } from "@/errors";
+import { RecipeDefinition } from "@/types/definitions";
 
 const specialCharsRegex = /[.[\]]/;
 
@@ -570,11 +572,19 @@ export function isMac(): boolean {
 /** Tests a target string against a list of strings (full match) or regexes (can be mixed) */
 export function matchesAnyPattern(
   target: string,
-  patterns: Array<string | RegExp>
+  patterns: Array<string | RegExp | ((x: string) => boolean)>
 ): boolean {
-  return patterns.some((pattern) =>
-    typeof pattern === "string" ? pattern === target : pattern.test(target)
-  );
+  return patterns.some((pattern) => {
+    if (typeof pattern === "string") {
+      return pattern === target;
+    }
+
+    if (typeof pattern === "function") {
+      return pattern(target);
+    }
+
+    return pattern.test(target);
+  });
 }
 
 // Enables highlighting/prettifying when used as html`<div>` or css`.a {}`
@@ -590,3 +600,32 @@ function concatenateTemplateLiteralTag(
 
 export const html = concatenateTemplateLiteralTag;
 export const css = concatenateTemplateLiteralTag;
+
+export function getRecipeById(
+  recipes: RecipeDefinition[],
+  id: RegistryId
+): RecipeDefinition | undefined {
+  return recipes.find((recipe) => recipe.metadata.id === id);
+}
+
+/**
+ * Splits a value into a scope and id, based on scope starting with @ and id
+ *  as everything following the first / character
+ * @param value the full RegistryId
+ */
+export function getScopeAndId(
+  value: RegistryId
+): [string | undefined, string | undefined] {
+  // Scope needs to start with @
+  if (!value.startsWith("@")) {
+    return [undefined, value];
+  }
+
+  // If the value starts with @ and doesn't have a slash, interpret it as a scope
+  if (!value.includes("/")) {
+    return [value, undefined];
+  }
+
+  const [scope, ...idParts] = split(value, "/");
+  return [scope, idParts.join("/")];
+}

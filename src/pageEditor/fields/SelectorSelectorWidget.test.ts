@@ -15,4 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export default "svg";
+import { ElementInfo } from "@/contentScript/nativeEditor/types";
+import { getSuggestionsForElement } from "./SelectorSelectorWidget";
+
+test("getSuggestionsForElement", () => {
+  const elementInfo = {
+    selectors: ["a", "#a"],
+    parent: {
+      selectors: [".a"],
+    },
+  } as ElementInfo;
+  expect(getSuggestionsForElement(elementInfo, { sort: false })).toMatchObject([
+    { value: "a" },
+    { value: "#a" },
+    { value: ".a" },
+  ]);
+  expect(getSuggestionsForElement(elementInfo, { sort: true })).toMatchObject([
+    { value: "#a" },
+    { value: ".a" },
+    { value: "a" },
+  ]);
+});

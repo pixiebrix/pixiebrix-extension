@@ -17,7 +17,6 @@
 
 import {
   buildRecipe,
-  generateRecipeId,
   generateScopeBrickId,
   isRecipeEditable,
   replaceRecipeExtension,
@@ -46,8 +45,8 @@ import { InnerDefinitionRef, UnresolvedExtension } from "@/core";
 import { MenuDefinition } from "@/extensionPoints/menuItemExtension";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
-  MINIMAL_SCHEMA,
-  MINIMAL_UI_SCHEMA,
+  getMinimalSchema,
+  getMinimalUiSchema,
 } from "@/components/formBuilder/formBuilderHelpers";
 import {
   EditablePackage,
@@ -454,8 +453,8 @@ describe("blueprint options", () => {
 
   test("doesn't add empty schema when blueprint options is empty", async () => {
     const emptyOptions = {
-      schema: MINIMAL_SCHEMA,
-      uiSchema: MINIMAL_UI_SCHEMA,
+      schema: getMinimalSchema(),
+      uiSchema: getMinimalUiSchema(),
     };
 
     const updatedRecipe = await runReplaceRecipeExtensions(
@@ -477,7 +476,7 @@ describe("blueprint options", () => {
           },
         },
       },
-      uiSchema: MINIMAL_UI_SCHEMA,
+      uiSchema: getMinimalUiSchema(),
     };
 
     const updatedRecipe = await runReplaceRecipeExtensions(
@@ -499,7 +498,7 @@ describe("blueprint options", () => {
           },
         },
       },
-      uiSchema: MINIMAL_UI_SCHEMA,
+      uiSchema: getMinimalUiSchema(),
     };
 
     const elementOptions: OptionsDefinition = {
@@ -511,7 +510,7 @@ describe("blueprint options", () => {
           },
         },
       },
-      uiSchema: MINIMAL_UI_SCHEMA,
+      uiSchema: getMinimalUiSchema(),
     };
 
     const updatedRecipe = await runReplaceRecipeExtensions(
@@ -533,12 +532,12 @@ describe("blueprint options", () => {
           },
         },
       },
-      uiSchema: MINIMAL_UI_SCHEMA,
+      uiSchema: getMinimalUiSchema(),
     };
 
     const elementOptions: OptionsDefinition = {
-      schema: MINIMAL_SCHEMA,
-      uiSchema: MINIMAL_UI_SCHEMA,
+      schema: getMinimalSchema(),
+      uiSchema: getMinimalUiSchema(),
     };
 
     const updatedRecipe = await runReplaceRecipeExtensions(
@@ -820,28 +819,4 @@ describe("buildRecipe", () => {
       expect(newRecipe).toStrictEqual(updated);
     }
   );
-});
-
-describe("generateRecipeId", () => {
-  test("no special chars", () => {
-    expect(generateRecipeId("@test", "This Is a Test")).toEqual(
-      "@test/this-is-a-test"
-    );
-  });
-
-  test("handle colon", () => {
-    expect(generateRecipeId("@test", "This: Is a Test")).toEqual(
-      "@test/this-is-a-test"
-    );
-  });
-
-  test("collapse spaces", () => {
-    expect(generateRecipeId("@test", "This   Is a Test")).toEqual(
-      "@test/this-is-a-test"
-    );
-  });
-
-  test("return empty on invalid", () => {
-    expect(generateRecipeId("", "This   Is a Test")).toBe(null);
-  });
 });

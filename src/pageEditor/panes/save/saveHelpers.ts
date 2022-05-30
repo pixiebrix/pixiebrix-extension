@@ -43,7 +43,6 @@ import {
   DEFAULT_EXTENSION_POINT_VAR,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
 } from "@/pageEditor/extensionPoints/base";
-import slugify from "slugify";
 import { Except } from "type-fest";
 
 /**
@@ -59,24 +58,6 @@ export function generateScopeBrickId(
   return validateRegistryId(
     compact([newScope, match.groups?.collection, match.groups?.name]).join("/")
   );
-}
-
-/**
- * Return a valid recipe id, or return null
- * @param userScope a user scope, with the leading @
- * @param extensionLabel the extension label
- */
-export function generateRecipeId(
-  userScope: string,
-  extensionLabel: string
-): RegistryId | null {
-  try {
-    return validateRegistryId(
-      `${userScope}/${slugify(extensionLabel, { lower: true, strict: true })}`
-    );
-  } catch {
-    return null;
-  }
 }
 
 export function isRecipeEditable(

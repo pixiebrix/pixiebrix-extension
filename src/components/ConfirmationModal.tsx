@@ -45,17 +45,30 @@ const initialModalState: ModalContextProps = {
 export const ModalContext = createContext<ModalContextProps>(initialModalState);
 
 const ConfirmationModal: React.FunctionComponent<
-  ModalProps & { onCancel: () => void; onSubmit: () => void }
+  ModalProps & {
+    onCancel: () => void;
+    onSubmit: () => void;
+    onExited: () => void;
+    isVisible: boolean;
+  }
 > = ({
   title,
   message,
   submitCaption,
   submitVariant = "danger",
   cancelCaption,
+  isVisible,
+  onExited,
   onCancel,
   onSubmit,
 }) => (
-  <Modal show onHide={onCancel} backdrop="static" keyboard={false}>
+  <Modal
+    show={isVisible}
+    onExited={onExited}
+    onHide={onCancel}
+    backdrop="static"
+    keyboard={false}
+  >
     <Modal.Header closeButton>
       <Modal.Title>{title ?? "Confirm?"}</Modal.Title>
     </Modal.Header>
@@ -78,7 +91,7 @@ export const ModalProvider: React.FunctionComponent<{
 }> = ({ children }) => {
   const [modalProps, setModalProps] = useState<ModalProps | null>();
   const [callback, setCallback] = useState<Callback | null>();
-
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   useEffect(
     // On unmount, resolve the promise as if the user cancelled out of the modal
     () => () => {
@@ -98,8 +111,8 @@ export const ModalProvider: React.FunctionComponent<{
 
       return new Promise<boolean>((resolve) => {
         setModalProps(modalProps);
+        setIsModalVisible(true);
         const newCallback = (submit: boolean) => {
-          setModalProps(null);
           resolve(submit);
           setCallback(null);
         };
@@ -112,17 +125,23 @@ export const ModalProvider: React.FunctionComponent<{
 
   return (
     <ModalContext.Provider value={{ showConfirmation }}>
-      {modalProps && (
+      {
         <ConfirmationModal
           {...modalProps}
           onSubmit={() => {
+            setIsModalVisible(false);
             callback(true);
           }}
           onCancel={() => {
+            setIsModalVisible(false);
             callback(false);
           }}
+          isVisible={isModalVisible}
+          onExited={() => {
+            setModalProps(null);
+          }}
         />
-      )}
+      }
       {children}
     </ModalContext.Provider>
   );

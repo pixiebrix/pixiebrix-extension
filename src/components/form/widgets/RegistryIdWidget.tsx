@@ -23,12 +23,13 @@ import SelectWidget, {
   makeStringOptions,
   SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
-import { split } from "lodash";
+import { isEmpty } from "lodash";
 import { RegistryId } from "@/core";
 import { Form } from "react-bootstrap";
 import styles from "./RegistryIdWidget.module.scss";
 import { StylesConfig } from "react-select";
 import { UserRole } from "@/types/contract";
+import { getScopeAndId } from "@/utils";
 
 const editorRoles = new Set<number>([
   UserRole.admin,
@@ -36,36 +37,17 @@ const editorRoles = new Set<number>([
   UserRole.manager,
 ]);
 
-/**
- * Splits a value into a scope and id, based on scope starting with @ and id
- *  as everything following the first / character
- * @param value the full RegistryId
- */
-export function getScopeAndId(
-  value: RegistryId
-): [string | undefined, string | undefined] {
-  // Scope needs to start with @
-  if (!value.startsWith("@")) {
-    return [undefined, value];
-  }
-
-  // If the value starts with @ and doesn't have a slash, interpret it as a scope
-  if (!value.includes("/")) {
-    return [value, undefined];
-  }
-
-  const [scope, ...idParts] = split(value, "/");
-  return [scope, idParts.join("/")];
-}
-
 const RegistryIdWidget: React.VFC<{
   name: string;
-  selectStyles: StylesConfig;
-}> = ({ name, selectStyles }) => {
+  selectStyles?: StylesConfig;
+}> = ({ name, selectStyles = {} }) => {
   const [{ value }, , { setValue, setTouched }] = useField<RegistryId>(name);
   const { scope: userScope, organizations } = useSelector(selectAuth);
   const organizationScopes = organizations
-    .filter((organization) => editorRoles.has(organization.role))
+    .filter(
+      (organization) =>
+        !isEmpty(organization.scope) && editorRoles.has(organization.role)
+    )
     .map((organization) => organization.scope);
 
   const options = makeStringOptions(userScope, ...organizationScopes);
@@ -98,7 +80,10 @@ const RegistryIdWidget: React.VFC<{
   return (
     <div className={styles.root}>
       <SelectWidget
-        name={name}
+        // This doesn't impact formik because these widgets aren't connected to formik directly;
+        // we need it for testing because the react-select element is hard to identify in tests - it
+        // doesn't accept a top-level data-testid prop
+        name={`${name}-scope`}
         value={scopeValue}
         isClearable={false}
         onChange={onChangeScope}
@@ -111,6 +96,7 @@ const RegistryIdWidget: React.VFC<{
         value={idValue}
         onChange={onChangeId}
         className={styles.idInput}
+        data-testid={`registryId-${name}-id`}
       />
     </div>
   );

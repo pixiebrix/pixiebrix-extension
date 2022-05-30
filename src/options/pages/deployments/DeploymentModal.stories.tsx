@@ -36,6 +36,7 @@ const extensionsStore = configureStore({
       nextUpdate: null,
       browserWarningDismissed: false,
       theme: undefined,
+      partnerId: null,
     },
   },
 });

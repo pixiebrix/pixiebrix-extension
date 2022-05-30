@@ -16,7 +16,6 @@
  */
 
 import React, { useMemo } from "react";
-import { AxiosError } from "axios";
 import { useAsyncState } from "@/hooks/common";
 import { Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -27,6 +26,7 @@ import {
 import JsonTree from "@/components/jsonTree/JsonTree";
 import { safeGuessStatusText } from "@/types/errorContract";
 import { selectAbsoluteUrl } from "@/services/requestErrorUtils";
+import { SerializableAxiosError } from "@/services/errors";
 
 function tryParse(value: unknown): unknown {
   if (typeof value === "string") {
@@ -41,9 +41,9 @@ function tryParse(value: unknown): unknown {
   return value;
 }
 
-const NetworkErrorDetail: React.FunctionComponent<{ error: AxiosError }> = ({
-  error,
-}) => {
+const NetworkErrorDetail: React.FunctionComponent<{
+  error: SerializableAxiosError;
+}> = ({ error }) => {
   const absoluteUrl = useMemo(
     () => selectAbsoluteUrl(error.config),
     [error.config]

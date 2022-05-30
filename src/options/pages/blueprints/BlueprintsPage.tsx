@@ -29,11 +29,11 @@ import {
   selectShowLogsContext,
   selectShowShareContext,
 } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
-import ShareExtensionModal from "@/options/pages/blueprints/modals/ShareExtensionModal";
-import ShareLinkModal from "@/options/pages/blueprints/modals/ShareLinkModal";
 import { useTitle } from "@/hooks/title";
 import Loader from "@/components/Loader";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
+import ConvertToRecipeModal from "./modals/ConvertToRecipeModal";
+import ShareRecipeModal from "./modals/ShareRecipeModal/ShareRecipeModal";
 
 const BlueprintsPage: React.FunctionComponent = () => {
   useTitle("Blueprints");
@@ -65,14 +65,8 @@ const BlueprintsPage: React.FunctionComponent = () => {
           context={showLogsContext.messageContext}
         />
       )}
-      {showShareContext?.extensionId && (
-        <ShareExtensionModal extensionId={showShareContext.extensionId} />
-      )}
-
-      {showShareContext?.blueprintId && (
-        <ShareLinkModal blueprintId={showShareContext.blueprintId} />
-      )}
-
+      {showShareContext?.extensionId != null && <ConvertToRecipeModal />}
+      {showShareContext?.blueprintId != null && <ShareRecipeModal />}
       {body}
     </div>
   );

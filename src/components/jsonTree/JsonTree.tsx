@@ -94,10 +94,15 @@ function normalize(value: Primitive): string {
  * Search data for query, matching both keys and values.
  * @see normalize
  */
-function searchData(query: string, data: unknown): unknown {
+export function searchData(query: string, data: unknown): unknown {
   const normalizedQuery = normalize(query);
   if (data == null) {
     return null;
+  }
+
+  // Array check must come before the object check
+  if (Array.isArray(data)) {
+    return compact(data.map((d) => searchData(query, d)));
   }
 
   if (typeof data === "object") {
@@ -106,18 +111,15 @@ function searchData(query: string, data: unknown): unknown {
         ? value
         : searchData(query, value)
     );
-    return pickBy(values, (value, key) => {
+    const pickResult = pickBy(values, (value, key) => {
       const keyMatch = includes(normalize(key), normalizedQuery);
       const valueMatch =
-        typeof value === "object" || Array.isArray(value)
+        typeof value === "object" // This check covers arrays as well
           ? !isEmpty(value)
           : value != null;
-      return keyMatch || valueMatch;
+      return keyMatch || valueMatch; // TODO: We might want slightly different behavior here depending on which one matches, and if the match is "nested" or not - see tests
     });
-  }
-
-  if (Array.isArray(data)) {
-    return compact(data.map((d) => searchData(query, d)));
+    return isEmpty(pickResult) ? undefined : pickResult;
   }
 
   return includes(normalize(data as Primitive), normalizedQuery)

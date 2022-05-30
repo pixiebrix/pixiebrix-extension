@@ -27,7 +27,6 @@ import type { ErrorObject } from "serialize-error";
 import type { Permissions } from "webextension-polyfill";
 import type React from "react";
 
-import { pick } from "lodash";
 import { contextNames } from "webext-detect-page";
 
 // Use our own name in the project so we can re-map/adjust the typing as necessary
@@ -245,13 +244,43 @@ export type ReaderRoot = HTMLElement | Document;
 // Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
 // the inputs using yup/jsonschema, so the types should match what's expected.
 export type BlockOptions<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see comment above
   TCtxt extends Record<string, any> = Record<string, any>
 > = {
+  /**
+   * The variable context, e.g., @input, @options, service definitions, and any output keys from other bricks
+   *
+   * @see BlockArgContext
+   */
   ctxt: TCtxt;
+
+  /**
+   * Logger for block messages
+   */
   logger: Logger;
+
+  /**
+   * Implicit root element (or document) for calls the select/read from the DOM
+   */
   root: ReaderRoot;
+
+  /**
+   * True if the brick is executing in headless mode.
+   */
   headless?: boolean;
+
+  /**
+   * Callback to run a sub-pipeline.
+   * @since 1.6.4
+   */
+  runPipeline: (
+    // This should be BlockPipeline, but our dependencies are too tangled to use
+    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3477
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- brick is responsible for providing shape
+    pipeline: any,
+    // Should be UnknownObject, but can't use to introduce a circular dependency
+    extraContext?: Record<string, unknown>
+  ) => Promise<unknown>;
 };
 
 /**
@@ -313,6 +342,7 @@ export type BlockIcon = string;
 export interface Metadata {
   readonly id: RegistryId;
   readonly name: string;
+  // XXX: why is this optional? Should default to the version of the extension?
   readonly version?: SemVerString;
   readonly description?: string;
 
@@ -337,10 +367,6 @@ export interface Metadata {
 export interface Sharing {
   readonly public: boolean;
   readonly organizations: UUID[];
-}
-
-export function selectMetadata(metadata: Metadata): Metadata {
-  return pick(metadata, ["id", "name", "version", "description"]);
 }
 
 export type Config = Record<string, unknown>;

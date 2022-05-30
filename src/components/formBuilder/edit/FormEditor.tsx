@@ -31,7 +31,7 @@ import {
   generateNewPropertyName,
   moveStringInArray,
   normalizeSchema,
-  normalizeUiOrder,
+  getNormalizedUiOrder,
   replaceStringInArray,
 } from "@/components/formBuilder/formBuilderHelpers";
 import { UI_ORDER } from "@/components/formBuilder/schemaFieldNames";
@@ -120,21 +120,23 @@ const FormEditor: React.FC<FormEditorProps> = ({
     };
     const nextUiOrder = activeField
       ? replaceStringInArray(
-          normalizeUiOrder(propertyKeys, uiOrder),
+          getNormalizedUiOrder(propertyKeys, uiOrder),
           activeField,
           activeField,
           propertyName
         )
       : replaceStringInArray(
-          normalizeUiOrder(propertyKeys, uiOrder),
+          getNormalizedUiOrder(propertyKeys, uiOrder),
           "*",
           propertyName,
           "*"
         );
 
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
-      draft.schema = normalizeSchema(schema);
-      set(draft.schema.properties, propertyName, newProperty);
+      draft.schema = normalizeSchema(draft);
+
+      // eslint-disable-next-line security/detect-object-injection -- prop name is generated
+      draft.schema.properties[propertyName] = newProperty;
 
       if (!uiSchema) {
         draft.uiSchema = {};
@@ -148,7 +150,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
   const moveProperty = (direction: "up" | "down") => {
     const nextUiOrder = moveStringInArray(
-      normalizeUiOrder(propertyKeys, uiOrder),
+      getNormalizedUiOrder(propertyKeys, uiOrder),
       activeField,
       direction
     );
@@ -158,7 +160,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
   const removeProperty = () => {
     const propertyToRemove = activeField;
     const nextUiOrder = replaceStringInArray(
-      normalizeUiOrder(propertyKeys, uiOrder),
+      getNormalizedUiOrder(propertyKeys, uiOrder),
       propertyToRemove
     );
     const nextActiveField = nextUiOrder.length > 1 ? nextUiOrder[0] : undefined;
@@ -166,7 +168,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
     setActiveField(nextActiveField);
 
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
-      draft.schema = normalizeSchema(schema);
+      normalizeSchema(draft);
 
       if (schema.required?.length > 0) {
         draft.schema.required = replaceStringInArray(

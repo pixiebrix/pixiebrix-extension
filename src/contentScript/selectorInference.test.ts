@@ -18,9 +18,11 @@
 import {
   generateSelector,
   getAttributeSelector,
+  getAttributeSelectorRegex,
   getSelectorPreference,
   inferSelectors,
   safeCssSelector,
+  sortBySelector,
 } from "./nativeEditor/selectorInference";
 import { JSDOM } from "jsdom";
 import { html } from "@/utils";
@@ -74,17 +76,17 @@ describe("getAttributeSelector", () => {
     expect(getAttributeSelector("id", "example.com")).toBe("#example\\.com");
   });
   test("find title selectors", () => {
-    expect(getAttributeSelector("title", "Book")).toBe('[title="Book"]');
+    expect(getAttributeSelector("title", "Book")).toBe("[title='Book']");
     expect(getAttributeSelector("title", "Book name")).toBe(
-      '[title="Book name"]'
+      "[title='Book\\ name']"
     );
     expect(getAttributeSelector("title", 'The "Great" Gatsby')).toBe(
-      '[title="The \\"Great\\" Gatsby"]'
+      "[title='The\\ \\\"Great\\\"\\ Gatsby']"
     );
   });
   test("find aria attribute selectors", () => {
     expect(getAttributeSelector("aria-title", "Your email")).toBe(
-      '[aria-title="Your email"]'
+      "[aria-title='Your\\ email']"
     );
   });
   test("exclude non-unique selectors", () => {
@@ -92,7 +94,36 @@ describe("getAttributeSelector", () => {
   });
 });
 
+function testAttribute(regex: RegExp, attribute: string) {
+  expect(`[${attribute}]`).toMatch(regex);
+  expect(`[${attribute}=anything]`).toMatch(regex);
+  expect(`[${attribute}='anything']`).toMatch(regex);
+
+  expect(`[no${attribute}]`).not.toMatch(regex);
+  expect(`[no-${attribute}]`).not.toMatch(regex);
+  expect(`[${attribute}d]`).not.toMatch(regex);
+  expect(`[${attribute}-user]`).not.toMatch(regex);
+  expect(`[${attribute}]:checked`).not.toMatch(regex);
+}
+
+test("getAttributeSelectorRegex", () => {
+  const singleAttributeRegex = getAttributeSelectorRegex("name");
+  testAttribute(singleAttributeRegex, "name");
+  expect(singleAttributeRegex).toStrictEqual(/^\[name(=|]$)/);
+
+  const multipleAttributeRegex = getAttributeSelectorRegex(
+    "name",
+    "aria-label"
+  );
+  testAttribute(multipleAttributeRegex, "name");
+  testAttribute(multipleAttributeRegex, "aria-label");
+  expect(multipleAttributeRegex).toStrictEqual(
+    /^\[name(=|]$)|^\[aria-label(=|]$)/
+  );
+});
+
 describe("safeCssSelector", () => {
+  /* eslint-disable jest/expect-expect -- Custom expectSelector */
   const expectSelector = (selector: string, body: string) => {
     document.body.innerHTML = body;
 
@@ -164,22 +195,96 @@ describe("safeCssSelector", () => {
       `
     );
   });
+
+  test("infer title attribute", () => {
+    expectSelector(
+      "[title='The\\ \\\"Great\\\"\\ Gatsby']",
+      html`
+        <ul>
+          <li><a title='The "Great" Gatsby' href="/about">About</a></li>
+          <li><a title="The Other Gatsby" href="/contacts">Contacts</a></li>
+        </ul>
+      `
+    );
+  });
+
+  test("infer id", () => {
+    expectSelector(
+      "#about",
+      html`
+        <ul>
+          <li><a id="about" class="about" href="/about">About</a></li>
+          <li>
+            <a id="contacts" class="contacts" href="/contacts">Contacts</a>
+          </li>
+        </ul>
+      `
+    );
+  });
+
+  test("skip unstable IDs", () => {
+    expectSelector(
+      ".about",
+      html`
+        <ul>
+          <li><a id="ember-23" class="about" href="/about">About</a></li>
+          <li>
+            <a id="ember-24" class="contacts" href="/contacts">Contacts</a>
+          </li>
+        </ul>
+      `
+    );
+  });
+
+  test("skip unstable attributes IDs", () => {
+    expectSelector(
+      "[aria-label='The\\ link']",
+      html`
+        <ul>
+          <li>
+            <a data-pb-extension-point aria-label="The link" href="/about">
+              About
+            </a>
+          </li>
+          <li><a href="/contacts" aria-label="The other link">Contacts</a></li>
+        </ul>
+      `
+    );
+  });
+
+  /* eslint-enable jest/expect-expect */
+});
+
+describe("sortBySelector", () => {
+  test("selector length", () => {
+    expect(sortBySelector(["#abc", "#a"])).toStrictEqual(["#a", "#abc"]);
+  });
+
+  test("select field", () => {
+    expect(
+      sortBySelector(
+        [{ foo: ".a" }, { foo: "#a" }],
+        (x: { foo: string }) => x.foo
+      )
+    ).toStrictEqual([{ foo: "#a" }, { foo: ".a" }]);
+  });
 });
 
 test("getSelectorPreference: matches expected sorting", () => {
-  expect(getSelectorPreference("#best-link-on-the-page")).toBe(0);
-  expect(getSelectorPreference('[data-cy="b4da55"]')).toBe(1);
-  expect(getSelectorPreference(".navItem")).toBe(2);
-  expect(getSelectorPreference(".birdsArentReal")).toBe(2);
+  expect(getSelectorPreference("#best-link-on-the-page")).toBe(-2);
+  expect(getSelectorPreference('[data-cy="b4da55"]')).toBe(-1);
+  expect(getSelectorPreference(".navItem")).toBe(0);
+  expect(getSelectorPreference(".birdsArentReal")).toBe(0);
   const selector = '[aria-label="Click elsewhere"]';
-  expect(getSelectorPreference(selector)).toBe(selector.length);
+  expect(getSelectorPreference(selector)).toBe(1);
 
   // Even if it contains an ID, the selector is low quality
   const selector2 = "#name > :nth-child(2)";
-  expect(getSelectorPreference(selector2)).toBe(selector2.length);
+  expect(getSelectorPreference(selector2)).toBe(2);
 });
 
 describe("inferSelectors", () => {
+  /* eslint-disable jest/expect-expect -- Custom expectSelectors */
   const expectSelectors = (selectors: string[], body: string) => {
     document.body.innerHTML = body;
 
@@ -242,4 +347,6 @@ describe("inferSelectors", () => {
       );
     }
   );
+
+  /* eslint-enable jest/expect-expect */
 });

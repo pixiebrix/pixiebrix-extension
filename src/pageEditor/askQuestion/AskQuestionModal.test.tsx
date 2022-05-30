@@ -15,6 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// __mocks__/fileMock.js
+import React from "react";
+import AskQuestionModal from "@/pageEditor/askQuestion/AskQuestionModal";
+import { render, screen } from "@testing-library/react";
 
-module.exports = "test-file-stub";
+describe("AskQuestionModal", () => {
+  test("it renders", () => {
+    render(<AskQuestionModal showModal={true} setShowModal={jest.fn()} />);
+
+    expect(screen.getByRole("button", { name: /join slack/i })).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: /start a new discussion/i })
+    ).toBeVisible();
+    expect(screen.getByRole("button", { name: /schedule/i })).toBeVisible();
+  });
+});

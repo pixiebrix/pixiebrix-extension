@@ -15,17 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MessageContext } from "@/core";
-import { getErrorMessage } from "@/errors";
+import { getSettingsState } from "@/store/settingsStorage";
+import { getThemeLogo } from "@/utils/themeUtils";
+import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
+import { DEFAULT_THEME } from "@/options/types";
 
-// A mock that doesn't call the background page to report the error
-function reportError(error: unknown, context?: MessageContext): void {
-  console.error("Report error: %s", getErrorMessage(error), {
-    error,
-    context,
-  });
+async function setToolbarIcon(): Promise<void> {
+  const { theme } = await getSettingsState();
 
-  throw new Error(`Unexpected call to reportError: ${getErrorMessage(error)}`);
+  if (theme === DEFAULT_THEME) {
+    activateBrowserActionIcon();
+    return;
+  }
+
+  const themeLogo = getThemeLogo(theme);
+  (chrome.browserAction ?? chrome.action).setIcon({ path: themeLogo.small });
 }
 
-export default reportError;
+export default function initPartnerTheme() {
+  void setToolbarIcon();
+}

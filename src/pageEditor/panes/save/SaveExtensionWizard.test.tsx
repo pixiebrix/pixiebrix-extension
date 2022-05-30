@@ -28,12 +28,13 @@ import {
   recipeFactory,
 } from "@/testUtils/factories";
 import { uuidv4 } from "@/types/helpers";
-import { createRenderFunction, waitForEffect } from "@/testUtils/testHelpers";
+import {
+  createRenderFunctionWithRedux,
+  waitForEffect,
+} from "@/testUtils/testHelpers";
 import { anonAuth } from "@/auth/authConstants";
 import { authSlice } from "@/auth/authSlice";
 import settingsSlice from "@/store/settingsSlice";
-
-jest.unmock("react-redux");
 
 jest.mock("@/utils/notify");
 jest.mock("./useSavingWizard");
@@ -47,7 +48,7 @@ jest.mock("@/services/api", () => ({
   useGetEditablePackagesQuery: jest.fn(),
 }));
 
-const renderSaveExtensionWizard = createRenderFunction({
+const renderSaveExtensionWizard = createRenderFunctionWithRedux({
   reducer: {
     auth: authSlice.reducer,
     settings: settingsSlice.reducer,

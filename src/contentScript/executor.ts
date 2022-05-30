@@ -18,6 +18,7 @@
 import blockRegistry from "@/blocks/registry";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { RunBlock } from "@/contentScript/runBlockTypes";
+import { BusinessError } from "@/errors";
 
 export async function runBrick(request: RunBlock): Promise<unknown> {
   // XXX: validate sourceTabId? Can't use childTabs because we also support `window: broadcast`
@@ -30,6 +31,11 @@ export async function runBrick(request: RunBlock): Promise<unknown> {
       ctxt: options.ctxt,
       logger,
       root: document,
+      async runPipeline() {
+        throw new BusinessError(
+          "Support for running pipelines in other contexts not implemented"
+        );
+      },
     });
   } catch (error) {
     // Provide extra logging on the tab because `handlers` doesn't report errors. It's also nice to log here because

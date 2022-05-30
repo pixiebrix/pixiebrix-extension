@@ -36,6 +36,9 @@ export interface paths {
   "/api/databases/records/": {
     get: operations["listAllRecords"];
   };
+  "/api/databases/records/jobs/{id}/": {
+    get: operations["retrieveDatabaseExportJob"];
+  };
   "/api/databases/{id}/": {
     get: operations["retrieveUserDatabase"];
     delete: operations["destroyUserDatabase"];
@@ -113,6 +116,10 @@ export interface paths {
   "/api/deployments/{deployment_pk}/groups/": {
     get: operations["listDeploymentPermissions"];
     post: operations["createDeploymentPermission"];
+  };
+  "/api/deployments/{deployment_pk}/managers/": {
+    get: operations["listDeploymentManagerPermissions"];
+    post: operations["createDeploymentManagerPermission"];
   };
   "/api/deployments/{deployment_pk}/contacts/": {
     get: operations["listDeploymentAlertEmails"];
@@ -267,7 +274,7 @@ export interface paths {
   };
   "/api/organizations/{organization_pk}/errors/": {
     /** View to return most recent Rollbar error report for an organization. */
-    get: operations["retrieveErrorOccurrence"];
+    get: operations["retrieveOrganizationErrors"];
   };
   "/api/organizations/{organization_pk}/events/": {
     get: operations["retrieveEventInterval"];
@@ -341,6 +348,9 @@ export interface paths {
   "/api/support/users/{user_pk}/bricks/{brick_pk}/": {
     get: operations["retrieveSupportUserBricks"];
   };
+  "/api/databases/records/jobs/": {
+    post: operations["createDatabaseExportJob"];
+  };
   "/api/databases/{database_pk}/queue/assign/": {
     /**
      * Get the next available item in a queue.
@@ -394,6 +404,9 @@ export interface paths {
   };
   "/api/deployments/{deployment_pk}/groups/{id}/": {
     delete: operations["destroyDeploymentPermission"];
+  };
+  "/api/deployments/{deployment_pk}/managers/{id}/": {
+    delete: operations["destroyDeploymentManagerPermission"];
   };
   "/api/groups/{group_pk}/memberships/{id}/": {
     /** Add, remove, and list users to/from a group */
@@ -498,6 +511,17 @@ export interface components {
       data: { [key: string]: unknown };
       /** Format: date-time */
       created_at?: string;
+    };
+    DatabaseExportJob: {
+      /** Format: uuid */
+      id: string;
+      /** @enum {string} */
+      status?: "UNKNOWN" | "PENDING" | "STARTED" | "SUCCESS" | "FAILURE";
+      /** Format: date-time */
+      created_at?: string;
+      /** Format: binary */
+      data?: string | null;
+      error_message?: string | null;
     };
     Record: {
       id: string;
@@ -750,6 +774,14 @@ export interface components {
       /** Format: date-time */
       created_at?: string;
     };
+    DeploymentManagerPermission: {
+      /** Format: uuid */
+      id?: string;
+      group_id: string;
+      group_name?: string;
+      /** Format: date-time */
+      created_at?: string;
+    };
     DeploymentAlertEmail: {
       /** Format: uuid */
       id?: string;
@@ -978,7 +1010,9 @@ export interface components {
         organization_name: string;
         /** @enum {integer} */
         role: 1 | 2 | 3 | 4 | 5;
-        scope?: string | null;
+        scope: string | null;
+        /** @description True if user is a manager of one or more team deployments */
+        is_deployment_manager?: string;
       }[];
       group_memberships?: {
         /** Format: uuid */
@@ -989,6 +1023,12 @@ export interface components {
       /** @description True if the account is an organization API service account */
       service_account?: boolean;
       flags?: string;
+      partner?: {
+        /** Format: uuid */
+        id?: string;
+        name: string;
+        theme?: string;
+      };
     };
     Membership: {
       id?: number;
@@ -1270,6 +1310,17 @@ export interface components {
       /** Format: date-time */
       created_at?: string;
     };
+    DatabaseExportRequest: {
+      name: string;
+      databases: string[];
+      /**
+       * @default application/json
+       * @enum {string}
+       */
+      media_type?: "application/xlsx" | "application/json" | "text/csv";
+      /** @default [object Object] */
+      filters?: { [key: string]: unknown };
+    };
     DeploymentMessage: {
       /** Format: email */
       recipient: string;
@@ -1335,37 +1386,6 @@ export interface components {
       args?: { [key: string]: unknown };
     };
     ErrorItem: {
-      id?: number;
-      user?: {
-        /** Format: uuid */
-        id?: string;
-        name?: string;
-        /** Format: email */
-        email?: string;
-        service_account?: boolean;
-        /** Format: date-time */
-        date_joined?: string;
-      };
-      user_extension?: {
-        /** Format: uuid */
-        id: string;
-        /** Format: date-time */
-        createTimestamp: string;
-        /** Format: date-time */
-        updateTimestamp: string;
-      };
-      blueprint_version?: {
-        id: string;
-        version: string;
-      };
-      brick_version?: {
-        id: string;
-        version: string;
-      };
-      service_version?: {
-        id: string;
-        version: string;
-      };
       /** Format: uuid */
       uuid: string;
       /** @description JavaScript error class name */
@@ -1379,6 +1399,38 @@ export interface components {
        * @description Timestamp the error occurred, not the time the record is added to the db
        */
       timestamp: string;
+      user?: {
+        /** Format: uuid */
+        id?: string;
+        name?: string;
+        /** Format: email */
+        email?: string;
+        service_account?: boolean;
+        /** Format: date-time */
+        date_joined?: string;
+      };
+      organization?: string | null;
+      deployment?: string | null;
+      blueprint_version?: {
+        id: string;
+        version: string;
+      };
+      brick_version?: {
+        id: string;
+        version: string;
+      };
+      service_version?: {
+        id: string;
+        version: string;
+      };
+      user_extension?: {
+        /** Format: uuid */
+        id: string;
+        /** Format: date-time */
+        createTimestamp: string;
+        /** Format: date-time */
+        updateTimestamp: string;
+      };
       /**
        * Format: uuid
        * @description UUID of the user-defined extension, not the Pixiebrix extension. Same value as UserExtension.extension_id
@@ -1392,8 +1444,6 @@ export interface components {
       /** @description Browser extension semantic version */
       user_agent_extension_version: string;
       error_data?: { [key: string]: unknown } | null;
-      organization?: string | null;
-      deployment?: string | null;
     };
   };
 }
@@ -1643,6 +1693,22 @@ export interface operations {
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ExportedRecord"][];
           "text/csv; version=1.0": components["schemas"]["ExportedRecord"][];
           "application/xlsx; version=1.0": components["schemas"]["ExportedRecord"][];
+        };
+      };
+    };
+  };
+  retrieveDatabaseExportJob: {
+    parameters: {
+      path: {
+        /** A UUID string identifying this database export job. */
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["DatabaseExportJob"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DatabaseExportJob"];
         };
       };
     };
@@ -2205,11 +2271,11 @@ export interface operations {
       };
     };
   };
-  /** View to return most recent Rollbar error report for an organization. */
+  /** View to return most recent Rollbar error report for a deployment. */
   retrieveErrorOccurrence: {
     parameters: {
       path: {
-        organization_pk: string;
+        deployment_pk: string;
       };
     };
     responses: {
@@ -2262,6 +2328,50 @@ export interface operations {
         "application/json": components["schemas"]["DeploymentPermission"];
         "application/x-www-form-urlencoded": components["schemas"]["DeploymentPermission"];
         "multipart/form-data": components["schemas"]["DeploymentPermission"];
+      };
+    };
+  };
+  listDeploymentManagerPermissions: {
+    parameters: {
+      path: {
+        deployment_pk: string;
+      };
+      query: {
+        /** A page number within the paginated result set. */
+        page?: number;
+        /** Number of results to return per page. */
+        page_size?: number;
+      };
+    };
+    responses: {
+      200: {
+        headers: {};
+        content: {
+          "application/json; version=2.0": components["schemas"]["DeploymentManagerPermission"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DeploymentManagerPermission"][];
+        };
+      };
+    };
+  };
+  createDeploymentManagerPermission: {
+    parameters: {
+      path: {
+        deployment_pk: string;
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          "application/json; version=2.0": components["schemas"]["DeploymentManagerPermission"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DeploymentManagerPermission"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DeploymentManagerPermission"];
+        "application/x-www-form-urlencoded": components["schemas"]["DeploymentManagerPermission"];
+        "multipart/form-data": components["schemas"]["DeploymentManagerPermission"];
       };
     };
   };
@@ -3542,6 +3652,22 @@ export interface operations {
       };
     };
   };
+  /** View to return most recent Rollbar error report for an organization. */
+  retrieveOrganizationErrors: {
+    parameters: {
+      path: {
+        organization_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["ErrorOccurrence"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ErrorOccurrence"];
+        };
+      };
+    };
+  };
   retrieveEventInterval: {
     parameters: {
       path: {
@@ -4083,6 +4209,24 @@ export interface operations {
       };
     };
   };
+  createDatabaseExportJob: {
+    parameters: {};
+    responses: {
+      201: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["DatabaseExportRequest"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DatabaseExportRequest"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DatabaseExportRequest"];
+        "application/x-www-form-urlencoded": components["schemas"]["DatabaseExportRequest"];
+        "multipart/form-data": components["schemas"]["DatabaseExportRequest"];
+      };
+    };
+  };
   /**
    * Get the next available item in a queue.
    *
@@ -4397,6 +4541,17 @@ export interface operations {
     };
   };
   destroyDeploymentPermission: {
+    parameters: {
+      path: {
+        deployment_pk: string;
+        id: string;
+      };
+    };
+    responses: {
+      204: never;
+    };
+  };
+  destroyDeploymentManagerPermission: {
     parameters: {
       path: {
         deployment_pk: string;

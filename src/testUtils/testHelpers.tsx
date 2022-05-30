@@ -16,7 +16,12 @@
  */
 
 import React from "react";
-import { render } from "@testing-library/react";
+import {
+  render,
+  RenderOptions,
+  RenderResult,
+  screen,
+} from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import {
@@ -24,11 +29,23 @@ import {
   AnyAction,
   CombinedState,
   configureStore,
+  EnhancedStore,
   PreloadedState,
   Reducer,
   ReducersMapObject,
 } from "@reduxjs/toolkit";
+import { Form, Formik, FormikValues } from "formik";
+import { Dispatch, Middleware } from "redux";
+import userEvent from "@testing-library/user-event";
 import { Expression, ExpressionType } from "@/core";
+import { noop } from "lodash";
+import { ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
+import { UnknownObject } from "@/types";
+
+export const neverPromise = async (...args: unknown[]): Promise<never> => {
+  console.error("This method should not have been called", { args });
+  throw new Error("This method should not have been called");
+};
 
 export const waitForEffect = async () =>
   act(async () => {
@@ -50,7 +67,17 @@ export type CreateRenderFunctionOptions<
   defaultProps?: TProps;
 };
 
-export function createRenderFunction<
+export type RenderFunctionWithRedux<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from Redux typings
+  S = any,
+  // eslint-disable-next-line @typescript-eslint/ban-types -- the type copied from Redux typings
+  P = {}
+> = (overrides?: {
+  propsOverride?: Partial<P>;
+  stateOverride?: Partial<S>;
+}) => RenderResult;
+
+export function createRenderFunctionWithRedux<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from Redux typings
   S = any,
   A extends Action = AnyAction,
@@ -61,7 +88,7 @@ export function createRenderFunction<
   preloadedState,
   ComponentUnderTest,
   defaultProps,
-}: CreateRenderFunctionOptions<S, A, P>) {
+}: CreateRenderFunctionOptions<S, A, P>): RenderFunctionWithRedux<S, P> {
   return (overrides?: {
     propsOverride?: Partial<P>;
     stateOverride?: Partial<S>;
@@ -84,6 +111,80 @@ export function createRenderFunction<
         <ComponentUnderTest {...props} />
       </Provider>
     );
+  };
+}
+
+type SetupRedux = (dispatch: Dispatch) => void;
+
+type WrapperOptions = Omit<RenderOptions, "wrapper"> & {
+  initialValues?: FormikValues;
+  setupRedux?: SetupRedux;
+};
+
+type WrapperResult = RenderResult & {
+  getFormState: () => Promise<FormikValues>;
+};
+
+type ConfigureStore<
+  S = UnknownObject,
+  A extends Action = AnyAction,
+  M extends ReadonlyArray<Middleware<UnknownObject, S>> = [
+    ThunkMiddlewareFor<S>
+  ]
+> = () => EnhancedStore<S, A, M>;
+
+export function createRenderWithWrappers(configureStore: ConfigureStore) {
+  return (
+    ui: React.ReactElement,
+    {
+      initialValues = {},
+      setupRedux = noop,
+      ...renderOptions
+    }: WrapperOptions = {}
+  ): WrapperResult => {
+    let submitHandler: (values: FormikValues) => void = jest.fn();
+
+    const store = configureStore();
+
+    setupRedux(store.dispatch);
+
+    const Wrapper: React.FC = initialValues
+      ? ({ children }) => (
+          <Provider store={store}>
+            <Formik
+              initialValues={initialValues}
+              onSubmit={(values) => {
+                submitHandler?.(values);
+              }}
+            >
+              {({ handleSubmit }) => (
+                <Form onSubmit={handleSubmit}>
+                  {children}
+                  <button type="submit">Submit</button>
+                </Form>
+              )}
+            </Formik>
+          </Provider>
+        )
+      : ({ children }) => <Provider store={store}>{children}</Provider>;
+
+    const renderResult = render(ui, { wrapper: Wrapper, ...renderOptions });
+
+    return {
+      ...renderResult,
+      async getFormState() {
+        // Wire-up a handler to grab the form state
+        let formState: FormikValues = null;
+        submitHandler = (values) => {
+          formState = values;
+        };
+
+        // Submit the form
+        await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+        return formState;
+      },
+    };
   };
 }
 

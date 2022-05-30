@@ -20,7 +20,7 @@ import styles from "./SetupPage.module.scss";
 import React from "react";
 import { faCheck, faLink } from "@fortawesome/free-solid-svg-icons";
 import { Button, Card, Col, ListGroup, Row } from "react-bootstrap";
-import { getBaseURL } from "@/services/baseService";
+import { getInstallURL } from "@/services/baseService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useAsyncState } from "@/hooks/common";
@@ -63,11 +63,7 @@ const SetupPage: React.FunctionComponent = () => {
     await browser.tabs.remove(accountTabs.map((tab) => tab.id));
     return accountTabs.length > 0;
   }, []);
-  const [installURL, installURLPending] = useAsyncState(async () => {
-    const url = new URL(await getBaseURL());
-    url.searchParams.set("install", "1");
-    return url.toString();
-  }, []);
+  const [installURL, installURLPending] = useAsyncState(getInstallURL, []);
 
   if (accountPending || installURLPending) {
     return (

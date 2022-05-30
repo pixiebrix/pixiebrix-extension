@@ -16,6 +16,8 @@
  */
 
 import { TemplateEngine, Expression } from "@/core";
+import { BlockPipeline } from "@/blocks/types";
+import { PipelineExpression } from "@/runtime/mapArgs";
 
 export function makeTemplateExpression(
   template: TemplateEngine,
@@ -23,6 +25,15 @@ export function makeTemplateExpression(
 ): Expression {
   return {
     __type__: template,
+    __value__: value,
+  };
+}
+
+export function makePipelineExpression(
+  value: BlockPipeline
+): PipelineExpression {
+  return {
+    __type__: "pipeline",
     __value__: value,
   };
 }
