@@ -71,8 +71,8 @@ const Message: React.VoidFunctionComponent<{
   id: string;
   dismissable: boolean;
 }> = ({ message, id, dismissable }) => (
-  <span>
-    {message}
+  <>
+    <span className={styles.message}>{message}</span>
     {dismissable ? (
       <button
         className={styles.closeButton}
@@ -83,7 +83,7 @@ const Message: React.VoidFunctionComponent<{
         ×
       </button>
     ) : undefined}
-  </span>
+  </>
 );
 
 function getMessageDisplayTime(message: string): number {
@@ -135,17 +135,18 @@ export function showNotification({
   }
 
   const options = { id, duration };
+  const component = <Message {...{ message, id, dismissable }} />;
 
   switch (type) {
     case "error":
     case "success":
     case "loading":
       // eslint-disable-next-line security/detect-object-injection -- Filtered
-      toast[type](<Message {...{ message, id, dismissable }} />, options);
+      toast[type](component, options);
       break;
 
     default:
-      toast(<Message {...{ message, id, dismissable }} />, options);
+      toast(component, options);
   }
 
   if (willReport) {
