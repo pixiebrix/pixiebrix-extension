@@ -17,11 +17,17 @@
 
 import { clearLog, getLog, LogEntry } from "@/background/logging";
 import { MessageContext } from "@/core";
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  PayloadAction,
+  Slice,
+} from "@reduxjs/toolkit";
 import { isEqual } from "lodash";
 import { selectActiveContext } from "./logSelectors";
 import { LogRootState, LogState } from "./logViewerTypes";
 import { castDraft } from "immer";
+import { WritableDraft } from "immer/dist/types/types-external";
 
 const REFRESH_INTERVAL = 750;
 
@@ -62,8 +68,20 @@ const pollLogs = createAsyncThunk<
   return availableEntries;
 });
 
-// @ts-expect-error TS2321: "Excessive stack depth comparing types" -- Not something we can fix, likely
-export const logSlice = createSlice({
+// Specify type explicitly. Otherwise, TypeScript was failing with "Excessive stack depth comparing types" after
+// updating to TypeScript 4.7. Other people seeing issues with TypeScript upgrade:
+// https://github.com/microsoft/TypeScript/issues/34933
+export const logSlice: Slice<
+  LogState,
+  {
+    refreshEntries(state: WritableDraft<LogState>): void;
+    setContext(
+      state: WritableDraft<LogState>,
+      { payload: context }: PayloadAction<MessageContext>
+    ): void;
+  },
+  "logs"
+> = createSlice({
   name: "logs",
   initialState: initialLogState,
   reducers: {
