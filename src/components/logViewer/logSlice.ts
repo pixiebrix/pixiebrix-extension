@@ -62,6 +62,7 @@ const pollLogs = createAsyncThunk<
   return availableEntries;
 });
 
+// @ts-expect-error TS2321: "Excessive stack depth comparing types" -- Not something we can fix, likely
 export const logSlice = createSlice({
   name: "logs",
   initialState: initialLogState,
