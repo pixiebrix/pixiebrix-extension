@@ -27,6 +27,7 @@ import reportError from "@/telemetry/reportError";
 import { Except, RequireAtLeastOne } from "type-fest";
 import { getErrorMessage } from "@/errors";
 import { truncate } from "lodash";
+import { SIDEBAR_WIDTH_CSS_PROPERTY } from "@/contentScript/sidebar";
 
 const MINIMUM_NOTIFICATION_DURATION = 2000;
 
@@ -134,7 +135,12 @@ export function showNotification({
     type = "error";
   }
 
-  const options = { id, duration };
+  const options = {
+    id,
+    duration,
+    // Keep the notification centered on the document even when the sidebar is open
+    style: { marginLeft: `calc(var(${SIDEBAR_WIDTH_CSS_PROPERTY}, 0) * -1)` },
+  };
   const component = <Message {...{ message, id, dismissable }} />;
 
   switch (type) {
