@@ -27,7 +27,11 @@ export type SelectorMatchFieldProps = {
 };
 
 const defaultDescription = (
-  <span>Advanced: selectors to restrict when to run the extension.</span>
+  <span>
+    Selectors restricting when the extension runs. If provided, at least one of
+    the selectors must match
+    <i>on page load</i> for the extension to run.
+  </span>
 );
 
 const SelectorMatchField: React.VFC<SelectorMatchFieldProps> = ({
