@@ -26,8 +26,6 @@ import EditorNodeConfigPanel from "@/pageEditor/tabs/editTab/editorNodeConfigPan
 import styles from "./EditTab.module.scss";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import BrickIcon from "@/components/BrickIcon";
-import { isNullOrBlank } from "@/utils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
 import useExtensionTrace from "@/pageEditor/hooks/useExtensionTrace";
@@ -35,10 +33,7 @@ import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationD
 import usePipelineField, {
   PIPELINE_BLOCKS_FIELD_NAME,
 } from "@/pageEditor/hooks/usePipelineField";
-import {
-  EditorNodeProps,
-  NodeId,
-} from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
+import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { useDispatch, useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
@@ -54,8 +49,8 @@ import useFlags from "@/hooks/useFlags";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
-import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import useReportTraceError from "./useReportTraceError";
+import useNodes from "./useNodes";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 
@@ -147,91 +142,15 @@ const EditTab: React.FC<{
     setActiveNodeId
   );
 
-  const traces = useSelector(selectExtensionTrace);
-
-  const nodes = useMemo<EditorNodeProps[]>(() => {
-    // A flag that shows if there are trace records related to any of the current nodes.
-    let blockNodesHaveTraces = false;
-    const blockNodes: EditorNodeProps[] = blockPipeline.map(
-      (blockConfig, index) => {
-        const block = allBlocks.get(blockConfig.id)?.block;
-        const nodeId = blockConfig.instanceId;
-        const traceRecord = traces.find(
-          (trace) => trace.blockInstanceId === nodeId
-        );
-        if (traceRecord != null) {
-          blockNodesHaveTraces = true;
-        }
-
-        if (!block) {
-          return {
-            nodeId,
-            title: "Loading...",
-          };
-        }
-
-        const newBlock: EditorNodeProps = {
-          nodeId,
-          title: isNullOrBlank(blockConfig.label)
-            ? block?.name
-            : blockConfig.label,
-          icon: (
-            <BrickIcon
-              brick={block}
-              size="2x"
-              // This makes brick icons that use basic font awesome icons
-              //   inherit the editor node layout color scheme.
-              // Customized SVG icons are unaffected and keep their branded
-              //   color schemes.
-              faIconClass={styles.brickFaIcon}
-            />
-          ),
-          hasError:
-            // If blockPipelineErrors is a string, it means the error is on the pipeline level
-            typeof blockPipelineErrors !== "string" &&
-            // eslint-disable-next-line security/detect-object-injection
-            Boolean(blockPipelineErrors?.[index]),
-          hasWarning:
-            errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
-          skippedRun: traceRecord?.skippedRun,
-          ran: traceRecord != null,
-          onClick() {
-            setActiveNodeId(blockConfig.instanceId);
-          },
-        };
-
-        if (blockConfig.outputKey) {
-          newBlock.outputKey = blockConfig.outputKey;
-        }
-
-        return newBlock;
-      }
-    );
-
-    const foundationNode: EditorNodeProps = {
-      nodeId: FOUNDATION_NODE_ID,
-      outputKey: "input",
-      title: label,
-      icon,
-      // Foundation Node doesn't have its own trace record, so we use the traces flag.
-      ran: blockNodesHaveTraces,
-      onClick() {
-        setActiveNodeId(FOUNDATION_NODE_ID);
-      },
-    };
-
-    return [foundationNode, ...blockNodes];
-  }, [
-    allBlocks,
+  const nodes = useNodes(
     blockPipeline,
     blockPipelineErrors,
-    errorTraceEntry?.blockInstanceId,
-    icon,
+    errorTraceEntry,
     label,
-    setActiveNodeId,
-    traces,
-  ]);
-
+    icon,
+    allBlocks,
+    setActiveNodeId
+  );
   const [relevantBlocksToAdd] = useAsyncState(
     async () => {
       const excludeType: BlockType = ["actionPanel", "panel"].includes(

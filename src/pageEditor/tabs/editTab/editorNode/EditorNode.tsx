@@ -41,6 +41,10 @@ export type EditorNodeProps = {
   onClickMoveDown?: () => void;
   skippedRun?: boolean;
   ran?: boolean;
+  children?: Array<{
+    label: string;
+    nodes: EditorNodeProps[];
+  }>;
 };
 
 function isFontAwesomeIcon(
