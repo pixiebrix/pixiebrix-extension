@@ -30,13 +30,15 @@ export type UrlMatchPatternFieldProps = {
 
 const defaultDescription = (
   <span>
-    URL match patterns for which pages to run the extension on. See{" "}
+    URL match patterns permitting the extension to run on a site. If PixieBrix
+    does not already have access to a site, your browser will prompt you to
+    grant access. See{" "}
     <a
       href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
       target="_blank"
       rel="noreferrer"
     >
-      Patterns Documentation
+      <code>match_patterns</code> Documentation
     </a>{" "}
     for examples.
   </span>

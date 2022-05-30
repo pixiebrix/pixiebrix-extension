@@ -34,23 +34,19 @@ export const urlSchemaProject: Schema = {
   properties: {
     hostname: {
       type: "string",
-      description:
-        "A string containing a pattern to match the hash part of a URL.",
+      description: "Pattern to match the hostname part of a URL.",
     },
     pathname: {
       type: "string",
-      description:
-        "A string containing a pattern to match the pathname part of a URL.",
+      description: "Pattern to match the pathname part of a URL.",
     },
     hash: {
       type: "string",
-      description:
-        "A string containing a pattern to match the hash part of a URL.",
+      description: "Pattern to match the hash part of a URL.",
     },
     search: {
       type: "string",
-      description:
-        "A string containing a pattern to match the search part of a URL.",
+      description: "Pattern to match the search part of a URL.",
     },
   },
   additionalProperties: {

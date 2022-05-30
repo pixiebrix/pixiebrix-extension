@@ -30,16 +30,15 @@ export type UrlPatternFieldProps = {
 
 const defaultDescription = (
   <span>
-    Advanced: URL pattern rules restricting on which pages the extension runs.
-    See{" "}
+    Advanced: URL pattern rules restricting when the extension runs. See{" "}
     <a
       href="https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API"
       target="_blank"
       rel="noreferrer"
     >
-      URL Pattern Documentation
+      URL Pattern API Documentation
     </a>{" "}
-    for examples
+    for examples.
   </span>
 );
 
