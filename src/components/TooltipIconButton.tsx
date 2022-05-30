@@ -17,7 +17,7 @@
 
 import React, { MouseEventHandler } from "react";
 import { IconProp, SizeProp } from "@fortawesome/fontawesome-svg-core";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, OverlayTriggerProps, Tooltip } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const TooltipIconButton: React.FC<{
@@ -37,7 +37,7 @@ const TooltipIconButton: React.FC<{
   buttonClassName = "",
   disabled = false,
 }) => {
-  const renderTooltip = (props: unknown) => (
+  const renderTooltip = (props: Partial<OverlayTriggerProps>) => (
     <Tooltip id={`${name}-tooltip`} {...props}>
       {tooltipText}
     </Tooltip>
