@@ -121,6 +121,7 @@ export class CustomFormRenderer extends Renderer {
             notify.error({
               error,
               message: "Error saving record",
+              reportError: false,
             });
           }
         },

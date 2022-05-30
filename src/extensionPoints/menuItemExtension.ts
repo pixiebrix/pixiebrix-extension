@@ -563,11 +563,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           showNotification({ ...DEFAULT_ACTION_RESULTS.cancel, ...onCancel });
         } else {
           extensionLogger.error(error);
-          showNotification({
-            ...DEFAULT_ACTION_RESULTS.error,
-            ...onError,
-            reportError: false,
-          });
+          showNotification({ ...DEFAULT_ACTION_RESULTS.error, ...onError });
         }
       }
     });

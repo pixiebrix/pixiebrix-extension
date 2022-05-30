@@ -170,6 +170,7 @@ export const DEFAULT_ACTION_RESULTS = {
   error: {
     message: "Error running action",
     type: "error",
+    reportError: false,
   },
   cancel: {
     message: "The action was cancelled",
