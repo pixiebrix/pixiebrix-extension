@@ -42,7 +42,7 @@ const EnvironmentBannerMessage: React.VFC = () => {
 
   const [versionName] = useAsyncState(async () => {
     const manifest = isExtension
-      ? chrome.runtime.getManifest()
+      ? browser.runtime.getManifest()
       : await connectPage();
     return manifest.version_name;
   }, []);

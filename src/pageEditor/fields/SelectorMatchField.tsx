@@ -16,49 +16,36 @@
  */
 
 import React from "react";
-import { Shortcut } from "@/pageEditor/components/urlMatchPatternWidgetTypes";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import widgetsRegistry from "@/components/fields/schemaFields/widgets/widgetsRegistry";
 
-export type UrlMatchPatternFieldProps = {
+export type SelectorMatchFieldProps = {
   name: string;
   disabled?: boolean;
   label?: React.ReactNode;
   description?: React.ReactNode;
-  shortcuts?: Shortcut[];
 };
 
 const defaultDescription = (
   <span>
-    URL match patterns permitting the extension to run on a site. If PixieBrix
-    does not already have access to a site, your browser will prompt you to
-    grant access. See{" "}
-    <a
-      href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
-      target="_blank"
-      rel="noreferrer"
-    >
-      <code>match_patterns</code> Documentation
-    </a>{" "}
-    for examples.
+    Selectors restricting when the extension runs. If provided, at least one of
+    the selectors must match <i>on page load</i> for the extension to run.
   </span>
 );
 
-const UrlMatchPatternField: React.VFC<UrlMatchPatternFieldProps> = ({
+const SelectorMatchField: React.VFC<SelectorMatchFieldProps> = ({
   name,
   disabled,
-  label = "Sites",
+  label = "Selectors",
   description = defaultDescription,
-  shortcuts,
 }) => (
   <ConnectedFieldTemplate
     name={name}
-    as={widgetsRegistry.UrlMatchPatternWidget}
+    as={widgetsRegistry.SelectorMatchWidget}
     disabled={disabled}
     label={label}
     description={description}
-    shortcuts={shortcuts}
   />
 );
 
-export default UrlMatchPatternField;
+export default SelectorMatchField;
