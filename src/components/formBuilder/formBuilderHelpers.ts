@@ -209,7 +209,7 @@ export const validateNextPropertyName = (
 
   if (
     // If the property with nextPropertyName is defined nevertheless, there's something wrong with the new name.
-    // eslint-disable-next-line security/detect-object-injection -- It doesn't work with hasOwnProp/getOwnPropaa
+    // eslint-disable-next-line security/detect-object-injection -- It doesn't work with hasOwnProp/getOwnProp
     typeof schema.properties?.[nextPropertyName] !== "undefined" ||
     // Will break the UI Schema
     KEYS_OF_UI_SCHEMA.includes(nextPropertyName)
