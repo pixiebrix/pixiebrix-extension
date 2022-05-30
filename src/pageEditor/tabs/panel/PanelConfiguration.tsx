@@ -24,6 +24,7 @@ import TemplateWidget, { Snippet } from "@/pageEditor/fields/TemplateWidget";
 import LocationWidget from "@/pageEditor/fields/LocationWidget";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import UrlPatternField from "@/pageEditor/fields/UrlPatternField";
 
 const panelSnippets: Snippet[] = [
   { label: "heading", value: "{{{heading}}}" },
@@ -51,6 +52,11 @@ const PanelConfiguration: React.FC<{
       <UrlMatchPatternField
         name="extensionPoint.definition.isAvailable.matchPatterns"
         {...makeLockableFieldProps("Sites", isLocked)}
+      />
+
+      <UrlPatternField
+        name="extensionPoint.definition.isAvailable.urlPatterns"
+        {...makeLockableFieldProps("URL Patterns", isLocked)}
       />
     </FieldSection>
 

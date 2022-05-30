@@ -16,6 +16,7 @@
  */
 
 import UrlMatchPatternWidget from "@/pageEditor/components/UrlMatchPatternWidget";
+import UrlPatternWidget from "@/pageEditor/components/UrlPatternWidget";
 import ArrayWidget from "./ArrayWidget";
 import BooleanWidget from "./BooleanWidget";
 import IntegerWidget from "./IntegerWidget";
@@ -41,6 +42,7 @@ function registerDefaultWidgets() {
   widgetsRegistry.TextWidget = TextWidget;
   widgetsRegistry.UnsupportedWidget = UnsupportedWidget;
   widgetsRegistry.UrlMatchPatternWidget = UrlMatchPatternWidget;
+  widgetsRegistry.UrlPatternWidget = UrlPatternWidget;
   widgetsRegistry.WorkshopMessageWidget = WorkshopMessageWidget;
 }
 

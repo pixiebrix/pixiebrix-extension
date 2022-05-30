@@ -25,6 +25,7 @@ import IconWidget from "@/components/fields/IconWidget";
 import LocationWidget from "@/pageEditor/fields/LocationWidget";
 import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
+import UrlPatternField from "@/pageEditor/fields/UrlPatternField";
 
 const menuSnippets: Snippet[] = [
   { label: "caption", value: "{{{caption}}}" },
@@ -58,6 +59,11 @@ const MenuItemConfiguration: React.FC<{
       <UrlMatchPatternField
         name="extensionPoint.definition.isAvailable.matchPatterns"
         {...makeLockableFieldProps("Sites", isLocked)}
+      />
+
+      <UrlPatternField
+        name="extensionPoint.definition.isAvailable.urlPatterns"
+        {...makeLockableFieldProps("URL Patterns", isLocked)}
       />
     </FieldSection>
 
