@@ -26,6 +26,7 @@ import { collectRegistryIds } from "@/pageEditor/tabs/editTab/editHelpers";
 import { ExtensionPointType } from "@/extensionPoints/types";
 import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormTransformer } from "@/blocks/transformers/ephemeralForm/formTransformer";
 
 const READER_COUNT_THRESHOLD = 2;
 
@@ -33,7 +34,7 @@ const typeRecommendations = new Map<ExtensionPointType, RegistryId[]>([
   [
     "menuItem",
     [
-      "@pixiebrix/form-modal",
+      FormTransformer.BLOCK_ID,
       "@pixiebrix/browser/open-tab",
       "@pixiebrix/zapier/push-data",
       "@pixiebrix/forms/set",
@@ -50,7 +51,7 @@ const typeRecommendations = new Map<ExtensionPointType, RegistryId[]>([
   [
     "contextMenu",
     [
-      "@pixiebrix/form-modal",
+      FormTransformer.BLOCK_ID,
       "@pixiebrix/browser/open-tab",
       "@pixiebrix/zapier/push-data",
       "slack/simple-message",

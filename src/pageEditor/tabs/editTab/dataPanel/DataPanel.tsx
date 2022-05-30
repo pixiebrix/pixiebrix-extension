@@ -47,6 +47,9 @@ import DataTabJsonTree from "./DataTabJsonTree";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import Alert from "@/components/Alert";
+import { CustomFormRenderer } from "@/blocks/renderers/customForm";
+import { FormTransformer } from "@/blocks/transformers/ephemeralForm/formTransformer";
+import { DocumentRenderer } from "@/blocks/renderers/document";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -130,8 +133,10 @@ const DataPanel: React.FC<{
 
   const [previewInfo] = usePreviewInfo(block?.id);
 
-  const showFormPreview = block.config?.schema && block.config?.uiSchema;
-  const showDocumentPreview = block.config?.body;
+  const showFormPreview =
+    block.id === CustomFormRenderer.BLOCK_ID ||
+    block.id === FormTransformer.BLOCK_ID;
+  const showDocumentPreview = block.id === DocumentRenderer.BLOCK_ID;
   const showBlockPreview = record || previewInfo?.traceOptional;
   const showPageState = pageStateBlockIds.includes(block.id);
 
