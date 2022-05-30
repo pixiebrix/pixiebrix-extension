@@ -64,6 +64,7 @@ import {
   INNER_SCOPE,
   isInnerExtensionPoint,
 } from "@/registry/internal";
+import { normalizePipeline } from "./normalizePipeline";
 
 export interface WizardStep {
   step: string;
@@ -91,16 +92,6 @@ export function makeIsAvailable(url: string): NormalizedAvailability {
     urlPatterns: [],
     selectors: [],
   };
-}
-
-/**
- * Enrich a BlockPipeline with instanceIds for use in tracing.
- */
-export function withInstanceIds(blocks: BlockPipeline): BlockPipeline {
-  return blocks.map((blockConfig) => ({
-    ...blockConfig,
-    instanceId: uuidv4(),
-  }));
 }
 
 /**
@@ -437,7 +428,7 @@ export function extensionWithNormalizedPipeline<
 ): BaseExtensionState & Omit<T, Prop> {
   const { [pipelineProp]: pipeline, ...rest } = { ...config };
   return {
-    blockPipeline: withInstanceIds(castArray(pipeline) as BlockPipeline),
+    blockPipeline: normalizePipeline(castArray(pipeline) as BlockPipeline),
     ...defaults,
     ...rest,
   };
