@@ -34,10 +34,12 @@ import Form, {
   RenderBody,
   RenderSubmit,
 } from "@/components/form/Form";
+import { isSingleObjectBadRequestError } from "@/types/errorContract";
+import { FormikErrors } from "formik";
 
-interface Profile {
+type Profile = {
   scope: string | null;
-}
+};
 
 const SCOPE_REGEX = /^@[\da-z~-][\d._a-z~-]*$/;
 
@@ -84,9 +86,17 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
           }
 
           case StatusCodes.BAD_REQUEST: {
-            helpers.setErrors(
-              mapValues(error.response.data, (xs) => castArray(xs)[0])
-            );
+            if (isSingleObjectBadRequestError(error)) {
+              helpers.setErrors(
+                mapValues(
+                  error.response.data,
+                  (xs) => castArray(xs)[0]
+                ) as FormikErrors<Profile>
+              );
+            } else {
+              notify.error({ message: "Error updating account alias", error });
+            }
+
             return;
           }
 

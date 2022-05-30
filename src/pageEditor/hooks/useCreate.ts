@@ -19,7 +19,7 @@ import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import notify from "@/utils/notify";
-import { getErrorMessage, isAxiosError } from "@/errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
@@ -37,6 +37,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
+import { isSingleObjectBadRequestError } from "@/types/errorContract";
 
 const { saveExtension } = extensionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -59,8 +60,9 @@ async function upsertConfig(
 
 function selectErrorMessage(error: unknown): string {
   // FIXME: should this logic be in getErrorMessage?
-  if (isAxiosError(error)) {
+  if (isSingleObjectBadRequestError(error)) {
     return (
+      // FIXME: won't the data on each property be an array?
       error.response?.data.config?.toString() ??
       error.response?.statusText ??
       "No response from PixieBrix server"

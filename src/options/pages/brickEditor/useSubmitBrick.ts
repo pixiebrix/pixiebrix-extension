@@ -30,7 +30,6 @@ import useReinstall from "@/options/pages/blueprints/utils/useReinstall";
 import notify from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/services/apiClient";
-import { isAxiosError } from "@/errors/errorHelpers";
 import {
   clearServiceCache,
   reactivateEveryTab,
@@ -38,6 +37,7 @@ import {
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { PackageUpsertResponse } from "@/types/contract";
 import { appApi } from "@/services/api";
+import { isSingleObjectBadRequestError } from "@/types/errorContract";
 
 type SubmitOptions = {
   create: boolean;
@@ -145,7 +145,7 @@ function useSubmitBrick({
       } catch (error) {
         console.debug("Got validation error", error);
 
-        if (isAxiosError(error)) {
+        if (isSingleObjectBadRequestError(error)) {
           for (const message of castArray(error.response.data.__all__ ?? [])) {
             notify.error(message);
           }
@@ -156,7 +156,7 @@ function useSubmitBrick({
         }
       }
     },
-    [history, refresh, reinstall, url, create]
+    [dispatch, history, refresh, reinstall, url, create]
   );
 
   return { submit, validate, remove: create ? null : remove };

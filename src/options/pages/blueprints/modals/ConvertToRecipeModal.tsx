@@ -32,7 +32,7 @@ import {
 } from "@/types/helpers";
 import { pick } from "lodash";
 import Form from "@/components/form/Form";
-import { getErrorMessage, isAxiosError } from "@/errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { appApi, useCreateRecipeMutation } from "@/services/api";
 import {
   RecipeDefinition,
@@ -47,6 +47,7 @@ import { FieldDescriptions } from "@/utils/strings";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { StylesConfig } from "react-select";
 import { RequireScope } from "@/auth/RequireScope";
+import { isSingleObjectBadRequestError } from "@/types/errorContract";
 
 type ConvertInstallableFormState = {
   blueprintId: RegistryId;
@@ -169,7 +170,7 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
         })
       );
     } catch (error) {
-      if (isAxiosError(error) && error.response.data.config) {
+      if (isSingleObjectBadRequestError(error) && error.response.data.config) {
         helpers.setStatus(error.response.data.config);
         return;
       }

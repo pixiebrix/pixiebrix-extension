@@ -67,6 +67,7 @@ import {
   initTelemetry,
   recordEvent,
   sendDeploymentAlert,
+  uid,
 } from "@/background/telemetry";
 import { captureTab } from "@/background/capture";
 import { getUserData } from "@/auth/token";
@@ -93,6 +94,7 @@ declare global {
 
     ACTIVATE_PARTNER_THEME: typeof initPartnerTheme;
 
+    GET_UID: typeof uid;
     ECHO_SENDER: typeof whoAmI;
     WAIT_FOR_TARGET_BY_URL: typeof waitForTargetByUrl;
 
@@ -165,6 +167,7 @@ export default function registerMessenger(): void {
     ENSURE_CONTEXT_MENU: ensureContextMenu,
     OPEN_POPUP_PROMPT: openPopupPrompt,
 
+    GET_UID: uid,
     ECHO_SENDER: whoAmI,
     WAIT_FOR_TARGET_BY_URL: waitForTargetByUrl,
 
