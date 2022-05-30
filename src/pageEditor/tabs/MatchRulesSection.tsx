@@ -21,7 +21,7 @@ import SelectorMatchField from "@/pageEditor/fields/SelectorMatchField";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import React from "react";
 
-export const MatchRulesSection: React.FunctionComponent<{
+const MatchRulesSection: React.FunctionComponent<{
   isLocked: boolean;
 }> = ({ isLocked }) => (
   <FieldSection title="Advanced: Match Rules">

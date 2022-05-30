@@ -1,0 +1,569 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MatchRulesSection render empty section 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="cardHeader card-header"
+    >
+      Advanced: Match Rules
+    </div>
+    <div
+      class="cardBody card-body"
+    >
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extensionPoint.definition.isAvailable.urlPatterns"
+        >
+          URL Patterns
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <ul
+            class="list-group mb-2"
+          />
+          <button
+            class="btn btn-primary"
+            type="button"
+          >
+            Add URL Pattern
+          </button>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              URL pattern rules restricting when the extension runs. If provided, at least one of the rules must match for the extension to run. See 
+              <a
+                href="https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API"
+                rel="noreferrer"
+                target="_blank"
+              >
+                URL Pattern API Documentation
+              </a>
+               for examples.
+            </span>
+          </small>
+        </div>
+      </div>
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extensionPoint.definition.isAvailable.selectors"
+        >
+          Selectors
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <ul
+            class="list-group mb-2"
+          />
+          <button
+            class="btn btn-primary"
+            type="button"
+          >
+            Add Selector
+          </button>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              Selectors restricting when the extension runs. If provided, at least one of the selectors must match 
+              <i>
+                on page load
+              </i>
+               for the extension to run.
+            </span>
+          </small>
+        </div>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`MatchRulesSection render populated section 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="cardHeader card-header"
+    >
+      Advanced: Match Rules
+    </div>
+    <div
+      class="cardBody card-body"
+    >
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extensionPoint.definition.isAvailable.urlPatterns"
+        >
+          URL Patterns
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <ul
+            class="list-group mb-2"
+          >
+            <li
+              class="list-group-item py-1"
+            >
+              <div
+                class="formGroup mb-0 form-group row"
+              >
+                <div
+                  class="col-xl-12 col-lg-12"
+                >
+                  <div
+                    class="root"
+                  >
+                    <div
+                      class="field"
+                    >
+                      <div>
+                        <table
+                          class="mb-0 table table-sm"
+                        >
+                          <thead>
+                            <tr>
+                              <th
+                                scope="col"
+                              >
+                                Property
+                              </th>
+                              <th
+                                scope="col"
+                              >
+                                Value
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>
+                                <input
+                                  class="form-control"
+                                  data-testid="extensionPoint.definition.isAvailable.urlPatterns.0.hostname-name"
+                                  readonly=""
+                                  type="text"
+                                  value="hostname"
+                                />
+                              </td>
+                              <td>
+                                <div
+                                  class="formGroup mb-0 form-group row"
+                                >
+                                  <div
+                                    class="col-xl-12 col-lg-12"
+                                  >
+                                    <div
+                                      class="root"
+                                    >
+                                      <div
+                                        class="field"
+                                      >
+                                        <div
+                                          role="button"
+                                          tabindex="0"
+                                        >
+                                          <input
+                                            class="form-control"
+                                            disabled=""
+                                            id="extensionPoint.definition.isAvailable.urlPatterns.0.hostname"
+                                            name="extensionPoint.definition.isAvailable.urlPatterns.0.hostname"
+                                            value=""
+                                          />
+                                        </div>
+                                      </div>
+                                      <div
+                                        class="dropdown dropdown"
+                                        data-test-selected="Exclude"
+                                        data-testid="toggle-extensionPoint.definition.isAvailable.urlPatterns.0.hostname"
+                                      >
+                                        <button
+                                          aria-expanded="false"
+                                          aria-haspopup="true"
+                                          class="dropdown-toggle btn btn-link"
+                                          type="button"
+                                        >
+                                          <span
+                                            class="symbol"
+                                          >
+                                            <test-file-stub
+                                              classname="root"
+                                            />
+                                          </span>
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <small
+                                      class="text-muted form-text"
+                                    >
+                                      Pattern to match the hostname part of a URL.
+                                    </small>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <input
+                                  class="form-control"
+                                  data-testid="extensionPoint.definition.isAvailable.urlPatterns.0.pathname-name"
+                                  readonly=""
+                                  type="text"
+                                  value="pathname"
+                                />
+                              </td>
+                              <td>
+                                <div
+                                  class="formGroup mb-0 form-group row"
+                                >
+                                  <div
+                                    class="col-xl-12 col-lg-12"
+                                  >
+                                    <div
+                                      class="root"
+                                    >
+                                      <div
+                                        class="field"
+                                      >
+                                        <div
+                                          role="button"
+                                          tabindex="0"
+                                        >
+                                          <input
+                                            class="form-control"
+                                            disabled=""
+                                            id="extensionPoint.definition.isAvailable.urlPatterns.0.pathname"
+                                            name="extensionPoint.definition.isAvailable.urlPatterns.0.pathname"
+                                            value=""
+                                          />
+                                        </div>
+                                      </div>
+                                      <div
+                                        class="dropdown dropdown"
+                                        data-test-selected="Exclude"
+                                        data-testid="toggle-extensionPoint.definition.isAvailable.urlPatterns.0.pathname"
+                                      >
+                                        <button
+                                          aria-expanded="false"
+                                          aria-haspopup="true"
+                                          class="dropdown-toggle btn btn-link"
+                                          type="button"
+                                        >
+                                          <span
+                                            class="symbol"
+                                          >
+                                            <test-file-stub
+                                              classname="root"
+                                            />
+                                          </span>
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <small
+                                      class="text-muted form-text"
+                                    >
+                                      Pattern to match the pathname part of a URL.
+                                    </small>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <input
+                                  class="form-control"
+                                  data-testid="extensionPoint.definition.isAvailable.urlPatterns.0.hash-name"
+                                  readonly=""
+                                  type="text"
+                                  value="hash"
+                                />
+                              </td>
+                              <td>
+                                <div
+                                  class="formGroup mb-0 form-group row"
+                                >
+                                  <div
+                                    class="col-xl-12 col-lg-12"
+                                  >
+                                    <div
+                                      class="root"
+                                    >
+                                      <div
+                                        class="field"
+                                      >
+                                        <textarea
+                                          class="form-control"
+                                          id="extensionPoint.definition.isAvailable.urlPatterns.0.hash"
+                                          name="extensionPoint.definition.isAvailable.urlPatterns.0.hash"
+                                          rows="1"
+                                        >
+                                          /foo/
+                                        </textarea>
+                                      </div>
+                                      <div
+                                        class="dropdown dropdown"
+                                        data-test-selected="Text"
+                                        data-testid="toggle-extensionPoint.definition.isAvailable.urlPatterns.0.hash"
+                                      >
+                                        <button
+                                          aria-expanded="false"
+                                          aria-haspopup="true"
+                                          class="dropdown-toggle btn btn-link"
+                                          type="button"
+                                        >
+                                          <span
+                                            class="symbol"
+                                          >
+                                            <test-file-stub
+                                              classname="root"
+                                            />
+                                          </span>
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <small
+                                      class="text-muted form-text"
+                                    >
+                                      Pattern to match the hash part of a URL.
+                                    </small>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <input
+                                  class="form-control"
+                                  data-testid="extensionPoint.definition.isAvailable.urlPatterns.0.search-name"
+                                  readonly=""
+                                  type="text"
+                                  value="search"
+                                />
+                              </td>
+                              <td>
+                                <div
+                                  class="formGroup mb-0 form-group row"
+                                >
+                                  <div
+                                    class="col-xl-12 col-lg-12"
+                                  >
+                                    <div
+                                      class="root"
+                                    >
+                                      <div
+                                        class="field"
+                                      >
+                                        <div
+                                          role="button"
+                                          tabindex="0"
+                                        >
+                                          <input
+                                            class="form-control"
+                                            disabled=""
+                                            id="extensionPoint.definition.isAvailable.urlPatterns.0.search"
+                                            name="extensionPoint.definition.isAvailable.urlPatterns.0.search"
+                                            value=""
+                                          />
+                                        </div>
+                                      </div>
+                                      <div
+                                        class="dropdown dropdown"
+                                        data-test-selected="Exclude"
+                                        data-testid="toggle-extensionPoint.definition.isAvailable.urlPatterns.0.search"
+                                      >
+                                        <button
+                                          aria-expanded="false"
+                                          aria-haspopup="true"
+                                          class="dropdown-toggle btn btn-link"
+                                          type="button"
+                                        >
+                                          <span
+                                            class="symbol"
+                                          >
+                                            <test-file-stub
+                                              classname="root"
+                                            />
+                                          </span>
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <small
+                                      class="text-muted form-text"
+                                    >
+                                      Pattern to match the search part of a URL.
+                                    </small>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <button
+                          class="btn btn-primary"
+                          type="button"
+                        >
+                          Add Property
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      class="dropdown dropdown"
+                      data-test-selected="Object properties"
+                      data-testid="toggle-extensionPoint.definition.isAvailable.urlPatterns.0"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        class="dropdown-toggle btn btn-link"
+                        type="button"
+                      >
+                        <span
+                          class="symbol"
+                        >
+                          <test-file-stub
+                            classname="root"
+                          />
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <button
+            class="btn btn-primary"
+            type="button"
+          >
+            Add URL Pattern
+          </button>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              URL pattern rules restricting when the extension runs. If provided, at least one of the rules must match for the extension to run. See 
+              <a
+                href="https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API"
+                rel="noreferrer"
+                target="_blank"
+              >
+                URL Pattern API Documentation
+              </a>
+               for examples.
+            </span>
+          </small>
+        </div>
+      </div>
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extensionPoint.definition.isAvailable.selectors"
+        >
+          Selectors
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <ul
+            class="list-group mb-2"
+          >
+            <li
+              class="list-group-item py-1"
+            >
+              <div
+                class="formGroup mb-0 form-group row"
+              >
+                <div
+                  class="col-xl-12 col-lg-12"
+                >
+                  <div
+                    class="root"
+                  >
+                    <div
+                      class="field"
+                    >
+                      <textarea
+                        class="form-control"
+                        id="extensionPoint.definition.isAvailable.selectors.0"
+                        name="extensionPoint.definition.isAvailable.selectors.0"
+                        rows="1"
+                      >
+                        #foo
+                      </textarea>
+                    </div>
+                    <div
+                      class="dropdown dropdown"
+                      data-test-selected="Text"
+                      data-testid="toggle-extensionPoint.definition.isAvailable.selectors.0"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        class="dropdown-toggle btn btn-link"
+                        type="button"
+                      >
+                        <span
+                          class="symbol"
+                        >
+                          <test-file-stub
+                            classname="root"
+                          />
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <button
+            class="btn btn-primary"
+            type="button"
+          >
+            Add Selector
+          </button>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              Selectors restricting when the extension runs. If provided, at least one of the selectors must match 
+              <i>
+                on page load
+              </i>
+               for the extension to run.
+            </span>
+          </small>
+        </div>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
