@@ -24,49 +24,38 @@ import { isPipelineExpression } from "@/runtime/mapArgs";
 import { produce } from "immer";
 import { WritableDraft } from "immer/dist/types/types-external";
 
-/**
- * Normalize the Block and invoke normalization for the sub pipelines
- */
-function normalizeBlockDraft(
-  block: WritableDraft<BlockConfig>,
-  pipelineProps: string[] = []
-) {
-  block.instanceId = uuidv4();
+function getPipelinePropNames(block: BlockConfig) {
+  switch (block.id) {
+    case ForEach.BLOCK_ID:
+      return ["body"];
 
-  for (const prop of pipelineProps) {
-    const pipeline = block.config[prop];
-    if (isPipelineExpression(pipeline)) {
-      normalizePipelineDraft(pipeline.__value__);
-    } else {
-      // Normalizing am empty pipeline
-      block.config[prop] = {
-        __type__: "pipeline",
-        __value__: [],
-      };
-    }
+    case IfElse.BLOCK_ID:
+      return ["if", "else"];
+
+    case TryExcept.BLOCK_ID:
+      return ["try", "except"];
+
+    default:
+      return [];
   }
 }
 
-/**
- * Find the sub pipelines in every block of the given pipeline
- */
 function normalizePipelineDraft(pipeline: WritableDraft<BlockPipeline>) {
   for (const block of pipeline) {
-    switch (block.id) {
-      case ForEach.BLOCK_ID:
-        normalizeBlockDraft(block, ["body"]);
-        break;
+    block.instanceId = uuidv4();
 
-      case IfElse.BLOCK_ID:
-        normalizeBlockDraft(block, ["if", "else"]);
-        break;
-
-      case TryExcept.BLOCK_ID:
-        normalizeBlockDraft(block, ["try", "except"]);
-        break;
-
-      default:
-        normalizeBlockDraft(block);
+    const pipelineProps = getPipelinePropNames(block);
+    for (const prop of pipelineProps) {
+      const pipeline = block.config[prop];
+      if (isPipelineExpression(pipeline)) {
+        normalizePipelineDraft(pipeline.__value__);
+      } else {
+        // Normalizing am empty pipeline
+        block.config[prop] = {
+          __type__: "pipeline",
+          __value__: [],
+        };
+      }
     }
   }
 }
@@ -81,43 +70,16 @@ export function normalizePipelineForEditor(
   return produce(pipeline, normalizePipelineDraft);
 }
 
-/**
- * Omit the Block's meta and invoke normalization for the sub pipelines
- */
-function omitMetaInBlockDraft(
-  block: WritableDraft<BlockConfig>,
-  pipelineProps: string[] = []
-) {
-  delete block.instanceId;
-
-  for (const prop of pipelineProps) {
-    const pipeline = block.config[prop];
-    if (isPipelineExpression(pipeline)) {
-      omitMetaInPipelineDraft(pipeline.__value__);
-    }
-  }
-}
-
-/**
- * Find the sub pipelines in every block of the given pipeline
- */
 function omitMetaInPipelineDraft(pipeline: WritableDraft<BlockPipeline>) {
   for (const block of pipeline) {
-    switch (block.id) {
-      case ForEach.BLOCK_ID:
-        omitMetaInBlockDraft(block, ["body"]);
-        break;
+    delete block.instanceId;
 
-      case IfElse.BLOCK_ID:
-        omitMetaInBlockDraft(block, ["if", "else"]);
-        break;
-
-      case TryExcept.BLOCK_ID:
-        omitMetaInBlockDraft(block, ["try", "except"]);
-        break;
-
-      default:
-        omitMetaInBlockDraft(block);
+    const pipelineProps = getPipelinePropNames(block);
+    for (const prop of pipelineProps) {
+      const pipeline = block.config[prop];
+      if (isPipelineExpression(pipeline)) {
+        omitMetaInPipelineDraft(pipeline.__value__);
+      }
     }
   }
 }
