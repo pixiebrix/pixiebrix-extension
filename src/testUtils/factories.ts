@@ -209,7 +209,9 @@ export const extensionFactory = define<IExtension>({
       properties: {},
       required: [] as string[],
     },
-    pipeline: [
+
+    // This is the pipeline prop for the MenuItem extension point, which is the default for extensionPointDefinitionFactory
+    action: [
       {
         id: "@pixiebrix/browser/open-tab",
         config: {
