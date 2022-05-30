@@ -19,7 +19,7 @@ import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { $safeFind } from "@/helpers";
-import { set } from "lodash";
+import { setOwnProp } from "@/utils/safeProps";
 
 export class FormData extends Transformer {
   defaultOutputKey = "form";
@@ -56,7 +56,7 @@ export class FormData extends Transformer {
       .each(function () {
         const name = $(this).attr("name") ?? "";
         if (name !== "") {
-          set(result, name, $(this).val());
+          setOwnProp(result, name, $(this).val());
         }
       });
     return result;

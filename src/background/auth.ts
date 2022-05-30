@@ -32,7 +32,7 @@ import {
 import { BusinessError, getErrorMessage } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
 import { UnknownObject } from "@/types";
-import { get, unset } from "lodash";
+import { unsetOwnProp, getOwnProp, hasOwnProp } from "@/utils/safeProps";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2" as ManualStorageKey;
 
@@ -67,7 +67,7 @@ export async function getCachedAuthData(
     OAUTH2_STORAGE_KEY,
     {}
   );
-  return get(current, serviceAuthId);
+  return getOwnProp(current, serviceAuthId);
 }
 
 export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
@@ -80,11 +80,11 @@ export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
     OAUTH2_STORAGE_KEY,
     {}
   );
-  if (Object.prototype.hasOwnProperty.call(current, serviceAuthId)) {
+  if (hasOwnProp(current, serviceAuthId)) {
     console.debug(
       `deleteCachedAuthData: removed data for auth ${serviceAuthId}`
     );
-    unset(current, serviceAuthId);
+    unsetOwnProp(current, serviceAuthId);
     await setStorage(OAUTH2_STORAGE_KEY, current);
   } else {
     console.warn(

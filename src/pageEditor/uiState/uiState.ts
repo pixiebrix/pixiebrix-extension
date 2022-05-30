@@ -23,7 +23,7 @@ import {
   TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import { set } from "lodash";
+import { setOwnProp } from "@/utils/safeProps";
 
 export const FOUNDATION_NODE_ID = "foundation" as UUID;
 
@@ -45,7 +45,7 @@ export function makeInitialNodeUIState(nodeId: NodeId): NodeUIState {
   };
 
   for (const tab of Object.values(DataPanelTabKey)) {
-    set(nodeUIState.dataPanel, tab, makeInitialDataTabState());
+    setOwnProp(nodeUIState.dataPanel, tab, makeInitialDataTabState());
   }
 
   return nodeUIState;

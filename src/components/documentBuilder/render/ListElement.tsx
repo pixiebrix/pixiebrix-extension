@@ -32,7 +32,7 @@ import { runMapArgs } from "@/contentScript/messenger/api";
 import { isNullOrBlank } from "@/utils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { whoAmI } from "@/background/messenger/api";
-import { set } from "lodash";
+import { hasOwnProp, setOwnProp } from "@/utils/safeProps";
 
 type DocumentListProps = {
   array: UnknownObject[];
@@ -58,9 +58,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
 
     const key = `@${elementKey}`;
 
-    if (
-      Object.prototype.hasOwnProperty.call(documentContext.options.ctxt, key)
-    ) {
+    if (hasOwnProp(documentContext.options.ctxt, key)) {
       documentContext.options.logger.warn(
         `List key ${key} shadows an existing key`
       );
@@ -69,7 +67,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
     return Promise.all(
       array.map(async (itemData) => {
         const elementContext = produce(documentContext, (draft) => {
-          set(draft.options.ctxt, key, itemData);
+          setOwnProp(draft.options.ctxt, key, itemData);
         });
 
         let documentElement: unknown;

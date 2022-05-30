@@ -19,7 +19,7 @@ import { Schema, SchemaDefinition } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { Draft, produce } from "immer";
-import { set } from "lodash";
+import { setOwnProp } from "@/utils/safeProps";
 
 export function fieldLabel(name: string): string {
   const parts = name.split(".");
@@ -60,7 +60,7 @@ function unwrapTemplateExpressions(mutableObj: Draft<any>) {
 
   for (const [key, value] of Object.entries(mutableObj)) {
     if (isTemplateExpression(value)) {
-      set(mutableObj, key, value.__value__);
+      setOwnProp(mutableObj, key, value.__value__);
     } else if (typeof value === "object") {
       unwrapTemplateExpressions(value);
     }

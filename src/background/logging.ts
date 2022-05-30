@@ -37,6 +37,7 @@ import {
   reportToErrorService,
   selectExtraContext,
 } from "@/services/errorService";
+import { getOwnProp } from "@/utils/safeProps";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -191,8 +192,9 @@ export async function getLog(
   }
 
   // We use the index to do an initial filter on the IndexedDB level, and then makeMatchEntry to apply the full filter in JS.
-  // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
-  const entries = await objectStore.index(indexKey).getAll(context[indexKey]);
+  const entries = await objectStore
+    .index(indexKey)
+    .getAll(getOwnProp(context, indexKey));
 
   const match = makeMatchEntry(context);
   const matches = entries.filter((entry) => match(entry));

@@ -37,7 +37,6 @@ import { addListenerForUpdateSelectedElement } from "@/pageEditor/getSelectedEle
 import { initToaster } from "@/utils/notify";
 import { isConnectionError } from "@/errors";
 import { showConnectionLost } from "@/contentScript/connection";
-import { set } from "lodash";
 
 const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
 const uuid = uuidv4();
@@ -98,6 +97,7 @@ const existing: string = window[PIXIEBRIX_SYMBOL];
 if (existing) {
   console.debug(`PixieBrix contentScript already installed: ${existing}`);
 } else {
-  set(window, PIXIEBRIX_SYMBOL, uuid);
+  // eslint-disable-next-line security/detect-object-injection -- using PIXIEBRIX_SYMBOL
+  window[PIXIEBRIX_SYMBOL] = uuid;
   void init();
 }

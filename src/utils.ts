@@ -32,17 +32,16 @@ import {
   maxBy,
   negate,
   ObjectIterator,
+  omit,
   partial,
   partialRight,
   pickBy,
   split,
   unary,
-  unset,
   zip,
 } from "lodash";
 import { Primitive } from "type-fest";
 import { ApiVersion, RegistryId, SafeString } from "@/core";
-import { UnknownObject } from "@/types";
 import { BusinessError, PromiseCancelled } from "@/errors";
 import { RecipeDefinition } from "@/types/definitions";
 
@@ -246,10 +245,7 @@ export function isObject(value: unknown): value is Record<string, unknown> {
 }
 
 export function clearObject(obj: Record<string, unknown>): void {
-  // eslint-disable-next-line guard-for-in -- Part of `_.unset`
-  for (const member in obj) {
-    unset(obj, member);
-  }
+  omit(obj, Object.keys(obj));
 }
 
 /**
@@ -512,14 +508,6 @@ export function isApiVersionAtLeast(
   const atLeastNum = Number(atLeast.slice(1));
 
   return isNum >= atLeastNum;
-}
-
-export function getProperty(obj: UnknownObject, property: string) {
-  if (Object.prototype.hasOwnProperty.call(obj, property)) {
-    // Checking for hasOwnProperty
-    // eslint-disable-next-line security/detect-object-injection
-    return obj[property];
-  }
 }
 
 export async function runInMillis<TResult>(

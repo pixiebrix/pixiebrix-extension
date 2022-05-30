@@ -20,7 +20,8 @@ import React, { useCallback, useMemo, useRef } from "react";
 import { Button, Form, Table } from "react-bootstrap";
 import { SafeString, Schema } from "@/core";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { isEmpty, set } from "lodash";
+import { isEmpty } from "lodash";
+import { hasOwnProp, setOwnProp } from "@/utils/safeProps";
 import { useField, useFormikContext } from "formik";
 import { produce } from "immer";
 import { freshIdentifier, joinName } from "@/utils";
@@ -229,7 +230,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
         setFieldValue(
           name,
           produce(previousValue, (draft) => {
-            set(draft, newProp, draft[oldProp] ?? "");
+            setOwnProp(draft, newProp, draft[oldProp] ?? "");
             delete draft[oldProp];
           })
         );
@@ -245,7 +246,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
         const prop = freshIdentifier("property" as SafeString, [
           ...Object.keys(draft),
         ]);
-        set(draft, prop, "");
+        setOwnProp(draft, prop, "");
       })
     );
   }, [name, setFieldValue, valueRef]);
@@ -271,10 +272,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
                   : joinName(field.name, property)
               }
               property={property}
-              defined={Object.prototype.hasOwnProperty.call(
-                declaredProperties,
-                property
-              )}
+              defined={hasOwnProp(declaredProperties, property)}
               onDelete={onDelete}
               onRename={onRename}
             />

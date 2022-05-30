@@ -39,9 +39,10 @@ if (window[PAGESCRIPT_SYMBOL]) {
   );
 }
 
-set(window, PAGESCRIPT_SYMBOL, uuidv4());
+// eslint-disable-next-line security/detect-object-injection -- using constant symbol defined above
+window[PAGESCRIPT_SYMBOL] = uuidv4();
 
-import { isEmpty, identity, castArray, cloneDeep, set } from "lodash";
+import { isEmpty, identity, castArray, cloneDeep } from "lodash";
 import {
   CONNECT_EXTENSION,
   DETECT_FRAMEWORK_VERSIONS,
@@ -280,4 +281,5 @@ setTimeout(() => {
 }, 0);
 
 // Ensure jquery is available for testing selectors when debugging PixieBrix errors
-set(window, JQUERY_WINDOW_PROP, $);
+// eslint-disable-next-line security/detect-object-injection
+window[JQUERY_WINDOW_PROP] = $;

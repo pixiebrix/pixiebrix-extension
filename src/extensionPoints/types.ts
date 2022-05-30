@@ -32,7 +32,7 @@ import {
 import { Availability, ReaderConfig } from "@/blocks/types";
 import { Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "@/types/helpers";
-import { set } from "lodash";
+import { setOwnProp } from "@/utils/safeProps";
 
 export type ExtensionPointType =
   | "panel"
@@ -172,7 +172,7 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
       console.warn(
         `Extension ${extension.id} already registered for the extension point ${this.id}`
       );
-      set(this.extensions, index, extension);
+      setOwnProp(this.extensions, index, extension);
     } else {
       this.extensions.push(extension);
     }

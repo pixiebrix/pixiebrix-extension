@@ -19,6 +19,7 @@ import { BusinessError } from "@/errors";
 import { UnknownObject } from "@/types";
 import { SafeHTML } from "@/core";
 import sanitize from "@/utils/sanitize";
+import { getOwnProp } from "@/utils/safeProps";
 
 // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
 export interface Row {
@@ -36,9 +37,7 @@ function renderValue<TRow extends Row>(
   row: TRow
 ) {
   const renderer = column.renderer ?? String;
-  const value = Object.prototype.hasOwnProperty.call(row, column.property)
-    ? row[column.property]
-    : null;
+  const value = getOwnProp(row, column.property);
   return renderer(value, row);
 }
 

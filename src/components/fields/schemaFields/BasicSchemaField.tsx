@@ -34,6 +34,7 @@ import { getToggleOptions } from "./getToggleOptions";
 import widgetsRegistry from "./widgets/widgetsRegistry";
 import useToggleFormField from "@/pageEditor/hooks/useToggleFormField";
 import { isExpression } from "@/runtime/mapArgs";
+import { hasOwnProp } from "@/utils/safeProps";
 
 const BasicSchemaField: SchemaFieldComponent = ({
   omitIfEmpty = false,
@@ -68,8 +69,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
 
   const normalizedSchema = useMemo(() => {
     const isObjectType =
-      schema.type === "object" ||
-      !Object.prototype.hasOwnProperty.call(schema, "type");
+      schema.type === "object" || !hasOwnProp(schema, "type");
 
     if (
       isObjectType &&

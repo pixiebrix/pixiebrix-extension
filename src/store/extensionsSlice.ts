@@ -31,7 +31,8 @@ import {
 } from "@/core";
 import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import { uuidv4 } from "@/types/helpers";
-import { partition, pick, set } from "lodash";
+import { partition, pick } from "lodash";
+import { setOwnProp } from "@/utils/safeProps";
 import { saveUserExtension } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import {
@@ -269,7 +270,7 @@ const extensionsSlice = createSlice({
       const index = state.extensions.findIndex((x) => x.id === id);
 
       if (index >= 0) {
-        set(state.extensions, index, extension);
+        setOwnProp(state.extensions, index, extension);
       } else {
         state.extensions.push(extension);
       }
@@ -288,9 +289,8 @@ const extensionsSlice = createSlice({
         return;
       }
 
-      set(state.extensions, index, {
-        // eslint-disable-next-line security/detect-object-injection -- index is number
-        ...state.extensions[index],
+      setOwnProp(state.extensions, index, {
+        ...state.extensions.at(index),
         ...extensionUpdate,
       });
     },

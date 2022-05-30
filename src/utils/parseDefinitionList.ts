@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { set } from "lodash";
+import { setOwnProp } from "@/utils/safeProps";
 import { describeTable, ParsedTable, TableRecord } from "./parseDomTable";
 
 /** Normalized data extracted from definition list */
@@ -61,7 +61,7 @@ export function parseDefinitionList(list: HTMLDListElement): ParsedTable {
 
   for (const { terms, definitions } of flattenListContent(list)) {
     for (const term of terms) {
-      set(record, term, definitions.join("\n"));
+      setOwnProp(record, term, definitions.join("\n"));
     }
   }
 

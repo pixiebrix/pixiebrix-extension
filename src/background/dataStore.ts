@@ -16,7 +16,7 @@
  */
 
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
-import { set } from "lodash";
+import { setOwnProp } from "@/utils/safeProps";
 import { JsonObject } from "type-fest";
 
 export const LOCAL_DATA_STORE = "LOCAL_DATA_STORE" as ManualStorageKey;
@@ -32,6 +32,6 @@ export async function setRecord(
   value: JsonObject
 ): Promise<void> {
   const data = await readStorage<Record<string, unknown>>(LOCAL_DATA_STORE, {});
-  set(data, `${KEY_PREFIX}${primaryKey}`, value);
+  setOwnProp(data, `${KEY_PREFIX}${primaryKey}`, value);
   await setStorage(LOCAL_DATA_STORE, data);
 }

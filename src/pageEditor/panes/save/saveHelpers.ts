@@ -33,7 +33,8 @@ import {
   UnsavedRecipeDefinition,
 } from "@/types/definitions";
 import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
-import { compact, isEmpty, isEqual, pick, set, sortBy } from "lodash";
+import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
+import { setOwnProp } from "@/utils/safeProps";
 import { produce } from "immer";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { freshIdentifier } from "@/utils";
@@ -230,27 +231,27 @@ export function replaceRecipeExtension(
             Object.keys(sourceRecipe.definitions)
           ) as InnerDefinitionRef;
           newInnerId = freshId;
-          set(draft.definitions, freshId, {
+          setOwnProp(draft.definitions, freshId, {
             kind: "extensionPoint",
             definition: extensionPointConfig.definition,
           });
         }
       } else {
         // There's only one, can re-use without breaking the other definition
-        set(draft.definitions, originalInnerId, {
+        setOwnProp(draft.definitions, originalInnerId, {
           kind: "extensionPoint",
           definition: extensionPointConfig.definition,
         });
       }
 
-      set(draft.extensionPoints, index, {
+      setOwnProp(draft.extensionPoints, index, {
         id: newInnerId,
         ...commonExtensionConfig,
       });
     } else {
       // It's not currently possible to switch from using an extensionPoint package to an inner extensionPoint
       // definition in the Page Editor. Therefore we can just use the rawExtension.extensionPointId directly here.
-      set(draft.extensionPoints, index, {
+      setOwnProp(draft.extensionPoints, index, {
         id: rawExtension.extensionPointId,
         ...commonExtensionConfig,
       });
@@ -468,7 +469,7 @@ function buildExtensionPoints(
         newExtensionPointId = newInnerId as InnerDefinitionRef;
       }
 
-      set(innerDefinitions, newInnerId, definition);
+      setOwnProp(innerDefinitions, newInnerId, definition);
     }
 
     // Construct the extension point config from the extension

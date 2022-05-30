@@ -48,11 +48,12 @@ const MoveElement: React.FC<MoveElementProps> = ({
   const moveElement = (direction: "up" | "down") => {
     const newElementsCollection = [...elementsCollection];
     const toIndex = direction === "up" ? elementIndex - 1 : elementIndex + 1;
-    // eslint-disable-next-line security/detect-object-injection
+    /* eslint-disable security/detect-object-injection */
     [newElementsCollection[elementIndex], newElementsCollection[toIndex]] = [
       newElementsCollection[toIndex],
       newElementsCollection[elementIndex],
     ];
+    /* eslint-enable security/detect-object-injection */
     setValue(newElementsCollection);
     setActiveElement(joinElementName(collectionName, toIndex));
   };

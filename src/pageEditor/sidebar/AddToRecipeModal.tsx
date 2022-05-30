@@ -37,7 +37,7 @@ import { object, string } from "yup";
 import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioItemListWidget";
 import { RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
-import { set } from "lodash";
+import { setOwnProp } from "@/utils/safeProps";
 
 type FormState = {
   recipeId: RegistryId;
@@ -64,7 +64,7 @@ const AddToRecipeModal: React.VFC = () => {
   const recipeMetadataById = useMemo(() => {
     const result: Record<RegistryId, RecipeMetadata> = {};
     for (const metadata of recipeMetadatas) {
-      set(result, metadata.id, metadata);
+      setOwnProp(result, metadata.id, metadata);
     }
 
     return result;

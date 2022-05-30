@@ -18,6 +18,7 @@
 import { isExtensionContext } from "webext-detect-page";
 import { forbidContext } from "@/utils/expectContext";
 import { JsonValue } from "type-fest";
+import { getOwnProp, hasOwnProp } from "@/utils/safeProps";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
@@ -89,12 +90,7 @@ export async function readStorage<T = unknown>(
   // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
   const result = await browser.storage[area].get(storageKey);
 
-  if (Object.prototype.hasOwnProperty.call(result, storageKey)) {
-    // eslint-disable-next-line security/detect-object-injection -- Just checked with hasOwnProperty
-    return result[storageKey];
-  }
-
-  return defaultValue;
+  return getOwnProp(result, storageKey) ?? defaultValue;
 }
 
 export async function readReduxStorage<T extends JsonValue = JsonValue>(
@@ -105,9 +101,8 @@ export async function readReduxStorage<T extends JsonValue = JsonValue>(
   // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
   const result = await browser.storage.local.get(storageKey);
 
-  if (Object.prototype.hasOwnProperty.call(result, storageKey)) {
-    // eslint-disable-next-line security/detect-object-injection -- Just checked with hasOwnProperty
-    const value = result[storageKey];
+  if (hasOwnProp(result, storageKey)) {
+    const value = getOwnProp(result, storageKey);
     if (typeof value === "string") {
       return JSON.parse(value);
     }

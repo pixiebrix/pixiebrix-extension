@@ -29,6 +29,7 @@ import {
 import ButtonElement from "@/components/documentBuilder/render/ButtonElement";
 import ListElement from "@/components/documentBuilder/render/ListElement";
 import { BusinessError } from "@/errors";
+import { getOwnProp } from "@/utils/safeProps";
 
 const headerComponents = {
   header_1: "h1",
@@ -62,8 +63,7 @@ export function getComponentDefinition(
       props.children = title;
 
       return {
-        // eslint-disable-next-line security/detect-object-injection -- componentType is header_1, header_2, or header_3
-        Component: headerComponents[componentType],
+        Component: getOwnProp(headerComponents, componentType),
         props,
       };
     }
@@ -80,8 +80,7 @@ export function getComponentDefinition(
     case "column": {
       const props = { ...config };
 
-      // eslint-disable-next-line security/detect-object-injection -- componentType is container, row, or column
-      return { Component: gridComponents[componentType], props };
+      return { Component: getOwnProp(gridComponents, componentType), props };
     }
 
     case "card": {

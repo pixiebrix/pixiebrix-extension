@@ -31,10 +31,8 @@ function validateObject(
   namePath: string,
   errors: FormikErrorTree
 ) {
-  for (const prop of Object.keys(config)) {
+  for (const [prop, value] of Object.entries(config)) {
     const propNamePath = joinName(namePath, prop);
-    // eslint-disable-next-line security/detect-object-injection -- iterating through props
-    const value = config[prop];
     if (
       isTemplateExpression(value) &&
       value.__type__ !== "mustache" &&

@@ -44,7 +44,8 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import LayoutWidget from "@/components/LayoutWidget";
-import { findLast, set, unset } from "lodash";
+import { findLast } from "lodash";
+import { unsetOwnProp, setOwnProp } from "@/utils/safeProps";
 
 export type FormEditorProps = {
   name: string;
@@ -133,16 +134,15 @@ const FormEditor: React.FC<FormEditorProps> = ({
         );
 
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
-      draft.schema = normalizeSchema(draft);
+      normalizeSchema(draft);
 
-      // eslint-disable-next-line security/detect-object-injection -- prop name is generated
-      draft.schema.properties[propertyName] = newProperty;
+      setOwnProp(draft.schema.properties, propertyName, newProperty);
 
       if (!uiSchema) {
         draft.uiSchema = {};
       }
 
-      set(draft.uiSchema, UI_ORDER, nextUiOrder);
+      setOwnProp(draft.uiSchema, UI_ORDER, nextUiOrder);
     });
     setRjsfSchema(nextRjsfSchema);
     setActiveField(propertyName);
@@ -177,14 +177,14 @@ const FormEditor: React.FC<FormEditorProps> = ({
         );
       }
 
-      unset(draft.schema.properties, propertyToRemove);
+      unsetOwnProp(draft.schema.properties, propertyToRemove);
 
       if (!uiSchema) {
         draft.uiSchema = {};
       }
 
-      set(draft.uiSchema, UI_ORDER, nextUiOrder);
-      unset(draft.uiSchema, propertyToRemove);
+      setOwnProp(draft.uiSchema, UI_ORDER, nextUiOrder);
+      unsetOwnProp(draft.uiSchema, propertyToRemove);
     });
 
     setRjsfSchema(nextRjsfSchema);

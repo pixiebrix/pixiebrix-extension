@@ -27,7 +27,8 @@ import {
   RegistryId,
   UUID,
 } from "@/core";
-import { sortBy, isEmpty, set } from "lodash";
+import { sortBy, isEmpty } from "lodash";
+import { setOwnProp, getOwnProp } from "@/utils/safeProps";
 import registry, { readRawConfigurations } from "@/services/registry";
 import { inputProperties } from "@/helpers";
 import {
@@ -60,9 +61,7 @@ export function excludeSecrets(
   for (const [key, type] of Object.entries(inputProperties(service.schema))) {
     // @ts-expect-error: ts doesn't think $ref can be on SchemaDefinition
     if (!REF_SECRETS.includes(type.$ref)) {
-      // Safe because we're getting from Object.entries
-      // eslint-disable-next-line security/detect-object-injection
-      set(result, key, config[key]);
+      setOwnProp(result, key, getOwnProp(config, key));
     }
   }
 

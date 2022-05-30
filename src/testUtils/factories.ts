@@ -72,7 +72,8 @@ import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { freshIdentifier } from "@/utils";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
-import { padStart, set } from "lodash";
+import { padStart } from "lodash";
+import { setOwnProp } from "@/utils/safeProps";
 import {
   AuthState,
   AuthUserOrganization,
@@ -420,7 +421,7 @@ export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
   const definitions: InnerDefinitions = {};
 
   for (const extensionPoint of extensionPoints) {
-    set(definitions, extensionPoint.id, {
+    setOwnProp(definitions, extensionPoint.id, {
       kind: "extensionPoint",
       definition: extensionPointDefinitionFactory().definition,
     });

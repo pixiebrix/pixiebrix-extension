@@ -18,7 +18,7 @@
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { pick, set } from "lodash";
+import { pick } from "lodash";
 import { isNullOrBlank } from "@/utils";
 
 // Methods imported async in the brick
@@ -121,10 +121,7 @@ export class UrlParser extends Transformer {
       }
     }
 
-    const searchParams: Record<string, string> = {};
-    for (const [key, value] of parsed.searchParams.entries()) {
-      set(searchParams, key, value);
-    }
+    const searchParams = Object.fromEntries(parsed.searchParams.entries());
 
     return {
       ...pick(parsed, URL_PROPERTIES),

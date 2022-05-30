@@ -32,6 +32,7 @@ import {
 import { produce } from "immer";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { useField } from "formik";
+import { getOwnProp } from "@/utils/safeProps";
 
 type ListOptionsProps = {
   elementName: string;
@@ -75,8 +76,7 @@ const ListOptions: React.FC<ListOptionsProps> = ({ elementName }) => {
         onChange={onElementTypeChange}
         as={SelectWidget}
         options={getAllowedChildTypes(documentElement).map((x) => ({
-          // eslint-disable-next-line security/detect-object-injection -- x is a know string
-          label: elementTypeLabels[x],
+          label: getOwnProp(elementTypeLabels, x),
           value: x,
         }))}
       />

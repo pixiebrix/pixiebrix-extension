@@ -25,7 +25,8 @@ import {
 } from "./authTypes";
 import { isExtensionContext } from "webext-detect-page";
 import { expectContext } from "@/utils/expectContext";
-import { omit, remove, set } from "lodash";
+import { omit, remove } from "lodash";
+import { getOwnProp, setOwnProp } from "@/utils/safeProps";
 
 const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
 
@@ -115,7 +116,7 @@ export async function updateUserData(update: UserDataUpdate): Promise<void> {
 
   for (const key of USER_DATA_UPDATE_KEYS) {
     // Intentionally overwrite values with null/undefined from the update
-    set(updated, key, update[key] as any);
+    setOwnProp(updated, key, getOwnProp(update, key));
   }
 
   await setStorage(STORAGE_EXTENSION_KEY, updated);
@@ -149,8 +150,7 @@ export async function linkExtension(auth: TokenAuthData): Promise<boolean> {
 if (isExtensionContext()) {
   browser.storage.onChanged.addListener((changes, storage) => {
     if (storage === "local") {
-      // eslint-disable-next-line security/detect-object-injection -- compile time constant
-      const change = changes[STORAGE_EXTENSION_KEY];
+      const change = getOwnProp(changes, STORAGE_EXTENSION_KEY);
 
       if (change) {
         for (const listener of listeners) {

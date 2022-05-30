@@ -42,6 +42,7 @@ import {
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { ReaderConfig } from "@/blocks/types";
 import { UnknownObject } from "@/types";
+import { getOwnProp, hasOwnProp } from "@/utils/safeProps";
 
 type InnerExtensionPoint = Pick<ExtensionPointConfig, "definition" | "kind">;
 
@@ -91,9 +92,8 @@ async function ensureReaders(
   }
 
   if (typeof reader === "string") {
-    if (Object.prototype.hasOwnProperty.call(definitions, reader)) {
-      // eslint-disable-next-line security/detect-object-injection -- checked hasOwnProperty
-      const definition = definitions[reader];
+    if (hasOwnProp(definitions, reader)) {
+      const definition = getOwnProp(definitions, reader);
       if (definition.kind !== "reader") {
         throw new TypeError(
           "extensionPoint references definition that is not a reader"

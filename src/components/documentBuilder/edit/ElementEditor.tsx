@@ -20,12 +20,12 @@ import styles from "./DocumentEditor.module.scss";
 import { useField } from "formik";
 import React from "react";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
-import { getProperty } from "@/utils";
 import { Col, Row } from "react-bootstrap";
 import RemoveElement from "./RemoveElement";
 import MoveElement from "./MoveElement";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import useElementOptions from "@/components/documentBuilder/edit/useElementOptions";
+import { getOwnProp } from "@/utils/safeProps";
 
 type ElementEditorProps = {
   name: string;
@@ -47,7 +47,7 @@ const ElementEditor: React.FC<ElementEditorProps> = ({
       <Row className={styles.currentFieldRow}>
         <Col xl="3" className={styles.currentField}>
           <h6>
-            {getProperty(elementTypeLabels, documentElement.type) ??
+            {getOwnProp(elementTypeLabels, documentElement.type) ??
               "Unknown element"}
           </h6>
         </Col>

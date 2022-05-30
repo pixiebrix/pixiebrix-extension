@@ -20,6 +20,7 @@ import { TraceError } from "@/telemetry/trace";
 import { joinName } from "@/utils";
 import { set } from "lodash";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
+import { setOwnProp } from "@/utils/safeProps";
 
 const requiredFieldRegex =
   /^Instance does not have required property "(?<property>.+)"\.$/;
@@ -79,7 +80,7 @@ function applyTraceInputError(
 
   // eslint-disable-next-line security/detect-object-injection -- accessing the error tree by index
   if (typeof pipelineErrors[blockIndex] === "undefined" && errors.length > 0) {
-    set(pipelineErrors, blockIndex, errors.join(" "));
+    setOwnProp(pipelineErrors, blockIndex, errors.join(" "));
   }
 }
 

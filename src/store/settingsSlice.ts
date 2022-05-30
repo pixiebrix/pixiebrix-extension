@@ -18,7 +18,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { SettingsState, SkunkworksSettings } from "@/store/settingsTypes";
 import reportError from "@/telemetry/reportError";
-import { once, set } from "lodash";
+import { once } from "lodash";
+import { setOwnProp } from "@/utils/safeProps";
 import { DEFAULT_THEME } from "@/options/types";
 import { isValidTheme } from "@/utils/themeUtils";
 
@@ -46,7 +47,7 @@ const settingsSlice = createSlice({
       }>
     ) {
       const { flag, value } = action.payload;
-      set(state, flag, value);
+      setOwnProp(state, flag, value);
     },
     snoozeUpdates(state, action: PayloadAction<{ durationMillis: number }>) {
       const { durationMillis } = action.payload;

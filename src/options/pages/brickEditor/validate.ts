@@ -19,6 +19,7 @@ import { KIND_SCHEMAS, validateKind } from "@/validators/generic";
 import { ValidationResult } from "@cfworker/json-schema";
 import { getErrorMessage } from "@/errors";
 import { loadBrickYaml } from "@/runtime/brickYaml";
+import { hasOwnProp } from "@/utils/safeProps";
 
 type PartialSchema = {
   kind?: string;
@@ -48,7 +49,7 @@ export async function validateSchema(
     };
   }
 
-  if (!Object.prototype.hasOwnProperty.call(KIND_SCHEMAS, json.kind)) {
+  if (!hasOwnProp(KIND_SCHEMAS, json.kind)) {
     return {
       config: [
         `Expected a value for "kind": ${Object.keys(KIND_SCHEMAS).join(", ")}`,

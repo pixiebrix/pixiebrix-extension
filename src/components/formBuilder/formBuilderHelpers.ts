@@ -28,6 +28,7 @@ import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 import { freshIdentifier } from "@/utils";
 import { produce } from "immer";
 import { WritableDraft } from "immer/dist/types/types-external";
+import { getOwnProp, hasOwnProp } from "@/utils/safeProps";
 
 export const getMinimalSchema: () => Schema = () => ({
   type: "object",
@@ -201,19 +202,14 @@ export const validateNextPropertyName = (
     return "Name must not contain periods.";
   }
 
-  if (
-    schema.properties &&
-    Object.prototype.hasOwnProperty.call(schema.properties, nextPropertyName)
-  ) {
-    return `Name must be unique. Another property "${
-      // eslint-disable-next-line security/detect-object-injection -- checked with hasOwnProperty
-      (schema.properties[nextPropertyName] as Schema).title
-    }" already has the name "${nextPropertyName}".`;
+  if (hasOwnProp(schema.properties, nextPropertyName)) {
+    const { title } = getOwnProp(schema.properties, nextPropertyName) as Schema;
+    return `Name must be unique. Another property "${title}" already has the name "${nextPropertyName}".`;
   }
 
   if (
-    // Checked Own Properties already.
     // If the property with nextPropertyName is defined nevertheless, there's something wrong with the new name.
+    // eslint-disable-next-line security/detect-object-injection -- It doesn't work with hasOwnProp/getOwnPropaa
     typeof schema.properties?.[nextPropertyName] !== "undefined" ||
     // Will break the UI Schema
     KEYS_OF_UI_SCHEMA.includes(nextPropertyName)

@@ -16,8 +16,9 @@
  */
 
 import { IExtension, RegistryId, UserOptions, UUID } from "@/core";
-import { compact, groupBy, set, uniq } from "lodash";
+import { compact, groupBy, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { setOwnProp } from "@/utils/safeProps";
 
 /**
  * Infer options from existing extension-like instances for reinstalling a recipe
@@ -61,7 +62,7 @@ export function inferRecipeAuths(
       throw new Error(`Service ${id} has multiple configurations`);
     }
 
-    set(result, id as RegistryId, configs[0]);
+    setOwnProp(result, id as RegistryId, configs[0]);
   }
 
   return result;

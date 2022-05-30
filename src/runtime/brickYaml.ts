@@ -18,7 +18,8 @@
 import yaml from "js-yaml";
 import { UnknownObject } from "@/types";
 import { produce } from "immer";
-import { isPlainObject, unset } from "lodash";
+import { isPlainObject } from "lodash";
+import { unsetOwnProp } from "@/utils/safeProps";
 
 /**
  * @param tag the tag name, without the leading `!`
@@ -104,7 +105,7 @@ function stripNonSchemaProps(brick: any) {
   return produce(brick, (draft: any) => {
     for (const prop of ["sharing", "updated_at"]) {
       if (prop in draft) {
-        unset(draft, prop);
+        unsetOwnProp(draft, prop);
       }
 
       if (
@@ -112,7 +113,7 @@ function stripNonSchemaProps(brick: any) {
         typeof draft.metadata === "object" &&
         prop in draft.metadata
       ) {
-        unset(draft.metadata, prop);
+        unsetOwnProp(draft.metadata, prop);
       }
     }
 

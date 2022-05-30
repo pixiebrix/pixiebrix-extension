@@ -19,6 +19,7 @@ import { UnknownObject } from "@/types";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { Schema } from "@/core";
 import { isEmpty } from "lodash";
+import { getOwnProp, hasOwnProp } from "@/utils/safeProps";
 
 export type FieldInputMode =
   | "string"
@@ -41,15 +42,14 @@ export function inferInputMode(
   fieldName: string,
   fieldSchema: Schema
 ): FieldInputMode {
-  const hasField = Object.prototype.hasOwnProperty.call(fieldConfig, fieldName);
+  const hasField = hasOwnProp(fieldConfig, fieldName);
   if (!hasField) {
     return "omit";
   }
 
   const hasEnum = !isEmpty(fieldSchema.examples ?? fieldSchema.enum);
 
-  // eslint-disable-next-line security/detect-object-injection -- config field names
-  const value = fieldConfig[fieldName];
+  const value = getOwnProp(fieldConfig, fieldName);
 
   if (value == null) {
     return hasEnum ? "select" : "string";

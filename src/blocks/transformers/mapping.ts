@@ -18,6 +18,7 @@
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { BusinessError } from "@/errors";
+import { getOwnProp, hasOwnProp } from "@/utils/safeProps";
 
 export class MappingTransformer extends Transformer {
   defaultOutputKey = "value";
@@ -66,10 +67,8 @@ export class MappingTransformer extends Transformer {
       return null;
     }
 
-    if (Object.prototype.hasOwnProperty.call(mapping, key)) {
-      // Checking for hasOwnProperty
-      // eslint-disable-next-line security/detect-object-injection
-      return mapping[key];
+    if (hasOwnProp(mapping, key)) {
+      return getOwnProp(mapping, key);
     }
 
     if (missing === "null" || missing === null) {

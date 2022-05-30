@@ -25,7 +25,8 @@ import {
   SchemaDefinition,
   TemplateEngine,
 } from "@/core";
-import { cloneDeep, set } from "lodash";
+import { cloneDeep } from "lodash";
+import { setOwnProp } from "@/utils/safeProps";
 import { isSelectField } from "@/components/fields/schemaFields/getToggleOptions";
 
 const VARIABLE_REGEX = /^@\S+$/;
@@ -229,7 +230,7 @@ async function upgradeValue({
         // This can then be used to match any remaining items in the value array of the
         // same typeof value.
         if (typeof items.type === "string") {
-          set(additionalItemSchemasByType, items.type, items);
+          setOwnProp(additionalItemSchemasByType, items.type, items);
         }
       }
 
@@ -241,7 +242,7 @@ async function upgradeValue({
           // If additionalItems is a single schema, and that schema has a single, string
           // type value, then we add this to our dictionary to match extra items in the
           // value array.
-          set(
+          setOwnProp(
             additionalItemSchemasByType,
             additionalItems.type,
             additionalItems
@@ -254,7 +255,7 @@ async function upgradeValue({
         if (additionalItems.oneOf) {
           for (const prop of additionalItems.oneOf) {
             if (typeof prop !== "boolean" && typeof prop?.type === "string") {
-              set(additionalItemSchemasByType, prop.type, prop);
+              setOwnProp(additionalItemSchemasByType, prop.type, prop);
             }
           }
         }
@@ -264,7 +265,11 @@ async function upgradeValue({
       // to assign each extra item a schema in our itemSchemas array.
       for (const [index, element] of value.entries()) {
         if (index >= itemSchemas.length) {
-          set(itemSchemas, index, additionalItemSchemasByType[typeof element]);
+          setOwnProp(
+            itemSchemas,
+            index,
+            additionalItemSchemasByType[typeof element]
+          );
         }
       }
 
@@ -311,17 +316,19 @@ async function upgradeValue({
         if (fieldSchema.additionalProperties.oneOf) {
           for (const prop of fieldSchema.additionalProperties.oneOf) {
             if (typeof prop !== "boolean" && typeof prop?.type === "string") {
-              set(additionalPropsByType, prop.type, prop);
+              setOwnProp(additionalPropsByType, prop.type, prop);
             }
           }
         }
 
-        for (const name of Object.keys(value).filter(
-          (key) => !(key in propertySchemas)
-        )) {
-          // eslint-disable-next-line security/detect-object-injection
-          const subValue = (value as UnknownObject)[name];
-          set(propertySchemas, name, additionalPropsByType[typeof subValue]);
+        for (const [name, subValue] of Object.entries(value)) {
+          if (!(name in propertySchemas)) {
+            setOwnProp(
+              propertySchemas,
+              name,
+              additionalPropsByType[typeof subValue]
+            );
+          }
         }
       }
 
@@ -350,7 +357,7 @@ async function upgradeValue({
   ) {
     // NOP: the Page Editor doesn't support templated selectors, and we don't want to convert enum values
   } else if (typeof value === "string") {
-    set(config, fieldName, stringToExpression(value, templateEngine));
+    setOwnProp(config, fieldName, stringToExpression(value, templateEngine));
   }
 }
 

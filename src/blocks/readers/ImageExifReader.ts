@@ -18,7 +18,7 @@
 import { Reader } from "@/types";
 import { Schema } from "@/core";
 import axios from "axios";
-import { set } from "lodash";
+import { setOwnProp } from "@/utils/safeProps";
 
 function base64ToArrayBuffer(base64: string): ArrayBuffer {
   // Adapted from https://github.com/exif-js/exif-js/blob/master/exif.js#L343
@@ -28,8 +28,8 @@ function base64ToArrayBuffer(base64: string): ArrayBuffer {
   const buffer = new ArrayBuffer(length_);
   const view = new Uint8Array(buffer);
   for (let i = 0; i < length_; i++) {
-    // eslint-disable-next-line unicorn/prefer-code-point -- is a numeric loop variable
-    set(view, i, binary.charCodeAt(i));
+    // eslint-disable-next-line unicorn/prefer-code-point -- Incompatible
+    setOwnProp(view, i, binary.charCodeAt(i));
   }
 
   return buffer;

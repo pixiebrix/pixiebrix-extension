@@ -40,9 +40,8 @@ export function globalSearch(
         postfix = "";
       }
 
-      for (const key of Object.keys(obj)) {
-        // @ts-expect-error typing is tricky since it can be an array or object
-        stack.push([obj[key], address + prefix + key + postfix]);
+      for (const [value, key] of Object.entries(obj)) {
+        stack.push([value, address + prefix + key + postfix]);
       }
 
       searched.push(obj);

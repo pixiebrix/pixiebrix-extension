@@ -20,6 +20,7 @@ import logo from "@img/logo.svg";
 import logoSmall from "@img/logo-small-rounded.svg";
 import aaLogo from "@img/aa-logo.svg";
 import aaLogoSmall from "@img/aa-logo-small.svg";
+import { getOwnProp } from "./safeProps";
 
 export const isValidTheme = (theme: string): theme is Theme =>
   THEMES.includes(theme as Theme);
@@ -48,12 +49,10 @@ const THEME_LOGOS: ThemeLogoMap = {
 // anything unavailable in the app environment, e.g. the background page
 export const getThemeLogo = (theme: string): ThemeLogo => {
   if (isValidTheme(theme)) {
-    // eslint-disable-next-line security/detect-object-injection -- theme is type Theme, a union type of string literal
-    return THEME_LOGOS[theme];
+    return getOwnProp(THEME_LOGOS, theme);
   }
 
-  // eslint-disable-next-line security/detect-object-injection -- theme not user defined
-  return THEME_LOGOS[DEFAULT_THEME];
+  return getOwnProp(THEME_LOGOS, DEFAULT_THEME);
 };
 
 // Note: this function is re-used in the app. Should not reference
