@@ -25,8 +25,8 @@ import { useField, useFormikContext } from "formik";
 import { TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
   DebounceOptions,
+  getDefaultReportModeForTrigger,
   Trigger,
-  USER_ACTION_TRIGGERS,
 } from "@/extensionPoints/triggerExtension";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
@@ -79,11 +79,10 @@ const TriggerConfiguration: React.FC<{
       setFieldValue(fieldName("background"), null);
     }
 
-    if (USER_ACTION_TRIGGERS.includes(nextTrigger)) {
-      setFieldValue(fieldName("action"), null);
-    } else {
-      setFieldValue(fieldName("once"), null);
-    }
+    setFieldValue(
+      fieldName("reportMode"),
+      getDefaultReportModeForTrigger(nextTrigger)
+    );
 
     setFieldValue(fieldName("trigger"), currentTarget.value);
   };
@@ -234,16 +233,15 @@ const TriggerConfiguration: React.FC<{
           title="Report Mode"
           description={
             <p>
-              Events/errors to report telemetry. Select &ldquo;User
-              Actions&rdquo; to only report the first event, unless the trigger
-              corresponds to a user action (e.g., click).
+              Events/errors to report telemetry. Select &ldquo;Report All&rdquo;
+              to report all runs and errors. Select &ldquo;Report First&rdquo;
+              to only report the first run and first error.
             </p>
           }
           {...makeLockableFieldProps("Report Mode", isLocked)}
         >
-          <option value="action">User Actions</option>
-          <option value="all">All Events</option>
-          <option value="once">Report First Event</option>
+          <option value="all">Report All</option>
+          <option value="once">Report First</option>
         </ConnectedFieldTemplate>
       </FieldSection>
     </Card>

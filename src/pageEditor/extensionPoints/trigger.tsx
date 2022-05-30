@@ -34,6 +34,7 @@ import {
 } from "@/pageEditor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
 import {
+  getDefaultReportModeForTrigger,
   TriggerConfig,
   TriggerDefinition,
   TriggerExtensionPoint,
@@ -65,7 +66,7 @@ function fromNativeElement(
         rootSelector: null,
         attachMode: null,
         targetMode: null,
-        // Use once, since the default is "load"
+        // Use "once" for reportMode, since the default is "load"
         reportMode: "once",
         intervalMillis: null,
         background: null,
@@ -110,7 +111,7 @@ function selectExtensionPoint(
       background,
       attachMode,
       targetMode,
-      reportMode,
+      reportMode: reportMode ?? getDefaultReportModeForTrigger(trigger),
       rootSelector,
     },
   });

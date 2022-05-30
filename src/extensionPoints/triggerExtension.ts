@@ -79,8 +79,6 @@ export type TargetMode =
   | "root";
 
 export type ReportMode =
-  // Default: Report all events involving user-actions
-  | "action"
   // Events (trigger/error) reported only once per extension per page
   | "once"
   // Report all events
@@ -104,6 +102,11 @@ export type Trigger =
   | "keypress"
   | "change";
 
+/**
+ * Triggers considered user actions for the purpose of defaulting the reportMode if not provided
+ * @see ReportMode
+ * @see getDefaultReportModeForTrigger
+ */
 export const USER_ACTION_TRIGGERS: Trigger[] = [
   "click",
   "blur",
@@ -136,6 +139,10 @@ type IntervalArgs = {
    */
   requestAnimationFrame: boolean;
 };
+
+export function getDefaultReportModeForTrigger(trigger: Trigger): ReportMode {
+  return USER_ACTION_TRIGGERS.includes(trigger) ? "all" : "once";
+}
 
 async function interval({
   intervalMillis,
@@ -260,10 +267,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
   private shouldReport(alreadyReported: boolean): boolean {
     switch (this.reportMode) {
-      case "action": {
-        return USER_ACTION_TRIGGERS.includes(this.trigger) || !alreadyReported;
-      }
-
       case "once": {
         return !alreadyReported;
       }
@@ -784,7 +787,12 @@ export interface TriggerDefinition extends ExtensionPointDefinition {
   /**
    * Flag to control if all trigger fires/errors for an extension are reported.
    *
+   * If not provided, defaults based on the trigger type:
+   * - User action (e.g., click): all
+   * - Automatic actions: once
+   *
    * @see ReportMode
+   * @see USER_ACTION_TRIGGERS
    * @since 1.6.4
    */
   reportMode?: ReportMode;
@@ -851,7 +859,10 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
   }
 
   get reportMode(): ReportMode {
-    return this._definition.reportMode ?? "action";
+    return (
+      this._definition.reportMode ??
+      getDefaultReportModeForTrigger(this.trigger)
+    );
   }
 
   get intervalMillis(): number {
