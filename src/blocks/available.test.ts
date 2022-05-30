@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { checkAvailable } from "@/blocks/available";
+import { checkAvailable, testMatchPatterns } from "@/blocks/available";
 
 describe("isAvailable.urlPatterns", () => {
   test("can match hash", async () => {
@@ -55,5 +55,45 @@ describe("isAvailable.matchPatterns", () => {
         urlPatterns: { hash: "/DIFFERENT/:id" },
       })
     ).toBe(false);
+  });
+});
+
+describe("testMatchPatterns", () => {
+  test("can match pattern", async () => {
+    const patterns = [
+      "https://www.example.com/*",
+      "https://*.pixiebrix.com/update/*",
+    ];
+    expect(testMatchPatterns(patterns, "https://www.example.com")).toBeTrue();
+    expect(
+      testMatchPatterns(patterns, "https://pixiebrix.com/update/")
+    ).toBeTrue();
+
+    expect(testMatchPatterns(patterns, "https://example.com")).toBeFalse();
+    expect(
+      testMatchPatterns(patterns, "https://www.example.comunication")
+    ).toBeFalse();
+    expect(
+      testMatchPatterns(patterns, "https://www.pixiebrix.com/")
+    ).toBeFalse();
+  });
+
+  test("will throw BusinessError or invalid patterns", async () => {
+    const url = "irrelevant";
+    expect(() =>
+      testMatchPatterns(["https://pixiebrix.*/update/*"], url)
+    ).toThrowErrorMatchingInlineSnapshot(
+      '"Pattern not recognized as valid match pattern: https://pixiebrix.*/update/*"'
+    );
+    expect(() =>
+      testMatchPatterns(["www.example.com/*"], url)
+    ).toThrowErrorMatchingInlineSnapshot(
+      '"Pattern not recognized as valid match pattern: www.example.com/*"'
+    );
+    expect(() =>
+      testMatchPatterns(["*.example.com/*"], url)
+    ).toThrowErrorMatchingInlineSnapshot(
+      '"Pattern not recognized as valid match pattern: *.example.com/*"'
+    );
   });
 });

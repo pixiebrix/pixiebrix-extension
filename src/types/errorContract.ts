@@ -16,9 +16,10 @@
  */
 
 import { getReasonPhrase } from "http-status-codes";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { isPlainObject } from "lodash";
 import { isObject } from "@/utils";
+import { isAxiosError } from "@/errors";
 
 /**
  * Version of getReasonPhrase that returns null for unknown status codes (i.e., instead of throwing an error)
@@ -87,6 +88,21 @@ export function isBadRequestResponse(
   }
 
   return isBadRequestObjectData(response.data);
+}
+
+/**
+ * Return true if error is a 400 Bad Request error for a single object from the PixieBrix API.
+ *
+ * @param error the API error
+ */
+export function isSingleObjectBadRequestError(
+  error: unknown
+): error is AxiosError<BadRequestObjectData> {
+  return (
+    isAxiosError(error) &&
+    isBadRequestResponse(error.response) &&
+    !Array.isArray(error.response.data)
+  );
 }
 
 /**
