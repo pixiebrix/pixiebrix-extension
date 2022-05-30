@@ -33,6 +33,7 @@ import { joinName } from "@/utils";
 import SwitchButtonWidget, {
   CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import UrlPatternField from "@/pageEditor/fields/UrlPatternField";
 
 function supportsSelector(trigger: Trigger) {
   return !["load", "interval"].includes(trigger);
@@ -216,6 +217,11 @@ const TriggerConfiguration: React.FC<{
         <UrlMatchPatternField
           name={fieldName("isAvailable", "matchPatterns")}
           {...makeLockableFieldProps("Sites", isLocked)}
+        />
+
+        <UrlPatternField
+          name={fieldName("isAvailable", "urlPatterns")}
+          {...makeLockableFieldProps("URL Patterns", isLocked)}
         />
       </FieldSection>
     </Card>
