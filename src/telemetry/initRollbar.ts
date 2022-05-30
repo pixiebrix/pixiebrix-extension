@@ -19,7 +19,7 @@ import Rollbar from "rollbar";
 import { isContentScript } from "webext-detect-page";
 import { addListener as addAuthListener, readAuthData } from "@/auth/token";
 import { UserData } from "@/auth/authTypes";
-import { getUID } from "@/background/telemetry";
+import { getUID } from "@/background/messenger/api";
 import pMemoize from "p-memoize";
 
 const accessToken = process.env.ROLLBAR_BROWSER_ACCESS_TOKEN;
