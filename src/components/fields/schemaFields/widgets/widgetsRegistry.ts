@@ -37,6 +37,7 @@ type Widgets = {
   TextWidget: React.VFC<SchemaFieldProps & FormControlProps>;
   UnsupportedWidget: React.VFC<SchemaFieldProps>;
   UrlMatchPatternWidget: React.VFC<SchemaFieldProps & FormControlProps>;
+  UrlPatternWidget: React.VFC<SchemaFieldProps>;
   WorkshopMessageWidget: React.VFC<Partial<SchemaFieldProps>>;
 };
 
@@ -63,6 +64,7 @@ const widgetsRegistry: Widgets = {
   TextWidget: UnsetWidget,
   UnsupportedWidget: UnsetWidget,
   UrlMatchPatternWidget: UnsetWidget,
+  UrlPatternWidget: UnsetWidget,
   WorkshopMessageWidget: UnsetWidget,
 };
 

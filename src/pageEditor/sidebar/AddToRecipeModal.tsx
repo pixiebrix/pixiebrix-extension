@@ -32,12 +32,12 @@ import Form, {
   RenderBody,
   RenderSubmit,
 } from "@/components/form/Form";
-import { isAxiosError } from "@/errors";
 import { object, string } from "yup";
 import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioItemListWidget";
 import { RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import { setOwnProp } from "@/utils/safeProps";
+import { isSingleObjectBadRequestError } from "@/types/errorContract";
 
 type FormState = {
   recipeId: RegistryId;
@@ -106,7 +106,10 @@ const AddToRecipeModal: React.VFC = () => {
 
         hideModal();
       } catch (error: unknown) {
-        if (isAxiosError(error) && error.response.data.config) {
+        if (
+          isSingleObjectBadRequestError(error) &&
+          error.response.data.config
+        ) {
           helpers.setStatus(error.response.data.config);
           return;
         }

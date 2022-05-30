@@ -53,6 +53,19 @@ const QuickBarConfiguration: React.FC<{
       <UrlMatchPatternField
         name="extensionPoint.definition.documentUrlPatterns"
         {...makeLockableFieldProps("Sites", isLocked)}
+        description={
+          <span>
+            URL match patterns to show the menu item on. See{" "}
+            <a
+              href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <code>match_patterns</code> Documentation
+            </a>{" "}
+            for examples.
+          </span>
+        }
       />
     </FieldSection>
 
