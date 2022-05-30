@@ -19,15 +19,14 @@ import styles from "./AdvancedSettings.module.scss";
 
 import { Button, Card, Form } from "react-bootstrap";
 import { DEFAULT_SERVICE_URL, useConfiguredHost } from "@/services/baseService";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { clearExtensionAuth } from "@/auth/token";
 import chromeP from "webext-polyfill-kinda";
-import { isEmpty } from "lodash";
 import notify from "@/utils/notify";
 import useFlags from "@/hooks/useFlags";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { assertHttpsUrl } from "@/utils";
+import { assertHttpsUrl, sleep } from "@/utils";
 import { selectSettings } from "@/store/settingsSelectors";
 
 const AdvancedSettings: React.FunctionComponent = () => {
@@ -36,6 +35,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
   const { partnerId } = useSelector(selectSettings);
 
   const [serviceURL, setServiceURL] = useConfiguredHost();
+  const [newPixiebrixUrl, setNewPixiebrixUrl] = useState<string>(null);
 
   const clear = useCallback(async () => {
     await clearExtensionAuth();
@@ -64,33 +64,40 @@ const AdvancedSettings: React.FunctionComponent = () => {
 
   const handleUpdate = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newURL = event.target.value.trim();
-      console.debug("Update service URL", { newURL, serviceURL });
-      if (newURL === serviceURL || (isEmpty(newURL) && isEmpty(serviceURL))) {
-        return;
-      }
+      console.log({ willSet: event.target.value.trim() });
 
-      try {
-        if (newURL) {
-          assertHttpsUrl(newURL);
-        }
-
-        await setServiceURL(newURL);
-        notify.success("Updated the service URL");
-      } catch (error) {
-        notify.error({ error });
-      }
+      setNewPixiebrixUrl(event.target.value.trim());
     },
-    [serviceURL, setServiceURL]
+    [setNewPixiebrixUrl]
   );
+
+  const saveAndReload = useCallback(async () => {
+    console.debug("Update service URL", { newPixiebrixUrl, serviceURL });
+
+    try {
+      if (newPixiebrixUrl) {
+        assertHttpsUrl(newPixiebrixUrl);
+      }
+
+      await setServiceURL(newPixiebrixUrl);
+      notify.success({
+        message: "Updated the service URL, the extension will be reloaded now",
+        dismissable: false,
+        duration: 9000,
+      });
+      await sleep(3000);
+      browser.runtime.reload();
+    } catch (error) {
+      notify.error({ error });
+    }
+  }, [newPixiebrixUrl, serviceURL, setServiceURL]);
 
   return (
     <Card>
       <Card.Header>Advanced Settings</Card.Header>
       <Card.Body>
         <Card.Text>
-          Only change these settings if you know what you&apos;re doing!{" "}
-          <b>After making changes, reload the extension.</b>
+          Only change these settings if you know what you&apos;re doing!
         </Card.Text>
         <Form>
           <Form.Group controlId="formServiceURL">
@@ -99,13 +106,15 @@ const AdvancedSettings: React.FunctionComponent = () => {
               type="text"
               placeholder={DEFAULT_SERVICE_URL}
               defaultValue={serviceURL}
-              onBlur={handleUpdate}
+              onInput={handleUpdate}
               disabled={restrict("service-url")}
             />
-            <Form.Text className="text-muted">
-              The PixieBrix service URL
-            </Form.Text>
           </Form.Group>
+          {newPixiebrixUrl == null || (
+            <Button variant="success" onClick={saveAndReload}>
+              Save and reload the extension
+            </Button>
+          )}
           {flagOn("partner-theming") && (
             <Form.Group controlId="partnerId">
               <Form.Label>Partner ID</Form.Label>
@@ -121,9 +130,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
                   );
                 }}
               />
-              <Form.Text className="text-muted">
-                The partner id of a PixieBrix partner
-              </Form.Text>
+              <Form.Text muted>The partner id of a PixieBrix partner</Form.Text>
             </Form.Group>
           )}
         </Form>
