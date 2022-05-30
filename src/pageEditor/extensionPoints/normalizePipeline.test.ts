@@ -188,6 +188,44 @@ describe("normalizePipeline", () => {
     expect(isPipelineExpression(exceptConfig)).toBeTrue();
     expect(exceptConfig).toEqual(emptyPipeline);
   });
+
+  test("nested pipelines", () => {
+    const createForEachBlock: (body: BlockConfig[]) => BlockConfig = (
+      body
+    ) => ({
+      id: ForEach.BLOCK_ID,
+      config: {
+        elements: toExpression("var", "@input"),
+        body: toExpression("pipeline", body),
+      },
+    });
+
+    const pipeline: BlockConfig[] = [
+      createForEachBlock([
+        createForEachBlock([echoBlockConfig, teapotBlockConfig]),
+      ]),
+    ];
+
+    const actual = normalizePipeline(pipeline) as any;
+
+    // 1st level - root
+    expect(actual[0].instanceId).toBeDefined();
+
+    // 2nd level
+    const loopConfig1: PipelineExpression = actual[0].config.body;
+    expect(loopConfig1.__value__[0].instanceId).toBeDefined();
+
+    // 3d level
+    expect(
+      isPipelineExpression(loopConfig1.__value__[0].config.body)
+    ).toBeTrue();
+    const loopConfig2 = loopConfig1.__value__[0].config
+      .body as PipelineExpression;
+    expect(loopConfig2.__value__).toHaveLength(2);
+    for (const config of loopConfig2.__value__) {
+      expect(config.instanceId).toBeDefined();
+    }
+  });
 });
 
 describe("omitEditorMetadata", () => {
@@ -223,6 +261,7 @@ describe("omitEditorMetadata", () => {
     const pipeline: BlockConfig[] = [
       {
         id: ForEach.BLOCK_ID,
+        instanceId: uuidSequence(3),
         config: {
           elements: toExpression("var", "@input"),
           body: toExpression("pipeline", [echoBlockConfig, teapotBlockConfig]),
@@ -242,6 +281,7 @@ describe("omitEditorMetadata", () => {
     const pipeline: BlockConfig[] = [
       {
         id: IfElse.BLOCK_ID,
+        instanceId: uuidSequence(3),
         config: {
           condition: true,
           if: toExpression("pipeline", [echoBlockConfig]),
@@ -269,6 +309,7 @@ describe("omitEditorMetadata", () => {
     const pipeline: BlockConfig[] = [
       {
         id: TryExcept.BLOCK_ID,
+        instanceId: uuidSequence(3),
         config: {
           try: toExpression("pipeline", [echoBlockConfig]),
           except: toExpression("pipeline", [teapotBlock]),
@@ -287,6 +328,43 @@ describe("omitEditorMetadata", () => {
     // Checking EXCEPT branch
     const exceptConfig = actual[0].config.except;
     for (const config of exceptConfig.__value__) {
+      expect(config.instanceId).toBeUndefined();
+    }
+  });
+
+  test("nested pipelines", () => {
+    const createForEachBlock: (
+      n: number,
+      body: BlockConfig[]
+    ) => BlockConfig = (n, body) => ({
+      id: ForEach.BLOCK_ID,
+      instanceId: uuidSequence(n),
+      config: {
+        elements: toExpression("var", "@input"),
+        body: toExpression("pipeline", body),
+      },
+    });
+
+    const pipeline: BlockConfig[] = [
+      createForEachBlock(3, [
+        createForEachBlock(4, [echoBlockConfig, teapotBlockConfig]),
+      ]),
+    ];
+
+    const actual = omitEditorMetadata(pipeline) as any;
+
+    // 1st level - root
+    expect(actual[0].instanceId).toBeUndefined();
+
+    // 2nd level
+    const loopConfig1: PipelineExpression = actual[0].config.body;
+    expect(loopConfig1.__value__[0].instanceId).toBeUndefined();
+
+    // 3d level
+    const loopConfig2 = loopConfig1.__value__[0].config
+      .body as PipelineExpression;
+    expect(loopConfig2.__value__).toHaveLength(2);
+    for (const config of loopConfig2.__value__) {
       expect(config.instanceId).toBeUndefined();
     }
   });
