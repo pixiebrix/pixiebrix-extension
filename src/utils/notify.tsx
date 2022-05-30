@@ -163,38 +163,21 @@ export function hideNotification(id: string): void {
 export const DEFAULT_ACTION_RESULTS = {
   error: {
     message: "Error running action",
-    config: {
-      className: "error",
-    },
+    type: "error",
   },
   cancel: {
     message: "The action was cancelled",
-    config: {
-      className: "info",
-    },
+    type: "info",
   },
   success: {
     message: "Successfully ran action",
-    config: {
-      className: "success",
-    },
+    type: "success",
   },
-};
+} as const;
 
 export interface MessageConfig {
   message: string;
-  config: Partial<NotificationOptions>;
-}
-
-export function notifyResult(
-  extensionId: string,
-  { message, config: { className } }: MessageConfig
-): void {
-  showNotification({
-    message,
-    type: className as NotificationType,
-    reportError: false,
-  });
+  type: NotificationType;
 }
 
 // Private method to prevent adding logic to the `notify.*` helpers.

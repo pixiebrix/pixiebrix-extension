@@ -17,7 +17,7 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { checkAvailable } from "@/blocks/available";
-import { castArray, cloneDeep, debounce, merge, once } from "lodash";
+import { castArray, cloneDeep, debounce, once } from "lodash";
 import {
   InitialValues,
   reduceExtensionPipeline,
@@ -56,7 +56,7 @@ import { reportEvent } from "@/telemetry/events";
 import notify, {
   DEFAULT_ACTION_RESULTS,
   MessageConfig,
-  notifyResult,
+  showNotification,
 } from "@/utils/notify";
 import { getNavigationId } from "@/contentScript/context";
 import { rejectOnCancelled } from "@/utils";
@@ -557,22 +557,17 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
         extensionLogger.info("Successfully ran menu action");
 
-        notifyResult(
-          extension.id,
-          merge({}, onSuccess, DEFAULT_ACTION_RESULTS.success)
-        );
+        showNotification({ ...DEFAULT_ACTION_RESULTS.success, ...onSuccess });
       } catch (error) {
         if (hasCancelRootCause(error)) {
-          notifyResult(
-            extension.id,
-            merge({}, onCancel, DEFAULT_ACTION_RESULTS.cancel)
-          );
+          showNotification({ ...DEFAULT_ACTION_RESULTS.cancel, ...onCancel });
         } else {
           extensionLogger.error(error);
-          notifyResult(
-            extension.id,
-            merge({}, onError, DEFAULT_ACTION_RESULTS.error)
-          );
+          showNotification({
+            ...DEFAULT_ACTION_RESULTS.error,
+            ...onError,
+            reportError: false,
+          });
         }
       }
     });
