@@ -31,7 +31,7 @@ import {
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
-import { omitEditorMetadata } from "./normalizePipeline";
+import { omitEditorMetadata } from "./pipelineMapping";
 import { uuidv4 } from "@/types/helpers";
 import {
   TriggerConfig,

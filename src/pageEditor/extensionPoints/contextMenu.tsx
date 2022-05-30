@@ -48,7 +48,7 @@ import React from "react";
 import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 import { ContextMenuFormState } from "./formStateTypes";
-import { omitEditorMetadata } from "./normalizePipeline";
+import { omitEditorMetadata } from "./pipelineMapping";
 
 function fromNativeElement(
   url: string,

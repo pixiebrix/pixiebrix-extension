@@ -75,7 +75,9 @@ function normalizePipelineDraft(pipeline: WritableDraft<BlockPipeline>) {
  * Enrich a BlockPipeline with instanceIds for use in tracing
  * and normalize sub pipelines
  */
-export function normalizePipeline(pipeline: BlockPipeline): BlockPipeline {
+export function normalizePipelineForEditor(
+  pipeline: BlockPipeline
+): BlockPipeline {
   return produce(pipeline, normalizePipelineDraft);
 }
 

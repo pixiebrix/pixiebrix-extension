@@ -64,7 +64,7 @@ import {
   INNER_SCOPE,
   isInnerExtensionPoint,
 } from "@/registry/internal";
-import { normalizePipeline } from "./normalizePipeline";
+import { normalizePipelineForEditor } from "./pipelineMapping";
 
 export interface WizardStep {
   step: string;
@@ -421,7 +421,9 @@ export function extensionWithNormalizedPipeline<
 ): BaseExtensionState & Omit<T, Prop> {
   const { [pipelineProp]: pipeline, ...rest } = { ...config };
   return {
-    blockPipeline: normalizePipeline(castArray(pipeline) as BlockPipeline),
+    blockPipeline: normalizePipelineForEditor(
+      castArray(pipeline) as BlockPipeline
+    ),
     ...defaults,
     ...rest,
   };

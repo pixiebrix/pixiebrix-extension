@@ -26,7 +26,10 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { uuidSequence } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
-import { normalizePipeline, omitEditorMetadata } from "./normalizePipeline";
+import {
+  normalizePipelineForEditor,
+  omitEditorMetadata,
+} from "./pipelineMapping";
 
 const emptyPipeline: PipelineExpression = Object.freeze({
   __type__: "pipeline",
@@ -54,7 +57,7 @@ describe("normalizePipeline", () => {
   test("should add instance id to every block in pipeline", () => {
     const pipeline = [echoBlockConfig, teapotBlockConfig];
 
-    const actual = normalizePipeline(pipeline);
+    const actual = normalizePipelineForEditor(pipeline);
     for (const config of actual) {
       expect(config.instanceId).toBeDefined();
     }
@@ -71,7 +74,7 @@ describe("normalizePipeline", () => {
       },
     ];
 
-    const actual = normalizePipeline(pipeline) as any;
+    const actual = normalizePipelineForEditor(pipeline) as any;
 
     // Checking the loop config
     const loopConfig = actual[0].config.body;
@@ -93,7 +96,7 @@ describe("normalizePipeline", () => {
       },
     ];
 
-    const actual = normalizePipeline(pipeline) as any;
+    const actual = normalizePipelineForEditor(pipeline) as any;
 
     // Checking IF branch
     const ifConfig = actual[0].config.if;
@@ -121,7 +124,7 @@ describe("normalizePipeline", () => {
       },
     ];
 
-    const actual = normalizePipeline(pipeline) as any;
+    const actual = normalizePipelineForEditor(pipeline) as any;
 
     // Checking IF branch
     const ifConfig = actual[0].config.if;
@@ -147,7 +150,7 @@ describe("normalizePipeline", () => {
       },
     ];
 
-    const actual = normalizePipeline(pipeline) as any;
+    const actual = normalizePipelineForEditor(pipeline) as any;
 
     // Checking TRY branch
     const tryConfig = actual[0].config.try;
@@ -174,7 +177,7 @@ describe("normalizePipeline", () => {
       },
     ];
 
-    const actual = normalizePipeline(pipeline) as any;
+    const actual = normalizePipelineForEditor(pipeline) as any;
 
     // Checking TRY branch
     const tryConfig = actual[0].config.try;
@@ -206,7 +209,7 @@ describe("normalizePipeline", () => {
       ]),
     ];
 
-    const actual = normalizePipeline(pipeline) as any;
+    const actual = normalizePipelineForEditor(pipeline) as any;
 
     // 1st level - root
     expect(actual[0].instanceId).toBeDefined();
