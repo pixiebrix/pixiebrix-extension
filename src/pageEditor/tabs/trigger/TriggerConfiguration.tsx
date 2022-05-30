@@ -37,7 +37,7 @@ import { joinName } from "@/utils";
 import SwitchButtonWidget, {
   CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
-import UrlPatternField from "@/pageEditor/fields/UrlPatternField";
+import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 
 function supportsSelector(trigger: Trigger) {
   return !["load", "interval"].includes(trigger);
@@ -228,11 +228,6 @@ const TriggerConfiguration: React.FC<{
           {...makeLockableFieldProps("Sites", isLocked)}
         />
 
-        <UrlPatternField
-          name={fieldName("isAvailable", "urlPatterns")}
-          {...makeLockableFieldProps("URL Patterns", isLocked)}
-        />
-
         <ConnectedFieldTemplate
           name={fieldName("reportMode")}
           as="select"
@@ -250,6 +245,8 @@ const TriggerConfiguration: React.FC<{
           <option value="once">Report First</option>
         </ConnectedFieldTemplate>
       </FieldSection>
+
+      <MatchRulesSection isLocked={isLocked} />
     </Card>
   );
 };

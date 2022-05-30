@@ -21,9 +21,9 @@ import { Card } from "react-bootstrap";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
-import UrlPatternField from "@/pageEditor/fields/UrlPatternField";
+import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 
-const Configuration: React.FC<{
+const SidebarConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => (
   <Card>
@@ -38,13 +38,10 @@ const Configuration: React.FC<{
         name="extensionPoint.definition.isAvailable.matchPatterns"
         {...makeLockableFieldProps("Sites", isLocked)}
       />
-
-      <UrlPatternField
-        name="extensionPoint.definition.isAvailable.urlPatterns"
-        {...makeLockableFieldProps("URL Patterns", isLocked)}
-      />
     </FieldSection>
+
+    <MatchRulesSection isLocked={isLocked} />
   </Card>
 );
 
-export default Configuration;
+export default SidebarConfiguration;
