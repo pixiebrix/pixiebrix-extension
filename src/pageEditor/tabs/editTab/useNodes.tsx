@@ -27,6 +27,7 @@ import { useSelector } from "react-redux";
 import { EditorNodeProps, NodeId } from "./editorNode/EditorNode";
 import { FormikError } from "./editTabTypes";
 import { TypedBlockMap } from "@/blocks/registry";
+import { getPipelinePropNames } from "@/pageEditor/utils";
 
 function mapPipelineToNodes(
   blockPipeline: BlockPipeline,
@@ -70,7 +71,24 @@ function mapPipelineToNodes(
       onClick() {
         setActiveNodeId(blockConfig.instanceId);
       },
-      children: [],
+      children: getPipelinePropNames(blockConfig).map((propName) => {
+        const subPipeline = blockConfig.config[propName]
+          .__value__ as BlockPipeline;
+        const { nodes: subNodes, nodesHaveTraces: subNodesHaveTraces } =
+          mapPipelineToNodes(
+            subPipeline,
+            allBlocks,
+            traces,
+            blockPipelineErrors,
+            errorTraceEntry,
+            setActiveNodeId
+          );
+        nodesHaveTraces = nodesHaveTraces || subNodesHaveTraces;
+        return {
+          label: propName,
+          nodes: subNodes,
+        };
+      }),
     };
 
     if (blockConfig.outputKey) {
@@ -123,7 +141,7 @@ function useNodes(
     allBlocks,
     blockPipeline,
     blockPipelineErrors,
-    errorTraceEntry?.blockInstanceId,
+    errorTraceEntry,
     icon,
     label,
     setActiveNodeId,

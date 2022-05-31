@@ -89,6 +89,7 @@ const EditTab: React.FC<{
   const dispatch = useDispatch();
   const setActiveNodeId = useCallback(
     (nodeId: NodeId) => {
+      console.log("selecting node", nodeId);
       dispatch(actions.setElementActiveNodeId(nodeId));
     },
     [dispatch]
@@ -151,6 +152,7 @@ const EditTab: React.FC<{
     allBlocks,
     setActiveNodeId
   );
+
   const [relevantBlocksToAdd] = useAsyncState(
     async () => {
       const excludeType: BlockType = ["actionPanel", "panel"].includes(

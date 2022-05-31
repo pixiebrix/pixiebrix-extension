@@ -72,7 +72,7 @@ const EditorNodeLayout: React.FC<{
     <ListGroup variant="flush">
       {nodes.length > 0 &&
         nodes.map((nodeProps, index) => {
-          const { nodeId } = nodeProps;
+          const { nodeId, children } = nodeProps;
           // Editor nodes are displayed from top to bottom in array order,
           // so, "up" is lower in the array, and "down" is higher in the array.
           // Also, you cannot move the foundation node, which is always at
@@ -102,18 +102,22 @@ const EditorNodeLayout: React.FC<{
                 canMoveAnything={canMoveAnything}
                 {...nodeProps}
               />
-              {nodeProps.children?.length > 0 && (
-                <EditorNodeLayout
-                  nodes={nodeProps.children[0].nodes}
-                  activeNodeId={activeNodeId}
-                  relevantBlocksToAdd={relevantBlocksToAdd}
-                  addBlock={noop}
-                  showAppend={false}
-                  moveBlockUp={noop}
-                  moveBlockDown={noop}
-                  pasteBlock={noop}
-                />
-              )}
+              {children?.length > 0 &&
+                children.map(({ label, nodes }) => (
+                  <ListGroup.Item key={label} as="div" className="pr-0">
+                    <ListGroup.Item>{label}</ListGroup.Item>
+                    <EditorNodeLayout
+                      nodes={nodes}
+                      activeNodeId={activeNodeId}
+                      relevantBlocksToAdd={relevantBlocksToAdd}
+                      addBlock={noop}
+                      showAppend={false}
+                      moveBlockUp={noop}
+                      moveBlockDown={noop}
+                      pasteBlock={null}
+                    />
+                  </ListGroup.Item>
+                ))}
               <div
                 className={cx(styles.actions, {
                   [styles.finalActions]: isFinal,

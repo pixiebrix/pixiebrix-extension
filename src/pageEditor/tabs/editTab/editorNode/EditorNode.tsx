@@ -105,7 +105,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   return (
     <ListGroup.Item
       ref={nodeRef}
-      tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
+      as="div"
       onClick={onClick}
       active={active}
       className={cx(styles.root, "list-group-item-action")}
