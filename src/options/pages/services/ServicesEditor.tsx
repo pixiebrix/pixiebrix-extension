@@ -34,7 +34,7 @@ import ZapierModal from "@/options/pages/services/ZapierModal";
 import notify from "@/utils/notify";
 import { useParams } from "react-router";
 import { IService, RawServiceConfiguration, UUID } from "@/core";
-import BrickModal from "@/components/brickModal/BrickModal";
+import BrickModal from "@/components/brickModalWithTags/BrickModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { uuidv4 } from "@/types/helpers";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
