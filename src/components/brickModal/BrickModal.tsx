@@ -37,6 +37,7 @@ import { Except } from "type-fest";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faChevronLeft,
   faPlus,
   IconName,
   IconPrefix,
@@ -308,17 +309,33 @@ function ActualModal<T extends IBrick>({
         </Container>
       </Modal.Header>
       <Modal.Body className={styles.body}>
-        <Container fluid>
+        <Container
+          fluid
+          className={cx({ [styles.brickDetail]: Boolean(detailBrick) })}
+        >
           {detailBrick ? (
-            <BrickDetail
-              brick={detailBrick}
-              listing={listings[detailBrick.id]}
-              selectCaption={selectCaption}
-              onSelect={() => {
-                onSelect(detailBrick);
-                close();
-              }}
-            />
+            <>
+              <Row>
+                <Button
+                  variant="link"
+                  onClick={() => {
+                    setDetailBrick(null);
+                  }}
+                  className={styles.backButton}
+                >
+                  <FontAwesomeIcon icon={faChevronLeft} /> Back
+                </Button>
+              </Row>
+              <BrickDetail
+                brick={detailBrick}
+                listing={listings[detailBrick.id]}
+                selectCaption={selectCaption}
+                onSelect={() => {
+                  onSelect(detailBrick);
+                  close();
+                }}
+              />
+            </>
           ) : (
             <Row>
               <Col xs={2} className={styles.tagList}>

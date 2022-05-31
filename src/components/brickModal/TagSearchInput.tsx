@@ -80,7 +80,16 @@ const TagSearchInput: React.VFC<{
         [styles.rootFocused]: isFocused,
       })}
     >
-      {tag && <TagBadge tag={tag} onClear={onClearTag} />}
+      {tag && (
+        <TagBadge
+          tag={tag}
+          onClear={() => {
+            if (!disabled) {
+              onClearTag();
+            }
+          }}
+        />
+      )}
       <input
         name={name}
         ref={inputRef}

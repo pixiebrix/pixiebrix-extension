@@ -58,3 +58,14 @@ $bootstrapPadding: 15px;
   padding-top: $bootstrapPadding;
   gap: $bootstrapPadding;
 }
+
+.brickDetail {
+  height: $maxHeight;
+  padding-top: $bootstrapPadding;
+  padding-bottom: $bootstrapPadding;
+  overflow: auto;
+}
+
+.backButton {
+  margin-bottom: $bootstrapPadding;
+}
