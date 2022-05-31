@@ -24,7 +24,7 @@ import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprin
 import * as Yup from "yup";
 import { sortBy } from "lodash";
 import Form from "@/components/form/Form";
-import { getErrorMessage, isAxiosError } from "@/errors";
+import { getErrorMessage } from "@/errors";
 import {
   appApi,
   useGetEditablePackagesQuery,
@@ -51,6 +51,7 @@ import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { selectAuth } from "@/auth/authSelectors";
 import { Organization, UserRole } from "@/types/contract";
 import Loading from "./Loading";
+import { isSingleObjectBadRequestError } from "@/types/errorContract";
 
 type ShareInstallableFormState = {
   public: boolean;
@@ -115,7 +116,7 @@ const ShareRecipeModal: React.FunctionComponent = () => {
       closeModal();
       dispatch(appApi.util.invalidateTags(["Recipes"]));
     } catch (error) {
-      if (isAxiosError(error) && error.response.data.config) {
+      if (isSingleObjectBadRequestError(error) && error.response.data.config) {
         helpers.setStatus(error.response.data.config);
         return;
       }

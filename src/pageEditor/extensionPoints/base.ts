@@ -25,7 +25,7 @@ import {
   Schema,
   UUID,
 } from "@/core";
-import { castArray, cloneDeep, isEmpty, omit } from "lodash";
+import { castArray, cloneDeep, isEmpty } from "lodash";
 import {
   assertExtensionPointConfig,
   ExtensionPointConfig,
@@ -64,7 +64,7 @@ import {
   INNER_SCOPE,
   isInnerExtensionPoint,
 } from "@/registry/internal";
-import { normalizePipeline } from "./normalizePipeline";
+import { normalizePipelineForEditor } from "./pipelineMapping";
 
 export interface WizardStep {
   step: string;
@@ -92,13 +92,6 @@ export function makeIsAvailable(url: string): NormalizedAvailability {
     urlPatterns: [],
     selectors: [],
   };
-}
-
-/**
- * Remove the automatically generated tracing ids.
- */
-export function omitEditorMetadata(pipeline: BlockPipeline): BlockPipeline {
-  return pipeline.map((blockConfig) => omit(blockConfig, "instanceId"));
 }
 
 /**
@@ -428,7 +421,9 @@ export function extensionWithNormalizedPipeline<
 ): BaseExtensionState & Omit<T, Prop> {
   const { [pipelineProp]: pipeline, ...rest } = { ...config };
   return {
-    blockPipeline: normalizePipeline(castArray(pipeline) as BlockPipeline),
+    blockPipeline: normalizePipelineForEditor(
+      castArray(pipeline) as BlockPipeline
+    ),
     ...defaults,
     ...rest,
   };

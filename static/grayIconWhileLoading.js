@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file This is a standalone background entry point that must run independendently of the rest of extension */
+/** @file This is a standalone background entry point that must run independently of the rest of extension */
 
 const { icons } = chrome.runtime.getManifest();
 const inactiveIcons = {};

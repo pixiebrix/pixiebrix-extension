@@ -16,46 +16,36 @@
  */
 
 import React from "react";
-import { Shortcut } from "@/pageEditor/components/urlMatchPatternWidgetTypes";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import widgetsRegistry from "@/components/fields/schemaFields/widgets/widgetsRegistry";
 
-export type UrlPatternFieldProps = {
+export type SelectorMatchFieldProps = {
   name: string;
   disabled?: boolean;
   label?: React.ReactNode;
   description?: React.ReactNode;
-  shortcuts?: Shortcut[];
 };
 
 const defaultDescription = (
   <span>
-    URL pattern rules restricting when the extension runs. If provided, at least
-    one of the rules must match for the extension to run. See{" "}
-    <a
-      href="https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API"
-      target="_blank"
-      rel="noreferrer"
-    >
-      URL Pattern API Documentation
-    </a>{" "}
-    for examples.
+    Selectors restricting when the extension runs. If provided, at least one of
+    the selectors must match <i>on page load</i> for the extension to run.
   </span>
 );
 
-const UrlPatternField: React.VFC<UrlPatternFieldProps> = ({
+const SelectorMatchField: React.VFC<SelectorMatchFieldProps> = ({
   name,
   disabled,
-  label = "URL Patterns",
+  label = "Selectors",
   description = defaultDescription,
 }) => (
   <ConnectedFieldTemplate
     name={name}
-    as={widgetsRegistry.UrlPatternWidget}
+    as={widgetsRegistry.SelectorMatchWidget}
     disabled={disabled}
     label={label}
     description={description}
   />
 );
 
-export default UrlPatternField;
+export default SelectorMatchField;
