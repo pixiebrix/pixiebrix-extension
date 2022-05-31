@@ -29,6 +29,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { assertHttpsUrl, sleep } from "@/utils";
 import { selectSettings } from "@/store/settingsSelectors";
 import AsyncButton from "@/components/AsyncButton";
+import { uuidv4 } from "@/types/helpers";
+
+const SAVING_URL_NOTIFICATION_ID = uuidv4();
+const SAVING_URL_TIMEOUT_MS = 4000;
 
 const AdvancedSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
@@ -81,7 +85,11 @@ const AdvancedSettings: React.FunctionComponent = () => {
         assertHttpsUrl(newPixiebrixUrl);
       }
     } catch (error) {
-      notify.error({ error, reportError: false });
+      notify.error({
+        id: SAVING_URL_NOTIFICATION_ID,
+        error,
+        reportError: false,
+      });
       return;
     }
 
@@ -95,6 +103,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
       }
     } catch {
       notify.error({
+        id: SAVING_URL_NOTIFICATION_ID,
         message: "The URL does not appear to point to a PixieBrix server",
         reportError: false,
       });
@@ -103,6 +112,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
 
     await setServiceURL(newPixiebrixUrl);
     notify.success({
+      id: SAVING_URL_NOTIFICATION_ID,
       message: "Updated the service URL, the extension will be reloaded now",
       dismissable: false,
       duration: 9000,
