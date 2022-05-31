@@ -56,6 +56,8 @@ import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import useReportTraceError from "./useReportTraceError";
+import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
+import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -320,7 +322,9 @@ const EditTab: React.FC<{
                     />
                     {showVersionField && <ApiVersionField />}
                     <UpgradedToApiV3 />
-                    <EditorNode isLocked={isLocked} />
+                    <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
+                      <EditorNode isLocked={isLocked} />
+                    </SchemaFieldContext.Provider>
                   </>
                 ) : (
                   <EditorNodeConfigPanel
