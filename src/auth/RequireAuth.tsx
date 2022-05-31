@@ -60,17 +60,16 @@ export const useRequiredPartnerAuth = () => {
   );
 
   const hasPartner = me ? Boolean(me?.partner) : Boolean(partner);
-
-  console.log("me:", me);
+  const requiresIntegration =
+    hasPartner &&
+    (me
+      ? Boolean(me?.organization?.control_room)
+      : Boolean(organization?.control_room));
 
   return {
     hasPartner,
-    requiresIntegration:
-      hasPartner &&
-      (me
-        ? Boolean(me?.organization?.control_room)
-        : Boolean(organization?.control_room)),
-    hasConfiguredIntegration: configuredAAIntegration,
+    requiresIntegration,
+    hasConfiguredIntegration: requiresIntegration && configuredAAIntegration,
     isLoading,
     error,
   };
@@ -181,13 +180,6 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
   } = useRequiredAuth();
   const { requiresIntegration, hasConfiguredIntegration } =
     useRequiredPartnerAuth();
-
-  console.log(
-    "requires integration:",
-    requiresIntegration,
-    "has configured:",
-    hasConfiguredIntegration
-  );
 
   // Show SetupPage if there is auth error or user not logged in
   if (
