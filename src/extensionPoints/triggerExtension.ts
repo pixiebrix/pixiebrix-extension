@@ -28,6 +28,7 @@ import {
   Schema,
   Metadata,
   Logger,
+  UUID,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -58,6 +59,7 @@ import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import pluralize from "@/utils/pluralize";
 import { JsonObject } from "type-fest";
 import { PromiseCancelled } from "@/errors/genericErrors";
+import { BusinessError } from "@/errors/businessErrors";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -77,6 +79,12 @@ export type TargetMode =
   // The element the trigger is attached to
   | "root";
 
+export type ReportMode =
+  // Events (trigger/error) reported only once per extension per page
+  | "once"
+  // Report all events
+  | "all";
+
 export type Trigger =
   // `load` is page load
   | "load"
@@ -94,6 +102,21 @@ export type Trigger =
   | "keyup"
   | "keypress"
   | "change";
+
+/**
+ * Triggers considered user actions for the purpose of defaulting the reportMode if not provided
+ * @see ReportMode
+ * @see getDefaultReportModeForTrigger
+ */
+export const USER_ACTION_TRIGGERS: Trigger[] = [
+  "click",
+  "blur",
+  "dblclick",
+  "mouseover",
+  "keydown",
+  "keyup",
+  "keypress",
+];
 
 type IntervalArgs = {
   /**
@@ -117,6 +140,10 @@ type IntervalArgs = {
    */
   requestAnimationFrame: boolean;
 };
+
+export function getDefaultReportModeForTrigger(trigger: Trigger): ReportMode {
+  return USER_ACTION_TRIGGERS.includes(trigger) ? "all" : "once";
+}
 
 async function interval({
   intervalMillis,
@@ -187,6 +214,8 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
   abstract get targetMode(): TargetMode;
 
+  abstract get reportMode(): ReportMode;
+
   abstract get debounceOptions(): DebounceOptions;
 
   abstract get triggerSelector(): string | null;
@@ -211,6 +240,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
    */
   private abortController = new AbortController();
 
+  // Extensions that have errors/events reported. NOTE: this tracked per contentScript instance. These are not
+  // reset on Single Page Application navigation events
+  private readonly reportedEvents = new Set<UUID>();
+  private readonly reportedErrors = new Set<UUID>();
+
   /**
    * Run all trigger extensions for all the provided roots.
    * @private
@@ -230,6 +264,35 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
   public get kind(): "trigger" {
     return "trigger";
+  }
+
+  private shouldReport(alreadyReported: boolean): boolean {
+    switch (this.reportMode) {
+      case "once": {
+        return !alreadyReported;
+      }
+
+      case "all": {
+        return true;
+      }
+
+      default: {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
+        throw new BusinessError(`Invalid reportMode: ${this.reportMode}`);
+      }
+    }
+  }
+
+  private shouldReportError(extensionId: UUID): boolean {
+    const alreadyReported = this.reportedErrors.has(extensionId);
+    this.reportedErrors.add(extensionId);
+    return this.shouldReport(alreadyReported);
+  }
+
+  private shouldReportEvent(extensionId: UUID): boolean {
+    const alreadyReported = this.reportedEvents.has(extensionId);
+    this.reportedEvents.add(extensionId);
+    return this.shouldReport(alreadyReported);
   }
 
   async install(): Promise<boolean> {
@@ -395,11 +458,16 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         try {
           await this.runExtension(readerContext, extension, root);
         } catch (error) {
-          reportError(error, extensionLogger.context);
+          if (this.shouldReportError(extension.id)) {
+            reportError(error, extensionLogger.context);
+          }
+
           return error;
         }
 
-        reportEvent("TriggerRun", selectEventData(extension));
+        if (this.shouldReportEvent(extension.id)) {
+          reportEvent("TriggerRun", selectEventData(extension));
+        }
       })
     );
     return compact(errors);
@@ -723,6 +791,19 @@ export interface TriggerDefinition extends ExtensionPointDefinition {
   background: boolean;
 
   /**
+   * Flag to control if all trigger fires/errors for an extension are reported.
+   *
+   * If not provided, defaults based on the trigger type:
+   * - User action (e.g., click): all
+   * - Automatic actions: once
+   *
+   * @see ReportMode
+   * @see USER_ACTION_TRIGGERS
+   * @since 1.6.4
+   */
+  reportMode?: ReportMode;
+
+  /**
    * @since 1.4.8
    */
   targetMode?: TargetMode;
@@ -781,6 +862,13 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
 
   get attachMode(): AttachMode {
     return this._definition.attachMode ?? "once";
+  }
+
+  get reportMode(): ReportMode {
+    return (
+      this._definition.reportMode ??
+      getDefaultReportModeForTrigger(this.trigger)
+    );
   }
 
   get intervalMillis(): number {

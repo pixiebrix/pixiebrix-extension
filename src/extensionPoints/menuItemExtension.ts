@@ -17,7 +17,7 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { checkAvailable } from "@/blocks/available";
-import { castArray, cloneDeep, debounce, merge, once } from "lodash";
+import { castArray, cloneDeep, debounce, once, pick } from "lodash";
 import {
   InitialValues,
   reduceExtensionPipeline,
@@ -51,7 +51,7 @@ import { reportEvent } from "@/telemetry/events";
 import notify, {
   DEFAULT_ACTION_RESULTS,
   MessageConfig,
-  notifyResult,
+  showNotification,
 } from "@/utils/notify";
 import { getNavigationId } from "@/contentScript/context";
 import getSvgIcon from "@/icons/getSvgIcon";
@@ -106,7 +106,7 @@ export type MenuItemExtensionConfig = {
   action: BlockConfig | BlockPipeline;
 
   /**
-   * (Experimental) condition to determine whether or not to show the menu item
+   * (Experimental) condition to determine whether to show the menu item
    * @see if
    */
   if?: BlockConfig | BlockPipeline;
@@ -122,8 +122,17 @@ export type MenuItemExtensionConfig = {
    */
   dynamicCaption?: boolean;
 
+  /**
+   * (Experimental) message to show on error running the extension
+   */
   onError?: MessageConfig;
+  /**
+   * (Experimental) message to show if the user cancelled the action (e.g., cancelled a form, or the Cancel brick ran)
+   */
   onCancel?: MessageConfig;
+  /**
+   * (Experimental) message to show on success when running the extension
+   */
   onSuccess?: MessageConfig;
 };
 
@@ -461,9 +470,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       caption,
       dynamicCaption = false,
       action: actionConfig,
-      onCancel,
-      onError,
-      onSuccess,
+      onCancel = {},
+      onError = {},
+      onSuccess = {},
       icon = { id: "box", size: 18 },
     } = extension.config;
 
@@ -558,22 +567,22 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
         extensionLogger.info("Successfully ran menu action");
 
-        notifyResult(
-          extension.id,
-          merge({}, onSuccess, DEFAULT_ACTION_RESULTS.success)
-        );
+        showNotification({
+          ...DEFAULT_ACTION_RESULTS.success,
+          ...pick(onSuccess, "message", "type"),
+        });
       } catch (error) {
         if (hasSpecificErrorCause(error, CancelError)) {
-          notifyResult(
-            extension.id,
-            merge({}, onCancel, DEFAULT_ACTION_RESULTS.cancel)
-          );
+          showNotification({
+            ...DEFAULT_ACTION_RESULTS.cancel,
+            ...pick(onCancel, "message", "type"),
+          });
         } else {
           extensionLogger.error(error);
-          notifyResult(
-            extension.id,
-            merge({}, onError, DEFAULT_ACTION_RESULTS.error)
-          );
+          showNotification({
+            ...DEFAULT_ACTION_RESULTS.error,
+            ...pick(onError, "message", "type"),
+          });
         }
       }
     });

@@ -91,7 +91,7 @@ export function getComponentDefinition(
       const Component: React.FC = ({ children }) => (
         <Card {...cardProps}>
           <Card.Header>{heading}</Card.Header>
-          <Card.Body {...bodyProps}>{children}</Card.Body>
+          <Card.Body {...(bodyProps as React.FC)}>{children}</Card.Body>
         </Card>
       );
       return {

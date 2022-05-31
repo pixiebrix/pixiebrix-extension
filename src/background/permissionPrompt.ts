@@ -17,6 +17,7 @@
 
 import { Tabs, Windows } from "webextension-polyfill";
 import { isFirefox } from "webext-detect-page";
+import { isMac } from "@/utils";
 
 const POPUP_WIDTH_PX = 400; // Makes the native prompt appear centered
 const POPUP_HEIGHT_PX = 215; // Includes titlebar height, must fit the content and error to avoid scrollbars
@@ -46,7 +47,7 @@ async function openPopup(
   url: string,
   opener: Windows.Window
 ): Promise<Tabs.Tab> {
-  // `top` and `left are ignored in .create on Firefox, but attempt anyway.
+  // `top` and `left` are ignored in .create on Firefox, but attempt anyway.
   // If present, the popup will be centered on screen rather than on the window.
   // https://bugzilla.mozilla.org/show_bug.cgi?id=1396881
   const window = await browser.windows.create({
@@ -65,15 +66,11 @@ async function openPopup(
 /**
  * Return true if popups are expected to work properly for the user agent / operating system.
  */
-async function detectPopupSupport(
-  currentWindow: Windows.Window
-): Promise<boolean> {
+function detectPopupSupport(currentWindow: Windows.Window): boolean {
   // Firefox on Mac seems to be unable to handle popups in fullscreen mode, changing the macOS "space"
   // back to the desktop
   const isBuggy =
-    isFirefox() &&
-    navigator.userAgent.includes("Macintosh") &&
-    currentWindow.state === "fullscreen";
+    isFirefox() && isMac() && currentWindow.state === "fullscreen";
   return !isBuggy;
 }
 
@@ -84,7 +81,7 @@ export async function openPopupPrompt(openerTabId: number, url: string) {
   const { windowId } = await browser.tabs.get(openerTabId);
   const openerWindow = await browser.windows.get(windowId);
 
-  const popupTab = (await detectPopupSupport(openerWindow))
+  const popupTab = detectPopupSupport(openerWindow)
     ? await openPopup(url, openerWindow)
     : await openTab(url, openerTabId);
 

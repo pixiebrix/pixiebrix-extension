@@ -19,7 +19,7 @@ import { getReasonPhrase } from "http-status-codes";
 import { AxiosError, AxiosResponse } from "axios";
 import { isPlainObject } from "lodash";
 import { isObject } from "@/utils";
-import { isAxiosError } from "@/errors";
+import { isAxiosError } from "@/errors/errorHelpers";
 
 /**
  * Version of getReasonPhrase that returns null for unknown status codes (i.e., instead of throwing an error)
