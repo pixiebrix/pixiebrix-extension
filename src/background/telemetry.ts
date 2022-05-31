@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { liftBackground } from "@/background/protocol";
 import { JsonObject } from "type-fest";
 import { uuidv4 } from "@/types/helpers";
 import { compact, debounce, throttle, uniq } from "lodash";
@@ -47,7 +46,7 @@ const buffer: UserEvent[] = [];
 /**
  * Return a random ID for this browser profile.
  */
-async function uid(): Promise<UUID> {
+export async function uid(): Promise<UUID> {
   if (_uid != null) {
     return _uid;
   }
@@ -79,8 +78,6 @@ const debouncedFlush = debounce(flush, EVENT_BUFFER_DEBOUNCE_MS, {
   leading: false,
   maxWait: EVENT_BUFFER_MAX_MS,
 });
-
-export const getUID = liftBackground("GET_UID", async () => uid());
 
 async function userSummary() {
   const { os } = await browser.runtime.getPlatformInfo();

@@ -27,6 +27,7 @@ import reportError from "@/telemetry/reportError";
 import { Except, RequireAtLeastOne } from "type-fest";
 import { getErrorMessage } from "@/errors";
 import { truncate } from "lodash";
+import { SIDEBAR_WIDTH_CSS_PROPERTY } from "@/contentScript/sidebar";
 
 const MINIMUM_NOTIFICATION_DURATION = 2000;
 
@@ -71,8 +72,8 @@ const Message: React.VoidFunctionComponent<{
   id: string;
   dismissable: boolean;
 }> = ({ message, id, dismissable }) => (
-  <span>
-    {message}
+  <>
+    <span className={styles.message}>{message}</span>
     {dismissable ? (
       <button
         className={styles.closeButton}
@@ -83,12 +84,12 @@ const Message: React.VoidFunctionComponent<{
         ×
       </button>
     ) : undefined}
-  </span>
+  </>
 );
 
 function getMessageDisplayTime(message: string): number {
   const wpm = 100; // 180 is the average words read per minute, make it slower
-  return Math.min(
+  return Math.max(
     MINIMUM_NOTIFICATION_DURATION,
     (message.split(" ").length / wpm) * 60_000
   );
@@ -115,8 +116,6 @@ export function showNotification({
   /** Only errors are reported by default */
   reportError: willReport = type === "error",
 }: RequireAtLeastOne<Notification, "message" | "error">): string {
-  const options = { id, duration };
-
   if (error) {
     if (!message) {
       message = getErrorMessage(error);
@@ -136,16 +135,24 @@ export function showNotification({
     type = "error";
   }
 
+  const options = {
+    id,
+    duration,
+    // Keep the notification centered on the document even when the sidebar is open
+    style: { marginLeft: `calc(var(${SIDEBAR_WIDTH_CSS_PROPERTY}, 0) * -1)` },
+  };
+  const component = <Message {...{ message, id, dismissable }} />;
+
   switch (type) {
     case "error":
     case "success":
     case "loading":
       // eslint-disable-next-line security/detect-object-injection -- Filtered
-      toast[type](<Message {...{ message, id, dismissable }} />, options);
+      toast[type](component, options);
       break;
 
     default:
-      toast(<Message {...{ message, id, dismissable }} />, options);
+      toast(component, options);
   }
 
   if (willReport) {
@@ -162,38 +169,22 @@ export function hideNotification(id: string): void {
 export const DEFAULT_ACTION_RESULTS = {
   error: {
     message: "Error running action",
-    config: {
-      className: "error",
-    },
+    type: "error",
+    reportError: false,
   },
   cancel: {
     message: "The action was cancelled",
-    config: {
-      className: "info",
-    },
+    type: "info",
   },
   success: {
     message: "Successfully ran action",
-    config: {
-      className: "success",
-    },
+    type: "success",
   },
-};
+} as const;
 
 export interface MessageConfig {
   message: string;
-  config: Partial<NotificationOptions>;
-}
-
-export function notifyResult(
-  extensionId: string,
-  { message, config: { className } }: MessageConfig
-): void {
-  showNotification({
-    message,
-    type: className as NotificationType,
-    reportError: false,
-  });
+  type: NotificationType;
 }
 
 // Private method to prevent adding logic to the `notify.*` helpers.

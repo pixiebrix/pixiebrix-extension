@@ -20,13 +20,16 @@ import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { boolean } from "@/utils";
 import { PipelineExpression } from "@/runtime/mapArgs";
+import { validateRegistryId } from "@/types/helpers";
 
 class IfElse extends Transformer {
+  static BLOCK_ID = validateRegistryId("@pixiebrix/if-else");
+
   defaultOutputKey = "result";
 
   constructor() {
     super(
-      "@pixiebrix/if-else",
+      IfElse.BLOCK_ID,
       "If-Else",
       "Run multiple bricks if a condition is met"
     );
