@@ -33,7 +33,7 @@ import {
   faSearch,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
-import BrickModal from "@/components/brickModalWithTags/BrickModal";
+import BrickModal from "@/components/brickModal/BrickModal";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import useAddExisting from "@/pageEditor/panes/insert/useAddExisting";
 

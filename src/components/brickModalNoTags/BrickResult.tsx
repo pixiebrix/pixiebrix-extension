@@ -23,21 +23,13 @@ import styles from "@/options/pages/brickEditor/referenceTab/BlockResult.module.
 import BrickIcon from "@/components/BrickIcon";
 import { OfficialBadge } from "@/components/OfficialBadge";
 
-export type BrickResultProps = {
+const BrickResult: React.FunctionComponent<{
   brick: IBrick;
   onSelect: () => void;
   onShowDetail: () => void;
   active?: boolean;
   selectCaption: React.ReactNode;
-};
-
-const BrickResult: React.FunctionComponent<BrickResultProps> = ({
-  brick,
-  onSelect,
-  onShowDetail,
-  active,
-  selectCaption,
-}) => (
+}> = ({ brick, onSelect, onShowDetail, selectCaption, active }) => (
   <ListGroup.Item
     onClick={onShowDetail}
     className={cx(styles.root, { [styles.active]: active, active })}

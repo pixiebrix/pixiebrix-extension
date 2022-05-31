@@ -28,7 +28,7 @@ import {
   faPlusCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { IBlock, UUID } from "@/core";
-import BrickModal from "@/components/brickModalWithTags/BrickModal";
+import BrickModal from "@/components/brickModal/BrickModal";
 import cx from "classnames";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";

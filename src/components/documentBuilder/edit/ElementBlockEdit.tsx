@@ -19,7 +19,7 @@ import React from "react";
 import { BlockConfig } from "@/blocks/types";
 import useBlockOptions from "@/hooks/useBlockOptions";
 import { Col, Row, Form as BootstrapForm } from "react-bootstrap";
-import BrickModal from "@/components/brickModalWithTags/BrickModal";
+import BrickModal from "@/components/brickModal/BrickModal";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { defaultBlockConfig } from "@/blocks/util";
