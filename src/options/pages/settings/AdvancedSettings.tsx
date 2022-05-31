@@ -30,6 +30,7 @@ import { assertHttpsUrl, sleep } from "@/utils";
 import { selectSettings } from "@/store/settingsSelectors";
 import AsyncButton from "@/components/AsyncButton";
 import { uuidv4 } from "@/types/helpers";
+import pTimeout from "p-timeout";
 
 const SAVING_URL_NOTIFICATION_ID = uuidv4();
 const SAVING_URL_TIMEOUT_MS = 4000;
@@ -96,7 +97,10 @@ const AdvancedSettings: React.FunctionComponent = () => {
     try {
       if (newPixiebrixUrl) {
         // Ensure it's connectable
-        const response = await fetch(new URL("api/me", newPixiebrixUrl).href);
+        const response = await pTimeout(
+          fetch(new URL("api/me", newPixiebrixUrl).href),
+          SAVING_URL_TIMEOUT_MS
+        );
 
         // Ensure it returns a JSON response. It's just `{}` when the user is logged out.
         await response.json();
