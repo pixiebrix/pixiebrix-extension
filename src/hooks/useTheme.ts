@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { selectSettings } from "@/store/settingsSelectors";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -27,10 +27,12 @@ import { ManualStorageKey, readStorage } from "@/chrome";
 import {
   addThemeClassToDocumentRoot,
   getThemeLogo,
+  isValidTheme,
   setThemeFavicon,
   ThemeLogo,
 } from "@/utils/themeUtils";
 import { useGetMeQuery } from "@/services/api";
+import { selectAuth } from "@/auth/authSelectors";
 
 const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
 
@@ -43,7 +45,16 @@ const activateBackgroundTheme = async (): Promise<void> => {
 export const useGetTheme = (): Theme => {
   const { theme, partnerId } = useSelector(selectSettings);
   const { data: me } = useGetMeQuery();
+  const { partner } = useSelector(selectAuth);
   const dispatch = useDispatch();
+
+  const partnerTheme = useMemo(() => {
+    if (me) {
+      return isValidTheme(me.partner?.theme) ? me.partner?.theme : null;
+    }
+
+    return isValidTheme(partner?.theme) ? partner?.theme : null;
+  }, [me, partner?.theme]);
 
   const [managedPartnerId, isLoading] = useAsyncState(
     readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed"),
@@ -65,10 +76,10 @@ export const useGetTheme = (): Theme => {
   useEffect(() => {
     dispatch(
       settingsSlice.actions.setTheme({
-        theme: (me ? me.partner?.theme : partnerId) ?? DEFAULT_THEME,
+        theme: partnerTheme ?? partnerId ?? DEFAULT_THEME,
       })
     );
-  }, [dispatch, me, partnerId, theme]);
+  }, [dispatch, me, partnerId, partnerTheme, theme]);
 
   return theme;
 };
