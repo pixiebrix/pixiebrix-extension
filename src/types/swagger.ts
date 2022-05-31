@@ -998,9 +998,11 @@ export interface components {
         name: string;
         scope?: string | null;
         control_room?: {
-          /** @description The control room url */
+          /**
+           * Format: uri
+           * @description The control room url
+           */
           url: string;
-          service_account_token: string;
         };
       };
       telemetry_organization?: {
@@ -1009,23 +1011,16 @@ export interface components {
         name: string;
         scope?: string | null;
         control_room?: {
-          /** @description The control room url */
+          /**
+           * Format: uri
+           * @description The control room url
+           */
           url: string;
-          service_account_token: string;
         };
       };
       organization_memberships?: {
-        organization: {
-          /** Format: uuid */
-          id?: string;
-          name: string;
-          scope?: string | null;
-          control_room?: {
-            /** @description The control room url */
-            url: string;
-            service_account_token: string;
-          };
-        };
+        /** Format: uuid */
+        organization: string;
         organization_name: string;
         /** @enum {integer} */
         role: 1 | 2 | 3 | 4 | 5;
