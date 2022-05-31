@@ -30,6 +30,7 @@ import {
   setThemeFavicon,
   ThemeLogo,
 } from "@/utils/themeUtils";
+import { useGetMeQuery } from "@/services/api";
 
 const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
 
@@ -41,6 +42,7 @@ const activateBackgroundTheme = async (): Promise<void> => {
 
 export const useGetTheme = (): Theme => {
   const { theme, partnerId } = useSelector(selectSettings);
+  const { data: me } = useGetMeQuery();
   const dispatch = useDispatch();
 
   const [managedPartnerId, isLoading] = useAsyncState(
@@ -63,10 +65,10 @@ export const useGetTheme = (): Theme => {
   useEffect(() => {
     dispatch(
       settingsSlice.actions.setTheme({
-        theme: partnerId ?? DEFAULT_THEME,
+        theme: (me ? me.partner?.theme : partnerId) ?? DEFAULT_THEME,
       })
     );
-  }, [dispatch, partnerId, theme]);
+  }, [dispatch, me, partnerId, theme]);
 
   return theme;
 };
