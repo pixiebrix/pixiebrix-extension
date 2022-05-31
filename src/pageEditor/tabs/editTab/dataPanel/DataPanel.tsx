@@ -134,11 +134,11 @@ const DataPanel: React.FC<{
   const [previewInfo] = usePreviewInfo(block?.id);
 
   const showFormPreview =
-    block.id === CustomFormRenderer.BLOCK_ID ||
-    block.id === FormTransformer.BLOCK_ID;
-  const showDocumentPreview = block.id === DocumentRenderer.BLOCK_ID;
+    block?.id === CustomFormRenderer.BLOCK_ID ||
+    block?.id === FormTransformer.BLOCK_ID;
+  const showDocumentPreview = block?.id === DocumentRenderer.BLOCK_ID;
   const showBlockPreview = record || previewInfo?.traceOptional;
-  const showPageState = pageStateBlockIds.includes(block.id);
+  const showPageState = pageStateBlockIds.includes(block?.id);
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
     showFormPreview || showDocumentPreview
@@ -331,7 +331,7 @@ const DataPanel: React.FC<{
           </DataTab>
           <DataTab eventKey={DataPanelTabKey.Preview} isTraceEmpty={false}>
             {/* The value of block.if can be `false`, in this case we also need to show the warning */}
-            {block.if != null && (
+            {block?.if != null && (
               <Alert variant="info">
                 This brick has a condition. The brick will not execute if the
                 condition is not met

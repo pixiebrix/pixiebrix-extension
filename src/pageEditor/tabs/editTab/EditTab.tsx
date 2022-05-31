@@ -82,14 +82,13 @@ const EditTab: React.FC<{
     new Map()
   );
 
-  const { blockPipeline, blockPipelineErrors, errorTraceEntry } =
+  const { blockPipeline, pipelineMap, blockPipelineErrors, errorTraceEntry } =
     usePipelineField(allBlocks, extensionPointType);
 
   const activeNodeId = useSelector(selectActiveNodeId);
   const dispatch = useDispatch();
   const setActiveNodeId = useCallback(
     (nodeId: NodeId) => {
-      console.log("selecting node", nodeId);
       dispatch(actions.setElementActiveNodeId(nodeId));
     },
     [dispatch]
@@ -104,8 +103,6 @@ const EditTab: React.FC<{
       (block) => block.instanceId === activeNodeId
     );
   }, [activeNodeId, blockPipeline]);
-
-  const blockFieldName = `${PIPELINE_BLOCKS_FIELD_NAME}[${activeBlockIndex}]`;
 
   const lastBlockPipelineId = blockPipeline[blockPipeline.length - 1]?.id;
   const lastBlock = useMemo(
@@ -250,11 +247,8 @@ const EditTab: React.FC<{
                 ) : (
                   <EditorNodeConfigPanel
                     key={activeNodeId}
-                    blockFieldName={blockFieldName}
-                    blockId={
-                      blockPipeline.find((x) => x.instanceId === activeNodeId)
-                        ?.id
-                    }
+                    blockFieldName={pipelineMap[activeNodeId].fieldName}
+                    blockId={pipelineMap[activeNodeId]?.blockId}
                     blockError={blockError}
                   />
                 )

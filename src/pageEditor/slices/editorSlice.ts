@@ -25,7 +25,7 @@ import {
   makeInitialNodeUIState,
 } from "@/pageEditor/uiState/uiState";
 import { WritableDraft } from "immer/dist/types/types-external";
-import { BlockConfig } from "@/blocks/types";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { ExtensionPointType } from "@/extensionPoints/types";
 import {
   OptionsDefinition,
@@ -35,9 +35,10 @@ import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
-import { isEmpty } from "lodash";
+import { get, isEmpty } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
+import { getPipelinePropNames } from "@/pageEditor/utils";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -83,13 +84,28 @@ function ensureNodeUIState(
   }
 }
 
+function getAllBlockInstanceIds(blockPipeline: BlockPipeline) {
+  let ids: UUID[] = [];
+  for (const blockConfig of blockPipeline) {
+    ids.push(blockConfig.instanceId);
+
+    for (const subPipelineField of getPipelinePropNames(blockConfig)) {
+      const subPipelineAccessor = ["config", subPipelineField, "__value__"];
+      const subPipeline = get(blockConfig, subPipelineAccessor);
+      ids = [...ids, ...getAllBlockInstanceIds(subPipeline)];
+    }
+  }
+
+  return ids;
+}
+
 function syncElementNodeUIStates(
   state: WritableDraft<EditorState>,
   element: FormState
 ) {
   const elementUIState = state.elementUIStates[element.uuid];
-  const blockPipelineIds = element.extension.blockPipeline.map(
-    (x) => x.instanceId
+  const blockPipelineIds = getAllBlockInstanceIds(
+    element.extension.blockPipeline
   );
 
   // Pipeline block instance IDs may have changed

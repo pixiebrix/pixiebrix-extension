@@ -25,7 +25,7 @@ import { useAsyncEffect } from "use-async-effect";
 import validateOutputKey from "@/pageEditor/validation/validateOutputKey";
 import validateRenderers from "@/pageEditor/validation/validateRenderers";
 import applyTraceError from "@/pageEditor/validation/applyTraceError";
-import { isEmpty } from "lodash";
+import { get, isEmpty } from "lodash";
 import {
   FormikError,
   FormikErrorTree,
@@ -33,14 +33,48 @@ import {
 import { TypedBlockMap } from "@/blocks/registry";
 import { ExtensionPointType } from "@/extensionPoints/types";
 import validateStringTemplates from "@/pageEditor/validation/validateStringTemplates";
+import { RegistryId, UUID } from "@/core";
+import { joinName } from "@/utils";
+import { getPipelinePropNames } from "@/pageEditor/utils";
 
 export const PIPELINE_BLOCKS_FIELD_NAME = "extension.blockPipeline";
+
+type PipelineMap = Record<
+  UUID,
+  {
+    blockId: RegistryId;
+    fieldName: string;
+  }
+>;
+
+function flattenPipeline(
+  blockPipeline: BlockPipeline,
+  parentFieldName: string,
+  pipelineMap: PipelineMap
+) {
+  for (const [index, blockConfig] of Object.entries(blockPipeline)) {
+    const { instanceId, id } = blockConfig;
+    const fieldName = joinName(parentFieldName, index);
+    pipelineMap[instanceId] = {
+      blockId: id,
+      fieldName,
+    };
+
+    for (const subPipelineField of getPipelinePropNames(blockConfig)) {
+      const subPipelineAccessor = ["config", subPipelineField, "__value__"];
+      const subPipeline = get(blockConfig, subPipelineAccessor);
+      const subPipelineFieldName = joinName(fieldName, ...subPipelineAccessor);
+      flattenPipeline(subPipeline, subPipelineFieldName, pipelineMap);
+    }
+  }
+}
 
 function usePipelineField(
   allBlocks: TypedBlockMap,
   extensionPointType: ExtensionPointType
 ): {
   blockPipeline: BlockPipeline;
+  pipelineMap: PipelineMap;
   blockPipelineErrors: FormikError;
   errorTraceEntry: TraceError;
 } {
@@ -67,6 +101,9 @@ function usePipelineField(
       validate: validatePipelineBlocks,
     });
 
+  const pipelineMap: PipelineMap = {};
+  flattenPipeline(blockPipeline, PIPELINE_BLOCKS_FIELD_NAME, pipelineMap);
+
   const formikContext = useFormikContext();
   useAsyncEffect(
     async (isMounted) => {
@@ -84,6 +121,7 @@ function usePipelineField(
 
   return {
     blockPipeline,
+    pipelineMap,
     blockPipelineErrors,
     errorTraceEntry,
   };
