@@ -75,21 +75,39 @@ const AdvancedSettings: React.FunctionComponent = () => {
     console.debug("Update service URL", { newPixiebrixUrl, serviceURL });
 
     try {
+      // Ensure it's a valid URL
       if (newPixiebrixUrl) {
         assertHttpsUrl(newPixiebrixUrl);
       }
-
-      await setServiceURL(newPixiebrixUrl);
-      notify.success({
-        message: "Updated the service URL, the extension will be reloaded now",
-        dismissable: false,
-        duration: 9000,
-      });
-      await sleep(3000);
-      browser.runtime.reload();
     } catch (error) {
-      notify.error({ error });
+      notify.error({ error, reportError: false });
+      return;
     }
+
+    try {
+      if (newPixiebrixUrl) {
+        // Ensure it's connectable
+        const response = await fetch(new URL("api/me", newPixiebrixUrl).href);
+
+        // Ensure it returns a JSON response. It's just `{}` when the user is logged out.
+        await response.json();
+      }
+    } catch {
+      notify.error({
+        message: "The URL does not appear to point to a PixieBrix server",
+        reportError: false,
+      });
+      return;
+    }
+
+    await setServiceURL(newPixiebrixUrl);
+    notify.success({
+      message: "Updated the service URL, the extension will be reloaded now",
+      dismissable: false,
+      duration: 9000,
+    });
+    await sleep(3000);
+    browser.runtime.reload();
   }, [newPixiebrixUrl, serviceURL, setServiceURL]);
 
   return (
