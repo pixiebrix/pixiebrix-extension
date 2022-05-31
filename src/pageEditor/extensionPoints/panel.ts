@@ -25,12 +25,12 @@ import {
   makeInitialBaseState,
   makeIsAvailable,
   extensionWithNormalizedPipeline,
-  omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
+import { omitEditorMetadata } from "./pipelineMapping";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import {
   PanelConfig,
@@ -222,6 +222,7 @@ const config: ElementConfig<PanelSelectionResult, PanelFormState> = {
   icon: faWindowMaximize,
   baseClass: PanelExtensionPoint,
   selectNativeElement: insertPanel,
+  flag: "page-editor-extension-panel",
   EditorNode: PanelConfiguration,
   fromNativeElement,
   asDynamicElement,

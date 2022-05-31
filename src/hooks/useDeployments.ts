@@ -23,7 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
-import { getUID } from "@/background/telemetry";
+import { getUID } from "@/background/messenger/api";
 import { getExtensionVersion } from "@/chrome";
 import { selectInstalledDeployments } from "@/background/deployment";
 import { refreshRegistries } from "@/hooks/useRefresh";

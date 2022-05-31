@@ -26,14 +26,15 @@ import {
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
+import { omitEditorMetadata } from "./pipelineMapping";
 import { uuidv4 } from "@/types/helpers";
 import {
+  getDefaultReportModeForTrigger,
   TriggerConfig,
   TriggerDefinition,
   TriggerExtensionPoint,
@@ -65,6 +66,8 @@ function fromNativeElement(
         rootSelector: null,
         attachMode: null,
         targetMode: null,
+        // Use "once" for reportMode, since the default is "load"
+        reportMode: "once",
         intervalMillis: null,
         background: null,
         debounce: null,
@@ -88,6 +91,7 @@ function selectExtensionPoint(
       rootSelector,
       attachMode,
       targetMode,
+      reportMode,
       debounce,
       intervalMillis,
       background,
@@ -107,6 +111,7 @@ function selectExtensionPoint(
       background,
       attachMode,
       targetMode,
+      reportMode: reportMode ?? getDefaultReportModeForTrigger(trigger),
       rootSelector,
     },
   });
@@ -149,6 +154,7 @@ async function fromExtensionPoint(
     rootSelector,
     attachMode,
     targetMode,
+    reportMode,
     debounce,
     reader,
     intervalMillis,
@@ -177,6 +183,7 @@ async function fromExtensionPoint(
         rootSelector,
         attachMode,
         targetMode,
+        reportMode,
         debounce,
         trigger,
         intervalMillis,
@@ -201,6 +208,7 @@ async function fromExtension(
     rootSelector,
     attachMode,
     targetMode,
+    reportMode,
     trigger,
     reader,
     background,
@@ -224,6 +232,7 @@ async function fromExtension(
         trigger,
         attachMode,
         targetMode,
+        reportMode,
         debounce,
         background,
         intervalMillis,

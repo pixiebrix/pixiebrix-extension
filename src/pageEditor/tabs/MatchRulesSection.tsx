@@ -15,30 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { Card } from "react-bootstrap";
-import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
-import FieldSection from "@/pageEditor/fields/FieldSection";
+import UrlPatternField from "@/pageEditor/fields/UrlPatternField";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
+import SelectorMatchField from "@/pageEditor/fields/SelectorMatchField";
+import FieldSection from "@/pageEditor/fields/FieldSection";
+import React from "react";
 
-const Configuration: React.FC<{
+const MatchRulesSection: React.FunctionComponent<{
   isLocked: boolean;
-}> = ({ isLocked = false }) => (
-  <Card>
-    <FieldSection title="Configuration">
-      <ConnectedFieldTemplate
-        name="extension.heading"
-        label="Heading"
-        description="Panel heading to show in the sidebar"
-      />
+}> = ({ isLocked }) => (
+  <FieldSection title="Advanced: Match Rules">
+    <UrlPatternField
+      name="extensionPoint.definition.isAvailable.urlPatterns"
+      {...makeLockableFieldProps("URL Patterns", isLocked)}
+    />
 
-      <UrlMatchPatternField
-        name="extensionPoint.definition.isAvailable.matchPatterns"
-        {...makeLockableFieldProps("Sites", isLocked)}
-      />
-    </FieldSection>
-  </Card>
+    <SelectorMatchField
+      name="extensionPoint.definition.isAvailable.selectors"
+      {...makeLockableFieldProps("Selectors", isLocked)}
+    />
+  </FieldSection>
 );
 
-export default Configuration;
+export default MatchRulesSection;
