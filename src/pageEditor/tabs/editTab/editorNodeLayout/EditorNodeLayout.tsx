@@ -18,7 +18,7 @@
 import React from "react";
 import styles from "./EditorNodeLayout.module.scss";
 import EditorNode, {
-  type EditorNodeProps,
+  EditorNodeProps,
   NodeId,
 } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -36,6 +36,7 @@ import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { ListGroup } from "react-bootstrap";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 
+const noop = () => {};
 const addBrickCaption = (
   <span>
     <FontAwesomeIcon icon={faPlus} className="mr-1" /> Add brick
@@ -101,6 +102,18 @@ const EditorNodeLayout: React.FC<{
                 canMoveAnything={canMoveAnything}
                 {...nodeProps}
               />
+              {nodeProps.children?.length > 0 && (
+                <EditorNodeLayout
+                  nodes={nodeProps.children[0].nodes}
+                  activeNodeId={activeNodeId}
+                  relevantBlocksToAdd={relevantBlocksToAdd}
+                  addBlock={noop}
+                  showAppend={false}
+                  moveBlockUp={noop}
+                  moveBlockDown={noop}
+                  pasteBlock={noop}
+                />
+              )}
               <div
                 className={cx(styles.actions, {
                   [styles.finalActions]: isFinal,
