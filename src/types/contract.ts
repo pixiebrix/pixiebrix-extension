@@ -179,6 +179,8 @@ export type BlueprintResponse = {
   updated_at: Timestamp;
 };
 
+export type MarketplaceTag = components["schemas"]["Tag"];
+
 /**
  * Detailed MarketplaceListing
  * TODO: generate type using swagger
@@ -194,6 +196,7 @@ export type MarketplaceListing = {
   };
   instructions: string;
   assets: unknown[];
+  tags: MarketplaceTag[];
 };
 
 export type ProxyResponseSuccessData = {

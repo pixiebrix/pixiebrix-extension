@@ -25,7 +25,7 @@ import React, {
   useState,
 } from "react";
 import { Button, Col, Container, Modal, Row } from "react-bootstrap";
-import { sortBy } from "lodash";
+import { isEmpty, sortBy } from "lodash";
 import { IBlock, IBrick, RegistryId } from "@/core";
 import { useDebounce } from "use-debounce";
 import Fuse from "fuse.js";
@@ -37,20 +37,20 @@ import { Except } from "type-fest";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBolt,
-  faEdit,
-  faFileUpload,
-  faKeyboard,
-  faNewspaper,
   faPlus,
-  faRecycle,
-  faSave,
-  faSyncAlt,
-  faUsers,
+  IconName,
+  IconPrefix,
 } from "@fortawesome/free-solid-svg-icons";
 import TagSearchInput from "@/components/brickModal/TagSearchInput";
-import TagList from "@/components/brickModal/TagList";
-import { brickHasTag, Tag } from "@/components/brickModal/brickTags";
+import TagList, { TagItem } from "@/components/brickModal/TagList";
+import {
+  useGetMarketplaceListingsQuery,
+  useGetMarketplaceTagsQuery,
+} from "@/services/api";
+import { MarketplaceListing, MarketplaceTag } from "@/types/contract";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+
+const TAG_ALL = "All Categories";
 
 type BrickOption<T extends IBrick = IBlock> = {
   data: T;
@@ -68,6 +68,7 @@ function makeBlockOption<T extends IBrick>(brick: T): BrickOption<T> {
 
 function useSearch<T extends IBrick>(
   bricks: T[],
+  taggedBrickIds: Record<string, Set<string>>,
   query: string,
   searchTag: string | null
 ): Array<BrickOption<T>> {
@@ -76,12 +77,24 @@ function useSearch<T extends IBrick>(
     leading: false,
   });
 
+  const brickHasTag = useCallback(
+    (brick: IBrick) => {
+      if (searchTag == null || searchTag === TAG_ALL) {
+        return true;
+      }
+
+      // eslint-disable-next-line security/detect-object-injection
+      return taggedBrickIds[searchTag].has(brick.id);
+    },
+    [searchTag, taggedBrickIds]
+  );
+
   const { fuse, brickOptions } = useMemo(() => {
     const brickOptions = sortBy(
       // We should never show @internal bricks to users. However, they'll sometimes find their way in from the registry
       (bricks ?? [])
         .filter((x) => !x.id.startsWith("@internal/"))
-        .filter((x) => brickHasTag(x, searchTag))
+        .filter((x) => brickHasTag(x))
         .map((x) => makeBlockOption(x)),
       (x) => x.label
     );
@@ -90,7 +103,7 @@ function useSearch<T extends IBrick>(
     });
 
     return { brickOptions, fuse };
-  }, [bricks, searchTag]);
+  }, [brickHasTag, bricks]);
 
   return useMemo(
     () =>
@@ -181,48 +194,20 @@ const defaultAddCaption = (
   </span>
 );
 
-const defaultTag = Tag.ALL;
-const tagItems = [
-  {
-    tag: Tag.ALL,
-  },
-  {
-    tag: Tag.EXTRACT,
-    icon: faFileUpload,
-  },
-  {
-    tag: Tag.COLLECT,
-    icon: faKeyboard,
-  },
-  {
-    tag: Tag.AUTOMATE,
-    icon: faBolt,
-  },
-  {
-    tag: Tag.TRANSFORM,
-    icon: faRecycle,
-  },
-  {
-    tag: Tag.INTEGRATE,
-    icon: faSyncAlt,
-  },
-  {
-    tag: Tag.COLLABORATE,
-    icon: faUsers,
-  },
-  {
-    tag: Tag.STORE,
-    icon: faSave,
-  },
-  {
-    tag: Tag.MODIFY,
-    icon: faEdit,
-  },
-  {
-    tag: Tag.SHOW,
-    icon: faNewspaper,
-  },
-];
+function parseIconProp(definition: string): IconProp {
+  const parts = definition.split(" ");
+
+  if (parts.length === 2) {
+    return [parts[0] as IconPrefix, parts[1] as IconName];
+  }
+
+  if (parts.length === 1) {
+    return parts[0] as IconName;
+  }
+
+  console.warn("Error parsing icon property definition string", { definition });
+  return null;
+}
 
 function ActualModal<T extends IBrick>({
   bricks = [],
@@ -233,12 +218,48 @@ function ActualModal<T extends IBrick>({
   modalClassName,
 }: ModalProps<T>): React.ReactElement<T> {
   const [query, setQuery] = useState("");
-  const [searchTag, setSearchTag] = useState<string>(defaultTag);
   const [detailBrick, setDetailBrick] = useState<T>(null);
   // The react-window library requires exact height
   const brickResultSizePx = 87;
 
-  const searchResults = useSearch(bricks, query, searchTag);
+  const { data: marketplaceTags = [] as MarketplaceTag[] } =
+    useGetMarketplaceTagsQuery();
+  const { data: listings = {} as Record<RegistryId, MarketplaceListing> } =
+    useGetMarketplaceListingsQuery();
+
+  const taggedBrickIds = useMemo<Record<string, Set<string>>>(() => {
+    if (isEmpty(marketplaceTags) || isEmpty(listings)) {
+      return {};
+    }
+
+    return Object.fromEntries(
+      marketplaceTags.map((tag) => [
+        tag.name,
+        new Set(
+          Object.entries(listings)
+            .filter(([, listing]) => {
+              const tags = listing.tags.map((x) => x.name);
+              return tags.includes(tag.name);
+            })
+            .map(([id]) => id)
+        ),
+      ])
+    );
+  }, [marketplaceTags, listings]);
+
+  const tagItems: TagItem[] = [
+    { tag: TAG_ALL },
+    ...marketplaceTags
+      .filter((tag) => tag.subtype === "role")
+      .map((tag) => ({
+        tag: tag.name,
+        icon: parseIconProp(tag.fa_icon),
+      })),
+  ];
+
+  const [searchTag, setSearchTag] = useState<string>(TAG_ALL);
+
+  const searchResults = useSearch(bricks, taggedBrickIds, query, searchTag);
 
   useEffect(
     () => {
@@ -273,9 +294,9 @@ function ActualModal<T extends IBrick>({
                 value={query}
                 onValueChange={setQuery}
                 placeholder={"Search"}
-                tag={searchTag === defaultTag ? null : searchTag}
+                tag={searchTag === TAG_ALL ? null : searchTag}
                 onClearTag={() => {
-                  setSearchTag(defaultTag);
+                  setSearchTag(TAG_ALL);
                 }}
                 focusInput
                 className={styles.searchInput}
@@ -287,18 +308,14 @@ function ActualModal<T extends IBrick>({
       <Modal.Body className={styles.body}>
         <Container fluid>
           <Row>
-            <Col xs={2}>
+            <Col xs={2} className={styles.tagList}>
               <TagList
                 tagItems={tagItems}
                 activeTag={searchTag}
                 onSelectTag={setSearchTag}
               />
             </Col>
-            <Col
-              xs={10}
-              className={cx(styles.brickDetail)}
-              key={detailBrick?.id}
-            >
+            <Col xs={10} className={styles.results}>
               <AutoSizer>
                 {({ height, width }) => (
                   <LazyList

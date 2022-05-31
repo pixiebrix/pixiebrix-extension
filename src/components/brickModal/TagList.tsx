@@ -45,9 +45,9 @@ const TagList: React.VFC<{
         }}
       >
         {item.icon && (
-          <span className={styles.iconContainer}>
-            <FontAwesomeIcon icon={item.icon} />
-          </span>
+          <>
+            <FontAwesomeIcon icon={item.icon} fixedWidth />{" "}
+          </>
         )}
         {item.tag}
       </button>
