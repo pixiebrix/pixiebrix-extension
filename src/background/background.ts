@@ -27,9 +27,8 @@ import "@/development/errorsBadge";
 
 import "webext-dynamic-content-scripts";
 
-import "@/messaging/external";
-
 import registerMessenger from "@/background/messenger/registration";
+import registerExternalMessenger from "@/background/messenger/external/registration";
 import initLocator from "@/background/locator";
 import initContextMenus from "@/background/contextMenus";
 import initBrowserAction from "@/background/browserAction";
@@ -46,6 +45,7 @@ import initPartnerTheme from "@/background/partnerTheme";
 
 void initLocator();
 registerMessenger();
+registerExternalMessenger();
 initBrowserAction();
 initInstaller();
 initNavigation();

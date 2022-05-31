@@ -17,7 +17,6 @@
 
 import { ActionType, Message, SerializedError, Meta } from "@/core";
 import { serializeError } from "serialize-error";
-import { Runtime } from "webextension-polyfill";
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- Line can be dropped once we migrate to `webext-messenger`
 export type SerializableResponse = boolean | string | number | object | void;
@@ -64,8 +63,4 @@ export function isRemoteProcedureCallRequest(
 ): message is RemoteProcedureCallRequest {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function and it uses ?.
   return typeof (message as any)?.type === "string";
-}
-
-export function allowSender(sender: Runtime.MessageSender): boolean {
-  return sender.id === browser.runtime.id;
 }
