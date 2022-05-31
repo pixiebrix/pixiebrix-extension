@@ -18,7 +18,7 @@
 import { Deployment, Me } from "@/types/contract";
 import { isEmpty, partition, uniqBy } from "lodash";
 import reportError from "@/telemetry/reportError";
-import { getUID } from "@/background/telemetry";
+import { getUID } from "@/background/messenger/api";
 import { getExtensionVersion, ManualStorageKey, readStorage } from "@/chrome";
 import { isLinked, readAuthData, updateUserData } from "@/auth/token";
 import { reportEvent } from "@/telemetry/events";
@@ -112,6 +112,7 @@ export async function uninstallAllDeployments(): Promise<void> {
 
   reportEvent("DeploymentDeactivateAll", {
     auto: true,
+    deployments: toUninstall.map((x) => x._deployment.id),
   });
 }
 
@@ -139,8 +140,9 @@ export async function uninstallUnmatchedDeployments(
 
   await setExtensionsState(state);
 
-  reportEvent("DeploymentDeactivateAll", {
+  reportEvent("DeploymentDeactivateUnassigned", {
     auto: true,
+    deployments: toUninstall.map((x) => x._deployment.id),
   });
 }
 

@@ -15,25 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useAsyncState } from "@/hooks/common";
+import { getInstallURL } from "@/services/baseService";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import { Card, Button } from "react-bootstrap";
+import { Button } from "react-bootstrap";
+import Centered from "./Centered";
 
-const LoginCard: React.VoidFunctionComponent = () => (
-  <Card>
-    <Card.Body>
+const LoginCard: React.VoidFunctionComponent = () => {
+  const [installURL] = useAsyncState(getInstallURL, []);
+
+  return (
+    <Centered vertically>
       <p>Complete PixieBrix Extension setup to use the Page Editor</p>
       <Button
         variant="primary"
         className="mt-2"
         target="_blank"
-        href="/options.html"
+        href={installURL ?? "/options.html"}
       >
         <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
       </Button>
-    </Card.Body>
-  </Card>
-);
+    </Centered>
+  );
+};
 
 export default LoginCard;

@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React, { useCallback } from "react";
 import paneStyles from "@/pageEditor/panes/Pane.module.scss";
 import styles from "./GenericInsertPane.module.scss";
-
-import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import useAvailableExtensionPoints from "@/pageEditor/hooks/useAvailableExtensionPoints";
 import Centered from "@/pageEditor/components/Centered";
@@ -105,6 +104,10 @@ const GenericInsertPane: React.FunctionComponent<{
       );
 
       await start(formState);
+
+      reportEvent("ExtensionAddNew", {
+        type: config.elementType,
+      });
     } catch (error) {
       notify.error({ message: "Error using adding new element", error });
     }

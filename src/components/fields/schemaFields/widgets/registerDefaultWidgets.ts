@@ -16,6 +16,7 @@
  */
 
 import UrlMatchPatternWidget from "@/pageEditor/components/UrlMatchPatternWidget";
+import UrlPatternWidget from "@/pageEditor/components/UrlPatternWidget";
 import ArrayWidget from "./ArrayWidget";
 import BooleanWidget from "./BooleanWidget";
 import IntegerWidget from "./IntegerWidget";
@@ -28,6 +29,7 @@ import TextWidget from "./TextWidget";
 import UnsupportedWidget from "./UnsupportedWidget";
 import widgetsRegistry from "./widgetsRegistry";
 import WorkshopMessageWidget from "./WorkshopMessageWidget";
+import SelectorMatchWidget from "@/pageEditor/components/SelectorMatchWidget";
 
 function registerDefaultWidgets() {
   widgetsRegistry.ArrayWidget = ArrayWidget;
@@ -41,6 +43,8 @@ function registerDefaultWidgets() {
   widgetsRegistry.TextWidget = TextWidget;
   widgetsRegistry.UnsupportedWidget = UnsupportedWidget;
   widgetsRegistry.UrlMatchPatternWidget = UrlMatchPatternWidget;
+  widgetsRegistry.UrlPatternWidget = UrlPatternWidget;
+  widgetsRegistry.SelectorMatchWidget = SelectorMatchWidget;
   widgetsRegistry.WorkshopMessageWidget = WorkshopMessageWidget;
 }
 

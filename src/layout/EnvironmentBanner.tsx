@@ -18,7 +18,7 @@
 import React from "react";
 import { getExtensionAuth } from "@/auth/token";
 import { isExtensionContext } from "webext-detect-page";
-import { connectPage } from "@/messaging/external";
+import { connectPage } from "@/background/messenger/external/api";
 import { useAsyncState } from "@/hooks/common";
 import Banner, { BannerVariant } from "@/components/banner/Banner";
 
@@ -42,7 +42,7 @@ const EnvironmentBannerMessage: React.VFC = () => {
 
   const [versionName] = useAsyncState(async () => {
     const manifest = isExtension
-      ? chrome.runtime.getManifest()
+      ? browser.runtime.getManifest()
       : await connectPage();
     return manifest.version_name;
   }, []);

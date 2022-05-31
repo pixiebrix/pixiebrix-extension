@@ -23,7 +23,11 @@ import FieldSection from "@/pageEditor/fields/FieldSection";
 import LocationWidget from "@/pageEditor/fields/LocationWidget";
 import { useField, useFormikContext } from "formik";
 import { TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { DebounceOptions, Trigger } from "@/extensionPoints/triggerExtension";
+import {
+  DebounceOptions,
+  getDefaultReportModeForTrigger,
+  Trigger,
+} from "@/extensionPoints/triggerExtension";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget";
@@ -33,6 +37,7 @@ import { joinName } from "@/utils";
 import SwitchButtonWidget, {
   CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 
 function supportsSelector(trigger: Trigger) {
   return !["load", "interval"].includes(trigger);
@@ -74,6 +79,11 @@ const TriggerConfiguration: React.FC<{
       setFieldValue(fieldName("intervalMillis"), null);
       setFieldValue(fieldName("background"), null);
     }
+
+    setFieldValue(
+      fieldName("reportMode"),
+      getDefaultReportModeForTrigger(nextTrigger)
+    );
 
     setFieldValue(fieldName("trigger"), currentTarget.value);
   };
@@ -217,7 +227,26 @@ const TriggerConfiguration: React.FC<{
           name={fieldName("isAvailable", "matchPatterns")}
           {...makeLockableFieldProps("Sites", isLocked)}
         />
+
+        <ConnectedFieldTemplate
+          name={fieldName("reportMode")}
+          as="select"
+          title="Report Mode"
+          description={
+            <p>
+              Events/errors to report telemetry. Select &ldquo;Report All&rdquo;
+              to report all runs and errors. Select &ldquo;Report First&rdquo;
+              to only report the first run and first error.
+            </p>
+          }
+          {...makeLockableFieldProps("Report Mode", isLocked)}
+        >
+          <option value="all">Report All</option>
+          <option value="once">Report First</option>
+        </ConnectedFieldTemplate>
       </FieldSection>
+
+      <MatchRulesSection isLocked={isLocked} />
     </Card>
   );
 };

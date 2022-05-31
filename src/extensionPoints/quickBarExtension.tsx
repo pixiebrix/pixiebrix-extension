@@ -40,7 +40,10 @@ import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/blocks/available";
 import { BusinessError, hasCancelRootCause } from "@/errors";
 import reportError from "@/telemetry/reportError";
-import notify, { DEFAULT_ACTION_RESULTS, notifyResult } from "@/utils/notify";
+import notify, {
+  DEFAULT_ACTION_RESULTS,
+  showNotification,
+} from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
@@ -233,10 +236,10 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
           });
         } catch (error) {
           if (hasCancelRootCause(error)) {
-            notifyResult(extension.id, DEFAULT_ACTION_RESULTS.cancel);
+            showNotification(DEFAULT_ACTION_RESULTS.cancel);
           } else {
             extensionLogger.error(error);
-            notifyResult(extension.id, DEFAULT_ACTION_RESULTS.error);
+            showNotification(DEFAULT_ACTION_RESULTS.error);
           }
         }
       },

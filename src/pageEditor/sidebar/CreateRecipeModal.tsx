@@ -51,7 +51,6 @@ import Form, {
 import { useCreateRecipeMutation, useGetRecipesQuery } from "@/services/api";
 import useCreate from "@/pageEditor/hooks/useCreate";
 import extensionsSlice from "@/store/extensionsSlice";
-import { isAxiosError } from "@/errors";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
@@ -67,6 +66,7 @@ import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { generateRecipeId } from "@/utils/recipeUtils";
+import { isSingleObjectBadRequestError } from "@/types/errorContract";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -337,7 +337,7 @@ const CreateRecipeModal: React.VFC = () => {
 
       hideModal();
     } catch (error) {
-      if (isAxiosError(error) && error.response.data.config) {
+      if (isSingleObjectBadRequestError(error) && error.response.data.config) {
         helpers.setStatus(error.response.data.config);
         return;
       }
