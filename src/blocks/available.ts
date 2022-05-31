@@ -28,25 +28,19 @@ export function testMatchPatterns(
   patterns: string[],
   url: string = document.location.href
 ): boolean {
-  let re;
-
-  try {
-    // Try all at once
-    re = patternToRegex(...patterns);
-  } catch {
-    // Try them one at a time to find the broken one
-    for (const pattern of patterns) {
-      try {
-        patternToRegex(pattern);
-      } catch {
-        throw new BusinessError(
-          `Pattern not recognized as valid match pattern: ${pattern}`
-        );
+  for (const pattern of patterns) {
+    try {
+      if (patternToRegex(pattern).test(url)) {
+        return true;
       }
+    } catch {
+      throw new BusinessError(
+        `Pattern not recognized as valid match pattern: ${pattern}`
+      );
     }
   }
 
-  return re.test(url);
+  return false;
 }
 
 function testUrlPattern(

@@ -20,18 +20,10 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Card } from "react-bootstrap";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import FieldSection from "@/pageEditor/fields/FieldSection";
-import TemplateWidget, { Snippet } from "@/pageEditor/fields/TemplateWidget";
-import LocationWidget from "@/pageEditor/fields/LocationWidget";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
-import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 
-const panelSnippets: Snippet[] = [
-  { label: "heading", value: "{{{heading}}}" },
-  { label: "body", value: "{{{body}}}" },
-];
-
-const PanelConfiguration: React.FC<{
+const SidebarConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => (
   <Card>
@@ -39,14 +31,7 @@ const PanelConfiguration: React.FC<{
       <ConnectedFieldTemplate
         name="extension.heading"
         label="Heading"
-        description="Panel heading"
-      />
-
-      <ConnectedFieldTemplate
-        name="extensionPoint.definition.containerSelector"
-        as={LocationWidget}
-        description="Location on the page"
-        {...makeLockableFieldProps("Location", isLocked)}
+        description="Panel heading to show in the sidebar"
       />
 
       <UrlMatchPatternField
@@ -55,32 +40,8 @@ const PanelConfiguration: React.FC<{
       />
     </FieldSection>
 
-    <FieldSection title="Advanced">
-      <ConnectedFieldTemplate
-        name="extension.collapsible"
-        as={SwitchButtonWidget}
-        label="Collapsible"
-        description="Render the panel as a collapsible drawer"
-      />
-
-      <ConnectedFieldTemplate
-        name="extension.shadowDOM"
-        as={SwitchButtonWidget}
-        label="Shadow DOM"
-        description="Isolate the panel style with a Shadow DOM"
-      />
-
-      <ConnectedFieldTemplate
-        name="extensionPoint.definition.template"
-        as={TemplateWidget}
-        description="A template for the item, with a placeholder for the heading and body"
-        snippets={panelSnippets}
-        {...makeLockableFieldProps("Template", isLocked)}
-      />
-    </FieldSection>
-
     <MatchRulesSection isLocked={isLocked} />
   </Card>
 );
 
-export default PanelConfiguration;
+export default SidebarConfiguration;

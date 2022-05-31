@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, OverlayTriggerProps, Tooltip } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import styles from "./PopoverInfoLabel.module.scss";
@@ -26,7 +26,7 @@ const PopoverInfoLabel: React.FC<{
   label: string;
   description: string;
 }> = ({ name, label, description }) => {
-  const renderTooltip = (props: unknown) => (
+  const renderTooltip = (props: Partial<OverlayTriggerProps>) => (
     <Tooltip id={`${name}-tooltip`} {...props}>
       {description}
     </Tooltip>

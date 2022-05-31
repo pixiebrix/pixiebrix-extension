@@ -36,6 +36,7 @@ import { SidebarConfig } from "@/extensionPoints/sidebarExtension";
 import {
   AttachMode,
   DebounceOptions,
+  ReportMode,
   TargetMode,
   Trigger,
 } from "@/extensionPoints/triggerExtension";
@@ -90,6 +91,7 @@ export type TriggerExtensionPointState = BaseExtensionPointState & {
     reader: SingleLayerReaderConfig;
     attachMode: AttachMode;
     targetMode: TargetMode;
+    reportMode: ReportMode;
 
     isAvailable: NormalizedAvailability;
 
