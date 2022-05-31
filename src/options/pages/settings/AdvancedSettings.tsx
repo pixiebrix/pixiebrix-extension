@@ -28,6 +28,7 @@ import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { assertHttpsUrl, sleep } from "@/utils";
 import { selectSettings } from "@/store/settingsSelectors";
+import AsyncButton from "@/components/AsyncButton";
 
 const AdvancedSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
@@ -129,9 +130,9 @@ const AdvancedSettings: React.FunctionComponent = () => {
             />
           </Form.Group>
           {newPixiebrixUrl == null || (
-            <Button variant="success" onClick={saveAndReload}>
+            <AsyncButton variant="success" onClick={saveAndReload}>
               Save and reload the extension
-            </Button>
+            </AsyncButton>
           )}
           {flagOn("partner-theming") && (
             <Form.Group controlId="partnerId">
