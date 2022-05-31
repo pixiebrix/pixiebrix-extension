@@ -18,39 +18,29 @@
 // Required for react-select-virtualized https://github.com/guiyep/react-select-virtualized/issues/283
 import "regenerator-runtime/runtime";
 
-import Select from "react-select-virtualized";
-import { components, OptionProps } from "react-select";
 import React, { useMemo } from "react";
 import { IconOption } from "@/icons/types";
 import { icons } from "@/icons/list";
 import Icon from "./Icon";
 import { IconLibrary } from "@/core";
 import { sortBy } from "lodash";
+import {
+  ComboBox,
+  Item,
+  defaultTheme,
+  Provider as SpectrumProvider,
+} from "@adobe/react-spectrum";
 
 const iconOptions: IconOption[] = sortBy(
   [...icons].flatMap(([library, libraryCache]) =>
     [...libraryCache].map(([id]) => ({
       value: { library, id },
       label: id,
+      key: JSON.stringify({ library, id }),
     }))
   ),
   (x) => x.label
 );
-
-// https://github.com/JedWatson/react-select/issues/3480#issuecomment-481566579
-function SingleValue(props: OptionProps<IconOption>): JSX.Element {
-  const { SingleValue } = components;
-  return (
-    <SingleValue {...props}>
-      <Icon
-        icon={props.data.value.id}
-        library={props.data.value.library}
-        className="mr-2"
-      />
-      {props.data.label}
-    </SingleValue>
-  );
-}
 
 interface OwnProps {
   value: { id: string; library: IconLibrary };
@@ -60,7 +50,6 @@ interface OwnProps {
 
 const IconSelector: React.FunctionComponent<OwnProps> = ({
   value,
-  isClearable = true,
   onChange,
 }) => {
   const selectedOption = useMemo(() => {
@@ -74,16 +63,15 @@ const IconSelector: React.FunctionComponent<OwnProps> = ({
   }, [value]);
 
   return (
-    <Select
-      isClearable={isClearable}
-      value={selectedOption}
-      options={iconOptions}
-      onChange={onChange}
-      // Only style the selected value because `react-select-virtualized`
-      // does not allow the customization of the list
-      // https://github.com/guiyep/react-select-virtualized/issues/13#issuecomment-527238574
-      components={{ SingleValue }}
-    />
+    <SpectrumProvider theme={defaultTheme} colorScheme="light">
+      <ComboBox defaultItems={iconOptions}>
+        {(item) => (
+          <Item aria-label={item.value.id} textValue={item.value.id}>
+            <Icon icon={item.value.id} size={32} library={item.value.library} />
+          </Item>
+        )}
+      </ComboBox>
+    </SpectrumProvider>
   );
 };
 

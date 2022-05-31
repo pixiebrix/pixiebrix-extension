@@ -20,4 +20,5 @@ import { IconLibrary } from "@/core";
 export interface IconOption {
   value: { id: string; library: IconLibrary };
   label: string;
+  key: string;
 }
