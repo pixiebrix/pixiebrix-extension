@@ -222,6 +222,7 @@ const config: ElementConfig<PanelSelectionResult, PanelFormState> = {
   icon: faWindowMaximize,
   baseClass: PanelExtensionPoint,
   selectNativeElement: insertPanel,
+  flag: "page-editor-extension-panel",
   EditorNode: PanelConfiguration,
   fromNativeElement,
   asDynamicElement,
