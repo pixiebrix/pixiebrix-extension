@@ -49,6 +49,7 @@ import {
 } from "@/services/api";
 import { MarketplaceListing, MarketplaceTag } from "@/types/contract";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import BrickDetail from "@/components/brickModal/BrickDetail";
 
 const TAG_ALL = "All Categories";
 
@@ -300,6 +301,7 @@ function ActualModal<T extends IBrick>({
                 }}
                 focusInput
                 className={styles.searchInput}
+                disabled={Boolean(detailBrick)}
               />
             </Col>
           </Row>
@@ -307,40 +309,52 @@ function ActualModal<T extends IBrick>({
       </Modal.Header>
       <Modal.Body className={styles.body}>
         <Container fluid>
-          <Row>
-            <Col xs={2} className={styles.tagList}>
-              <TagList
-                tagItems={tagItems}
-                activeTag={searchTag}
-                onSelectTag={setSearchTag}
-              />
-            </Col>
-            <Col xs={10} className={styles.results}>
-              <AutoSizer>
-                {({ height, width }) => (
-                  <LazyList
-                    height={height}
-                    width={width}
-                    itemCount={searchResults.length}
-                    itemSize={brickResultSizePx}
-                    itemKey={itemKey}
-                    itemData={
-                      {
-                        searchResults,
-                        setDetailBrick,
-                        activeBrick: detailBrick,
-                        selectCaption,
-                        onSelect,
-                        close,
-                      } as ItemType
-                    }
-                  >
-                    {ItemRenderer}
-                  </LazyList>
-                )}
-              </AutoSizer>
-            </Col>
-          </Row>
+          {detailBrick ? (
+            <BrickDetail
+              brick={detailBrick}
+              listing={listings[detailBrick.id]}
+              selectCaption={selectCaption}
+              onSelect={() => {
+                onSelect(detailBrick);
+                close();
+              }}
+            />
+          ) : (
+            <Row>
+              <Col xs={2} className={styles.tagList}>
+                <TagList
+                  tagItems={tagItems}
+                  activeTag={searchTag}
+                  onSelectTag={setSearchTag}
+                />
+              </Col>
+              <Col xs={10} className={styles.results}>
+                <AutoSizer>
+                  {({ height, width }) => (
+                    <LazyList
+                      height={height}
+                      width={width}
+                      itemCount={searchResults.length}
+                      itemSize={brickResultSizePx}
+                      itemKey={itemKey}
+                      itemData={
+                        {
+                          searchResults,
+                          setDetailBrick,
+                          activeBrick: detailBrick,
+                          selectCaption,
+                          onSelect,
+                          close,
+                        } as ItemType
+                      }
+                    >
+                      {ItemRenderer}
+                    </LazyList>
+                  )}
+                </AutoSizer>
+              </Col>
+            </Row>
+          )}
         </Container>
       </Modal.Body>
     </Modal>

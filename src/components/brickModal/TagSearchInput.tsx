@@ -39,6 +39,7 @@ const TagSearchInput: React.VFC<{
   placeholder?: string;
   focusInput?: boolean;
   className?: string;
+  disabled?: boolean;
 }> = ({
   name,
   value,
@@ -48,12 +49,13 @@ const TagSearchInput: React.VFC<{
   placeholder,
   focusInput,
   className,
+  disabled,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>();
 
   useEffect(() => {
-    if (focusInput) {
+    if (focusInput && !disabled) {
       inputRef.current?.focus();
       setIsFocused(true);
     }
@@ -88,6 +90,7 @@ const TagSearchInput: React.VFC<{
         onFocus={handleFocus}
         onBlur={handleBlur}
         className={styles.input}
+        disabled={disabled}
       />
     </div>
   );
