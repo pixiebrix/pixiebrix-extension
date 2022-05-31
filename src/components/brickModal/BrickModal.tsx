@@ -17,20 +17,14 @@
 
 import styles from "./BrickModal.module.scss";
 
-import React, {
-  CSSProperties,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { CSSProperties, useCallback, useMemo, useState } from "react";
 import { Button, Col, Container, Modal, Row } from "react-bootstrap";
 import { isEmpty, sortBy } from "lodash";
 import { IBlock, IBrick, RegistryId } from "@/core";
 import { useDebounce } from "use-debounce";
 import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
-import { FixedSizeList as LazyList } from "react-window";
+import { FixedSizeGrid as LazyGrid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import BrickResult from "./BrickResult";
 import { Except } from "type-fest";
@@ -120,7 +114,6 @@ type ModalProps<T extends IBrick = IBlock> = {
   bricks: T[];
   onSelect: (brick: T) => void;
   selectCaption?: React.ReactNode;
-  recommendations?: RegistryId[];
   close: () => void;
   modalClassName?: string;
 };
@@ -139,10 +132,21 @@ type ItemType = {
   activeBrick: IBrick | null;
 };
 
+const RESULT_COLUMN_COUNT = 2;
+
+function getIndexForRowAndColumn(
+  rowIndex: number,
+  columnIndex: number
+): number {
+  // Simple algorithm to layout items left to right, top to bottom, in the grid
+  return rowIndex * RESULT_COLUMN_COUNT + columnIndex;
+}
+
 // The item renderer must be its own separate component to react-window from re-mounting the results
 // https://github.com/bvaughn/react-window/issues/420#issuecomment-585813335
 const ItemRenderer = ({
-  index,
+  columnIndex,
+  rowIndex,
   style,
   data: {
     searchResults,
@@ -153,10 +157,12 @@ const ItemRenderer = ({
     activeBrick,
   },
 }: {
-  index: number;
+  columnIndex: number;
+  rowIndex: number;
   style: CSSProperties;
   data: ItemType;
 }) => {
+  const index = getIndexForRowAndColumn(rowIndex, columnIndex);
   // eslint-disable-next-line security/detect-object-injection -- numeric value from library
   const { data: brick } = searchResults[index];
   return (
@@ -178,16 +184,19 @@ const ItemRenderer = ({
 };
 
 // Need to provide a key because we reorder elements on search
-// See https://react-window.vercel.app/#/api/FixedSizeList
-function itemKey(index: number, { searchResults }: ItemType): RegistryId {
-  // Find the item at the specified index.
-  // In this case "data" is an Array that was passed to List as "itemData".
-  // eslint-disable-next-line security/detect-object-injection -- numeric value
-  const item = searchResults[index];
-
-  // Return a value that uniquely identifies this item.
-  // Typically this will be a UID of some sort.
-  return item.value;
+// See https://react-window.vercel.app/#/api/FixedSizeGrid
+type ItemKeyInput = {
+  columnIndex: number;
+  data: ItemType;
+  rowIndex: number;
+};
+// Here, we use the brick id as the key
+function itemKey({
+  columnIndex,
+  data: { searchResults },
+  rowIndex,
+}: ItemKeyInput): RegistryId {
+  return searchResults[getIndexForRowAndColumn(rowIndex, columnIndex)].value;
 }
 
 const defaultAddCaption = (
@@ -216,13 +225,12 @@ function ActualModal<T extends IBrick>({
   close,
   onSelect,
   selectCaption = defaultAddCaption,
-  recommendations = [],
   modalClassName,
 }: ModalProps<T>): React.ReactElement<T> {
   const [query, setQuery] = useState("");
   const [detailBrick, setDetailBrick] = useState<T>(null);
   // The react-window library requires exact height
-  const brickResultSizePx = 87;
+  const brickResultHeightPx = 87;
 
   const { data: marketplaceTags = [] as MarketplaceTag[] } =
     useGetMarketplaceTagsQuery();
@@ -262,17 +270,6 @@ function ActualModal<T extends IBrick>({
   const [searchTag, setSearchTag] = useState<string>(TAG_ALL);
 
   const searchResults = useSearch(bricks, taggedBrickIds, query, searchTag);
-
-  useEffect(
-    () => {
-      // If there's no recommendations, default to the first brick so the right side isn't blank
-      if (recommendations.length === 0 && searchResults.length > 0) {
-        setDetailBrick(searchResults[0].data);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- run on initial mount
-    []
-  );
 
   return (
     <Modal
@@ -348,11 +345,15 @@ function ActualModal<T extends IBrick>({
               <Col xs={10} className={styles.results}>
                 <AutoSizer>
                   {({ height, width }) => (
-                    <LazyList
+                    <LazyGrid
                       height={height}
                       width={width}
-                      itemCount={searchResults.length}
-                      itemSize={brickResultSizePx}
+                      columnWidth={width / RESULT_COLUMN_COUNT}
+                      rowHeight={brickResultHeightPx}
+                      columnCount={RESULT_COLUMN_COUNT}
+                      rowCount={Math.trunc(
+                        searchResults.length / RESULT_COLUMN_COUNT
+                      )}
                       itemKey={itemKey}
                       itemData={
                         {
@@ -366,7 +367,7 @@ function ActualModal<T extends IBrick>({
                       }
                     >
                       {ItemRenderer}
-                    </LazyList>
+                    </LazyGrid>
                   )}
                 </AutoSizer>
               </Col>
