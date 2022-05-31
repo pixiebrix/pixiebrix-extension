@@ -38,13 +38,14 @@ export const OnboardingStep: React.FunctionComponent<{
 
   return (
     <ListGroup.Item
-      className={cx(
-        styles.checklistItem,
-        !active && !completed && styles.futureStep
-      )}
+      className={cx(styles.checklistItem, {
+        [styles.futureStep]: !active && !completed,
+      })}
     >
       <div
-        className={cx(styles.checklistItemLayout, !active && styles.inactive)}
+        className={cx(styles.checklistItemLayout, {
+          [styles.inactive]: !active,
+        })}
       >
         <div>
           <span className={cx(styles.circleIcon, circleIconStyle)}>
@@ -55,8 +56,10 @@ export const OnboardingStep: React.FunctionComponent<{
           <div className={styles.stepNumber}>Step {number}</div>
           <div>
             {title && <h3 className={styles.stepTitle}>{title}</h3>}
-            {children && !(notStarted || completed) && (
-              <div className={title && styles.stepBody}>{children}</div>
+            {children && !notStarted && !completed && (
+              <div className={cx({ [styles.stepBody]: Boolean(title) })}>
+                {children}
+              </div>
             )}
           </div>
         </div>

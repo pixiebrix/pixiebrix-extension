@@ -68,7 +68,8 @@ const RefreshBricks: React.VFC = () => {
 };
 
 const Layout = () => {
-  useTheme(useGetTheme());
+  const theme = useGetTheme();
+  useTheme(theme);
   const { permit } = useFlags();
 
   return (

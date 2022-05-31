@@ -16,9 +16,10 @@
  */
 
 import { ServicesState } from "@/store/servicesSlice";
+import { RawServiceConfiguration } from "@/core";
 
 export const selectConfiguredServices = ({
   services,
 }: {
   services: ServicesState;
-}) => Object.values(services.configured);
+}): RawServiceConfiguration[] => Object.values(services.configured);

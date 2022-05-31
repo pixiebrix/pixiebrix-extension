@@ -33,13 +33,13 @@ const SetupPage: React.FunctionComponent = () => {
   useTitle("Setup");
   const {
     hasPartner,
-    hasRequiredIntegration,
+    requiresIntegration,
     hasConfiguredIntegration,
     isLoading: isPartnerLoading,
   } = useRequiredPartnerAuth();
   const { isAccountUnlinked } = useRequiredAuth();
 
-  const [accountTab, accountPending] = useAsyncState(async () => {
+  const [wasOnboardingTabOpen, accountPending] = useAsyncState(async () => {
     const accountTabs = await browser.tabs.query({
       url: [
         new URL("setup", SERVICE_URL).toString(),
@@ -57,8 +57,8 @@ const SetupPage: React.FunctionComponent = () => {
     return url.toString();
   }, []);
 
-  // Don't render anything, just visit app
-  if (accountTab) {
+  // Redirect to the app to complete onboarding flow
+  if (wasOnboardingTabOpen) {
     location.replace(installURL);
     return null;
   }
@@ -68,8 +68,8 @@ const SetupPage: React.FunctionComponent = () => {
       installURL={installURL}
       isAccountUnlinked={isAccountUnlinked}
       needsConfiguration={
-        !hasRequiredIntegration ||
-        (hasRequiredIntegration && !hasConfiguredIntegration)
+        !requiresIntegration ||
+        (requiresIntegration && !hasConfiguredIntegration)
       }
     />
   ) : (

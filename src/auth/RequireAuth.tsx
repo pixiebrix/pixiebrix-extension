@@ -48,7 +48,7 @@ type RequireAuthProps = {
 const AA_CONTROL_ROOM_SERVICE_ID = "automation-anywhere/control-room";
 
 export const useRequiredPartnerAuth = () => {
-  const { isLoading, data: me } = useGetMeQuery();
+  const { isLoading, data: me, error } = useGetMeQuery();
   const { partner, organization } = useSelector(selectAuth);
 
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
@@ -59,13 +59,20 @@ export const useRequiredPartnerAuth = () => {
     (service) => service.serviceId === AA_CONTROL_ROOM_SERVICE_ID
   );
 
+  const hasPartner = me ? Boolean(me?.partner) : Boolean(partner);
+
+  console.log("me:", me);
+
   return {
-    hasPartner: Boolean(me?.partner) || Boolean(partner),
-    hasRequiredIntegration:
-      Boolean(me?.organization?.control_room) ||
-      Boolean(organization?.control_room),
+    hasPartner,
+    requiresIntegration:
+      hasPartner &&
+      (me
+        ? Boolean(me?.organization?.control_room)
+        : Boolean(organization?.control_room)),
     hasConfiguredIntegration: configuredAAIntegration,
     isLoading,
+    error,
   };
 };
 
@@ -172,8 +179,15 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     isLoading,
     meError,
   } = useRequiredAuth();
-  const { hasRequiredIntegration, hasConfiguredIntegration } =
+  const { requiresIntegration, hasConfiguredIntegration } =
     useRequiredPartnerAuth();
+
+  console.log(
+    "requires integration:",
+    requiresIntegration,
+    "has configured:",
+    hasConfiguredIntegration
+  );
 
   // Show SetupPage if there is auth error or user not logged in
   if (
@@ -183,7 +197,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     // http://github.com/pixiebrix/pixiebrix-app/blob/0686663bf007cf4b33d547d9f124d1fa2a83ec9a/api/views/site.py#L210-L210
     // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3056
     isAccountUnlinked ||
-    (hasRequiredIntegration && !hasConfiguredIntegration)
+    (requiresIntegration && !hasConfiguredIntegration)
   ) {
     return <LoginPage />;
   }

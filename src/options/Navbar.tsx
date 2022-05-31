@@ -45,7 +45,8 @@ const Navbar: React.FunctionComponent = () => {
   const mode = useSelector<{ settings: SettingsState }, string>(
     ({ settings }) => settings.mode
   );
-  const { logo } = useTheme(useGetTheme());
+  const theme = useGetTheme();
+  const { logo } = useTheme(theme);
 
   // Use `connectedPending` to optimistically show the toggle
   const showNavbarToggle = mode === "local" || connected || connectedPending;

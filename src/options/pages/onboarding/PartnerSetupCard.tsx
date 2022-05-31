@@ -16,14 +16,13 @@
  */
 
 import React from "react";
-import { Form, Col, Button } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import OnboardingChecklistCard, {
   OnboardingStep,
 } from "@/components/onboarding/OnboardingChecklistCard";
 import { useGetMeQuery } from "@/services/api";
 import servicesSlice from "@/store/servicesSlice";
 import { uuidv4 } from "@/types/helpers";
-import { Formik } from "formik";
 import { GridLoader } from "react-spinners";
 import notify from "@/utils/notify";
 import { persistor } from "@/options/store";
@@ -31,6 +30,9 @@ import { services } from "@/background/messenger/api";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
+import * as Yup from "yup";
+import Form, { RenderBody, RenderSubmit } from "@/components/form/Form";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
 const CONTROL_ROOM_SERVICE_ID = "automation-anywhere/control-room";
 
@@ -39,6 +41,12 @@ type ControlRoomConfiguration = {
   username: string;
   password: string;
 };
+
+const validationSchema = Yup.object().shape({
+  controlRoomUrl: Yup.string().url().required(),
+  username: Yup.string().required(),
+  password: Yup.string().required(),
+});
 
 const AutomationAnywhereControlRoomForm: React.FunctionComponent<{
   initialValues: ControlRoomConfiguration;
@@ -71,45 +79,38 @@ const AutomationAnywhereControlRoomForm: React.FunctionComponent<{
     }
   };
 
+  const renderBody: RenderBody = () => (
+    <>
+      <ConnectedFieldTemplate
+        name="controlRoomUrl"
+        label="Control Room URL"
+        type="text"
+      />
+      <ConnectedFieldTemplate name="username" label="Username" type="text" />
+      <ConnectedFieldTemplate
+        name="password"
+        label="Password"
+        type="password"
+      />
+    </>
+  );
+
+  const renderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
+    <div className="text-right">
+      <Button type="submit" disabled={isSubmitting || !isValid}>
+        Connect
+      </Button>
+    </div>
+  );
+
   return (
-    <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-      {({ handleSubmit, values, handleChange }) => (
-        <Form onSubmit={handleSubmit}>
-          <Form.Group>
-            <Form.Label>Control Room URL</Form.Label>
-            <Form.Control
-              type="text"
-              name="controlRoomUrl"
-              value={values.controlRoomUrl}
-              onChange={handleChange}
-            />
-          </Form.Group>
-          <Form.Row>
-            <Form.Group as={Col}>
-              <Form.Label>Username</Form.Label>
-              <Form.Control
-                type="text"
-                name="username"
-                value={values.username}
-                onChange={handleChange}
-              />
-            </Form.Group>
-            <Form.Group as={Col}>
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                name="password"
-                value={values.password}
-                onChange={handleChange}
-              />
-            </Form.Group>
-          </Form.Row>
-          <div className="text-right">
-            <Button type="submit">Connect</Button>
-          </div>
-        </Form>
-      )}
-    </Formik>
+    <Form
+      validationSchema={validationSchema}
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+      renderBody={renderBody}
+      renderSubmit={renderSubmit}
+    />
   );
 };
 
