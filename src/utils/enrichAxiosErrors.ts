@@ -17,18 +17,18 @@
 
 import axios from "axios";
 import { expectContext } from "@/utils/expectContext";
-import {
-  getErrorMessage,
-  isAxiosError,
-  NO_INTERNET_MESSAGE,
-  NO_RESPONSE_MESSAGE,
-} from "@/errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import {
   ClientNetworkError,
   ClientNetworkPermissionError,
   RemoteServiceError,
 } from "@/errors/clientRequestErrors";
 import { assertHttpsUrl } from "@/errors/assertHttpsUrl";
+import {
+  isAxiosError,
+  NO_INTERNET_MESSAGE,
+  NO_RESPONSE_MESSAGE,
+} from "@/errors/networkErrorHelpers";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const SERVICE_URL = process.env.SERVICE_URL;

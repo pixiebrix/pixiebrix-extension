@@ -37,7 +37,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
-import { isSingleObjectBadRequestError } from "@/types/errorContract";
+import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 
 const { saveExtension } = extensionsSlice.actions;
 const { markSaved } = editorSlice.actions;

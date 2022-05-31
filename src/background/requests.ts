@@ -43,13 +43,13 @@ import {
   proxyResponseToAxiosResponse,
 } from "@/background/proxyUtils";
 import { selectAxiosError } from "@/services/requestErrorUtils";
-import { safeGuessStatusText } from "@/types/errorContract";
 import {
   BusinessError,
   ProxiedRemoteServiceError,
 } from "@/errors/businessErrors";
 import { ContextError, ExtensionNotLinkedError } from "@/errors/genericErrors";
 import { assertHttpsUrl } from "@/errors/assertHttpsUrl";
+import { safeGuessStatusText } from "@/errors/networkErrorHelpers";
 
 type SanitizedResponse<T = unknown> = Pick<
   AxiosResponse<T>,

@@ -16,7 +16,7 @@
  */
 
 import { BusinessError } from "@/errors/businessErrors";
-import { SerializableAxiosError } from "@/errors/errorHelpers";
+import { SerializableAxiosError } from "@/errors/networkErrorHelpers";
 
 /**
  * @file ONLY KEEP ACTUAL ERRORS IN HERE.

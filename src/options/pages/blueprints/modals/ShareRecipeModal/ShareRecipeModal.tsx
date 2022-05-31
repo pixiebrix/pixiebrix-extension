@@ -51,7 +51,7 @@ import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { selectAuth } from "@/auth/authSelectors";
 import { Organization, UserRole } from "@/types/contract";
 import Loading from "./Loading";
-import { isSingleObjectBadRequestError } from "@/types/errorContract";
+import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 
 type ShareInstallableFormState = {
   public: boolean;
