@@ -397,7 +397,7 @@ describe("inferSelectorsIncludingStableAncestors", () => {
 
   test("include stable data-id attribute", () => {
     expectSelectors(
-      ['[data-id="thisisgoodid"] h2', "h2"],
+      ["[data-id='thisisgoodid'] h2", "h2"],
       html`
         <div data-id="thisisgoodid">
           <h2>I am a header</h2>
