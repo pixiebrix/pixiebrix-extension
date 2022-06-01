@@ -87,7 +87,7 @@ export function useAsyncIcon(
 
       return fetchFortAwesomeIcon(icon);
     },
-    [icon],
+    [icon, defaultIcon],
     placeholder
   );
 
