@@ -17,7 +17,6 @@
  */
 
 import React, { useMemo } from "react";
-import { UUID } from "@/core";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isEmpty, isEqual, pickBy } from "lodash";
 import { useFormikContext } from "formik";
@@ -46,7 +45,8 @@ import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import {
   selectActiveElement,
-  selectActivePipelineMap,
+  selectActiveNodeId,
+  selectActiveNodeInfo,
   selectNodePreviewActiveElement,
 } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
@@ -73,22 +73,25 @@ const contextFilter = (value: unknown, key: string) => {
 
 const pageStateBlockIds = ["@pixiebrix/state/set", "@pixiebrix/state/get"];
 
-const DataPanel: React.FC<{
-  instanceId: UUID;
-}> = ({ instanceId }) => {
+const DataPanel: React.FC = () => {
+  const activeNodeId = useSelector(selectActiveNodeId);
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
 
   const { errors: formikErrors } = useFormikContext<FormState>();
   const activeElement = useSelector(selectActiveElement);
 
-  const pipelineMap = useSelector(selectActivePipelineMap);
-  const { blockConfig, blockIndex, pipeline } = pipelineMap[instanceId];
+  const {
+    blockId,
+    blockConfig,
+    index: blockIndex,
+    pipeline,
+  } = useSelector(selectActiveNodeInfo);
 
   const traces = useSelector(selectExtensionTrace);
-  const record = traces.find((trace) => trace.blockInstanceId === instanceId);
+  const record = traces.find((trace) => trace.blockInstanceId === activeNodeId);
 
-  // TODO need to traverse up the block pipeline and the paren pipelines
+  // TODO need to traverse up the block pipeline and the parent pipelines
   const isInputStale = useMemo(() => {
     // Don't show the warning if there are no traces. Also, this block can't have a
     // stale input if it's the first block in the pipeline.
@@ -133,14 +136,14 @@ const DataPanel: React.FC<{
         : record.output
       : null;
 
-  const [previewInfo] = usePreviewInfo(blockConfig?.id);
+  const [previewInfo] = usePreviewInfo(blockId);
 
   const showFormPreview =
-    blockConfig?.id === CustomFormRenderer.BLOCK_ID ||
-    blockConfig?.id === FormTransformer.BLOCK_ID;
-  const showDocumentPreview = blockConfig?.id === DocumentRenderer.BLOCK_ID;
+    blockId === CustomFormRenderer.BLOCK_ID ||
+    blockId === FormTransformer.BLOCK_ID;
+  const showDocumentPreview = blockId === DocumentRenderer.BLOCK_ID;
   const showBlockPreview = record || previewInfo?.traceOptional;
-  const showPageState = pageStateBlockIds.includes(blockConfig?.id);
+  const showPageState = pageStateBlockIds.includes(blockId);
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
     showFormPreview || showDocumentPreview
@@ -167,7 +170,7 @@ const DataPanel: React.FC<{
     }
 
     const trace = traces.find(
-      (trace) => trace.blockInstanceId === blockConfig?.instanceId
+      (trace) => trace.blockInstanceId === activeNodeId
     );
 
     // No traces or no changes since the last render, we are good, no alert
@@ -354,7 +357,7 @@ const DataPanel: React.FC<{
                 {showFormPreview ? (
                   <div className={dataPanelStyles.selectablePreviewContainer}>
                     <FormPreview
-                      rjsfSchema={blockConfig.config as RJSFSchema}
+                      rjsfSchema={blockConfig?.config as RJSFSchema}
                       activeField={nodePreviewActiveElement}
                       setActiveField={setNodePreviewActiveElement}
                     />

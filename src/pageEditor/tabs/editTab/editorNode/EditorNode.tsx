@@ -22,11 +22,12 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ListGroup } from "react-bootstrap";
 import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import { UUID } from "@/core";
+import { RegistryId, UUID } from "@/core";
 
 export type NodeId = UUID;
 export type EditorNodeProps = {
   nodeId?: NodeId;
+  blockId?: RegistryId;
   title: string;
   outputKey?: string;
   icon?: IconProp | React.ReactNode;

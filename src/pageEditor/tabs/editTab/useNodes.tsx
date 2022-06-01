@@ -59,6 +59,7 @@ function mapPipelineToNodes(
 
     const newBlock: EditorNodeProps = {
       nodeId,
+      blockId: blockConfig.id,
       title: isNullOrBlank(blockConfig.label) ? block?.name : blockConfig.label,
       icon: <BrickIcon brick={block} size="2x" inheritColor />,
       hasError:

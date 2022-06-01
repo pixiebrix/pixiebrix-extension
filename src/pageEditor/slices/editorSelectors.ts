@@ -28,6 +28,7 @@ import {
 } from "@/pageEditor/uiState/uiStateTypes";
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { BlockConfig } from "@/blocks/types";
+import { select } from "react-select-event";
 
 type RootState = { editor: EditorState };
 
@@ -191,11 +192,6 @@ export function selectActiveElementUIState(
   return rootState.editor.elementUIStates[rootState.editor.activeElementId];
 }
 
-export const selectActivePipelineMap = createSelector(
-  selectActiveElementUIState,
-  (uiState: ElementUIState) => uiState.pipelineMap
-);
-
 export const selectActiveNodeUIState: (rootState: RootState) => NodeUIState =
   createSelector(
     selectActiveElementUIState,
@@ -207,6 +203,13 @@ export const selectActiveNodeId: (rootState: RootState) => NodeId =
     selectActiveElementUIState,
     (elementUIState) => elementUIState.activeNodeId
   );
+
+export const selectActiveNodeInfo = createSelector(
+  selectActiveElementUIState,
+  selectActiveNodeId,
+  (uiState: ElementUIState, activeNodeId: UUID) =>
+    uiState.pipelineMap[activeNodeId]
+);
 
 export const selectActiveNode: (rootState: RootState) => BlockConfig =
   createSelector(selectActiveElement, selectActiveNodeId, (element, nodeId) =>

@@ -36,6 +36,7 @@ import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { ListGroup } from "react-bootstrap";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { noop } from "lodash";
+import { TypedBlockMap } from "@/blocks/registry";
 
 const addBrickCaption = (
   <span>
@@ -45,19 +46,19 @@ const addBrickCaption = (
 
 const EditorNodeLayout: React.FC<{
   nodes: EditorNodeProps[];
+  allBlocks: TypedBlockMap;
   activeNodeId: NodeId;
   relevantBlocksToAdd: IBlock[];
   addBlock: (block: IBlock, pipelineIndex: number) => void;
-  showAppend: boolean;
   moveBlockUp: (instanceId: UUID) => void;
   moveBlockDown: (instanceId: UUID) => void;
   pasteBlock?: (pipelineIndex: number) => void;
 }> = ({
   nodes,
+  allBlocks,
   activeNodeId,
   relevantBlocksToAdd,
   addBlock,
-  showAppend,
   moveBlockUp,
   moveBlockDown,
   pasteBlock,
@@ -67,6 +68,12 @@ const EditorNodeLayout: React.FC<{
 
   const canMoveAnything = nodes.length > 2;
   const finalIndex = nodes.length - 1;
+
+  const lastBlockPipelineId = nodes[nodes.length - 1]?.blockId;
+  const lastBlock = lastBlockPipelineId
+    ? allBlocks.get(lastBlockPipelineId)
+    : undefined;
+  const showAppend = !lastBlock?.block || lastBlock.type !== "renderer";
 
   return (
     <ListGroup variant="flush">
@@ -108,10 +115,10 @@ const EditorNodeLayout: React.FC<{
                     <ListGroup.Item>{label}</ListGroup.Item>
                     <EditorNodeLayout
                       nodes={nodes}
+                      allBlocks={allBlocks}
                       activeNodeId={activeNodeId}
                       relevantBlocksToAdd={relevantBlocksToAdd}
                       addBlock={noop}
-                      showAppend={false}
                       moveBlockUp={noop}
                       moveBlockDown={noop}
                       pasteBlock={null}

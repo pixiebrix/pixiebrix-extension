@@ -34,7 +34,10 @@ import usePipelineField from "@/pageEditor/hooks/usePipelineField";
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { useDispatch, useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveNodeId,
+  selectActiveNodeInfo,
+} from "@/pageEditor/slices/editorSelectors";
 import ApiVersionField from "@/pageEditor/fields/ApiVersionField";
 import useBlockPipelineActions from "@/pageEditor/tabs/editTab/useBlockPipelineActions";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
@@ -51,6 +54,8 @@ import useReportTraceError from "./useReportTraceError";
 import useNodes from "./useNodes";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
+import { get } from "lodash";
+import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -80,48 +85,24 @@ const EditTab: React.FC<{
     new Map()
   );
 
-  const { blockPipeline, pipelineMap, blockPipelineErrors, errorTraceEntry } =
+  const { blockPipeline, blockPipelineErrors, errorTraceEntry } =
     usePipelineField(allBlocks, extensionPointType);
 
   const activeNodeId = useSelector(selectActiveNodeId);
+  const { blockId, path } = useSelector(selectActiveNodeInfo) ?? {};
+  const fieldName = `${PIPELINE_BLOCKS_FIELD_NAME}.${path}`;
+
+  console.log("Edit Tab", {
+    activeNodeId,
+    blockId,
+    fieldName,
+  });
   const dispatch = useDispatch();
   const setActiveNodeId = useCallback(
     (nodeId: NodeId) => {
       dispatch(actions.setElementActiveNodeId(nodeId));
     },
     [dispatch]
-  );
-
-  const activeBlockIndex = useMemo(() => {
-    if (activeNodeId === FOUNDATION_NODE_ID) {
-      return 0;
-    }
-
-    return blockPipeline.findIndex(
-      (block) => block.instanceId === activeNodeId
-    );
-  }, [activeNodeId, blockPipeline]);
-
-  const lastBlockPipelineId = blockPipeline[blockPipeline.length - 1]?.id;
-  const lastBlock = useMemo(
-    () =>
-      lastBlockPipelineId ? allBlocks.get(lastBlockPipelineId) : undefined,
-    [allBlocks, lastBlockPipelineId]
-  );
-  const [showAppendNode] = useAsyncState(
-    async () => {
-      if (!lastBlock) {
-        return true;
-      }
-
-      if (!lastBlock?.block) {
-        return true;
-      }
-
-      return lastBlock.type !== "renderer";
-    },
-    [lastBlock],
-    false
   );
 
   const {
@@ -164,12 +145,11 @@ const EditTab: React.FC<{
     []
   );
 
+  // The value of formikErrorForBlock can be object or string.
+  const formikErrorForBlock = get(blockPipelineErrors, fieldName);
+  // If formikErrorForBlock is a string, it means that this exact block has an error.
   const blockError: string =
-    // eslint-disable-next-line security/detect-object-injection
-    typeof blockPipelineErrors?.[activeBlockIndex] === "string"
-      ? // eslint-disable-next-line security/detect-object-injection
-        (blockPipelineErrors[activeBlockIndex] as string)
-      : null;
+    typeof formikErrorForBlock === "string" ? formikErrorForBlock : null;
 
   const { flagOn } = useFlags();
   const showVersionField = flagOn("page-editor-developer");
@@ -210,10 +190,10 @@ const EditTab: React.FC<{
           <div className={styles.nodeLayout}>
             <EditorNodeLayout
               nodes={nodes}
+              allBlocks={allBlocks}
               activeNodeId={activeNodeId}
               relevantBlocksToAdd={relevantBlocksToAdd}
               addBlock={addBlock}
-              showAppend={showAppendNode}
               moveBlockUp={moveBlockUp}
               moveBlockDown={moveBlockDown}
               pasteBlock={pasteBlock}
@@ -245,8 +225,8 @@ const EditTab: React.FC<{
                 ) : (
                   <EditorNodeConfigPanel
                     key={activeNodeId}
-                    blockFieldName={pipelineMap[activeNodeId].fieldName}
-                    blockId={pipelineMap[activeNodeId]?.blockId}
+                    blockFieldName={fieldName}
+                    blockId={blockId}
                     blockError={blockError}
                   />
                 )
@@ -262,7 +242,7 @@ const EditTab: React.FC<{
               firstBlockInstanceId={blockPipeline[0]?.instanceId}
             />
           ) : (
-            <DataPanel key={activeNodeId} instanceId={activeNodeId} />
+            <DataPanel key={activeNodeId} />
           )}
         </div>
       </div>

@@ -71,16 +71,16 @@ export const initialState: EditorState = {
 // TODO move to some utils file
 function traversePipeline(
   blockPipeline: BlockPipeline,
-  parentFieldName: string,
+  parentPath: string,
   action: (
     blockConfig: BlockConfig,
-    blockIndex: number,
-    fieldName: string,
-    blockPipeline: BlockPipeline
+    index: number,
+    path: string,
+    pipeline: BlockPipeline
   ) => void
 ) {
   for (const [index, blockConfig] of Object.entries(blockPipeline)) {
-    const fieldName = joinName(parentFieldName, index);
+    const fieldName = joinName(parentPath, index);
     action(blockConfig, Number(index), fieldName, blockPipeline);
 
     for (const subPipelineField of getPipelinePropNames(blockConfig)) {
@@ -97,19 +97,15 @@ function traversePipeline(
 
 function getPipelineMap(blockPipeline: BlockPipeline) {
   const pipelineMap: PipelineMap = {};
-  traversePipeline(
-    blockPipeline,
-    "",
-    (blockConfig, blockIndex, fieldName, pipeline) => {
-      pipelineMap[blockConfig.instanceId] = {
-        blockId: blockConfig.id,
-        fieldName,
-        blockConfig,
-        blockIndex,
-        pipeline,
-      };
-    }
-  );
+  traversePipeline(blockPipeline, "", (blockConfig, index, path, pipeline) => {
+    pipelineMap[blockConfig.instanceId] = {
+      blockId: blockConfig.id,
+      path: path,
+      blockConfig,
+      index: index,
+      pipeline,
+    };
+  });
 
   return pipelineMap;
 }

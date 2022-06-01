@@ -28,9 +28,22 @@ export type PipelineMap = Record<
   UUID,
   {
     blockId: RegistryId;
-    fieldName: string;
+
+    /**
+     * The property name path relative to the pipeline root
+     */
+    path: string;
+
     blockConfig: BlockConfig;
-    blockIndex: number;
+
+    /**
+     * Index of the block in its pipeline
+     */
+    index: number;
+
+    /**
+     * The block's pipeline
+     */
     pipeline: BlockPipeline;
   }
 >;
