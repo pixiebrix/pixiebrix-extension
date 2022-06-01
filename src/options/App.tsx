@@ -37,7 +37,7 @@ import ErrorModal from "@/layout/ErrorModal";
 import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprintPage";
 import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
 import useRefresh from "@/hooks/useRefresh";
-import SetupPage from "@/options/pages/SetupPage";
+import SetupPage from "@/options/pages/onboarding/SetupPage";
 import { initTelemetry } from "@/background/messenger/api";
 import UpdateBanner from "@/options/pages/UpdateBanner";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
@@ -51,7 +51,7 @@ import BrowserBanner from "./pages/BrowserBanner";
 import useFlags from "@/hooks/useFlags";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import RequireAuth from "@/auth/RequireAuth";
-import useTheme from "@/hooks/useTheme";
+import useTheme, { useGetTheme } from "@/hooks/useTheme";
 
 // Register the built-in bricks
 registerEditors();
@@ -68,7 +68,8 @@ const RefreshBricks: React.VFC = () => {
 };
 
 const Layout = () => {
-  useTheme();
+  const theme = useGetTheme();
+  useTheme(theme);
   const { permit } = useFlags();
 
   return (

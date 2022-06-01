@@ -997,12 +997,26 @@ export interface components {
         id?: string;
         name: string;
         scope?: string | null;
+        control_room?: {
+          /**
+           * Format: uri
+           * @description The control room url
+           */
+          url: string;
+        };
       };
       telemetry_organization?: {
         /** Format: uuid */
         id?: string;
         name: string;
         scope?: string | null;
+        control_room?: {
+          /**
+           * Format: uri
+           * @description The control room url
+           */
+          url: string;
+        };
       };
       organization_memberships?: {
         /** Format: uuid */

@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,20 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.onboardingStepStatus {
-  min-width: 50px;
-  color: #00b300;
-  font-size: 1.5rem;
-  line-height: 1.5rem;
-}
+import { ServicesState } from "@/store/servicesSlice";
+import { RawServiceConfiguration } from "@/core";
 
-.onboardingStepStep {
-  font-size: 1.25rem;
-  line-height: 1.5rem;
-  min-width: 125px;
-}
-
-.onboardingStepContent {
-  flex-grow: 1;
-  font-size: 1.25rem;
-}
+export const selectConfiguredServices = ({
+  services,
+}: {
+  services: ServicesState;
+}): RawServiceConfiguration[] => Object.values(services.configured);
