@@ -175,11 +175,14 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     isAccountUnlinked,
     tokenError,
     hasCachedLoggedIn,
-    isLoading,
+    isLoading: isRequiredAuthLoading,
     meError,
   } = useRequiredAuth();
-  const { requiresIntegration, hasConfiguredIntegration } =
-    useRequiredPartnerAuth();
+  const {
+    requiresIntegration,
+    hasConfiguredIntegration,
+    isLoading: isPartnerAuthLoading,
+  } = useRequiredPartnerAuth();
 
   // Show SetupPage if there is auth error or user not logged in
   if (
@@ -195,7 +198,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
   }
 
   // Optimistically skip waiting if we have cached auth data
-  if (!hasCachedLoggedIn && isLoading) {
+  if (!hasCachedLoggedIn && (isRequiredAuthLoading || isPartnerAuthLoading)) {
     return <Loader />;
   }
 
