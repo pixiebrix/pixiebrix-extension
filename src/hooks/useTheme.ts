@@ -45,7 +45,7 @@ const activateBackgroundTheme = async (): Promise<void> => {
 export const useGetTheme = (): Theme => {
   const { theme, partnerId } = useSelector(selectSettings);
   const { data: me } = useGetMeQuery();
-  const { partner } = useSelector(selectAuth);
+  const { partner: cachedParnter } = useSelector(selectAuth);
   const dispatch = useDispatch();
 
   const partnerTheme = useMemo(() => {
@@ -53,8 +53,8 @@ export const useGetTheme = (): Theme => {
       return isValidTheme(me.partner?.theme) ? me.partner?.theme : null;
     }
 
-    return isValidTheme(partner?.theme) ? partner?.theme : null;
-  }, [me, partner?.theme]);
+    return isValidTheme(cachedParnter?.theme) ? cachedParnter?.theme : null;
+  }, [me, cachedParnter?.theme]);
 
   const [managedPartnerId, isLoading] = useAsyncState(
     readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed"),

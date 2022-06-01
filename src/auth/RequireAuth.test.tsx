@@ -43,7 +43,9 @@ const MockLoginPage: React.VFC = () => <div>Login</div>;
 
 describe("RequireAuth", () => {
   test("authenticated user", () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({}));
+    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+      isLoading: false,
+    }));
 
     render(
       <Provider store={optionsStore({ auth: { isLoggedIn: true } })}>
