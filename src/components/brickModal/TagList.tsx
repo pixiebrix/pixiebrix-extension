@@ -16,14 +16,42 @@
  */
 
 import React from "react";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./TagList.module.scss";
 import cx from "classnames";
+import { useAsyncIcon } from "@/components/AsyncIcon";
+import { IconStringDefinition } from "@/types/contract";
+import { faTag } from "@fortawesome/free-solid-svg-icons";
 
 export type TagItem = {
   tag: string;
-  icon?: IconProp;
+  icon?: IconStringDefinition;
+};
+
+const TagListItem: React.VFC<{
+  item: TagItem;
+  isActive: boolean;
+  onSelect: () => void;
+}> = ({ item, isActive, onSelect }) => {
+  const icon = useAsyncIcon(item.icon, faTag);
+
+  return (
+    <button
+      className={cx(styles.item, {
+        [styles.itemActive]: isActive,
+      })}
+      onClick={() => {
+        onSelect();
+      }}
+    >
+      {icon && (
+        <>
+          <FontAwesomeIcon icon={icon} fixedWidth />{" "}
+        </>
+      )}
+      {item.tag}
+    </button>
+  );
 };
 
 const TagList: React.VFC<{
@@ -33,24 +61,16 @@ const TagList: React.VFC<{
 }> = ({ tagItems, activeTag, onSelectTag }) => (
   <div className={styles.root}>
     {tagItems.map((item) => (
-      <button
-        className={cx(styles.item, {
-          [styles.itemActive]: activeTag === item.tag,
-        })}
+      <TagListItem
         key={item.tag}
-        onClick={() => {
+        item={item}
+        isActive={activeTag === item.tag}
+        onSelect={() => {
           if (activeTag !== item.tag) {
             onSelectTag(item.tag);
           }
         }}
-      >
-        {item.icon && (
-          <>
-            <FontAwesomeIcon icon={item.icon} fixedWidth />{" "}
-          </>
-        )}
-        {item.tag}
-      </button>
+      />
     ))}
   </div>
 );

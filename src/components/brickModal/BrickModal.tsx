@@ -30,12 +30,7 @@ import BrickResult from "./BrickResult";
 import { Except } from "type-fest";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faPlus,
-  IconName,
-  IconPrefix,
-} from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faPlus } from "@fortawesome/free-solid-svg-icons";
 import TagSearchInput from "@/components/brickModal/TagSearchInput";
 import TagList, { TagItem } from "@/components/brickModal/TagList";
 import {
@@ -43,7 +38,6 @@ import {
   useGetMarketplaceTagsQuery,
 } from "@/services/api";
 import { MarketplaceListing, MarketplaceTag } from "@/types/contract";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import BrickDetail from "@/components/brickModal/BrickDetail";
 
 const TAG_ALL = "All Categories";
@@ -205,21 +199,6 @@ const defaultAddCaption = (
   </span>
 );
 
-function parseIconProp(definition: string): IconProp {
-  const parts = definition.split(" ");
-
-  if (parts.length === 2) {
-    return [parts[0] as IconPrefix, parts[1] as IconName];
-  }
-
-  if (parts.length === 1) {
-    return parts[0] as IconName;
-  }
-
-  console.warn("Error parsing icon property definition string", { definition });
-  return null;
-}
-
 function ActualModal<T extends IBrick>({
   bricks = [],
   close,
@@ -263,7 +242,7 @@ function ActualModal<T extends IBrick>({
       .filter((tag) => tag.subtype === "role")
       .map((tag) => ({
         tag: tag.name,
-        icon: parseIconProp(tag.fa_icon),
+        icon: tag.fa_icon,
       })),
   ];
 
