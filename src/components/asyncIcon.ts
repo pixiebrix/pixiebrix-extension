@@ -1,14 +1,9 @@
-import { IconLookup, IconProp } from "@fortawesome/fontawesome-svg-core";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { camelCase } from "lodash";
 import { IconStringDefinition } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
 import { useEffect } from "react";
 import { IconName, IconPrefix } from "@fortawesome/free-solid-svg-icons";
-
-function parseFullIconDefinition(definition: IconStringDefinition): IconLookup {
-  const [prefix, iconName] = definition.split(" ") as [IconPrefix, IconName];
-  return { prefix, iconName };
-}
 
 async function handleIconImport(
   moduleImport: Promise<{ definition: IconProp }>
@@ -29,7 +24,10 @@ async function handleIconImport(
 export async function fetchFortAwesomeIcon(
   iconDefinition: IconStringDefinition
 ): Promise<IconProp> {
-  const { prefix, iconName } = parseFullIconDefinition(iconDefinition);
+  const [prefix, iconName] = iconDefinition.split(" ") as [
+    IconPrefix,
+    IconName
+  ];
 
   switch (prefix) {
     // For the dynamic imports to work correctly with Webpack, they must be as explicit as possible

@@ -38,7 +38,7 @@ import { PanelExtensionPoint } from "@/extensionPoints/panelExtension";
 import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 import { appApi } from "@/services/api";
 import { useAsyncState } from "@/hooks/common";
-import { useAsyncIcon } from "@/components/AsyncIcon";
+import { useAsyncIcon } from "@/components/asyncIcon";
 import { MarketplaceListing } from "@/types/contract";
 import getType from "@/runtime/getType";
 import { BlockType } from "@/runtime/runtimeTypes";

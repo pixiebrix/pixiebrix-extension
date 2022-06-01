@@ -179,7 +179,7 @@ export type BlueprintResponse = {
   updated_at: Timestamp;
 };
 
-// The fa_icon database value is a string with prefix and name, e.g. "fas fa-coffee"
+// The fa_icon database value is a string with Font Awesome prefix and name, e.g. "fas fa-coffee"
 export type IconStringDefinition = `${IconPrefix} ${IconName}`;
 
 /**

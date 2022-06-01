@@ -73,7 +73,7 @@ function useSearch<T extends IBrick>(
         return true;
       }
 
-      // eslint-disable-next-line security/detect-object-injection
+      // eslint-disable-next-line security/detect-object-injection -- tag values come from the API
       return taggedBrickIds[searchTag].has(brick.id);
     },
     [searchTag, taggedBrickIds]
@@ -81,10 +81,9 @@ function useSearch<T extends IBrick>(
 
   const { fuse, brickOptions } = useMemo(() => {
     const brickOptions = sortBy(
-      // We should never show @internal bricks to users. However, they'll sometimes find their way in from the registry
       (bricks ?? [])
-        .filter((x) => !x.id.startsWith("@internal/"))
-        .filter((x) => brickHasTag(x))
+        // We should never show @internal bricks to users. They'll sometimes find their way in from the registry
+        .filter((x) => !x.id.startsWith("@internal/") && brickHasTag(x))
         .map((x) => makeBlockOption(x)),
       (x) => x.label
     );
@@ -128,11 +127,8 @@ type ItemType = {
 
 const RESULT_COLUMN_COUNT = 2;
 
-function getIndexForRowAndColumn(
-  rowIndex: number,
-  columnIndex: number
-): number {
-  // Simple algorithm to layout items left to right, top to bottom, in the grid
+function getFlatArrayIndex(rowIndex: number, columnIndex: number): number {
+  // Layout items in the grid left to right, top to bottom
   return rowIndex * RESULT_COLUMN_COUNT + columnIndex;
 }
 
@@ -156,7 +152,7 @@ const ItemRenderer = ({
   style: CSSProperties;
   data: ItemType;
 }) => {
-  const index = getIndexForRowAndColumn(rowIndex, columnIndex);
+  const index = getFlatArrayIndex(rowIndex, columnIndex);
   // eslint-disable-next-line security/detect-object-injection -- numeric value from library
   const { data: brick } = searchResults[index];
   return (
@@ -184,13 +180,13 @@ type ItemKeyInput = {
   data: ItemType;
   rowIndex: number;
 };
-// Here, we use the brick id as the key
+// Here, we use the brick id as the key, which is the "value" prop on the search result option
 function itemKey({
   columnIndex,
   data: { searchResults },
   rowIndex,
 }: ItemKeyInput): RegistryId {
-  return searchResults[getIndexForRowAndColumn(rowIndex, columnIndex)].value;
+  return searchResults[getFlatArrayIndex(rowIndex, columnIndex)].value;
 }
 
 const defaultAddCaption = (
@@ -226,10 +222,9 @@ function ActualModal<T extends IBrick>({
         tag.name,
         new Set(
           Object.entries(listings)
-            .filter(([, listing]) => {
-              const tags = listing.tags.map((x) => x.name);
-              return tags.includes(tag.name);
-            })
+            .filter(([, listing]) =>
+              listing.tags.some((lTag) => lTag.name === tag.name)
+            )
             .map(([id]) => id)
         ),
       ])

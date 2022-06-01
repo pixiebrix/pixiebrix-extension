@@ -18,7 +18,7 @@
 import React, { useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube, faCubes } from "@fortawesome/free-solid-svg-icons";
-import { useAsyncIcon } from "@/components/AsyncIcon";
+import { useAsyncIcon } from "@/components/asyncIcon";
 import { MarketplaceListing } from "@/types/contract";
 import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 import { isBlueprint } from "@/options/pages/blueprints/utils/installableUtils";
