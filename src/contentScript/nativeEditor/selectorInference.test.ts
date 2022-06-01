@@ -21,9 +21,10 @@ import {
   getAttributeSelectorRegex,
   getSelectorPreference,
   inferSelectors,
+  inferSelectorsIncludingStableAncestors,
   safeCssSelector,
   sortBySelector,
-} from "./nativeEditor/selectorInference";
+} from "@/contentScript/nativeEditor/selectorInference";
 import { JSDOM } from "jsdom";
 import { html } from "@/utils";
 import { uniq } from "lodash";
@@ -347,6 +348,39 @@ describe("inferSelectors", () => {
       );
     }
   );
+
+  /* eslint-enable jest/expect-expect */
+});
+
+describe("inferSelectorsIncludingStableAncestors", () => {
+  /* eslint-disable jest/expect-expect -- Custom expectSelectors */
+
+  const expectSelectors = (selectors: string[], body: string) => {
+    document.body.innerHTML = body;
+
+    // The provided selector list should only match one element
+    const userSelectedElements = selectors.map((selector) =>
+      document.body.querySelector<HTMLElement>(selector)
+    );
+    expect(uniq(userSelectedElements)).toHaveLength(1);
+
+    // The provided selector list should match the inferred list
+    const inferredSelectors = inferSelectorsIncludingStableAncestors(
+      userSelectedElements[0]
+    );
+    expect(inferredSelectors).toEqual(selectors);
+  };
+
+  test("exclude unstable attribute", () => {
+    expectSelectors(
+      ["h2"],
+      html`
+        <div id="#ember33">
+          <h2>I am a header</h2>
+        </div>
+      `
+    );
+  });
 
   /* eslint-enable jest/expect-expect */
 });
