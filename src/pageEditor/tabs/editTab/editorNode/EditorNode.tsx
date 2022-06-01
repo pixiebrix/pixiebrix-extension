@@ -73,7 +73,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   skippedRun = false,
   ran = false,
 }) => {
-  const nodeRef = useRef<HTMLAnchorElement>(null);
+  const nodeRef = useRef<HTMLDivElement>(null);
   const outputName = outputKey ? `@${outputKey}` : "";
 
   const icon = isFontAwesomeIcon(iconProp) ? (

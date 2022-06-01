@@ -100,9 +100,9 @@ function getPipelineMap(blockPipeline: BlockPipeline) {
   traversePipeline(blockPipeline, "", (blockConfig, index, path, pipeline) => {
     pipelineMap[blockConfig.instanceId] = {
       blockId: blockConfig.id,
-      path: path,
+      path,
       blockConfig,
-      index: index,
+      index,
       pipeline,
     };
   });
@@ -257,7 +257,8 @@ export const editorSlice = createSlice({
       state.activeRecipeId = null;
       state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
       state.selectionSeq++;
-      state.elementUIStates[element.uuid] = makeInitialElementUIState();
+
+      ensureElementUIState(state, element.uuid);
     },
     betaError(state, action: PayloadAction<{ error: string }>) {
       state.error = action.payload.error;

@@ -28,7 +28,6 @@ import {
 } from "@/pageEditor/uiState/uiStateTypes";
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { BlockConfig } from "@/blocks/types";
-import { select } from "react-select-event";
 
 type RootState = { editor: EditorState };
 
