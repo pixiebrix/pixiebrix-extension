@@ -148,7 +148,6 @@ export const useRequiredAuth = () => {
   }
 
   return {
-    isUnauthenticated,
     isAccountUnlinked:
       isUnauthenticated ||
       (!hasCachedLoggedIn && !meLoading) ||
