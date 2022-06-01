@@ -366,7 +366,9 @@ describe("inferSelectorsIncludingStableAncestors", () => {
 
     // The provided selector list should match the inferred list
     const inferredSelectors = inferSelectorsIncludingStableAncestors(
-      userSelectedElements[0]
+      userSelectedElements[0],
+      document.body,
+      true
     );
     expect(inferredSelectors).toEqual(selectors);
   };
@@ -375,7 +377,29 @@ describe("inferSelectorsIncludingStableAncestors", () => {
     expectSelectors(
       ["h2"],
       html`
-        <div id="#ember33">
+        <div id="ember33">
+          <h2>I am a header</h2>
+        </div>
+      `
+    );
+  });
+
+  test("include stable id attribute", () => {
+    expectSelectors(
+      ["#thisisgoodid h2", "h2"],
+      html`
+        <div id="thisisgoodid">
+          <h2>I am a header</h2>
+        </div>
+      `
+    );
+  });
+
+  test("include stable data-id attribute", () => {
+    expectSelectors(
+      ['[data-id="thisisgoodid"] h2', "h2"],
+      html`
+        <div data-id="thisisgoodid">
           <h2>I am a header</h2>
         </div>
       `
