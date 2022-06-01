@@ -74,4 +74,20 @@ describe("RequireAuth", () => {
 
     expect(screen.getByText("Login")).not.toBeNull();
   });
+
+  test("loading state does not flash content", () => {
+    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+      isLoading: true,
+    }));
+
+    render(
+      <Provider store={optionsStore()}>
+        <RequireAuth LoginPage={MockLoginPage}>
+          Only authenticated users should see me!
+        </RequireAuth>
+      </Provider>
+    );
+
+    expect(screen.getByTestId("loader")).not.toBeNull();
+  });
 });
