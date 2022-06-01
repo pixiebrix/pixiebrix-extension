@@ -35,8 +35,8 @@ import TooltipIconButton from "@/components/TooltipIconButton";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { ListGroup } from "react-bootstrap";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
+import { noop } from "lodash";
 
-const noop = () => {};
 const addBrickCaption = (
   <span>
     <FontAwesomeIcon icon={faPlus} className="mr-1" /> Add brick

@@ -39,6 +39,9 @@ import { getPipelinePropNames } from "@/pageEditor/utils";
 
 export const PIPELINE_BLOCKS_FIELD_NAME = "extension.blockPipeline";
 
+/**
+ * The map of pipeline blocks. The key is the instanceId of the block.
+ */
 type PipelineMap = Record<
   UUID,
   {

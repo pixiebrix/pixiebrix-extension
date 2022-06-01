@@ -29,6 +29,7 @@ import { FormikError } from "./editTabTypes";
 import { TypedBlockMap } from "@/blocks/registry";
 import { getPipelinePropNames } from "@/pageEditor/utils";
 
+// TODO change the call signature of the hook, don't use 6 arguments
 function mapPipelineToNodes(
   blockPipeline: BlockPipeline,
   allBlocks: TypedBlockMap,
