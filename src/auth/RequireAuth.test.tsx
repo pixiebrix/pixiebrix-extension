@@ -20,7 +20,7 @@ import { render, screen } from "@testing-library/react";
 import RequireAuth from "@/auth/RequireAuth";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
-import { appApi, useGetMeQuery } from "@/services/api";
+import { useGetMeQuery } from "@/services/api";
 import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
@@ -30,7 +30,6 @@ function optionsStore(initialState?: any) {
     reducer: {
       auth: persistReducer(persistAuthConfig, authSlice.reducer),
       services: persistReducer(persistServicesConfig, servicesSlice.reducer),
-      //[appApi.reducerPath]: appApi.reducer,
     },
     preloadedState: initialState,
   });
