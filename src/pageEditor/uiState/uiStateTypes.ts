@@ -18,6 +18,22 @@
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { RegistryId, UUID } from "@/core";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
+
+/**
+ * The map of pipeline blocks. The key is the instanceId of the block.
+ */
+export type PipelineMap = Record<
+  UUID,
+  {
+    blockId: RegistryId;
+    fieldName: string;
+    blockConfig: BlockConfig;
+    blockIndex: number;
+    pipeline: BlockPipeline;
+  }
+>;
 
 export type TabUIState = {
   /**
@@ -54,6 +70,12 @@ export type NodeUIState = {
 };
 
 export type ElementUIState = {
+  /**
+   * Flat map of all pipeline blocks including sub pipelines.
+   * Key is the block instanceId.
+   */
+  pipelineMap: PipelineMap;
+
   /**
    * The instanceId of the active node in the editor,
    *  or:

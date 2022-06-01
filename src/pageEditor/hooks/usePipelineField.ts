@@ -37,7 +37,7 @@ import { RegistryId, UUID } from "@/core";
 import { joinName } from "@/utils";
 import { getPipelinePropNames } from "@/pageEditor/utils";
 
-export const PIPELINE_BLOCKS_FIELD_NAME = "extension.blockPipeline";
+const PIPELINE_BLOCKS_FIELD_NAME = "extension.blockPipeline";
 
 /**
  * The map of pipeline blocks. The key is the instanceId of the block.
@@ -104,6 +104,7 @@ function usePipelineField(
       validate: validatePipelineBlocks,
     });
 
+  // TODO remove this and use the map from Redux
   const pipelineMap: PipelineMap = {};
   flattenPipeline(blockPipeline, PIPELINE_BLOCKS_FIELD_NAME, pipelineMap);
 

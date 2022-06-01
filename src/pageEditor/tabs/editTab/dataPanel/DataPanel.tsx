@@ -44,7 +44,11 @@ import ErrorDisplay from "./ErrorDisplay";
 import PageStateTab from "./PageStateTab";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
-import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveElement,
+  selectActivePipelineMap,
+  selectNodePreviewActiveElement,
+} from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import Alert from "@/components/Alert";
 import { CustomFormRenderer } from "@/blocks/renderers/customForm";
@@ -75,19 +79,16 @@ const DataPanel: React.FC<{
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
 
-  const { values: formState, errors } = useFormikContext<FormState>();
-  const formikData = { errors, ...formState };
+  const { errors: formikErrors } = useFormikContext<FormState>();
+  const activeElement = useSelector(selectActiveElement);
 
-  const { blockPipeline } = formState.extension;
-  const blockIndex = blockPipeline.findIndex(
-    (x) => x.instanceId === instanceId
-  );
-  // eslint-disable-next-line security/detect-object-injection
-  const block = blockPipeline[blockIndex];
+  const pipelineMap = useSelector(selectActivePipelineMap);
+  const { blockConfig, blockIndex, pipeline } = pipelineMap[instanceId];
 
   const traces = useSelector(selectExtensionTrace);
   const record = traces.find((trace) => trace.blockInstanceId === instanceId);
 
+  // TODO need to traverse up the block pipeline and the paren pipelines
   const isInputStale = useMemo(() => {
     // Don't show the warning if there are no traces. Also, this block can't have a
     // stale input if it's the first block in the pipeline.
@@ -95,7 +96,7 @@ const DataPanel: React.FC<{
       return false;
     }
 
-    const currentInput = blockPipeline.slice(0, blockIndex);
+    const currentInput = pipeline.slice(0, blockIndex);
     const tracedInput = currentInput.map(
       (block) =>
         traces.find((trace) => trace.blockInstanceId === block.instanceId)
@@ -103,7 +104,7 @@ const DataPanel: React.FC<{
     );
 
     return !isEqual(currentInput, tracedInput);
-  }, [blockIndex, blockPipeline, record, traces]);
+  }, [blockIndex, pipeline, record, traces]);
 
   const isCurrentStale = useMemo(() => {
     if (isInputStale) {
@@ -114,14 +115,15 @@ const DataPanel: React.FC<{
       return false;
     }
 
-    return !isEqual(record.blockConfig, block);
-  }, [isInputStale, record, block]);
+    return !isEqual(record.blockConfig, blockConfig);
+  }, [isInputStale, record, blockConfig]);
 
   const relevantContext = useMemo(
     () => pickBy(record?.templateContext ?? {}, contextFilter),
     [record?.templateContext]
   );
 
+  // TODO refactor this to work with nested pipelines
   const documentBodyName = `extension.blockPipeline.${blockIndex}.config.body`;
 
   const outputObj: JsonObject =
@@ -131,14 +133,14 @@ const DataPanel: React.FC<{
         : record.output
       : null;
 
-  const [previewInfo] = usePreviewInfo(block?.id);
+  const [previewInfo] = usePreviewInfo(blockConfig?.id);
 
   const showFormPreview =
-    block?.id === CustomFormRenderer.BLOCK_ID ||
-    block?.id === FormTransformer.BLOCK_ID;
-  const showDocumentPreview = block?.id === DocumentRenderer.BLOCK_ID;
+    blockConfig?.id === CustomFormRenderer.BLOCK_ID ||
+    blockConfig?.id === FormTransformer.BLOCK_ID;
+  const showDocumentPreview = blockConfig?.id === DocumentRenderer.BLOCK_ID;
   const showBlockPreview = record || previewInfo?.traceOptional;
-  const showPageState = pageStateBlockIds.includes(block?.id);
+  const showPageState = pageStateBlockIds.includes(blockConfig?.id);
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
     showFormPreview || showDocumentPreview
@@ -146,7 +148,7 @@ const DataPanel: React.FC<{
       : DataPanelTabKey.Output
   );
 
-  const [activeElement, setActiveElement] = useReduxState(
+  const [nodePreviewActiveElement, setNodePreviewActiveElement] = useReduxState(
     selectNodePreviewActiveElement,
     editorActions.setNodePreviewActiveElement
   );
@@ -157,25 +159,28 @@ const DataPanel: React.FC<{
 
   const isRenderedPanelStale = useMemo(() => {
     // Only show alert for Panel and Side Panel extensions
-    if (formState.type !== "panel" && formState.type !== "actionPanel") {
+    if (
+      activeElement.type !== "panel" &&
+      activeElement.type !== "actionPanel"
+    ) {
       return false;
     }
 
     const trace = traces.find(
-      (trace) => trace.blockInstanceId === block?.instanceId
+      (trace) => trace.blockInstanceId === blockConfig?.instanceId
     );
 
     // No traces or no changes since the last render, we are good, no alert
     if (
       traces.length === 0 ||
       trace == null ||
-      isEqual(trace.blockConfig, block)
+      isEqual(trace.blockConfig, blockConfig)
     ) {
       return false;
     }
 
     return true;
-  }, [formState, traces, block]);
+  }, [activeElement, traces, blockConfig]);
 
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
@@ -240,7 +245,7 @@ const DataPanel: React.FC<{
                   visible to developers
                 </div>
                 <DataTabJsonTree
-                  data={formikData ?? {}}
+                  data={{ ...activeElement, ...formikErrors }}
                   searchable
                   tabKey={DataPanelTabKey.Formik}
                 />
@@ -251,12 +256,12 @@ const DataPanel: React.FC<{
                   visible to developers
                 </div>
                 <DataTabJsonTree
-                  data={block ?? {}}
+                  data={blockConfig ?? {}}
                   tabKey={DataPanelTabKey.BlockConfig}
                 />
                 <Button
                   onClick={() => {
-                    copy(JSON.stringify(block, undefined, 2));
+                    copy(JSON.stringify(blockConfig, undefined, 2));
                   }}
                   size="sm"
                 >
@@ -331,7 +336,7 @@ const DataPanel: React.FC<{
           </DataTab>
           <DataTab eventKey={DataPanelTabKey.Preview} isTraceEmpty={false}>
             {/* The value of block.if can be `false`, in this case we also need to show the warning */}
-            {block?.if != null && (
+            {blockConfig?.if != null && (
               <Alert variant="info">
                 This brick has a condition. The brick will not execute if the
                 condition is not met
@@ -342,23 +347,23 @@ const DataPanel: React.FC<{
                 {isRenderedPanelStale && (
                   <Alert variant="info">
                     The rendered{" "}
-                    {formState.type === "panel" ? "Panel" : "Sidebar Panel"} is
-                    out of date with the preview
+                    {activeElement.type === "panel" ? "Panel" : "Sidebar Panel"}{" "}
+                    is out of date with the preview
                   </Alert>
                 )}
                 {showFormPreview ? (
                   <div className={dataPanelStyles.selectablePreviewContainer}>
                     <FormPreview
-                      rjsfSchema={block.config as RJSFSchema}
-                      activeField={activeElement}
-                      setActiveField={setActiveElement}
+                      rjsfSchema={blockConfig.config as RJSFSchema}
+                      activeField={nodePreviewActiveElement}
+                      setActiveField={setNodePreviewActiveElement}
                     />
                   </div>
                 ) : (
                   <DocumentPreview
                     name={documentBodyName}
-                    activeElement={activeElement}
-                    setActiveElement={setActiveElement}
+                    activeElement={nodePreviewActiveElement}
+                    setActiveElement={setNodePreviewActiveElement}
                     menuBoundary={popupBoundary}
                   />
                 )}
@@ -367,8 +372,8 @@ const DataPanel: React.FC<{
               <ErrorBoundary>
                 <BlockPreview
                   traceRecord={record}
-                  blockConfig={block}
-                  extensionPoint={formState.extensionPoint}
+                  blockConfig={blockConfig}
+                  extensionPoint={activeElement.extensionPoint}
                 />
               </ErrorBoundary>
             ) : (

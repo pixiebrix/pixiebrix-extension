@@ -191,6 +191,11 @@ export function selectActiveElementUIState(
   return rootState.editor.elementUIStates[rootState.editor.activeElementId];
 }
 
+export const selectActivePipelineMap = createSelector(
+  selectActiveElementUIState,
+  (uiState: ElementUIState) => uiState.pipelineMap
+);
+
 export const selectActiveNodeUIState: (rootState: RootState) => NodeUIState =
   createSelector(
     selectActiveElementUIState,

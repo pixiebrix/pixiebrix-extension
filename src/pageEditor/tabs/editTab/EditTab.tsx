@@ -30,9 +30,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
 import useExtensionTrace from "@/pageEditor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationDataPanel";
-import usePipelineField, {
-  PIPELINE_BLOCKS_FIELD_NAME,
-} from "@/pageEditor/hooks/usePipelineField";
+import usePipelineField from "@/pageEditor/hooks/usePipelineField";
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { useDispatch, useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";

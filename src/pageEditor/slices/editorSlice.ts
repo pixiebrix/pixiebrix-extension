@@ -33,12 +33,13 @@ import {
 } from "@/types/definitions";
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
-import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
+import { ElementUIState, PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
 import { get, isEmpty } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getPipelinePropNames } from "@/pageEditor/utils";
+import { joinName } from "@/utils";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -66,12 +67,63 @@ export const initialState: EditorState = {
 };
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
+
+// TODO move to some utils file
+function traversePipeline(
+  blockPipeline: BlockPipeline,
+  parentFieldName: string,
+  action: (
+    blockConfig: BlockConfig,
+    blockIndex: number,
+    fieldName: string,
+    blockPipeline: BlockPipeline
+  ) => void
+) {
+  for (const [index, blockConfig] of Object.entries(blockPipeline)) {
+    const fieldName = joinName(parentFieldName, index);
+    action(blockConfig, Number(index), fieldName, blockPipeline);
+
+    for (const subPipelineField of getPipelinePropNames(blockConfig)) {
+      const subPipelineAccessor = ["config", subPipelineField, "__value__"];
+      const subPipeline = get(blockConfig, subPipelineAccessor);
+      traversePipeline(
+        subPipeline,
+        joinName(fieldName, ...subPipelineAccessor),
+        action
+      );
+    }
+  }
+}
+
+function getPipelineMap(blockPipeline: BlockPipeline) {
+  const pipelineMap: PipelineMap = {};
+  traversePipeline(
+    blockPipeline,
+    "",
+    (blockConfig, blockIndex, fieldName, pipeline) => {
+      pipelineMap[blockConfig.instanceId] = {
+        blockId: blockConfig.id,
+        fieldName,
+        blockConfig,
+        blockIndex,
+        pipeline,
+      };
+    }
+  );
+
+  return pipelineMap;
+}
+
+// TODO use selector to get and map the pipeline
 function ensureElementUIState(
   state: WritableDraft<EditorState>,
   elementId: UUID
 ) {
   if (!state.elementUIStates[elementId]) {
     state.elementUIStates[elementId] = makeInitialElementUIState();
+    const pipeline = state.elements.find((x) => x.uuid === elementId).extension
+      .blockPipeline;
+    state.elementUIStates[elementId].pipelineMap = getPipelineMap(pipeline);
   }
 }
 
@@ -84,32 +136,18 @@ function ensureNodeUIState(
   }
 }
 
-function getAllBlockInstanceIds(blockPipeline: BlockPipeline) {
-  let ids: UUID[] = [];
-  for (const blockConfig of blockPipeline) {
-    ids.push(blockConfig.instanceId);
-
-    for (const subPipelineField of getPipelinePropNames(blockConfig)) {
-      const subPipelineAccessor = ["config", subPipelineField, "__value__"];
-      const subPipeline = get(blockConfig, subPipelineAccessor);
-      ids = [...ids, ...getAllBlockInstanceIds(subPipeline)];
-    }
-  }
-
-  return ids;
-}
-
 function syncElementNodeUIStates(
   state: WritableDraft<EditorState>,
   element: FormState
 ) {
   const elementUIState = state.elementUIStates[element.uuid];
-  const blockPipelineIds = getAllBlockInstanceIds(
-    element.extension.blockPipeline
-  );
+
+  const pipelineMap = getPipelineMap(element.extension.blockPipeline);
+
+  elementUIState.pipelineMap = pipelineMap;
 
   // Pipeline block instance IDs may have changed
-  if (!blockPipelineIds.includes(elementUIState.activeNodeId)) {
+  if (pipelineMap[elementUIState.activeNodeId] == null) {
     elementUIState.activeNodeId = FOUNDATION_NODE_ID;
   }
 
@@ -117,14 +155,14 @@ function syncElementNodeUIStates(
   for (const key of Object.keys(elementUIState.nodeUIStates)) {
     const nodeId = key as NodeId;
     // Don't remove the foundation NodeUIState
-    if (nodeId !== FOUNDATION_NODE_ID && !blockPipelineIds.includes(nodeId)) {
+    if (nodeId !== FOUNDATION_NODE_ID && pipelineMap[nodeId] == null) {
       delete elementUIState.nodeUIStates[nodeId];
     }
   }
 
   // Add missing NodeUIStates
-  for (const uuid of blockPipelineIds) {
-    ensureNodeUIState(elementUIState, uuid);
+  for (const uuid of Object.keys(pipelineMap)) {
+    ensureNodeUIState(elementUIState, uuid as UUID);
   }
 }
 
