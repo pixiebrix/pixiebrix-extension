@@ -32,7 +32,6 @@ import {
   maxBy,
   negate,
   ObjectIterator,
-  omit,
   partial,
   partialRight,
   pickBy,
@@ -44,6 +43,7 @@ import { Primitive } from "type-fest";
 import { ApiVersion, RegistryId, SafeString } from "@/core";
 import { BusinessError, PromiseCancelled } from "@/errors";
 import { RecipeDefinition } from "@/types/definitions";
+import { unsetOwnProp } from "./utils/safeProps";
 
 const specialCharsRegex = /[.[\]]/;
 
@@ -242,10 +242,6 @@ export function clone<T extends Record<string, unknown>>(object: T): T {
 
 export function isObject(value: unknown): value is Record<string, unknown> {
   return value && typeof value === "object";
-}
-
-export function clearObject(obj: Record<string, unknown>): void {
-  omit(obj, Object.keys(obj));
 }
 
 /**
