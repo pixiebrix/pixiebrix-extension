@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { IBrick } from "@/core";
-import { Split } from "type-fest";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -39,8 +38,7 @@ import { PanelExtensionPoint } from "@/extensionPoints/panelExtension";
 import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 import { appApi } from "@/services/api";
 import { useAsyncState } from "@/hooks/common";
-import { useAsyncEffect } from "use-async-effect";
-import { fetchFortAwesomeIcon } from "@/components/AsyncIcon";
+import { useAsyncIcon } from "@/components/asyncIcon";
 import { MarketplaceListing } from "@/types/contract";
 import getType from "@/runtime/getType";
 import { BlockType } from "@/runtime/runtimeTypes";
@@ -110,40 +108,10 @@ const BrickIcon: React.FunctionComponent<{
   const listing: MarketplaceListing | null = listings[brick.id];
 
   const [type] = useAsyncState(async () => getType(brick), [brick]);
-  const [listingFaIcon, setFaListingIcon] = useState<IconProp | undefined>();
 
-  useAsyncEffect(
-    async (isMounted) => {
-      if (!listing?.fa_icon) {
-        return;
-      }
-
-      // The fa_icon database value is a string e.g. "fas fa-coffee"
-      const [library, icon] = listing.fa_icon.split(" ") as Split<
-        typeof listing.fa_icon,
-        " "
-      >;
-
-      let svg: IconProp;
-
-      try {
-        svg = await fetchFortAwesomeIcon(library, icon);
-      } catch {
-        console.warn("Error dynamically loading FontAwesome icon", {
-          library,
-          icon,
-        });
-        // Don't do anything, because we're already using the default brick icon
-        return;
-      }
-
-      if (!isMounted()) {
-        return;
-      }
-
-      setFaListingIcon(svg);
-    },
-    [listing, setFaListingIcon]
+  const listingFaIcon = useAsyncIcon(
+    listing?.fa_icon,
+    getDefaultBrickIcon(brick, type)
   );
 
   const sizeMultiplier = SIZE_REGEX.exec(size).groups?.size;
@@ -159,7 +127,7 @@ const BrickIcon: React.FunctionComponent<{
     />
   ) : (
     <FontAwesomeIcon
-      icon={listingFaIcon ?? getDefaultBrickIcon(brick, type)}
+      icon={listingFaIcon}
       color={listing?.icon_color ?? "darkGrey"}
       className={faIconClass}
       size={size}
