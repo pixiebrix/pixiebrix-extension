@@ -25,7 +25,7 @@ import {
   makeInitialNodeUIState,
 } from "@/pageEditor/uiState/uiState";
 import { WritableDraft } from "immer/dist/types/types-external";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { BlockConfig } from "@/blocks/types";
 import { ExtensionPointType } from "@/extensionPoints/types";
 import {
   OptionsDefinition,
@@ -33,13 +33,12 @@ import {
 } from "@/types/definitions";
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
-import { ElementUIState, PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
+import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
-import { get, isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
-import { getPipelinePropNames } from "@/pageEditor/utils";
-import { joinName } from "@/utils";
+import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -68,49 +67,6 @@ export const initialState: EditorState = {
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
 
-// TODO move to some utils file
-function traversePipeline(
-  blockPipeline: BlockPipeline,
-  parentPath: string,
-  action: (
-    blockConfig: BlockConfig,
-    index: number,
-    path: string,
-    pipeline: BlockPipeline
-  ) => void
-) {
-  for (const [index, blockConfig] of Object.entries(blockPipeline)) {
-    const fieldName = joinName(parentPath, index);
-    action(blockConfig, Number(index), fieldName, blockPipeline);
-
-    for (const subPipelineField of getPipelinePropNames(blockConfig)) {
-      const subPipelineAccessor = ["config", subPipelineField, "__value__"];
-      const subPipeline = get(blockConfig, subPipelineAccessor);
-      traversePipeline(
-        subPipeline,
-        joinName(fieldName, ...subPipelineAccessor),
-        action
-      );
-    }
-  }
-}
-
-function getPipelineMap(blockPipeline: BlockPipeline) {
-  const pipelineMap: PipelineMap = {};
-  traversePipeline(blockPipeline, "", (blockConfig, index, path, pipeline) => {
-    pipelineMap[blockConfig.instanceId] = {
-      blockId: blockConfig.id,
-      path,
-      blockConfig,
-      index,
-      pipeline,
-    };
-  });
-
-  return pipelineMap;
-}
-
-// TODO use selector to get and map the pipeline
 function ensureElementUIState(
   state: WritableDraft<EditorState>,
   elementId: UUID
@@ -658,6 +614,21 @@ export const editorSlice = createSlice({
       // Clean up the old metadata and options
       delete state.dirtyRecipeMetadataById[oldRecipeId];
       delete state.dirtyRecipeOptionsById[oldRecipeId];
+    },
+    addNode(
+      state,
+      action: PayloadAction<{ block: BlockConfig; pipelineIndex: number }>
+    ) {
+      const { block, pipelineIndex } = action.payload;
+      const element = state.elements.find(
+        (x) => x.uuid === state.activeElementId
+      );
+      element.extension.blockPipeline.splice(pipelineIndex, 0, block);
+      syncElementNodeUIStates(state, element);
+      setActiveNodeId(state, block.instanceId);
+
+      // This change should re-initialize the Page Editor Formik form
+      state.selectionSeq++;
     },
   },
 });
