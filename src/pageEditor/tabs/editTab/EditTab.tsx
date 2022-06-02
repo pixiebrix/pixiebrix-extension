@@ -92,11 +92,6 @@ const EditTab: React.FC<{
   const { blockId, path } = useSelector(selectActiveNodeInfo) ?? {};
   const fieldName = `${PIPELINE_BLOCKS_FIELD_NAME}.${path}`;
 
-  console.log("Edit Tab", {
-    activeNodeId,
-    blockId,
-    fieldName,
-  });
   const dispatch = useDispatch();
   const setActiveNodeId = useCallback(
     (nodeId: NodeId) => {
