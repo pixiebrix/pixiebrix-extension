@@ -36,16 +36,16 @@ import { selectAuth } from "@/auth/authSelectors";
 
 const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
 
-const activateBackgroundTheme = async (): Promise<void> => {
+const activateBackgroundTheme = async (theme: Theme): Promise<void> => {
   // Flush the Redux state to localStorage to ensure the background page sees the latest state
   await persistor.flush();
-  await activatePartnerTheme();
+  await activatePartnerTheme(theme);
 };
 
 export const useGetTheme = (): Theme => {
   const { theme, partnerId } = useSelector(selectSettings);
   const { data: me } = useGetMeQuery();
-  const { partner: cachedParnter } = useSelector(selectAuth);
+  const { partner: cachedPartner } = useSelector(selectAuth);
   const dispatch = useDispatch();
 
   const partnerTheme = useMemo(() => {
@@ -53,8 +53,8 @@ export const useGetTheme = (): Theme => {
       return isValidTheme(me.partner?.theme) ? me.partner?.theme : null;
     }
 
-    return isValidTheme(cachedParnter?.theme) ? cachedParnter?.theme : null;
-  }, [me, cachedParnter?.theme]);
+    return isValidTheme(cachedPartner?.theme) ? cachedPartner?.theme : null;
+  }, [me, cachedPartner?.theme]);
 
   const [managedPartnerId, isLoading] = useAsyncState(
     readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed"),
@@ -84,14 +84,15 @@ export const useGetTheme = (): Theme => {
   return theme;
 };
 
-const useTheme = (theme: Theme): { logo: ThemeLogo } => {
+const useTheme = (theme?: Theme): { logo: ThemeLogo } => {
   const themeLogo = getThemeLogo(theme);
+  const inferredTheme = useGetTheme();
 
   useEffect(() => {
-    void activateBackgroundTheme();
-    addThemeClassToDocumentRoot(theme);
-    setThemeFavicon(theme);
-  }, [theme]);
+    void activateBackgroundTheme(theme ?? inferredTheme);
+    addThemeClassToDocumentRoot(theme ?? inferredTheme);
+    setThemeFavicon(theme ?? inferredTheme);
+  }, [theme, inferredTheme]);
 
   return {
     logo: themeLogo,
