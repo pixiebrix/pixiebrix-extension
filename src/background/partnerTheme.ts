@@ -15,11 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { getSettingsState } from "@/store/settingsStorage";
 import { getThemeLogo } from "@/utils/themeUtils";
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
-import { DEFAULT_THEME, Theme } from "@/options/types";
+import { DEFAULT_THEME } from "@/options/types";
 
-async function setToolbarIcon(theme: Theme): Promise<void> {
+async function setToolbarIcon(): Promise<void> {
+  const { theme } = await getSettingsState();
+
   if (theme === DEFAULT_THEME) {
     activateBrowserActionIcon();
     return;
@@ -29,6 +32,6 @@ async function setToolbarIcon(theme: Theme): Promise<void> {
   (chrome.browserAction ?? chrome.action).setIcon({ path: themeLogo.small });
 }
 
-export default function initPartnerTheme(theme: Theme) {
-  void setToolbarIcon(theme);
+export default function initPartnerTheme() {
+  void setToolbarIcon();
 }

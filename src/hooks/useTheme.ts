@@ -36,10 +36,10 @@ import { selectAuth } from "@/auth/authSelectors";
 
 const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
 
-const activateBackgroundTheme = async (theme: Theme): Promise<void> => {
+const activateBackgroundTheme = async (): Promise<void> => {
   // Flush the Redux state to localStorage to ensure the background page sees the latest state
   await persistor.flush();
-  await activatePartnerTheme(theme);
+  await activatePartnerTheme();
 };
 
 export const useGetTheme = (): Theme => {
@@ -89,7 +89,7 @@ const useTheme = (theme?: Theme): { logo: ThemeLogo } => {
   const inferredTheme = useGetTheme();
 
   useEffect(() => {
-    void activateBackgroundTheme(theme ?? inferredTheme);
+    void activateBackgroundTheme();
     addThemeClassToDocumentRoot(theme ?? inferredTheme);
     setThemeFavicon(theme ?? inferredTheme);
   }, [theme, inferredTheme]);
