@@ -48,6 +48,7 @@ const EditorNodeLayout: React.FC<{
   allBlocks: TypedBlockMap;
   activeNodeId: NodeId;
   relevantBlocksToAdd: IBlock[];
+  selectBlock: (instanceId: UUID) => void;
   addBlock: (block: IBlock, pipelineIndex: number) => void;
   moveBlockUp: (instanceId: UUID) => void;
   moveBlockDown: (instanceId: UUID) => void;
@@ -57,6 +58,7 @@ const EditorNodeLayout: React.FC<{
   allBlocks,
   activeNodeId,
   relevantBlocksToAdd,
+  selectBlock,
   addBlock,
   moveBlockUp,
   moveBlockDown,
@@ -71,7 +73,8 @@ const EditorNodeLayout: React.FC<{
   const lastBlock = lastBlockPipelineId
     ? allBlocks.get(lastBlockPipelineId)
     : undefined;
-  const showAppend = !lastBlock?.block || lastBlock.type !== "renderer";
+  const showAppend =
+    addBlock != null && (!lastBlock?.block || lastBlock.type !== "renderer");
 
   return (
     <ListGroup variant="flush">
@@ -105,6 +108,9 @@ const EditorNodeLayout: React.FC<{
               <EditorNode
                 active={nodeId === activeNodeId}
                 canMoveAnything={canMoveAnything}
+                onClick={() => {
+                  selectBlock(nodeId);
+                }}
                 {...nodeProps}
               />
               {children?.length > 0 &&
@@ -116,7 +122,8 @@ const EditorNodeLayout: React.FC<{
                       allBlocks={allBlocks}
                       activeNodeId={activeNodeId}
                       relevantBlocksToAdd={relevantBlocksToAdd}
-                      addBlock={noop}
+                      selectBlock={selectBlock}
+                      addBlock={null}
                       moveBlockUp={noop}
                       moveBlockDown={noop}
                       pasteBlock={null}

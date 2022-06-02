@@ -114,15 +114,14 @@ const EditTab: React.FC<{
     setActiveNodeId
   );
 
-  const nodes = useNodes(
+  const nodes = useNodes({
     blockPipeline,
     blockPipelineErrors,
     errorTraceEntry,
     label,
     icon,
     allBlocks,
-    setActiveNodeId
-  );
+  });
 
   const [relevantBlocksToAdd] = useAsyncState(
     async () => {
@@ -188,6 +187,7 @@ const EditTab: React.FC<{
               allBlocks={allBlocks}
               activeNodeId={activeNodeId}
               relevantBlocksToAdd={relevantBlocksToAdd}
+              selectBlock={setActiveNodeId}
               addBlock={addBlock}
               moveBlockUp={moveBlockUp}
               moveBlockDown={moveBlockDown}

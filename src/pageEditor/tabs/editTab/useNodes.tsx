@@ -24,23 +24,30 @@ import { TraceError, TraceRecord } from "@/telemetry/trace";
 import { isNullOrBlank } from "@/utils";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { useSelector } from "react-redux";
-import { EditorNodeProps, NodeId } from "./editorNode/EditorNode";
+import { EditorNodeProps } from "./editorNode/EditorNode";
 import { FormikError } from "./editTabTypes";
 import { TypedBlockMap } from "@/blocks/registry";
 import { getPipelinePropNames } from "@/pageEditor/utils";
+import { PipelineExpression } from "@/runtime/mapArgs";
 
-// TODO change the call signature of the hook, don't use 6 arguments
-function mapPipelineToNodes(
-  blockPipeline: BlockPipeline,
-  allBlocks: TypedBlockMap,
-  traces: TraceRecord[],
-  blockPipelineErrors: FormikError,
-  errorTraceEntry: TraceError,
-  setActiveNodeId: (nodeId: NodeId) => void
-) {
+type MapPipelineToNodesParams = {
+  pipeline: BlockPipeline;
+  allBlocks: TypedBlockMap;
+  traces: TraceRecord[];
+  blockPipelineErrors: FormikError;
+  errorTraceEntry: TraceError;
+};
+
+function mapPipelineToNodes({
+  pipeline,
+  allBlocks,
+  traces,
+  blockPipelineErrors,
+  errorTraceEntry,
+}: MapPipelineToNodesParams) {
   // A flag that shows if there are trace records related to any of the current nodes.
   let nodesHaveTraces = false;
-  const nodes = blockPipeline.map((blockConfig, index) => {
+  const nodes = pipeline.map((blockConfig, index) => {
     const block = allBlocks.get(blockConfig.id)?.block;
     const nodeId = blockConfig.instanceId;
     const traceRecord = traces.find(
@@ -70,21 +77,18 @@ function mapPipelineToNodes(
       hasWarning: errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
       skippedRun: traceRecord?.skippedRun,
       ran: traceRecord != null,
-      onClick() {
-        setActiveNodeId(blockConfig.instanceId);
-      },
       children: getPipelinePropNames(blockConfig).map((propName) => {
-        const subPipeline = blockConfig.config[propName]
-          .__value__ as BlockPipeline;
+        // eslint-disable-next-line security/detect-object-injection -- propName is a known pipeline property
+        const subPipeline = (blockConfig.config[propName] as PipelineExpression)
+          .__value__;
         const { nodes: subNodes, nodesHaveTraces: subNodesHaveTraces } =
-          mapPipelineToNodes(
-            subPipeline,
+          mapPipelineToNodes({
+            pipeline: subPipeline,
             allBlocks,
             traces,
             blockPipelineErrors,
             errorTraceEntry,
-            setActiveNodeId
-          );
+          });
         nodesHaveTraces = nodesHaveTraces || subNodesHaveTraces;
         return {
           label: propName,
@@ -106,25 +110,32 @@ function mapPipelineToNodes(
   };
 }
 
-function useNodes(
-  blockPipeline: BlockPipeline,
-  blockPipelineErrors: FormikError,
-  errorTraceEntry: TraceError,
-  label: string,
-  icon: IconProp,
-  allBlocks: TypedBlockMap,
-  setActiveNodeId: (nodeId: NodeId) => void
-) {
+type UseNodesParams = {
+  blockPipeline: BlockPipeline;
+  blockPipelineErrors: FormikError;
+  errorTraceEntry: TraceError;
+  label: string;
+  icon: IconProp;
+  allBlocks: TypedBlockMap;
+};
+
+function useNodes({
+  blockPipeline,
+  blockPipelineErrors,
+  errorTraceEntry,
+  label,
+  icon,
+  allBlocks,
+}: UseNodesParams) {
   const traces = useSelector(selectExtensionTrace);
   const nodes = useMemo<EditorNodeProps[]>(() => {
-    const { nodes, nodesHaveTraces } = mapPipelineToNodes(
-      blockPipeline,
+    const { nodes, nodesHaveTraces } = mapPipelineToNodes({
+      pipeline: blockPipeline,
       allBlocks,
       traces,
       blockPipelineErrors,
       errorTraceEntry,
-      setActiveNodeId
-    );
+    });
 
     const foundationNode: EditorNodeProps = {
       nodeId: FOUNDATION_NODE_ID,
@@ -133,9 +144,6 @@ function useNodes(
       icon,
       // Foundation Node doesn't have its own trace record, so we use the traces flag.
       ran: nodesHaveTraces,
-      onClick() {
-        setActiveNodeId(FOUNDATION_NODE_ID);
-      },
     };
 
     return [foundationNode, ...nodes];
@@ -146,7 +154,6 @@ function useNodes(
     errorTraceEntry,
     icon,
     label,
-    setActiveNodeId,
     traces,
   ]);
 
