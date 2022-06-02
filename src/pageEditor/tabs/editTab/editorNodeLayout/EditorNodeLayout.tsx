@@ -116,7 +116,9 @@ const EditorNodeLayout: React.FC<{
               {children?.length > 0 &&
                 children.map(({ label, nodes }) => (
                   <ListGroup.Item key={label} as="div" className="pr-0">
-                    <ListGroup.Item>{label}</ListGroup.Item>
+                    <ListGroup.Item className={styles.subPipelineLabel}>
+                      {label}
+                    </ListGroup.Item>
                     <EditorNodeLayout
                       nodes={nodes}
                       allBlocks={allBlocks}
