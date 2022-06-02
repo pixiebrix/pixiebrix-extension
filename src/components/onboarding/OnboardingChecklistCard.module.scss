@@ -1,0 +1,106 @@
+/*!
+ * Copyright (C) 2022 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.checklistCard {
+  :global(.list-group-item) {
+    border: none;
+  }
+
+  :not(:last-child):global(.list-group-item) {
+    border-bottom: 1px solid #e3e3e6;
+  }
+}
+
+.checklistItem {
+  padding: 24px 39px;
+}
+
+.checklistItemLayout {
+  display: flex;
+}
+
+.inactive {
+  opacity: 50%;
+}
+
+.stepDescription {
+  flex-grow: 1;
+}
+
+.futureStep {
+  background-color: #f6f6f7 !important;
+}
+
+.stepBody {
+  padding-top: 8px;
+
+  :last-child {
+    margin-bottom: 0 !important;
+  }
+}
+
+.stepTitle {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  color: #58538d;
+  margin: 0;
+}
+
+.circleIconSuccess {
+  background-color: var(--theme-success);
+}
+
+.circleIconActive {
+  background-color: #58538d;
+}
+
+.circleIconDefault {
+  background-color: transparent;
+  border: 3px solid #58538d;
+}
+
+.onboardingTitle {
+  color: #495057;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 25px;
+  text-align: center;
+  margin-bottom: 19px;
+}
+
+.stepNumber {
+  color: #8ea4b3;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.circleIcon {
+  padding: 7px;
+  color: white;
+  border-radius: 100%;
+  width: 30px !important;
+  height: 30px !important;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 27px;
+}

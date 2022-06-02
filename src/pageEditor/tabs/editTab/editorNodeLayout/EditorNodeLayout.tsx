@@ -27,9 +27,8 @@ import {
   faPlus,
   faPlusCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { IBlock, RegistryId, UUID } from "@/core";
-import BlockModal from "@/components/brickModal/BrickModal";
-import useBrickRecommendations from "@/pageEditor/tabs/editTab/useBrickRecommendations";
+import { IBlock, UUID } from "@/core";
+import BrickModal from "@/components/brickModal/BrickModal";
 import cx from "classnames";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
@@ -63,7 +62,6 @@ const EditorNodeLayout: React.FC<{
   moveBlockDown,
   pasteBlock,
 }) => {
-  const recommendations: RegistryId[] = useBrickRecommendations();
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
   const canMoveAnything = nodes.length > 2;
@@ -131,7 +129,7 @@ const EditorNodeLayout: React.FC<{
                 })}
               >
                 {showAddBlock && (
-                  <BlockModal
+                  <BrickModal
                     bricks={relevantBlocksToAdd}
                     renderButton={(onClick) => (
                       <TooltipIconButton
@@ -141,7 +139,6 @@ const EditorNodeLayout: React.FC<{
                         tooltipText="Add a brick"
                       />
                     )}
-                    recommendations={recommendations}
                     selectCaption={addBrickCaption}
                     onSelect={(block) => {
                       addBlock(block, index);

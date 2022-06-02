@@ -32,26 +32,50 @@ import {
 } from "@/auth/authUtils";
 import { authActions } from "@/auth/authSlice";
 import { anonAuth } from "@/auth/authConstants";
-import { selectIsLoggedIn } from "@/auth/authSelectors";
+import { selectAuth, selectIsLoggedIn } from "@/auth/authSelectors";
 import { Me } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
 import { AxiosError } from "axios";
+import { RootState } from "@/options/store";
+import { RawServiceConfiguration } from "@/core";
+import { selectConfiguredServices } from "@/store/servicesSelectors";
 
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
   LoginPage: React.VFC;
 };
 
-/**
- * Require that the extension is linked to the PixieBrix API (has a token) and that the user is authenticated.
- *
- * - Axios passes the session along with requests (even for CORS, it seems). So safe (GET) methods succeed with
- *   just the session cookies. However, the server needs an X-CSRFToken token for unsafe methods (e.g., POST, DELETE).
- *   NOTE: the CSRF token for session authentication is _not_ the same as the Authentication header token for
- *   token-based authentication.
- * - Therefore, also check the extension has the Authentication header token from the server.
- */
-const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
+const AA_CONTROL_ROOM_SERVICE_ID = "automation-anywhere/control-room";
+
+export const useRequiredPartnerAuth = () => {
+  const { isLoading, data: me, error } = useGetMeQuery();
+  const { partner, organization } = useSelector(selectAuth);
+
+  const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
+    selectConfiguredServices
+  );
+
+  const configuredAAIntegration = configuredServices.some(
+    (service) => service.serviceId === AA_CONTROL_ROOM_SERVICE_ID
+  );
+
+  const hasPartner = me ? Boolean(me?.partner) : Boolean(partner);
+  const requiresIntegration =
+    hasPartner &&
+    (me
+      ? Boolean(me?.organization?.control_room)
+      : Boolean(organization?.control_room));
+
+  return {
+    hasPartner,
+    requiresIntegration,
+    hasConfiguredIntegration: requiresIntegration && configuredAAIntegration,
+    isLoading,
+    error,
+  };
+};
+
+export const useRequiredAuth = () => {
   const dispatch = useDispatch();
 
   const hasCachedLoggedIn = useSelector(selectIsLoggedIn);
@@ -123,6 +147,42 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     void clearExtensionAuth();
   }
 
+  return {
+    isAccountUnlinked:
+      isUnauthenticated ||
+      (!hasCachedLoggedIn && !meLoading) ||
+      (!hasToken && !tokenLoading),
+    hasToken,
+    tokenError,
+    hasCachedLoggedIn,
+    isLoading,
+    meError,
+  };
+};
+
+/**
+ * Require that the extension is linked to the PixieBrix API (has a token) and that the user is authenticated.
+ *
+ * - Axios passes the session along with requests (even for CORS, it seems). So safe (GET) methods succeed with
+ *   just the session cookies. However, the server needs an X-CSRFToken token for unsafe methods (e.g., POST, DELETE).
+ *   NOTE: the CSRF token for session authentication is _not_ the same as the Authentication header token for
+ *   token-based authentication.
+ * - Therefore, also check the extension has the Authentication header token from the server.
+ */
+const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
+  const {
+    isAccountUnlinked,
+    tokenError,
+    hasCachedLoggedIn,
+    isLoading: isRequiredAuthLoading,
+    meError,
+  } = useRequiredAuth();
+  const {
+    requiresIntegration,
+    hasConfiguredIntegration,
+    isLoading: isPartnerAuthLoading,
+  } = useRequiredPartnerAuth();
+
   // Show SetupPage if there is auth error or user not logged in
   if (
     // Currently, useGetMeQuery will only return a 401 if the user has a non-empty invalid token. If the extension
@@ -130,15 +190,14 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     // the user is not authenticated.
     // http://github.com/pixiebrix/pixiebrix-app/blob/0686663bf007cf4b33d547d9f124d1fa2a83ec9a/api/views/site.py#L210-L210
     // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3056
-    isUnauthenticated ||
-    (!hasCachedLoggedIn && !meLoading) ||
-    (!hasToken && !tokenLoading)
+    isAccountUnlinked ||
+    (requiresIntegration && !hasConfiguredIntegration)
   ) {
     return <LoginPage />;
   }
 
   // Optimistically skip waiting if we have cached auth data
-  if (!hasCachedLoggedIn && isLoading) {
+  if (!hasCachedLoggedIn && (isRequiredAuthLoading || isPartnerAuthLoading)) {
     return <Loader />;
   }
 
