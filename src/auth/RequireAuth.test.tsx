@@ -24,10 +24,13 @@ import { useGetMeQuery } from "@/services/api";
 import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
+import { connectRouter } from "connected-react-router";
+import { hashHistory } from "@/options/store";
 
 function optionsStore(initialState?: any) {
   return configureStore({
     reducer: {
+      router: connectRouter(hashHistory),
       auth: persistReducer(persistAuthConfig, authSlice.reducer),
       services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     },
@@ -74,6 +77,9 @@ describe("RequireAuth", () => {
     );
 
     expect(screen.getByText("Login")).not.toBeNull();
+    expect(
+      screen.queryByText("Only authenticated users should see me!")
+    ).toBeNull();
   });
 
   test("loading state does not flash content", () => {
@@ -90,5 +96,8 @@ describe("RequireAuth", () => {
     );
 
     expect(screen.getByTestId("loader")).not.toBeNull();
+    expect(
+      screen.queryByText("Only authenticated users should see me!")
+    ).toBeNull();
   });
 });
