@@ -91,7 +91,6 @@ const DataPanel: React.FC = () => {
   const traces = useSelector(selectExtensionTrace);
   const record = traces.find((trace) => trace.blockInstanceId === activeNodeId);
 
-  // TODO need to traverse up the block pipeline and the parent pipelines
   const isInputStale = useMemo(() => {
     // Don't show the warning if there are no traces. Also, this block can't have a
     // stale input if it's the first block in the pipeline.
