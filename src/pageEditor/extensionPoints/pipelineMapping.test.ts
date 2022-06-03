@@ -25,16 +25,11 @@ import {
   teapotBlock,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { uuidSequence } from "@/testUtils/factories";
-import { toExpression } from "@/testUtils/testHelpers";
+import { EMPTY_PIPELINE, toExpression } from "@/testUtils/testHelpers";
 import {
   normalizePipelineForEditor,
   omitEditorMetadata,
 } from "./pipelineMapping";
-
-const emptyPipeline: PipelineExpression = Object.freeze({
-  __type__: "pipeline",
-  __value__: [],
-});
 
 describe("normalizePipeline", () => {
   let echoBlockConfig: BlockConfig;
@@ -136,7 +131,7 @@ describe("normalizePipeline", () => {
     // ELSE branch should be undefined
     const elseConfig = actual[0].config.else;
     expect(isPipelineExpression(elseConfig)).toBeTrue();
-    expect(elseConfig).toEqual(emptyPipeline);
+    expect(elseConfig).toEqual(EMPTY_PIPELINE);
   });
 
   test("Try-Except block", () => {
@@ -189,7 +184,7 @@ describe("normalizePipeline", () => {
     // EXCEPT branch should be undefined
     const exceptConfig = actual[0].config.except;
     expect(isPipelineExpression(exceptConfig)).toBeTrue();
-    expect(exceptConfig).toEqual(emptyPipeline);
+    expect(exceptConfig).toEqual(EMPTY_PIPELINE);
   });
 
   test("nested pipelines", () => {

@@ -41,6 +41,8 @@ import { Expression, ExpressionType } from "@/core";
 import { noop } from "lodash";
 import { ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
 import { UnknownObject } from "@/types";
+import { PipelineExpression } from "@/runtime/mapArgs";
+import { BlockPipeline } from "@/blocks/types";
 
 export const neverPromise = async (...args: unknown[]): Promise<never> => {
   console.error("This method should not have been called", { args });
@@ -188,9 +190,19 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
   };
 }
 
-export function toExpression<T>(type: ExpressionType, value: T): Expression<T> {
+export function toExpression<
+  TTemplateOrPipeline,
+  TTypeTag extends ExpressionType
+>(
+  type: TTypeTag,
+  value: TTemplateOrPipeline
+): Expression<TTemplateOrPipeline, TTypeTag> {
   return {
     __type__: type,
     __value__: value,
   };
 }
+
+export const EMPTY_PIPELINE: PipelineExpression = Object.freeze(
+  toExpression("pipeline", [] as BlockPipeline)
+);

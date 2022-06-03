@@ -22,11 +22,12 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ListGroup } from "react-bootstrap";
 import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import { UUID } from "@/core";
+import { RegistryId, UUID } from "@/core";
 
 export type NodeId = UUID;
 export type EditorNodeProps = {
   nodeId?: NodeId;
+  blockId?: RegistryId;
   title: string;
   outputKey?: string;
   icon?: IconProp | React.ReactNode;
@@ -41,6 +42,10 @@ export type EditorNodeProps = {
   onClickMoveDown?: () => void;
   skippedRun?: boolean;
   ran?: boolean;
+  children?: Array<{
+    label: string;
+    nodes: EditorNodeProps[];
+  }>;
 };
 
 function isFontAwesomeIcon(
@@ -68,7 +73,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   skippedRun = false,
   ran = false,
 }) => {
-  const nodeRef = useRef<HTMLAnchorElement>(null);
+  const nodeRef = useRef<HTMLDivElement>(null);
   const outputName = outputKey ? `@${outputKey}` : "";
 
   const icon = isFontAwesomeIcon(iconProp) ? (
@@ -101,7 +106,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   return (
     <ListGroup.Item
       ref={nodeRef}
-      tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
+      as="div"
       onClick={onClick}
       active={active}
       className={cx(styles.root, "list-group-item-action")}

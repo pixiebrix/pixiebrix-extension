@@ -18,6 +18,8 @@
 import { UnknownObject } from "@/types";
 import { RegistryId } from "@/core";
 import { COMPONENT_READER_ID } from "@/blocks/transformers/component/ComponentReader";
+import { FormTransformer } from "@/blocks/transformers/ephemeralForm/formTransformer";
+import { CustomFormRenderer } from "@/blocks/renderers/customForm";
 
 export function getExampleBlockConfig(
   blockId: RegistryId
@@ -37,7 +39,7 @@ export function getExampleBlockConfig(
     };
   }
 
-  if (blockId === "@pixiebrix/form-modal") {
+  if (blockId === FormTransformer.BLOCK_ID) {
     return {
       schema: {
         title: "Example Form",
@@ -57,7 +59,7 @@ export function getExampleBlockConfig(
     };
   }
 
-  if (blockId === "@pixiebrix/form") {
+  if (blockId === CustomFormRenderer.BLOCK_ID) {
     return {
       schema: {
         title: "Example Form",
