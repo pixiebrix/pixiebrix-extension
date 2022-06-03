@@ -104,8 +104,7 @@ function syncElementNodeUIStates(
   }
 
   // Remove NodeUIStates for invalid IDs
-  for (const key of Object.keys(elementUIState.nodeUIStates)) {
-    const nodeId = key as NodeId;
+  for (const nodeId of Object.keys(elementUIState.nodeUIStates) as NodeId[]) {
     // Don't remove the foundation NodeUIState
     if (nodeId !== FOUNDATION_NODE_ID && pipelineMap[nodeId] == null) {
       delete elementUIState.nodeUIStates[nodeId];
@@ -113,8 +112,8 @@ function syncElementNodeUIStates(
   }
 
   // Add missing NodeUIStates
-  for (const uuid of Object.keys(pipelineMap)) {
-    ensureNodeUIState(elementUIState, uuid as UUID);
+  for (const nodeId of Object.keys(pipelineMap) as NodeId[]) {
+    ensureNodeUIState(elementUIState, nodeId);
   }
 }
 

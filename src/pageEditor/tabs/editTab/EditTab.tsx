@@ -115,8 +115,8 @@ const EditTab: React.FC<{
   );
 
   const nodes = useNodes({
-    blockPipeline,
-    blockPipelineErrors,
+    pipeline: blockPipeline,
+    pipelineErrors: blockPipelineErrors,
     errorTraceEntry,
     label,
     icon,

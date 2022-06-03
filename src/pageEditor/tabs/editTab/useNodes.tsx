@@ -34,7 +34,7 @@ type MapPipelineToNodesParams = {
   pipeline: BlockPipeline;
   allBlocks: TypedBlockMap;
   traces: TraceRecord[];
-  blockPipelineErrors: FormikError;
+  pipelineErrors: FormikError;
   errorTraceEntry: TraceError;
 };
 
@@ -42,7 +42,7 @@ function mapPipelineToNodes({
   pipeline,
   allBlocks,
   traces,
-  blockPipelineErrors,
+  pipelineErrors,
   errorTraceEntry,
 }: MapPipelineToNodesParams) {
   // A flag that shows if there are trace records related to any of the current nodes.
@@ -71,9 +71,9 @@ function mapPipelineToNodes({
       icon: <BrickIcon brick={block} size="2x" inheritColor />,
       hasError:
         // If blockPipelineErrors is a string, it means the error is on the pipeline level
-        typeof blockPipelineErrors !== "string" &&
+        typeof pipelineErrors !== "string" &&
         // eslint-disable-next-line security/detect-object-injection
-        Boolean(blockPipelineErrors?.[index]),
+        Boolean(pipelineErrors?.[index]),
       hasWarning: errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
       skippedRun: traceRecord?.skippedRun,
       ran: traceRecord != null,
@@ -86,7 +86,7 @@ function mapPipelineToNodes({
             pipeline: subPipeline,
             allBlocks,
             traces,
-            blockPipelineErrors,
+            pipelineErrors,
             errorTraceEntry,
           });
         nodesHaveTraces = nodesHaveTraces || subNodesHaveTraces;
@@ -111,8 +111,8 @@ function mapPipelineToNodes({
 }
 
 type UseNodesParams = {
-  blockPipeline: BlockPipeline;
-  blockPipelineErrors: FormikError;
+  pipeline: BlockPipeline;
+  pipelineErrors: FormikError;
   errorTraceEntry: TraceError;
   label: string;
   icon: IconProp;
@@ -120,8 +120,8 @@ type UseNodesParams = {
 };
 
 function useNodes({
-  blockPipeline,
-  blockPipelineErrors,
+  pipeline,
+  pipelineErrors,
   errorTraceEntry,
   label,
   icon,
@@ -130,10 +130,10 @@ function useNodes({
   const traces = useSelector(selectExtensionTrace);
   const nodes = useMemo<EditorNodeProps[]>(() => {
     const { nodes, nodesHaveTraces } = mapPipelineToNodes({
-      pipeline: blockPipeline,
+      pipeline,
       allBlocks,
       traces,
-      blockPipelineErrors,
+      pipelineErrors,
       errorTraceEntry,
     });
 
@@ -148,12 +148,12 @@ function useNodes({
 
     return [foundationNode, ...nodes];
   }, [
-    allBlocks,
-    blockPipeline,
-    blockPipelineErrors,
+    pipeline,
+    pipelineErrors,
     errorTraceEntry,
-    icon,
     label,
+    icon,
+    allBlocks,
     traces,
   ]);
 
