@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isOfficial } from "./util";
+import { defaultBlockConfig, isOfficial } from "./util";
 import { RegistryId } from "@/core";
+import IfElse from "./transformers/controlFlow/IfElse";
+import { EMPTY_PIPELINE } from "@/testUtils/testHelpers";
 
 describe("isOfficial", () => {
   test("returns true for an official block", () => {
@@ -24,5 +26,15 @@ describe("isOfficial", () => {
   });
   test("returns false for a 3d-party block", () => {
     expect(isOfficial("@non/pixiebrix" as RegistryId)).toBeFalsy();
+  });
+});
+
+describe("defaultBlockConfig", () => {
+  test("initialize pipeline props", () => {
+    const ifElse = new IfElse();
+    const actual = defaultBlockConfig(ifElse.inputSchema);
+
+    expect(actual.if).toEqual(EMPTY_PIPELINE);
+    expect(actual.else).toEqual(EMPTY_PIPELINE);
   });
 });
