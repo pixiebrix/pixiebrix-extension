@@ -113,6 +113,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       title={
         skippedRun ? "This brick was skipped due to its condition" : undefined
       }
+      data-testid="editor-node"
     >
       <div className={styles.icon}>
         {icon}

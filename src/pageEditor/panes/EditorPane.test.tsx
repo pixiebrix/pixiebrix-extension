@@ -29,6 +29,10 @@ import {
 import { defaultBlockConfig } from "@/blocks/util";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import userEvent from "@testing-library/user-event";
+import { JQTransformer } from "@/blocks/transformers/jq";
+
+const jqBlock = new JQTransformer();
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -36,9 +40,9 @@ beforeAll(() => {
 
 describe("sanity check", () => {
   let formState: FormState;
-  beforeEach(() => {
+  beforeEach(async () => {
     blockRegistry.clear();
-    blockRegistry.register(echoBlock, teapotBlock);
+    blockRegistry.register(echoBlock, teapotBlock, jqBlock);
     formState = formStateFactory(undefined, [
       blockConfigFactory({
         id: echoBlock.id,
@@ -49,6 +53,8 @@ describe("sanity check", () => {
         config: defaultBlockConfig(teapotBlock.inputSchema),
       }),
     ]);
+
+    await blockRegistry.allTyped();
   });
 
   test("it renders first selected node", async () => {
@@ -64,5 +70,32 @@ describe("sanity check", () => {
     await waitForEffect();
 
     expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  test("can add a node", async () => {
+    const rendered = render(<EditorPane />, {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.selectElement(formState.uuid));
+      },
+    });
+
+    await waitForEffect();
+
+    // Hitting the last (Foundation node plus 2 bricks) Add Node button
+    await userEvent.click(rendered.getByTestId("icon-button-add-node-2"));
+
+    // Add the first (and the only) available block
+    await userEvent.click(
+      rendered.getByRole("button", {
+        name: /add brick/i,
+      })
+    );
+
+    // Selecting the last node
+    const newNode = rendered.getAllByTestId("editor-node")[3];
+    expect(newNode).toBeInTheDocument();
+    expect(newNode).toHaveClass("active");
+    expect(newNode).toHaveTextContent(/jq - json processor/i);
   });
 });

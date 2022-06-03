@@ -215,6 +215,7 @@ exports[`sanity check it renders first selected node 1`] = `
               </span>
               <button
                 class="copyButton"
+                data-testid="icon-button-copyNode"
                 type="button"
               >
                 <svg
@@ -235,6 +236,7 @@ exports[`sanity check it renders first selected node 1`] = `
               </button>
               <button
                 class="removeButton"
+                data-testid="icon-button-removeNode"
                 type="button"
               >
                 <svg
@@ -262,6 +264,7 @@ exports[`sanity check it renders first selected node 1`] = `
               >
                 <div
                   class="root list-group-item-action list-group-item"
+                  data-testid="editor-node"
                 >
                   <div
                     class="icon"
@@ -302,7 +305,7 @@ exports[`sanity check it renders first selected node 1`] = `
                   class="actions"
                 >
                   <button
-                    class=""
+                    data-testid="icon-button-add-node-0"
                     type="button"
                   >
                     <svg
@@ -324,6 +327,7 @@ exports[`sanity check it renders first selected node 1`] = `
                 </div>
                 <div
                   class="root list-group-item-action list-group-item active"
+                  data-testid="editor-node"
                 >
                   <div
                     class="icon"
@@ -404,7 +408,7 @@ exports[`sanity check it renders first selected node 1`] = `
                   class="actions"
                 >
                   <button
-                    class=""
+                    data-testid="icon-button-add-node-1"
                     type="button"
                   >
                     <svg
@@ -426,6 +430,7 @@ exports[`sanity check it renders first selected node 1`] = `
                 </div>
                 <div
                   class="root list-group-item-action list-group-item"
+                  data-testid="editor-node"
                 >
                   <div
                     class="icon"
@@ -506,7 +511,7 @@ exports[`sanity check it renders first selected node 1`] = `
                   class="actions finalActions"
                 >
                   <button
-                    class=""
+                    data-testid="icon-button-add-node-2"
                     type="button"
                   >
                     <svg
