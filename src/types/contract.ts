@@ -182,7 +182,13 @@ export type BlueprintResponse = {
 // The fa_icon database value is a string with Font Awesome prefix and name, e.g. "fas fa-coffee"
 export type IconStringDefinition = `${IconPrefix} ${IconName}`;
 
-export type MarketplaceTag = components["schemas"]["Tag"];
+/**
+ * @See components["schemas"]["Tag"]
+ */
+export type MarketplaceTag = Omit<components["schemas"]["Tag"], "fa_icon"> & {
+  // See IconStringDefinition for type explanation
+  fa_icon: IconStringDefinition | null;
+};
 
 export type MarketplaceListing = Omit<
   components["schemas"]["MarketplaceListing"],

@@ -39,7 +39,7 @@ import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 import { appApi } from "@/services/api";
 import { useAsyncState } from "@/hooks/common";
 import { useAsyncIcon } from "@/components/asyncIcon";
-import { IconStringDefinition, MarketplaceListing } from "@/types/contract";
+import { MarketplaceListing } from "@/types/contract";
 import getType from "@/runtime/getType";
 import { BlockType } from "@/runtime/runtimeTypes";
 
