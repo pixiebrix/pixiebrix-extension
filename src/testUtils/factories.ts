@@ -536,13 +536,13 @@ const internalFormStateFactory = define<FormState>({
 
 export const formStateFactory = (
   override?: FactoryConfig<FormState>,
-  blockConfigOverride?: FactoryConfig<BlockConfig>
+  pipelineOverride?: BlockPipeline
 ) => {
-  if (blockConfigOverride) {
+  if (pipelineOverride) {
     return internalFormStateFactory({
       ...override,
       extension: baseExtensionStateFactory({
-        blockPipeline: pipelineFactory(blockConfigOverride),
+        blockPipeline: pipelineOverride,
       }),
     } as any);
   }
@@ -551,8 +551,8 @@ export const formStateFactory = (
 };
 
 export const triggerFormStateFactory = (
-  override: FactoryConfig<TriggerFormState>,
-  blockConfigOverride?: FactoryConfig<BlockConfig>
+  override?: FactoryConfig<TriggerFormState>,
+  pipelineOverride?: BlockPipeline
 ) => {
   const defaultTriggerProps = trigger.fromNativeElement(
     "https://test.com",
@@ -568,13 +568,13 @@ export const triggerFormStateFactory = (
       ...defaultTriggerProps,
       ...override,
     } as any,
-    blockConfigOverride
+    pipelineOverride
   ) as TriggerFormState;
 };
 
 export const menuItemFormStateFactory = (
-  override: FactoryConfig<ActionFormState>,
-  blockConfigOverride?: FactoryConfig<BlockConfig>
+  override?: FactoryConfig<ActionFormState>,
+  pipelineOverride?: BlockPipeline
 ) => {
   const defaultTriggerProps = menuItem.fromNativeElement(
     "https://test.com",
@@ -594,7 +594,7 @@ export const menuItemFormStateFactory = (
       ...defaultTriggerProps,
       ...override,
     } as any,
-    blockConfigOverride
+    pipelineOverride
   ) as ActionFormState;
 };
 

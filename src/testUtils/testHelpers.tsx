@@ -79,6 +79,9 @@ export type RenderFunctionWithRedux<
   stateOverride?: Partial<S>;
 }) => RenderResult;
 
+/**
+ * @deprecated Prefer using `createRenderWithWrappers` instead
+ */
 export function createRenderFunctionWithRedux<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from Redux typings
   S = any,
@@ -138,11 +141,7 @@ type ConfigureStore<
 export function createRenderWithWrappers(configureStore: ConfigureStore) {
   return (
     ui: React.ReactElement,
-    {
-      initialValues = {},
-      setupRedux = noop,
-      ...renderOptions
-    }: WrapperOptions = {}
+    { initialValues, setupRedux = noop, ...renderOptions }: WrapperOptions = {}
   ): WrapperResult => {
     let submitHandler: (values: FormikValues) => void = jest.fn();
 
