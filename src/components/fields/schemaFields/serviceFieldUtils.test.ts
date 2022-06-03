@@ -19,7 +19,6 @@ import {
   blockConfigFactory,
   formStateFactory,
   uuidSequence,
-  baseExtensionStateFactory,
 } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
 import { selectPipelines, selectVariables } from "./serviceFieldUtils";
