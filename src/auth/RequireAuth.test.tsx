@@ -55,6 +55,7 @@ describe("RequireAuth", () => {
       </Provider>
     );
 
+    expect(screen.queryByTestId("loader")).toBeNull();
     expect(
       screen.getByText("Only authenticated users should see me!")
     ).not.toBeNull();
@@ -73,6 +74,7 @@ describe("RequireAuth", () => {
       </Provider>
     );
 
+    expect(screen.queryByTestId("loader")).toBeNull();
     expect(screen.getByText("Login")).not.toBeNull();
     expect(
       screen.queryByText("Only authenticated users should see me!")
