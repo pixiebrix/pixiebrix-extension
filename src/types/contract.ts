@@ -195,23 +195,7 @@ export type MarketplaceTag = {
   updated_at?: string;
 };
 
-/**
- * Detailed MarketplaceListing
- * TODO: generate type using swagger
- */
-export type MarketplaceListing = {
-  id: string;
-  package: Record<string, unknown>;
-  fa_icon: IconStringDefinition | null;
-  icon_color: string;
-  image?: {
-    url: string;
-    alt_text: string;
-  };
-  instructions: string;
-  assets: unknown[];
-  tags: MarketplaceTag[];
-};
+export type MarketplaceListing = components["schemas"]["MarketplaceListing"];
 
 export type ProxyResponseSuccessData = {
   json: unknown;
