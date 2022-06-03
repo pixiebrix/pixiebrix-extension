@@ -18,7 +18,7 @@
 import React from "react";
 import styles from "./EditorNodeLayout.module.scss";
 import EditorNode, {
-  type EditorNodeProps,
+  EditorNodeProps,
   NodeId,
 } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -34,6 +34,8 @@ import TooltipIconButton from "@/components/TooltipIconButton";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { ListGroup } from "react-bootstrap";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
+import { noop } from "lodash";
+import { TypedBlockMap } from "@/blocks/registry";
 
 const addBrickCaption = (
   <span>
@@ -43,19 +45,21 @@ const addBrickCaption = (
 
 const EditorNodeLayout: React.FC<{
   nodes: EditorNodeProps[];
+  allBlocks: TypedBlockMap;
   activeNodeId: NodeId;
   relevantBlocksToAdd: IBlock[];
+  selectBlock: (instanceId: UUID) => void;
   addBlock: (block: IBlock, pipelineIndex: number) => void;
-  showAppend: boolean;
   moveBlockUp: (instanceId: UUID) => void;
   moveBlockDown: (instanceId: UUID) => void;
   pasteBlock?: (pipelineIndex: number) => void;
 }> = ({
   nodes,
+  allBlocks,
   activeNodeId,
   relevantBlocksToAdd,
+  selectBlock,
   addBlock,
-  showAppend,
   moveBlockUp,
   moveBlockDown,
   pasteBlock,
@@ -65,11 +69,18 @@ const EditorNodeLayout: React.FC<{
   const canMoveAnything = nodes.length > 2;
   const finalIndex = nodes.length - 1;
 
+  const lastBlockPipelineId = nodes[nodes.length - 1]?.blockId;
+  const lastBlock = lastBlockPipelineId
+    ? allBlocks.get(lastBlockPipelineId)
+    : undefined;
+  const showAppend =
+    addBlock != null && (!lastBlock?.block || lastBlock.type !== "renderer");
+
   return (
     <ListGroup variant="flush">
       {nodes.length > 0 &&
         nodes.map((nodeProps, index) => {
-          const { nodeId } = nodeProps;
+          const { nodeId, children } = nodeProps;
           // Editor nodes are displayed from top to bottom in array order,
           // so, "up" is lower in the array, and "down" is higher in the array.
           // Also, you cannot move the foundation node, which is always at
@@ -97,8 +108,30 @@ const EditorNodeLayout: React.FC<{
               <EditorNode
                 active={nodeId === activeNodeId}
                 canMoveAnything={canMoveAnything}
+                onClick={() => {
+                  selectBlock(nodeId);
+                }}
                 {...nodeProps}
               />
+              {children?.length > 0 &&
+                children.map(({ label, nodes }) => (
+                  <ListGroup.Item key={label} as="div" className="pr-0">
+                    <ListGroup.Item className={styles.subPipelineLabel}>
+                      {label}
+                    </ListGroup.Item>
+                    <EditorNodeLayout
+                      nodes={nodes}
+                      allBlocks={allBlocks}
+                      activeNodeId={activeNodeId}
+                      relevantBlocksToAdd={relevantBlocksToAdd}
+                      selectBlock={selectBlock}
+                      addBlock={null}
+                      moveBlockUp={noop}
+                      moveBlockDown={noop}
+                      pasteBlock={null}
+                    />
+                  </ListGroup.Item>
+                ))}
               <div
                 className={cx(styles.actions, {
                   [styles.finalActions]: isFinal,

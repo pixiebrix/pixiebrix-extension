@@ -16,29 +16,11 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
-import ForEach from "@/blocks/transformers/controlFlow/ForEach";
-import IfElse from "@/blocks/transformers/controlFlow/IfElse";
-import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
+import { BlockPipeline } from "@/blocks/types";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 import { produce } from "immer";
 import { WritableDraft } from "immer/dist/types/types-external";
-
-function getPipelinePropNames(block: BlockConfig) {
-  switch (block.id) {
-    case ForEach.BLOCK_ID:
-      return ["body"];
-
-    case IfElse.BLOCK_ID:
-      return ["if", "else"];
-
-    case TryExcept.BLOCK_ID:
-      return ["try", "except"];
-
-    default:
-      return [];
-  }
-}
+import { getPipelinePropNames } from "@/pageEditor/utils";
 
 function normalizePipelineDraft(pipeline: WritableDraft<BlockPipeline>) {
   for (const block of pipeline) {

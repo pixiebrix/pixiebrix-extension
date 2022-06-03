@@ -21,6 +21,7 @@ import { Schema, UiSchema } from "@/core";
 import { isEmpty } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
+import pipelineSchema from "@schemas/pipeline.json";
 
 export type BlockOptionProps = {
   /**
@@ -50,24 +51,27 @@ function genericOptionsFactory(
 
     return (
       <>
-        {Object.entries(optionSchema).map(([prop, fieldSchema]) => {
-          if (typeof fieldSchema === "boolean") {
-            throw new TypeError("Expected schema for input property type");
-          }
-
-          // Fine because coming from Object.entries for the schema
-          // eslint-disable-next-line security/detect-object-injection
-          const propUiSchema = uiSchema?.[prop];
-          return (
-            <SchemaField
-              key={prop}
-              name={joinName(name, configKey, prop)}
-              schema={fieldSchema}
-              isRequired={schema.required?.includes(prop)}
-              uiSchema={propUiSchema}
-            />
-          );
-        })}
+        {Object.entries(optionSchema)
+          .filter(
+            ([, fieldSchema]) =>
+              typeof fieldSchema === "object" &&
+              fieldSchema.$ref !== pipelineSchema.$id
+          )
+          .map(([prop, fieldSchema]) => {
+            // Fine because coming from Object.entries for the schema
+            // eslint-disable-next-line security/detect-object-injection
+            const propUiSchema = uiSchema?.[prop];
+            return (
+              <SchemaField
+                key={prop}
+                name={joinName(name, configKey, prop)}
+                // The fieldSchema type has been filtered and is safe to assume it is Schema
+                schema={fieldSchema as Schema}
+                isRequired={schema.required?.includes(prop)}
+                uiSchema={propUiSchema}
+              />
+            );
+          })}
       </>
     );
   };

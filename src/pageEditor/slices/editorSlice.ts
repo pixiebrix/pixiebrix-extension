@@ -38,6 +38,7 @@ import { uuidv4 } from "@/types/helpers";
 import { isEmpty } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
+import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -65,12 +66,16 @@ export const initialState: EditorState = {
 };
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
+
 function ensureElementUIState(
   state: WritableDraft<EditorState>,
   elementId: UUID
 ) {
   if (!state.elementUIStates[elementId]) {
     state.elementUIStates[elementId] = makeInitialElementUIState();
+    const pipeline = state.elements.find((x) => x.uuid === elementId).extension
+      .blockPipeline;
+    state.elementUIStates[elementId].pipelineMap = getPipelineMap(pipeline);
   }
 }
 
@@ -88,27 +93,27 @@ function syncElementNodeUIStates(
   element: FormState
 ) {
   const elementUIState = state.elementUIStates[element.uuid];
-  const blockPipelineIds = element.extension.blockPipeline.map(
-    (x) => x.instanceId
-  );
+
+  const pipelineMap = getPipelineMap(element.extension.blockPipeline);
+
+  elementUIState.pipelineMap = pipelineMap;
 
   // Pipeline block instance IDs may have changed
-  if (!blockPipelineIds.includes(elementUIState.activeNodeId)) {
+  if (pipelineMap[elementUIState.activeNodeId] == null) {
     elementUIState.activeNodeId = FOUNDATION_NODE_ID;
   }
 
   // Remove NodeUIStates for invalid IDs
-  for (const key of Object.keys(elementUIState.nodeUIStates)) {
-    const nodeId = key as NodeId;
+  for (const nodeId of Object.keys(elementUIState.nodeUIStates) as NodeId[]) {
     // Don't remove the foundation NodeUIState
-    if (nodeId !== FOUNDATION_NODE_ID && !blockPipelineIds.includes(nodeId)) {
+    if (nodeId !== FOUNDATION_NODE_ID && pipelineMap[nodeId] == null) {
       delete elementUIState.nodeUIStates[nodeId];
     }
   }
 
   // Add missing NodeUIStates
-  for (const uuid of blockPipelineIds) {
-    ensureNodeUIState(elementUIState, uuid);
+  for (const nodeId of Object.keys(pipelineMap) as NodeId[]) {
+    ensureNodeUIState(elementUIState, nodeId);
   }
 }
 
@@ -207,7 +212,8 @@ export const editorSlice = createSlice({
       state.activeRecipeId = null;
       state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
       state.selectionSeq++;
-      state.elementUIStates[element.uuid] = makeInitialElementUIState();
+
+      ensureElementUIState(state, element.uuid);
     },
     betaError(state, action: PayloadAction<{ error: string }>) {
       state.error = action.payload.error;
@@ -607,6 +613,21 @@ export const editorSlice = createSlice({
       // Clean up the old metadata and options
       delete state.dirtyRecipeMetadataById[oldRecipeId];
       delete state.dirtyRecipeOptionsById[oldRecipeId];
+    },
+    addNode(
+      state,
+      action: PayloadAction<{ block: BlockConfig; pipelineIndex: number }>
+    ) {
+      const { block, pipelineIndex } = action.payload;
+      const element = state.elements.find(
+        (x) => x.uuid === state.activeElementId
+      );
+      element.extension.blockPipeline.splice(pipelineIndex, 0, block);
+      syncElementNodeUIStates(state, element);
+      setActiveNodeId(state, block.instanceId);
+
+      // This change should re-initialize the Page Editor Formik form
+      state.selectionSeq++;
     },
   },
 });

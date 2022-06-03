@@ -146,19 +146,21 @@ const ItemRenderer = ({
 }) => {
   const index = getFlatArrayIndex(rowIndex, columnIndex);
   // eslint-disable-next-line security/detect-object-injection -- numeric value from library
-  const { data: brick } = searchResults[index];
+  const { data: brick } = searchResults[index] ?? {};
   return (
     <div style={style}>
-      <BrickResult
-        brick={brick}
-        onShowDetail={() => {
-          setDetailBrick(brick);
-        }}
-        onSelect={() => {
-          onSelect(brick);
-          close();
-        }}
-      />
+      {brick && (
+        <BrickResult
+          brick={brick}
+          onShowDetail={() => {
+            setDetailBrick(brick);
+          }}
+          onSelect={() => {
+            onSelect(brick);
+            close();
+          }}
+        />
+      )}
     </div>
   );
 };
@@ -175,8 +177,15 @@ function itemKey({
   columnIndex,
   data: { searchResults },
   rowIndex,
-}: ItemKeyInput): RegistryId {
-  return searchResults[getFlatArrayIndex(rowIndex, columnIndex)].value;
+}: ItemKeyInput): RegistryId | number {
+  const resultIndex = getFlatArrayIndex(rowIndex, columnIndex);
+  // Number of bricks for the last Grid row could be less than the number of columns
+  // Returning the index here, ItemRenderer will render an empty cell
+  if (resultIndex >= searchResults.length) {
+    return resultIndex;
+  }
+
+  return searchResults[resultIndex]?.value;
 }
 
 const defaultAddCaption = (
@@ -326,7 +335,7 @@ function ActualModal<T extends IBrick>({
                         columnWidth={width / RESULT_COLUMN_COUNT}
                         rowHeight={BRICK_RESULT_FIXED_HEIGHT_PX}
                         columnCount={RESULT_COLUMN_COUNT}
-                        rowCount={Math.trunc(
+                        rowCount={Math.ceil(
                           searchResults.length / RESULT_COLUMN_COUNT
                         )}
                         itemKey={itemKey}

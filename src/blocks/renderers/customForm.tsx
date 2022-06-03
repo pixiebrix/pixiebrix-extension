@@ -30,6 +30,7 @@ import ImageCropStylesheet from "@/blocks/renderers/ImageCropStylesheet";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { validateRegistryId } from "@/types/helpers";
 
 const fields = {
   DescriptionField,
@@ -71,9 +72,10 @@ const CustomFormComponent: React.FunctionComponent<{
 );
 
 export class CustomFormRenderer extends Renderer {
+  static BLOCK_ID = validateRegistryId("@pixiebrix/form");
   constructor() {
     super(
-      "@pixiebrix/form",
+      CustomFormRenderer.BLOCK_ID,
       "Custom Form",
       "Show a custom form connected to a data source"
     );

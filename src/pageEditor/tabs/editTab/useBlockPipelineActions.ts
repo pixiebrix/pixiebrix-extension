@@ -53,6 +53,10 @@ function useBlockPipelineActions(
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
 
+  /**
+   * This action will update the Redux state and propagate it to Formik.
+   * Other actions do the opposite.
+   */
   const addBlock = useCallback(
     async (block: IBlock, pipelineIndex: number) => {
       const outputKey = await generateFreshOutputKey(
@@ -67,11 +71,7 @@ function useBlockPipelineActions(
         newBlock.outputKey = outputKey;
       }
 
-      const nextState = produce(values, (draft) => {
-        draft.extension.blockPipeline.splice(pipelineIndex, 0, newBlock);
-      });
-      setFormValues(nextState, true);
-      setActiveNodeId(newBlock.instanceId);
+      dispatch(actions.addNode({ block: newBlock, pipelineIndex }));
 
       reportEvent("BrickAdd", {
         brickId: block.id,

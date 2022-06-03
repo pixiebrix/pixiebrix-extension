@@ -23,6 +23,7 @@ import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { PipelineConfigurationError } from "@/blocks/errors";
 import blockRegistry from "@/blocks/registry";
 import pDefer from "p-defer";
+import pipelineSchema from "@schemas/pipeline.json";
 
 export function isOfficial(id: RegistryId): boolean {
   return id.startsWith("@pixiebrix/");
@@ -38,9 +39,19 @@ export function defaultBlockConfig(schema: Schema): UnknownObject {
       mapValues(
         pickBy(
           schema.properties,
-          (x) => typeof x !== "boolean" && x.default && !x.anyOf && !x.oneOf
+          (x) =>
+            typeof x !== "boolean" &&
+            ((x.default && !x.anyOf && !x.oneOf) ||
+              x.$ref === pipelineSchema.$id)
         ),
         (propertySchema: Schema) => {
+          if (propertySchema.$ref === pipelineSchema.$id) {
+            return {
+              __type__: "pipeline",
+              __value__: [],
+            };
+          }
+
           if (typeof propertySchema.default !== "object") {
             return propertySchema.default;
           }

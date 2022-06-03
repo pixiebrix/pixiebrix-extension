@@ -96,11 +96,20 @@ const SIZE_REGEX = /^(?<size>\d)x$/i;
 const BrickIcon: React.FunctionComponent<{
   brick: IBrick;
   size?: "1x" | "2x";
+
   /**
    * Sets a className only in cases where a <FontAwesomeIcon/> is used
    */
   faIconClass?: string;
-}> = ({ brick, size = "1x", faIconClass = "" }) => {
+
+  /**
+   * This makes brick icons that use basic font awesome icons
+   * inherit the editor node layout color scheme.
+   * Customized SVG icons are unaffected and keep their branded
+   * color schemes.
+   */
+  inheritColor?: boolean;
+}> = ({ brick, size = "1x", faIconClass = "", inheritColor = false }) => {
   const { data: listings = {} } =
     // BrickIcon only gets the data from the store. The API query must be issued by a parent component.
     appApi.endpoints.getMarketplaceListings.useQueryState();
@@ -128,7 +137,7 @@ const BrickIcon: React.FunctionComponent<{
   ) : (
     <FontAwesomeIcon
       icon={listingFaIcon}
-      color={listing?.icon_color ?? "darkGrey"}
+      color={inheritColor ? "inherit" : listing?.icon_color ?? "darkGrey"}
       className={faIconClass}
       size={size}
       fixedWidth
