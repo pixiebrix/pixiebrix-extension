@@ -182,20 +182,15 @@ export type BlueprintResponse = {
 // The fa_icon database value is a string with Font Awesome prefix and name, e.g. "fas fa-coffee"
 export type IconStringDefinition = `${IconPrefix} ${IconName}`;
 
-/**
- * @See components["schemas"]["Tag"]
- */
-export type MarketplaceTag = {
-  id?: UUID;
-  name: string;
-  slug?: string;
-  fa_icon: IconStringDefinition | null;
-  subtype: components["schemas"]["Tag"]["subtype"];
-  created_at?: string;
-  updated_at?: string;
-};
+export type MarketplaceTag = components["schemas"]["Tag"];
 
-export type MarketplaceListing = components["schemas"]["MarketplaceListing"];
+export type MarketplaceListing = Omit<
+  components["schemas"]["MarketplaceListing"],
+  "fa_icon"
+> & {
+  // See IconStringDefinition for type explanation
+  fa_icon: IconStringDefinition | null;
+};
 
 export type ProxyResponseSuccessData = {
   json: unknown;
