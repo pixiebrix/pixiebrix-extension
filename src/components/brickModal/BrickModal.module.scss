@@ -49,15 +49,13 @@ $bootstrapPadding: 15px;
 
 .tagList {
   height: $maxHeight;
+  min-width: 185px;
   overflow: auto;
 }
 
 .results {
-  height: $maxHeight;
-  display: grid;
-  grid-template-rows: min-content 1fr;
-  padding-top: $bootstrapPadding;
-  gap: $bootstrapPadding;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 
 .brickDetail {

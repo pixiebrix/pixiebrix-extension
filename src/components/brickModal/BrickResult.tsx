@@ -17,11 +17,12 @@
 
 import React from "react";
 import { IBrick } from "@/core";
-import { Button, ListGroup } from "react-bootstrap";
+import { Button, Card, ListGroup } from "react-bootstrap";
 import cx from "classnames";
-import styles from "@/options/pages/brickEditor/referenceTab/BlockResult.module.scss";
 import BrickIcon from "@/components/BrickIcon";
-import { OfficialBadge } from "@/components/OfficialBadge";
+import styles from "./BrickResult.module.scss";
+
+export const BRICK_RESULT_FIXED_HEIGHT_PX = 98;
 
 export type BrickResultProps = {
   brick: IBrick;
@@ -38,40 +39,14 @@ const BrickResult: React.FunctionComponent<BrickResultProps> = ({
   active,
   selectCaption,
 }) => (
-  <ListGroup.Item
-    onClick={onShowDetail}
-    className={cx(styles.root, { [styles.active]: active, active })}
-  >
-    <div className="d-flex">
-      <div className="mr-2 text-muted">
-        <BrickIcon brick={brick} />
+  <ListGroup.Item onClick={onShowDetail} className={styles.root}>
+    <Card className={styles.card}>
+      <div className={styles.nameRow}>
+        <BrickIcon brick={brick} faIconClass={styles.icon} />
+        <span className={styles.name}>{brick.name}</span>
       </div>
-      <div className={cx("flex-grow-1", styles.titleColumn)}>
-        <div className={styles.ellipsis}>{brick.name}</div>
-        <code className={cx("small", styles.id)}>{brick.id}</code>
-        <p className={cx("small mb-0", styles.ellipsis)}>
-          {/* Use a span if no description to ensure a consistent height for react-window */}
-          {brick.description ? `${brick.description}` : <span>&nbsp;</span>}
-        </p>
-      </div>
-      <div className={cx("flex-grow-0", styles.officialBadge)}>
-        <OfficialBadge id={brick.id} />
-      </div>
-      <div
-        className={cx(
-          "align-items-center justify-content-end",
-          styles.actionButtons
-        )}
-      >
-        <Button
-          variant="primary"
-          className="mb-1 text-nowrap"
-          onClick={onSelect}
-        >
-          {selectCaption}
-        </Button>
-      </div>
-    </div>
+      <div className={styles.description}>{brick.description}</div>
+    </Card>
   </ListGroup.Item>
 );
 

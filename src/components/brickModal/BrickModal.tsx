@@ -26,7 +26,7 @@ import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
 import { FixedSizeGrid as LazyGrid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-import BrickResult from "./BrickResult";
+import BrickResult, { BRICK_RESULT_FIXED_HEIGHT_PX } from "./BrickResult";
 import { Except } from "type-fest";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -39,6 +39,7 @@ import {
 } from "@/services/api";
 import { MarketplaceListing, MarketplaceTag } from "@/types/contract";
 import BrickDetail from "@/components/brickModal/BrickDetail";
+import Loader from "@/components/Loader";
 
 const TAG_ALL = "All Categories";
 
@@ -204,13 +205,15 @@ function ActualModal<T extends IBrick>({
 }: ModalProps<T>): React.ReactElement<T> {
   const [query, setQuery] = useState("");
   const [detailBrick, setDetailBrick] = useState<T>(null);
-  // The react-window library requires exact height
-  const brickResultHeightPx = 87;
 
-  const { data: marketplaceTags = [] as MarketplaceTag[] } =
-    useGetMarketplaceTagsQuery();
-  const { data: listings = {} as Record<RegistryId, MarketplaceListing> } =
-    useGetMarketplaceListingsQuery();
+  const {
+    data: marketplaceTags = [] as MarketplaceTag[],
+    isLoading: isLoadingTags,
+  } = useGetMarketplaceTagsQuery();
+  const {
+    data: listings = {} as Record<RegistryId, MarketplaceListing>,
+    isLoading: isLoadingListings,
+  } = useGetMarketplaceListingsQuery();
 
   const taggedBrickIds = useMemo<Record<string, Set<string>>>(() => {
     if (isEmpty(marketplaceTags) || isEmpty(listings)) {
@@ -259,7 +262,7 @@ function ActualModal<T extends IBrick>({
         <Container fluid>
           <Row>
             <Col xs={2}>
-              <Modal.Title className={styles.title}>Add brick</Modal.Title>
+              <Modal.Title className={styles.title}>Add Brick</Modal.Title>
             </Col>
             <Col xs={10}>
               <TagSearchInput
@@ -310,40 +313,48 @@ function ActualModal<T extends IBrick>({
           ) : (
             <Row>
               <Col xs={2} className={styles.tagList}>
-                <TagList
-                  tagItems={tagItems}
-                  activeTag={searchTag}
-                  onSelectTag={setSearchTag}
-                />
+                {isLoadingTags ? (
+                  <Loader />
+                ) : (
+                  <TagList
+                    tagItems={tagItems}
+                    activeTag={searchTag}
+                    onSelectTag={setSearchTag}
+                  />
+                )}
               </Col>
               <Col xs={10} className={styles.results}>
-                <AutoSizer>
-                  {({ height, width }) => (
-                    <LazyGrid
-                      height={height}
-                      width={width}
-                      columnWidth={width / RESULT_COLUMN_COUNT}
-                      rowHeight={brickResultHeightPx}
-                      columnCount={RESULT_COLUMN_COUNT}
-                      rowCount={Math.trunc(
-                        searchResults.length / RESULT_COLUMN_COUNT
-                      )}
-                      itemKey={itemKey}
-                      itemData={
-                        {
-                          searchResults,
-                          setDetailBrick,
-                          activeBrick: detailBrick,
-                          selectCaption,
-                          onSelect,
-                          close,
-                        } as ItemType
-                      }
-                    >
-                      {ItemRenderer}
-                    </LazyGrid>
-                  )}
-                </AutoSizer>
+                {isLoadingListings ? (
+                  <Loader />
+                ) : (
+                  <AutoSizer>
+                    {({ height, width }) => (
+                      <LazyGrid
+                        height={height}
+                        width={width}
+                        columnWidth={width / RESULT_COLUMN_COUNT}
+                        rowHeight={BRICK_RESULT_FIXED_HEIGHT_PX}
+                        columnCount={RESULT_COLUMN_COUNT}
+                        rowCount={Math.trunc(
+                          searchResults.length / RESULT_COLUMN_COUNT
+                        )}
+                        itemKey={itemKey}
+                        itemData={
+                          {
+                            searchResults,
+                            setDetailBrick,
+                            activeBrick: detailBrick,
+                            selectCaption,
+                            onSelect,
+                            close,
+                          } as ItemType
+                        }
+                      >
+                        {ItemRenderer}
+                      </LazyGrid>
+                    )}
+                  </AutoSizer>
+                )}
               </Col>
             </Row>
           )}

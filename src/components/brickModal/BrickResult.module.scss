@@ -15,41 +15,51 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$bootstrapPadding: 15px;
-
 .root {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: stretch;
-  padding: $bootstrapPadding 0;
-}
-
-.item {
-  border-radius: 4px;
   border: none;
-  font-weight: 400;
+  padding: 12px 10px;
+}
+
+.card {
+  cursor: pointer;
+  border-radius: 4px;
+  // Need to use exact px for fixed height grid items
+  padding: 12px;
+
+  &:hover {
+    background: #ebebf1;
+  }
+}
+
+.nameRow {
+  display: flex;
+  width: 100%;
+  height: auto;
+  gap: 0.5rem;
+  align-items: center;
+  // Need to use exact px for fixed height grid items
+  margin-bottom: 6px;
+}
+
+.icon {
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
+.name {
+  // Need to use exact px for fixed height grid items
   font-size: 16px;
-  color: #7674ab;
-  background: none;
-  text-align: start;
-  padding: 0.25rem 0.5rem;
-
-  &:hover {
-    background: #fbe5ff !important;
-  }
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.itemActive {
-  color: #fae5ff !important;
-  background: #6462aa;
-
-  &:hover {
-    background: #6462aa !important;
-  }
-}
-
-.iconContainer {
-  display: inline-block;
-  width: 1.5rem;
+.description {
+  // Need to use exact px for fixed height grid items
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #4c4c4c;
 }
