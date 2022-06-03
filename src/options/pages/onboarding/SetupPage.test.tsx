@@ -16,14 +16,15 @@
  */
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
-import RequireAuth from "@/auth/RequireAuth";
+import SetupPage from "@/options/pages/onboarding/SetupPage";
+import { render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
-import { useGetMeQuery } from "@/services/api";
-import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
+import { Provider } from "react-redux";
+import { useGetMeQuery } from "@/services/api";
 
 function optionsStore(initialState?: any) {
   return configureStore({
@@ -39,64 +40,58 @@ jest.mock("@/services/api", () => ({
   useGetMeQuery: jest.fn(),
 }));
 
-const MockLoginPage: React.VFC = () => <div>Login</div>;
+jest.mock("@/options/store", () => ({
+  persistor: {
+    flush: jest.fn(),
+  },
+}));
 
-describe("RequireAuth", () => {
-  test("authenticated user", () => {
+describe("SetupPage", () => {
+  test("typical user", async () => {
     (useGetMeQuery as jest.Mock).mockImplementation(() => ({
       isLoading: false,
-    }));
-
-    render(
-      <Provider store={optionsStore({ auth: { isLoggedIn: true } })}>
-        <RequireAuth LoginPage={MockLoginPage}>
-          Only authenticated users should see me!
-        </RequireAuth>
-      </Provider>
-    );
-
-    expect(screen.queryByTestId("loader")).toBeNull();
-    expect(
-      screen.getByText("Only authenticated users should see me!")
-    ).not.toBeNull();
-  });
-
-  test("unauthenticated user", () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
-      error: { response: { status: 401 } },
-    }));
-
-    render(
-      <Provider store={optionsStore({ auth: { isLoggedIn: true } })}>
-        <RequireAuth LoginPage={MockLoginPage}>
-          Only authenticated users should see me!
-        </RequireAuth>
-      </Provider>
-    );
-
-    expect(screen.queryByTestId("loader")).toBeNull();
-    expect(screen.getByText("Login")).not.toBeNull();
-    expect(
-      screen.queryByText("Only authenticated users should see me!")
-    ).toBeNull();
-  });
-
-  test("loading state does not flash content", () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
-      isLoading: true,
+      partner: null,
     }));
 
     render(
       <Provider store={optionsStore()}>
-        <RequireAuth LoginPage={MockLoginPage}>
-          Only authenticated users should see me!
-        </RequireAuth>
+        <MemoryRouter>
+          <SetupPage />
+        </MemoryRouter>
       </Provider>
     );
 
-    expect(screen.getByTestId("loader")).not.toBeNull();
-    expect(
-      screen.queryByText("Only authenticated users should see me!")
-    ).toBeNull();
+    await waitFor(() => {
+      expect(screen.queryByTestId("loader")).toBeNull();
+    });
+
+    expect(screen.queryByText("Connect your AARI account")).toBeNull();
+  });
+
+  test("partner user", async () => {
+    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+      isLoading: false,
+      data: {
+        partner: {
+          id: "",
+          name: "Test Partner",
+          theme: "automation-anywhere",
+        },
+      },
+    }));
+
+    render(
+      <Provider store={optionsStore()}>
+        <MemoryRouter>
+          <SetupPage />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("loader")).toBeNull();
+    });
+
+    expect(screen.getByText("Connect your AARI account")).not.toBeNull();
   });
 });

@@ -51,6 +51,7 @@ const SetupPage: React.FunctionComponent = () => {
     await browser.tabs.remove(accountTabs.map((tab) => tab.id));
     return accountTabs.length > 0;
   }, []);
+
   const [installURL, installURLPending] = useAsyncState(async () => {
     const url = new URL(await getBaseURL());
     url.searchParams.set("install", "1");
