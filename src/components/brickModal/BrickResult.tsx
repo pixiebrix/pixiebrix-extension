@@ -28,16 +28,12 @@ export type BrickResultProps = {
   brick: IBrick;
   onSelect: () => void;
   onShowDetail: () => void;
-  active?: boolean;
-  selectCaption: React.ReactNode;
 };
 
 const BrickResult: React.FunctionComponent<BrickResultProps> = ({
   brick,
   onSelect,
   onShowDetail,
-  active,
-  selectCaption,
 }) => (
   <ListGroup.Item onClick={onShowDetail} className={styles.root}>
     <Card className={styles.card}>

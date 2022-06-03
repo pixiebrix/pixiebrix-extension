@@ -120,10 +120,8 @@ type ButtonProps = {
 type ItemType = {
   searchResults: BrickOption[];
   setDetailBrick: (brick: IBrick) => void;
-  selectCaption: React.ReactNode;
   onSelect: (brick: IBrick) => void;
   close: () => void;
-  activeBrick: IBrick | null;
 };
 
 const RESULT_COLUMN_COUNT = 2;
@@ -139,14 +137,7 @@ const ItemRenderer = ({
   columnIndex,
   rowIndex,
   style,
-  data: {
-    searchResults,
-    setDetailBrick,
-    selectCaption,
-    onSelect,
-    close,
-    activeBrick,
-  },
+  data: { searchResults, setDetailBrick, onSelect, close },
 }: {
   columnIndex: number;
   rowIndex: number;
@@ -167,8 +158,6 @@ const ItemRenderer = ({
           onSelect(brick);
           close();
         }}
-        selectCaption={selectCaption}
-        active={activeBrick?.id === brick.id}
       />
     </div>
   );
@@ -261,24 +250,37 @@ function ActualModal<T extends IBrick>({
       <Modal.Header closeButton>
         <Container fluid>
           <Row>
-            <Col xs={2}>
-              <Modal.Title className={styles.title}>Add Brick</Modal.Title>
-            </Col>
-            <Col xs={10}>
-              <TagSearchInput
-                name={"brickSearch"}
-                value={query}
-                onValueChange={setQuery}
-                placeholder={"Search"}
-                tag={searchTag === TAG_ALL ? null : searchTag}
-                onClearTag={() => {
-                  setSearchTag(TAG_ALL);
+            {detailBrick ? (
+              <Button
+                variant="link"
+                onClick={() => {
+                  setDetailBrick(null);
                 }}
-                focusInput
-                className={styles.searchInput}
-                disabled={Boolean(detailBrick)}
-              />
-            </Col>
+                className={styles.backButton}
+              >
+                <FontAwesomeIcon icon={faChevronLeft} /> Back
+              </Button>
+            ) : (
+              <>
+                <Col xs={2}>
+                  <Modal.Title className={styles.title}>Add Brick</Modal.Title>
+                </Col>
+                <Col xs={10}>
+                  <TagSearchInput
+                    name={"brickSearch"}
+                    value={query}
+                    onValueChange={setQuery}
+                    placeholder={"Search"}
+                    tag={searchTag === TAG_ALL ? null : searchTag}
+                    onClearTag={() => {
+                      setSearchTag(TAG_ALL);
+                    }}
+                    focusInput
+                    className={styles.searchInput}
+                  />
+                </Col>
+              </>
+            )}
           </Row>
         </Container>
       </Modal.Header>
@@ -289,17 +291,7 @@ function ActualModal<T extends IBrick>({
         >
           {detailBrick ? (
             <>
-              <Row>
-                <Button
-                  variant="link"
-                  onClick={() => {
-                    setDetailBrick(null);
-                  }}
-                  className={styles.backButton}
-                >
-                  <FontAwesomeIcon icon={faChevronLeft} /> Back
-                </Button>
-              </Row>
+              <Row></Row>
               <BrickDetail
                 brick={detailBrick}
                 listing={listings[detailBrick.id]}
