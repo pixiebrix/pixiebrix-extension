@@ -23,22 +23,39 @@
 .card {
   cursor: pointer;
   border-radius: 4px;
-  // Need to use exact px for fixed height grid items
-  padding: 12px;
+  padding: 12px; // Need to use exact px for fixed height grid items
+  flex-direction: row; // override card default
+  align-items: center;
 
   &:hover {
     background: #ebebf1;
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
   }
 }
 
 .nameRow {
   display: flex;
-  width: 100%;
   height: auto;
   gap: 0.5rem;
   align-items: center;
-  // Need to use exact px for fixed height grid items
-  margin-bottom: 6px;
+  margin-bottom: 6px; // Need to use exact px for fixed height grid items
+}
+
+.cardContent {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+
+  // Allow flex-box to be smaller than
+  // its children so the ellipsized
+  // description works properly.
+  // See: https://stackoverflow.com/a/38224283
+  min-width: 0;
 }
 
 .icon {
@@ -47,8 +64,7 @@
 }
 
 .name {
-  // Need to use exact px for fixed height grid items
-  font-size: 16px;
+  font-size: 16px; // Need to use exact px for fixed height grid items
   font-weight: 400;
   white-space: nowrap;
   overflow: hidden;
@@ -62,4 +78,14 @@
   overflow: hidden;
   text-overflow: ellipsis;
   color: #4c4c4c;
+}
+
+.actions {
+  display: none;
+  gap: 12px;
+}
+
+.viewDetails {
+  white-space: nowrap;
+  color: #3e66fb;
 }

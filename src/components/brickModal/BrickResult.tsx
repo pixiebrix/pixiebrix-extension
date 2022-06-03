@@ -18,9 +18,10 @@
 import React from "react";
 import { IBrick } from "@/core";
 import { Button, Card, ListGroup } from "react-bootstrap";
-import cx from "classnames";
 import BrickIcon from "@/components/BrickIcon";
 import styles from "./BrickResult.module.scss";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const BRICK_RESULT_FIXED_HEIGHT_PX = 98;
 
@@ -37,11 +38,27 @@ const BrickResult: React.FunctionComponent<BrickResultProps> = ({
 }) => (
   <ListGroup.Item onClick={onShowDetail} className={styles.root}>
     <Card className={styles.card}>
-      <div className={styles.nameRow}>
-        <BrickIcon brick={brick} faIconClass={styles.icon} />
-        <span className={styles.name}>{brick.name}</span>
+      {/* Main Content */}
+      <div className={styles.cardContent}>
+        <div className={styles.nameRow}>
+          <BrickIcon brick={brick} faIconClass={styles.icon} />
+          <span className={styles.name}>{brick.name}</span>
+        </div>
+        <div className={styles.description}>{brick.description}</div>
       </div>
-      <div className={styles.description}>{brick.description}</div>
+
+      {/* Hover Actions */}
+      <div className={styles.actions}>
+        <span className={styles.viewDetails}>View Details</span>
+        <Button
+          variant="primary"
+          onClick={() => {
+            onSelect();
+          }}
+        >
+          <FontAwesomeIcon icon={faPlus} />
+        </Button>
+      </div>
     </Card>
   </ListGroup.Item>
 );
