@@ -53,22 +53,18 @@ describe("selectPipelines", () => {
 
 describe("selectVariables", () => {
   test("selects nothing when no services used", () => {
-    const formState = formStateFactory({
-      extension: baseExtensionStateFactory({
-        blockPipeline: [
-          blockConfigFactory({
-            config: {
-              data: false,
-            },
-          }),
-          blockConfigFactory({
-            config: {
-              input: toExpression("nunjucks", "foo: {{ @foo }}"),
-            },
-          }),
-        ],
+    const formState = formStateFactory(undefined, [
+      blockConfigFactory({
+        config: {
+          data: false,
+        },
       }),
-    });
+      blockConfigFactory({
+        config: {
+          input: toExpression("nunjucks", "foo: {{ @foo }}"),
+        },
+      }),
+    ]);
 
     const actual = selectVariables(formState);
     expect(actual).toEqual(new Set());
@@ -81,26 +77,24 @@ describe("selectVariables", () => {
       input: toExpression("var", "@foo"),
     };
 
-    const formState = formStateFactory(
-      undefined,
+    const formState = formStateFactory(undefined, [
       blockConfigFactory({
         config: serviceConfig,
-      })
-    );
+      }),
+    ]);
 
     const actual = selectVariables(formState);
     expect(actual).toEqual(new Set(["@foo"]));
   });
 
   test("do not select variable with path seperator", () => {
-    const formState = formStateFactory(
-      undefined,
+    const formState = formStateFactory(undefined, [
       blockConfigFactory({
         config: {
           foo: toExpression("var", "@foo.bar"),
         },
-      })
-    );
+      }),
+    ]);
 
     const actual = selectVariables(formState);
     expect(actual).toEqual(new Set([]));
@@ -131,12 +125,11 @@ describe("selectVariables", () => {
       instanceId: uuidSequence(1),
     };
 
-    const formState = formStateFactory(
-      undefined,
+    const formState = formStateFactory(undefined, [
       blockConfigFactory({
         config: documentWithButtonConfig,
-      })
-    );
+      }),
+    ]);
 
     const actual = selectVariables(formState);
     expect(actual).toEqual(new Set(["@foo"]));
@@ -179,12 +172,11 @@ describe("selectVariables", () => {
       instanceId: uuidSequence(1),
     };
 
-    const formState = formStateFactory(
-      undefined,
+    const formState = formStateFactory(undefined, [
       blockConfigFactory({
         config: documentWithButtonConfig,
-      })
-    );
+      }),
+    ]);
 
     const actual = selectVariables(formState);
     expect(actual).toEqual(new Set(["@foo", "@bar"]));

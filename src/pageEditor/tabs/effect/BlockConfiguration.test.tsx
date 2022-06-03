@@ -19,6 +19,7 @@ import React from "react";
 import BlockConfiguration from "./BlockConfiguration";
 import { createFormikTemplate } from "@/testUtils/formHelpers";
 import {
+  blockConfigFactory,
   blockFactory,
   formStateFactory,
   triggerFormStateFactory,
@@ -52,7 +53,9 @@ afterEach(() => {
 test("renders", async () => {
   const block = echoBlock;
   blockRegistry.register(block);
-  const initialState = formStateFactory({ apiVersion: "v3" }, { id: block.id });
+  const initialState = formStateFactory({ apiVersion: "v3" }, [
+    blockConfigFactory({ id: block.id }),
+  ]);
   const FormikTemplate = createFormikTemplate(initialState);
   const rendered = render(
     <FormikTemplate>
