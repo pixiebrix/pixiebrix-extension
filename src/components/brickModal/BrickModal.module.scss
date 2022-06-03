@@ -31,7 +31,7 @@ $bootstrapPadding: 15px;
 .title {
   font-style: normal;
   font-weight: 400;
-  font-size: 24px;
+  font-size: 1.25rem;
   line-height: 28px;
   color: #595969;
   flex-shrink: 0;
@@ -63,8 +63,4 @@ $bootstrapPadding: 15px;
   padding-top: $bootstrapPadding;
   padding-bottom: $bootstrapPadding;
   overflow: auto;
-}
-
-.backButton {
-  margin-bottom: $bootstrapPadding;
 }

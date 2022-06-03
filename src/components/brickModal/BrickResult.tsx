@@ -44,7 +44,13 @@ const BrickResult: React.FunctionComponent<BrickResultProps> = ({
           <BrickIcon brick={brick} faIconClass={styles.icon} />
           <span className={styles.name}>{brick.name}</span>
         </div>
-        <div className={styles.description}>{brick.description}</div>
+        {brick.description ? (
+          <div className={styles.description}>{brick.description}</div>
+        ) : (
+          <small className="text-muted font-italic">
+            No description provided.
+          </small>
+        )}
       </div>
 
       {/* Hover Actions */}
@@ -55,8 +61,9 @@ const BrickResult: React.FunctionComponent<BrickResultProps> = ({
           onClick={() => {
             onSelect();
           }}
+          className={styles.addButton}
         >
-          <FontAwesomeIcon icon={faPlus} />
+          <FontAwesomeIcon icon={faPlus} /> Add
         </Button>
       </div>
     </Card>

@@ -256,7 +256,6 @@ function ActualModal<T extends IBrick>({
                 onClick={() => {
                   setDetailBrick(null);
                 }}
-                className={styles.backButton}
               >
                 <FontAwesomeIcon icon={faChevronLeft} /> Back
               </Button>
