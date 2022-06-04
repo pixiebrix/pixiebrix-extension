@@ -25,7 +25,7 @@ import { ExtensionPointConfig } from "@/extensionPoints/types";
 import React from "react";
 import useAvailableExtensionPoints from "@/pageEditor/hooks/useAvailableExtensionPoints";
 import Centered from "@/pageEditor/components/Centered";
-import BlockModal from "@/components/brickModal/BrickModal";
+import BrickModal from "@/components/brickModalNoTags/BrickModal";
 import { Alert, Button } from "react-bootstrap";
 import config from "@/pageEditor/extensionPoints/panel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -68,7 +68,7 @@ const InsertPanelPane: React.FunctionComponent<{
         </div>
       </div>
       <div>
-        <BlockModal
+        <BrickModal
           bricks={panelExtensionPoints ?? []}
           caption="Select panel foundation"
           renderButton={(onClick) => (

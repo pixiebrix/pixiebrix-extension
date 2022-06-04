@@ -19,6 +19,10 @@ import { Target } from "@/types";
 import { IExtension, RegistryId, UUID } from "@/core";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isExtension } from "@/pageEditor/sidebar/common";
+import { BlockConfig } from "@/blocks/types";
+import ForEach from "@/blocks/transformers/controlFlow/ForEach";
+import IfElse from "@/blocks/transformers/controlFlow/IfElse";
+import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
 
 export async function getCurrentURL(): Promise<string> {
   if (!browser.devtools) {
@@ -49,4 +53,20 @@ export function getRecipeIdForElement(
   element: IExtension | FormState
 ): RegistryId {
   return isExtension(element) ? element._recipe?.id : element.recipe?.id;
+}
+
+export function getPipelinePropNames(block: BlockConfig) {
+  switch (block.id) {
+    case ForEach.BLOCK_ID:
+      return ["body"];
+
+    case IfElse.BLOCK_ID:
+      return ["if", "else"];
+
+    case TryExcept.BLOCK_ID:
+      return ["try", "except"];
+
+    default:
+      return [];
+  }
 }

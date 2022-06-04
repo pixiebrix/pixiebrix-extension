@@ -42,7 +42,6 @@ mockIsExtensionContext.mockImplementation(() => true);
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 
-jest.mock("@/background/protocol");
 jest.mock("@/auth/token");
 jest.mock("webext-detect-page");
 jest.mock("@/services/locator");

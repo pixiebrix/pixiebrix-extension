@@ -15,13 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
-import { Split } from "type-fest";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import React, { useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube, faCubes } from "@fortawesome/free-solid-svg-icons";
-import { useAsyncEffect } from "use-async-effect";
-import { fetchFortAwesomeIcon } from "@/components/AsyncIcon";
+import { useAsyncIcon } from "@/components/asyncIcon";
 import { MarketplaceListing } from "@/types/contract";
 import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 import { isBlueprint } from "@/options/pages/blueprints/utils/installableUtils";
@@ -47,48 +44,9 @@ const InstallableIcon: React.FunctionComponent<{
    */
   faIconClass?: string;
 }> = ({ listing, installable, isLoading, size = "1x", faIconClass = "" }) => {
-  const [listingFaIcon, setFaListingIcon] = useState<IconProp | undefined>();
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- only load default icon once
   const defaultIcon = useMemo(() => getDefaultInstallableIcon(installable), []);
-
-  const iconToUse = useMemo(
-    () => listingFaIcon ?? defaultIcon,
-    [listingFaIcon, defaultIcon]
-  );
-
-  useAsyncEffect(
-    async (isMounted) => {
-      if (!listing?.fa_icon) {
-        return;
-      }
-
-      // The fa_icon database value is a string e.g. "fas fa-coffee"
-      const [library, icon] = listing.fa_icon.split(" ") as Split<
-        typeof listing.fa_icon,
-        " "
-      >;
-
-      let svg: IconProp;
-
-      try {
-        svg = await fetchFortAwesomeIcon(library, icon);
-      } catch {
-        console.warn("Error dynamically loading FontAwesome icon", {
-          library,
-          icon,
-        });
-        // Don't do anything, because we're already using the default brick icon
-        return;
-      }
-
-      if (!isMounted()) {
-        return;
-      }
-
-      setFaListingIcon(svg);
-    },
-    [listing, setFaListingIcon]
-  );
+  const listingFaIcon = useAsyncIcon(listing?.fa_icon, defaultIcon);
 
   const sizeMultiplier = SIZE_REGEX.exec(size).groups?.size;
   // Setting height and width via em allows for scaling with font size
@@ -107,7 +65,7 @@ const InstallableIcon: React.FunctionComponent<{
     />
   ) : (
     <FontAwesomeIcon
-      icon={iconToUse}
+      icon={listingFaIcon}
       color={listing?.icon_color ?? DARK_LAVENDER}
       className={faIconClass}
       size={size}

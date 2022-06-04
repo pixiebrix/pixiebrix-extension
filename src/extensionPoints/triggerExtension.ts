@@ -104,18 +104,19 @@ export type Trigger =
   | "change";
 
 /**
- * Triggers considered user actions for the purpose of defaulting the reportMode if not provided
+ * Triggers considered user actions for the purpose of defaulting the reportMode if not provided.
+ *
+ * Currently, includes mouse events and input blur. Keyboard events, e.g., "keydown", are not included because single
+ * key events do not convery user intent.
+ *
  * @see ReportMode
  * @see getDefaultReportModeForTrigger
  */
 export const USER_ACTION_TRIGGERS: Trigger[] = [
   "click",
-  "blur",
   "dblclick",
+  "blur",
   "mouseover",
-  "keydown",
-  "keyup",
-  "keypress",
 ];
 
 type IntervalArgs = {
