@@ -59,6 +59,7 @@ import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import pluralize from "@/utils/pluralize";
 import { BusinessError, PromiseCancelled } from "@/errors";
 import { JsonObject } from "type-fest";
+import safeJsonStringify from "json-stringify-safe";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -206,7 +207,7 @@ function pickEventProperties(nativeEvent: Event): JsonObject {
     const { detail = {} } = nativeEvent;
 
     if (isObject(detail)) {
-      return JSON.parse(JSON.stringify(detail)) as JsonObject;
+      return JSON.parse(safeJsonStringify(detail)) as JsonObject;
     }
 
     throw new BusinessError("Custom event detail is not an object");
