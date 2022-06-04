@@ -33,8 +33,7 @@ import {
 import { TypedBlockMap } from "@/blocks/registry";
 import { ExtensionPointType } from "@/extensionPoints/types";
 import validateStringTemplates from "@/pageEditor/validation/validateStringTemplates";
-
-export const PIPELINE_BLOCKS_FIELD_NAME = "extension.blockPipeline";
+import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
 function usePipelineField(
   allBlocks: TypedBlockMap,

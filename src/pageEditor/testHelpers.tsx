@@ -26,6 +26,7 @@ import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSli
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import { createRenderWithWrappers } from "@/testUtils/testHelpers";
+import { appApi } from "@/services/api";
 
 const renderWithWrappers = createRenderWithWrappers(() =>
   configureStore({
@@ -39,6 +40,7 @@ const renderWithWrappers = createRenderWithWrappers(() =>
       savingExtension: savingExtensionSlice.reducer,
       runtime: runtimeSlice.reducer,
       logs: logSlice.reducer,
+      [appApi.reducerPath]: appApi.reducer,
     },
   })
 );

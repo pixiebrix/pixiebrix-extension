@@ -23,7 +23,6 @@ import {
   selectSchemaFieldType,
 } from "@/testUtils/formHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { validateRegistryId } from "@/types/helpers";
 import { render, RenderResult, screen } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
@@ -32,6 +31,7 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import FormBuilder from "./FormBuilder";
 import { RJSFSchema } from "./formBuilderTypes";
 import userEvent from "@testing-library/user-event";
+import { CustomFormRenderer } from "@/blocks/renderers/customForm";
 
 let exampleFormSchema: RJSFSchema;
 let defaultFieldName: string;
@@ -39,7 +39,7 @@ let defaultFieldName: string;
 beforeAll(() => {
   registerDefaultWidgets();
   const { schema, uiSchema } = getExampleBlockConfig(
-    validateRegistryId("@pixiebrix/form")
+    CustomFormRenderer.BLOCK_ID
   );
   exampleFormSchema = {
     schema,
@@ -351,7 +351,7 @@ describe("rename a field", () => {
     const FormikTemplate = createFormikTemplate(
       {
         [RJSF_SCHEMA_PROPERTY_NAME]: getExampleBlockConfig(
-          validateRegistryId("@pixiebrix/form")
+          CustomFormRenderer.BLOCK_ID
         ),
       },
       jest.fn()

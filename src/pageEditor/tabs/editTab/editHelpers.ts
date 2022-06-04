@@ -16,11 +16,15 @@
  */
 
 import { IBlock, OutputKey, RegistryId, SafeString } from "@/core";
-import { freshIdentifier } from "@/utils";
+import { freshIdentifier, joinName } from "@/utils";
 import { selectReaderIds } from "@/blocks/readers/readerUtils";
 import getType from "@/runtime/getType";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { getPipelinePropNames } from "@/pageEditor/utils";
+import { BlockPipeline, BlockConfig } from "@/blocks/types";
+import { PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
+import { get } from "lodash";
 
 export function collectRegistryIds(form: FormState): RegistryId[] {
   return [
@@ -70,4 +74,45 @@ export async function generateFreshOutputKey(
   }
 
   return freshIdentifier(type as SafeString, outputKeys) as OutputKey;
+}
+
+function traversePipeline(
+  blockPipeline: BlockPipeline,
+  parentPath: string,
+  action: (
+    blockConfig: BlockConfig,
+    index: number,
+    path: string,
+    pipeline: BlockPipeline
+  ) => void
+) {
+  for (const [index, blockConfig] of Object.entries(blockPipeline)) {
+    const fieldName = joinName(parentPath, index);
+    action(blockConfig, Number(index), fieldName, blockPipeline);
+
+    for (const subPipelineField of getPipelinePropNames(blockConfig)) {
+      const subPipelineAccessor = ["config", subPipelineField, "__value__"];
+      const subPipeline = get(blockConfig, subPipelineAccessor);
+      traversePipeline(
+        subPipeline,
+        joinName(fieldName, ...subPipelineAccessor),
+        action
+      );
+    }
+  }
+}
+
+export function getPipelineMap(blockPipeline: BlockPipeline) {
+  const pipelineMap: PipelineMap = {};
+  traversePipeline(blockPipeline, "", (blockConfig, index, path, pipeline) => {
+    pipelineMap[blockConfig.instanceId] = {
+      blockId: blockConfig.id,
+      path,
+      blockConfig,
+      index,
+      pipeline,
+    };
+  });
+
+  return pipelineMap;
 }

@@ -33,7 +33,7 @@ import {
   faSearch,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
-import BlockModal from "@/components/brickModal/BrickModal";
+import BrickModal from "@/components/brickModalNoTags/BrickModal";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import useAddExisting from "@/pageEditor/panes/insert/useAddExisting";
 
@@ -71,7 +71,7 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
         </div>
       </div>
       <div>
-        <BlockModal
+        <BrickModal
           bricks={menuItemExtensionPoints ?? []}
           caption="Select button foundation"
           renderButton={(onClick) => (

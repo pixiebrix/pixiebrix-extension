@@ -34,7 +34,7 @@ const TooltipIconButton: React.FC<{
   size = "1x",
   onClick,
   tooltipText,
-  buttonClassName = "",
+  buttonClassName,
   disabled = false,
 }) => {
   const renderTooltip = (props: Partial<OverlayTriggerProps>) => (
@@ -58,6 +58,7 @@ const TooltipIconButton: React.FC<{
         onClick={onClick}
         className={buttonClassName}
         disabled={disabled}
+        data-testid={`icon-button-${name}`}
       >
         <FontAwesomeIcon icon={icon} size={size} />
       </button>
