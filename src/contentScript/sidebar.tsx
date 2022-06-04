@@ -35,6 +35,7 @@ import pDefer from "p-defer";
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_SELECTOR = "#" + PANEL_FRAME_ID;
 export const PANEL_HIDING_EVENT = "pixiebrix:hideSidebar";
+export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-margin-right";
 
 let renderSequenceNumber = 0;
 
@@ -80,11 +81,16 @@ function storeOriginalCSS() {
 
 function adjustDocumentStyle(): void {
   const $html = getHTMLElement();
-  $html.css("margin-right", `${originalMarginRight + SIDEBAR_WIDTH_PX}px`);
+  $html.css(
+    SIDEBAR_WIDTH_CSS_PROPERTY,
+    `${originalMarginRight + SIDEBAR_WIDTH_PX}px`
+  );
+  $html.css("margin-right", `var(${SIDEBAR_WIDTH_CSS_PROPERTY})`);
 }
 
 function restoreDocumentStyle(): void {
   const $html = getHTMLElement();
+  $html.css(SIDEBAR_WIDTH_CSS_PROPERTY, "");
   $html.css("margin-right", originalMarginRight);
 }
 

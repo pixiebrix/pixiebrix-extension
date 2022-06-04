@@ -150,13 +150,13 @@ async function oneResponse<R>(nonce: string): Promise<R> {
   });
 }
 
-export function liftExternal<
+export function liftExternalToContentScript<
   TArguments extends unknown[],
   R extends SerializableResponse
 >(
   type: string,
   method: (...args: TArguments) => Promise<R>,
-  options: HandlerOptions = {}
+  options?: HandlerOptions
 ): (...args: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
   // Set defaults

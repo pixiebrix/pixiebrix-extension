@@ -36,7 +36,7 @@ import { toggleSidebar } from "./toggleSidebar";
 import { SettingsState } from "@/store/settingsTypes";
 import cx from "classnames";
 import { selectAuth } from "@/auth/authSelectors";
-import useTheme from "@/hooks/useTheme";
+import useTheme, { useGetTheme } from "@/hooks/useTheme";
 
 const Navbar: React.FunctionComponent = () => {
   const { email, extension } = useSelector(selectAuth);
@@ -45,7 +45,8 @@ const Navbar: React.FunctionComponent = () => {
   const mode = useSelector<{ settings: SettingsState }, string>(
     ({ settings }) => settings.mode
   );
-  const { logo } = useTheme();
+  const theme = useGetTheme();
+  const { logo } = useTheme(theme);
 
   // Use `connectedPending` to optimistically show the toggle
   const showNavbarToggle = mode === "local" || connected || connectedPending;

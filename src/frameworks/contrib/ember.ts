@@ -98,9 +98,10 @@ export function getEmberComponentById(componentId: string): EmberObject {
 }
 
 function isMutableCell(cell: unknown): cell is MutableCell {
-  // https://github.com/emberjs/ember.js/blob/f73d8440d19cf86a10c61ddb89d45881acfcf974/packages/%40ember/-internals/views/lib/compat/attrs.js
-  // FIXME: field is actually a symbol and isn't enumerable, so this is probably wrong
-  return Object.keys(cell).some((key) => key.startsWith("__MUTABLE_CELL__"));
+  // As of Ember 4.6.0 this is not a real Symbol, so Object.keys should detect it. If they change it, this will stop working:
+  // https://github.com/emberjs/ember.js/blob/55ffe6326f11efcaeb278cdf7e0f86543daa9f04/packages/%40ember/-internals/utils/lib/symbol.ts#L14-L26
+  // https://github.com/emberjs/ember.js/blob/55ffe6326f11efcaeb278cdf7e0f86543daa9f04/packages/%40ember/-internals/views/lib/compat/attrs.ts#L1
+  return Object.keys(cell).some((key) => key.startsWith("__MUTABLE_CELL"));
 }
 
 //

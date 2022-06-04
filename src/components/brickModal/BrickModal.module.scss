@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$maxHeight: calc(100vh - 50px);
+$maxHeight: calc(100vh - 100px);
 $bootstrapPadding: 15px;
 
 .root {
@@ -28,8 +28,28 @@ $bootstrapPadding: 15px;
   }
 }
 
+.title {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 28px;
+  color: #595969;
+  flex-shrink: 0;
+  align-self: center;
+  padding: 0.25rem 0;
+}
+
+.searchInput {
+  width: 50%;
+}
+
 .body {
   padding: 0;
+}
+
+.tagList {
+  height: $maxHeight;
+  overflow: auto;
 }
 
 .results {
@@ -45,4 +65,8 @@ $bootstrapPadding: 15px;
   padding-top: $bootstrapPadding;
   padding-bottom: $bootstrapPadding;
   overflow: auto;
+}
+
+.backButton {
+  margin-bottom: $bootstrapPadding;
 }

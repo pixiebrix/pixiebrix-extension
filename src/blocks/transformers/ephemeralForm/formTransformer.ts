@@ -17,7 +17,7 @@
 
 import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
-import { uuidv4 } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import {
   cancelForm,
   registerForm,
@@ -53,11 +53,12 @@ export async function createFrameSource(
 }
 
 export class FormTransformer extends Transformer {
+  static BLOCK_ID = validateRegistryId("@pixiebrix/form-modal");
   defaultOutputKey = "form";
 
   constructor() {
     super(
-      "@pixiebrix/form-modal",
+      FormTransformer.BLOCK_ID,
       "Show a modal or sidebar form",
       "Show a form as a modal or in the sidebar, and return the input",
       "faCode"

@@ -37,7 +37,7 @@ import ErrorModal from "@/layout/ErrorModal";
 import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprintPage";
 import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
 import useRefresh from "@/hooks/useRefresh";
-import SetupPage from "@/options/pages/SetupPage";
+import SetupPage from "@/options/pages/onboarding/SetupPage";
 import { initTelemetry } from "@/background/messenger/api";
 import UpdateBanner from "@/options/pages/UpdateBanner";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";

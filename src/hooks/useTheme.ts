@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { selectSettings } from "@/store/settingsSelectors";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { DEFAULT_THEME } from "@/options/types";
+import { DEFAULT_THEME, Theme } from "@/options/types";
 import { activatePartnerTheme } from "@/background/messenger/api";
 import { persistor } from "@/options/store";
 import { useAsyncState } from "@/hooks/common";
@@ -27,9 +27,12 @@ import { ManualStorageKey, readStorage } from "@/chrome";
 import {
   addThemeClassToDocumentRoot,
   getThemeLogo,
+  isValidTheme,
   setThemeFavicon,
   ThemeLogo,
 } from "@/utils/themeUtils";
+import { useGetMeQuery } from "@/services/api";
+import { selectAuth } from "@/auth/authSelectors";
 
 const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
 
@@ -39,10 +42,19 @@ const activateBackgroundTheme = async (): Promise<void> => {
   await activatePartnerTheme();
 };
 
-const useTheme = (): { logo: ThemeLogo } => {
+export const useGetTheme = (): Theme => {
   const { theme, partnerId } = useSelector(selectSettings);
+  const { data: me } = useGetMeQuery();
+  const { partner: cachedPartner } = useSelector(selectAuth);
   const dispatch = useDispatch();
-  const themeLogo = getThemeLogo(theme);
+
+  const partnerTheme = useMemo(() => {
+    if (me) {
+      return isValidTheme(me.partner?.theme) ? me.partner?.theme : null;
+    }
+
+    return isValidTheme(cachedPartner?.theme) ? cachedPartner?.theme : null;
+  }, [me, cachedPartner?.theme]);
 
   const [managedPartnerId, isLoading] = useAsyncState(
     readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed"),
@@ -64,14 +76,23 @@ const useTheme = (): { logo: ThemeLogo } => {
   useEffect(() => {
     dispatch(
       settingsSlice.actions.setTheme({
-        theme: partnerId ?? DEFAULT_THEME,
+        theme: partnerTheme ?? partnerId ?? DEFAULT_THEME,
       })
     );
+  }, [dispatch, me, partnerId, partnerTheme, theme]);
 
+  return theme;
+};
+
+const useTheme = (theme?: Theme): { logo: ThemeLogo } => {
+  const themeLogo = getThemeLogo(theme);
+  const inferredTheme = useGetTheme();
+
+  useEffect(() => {
     void activateBackgroundTheme();
-    addThemeClassToDocumentRoot(theme);
-    setThemeFavicon(theme);
-  }, [dispatch, partnerId, theme]);
+    addThemeClassToDocumentRoot(theme ?? inferredTheme);
+    setThemeFavicon(theme ?? inferredTheme);
+  }, [theme, inferredTheme]);
 
   return {
     logo: themeLogo,

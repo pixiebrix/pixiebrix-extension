@@ -43,7 +43,6 @@ import { Primitive } from "type-fest";
 import { ApiVersion, RegistryId, SafeString } from "@/core";
 import { BusinessError, PromiseCancelled } from "@/errors";
 import { RecipeDefinition } from "@/types/definitions";
-import { unsetOwnProp } from "./utils/safeProps";
 
 const specialCharsRegex = /[.[\]]/;
 

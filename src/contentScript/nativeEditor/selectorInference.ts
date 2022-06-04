@@ -79,7 +79,7 @@ const UNSTABLE_SELECTORS = [
 function getUniqueAttributeSelectors(element: HTMLElement): string[] {
   return UNIQUE_ATTRIBUTES.map((attribute) =>
     getAttributeSelector(attribute, element.getAttribute(attribute))
-  ).filter((selector) => matchesAnyPattern(selector, UNSTABLE_SELECTORS));
+  ).filter((selector) => !matchesAnyPattern(selector, UNSTABLE_SELECTORS));
 }
 
 /** ID selectors and certain other attributes can uniquely identify items */

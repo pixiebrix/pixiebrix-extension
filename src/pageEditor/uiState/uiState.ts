@@ -53,6 +53,7 @@ export function makeInitialNodeUIState(nodeId: NodeId): NodeUIState {
 
 export function makeInitialElementUIState(): ElementUIState {
   return {
+    pipelineMap: {},
     activeNodeId: FOUNDATION_NODE_ID,
     nodeUIStates: {
       [FOUNDATION_NODE_ID]: makeInitialNodeUIState(FOUNDATION_NODE_ID),

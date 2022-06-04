@@ -18,7 +18,7 @@
 import styles from "./LockedExtensionPointLabel.module.scss";
 
 import React from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, OverlayTriggerProps, Tooltip } from "react-bootstrap";
 import { uuidv4 } from "@/types/helpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
@@ -36,7 +36,7 @@ const LockedExtensionPointLabel: React.FC<{
     </p>
   );
 
-  const renderTooltip = (props: unknown) => (
+  const renderTooltip = (props: Partial<OverlayTriggerProps>) => (
     <Tooltip id={`${uuidv4()}-tooltip`} {...props}>
       {message ?? defaultMessage}
     </Tooltip>
