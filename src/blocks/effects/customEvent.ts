@@ -18,7 +18,7 @@
 import { Effect, UnknownObject } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 
-export class CustomEventEffect extends Effect {
+class CustomEventEffect extends Effect {
   constructor() {
     super(
       "@pixiebrix/event",
