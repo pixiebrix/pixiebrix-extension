@@ -46,7 +46,7 @@ module.exports = {
           "**/*.css",
           "**/*.scss",
           "@/development/*",
-          "@/messaging/external",
+          "@/background/messenger/external/api",
           "@/extensionContext", // Must be run before other code
           "@/background/axiosFetch", // Must be run before other code
           "@/telemetry/reportUncaughtErrors",

@@ -18,11 +18,13 @@
 import { Renderer } from "@/types";
 import { BlockArg, BlockOptions, ComponentRef, Schema } from "@/core";
 import DocumentViewLazy from "./documentView/DocumentViewLazy";
+import { validateRegistryId } from "@/types/helpers";
 
 export class DocumentRenderer extends Renderer {
+  static BLOCK_ID = validateRegistryId("@pixiebrix/document");
   constructor() {
     super(
-      "@pixiebrix/document",
+      DocumentRenderer.BLOCK_ID,
       "Render Document",
       "Render an interactive document"
     );

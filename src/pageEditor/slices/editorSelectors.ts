@@ -203,6 +203,13 @@ export const selectActiveNodeId: (rootState: RootState) => NodeId =
     (elementUIState) => elementUIState.activeNodeId
   );
 
+export const selectActiveNodeInfo = createSelector(
+  selectActiveElementUIState,
+  selectActiveNodeId,
+  (uiState: ElementUIState, activeNodeId: UUID) =>
+    uiState.pipelineMap[activeNodeId]
+);
+
 export const selectActiveNode: (rootState: RootState) => BlockConfig =
   createSelector(selectActiveElement, selectActiveNodeId, (element, nodeId) =>
     element.extension.blockPipeline.find((node) => node.instanceId === nodeId)

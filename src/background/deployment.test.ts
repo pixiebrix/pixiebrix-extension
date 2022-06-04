@@ -73,9 +73,6 @@ jest.mock("@/background/messenger/api", () => ({
   contextMenus: {
     preload: jest.fn(),
   },
-}));
-
-jest.mock("@/background/telemetry", () => ({
   getUID: async () => "UID",
 }));
 

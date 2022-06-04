@@ -27,16 +27,14 @@ import "@/development/errorsBadge";
 
 import "webext-dynamic-content-scripts";
 
-import "@/messaging/external";
-
 import registerMessenger from "@/background/messenger/registration";
+import registerExternalMessenger from "@/background/messenger/external/registration";
 import initLocator from "@/background/locator";
 import initContextMenus from "@/background/contextMenus";
 import initBrowserAction from "@/background/browserAction";
 import initInstaller from "@/background/installer";
 import initNavigation from "@/background/navigation";
 import initGoogle from "@/contrib/google/initGoogle";
-import initFrames from "@/background/iframes";
 import initExecutor from "@/background/executor";
 import initBrowserCommands from "@/background/initBrowserCommands";
 import initDeploymentUpdater from "@/background/deployment";
@@ -47,12 +45,12 @@ import initPartnerTheme from "@/background/partnerTheme";
 
 void initLocator();
 registerMessenger();
+registerExternalMessenger();
 initBrowserAction();
 initInstaller();
 initNavigation();
 initExecutor();
 initGoogle();
-initFrames();
 initContextMenus();
 initBrowserCommands();
 initDeploymentUpdater();

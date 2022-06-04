@@ -17,7 +17,8 @@
 
 import { Runtime } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
-import { getUID, initTelemetry } from "@/background/telemetry";
+import { initTelemetry } from "@/background/telemetry";
+import { getUID } from "@/background/messenger/api";
 import { DNT_STORAGE_KEY, allowsTrack } from "@/telemetry/dnt";
 import { gt } from "semver";
 import { getInstallURL } from "@/services/baseService";

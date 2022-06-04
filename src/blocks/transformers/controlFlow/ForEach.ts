@@ -20,13 +20,15 @@ import { BlockArg, BlockOptions, OutputKey, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { PipelineExpression } from "@/runtime/mapArgs";
+import { validateRegistryId } from "@/types/helpers";
 
 class ForEach extends Transformer {
+  static BLOCK_ID = validateRegistryId("@pixiebrix/for-each");
   defaultOutputKey = "result";
 
   constructor() {
     super(
-      "@pixiebrix/for-each",
+      ForEach.BLOCK_ID,
       "For-Each Loop",
       "Loop over elements in a list/array, returning the value of the last iteration"
     );

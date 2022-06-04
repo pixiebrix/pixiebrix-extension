@@ -17,14 +17,6 @@
 
 /* Do not use `registerMethod` in this file */
 import { getMethod } from "webext-messenger";
-import { isBrowserSidebar } from "@/chrome";
-
-// TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
-if (isBrowserSidebar() && process.env.DEBUG) {
-  console.warn(
-    "This should not have been imported in the sidebar. Use the API directly instead."
-  );
-}
 
 export const renderPanels = getMethod("SIDEBAR_RENDER_PANELS");
 export const showForm = getMethod("SIDEBAR_SHOW_FORM");

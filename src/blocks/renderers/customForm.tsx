@@ -17,13 +17,11 @@
 
 import React from "react";
 import { Renderer } from "@/types";
-import { BlockArg, BlockOptions, ComponentRef, Schema, UiSchema } from "@/core";
+import { BlockArg, ComponentRef, Schema, UiSchema } from "@/core";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { JsonObject } from "type-fest";
 import { dataStore } from "@/background/messenger/api";
-import reportError from "@/telemetry/reportError";
-import { notifyResult } from "@/utils/notify";
-
+import notify from "@/utils/notify";
 import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
 import BootstrapStylesheet from "./BootstrapStylesheet";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
@@ -32,6 +30,7 @@ import ImageCropStylesheet from "@/blocks/renderers/ImageCropStylesheet";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { validateRegistryId } from "@/types/helpers";
 
 const fields = {
   DescriptionField,
@@ -73,9 +72,10 @@ const CustomFormComponent: React.FunctionComponent<{
 );
 
 export class CustomFormRenderer extends Renderer {
+  static BLOCK_ID = validateRegistryId("@pixiebrix/form");
   constructor() {
     super(
-      "@pixiebrix/form",
+      CustomFormRenderer.BLOCK_ID,
       "Custom Form",
       "Show a custom form connected to a data source"
     );
@@ -99,10 +99,11 @@ export class CustomFormRenderer extends Renderer {
     },
   };
 
-  async render(
-    { recordId, schema, uiSchema }: BlockArg,
-    { logger }: BlockOptions
-  ): Promise<ComponentRef> {
+  async render({
+    recordId,
+    schema,
+    uiSchema,
+  }: BlockArg): Promise<ComponentRef> {
     const formData = await dataStore.get(recordId);
 
     console.debug("Building panel for record: [[ %s ]]", recordId);
@@ -117,19 +118,12 @@ export class CustomFormRenderer extends Renderer {
         async onSubmit(values: JsonObject) {
           try {
             await dataStore.set(recordId, values);
-            notifyResult(logger.context.extensionId, {
-              message: "Saved record",
-              config: {
-                className: "success",
-              },
-            });
+            notify.success("Saved record");
           } catch (error) {
-            reportError(error);
-            notifyResult(logger.context.extensionId, {
+            notify.error({
+              error,
               message: "Error saving record",
-              config: {
-                className: "error",
-              },
+              reportError: false,
             });
           }
         },
