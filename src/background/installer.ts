@@ -36,12 +36,14 @@ let _availableVersion: string | null = null;
 async function openInstallPage() {
   const [accountTab] = await browser.tabs.query({
     url: [
-      new URL("setup", SERVICE_URL).toString(),
-      new URL("start", SERVICE_URL).toString(),
+      new URL("setup", SERVICE_URL).href,
+      new URL("start", SERVICE_URL).href,
     ],
   });
 
   if (accountTab) {
+    // Automatically reuse the tab that is part of the onboarding flow
+    // https://github.com/pixiebrix/pixiebrix-extension/pull/3506
     await browser.tabs.update(accountTab.id, {
       url: await getInstallURL(),
     });
