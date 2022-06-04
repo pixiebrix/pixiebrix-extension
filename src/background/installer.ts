@@ -35,7 +35,10 @@ let _availableVersion: string | null = null;
 
 async function openInstallPage() {
   const [accountTab] = await browser.tabs.query({
-    url: new URL("setup", SERVICE_URL).toString(),
+    url: [
+      new URL("setup", SERVICE_URL).toString(),
+      new URL("start", SERVICE_URL).toString(),
+    ],
   });
 
   if (accountTab) {
