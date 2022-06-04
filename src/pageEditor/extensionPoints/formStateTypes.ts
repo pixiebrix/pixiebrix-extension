@@ -35,6 +35,7 @@ import {
 import { SidebarConfig } from "@/extensionPoints/sidebarExtension";
 import {
   AttachMode,
+  CustomEventOptions,
   DebounceOptions,
   ReportMode,
   TargetMode,
@@ -97,6 +98,9 @@ export type TriggerExtensionPointState = BaseExtensionPointState & {
 
     // Debouncing props
     debounce: DebounceOptions;
+
+    // Custom tigger props
+    customEvent: CustomEventOptions;
 
     // Interval props
     intervalMillis: number | null;
