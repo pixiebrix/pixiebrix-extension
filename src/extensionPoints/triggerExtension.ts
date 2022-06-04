@@ -59,6 +59,9 @@ import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import pluralize from "@/utils/pluralize";
 import { BusinessError, PromiseCancelled } from "@/errors";
 import { JsonObject } from "type-fest";
+import selectionController, {
+  guessSelectedElement,
+} from "@/utils/selectionController";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -100,13 +103,15 @@ export type Trigger =
   | "keydown"
   | "keyup"
   | "keypress"
-  | "change";
+  | "change"
+  // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
+  | "selectionchange";
 
 /**
  * Triggers considered user actions for the purpose of defaulting the reportMode if not provided.
  *
  * Currently, includes mouse events and input blur. Keyboard events, e.g., "keydown", are not included because single
- * key events do not convery user intent.
+ * key events do not convey user intent.
  *
  * @see ReportMode
  * @see getDefaultReportModeForTrigger
@@ -197,6 +202,15 @@ function pickEventProperties(nativeEvent: Event): JsonObject {
       altKey,
       shiftKey,
       ctrlKey,
+    };
+  }
+
+  // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
+  if (nativeEvent.type === "selectionchange") {
+    // https://developer.mozilla.org/en-US/docs/Web/API/Selection
+    return {
+      // Match the behavior for contextMenu and quickBar
+      selectionText: selectionController.get(),
     };
   }
 
@@ -415,6 +429,10 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     });
 
     let element: HTMLElement | Document = event.target;
+
+    if (this.trigger === "selectionchange") {
+      element = guessSelectedElement() ?? document;
+    }
 
     if (this.targetMode === "root") {
       element = $(event.target).closest(this.triggerSelector).get(0);
@@ -646,6 +664,21 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     });
   }
 
+  private attachSelectionTrigger(): void {
+    const $document = $(document);
+
+    $document.off(this.trigger, this.boundEventHandler);
+
+    // Install the DOM trigger
+    $document.on(this.trigger, this.boundEventHandler);
+
+    this.installedEvents.add(this.trigger);
+
+    this.addCancelHandler(() => {
+      $document.off(this.trigger, this.boundEventHandler);
+    });
+  }
+
   private attachDOMTrigger(
     $element: JQuery,
     { watch = false }: { watch?: boolean }
@@ -730,6 +763,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       case "appear": {
         this.assertElement($root);
         this.attachAppearTrigger($root);
+        break;
+      }
+
+      case "selectionchange": {
+        this.attachSelectionTrigger();
         break;
       }
 
