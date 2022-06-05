@@ -26,6 +26,8 @@ import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { persistSettingsConfig } from "@/store/settingsStorage";
 import settingsSlice from "@/store/settingsSlice";
+import { appApi } from "@/services/api";
+import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -42,12 +44,14 @@ if (typeof createLogger === "function") {
 
 const store = configureStore({
   reducer: {
+    auth: persistReducer(persistAuthConfig, authSlice.reducer),
     options: persistReducer(
       persistExtensionOptionsConfig,
       extensionsSlice.reducer
     ),
     sidebar: sidebarSlice.reducer,
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
+    [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {
     /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
@@ -56,7 +60,9 @@ const store = configureStore({
       serializableCheck: {
         ignoredActions: ["persist/PERSIST", "persist/FLUSH"],
       },
-    }).concat(conditionalMiddleware);
+    })
+      .concat(appApi.middleware)
+      .concat(conditionalMiddleware);
     /* eslint-enable unicorn/prefer-spread */
   },
   devTools: REDUX_DEV_TOOLS,
