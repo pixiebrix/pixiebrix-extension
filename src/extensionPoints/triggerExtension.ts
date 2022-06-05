@@ -37,7 +37,7 @@ import {
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { Permissions } from "webextension-polyfill";
-import { castArray, cloneDeep, compact, debounce, noop } from "lodash";
+import { castArray, cloneDeep, compact, debounce, isEmpty, noop } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
@@ -52,7 +52,7 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
-import { sleep } from "@/utils";
+import { ensureJsonObject, isObject, sleep } from "@/utils";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
@@ -105,7 +105,9 @@ export type Trigger =
   | "keypress"
   | "change"
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
-  | "selectionchange";
+  | "selectionchange"
+  // A custom event configured by the user
+  | "custom";
 
 /**
  * Triggers considered user actions for the purpose of defaulting the reportMode if not provided.
@@ -205,6 +207,18 @@ function pickEventProperties(nativeEvent: Event): JsonObject {
     };
   }
 
+  if (nativeEvent instanceof CustomEvent) {
+    const { detail = {} } = nativeEvent;
+
+    if (isObject(detail)) {
+      // Ensure detail is a serialized/a JSON object. The custom trigger can also pick up JS custom event, which could
+      // have real JS data in them (vs. a JsonObject the user has provided via our @pixiebrix/event brick)
+      return ensureJsonObject(detail);
+    }
+
+    throw new BusinessError("Custom event detail is not an object");
+  }
+
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
   if (nativeEvent.type === "selectionchange") {
     // https://developer.mozilla.org/en-US/docs/Web/API/Selection
@@ -231,6 +245,8 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   abstract get reportMode(): ReportMode;
 
   abstract get debounceOptions(): DebounceOptions;
+
+  abstract get customTriggerOptions(): CustomEventOptions;
 
   abstract get triggerSelector(): string | null;
 
@@ -534,9 +550,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     const rootSelector = this.triggerSelector;
 
     // Await for the element(s) to appear on the page so that we can
-    const [rootPromise, cancelRun] = rootSelector
-      ? awaitElementOnce(rootSelector)
-      : [document, noop];
+    const [rootPromise, cancelRun] = isEmpty(rootSelector)
+      ? [document, noop]
+      : awaitElementOnce(rootSelector);
 
     this.addCancelHandler(cancelRun);
 
@@ -551,7 +567,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     }
 
     // AwaitElementOnce doesn't work with multiple elements. Get everything that's on the current page
-    const $root = rootSelector ? $safeFind(rootSelector) : $(document);
+    const $root = isEmpty(rootSelector) ? $(document) : $safeFind(rootSelector);
 
     if ($root.length === 0) {
       console.warn("No elements found for trigger selector: %s", rootSelector);
@@ -680,9 +696,20 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   }
 
   private attachDOMTrigger(
-    $element: JQuery,
+    $element: JQuery<HTMLElement | Document>,
     { watch = false }: { watch?: boolean }
   ): void {
+    const domTrigger =
+      this.trigger === "custom"
+        ? this.customTriggerOptions?.eventName
+        : this.trigger;
+
+    if (!domTrigger) {
+      throw new BusinessError(
+        "No trigger event configured for extension point"
+      );
+    }
+
     // Avoid duplicate events caused by:
     // 1) Navigation events on SPAs where the element remains on the page
     // 2) `watch` mode, because the observer will fire the existing elements on the page. (That re-fire will have
@@ -691,17 +718,17 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       "Removing existing %s handler for extension point",
       this.trigger
     );
-    $element.off(this.trigger, this.boundEventHandler);
+    $element.off(domTrigger, this.boundEventHandler);
 
     // Install the DOM trigger
-    $element.on(this.trigger, this.boundEventHandler);
-    this.installedEvents.add(this.trigger);
+    $element.on(domTrigger, this.boundEventHandler);
+    this.installedEvents.add(domTrigger);
     console.debug(
       "Installed %s event handler on %d elements",
-      this.trigger,
+      domTrigger,
       $element.length,
       {
-        trigger: this.trigger,
+        trigger: domTrigger,
         selector: this.triggerSelector,
         targetMode: this.targetMode,
         watch,
@@ -709,6 +736,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     );
 
     if (watch) {
+      if ($element.get(0) === document) {
+        console.warn("Ignoring watchMode for document target");
+        return;
+      }
+
       // Clear out the existing mutation observer on SPA navigation events.
       // On mutation events, this watch branch is not executed because the mutation handler below passes `watch: false`
       this.cancelObservers();
@@ -771,12 +803,19 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         break;
       }
 
+      case "custom": {
+        this.attachDOMTrigger($root, { watch: false });
+        break;
+      }
+
       default: {
         if (this.trigger) {
           this.assertElement($root);
           this.attachDOMTrigger($root, { watch: this.attachMode === "watch" });
         } else {
-          throw new Error("No trigger event configured for extension point");
+          throw new BusinessError(
+            "No trigger event configured for extension point"
+          );
         }
       }
     }
@@ -803,6 +842,17 @@ export type DebounceOptions = {
    *  Specify invoking on the trailing edge of the timeout.
    */
   trailing?: boolean;
+};
+
+/**
+ * Custom options for the `custom` trigger
+ * @since 1.6.5
+ */
+export type CustomEventOptions = {
+  /**
+   * The name of the event.
+   */
+  eventName: "string";
 };
 
 export interface TriggerDefinition extends ExtensionPointDefinition {
@@ -857,6 +907,13 @@ export interface TriggerDefinition extends ExtensionPointDefinition {
   intervalMillis?: number;
 
   /**
+   * For `custom` trigger, the custom event trigger options.
+   *
+   * @since 1.6.5
+   */
+  customEvent?: CustomEventOptions;
+
+  /**
    * Debounce the trigger for the extension point.
    */
   debounce?: DebounceOptions;
@@ -888,6 +945,10 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
 
   get debounceOptions(): DebounceOptions | null {
     return this._definition.debounce;
+  }
+
+  get customTriggerOptions(): CustomEventOptions | null {
+    return this._definition.customEvent;
   }
 
   get trigger(): Trigger {

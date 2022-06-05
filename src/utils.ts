@@ -39,11 +39,12 @@ import {
   unary,
   zip,
 } from "lodash";
-import { Primitive } from "type-fest";
+import { JsonObject, Primitive } from "type-fest";
 import { ApiVersion, RegistryId, SafeString } from "@/core";
 import { UnknownObject } from "@/types";
 import { BusinessError, PromiseCancelled } from "@/errors";
 import { RecipeDefinition } from "@/types/definitions";
+import safeJsonStringify from "json-stringify-safe";
 
 const specialCharsRegex = /[.[\]]/;
 
@@ -242,6 +243,14 @@ export function clone<T extends Record<string, unknown>>(object: T): T {
 
 export function isObject(value: unknown): value is Record<string, unknown> {
   return value && typeof value === "object";
+}
+
+export function ensureJsonObject(value: Record<string, unknown>): JsonObject {
+  if (!isObject(value)) {
+    throw new TypeError("expected object");
+  }
+
+  return JSON.parse(safeJsonStringify(value)) as JsonObject;
 }
 
 export function clearObject(obj: Record<string, unknown>): void {

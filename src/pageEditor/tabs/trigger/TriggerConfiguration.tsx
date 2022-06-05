@@ -80,6 +80,12 @@ const TriggerConfiguration: React.FC<{
       setFieldValue(fieldName("background"), null);
     }
 
+    if (nextTrigger === "custom") {
+      setFieldValue(fieldName("customEvent"), { eventName: "" });
+    } else {
+      setFieldValue(fieldName("customEvent"), null);
+    }
+
     setFieldValue(
       fieldName("reportMode"),
       getDefaultReportModeForTrigger(nextTrigger)
@@ -120,7 +126,17 @@ const TriggerConfiguration: React.FC<{
           <option value="keyup">Keyup</option>
           <option value="keypress">Keypress</option>
           <option value="change">Change</option>
+          <option value="custom">Custom Event</option>
         </ConnectedFieldTemplate>
+
+        {trigger === "custom" && (
+          <ConnectedFieldTemplate
+            title="Custom Event"
+            name={fieldName("customEvent", "eventName")}
+            description="The custom event name"
+            {...makeLockableFieldProps("Custom Event", isLocked)}
+          />
+        )}
 
         {trigger === "interval" && (
           <>
