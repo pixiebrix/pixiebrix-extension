@@ -19,8 +19,8 @@ import { Transformer } from "@/types";
 import { proxyService } from "@/background/messenger/api";
 import { Schema, BlockArg } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { PropError } from "@/errors";
 import { isNullOrBlank } from "@/utils";
+import { PropError } from "@/errors/businessErrors";
 
 export class GetAPITransformer extends Transformer {
   constructor() {

@@ -19,7 +19,7 @@ import { Transformer, UnknownObject } from "@/types";
 import { BlockArg, BlockOptions, RegistryId, Schema, UUID } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { merge, cloneDeep } from "lodash";
-import { BusinessError, PropError } from "@/errors";
+import { BusinessError, PropError } from "@/errors/businessErrors";
 
 const extensionState = new Map<UUID, UnknownObject>();
 

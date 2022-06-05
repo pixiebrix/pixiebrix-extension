@@ -35,11 +35,11 @@ import { cloneDeep } from "lodash";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { SerializableResponse } from "@/messaging/protocol";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { BusinessError } from "@/errors";
 import { $safeFind } from "@/helpers";
 import { clearDynamicElements } from "@/contentScript/nativeEditor/dynamic";
 import { reactivateTab } from "./lifecycle";
 import selection from "@/utils/selectionController";
+import { BusinessError } from "@/errors/businessErrors";
 
 async function read(factory: () => Promise<unknown>): Promise<unknown> {
   try {

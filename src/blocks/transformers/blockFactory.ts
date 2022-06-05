@@ -18,7 +18,6 @@
 import { Block } from "@/types";
 import { readerFactory } from "@/blocks/readers/factory";
 import { Validator, Schema as ValidatorSchema } from "@cfworker/json-schema";
-import { InvalidDefinitionError } from "@/errors";
 import { castArray } from "lodash";
 import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import {
@@ -39,6 +38,7 @@ import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import getType from "@/runtime/getType";
 import { BlockType } from "@/runtime/runtimeTypes";
+import { InvalidDefinitionError } from "@/errors/businessErrors";
 
 type ComponentConfig = {
   apiVersion?: ApiVersion;

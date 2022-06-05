@@ -27,7 +27,7 @@ import {
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { produce } from "immer";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { runMapArgs } from "@/contentScript/messenger/api";
 import { isNullOrBlank } from "@/utils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";

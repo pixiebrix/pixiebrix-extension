@@ -18,7 +18,7 @@
 import { MessageContext } from "@/core";
 import { backgroundTarget as bg, messenger } from "webext-messenger";
 import { serializeError } from "serialize-error";
-import { selectError } from "@/errors";
+import { selectError } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
 import { getContextName } from "webext-detect-page";
 

@@ -26,7 +26,7 @@ import notify from "@/utils/notify";
 import useFlags from "@/hooks/useFlags";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { assertHttpsUrl } from "@/utils";
+import { assertHttpsUrl } from "@/errors/assertHttpsUrl";
 import { selectSettings } from "@/store/settingsSelectors";
 import { uuidv4 } from "@/types/helpers";
 import pTimeout from "p-timeout";

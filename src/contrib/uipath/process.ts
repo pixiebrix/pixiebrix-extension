@@ -25,8 +25,8 @@ import {
   SchemaProperties,
 } from "@/core";
 import { sleep } from "@/utils";
-import { BusinessError } from "@/errors";
 import { validateRegistryId } from "@/types/helpers";
+import { BusinessError } from "@/errors/businessErrors";
 
 export const UIPATH_SERVICE_IDS: RegistryId[] = [
   "uipath/cloud",

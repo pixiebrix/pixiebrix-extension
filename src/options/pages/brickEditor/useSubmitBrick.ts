@@ -37,7 +37,7 @@ import {
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { PackageUpsertResponse } from "@/types/contract";
 import { appApi } from "@/services/api";
-import { isSingleObjectBadRequestError } from "@/types/errorContract";
+import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 
 type SubmitOptions = {
   create: boolean;

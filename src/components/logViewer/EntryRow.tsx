@@ -19,7 +19,7 @@ import React, { useMemo, useState } from "react";
 import type { LogEntry } from "@/background/logging";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
-import { isErrorObject } from "@/errors";
+import { isErrorObject } from "@/errors/errorHelpers";
 import InputDetail from "@/components/logViewer/details/InputDetail";
 import OutputDetail from "@/components/logViewer/details/OutputDetail";
 import getErrorDetails from "@/components/errors/getErrorDetails";

@@ -57,8 +57,9 @@ import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import pluralize from "@/utils/pluralize";
-import { BusinessError, PromiseCancelled } from "@/errors";
 import { JsonObject } from "type-fest";
+import { PromiseCancelled } from "@/errors/genericErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import selectionController, {
   guessSelectedElement,
 } from "@/utils/selectionController";

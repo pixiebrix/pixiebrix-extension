@@ -18,7 +18,7 @@
 import React from "react";
 import { BlockArgContext, BlockOptions } from "@/core";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { BusinessError } from "@/errors";
+import { BusinessError } from "@/errors/businessErrors";
 
 type DocumentState = {
   options: BlockOptions<BlockArgContext>;

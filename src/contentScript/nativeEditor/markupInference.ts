@@ -27,7 +27,7 @@ import {
   UNIQUE_ATTRIBUTES,
 } from "@/contentScript/nativeEditor/selectorInference";
 import { intersection, unary, uniq } from "lodash";
-import { BusinessError } from "@/errors";
+import { BusinessError } from "@/errors/businessErrors";
 
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
 const ICON_TAGS = ["svg", "img"];

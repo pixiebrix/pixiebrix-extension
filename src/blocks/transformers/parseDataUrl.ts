@@ -18,10 +18,10 @@
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { PropError } from "@/errors";
 import { truncate } from "lodash";
 import { getEncodingName } from "@/vendors/encodings";
 import parseDataUrl from "@/utils/parseDataUrl";
+import { PropError } from "@/errors/businessErrors";
 
 /**
  * Length to trim URLs to in error messages.

@@ -19,10 +19,10 @@ import { Effect } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { $safeFind } from "@/helpers";
-import { BusinessError } from "@/errors";
 import sanitize from "@/utils/sanitize";
 import { PIXIEBRIX_DATA_ATTR } from "@/common";
 import { escape } from "lodash";
+import { BusinessError } from "@/errors/businessErrors";
 
 type Position = "before" | "prepend" | "append" | "after";
 

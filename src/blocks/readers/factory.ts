@@ -17,7 +17,6 @@
 
 import { Reader } from "@/types";
 import { checkAvailable } from "@/blocks/available";
-import { InvalidDefinitionError } from "@/errors";
 import {
   Metadata,
   IReader,
@@ -33,6 +32,7 @@ import { dereference } from "@/validators/generic";
 import readerSchema from "@schemas/reader.json";
 import { Schema as ValidatorSchema } from "@cfworker/json-schema/dist/types";
 import { cloneDeep } from "lodash";
+import { InvalidDefinitionError } from "@/errors/businessErrors";
 
 export interface ReaderTypeConfig {
   type: string;

@@ -32,7 +32,7 @@ import {
 } from "@/types/helpers";
 import { pick } from "lodash";
 import Form from "@/components/form/Form";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { appApi, useCreateRecipeMutation } from "@/services/api";
 import {
   RecipeDefinition,
@@ -47,7 +47,7 @@ import { FieldDescriptions } from "@/utils/strings";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { StylesConfig } from "react-select";
 import { RequireScope } from "@/auth/RequireScope";
-import { isSingleObjectBadRequestError } from "@/types/errorContract";
+import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 
 type ConvertInstallableFormState = {
   blueprintId: RegistryId;

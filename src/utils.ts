@@ -42,7 +42,6 @@ import {
 import { JsonObject, Primitive } from "type-fest";
 import { ApiVersion, RegistryId, SafeString } from "@/core";
 import { UnknownObject } from "@/types";
-import { BusinessError, PromiseCancelled } from "@/errors";
 import { RecipeDefinition } from "@/types/definitions";
 import safeJsonStringify from "json-stringify-safe";
 
@@ -343,32 +342,6 @@ export function excludeUndefined(obj: unknown): unknown {
   return obj;
 }
 
-/**
- * Creates a new promise that's rejected if isCancelled returns true.
- * @throws PromiseCancelled
- */
-export async function rejectOnCancelled<T>(
-  promise: Promise<T>,
-  isCancelled: () => boolean
-): Promise<T> {
-  let rv: T;
-  try {
-    rv = await promise;
-  } catch (error) {
-    if (isCancelled()) {
-      throw new PromiseCancelled();
-    }
-
-    throw error ?? new Error("Undefined error awaiting promise");
-  }
-
-  if (isCancelled()) {
-    throw new PromiseCancelled();
-  }
-
-  return rv;
-}
-
 export function evaluableFunction(
   function_: (...parameters: unknown[]) => unknown
 ): string {
@@ -473,45 +446,6 @@ export function safeParseUrl(url: string, baseUrl?: string): URL {
     return new URL(url, baseUrl);
   } catch {
     return new URL("invalid-url://");
-  }
-}
-
-/**
- * Returns an https: schema URL, or throws a BusinessError
- * @param url an absolute or relative URL
- * @param baseUrl the baseUrl to use if url is relative
- * @return the URL instance
- * @throws BusinessError if the URL is invalid
- */
-export function assertHttpsUrl(
-  url: string,
-  // Don't default baseUrl to location.href here. API calls are always routed through a chrome-extension:// page (e.g.,
-  // the background page. So they would always be flagged as having an invalid schema)
-  baseUrl?: string
-): URL {
-  const parsedUrl = safeParseUrl(url, baseUrl);
-
-  // Allow local non-HTTPS URLs when testing locally
-  if (process.env.DEBUG && parsedUrl.protocol === "http:") {
-    return parsedUrl;
-  }
-
-  switch (parsedUrl.protocol) {
-    case "https:": {
-      return parsedUrl;
-    }
-
-    case "invalid-url:": {
-      baseUrl =
-        isAbsoluteUrl(url) || isEmpty(baseUrl) ? "" : ` (base URL: ${baseUrl})`;
-      throw new BusinessError(`Invalid URL: ${url}${baseUrl}`);
-    }
-
-    default: {
-      throw new BusinessError(
-        `Unsupported protocol: ${parsedUrl.protocol}. Use https:`
-      );
-    }
   }
 }
 

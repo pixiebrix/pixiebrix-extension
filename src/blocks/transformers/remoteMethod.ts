@@ -19,8 +19,8 @@ import { Transformer } from "@/types";
 import { proxyService } from "@/background/messenger/api";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { PropError } from "@/errors";
 import { AxiosRequestConfig } from "axios";
+import { PropError } from "@/errors/businessErrors";
 
 export const inputProperties: Record<string, Schema> = {
   url: {

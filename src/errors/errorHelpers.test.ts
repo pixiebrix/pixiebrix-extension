@@ -16,26 +16,30 @@
  */
 
 import {
-  BusinessError,
-  CancelError,
-  ContextError,
   getErrorMessage,
-  hasBusinessRootCause,
-  hasCancelRootCause,
+  hasSpecificErrorCause,
   IGNORED_ERROR_PATTERNS,
   isErrorObject,
-  MultipleElementsFoundError,
-  NoElementsFoundError,
   selectError,
   selectSpecificError,
-} from "@/errors";
+} from "@/errors/errorHelpers";
 import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
 import { matchesAnyPattern } from "@/utils";
 import { isPlainObject } from "@reduxjs/toolkit";
-import { ClientRequestError, RemoteServiceError } from "@/services/errors";
 import { AxiosError } from "axios";
+import {
+  BusinessError,
+  CancelError,
+  MultipleElementsFoundError,
+  NoElementsFoundError,
+} from "@/errors/businessErrors";
+import { ContextError } from "@/errors/genericErrors";
+import {
+  ClientRequestError,
+  RemoteServiceError,
+} from "@/errors/clientRequestErrors";
 
 const TEST_MESSAGE = "Test message";
 
@@ -57,7 +61,11 @@ function nest(error: Error, level = 1): Error {
   );
 }
 
-describe("hasCancelRootCause", () => {
+describe("hasSpecificErrorCause CancelError", () => {
+  // Just a helper around a new API to preserve the old CancelError-specific tests
+  const hasCancelRootCause = (error: unknown) =>
+    hasSpecificErrorCause(error, CancelError);
+
   test("can detect cancel root cause", () => {
     const error = new CancelError(TEST_MESSAGE);
     for (const level of range(3)) {
@@ -93,7 +101,11 @@ describe("hasCancelRootCause", () => {
   });
 });
 
-describe("hasBusinessRootCause", () => {
+describe("hasSpecificErrorCause BusinessError", () => {
+  // Just a helper around a new API to preserve the old BusinessError-specific tests
+  const hasBusinessRootCause = (error: unknown) =>
+    hasSpecificErrorCause(error, BusinessError);
+
   const errorTable = [
     new BusinessError(TEST_MESSAGE),
     new NoElementsFoundError("#test"),

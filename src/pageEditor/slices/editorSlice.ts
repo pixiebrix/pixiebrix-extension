@@ -16,7 +16,7 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { RecipeMetadata, RegistryId, UUID } from "@/core";
 import {

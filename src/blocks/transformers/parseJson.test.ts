@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BusinessError } from "@/errors";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ParseJson from "@/blocks/transformers/ParseJson";
 import { neverPromise } from "@/testUtils/testHelpers";
+import { BusinessError } from "@/errors/businessErrors";
 
 describe("ParseJson block", () => {
   test("Parse object", async () => {

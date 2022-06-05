@@ -22,7 +22,7 @@ import Select, {
   SelectComponentsConfig,
   StylesConfig,
 } from "react-select";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 // Type of the Select options
 export type Option<TValue = string> = {

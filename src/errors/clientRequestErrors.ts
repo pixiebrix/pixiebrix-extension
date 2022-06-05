@@ -15,68 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AxiosError, AxiosResponse } from "axios";
-import { BusinessError, SuspiciousOperationError } from "@/errors";
-import { Except } from "type-fest";
-
-export class IncompatibleServiceError extends SuspiciousOperationError {
-  override name = "IncompatibleServiceError";
-}
-
-export class MissingConfigurationError extends BusinessError {
-  override name = "MissingConfigurationError";
-
-  serviceId: string;
-
-  id: string;
-
-  constructor(message: string, serviceId: string, id?: string) {
-    super(message);
-    this.serviceId = serviceId;
-    this.id = id;
-  }
-}
-
-export class NotConfiguredError extends BusinessError {
-  override name = "NotConfiguredError";
-
-  serviceId: string;
-
-  missingProperties: string[];
-
-  constructor(
-    message: string,
-    serviceId: string,
-    missingProperties?: string[]
-  ) {
-    super(message);
-    this.serviceId = serviceId;
-    this.missingProperties = missingProperties;
-  }
-}
+import { BusinessError } from "@/errors/businessErrors";
+import { SerializableAxiosError } from "@/errors/networkErrorHelpers";
 
 /**
- * Axios offers its own serialization method, but it doesn't include the response.
- * By deleting toJSON, the serialize-error library will use its default serialization
+ * @file ONLY KEEP ACTUAL ERRORS IN HERE.
+ * Functions go in errorHelpers.ts
+ * This helps avoids circular references.
  */
-export type SerializableAxiosError = Except<AxiosError, "toJSON">;
-
-type ProxiedResponse = Pick<AxiosResponse, "data" | "status" | "statusText">;
-
-/**
- * An error response from a 3rd party API via the PixieBrix proxy
- * @see RemoteServiceError
- */
-export class ProxiedRemoteServiceError extends BusinessError {
-  override name = "ProxiedRemoteServiceError";
-  readonly response: ProxiedResponse;
-
-  constructor(message: string, response: ProxiedResponse) {
-    super(message);
-
-    this.response = response;
-  }
-}
 
 /**
  * Base class for request errors from client to 3rd-party service.
@@ -84,6 +30,7 @@ export class ProxiedRemoteServiceError extends BusinessError {
 export class ClientRequestError extends BusinessError {
   override name = "ClientRequestError";
   override readonly cause: SerializableAxiosError;
+
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor -- Required to make the types stricter
   constructor(message: string, options: { cause: SerializableAxiosError }) {
     super(message, options);

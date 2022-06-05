@@ -23,9 +23,9 @@ import SelectWidget, {
 import { SanitizedServiceConfiguration } from "@/core";
 import { AsyncState, useAsyncState } from "@/hooks/common";
 import { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
-import { BusinessError } from "@/errors";
 import isPromise from "is-promise";
 import useReportError from "@/hooks/useReportError";
+import { BusinessError } from "@/errors/businessErrors";
 
 export type OptionsFactory<T = unknown> = (
   config: SanitizedServiceConfiguration

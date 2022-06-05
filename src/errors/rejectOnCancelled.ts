@@ -15,31 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import { BlockArg, Schema } from "@/core";
-import { CancelError } from "@/errors/businessErrors";
+import { PromiseCancelled } from "@/errors/genericErrors";
 
-export class CancelEffect extends Effect {
-  constructor() {
-    super(
-      "@pixiebrix/cancel",
-      "Cancel current action",
-      "Cancels the current action"
-    );
+/**
+ * Creates a new promise that's rejected if isCancelled returns true.
+ * @throws PromiseCancelled
+ */
+export async function rejectOnCancelled<T>(
+  promise: Promise<T>,
+  isCancelled: () => boolean
+): Promise<T> {
+  let rv: T;
+  try {
+    rv = await promise;
+  } catch (error) {
+    if (isCancelled()) {
+      throw new PromiseCancelled();
+    }
+
+    throw error ?? new Error("Undefined error awaiting promise");
   }
 
-  inputSchema: Schema = {
-    type: "object",
-
-    properties: {
-      message: {
-        type: "string",
-        description: "Optional cancellation message",
-      },
-    },
-  };
-
-  async effect({ message }: BlockArg): Promise<void> {
-    throw new CancelError(message ?? "Action cancelled");
+  if (isCancelled()) {
+    throw new PromiseCancelled();
   }
+
+  return rv;
 }

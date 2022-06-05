@@ -19,7 +19,7 @@ import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { unary } from "lodash";
-import { PropError } from "@/errors";
+import { PropError } from "@/errors/businessErrors";
 
 export class RegexTransformer extends Transformer {
   override async isPure(): Promise<boolean> {
