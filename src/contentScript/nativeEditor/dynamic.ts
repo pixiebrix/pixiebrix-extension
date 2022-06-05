@@ -179,7 +179,6 @@ export async function updateDynamicElement({
 
   if (extensionPoint.kind === "actionPanel") {
     await ensureSidebar();
-    // XXX: there's a race here on the initial show
     await activateExtensionPanel(extensionConfig.id);
   }
 }

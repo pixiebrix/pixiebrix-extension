@@ -38,12 +38,16 @@ import {
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
 import pDefer from "p-defer";
 import { getHTMLElement } from "@/utils/domUtils";
+import { isEmpty } from "lodash";
 
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_SELECTOR = "#" + PANEL_FRAME_ID;
 export const PANEL_HIDING_EVENT = "pixiebrix:hideSidebar";
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-margin-right";
 
+/**
+ * Sequence number for ensuring render requests are handled in order
+ */
 let renderSequenceNumber = 0;
 
 export type ShowCallback = () => void;
@@ -126,6 +130,8 @@ export function showSidebar(
 
   let nonce = container?.dataset?.nonce;
 
+  const isShowing = Boolean(nonce);
+
   if (!nonce) {
     console.debug("SidePanel is not on the page, attaching side panel");
     adjustDocumentStyle();
@@ -144,19 +150,48 @@ export function showSidebar(
     }
   }
 
-  // XXX: is there a race condition here on initial toggle? Or are the panel placeholders enough to make this
-  // work in practice?
-  void activatePanel({ tabId: "this", page: "/sidebar.html" }, activateOptions);
+  if (!isEmpty(activateOptions)) {
+    const seqNum = renderSequenceNumber;
+    renderSequenceNumber++;
+
+    // The sidebarSlice handles the race condition with the panels loading by keeping track of the latest pending
+    // activatePanel request.
+    void activatePanel({ tabId: "this", page: "/sidebar.html" }, seqNum, {
+      ...activateOptions,
+      // If the sidebar wasn't showing, force the behavior. (Otherwise, there's a race on the initial activation, where
+      // depending on when the message is received, the sidebar might already be showing a panel)
+      force: activateOptions.force || !isShowing,
+    })
+      // eslint-disable-next-line promise/prefer-await-to-then -- not in an async method
+      .catch((error: unknown) => {
+        reportError(
+          new Error("Error activating sidebar panel", { cause: error })
+        );
+      });
+  }
 
   // TODO: Drop `nonce` if not used by the caller
   return nonce;
 }
 
+/**
+ * Force-show the panel for the given extension id
+ * @param extensionId the extension UUID
+ */
 export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
-  void activatePanel(
-    { tabId: "this", page: "/sidebar.html" },
-    { extensionId, force: true }
-  );
+  expectContext("contentScript");
+
+  if (!isSidebarVisible()) {
+    console.warn("sidebar is not attached to the page");
+  }
+
+  const seqNum = renderSequenceNumber;
+  renderSequenceNumber++;
+
+  void activatePanel({ tabId: "this", page: "/sidebar.html" }, seqNum, {
+    extensionId,
+    force: true,
+  });
 }
 
 /**

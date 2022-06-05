@@ -51,8 +51,8 @@ function runListeners<Method extends keyof SidebarListener>(
   if (sequence < lastMessageSeen) {
     console.debug(
       "Skipping stale message (seq: %d, current: %d)",
-      lastMessageSeen,
       sequence,
+      lastMessageSeen,
       { data }
     );
     return;
@@ -83,10 +83,11 @@ export async function renderPanels(
 }
 
 export async function activatePanel(
+  sequence: number,
   options: ActivatePanelOptions
 ): Promise<void> {
-  // Activating a panel doesn't cause a re-render, so can use the lastMessageSeen
-  runListeners("onActivatePanel", lastMessageSeen, options);
+  // Activating a panel doesn't cause a rerender, so can use the lastMessageSeen
+  runListeners("onActivatePanel", sequence, options);
 }
 
 export async function showForm(sequence: number, entry: FormEntry) {
