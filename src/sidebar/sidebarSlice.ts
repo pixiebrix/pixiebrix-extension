@@ -27,6 +27,7 @@ import { UUID } from "@/core";
 import { cancelForm } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 import { asyncForEach } from "@/utils";
+import { sortBy } from "lodash";
 
 export type SidebarState = SidebarEntries & {
   activeKey: string;
@@ -59,6 +60,7 @@ const sidebarSlice = createSlice({
       state.forms = state.forms.filter(
         (x) => x.extensionId !== form.extensionId
       );
+      // Unlike panels which are sorted, forms are like a "stack", will show the latest form available
       state.forms.push(form);
       state.activeKey = mapTabEventKey("form", form);
     },
@@ -118,7 +120,12 @@ const sidebarSlice = createSlice({
       }
     },
     setPanels(state, action: PayloadAction<{ panels: PanelEntry[] }>) {
-      state.panels = action.payload.panels;
+      // For now, pick an arbitrary order that's stable. There's no guarantees on which order panels are registered
+      state.panels = sortBy(
+        action.payload.panels,
+        (panel) => panel.extensionId
+      );
+
       // If a panel is no longer available, reset the current tab to a valid tab
       if (
         state.activeKey == null ||

@@ -40,9 +40,9 @@ export class ShowSidebar extends Effect {
       panelHeading: {
         type: "string",
         description:
-          "The panel to show in the sidebar. If not provided, defaults to a sidebar panel in the blueprint",
+          "The panel to show in the sidebar. If not provided, defaults to a sidebar panel in this extension's blueprint",
       },
-      force: {
+      forcePanel: {
         type: "boolean",
         description:
           "If the sidebar is already showing a panel, force switch the active panel",
@@ -55,17 +55,17 @@ export class ShowSidebar extends Effect {
   async effect(
     {
       panelHeading,
-      force = false,
+      forcePanel = false,
     }: BlockArg<{
       panelHeading?: string;
-      force?: boolean;
+      forcePanel?: boolean;
     }>,
     { logger }: BlockOptions
   ): Promise<void> {
     // Don't pass extensionId here because the extensionId in showOptions refers to the extensionId of the panel,
     // not the extensionId of the extension toggling the sidebar
     showSidebar({
-      force,
+      force: forcePanel,
       panelHeading,
       blueprintId: logger.context.blueprintId,
     });
