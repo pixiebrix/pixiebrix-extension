@@ -52,14 +52,13 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
-import { isObject, sleep } from "@/utils";
+import { ensureJsonObject, isObject, sleep } from "@/utils";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import pluralize from "@/utils/pluralize";
 import { BusinessError, PromiseCancelled } from "@/errors";
 import { JsonObject } from "type-fest";
-import safeJsonStringify from "json-stringify-safe";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -207,7 +206,9 @@ function pickEventProperties(nativeEvent: Event): JsonObject {
     const { detail = {} } = nativeEvent;
 
     if (isObject(detail)) {
-      return JSON.parse(safeJsonStringify(detail)) as JsonObject;
+      // Ensure detail is a serialized/a JSON object. The custom trigger can also pick up JS custom event, which could
+      // have real JS data in them (vs. a JsonObject the user has provided via our @pixiebrix/event brick)
+      return ensureJsonObject(detail);
     }
 
     throw new BusinessError("Custom event detail is not an object");
