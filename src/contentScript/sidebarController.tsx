@@ -110,7 +110,7 @@ function insertSidebar(): string {
 }
 
 /**
- * Add the sidebar to the page if it's not already on the page
+ * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
  * @param activateOptions options controlling the visible panel in the sidebar
  * @param callbacks callbacks to refresh the panels, leave blank to refresh all extension panels
  */
@@ -152,11 +152,20 @@ export function showSidebar(
   return nonce;
 }
 
+export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
+  void activatePanel(
+    { tabId: "this", page: "/sidebar.html" },
+    { extensionId, force: true }
+  );
+}
+
 /**
  * Awaitable version of showSidebar which does not reload existing panels if the sidebar is already visible
  * @see showSidebar
  */
 export async function ensureSidebar(): Promise<void> {
+  expectContext("contentScript");
+
   const show = pDefer();
 
   if (!isSidebarVisible()) {
