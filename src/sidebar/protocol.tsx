@@ -16,15 +16,9 @@
  */
 
 import reportError from "@/telemetry/reportError";
-import { FormEntry, PanelEntry } from "@/sidebar/types";
+import { ActivatePanelOptions, FormEntry, PanelEntry } from "@/sidebar/types";
 import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 import { UUID } from "@/core";
-
-export const MESSAGE_PREFIX = "@@pixiebrix/sidebar/";
-
-export const RENDER_PANELS_MESSAGE = `${MESSAGE_PREFIX}RENDER_PANELS`;
-export const SHOW_FORM_MESSAGE = `${MESSAGE_PREFIX}SHOW_FORM`;
-export const HIDE_FORM_MESSAGE = `${MESSAGE_PREFIX}HIDE_FORM`;
 
 let lastMessageSeen = -1;
 
@@ -32,6 +26,7 @@ export type SidebarListener = {
   onRenderPanels: (panels: PanelEntry[]) => void;
   onShowForm: (form: { nonce: UUID; form: FormDefinition }) => void;
   onHideForm: (form: { nonce: UUID }) => void;
+  onActivatePanel: (options: ActivatePanelOptions) => void;
 };
 
 const listeners: SidebarListener[] = [];
@@ -85,6 +80,13 @@ export async function renderPanels(
   panels: PanelEntry[]
 ): Promise<void> {
   runListeners("onRenderPanels", sequence, panels);
+}
+
+export async function activatePanel(
+  options: ActivatePanelOptions
+): Promise<void> {
+  // Activating a panel doesn't cause a re-render, so can use the lastMessageSeen
+  runListeners("onActivatePanel", lastMessageSeen, options);
 }
 
 export async function showForm(sequence: number, entry: FormEntry) {

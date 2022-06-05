@@ -31,7 +31,7 @@ import store, { persistor } from "@/sidebar/store";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import Loader from "@/components/Loader";
 import { PersistGate } from "redux-persist/integration/react";
-import { FormEntry, PanelEntry } from "@/sidebar/types";
+import { ActivatePanelOptions, FormEntry, PanelEntry } from "@/sidebar/types";
 import Tabs from "@/sidebar/Tabs";
 import sidebarSlice, { SidebarState } from "./sidebarSlice";
 import { AnyAction } from "redux";
@@ -52,6 +52,9 @@ function getConnectedListener(dispatch: Dispatch<AnyAction>): SidebarListener {
     },
     onHideForm({ nonce }: Partial<FormEntry>) {
       dispatch(sidebarSlice.actions.removeForm(nonce));
+    },
+    onActivatePanel(options: ActivatePanelOptions) {
+      dispatch(sidebarSlice.actions.activatePanel(options));
     },
   };
 }

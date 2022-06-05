@@ -47,7 +47,7 @@ import {
   ShowCallback,
   updateHeading,
   upsertPanel,
-} from "@/contentScript/sidebar";
+} from "@/contentScript/sidebarController";
 import Mustache from "mustache";
 import { uuidv4 } from "@/types/helpers";
 import { getErrorMessage } from "@/errors/errorHelpers";
@@ -150,7 +150,11 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
       // noinspection ExceptionCaughtLocallyJS
       throw new BusinessError("No renderer brick attached to body");
     } catch (error) {
-      const ref = { extensionId: extension.id, extensionPointId: this.id };
+      const ref = {
+        extensionId: extension.id,
+        extensionPointId: this.id,
+        blueprintId: extension._recipe?.id,
+      };
 
       if (error instanceof HeadlessModeError) {
         upsertPanel(ref, heading, {
@@ -195,6 +199,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
       this.extensions.map((extension) => ({
         extensionId: extension.id,
         extensionPointId: this.id,
+        blueprintId: extension._recipe?.id,
       }))
     );
 

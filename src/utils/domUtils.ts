@@ -15,10 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Do not use `registerMethod` in this file */
-import { getMethod } from "webext-messenger";
+export function getHTMLElement(): JQuery {
+  // Resolve html tag, which is more dominant than <body>
+  if (document.documentElement) {
+    return $(document.documentElement);
+  }
 
-export const renderPanels = getMethod("SIDEBAR_RENDER_PANELS");
-export const activatePanel = getMethod("SIDEBAR_ACTIVATE_PANEL");
-export const showForm = getMethod("SIDEBAR_SHOW_FORM");
-export const hideForm = getMethod("SIDEBAR_HIDE_FORM");
+  if (document.querySelector("html")) {
+    return $(document.querySelector("html"));
+  }
+
+  const $html = $("html");
+  if ($html.length > 0) {
+    return $html;
+  }
+
+  throw new Error("HTML node not found");
+}

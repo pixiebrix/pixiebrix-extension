@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SidebarEntries, FormEntry, PanelEntry } from "@/sidebar/types";
+import {
+  SidebarEntries,
+  FormEntry,
+  PanelEntry,
+  ActivatePanelOptions,
+} from "@/sidebar/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { defaultEventKey, mapTabEventKey } from "@/sidebar/utils";
 import { UUID } from "@/core";
@@ -61,6 +66,56 @@ const sidebarSlice = createSlice({
       const nonce = action.payload;
       state.forms = state.forms.filter((x) => x.nonce !== nonce);
       state.activeKey = defaultEventKey(state);
+    },
+    activatePanel(
+      state,
+      {
+        payload: { extensionId, panelHeading, blueprintId, force },
+      }: PayloadAction<ActivatePanelOptions>
+    ) {
+      const hasActive = state.forms.length > 0 || state.panels.length > 0;
+
+      if (hasActive && !force) {
+        return;
+      }
+
+      // Try matching on extension
+      if (extensionId) {
+        const extensionForm = state.forms.find(
+          (x) => x.extensionId === extensionId
+        );
+        if (extensionForm) {
+          state.activeKey = mapTabEventKey("form", extensionForm);
+          return;
+        }
+
+        const extensionPanel = state.panels.find(
+          (x) => x.extensionId === extensionId
+        );
+        if (extensionPanel) {
+          state.activeKey = mapTabEventKey("panel", extensionPanel);
+        }
+      }
+
+      // Try matching on panel heading
+      if (panelHeading) {
+        const extensionPanel = state.panels
+          .filter((x) => blueprintId == null || x.blueprintId === blueprintId)
+          .find((x) => x.heading === panelHeading);
+        if (extensionPanel) {
+          state.activeKey = mapTabEventKey("panel", extensionPanel);
+        }
+      }
+
+      // Try matching on blueprint
+      if (blueprintId) {
+        const blueprintPanel = state.panels.find(
+          (x) => x.blueprintId === blueprintId
+        );
+        if (blueprintPanel) {
+          state.activeKey = mapTabEventKey("panel", blueprintPanel);
+        }
+      }
     },
     setPanels(state, action: PayloadAction<{ panels: PanelEntry[] }>) {
       state.panels = action.payload.panels;
