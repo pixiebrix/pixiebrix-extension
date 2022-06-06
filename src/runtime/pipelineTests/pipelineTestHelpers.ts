@@ -4,12 +4,12 @@ import { propertiesToSchema } from "@/validators/generic";
 import { ApiVersion, BlockArg, BlockOptions, Schema } from "@/core";
 import { InitialValues } from "@/runtime/reducePipeline";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { BusinessError } from "@/errors";
 import {
   isDeferExpression,
   mapArgs,
   PipelineExpression,
 } from "@/runtime/mapArgs";
+import { BusinessError } from "@/errors/businessErrors";
 
 const logger = new ConsoleLogger();
 

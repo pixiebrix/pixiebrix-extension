@@ -17,7 +17,7 @@
 
 import { UrlParser } from "@/blocks/transformers/parseUrl";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { BusinessError } from "@/errors";
+import { BusinessError } from "@/errors/businessErrors";
 
 describe("parseUrl", () => {
   it("parses absolute URL", async () => {

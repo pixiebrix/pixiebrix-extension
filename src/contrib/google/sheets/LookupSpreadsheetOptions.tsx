@@ -27,7 +27,7 @@ import TabField from "@/contrib/google/sheets/TabField";
 import { useAsyncState } from "@/hooks/common";
 import { sheets } from "@/background/messenger/api";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { LOOKUP_SCHEMA } from "@/contrib/google/sheets/lookup";
 import { isEmpty } from "lodash";
 import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";

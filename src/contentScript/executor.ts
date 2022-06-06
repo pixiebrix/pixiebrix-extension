@@ -18,7 +18,7 @@
 import blockRegistry from "@/blocks/registry";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { RunBlock } from "@/contentScript/runBlockTypes";
-import { BusinessError } from "@/errors";
+import { BusinessError } from "@/errors/businessErrors";
 
 export async function runBrick(request: RunBlock): Promise<unknown> {
   // XXX: validate sourceTabId? Can't use childTabs because we also support `window: broadcast`

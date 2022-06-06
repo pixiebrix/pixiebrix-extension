@@ -17,7 +17,7 @@
 
 import { Logger, MessageContext } from "@/core";
 import { UnknownObject } from "@/types";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 class ConsoleLogger implements Logger {
   readonly context: MessageContext = {};

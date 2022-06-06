@@ -50,7 +50,7 @@ import {
 } from "@/contentScript/sidebar";
 import Mustache from "mustache";
 import { uuidv4 } from "@/types/helpers";
-import { BusinessError, getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { HeadlessModeError } from "@/blocks/errors";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { cloneDeep } from "lodash";
@@ -60,6 +60,7 @@ import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import { BusinessError } from "@/errors/businessErrors";
 
 export type SidebarConfig = {
   heading: string;

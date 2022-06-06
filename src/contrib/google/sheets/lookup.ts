@@ -20,9 +20,9 @@ import { Transformer, UnknownObject } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { sheets } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
-import { BusinessError } from "@/errors";
 import { zip } from "lodash";
 import { isNullOrBlank } from "@/utils";
+import { BusinessError } from "@/errors/businessErrors";
 
 export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
   "@pixiebrix/google/sheets-lookup"

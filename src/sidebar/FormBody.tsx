@@ -19,7 +19,7 @@ import React from "react";
 import { FormEntry } from "@/sidebar/types";
 import { useAsyncState } from "@/hooks/common";
 import Loader from "@/components/Loader";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { createFrameSource } from "@/blocks/transformers/ephemeralForm/formTransformer";
 
 type FormBodyProps = {

@@ -24,7 +24,6 @@ import { castArray, mapValues } from "lodash";
 import { faEyeSlash, faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { StatusCodes } from "http-status-codes";
-import { isAxiosError } from "@/errors";
 import reportError from "@/telemetry/reportError";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -34,8 +33,11 @@ import Form, {
   RenderBody,
   RenderSubmit,
 } from "@/components/form/Form";
-import { isSingleObjectBadRequestError } from "@/types/errorContract";
 import { FormikErrors } from "formik";
+import {
+  isAxiosError,
+  isSingleObjectBadRequestError,
+} from "@/errors/networkErrorHelpers";
 
 type Profile = {
   scope: string | null;

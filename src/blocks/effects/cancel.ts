@@ -17,7 +17,7 @@
 
 import { Effect } from "@/types";
 import { BlockArg, Schema } from "@/core";
-import { CancelError } from "@/errors";
+import { CancelError } from "@/errors/businessErrors";
 
 export class CancelEffect extends Effect {
   constructor() {

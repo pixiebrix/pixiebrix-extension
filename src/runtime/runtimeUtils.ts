@@ -38,9 +38,9 @@ import {
 } from "@/runtime/apiVersionOptions";
 import { engineRenderer } from "@/runtime/renderers";
 import { mapArgs } from "@/runtime/mapArgs";
-import { BusinessError } from "@/errors";
 import { $safeFind } from "@/helpers";
 import { isInnerExtensionPoint } from "@/registry/internal";
+import { BusinessError } from "@/errors/businessErrors";
 
 /**
  * @throws InputValidationError if blockArgs does not match the input schema for block

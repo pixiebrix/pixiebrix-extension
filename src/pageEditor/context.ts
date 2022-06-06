@@ -20,7 +20,7 @@ import pTimeout from "p-timeout";
 import { navigationEvent } from "@/pageEditor/events";
 import { useAsyncEffect } from "use-async-effect";
 import { FrameworkMeta } from "@/messaging/constants";
-import { getErrorMessage, isErrorObject } from "@/errors";
+import { getErrorMessage, isErrorObject } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 import { uuidv4 } from "@/types/helpers";
 import { useTabEventListener } from "@/hooks/events";

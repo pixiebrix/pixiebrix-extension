@@ -18,7 +18,7 @@
 import React, { useCallback, useEffect, useReducer } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import Loader from "@/components/Loader";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { UnknownObject } from "@/types";
 import { runExtensionPointReader } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";

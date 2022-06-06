@@ -17,7 +17,7 @@
 
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
-import { BusinessError } from "@/errors";
+import { BusinessError } from "@/errors/businessErrors";
 
 export class MappingTransformer extends Transformer {
   defaultOutputKey = "value";

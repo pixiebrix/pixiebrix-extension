@@ -36,7 +36,7 @@ import { object, string } from "yup";
 import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioItemListWidget";
 import { RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
-import { isSingleObjectBadRequestError } from "@/types/errorContract";
+import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 
 type FormState = {
   recipeId: RegistryId;

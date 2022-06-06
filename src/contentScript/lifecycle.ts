@@ -29,7 +29,7 @@ import { resolveDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deployment";
 import { $safeFind } from "@/helpers";
-import { PromiseCancelled } from "@/errors";
+import { PromiseCancelled } from "@/errors/genericErrors";
 
 let _scriptPromise: Promise<void> | undefined;
 const _dynamic: Map<UUID, IExtensionPoint> = new Map();

@@ -16,46 +16,49 @@
  */
 
 import { Runtime, Tabs } from "webextension-polyfill";
-import { BusinessError } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
 import { asyncForEach } from "@/utils";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { JsonObject } from "type-fest";
-import { MessengerMeta } from "webext-messenger";
+import {
+  MessengerMeta,
+  errorTargetClosedEarly,
+  errorTabDoesntExist,
+} from "webext-messenger";
 import { runBrick } from "@/contentScript/messenger/api";
 import { Target } from "@/types";
 import { RemoteExecutionError } from "@/blocks/errors";
 import pDefer from "p-defer";
 import { canAccessTab } from "webext-tools";
-import { onTabClose } from "@/chrome";
+import { getErrorMessage } from "@/errors/errorHelpers";
 // eslint-disable-next-line import/no-restricted-paths -- Type only
 import type { RunBlock } from "@/contentScript/runBlockTypes";
+import { BusinessError } from "@/errors/businessErrors";
 
 type TabId = number;
-
-// Used to determine which promise was resolved in a race
-const TYPE_WAS_CLOSED = Symbol("Tab was closed");
 
 const tabToOpener = new Map<TabId, TabId>();
 const tabToTarget = new Map<TabId, TabId>();
 // TODO: One tab could have multiple targets, but `tabToTarget` currenly only supports one at a time
 
 async function safelyRunBrick({ tabId }: { tabId: number }, request: RunBlock) {
-  if (!(await canAccessTab(tabId))) {
-    throw new BusinessError("PixieBrix doesn't have access to the tab");
+  try {
+    return await runBrick({ tabId }, request);
+  } catch (error) {
+    const errorMessage = getErrorMessage(error);
+
+    // Repackage tab-lifecycle-related errors as BusinessErrors
+    if ([errorTargetClosedEarly, errorTabDoesntExist].includes(errorMessage)) {
+      throw new BusinessError(errorMessage);
+    }
+
+    // This must follow the tab existence checks or else it returns false even if the tab simply doesn't exist
+    if (!(await canAccessTab(tabId))) {
+      throw new BusinessError("PixieBrix doesn't have access to the tab");
+    }
+
+    throw error;
   }
-
-  const result = await Promise.race([
-    // If https://github.com/pixiebrix/webext-messenger/issues/67 is resolved, we don't need the listener
-    onTabClose(tabId).then(() => TYPE_WAS_CLOSED),
-    runBrick({ tabId }, request),
-  ]);
-
-  if (result === TYPE_WAS_CLOSED) {
-    throw new BusinessError("The tab was closed");
-  }
-
-  return result;
 }
 
 export async function waitForTargetByUrl(url: string): Promise<Target> {

@@ -18,8 +18,8 @@
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { PropError } from "@/errors";
 import { isEmpty } from "lodash";
+import { PropError } from "@/errors/businessErrors";
 
 export function getLocalISOString(date: Date): string {
   let offsetInMinutes = date.getTimezoneOffset();

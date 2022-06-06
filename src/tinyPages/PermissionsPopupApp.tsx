@@ -21,7 +21,7 @@ import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import { Button } from "react-bootstrap";
 import Centered from "@/pageEditor/components/Centered";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 import { Permissions } from "webextension-polyfill";
 import { selectOptionalPermissions } from "@/utils/permissions";

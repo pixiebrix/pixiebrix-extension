@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { ContextError } from "@/errors/genericErrors";
+
 Object.assign(global, { chrome: { runtime: { id: 42 } } });
 
 import React from "react";
@@ -23,7 +25,6 @@ import { validateRegistryId, uuidv4 } from "@/types/helpers";
 import LogTable from "@/components/logViewer/LogTable";
 import { serializeError } from "serialize-error";
 import { Card } from "react-bootstrap";
-import { ContextError } from "@/errors";
 import { InputValidationError } from "@/blocks/errors";
 import { Schema } from "@/core";
 import type { LogEntry } from "@/background/logging";

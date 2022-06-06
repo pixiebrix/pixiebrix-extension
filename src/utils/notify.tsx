@@ -25,7 +25,7 @@ import { DefaultToastOptions } from "react-hot-toast/dist/core/types";
 import { NOTIFICATIONS_Z_INDEX } from "@/common";
 import reportError from "@/telemetry/reportError";
 import { Except, RequireAtLeastOne } from "type-fest";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { truncate } from "lodash";
 import { SIDEBAR_WIDTH_CSS_PROPERTY } from "@/contentScript/sidebar";
 

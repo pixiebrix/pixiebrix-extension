@@ -26,8 +26,8 @@ import {
 import { JSONSchema7Type } from "json-schema";
 import { UnknownObject } from "@/types";
 import { mapValues } from "lodash";
-import { BusinessError } from "@/errors";
 import { Primitive } from "type-fest";
+import { BusinessError } from "@/errors/businessErrors";
 
 const COMMUNITY_HOSTNAME_REGEX =
   /^community\d+\..*\.automationanywhere\.digital$/;

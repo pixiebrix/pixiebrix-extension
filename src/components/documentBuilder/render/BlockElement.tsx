@@ -18,7 +18,7 @@
 import React, { useContext } from "react";
 import { BlockPipeline } from "@/blocks/types";
 import { useAsyncState } from "@/hooks/common";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { runRendererPipeline } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";

@@ -24,9 +24,11 @@ import {
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import JsonTree from "@/components/jsonTree/JsonTree";
-import { safeGuessStatusText } from "@/types/errorContract";
 import { selectAbsoluteUrl } from "@/services/requestErrorUtils";
-import { SerializableAxiosError } from "@/services/errors";
+import {
+  safeGuessStatusText,
+  SerializableAxiosError,
+} from "@/errors/networkErrorHelpers";
 
 function tryParse(value: unknown): unknown {
   if (typeof value === "string") {

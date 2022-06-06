@@ -40,7 +40,7 @@ import SwitchButtonWidget, {
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 
 function supportsSelector(trigger: Trigger) {
-  return !["load", "interval"].includes(trigger);
+  return !["load", "interval", "selectionchange"].includes(trigger);
 }
 
 function supportsTargetMode(trigger: Trigger) {
@@ -80,10 +80,25 @@ const TriggerConfiguration: React.FC<{
       setFieldValue(fieldName("background"), null);
     }
 
+    if (nextTrigger === "custom") {
+      setFieldValue(fieldName("customEvent"), { eventName: "" });
+    } else {
+      setFieldValue(fieldName("customEvent"), null);
+    }
+
     setFieldValue(
       fieldName("reportMode"),
       getDefaultReportModeForTrigger(nextTrigger)
     );
+
+    if (nextTrigger === "selectionchange" && debounce == null) {
+      // Add debounce by default, because the selection event fires for every event when clicking and dragging
+      setFieldValue(fieldName("debounce"), {
+        waitMillis: 250,
+        leading: false,
+        trailing: true,
+      });
+    }
 
     setFieldValue(fieldName("trigger"), currentTarget.value);
   };
@@ -106,11 +121,22 @@ const TriggerConfiguration: React.FC<{
           <option value="dblclick">Double Click</option>
           <option value="blur">Blur</option>
           <option value="mouseover">Mouseover</option>
+          <option value="selectionchange">Selection Change</option>
           <option value="keydown">Keydown</option>
           <option value="keyup">Keyup</option>
           <option value="keypress">Keypress</option>
           <option value="change">Change</option>
+          <option value="custom">Custom Event</option>
         </ConnectedFieldTemplate>
+
+        {trigger === "custom" && (
+          <ConnectedFieldTemplate
+            title="Custom Event"
+            name={fieldName("customEvent", "eventName")}
+            description="The custom event name"
+            {...makeLockableFieldProps("Custom Event", isLocked)}
+          />
+        )}
 
         {trigger === "interval" && (
           <>
