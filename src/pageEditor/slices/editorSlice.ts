@@ -636,6 +636,31 @@ export const editorSlice = createSlice({
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
     },
+    removeNode(state, action: PayloadAction<UUID>) {
+      const nodeIdToRemove = action.payload;
+      const element = state.elements.find(
+        (x) => x.uuid === state.activeElementId
+      );
+      const elementUiState = state.elementUIStates[state.activeElementId];
+      const { pipelinePath, index } =
+        elementUiState.pipelineMap[nodeIdToRemove];
+      const pipeline = isEmpty(pipelinePath)
+        ? element.extension.blockPipeline
+        : get(element.extension.blockPipeline, pipelinePath);
+
+      const nextActiveNodeId =
+        index === 0 ? FOUNDATION_NODE_ID : pipeline[index - 1].instanceId;
+
+      pipeline.splice(index, 1);
+
+      // TODO also remove the ui states of children nodes
+      delete elementUiState.nodeUIStates[nodeIdToRemove];
+
+      elementUiState.activeNodeId = nextActiveNodeId;
+
+      // This change should re-initialize the Page Editor Formik form
+      state.selectionSeq++;
+    },
   },
 });
 /* eslint-enable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- re-enable rule */

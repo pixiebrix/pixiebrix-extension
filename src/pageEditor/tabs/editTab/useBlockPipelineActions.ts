@@ -24,12 +24,10 @@ import { uuidv4 } from "@/types/helpers";
 import { produce } from "immer";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
-import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
-import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { createNewBlock } from "@/pageEditor/createNewBlock";
 
 type BlockPipelineActions = {
@@ -86,35 +84,11 @@ function useBlockPipelineActions(
         source: "PageEditor-BrickSearchModal",
       });
     },
-    [blockPipeline, values, setFormValues, setActiveNodeId, sessionId, dispatch]
+    [blockPipeline, values, sessionId, dispatch]
   );
 
   const removeBlock = (nodeIdToRemove: NodeId) => {
-    let prevNodeId: NodeId;
-    let nextState = produce(values, (draft) => {
-      const index = draft.extension.blockPipeline.findIndex(
-        (block) => block.instanceId === nodeIdToRemove
-      );
-
-      prevNodeId =
-        index === 0
-          ? FOUNDATION_NODE_ID
-          : draft.extension.blockPipeline[index - 1].instanceId;
-
-      draft.extension.blockPipeline.splice(index, 1);
-    });
-
-    nextState = produceExcludeUnusedDependencies(nextState);
-
-    // Set the active node before setting the form values, otherwise there's a race condition based on the React state
-    // causing a re-render vs. the Formik state causing a re-render
-    dispatch(
-      actions.removeElementNodeUIState({
-        nodeIdToRemove,
-        newActiveNodeId: prevNodeId,
-      })
-    );
-    setFormValues(nextState, true);
+    dispatch(actions.removeNode(nodeIdToRemove));
   };
 
   const moveBlockUp = useCallback(
