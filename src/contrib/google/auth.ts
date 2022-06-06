@@ -53,10 +53,9 @@ class PermissionsError extends Error {
 
   public readonly status: number;
 
-  constructor(m: string, status: number) {
-    super(m);
+  constructor(message: string, status: number) {
+    super(message);
     this.status = status;
-    Object.setPrototypeOf(this, Error.prototype);
   }
 }
 
