@@ -34,6 +34,10 @@ import { TriggerDefinition } from "@/extensionPoints/triggerExtension";
 import selection from "@/utils/selectionController";
 import { ContextMenuReader } from "@/extensionPoints/contextMenuReader";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
+import {
+  activateExtensionPanel,
+  ensureSidebar,
+} from "@/contentScript/sidebarController";
 
 let _overlay: Overlay | null = null;
 const _temporaryExtensions: Map<string, IExtensionPoint> = new Map();
@@ -172,6 +176,11 @@ export async function updateDynamicElement({
 
   extensionPoint.addExtension(resolved);
   await runDynamic(extensionConfig.id, extensionPoint);
+
+  if (extensionPoint.kind === "actionPanel") {
+    await ensureSidebar();
+    await activateExtensionPanel(extensionConfig.id);
+  }
 }
 
 export async function enableOverlay(selector: string): Promise<void> {

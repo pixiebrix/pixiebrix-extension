@@ -38,6 +38,7 @@ import {
   disableOverlay,
   enableOverlay,
   removeExtension,
+  showSidebar,
 } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { resolveDefinitions } from "@/registry/internal";
@@ -94,12 +95,17 @@ const InstalledEntry: React.FunctionComponent<{
         // FIXME: is where we need to uninstall the extension because it will now be a dynamic element? Or should it
         //  be getting handled by lifecycle.ts? Need to add some logging to figure out how other ones work
         dispatch(actions.selectInstalled(state));
+
+        if (type === "actionPanel") {
+          // Switch the sidepanel over to the panel
+          void showSidebar(thisTab, { extensionId: extension.id, force: true });
+        }
       } catch (error) {
         reportError(error);
         dispatch(actions.adapterError({ uuid: extension.id, error }));
       }
     },
-    [dispatch, sessionId, recipes]
+    [dispatch, sessionId, recipes, type]
   );
 
   const isButton = type === "menuItem";

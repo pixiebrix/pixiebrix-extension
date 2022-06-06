@@ -19,7 +19,7 @@ import { loadOptions } from "@/store/extensionsStorage";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { ResolvedExtension, IExtensionPoint, RegistryId, UUID } from "@/core";
 import * as context from "@/contentScript/context";
-import * as sidebar from "@/contentScript/sidebar";
+import * as sidebar from "@/contentScript/sidebarController";
 import { sleep } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";

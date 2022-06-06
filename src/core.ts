@@ -444,6 +444,11 @@ export type ExtensionRef = {
    * Registry id of the extension point.
    */
   extensionPointId: RegistryId;
+
+  /**
+   * Blueprint the extension is from.
+   */
+  blueprintId: RegistryId | null;
 };
 
 /**

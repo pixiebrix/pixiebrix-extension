@@ -20,23 +20,34 @@ import { uuidv4 } from "@/types/helpers";
 import { IS_BROWSER } from "@/helpers";
 import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
-import { ExtensionRef, UUID } from "@/core";
+import { ExtensionRef, RegistryId, UUID } from "@/core";
 import type {
   SidebarEntries,
   FormEntry,
   PanelEntry,
   RendererError,
+  ActivatePanelOptions,
 } from "@/sidebar/types";
 import { RendererPayload } from "@/runtime/runtimeTypes";
-import { hideForm, renderPanels, showForm } from "@/sidebar/messenger/api";
+import {
+  hideForm,
+  renderPanels,
+  showForm,
+  activatePanel,
+} from "@/sidebar/messenger/api";
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
 import pDefer from "p-defer";
+import { getHTMLElement } from "@/utils/domUtils";
+import { isEmpty } from "lodash";
 
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_SELECTOR = "#" + PANEL_FRAME_ID;
 export const PANEL_HIDING_EVENT = "pixiebrix:hideSidebar";
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-margin-right";
 
+/**
+ * Sequence number for ensuring render requests are handled in order
+ */
 let renderSequenceNumber = 0;
 
 export type ShowCallback = () => void;
@@ -54,24 +65,6 @@ export function removeShowCallback(onShow: ShowCallback): void {
   if (index > -1) {
     extensionCallbacks.splice(index, 1);
   }
-}
-
-function getHTMLElement(): JQuery {
-  // Resolve html tag, which is more dominant than <body>
-  if (document.documentElement) {
-    return $(document.documentElement);
-  }
-
-  if (document.querySelector("html")) {
-    return $(document.querySelector("html"));
-  }
-
-  const $html = $("html");
-  if ($html.length > 0) {
-    return $html;
-  }
-
-  throw new Error("HTML node not found");
 }
 
 function storeOriginalCSS() {
@@ -102,7 +95,7 @@ function insertSidebar(): string {
     .attr({
       id: PANEL_FRAME_ID,
       src: `${actionURL}?nonce=${nonce}`,
-      "data-nonce": nonce, // Don't use jQuery.data because we need the attribute
+      "data-nonce": nonce, // Don't use jQuery.data because we need this as an HTML attribute to target with selector
     })
     .css({
       position: "fixed",
@@ -121,10 +114,14 @@ function insertSidebar(): string {
 }
 
 /**
- * Add the sidebar to the page if it's not already on the page
+ * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
+ * @param activateOptions options controlling the visible panel in the sidebar
  * @param callbacks callbacks to refresh the panels, leave blank to refresh all extension panels
  */
-export function showSidebar(callbacks = extensionCallbacks): string {
+export function showSidebar(
+  activateOptions: ActivatePanelOptions = {},
+  callbacks = extensionCallbacks
+): string {
   reportEvent("SidePanelShow");
 
   const container: HTMLElement = document.querySelector(
@@ -133,7 +130,9 @@ export function showSidebar(callbacks = extensionCallbacks): string {
 
   let nonce = container?.dataset?.nonce;
 
-  if (!nonce) {
+  const isShowing = Boolean(nonce);
+
+  if (!isShowing) {
     console.debug("SidePanel is not on the page, attaching side panel");
     adjustDocumentStyle();
     nonce = insertSidebar();
@@ -151,8 +150,48 @@ export function showSidebar(callbacks = extensionCallbacks): string {
     }
   }
 
+  if (!isEmpty(activateOptions)) {
+    const seqNum = renderSequenceNumber;
+    renderSequenceNumber++;
+
+    // The sidebarSlice handles the race condition with the panels loading by keeping track of the latest pending
+    // activatePanel request.
+    void activatePanel({ tabId: "this", page: "/sidebar.html" }, seqNum, {
+      ...activateOptions,
+      // If the sidebar wasn't showing, force the behavior. (Otherwise, there's a race on the initial activation, where
+      // depending on when the message is received, the sidebar might already be showing a panel)
+      force: activateOptions.force || !isShowing,
+    })
+      // eslint-disable-next-line promise/prefer-await-to-then -- not in an async method
+      .catch((error: unknown) => {
+        reportError(
+          new Error("Error activating sidebar panel", { cause: error })
+        );
+      });
+  }
+
   // TODO: Drop `nonce` if not used by the caller
   return nonce;
+}
+
+/**
+ * Force-show the panel for the given extension id
+ * @param extensionId the extension UUID
+ */
+export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
+  expectContext("contentScript");
+
+  if (!isSidebarVisible()) {
+    console.warn("sidebar is not attached to the page");
+  }
+
+  const seqNum = renderSequenceNumber;
+  renderSequenceNumber++;
+
+  void activatePanel({ tabId: "this", page: "/sidebar.html" }, seqNum, {
+    extensionId,
+    force: true,
+  });
 }
 
 /**
@@ -160,6 +199,8 @@ export function showSidebar(callbacks = extensionCallbacks): string {
  * @see showSidebar
  */
 export async function ensureSidebar(): Promise<void> {
+  expectContext("contentScript");
+
   const show = pDefer();
 
   if (!isSidebarVisible()) {
@@ -190,15 +231,24 @@ export function toggleSidebar(): string | void {
 }
 
 export function isSidebarVisible(): boolean {
+  expectContext("contentScript");
+
   return Boolean(document.querySelector(PANEL_CONTAINER_SELECTOR));
 }
 
+/**
+ * Return the Sidebar state for the React App to get the state from sidebar controller.
+ *
+ * Called from the Sidebar React App via the messenger API
+ */
 export function getSidebarEntries(): SidebarEntries {
+  expectContext("contentScript");
+
   // `forms` state is managed by the sidebar react component
   return { panels, forms: [] };
 }
 
-function renderPanelsIfVisible() {
+function renderPanelsIfVisible(): void {
   expectContext("contentScript");
 
   if (isSidebarVisible()) {
@@ -210,7 +260,7 @@ function renderPanelsIfVisible() {
   }
 }
 
-export function showSidebarForm(entry: FormEntry) {
+export function showSidebarForm(entry: FormEntry): void {
   expectContext("contentScript");
 
   if (!isSidebarVisible()) {
@@ -222,7 +272,7 @@ export function showSidebarForm(entry: FormEntry) {
   void showForm({ tabId: "this", page: "/sidebar.html" }, seqNum, entry);
 }
 
-export function hideSidebarForm(nonce: UUID) {
+export function hideSidebarForm(nonce: UUID): void {
   expectContext("contentScript");
 
   if (!isSidebarVisible()) {
@@ -235,7 +285,7 @@ export function hideSidebarForm(nonce: UUID) {
   void hideForm({ tabId: "this", page: "/sidebar.html" }, seqNum, nonce);
 }
 
-export function removeExtension(extensionId: string): void {
+export function removeExtension(extensionId: UUID): void {
   expectContext("contentScript");
 
   // `panels` is const, so replace the contents
@@ -244,7 +294,7 @@ export function removeExtension(extensionId: string): void {
   renderPanelsIfVisible();
 }
 
-export function removeExtensionPoint(extensionPointId: string): void {
+export function removeExtensionPoint(extensionPointId: RegistryId): void {
   expectContext("contentScript");
 
   // `panels` is const, so replace the contents
@@ -264,11 +314,12 @@ export function reservePanels(refs: ExtensionRef[]): void {
   }
 
   const current = new Set(panels.map((x) => x.extensionId));
-  for (const { extensionId, extensionPointId } of refs) {
+  for (const { extensionId, extensionPointId, blueprintId } of refs) {
     if (!current.has(extensionId)) {
       const entry: PanelEntry = {
         extensionId,
         extensionPointId,
+        blueprintId,
         heading: null,
         payload: null,
       };
@@ -277,6 +328,7 @@ export function reservePanels(refs: ExtensionRef[]): void {
         "reservePanels: reserve panel %s for %s",
         extensionId,
         extensionPointId,
+        blueprintId,
         { ...entry }
       );
 
@@ -287,7 +339,7 @@ export function reservePanels(refs: ExtensionRef[]): void {
   renderPanelsIfVisible();
 }
 
-export function updateHeading(extensionId: string, heading: string): void {
+export function updateHeading(extensionId: UUID, heading: string): void {
   const entry = panels.find((x) => x.extensionId === extensionId);
   if (entry) {
     entry.heading = heading;
@@ -307,7 +359,7 @@ export function updateHeading(extensionId: string, heading: string): void {
 }
 
 export function upsertPanel(
-  { extensionId, extensionPointId }: ExtensionRef,
+  { extensionId, extensionPointId, blueprintId }: ExtensionRef,
   heading: string,
   payload: RendererPayload | RendererError
 ): void {
@@ -319,6 +371,7 @@ export function upsertPanel(
       "upsertPanel: update existing panel %s for %s",
       extensionId,
       extensionPointId,
+      blueprintId,
       { ...entry }
     );
   } else {
@@ -326,6 +379,7 @@ export function upsertPanel(
       "upsertPanel: add new panel %s for %s",
       extensionId,
       extensionPointId,
+      blueprintId,
       {
         entry,
         extensionPointId,
@@ -333,7 +387,13 @@ export function upsertPanel(
         payload,
       }
     );
-    panels.push({ extensionId, extensionPointId, heading, payload });
+    panels.push({
+      extensionId,
+      extensionPointId,
+      blueprintId,
+      heading,
+      payload,
+    });
   }
 
   renderPanelsIfVisible();

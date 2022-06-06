@@ -27,7 +27,11 @@ import {
   UnsavedChangesIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
 import { UUID } from "@/core";
-import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
+import {
+  disableOverlay,
+  enableOverlay,
+  showSidebar,
+} from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
 import { reportEvent } from "@/telemetry/events";
@@ -87,6 +91,10 @@ const DynamicEntry: React.FunctionComponent<{
         });
 
         dispatch(actions.selectElement(item.uuid));
+
+        if (item.type === "actionPanel") {
+          void showSidebar(thisTab, { extensionId: item.uuid, force: true });
+        }
       }}
     >
       <span
