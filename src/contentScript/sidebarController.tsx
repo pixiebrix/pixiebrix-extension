@@ -294,13 +294,30 @@ export function removeExtension(extensionId: UUID): void {
   renderPanelsIfVisible();
 }
 
-export function removeExtensionPoint(extensionPointId: RegistryId): void {
+/**
+ * Remove all panels associated with the given extensionPointId.
+ * @param extensionPointId the extension point id (internal or external)
+ * @param preserveExtensionIds array of extension ids to keep in the panel. Used to avoid flickering if updating
+ * the extensionPoint for a sidebar extension from the Page Editor
+ */
+export function removeExtensionPoint(
+  extensionPointId: RegistryId,
+  { preserveExtensionIds = [] }: { preserveExtensionIds?: UUID[] } = {}
+): void {
   expectContext("contentScript");
+
+  console.debug("removeExtensionPoint %s", extensionPointId, {
+    preserveExtensionIds,
+  });
 
   // `panels` is const, so replace the contents
   const current = panels.splice(0, panels.length);
   panels.push(
-    ...current.filter((x) => x.extensionPointId !== extensionPointId)
+    ...current.filter(
+      (x) =>
+        x.extensionPointId !== extensionPointId ||
+        preserveExtensionIds.includes(x.extensionId)
+    )
   );
   renderPanelsIfVisible();
 }

@@ -30,6 +30,7 @@ import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deployment";
 import { $safeFind } from "@/helpers";
 import { PromiseCancelled } from "@/errors/genericErrors";
+import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 
 let _scriptPromise: Promise<void> | undefined;
 const _dynamic: Map<UUID, IExtensionPoint> = new Map();
@@ -195,15 +196,24 @@ function makeCancelOnNavigate(): () => boolean {
 }
 
 export async function runDynamic(
-  uuid: UUID,
+  elementId: UUID,
   extensionPoint: IExtensionPoint
 ): Promise<void> {
   // Uninstall the previous extension point instance (in favor of the updated extensionPoint)
-  if (_dynamic.has(uuid)) {
-    _dynamic.get(uuid).uninstall();
+  const previousExtensionPoint = _dynamic.get(elementId);
+
+  if (previousExtensionPoint) {
+    if (previousExtensionPoint.kind === "actionPanel") {
+      // eslint-disable-next-line new-cap -- hack for action panels
+      (
+        previousExtensionPoint as SidebarExtensionPoint
+      ).HACK_uninstallExceptExtension(elementId);
+    } else {
+      previousExtensionPoint.uninstall();
+    }
   }
 
-  _dynamic.set(uuid, extensionPoint);
+  _dynamic.set(elementId, extensionPoint);
   await runExtensionPoint(extensionPoint, makeCancelOnNavigate());
 }
 

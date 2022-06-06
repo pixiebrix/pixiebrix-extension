@@ -169,7 +169,11 @@ export async function updateDynamicElement({
 
   _temporaryExtensions.set(extensionConfig.id, extensionPoint);
 
-  clearDynamic(extensionConfig.id, { clearTrace: false });
+  // Don't clear actionPanel because it causes flicking between the tabs in the sidebar. The updated dynamic element
+  // will automatically replace the old panel because the panels are keyed by extension id
+  if (extensionPoint.kind !== "actionPanel") {
+    clearDynamic(extensionConfig.id, { clearTrace: false });
+  }
 
   // In practice, should be a no-op because the Page Editor handles the extensionPoint
   const resolved = await resolveDefinitions(extensionConfig);
