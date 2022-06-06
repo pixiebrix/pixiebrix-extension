@@ -34,11 +34,19 @@ const BootstrapStylesheet: React.FC<BootstrapStylesheetProps> = ({
   const linkRef = useRef<HTMLLinkElement>();
 
   useEffect(() => {
-    linkRef.current.addEventListener("load", () => {
+    const onLoadHandler = () => {
       requestAnimationFrame(() => {
         onLoad();
       });
-    });
+    };
+
+    const linkElement = linkRef.current;
+
+    linkElement.addEventListener("load", onLoadHandler);
+
+    return () => {
+      linkElement.removeEventListener("load", onLoadHandler);
+    };
   }, [onLoad]);
 
   return <link rel="stylesheet" href={theme} ref={linkRef} />;

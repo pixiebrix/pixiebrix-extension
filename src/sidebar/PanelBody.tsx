@@ -90,9 +90,6 @@ const slice = createSlice({
       // reloading
       state.isFetching = true;
     },
-    run() {
-      // NOP
-    },
     success(state, action: PayloadAction<{ data: BodyProps }>) {
       state.isLoading = false;
       state.isFetching = false;
@@ -125,7 +122,9 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
     }
 
     try {
-      dispatch(slice.actions.run());
+      // In most cases reactivate would have already been called for the payload == null branch. But confirm it here
+      dispatch(slice.actions.reactivate());
+
       const { blockId, ctxt, args } = payload;
       const block = await blockRegistry.lookup(blockId);
       // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/1939
