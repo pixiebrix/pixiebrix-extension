@@ -88,7 +88,7 @@ describe("sanity check", () => {
     // Add the first (and the only) available block
     await userEvent.click(
       rendered.getByRole("button", {
-        name: /add brick/i,
+        name: /add/i,
       })
     );
 
