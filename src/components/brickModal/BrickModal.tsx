@@ -119,7 +119,7 @@ type ButtonProps = {
 
 type ItemType = {
   searchResults: BrickOption[];
-  setDetailBrick: (brick: IBrick) => void;
+  onSetDetailBrick: (brick: IBrick, rowIndex: number) => void;
   onSelect: (brick: IBrick) => void;
   close: () => void;
 };
@@ -137,7 +137,7 @@ const ItemRenderer = ({
   columnIndex,
   rowIndex,
   style,
-  data: { searchResults, setDetailBrick, onSelect, close },
+  data: { searchResults, onSetDetailBrick, onSelect, close },
 }: {
   columnIndex: number;
   rowIndex: number;
@@ -153,7 +153,7 @@ const ItemRenderer = ({
         <BrickResult
           brick={brick}
           onShowDetail={() => {
-            setDetailBrick(brick);
+            onSetDetailBrick(brick, rowIndex);
           }}
           onSelect={() => {
             onSelect(brick);
@@ -203,6 +203,14 @@ function ActualModal<T extends IBrick>({
 }: ModalProps<T>): React.ReactElement<T> {
   const [query, setQuery] = useState("");
   const [detailBrick, setDetailBrick] = useState<T>(null);
+  const [detailBrickRow, setDetailBrickRow] = useState(0);
+
+  const refCallback = (element: LazyGrid) => {
+    if (element != null && detailBrickRow > 0 && detailBrick == null) {
+      element.scrollToItem({ rowIndex: detailBrickRow });
+      setDetailBrickRow(0);
+    }
+  };
 
   const {
     data: marketplaceTags = [] as MarketplaceTag[],
@@ -342,13 +350,17 @@ function ActualModal<T extends IBrick>({
                         itemData={
                           {
                             searchResults,
-                            setDetailBrick,
+                            onSetDetailBrick(brick: T, rowIndex: number) {
+                              setDetailBrick(brick);
+                              setDetailBrickRow(rowIndex);
+                            },
                             activeBrick: detailBrick,
                             selectCaption,
                             onSelect,
                             close,
                           } as ItemType
                         }
+                        ref={refCallback}
                       >
                         {ItemRenderer}
                       </LazyGrid>

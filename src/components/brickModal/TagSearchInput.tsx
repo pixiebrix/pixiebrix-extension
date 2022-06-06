@@ -95,6 +95,11 @@ const TagSearchInput: React.VFC<{
         onFocus={handleFocus}
         onBlur={handleBlur}
         className={styles.input}
+        onKeyDown={(event) => {
+          if (event.key === "Backspace" && value === "") {
+            onClearTag();
+          }
+        }}
       />
     </div>
   );
