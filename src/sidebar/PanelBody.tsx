@@ -56,6 +56,9 @@ const BodyContainer: React.FC<BodyProps & { isFetching: boolean }> = ({
 );
 
 type State = {
+  /**
+   * Data about the component to display
+   */
   component: BodyProps | null;
   /**
    * True if the panel is loading the first time
@@ -65,13 +68,16 @@ type State = {
    * True if the panel is recalculating
    */
   isFetching: boolean;
+  /**
+   * Error to display from running the renderer
+   */
   error: unknown | null;
 };
 
 const initialPanelState: State = {
   component: null,
   isLoading: true,
-  isFetching: false,
+  isFetching: true,
   error: null,
 };
 
@@ -80,7 +86,8 @@ const slice = createSlice({
   initialState: initialPanelState,
   reducers: {
     reactivate(state) {
-      // Don't clear out the component, because we want to keep showing the old component while the panel is reloading
+      // Don't clear out the component/error, because we want to keep showing the old component while the panel is
+      // reloading
       state.isFetching = true;
     },
     run() {
@@ -153,9 +160,16 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
 
   if (state.error) {
     return (
-      <div className="text-danger">
-        Error rendering panel: {getErrorMessage(state.error)}
-      </div>
+      <>
+        {state.isFetching && (
+          <span className={styles.loader}>
+            <GridLoader size={8} />
+          </span>
+        )}
+        <div className="text-danger">
+          Error rendering panel: {getErrorMessage(state.error)}
+        </div>
+      </>
     );
   }
 
