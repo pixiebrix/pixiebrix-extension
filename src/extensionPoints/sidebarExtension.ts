@@ -28,6 +28,7 @@ import {
   ReaderOutput,
   ResolvedExtension,
   Schema,
+  UUID,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -96,6 +97,8 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
     ["heading", "body"]
   );
 
+  // Historical context: in the browser API, the toolbar icon is bound to an action. This is a panel that's shown
+  // when the user toggles the toolbar icon. Hence: actionPanel
   public get kind(): "actionPanel" {
     return "actionPanel";
   }
@@ -113,6 +116,17 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   public override uninstall(): void {
     this.removeExtensions();
     removeExtensionPoint(this.id);
+    removeShowCallback(this.showCallback);
+  }
+
+  /**
+   * HACK: a version of uninstall that keeps the panel for extensionId in the sidebar so the tab doesn't flicker
+   * @param extensionId the panel to preserve
+   * @see uninstall
+   */
+  public HACK_uninstallExceptExtension(extensionId: UUID): void {
+    this.removeExtensions();
+    removeExtensionPoint(this.id, { preserveExtensionIds: [extensionId] });
     removeShowCallback(this.showCallback);
   }
 
