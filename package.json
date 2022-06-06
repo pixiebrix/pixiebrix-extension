@@ -177,7 +177,7 @@
     "@types/data-urls": "^2.0.1",
     "@types/dompurify": "^2.2.3",
     "@types/file-saver": "^2.0.3",
-    "@types/gapi": "0.0.41",
+    "@types/gapi": "0.0.42",
     "@types/gapi.client.bigquery": "^2.0.2",
     "@types/gapi.client.oauth2": "^2.0.2",
     "@types/gapi.client.sheets": "^4.0.20201029",
