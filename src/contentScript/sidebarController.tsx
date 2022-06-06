@@ -132,7 +132,7 @@ export function showSidebar(
 
   const isShowing = Boolean(nonce);
 
-  if (!nonce) {
+  if (!isShowing) {
     console.debug("SidePanel is not on the page, attaching side panel");
     adjustDocumentStyle();
     nonce = insertSidebar();
