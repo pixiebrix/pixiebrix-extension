@@ -213,7 +213,7 @@
     "@types/semver": "^7.3.8",
     "@types/simple-icons": "^5.0.1",
     "@types/uuid": "^8.3.1",
-    "@types/webextension-polyfill": "^0.8.1",
+    "@types/webextension-polyfill": "^0.9.0",
     "@types/webpack": "^5.28.0",
     "@types/webpack-env": "^1.16.2",
     "@types/yup": "^0.29.13",
