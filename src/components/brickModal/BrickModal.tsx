@@ -37,7 +37,7 @@ import {
   useGetMarketplaceListingsQuery,
   useGetMarketplaceTagsQuery,
 } from "@/services/api";
-import { MarketplaceListing, MarketplaceTag } from "@/types/contract";
+import { MarketplaceListing } from "@/types/contract";
 import BrickDetail from "@/components/brickModal/BrickDetail";
 import Loader from "@/components/Loader";
 
@@ -212,10 +212,8 @@ function ActualModal<T extends IBrick>({
     }
   };
 
-  const {
-    data: marketplaceTags = [] as MarketplaceTag[],
-    isLoading: isLoadingTags,
-  } = useGetMarketplaceTagsQuery();
+  const { data: marketplaceTags = [], isLoading: isLoadingTags } =
+    useGetMarketplaceTagsQuery();
   const {
     data: listings = {} as Record<RegistryId, MarketplaceListing>,
     isLoading: isLoadingListings,
@@ -306,18 +304,15 @@ function ActualModal<T extends IBrick>({
           className={cx({ [styles.brickDetail]: Boolean(detailBrick) })}
         >
           {detailBrick ? (
-            <>
-              <Row></Row>
-              <BrickDetail
-                brick={detailBrick}
-                listing={listings[detailBrick.id]}
-                selectCaption={selectCaption}
-                onSelect={() => {
-                  onSelect(detailBrick);
-                  close();
-                }}
-              />
-            </>
+            <BrickDetail
+              brick={detailBrick}
+              listing={listings[detailBrick.id]}
+              selectCaption={selectCaption}
+              onSelect={() => {
+                onSelect(detailBrick);
+                close();
+              }}
+            />
           ) : (
             <Row>
               <Col xs={2} className={styles.tagList}>
