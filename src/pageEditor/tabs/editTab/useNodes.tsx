@@ -21,17 +21,22 @@ import BrickIcon from "@/components/BrickIcon";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { TraceError, TraceRecord } from "@/telemetry/trace";
-import { isNullOrBlank } from "@/utils";
+import { isNullOrBlank, joinName } from "@/utils";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { useSelector } from "react-redux";
 import { EditorNodeProps } from "./editorNode/EditorNode";
 import { FormikError } from "./editTabTypes";
 import { TypedBlockMap } from "@/blocks/registry";
 import { getPipelinePropNames } from "@/pageEditor/utils";
-import { PipelineExpression } from "@/runtime/mapArgs";
+import { get } from "lodash";
 
 type MapPipelineToNodesParams = {
   pipeline: BlockPipeline;
+
+  /**
+   * The path of the pipeline relative to the root
+   */
+  pipelinePath: string;
   allBlocks: TypedBlockMap;
   traces: TraceRecord[];
   pipelineErrors: FormikError;
@@ -40,6 +45,7 @@ type MapPipelineToNodesParams = {
 
 function mapPipelineToNodes({
   pipeline,
+  pipelinePath,
   allBlocks,
   traces,
   pipelineErrors,
@@ -78,12 +84,19 @@ function mapPipelineToNodes({
       skippedRun: traceRecord?.skippedRun,
       ran: traceRecord != null,
       children: getPipelinePropNames(blockConfig).map((propName) => {
+        const subPipelineAccessor = [
+          String(index),
+          "config",
+          propName,
+          "__value__",
+        ];
+        const subPipelinePath = joinName(pipelinePath, ...subPipelineAccessor);
         // eslint-disable-next-line security/detect-object-injection -- propName is a known pipeline property
-        const subPipeline = (blockConfig.config[propName] as PipelineExpression)
-          .__value__;
+        const subPipeline = get(pipeline, subPipelineAccessor) as BlockPipeline;
         const { nodes: subNodes, nodesHaveTraces: subNodesHaveTraces } =
           mapPipelineToNodes({
             pipeline: subPipeline,
+            pipelinePath: subPipelinePath,
             allBlocks,
             traces,
             pipelineErrors,
@@ -92,6 +105,7 @@ function mapPipelineToNodes({
         nodesHaveTraces = nodesHaveTraces || subNodesHaveTraces;
         return {
           label: propName,
+          pipelinePath: subPipelinePath,
           nodes: subNodes,
         };
       }),
@@ -131,6 +145,7 @@ function useNodes({
   const nodes = useMemo<EditorNodeProps[]>(() => {
     const { nodes, nodesHaveTraces } = mapPipelineToNodes({
       pipeline,
+      pipelinePath: "",
       allBlocks,
       traces,
       pipelineErrors,

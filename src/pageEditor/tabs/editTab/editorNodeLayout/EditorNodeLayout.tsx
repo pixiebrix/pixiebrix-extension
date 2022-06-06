@@ -37,6 +37,7 @@ import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { TypedBlockMap } from "@/blocks/registry";
 import { useSelector } from "react-redux";
 import { selectPipelineMap } from "@/pageEditor/slices/editorSelectors";
+import { isEmpty } from "lodash";
 
 const addBrickCaption = (
   <span>
@@ -48,6 +49,7 @@ const EditorNodeLayout: React.FC<{
   nodes: EditorNodeProps[];
   allBlocks: TypedBlockMap;
   activeNodeId: NodeId;
+  pipelinePath: string;
   relevantBlocksToAdd: IBlock[];
   selectBlock: (instanceId: UUID) => void;
   addBlock: (
@@ -62,6 +64,7 @@ const EditorNodeLayout: React.FC<{
   nodes,
   allBlocks,
   activeNodeId,
+  pipelinePath,
   relevantBlocksToAdd,
   selectBlock,
   addBlock,
@@ -80,19 +83,16 @@ const EditorNodeLayout: React.FC<{
     ? allBlocks.get(lastBlockPipelineId)
     : undefined;
   const showAppend = !lastBlock?.block || lastBlock.type !== "renderer";
+  const isRootPipeline = isEmpty(pipelinePath);
 
   return (
     <ListGroup variant="flush">
       {nodes.length > 0 &&
         nodes.map((nodeProps, nodeIndex) => {
           const { nodeId, children } = nodeProps;
-          const { pipelinePath, index: blockIndex } =
-            nodeId === FOUNDATION_NODE_ID
-              ? {
-                  pipelinePath: "",
-                  index: -1,
-                }
-              : pipelineMap[nodeId];
+          const blockIndex =
+            nodeId === FOUNDATION_NODE_ID ? -1 : pipelineMap[nodeId].index;
+
           // Editor nodes are displayed from top to bottom in array order,
           // so, "up" is lower in the array, and "down" is higher in the array.
           // Also, you cannot move the foundation node, which is always at
@@ -111,8 +111,9 @@ const EditorNodeLayout: React.FC<{
 
           const showAddBlock =
             isApiAtLeastV2 && (nodeIndex < finalIndex || showAppend);
-          const isFinal = nodeIndex === finalIndex;
-          const showAddMessage = showAddBlock && isFinal;
+          const showBiggerActionButtons =
+            nodeIndex === finalIndex && isRootPipeline;
+          const showAddMessage = showAddBlock && showBiggerActionButtons;
           const showPaste = pasteBlock && isApiAtLeastV2;
 
           return (
@@ -126,47 +127,53 @@ const EditorNodeLayout: React.FC<{
                 {...nodeProps}
               />
               {children?.length > 0 &&
-                children.map(({ label, nodes: childNodes }) => (
-                  <ListGroup.Item key={label} as="div" className="pr-0">
-                    <ListGroup.Item className={styles.subPipelineLabel}>
-                      {label}
+                children.map(
+                  ({
+                    label,
+                    pipelinePath: subPipelinePath,
+                    nodes: childNodes,
+                  }) => (
+                    <ListGroup.Item key={label} as="div" className="pr-0 pb-4">
+                      <ListGroup.Item className={styles.subPipelineLabel}>
+                        {label}
+                      </ListGroup.Item>
+                      <div className={styles.actions}>
+                        {showAddBlock && (
+                          <BrickModal
+                            bricks={relevantBlocksToAdd}
+                            renderButton={(onClick) => (
+                              <TooltipIconButton
+                                name={`add-node-${nodeIndex}`}
+                                icon={faPlusCircle}
+                                onClick={onClick}
+                                tooltipText="Add a brick"
+                              />
+                            )}
+                            selectCaption={addBrickCaption}
+                            onSelect={(block) => {
+                              addBlock(block, subPipelinePath, 0);
+                            }}
+                          />
+                        )}
+                      </div>
+                      <EditorNodeLayout
+                        nodes={childNodes}
+                        allBlocks={allBlocks}
+                        activeNodeId={activeNodeId}
+                        pipelinePath={subPipelinePath}
+                        relevantBlocksToAdd={relevantBlocksToAdd}
+                        selectBlock={selectBlock}
+                        addBlock={addBlock}
+                        moveBlockUp={null}
+                        moveBlockDown={null}
+                        pasteBlock={null}
+                      />
                     </ListGroup.Item>
-                    <div className={styles.actions}>
-                      {showAddBlock && (
-                        <BrickModal
-                          bricks={relevantBlocksToAdd}
-                          renderButton={(onClick) => (
-                            <TooltipIconButton
-                              name={`add-node-${nodeIndex}`}
-                              icon={faPlusCircle}
-                              onClick={onClick}
-                              tooltipText="Add a brick"
-                            />
-                          )}
-                          selectCaption={addBrickCaption}
-                          onSelect={(block) => {
-                            // The pipeline path here is not correct
-                            addBlock(block, pipelinePath, 0);
-                          }}
-                        />
-                      )}
-                    </div>
-                    <EditorNodeLayout
-                      nodes={childNodes}
-                      allBlocks={allBlocks}
-                      activeNodeId={activeNodeId}
-                      relevantBlocksToAdd={relevantBlocksToAdd}
-                      selectBlock={selectBlock}
-                      addBlock={addBlock}
-                      moveBlockUp={null}
-                      moveBlockDown={null}
-                      pasteBlock={null}
-                    />
-                  </ListGroup.Item>
-                ))}
+                  )
+                )}
               <div
                 className={cx(styles.actions, {
-                  [styles.finalActions]: isFinal,
+                  [styles.finalActions]: showBiggerActionButtons,
                 })}
               >
                 {showAddBlock && (

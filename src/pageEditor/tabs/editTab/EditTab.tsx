@@ -186,6 +186,7 @@ const EditTab: React.FC<{
               nodes={nodes}
               allBlocks={allBlocks}
               activeNodeId={activeNodeId}
+              pipelinePath=""
               relevantBlocksToAdd={relevantBlocksToAdd}
               selectBlock={setActiveNodeId}
               addBlock={addBlock}

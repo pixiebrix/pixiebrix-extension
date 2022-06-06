@@ -44,6 +44,7 @@ export type EditorNodeProps = {
   ran?: boolean;
   children?: Array<{
     label: string;
+    pipelinePath: string;
     nodes: EditorNodeProps[];
   }>;
 };
