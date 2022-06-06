@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import chromeP from "webext-polyfill-kinda";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { forbidContext } from "@/utils/expectContext";
 
@@ -33,7 +32,7 @@ export async function ensureAuth(
   }
 
   try {
-    const token = await chromeP.identity.getAuthToken({
+    const token = await browser.identity.getAuthToken({
       interactive,
       scopes,
     });
@@ -80,7 +79,7 @@ export async function handleRejection(
   }
 
   if ([403, 401].includes(status)) {
-    await chromeP.identity.removeCachedAuthToken({ token });
+    await browser.identity.removeCachedAuthToken({ token });
     console.debug(
       "Bad Google OAuth token. Removed the auth token from the cache so the user can re-authenticate"
     );
