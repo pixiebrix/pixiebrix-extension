@@ -204,10 +204,9 @@ export async function runDynamic(
 
   if (previousExtensionPoint) {
     if (previousExtensionPoint.kind === "actionPanel") {
+      const sidebar = previousExtensionPoint as SidebarExtensionPoint;
       // eslint-disable-next-line new-cap -- hack for action panels
-      (
-        previousExtensionPoint as SidebarExtensionPoint
-      ).HACK_uninstallExceptExtension(elementId);
+      sidebar.HACK_uninstallExceptExtension(elementId);
     } else {
       previousExtensionPoint.uninstall();
     }
