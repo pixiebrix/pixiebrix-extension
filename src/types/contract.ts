@@ -185,32 +185,17 @@ export type IconStringDefinition = `${IconPrefix} ${IconName}`;
 /**
  * @See components["schemas"]["Tag"]
  */
-export type MarketplaceTag = {
-  id?: UUID;
-  name: string;
-  slug?: string;
+export type MarketplaceTag = Omit<components["schemas"]["Tag"], "fa_icon"> & {
+  // See IconStringDefinition for type explanation
   fa_icon: IconStringDefinition | null;
-  subtype: components["schemas"]["Tag"]["subtype"];
-  created_at?: string;
-  updated_at?: string;
 };
 
-/**
- * Detailed MarketplaceListing
- * TODO: generate type using swagger
- */
-export type MarketplaceListing = {
-  id: string;
-  package: Record<string, unknown>;
+export type MarketplaceListing = Omit<
+  components["schemas"]["MarketplaceListing"],
+  "fa_icon"
+> & {
+  // See IconStringDefinition for type explanation
   fa_icon: IconStringDefinition | null;
-  icon_color: string;
-  image?: {
-    url: string;
-    alt_text: string;
-  };
-  instructions: string;
-  assets: unknown[];
-  tags: MarketplaceTag[];
 };
 
 export type ProxyResponseSuccessData = {
