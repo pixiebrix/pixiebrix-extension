@@ -91,7 +91,6 @@ function mapPipelineToNodes({
           "__value__",
         ];
         const subPipelinePath = joinName(pipelinePath, ...subPipelineAccessor);
-        // eslint-disable-next-line security/detect-object-injection -- propName is a known pipeline property
         const subPipeline = get(pipeline, subPipelineAccessor) as BlockPipeline;
         const { nodes: subNodes, nodesHaveTraces: subNodesHaveTraces } =
           mapPipelineToNodes({

@@ -653,8 +653,7 @@ export const editorSlice = createSlice({
 
       pipeline.splice(index, 1);
 
-      // TODO also remove the ui states of children nodes
-      delete elementUiState.nodeUIStates[nodeIdToRemove];
+      syncElementNodeUIStates(state, element);
 
       elementUiState.activeNodeId = nextActiveNodeId;
 
