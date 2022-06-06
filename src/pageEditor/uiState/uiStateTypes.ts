@@ -32,6 +32,12 @@ type PipelineMapBlock = {
    * Index of the block in its pipeline
    */
   index: number;
+
+  /**
+   * The path of the pipeline relative to the pipeline root
+   */
+  pipelinePath: string;
+
   /**
    * The block's pipeline
    */

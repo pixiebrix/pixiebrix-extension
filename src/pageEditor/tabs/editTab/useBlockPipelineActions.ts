@@ -33,7 +33,11 @@ import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { createNewBlock } from "@/pageEditor/createNewBlock";
 
 type BlockPipelineActions = {
-  addBlock: (block: IBlock, pipelineIndex: number) => void;
+  addBlock: (
+    block: IBlock,
+    pipelinePath: string,
+    pipelineIndex: number
+  ) => void;
   removeBlock: (nodeIdToRemove: NodeId) => void;
   moveBlockUp: (instanceId: UUID) => void;
   moveBlockDown: (instanceId: UUID) => void;
@@ -58,7 +62,7 @@ function useBlockPipelineActions(
    * Other actions do the opposite.
    */
   const addBlock = useCallback(
-    async (block: IBlock, pipelineIndex: number) => {
+    async (block: IBlock, pipelinePath: string, pipelineIndex: number) => {
       const outputKey = await generateFreshOutputKey(
         block,
         compact([
@@ -71,7 +75,9 @@ function useBlockPipelineActions(
         newBlock.outputKey = outputKey;
       }
 
-      dispatch(actions.addNode({ block: newBlock, pipelineIndex }));
+      dispatch(
+        actions.addNode({ block: newBlock, pipelinePath, pipelineIndex })
+      );
 
       reportEvent("BrickAdd", {
         brickId: block.id,
@@ -80,7 +86,7 @@ function useBlockPipelineActions(
         source: "PageEditor-BrickSearchModal",
       });
     },
-    [blockPipeline, values, setFormValues, setActiveNodeId, sessionId]
+    [blockPipeline, values, setFormValues, setActiveNodeId, sessionId, dispatch]
   );
 
   const removeBlock = (nodeIdToRemove: NodeId) => {

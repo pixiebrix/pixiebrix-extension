@@ -34,8 +34,9 @@ import TooltipIconButton from "@/components/TooltipIconButton";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { ListGroup } from "react-bootstrap";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import { noop } from "lodash";
 import { TypedBlockMap } from "@/blocks/registry";
+import { useSelector } from "react-redux";
+import { selectPipelineMap } from "@/pageEditor/slices/editorSelectors";
 
 const addBrickCaption = (
   <span>
@@ -49,7 +50,11 @@ const EditorNodeLayout: React.FC<{
   activeNodeId: NodeId;
   relevantBlocksToAdd: IBlock[];
   selectBlock: (instanceId: UUID) => void;
-  addBlock: (block: IBlock, pipelineIndex: number) => void;
+  addBlock: (
+    block: IBlock,
+    pipelinePath: string,
+    pipelineIndex: number
+  ) => void;
   moveBlockUp: (instanceId: UUID) => void;
   moveBlockDown: (instanceId: UUID) => void;
   pasteBlock?: (pipelineIndex: number) => void;
@@ -65,6 +70,7 @@ const EditorNodeLayout: React.FC<{
   pasteBlock,
 }) => {
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
+  const pipelineMap = useSelector(selectPipelineMap);
 
   const canMoveAnything = nodes.length > 2;
   const finalIndex = nodes.length - 1;
@@ -73,21 +79,27 @@ const EditorNodeLayout: React.FC<{
   const lastBlock = lastBlockPipelineId
     ? allBlocks.get(lastBlockPipelineId)
     : undefined;
-  const showAppend =
-    addBlock != null && (!lastBlock?.block || lastBlock.type !== "renderer");
+  const showAppend = !lastBlock?.block || lastBlock.type !== "renderer";
 
   return (
     <ListGroup variant="flush">
       {nodes.length > 0 &&
-        nodes.map((nodeProps, index) => {
+        nodes.map((nodeProps, nodeIndex) => {
           const { nodeId, children } = nodeProps;
+          const { pipelinePath, index: blockIndex } =
+            nodeId === FOUNDATION_NODE_ID
+              ? {
+                  pipelinePath: "",
+                  index: -1,
+                }
+              : pipelineMap[nodeId];
           // Editor nodes are displayed from top to bottom in array order,
           // so, "up" is lower in the array, and "down" is higher in the array.
           // Also, you cannot move the foundation node, which is always at
           // index 0.
           if (nodeId !== FOUNDATION_NODE_ID) {
-            nodeProps.canMoveUp = index > 1; // Any nodes beyond the first non-foundation node
-            nodeProps.canMoveDown = index > 0 && index < finalIndex; // Not the first and not the last
+            nodeProps.canMoveUp = nodeIndex > 1; // Any nodes beyond the first non-foundation node
+            nodeProps.canMoveDown = nodeIndex > 0 && nodeIndex < finalIndex; // Not the first and not the last
             nodeProps.onClickMoveUp = () => {
               moveBlockUp(nodeId);
             };
@@ -98,8 +110,8 @@ const EditorNodeLayout: React.FC<{
           }
 
           const showAddBlock =
-            isApiAtLeastV2 && (index < finalIndex || showAppend);
-          const isFinal = index === finalIndex;
+            isApiAtLeastV2 && (nodeIndex < finalIndex || showAppend);
+          const isFinal = nodeIndex === finalIndex;
           const showAddMessage = showAddBlock && isFinal;
           const showPaste = pasteBlock && isApiAtLeastV2;
 
@@ -114,20 +126,40 @@ const EditorNodeLayout: React.FC<{
                 {...nodeProps}
               />
               {children?.length > 0 &&
-                children.map(({ label, nodes }) => (
+                children.map(({ label, nodes: childNodes }) => (
                   <ListGroup.Item key={label} as="div" className="pr-0">
                     <ListGroup.Item className={styles.subPipelineLabel}>
                       {label}
                     </ListGroup.Item>
+                    <div className={styles.actions}>
+                      {showAddBlock && (
+                        <BrickModal
+                          bricks={relevantBlocksToAdd}
+                          renderButton={(onClick) => (
+                            <TooltipIconButton
+                              name={`add-node-${nodeIndex}`}
+                              icon={faPlusCircle}
+                              onClick={onClick}
+                              tooltipText="Add a brick"
+                            />
+                          )}
+                          selectCaption={addBrickCaption}
+                          onSelect={(block) => {
+                            // The pipeline path here is not correct
+                            addBlock(block, pipelinePath, 0);
+                          }}
+                        />
+                      )}
+                    </div>
                     <EditorNodeLayout
-                      nodes={nodes}
+                      nodes={childNodes}
                       allBlocks={allBlocks}
                       activeNodeId={activeNodeId}
                       relevantBlocksToAdd={relevantBlocksToAdd}
                       selectBlock={selectBlock}
-                      addBlock={null}
-                      moveBlockUp={noop}
-                      moveBlockDown={noop}
+                      addBlock={addBlock}
+                      moveBlockUp={null}
+                      moveBlockDown={null}
                       pasteBlock={null}
                     />
                   </ListGroup.Item>
@@ -142,7 +174,7 @@ const EditorNodeLayout: React.FC<{
                     bricks={relevantBlocksToAdd}
                     renderButton={(onClick) => (
                       <TooltipIconButton
-                        name={`add-node-${index}`}
+                        name={`add-node-${nodeIndex}`}
                         icon={faPlusCircle}
                         onClick={onClick}
                         tooltipText="Add a brick"
@@ -150,16 +182,16 @@ const EditorNodeLayout: React.FC<{
                     )}
                     selectCaption={addBrickCaption}
                     onSelect={(block) => {
-                      addBlock(block, index);
+                      addBlock(block, pipelinePath, blockIndex + 1);
                     }}
                   />
                 )}
                 {showPaste && (
                   <TooltipIconButton
-                    name={`paste-brick-${index}`}
+                    name={`paste-brick-${nodeIndex}`}
                     icon={faPaste}
                     onClick={() => {
-                      pasteBlock(index);
+                      pasteBlock(nodeIndex);
                     }}
                     tooltipText="Paste copied brick"
                   />

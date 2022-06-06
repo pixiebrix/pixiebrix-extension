@@ -35,7 +35,7 @@ import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
-import { isEmpty } from "lodash";
+import { get, isEmpty } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
@@ -616,13 +616,20 @@ export const editorSlice = createSlice({
     },
     addNode(
       state,
-      action: PayloadAction<{ block: BlockConfig; pipelineIndex: number }>
+      action: PayloadAction<{
+        block: BlockConfig;
+        pipelinePath: string;
+        pipelineIndex: number;
+      }>
     ) {
-      const { block, pipelineIndex } = action.payload;
+      const { block, pipelinePath, pipelineIndex } = action.payload;
       const element = state.elements.find(
         (x) => x.uuid === state.activeElementId
       );
-      element.extension.blockPipeline.splice(pipelineIndex, 0, block);
+      const pipeline = isEmpty(pipelinePath)
+        ? element.extension.blockPipeline
+        : get(element.extension.blockPipeline, pipelinePath);
+      pipeline.splice(pipelineIndex, 0, block);
       syncElementNodeUIStates(state, element);
       setActiveNodeId(state, block.instanceId);
 
