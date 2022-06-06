@@ -21,6 +21,9 @@ import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 import { UUID } from "@/core";
 
 let lastMessageSeen = -1;
+// Track activate messages separately. The Sidebar App Redux state has special handling for these messages to account
+// for race conditions in panel loading
+let lastActivateMessageSeen = -1;
 
 export type SidebarListener = {
   onRenderPanels: (panels: PanelEntry[]) => void;
@@ -46,9 +49,10 @@ export function removeListener(fn: SidebarListener): void {
 function runListeners<Method extends keyof SidebarListener>(
   method: Method,
   sequence: number,
-  data: Parameters<SidebarListener[Method]>[0]
+  data: Parameters<SidebarListener[Method]>[0],
+  { force = false }: { force?: boolean } = {}
 ): void {
-  if (sequence < lastMessageSeen) {
+  if (sequence < lastMessageSeen && !force) {
     console.debug(
       "Skipping stale message (seq: %d, current: %d)",
       sequence,
@@ -58,7 +62,8 @@ function runListeners<Method extends keyof SidebarListener>(
     return;
   }
 
-  lastMessageSeen = sequence;
+  // Use Match.max to account for unordered messages with force
+  lastMessageSeen = Math.max(sequence, lastMessageSeen);
 
   console.debug(`Running ${listeners.length} listener(s) for %s`, method, {
     data,
@@ -86,8 +91,19 @@ export async function activatePanel(
   sequence: number,
   options: ActivatePanelOptions
 ): Promise<void> {
-  // Activating a panel doesn't cause a rerender, so can use the lastMessageSeen
-  runListeners("onActivatePanel", sequence, options);
+  if (sequence < lastActivateMessageSeen) {
+    console.debug(
+      "Skipping stale message (seq: %d, current: %d)",
+      sequence,
+      lastActivateMessageSeen,
+      { data: options }
+    );
+    return;
+  }
+
+  lastActivateMessageSeen = sequence;
+
+  runListeners("onActivatePanel", sequence, options, { force: true });
 }
 
 export async function showForm(sequence: number, entry: FormEntry) {
