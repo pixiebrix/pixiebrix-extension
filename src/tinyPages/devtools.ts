@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const { tabId } = chrome.devtools.inspectedWindow;
-if (typeof tabId === "number") {
+if (typeof chrome.devtools.inspectedWindow.tabId === "number") {
   chrome.devtools.panels.create(
     "PixieBrix",
     "",
-    `pageEditor.html?tabId=${tabId}`
+    `pageEditor.html?tabId=${chrome.devtools.inspectedWindow.tabId}`
   );
 }
