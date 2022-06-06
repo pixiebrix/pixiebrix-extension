@@ -39,7 +39,6 @@ const TagSearchInput: React.VFC<{
   placeholder?: string;
   focusInput?: boolean;
   className?: string;
-  disabled?: boolean;
 }> = ({
   name,
   value,
@@ -49,13 +48,12 @@ const TagSearchInput: React.VFC<{
   placeholder,
   focusInput,
   className,
-  disabled,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>();
 
   useEffect(() => {
-    if (focusInput && !disabled) {
+    if (focusInput) {
       inputRef.current?.focus();
       setIsFocused(true);
     }
@@ -84,9 +82,7 @@ const TagSearchInput: React.VFC<{
         <TagBadge
           tag={tag}
           onClear={() => {
-            if (!disabled) {
-              onClearTag();
-            }
+            onClearTag();
           }}
         />
       )}
@@ -99,7 +95,11 @@ const TagSearchInput: React.VFC<{
         onFocus={handleFocus}
         onBlur={handleBlur}
         className={styles.input}
-        disabled={disabled}
+        onKeyDown={(event) => {
+          if (event.key === "Backspace" && value === "") {
+            onClearTag();
+          }
+        }}
       />
     </div>
   );

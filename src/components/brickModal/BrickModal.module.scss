@@ -31,7 +31,7 @@ $bootstrapPadding: 15px;
 .title {
   font-style: normal;
   font-weight: 400;
-  font-size: 24px;
+  font-size: 1.25rem;
   line-height: 28px;
   color: #595969;
   flex-shrink: 0;
@@ -49,15 +49,13 @@ $bootstrapPadding: 15px;
 
 .tagList {
   height: $maxHeight;
+  min-width: 185px;
   overflow: auto;
 }
 
 .results {
-  height: $maxHeight;
-  display: grid;
-  grid-template-rows: min-content 1fr;
-  padding-top: $bootstrapPadding;
-  gap: $bootstrapPadding;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 
 .brickDetail {
@@ -65,8 +63,4 @@ $bootstrapPadding: 15px;
   padding-top: $bootstrapPadding;
   padding-bottom: $bootstrapPadding;
   overflow: auto;
-}
-
-.backButton {
-  margin-bottom: $bootstrapPadding;
 }

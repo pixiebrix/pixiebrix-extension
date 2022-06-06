@@ -26,7 +26,7 @@ import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
 import { FixedSizeGrid as LazyGrid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-import BrickResult from "./BrickResult";
+import BrickResult, { BRICK_RESULT_FIXED_HEIGHT_PX } from "./BrickResult";
 import { Except } from "type-fest";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -37,8 +37,9 @@ import {
   useGetMarketplaceListingsQuery,
   useGetMarketplaceTagsQuery,
 } from "@/services/api";
-import { MarketplaceListing, MarketplaceTag } from "@/types/contract";
+import { MarketplaceListing } from "@/types/contract";
 import BrickDetail from "@/components/brickModal/BrickDetail";
+import Loader from "@/components/Loader";
 
 const TAG_ALL = "All Categories";
 
@@ -118,11 +119,9 @@ type ButtonProps = {
 
 type ItemType = {
   searchResults: BrickOption[];
-  setDetailBrick: (brick: IBrick) => void;
-  selectCaption: React.ReactNode;
+  onSetDetailBrick: (brick: IBrick, rowIndex: number) => void;
   onSelect: (brick: IBrick) => void;
   close: () => void;
-  activeBrick: IBrick | null;
 };
 
 const RESULT_COLUMN_COUNT = 2;
@@ -138,14 +137,7 @@ const ItemRenderer = ({
   columnIndex,
   rowIndex,
   style,
-  data: {
-    searchResults,
-    setDetailBrick,
-    selectCaption,
-    onSelect,
-    close,
-    activeBrick,
-  },
+  data: { searchResults, onSetDetailBrick, onSelect, close },
 }: {
   columnIndex: number;
   rowIndex: number;
@@ -161,14 +153,12 @@ const ItemRenderer = ({
         <BrickResult
           brick={brick}
           onShowDetail={() => {
-            setDetailBrick(brick);
+            onSetDetailBrick(brick, rowIndex);
           }}
           onSelect={() => {
             onSelect(brick);
             close();
           }}
-          selectCaption={selectCaption}
-          active={activeBrick?.id === brick.id}
         />
       )}
     </div>
@@ -213,13 +203,21 @@ function ActualModal<T extends IBrick>({
 }: ModalProps<T>): React.ReactElement<T> {
   const [query, setQuery] = useState("");
   const [detailBrick, setDetailBrick] = useState<T>(null);
-  // The react-window library requires exact height
-  const brickResultHeightPx = 87;
+  const [detailBrickRow, setDetailBrickRow] = useState(0);
 
-  const { data: marketplaceTags = [] as MarketplaceTag[] } =
+  const refCallback = (element: LazyGrid) => {
+    if (element != null && detailBrickRow > 0 && detailBrick == null) {
+      element.scrollToItem({ rowIndex: detailBrickRow });
+      setDetailBrickRow(0);
+    }
+  };
+
+  const { data: marketplaceTags = [], isLoading: isLoadingTags } =
     useGetMarketplaceTagsQuery();
-  const { data: listings = {} as Record<RegistryId, MarketplaceListing> } =
-    useGetMarketplaceListingsQuery();
+  const {
+    data: listings = {} as Record<RegistryId, MarketplaceListing>,
+    isLoading: isLoadingListings,
+  } = useGetMarketplaceListingsQuery();
 
   const taggedBrickIds = useMemo<Record<string, Set<string>>>(() => {
     if (isEmpty(marketplaceTags) || isEmpty(listings)) {
@@ -267,24 +265,36 @@ function ActualModal<T extends IBrick>({
       <Modal.Header closeButton>
         <Container fluid>
           <Row>
-            <Col xs={2}>
-              <Modal.Title className={styles.title}>Add brick</Modal.Title>
-            </Col>
-            <Col xs={10}>
-              <TagSearchInput
-                name={"brickSearch"}
-                value={query}
-                onValueChange={setQuery}
-                placeholder={"Search"}
-                tag={searchTag === TAG_ALL ? null : searchTag}
-                onClearTag={() => {
-                  setSearchTag(TAG_ALL);
+            {detailBrick ? (
+              <Button
+                variant="link"
+                onClick={() => {
+                  setDetailBrick(null);
                 }}
-                focusInput
-                className={styles.searchInput}
-                disabled={Boolean(detailBrick)}
-              />
-            </Col>
+              >
+                <FontAwesomeIcon icon={faChevronLeft} /> Back
+              </Button>
+            ) : (
+              <>
+                <Col xs={2}>
+                  <Modal.Title className={styles.title}>Add Brick</Modal.Title>
+                </Col>
+                <Col xs={10}>
+                  <TagSearchInput
+                    name={"brickSearch"}
+                    value={query}
+                    onValueChange={setQuery}
+                    placeholder={"Search"}
+                    tag={searchTag === TAG_ALL ? null : searchTag}
+                    onClearTag={() => {
+                      setSearchTag(TAG_ALL);
+                    }}
+                    focusInput
+                    className={styles.searchInput}
+                  />
+                </Col>
+              </>
+            )}
           </Row>
         </Container>
       </Modal.Header>
@@ -294,65 +304,64 @@ function ActualModal<T extends IBrick>({
           className={cx({ [styles.brickDetail]: Boolean(detailBrick) })}
         >
           {detailBrick ? (
-            <>
-              <Row>
-                <Button
-                  variant="link"
-                  onClick={() => {
-                    setDetailBrick(null);
-                  }}
-                  className={styles.backButton}
-                >
-                  <FontAwesomeIcon icon={faChevronLeft} /> Back
-                </Button>
-              </Row>
-              <BrickDetail
-                brick={detailBrick}
-                listing={listings[detailBrick.id]}
-                selectCaption={selectCaption}
-                onSelect={() => {
-                  onSelect(detailBrick);
-                  close();
-                }}
-              />
-            </>
+            <BrickDetail
+              brick={detailBrick}
+              listing={listings[detailBrick.id]}
+              selectCaption={selectCaption}
+              onSelect={() => {
+                onSelect(detailBrick);
+                close();
+              }}
+            />
           ) : (
             <Row>
               <Col xs={2} className={styles.tagList}>
-                <TagList
-                  tagItems={tagItems}
-                  activeTag={searchTag}
-                  onSelectTag={setSearchTag}
-                />
+                {isLoadingTags ? (
+                  <Loader />
+                ) : (
+                  <TagList
+                    tagItems={tagItems}
+                    activeTag={searchTag}
+                    onSelectTag={setSearchTag}
+                  />
+                )}
               </Col>
               <Col xs={10} className={styles.results}>
-                <AutoSizer>
-                  {({ height, width }) => (
-                    <LazyGrid
-                      height={height}
-                      width={width}
-                      columnWidth={width / RESULT_COLUMN_COUNT}
-                      rowHeight={brickResultHeightPx}
-                      columnCount={RESULT_COLUMN_COUNT}
-                      rowCount={Math.ceil(
-                        searchResults.length / RESULT_COLUMN_COUNT
-                      )}
-                      itemKey={itemKey}
-                      itemData={
-                        {
-                          searchResults,
-                          setDetailBrick,
-                          activeBrick: detailBrick,
-                          selectCaption,
-                          onSelect,
-                          close,
-                        } as ItemType
-                      }
-                    >
-                      {ItemRenderer}
-                    </LazyGrid>
-                  )}
-                </AutoSizer>
+                {isLoadingListings ? (
+                  <Loader />
+                ) : (
+                  <AutoSizer>
+                    {({ height, width }) => (
+                      <LazyGrid
+                        height={height}
+                        width={width}
+                        columnWidth={width / RESULT_COLUMN_COUNT}
+                        rowHeight={BRICK_RESULT_FIXED_HEIGHT_PX}
+                        columnCount={RESULT_COLUMN_COUNT}
+                        rowCount={Math.ceil(
+                          searchResults.length / RESULT_COLUMN_COUNT
+                        )}
+                        itemKey={itemKey}
+                        itemData={
+                          {
+                            searchResults,
+                            onSetDetailBrick(brick: T, rowIndex: number) {
+                              setDetailBrick(brick);
+                              setDetailBrickRow(rowIndex);
+                            },
+                            activeBrick: detailBrick,
+                            selectCaption,
+                            onSelect,
+                            close,
+                          } as ItemType
+                        }
+                        ref={refCallback}
+                      >
+                        {ItemRenderer}
+                      </LazyGrid>
+                    )}
+                  </AutoSizer>
+                )}
               </Col>
             </Row>
           )}
