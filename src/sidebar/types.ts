@@ -55,6 +55,14 @@ export type PanelEntry = {
    */
   extensionId: UUID;
   /**
+   * The blueprint associated with the extension that added the panel.
+   *
+   * Used to give preference to blueprint side panels when using the "Show Sidebar" brick.
+   *
+   * @since 1.6.5
+   */
+  blueprintId: RegistryId | null;
+  /**
    * The sidebar extension point
    * @see SidebarExtensionPoint
    */
@@ -94,4 +102,36 @@ export type FormEntry = {
 export type SidebarEntries = {
   panels: PanelEntry[];
   forms: FormEntry[];
+};
+
+/**
+ * A request to activate a panel in the sidebar
+ * @since 1.6.5
+ */
+export type ActivatePanelOptions = {
+  /**
+   * Force-activate the panel, even if the user is currently viewing a different panel that doesn't match the criteria
+   *
+   * @since 1.6.5
+   */
+  force?: boolean;
+  /**
+   * The id of the extension panel to show. Included so the Page Editor can request a specific panel to show when
+   * editing the extension
+   *
+   * @since 1.6.5
+   */
+  extensionId?: UUID;
+  /**
+   * The blueprint of the extension panel to show
+   *
+   * @since 1.6.5
+   */
+  blueprintId?: RegistryId;
+  /**
+   * A panel heading name to match
+   *
+   * @since 1.6.5
+   */
+  panelHeading?: string;
 };

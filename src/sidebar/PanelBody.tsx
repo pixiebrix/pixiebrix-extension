@@ -15,68 +15,164 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useReducer } from "react";
 import Loader from "@/components/Loader";
 import blockRegistry from "@/blocks/registry";
-import { useAsyncState } from "@/hooks/common";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import ReactShadowRoot from "react-shadow-root";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { BlockArg, RendererOutput } from "@/core";
+import { BlockArg, RegistryId, RendererOutput } from "@/core";
 import { PanelPayload } from "@/sidebar/types";
 import RendererComponent from "@/sidebar/RendererComponent";
 import { BusinessError } from "@/errors/businessErrors";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { useAsyncEffect } from "use-async-effect";
+import GridLoader from "react-spinners/GridLoader";
+import styles from "./PanelBody.module.scss";
+
+type BodyProps = {
+  blockId: RegistryId;
+  body: RendererOutput;
+};
+
+const BodyContainer: React.FC<BodyProps & { isFetching: boolean }> = ({
+  blockId,
+  body,
+  isFetching,
+}) => (
+  <>
+    {isFetching && (
+      <span className={styles.loader}>
+        <GridLoader size={8} />
+      </span>
+    )}
+
+    <div className="full-height" data-block-id={blockId}>
+      <ReactShadowRoot>
+        <RendererComponent body={body} />
+      </ReactShadowRoot>
+    </div>
+  </>
+);
+
+type State = {
+  /**
+   * Data about the component to display
+   */
+  component: BodyProps | null;
+  /**
+   * True if the panel is loading the first time
+   */
+  isLoading: boolean;
+  /**
+   * True if the panel is recalculating
+   */
+  isFetching: boolean;
+  /**
+   * Error to display from running the renderer
+   */
+  error: unknown | null;
+};
+
+const initialPanelState: State = {
+  component: null,
+  isLoading: true,
+  isFetching: true,
+  error: null,
+};
+
+const slice = createSlice({
+  name: "panelSlice",
+  initialState: initialPanelState,
+  reducers: {
+    reactivate(state) {
+      // Don't clear out the component/error, because we want to keep showing the old component while the panel is
+      // reloading
+      state.isFetching = true;
+    },
+    success(state, action: PayloadAction<{ data: BodyProps }>) {
+      state.isLoading = false;
+      state.isFetching = false;
+      state.component = action.payload.data;
+      state.error = null;
+    },
+    failure(state, action: PayloadAction<{ error: unknown }>) {
+      state.isLoading = false;
+      state.isFetching = false;
+      state.component = null;
+      state.error = action.payload.error ?? "Error rendering component";
+    },
+  },
+});
 
 const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
   payload,
 }) => {
-  const [component, pending, error] = useAsyncState(async () => {
-    if (!payload) {
-      return null;
+  const [state, dispatch] = useReducer(slice.reducer, initialPanelState);
+
+  useAsyncEffect(async () => {
+    if (payload == null) {
+      dispatch(slice.actions.reactivate());
+      return;
     }
 
     if ("error" in payload) {
-      // Have useAsyncState return the error. PanelBody already knows how to render an error received from useAsyncState
-      const { error } = payload;
-      throw error;
+      dispatch(slice.actions.failure({ error: payload.error }));
+      return;
     }
 
-    // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/1939
-    const { blockId, ctxt, args } = payload;
-    const block = await blockRegistry.lookup(blockId);
-    const body = await block.run(args as BlockArg, {
-      ctxt,
-      root: null,
-      // TODO: use the correct logger here so the errors show up in the logs
-      logger: new ConsoleLogger({ blockId }),
-      async runPipeline() {
-        throw new BusinessError(
-          "Support for running pipelines in panels not implemented"
-        );
-      },
-    });
-    return (
-      <div className="full-height" data-block-id={blockId}>
-        <ReactShadowRoot>
-          <RendererComponent body={body as RendererOutput} />
-        </ReactShadowRoot>
-      </div>
-    );
-  }, [payload?.key]);
+    try {
+      // In most cases reactivate would have already been called for the payload == null branch. But confirm it here
+      dispatch(slice.actions.reactivate());
 
-  if (error) {
-    return (
-      <div className="text-danger">
-        Error rendering panel: {getErrorMessage(error as Error)}
-      </div>
-    );
-  }
+      const { blockId, ctxt, args } = payload;
+      const block = await blockRegistry.lookup(blockId);
+      // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/1939
+      const body = await block.run(args as BlockArg, {
+        ctxt,
+        root: null,
+        // TODO: use the correct logger here so the errors show up in the logs
+        logger: new ConsoleLogger({ blockId }),
+        async runPipeline() {
+          throw new BusinessError(
+            "Support for running pipelines in panels not implemented"
+          );
+        },
+      });
 
-  if (pending || component == null) {
+      dispatch(
+        slice.actions.success({
+          data: { blockId, body: body as RendererOutput },
+        })
+      );
+    } catch (error) {
+      dispatch(slice.actions.failure({ error }));
+    }
+  }, [payload?.key, dispatch]);
+
+  // Only show loader on initial render. Otherwise, just overlay a loading indicator over the other panel to
+  // avoid remounting the whole generated component. Some components maybe have long initialization times. E.g., our
+  // Document Builder loads Bootstrap into the Shadow DOM
+  if (state.isLoading) {
     return <Loader />;
   }
 
-  return component;
+  if (state.error) {
+    return (
+      <>
+        {state.isFetching && (
+          <span className={styles.loader}>
+            <GridLoader size={8} />
+          </span>
+        )}
+        <div className="text-danger">
+          Error rendering panel: {getErrorMessage(state.error)}
+        </div>
+      </>
+    );
+  }
+
+  return <BodyContainer {...state.component} isFetching={state.isFetching} />;
 };
 
 export default PanelBody;

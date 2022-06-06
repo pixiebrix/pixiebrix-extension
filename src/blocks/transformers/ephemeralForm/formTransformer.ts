@@ -29,7 +29,7 @@ import {
   hideSidebarForm,
   PANEL_HIDING_EVENT,
   showSidebarForm,
-} from "@/contentScript/sidebar";
+} from "@/contentScript/sidebarController";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 
 // The modes for createFrameSrc are different than the location argument for FormTransformer. The mode for the frame

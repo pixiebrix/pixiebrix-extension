@@ -19,7 +19,7 @@ import { loadOptions } from "@/store/extensionsStorage";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { ResolvedExtension, IExtensionPoint, RegistryId, UUID } from "@/core";
 import * as context from "@/contentScript/context";
-import * as sidebar from "@/contentScript/sidebar";
+import * as sidebar from "@/contentScript/sidebarController";
 import { sleep } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";
@@ -30,6 +30,7 @@ import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deployment";
 import { $safeFind } from "@/helpers";
 import { PromiseCancelled } from "@/errors/genericErrors";
+import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 
 let _scriptPromise: Promise<void> | undefined;
 const _dynamic: Map<UUID, IExtensionPoint> = new Map();
@@ -195,15 +196,23 @@ function makeCancelOnNavigate(): () => boolean {
 }
 
 export async function runDynamic(
-  uuid: UUID,
+  elementId: UUID,
   extensionPoint: IExtensionPoint
 ): Promise<void> {
   // Uninstall the previous extension point instance (in favor of the updated extensionPoint)
-  if (_dynamic.has(uuid)) {
-    _dynamic.get(uuid).uninstall();
+  const previousExtensionPoint = _dynamic.get(elementId);
+
+  if (previousExtensionPoint) {
+    if (previousExtensionPoint.kind === "actionPanel") {
+      const sidebar = previousExtensionPoint as SidebarExtensionPoint;
+      // eslint-disable-next-line new-cap -- hack for action panels
+      sidebar.HACK_uninstallExceptExtension(elementId);
+    } else {
+      previousExtensionPoint.uninstall();
+    }
   }
 
-  _dynamic.set(uuid, extensionPoint);
+  _dynamic.set(elementId, extensionPoint);
   await runExtensionPoint(extensionPoint, makeCancelOnNavigate());
 }
 
