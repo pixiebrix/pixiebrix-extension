@@ -107,12 +107,7 @@ const EditTab: React.FC<{
     moveBlockDown,
     copyBlock,
     pasteBlock,
-  } = useBlockPipelineActions(
-    blockPipeline,
-    values,
-    setFormValues,
-    setActiveNodeId
-  );
+  } = useBlockPipelineActions(blockPipeline, values, setFormValues);
 
   const nodes = useNodes({
     pipeline: blockPipeline,

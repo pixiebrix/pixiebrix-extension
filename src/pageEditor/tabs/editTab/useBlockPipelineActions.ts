@@ -49,8 +49,7 @@ function useBlockPipelineActions(
   setFormValues: (
     values: React.SetStateAction<FormState>,
     shouldValidate?: boolean
-  ) => void,
-  setActiveNodeId: (nodeId: NodeId) => void
+  ) => void
 ): BlockPipelineActions {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
