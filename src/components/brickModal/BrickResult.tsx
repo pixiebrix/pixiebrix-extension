@@ -23,7 +23,7 @@ import styles from "./BrickResult.module.scss";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export const BRICK_RESULT_FIXED_HEIGHT_PX = 98;
+export const BRICK_RESULT_FIXED_HEIGHT_PX = 89;
 
 export type BrickResultProps = {
   brick: IBrick;
