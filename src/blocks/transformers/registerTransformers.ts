@@ -43,6 +43,7 @@ import ParseJson from "./ParseJson";
 import ForEach from "./controlFlow/ForEach";
 import IfElse from "./controlFlow/IfElse";
 import TryExcept from "./controlFlow/TryExcept";
+import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 
 function registerTransformers() {
   registerBlock(new JQTransformer());
@@ -75,6 +76,7 @@ function registerTransformers() {
   registerBlock(new ForEach());
   registerBlock(new IfElse());
   registerBlock(new TryExcept());
+  registerBlock(new ForEachElement());
 }
 
 export default registerTransformers;

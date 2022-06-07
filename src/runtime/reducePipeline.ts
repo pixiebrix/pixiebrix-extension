@@ -253,7 +253,7 @@ async function executeBlockWithValidatedProps(
         ...commonOptions,
         ...options,
         root,
-        async runPipeline(pipeline, extraContext) {
+        async runPipeline(pipeline, extraContext, root) {
           if (!isObject(commonOptions.ctxt)) {
             throw new Error("Expected object context for v3+ runtime");
           }

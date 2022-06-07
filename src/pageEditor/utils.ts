@@ -23,6 +23,7 @@ import { BlockConfig } from "@/blocks/types";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
+import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 
 export async function getCurrentURL(): Promise<string> {
   if (!browser.devtools) {
@@ -57,16 +58,24 @@ export function getRecipeIdForElement(
 
 export function getPipelinePropNames(block: BlockConfig) {
   switch (block.id) {
-    case ForEach.BLOCK_ID:
+    case ForEach.BLOCK_ID: {
       return ["body"];
+    }
 
-    case IfElse.BLOCK_ID:
+    case ForEachElement.BLOCK_ID: {
+      return ["body"];
+    }
+
+    case IfElse.BLOCK_ID: {
       return ["if", "else"];
+    }
 
-    case TryExcept.BLOCK_ID:
+    case TryExcept.BLOCK_ID: {
       return ["try", "except"];
+    }
 
-    default:
+    default: {
       return [];
+    }
   }
 }
