@@ -60,8 +60,16 @@
   text-align: center;
 }
 
+.subPipeline {
+  padding: 0 0 1.5rem 32px;
+}
+
+.subPipelineHeader {
+  background: #ebebf1;
+  padding: 0.5rem 0 0.5rem 32px;
+}
+
 .subPipelineLabel {
-  padding: 0;
   border-left: none;
   border-right: none;
   border-top: none;

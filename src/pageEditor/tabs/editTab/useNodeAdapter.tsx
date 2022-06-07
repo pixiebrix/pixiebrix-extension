@@ -21,7 +21,7 @@ import EditorNode, {
 } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { ListGroup } from "react-bootstrap";
-import styles from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorNodeLayout.module.scss";
+import styles from "./NodeAdapter.module.scss";
 import BrickModal from "@/components/brickModal/BrickModal";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import {
@@ -32,10 +32,7 @@ import {
 import cx from "classnames";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectActiveNodeId,
-  selectPipelineMap,
-} from "@/pageEditor/slices/editorSelectors";
+import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import EditorNodeLayout from "./editorNodeLayout/EditorNodeLayout";
 import { isEmpty, join } from "lodash";
@@ -60,7 +57,6 @@ export function useNodeAdapter({
   relevantBlocksToAdd,
   allBlocks,
 }: NodeAdapterProps): (renderProps: RenderProps) => React.ReactNode {
-  const pipelineMap = useSelector(selectPipelineMap);
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
   const activeNodeId = useSelector(selectActiveNodeId);
 
@@ -145,38 +141,44 @@ export function useNodeAdapter({
             !collapsed &&
             children.map(
               ({ label, pipelinePath: subPipelinePath, nodes: childNodes }) => (
-                <ListGroup.Item key={label} as="div" className="pr-0 pb-4">
-                  <ListGroup.Item className={styles.subPipelineLabel}>
-                    {label}
-                  </ListGroup.Item>
-                  <div className={styles.actions}>
-                    <BrickModal
-                      bricks={relevantBlocksToAdd}
-                      renderButton={(onClick) => (
-                        <TooltipIconButton
-                          name={`add-node-${nodeIndex}`}
-                          icon={faPlusCircle}
-                          onClick={onClick}
-                          tooltipText="Add a brick"
-                        />
-                      )}
-                      selectCaption={addBrickCaption}
-                      onSelect={(block) => {
-                        addBlock(block, subPipelinePath, 0);
-                      }}
-                    />
+                <>
+                  <div className={styles.subPipelineHeader}>
+                    <div className={styles.subPipelineLabel}>{label}</div>
+                    <div className={styles.actions}>
+                      <BrickModal
+                        bricks={relevantBlocksToAdd}
+                        renderButton={(onClick) => (
+                          <TooltipIconButton
+                            name={`add-node-${nodeIndex}`}
+                            icon={faPlusCircle}
+                            onClick={onClick}
+                            tooltipText="Add a brick"
+                          />
+                        )}
+                        selectCaption={addBrickCaption}
+                        onSelect={(block) => {
+                          addBlock(block, subPipelinePath, 0);
+                        }}
+                      />
+                    </div>
                   </div>
-                  <EditorNodeLayout
-                    nodes={childNodes}
-                    renderNode={(renderProps) =>
-                      renderNode({
-                        ...renderProps,
-                        pipelinePath: subPipelinePath,
-                      })
-                    }
-                    allBlocks={allBlocks}
-                  />
-                </ListGroup.Item>
+                  <ListGroup.Item
+                    key={label}
+                    as="div"
+                    className={styles.subPipeline}
+                  >
+                    <EditorNodeLayout
+                      nodes={childNodes}
+                      renderNode={(renderProps) =>
+                        renderNode({
+                          ...renderProps,
+                          pipelinePath: subPipelinePath,
+                        })
+                      }
+                      allBlocks={allBlocks}
+                    />
+                  </ListGroup.Item>
+                </>
               )
             )}
           <div
@@ -225,12 +227,12 @@ export function useNodeAdapter({
     [
       activeNodeId,
       addBlock,
+      allBlocks,
       collapsedState,
       isApiAtLeastV2,
       moveBlockDown,
       moveBlockUp,
       pasteBlock,
-      pipelineMap,
       relevantBlocksToAdd,
       setActiveNodeId,
     ]
