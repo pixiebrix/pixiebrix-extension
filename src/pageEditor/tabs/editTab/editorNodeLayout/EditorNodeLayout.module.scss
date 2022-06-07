@@ -48,7 +48,7 @@
   }
 }
 
-.finalActions {
+.biggerActions {
   --size: 40px;
   height: auto;
   margin: 0.4em 0;
@@ -60,6 +60,10 @@
   text-align: center;
 }
 
+.subPipelineContainer {
+  padding-right: 0;
+  padding-bottom: 1.5rem;
+}
 .subPipelineLabel {
   padding: 0;
   border-left: none;

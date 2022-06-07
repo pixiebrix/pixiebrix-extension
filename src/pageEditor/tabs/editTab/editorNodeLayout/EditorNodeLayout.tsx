@@ -49,7 +49,7 @@ const EditorNodeLayout: React.FC<{
   nodes: EditorNodeProps[];
   allBlocks: TypedBlockMap;
   activeNodeId: NodeId;
-  pipelinePath: string;
+  pipelinePath?: string;
   relevantBlocksToAdd: IBlock[];
   selectBlock: (instanceId: UUID) => void;
   addBlock: (
@@ -64,7 +64,7 @@ const EditorNodeLayout: React.FC<{
   nodes,
   allBlocks,
   activeNodeId,
-  pipelinePath,
+  pipelinePath = "",
   relevantBlocksToAdd,
   selectBlock,
   addBlock,
@@ -89,7 +89,7 @@ const EditorNodeLayout: React.FC<{
     <ListGroup variant="flush">
       {nodes.length > 0 &&
         nodes.map((nodeProps, nodeIndex) => {
-          const { nodeId, children } = nodeProps;
+          const { nodeId, children: childNodes } = nodeProps;
           const blockIndex =
             nodeId === FOUNDATION_NODE_ID ? -1 : pipelineMap[nodeId].index;
 
@@ -126,14 +126,18 @@ const EditorNodeLayout: React.FC<{
                 }}
                 {...nodeProps}
               />
-              {children?.length > 0 &&
-                children.map(
+              {childNodes?.length > 0 &&
+                childNodes.map(
                   ({
                     label,
                     pipelinePath: subPipelinePath,
                     nodes: childNodes,
                   }) => (
-                    <ListGroup.Item key={label} as="div" className="pr-0 pb-4">
+                    <ListGroup.Item
+                      key={label}
+                      as="div"
+                      className={styles.subPipelineContainer}
+                    >
                       <ListGroup.Item className={styles.subPipelineLabel}>
                         {label}
                       </ListGroup.Item>
@@ -173,7 +177,7 @@ const EditorNodeLayout: React.FC<{
                 )}
               <div
                 className={cx(styles.actions, {
-                  [styles.finalActions]: showBiggerActionButtons,
+                  [styles.biggerActions]: showBiggerActionButtons,
                 })}
               >
                 {showAddBlock && (
