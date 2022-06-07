@@ -76,7 +76,7 @@ export async function generateFreshOutputKey(
   return freshIdentifier(type as SafeString, outputKeys) as OutputKey;
 }
 
-function traversePipeline(
+export function traversePipeline(
   blockPipeline: BlockPipeline,
   parentPath: string,
   action: (
