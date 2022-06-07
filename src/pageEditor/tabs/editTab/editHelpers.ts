@@ -107,7 +107,7 @@ export function getPipelineMap(blockPipeline: BlockPipeline) {
   const pipelineMap: PipelineMap = {};
   traversePipeline(
     blockPipeline,
-    "",
+    "extension.blockPipeline",
     (blockConfig, index, path, pipelinePath, pipeline) => {
       pipelineMap[blockConfig.instanceId] = {
         blockId: blockConfig.id,

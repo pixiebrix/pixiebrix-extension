@@ -29,6 +29,7 @@ import { FormikError } from "./editTabTypes";
 import { TypedBlockMap } from "@/blocks/registry";
 import { getPipelinePropNames } from "@/pageEditor/utils";
 import { get } from "lodash";
+import { RunStatus } from "@/pageEditor/tabs/editTab/editorNode/EditorNodeContent";
 
 type MapPipelineToNodesParams = {
   pipeline: BlockPipeline;
@@ -70,19 +71,26 @@ function mapPipelineToNodes({
       };
     }
 
+    const runStatus: RunStatus =
+      // If blockPipelineErrors is a string, it means the error is on the pipeline level
+      typeof pipelineErrors !== "string" &&
+      // eslint-disable-next-line security/detect-object-injection
+      Boolean(pipelineErrors?.[index])
+        ? RunStatus.ERROR
+        : errorTraceEntry?.blockInstanceId === blockConfig.instanceId
+        ? RunStatus.WARNING
+        : traceRecord?.skippedRun
+        ? RunStatus.SKIPPED
+        : traceRecord == null
+        ? RunStatus.NONE
+        : RunStatus.SUCCESS;
+
     const newBlock: EditorNodeProps = {
       nodeId,
       blockId: blockConfig.id,
       title: isNullOrBlank(blockConfig.label) ? block?.name : blockConfig.label,
       icon: <BrickIcon brick={block} size="2x" inheritColor />,
-      hasError:
-        // If blockPipelineErrors is a string, it means the error is on the pipeline level
-        typeof pipelineErrors !== "string" &&
-        // eslint-disable-next-line security/detect-object-injection
-        Boolean(pipelineErrors?.[index]),
-      hasWarning: errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
-      skippedRun: traceRecord?.skippedRun,
-      ran: traceRecord != null,
+      runStatus,
       children: getPipelinePropNames(blockConfig).map((propName) => {
         const subPipelineAccessor = [
           String(index),
@@ -141,7 +149,8 @@ function useNodes({
   allBlocks,
 }: UseNodesParams) {
   const traces = useSelector(selectExtensionTrace);
-  const nodes = useMemo<EditorNodeProps[]>(() => {
+
+  return useMemo<EditorNodeProps[]>(() => {
     const { nodes, nodesHaveTraces } = mapPipelineToNodes({
       pipeline,
       pipelinePath: "",
@@ -157,7 +166,7 @@ function useNodes({
       title: label,
       icon,
       // Foundation Node doesn't have its own trace record, so we use the traces flag.
-      ran: nodesHaveTraces,
+      runStatus: nodesHaveTraces ? RunStatus.SUCCESS : RunStatus.NONE,
     };
 
     return [foundationNode, ...nodes];
@@ -170,8 +179,6 @@ function useNodes({
     allBlocks,
     traces,
   ]);
-
-  return nodes;
 }
 
 export default useNodes;

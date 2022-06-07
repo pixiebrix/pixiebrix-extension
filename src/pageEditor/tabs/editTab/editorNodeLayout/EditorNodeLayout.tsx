@@ -16,204 +16,35 @@
  */
 
 import React from "react";
-import styles from "./EditorNodeLayout.module.scss";
-import EditorNode, {
-  EditorNodeProps,
-  NodeId,
-} from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPaste,
-  faPlus,
-  faPlusCircle,
-} from "@fortawesome/free-solid-svg-icons";
-import { IBlock, UUID } from "@/core";
-import BrickModal from "@/components/brickModal/BrickModal";
-import cx from "classnames";
-import TooltipIconButton from "@/components/TooltipIconButton";
-import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
+import { EditorNodeProps } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { ListGroup } from "react-bootstrap";
-import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
+import { RenderProps } from "@/pageEditor/tabs/editTab/nodeAdapterTypes";
 import { TypedBlockMap } from "@/blocks/registry";
-import { useSelector } from "react-redux";
-import { selectPipelineMap } from "@/pageEditor/slices/editorSelectors";
-import { isEmpty } from "lodash";
-
-const addBrickCaption = (
-  <span>
-    <FontAwesomeIcon icon={faPlus} className="mr-1" /> Add brick
-  </span>
-);
 
 const EditorNodeLayout: React.FC<{
   nodes: EditorNodeProps[];
+  renderNode: (renderProps: RenderProps) => React.ReactNode;
   allBlocks: TypedBlockMap;
-  activeNodeId: NodeId;
-  pipelinePath: string;
-  relevantBlocksToAdd: IBlock[];
-  selectBlock: (instanceId: UUID) => void;
-  addBlock: (
-    block: IBlock,
-    pipelinePath: string,
-    pipelineIndex: number
-  ) => void;
-  moveBlockUp: (instanceId: UUID) => void;
-  moveBlockDown: (instanceId: UUID) => void;
-  pasteBlock?: (pipelineIndex: number) => void;
-}> = ({
-  nodes,
-  allBlocks,
-  activeNodeId,
-  pipelinePath,
-  relevantBlocksToAdd,
-  selectBlock,
-  addBlock,
-  moveBlockUp,
-  moveBlockDown,
-  pasteBlock,
-}) => {
-  const isApiAtLeastV2 = useApiVersionAtLeast("v2");
-  const pipelineMap = useSelector(selectPipelineMap);
-
-  const canMoveAnything = nodes.length > 2;
-  const finalIndex = nodes.length - 1;
-
-  const lastBlockPipelineId = nodes[nodes.length - 1]?.blockId;
+}> = ({ nodes, renderNode, allBlocks }) => {
+  const lastIndex = nodes.length - 1;
+  // eslint-disable-next-line security/detect-object-injection -- just created this variable
+  const lastBlockPipelineId = nodes[lastIndex]?.blockId;
   const lastBlock = lastBlockPipelineId
     ? allBlocks.get(lastBlockPipelineId)
     : undefined;
   const showAppend = !lastBlock?.block || lastBlock.type !== "renderer";
-  const isRootPipeline = isEmpty(pipelinePath);
 
   return (
     <ListGroup variant="flush">
       {nodes.length > 0 &&
-        nodes.map((nodeProps, nodeIndex) => {
-          const { nodeId, children } = nodeProps;
-          const blockIndex =
-            nodeId === FOUNDATION_NODE_ID ? -1 : pipelineMap[nodeId].index;
-
-          // Editor nodes are displayed from top to bottom in array order,
-          // so, "up" is lower in the array, and "down" is higher in the array.
-          // Also, you cannot move the foundation node, which is always at
-          // index 0.
-          if (nodeId !== FOUNDATION_NODE_ID) {
-            nodeProps.canMoveUp = nodeIndex > 1; // Any nodes beyond the first non-foundation node
-            nodeProps.canMoveDown = nodeIndex > 0 && nodeIndex < finalIndex; // Not the first and not the last
-            nodeProps.onClickMoveUp = () => {
-              moveBlockUp(nodeId);
-            };
-
-            nodeProps.onClickMoveDown = () => {
-              moveBlockDown(nodeId);
-            };
-          }
-
-          const showAddBlock =
-            isApiAtLeastV2 && (nodeIndex < finalIndex || showAppend);
-          const showBiggerActionButtons =
-            nodeIndex === finalIndex && isRootPipeline;
-          const showAddMessage = showAddBlock && showBiggerActionButtons;
-          const showPaste = pasteBlock && isApiAtLeastV2;
-
-          return (
-            <React.Fragment key={nodeId}>
-              <EditorNode
-                active={nodeId === activeNodeId}
-                canMoveAnything={canMoveAnything}
-                onClick={() => {
-                  selectBlock(nodeId);
-                }}
-                {...nodeProps}
-              />
-              {children?.length > 0 &&
-                children.map(
-                  ({
-                    label,
-                    pipelinePath: subPipelinePath,
-                    nodes: childNodes,
-                  }) => (
-                    <ListGroup.Item key={label} as="div" className="pr-0 pb-4">
-                      <ListGroup.Item className={styles.subPipelineLabel}>
-                        {label}
-                      </ListGroup.Item>
-                      <div className={styles.actions}>
-                        {showAddBlock && (
-                          <BrickModal
-                            bricks={relevantBlocksToAdd}
-                            renderButton={(onClick) => (
-                              <TooltipIconButton
-                                name={`add-node-${nodeIndex}`}
-                                icon={faPlusCircle}
-                                onClick={onClick}
-                                tooltipText="Add a brick"
-                              />
-                            )}
-                            selectCaption={addBrickCaption}
-                            onSelect={(block) => {
-                              addBlock(block, subPipelinePath, 0);
-                            }}
-                          />
-                        )}
-                      </div>
-                      <EditorNodeLayout
-                        nodes={childNodes}
-                        allBlocks={allBlocks}
-                        activeNodeId={activeNodeId}
-                        pipelinePath={subPipelinePath}
-                        relevantBlocksToAdd={relevantBlocksToAdd}
-                        selectBlock={selectBlock}
-                        addBlock={addBlock}
-                        moveBlockUp={null}
-                        moveBlockDown={null}
-                        pasteBlock={null}
-                      />
-                    </ListGroup.Item>
-                  )
-                )}
-              <div
-                className={cx(styles.actions, {
-                  [styles.finalActions]: showBiggerActionButtons,
-                })}
-              >
-                {showAddBlock && (
-                  <BrickModal
-                    bricks={relevantBlocksToAdd}
-                    renderButton={(onClick) => (
-                      <TooltipIconButton
-                        name={`add-node-${nodeIndex}`}
-                        icon={faPlusCircle}
-                        onClick={onClick}
-                        tooltipText="Add a brick"
-                      />
-                    )}
-                    selectCaption={addBrickCaption}
-                    onSelect={(block) => {
-                      addBlock(block, pipelinePath, blockIndex + 1);
-                    }}
-                  />
-                )}
-                {showPaste && (
-                  <TooltipIconButton
-                    name={`paste-brick-${nodeIndex}`}
-                    icon={faPaste}
-                    onClick={() => {
-                      pasteBlock(nodeIndex);
-                    }}
-                    tooltipText="Paste copied brick"
-                  />
-                )}
-              </div>
-              {showAddMessage && (
-                <p className={styles.appendInfo}>
-                  <small className="text-muted">
-                    Add more bricks with the plus button
-                  </small>
-                </p>
-              )}
-            </React.Fragment>
-          );
-        })}
+        nodes.map((nodeProps, nodeIndex) =>
+          renderNode({
+            nodeProps,
+            nodeIndex,
+            lastIndex,
+            showAppend,
+          })
+        )}
     </ListGroup>
   );
 };

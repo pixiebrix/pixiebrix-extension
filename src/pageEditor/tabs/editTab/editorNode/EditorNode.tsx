@@ -18,92 +18,59 @@
 import React, { useEffect, useRef } from "react";
 import styles from "./EditorNode.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ListGroup } from "react-bootstrap";
 import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import { RegistryId, UUID } from "@/core";
+import EditorNodeContent, {
+  EditorNodeContentProps,
+  RunStatus,
+} from "./EditorNodeContent";
+import { isEmpty } from "lodash";
 
 export type NodeId = UUID;
-export type EditorNodeProps = {
+export type EditorNodeProps = EditorNodeContentProps & {
   nodeId?: NodeId;
   blockId?: RegistryId;
-  title: string;
-  outputKey?: string;
-  icon?: IconProp | React.ReactNode;
   onClick?: () => void;
   active?: boolean;
-  hasError?: boolean;
-  hasWarning?: boolean;
   canMoveAnything?: boolean;
   canMoveUp?: boolean;
   canMoveDown?: boolean;
   onClickMoveUp?: () => void;
   onClickMoveDown?: () => void;
-  skippedRun?: boolean;
-  ran?: boolean;
   children?: Array<{
     label: string;
     pipelinePath: string;
     nodes: EditorNodeProps[];
   }>;
+  collapsed?: boolean;
 };
 
-function isFontAwesomeIcon(
-  maybeIcon: IconProp | React.ReactNode
-): maybeIcon is IconProp {
-  return (
-    typeof maybeIcon === "string" ||
-    (typeof maybeIcon === "object" && "icon" in maybeIcon)
-  );
-}
-
 const EditorNode: React.FC<EditorNodeProps> = ({
+  blockId,
   onClick,
-  icon: iconProp,
-  title,
-  outputKey,
   active,
-  hasError,
-  hasWarning,
-  canMoveAnything,
   canMoveUp,
   canMoveDown,
   onClickMoveUp,
   onClickMoveDown,
-  skippedRun = false,
-  ran = false,
+  children,
+  collapsed,
+  ...contentProps
 }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
-  const outputName = outputKey ? `@${outputKey}` : "";
 
-  const icon = isFontAwesomeIcon(iconProp) ? (
-    <FontAwesomeIcon icon={iconProp as IconProp} size="2x" fixedWidth />
-  ) : (
-    iconProp
-  );
-
-  const badgeSource = hasError
-    ? "/img/fa-exclamation-circle-custom.svg"
-    : hasWarning
-    ? "/img/fa-exclamation-triangle-custom.svg"
-    : skippedRun
-    ? "/img/fa-minus-circle-solid-custom.svg"
-    : ran
-    ? "/img/fa-check-circle-solid-custom.svg"
-    : null;
-
-  const badge = badgeSource ? (
-    <span className={styles.badge}>
-      <img src={badgeSource} alt="" />
-    </span>
-  ) : null;
+  useEffect(() => {
+    console.log("render EditorNode", { blockId, canMoveUp, canMoveDown });
+  }, [blockId, canMoveDown, canMoveUp]);
 
   useEffect(() => {
     if (active) {
       nodeRef.current?.focus();
     }
   }, [active]);
+
   return (
     <ListGroup.Item
       ref={nodeRef}
@@ -112,48 +79,48 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       active={active}
       className={cx(styles.root, "list-group-item-action")}
       title={
-        skippedRun ? "This brick was skipped due to its condition" : undefined
+        contentProps.runStatus === RunStatus.SKIPPED
+          ? "This brick was skipped due to its condition"
+          : undefined
       }
       data-testid="editor-node"
     >
-      <div className={styles.icon}>
-        {icon}
-        {badge}
-      </div>
-      <div className={styles.text}>
-        <div>{title}</div>
-        {outputName && <div className={styles.outputKey}>{outputName}</div>}
-      </div>
-      {canMoveAnything && (
+      {!isEmpty(children) && (
+        <div
+          className={cx({
+            [styles.active]: active,
+            [styles.closedHandle]: collapsed,
+            [styles.openHandle]: !collapsed,
+          })}
+        />
+      )}
+      <EditorNodeContent {...contentProps} />
+      {(canMoveUp || canMoveDown) && (
         <div className={styles.moveButtons}>
-          {(canMoveUp || canMoveDown) && (
-            <>
-              <button
-                type="button"
-                onClick={(event) => {
-                  onClickMoveUp();
-                  event.stopPropagation();
-                }}
-                title="Move brick higher"
-                disabled={!canMoveUp}
-                className={styles.moveButton}
-              >
-                <FontAwesomeIcon icon={faArrowUp} size="sm" />
-              </button>
-              <button
-                type="button"
-                onClick={(event) => {
-                  onClickMoveDown();
-                  event.stopPropagation();
-                }}
-                title="Move brick lower"
-                disabled={!canMoveDown}
-                className={styles.moveButton}
-              >
-                <FontAwesomeIcon icon={faArrowDown} size="sm" />
-              </button>
-            </>
-          )}
+          <button
+            type="button"
+            onClick={(event) => {
+              onClickMoveUp();
+              event.stopPropagation();
+            }}
+            title="Move brick higher"
+            disabled={!canMoveUp}
+            className={styles.moveButton}
+          >
+            <FontAwesomeIcon icon={faArrowUp} size="sm" />
+          </button>
+          <button
+            type="button"
+            onClick={(event) => {
+              onClickMoveDown();
+              event.stopPropagation();
+            }}
+            title="Move brick lower"
+            disabled={!canMoveDown}
+            className={styles.moveButton}
+          >
+            <FontAwesomeIcon icon={faArrowDown} size="sm" />
+          </button>
         </div>
       )}
     </ListGroup.Item>
