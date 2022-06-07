@@ -23,7 +23,7 @@ import { BlockConfig } from "@/blocks/types";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
-import ForEachElement from "@/blocks/transformers/controlFlow/WithElements";
+import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 
 export async function getCurrentURL(): Promise<string> {
   if (!browser.devtools) {
