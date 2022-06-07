@@ -279,7 +279,8 @@ export type BlockOptions<
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- brick is responsible for providing shape
     pipeline: any,
     // Should be UnknownObject, but can't use to introduce a circular dependency
-    extraContext?: Record<string, unknown>
+    extraContext?: Record<string, unknown>,
+    root?: ReaderRoot
   ) => Promise<unknown>;
 };
 
