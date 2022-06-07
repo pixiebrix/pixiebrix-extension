@@ -17,61 +17,56 @@
 
 import React from "react";
 import { IBrick } from "@/core";
-import { Button, ListGroup } from "react-bootstrap";
-import cx from "classnames";
-import styles from "@/options/pages/brickEditor/referenceTab/BlockResult.module.scss";
+import { Button, Card, ListGroup } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
-import { OfficialBadge } from "@/components/OfficialBadge";
+import styles from "./BrickResult.module.scss";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+export const BRICK_RESULT_FIXED_HEIGHT_PX = 89;
 
 export type BrickResultProps = {
   brick: IBrick;
   onSelect: () => void;
   onShowDetail: () => void;
-  active?: boolean;
-  selectCaption: React.ReactNode;
 };
 
 const BrickResult: React.FunctionComponent<BrickResultProps> = ({
   brick,
   onSelect,
   onShowDetail,
-  active,
-  selectCaption,
 }) => (
-  <ListGroup.Item
-    onClick={onShowDetail}
-    className={cx(styles.root, { [styles.active]: active, active })}
-  >
-    <div className="d-flex">
-      <div className="mr-2 text-muted">
-        <BrickIcon brick={brick} />
-      </div>
-      <div className={cx("flex-grow-1", styles.titleColumn)}>
-        <div className={styles.ellipsis}>{brick.name}</div>
-        <code className={cx("small", styles.id)}>{brick.id}</code>
-        <p className={cx("small mb-0", styles.ellipsis)}>
-          {/* Use a span if no description to ensure a consistent height for react-window */}
-          {brick.description ? `${brick.description}` : <span>&nbsp;</span>}
-        </p>
-      </div>
-      <div className={cx("flex-grow-0", styles.officialBadge)}>
-        <OfficialBadge id={brick.id} />
-      </div>
-      <div
-        className={cx(
-          "align-items-center justify-content-end",
-          styles.actionButtons
+  <ListGroup.Item onClick={onShowDetail} className={styles.root}>
+    <Card className={styles.card}>
+      {/* Main Content */}
+      <div className={styles.cardContent}>
+        <div className={styles.nameRow}>
+          <BrickIcon brick={brick} faIconClass={styles.icon} />
+          <span className={styles.name}>{brick.name}</span>
+        </div>
+        {brick.description ? (
+          <div className={styles.description}>{brick.description}</div>
+        ) : (
+          <small className="text-muted font-italic">
+            No description provided.
+          </small>
         )}
-      >
+      </div>
+
+      {/* Hover Actions */}
+      <div className={styles.actions}>
+        <span className={styles.viewDetails}>View Details</span>
         <Button
           variant="primary"
-          className="mb-1 text-nowrap"
-          onClick={onSelect}
+          onClick={() => {
+            onSelect();
+          }}
+          className={styles.addButton}
         >
-          {selectCaption}
+          <FontAwesomeIcon icon={faPlus} /> Add
         </Button>
       </div>
-    </div>
+    </Card>
   </ListGroup.Item>
 );
 

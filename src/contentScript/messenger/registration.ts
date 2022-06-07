@@ -37,7 +37,7 @@ import {
   toggleSidebar,
   removeExtension as removeSidebar,
   getSidebarEntries,
-} from "@/contentScript/sidebar";
+} from "@/contentScript/sidebarController";
 import { insertPanel } from "@/contentScript/nativeEditor/insertPanel";
 import { insertButton } from "@/contentScript/nativeEditor/insertButton";
 import {

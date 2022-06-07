@@ -16,26 +16,36 @@
  */
 
 import { buildDocumentBranch } from "@/components/documentBuilder/documentTree";
-import React from "react";
+import React, { useState } from "react";
 import ReactShadowRoot from "react-shadow-root";
 import BootstrapStylesheet from "@/blocks/renderers/BootstrapStylesheet";
 import { DocumentViewProps } from "./DocumentViewProps";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 
-const DocumentView: React.FC<DocumentViewProps> = ({ body, options }) => (
-  // Wrap in a React context provider that passes BlockOptions down to any embedded bricks
-  // ReactShadowRoot needs to be inside an HTMLElement so it has something to attach to
-  <DocumentContext.Provider value={{ options }}>
-    <div className="h-100">
-      <ReactShadowRoot>
-        <BootstrapStylesheet />
-        {body.map((documentElement, i) => {
-          const { Component, props } = buildDocumentBranch(documentElement);
-          return <Component key={i} {...props} />;
-        })}
-      </ReactShadowRoot>
-    </div>
-  </DocumentContext.Provider>
-);
+const DocumentView: React.FC<DocumentViewProps> = ({ body, options }) => {
+  // Track style loading to avoid a FOUC
+  const [styleLoaded, setStyleLoaded] = useState(false);
+
+  return (
+    // Wrap in a React context provider that passes BlockOptions down to any embedded bricks
+    // ReactShadowRoot needs to be inside an HTMLElement to attach to something
+    <DocumentContext.Provider value={{ options }}>
+      <div className="h-100">
+        <ReactShadowRoot>
+          <BootstrapStylesheet
+            onLoad={() => {
+              setStyleLoaded(true);
+            }}
+          />
+          {styleLoaded &&
+            body.map((documentElement, index) => {
+              const { Component, props } = buildDocumentBranch(documentElement);
+              return <Component key={index} {...props} />;
+            })}
+        </ReactShadowRoot>
+      </div>
+    </DocumentContext.Provider>
+  );
+};
 
 export default DocumentView;

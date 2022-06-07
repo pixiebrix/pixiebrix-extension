@@ -27,7 +27,7 @@ import reportError from "@/telemetry/reportError";
 import { Except, RequireAtLeastOne } from "type-fest";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { truncate } from "lodash";
-import { SIDEBAR_WIDTH_CSS_PROPERTY } from "@/contentScript/sidebar";
+import { SIDEBAR_WIDTH_CSS_PROPERTY } from "@/contentScript/sidebarController";
 
 const MINIMUM_NOTIFICATION_DURATION = 2000;
 

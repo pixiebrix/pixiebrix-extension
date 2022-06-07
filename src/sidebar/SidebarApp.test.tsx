@@ -15,10 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Do not use `registerMethod` in this file */
-import { getMethod } from "webext-messenger";
+import React from "react";
+import { render } from "@testing-library/react";
+import SidebarApp from "@/sidebar/SidebarApp";
 
-export const renderPanels = getMethod("SIDEBAR_RENDER_PANELS");
-export const activatePanel = getMethod("SIDEBAR_ACTIVATE_PANEL");
-export const showForm = getMethod("SIDEBAR_SHOW_FORM");
-export const hideForm = getMethod("SIDEBAR_HIDE_FORM");
+jest.mock("@/options/store", () => ({
+  persistor: {
+    flush: jest.fn(),
+  },
+}));
+
+describe("SidebarApp", () => {
+  test("renders", () => {
+    expect(render(<SidebarApp />).asFragment()).toMatchSnapshot();
+  });
+});
