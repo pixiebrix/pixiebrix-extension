@@ -258,7 +258,7 @@ export const appApi = createApi({
       void
     >({
       query: () => ({
-        url: "/api/marketplace/listings/?show_detail=true",
+        url: "/api/marketplace/listings/",
         method: "get",
         // Returns public marketplace
         requireLinked: false,

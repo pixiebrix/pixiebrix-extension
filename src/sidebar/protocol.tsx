@@ -16,22 +16,20 @@
  */
 
 import reportError from "@/telemetry/reportError";
-import { FormEntry, PanelEntry } from "@/sidebar/types";
+import { ActivatePanelOptions, FormEntry, PanelEntry } from "@/sidebar/types";
 import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 import { UUID } from "@/core";
 
-export const MESSAGE_PREFIX = "@@pixiebrix/sidebar/";
-
-export const RENDER_PANELS_MESSAGE = `${MESSAGE_PREFIX}RENDER_PANELS`;
-export const SHOW_FORM_MESSAGE = `${MESSAGE_PREFIX}SHOW_FORM`;
-export const HIDE_FORM_MESSAGE = `${MESSAGE_PREFIX}HIDE_FORM`;
-
 let lastMessageSeen = -1;
+// Track activate messages separately. The Sidebar App Redux state has special handling for these messages to account
+// for race conditions in panel loading
+let lastActivateMessageSeen = -1;
 
 export type SidebarListener = {
   onRenderPanels: (panels: PanelEntry[]) => void;
   onShowForm: (form: { nonce: UUID; form: FormDefinition }) => void;
   onHideForm: (form: { nonce: UUID }) => void;
+  onActivatePanel: (options: ActivatePanelOptions) => void;
 };
 
 const listeners: SidebarListener[] = [];
@@ -51,19 +49,21 @@ export function removeListener(fn: SidebarListener): void {
 function runListeners<Method extends keyof SidebarListener>(
   method: Method,
   sequence: number,
-  data: Parameters<SidebarListener[Method]>[0]
+  data: Parameters<SidebarListener[Method]>[0],
+  { force = false }: { force?: boolean } = {}
 ): void {
-  if (sequence < lastMessageSeen) {
+  if (sequence < lastMessageSeen && !force) {
     console.debug(
       "Skipping stale message (seq: %d, current: %d)",
-      lastMessageSeen,
       sequence,
+      lastMessageSeen,
       { data }
     );
     return;
   }
 
-  lastMessageSeen = sequence;
+  // Use Match.max to account for unordered messages with force
+  lastMessageSeen = Math.max(sequence, lastMessageSeen);
 
   console.debug(`Running ${listeners.length} listener(s) for %s`, method, {
     data,
@@ -85,6 +85,25 @@ export async function renderPanels(
   panels: PanelEntry[]
 ): Promise<void> {
   runListeners("onRenderPanels", sequence, panels);
+}
+
+export async function activatePanel(
+  sequence: number,
+  options: ActivatePanelOptions
+): Promise<void> {
+  if (sequence < lastActivateMessageSeen) {
+    console.debug(
+      "Skipping stale message (seq: %d, current: %d)",
+      sequence,
+      lastActivateMessageSeen,
+      { data: options }
+    );
+    return;
+  }
+
+  lastActivateMessageSeen = sequence;
+
+  runListeners("onActivatePanel", sequence, options, { force: true });
 }
 
 export async function showForm(sequence: number, entry: FormEntry) {

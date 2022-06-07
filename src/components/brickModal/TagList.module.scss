@@ -15,12 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+$bootstrapPadding: 15px;
+
 .root {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   align-items: stretch;
-  padding-top: 0.5rem;
+  padding: $bootstrapPadding 0;
 }
 
 .item {
