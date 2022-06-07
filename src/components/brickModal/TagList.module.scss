@@ -23,6 +23,7 @@ $bootstrapPadding: 15px;
   gap: 0.5rem;
   align-items: stretch;
   padding: $bootstrapPadding 0;
+  min-width: 160px;
 }
 
 .item {

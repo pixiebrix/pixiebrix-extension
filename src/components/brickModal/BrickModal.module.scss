@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$maxHeight: calc(100vh - 100px);
+$bodyHeight: calc(100vh - 100px);
 $bootstrapPadding: 15px;
 
 .root {
@@ -24,7 +24,7 @@ $bootstrapPadding: 15px;
   & > :first-child {
     margin: auto;
     width: 89vw;
-    max-width: 1220px; // Fits 3 "recommended bricks" columns
+    max-width: 1220px;
   }
 }
 
@@ -48,8 +48,7 @@ $bootstrapPadding: 15px;
 }
 
 .tagList {
-  height: $maxHeight;
-  min-width: 185px;
+  height: $bodyHeight;
   overflow: auto;
 }
 
@@ -59,7 +58,7 @@ $bootstrapPadding: 15px;
 }
 
 .brickDetail {
-  height: $maxHeight;
+  height: $bodyHeight;
   padding-top: $bootstrapPadding;
   padding-bottom: $bootstrapPadding;
   overflow: auto;
