@@ -21,10 +21,15 @@ import { selectReaderIds } from "@/blocks/readers/readerUtils";
 import getType from "@/runtime/getType";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { FormState } from "@/pageEditor/pageEditorTypes";
-import { getPipelinePropNames } from "@/pageEditor/utils";
+import {
+  getDocumentPipelinePaths,
+  getPipelinePropNames,
+} from "@/pageEditor/utils";
 import { BlockPipeline, BlockConfig } from "@/blocks/types";
 import { PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
 import { get } from "lodash";
+import { DocumentRenderer } from "@/blocks/renderers/document";
+import { joinElementName } from "@/components/documentBuilder/utils";
 
 export function collectRegistryIds(form: FormState): RegistryId[] {
   return [
@@ -91,14 +96,29 @@ export function traversePipeline(
     const fieldName = joinName(parentPath, index);
     action(blockConfig, Number(index), fieldName, parentPath, blockPipeline);
 
-    for (const subPipelineField of getPipelinePropNames(blockConfig)) {
-      const subPipelineAccessor = ["config", subPipelineField, "__value__"];
-      const subPipeline = get(blockConfig, subPipelineAccessor);
-      traversePipeline(
-        subPipeline,
-        joinName(fieldName, ...subPipelineAccessor),
-        action
-      );
+    if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
+      for (const subPipelinePath of getDocumentPipelinePaths(blockConfig)) {
+        const subPipelineAccessor = joinElementName(
+          subPipelinePath,
+          "__value__"
+        );
+        const subPipeline = get(blockConfig, subPipelineAccessor);
+        traversePipeline(
+          subPipeline,
+          joinElementName(fieldName, subPipelineAccessor),
+          action
+        );
+      }
+    } else {
+      for (const subPipelineField of getPipelinePropNames(blockConfig)) {
+        const subPipelineAccessor = ["config", subPipelineField, "__value__"];
+        const subPipeline = get(blockConfig, subPipelineAccessor);
+        traversePipeline(
+          subPipeline,
+          joinName(fieldName, ...subPipelineAccessor),
+          action
+        );
+      }
     }
   }
 }

@@ -27,8 +27,12 @@ import { useSelector } from "react-redux";
 import { EditorNodeProps } from "./editorNode/EditorNode";
 import { FormikError } from "./editTabTypes";
 import { TypedBlockMap } from "@/blocks/registry";
-import { getPipelinePropNames } from "@/pageEditor/utils";
+import {
+  getDocumentPipelinePaths,
+  getPipelinePropNames,
+} from "@/pageEditor/utils";
 import { get } from "lodash";
+import { joinElementName } from "@/components/documentBuilder/utils";
 
 type MapPipelineToNodesParams = {
   pipeline: BlockPipeline;
@@ -83,31 +87,68 @@ function mapPipelineToNodes({
       hasWarning: errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
       skippedRun: traceRecord?.skippedRun,
       ran: traceRecord != null,
-      children: getPipelinePropNames(blockConfig).map((propName) => {
-        const subPipelineAccessor = [
-          String(index),
-          "config",
-          propName,
-          "__value__",
-        ];
-        const subPipelinePath = joinName(pipelinePath, ...subPipelineAccessor);
-        const subPipeline = get(pipeline, subPipelineAccessor) as BlockPipeline;
-        const { nodes: subNodes, nodesHaveTraces: subNodesHaveTraces } =
-          mapPipelineToNodes({
-            pipeline: subPipeline,
+      children: getPipelinePropNames(blockConfig)
+        .map((propName) => {
+          const subPipelineAccessor = [
+            String(index),
+            "config",
+            propName,
+            "__value__",
+          ];
+          const subPipelinePath = joinName(
+            pipelinePath,
+            ...subPipelineAccessor
+          );
+          const subPipeline = get(
+            pipeline,
+            subPipelineAccessor
+          ) as BlockPipeline;
+          const { nodes: subNodes, nodesHaveTraces: subNodesHaveTraces } =
+            mapPipelineToNodes({
+              pipeline: subPipeline,
+              pipelinePath: subPipelinePath,
+              allBlocks,
+              traces,
+              pipelineErrors,
+              errorTraceEntry,
+            });
+          nodesHaveTraces = nodesHaveTraces || subNodesHaveTraces;
+          return {
+            label: propName,
             pipelinePath: subPipelinePath,
-            allBlocks,
-            traces,
-            pipelineErrors,
-            errorTraceEntry,
-          });
-        nodesHaveTraces = nodesHaveTraces || subNodesHaveTraces;
-        return {
-          label: propName,
-          pipelinePath: subPipelinePath,
-          nodes: subNodes,
-        };
-      }),
+            nodes: subNodes,
+          };
+        })
+        .concat(
+          getDocumentPipelinePaths(blockConfig).map((propPath) => {
+            const subPipelineAccessor = joinElementName(
+              String(index),
+              propPath,
+              "__value__"
+            );
+            const subPipelinePath = joinElementName(
+              pipelinePath,
+              subPipelineAccessor
+            );
+            const subPipeline = (get(pipeline, subPipelineAccessor) ??
+              []) as BlockPipeline;
+            const { nodes: subNodes, nodesHaveTraces: subNodesHaveTraces } =
+              mapPipelineToNodes({
+                pipeline: subPipeline,
+                pipelinePath: subPipelinePath,
+                allBlocks,
+                traces,
+                pipelineErrors,
+                errorTraceEntry,
+              });
+            nodesHaveTraces = nodesHaveTraces || subNodesHaveTraces;
+            return {
+              label: propPath,
+              pipelinePath: subPipelinePath,
+              nodes: subNodes,
+            };
+          })
+        ),
     };
 
     if (blockConfig.outputKey) {

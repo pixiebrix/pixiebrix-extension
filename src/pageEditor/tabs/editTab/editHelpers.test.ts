@@ -67,10 +67,12 @@ describe("traversePipeline", () => {
 
   it("should invoke the callback for the Document sub pipeline bricks", () => {
     const buttonElement = createNewElement("button");
+    const containerElement = createNewElement("container");
+    containerElement.children[0].children[0].children.push(buttonElement);
     const documentBrick = blockConfigFactory({
       id: DocumentRenderer.BLOCK_ID,
       config: {
-        body: [buttonElement],
+        body: [containerElement],
       },
     });
     const pipeline = [documentBrick];
@@ -84,8 +86,8 @@ describe("traversePipeline", () => {
       // @ts-expect-error - onClick is a valid pipeline
       buttonElement.config.onClick.__value__[0],
       0,
-      "0.config.body.0.config.onClick.__value__.0",
-      "0.config.body.0.config.onClick.__value__",
+      "0.config.body.0.children.0.children.0.children.0.config.onClick.__value__.0",
+      "0.config.body.0.children.0.children.0.children.0.config.onClick.__value__",
       // @ts-expect-error - onClick is a valid pipeline
       buttonElement.config.onClick.__value__
     );
