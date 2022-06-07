@@ -508,7 +508,7 @@ exports[`sanity check it renders first selected node 1`] = `
                   </div>
                 </div>
                 <div
-                  class="actions finalActions"
+                  class="actions biggerActions"
                 >
                   <button
                     data-testid="icon-button-add-node-2"

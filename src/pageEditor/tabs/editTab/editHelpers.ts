@@ -83,12 +83,13 @@ function traversePipeline(
     blockConfig: BlockConfig,
     index: number,
     path: string,
+    pipelinePath: string,
     pipeline: BlockPipeline
   ) => void
 ) {
   for (const [index, blockConfig] of Object.entries(blockPipeline)) {
     const fieldName = joinName(parentPath, index);
-    action(blockConfig, Number(index), fieldName, blockPipeline);
+    action(blockConfig, Number(index), fieldName, parentPath, blockPipeline);
 
     for (const subPipelineField of getPipelinePropNames(blockConfig)) {
       const subPipelineAccessor = ["config", subPipelineField, "__value__"];
@@ -104,15 +105,20 @@ function traversePipeline(
 
 export function getPipelineMap(blockPipeline: BlockPipeline) {
   const pipelineMap: PipelineMap = {};
-  traversePipeline(blockPipeline, "", (blockConfig, index, path, pipeline) => {
-    pipelineMap[blockConfig.instanceId] = {
-      blockId: blockConfig.id,
-      path,
-      blockConfig,
-      index,
-      pipeline,
-    };
-  });
+  traversePipeline(
+    blockPipeline,
+    "",
+    (blockConfig, index, path, pipelinePath, pipeline) => {
+      pipelineMap[blockConfig.instanceId] = {
+        blockId: blockConfig.id,
+        path,
+        blockConfig,
+        index,
+        pipelinePath,
+        pipeline,
+      };
+    }
+  );
 
   return pipelineMap;
 }

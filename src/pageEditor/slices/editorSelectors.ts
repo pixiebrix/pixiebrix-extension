@@ -203,6 +203,11 @@ export const selectActiveNodeId: (rootState: RootState) => NodeId =
     (elementUIState) => elementUIState.activeNodeId
   );
 
+export const selectPipelineMap = createSelector(
+  selectActiveElementUIState,
+  (uiState: ElementUIState) => uiState.pipelineMap
+);
+
 export const selectActiveNodeInfo = createSelector(
   selectActiveElementUIState,
   selectActiveNodeId,

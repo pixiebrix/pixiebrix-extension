@@ -24,16 +24,18 @@ import { uuidv4 } from "@/types/helpers";
 import { produce } from "immer";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
-import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
-import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { createNewBlock } from "@/pageEditor/createNewBlock";
 
 type BlockPipelineActions = {
-  addBlock: (block: IBlock, pipelineIndex: number) => void;
+  addBlock: (
+    block: IBlock,
+    pipelinePath: string,
+    pipelineIndex: number
+  ) => void;
   removeBlock: (nodeIdToRemove: NodeId) => void;
   moveBlockUp: (instanceId: UUID) => void;
   moveBlockDown: (instanceId: UUID) => void;
@@ -47,8 +49,7 @@ function useBlockPipelineActions(
   setFormValues: (
     values: React.SetStateAction<FormState>,
     shouldValidate?: boolean
-  ) => void,
-  setActiveNodeId: (nodeId: NodeId) => void
+  ) => void
 ): BlockPipelineActions {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
@@ -58,7 +59,7 @@ function useBlockPipelineActions(
    * Other actions do the opposite.
    */
   const addBlock = useCallback(
-    async (block: IBlock, pipelineIndex: number) => {
+    async (block: IBlock, pipelinePath: string, pipelineIndex: number) => {
       const outputKey = await generateFreshOutputKey(
         block,
         compact([
@@ -71,7 +72,9 @@ function useBlockPipelineActions(
         newBlock.outputKey = outputKey;
       }
 
-      dispatch(actions.addNode({ block: newBlock, pipelineIndex }));
+      dispatch(
+        actions.addNode({ block: newBlock, pipelinePath, pipelineIndex })
+      );
 
       reportEvent("BrickAdd", {
         brickId: block.id,
@@ -80,35 +83,11 @@ function useBlockPipelineActions(
         source: "PageEditor-BrickSearchModal",
       });
     },
-    [blockPipeline, values, setFormValues, setActiveNodeId, sessionId]
+    [blockPipeline, values, sessionId, dispatch]
   );
 
   const removeBlock = (nodeIdToRemove: NodeId) => {
-    let prevNodeId: NodeId;
-    let nextState = produce(values, (draft) => {
-      const index = draft.extension.blockPipeline.findIndex(
-        (block) => block.instanceId === nodeIdToRemove
-      );
-
-      prevNodeId =
-        index === 0
-          ? FOUNDATION_NODE_ID
-          : draft.extension.blockPipeline[index - 1].instanceId;
-
-      draft.extension.blockPipeline.splice(index, 1);
-    });
-
-    nextState = produceExcludeUnusedDependencies(nextState);
-
-    // Set the active node before setting the form values, otherwise there's a race condition based on the React state
-    // causing a re-render vs. the Formik state causing a re-render
-    dispatch(
-      actions.removeElementNodeUIState({
-        nodeIdToRemove,
-        newActiveNodeId: prevNodeId,
-      })
-    );
-    setFormValues(nextState, true);
+    dispatch(actions.removeNode(nodeIdToRemove));
   };
 
   const moveBlockUp = useCallback(
