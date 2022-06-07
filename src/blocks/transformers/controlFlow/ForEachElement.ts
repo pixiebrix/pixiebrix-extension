@@ -24,7 +24,7 @@ import { $safeFind } from "@/helpers";
 
 class ForEachElement extends Transformer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/for-each-element");
-  defaultOutputKey = "result";
+  defaultOutputKey = "forEachResult";
 
   constructor() {
     super(
