@@ -20,6 +20,9 @@ import { EditorNodeProps } from "@/pageEditor/tabs/editTab/editorNode/EditorNode
 import { Except } from "type-fest";
 import { TypedBlockMap } from "@/blocks/registry";
 
+/**
+ * These props do not depend on which node is being rendered
+ */
 export type NodeAdapterProps = {
   addBlock: (
     block: IBlock,
@@ -33,6 +36,10 @@ export type NodeAdapterProps = {
   allBlocks: TypedBlockMap;
 };
 
+/**
+ * These props depend on which node is being rendered, so they need to be
+ * passed in to the render function itself.
+ */
 export type InnerRenderProps = {
   pipelinePath: string;
   nodeProps: EditorNodeProps;
@@ -41,4 +48,7 @@ export type InnerRenderProps = {
   showAppend: boolean;
 };
 
+/**
+ * The adapter manages the pipelinePath prop internally
+ */
 export type RenderProps = Except<InnerRenderProps, "pipelinePath">;

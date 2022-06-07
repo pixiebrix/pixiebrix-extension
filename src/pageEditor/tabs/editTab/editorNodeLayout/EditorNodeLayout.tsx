@@ -20,9 +20,6 @@ import { EditorNodeProps } from "@/pageEditor/tabs/editTab/editorNode/EditorNode
 import { ListGroup } from "react-bootstrap";
 import { RenderProps } from "@/pageEditor/tabs/editTab/nodeAdapterTypes";
 import { TypedBlockMap } from "@/blocks/registry";
-import { useSelector } from "react-redux";
-import { selectPipelineMap } from "@/pageEditor/slices/editorSelectors";
-import { isEmpty } from "lodash";
 
 const EditorNodeLayout: React.FC<{
   nodes: EditorNodeProps[];

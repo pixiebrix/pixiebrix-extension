@@ -144,7 +144,9 @@ export function useNodeAdapter({
                 <>
                   <div className={styles.subPipelineHeader}>
                     <div className={styles.subPipelineLabel}>{label}</div>
-                    <div className={styles.actions}>
+                    <div
+                      className={cx(styles.actions, styles.topPipelineAction)}
+                    >
                       <BrickModal
                         bricks={relevantBlocksToAdd}
                         renderButton={(onClick) => (
@@ -183,7 +185,7 @@ export function useNodeAdapter({
             )}
           <div
             className={cx(styles.actions, {
-              [styles.finalActions]: showBiggerActionButtons,
+              [styles.biggerActions]: showBiggerActionButtons,
             })}
           >
             {showAddBlock && (

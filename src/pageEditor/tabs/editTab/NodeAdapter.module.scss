@@ -15,6 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "@/pageEditor/tabs/editTab/editTabVariables.scss";
+
+$headerOffsetX: $pipeLineOffset * 0.6; // Tweaked to make the 'if' label centered in the pipe-line
+$headerOffsetY: 0.5rem;
+$contentOffset: $pipeLineOffset * 2 + $pipeLineBorderWidth;
+
 .actions {
   height: 0;
   display: flex;
@@ -48,6 +54,13 @@
   }
 }
 
+// Align the top action with the inner content
+$topPipelineLeft: $contentOffset - $headerOffsetX;
+.topPipelineAction {
+  left: $topPipelineLeft;
+  width: calc(100% - #{$topPipelineLeft});
+}
+
 .biggerActions {
   --size: 40px;
   height: auto;
@@ -61,16 +74,19 @@
 }
 
 .subPipeline {
-  padding: 0 0 1.5rem 32px;
+  padding: 0 0 1.5rem $contentOffset;
 }
 
 .subPipelineHeader {
   background: #ebebf1;
-  padding: 0.5rem 0 0.5rem 32px;
+  padding: $headerOffsetY 0 0 $headerOffsetX;
 }
 
 .subPipelineLabel {
-  border-left: none;
-  border-right: none;
-  border-top: none;
+  display: inline-block;
+  width: auto;
+  margin-bottom: $headerOffsetY;
+  padding: 0 0.25rem;
+  background: white;
+  border-radius: 3px;
 }

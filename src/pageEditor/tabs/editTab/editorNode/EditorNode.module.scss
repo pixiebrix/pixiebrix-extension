@@ -15,6 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "@/pageEditor/tabs/editTab/editTabVariables.scss";
+
+$closedHandleSize: 24px;
+$closedHandleMarginBottom: 2px;
+$openHandleHeight: $closedHandleSize + $closedHandleMarginBottom;
+
 .root {
   display: flex;
   align-items: center;
@@ -25,13 +31,13 @@
 
 .closedHandle {
   position: absolute;
-  bottom: 2px;
-  left: 23px;
-  width: 24px;
-  height: 24px;
-  border-radius: 0 0 0 12px;
-  border-left: 1px solid black;
-  border-bottom: 1px solid black;
+  bottom: $closedHandleMarginBottom;
+  left: $pipeLineOffset;
+  width: $closedHandleSize;
+  height: $closedHandleSize;
+  border-radius: 0 0 0 $closedHandleSize/2;
+  border-left: $pipeLineBorderWidth solid black;
+  border-bottom: $pipeLineBorderWidth solid black;
 
   &.active {
     border-color: white;
@@ -40,11 +46,11 @@
 
 .openHandle {
   position: absolute;
-  bottom: 2px;
+  bottom: 0;
   left: 0;
-  width: 23px;
-  height: 24px;
-  border-right: 1px solid black;
+  width: $pipeLineOffset;
+  height: $openHandleHeight;
+  border-right: $pipeLineBorderWidth solid black;
 
   &.active {
     border-color: white;
