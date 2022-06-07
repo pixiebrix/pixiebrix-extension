@@ -23,10 +23,7 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import * as logging from "@/background/messenger/api";
-import {
-  makePipelineExpression,
-  makeTemplateExpression,
-} from "@/testUtils/expressionTestHelpers";
+import { makePipelineExpression } from "@/testUtils/expressionTestHelpers";
 import ForEachElement from "./ForEachElement";
 
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
