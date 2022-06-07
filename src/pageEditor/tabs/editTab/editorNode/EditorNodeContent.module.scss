@@ -16,20 +16,19 @@
  */
 
 .icon {
-  display: flex;
+  display: inline-flex;
   flex-shrink: 0;
   flex-grow: 0;
   place-items: center;
   place-content: center;
-  width: 1.2em;
+  width: 1.1em;
   margin-right: 10px;
-  font-size: 1.65em;
 
   // External icon
   img {
     // !important is to override the inline CSS
-    width: 1.2em !important;
-    height: 1.2em !important;
+    width: 1.1em !important;
+    height: 1.1em !important;
   }
   svg {
     font-size: inherit;

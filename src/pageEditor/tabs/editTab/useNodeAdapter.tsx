@@ -82,8 +82,10 @@ export function useNodeAdapter({
     }: InnerRenderProps) => {
       const { nodeId, children } = nodeProps;
       const isRootPipeline = isEmpty(pipelinePath);
+      const nodeIsActive = nodeId === activeNodeId;
 
-      nodeProps.active = nodeId === activeNodeId;
+      nodeProps.active = nodeIsActive;
+      // TODO: Handle collapsed state during add/remove/move node actions
       const collapsedKey = join([pipelinePath, nodeIndex], ".");
       /* eslint-disable security/detect-object-injection -- working with a record */
       const collapsed = collapsedState[collapsedKey];
@@ -136,16 +138,30 @@ export function useNodeAdapter({
 
       return (
         <React.Fragment key={nodeId}>
-          <EditorNode {...nodeProps} />
+          {!isRootPipeline && (
+            <div
+              className={cx(styles.pipeLine, { [styles.active]: nodeIsActive })}
+            />
+          )}
+          <EditorNode
+            {...nodeProps}
+            className={cx({ [styles.subPipelineNode]: !isRootPipeline })}
+          />
           {children?.length > 0 &&
             !collapsed &&
             children.map(
               ({ label, pipelinePath: subPipelinePath, nodes: childNodes }) => (
                 <>
-                  <div className={styles.subPipelineHeader}>
+                  <div
+                    className={cx(styles.subPipelineHeader, {
+                      [styles.pipelineBottom]: isEmpty(childNodes),
+                    })}
+                  >
+                    <div className={styles.headerPipeLineTop} />
                     <div className={styles.subPipelineLabel}>{label}</div>
+                    <div className={styles.headerPipeLineBottom} />
                     <div
-                      className={cx(styles.actions, styles.topPipelineAction)}
+                      className={cx(styles.actions, styles.topPipelineActions)}
                     >
                       <BrickModal
                         bricks={relevantBlocksToAdd}
@@ -186,6 +202,7 @@ export function useNodeAdapter({
           <div
             className={cx(styles.actions, {
               [styles.biggerActions]: showBiggerActionButtons,
+              [styles.subPipelineNode]: !isRootPipeline,
             })}
           >
             {showAddBlock && (

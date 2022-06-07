@@ -52,7 +52,7 @@ const EditorNodeContent: React.FC<EditorNodeContentProps> = ({
 }) => {
   const outputName = outputKey ? `@${outputKey}` : "";
   const icon = isFontAwesomeIcon(iconProp) ? (
-    <FontAwesomeIcon icon={iconProp as IconProp} size="2x" fixedWidth />
+    <FontAwesomeIcon icon={iconProp as IconProp} fixedWidth />
   ) : (
     iconProp
   );

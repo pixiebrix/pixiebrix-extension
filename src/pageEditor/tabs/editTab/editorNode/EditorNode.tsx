@@ -45,6 +45,7 @@ export type EditorNodeProps = EditorNodeContentProps & {
     nodes: EditorNodeProps[];
   }>;
   collapsed?: boolean;
+  className?: string;
 };
 
 const EditorNode: React.FC<EditorNodeProps> = ({
@@ -57,6 +58,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   onClickMoveDown,
   children,
   collapsed,
+  className,
   ...contentProps
 }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
@@ -77,7 +79,9 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       as="div"
       onClick={onClick}
       active={active}
-      className={cx(styles.root, "list-group-item-action")}
+      className={cx(styles.root, "list-group-item-action", className, {
+        [styles.expanded]: !isEmpty(children) && !collapsed,
+      })}
       title={
         contentProps.runStatus === RunStatus.SKIPPED
           ? "This brick was skipped due to its condition"

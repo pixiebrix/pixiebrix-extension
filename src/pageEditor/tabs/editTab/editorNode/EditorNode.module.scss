@@ -25,8 +25,12 @@ $openHandleHeight: $closedHandleSize + $closedHandleMarginBottom;
   display: flex;
   align-items: center;
   font-size: 0.875rem;
-  padding: 20px 0 20px 10px;
+  padding: 20px 0 20px $defaultNodePaddingLeft;
   cursor: pointer;
+
+  &.expanded {
+    border-bottom: none;
+  }
 }
 
 .closedHandle {

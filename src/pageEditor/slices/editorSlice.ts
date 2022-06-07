@@ -644,18 +644,17 @@ export const editorSlice = createSlice({
       const elementUiState = state.elementUIStates[state.activeElementId];
       const { pipelinePath, index } =
         elementUiState.pipelineMap[nodeIdToRemove];
-      const pipeline = isEmpty(pipelinePath)
-        ? element.extension.blockPipeline
-        : get(element.extension.blockPipeline, pipelinePath);
+      const pipeline = get(element, pipelinePath);
 
-      const nextActiveNodeId =
-        index === 0 ? FOUNDATION_NODE_ID : pipeline[index - 1].instanceId;
-
+      const nextActiveNode =
+        index + 1 === pipeline.length
+          ? pipeline[index - 1] // Last item, select previous
+          : pipeline[index + 1]; // Not last item, select next
       pipeline.splice(index, 1);
 
       syncElementNodeUIStates(state, element);
 
-      elementUiState.activeNodeId = nextActiveNodeId;
+      elementUiState.activeNodeId = nextActiveNode.instanceId;
 
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
