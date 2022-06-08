@@ -19,32 +19,39 @@
  * @file This file must be imported as early as possible in each entrypoint, once
  */
 import {
-  isConnectionError,
+  getErrorMessage,
+  IGNORED_ERROR_PATTERNS,
   selectErrorFromEvent,
   selectErrorFromRejectionEvent,
 } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
+import { matchesAnyPattern } from "@/utils";
 
-function ignoreConnectionErrors(
-  errorEvent: ErrorEvent | PromiseRejectionEvent
+function ignoreKnownPatterns(
+  errorEvent: ErrorEvent | PromiseRejectionEvent,
+  error: unknown
 ): void {
-  if (isConnectionError(errorEvent)) {
+  if (matchesAnyPattern(getErrorMessage(error), IGNORED_ERROR_PATTERNS)) {
+    console.debug("Ignoring error matching IGNORED_ERROR_PATTERNS", {
+      error,
+    });
+
     errorEvent.preventDefault();
   }
 }
 
 function errorListener(errorEvent: ErrorEvent | PromiseRejectionEvent): void {
-  for (const handler of uncaughtErrorHandlers) {
-    handler(errorEvent);
-    if (errorEvent.defaultPrevented) {
-      return;
-    }
-  }
-
   const error =
     errorEvent instanceof PromiseRejectionEvent
       ? selectErrorFromRejectionEvent(errorEvent)
       : selectErrorFromEvent(errorEvent);
+
+  for (const handler of uncaughtErrorHandlers) {
+    handler(errorEvent, error);
+    if (errorEvent.defaultPrevented) {
+      return;
+    }
+  }
 
   // The browser already shows uncaught errors in the console
   reportError(error, undefined, { logToConsole: false });
@@ -54,7 +61,7 @@ function errorListener(errorEvent: ErrorEvent | PromiseRejectionEvent): void {
  * Array of handlers to run in order before the default one.
  * They can call `event.preventDefault()` to avoid reporting the error.
  */
-export const uncaughtErrorHandlers = [ignoreConnectionErrors];
+export const uncaughtErrorHandlers = [ignoreKnownPatterns];
 
 // Refactor beware: Do not add an `init` function or it will run too late.
 // When imported, the file will be executed immediately, whereas if it exports
