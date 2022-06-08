@@ -85,6 +85,11 @@ const EditorNodeLayout: React.FC<{
     : undefined;
   const showAppend = !lastBlock?.block || lastBlock.type !== "renderer";
 
+  const allBlocksAsRelevant = useMemo(
+    () => [...allBlocks.values()].map(({ block }) => block),
+    [allBlocks]
+  );
+
   return (
     <ListGroup variant="flush">
       {nodes.length > 0 &&
@@ -115,11 +120,6 @@ const EditorNodeLayout: React.FC<{
             nodeIndex === finalIndex && isRootPipeline;
           const showAddMessage = showAddBlock && showBiggerActionButtons;
           const showPaste = pasteBlock && isApiAtLeastV2;
-
-          const allBlocksAsRelevant = useMemo(
-            () => [...allBlocks.values()].map(({ block }) => block),
-            [allBlocks]
-          );
 
           return (
             <React.Fragment key={nodeId}>
