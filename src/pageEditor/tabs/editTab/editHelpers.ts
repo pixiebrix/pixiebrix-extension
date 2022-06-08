@@ -81,20 +81,28 @@ export async function generateFreshOutputKey(
   return freshIdentifier(type as SafeString, outputKeys) as OutputKey;
 }
 
+type BlockAction = (blockInfo: {
+  blockConfig: BlockConfig;
+  index: number;
+  path: string;
+  pipelinePath: string;
+  pipeline: BlockPipeline;
+}) => void;
+
 export function traversePipeline(
   blockPipeline: BlockPipeline,
   parentPath: string,
-  action: (
-    blockConfig: BlockConfig,
-    index: number,
-    path: string,
-    pipelinePath: string,
-    pipeline: BlockPipeline
-  ) => void
+  action: BlockAction
 ) {
   for (const [index, blockConfig] of Object.entries(blockPipeline)) {
     const fieldName = joinName(parentPath, index);
-    action(blockConfig, Number(index), fieldName, parentPath, blockPipeline);
+    action({
+      blockConfig,
+      index: Number(index),
+      path: fieldName,
+      pipelinePath: parentPath,
+      pipeline: blockPipeline,
+    });
 
     if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
       for (const subPipelinePath of getDocumentPipelinePaths(blockConfig)) {
@@ -128,7 +136,7 @@ export function getPipelineMap(blockPipeline: BlockPipeline) {
   traversePipeline(
     blockPipeline,
     "",
-    (blockConfig, index, path, pipelinePath, pipeline) => {
+    ({ blockConfig, index, path, pipelinePath, pipeline }) => {
       pipelineMap[blockConfig.instanceId] = {
         blockId: blockConfig.id,
         path,

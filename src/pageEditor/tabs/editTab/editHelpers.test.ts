@@ -31,8 +31,20 @@ describe("traversePipeline", () => {
     traversePipeline(pipeline, "", action);
 
     expect(action).toHaveBeenCalledTimes(pipeline.length);
-    expect(action).toHaveBeenCalledWith(pipeline[0], 0, "0", "", pipeline);
-    expect(action).toHaveBeenCalledWith(pipeline[1], 1, "1", "", pipeline);
+    expect(action).toHaveBeenCalledWith({
+      blockConfig: pipeline[0],
+      index: 0,
+      path: "0",
+      pipelinePath: "",
+      pipeline,
+    });
+    expect(action).toHaveBeenCalledWith({
+      blockConfig: pipeline[1],
+      index: 1,
+      path: "1",
+      pipelinePath: "",
+      pipeline,
+    });
   });
 
   test("should invoke the callback for the sub pipeline bricks", () => {
@@ -50,20 +62,20 @@ describe("traversePipeline", () => {
 
     traversePipeline(pipeline, "", action);
     expect(action).toHaveBeenCalledTimes(pipeline.length + subPipeline.length);
-    expect(action).toHaveBeenCalledWith(
-      subPipeline[0],
-      0,
-      "0.config.body.__value__.0",
-      "0.config.body.__value__",
-      subPipeline
-    );
-    expect(action).toHaveBeenCalledWith(
-      subPipeline[1],
-      1,
-      "0.config.body.__value__.1",
-      "0.config.body.__value__",
-      subPipeline
-    );
+    expect(action).toHaveBeenCalledWith({
+      blockConfig: subPipeline[0],
+      index: 0,
+      path: "0.config.body.__value__.0",
+      pipelinePath: "0.config.body.__value__",
+      pipeline: subPipeline,
+    });
+    expect(action).toHaveBeenCalledWith({
+      blockConfig: subPipeline[1],
+      index: 1,
+      path: "0.config.body.__value__.1",
+      pipelinePath: "0.config.body.__value__",
+      pipeline: subPipeline,
+    });
   });
 
   test("should invoke the callback for the Document button pipeline", () => {
@@ -84,14 +96,21 @@ describe("traversePipeline", () => {
 
     traversePipeline(pipeline, "", action);
     expect(action).toHaveBeenCalledTimes(2); // One Document brick and one brick in the pipeline
-    expect(action).toHaveBeenCalledWith(documentBrick, 0, "0", "", pipeline);
-    expect(action).toHaveBeenCalledWith(
-      subPipeline.__value__[0],
-      0,
-      "0.config.body.0.children.0.children.0.children.0.config.onClick.__value__.0",
-      "0.config.body.0.children.0.children.0.children.0.config.onClick.__value__",
-      subPipeline.__value__
-    );
+    expect(action).toHaveBeenCalledWith({
+      blockConfig: documentBrick,
+      index: 0,
+      path: "0",
+      pipelinePath: "",
+      pipeline,
+    });
+    expect(action).toHaveBeenCalledWith({
+      blockConfig: subPipeline.__value__[0],
+      index: 0,
+      path: "0.config.body.0.children.0.children.0.children.0.config.onClick.__value__.0",
+      pipelinePath:
+        "0.config.body.0.children.0.children.0.children.0.config.onClick.__value__",
+      pipeline: subPipeline.__value__,
+    });
   });
 
   test("should invoke the callback for the Document brick pipeline", () => {
@@ -112,13 +131,20 @@ describe("traversePipeline", () => {
 
     traversePipeline(pipeline, "", action);
     expect(action).toHaveBeenCalledTimes(2); // One Document brick and one brick in the pipeline
-    expect(action).toHaveBeenCalledWith(documentBrick, 0, "0", "", pipeline);
-    expect(action).toHaveBeenCalledWith(
-      subPipeline.__value__[0],
-      0,
-      "0.config.body.0.children.0.children.0.children.0.config.pipeline.__value__.0",
-      "0.config.body.0.children.0.children.0.children.0.config.pipeline.__value__",
-      subPipeline.__value__
-    );
+    expect(action).toHaveBeenCalledWith({
+      blockConfig: documentBrick,
+      index: 0,
+      path: "0",
+      pipelinePath: "",
+      pipeline,
+    });
+    expect(action).toHaveBeenCalledWith({
+      blockConfig: subPipeline.__value__[0],
+      index: 0,
+      path: "0.config.body.0.children.0.children.0.children.0.config.pipeline.__value__.0",
+      pipelinePath:
+        "0.config.body.0.children.0.children.0.children.0.config.pipeline.__value__",
+      pipeline: subPipeline.__value__,
+    });
   });
 });

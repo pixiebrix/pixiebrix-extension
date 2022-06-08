@@ -138,8 +138,7 @@ test("can preview pipeline element with bricks", () => {
 
   const element = createNewElement("pipeline");
   const pipeline = element.config.pipeline as PipelineExpression;
-  pipeline.__value__.push(testBlock);
-  pipeline.__value__.push(markdownConfig);
+  pipeline.__value__.push(testBlock, markdownConfig);
   const rendered = renderElementPreview(element);
 
   expect(rendered.asFragment()).toMatchSnapshot();

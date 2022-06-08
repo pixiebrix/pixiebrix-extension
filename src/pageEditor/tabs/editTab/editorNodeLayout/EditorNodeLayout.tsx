@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import styles from "./EditorNodeLayout.module.scss";
 import EditorNode, {
   EditorNodeProps,
@@ -116,6 +116,11 @@ const EditorNodeLayout: React.FC<{
           const showAddMessage = showAddBlock && showBiggerActionButtons;
           const showPaste = pasteBlock && isApiAtLeastV2;
 
+          const allBlocksAsRelevant = useMemo(
+            () => [...allBlocks.values()].map(({ block }) => block),
+            [allBlocks]
+          );
+
           return (
             <React.Fragment key={nodeId}>
               <EditorNode
@@ -142,9 +147,7 @@ const EditorNodeLayout: React.FC<{
                       </ListGroup.Item>
                       <div className={styles.actions}>
                         <BrickModal
-                          bricks={[...allBlocks.values()].map(
-                            ({ block }) => block
-                          )}
+                          bricks={allBlocksAsRelevant}
                           renderButton={(onClick) => (
                             <TooltipIconButton
                               name={`add-node-${nodeIndex}`}
@@ -164,9 +167,7 @@ const EditorNodeLayout: React.FC<{
                         allBlocks={allBlocks}
                         activeNodeId={activeNodeId}
                         pipelinePath={subPipelinePath}
-                        relevantBlocksToAdd={[...allBlocks.values()].map(
-                          ({ block }) => block
-                        )}
+                        relevantBlocksToAdd={allBlocksAsRelevant}
                         selectBlock={selectBlock}
                         addBlock={addBlock}
                         moveBlockUp={null}

@@ -18,11 +18,7 @@
 import React from "react";
 import { Col, Row } from "react-bootstrap";
 
-type PipelineOptionsProps = {
-  elementName: string;
-};
-
-const PipelineOptions: React.FC<PipelineOptionsProps> = ({ elementName }) => (
+const PipelineOptions: React.FC = () => (
   <Row>
     <Col>Use the Nodes Tree on the left to edit the nested pipeline.</Col>
   </Row>
