@@ -42,6 +42,7 @@ import {
   RendererOutput,
   Metadata,
   Logger,
+  RunArgs,
 } from "@/core";
 import {
   ExtensionPointDefinition,
@@ -438,7 +439,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     }
   }
 
-  async run(extensionIds?: string[]): Promise<void> {
+  async run({ extensionIds = null }: RunArgs): Promise<void> {
     if (!this.$container || this.extensions.length === 0) {
       return;
     }

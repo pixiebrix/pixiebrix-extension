@@ -79,8 +79,9 @@ const ReloadButton: React.VoidFunctionComponent = () => (
     className="mt-auto"
     onClick={async (event) => {
       if (event.shiftKey) {
-        browser.runtime?.reload(); // Not guaranteed
         await browser.tabs.reload(browser.devtools.inspectedWindow.tabId);
+
+        browser.runtime?.reload(); // Not guaranteed
 
         // We must wait before reloading or else the loading fails
         // https://github.com/pixiebrix/pixiebrix-extension/pull/2381

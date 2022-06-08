@@ -16,21 +16,21 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockArg, BlockOptions, OutputKey, Schema } from "@/core";
+import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { PipelineExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
+import { $safeFind } from "@/helpers";
 
-class ForEach extends Transformer {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/for-each");
-  defaultOutputKey = "forEachOutput";
+class ForEachElement extends Transformer {
+  static BLOCK_ID = validateRegistryId("@pixiebrix/for-each-element");
+  defaultOutputKey = "forEachResult";
 
   constructor() {
     super(
-      ForEach.BLOCK_ID,
-      "For-Each Loop",
-      "Loop over elements in a list/array, returning the value of the last iteration"
+      ForEachElement.BLOCK_ID,
+      "For-Each Element",
+      "Loop over elements on the page, returning the value of the last iteration"
     );
   }
 
@@ -40,53 +40,45 @@ class ForEach extends Transformer {
   }
 
   override async isRootAware(): Promise<boolean> {
-    // Safe default -- need to be able to inspect the inputs to determine if any sub-calls are root aware
     return true;
   }
 
   inputSchema: Schema = propertiesToSchema(
     {
-      elements: {
-        type: "array",
-        description: "A list/array of elements to loop over",
+      selector: {
+        type: "string",
+        format: "selector",
+        description: "A selector to match elements on the page",
       },
       body: {
         $ref: "https://app.pixiebrix.com/schemas/pipeline#",
         description: "The bricks to execute for each element",
       },
-      elementKey: {
-        type: "string",
-        default: "element",
-        description:
-          "The element key/variable for the body of the loop, without the leading @",
-      },
     },
-    ["elements", "body"]
+    ["selector", "body"]
   );
 
   async transform(
     {
-      elements,
+      selector,
       body: bodyPipeline,
-      elementKey = validateOutputKey("element"),
     }: BlockArg<{
-      elements: unknown[];
+      selector: string;
       body: PipelineExpression;
-      elementKey: OutputKey;
     }>,
     options: BlockOptions
   ): Promise<unknown> {
+    const elements = $safeFind(selector, options.root ?? document);
+
     let last: unknown;
 
-    for (const element of elements) {
+    for (const element of elements.get()) {
       // eslint-disable-next-line no-await-in-loop -- synchronous for-loop brick
-      last = await options.runPipeline(bodyPipeline.__value__, {
-        [`@${elementKey}`]: element,
-      });
+      last = await options.runPipeline(bodyPipeline.__value__, {}, element);
     }
 
     return last;
   }
 }
 
-export default ForEach;
+export default ForEachElement;

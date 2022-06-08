@@ -27,9 +27,14 @@ import { useSelector } from "react-redux";
 import { EditorNodeProps } from "./editorNode/EditorNode";
 import { FormikError } from "./editTabTypes";
 import { TypedBlockMap } from "@/blocks/registry";
-import { getPipelinePropNames } from "@/pageEditor/utils";
+import {
+  getDocumentPipelinePaths,
+  getPipelinePropNames,
+} from "@/pageEditor/utils";
 import { get } from "lodash";
 import { RunStatus } from "@/pageEditor/tabs/editTab/editorNode/EditorNodeContent";
+import { joinElementName } from "@/components/documentBuilder/utils";
+import { DocumentRenderer } from "@/blocks/renderers/document";
 
 type MapPipelineToNodesParams = {
   pipeline: BlockPipeline;
@@ -85,37 +90,78 @@ function mapPipelineToNodes({
         ? RunStatus.NONE
         : RunStatus.SUCCESS;
 
+    const childNodes =
+      blockConfig.id === DocumentRenderer.BLOCK_ID
+        ? getDocumentPipelinePaths(blockConfig).map((propPath) => {
+            const subPipelineAccessor = joinElementName(
+              String(index),
+              propPath,
+              "__value__"
+            );
+            const subPipelinePath = joinElementName(
+              pipelinePath,
+              subPipelineAccessor
+            );
+            const subPipeline = (get(pipeline, subPipelineAccessor) ??
+              []) as BlockPipeline;
+            const { nodes: subNodes, nodesHaveTraces: subNodesHaveTraces } =
+              mapPipelineToNodes({
+                pipeline: subPipeline,
+                pipelinePath: subPipelinePath,
+                allBlocks,
+                traces,
+                pipelineErrors,
+                errorTraceEntry,
+              });
+            nodesHaveTraces = nodesHaveTraces || subNodesHaveTraces;
+
+            const propName = propPath.split(".").pop();
+            const label = propName === "onClick" ? "button" : "brick";
+            return {
+              label,
+              pipelinePath: subPipelinePath,
+              nodes: subNodes,
+            };
+          })
+        : getPipelinePropNames(blockConfig).map((propName) => {
+            const subPipelineAccessor = [
+              String(index),
+              "config",
+              propName,
+              "__value__",
+            ];
+            const subPipelinePath = joinName(
+              pipelinePath,
+              ...subPipelineAccessor
+            );
+            const subPipeline = get(
+              pipeline,
+              subPipelineAccessor
+            ) as BlockPipeline;
+            const { nodes: subNodes, nodesHaveTraces: subNodesHaveTraces } =
+              mapPipelineToNodes({
+                pipeline: subPipeline,
+                pipelinePath: subPipelinePath,
+                allBlocks,
+                traces,
+                pipelineErrors,
+                errorTraceEntry,
+              });
+            nodesHaveTraces = nodesHaveTraces || subNodesHaveTraces;
+            return {
+              label: propName,
+              pipelinePath: subPipelinePath,
+              nodes: subNodes,
+            };
+          });
+
     const newBlock: EditorNodeProps = {
       nodeId,
       blockId: blockConfig.id,
       title: isNullOrBlank(blockConfig.label) ? block?.name : blockConfig.label,
       icon: <BrickIcon brick={block} size="2x" inheritColor />,
       runStatus,
-      children: getPipelinePropNames(blockConfig).map((propName) => {
-        const subPipelineAccessor = [
-          String(index),
-          "config",
-          propName,
-          "__value__",
-        ];
-        const subPipelinePath = joinName(pipelinePath, ...subPipelineAccessor);
-        const subPipeline = get(pipeline, subPipelineAccessor) as BlockPipeline;
-        const { nodes: subNodes, nodesHaveTraces: subNodesHaveTraces } =
-          mapPipelineToNodes({
-            pipeline: subPipeline,
-            pipelinePath: subPipelinePath,
-            allBlocks,
-            traces,
-            pipelineErrors,
-            errorTraceEntry,
-          });
-        nodesHaveTraces = nodesHaveTraces || subNodesHaveTraces;
-        return {
-          label: propName,
-          pipelinePath: subPipelinePath,
-          nodes: subNodes,
-        };
-      }),
+      children: childNodes,
     };
 
     if (blockConfig.outputKey) {

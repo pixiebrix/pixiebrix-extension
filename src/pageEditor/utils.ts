@@ -23,6 +23,13 @@ import { BlockConfig } from "@/blocks/types";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
+import {
+  DocumentElement,
+  isButtonElement,
+  isPipelineElement,
+} from "@/components/documentBuilder/documentBuilderTypes";
+import { joinElementName } from "@/components/documentBuilder/utils";
+import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 
 export async function getCurrentURL(): Promise<string> {
   if (!browser.devtools) {
@@ -55,18 +62,56 @@ export function getRecipeIdForElement(
   return isExtension(element) ? element._recipe?.id : element.recipe?.id;
 }
 
-export function getPipelinePropNames(block: BlockConfig) {
+export function getPipelinePropNames(block: BlockConfig): string[] {
   switch (block.id) {
-    case ForEach.BLOCK_ID:
+    case ForEach.BLOCK_ID: {
       return ["body"];
+    }
 
-    case IfElse.BLOCK_ID:
+    case ForEachElement.BLOCK_ID: {
+      return ["body"];
+    }
+
+    case IfElse.BLOCK_ID: {
       return ["if", "else"];
+    }
 
-    case TryExcept.BLOCK_ID:
+    case TryExcept.BLOCK_ID: {
       return ["try", "except"];
+    }
 
-    default:
+    default: {
       return [];
+    }
   }
+}
+
+function getElementsPipelinePropNames(
+  parentPath: string,
+  elements: DocumentElement[]
+): string[] {
+  const propNames: string[] = [];
+  for (const [index, element] of Object.entries(elements)) {
+    if (isButtonElement(element)) {
+      propNames.push(joinElementName(parentPath, index, "config", "onClick"));
+    } else if (isPipelineElement(element)) {
+      propNames.push(joinElementName(parentPath, index, "config", "pipeline"));
+    } else if (element.children?.length > 0) {
+      propNames.push(
+        ...getElementsPipelinePropNames(
+          joinElementName(parentPath, index, "children"),
+          element.children
+        )
+      );
+    }
+  }
+
+  return propNames;
+}
+
+export function getDocumentPipelinePaths(block: BlockConfig): string[] {
+  return getElementsPipelinePropNames(
+    "config.body",
+    (block.config.body ?? []) as DocumentElement[]
+  );
 }

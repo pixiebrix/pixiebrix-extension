@@ -20,6 +20,10 @@ import initialize from "@/vendors/initialize";
 import { MessageContext, ResolvedExtension } from "@/core";
 import { $safeFind } from "@/helpers";
 import { EXTENSION_POINT_DATA_ATTR } from "@/common";
+import { JsonObject } from "type-fest";
+import { ensureJsonObject, isObject } from "@/utils";
+import { BusinessError } from "@/errors/businessErrors";
+import selectionController from "@/utils/selectionController";
 
 export function isHost(hostname: string): boolean {
   return (
@@ -235,4 +239,44 @@ export function selectExtensionContext(
     blueprintId: extension._recipe?.id,
     blueprintVersion: extension._recipe?.version,
   };
+}
+
+export function pickEventProperties(nativeEvent: Event): JsonObject {
+  if (nativeEvent instanceof KeyboardEvent) {
+    // Can't use Object.entries because they're on the prototype. Can't use lodash's pick because the type isn't
+    // precise enough (per-picked property) to support the JsonObject return type.
+    const { key, keyCode, metaKey, altKey, shiftKey, ctrlKey } = nativeEvent;
+
+    return {
+      key,
+      keyCode,
+      metaKey,
+      altKey,
+      shiftKey,
+      ctrlKey,
+    };
+  }
+
+  if (nativeEvent instanceof CustomEvent) {
+    const { detail = {} } = nativeEvent;
+
+    if (isObject(detail)) {
+      // Ensure detail is a serialized/a JSON object. The custom trigger can also pick up JS custom event, which could
+      // have real JS data in them (vs. a JsonObject the user has provided via our @pixiebrix/event brick)
+      return ensureJsonObject(detail);
+    }
+
+    throw new BusinessError("Custom event detail is not an object");
+  }
+
+  // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
+  if (nativeEvent.type === "selectionchange") {
+    // https://developer.mozilla.org/en-US/docs/Web/API/Selection
+    return {
+      // Match the behavior for contextMenu and quickBar
+      selectionText: selectionController.get(),
+    };
+  }
+
+  return {};
 }

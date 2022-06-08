@@ -26,6 +26,7 @@ import {
   Metadata,
   RegistryId,
   ResolvedExtension,
+  RunArgs,
   Schema,
   UUID,
 } from "@/core";
@@ -40,6 +41,37 @@ export type ExtensionPointType =
   | "contextMenu"
   | "actionPanel"
   | "quickBar";
+
+/**
+ * Follows the semantics of lodash's debounce: https://lodash.com/docs/4.17.15#debounce
+ */
+export type DebounceOptions = {
+  /**
+   * The number of milliseconds to delay.
+   */
+  waitMillis?: number;
+
+  /**
+   * Specify invoking on the leading edge of the timeout.
+   */
+  leading?: boolean;
+
+  /**
+   *  Specify invoking on the trailing edge of the timeout.
+   */
+  trailing?: boolean;
+};
+
+/**
+ * Custom options for the `custom` trigger
+ * @since 1.6.5
+ */
+export type CustomEventOptions = {
+  /**
+   * The name of the event.
+   */
+  eventName: "string";
+};
 
 export interface ExtensionPointDefinition {
   type: ExtensionPointType;
@@ -191,5 +223,5 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
     console.warn(`Uninstall not implemented for extension point: ${this.id}`);
   }
 
-  abstract run(): Promise<void>;
+  abstract run(args: RunArgs): Promise<void>;
 }
