@@ -23,7 +23,7 @@ import { toExpression } from "@/testUtils/testHelpers";
 import { traversePipeline } from "./editHelpers";
 
 describe("traversePipeline", () => {
-  it("should invoke the callback for the pipeline bricks", () => {
+  test("should invoke the callback for the pipeline bricks", () => {
     const pipeline = pipelineFactory();
     const action = jest.fn();
 
@@ -34,7 +34,7 @@ describe("traversePipeline", () => {
     expect(action).toHaveBeenCalledWith(pipeline[1], 1, "1", "", pipeline);
   });
 
-  it("should invoke the callback for the sub pipeline bricks", () => {
+  test("should invoke the callback for the sub pipeline bricks", () => {
     const subPipeline = pipelineFactory();
     const forEachBrick = blockConfigFactory({
       id: ForEach.BLOCK_ID,
@@ -65,7 +65,7 @@ describe("traversePipeline", () => {
     );
   });
 
-  it("should invoke the callback for the Document sub pipeline bricks", () => {
+  test("should invoke the callback for the Document button pipeline", () => {
     const buttonElement = createNewElement("button");
     const containerElement = createNewElement("container");
     containerElement.children[0].children[0].children.push(buttonElement);
@@ -90,6 +90,34 @@ describe("traversePipeline", () => {
       "0.config.body.0.children.0.children.0.children.0.config.onClick.__value__",
       // @ts-expect-error - onClick is a valid pipeline
       buttonElement.config.onClick.__value__
+    );
+  });
+
+  test("should invoke the callback for the Document brick pipeline", () => {
+    const brickElement = createNewElement("pipeline");
+    const containerElement = createNewElement("container");
+    containerElement.children[0].children[0].children.push(brickElement);
+    const documentBrick = blockConfigFactory({
+      id: DocumentRenderer.BLOCK_ID,
+      config: {
+        body: [containerElement],
+      },
+    });
+    const pipeline = [documentBrick];
+
+    const action = jest.fn();
+
+    traversePipeline(pipeline, "", action);
+    expect(action).toHaveBeenCalledTimes(2); // One Document brick and one brick in the pipeline
+    expect(action).toHaveBeenCalledWith(documentBrick, 0, "0", "", pipeline);
+    expect(action).toHaveBeenCalledWith(
+      // @ts-expect-error - pipeline is a valid pipeline
+      brickElement.config.pipeline.__value__[0],
+      0,
+      "0.config.body.0.children.0.children.0.children.0.config.pipeline.__value__.0",
+      "0.config.body.0.children.0.children.0.children.0.config.pipeline.__value__",
+      // @ts-expect-error - pipeline is a valid pipeline
+      brickElement.config.pipeline.__value__
     );
   });
 });

@@ -142,8 +142,11 @@ function mapPipelineToNodes({
                 errorTraceEntry,
               });
             nodesHaveTraces = nodesHaveTraces || subNodesHaveTraces;
+
+            const propName = propPath.split(".").pop();
+            const label = propName === "onClick" ? "button" : "brick";
             return {
-              label: propPath.split(".").pop(),
+              label,
               pipelinePath: subPipelinePath,
               nodes: subNodes,
             };

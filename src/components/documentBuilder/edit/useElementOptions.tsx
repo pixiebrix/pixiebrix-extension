@@ -25,8 +25,7 @@ import React, { useMemo } from "react";
 import ListOptions from "@/components/documentBuilder/edit/ListOptions";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import getElementEditSchemas from "@/components/documentBuilder/edit/getElementEditSchemas";
-import PipelineOptions from "@/components/documentBuilder/edit/PipelineOptions";
-import ButtonOptions from "@/components/documentBuilder/edit/ButtonOptions";
+import { Col, Row } from "react-bootstrap";
 
 const useElementOptions = (
   element: DocumentElement,
@@ -40,19 +39,13 @@ const useElementOptions = (
       return ListOptionsFields;
     }
 
-    if (isPipelineElement(element)) {
-      const PipelineOptionsFields = () => (
-        <PipelineOptions elementName={elementName} />
+    if (isPipelineElement(element) || isButtonElement(element)) {
+      const DocumentSubPipelineMessage = () => (
+        <Row>
+          <Col>Use the Nodes Tree on the left to edit the nested pipeline.</Col>
+        </Row>
       );
-      return PipelineOptionsFields;
-    }
-
-    if (isButtonElement(element)) {
-      const ButtonOptionsFields = () => (
-        <ButtonOptions elementName={elementName} />
-      );
-
-      return ButtonOptionsFields;
+      return DocumentSubPipelineMessage;
     }
 
     const editSchemas = getElementEditSchemas(elementType, elementName);
