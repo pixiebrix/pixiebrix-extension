@@ -79,7 +79,7 @@ module.exports = {
         node: true,
         jest: true,
       },
-      // Overridden rules: https://github.com/fregante/eslint-config-pixiebrix/blob/main/server.js
+      // Overridden rules: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/server.js
       extends: ["pixiebrix/server"],
     },
   ],
