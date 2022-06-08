@@ -32,6 +32,8 @@ import {
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
+  CustomEventOptions,
+  DebounceOptions,
   ExtensionPoint,
   ExtensionPointConfig,
   ExtensionPointDefinition,
@@ -782,37 +784,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 }
 
 type TriggerDefinitionOptions = Record<string, string>;
-
-/**
- * Follows the semantics of lodash's debounce: https://lodash.com/docs/4.17.15#debounce
- */
-export type DebounceOptions = {
-  /**
-   * The number of milliseconds to delay.
-   */
-  waitMillis?: number;
-
-  /**
-   * Specify invoking on the leading edge of the timeout.
-   */
-  leading?: boolean;
-
-  /**
-   *  Specify invoking on the trailing edge of the timeout.
-   */
-  trailing?: boolean;
-};
-
-/**
- * Custom options for the `custom` trigger
- * @since 1.6.5
- */
-export type CustomEventOptions = {
-  /**
-   * The name of the event.
-   */
-  eventName: "string";
-};
 
 export interface TriggerDefinition extends ExtensionPointDefinition {
   defaultOptions?: TriggerDefinitionOptions;

@@ -38,13 +38,15 @@ import {
 } from "@/extensionPoints/sidebarExtension";
 import {
   AttachMode,
-  CustomEventOptions,
-  DebounceOptions,
   ReportMode,
   TargetMode,
   Trigger as TriggerTrigger,
 } from "@/extensionPoints/triggerExtension";
-import { ExtensionPointType } from "@/extensionPoints/types";
+import {
+  CustomEventOptions,
+  DebounceOptions,
+  ExtensionPointType,
+} from "@/extensionPoints/types";
 import { Except } from "type-fest";
 import { Menus } from "webextension-polyfill";
 import {

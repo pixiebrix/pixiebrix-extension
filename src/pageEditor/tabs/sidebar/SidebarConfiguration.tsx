@@ -25,9 +25,10 @@ import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import { partial } from "lodash";
 import { joinName } from "@/utils";
 import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
-import { DebounceOptions, Trigger } from "@/extensionPoints/sidebarExtension";
+import { Trigger } from "@/extensionPoints/sidebarExtension";
 import { useField, useFormikContext } from "formik";
 import { TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { DebounceOptions } from "@/extensionPoints/types";
 
 const SidebarConfiguration: React.FC<{
   isLocked: boolean;

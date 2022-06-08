@@ -24,7 +24,6 @@ import LocationWidget from "@/pageEditor/fields/LocationWidget";
 import { useField, useFormikContext } from "formik";
 import { TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
-  DebounceOptions,
   getDefaultReportModeForTrigger,
   Trigger,
 } from "@/extensionPoints/triggerExtension";
@@ -34,6 +33,7 @@ import { partial } from "lodash";
 import { joinName } from "@/utils";
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
+import { DebounceOptions } from "@/extensionPoints/types";
 
 function supportsSelector(trigger: Trigger) {
   return !["load", "interval", "selectionchange"].includes(trigger);
