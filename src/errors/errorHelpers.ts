@@ -139,6 +139,7 @@ export function isBusinessError(error: unknown): boolean {
 // - because not all of our errors can be deserialized with the right class:
 //   https://github.com/sindresorhus/serialize-error/issues/72
 const CLIENT_REQUEST_ERROR_NAMES = new Set([
+  "ClientRequestError",
   "RemoteServiceError",
   "ClientNetworkPermissionError",
   "ClientNetworkError",
