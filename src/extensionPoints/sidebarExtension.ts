@@ -55,10 +55,7 @@ import Mustache from "mustache";
 import { uuidv4 } from "@/types/helpers";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { HeadlessModeError } from "@/blocks/errors";
-import {
-  pickEventProperties,
-  selectExtensionContext,
-} from "@/extensionPoints/helpers";
+import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { cloneDeep, debounce } from "lodash";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
@@ -151,11 +148,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
    * @private
    */
   // Can't set in constructor because the constructor doesn't have access to debounceOptions
-  private debouncedRefreshPanelsAndNotify?: ({
-    nativeEvent,
-  }: {
-    nativeEvent: Event | null;
-  }) => Promise<void>;
+  private debouncedRefreshPanelsAndNotify?: () => Promise<void>;
 
   inputSchema: Schema = propertiesToSchema(
     {
@@ -270,17 +263,10 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   /**
    * DO NOT CALL DIRECTLY - call debouncedRefreshPanels
    */
-  private async refreshPanels(
-    // Force parameter to be included to make it explicit which types of triggers pass nativeEvent
-    { nativeEvent }: { nativeEvent: Event | null }
-  ): Promise<void> {
+  private async refreshPanels(): Promise<void> {
     const reader = await this.defaultReader();
 
-    const readerContext = {
-      // The default reader overrides the event property
-      event: nativeEvent ? pickEventProperties(nativeEvent) : null,
-      ...(await reader.read(document)),
-    };
+    const readerContext = await reader.read(document);
 
     const errors: unknown[] = [];
 
@@ -323,12 +309,8 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   /**
    * Shared event handler for DOM event triggers
    */
-  private readonly eventHandler: JQuery.EventHandler<unknown> = async (
-    event
-  ) => {
-    const nativeEvent = event.originalEvent;
-    return this.debouncedRefreshPanelsAndNotify({ nativeEvent });
-  };
+  private readonly eventHandler: JQuery.EventHandler<unknown> = async () =>
+    this.debouncedRefreshPanelsAndNotify();
 
   private attachEventTrigger(eventName: string): void {
     const $document = $(document);
@@ -379,7 +361,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
       this.trigger === "load" ||
       [RunReason.MANUAL, RunReason.INITIAL_LOAD].includes(reason)
     ) {
-      void this.debouncedRefreshPanelsAndNotify({ nativeEvent: null });
+      void this.debouncedRefreshPanelsAndNotify();
     }
 
     if (!this.installedListeners) {
