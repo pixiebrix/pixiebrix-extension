@@ -29,6 +29,7 @@ import cx from "classnames";
 import React from "react";
 import { Button } from "react-bootstrap";
 import { getComponentDefinition } from "@/components/documentBuilder/documentTree";
+import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 
 type PreviewComponentProps = {
   className?: string;
@@ -96,7 +97,7 @@ function getPreviewComponentDefinition(
         ...restPreviewProps
       }) => (
         <div className={cx(className)} {...restPreviewProps}>
-          <h3>Block</h3>
+          <h3>{elementTypeLabels.pipeline}</h3>
           {pipeline.__value__.map(({ id }) => (
             <p key={id}>{id}</p>
           ))}
