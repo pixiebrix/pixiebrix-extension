@@ -84,6 +84,7 @@ export function useNodeAdapter({
       const isRootPipeline = isEmpty(pipelinePath);
       const nodeIsActive = nodeId === activeNodeId;
 
+      nodeProps.isNested = !isRootPipeline;
       nodeProps.active = nodeIsActive;
       // TODO: Handle collapsed state during add/remove/move node actions
       const collapsedKey = join([pipelinePath, nodeIndex], ".");
@@ -143,10 +144,7 @@ export function useNodeAdapter({
               className={cx(styles.pipeLine, { [styles.active]: nodeIsActive })}
             />
           )}
-          <EditorNode
-            {...nodeProps}
-            className={cx({ [styles.subPipelineNode]: !isRootPipeline })}
-          />
+          <EditorNode {...nodeProps} />
           {children?.length > 0 &&
             !collapsed &&
             children.map(
@@ -155,6 +153,7 @@ export function useNodeAdapter({
                   <div
                     className={cx(styles.subPipelineHeader, {
                       [styles.pipelineBottom]: isEmpty(childNodes),
+                      [styles.nestedHeader]: !isRootPipeline,
                     })}
                   >
                     <div className={styles.headerPipeLineTop} />

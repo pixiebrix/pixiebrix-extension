@@ -45,7 +45,7 @@ export type EditorNodeProps = EditorNodeContentProps & {
     nodes: EditorNodeProps[];
   }>;
   collapsed?: boolean;
-  className?: string;
+  isNested?: boolean;
 };
 
 const EditorNode: React.FC<EditorNodeProps> = ({
@@ -58,7 +58,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   onClickMoveDown,
   children,
   collapsed,
-  className,
+  isNested,
   ...contentProps
 }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
@@ -79,8 +79,9 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       as="div"
       onClick={onClick}
       active={active}
-      className={cx(styles.root, "list-group-item-action", className, {
+      className={cx(styles.root, "list-group-item-action", {
         [styles.expanded]: !isEmpty(children) && !collapsed,
+        [styles.nestedNode]: isNested,
       })}
       title={
         contentProps.runStatus === RunStatus.SKIPPED
@@ -95,6 +96,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
             [styles.active]: active,
             [styles.closedHandle]: collapsed,
             [styles.openHandle]: !collapsed,
+            [styles.nested]: isNested,
           })}
         />
       )}

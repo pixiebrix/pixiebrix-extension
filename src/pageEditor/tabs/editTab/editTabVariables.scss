@@ -18,3 +18,6 @@
 $pipeLineOffset: 1.1rem;
 $pipeLineBorderWidth: 1px;
 $defaultNodePaddingLeft: 10px;
+$contentOffset: calc(
+  #{$pipeLineOffset} + #{$pipeLineBorderWidth} + #{$defaultNodePaddingLeft}
+);

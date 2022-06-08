@@ -19,7 +19,6 @@
 
 $headerOffsetX: $pipeLineOffset / 2;
 $headerOffsetY: 0.5rem;
-$contentOffset: calc(#{$pipeLineOffset} * 2 + #{$pipeLineBorderWidth});
 
 .actions {
   height: 0;
@@ -83,6 +82,10 @@ $topPipelineLeft: calc(
   position: relative; // Allow children to position relative to this element
   background: #ebebf1;
   padding: $headerOffsetY 0 0 $headerOffsetX;
+
+  &.nestedHeader {
+    margin-left: $pipeLineOffset;
+  }
 }
 
 .subPipelineLabel {
@@ -120,7 +123,7 @@ $headerPipeLineHeight: 4px;
 
 .subPipelineNode {
   padding-right: 0;
-  padding-left: calc(#{$contentOffset} + #{$defaultNodePaddingLeft});
+  padding-left: $contentOffset;
 }
 
 .pipeLine {
