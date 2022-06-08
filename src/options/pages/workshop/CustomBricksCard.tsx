@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import {
   faBars,
   faBolt,
@@ -30,11 +30,13 @@ import {
 import { Kind } from "@/registry/localRegistry";
 import styles from "./CustomBricksCard.module.scss";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { Card, Table } from "react-bootstrap";
+import { Card } from "react-bootstrap";
+import { Column } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { EnrichedBrick, NavigateProps } from "./workshopTypes";
-import Pagination from "@/components/pagination/Pagination";
+import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
 
+type TableColumn = Column<EnrichedBrick>;
 function inferIcon(kind: Kind, verboseName: string): IconProp {
   switch (kind.toLocaleLowerCase()) {
     case "service": {
@@ -89,64 +91,59 @@ const KindIcon: React.FunctionComponent<{ brick: EnrichedBrick }> = ({
   brick: { kind, verbose_name },
 }) => <FontAwesomeIcon icon={inferIcon(kind, verbose_name)} fixedWidth />;
 
+const columnFactory = (): TableColumn[] => [
+  {
+    Header: "Name",
+    accessor: "name",
+    width: 250,
+    Cell: ({ row, value }) => (
+      <div className="d-flex align-items-center w-100 overflow-hidden">
+        <div className="text-right text-muted px-1">
+          <KindIcon brick={row.original} />
+        </div>
+        <div className="ml-1">
+          <p>{row.original.verbose_name}</p>
+          <div className="mt-1">
+            <code className="p-0" style={{ fontSize: "0.8rem" }}>
+              {value}
+            </code>
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    Header: "Collection",
+    accessor: "collection",
+  },
+  {
+    Header: "Type",
+    accessor: "kind",
+  },
+  {
+    Header: "Version",
+    accessor: "version",
+  },
+];
+
 const CustomBricksCard: React.FunctionComponent<
   NavigateProps & { bricks: EnrichedBrick[]; maxRows?: number }
-> = ({ navigate, bricks, maxRows = 10 }) => {
-  const [page, setPage] = useState(0);
-  const numPages = Math.ceil(bricks.length / maxRows);
-
-  useEffect(() => {
-    setPage(0);
-  }, [bricks, maxRows]);
-
+> = ({ navigate, bricks }) => {
+  const columns = useMemo(() => columnFactory(), []);
   return (
     <Card>
       <Card.Header>Custom Bricks</Card.Header>
-      <Table className={styles.brickTable}>
-        <thead>
-          <tr>
-            <th>&nbsp;</th>
-            <th>Name</th>
-            <th>Collection</th>
-            <th>Type</th>
-            <th>Version</th>
-          </tr>
-        </thead>
-        <tbody>
-          {bricks.slice(page * maxRows, (page + 1) * maxRows).map((brick) => (
-            <tr
-              key={brick.id}
-              onClick={() => {
-                navigate(`/workshop/bricks/${brick.id}`);
-              }}
-            >
-              <td className="text-right text-muted px-1">
-                <KindIcon brick={brick} />
-              </td>
-              <td>
-                <div>{brick.verbose_name}</div>
-                <div className="mt-1">
-                  <code className="p-0" style={{ fontSize: "0.8rem" }}>
-                    {brick.name}
-                  </code>
-                </div>
-              </td>
-              <td>{brick.collection}</td>
-              <td>{brick.kind}</td>
-              <td>{brick.version}</td>
-            </tr>
-          ))}
-        </tbody>
-        {bricks.length >= maxRows && (
-          <tfoot>
-            <tr>
-              <td colSpan={5} className="text-info text-center">
-                <Pagination page={page} setPage={setPage} numPages={numPages} />
-              </td>
-            </tr>
-          </tfoot>
-        )}
-      </Table>
+      <PaginatedTable
+        actions={{}}
+        columns={columns}
+        data={bricks}
+        rowProps={(brick: EnrichedBrick) => ({
+          onClick() {
+            navigate(`/workshop/bricks/${brick.id}`);
+          },
+          className: `${styles.customRow}`,
+        })}
+      />
     </Card>
   );
 };
