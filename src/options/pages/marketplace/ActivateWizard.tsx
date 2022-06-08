@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { RecipeDefinition } from "@/types/definitions";
 import { Button, Card, Form, Nav, Tab } from "react-bootstrap";
 import { truncate } from "lodash";
@@ -32,6 +32,7 @@ import { useLocation } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { uninstallContextMenu } from "@/background/messenger/api";
+import { push } from "connected-react-router";
 import notify from "@/utils/notify";
 import useWizard from "@/options/pages/marketplace/useWizard";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -99,6 +100,7 @@ const ActivateButton: React.FunctionComponent<{
 };
 
 const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const reinstall =
     new URLSearchParams(location.search).get("reinstall") === "1";
@@ -106,7 +108,26 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const [stepKey, setStep] = useState(blueprintSteps[0].key);
   const install = useInstall(blueprint);
 
-  useTitle(`Activate ${truncate(blueprint.metadata.name, { length: 15 })}`);
+  const installedExtensions = useSelector(selectExtensions);
+
+  // Redirect to reinstall page if the user already has the blueprint installed
+  useEffect(() => {
+    if (
+      !reinstall &&
+      installedExtensions.some((x) => x._recipe?.id === blueprint.metadata.id)
+    ) {
+      dispatch(
+        push(
+          `/marketplace/activate/${encodeURIComponent(
+            blueprint.metadata.id
+          )}?reinstall=1`
+        )
+      );
+    }
+  }, [dispatch, reinstall, installedExtensions, blueprint.metadata.id]);
+
+  const action = reinstall ? "Reactivate" : "Activate";
+  useTitle(`${action} ${truncate(blueprint.metadata.name, { length: 15 })}`);
 
   return (
     <Formik initialValues={initialValues} onSubmit={install}>

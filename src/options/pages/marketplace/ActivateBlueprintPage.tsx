@@ -18,7 +18,7 @@
 import Page from "@/layout/Page";
 import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";
 import React, { useMemo } from "react";
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import { RecipeDefinition } from "@/types/definitions";
 import { Card, Col, Row } from "react-bootstrap";
 import Loader from "@/components/Loader";
@@ -31,9 +31,15 @@ import { BlueprintResponse } from "@/types/contract";
 import { pick } from "lodash";
 
 const ActivateBlueprintPage: React.FunctionComponent = () => {
+  const location = useLocation();
+
   const { blueprintId } = useParams<{
     blueprintId: string;
   }>();
+
+  const reinstall =
+    new URLSearchParams(location.search).get("reinstall") === "1";
+
   const {
     data: remoteBlueprint,
     isLoading: fetchingBlueprint,
@@ -80,9 +86,11 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
     return <Loader />;
   }, [recipeDefinition, remoteBlueprint, blueprintId]);
 
+  const action = reinstall ? "Reactivate" : "Activate";
+
   return (
     <Page
-      title="Activate Blueprint"
+      title={`${action} Blueprint`}
       icon={faStoreAlt}
       description="Configure and activate a blueprint from the marketplace"
       isPending={fetchingBlueprint}
