@@ -26,8 +26,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ServiceAuthPair } from "@/core";
-import { useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
 
 function selectedAuths(values: WizardValues): ServiceAuthPair[] {
   return values.services.filter((x) => x.config);
@@ -98,81 +96,62 @@ const ConfigureRow: React.FunctionComponent<{
 
 interface OwnProps {
   blueprint: RecipeDefinition;
-  reinstall: boolean;
 }
 
-const ConfigureBody: React.FunctionComponent<OwnProps> = ({
-  blueprint,
-  reinstall,
-}) => {
-  const extensions = useSelector(selectExtensions);
-
-  const installedExtensions = useMemo(
-    () =>
-      extensions?.filter(
-        (extension) => extension._recipe?.id === blueprint?.metadata.id
-      ),
-    [blueprint, extensions]
-  );
-
-  return (
-    <>
-      <Card.Body className="p-3">
-        <h3 className="pb-1 mb-0">{blueprint.metadata.name}</h3>
-        <code className="p-0 small">{blueprint.metadata.id}</code>
-        <div className="pt-3">
-          <p>
-            {blueprint.metadata.description ?? (
-              <span>
-                <i>No description provided</i>
-              </span>
-            )}
-          </p>
-        </div>
-      </Card.Body>
-
-      <Card.Body className="px-3 py-0">
-        <p className="text-info">
-          <FontAwesomeIcon icon={faInfoCircle} /> Don&apos;t know which bricks
-          to select? Don&apos;t worry! &mdash; you can de-activate bricks at any
-          time on the{" "}
-          <Link to="/blueprints">
-            <u className="text-nowrap">
-              <FontAwesomeIcon icon={faCubes} /> Blueprints page
-            </u>
-          </Link>
+const ConfigureBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => (
+  <>
+    <Card.Body className="p-3">
+      <h3 className="pb-1 mb-0">{blueprint.metadata.name}</h3>
+      <code className="p-0 small">{blueprint.metadata.id}</code>
+      <div className="pt-3">
+        <p>
+          {blueprint.metadata.description ?? (
+            <span>
+              <i>No description provided</i>
+            </span>
+          )}
         </p>
-      </Card.Body>
+      </div>
+    </Card.Body>
 
-      <Table>
-        <thead>
-          <tr>
-            <th colSpan={2}>Selected?</th>
-            <th className="w-100">Name/Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          {blueprint.extensionPoints.map((x, i) => {
-            // Unless user is reinstalling, bricks should be toggled ON by default
-            const shouldBeOn =
-              !reinstall ||
-              installedExtensions?.some(
-                // TODO: maybe need to implement a better way to do this
-                (installedExtension) => x.label === installedExtension.label
-              );
-            return (
-              <ConfigureRow
-                key={i}
-                definition={x}
-                name={`extensions.${i}`}
-                initialValue={shouldBeOn}
-              />
-            );
-          })}
-        </tbody>
-      </Table>
-    </>
-  );
-};
+    <Card.Body className="px-3 py-0">
+      <p className="text-info">
+        <FontAwesomeIcon icon={faInfoCircle} /> Don&apos;t know which bricks to
+        select? Don&apos;t worry! &mdash; you can de-activate bricks at any time
+        on the{" "}
+        <Link to="/blueprints">
+          <u className="text-nowrap">
+            <FontAwesomeIcon icon={faCubes} /> Blueprints page
+          </u>
+        </Link>
+      </p>
+    </Card.Body>
+
+    <Table>
+      <thead>
+        <tr>
+          <th colSpan={2}>Selected?</th>
+          <th className="w-100">Name/Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          // Since 1.6.5, during reactivation all extensions are toggled on by default. This is to account for a
+          // situation where a user upgrades to a new version of a blueprint that has additional required extensions.
+          // In the ability, we will likely remove the ability to toggle extensions altogether
+          // See https://github.com/pixiebrix/pixiebrix-extension/issues/3551 for more information.
+          blueprint.extensionPoints.map((definition, index) => (
+            <ConfigureRow
+              key={index}
+              definition={definition}
+              name={`extensions.${index}`}
+              initialValue={true}
+            />
+          ))
+        }
+      </tbody>
+    </Table>
+  </>
+);
 
 export default ConfigureBody;
