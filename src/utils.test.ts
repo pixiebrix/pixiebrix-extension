@@ -23,6 +23,7 @@ import {
   matchesAnyPattern,
   makeURL,
   getScopeAndId,
+  smartAppendPeriod,
 } from "@/utils";
 import type { RegistryId, SafeString } from "@/core";
 import { BusinessError } from "@/errors/businessErrors";
@@ -228,4 +229,15 @@ describe("getScopeAndId", () => {
     const id = "@foo" as RegistryId;
     expect(getScopeAndId(id)).toStrictEqual(["@foo", undefined]);
   });
+});
+
+test("smartAppendPeriod", () => {
+  expect(smartAppendPeriod("hello")).toBe("hello.");
+  expect(smartAppendPeriod("hello.")).toBe("hello.");
+  expect(smartAppendPeriod("hello (good looking)")).toBe(
+    "hello (good looking.)"
+  );
+  expect(smartAppendPeriod("hello (good looking.)")).toBe(
+    "hello (good looking.)"
+  );
 });

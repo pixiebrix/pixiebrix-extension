@@ -574,3 +574,10 @@ export function getScopeAndId(
   const [scope, ...idParts] = split(value, "/");
   return [scope, idParts.join("/")];
 }
+
+/**
+ * Appends a period to a string as long as it doesn't end with one.
+ * Considers quotes and parens and it always trims the trailing spaces. */
+export function smartAppendPeriod(string: string): string {
+  return string.trimEnd().replace(/\.?(["')\]]+)?$/, ".$1");
+}

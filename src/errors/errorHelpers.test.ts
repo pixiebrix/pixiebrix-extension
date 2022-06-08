@@ -17,6 +17,7 @@
 
 import {
   getErrorMessage,
+  getErrorMessageWithCauses,
   hasSpecificErrorCause,
   IGNORED_ERROR_PATTERNS,
   isErrorObject,
@@ -177,6 +178,66 @@ describe("getErrorMessage", () => {
     expect(getErrorMessage(null)).toBe("Unknown error");
     // eslint-disable-next-line unicorn/no-useless-undefined -- testing value since it comes from variable/expression in the wild
     expect(getErrorMessage(undefined)).toBe("Unknown error");
+  });
+});
+
+describe("getErrorMessageWithCauses", () => {
+  const FIRST_ERROR = "There was an error while fetching the page";
+  const SECOND_ERROR = "You are not connected to the internet";
+  const THIRD_ERROR = "The network request failed";
+  test("handles string", () => {
+    expect(getErrorMessageWithCauses(FIRST_ERROR)).toBe(FIRST_ERROR);
+  });
+
+  test("handles vanilla error", () => {
+    expect(getErrorMessageWithCauses(new Error(FIRST_ERROR))).toBe(FIRST_ERROR);
+  });
+
+  test("handles null/undefined", () => {
+    expect(getErrorMessageWithCauses(null)).toBe("Unknown error");
+    // eslint-disable-next-line unicorn/no-useless-undefined -- testing value since it comes from variable/expression in the wild
+    expect(getErrorMessageWithCauses(undefined)).toBe("Unknown error");
+  });
+
+  test("handles good causes", () => {
+    expect(
+      getErrorMessageWithCauses(
+        new Error(FIRST_ERROR, { cause: new Error(SECOND_ERROR) })
+      )
+    ).toMatchInlineSnapshot(`
+      "There was an error while fetching the page.
+      You are not connected to the internet."
+    `);
+    expect(
+      getErrorMessageWithCauses(
+        new Error(FIRST_ERROR, {
+          cause: new Error(SECOND_ERROR, { cause: new Error(THIRD_ERROR) }),
+        })
+      )
+    ).toMatchInlineSnapshot(`
+      "There was an error while fetching the page.
+      You are not connected to the internet.
+      The network request failed."
+    `);
+  });
+
+  test("handles questionable causes", () => {
+    expect(
+      getErrorMessageWithCauses(new Error(FIRST_ERROR, { cause: null }))
+    ).toBe(FIRST_ERROR);
+    expect(
+      getErrorMessageWithCauses(new Error(FIRST_ERROR, { cause: undefined }))
+    ).toBe(FIRST_ERROR);
+    expect(getErrorMessageWithCauses(new Error(FIRST_ERROR, { cause: "idk" })))
+      .toMatchInlineSnapshot(`
+        "There was an error while fetching the page.
+        idk."
+      `);
+    expect(getErrorMessageWithCauses(new Error(FIRST_ERROR, { cause: 420 })))
+      .toMatchInlineSnapshot(`
+        "There was an error while fetching the page.
+        420."
+      `);
   });
 });
 
