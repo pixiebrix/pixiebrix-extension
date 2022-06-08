@@ -18,7 +18,11 @@
 /**
  * @file This file must be imported as early as possible in each entrypoint, once
  */
-import { isConnectionError } from "@/errors/errorHelpers";
+import {
+  isConnectionError,
+  selectErrorFromEvent,
+  selectErrorFromRejectionEvent,
+} from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 
 function ignoreConnectionErrors(
@@ -37,8 +41,13 @@ function errorListener(errorEvent: ErrorEvent | PromiseRejectionEvent): void {
     }
   }
 
+  const error =
+    errorEvent instanceof PromiseRejectionEvent
+      ? selectErrorFromRejectionEvent(errorEvent)
+      : selectErrorFromEvent(errorEvent);
+
   // The browser already shows uncaught errors in the console
-  reportError(errorEvent, undefined, { logToConsole: false });
+  reportError(error, undefined, { logToConsole: false });
 }
 
 /**

@@ -215,7 +215,7 @@ export function getErrorMessage(
  * Handle ErrorEvents, i.e., generated from window.onerror
  * @param event the error event
  */
-function selectErrorFromEvent(event: ErrorEvent): Error {
+export function selectErrorFromEvent(event: ErrorEvent): Error {
   // https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onerror
   // https://developer.mozilla.org/en-US/docs/Web/API/ErrorEvent
 
@@ -254,7 +254,9 @@ function selectErrorFromEvent(event: ErrorEvent): Error {
  * Handle unhandled promise rejections
  * @param event the promise rejection event
  */
-function selectErrorFromRejectionEvent(event: PromiseRejectionEvent): Error {
+export function selectErrorFromRejectionEvent(
+  event: PromiseRejectionEvent
+): Error {
   // WARNING: don't prefix the error message, e.g., with "Asynchronous error:" because that breaks
   // message-based error filtering via IGNORED_ERROR_PATTERNS
   if (typeof event.reason === "string" || event.reason == null) {
@@ -265,19 +267,11 @@ function selectErrorFromRejectionEvent(event: PromiseRejectionEvent): Error {
 }
 
 /**
- * Finds or creates an Error starting from strings, error event, or real Errors.
+ * Finds or creates an Error starting from strings or real Errors.
  *
  * The result is suitable for passing to Rollbar (which treats Errors and objects differently.)
  */
 export function selectError(originalError: unknown): Error {
-  if (originalError instanceof ErrorEvent) {
-    return selectErrorFromEvent(originalError);
-  }
-
-  if (originalError instanceof PromiseRejectionEvent) {
-    return selectErrorFromRejectionEvent(originalError);
-  }
-
   const error = originalError;
 
   if (error instanceof Error) {
