@@ -326,7 +326,7 @@ function ActualModal<T extends IBrick>({
                   />
                 )}
               </Col>
-              <Col xs={10} className={styles.results}>
+              <Col xs={10}>
                 {isLoadingListings ? (
                   <Loader />
                 ) : (
@@ -335,7 +335,7 @@ function ActualModal<T extends IBrick>({
                       <LazyGrid
                         height={height}
                         width={width}
-                        columnWidth={width / RESULT_COLUMN_COUNT}
+                        columnWidth={(width - 15) / RESULT_COLUMN_COUNT} // 15px for the scroll bar width
                         rowHeight={BRICK_RESULT_FIXED_HEIGHT_PX}
                         columnCount={RESULT_COLUMN_COUNT}
                         rowCount={Math.ceil(
