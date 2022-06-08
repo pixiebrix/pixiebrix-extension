@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import EditorNode, {
   NodeId,
 } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
@@ -70,6 +70,11 @@ export function useNodeAdapter({
       dispatch(actions.setElementActiveNodeId(nodeId));
     },
     [dispatch]
+  );
+
+  const allBlocksAsRelevant = useMemo(
+    () => [...allBlocks.values()].map(({ block }) => block),
+    [allBlocks]
   );
 
   const renderNode = useCallback(
@@ -163,7 +168,7 @@ export function useNodeAdapter({
                       className={cx(styles.actions, styles.topPipelineActions)}
                     >
                       <BrickModal
-                        bricks={relevantBlocksToAdd}
+                        bricks={allBlocksAsRelevant}
                         renderButton={(onClick) => (
                           <TooltipIconButton
                             name={`add-node-${nodeIndex}`}
@@ -246,6 +251,7 @@ export function useNodeAdapter({
       activeNodeId,
       addBlock,
       allBlocks,
+      allBlocksAsRelevant,
       collapsedState,
       isApiAtLeastV2,
       moveBlockDown,
