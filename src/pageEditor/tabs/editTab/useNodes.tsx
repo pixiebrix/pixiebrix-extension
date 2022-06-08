@@ -33,6 +33,7 @@ import {
 } from "@/pageEditor/utils";
 import { get } from "lodash";
 import { joinElementName } from "@/components/documentBuilder/utils";
+import { DocumentRenderer } from "@/blocks/renderers/document";
 
 type MapPipelineToNodesParams = {
   pipeline: BlockPipeline;
@@ -74,53 +75,9 @@ function mapPipelineToNodes({
       };
     }
 
-    const newBlock: EditorNodeProps = {
-      nodeId,
-      blockId: blockConfig.id,
-      title: isNullOrBlank(blockConfig.label) ? block?.name : blockConfig.label,
-      icon: <BrickIcon brick={block} size="2x" inheritColor />,
-      hasError:
-        // If blockPipelineErrors is a string, it means the error is on the pipeline level
-        typeof pipelineErrors !== "string" &&
-        // eslint-disable-next-line security/detect-object-injection
-        Boolean(pipelineErrors?.[index]),
-      hasWarning: errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
-      skippedRun: traceRecord?.skippedRun,
-      ran: traceRecord != null,
-      children: getPipelinePropNames(blockConfig)
-        .map((propName) => {
-          const subPipelineAccessor = [
-            String(index),
-            "config",
-            propName,
-            "__value__",
-          ];
-          const subPipelinePath = joinName(
-            pipelinePath,
-            ...subPipelineAccessor
-          );
-          const subPipeline = get(
-            pipeline,
-            subPipelineAccessor
-          ) as BlockPipeline;
-          const { nodes: subNodes, nodesHaveTraces: subNodesHaveTraces } =
-            mapPipelineToNodes({
-              pipeline: subPipeline,
-              pipelinePath: subPipelinePath,
-              allBlocks,
-              traces,
-              pipelineErrors,
-              errorTraceEntry,
-            });
-          nodesHaveTraces = nodesHaveTraces || subNodesHaveTraces;
-          return {
-            label: propName,
-            pipelinePath: subPipelinePath,
-            nodes: subNodes,
-          };
-        })
-        .concat(
-          getDocumentPipelinePaths(blockConfig).map((propPath) => {
+    const childNodes =
+      blockConfig.id === DocumentRenderer.BLOCK_ID
+        ? getDocumentPipelinePaths(blockConfig).map((propPath) => {
             const subPipelineAccessor = joinElementName(
               String(index),
               propPath,
@@ -151,7 +108,52 @@ function mapPipelineToNodes({
               nodes: subNodes,
             };
           })
-        ),
+        : getPipelinePropNames(blockConfig).map((propName) => {
+            const subPipelineAccessor = [
+              String(index),
+              "config",
+              propName,
+              "__value__",
+            ];
+            const subPipelinePath = joinName(
+              pipelinePath,
+              ...subPipelineAccessor
+            );
+            const subPipeline = get(
+              pipeline,
+              subPipelineAccessor
+            ) as BlockPipeline;
+            const { nodes: subNodes, nodesHaveTraces: subNodesHaveTraces } =
+              mapPipelineToNodes({
+                pipeline: subPipeline,
+                pipelinePath: subPipelinePath,
+                allBlocks,
+                traces,
+                pipelineErrors,
+                errorTraceEntry,
+              });
+            nodesHaveTraces = nodesHaveTraces || subNodesHaveTraces;
+            return {
+              label: propName,
+              pipelinePath: subPipelinePath,
+              nodes: subNodes,
+            };
+          });
+
+    const newBlock: EditorNodeProps = {
+      nodeId,
+      blockId: blockConfig.id,
+      title: isNullOrBlank(blockConfig.label) ? block?.name : blockConfig.label,
+      icon: <BrickIcon brick={block} size="2x" inheritColor />,
+      hasError:
+        // If blockPipelineErrors is a string, it means the error is on the pipeline level
+        typeof pipelineErrors !== "string" &&
+        // eslint-disable-next-line security/detect-object-injection
+        Boolean(pipelineErrors?.[index]),
+      hasWarning: errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
+      skippedRun: traceRecord?.skippedRun,
+      ran: traceRecord != null,
+      children: childNodes,
     };
 
     if (blockConfig.outputKey) {
@@ -160,8 +162,6 @@ function mapPipelineToNodes({
 
     return newBlock;
   });
-
-  console.log("nodes", nodes);
 
   return {
     nodes,
