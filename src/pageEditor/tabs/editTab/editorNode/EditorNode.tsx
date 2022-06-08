@@ -64,10 +64,6 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   const nodeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log("render EditorNode", { blockId, canMoveUp, canMoveDown });
-  }, [blockId, canMoveDown, canMoveUp]);
-
-  useEffect(() => {
     if (active) {
       nodeRef.current?.focus();
     }
