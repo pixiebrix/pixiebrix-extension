@@ -26,7 +26,7 @@ import {
   ListGroup,
   Row,
 } from "react-bootstrap";
-import { IBlock, IService } from "@/core";
+import { IBlock, IExtensionPoint, IService } from "@/core";
 import Fuse from "fuse.js";
 import { sortBy } from "lodash";
 import Loader from "@/components/Loader";
@@ -77,7 +77,7 @@ const BrickReference: React.FunctionComponent<{
     return null;
   }, [selected]);
 
-  const fuse: Fuse<IBlock | IService> = useMemo(
+  const fuse: Fuse<IBlock | IService | IExtensionPoint> = useMemo(
     () =>
       new Fuse(sortedBricks, {
         // Prefer name, then id

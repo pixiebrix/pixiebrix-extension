@@ -43,6 +43,8 @@ import {
   Metadata,
   ReaderOutput,
   ResolvedExtension,
+  RunArgs,
+  RunReason,
   Schema,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
@@ -373,7 +375,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       this.menus.delete(uuid);
       // Re-install the menus (will wait for the menu selector to re-appear)
       await this.installMenus();
-      await this.run();
+      await this.run({ reason: RunReason.MUTATION });
     }
   }
 
@@ -623,7 +625,10 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     if (dependencies.length > 0) {
       const rerun = once(() => {
         console.debug("Dependency changed, re-running extension");
-        void this.run([extension.id]);
+        void this.run({
+          reason: RunReason.DEPENDENCY_CHANGED,
+          extensionIds: [extension.id],
+        });
       });
 
       const observer = new MutationObserver(rerun);
@@ -675,7 +680,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
   }
 
-  async run(extensionIds?: string[]): Promise<void> {
+  async run({ extensionIds = null }: RunArgs): Promise<void> {
     if (this.menus.size === 0 || this.extensions.length === 0) {
       return;
     }
