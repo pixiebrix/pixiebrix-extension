@@ -18,6 +18,7 @@
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
+import { PipelineExpression } from "@/runtime/mapArgs";
 import { blockConfigFactory, pipelineFactory } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
 import { traversePipeline } from "./editHelpers";
@@ -67,6 +68,8 @@ describe("traversePipeline", () => {
 
   test("should invoke the callback for the Document button pipeline", () => {
     const buttonElement = createNewElement("button");
+    const subPipeline = buttonElement.config.onClick as PipelineExpression;
+    subPipeline.__value__.push(blockConfigFactory());
     const containerElement = createNewElement("container");
     containerElement.children[0].children[0].children.push(buttonElement);
     const documentBrick = blockConfigFactory({
@@ -83,18 +86,18 @@ describe("traversePipeline", () => {
     expect(action).toHaveBeenCalledTimes(2); // One Document brick and one brick in the pipeline
     expect(action).toHaveBeenCalledWith(documentBrick, 0, "0", "", pipeline);
     expect(action).toHaveBeenCalledWith(
-      // @ts-expect-error - onClick is a valid pipeline
-      buttonElement.config.onClick.__value__[0],
+      subPipeline.__value__[0],
       0,
       "0.config.body.0.children.0.children.0.children.0.config.onClick.__value__.0",
       "0.config.body.0.children.0.children.0.children.0.config.onClick.__value__",
-      // @ts-expect-error - onClick is a valid pipeline
-      buttonElement.config.onClick.__value__
+      subPipeline.__value__
     );
   });
 
   test("should invoke the callback for the Document brick pipeline", () => {
     const brickElement = createNewElement("pipeline");
+    const subPipeline = brickElement.config.pipeline as PipelineExpression;
+    subPipeline.__value__.push(blockConfigFactory());
     const containerElement = createNewElement("container");
     containerElement.children[0].children[0].children.push(brickElement);
     const documentBrick = blockConfigFactory({
@@ -111,13 +114,11 @@ describe("traversePipeline", () => {
     expect(action).toHaveBeenCalledTimes(2); // One Document brick and one brick in the pipeline
     expect(action).toHaveBeenCalledWith(documentBrick, 0, "0", "", pipeline);
     expect(action).toHaveBeenCalledWith(
-      // @ts-expect-error - pipeline is a valid pipeline
-      brickElement.config.pipeline.__value__[0],
+      subPipeline.__value__[0],
       0,
       "0.config.body.0.children.0.children.0.children.0.config.pipeline.__value__.0",
       "0.config.body.0.children.0.children.0.children.0.config.pipeline.__value__",
-      // @ts-expect-error - pipeline is a valid pipeline
-      brickElement.config.pipeline.__value__
+      subPipeline.__value__
     );
   });
 });
