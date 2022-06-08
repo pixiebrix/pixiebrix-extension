@@ -25,6 +25,7 @@ import {
   selectNetworkErrorMessage,
   selectServerErrorMessage,
 } from "@/errors/networkErrorHelpers";
+import { errorTabDoesntExist, errorTargetClosedEarly } from "webext-messenger";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
@@ -57,6 +58,8 @@ export const IGNORED_ERROR_PATTERNS = [
   /No frame with id \d+ in tab \d+/,
   /^No tab with id/,
   "The tab was closed.",
+  errorTabDoesntExist,
+  errorTargetClosedEarly,
   ...CONNECTION_ERROR_MESSAGES,
 ];
 
