@@ -92,7 +92,7 @@ const Editor: React.FunctionComponent = () => {
 
   useEscapeHandler(cancelInsert, inserting != null);
 
-  const { availableDynamicIds, unavailableCount } = useInstallState(
+  const { availableDynamicIds, unavailableCount, loading } = useInstallState(
     installed,
     elements
   );
@@ -146,6 +146,9 @@ const Editor: React.FunctionComponent = () => {
       return <EditorPane />;
     } else if (activeRecipeId) {
       return <RecipePane />;
+    } else if (connecting || loading) {
+      // Don't show anything while it's loading
+      return null;
     } else if (
       availableDynamicIds?.size ||
       installed.length > unavailableCount
@@ -157,6 +160,7 @@ const Editor: React.FunctionComponent = () => {
       return <WelcomePane />;
     }
   }, [
+    loading,
     tabState.hasPermissions,
     connecting,
     editorError,
