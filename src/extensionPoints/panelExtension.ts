@@ -438,7 +438,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     }
   }
 
-  async run(extensionIds?: string[]): Promise<void> {
+  async run(): Promise<void> {
     if (!this.$container || this.extensions.length === 0) {
       return;
     }
@@ -453,10 +453,6 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     const errors: unknown[] = [];
 
     for (const extension of this.extensions) {
-      if (extensionIds != null && !extensionIds.includes(extension.id)) {
-        continue;
-      }
-
       try {
         // Running in loop to ensure consistent placement. OK because `installBody` in runExtension is runs asynchronously
         // eslint-disable-next-line no-await-in-loop

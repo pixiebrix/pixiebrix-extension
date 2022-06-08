@@ -613,6 +613,56 @@ export type ResolvedExtension<T extends Config = EmptyConfig> = Except<
   _resolvedExtensionBrand: never;
 };
 
+/**
+ * The extension run reason.
+ * @since 1.6.5
+ */
+export enum RunReason {
+  // Skip 0 to avoid truthy/falsy conversion issues
+
+  /**
+   * The initial load/navigation of the page.
+   */
+  INITIAL_LOAD = 1,
+  /**
+   * The SPA navigated
+   */
+  NAVIGATE = 2,
+  /**
+   * A manual run request. One of:
+   * - Page Editor updated the extension
+   * - The user toggled the sidebar (sidebar extensions only)
+   * - A brick issued a reactivation event
+   * - PixieBrix issues a re-activate (e.g., on extension install/uninstall)
+   */
+  MANUAL = 3,
+  /**
+   * Experimental: a declared dependency of the extension point changed.
+   *
+   * See MenuItemExtensionPoint
+   */
+  DEPENDENCY_CHANGED = 4,
+  /**
+   * The SPA mutated without navigating
+   */
+  MUTATION = 5,
+}
+
+/**
+ * Arguments for running an IExtensionPoint
+ * @see IExtensionPoint.run
+ */
+export type RunArgs = {
+  /**
+   * The reason for running the extension point.
+   */
+  reason: RunReason;
+  /**
+   * If provided, only run the specified extensions.
+   */
+  extensionIds?: UUID[];
+};
+
 export interface IExtensionPoint extends Metadata {
   kind: string;
 
@@ -657,7 +707,7 @@ export interface IExtensionPoint extends Metadata {
   /**
    * Run the installed extensions for extension point.
    */
-  run(): Promise<void>;
+  run(args: RunArgs): Promise<void>;
 
   /**
    * Returns any blocks configured in extension.

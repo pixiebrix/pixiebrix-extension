@@ -26,6 +26,7 @@ import {
   Metadata,
   RegistryId,
   ResolvedExtension,
+  RunArgs,
   Schema,
   UUID,
 } from "@/core";
@@ -191,5 +192,5 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
     console.warn(`Uninstall not implemented for extension point: ${this.id}`);
   }
 
-  abstract run(): Promise<void>;
+  abstract run(args: RunArgs): Promise<void>;
 }

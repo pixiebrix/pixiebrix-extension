@@ -21,13 +21,13 @@ import {
 } from "@/runtime/reducePipeline";
 import {
   IBlock,
-  ResolvedExtension,
   IExtensionPoint,
+  Logger,
+  Metadata,
   ReaderOutput,
   ReaderRoot,
+  ResolvedExtension,
   Schema,
-  Metadata,
-  Logger,
   UUID,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
@@ -43,6 +43,7 @@ import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
 import {
   awaitElementOnce,
+  pickEventProperties,
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import notify from "@/utils/notify";
@@ -52,17 +53,14 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
-import { ensureJsonObject, isObject, sleep } from "@/utils";
+import { sleep } from "@/utils";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import pluralize from "@/utils/pluralize";
-import { JsonObject } from "type-fest";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { BusinessError } from "@/errors/businessErrors";
-import selectionController, {
-  guessSelectedElement,
-} from "@/utils/selectionController";
+import { guessSelectedElement } from "@/utils/selectionController";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -190,46 +188,6 @@ async function interval({
   }
 
   console.debug("interval:completed");
-}
-
-function pickEventProperties(nativeEvent: Event): JsonObject {
-  if (nativeEvent instanceof KeyboardEvent) {
-    // Can't use Object.entries because they're on the prototype. Can't use lodash's pick because the type isn't
-    // precise enough (per-picked property) to support the JsonObject return type.
-    const { key, keyCode, metaKey, altKey, shiftKey, ctrlKey } = nativeEvent;
-
-    return {
-      key,
-      keyCode,
-      metaKey,
-      altKey,
-      shiftKey,
-      ctrlKey,
-    };
-  }
-
-  if (nativeEvent instanceof CustomEvent) {
-    const { detail = {} } = nativeEvent;
-
-    if (isObject(detail)) {
-      // Ensure detail is a serialized/a JSON object. The custom trigger can also pick up JS custom event, which could
-      // have real JS data in them (vs. a JsonObject the user has provided via our @pixiebrix/event brick)
-      return ensureJsonObject(detail);
-    }
-
-    throw new BusinessError("Custom event detail is not an object");
-  }
-
-  // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
-  if (nativeEvent.type === "selectionchange") {
-    // https://developer.mozilla.org/en-US/docs/Web/API/Selection
-    return {
-      // Match the behavior for contextMenu and quickBar
-      selectionText: selectionController.get(),
-    };
-  }
-
-  return {};
 }
 
 export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig> {
