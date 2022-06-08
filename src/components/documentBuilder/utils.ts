@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { isEmpty } from "lodash";
+
 export function joinElementName(...nameParts: Array<string | number>): string {
   // Don't use lodash.compact since it treats 0 as falsy
-  return nameParts.filter((x) => x != null).join(".");
+  return nameParts.filter((x) => !isEmpty(x)).join(".");
 }

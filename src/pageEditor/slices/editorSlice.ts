@@ -629,6 +629,14 @@ export const editorSlice = createSlice({
       const pipeline = isEmpty(pipelinePath)
         ? element.extension.blockPipeline
         : get(element.extension.blockPipeline, pipelinePath);
+
+      console.log("addNode", {
+        block,
+        pipelinePath,
+        pipelineIndex,
+        pipeline,
+      });
+
       pipeline.splice(pipelineIndex, 0, block);
       syncElementNodeUIStates(state, element);
       setActiveNodeId(state, block.instanceId);

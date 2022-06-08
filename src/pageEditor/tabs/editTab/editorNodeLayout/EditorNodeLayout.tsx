@@ -74,8 +74,9 @@ const EditorNodeLayout: React.FC<{
 }) => {
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
   const pipelineMap = useSelector(selectPipelineMap);
+  const isRootPipeline = isEmpty(pipelinePath);
 
-  const canMoveAnything = nodes.length > 2;
+  const canMoveAnything = isRootPipeline && nodes.length > 2;
   const finalIndex = nodes.length - 1;
 
   const lastBlockPipelineId = nodes[nodes.length - 1]?.blockId;
@@ -83,7 +84,6 @@ const EditorNodeLayout: React.FC<{
     ? allBlocks.get(lastBlockPipelineId)
     : undefined;
   const showAppend = !lastBlock?.block || lastBlock.type !== "renderer";
-  const isRootPipeline = isEmpty(pipelinePath);
 
   return (
     <ListGroup variant="flush">
@@ -128,13 +128,12 @@ const EditorNodeLayout: React.FC<{
               />
               {childNodes?.length > 0 &&
                 childNodes.map(
-                  ({
-                    label,
-                    pipelinePath: subPipelinePath,
-                    nodes: childNodes,
-                  }) => (
+                  (
+                    { label, pipelinePath: subPipelinePath, nodes: childNodes },
+                    index
+                  ) => (
                     <ListGroup.Item
-                      key={label}
+                      key={`${subPipelinePath}-${index}`}
                       as="div"
                       className={styles.subPipelineContainer}
                     >
@@ -142,30 +141,32 @@ const EditorNodeLayout: React.FC<{
                         {label}
                       </ListGroup.Item>
                       <div className={styles.actions}>
-                        {showAddBlock && (
-                          <BrickModal
-                            bricks={relevantBlocksToAdd}
-                            renderButton={(onClick) => (
-                              <TooltipIconButton
-                                name={`add-node-${nodeIndex}`}
-                                icon={faPlusCircle}
-                                onClick={onClick}
-                                tooltipText="Add a brick"
-                              />
-                            )}
-                            selectCaption={addBrickCaption}
-                            onSelect={(block) => {
-                              addBlock(block, subPipelinePath, 0);
-                            }}
-                          />
-                        )}
+                        <BrickModal
+                          bricks={[...allBlocks.values()].map(
+                            ({ block }) => block
+                          )}
+                          renderButton={(onClick) => (
+                            <TooltipIconButton
+                              name={`add-node-${nodeIndex}`}
+                              icon={faPlusCircle}
+                              onClick={onClick}
+                              tooltipText="Add a brick"
+                            />
+                          )}
+                          selectCaption={addBrickCaption}
+                          onSelect={(block) => {
+                            addBlock(block, subPipelinePath, 0);
+                          }}
+                        />
                       </div>
                       <EditorNodeLayout
                         nodes={childNodes}
                         allBlocks={allBlocks}
                         activeNodeId={activeNodeId}
                         pipelinePath={subPipelinePath}
-                        relevantBlocksToAdd={relevantBlocksToAdd}
+                        relevantBlocksToAdd={[...allBlocks.values()].map(
+                          ({ block }) => block
+                        )}
                         selectBlock={selectBlock}
                         addBlock={addBlock}
                         moveBlockUp={null}

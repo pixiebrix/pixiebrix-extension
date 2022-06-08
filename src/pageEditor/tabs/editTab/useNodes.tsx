@@ -143,7 +143,7 @@ function mapPipelineToNodes({
               });
             nodesHaveTraces = nodesHaveTraces || subNodesHaveTraces;
             return {
-              label: propPath,
+              label: propPath.split(".").pop(),
               pipelinePath: subPipelinePath,
               nodes: subNodes,
             };
@@ -157,6 +157,8 @@ function mapPipelineToNodes({
 
     return newBlock;
   });
+
+  console.log("nodes", nodes);
 
   return {
     nodes,
