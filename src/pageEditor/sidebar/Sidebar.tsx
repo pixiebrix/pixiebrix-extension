@@ -65,7 +65,7 @@ import {
   selectIsAddToRecipeModalVisible,
 } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
-import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useGetRecipesQuery } from "@/services/api";
 import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
