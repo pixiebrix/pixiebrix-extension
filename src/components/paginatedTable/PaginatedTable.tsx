@@ -240,7 +240,11 @@ function PaginatedTable<
             prepareRow(row);
             return (
               // eslint-disable-next-line react/jsx-key -- handled by getRowProps
-              <tr {...row.getRowProps(rowProps(row.original) ?? undefined)}>
+              <tr
+                {...row.getRowProps(
+                  rowProps ? rowProps(row.original) : undefined
+                )}
+              >
                 {row.cells.map((cell) => (
                   // eslint-disable-next-line react/jsx-key -- handled by getCellProps?
                   <td {...cell.getCellProps()} className={styles.td}>
