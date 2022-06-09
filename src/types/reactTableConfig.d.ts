@@ -31,6 +31,9 @@ import {
   UseFiltersInstanceProps,
   UseFiltersOptions,
   UseFiltersState,
+  UsePaginationInstanceProps,
+  UseResizeColumnsColumnProps,
+  UsePaginationState,
 } from "react-table";
 
 type ActionOptions<D extends object> = Partial<{
@@ -63,12 +66,14 @@ declare module "react-table" {
       UseFiltersInstanceProps<D>,
       UseGroupByInstanceProps<D>,
       UseGlobalFiltersInstanceProps<D>,
+      UsePaginationInstanceProps<D>,
       UseSortByInstanceProps<D> {}
 
   export interface TableState<D extends object = {}>
     extends UseExpandedState<D>,
       UseFiltersState<D>,
       UseGlobalFiltersState<D>,
+      UsePaginationState<D>,
       UseGroupByState<D>,
       UseSortByState<D> {}
 
@@ -82,6 +87,7 @@ declare module "react-table" {
   export interface ColumnInstance<D extends object = {}>
     extends UseFiltersColumnProps<D>,
       UseGroupByColumnProps<D>,
+      UseResizeColumnsColumnProps<D>,
       UseSortByColumnProps<D> {}
 
   export interface Cell<D extends object = {}, V = any>
@@ -92,4 +98,7 @@ declare module "react-table" {
     extends UseExpandedRowProps<D>,
       UseRowStateRowProps<D>,
       UseGroupByRowProps<D> {}
+  export interface TableCommonProps {
+    onClick: (...args: unknown[]) => void;
+  }
 }
