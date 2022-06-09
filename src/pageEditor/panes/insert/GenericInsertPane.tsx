@@ -37,6 +37,7 @@ import {
 } from "@/contentScript/messenger/api";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { getExampleBlockPipeline } from "@/pageEditor/exampleExtensionConfig";
+import useFlags from "@/hooks/useFlags";
 
 const { addElement } = editorSlice.actions;
 
@@ -44,7 +45,9 @@ const GenericInsertPane: React.FunctionComponent<{
   cancel: () => void;
   config: ElementConfig;
 }> = ({ cancel, config }) => {
+  const { flagOn } = useFlags();
   const dispatch = useDispatch();
+
   const start = useCallback(
     async (state: FormState) => {
       try {
@@ -128,20 +131,22 @@ const GenericInsertPane: React.FunctionComponent<{
           <FontAwesomeIcon icon={faPlus} /> Create new {config.label}
         </Button>
 
-        <BrickModal
-          bricks={extensionPoints ?? []}
-          renderButton={(onClick) => (
-            <Button
-              variant="info"
-              onClick={onClick}
-              disabled={!extensionPoints?.length}
-              className={styles.searchButton}
-            >
-              <FontAwesomeIcon icon={faSearch} /> Search Marketplace
-            </Button>
-          )}
-          onSelect={async (block) => addExisting(block)}
-        />
+        {flagOn("page-editor-extension-point-marketplace") && (
+          <BrickModal
+            bricks={extensionPoints ?? []}
+            renderButton={(onClick) => (
+              <Button
+                variant="info"
+                onClick={onClick}
+                disabled={!extensionPoints?.length}
+                className={styles.searchButton}
+              >
+                <FontAwesomeIcon icon={faSearch} /> Search Marketplace
+              </Button>
+            )}
+            onSelect={async (block) => addExisting(block)}
+          />
+        )}
       </Row>
       <Row className={styles.cancelRow}>
         <Button variant="danger" className="m-3" onClick={cancel}>
