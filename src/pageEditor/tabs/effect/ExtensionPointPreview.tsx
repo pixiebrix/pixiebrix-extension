@@ -168,6 +168,7 @@ const ExtensionPointPreview: React.FunctionComponent<{
         searchable
         copyable
         tabKey={DataPanelTabKey.Preview}
+        label="Output Preview"
       />
     </div>
   );
