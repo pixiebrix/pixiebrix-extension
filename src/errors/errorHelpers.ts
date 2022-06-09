@@ -226,6 +226,9 @@ export function getErrorMessageWithCauses(
   return getErrorMessage(error, defaultMessage);
 }
 
+/***
+ * Return chain of error causes (including the top-level error)
+ */
 export function getErrorCauseList(error: unknown): unknown[] {
   const errors = [];
 

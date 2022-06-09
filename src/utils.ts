@@ -576,10 +576,10 @@ export function getScopeAndId(
 }
 
 const punctuation = [...".,;:?!"];
-const wrappers = ["'", '"'];
+
 /**
  * Appends a period to a string as long as it doesn't end with one.
- * Considers quotes and parens and it always trims the trailing spaces.
+ * Considers quotes and parentheses and it always trims the trailing spaces.
  */
 export function smartAppendPeriod(string: string): string {
   const trimmed = string.trimEnd();
