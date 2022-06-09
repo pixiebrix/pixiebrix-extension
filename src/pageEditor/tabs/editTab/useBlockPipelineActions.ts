@@ -171,6 +171,7 @@ function useBlockPipelineActions(
       dispatch(
         actions.addNode({ block: blockToPast, pipelinePath, pipelineIndex })
       );
+      dispatch(actions.clearCopiedBlockConfig());
     };
   }, [copiedBlock, dispatch]);
 
