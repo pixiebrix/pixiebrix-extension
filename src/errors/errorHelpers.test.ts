@@ -183,8 +183,8 @@ describe("getErrorMessage", () => {
 
 describe("getErrorMessageWithCauses", () => {
   const FIRST_ERROR = "There was an error while fetching the page";
-  const SECOND_ERROR = "You are not connected to the internet";
-  const THIRD_ERROR = "The network request failed";
+  const SECOND_ERROR = "Maybe you are not connected to the internet?";
+  const THIRD_ERROR = "The network request failed (NO_NETWORK)";
   test("handles string", () => {
     expect(getErrorMessageWithCauses(FIRST_ERROR)).toBe(FIRST_ERROR);
   });
@@ -206,7 +206,7 @@ describe("getErrorMessageWithCauses", () => {
       )
     ).toMatchInlineSnapshot(`
       "There was an error while fetching the page.
-      You are not connected to the internet."
+      Maybe you are not connected to the internet?"
     `);
     expect(
       getErrorMessageWithCauses(
@@ -216,8 +216,8 @@ describe("getErrorMessageWithCauses", () => {
       )
     ).toMatchInlineSnapshot(`
       "There was an error while fetching the page.
-      You are not connected to the internet.
-      The network request failed."
+      Maybe you are not connected to the internet?
+      The network request failed (NO_NETWORK)."
     `);
   });
 
