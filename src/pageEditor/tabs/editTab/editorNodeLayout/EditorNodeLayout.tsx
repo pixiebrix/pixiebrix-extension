@@ -260,7 +260,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             key={`${nodeName}-add`}
             nodeName={nodeName}
             onClickPaste={() => {
-              pasteBlock(pipelinePath, index);
+              pasteBlock(pipelinePath, index + 1);
             }}
           />
         );
