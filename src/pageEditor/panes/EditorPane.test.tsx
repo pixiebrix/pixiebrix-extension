@@ -38,25 +38,25 @@ beforeAll(() => {
   registerDefaultWidgets();
 });
 
+let formState: FormState;
+beforeEach(async () => {
+  blockRegistry.clear();
+  blockRegistry.register(echoBlock, teapotBlock, jqBlock);
+  formState = formStateFactory(undefined, [
+    blockConfigFactory({
+      id: echoBlock.id,
+      config: defaultBlockConfig(echoBlock.inputSchema),
+    }),
+    blockConfigFactory({
+      id: teapotBlock.id,
+      config: defaultBlockConfig(teapotBlock.inputSchema),
+    }),
+  ]);
+
+  await blockRegistry.allTyped();
+});
+
 describe("sanity check", () => {
-  let formState: FormState;
-  beforeEach(async () => {
-    blockRegistry.clear();
-    blockRegistry.register(echoBlock, teapotBlock, jqBlock);
-    formState = formStateFactory(undefined, [
-      blockConfigFactory({
-        id: echoBlock.id,
-        config: defaultBlockConfig(echoBlock.inputSchema),
-      }),
-      blockConfigFactory({
-        id: teapotBlock.id,
-        config: defaultBlockConfig(teapotBlock.inputSchema),
-      }),
-    ]);
-
-    await blockRegistry.allTyped();
-  });
-
   test("it renders first selected node", async () => {
     const { instanceId } = formState.extension.blockPipeline[0];
     const rendered = render(<EditorPane />, {
@@ -71,8 +71,10 @@ describe("sanity check", () => {
 
     expect(rendered.asFragment()).toMatchSnapshot();
   });
+});
 
-  test("can add a node", async () => {
+describe("can add a node", () => {
+  test("to root pipeline", async () => {
     const rendered = render(<EditorPane />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addElement(formState));
@@ -86,6 +88,7 @@ describe("sanity check", () => {
     const addButtons = screen.getAllByTestId("icon-button-add-node", {
       exact: false,
     });
+    screen.debug(addButtons);
     const last = addButtons[addButtons.length - 1];
     await userEvent.click(last);
 
@@ -97,7 +100,39 @@ describe("sanity check", () => {
     );
 
     // Selecting the last node
-    const newNode = rendered.getAllByTestId("editor-node")[3];
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(4);
+    const newNode = nodes[3];
+    expect(newNode).toBeInTheDocument();
+    expect(newNode).toHaveClass("active");
+    expect(newNode).toHaveTextContent(/jq - json processor/i);
+  });
+
+  test("to an empty extension", async () => {
+    const element = formStateFactory(undefined, []);
+    const rendered = render(<EditorPane />, {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addElement(element));
+        dispatch(editorActions.selectElement(element.uuid));
+      },
+    });
+
+    await waitForEffect();
+
+    const addButton = screen.getByTestId("icon-button-add-node-foundation");
+    await userEvent.click(addButton);
+
+    // Add the first (and the only) available block
+    await userEvent.click(
+      rendered.getByRole("button", {
+        name: /add/i,
+      })
+    );
+
+    // Selecting the last node
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(2);
+    const newNode = nodes[1];
     expect(newNode).toBeInTheDocument();
     expect(newNode).toHaveClass("active");
     expect(newNode).toHaveTextContent(/jq - json processor/i);
