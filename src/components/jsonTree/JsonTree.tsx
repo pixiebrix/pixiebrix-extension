@@ -153,7 +153,7 @@ const CopyDataButton: React.FunctionComponent<{ data: unknown }> = ({
     aria-label="copy data"
     href="#"
     onClick={(event) => {
-      copy(safeJsonStringify(data));
+      copy(safeJsonStringify(data, null, 2));
       event.preventDefault();
       event.stopPropagation();
       notify.info("Copied data to the clipboard");
@@ -164,7 +164,7 @@ const CopyDataButton: React.FunctionComponent<{ data: unknown }> = ({
 );
 
 /**
- * Internally a memoised component is used, be mindful about the reference equality of the props
+ * Internally a memoized component is used, be mindful about the reference equality of the props
  */
 const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   copyable = false,
