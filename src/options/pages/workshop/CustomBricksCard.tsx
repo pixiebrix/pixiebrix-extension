@@ -30,11 +30,11 @@ import {
 import { Kind } from "@/registry/localRegistry";
 import styles from "./CustomBricksCard.module.scss";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { Card } from "react-bootstrap";
 import { Column } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { EnrichedBrick, NavigateProps } from "./workshopTypes";
 import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
+import AsyncCard from "@/components/asyncCard/AsyncCard";
 
 type TableColumn = Column<EnrichedBrick>;
 function inferIcon(kind: Kind, verboseName: string): IconProp {
@@ -127,24 +127,31 @@ const columnFactory = (): TableColumn[] => [
 ];
 
 const CustomBricksCard: React.FunctionComponent<
-  NavigateProps & { bricks: EnrichedBrick[]; maxRows?: number }
-> = ({ navigate, bricks }) => {
+  NavigateProps & {
+    bricks: EnrichedBrick[];
+    maxRows?: number;
+    isFetching: boolean;
+    error: unknown;
+  }
+> = ({ navigate, bricks, isFetching, error }) => {
   const columns = useMemo(() => columnFactory(), []);
   return (
-    <Card>
-      <Card.Header>Custom Bricks</Card.Header>
-      <PaginatedTable
-        actions={{}}
-        columns={columns}
-        data={bricks}
-        rowProps={(brick: EnrichedBrick) => ({
-          onClick() {
-            navigate(`/workshop/bricks/${brick.id}`);
-          },
-          className: `${styles.customRow}`,
-        })}
-      />
-    </Card>
+    <AsyncCard header="Custom Bricks" isPending={isFetching} error={error}>
+      {() => (
+        <PaginatedTable
+          actions={{}}
+          columns={columns}
+          data={bricks}
+          rowProps={(brick: EnrichedBrick) => ({
+            onClick() {
+              navigate(`/workshop/bricks/${brick.id}`);
+            },
+            className: `${styles.customRow}`,
+          })}
+          showSearchFilter
+        />
+      )}
+    </AsyncCard>
   );
 };
 

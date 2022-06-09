@@ -41,6 +41,7 @@ interface TableProps<
   actions: Actions;
   initialPageSize?: number;
   rowProps?: (row: Record<string, unknown>) => RowProps;
+  showSearchFilter: boolean;
 
   /**
    * Track pagination in the URL `page` query parameter. WARNING: opt-in, because if there are multiple multi-page
@@ -123,6 +124,7 @@ function PaginatedTable<
   initialPageSize = 10,
   syncURL = false,
   rowProps,
+  showSearchFilter,
 }: TableProps<Row, Actions>): React.ReactElement {
   const history = useHistory();
   const location = useLocation();
@@ -271,14 +273,17 @@ function PaginatedTable<
                   {Math.min(rowNumber + pageSize - 1, rows.length)} of{" "}
                   {rows.length}
                 </div>
-
-                <div className="flex-grow-1 px-3">
-                  <div style={{ maxWidth: 300 }}>
-                    <SearchFilter setGlobalFilter={setGlobalFilter} />
+                {showSearchFilter ? (
+                  <div className="flex-grow-1 px-3">
+                    <div style={{ maxWidth: 300 }}>
+                      <SearchFilter setGlobalFilter={setGlobalFilter} />
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  ""
+                )}
 
-                <div>
+                <div className="flex-grow-1">
                   <Pagination className="m-0 float-right">
                     <Pagination.First
                       onClick={() => {
