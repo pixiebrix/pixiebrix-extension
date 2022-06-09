@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./JsonTree.module.scss";
 import { JSONTree } from "react-json-tree";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import React, {
@@ -42,6 +41,14 @@ import {
 import { Primitive } from "type-fest";
 import { produce } from "immer";
 import { Styling, Theme } from "react-base16-styling";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCode } from "@fortawesome/free-solid-svg-icons";
+import cx from "classnames";
+import copy from "copy-to-clipboard";
+import notify from "@/utils/notify";
+import safeJsonStringify from "json-stringify-safe";
+import { Button } from "react-bootstrap";
+import styles from "./JsonTree.module.scss";
 
 const SEARCH_DEBOUNCE_MS = 100;
 
@@ -137,6 +144,25 @@ const jsonTreeTheme: Theme = {
   }),
 };
 
+const CopyDataButton: React.FunctionComponent<{ data: unknown }> = ({
+  data,
+}) => (
+  <Button
+    variant="text"
+    className={cx(styles.copyPath, "p-0")}
+    aria-label="copy data"
+    href="#"
+    onClick={(event) => {
+      copy(safeJsonStringify(data));
+      event.preventDefault();
+      event.stopPropagation();
+      notify.info("Copied data to the clipboard");
+    }}
+  >
+    <FontAwesomeIcon icon={faCode} aria-hidden />
+  </Button>
+);
+
 /**
  * Internally a memoised component is used, be mindful about the reference equality of the props
  */
@@ -229,7 +255,12 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
           fitLabelWidth
         />
       )}
-      {labelText && <span>{labelText}</span>}
+      {labelText && (
+        <span>
+          {labelText}&nbsp;
+          <CopyDataButton data={searchResults} />
+        </span>
+      )}
       {searchResults === undefined ? (
         <Loader />
       ) : (

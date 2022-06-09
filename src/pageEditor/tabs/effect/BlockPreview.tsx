@@ -281,6 +281,7 @@ const BlockPreview: React.FunctionComponent<{
           searchable
           copyable
           tabKey={DataPanelTabKey.Preview}
+          label="Output Preview"
         />
       )}
 
