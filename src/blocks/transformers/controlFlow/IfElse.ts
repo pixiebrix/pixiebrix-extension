@@ -24,8 +24,7 @@ import { validateRegistryId } from "@/types/helpers";
 
 class IfElse extends Transformer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/if-else");
-
-  defaultOutputKey = "result";
+  defaultOutputKey = "ifElseOutput";
 
   constructor() {
     super(

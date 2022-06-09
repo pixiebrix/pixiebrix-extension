@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { UUID } from "@/core";
 import {
   ElementUIState,
@@ -34,7 +33,7 @@ function makeInitialDataTabState(): TabUIState {
   };
 }
 
-export function makeInitialNodeUIState(nodeId: NodeId): NodeUIState {
+export function makeInitialNodeUIState(nodeId: UUID): NodeUIState {
   const nodeUIState: NodeUIState = {
     nodeId,
     // @ts-expect-error -- initializing the Tab states down below

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { useFormikContext } from "formik";
@@ -24,19 +24,18 @@ import { useAsyncState } from "@/hooks/common";
 import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
 import EditorNodeConfigPanel from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
-import { actions } from "@/pageEditor/slices/editorSlice";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
 import useExtensionTrace from "@/pageEditor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationDataPanel";
 import usePipelineField from "@/pageEditor/hooks/usePipelineField";
-import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import {
   selectActiveNodeId,
   selectActiveNodeInfo,
+  selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import ApiVersionField from "@/pageEditor/fields/ApiVersionField";
 import useBlockPipelineActions from "@/pageEditor/tabs/editTab/useBlockPipelineActions";
@@ -47,16 +46,15 @@ import TooltipIconButton from "@/components/TooltipIconButton";
 import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import useFlags from "@/hooks/useFlags";
-import { BlockType } from "@/runtime/runtimeTypes";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import useReportTraceError from "./useReportTraceError";
-import useNodes from "./useNodes";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { get } from "lodash";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import Loader from "@/components/Loader";
 import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
+import { BlockType } from "@/runtime/runtimeTypes";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -75,31 +73,41 @@ const EditTab: React.FC<{
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
-  const { label, icon, EditorNode } = useMemo(
-    () => ADAPTERS.get(extensionPointType),
-    [extensionPointType]
-  );
+  const {
+    label: extensionPointLabel,
+    icon: extensionPointIcon,
+    EditorNode,
+  } = useMemo(() => ADAPTERS.get(extensionPointType), [extensionPointType]);
 
-  const [allBlocks] = useAsyncState<TypedBlockMap>(
+  const [allBlocks, isLoadingAllBlocks] = useAsyncState<TypedBlockMap>(
     async () => blockRegistry.allTyped(),
     [],
     new Map()
   );
 
+  const [relevantBlocksForRootPipeline, isLoadingRelevantBlocks] =
+    useAsyncState(
+      async () => {
+        const excludeType: BlockType = ["actionPanel", "panel"].includes(
+          extensionPointType
+        )
+          ? "effect"
+          : "renderer";
+
+        return [...allBlocks.values()]
+          .filter(({ type }) => type != null && type !== excludeType)
+          .map(({ block }) => block);
+      },
+      [allBlocks, extensionPointType],
+      []
+    );
+
   const { blockPipeline, blockPipelineErrors, errorTraceEntry } =
     usePipelineField(allBlocks, extensionPointType);
 
   const activeNodeId = useSelector(selectActiveNodeId);
-  const { blockId, path } = useSelector(selectActiveNodeInfo) ?? {};
-  const fieldName = `${PIPELINE_BLOCKS_FIELD_NAME}.${path}`;
-
-  const dispatch = useDispatch();
-  const setActiveNodeId = useCallback(
-    (nodeId: NodeId) => {
-      dispatch(actions.setElementActiveNodeId(nodeId));
-    },
-    [dispatch]
-  );
+  const { blockId, path: fieldName } = useSelector(selectActiveNodeInfo) ?? {};
+  const pipelineMap = useSelector(selectPipelineMap);
 
   const {
     addBlock,
@@ -108,32 +116,7 @@ const EditTab: React.FC<{
     moveBlockDown,
     copyBlock,
     pasteBlock,
-  } = useBlockPipelineActions(blockPipeline, values, setFormValues);
-
-  const nodes = useNodes({
-    pipeline: blockPipeline,
-    pipelineErrors: blockPipelineErrors,
-    errorTraceEntry,
-    label,
-    icon,
-    allBlocks,
-  });
-
-  const [relevantBlocksToAdd] = useAsyncState(
-    async () => {
-      const excludeType: BlockType = ["actionPanel", "panel"].includes(
-        extensionPointType
-      )
-        ? "effect"
-        : "renderer";
-
-      return [...allBlocks.values()]
-        .filter(({ type }) => type != null && type !== excludeType)
-        .map(({ block }) => block);
-    },
-    [allBlocks, extensionPointType],
-    []
-  );
+  } = useBlockPipelineActions(pipelineMap, values, setFormValues);
 
   // The value of formikErrorForBlock can be object or string.
   const formikErrorForBlock = get(blockPipelineErrors, fieldName);
@@ -178,17 +161,23 @@ const EditTab: React.FC<{
             />
           </div>
           <div className={styles.nodeLayout}>
-            <EditorNodeLayout
-              nodes={nodes}
-              allBlocks={allBlocks}
-              activeNodeId={activeNodeId}
-              relevantBlocksToAdd={relevantBlocksToAdd}
-              selectBlock={setActiveNodeId}
-              addBlock={addBlock}
-              moveBlockUp={moveBlockUp}
-              moveBlockDown={moveBlockDown}
-              pasteBlock={pasteBlock}
-            />
+            {isLoadingAllBlocks || isLoadingRelevantBlocks ? (
+              <Loader />
+            ) : (
+              <EditorNodeLayout
+                allBlocks={allBlocks}
+                relevantBlocksForRootPipeline={relevantBlocksForRootPipeline}
+                pipeline={blockPipeline}
+                pipelineErrors={blockPipelineErrors}
+                errorTraceEntry={errorTraceEntry}
+                extensionPointLabel={extensionPointLabel}
+                extensionPointIcon={extensionPointIcon}
+                addBlock={addBlock}
+                moveBlockUp={moveBlockUp}
+                moveBlockDown={moveBlockDown}
+                pasteBlock={pasteBlock}
+              />
+            )}
           </div>
         </div>
         <div className={styles.configPanel}>

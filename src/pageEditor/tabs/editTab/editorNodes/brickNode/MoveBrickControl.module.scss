@@ -17,52 +17,8 @@
 
 .root {
   display: flex;
-  align-items: center;
-  font-size: 0.875rem;
-  padding: 20px 10px;
-  padding-right: 0;
-  cursor: pointer;
-}
-
-.icon {
-  display: flex;
-  flex-shrink: 0;
-  flex-grow: 0;
-  place-items: center;
+  flex-direction: column;
   place-content: center;
-  width: 1.2em;
-  margin-right: 10px;
-  font-size: 1.65em;
-
-  // External icon
-  img {
-    // !important is to override the inline CSS
-    width: 1.2em !important;
-    height: 1.2em !important;
-  }
-  svg {
-    font-size: inherit;
-  }
-}
-
-.badge {
-  width: 0;
-  img {
-    font-size: 0.7em;
-    transform: translate(-0.7em, -0.8em);
-  }
-}
-
-.text {
-  line-height: 1.2;
-}
-.outputKey {
-  margin-top: 0.4em;
-  font-size: 0.9em !important;
-  font-family: monospace;
-}
-.moveButtons {
-  margin-left: auto;
 }
 
 .moveButton {

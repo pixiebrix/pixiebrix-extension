@@ -16,7 +16,6 @@
  */
 
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
-import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { RegistryId, UUID } from "@/core";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
@@ -70,7 +69,7 @@ export type NodeUIState = {
   /**
    * Identifier for the node in the editor, either the foundation or a block uuid
    */
-  nodeId: NodeId;
+  nodeId: UUID;
 
   /**
    * UI state of the Tabs in the data panel
@@ -95,10 +94,10 @@ export type ElementUIState = {
    *  or:
    *  @see FOUNDATION_NODE_ID
    */
-  activeNodeId: NodeId;
+  activeNodeId: UUID;
 
   /**
    * UI state of foundation and blocks in the extension pipeline
    */
-  nodeUIStates: Record<NodeId, NodeUIState>;
+  nodeUIStates: Record<UUID, NodeUIState>;
 };

@@ -17,10 +17,13 @@
 
 import {
   getErrorMessage,
+  getErrorMessageWithCauses,
   hasSpecificErrorCause,
   IGNORED_ERROR_PATTERNS,
   isErrorObject,
   selectError,
+  selectErrorFromEvent,
+  selectErrorFromRejectionEvent,
   selectSpecificError,
 } from "@/errors/errorHelpers";
 import { range } from "lodash";
@@ -180,6 +183,66 @@ describe("getErrorMessage", () => {
   });
 });
 
+describe("getErrorMessageWithCauses", () => {
+  const FIRST_ERROR = "There was an error while fetching the page";
+  const SECOND_ERROR = "Maybe you are not connected to the internet?";
+  const THIRD_ERROR = "The network request failed (NO_NETWORK)";
+  test("handles string", () => {
+    expect(getErrorMessageWithCauses(FIRST_ERROR)).toBe(FIRST_ERROR);
+  });
+
+  test("handles vanilla error", () => {
+    expect(getErrorMessageWithCauses(new Error(FIRST_ERROR))).toBe(FIRST_ERROR);
+  });
+
+  test("handles null/undefined", () => {
+    expect(getErrorMessageWithCauses(null)).toBe("Unknown error");
+    // eslint-disable-next-line unicorn/no-useless-undefined -- testing value since it comes from variable/expression in the wild
+    expect(getErrorMessageWithCauses(undefined)).toBe("Unknown error");
+  });
+
+  test("handles good causes", () => {
+    expect(
+      getErrorMessageWithCauses(
+        new Error(FIRST_ERROR, { cause: new Error(SECOND_ERROR) })
+      )
+    ).toMatchInlineSnapshot(`
+      "There was an error while fetching the page.
+      Maybe you are not connected to the internet?"
+    `);
+    expect(
+      getErrorMessageWithCauses(
+        new Error(FIRST_ERROR, {
+          cause: new Error(SECOND_ERROR, { cause: new Error(THIRD_ERROR) }),
+        })
+      )
+    ).toMatchInlineSnapshot(`
+      "There was an error while fetching the page.
+      Maybe you are not connected to the internet?
+      The network request failed (NO_NETWORK)."
+    `);
+  });
+
+  test("handles questionable causes", () => {
+    expect(
+      getErrorMessageWithCauses(new Error(FIRST_ERROR, { cause: null }))
+    ).toBe(FIRST_ERROR);
+    expect(
+      getErrorMessageWithCauses(new Error(FIRST_ERROR, { cause: undefined }))
+    ).toBe(FIRST_ERROR);
+    expect(getErrorMessageWithCauses(new Error(FIRST_ERROR, { cause: "idk" })))
+      .toMatchInlineSnapshot(`
+        "There was an error while fetching the page.
+        idk."
+      `);
+    expect(getErrorMessageWithCauses(new Error(FIRST_ERROR, { cause: 420 })))
+      .toMatchInlineSnapshot(`
+        "There was an error while fetching the page.
+        420."
+      `);
+  });
+});
+
 describe("isErrorObject", () => {
   test("handles error", () => {
     expect(isErrorObject(new Error(TEST_MESSAGE))).toBe(true);
@@ -215,14 +278,16 @@ describe("selectError", () => {
       '[Error: {"my":"object"}]'
     );
   });
+});
 
+describe("selectErrorFromEvent", () => {
   it("extracts error from ErrorEvent", () => {
     const error = new Error("This won’t be caught");
     const errorEvent = new ErrorEvent("error", {
       error,
     });
 
-    expect(selectError(errorEvent)).toBe(error);
+    expect(selectErrorFromEvent(errorEvent)).toBe(error);
   });
 
   it("handles ErrorEvent with null message and error", () => {
@@ -231,7 +296,7 @@ describe("selectError", () => {
       message: null,
     });
 
-    const selectedError = selectError(errorEvent);
+    const selectedError = selectErrorFromEvent(errorEvent);
     expect(selectedError).toMatchInlineSnapshot("[Error: Unknown error event]");
   });
 
@@ -247,7 +312,7 @@ describe("selectError", () => {
       message: eventMessage,
     });
 
-    const selectedError = selectError(errorEvent);
+    const selectedError = selectErrorFromEvent(errorEvent);
 
     expect(selectedError.message).toBe(eventMessage);
 
@@ -266,14 +331,16 @@ describe("selectError", () => {
       error,
     });
 
-    const selectedError = selectError(errorEvent);
+    const selectedError = selectErrorFromEvent(errorEvent);
     expect(selectedError).toMatchInlineSnapshot("[Error: It’s a non-error]");
     expect(selectedError.stack).toMatchInlineSnapshot(`
       "Error: It’s a non-error
           at unknown (yoshi://mushroom-kingdom/bowser.js:2:10)"
     `);
   });
+});
 
+describe("selectErrorFromRejectionEvent", () => {
   it("extracts error from PromiseRejectionEvent", () => {
     const error = new Error("This won’t be caught");
     const errorEvent = new PromiseRejectionEvent(
@@ -281,7 +348,7 @@ describe("selectError", () => {
       createUncaughtRejection(error)
     );
 
-    expect(selectError(errorEvent)).toBe(error);
+    expect(selectErrorFromRejectionEvent(errorEvent)).toBe(error);
   });
 
   it("handles PromiseRejectionEvent with null reason", () => {
@@ -290,7 +357,7 @@ describe("selectError", () => {
       createUncaughtRejection(null)
     );
 
-    const selectedError = selectError(errorEvent);
+    const selectedError = selectErrorFromRejectionEvent(errorEvent);
     expect(selectedError).toMatchInlineSnapshot(
       "[Error: Unknown promise rejection]"
     );
@@ -302,7 +369,7 @@ describe("selectError", () => {
       createUncaughtRejection("It's a non-error")
     );
 
-    expect(selectError(errorEvent)).toMatchInlineSnapshot(
+    expect(selectErrorFromRejectionEvent(errorEvent)).toMatchInlineSnapshot(
       "[Error: It's a non-error]"
     );
   });
