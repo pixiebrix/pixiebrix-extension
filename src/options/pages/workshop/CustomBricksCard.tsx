@@ -148,7 +148,7 @@ const CustomBricksCard: React.FunctionComponent<
             },
             className: `${styles.customRow}`,
           })}
-          showSearchFilter
+          showSearchFilter={false}
         />
       )}
     </AsyncCard>
