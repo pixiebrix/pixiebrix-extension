@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.actions {
+.root {
   height: 0;
   display: flex;
   place-content: center;
@@ -53,20 +53,4 @@
   height: auto;
   margin: 0.4em 0;
   gap: 0.6em;
-}
-
-.appendInfo {
-  padding: 0 2em 1em;
-  text-align: center;
-}
-
-.subPipelineContainer {
-  padding-right: 0;
-  padding-bottom: 1.5rem;
-}
-.subPipelineLabel {
-  padding: 0;
-  border-left: none;
-  border-right: none;
-  border-top: none;
 }

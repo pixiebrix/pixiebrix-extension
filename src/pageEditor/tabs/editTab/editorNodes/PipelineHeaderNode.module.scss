@@ -1,0 +1,60 @@
+/*!
+ * Copyright (C) 2022 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+@import "@/pageEditor/tabs/editTab/editTabVariables.scss";
+
+$headerOffsetX: $pipeLineOffset / 2;
+$headerOffsetY: 0.5rem;
+$headerPipeLineHeight: 4px;
+
+.root {
+  display: flex;
+}
+
+.header {
+  flex-grow: 1;
+  position: relative; // Allow children to position relative to this element
+  background: #ebebf1;
+  padding: $headerOffsetY 0 0 $headerOffsetX;
+}
+
+.subPipelineLabel {
+  display: inline-block;
+  width: auto;
+  margin-bottom: $headerOffsetY;
+  padding: 0 0.25rem;
+  background: white;
+  border-radius: 3px;
+}
+
+.headerPipeLineTop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: $pipeLineOffset;
+  height: $headerPipeLineHeight;
+  border-right: $pipeLineBorderWidth solid black;
+}
+
+.headerPipeLineBottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: $pipeLineOffset;
+  height: $headerPipeLineHeight;
+  border-right: $pipeLineBorderWidth solid black;
+}

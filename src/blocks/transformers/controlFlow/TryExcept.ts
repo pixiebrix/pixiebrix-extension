@@ -25,7 +25,7 @@ import { validateRegistryId } from "@/types/helpers";
 
 class TryExcept extends Transformer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/try-catch");
-  defaultOutputKey = "result";
+  defaultOutputKey = "tryExceptOutput";
 
   constructor() {
     super(
