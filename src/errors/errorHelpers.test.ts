@@ -21,6 +21,8 @@ import {
   IGNORED_ERROR_PATTERNS,
   isErrorObject,
   selectError,
+  selectErrorFromEvent,
+  selectErrorFromRejectionEvent,
   selectSpecificError,
 } from "@/errors/errorHelpers";
 import { range } from "lodash";
@@ -215,14 +217,16 @@ describe("selectError", () => {
       '[Error: {"my":"object"}]'
     );
   });
+});
 
+describe("selectErrorFromEvent", () => {
   it("extracts error from ErrorEvent", () => {
     const error = new Error("This won’t be caught");
     const errorEvent = new ErrorEvent("error", {
       error,
     });
 
-    expect(selectError(errorEvent)).toBe(error);
+    expect(selectErrorFromEvent(errorEvent)).toBe(error);
   });
 
   it("handles ErrorEvent with null message and error", () => {
@@ -231,7 +235,7 @@ describe("selectError", () => {
       message: null,
     });
 
-    const selectedError = selectError(errorEvent);
+    const selectedError = selectErrorFromEvent(errorEvent);
     expect(selectedError).toMatchInlineSnapshot("[Error: Unknown error event]");
   });
 
@@ -247,7 +251,7 @@ describe("selectError", () => {
       message: eventMessage,
     });
 
-    const selectedError = selectError(errorEvent);
+    const selectedError = selectErrorFromEvent(errorEvent);
 
     expect(selectedError.message).toBe(eventMessage);
 
@@ -266,14 +270,16 @@ describe("selectError", () => {
       error,
     });
 
-    const selectedError = selectError(errorEvent);
+    const selectedError = selectErrorFromEvent(errorEvent);
     expect(selectedError).toMatchInlineSnapshot("[Error: It’s a non-error]");
     expect(selectedError.stack).toMatchInlineSnapshot(`
       "Error: It’s a non-error
           at unknown (yoshi://mushroom-kingdom/bowser.js:2:10)"
     `);
   });
+});
 
+describe("selectErrorFromRejectionEvent", () => {
   it("extracts error from PromiseRejectionEvent", () => {
     const error = new Error("This won’t be caught");
     const errorEvent = new PromiseRejectionEvent(
@@ -281,7 +287,7 @@ describe("selectError", () => {
       createUncaughtRejection(error)
     );
 
-    expect(selectError(errorEvent)).toBe(error);
+    expect(selectErrorFromRejectionEvent(errorEvent)).toBe(error);
   });
 
   it("handles PromiseRejectionEvent with null reason", () => {
@@ -290,7 +296,7 @@ describe("selectError", () => {
       createUncaughtRejection(null)
     );
 
-    const selectedError = selectError(errorEvent);
+    const selectedError = selectErrorFromRejectionEvent(errorEvent);
     expect(selectedError).toMatchInlineSnapshot(
       "[Error: Unknown promise rejection]"
     );
@@ -302,7 +308,7 @@ describe("selectError", () => {
       createUncaughtRejection("It's a non-error")
     );
 
-    expect(selectError(errorEvent)).toMatchInlineSnapshot(
+    expect(selectErrorFromRejectionEvent(errorEvent)).toMatchInlineSnapshot(
       "[Error: It's a non-error]"
     );
   });
