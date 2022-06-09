@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import paneStyles from "@/pageEditor/panes/Pane.module.scss";
 import styles from "./GenericInsertPane.module.scss";
 import { useDispatch } from "react-redux";
@@ -38,6 +38,7 @@ import {
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { getExampleBlockPipeline } from "@/pageEditor/exampleExtensionConfig";
 import useFlags from "@/hooks/useFlags";
+import GridLoader from "react-spinners/GridLoader";
 
 const { addElement } = editorSlice.actions;
 
@@ -47,6 +48,8 @@ const GenericInsertPane: React.FunctionComponent<{
 }> = ({ cancel, config }) => {
   const { flagOn } = useFlags();
   const dispatch = useDispatch();
+
+  const showMarketplace = flagOn("page-editor-extension-point-marketplace");
 
   const start = useCallback(
     async (state: FormState) => {
@@ -116,7 +119,25 @@ const GenericInsertPane: React.FunctionComponent<{
     }
   }, [start, config]);
 
+  useEffect(() => {
+    if (!showMarketplace) {
+      // Add the extension directly since there's no options for the user. The insert pane will flash up quickly.
+      void addNew();
+    }
+  }, [showMarketplace, addNew]);
+
   const extensionPoints = useAvailableExtensionPoints(config.baseClass);
+
+  if (!showMarketplace) {
+    // The insert pane will flash up quickly while the addNew is running.
+    return (
+      <Centered isScrollable>
+        <Row className={styles.loadingRow}>
+          <GridLoader />
+        </Row>
+      </Centered>
+    );
+  }
 
   return (
     <Centered isScrollable>
@@ -131,22 +152,20 @@ const GenericInsertPane: React.FunctionComponent<{
           <FontAwesomeIcon icon={faPlus} /> Create new {config.label}
         </Button>
 
-        {flagOn("page-editor-extension-point-marketplace") && (
-          <BrickModal
-            bricks={extensionPoints ?? []}
-            renderButton={(onClick) => (
-              <Button
-                variant="info"
-                onClick={onClick}
-                disabled={!extensionPoints?.length}
-                className={styles.searchButton}
-              >
-                <FontAwesomeIcon icon={faSearch} /> Search Marketplace
-              </Button>
-            )}
-            onSelect={async (block) => addExisting(block)}
-          />
-        )}
+        <BrickModal
+          bricks={extensionPoints ?? []}
+          renderButton={(onClick) => (
+            <Button
+              variant="info"
+              onClick={onClick}
+              disabled={!extensionPoints?.length}
+              className={styles.searchButton}
+            >
+              <FontAwesomeIcon icon={faSearch} /> Search Marketplace
+            </Button>
+          )}
+          onSelect={async (block) => addExisting(block)}
+        />
       </Row>
       <Row className={styles.cancelRow}>
         <Button variant="danger" className="m-3" onClick={cancel}>

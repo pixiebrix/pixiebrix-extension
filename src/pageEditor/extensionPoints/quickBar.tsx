@@ -223,6 +223,41 @@ function asDynamicElement(element: QuickBarFormState): DynamicDefinition {
   };
 }
 
+export const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
+  const [shortcut, setShortcut] = useState("");
+
+  useEffect(() => {
+    chrome.commands.getAll((commands) => {
+      const command = commands.find(
+        (command) => command.name === "toggle-quick-bar"
+      );
+      if (command) {
+        setShortcut(command.shortcut);
+      }
+    });
+  }, []);
+
+  if (isEmpty(shortcut)) {
+    return (
+      <Alert variant="warning">
+        <FontAwesomeIcon icon={faExclamationTriangle} />
+        &nbsp;You have not{" "}
+        <a
+          href="chrome://extensions/shortcuts"
+          onClick={(event) => {
+            event.preventDefault();
+            void browser.tabs.create({ url: event.currentTarget.href });
+          }}
+        >
+          configured a Quick Bar shortcut
+        </a>
+      </Alert>
+    );
+  }
+
+  return null;
+};
+
 const config: ElementConfig<undefined, QuickBarFormState> = {
   displayOrder: 1,
   elementType: "quickBar",

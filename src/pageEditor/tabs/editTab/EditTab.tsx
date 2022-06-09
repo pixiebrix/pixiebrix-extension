@@ -56,6 +56,7 @@ import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { get } from "lodash";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -202,6 +203,9 @@ const EditTab: React.FC<{
               {isApiAtLeastV2 ? (
                 activeNodeId === FOUNDATION_NODE_ID ? (
                   <>
+                    {extensionPointType === "quickBar" && (
+                      <UnconfiguredQuickBarAlert />
+                    )}
                     <ConnectedFieldTemplate
                       name="label"
                       label="Extension Name"
