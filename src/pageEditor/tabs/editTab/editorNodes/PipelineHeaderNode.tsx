@@ -23,17 +23,19 @@ import styles from "./PipelineHeaderNode.module.scss";
 import PipelineOffsetView from "@/pageEditor/tabs/editTab/editorNodes/PipelineOffsetView";
 
 export type PipelineHeaderNodeProps = {
+  pipelinePath: string;
   headerLabel: string;
   nestingLevel: number;
   nodeActions: NodeAction[];
 };
 
 const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
+  pipelinePath,
   headerLabel,
   nestingLevel,
   nodeActions,
 }) => (
-  <div className={styles.root}>
+  <div className={styles.root} key={pipelinePath}>
     <PipelineOffsetView nestingLevel={nestingLevel} />
     <div className={styles.header}>
       <div className={styles.headerPipeLineTop} />

@@ -31,9 +31,11 @@ import NodeActionsView, {
 } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import PipelineOffsetView from "@/pageEditor/tabs/editTab/editorNodes/PipelineOffsetView";
 import TrailingMessage from "@/pageEditor/tabs/editTab/editorNodes/TrailingMessage";
+import { UUID } from "@/core";
 
 export type BrickNodeProps = BrickNodeContentProps &
   MoveBrickControlProps & {
+    blockInstanceId: UUID;
     onClick?: () => void;
     active?: boolean;
     nestingLevel: number;
@@ -45,6 +47,7 @@ export type BrickNodeProps = BrickNodeContentProps &
   };
 
 const BrickNode: React.VFC<BrickNodeProps> = ({
+  blockInstanceId,
   onClick,
   active,
   icon,
@@ -71,6 +74,7 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
   return (
     <>
       <ListGroup.Item
+        key={blockInstanceId}
         ref={nodeRef}
         as="div"
         onClick={onClick}

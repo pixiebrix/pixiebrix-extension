@@ -27,7 +27,6 @@ import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { NodeId } from "@/pageEditor/tabs/editTab/editorNodes/EditorNode";
 import { createNewBlock } from "@/pageEditor/createNewBlock";
 import { PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
 import { getIn } from "formik";
@@ -38,7 +37,7 @@ type BlockPipelineActions = {
     pipelinePath: string,
     pipelineIndex: number
   ) => void;
-  removeBlock: (nodeIdToRemove: NodeId) => void;
+  removeBlock: (nodeIdToRemove: UUID) => void;
   moveBlockUp: (instanceId: UUID) => void;
   moveBlockDown: (instanceId: UUID) => void;
   copyBlock: (instanceId: UUID) => void;
@@ -88,7 +87,7 @@ function useBlockPipelineActions(
     [pipelineMap, dispatch, sessionId, values.uuid]
   );
 
-  const removeBlock = (nodeIdToRemove: NodeId) => {
+  const removeBlock = (nodeIdToRemove: UUID) => {
     dispatch(actions.removeNode(nodeIdToRemove));
   };
 

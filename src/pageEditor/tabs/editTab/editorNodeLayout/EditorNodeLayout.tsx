@@ -58,6 +58,8 @@ import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
+const ROOT_PATH = "extension.blockPipeline";
+
 type EditorNodeProps =
   | (BrickNodeProps & { type: "brick" })
   | (PipelineHeaderNodeProps & { type: "header" })
@@ -126,10 +128,10 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
 
   function mapPipelineToNodes(
     pipeline: BlockPipeline,
-    pipelinePath = "",
+    pipelinePath = ROOT_PATH,
     nestingLevel = 0
   ): EditorNodeProps[] {
-    const isRootPipeline = isEmpty(pipelinePath);
+    const isRootPipeline = pipelinePath === ROOT_PATH;
     const relevantBlocks = isRootPipeline
       ? relevantBlocksForRootPipeline
       : allBlocksAsRelevant;
@@ -300,6 +302,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
         BrickNodeProps,
         keyof BrickNodeContentProps
       > = {
+        blockInstanceId: blockConfig.instanceId,
         onClickMoveUp,
         onClickMoveDown,
         onClick,
@@ -350,6 +353,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           }
 
           const headerNodeProps: PipelineHeaderNodeProps = {
+            pipelinePath,
             headerLabel,
             nestingLevel,
             nodeActions: headerActions,
@@ -369,6 +373,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
         }
 
         const footerNodeProps: PipelineFooterNodeProps = {
+          blockInstanceId: blockConfig.instanceId,
           outputKey: blockConfig.outputKey,
           nodeActions: brickNodeActions,
           showBiggerActions,
@@ -412,6 +417,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   const showBiggerFoundationActions = isEmpty(pipeline);
 
   const foundationNodeProps: BrickNodeProps = {
+    blockInstanceId: FOUNDATION_NODE_ID,
     icon: extensionPointIcon,
     runStatus: foundationRunStatus,
     brickLabel: extensionPointLabel,
@@ -428,7 +434,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
 
   return (
     <ListGroup variant="flush">
-      <BrickNode {...foundationNodeProps} />
+      <BrickNode key={FOUNDATION_NODE_ID} {...foundationNodeProps} />
       {mapPipelineToNodes(pipeline).map(({ type, ...nodeProps }) => {
         switch (type) {
           case "brick": {

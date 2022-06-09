@@ -31,7 +31,6 @@ import {
   OptionsDefinition,
   RecipeMetadataFormState,
 } from "@/types/definitions";
-import { NodeId } from "@/pageEditor/tabs/editTab/editorNodes/EditorNode";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
@@ -79,10 +78,7 @@ function ensureElementUIState(
   }
 }
 
-function ensureNodeUIState(
-  state: WritableDraft<ElementUIState>,
-  nodeId: NodeId
-) {
+function ensureNodeUIState(state: WritableDraft<ElementUIState>, nodeId: UUID) {
   if (!state.nodeUIStates[nodeId]) {
     state.nodeUIStates[nodeId] = makeInitialNodeUIState(nodeId);
   }
@@ -104,7 +100,7 @@ function syncElementNodeUIStates(
   }
 
   // Remove NodeUIStates for invalid IDs
-  for (const nodeId of Object.keys(elementUIState.nodeUIStates) as NodeId[]) {
+  for (const nodeId of Object.keys(elementUIState.nodeUIStates) as UUID[]) {
     // Don't remove the foundation NodeUIState
     if (nodeId !== FOUNDATION_NODE_ID && pipelineMap[nodeId] == null) {
       delete elementUIState.nodeUIStates[nodeId];
@@ -112,12 +108,12 @@ function syncElementNodeUIStates(
   }
 
   // Add missing NodeUIStates
-  for (const nodeId of Object.keys(pipelineMap) as NodeId[]) {
+  for (const nodeId of Object.keys(pipelineMap) as UUID[]) {
     ensureNodeUIState(elementUIState, nodeId);
   }
 }
 
-function setActiveNodeId(state: WritableDraft<EditorState>, nodeId: NodeId) {
+function setActiveNodeId(state: WritableDraft<EditorState>, nodeId: UUID) {
   const elementUIState = state.elementUIStates[state.activeElementId];
   ensureNodeUIState(elementUIState, nodeId);
   elementUIState.activeNodeId = nodeId;
@@ -345,8 +341,8 @@ export const editorSlice = createSlice({
     removeElementNodeUIState(
       state,
       action: PayloadAction<{
-        nodeIdToRemove: NodeId;
-        newActiveNodeId?: NodeId;
+        nodeIdToRemove: UUID;
+        newActiveNodeId?: UUID;
       }>
     ) {
       const elementUIState = state.elementUIStates[state.activeElementId];
@@ -357,7 +353,7 @@ export const editorSlice = createSlice({
 
       delete elementUIState.nodeUIStates[nodeIdToRemove];
     },
-    setElementActiveNodeId(state, action: PayloadAction<NodeId>) {
+    setElementActiveNodeId(state, action: PayloadAction<UUID>) {
       setActiveNodeId(state, action.payload);
     },
     setNodeDataPanelTabSelected(state, action: PayloadAction<DataPanelTabKey>) {
@@ -647,6 +643,7 @@ export const editorSlice = createSlice({
         elementUiState.pipelineMap[nodeIdToRemove];
       const pipeline = get(element, pipelinePath);
 
+      // TODO: this fails when the brick is the last in a pipeline, need to select parent node
       const nextActiveNode =
         index + 1 === pipeline.length
           ? pipeline[index - 1] // Last item, select previous
@@ -655,7 +652,8 @@ export const editorSlice = createSlice({
 
       syncElementNodeUIStates(state, element);
 
-      elementUiState.activeNodeId = nextActiveNode.instanceId;
+      elementUiState.activeNodeId =
+        nextActiveNode?.instanceId ?? FOUNDATION_NODE_ID;
 
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
