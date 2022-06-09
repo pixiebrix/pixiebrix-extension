@@ -24,10 +24,13 @@ import styles from "./PipelineFooterNode.module.scss";
 import OutputKeyView from "@/pageEditor/tabs/editTab/editorNodes/OutputKeyView";
 import PipelineOffsetView from "@/pageEditor/tabs/editTab/editorNodes/PipelineOffsetView";
 import { OutputKey } from "@/core";
+import TrailingMessage from "@/pageEditor/tabs/editTab/editorNodes/TrailingMessage";
 
 export type PipelineFooterNodeProps = {
   outputKey: OutputKey;
   nodeActions: NodeAction[];
+  showBiggerActions?: boolean;
+  trailingMessage?: string;
   nestingLevel: number;
   active?: boolean;
 };
@@ -35,6 +38,8 @@ export type PipelineFooterNodeProps = {
 const PipelineFooterNode: React.VFC<PipelineFooterNodeProps> = ({
   outputKey,
   nodeActions,
+  showBiggerActions,
+  trailingMessage,
   nestingLevel,
   active,
 }) => (
@@ -44,9 +49,13 @@ const PipelineFooterNode: React.VFC<PipelineFooterNodeProps> = ({
       <div className={styles.pipelineContainer}>
         <div className={cx(styles.pipelineEnd, { [styles.active]: active })} />
       </div>
-      <OutputKeyView outputKey={outputKey} />
+      <OutputKeyView outputKey={outputKey} className={styles.outputKey} />
     </div>
-    <NodeActionsView nodeActions={nodeActions} />
+    <NodeActionsView
+      nodeActions={nodeActions}
+      showBiggerActions={showBiggerActions}
+    />
+    {trailingMessage && <TrailingMessage message={trailingMessage} />}
   </>
 );
 

@@ -219,12 +219,8 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       // so, "up" is lower in the array, and "down" is higher in the array.
       // Also, you cannot move the foundation node, which is always at
       // index 0.
-      const canMoveUp = isRootPipeline
-        ? index > 1 // Any nodes beyond the first non-foundation node
-        : index > 0; // Non-root pipeline doesn't have a foundation
-      const canModeDown = isRootPipeline
-        ? index > 0 && index < lastIndex // Not the first and not the last
-        : index < lastIndex; // Only care about less than end for non-pipeline
+      const canMoveUp = index > 0;
+      const canModeDown = index < lastIndex;
 
       const onClickMoveUp = canMoveUp
         ? () => {
@@ -312,6 +308,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
         hasSubPipelines,
         collapsed,
         nodeActions: expanded ? [] : brickNodeActions,
+        showBiggerActions,
         trailingMessage,
       };
 
@@ -321,55 +318,61 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
         ...restBrickNodeProps,
       });
 
-      for (const {
-        headerLabel,
-        subPipeline,
-        subPipelinePath,
-      } of subPipelines) {
-        const nodeName = `${subPipelinePath}-header`;
+      if (expanded) {
+        for (const {
+          headerLabel,
+          subPipeline,
+          subPipelinePath,
+        } of subPipelines) {
+          const nodeName = `${subPipelinePath}-header`;
 
-        const headerActions: NodeAction[] = [
-          <AddBrickAction
-            key={nodeName}
-            relevantBlocksToAdd={allBlocksAsRelevant}
-            nodeName={nodeName}
-            onSelectBlock={(block) => {
-              addBlock(block, subPipelinePath, 0);
-            }}
-          />,
-        ];
-
-        if (showPaste) {
-          headerActions.push(
-            <PasteBrickAction
+          const headerActions: NodeAction[] = [
+            <AddBrickAction
               key={nodeName}
+              relevantBlocksToAdd={allBlocksAsRelevant}
               nodeName={nodeName}
-              onClickPaste={() => {
-                pasteBlock(subPipelinePath, 0);
+              onSelectBlock={(block) => {
+                addBlock(block, subPipelinePath, 0);
               }}
-            />
+            />,
+          ];
+
+          if (showPaste) {
+            headerActions.push(
+              <PasteBrickAction
+                key={nodeName}
+                nodeName={nodeName}
+                onClickPaste={() => {
+                  pasteBlock(subPipelinePath, 0);
+                }}
+              />
+            );
+          }
+
+          const headerNodeProps: PipelineHeaderNodeProps = {
+            headerLabel,
+            nestingLevel,
+            nodeActions: headerActions,
+          };
+
+          nodes.push(
+            {
+              type: "header",
+              ...headerNodeProps,
+            },
+            ...mapPipelineToNodes(
+              subPipeline,
+              subPipelinePath,
+              nestingLevel + 1
+            )
           );
         }
 
-        const headerNodeProps: PipelineHeaderNodeProps = {
-          headerLabel,
-          nestingLevel,
-          nodeActions: headerActions,
-        };
-
-        nodes.push(
-          {
-            type: "header",
-            ...headerNodeProps,
-          },
-          ...mapPipelineToNodes(subPipeline, subPipelinePath, nestingLevel + 1)
-        );
-      }
-
-      if (expanded) {
         const footerNodeProps: PipelineFooterNodeProps = {
           outputKey: blockConfig.outputKey,
           nodeActions: brickNodeActions,
+          showBiggerActions,
+          trailingMessage,
           nestingLevel,
           active: nodeIsActive,
         };
@@ -419,6 +422,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
     active: activeNodeId === FOUNDATION_NODE_ID,
     nestingLevel: 0,
     nodeActions: foundationNodeActions,
+    showBiggerActions: showBiggerFoundationActions,
     trailingMessage: showBiggerFoundationActions ? ADD_MESSAGE : undefined,
   };
 

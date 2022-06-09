@@ -30,6 +30,7 @@ import NodeActionsView, {
   NodeAction,
 } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import PipelineOffsetView from "@/pageEditor/tabs/editTab/editorNodes/PipelineOffsetView";
+import TrailingMessage from "@/pageEditor/tabs/editTab/editorNodes/TrailingMessage";
 
 export type BrickNodeProps = BrickNodeContentProps &
   MoveBrickControlProps & {
@@ -39,6 +40,7 @@ export type BrickNodeProps = BrickNodeContentProps &
     hasSubPipelines?: boolean;
     collapsed?: boolean;
     nodeActions: NodeAction[];
+    showBiggerActions?: boolean;
     trailingMessage?: string;
   };
 
@@ -55,6 +57,7 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
   onClickMoveUp,
   onClickMoveDown,
   nodeActions,
+  showBiggerActions,
   trailingMessage,
 }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
@@ -83,15 +86,17 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
         data-testid="editor-node"
       >
         <PipelineOffsetView nestingLevel={nestingLevel} active={active} />
-        <div className={styles.handleContainer}>
-          <div
-            className={cx({
-              [styles.active]: active,
-              [styles.closedHandle]: collapsed,
-              [styles.openHandle]: !collapsed,
-            })}
-          />
-        </div>
+        {hasSubPipelines && (
+          <div className={styles.handleContainer}>
+            <div
+              className={cx({
+                [styles.active]: active,
+                [styles.closedHandle]: collapsed,
+                [styles.openHandle]: !collapsed,
+              })}
+            />
+          </div>
+        )}
         <BrickNodeContent
           icon={icon}
           runStatus={runStatus}
@@ -103,11 +108,12 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
           onClickMoveDown={onClickMoveDown}
         />
       </ListGroup.Item>
-      <NodeActionsView nodeActions={nodeActions} />
-      {trailingMessage && (
-        <p className={styles.trailingMessage}>
-          <small className="text-muted">{trailingMessage}</small>
-        </p>
+      <NodeActionsView
+        nodeActions={nodeActions}
+        showBiggerActions={showBiggerActions}
+      />
+      {trailingMessage && collapsed && (
+        <TrailingMessage message={trailingMessage} />
       )}
     </>
   );

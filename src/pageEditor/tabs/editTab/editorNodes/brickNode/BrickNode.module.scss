@@ -17,15 +17,17 @@
 
 @import "@/pageEditor/tabs/editTab/editTabVariables.scss";
 
-$closedHandleSize: 24px;
+$closedHandleHeight: 30px;
+$closedHandleWidth: 24px;
 $closedHandleMarginBottom: 2px;
-$openHandleHeight: $closedHandleSize + $closedHandleMarginBottom;
+$openHandleHeight: 24px;
 
 .root {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   font-size: 0.875rem;
   cursor: pointer;
+  padding: 0;
 
   &.expanded {
     border-bottom: none;
@@ -34,16 +36,16 @@ $openHandleHeight: $closedHandleSize + $closedHandleMarginBottom;
 
 .handleContainer {
   width: 0;
-  position: relative; // Allow handle to be positioned relative
+  position: relative; // Allow handle to be positioned
 }
 
 .closedHandle {
-  position: relative;
+  position: absolute;
   bottom: $closedHandleMarginBottom;
   left: $pipeLineOffset;
-  width: $closedHandleSize;
-  height: $closedHandleSize;
-  border-radius: 0 0 0 $closedHandleSize/2;
+  width: $closedHandleWidth;
+  height: $closedHandleHeight;
+  border-radius: 0 0 0 $closedHandleWidth/2;
   border-left: $pipeLineBorderWidth solid black;
   border-bottom: $pipeLineBorderWidth solid black;
 
@@ -53,7 +55,7 @@ $openHandleHeight: $closedHandleSize + $closedHandleMarginBottom;
 }
 
 .openHandle {
-  position: relative;
+  position: absolute;
   bottom: 0;
   left: 0;
   width: $pipeLineOffset;
@@ -63,8 +65,4 @@ $openHandleHeight: $closedHandleSize + $closedHandleMarginBottom;
   &.active {
     border-color: white;
   }
-}
-.trailingMessage {
-  padding: 0 2em 1em;
-  text-align: center;
 }

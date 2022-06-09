@@ -15,36 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "@/pageEditor/tabs/editTab/editTabVariables.scss";
-
-$pipeLineFooterWidth: 17px;
-
-.footer {
-  display: flex;
-  align-items: stretch;
-  border-bottom: 1px solid lightgrey;
-}
-
-.pipelineContainer {
-  width: calc(
-    #{$pipeLineOffset} + #{$pipeLineFooterWidth} - #{$pipeLineBorderWidth}
-  );
-  margin-right: 0.5rem;
-}
-
-.pipelineEnd {
-  width: $pipeLineFooterWidth;
-  height: 50%;
-  margin-left: auto;
-  border-bottom-left-radius: 50%;
-  border-left: $pipeLineBorderWidth solid black;
-  border-bottom: $pipeLineBorderWidth solid black;
-
-  &.active {
-    border-color: white;
-  }
-}
-
-.outputKey {
-  padding: 15px 0;
+.root {
+  padding: 0 2em 1em;
+  text-align: center;
 }

@@ -30,9 +30,10 @@ const PipelineOffsetView: React.VFC<PipelineOffsetViewProps> = ({
   active,
 }) => (
   <>
-    {times(nestingLevel, () => (
-      <div className={cx(styles.pipeLine, { [styles.active]: active })} />
-    ))}
+    {nestingLevel > 0 &&
+      times(nestingLevel, () => (
+        <div className={cx(styles.pipeLine, { [styles.active]: active })} />
+      ))}
   </>
 );
 

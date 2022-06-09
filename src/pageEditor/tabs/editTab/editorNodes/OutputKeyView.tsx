@@ -18,9 +18,17 @@
 import React from "react";
 import { OutputKey } from "@/core";
 import styles from "./OutputKeyView.module.scss";
+import cx from "classnames";
 
-const OutputKeyView: React.VFC<{ outputKey: OutputKey }> = ({ outputKey }) => (
-  <>{outputKey && <div className={styles.root}>@{outputKey}</div>}</>
+const OutputKeyView: React.VFC<{
+  outputKey: OutputKey;
+  className?: string;
+}> = ({ outputKey, className }) => (
+  <>
+    {outputKey && (
+      <div className={cx(styles.root, className)}>@{outputKey}</div>
+    )}
+  </>
 );
 
 export default OutputKeyView;

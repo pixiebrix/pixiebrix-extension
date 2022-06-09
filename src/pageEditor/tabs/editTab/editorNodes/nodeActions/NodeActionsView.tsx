@@ -18,6 +18,7 @@
 import React from "react";
 import cx from "classnames";
 import styles from "./NodeActionsView.module.scss";
+import { isEmpty } from "lodash";
 
 export type NodeAction = React.ReactNode;
 
@@ -31,7 +32,9 @@ const NodeActionsView: React.VFC<NodeActionsProps> = ({
   showBiggerActions,
 }) => (
   <div
-    className={cx(styles.root, { [styles.biggerActions]: showBiggerActions })}
+    className={cx(styles.root, {
+      [styles.biggerActions]: showBiggerActions && !isEmpty(nodeActions),
+    })}
   >
     {nodeActions}
   </div>

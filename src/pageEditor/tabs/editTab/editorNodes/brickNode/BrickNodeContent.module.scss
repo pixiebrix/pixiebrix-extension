@@ -18,6 +18,7 @@
 @import "@/pageEditor/tabs/editTab/editTabVariables.scss";
 
 .root {
+  flex-grow: 1;
   display: flex;
   padding: 20px 0 20px $defaultNodePaddingLeft;
 }
