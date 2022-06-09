@@ -33,7 +33,7 @@ $headerPipeLineHeight: 4px;
   padding: $headerOffsetY 0 0 $headerOffsetX;
 
   &.active {
-    background-color: #b8dbf6;
+    background-color: $activeHeaderBackgroundColor;
   }
 }
 

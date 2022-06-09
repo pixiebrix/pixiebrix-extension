@@ -34,7 +34,7 @@ $openHandleHeight: 24px;
   }
 
   &.parentIsActive {
-    background-color: #e8f3fc;
+    background-color: $parentActiveBackgroundColor;
   }
 }
 

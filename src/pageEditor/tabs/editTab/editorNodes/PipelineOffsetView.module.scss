@@ -26,6 +26,6 @@
   }
 
   &.parentIsActive {
-    background-color: #b8dbf6;
+    background-color: $activeHeaderBackgroundColor;
   }
 }

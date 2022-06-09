@@ -25,11 +25,11 @@ $pipeLineFooterWidth: 17px;
   border-bottom: 1px solid lightgrey;
 
   &.active {
-    background-color: #007bff;
+    background-color: $selectedListItemBackgroundColor;
   }
 
   &.parentIsActive {
-    background-color: #e8f3fc;
+    background-color: $parentActiveBackgroundColor;
   }
 }
 
