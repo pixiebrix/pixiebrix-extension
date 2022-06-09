@@ -22,11 +22,11 @@ import {
   baseSelectExtension,
   baseSelectExtensionPoint,
   cleanIsAvailable,
+  extensionWithNormalizedPipeline,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  extensionWithNormalizedPipeline,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   removeEmptyValues,
   selectIsAvailable,
@@ -43,7 +43,7 @@ import {
   ElementConfig,
   SingleLayerReaderConfig,
 } from "@/pageEditor/extensionPoints/elementConfig";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Alert } from "react-bootstrap";
 import {
   QuickBarConfig,
@@ -51,7 +51,6 @@ import {
   QuickBarExtensionPoint,
 } from "@/extensionPoints/quickBarExtension";
 import QuickBarConfiguration from "@/pageEditor/tabs/quickBar/QuickBarConfiguration";
-import { isEmpty } from "lodash";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { QuickBarFormState } from "./formStateTypes";

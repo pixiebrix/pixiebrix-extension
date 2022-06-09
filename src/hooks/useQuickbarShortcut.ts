@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
-import { isEmpty } from "lodash";
-
-const NO_SHORTCUT = "";
 
 function useQuickbarShortcut(): {
   shortcut: string | null;
   isConfigured: boolean;
 } {
-  const [shortcut, setShortcut] = useState(NO_SHORTCUT);
+  const [shortcut, setShortcut] = useState(null);
 
   useEffect(() => {
     chrome.commands.getAll((commands) => {
@@ -20,10 +17,11 @@ function useQuickbarShortcut(): {
     });
   }, []);
 
-  const isConfigured = !isEmpty(shortcut);
+  const isConfigured = shortcut !== "";
 
   return {
-    isConfigured,
+    // Optimistically return as isConfigured so interface doesn't show a warning
+    isConfigured: isConfigured || shortcut == null,
     shortcut: isConfigured ? shortcut : null,
   };
 }
