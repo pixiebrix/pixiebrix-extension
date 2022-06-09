@@ -94,7 +94,7 @@ const ActivateButton: React.FunctionComponent<{
 
   return (
     <AsyncButton size="sm" disabled={isPending} onClick={activateOrReinstall}>
-      <FontAwesomeIcon icon={faMagic} /> Activate
+      <FontAwesomeIcon icon={faMagic} /> {reinstall ? "Reactivate" : "Activate"}
     </AsyncButton>
   );
 };
