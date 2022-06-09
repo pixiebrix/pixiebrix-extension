@@ -41,7 +41,7 @@ import {
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
-import { get, isEmpty, join } from "lodash";
+import { get, isEmpty } from "lodash";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import {
   getDocumentPipelinePaths,
@@ -106,7 +106,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectExtensionTrace);
 
-  const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>(
+  const [collapsedState, setCollapsedState] = useState<Record<UUID, boolean>>(
     {}
   );
 
@@ -199,9 +199,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       }
 
       const hasSubPipelines = !isEmpty(subPipelines);
-      const collapsedKey = join([pipelinePath, index], ".");
-      // eslint-disable-next-line security/detect-object-injection -- constructed key
-      const collapsed = collapsedState[collapsedKey];
+      const collapsed = collapsedState[blockConfig.instanceId];
       const expanded = hasSubPipelines && !collapsed;
 
       const onClick = () => {
@@ -209,7 +207,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           if (hasSubPipelines) {
             setCollapsedState((previousState) => ({
               ...previousState,
-              [collapsedKey]: !collapsed,
+              [blockConfig.instanceId]: !collapsed,
             }));
           }
         } else {
