@@ -15,26 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
 
 let counter = 0;
 let timer: NodeJS.Timeout;
 
-function updateCounter(): void {
+function updateBadge(errorMessage: string | null): void {
+  void chrome.browserAction.setTitle({
+    title: errorMessage,
+  });
   void chrome.browserAction.setBadgeText({
     text: counter ? String(counter) : undefined,
   });
   void chrome.browserAction.setBadgeBackgroundColor({ color: "#F00" });
 }
 
-function backgroundErrorsBadge() {
+function backgroundErrorsBadge(_: unknown, error: unknown) {
   counter++;
-  updateCounter();
+  // Show the last error as tooltip
+  updateBadge(getErrorMessage(error));
+
   // Reset the counter after a minute of inactivity
   clearTimeout(timer);
   timer = setTimeout(() => {
     counter = 0;
-    updateCounter();
+    updateBadge(null); // Resets it
   }, 60_000);
 }
 
