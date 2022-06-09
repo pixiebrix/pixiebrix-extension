@@ -59,7 +59,7 @@ const EditorNodeLayout: React.FC<{
   ) => void;
   moveBlockUp: (instanceId: UUID) => void;
   moveBlockDown: (instanceId: UUID) => void;
-  pasteBlock?: (pipelineIndex: number) => void;
+  pasteBlock: (pipelinePath: string, pipelineIndex: number) => void | null;
 }> = ({
   nodes,
   allBlocks,
@@ -161,6 +161,16 @@ const EditorNodeLayout: React.FC<{
                             addBlock(block, subPipelinePath, 0);
                           }}
                         />
+                        {showPaste && (
+                          <TooltipIconButton
+                            name={`paste-brick-${nodeIndex}`}
+                            icon={faPaste}
+                            onClick={() => {
+                              pasteBlock(subPipelinePath, 0);
+                            }}
+                            tooltipText="Paste copied brick"
+                          />
+                        )}
                       </div>
                       <EditorNodeLayout
                         nodes={childNodes}
@@ -172,7 +182,7 @@ const EditorNodeLayout: React.FC<{
                         addBlock={addBlock}
                         moveBlockUp={null}
                         moveBlockDown={null}
-                        pasteBlock={null}
+                        pasteBlock={pasteBlock}
                       />
                     </ListGroup.Item>
                   )
@@ -204,7 +214,7 @@ const EditorNodeLayout: React.FC<{
                     name={`paste-brick-${nodeIndex}`}
                     icon={faPaste}
                     onClick={() => {
-                      pasteBlock(nodeIndex);
+                      pasteBlock(pipelinePath, blockIndex + 1);
                     }}
                     tooltipText="Paste copied brick"
                   />

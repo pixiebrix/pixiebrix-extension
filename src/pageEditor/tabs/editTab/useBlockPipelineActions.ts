@@ -20,7 +20,6 @@ import { IBlock, OutputKey, UUID } from "@/core";
 import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import { compact } from "lodash";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
-import { uuidv4 } from "@/types/helpers";
 import { produce } from "immer";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
@@ -29,6 +28,8 @@ import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { createNewBlock } from "@/pageEditor/createNewBlock";
+import { selectPipelineMap } from "@/pageEditor/slices/editorSelectors";
+import { uuidv4 } from "@/types/helpers";
 
 type BlockPipelineActions = {
   addBlock: (
@@ -40,7 +41,7 @@ type BlockPipelineActions = {
   moveBlockUp: (instanceId: UUID) => void;
   moveBlockDown: (instanceId: UUID) => void;
   copyBlock: (instanceId: UUID) => void;
-  pasteBlock?: (pipelineIndex: number) => void;
+  pasteBlock: (pipelinePath: string, pipelineIndex: number) => void | null;
 };
 
 function useBlockPipelineActions(
@@ -53,6 +54,7 @@ function useBlockPipelineActions(
 ): BlockPipelineActions {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
+  const pipelineMap = useSelector(selectPipelineMap);
 
   /**
    * This action will update the Redux state and propagate it to Formik.
@@ -142,9 +144,7 @@ function useBlockPipelineActions(
 
   const copyBlock = useCallback(
     (instanceId: UUID) => {
-      const blockToCopy = blockPipeline.find(
-        (block) => block.instanceId === instanceId
-      );
+      const blockToCopy = pipelineMap[instanceId]?.blockConfig;
       if (blockToCopy) {
         dispatch(actions.copyBlockConfig(blockToCopy));
       }
@@ -158,26 +158,21 @@ function useBlockPipelineActions(
 
   const pasteBlock = useMemo(() => {
     if (copiedBlock === undefined) {
-      return;
+      return null;
     }
 
-    return (pipelineIndex: number) => {
-      const nextState = produce(values, (draft) => {
-        const pipeline = draft.extension.blockPipeline;
-        // Give the block a new instanceId
-        const newInstanceId = uuidv4();
-        const pastedBlock: BlockConfig = {
-          ...copiedBlock,
-          instanceId: newInstanceId,
-        };
-        // Insert the block
-        pipeline.splice(pipelineIndex, 0, pastedBlock);
-        dispatch(actions.setElementActiveNodeId(newInstanceId));
-      });
-      setFormValues(nextState);
-      dispatch(actions.clearCopiedBlockConfig());
+    return (pipelinePath: string, pipelineIndex: number) => {
+      // Give the block a new instanceId
+      const newInstanceId = uuidv4();
+      const blockToPast: BlockConfig = {
+        ...copiedBlock,
+        instanceId: newInstanceId,
+      };
+      dispatch(
+        actions.addNode({ block: blockToPast, pipelinePath, pipelineIndex })
+      );
     };
-  }, [copiedBlock, dispatch, setFormValues, values]);
+  }, [copiedBlock, dispatch]);
 
   return {
     addBlock,
