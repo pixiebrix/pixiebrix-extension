@@ -36,6 +36,7 @@ export type BrickNodeProps = BrickNodeContentProps &
   MoveBrickControlProps & {
     onClick?: () => void;
     active?: boolean;
+    parentIsActive?: boolean;
     nestingLevel: number;
     hasSubPipelines?: boolean;
     collapsed?: boolean;
@@ -47,6 +48,7 @@ export type BrickNodeProps = BrickNodeContentProps &
 const BrickNode: React.VFC<BrickNodeProps> = ({
   onClick,
   active,
+  parentIsActive,
   icon,
   runStatus,
   brickLabel,
@@ -77,6 +79,7 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
         active={active}
         className={cx(styles.root, "list-group-item-action", {
           [styles.expanded]: hasSubPipelines && !collapsed,
+          [styles.parentIsActive]: parentIsActive,
         })}
         title={
           runStatus === RunStatus.SKIPPED

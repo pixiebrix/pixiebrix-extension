@@ -30,6 +30,10 @@ $headerPipeLineHeight: 4px;
   position: relative; // Allow children to position relative to this element
   background: #ebebf1;
   padding: $headerOffsetY 0 0 $headerOffsetX;
+
+  &.active {
+    background-color: #b8dbf6;
+  }
 }
 
 .subPipelineLabel {

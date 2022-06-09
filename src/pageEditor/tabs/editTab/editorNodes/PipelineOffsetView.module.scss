@@ -24,4 +24,8 @@
   &.active {
     border-color: white;
   }
+
+  &.parentIsActive {
+    background-color: #b8dbf6;
+  }
 }

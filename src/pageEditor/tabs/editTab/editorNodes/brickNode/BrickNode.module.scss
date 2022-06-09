@@ -32,6 +32,10 @@ $openHandleHeight: 24px;
   &.expanded {
     border-bottom: none;
   }
+
+  &.parentIsActive {
+    background-color: #e8f3fc;
+  }
 }
 
 .handleContainer {

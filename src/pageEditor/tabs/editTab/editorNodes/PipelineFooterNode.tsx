@@ -33,6 +33,7 @@ export type PipelineFooterNodeProps = {
   trailingMessage?: string;
   nestingLevel: number;
   active?: boolean;
+  parentIsActive?: boolean;
 };
 
 const PipelineFooterNode: React.VFC<PipelineFooterNodeProps> = ({
@@ -42,14 +43,29 @@ const PipelineFooterNode: React.VFC<PipelineFooterNodeProps> = ({
   trailingMessage,
   nestingLevel,
   active,
+  parentIsActive,
 }) => (
   <>
-    <div className={styles.footer}>
-      <PipelineOffsetView nestingLevel={nestingLevel} />
+    <div
+      className={cx(styles.footer, {
+        [styles.active]: active,
+        [styles.parentIsActive]: parentIsActive,
+      })}
+    >
+      <PipelineOffsetView nestingLevel={nestingLevel} active={active} />
       <div className={styles.pipelineContainer}>
-        <div className={cx(styles.pipelineEnd, { [styles.active]: active })} />
+        <div
+          className={cx(styles.pipelineEnd, {
+            [styles.active]: active && !parentIsActive,
+          })}
+        />
       </div>
-      <OutputKeyView outputKey={outputKey} className={styles.outputKey} />
+      <OutputKeyView
+        outputKey={outputKey}
+        className={cx(styles.outputKey, {
+          [styles.active]: active && !parentIsActive,
+        })}
+      />
     </div>
     <NodeActionsView
       nodeActions={nodeActions}

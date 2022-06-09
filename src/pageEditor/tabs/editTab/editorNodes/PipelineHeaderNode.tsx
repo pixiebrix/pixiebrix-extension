@@ -21,21 +21,24 @@ import NodeActionsView, {
 } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import styles from "./PipelineHeaderNode.module.scss";
 import PipelineOffsetView from "@/pageEditor/tabs/editTab/editorNodes/PipelineOffsetView";
+import cx from "classnames";
 
 export type PipelineHeaderNodeProps = {
   headerLabel: string;
   nestingLevel: number;
   nodeActions: NodeAction[];
+  active?: boolean;
 };
 
 const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   headerLabel,
   nestingLevel,
   nodeActions,
+  active,
 }) => (
   <div className={styles.root}>
-    <PipelineOffsetView nestingLevel={nestingLevel} />
-    <div className={styles.header}>
+    <PipelineOffsetView nestingLevel={nestingLevel} parentIsActive={active} />
+    <div className={cx(styles.header, { [styles.active]: active })}>
       <div className={styles.headerPipeLineTop} />
       <div className={styles.subPipelineLabel}>{headerLabel}</div>
       <div className={styles.headerPipeLineBottom} />

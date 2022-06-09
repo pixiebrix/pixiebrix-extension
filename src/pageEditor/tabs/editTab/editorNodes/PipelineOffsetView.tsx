@@ -23,18 +23,23 @@ import styles from "./PipelineOffsetView.module.scss";
 type PipelineOffsetViewProps = {
   nestingLevel: number;
   active?: boolean;
+  parentIsActive?: boolean;
 };
 
 const PipelineOffsetView: React.VFC<PipelineOffsetViewProps> = ({
   nestingLevel,
   active,
+  parentIsActive,
 }) => (
   <>
     {nestingLevel > 0 &&
       times(nestingLevel, (n) => (
         <div
           key={n}
-          className={cx(styles.pipeLine, { [styles.active]: active })}
+          className={cx(styles.pipeLine, {
+            [styles.active]: active,
+            [styles.parentIsActive]: parentIsActive,
+          })}
         />
       ))}
   </>

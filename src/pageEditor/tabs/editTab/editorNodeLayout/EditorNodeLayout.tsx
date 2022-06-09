@@ -128,7 +128,8 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   function mapPipelineToNodes(
     pipeline: BlockPipeline,
     pipelinePath = PIPELINE_BLOCKS_FIELD_NAME,
-    nestingLevel = 0
+    nestingLevel = 0,
+    parentIsActive = false
   ): EditorNodeProps[] {
     const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
     const relevantBlocks = isRootPipeline
@@ -305,6 +306,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
         onClickMoveDown,
         onClick,
         active: nodeIsActive,
+        parentIsActive,
         nestingLevel,
         hasSubPipelines,
         collapsed,
@@ -355,6 +357,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             headerLabel,
             nestingLevel,
             nodeActions: headerActions,
+            active: nodeIsActive || parentIsActive,
           };
 
           nodes.push(
@@ -366,7 +369,8 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             ...mapPipelineToNodes(
               subPipeline,
               subPipelinePath,
-              nestingLevel + 1
+              nestingLevel + 1,
+              nodeIsActive || parentIsActive
             )
           );
         }
@@ -378,6 +382,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           trailingMessage,
           nestingLevel,
           active: nodeIsActive,
+          parentIsActive,
         };
         nodes.push({
           type: "footer",

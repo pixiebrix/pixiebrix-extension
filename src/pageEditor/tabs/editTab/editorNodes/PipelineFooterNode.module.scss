@@ -23,6 +23,14 @@ $pipeLineFooterWidth: 17px;
   display: flex;
   align-items: stretch;
   border-bottom: 1px solid lightgrey;
+
+  &.active {
+    background-color: #007bff;
+  }
+
+  &.parentIsActive {
+    background-color: #e8f3fc;
+  }
 }
 
 .pipelineContainer {
@@ -47,4 +55,8 @@ $pipeLineFooterWidth: 17px;
 
 .outputKey {
   padding: 15px 0;
+
+  &.active {
+    color: white;
+  }
 }
