@@ -65,7 +65,7 @@ import {
   selectIsAddToRecipeModalVisible,
 } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
-import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useGetRecipesQuery } from "@/services/api";
 import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
@@ -167,9 +167,6 @@ const SidebarExpanded: React.VoidFunctionComponent<{
   const { data: allRecipes, isLoading: isLoadingRecipes } =
     useGetRecipesQuery();
 
-  const isInsertingElement = useSelector((state: EditorState) =>
-    Boolean(state.inserting)
-  );
   const activeElementId = useSelector(selectActiveElementId);
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const expandedRecipeId = useSelector(selectExpandedRecipeId);
@@ -349,7 +346,7 @@ const SidebarExpanded: React.VoidFunctionComponent<{
               <Logo />
             </a>
             <DropdownButton
-              disabled={isInsertingElement || !hasPermissions}
+              disabled={!hasPermissions}
               variant="info"
               size="sm"
               title="Add"
