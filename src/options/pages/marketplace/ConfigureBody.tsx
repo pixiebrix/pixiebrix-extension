@@ -138,8 +138,10 @@ const ConfigureBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => (
         {
           // Since 1.6.5, during reactivation all extensions are toggled on by default. This is to account for a
           // situation where a user upgrades to a new version of a blueprint that has additional required extensions.
-          // In the ability, we will likely remove the ability to toggle extensions altogether
+          // In the future, we will likely remove the ability to toggle extensions altogether
           // See https://github.com/pixiebrix/pixiebrix-extension/issues/3551 for more information.
+          // For now, we're just hard-coding the initialValue but keeping the parameter because we may want to
+          // reintroduce conditional logic in the future
           blueprint.extensionPoints.map((definition, index) => (
             <ConfigureRow
               key={index}
