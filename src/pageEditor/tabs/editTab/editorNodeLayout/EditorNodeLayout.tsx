@@ -396,7 +396,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       relevantBlocksToAdd={relevantBlocksForRootPipeline}
       nodeName={FOUNDATION_NODE_ID}
       onSelectBlock={(block) => {
-        addBlock(block, "", 0);
+        addBlock(block, PIPELINE_BLOCKS_FIELD_NAME, 0);
       }}
     />,
   ];
@@ -407,7 +407,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
         key={`${FOUNDATION_NODE_ID}-paste`}
         nodeName={FOUNDATION_NODE_ID}
         onClickPaste={() => {
-          pasteBlock("", 0);
+          pasteBlock(PIPELINE_BLOCKS_FIELD_NAME, 0);
         }}
       />
     );

@@ -30,6 +30,7 @@ import { PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
 import { get } from "lodash";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { joinElementName } from "@/components/documentBuilder/utils";
+import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
 export function collectRegistryIds(form: FormState): RegistryId[] {
   return [
@@ -135,7 +136,7 @@ export function getPipelineMap(blockPipeline: BlockPipeline) {
   const pipelineMap: PipelineMap = {};
   traversePipeline(
     blockPipeline,
-    "extension.blockPipeline",
+    PIPELINE_BLOCKS_FIELD_NAME,
     ({ blockConfig, index, path, pipelinePath, pipeline }) => {
       pipelineMap[blockConfig.instanceId] = {
         blockId: blockConfig.id,
