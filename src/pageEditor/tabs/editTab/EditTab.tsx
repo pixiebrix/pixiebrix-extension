@@ -52,7 +52,6 @@ import useReportTraceError from "./useReportTraceError";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { get } from "lodash";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import Loader from "@/components/Loader";
 import { BlockType } from "@/runtime/runtimeTypes";
 
@@ -106,8 +105,7 @@ const EditTab: React.FC<{
     usePipelineField(allBlocks, extensionPointType);
 
   const activeNodeId = useSelector(selectActiveNodeId);
-  const { blockId, path } = useSelector(selectActiveNodeInfo) ?? {};
-  const fieldName = `${PIPELINE_BLOCKS_FIELD_NAME}.${path}`;
+  const { blockId, path: fieldName } = useSelector(selectActiveNodeInfo) ?? {};
   const pipelineMap = useSelector(selectPipelineMap);
 
   const {
