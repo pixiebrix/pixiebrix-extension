@@ -265,11 +265,8 @@ exports[`can preview default pipeline 1`] = `
     class="root"
   >
     <h3>
-      Block
+      Brick
     </h3>
-    <p>
-      @pixiebrix/markdown
-    </p>
   </div>
 </DocumentFragment>
 `;
@@ -351,5 +348,23 @@ exports[`can preview default text 1`] = `
   >
     Paragraph text.
   </p>
+</DocumentFragment>
+`;
+
+exports[`can preview pipeline element with bricks 1`] = `
+<DocumentFragment>
+  <div
+    class="root"
+  >
+    <h3>
+      Brick
+    </h3>
+    <p>
+      testing/block-id_1
+    </p>
+    <p>
+      @pixiebrix/markdown
+    </p>
+  </div>
 </DocumentFragment>
 `;

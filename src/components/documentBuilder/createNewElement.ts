@@ -16,15 +16,7 @@
  */
 
 import { DocumentElement, DocumentElementType } from "./documentBuilderTypes";
-import { BlockConfig } from "@/blocks/types";
-import { MarkdownRenderer } from "@/blocks/renderers/markdown";
-import { uuidv4 } from "@/types/helpers";
-import { defaultBlockConfig } from "@/blocks/util";
-import { ConfettiEffect } from "@/blocks/effects/confetti";
 import { DeferExpression, PipelineExpression } from "@/runtime/mapArgs";
-
-const markdownBlock = new MarkdownRenderer();
-const confettiEffect = new ConfettiEffect();
 
 export function createNewElement(elementType: DocumentElementType) {
   const element: DocumentElement = {
@@ -61,14 +53,9 @@ export function createNewElement(elementType: DocumentElementType) {
       break;
 
     case "pipeline": {
-      const markdownConfig: BlockConfig = {
-        id: markdownBlock.id,
-        instanceId: uuidv4(),
-        config: defaultBlockConfig(markdownBlock.inputSchema),
-      };
       element.config.pipeline = {
         __type__: "pipeline",
-        __value__: [markdownConfig],
+        __value__: [],
       } as PipelineExpression;
       break;
     }
@@ -76,14 +63,9 @@ export function createNewElement(elementType: DocumentElementType) {
     case "button": {
       element.config.title = "Action";
 
-      const confettiConfig: BlockConfig = {
-        id: confettiEffect.id,
-        instanceId: uuidv4(),
-        config: defaultBlockConfig(confettiEffect.inputSchema),
-      };
       element.config.onClick = {
         __type__: "pipeline",
-        __value__: [confettiConfig],
+        __value__: [],
       } as PipelineExpression;
 
       break;

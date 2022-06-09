@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IBlock, IService } from "@/core";
+import { IBlock, IExtensionPoint, IService } from "@/core";
 import { BlockType } from "@/runtime/runtimeTypes";
 
 export default async function getType(
-  // HACK: including IService here is a hack to fix some call-sites. This method can only return block types
-  block: IBlock | IService
+  // HACK: including IService and IExtensionPoint here is a hack to fix some call-sites. This method can only return
+  // block types
+  block: IBlock | IService | IExtensionPoint
 ): Promise<BlockType | null> {
   if ("inferType" in block) {
     // For YAML-based blocks, can't use the method to determine the type because only the "run" method is available.

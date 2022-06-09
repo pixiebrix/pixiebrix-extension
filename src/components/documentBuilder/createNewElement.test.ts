@@ -20,9 +20,7 @@ import {
   DocumentElementType,
   DOCUMENT_ELEMENT_TYPES,
 } from "./documentBuilderTypes";
-import { defaultBlockConfig } from "@/blocks/util";
-import { MarkdownRenderer } from "@/blocks/renderers/markdown";
-import { ConfettiEffect } from "@/blocks/effects/confetti";
+import { BlockPipeline } from "@/blocks/types";
 
 test.each(DOCUMENT_ELEMENT_TYPES)(
   "sets correct element type for %s",
@@ -78,17 +76,10 @@ test("sets default config and children for card", () => {
 });
 
 test("sets default config for block", () => {
-  const markdownBlock = new MarkdownRenderer();
   const expectedConfig = {
     pipeline: {
       __type__: "pipeline",
-      __value__: [
-        {
-          id: markdownBlock.id,
-          instanceId: expect.any(String),
-          config: defaultBlockConfig(markdownBlock.inputSchema),
-        },
-      ],
+      __value__: [] as BlockPipeline,
     },
   };
   const actual = createNewElement("pipeline");
@@ -97,18 +88,11 @@ test("sets default config for block", () => {
 });
 
 test("sets default config for button", () => {
-  const confettiEffect = new ConfettiEffect();
   const expectedConfig = {
     title: "Action",
     onClick: {
       __type__: "pipeline",
-      __value__: [
-        {
-          id: confettiEffect.id,
-          instanceId: expect.any(String),
-          config: defaultBlockConfig(confettiEffect.inputSchema),
-        },
-      ],
+      __value__: [] as BlockPipeline,
     },
   };
 
