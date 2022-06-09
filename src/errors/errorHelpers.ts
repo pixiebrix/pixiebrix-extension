@@ -16,7 +16,7 @@
  */
 
 import { deserializeError, ErrorObject } from "serialize-error";
-import { isObject, matchesAnyPattern } from "@/utils";
+import { isObject, matchesAnyPattern, smartAppendPeriod } from "@/utils";
 import safeJsonStringify from "json-stringify-safe";
 import { truncate } from "lodash";
 import type { ContextError } from "@/errors/genericErrors";
@@ -210,6 +210,34 @@ export function getErrorMessage(
   }
 
   return String(selectError(error).message ?? defaultMessage);
+}
+
+export function getErrorMessageWithCauses(
+  error: unknown,
+  defaultMessage = DEFAULT_ERROR_MESSAGE
+): string {
+  if (isErrorObject(error) && error.cause) {
+    return getErrorCauseList(error)
+      .map((error) => smartAppendPeriod(getErrorMessage(error)))
+      .join("\n");
+  }
+
+  // Handle cause-less messages more simply, they don't need to end with a period.
+  return getErrorMessage(error, defaultMessage);
+}
+
+/***
+ * Return chain of error causes (including the top-level error)
+ */
+export function getErrorCauseList(error: unknown): unknown[] {
+  const errors = [];
+
+  while (error != null) {
+    errors.push(error);
+    error = (error as Error)?.cause;
+  }
+
+  return errors;
 }
 
 /**
