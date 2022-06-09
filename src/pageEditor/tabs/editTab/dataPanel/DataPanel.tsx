@@ -20,7 +20,7 @@ import React, { useMemo } from "react";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isEmpty, isEqual, pickBy } from "lodash";
 import { useFormikContext } from "formik";
-import { Button, Nav, Tab } from "react-bootstrap";
+import { Nav, Tab } from "react-bootstrap";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -37,7 +37,6 @@ import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DataTab from "./DataTab";
 import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import DocumentPreview from "@/components/documentBuilder/preview/DocumentPreview";
-import copy from "copy-to-clipboard";
 import useFlags from "@/hooks/useFlags";
 import ErrorDisplay from "./ErrorDisplay";
 import PageStateTab from "./PageStateTab";
@@ -232,6 +231,7 @@ const DataPanel: React.FC = () => {
               copyable
               searchable
               tabKey={DataPanelTabKey.Context}
+              label="Context"
             />
           </DataTab>
           {showPageState && (
@@ -250,6 +250,7 @@ const DataPanel: React.FC = () => {
                   data={{ ...activeElement, ...formikErrors }}
                   searchable
                   tabKey={DataPanelTabKey.Formik}
+                  label="Formik State"
                 />
               </DataTab>
               <DataTab eventKey={DataPanelTabKey.BlockConfig}>
@@ -260,15 +261,8 @@ const DataPanel: React.FC = () => {
                 <DataTabJsonTree
                   data={blockConfig ?? {}}
                   tabKey={DataPanelTabKey.BlockConfig}
+                  label="Configuration"
                 />
-                <Button
-                  onClick={() => {
-                    copy(JSON.stringify(blockConfig, undefined, 2));
-                  }}
-                  size="sm"
-                >
-                  Copy JSON
-                </Button>
               </DataTab>
             </>
           )}
@@ -328,7 +322,7 @@ const DataPanel: React.FC = () => {
                   copyable
                   searchable
                   tabKey={DataPanelTabKey.Output}
-                  label="Data"
+                  label="Output Data"
                 />
               </>
             )}

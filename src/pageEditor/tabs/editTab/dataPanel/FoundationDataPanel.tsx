@@ -107,6 +107,7 @@ const FoundationDataPanel: React.FC<{
                 data={formState ?? {}}
                 searchable
                 tabKey={DataPanelTabKey.Formik}
+                label="Formik State"
               />
             </Tab.Pane>
             <Tab.Pane
@@ -122,6 +123,7 @@ const FoundationDataPanel: React.FC<{
               <DataTabJsonTree
                 data={extensionPoint}
                 tabKey={DataPanelTabKey.BlockConfig}
+                label="Configuration"
               />
             </Tab.Pane>
           </>
@@ -147,7 +149,7 @@ const FoundationDataPanel: React.FC<{
               copyable
               searchable
               tabKey={DataPanelTabKey.Output}
-              label="Data"
+              label="Output Data"
             />
           ) : (
             <div className="text-muted">
