@@ -17,32 +17,21 @@
 
 import React from "react";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
-import { selectSpecificError } from "@/errors/errorHelpers";
+import {
+  getErrorMessageWithCauses,
+  selectSpecificError,
+} from "@/errors/errorHelpers";
 import { ErrorObject } from "serialize-error";
 import InputValidationErrorDetail from "./InputValidationErrorDetail";
 import NetworkErrorDetail from "./NetworkErrorDetail";
 import OutputValidationErrorDetail from "./OutputValidationErrorDetail";
 import { Col, Row } from "react-bootstrap";
-import { UnknownObject } from "@/types";
 import { ClientRequestError } from "@/errors/clientRequestErrors";
-import { isObject } from "@/utils";
 
 type ErrorDetails = {
   title: string;
   detailsElement: React.ReactElement;
 };
-
-/**
- * Find the root cause
- * @deprecated Look for specific errors via selectSpecificError
- */
-function getRootCause(error: unknown): unknown {
-  while (isObject(error) && error.cause != null) {
-    error = error.cause;
-  }
-
-  return error;
-}
 
 export default function getErrorDetails(error: ErrorObject): ErrorDetails {
   const inputValidationError = selectSpecificError(error, InputValidationError);
@@ -76,17 +65,11 @@ export default function getErrorDetails(error: ErrorObject): ErrorDetails {
     };
   }
 
-  // TODO: Use getErrorMessage instead, or something that combines the whole error cause stack
-  const { name = "Error", message = "Unknown error" } = (getRootCause(error) ??
-    {}) as UnknownObject;
-
   return {
     title: "Error",
     detailsElement: (
       <Row>
-        <Col>
-          {name}: {message}
-        </Col>
+        <Col>{getErrorMessageWithCauses(error)}</Col>
       </Row>
     ),
   };

@@ -16,52 +16,12 @@
  */
 
 import React from "react";
-import { PipelineDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import { Col, Row } from "react-bootstrap";
-import ElementBlockEdit from "@/components/documentBuilder/edit/ElementBlockEdit";
-import { useField } from "formik";
-import { BlockConfig } from "@/blocks/types";
-import { produce } from "immer";
 
-type PipelineOptionsProps = {
-  elementName: string;
-};
-
-const PipelineOptions: React.FC<PipelineOptionsProps> = ({ elementName }) => {
-  const [{ value: documentElement }, , { setValue: setDocumentElement }] =
-    useField<PipelineDocumentElement>(elementName);
-
-  const pipelineValue = documentElement.config.pipeline.__value__;
-  if (pipelineValue.length > 1) {
-    return (
-      <Row>
-        <Col>Use Workshop to edit a pipeline made of multiple bricks.</Col>
-      </Row>
-    );
-  }
-
-  const pipelineConfigName = `${elementName}.config.pipeline.__value__.0`;
-  const pipelineConfig = pipelineValue[0];
-
-  const onPipelineBlockSelected = (blockConfig: BlockConfig) => {
-    const nextDocumentElement = produce(
-      documentElement,
-      (draft: PipelineDocumentElement) => {
-        draft.config.pipeline.__value__ = [blockConfig];
-      }
-    );
-
-    setDocumentElement(nextDocumentElement);
-  };
-
-  return (
-    <ElementBlockEdit
-      blockTypes={["renderer"]}
-      blockConfigName={pipelineConfigName}
-      blockConfig={pipelineConfig}
-      onBlockSelected={onPipelineBlockSelected}
-    />
-  );
-};
+const PipelineOptions: React.FC = () => (
+  <Row>
+    <Col>Use the Nodes Tree on the left to edit the nested pipeline.</Col>
+  </Row>
+);
 
 export default PipelineOptions;

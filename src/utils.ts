@@ -574,3 +574,26 @@ export function getScopeAndId(
   const [scope, ...idParts] = split(value, "/");
   return [scope, idParts.join("/")];
 }
+
+const punctuation = [...".,;:?!"];
+
+/**
+ * Appends a period to a string as long as it doesn't end with one.
+ * Considers quotes and parentheses and it always trims the trailing spaces.
+ */
+export function smartAppendPeriod(string: string): string {
+  const trimmed = string.trimEnd();
+  const [secondLastChar, lastChar] = trimmed.slice(-2);
+  if (punctuation.includes(lastChar) || punctuation.includes(secondLastChar)) {
+    // Already punctuated
+    return trimmed;
+  }
+
+  // Else: No punctuation, find where to place it
+
+  if (lastChar === '"' || lastChar === "'") {
+    return trimmed.slice(0, -1) + "." + lastChar;
+  }
+
+  return trimmed + ".";
+}

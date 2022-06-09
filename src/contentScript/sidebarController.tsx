@@ -20,7 +20,7 @@ import { uuidv4 } from "@/types/helpers";
 import { IS_BROWSER } from "@/helpers";
 import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
-import { ExtensionRef, RegistryId, UUID } from "@/core";
+import { ExtensionRef, RegistryId, RunArgs, RunReason, UUID } from "@/core";
 import type {
   SidebarEntries,
   FormEntry,
@@ -50,7 +50,7 @@ export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-margin-right";
  */
 let renderSequenceNumber = 0;
 
-export type ShowCallback = () => void;
+export type ShowCallback = (args: RunArgs) => void;
 
 const panels: PanelEntry[] = [];
 const extensionCallbacks: ShowCallback[] = [];
@@ -142,7 +142,7 @@ export function showSidebar(
   // all the callbacks ensures the content is up-to-date
   for (const callback of callbacks) {
     try {
-      callback();
+      callback({ reason: RunReason.MANUAL });
     } catch (error) {
       // The callbacks should each have their own error handling. But wrap in a try-catch to ensure running
       // the callbacks does not interfere prevent showing the sidebar

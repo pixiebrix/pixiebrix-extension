@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ChangeEvent } from "react";
+import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Card } from "react-bootstrap";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
@@ -24,20 +24,16 @@ import LocationWidget from "@/pageEditor/fields/LocationWidget";
 import { useField, useFormikContext } from "formik";
 import { TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
-  DebounceOptions,
   getDefaultReportModeForTrigger,
   Trigger,
 } from "@/extensionPoints/triggerExtension";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
-import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget";
-import FieldTemplate from "@/components/form/FieldTemplate";
-import { isEmpty, partial } from "lodash";
+import { partial } from "lodash";
 import { joinName } from "@/utils";
-import SwitchButtonWidget, {
-  CheckBoxLike,
-} from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
+import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
+import { DebounceOptions } from "@/extensionPoints/types";
 
 function supportsSelector(trigger: Trigger) {
   return !["load", "interval", "selectionchange"].includes(trigger);
@@ -207,47 +203,7 @@ const TriggerConfiguration: React.FC<{
           </ConnectedFieldTemplate>
         )}
 
-        <FieldTemplate
-          as={SwitchButtonWidget}
-          description="Debounce the trigger"
-          name="debounce"
-          value={!isEmpty(debounce)}
-          onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
-            if (target.value) {
-              setFieldValue(fieldName("debounce"), {
-                waitMillis: 250,
-                leading: false,
-                trailing: true,
-              });
-            } else {
-              setFieldValue(fieldName("debounce"), null);
-            }
-          }}
-          {...makeLockableFieldProps("Debounce", isLocked)}
-        />
-
-        {debounce && (
-          <>
-            <ConnectedFieldTemplate
-              name={fieldName("debounce", "waitMillis")}
-              as={NumberWidget}
-              description="The number of milliseconds to delay"
-              {...makeLockableFieldProps("Delay Millis", isLocked)}
-            />
-            <ConnectedFieldTemplate
-              name={fieldName("debounce", "leading")}
-              as={BooleanWidget}
-              description="Specify invoking on the leading edge of the debounced timeout."
-              {...makeLockableFieldProps("Leading", isLocked)}
-            />
-            <ConnectedFieldTemplate
-              name={fieldName("debounce", "trailing")}
-              as={BooleanWidget}
-              description="Specify invoking on the trailing edge of the debounced timeout."
-              {...makeLockableFieldProps("Trailing", isLocked)}
-            />
-          </>
-        )}
+        <DebounceFieldSet isLocked={isLocked} />
 
         <UrlMatchPatternField
           name={fieldName("isAvailable", "matchPatterns")}

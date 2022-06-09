@@ -19,10 +19,10 @@ $maxHeight: calc(100vh - 100px);
 $bootstrapPadding: 15px;
 
 .root {
-  display: grid;
+  display: grid !important;
   place-content: center center;
   & > :first-child {
-    margin: 20px auto;
+    margin: auto;
     width: 89vw;
     max-width: 1220px; // Fits 3 "recommended bricks" columns
   }

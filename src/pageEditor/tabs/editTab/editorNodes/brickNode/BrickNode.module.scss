@@ -1,0 +1,68 @@
+/*!
+ * Copyright (C) 2022 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+@import "@/pageEditor/tabs/editTab/editTabVariables.scss";
+
+$closedHandleHeight: 38px;
+$closedHandleWidth: 24px;
+$closedHandleMarginBottom: 2px;
+$openHandleHeight: 24px;
+
+.root {
+  display: flex;
+  align-items: stretch;
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 0;
+
+  &.expanded {
+    border-bottom: none;
+  }
+}
+
+.handleContainer {
+  width: 0;
+  position: relative; // Allow handle to be positioned
+}
+
+.closedHandle {
+  position: absolute;
+  bottom: $closedHandleMarginBottom;
+  left: calc(#{$pipeLineOffset} - #{$pipeLineBorderWidth});
+  width: $closedHandleWidth;
+  height: $closedHandleHeight;
+  border-radius: 0 0 0 $closedHandleWidth/2;
+  border-left: $pipeLineBorderWidth solid black;
+  border-bottom: $pipeLineBorderWidth solid black;
+
+  &.active {
+    border-color: white;
+  }
+}
+
+.openHandle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: $pipeLineOffset;
+  height: $openHandleHeight;
+  border-right: $pipeLineBorderWidth solid black;
+
+  &.active {
+    border-color: white;
+  }
+}

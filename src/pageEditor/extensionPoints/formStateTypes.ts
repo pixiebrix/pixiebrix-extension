@@ -32,16 +32,21 @@ import {
   QuickBarDefaultOptions,
   QuickBarTargetMode,
 } from "@/extensionPoints/quickBarExtension";
-import { SidebarConfig } from "@/extensionPoints/sidebarExtension";
+import {
+  SidebarConfig,
+  Trigger as SidebarTrigger,
+} from "@/extensionPoints/sidebarExtension";
 import {
   AttachMode,
-  CustomEventOptions,
-  DebounceOptions,
   ReportMode,
   TargetMode,
-  Trigger,
+  Trigger as TriggerTrigger,
 } from "@/extensionPoints/triggerExtension";
-import { ExtensionPointType } from "@/extensionPoints/types";
+import {
+  CustomEventOptions,
+  DebounceOptions,
+  ExtensionPointType,
+} from "@/extensionPoints/types";
 import { Except } from "type-fest";
 import { Menus } from "webextension-polyfill";
 import {
@@ -79,7 +84,30 @@ export interface ActionFormState
 // SidebarFormState
 type SidebarExtensionState = BaseExtensionState & Except<SidebarConfig, "body">;
 
-export interface SidebarFormState extends BaseFormState<SidebarExtensionState> {
+export type SidebarExtensionPointState = BaseExtensionPointState & {
+  definition: BaseExtensionPointState["definition"] & {
+    /**
+     * Sidebar trigger (default="load")
+     * @since 1.6.5
+     */
+    trigger: SidebarTrigger;
+
+    /**
+     * Debouncing props
+     * @since 1.6.5
+     */
+    debounce: DebounceOptions | null;
+
+    /**
+     * Custom trigger props
+     * @since 1.6.5
+     */
+    customEvent: CustomEventOptions | null;
+  };
+};
+
+export interface SidebarFormState
+  extends BaseFormState<SidebarExtensionState, SidebarExtensionPointState> {
   type: "actionPanel";
 }
 
@@ -88,7 +116,7 @@ export type TriggerExtensionPointState = BaseExtensionPointState & {
   definition: {
     type: ExtensionPointType;
     rootSelector: string | null;
-    trigger: Trigger;
+    trigger: TriggerTrigger;
     reader: SingleLayerReaderConfig;
     attachMode: AttachMode;
     targetMode: TargetMode;

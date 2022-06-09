@@ -575,7 +575,7 @@ exports[`Template render error 1`] = `
     <div
       class="col"
     >
-      Template render error: (unknown path) [Line 1, Column 3]
+      (unknown path) [Line 1, Column 3]
   parseAggregate: expected colon after dict key
     </div>
   </div>

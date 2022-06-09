@@ -27,11 +27,15 @@ import {
   Metadata,
   ReaderOutput,
   ResolvedExtension,
+  RunArgs,
+  RunReason,
   Schema,
   UUID,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
+  CustomEventOptions,
+  DebounceOptions,
   ExtensionPoint,
   ExtensionPointConfig,
   ExtensionPointDefinition,
@@ -54,7 +58,7 @@ import { uuidv4 } from "@/types/helpers";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { HeadlessModeError } from "@/blocks/errors";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { cloneDeep } from "lodash";
+import { cloneDeep, debounce } from "lodash";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
@@ -68,15 +72,54 @@ export type SidebarConfig = {
   body: BlockConfig | BlockPipeline;
 };
 
+export type Trigger =
+  // `load` is page load/navigation (default for backward compatability)
+  | "load"
+  // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
+  | "selectionchange"
+  // Manually, e.g., via the Page Editor or Show Sidebar brick
+  | "manual"
+  // A custom event configured by the user
+  | "custom";
+
 export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig> {
+  abstract get trigger(): Trigger;
+
+  abstract get debounceOptions(): DebounceOptions;
+
+  abstract get customTriggerOptions(): CustomEventOptions;
+
   readonly permissions: Permissions.Permissions = {};
 
   readonly showCallback: ShowCallback;
 
+  /**
+   * Controller to drop all listeners and timers
+   * @private
+   */
+  private abortController = new AbortController();
+
+  private installedListeners = false;
+
+  /**
+   * A bound version of eventHandler
+   * @private
+   */
+  private readonly boundEventHandler: JQuery.EventHandler<unknown>;
+
   protected constructor(metadata: Metadata, logger: Logger) {
     super(metadata, logger);
     this.showCallback = SidebarExtensionPoint.prototype.run.bind(this);
+    // Bind so we can pass as callback
+    this.boundEventHandler = this.eventHandler.bind(this);
   }
+
+  /**
+   * Refresh all panels for the extension point
+   * @private
+   */
+  // Can't set in constructor because the constructor doesn't have access to debounceOptions
+  private debouncedRefreshPanelsAndNotify?: () => Promise<void>;
 
   inputSchema: Schema = propertiesToSchema(
     {
@@ -117,6 +160,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
     this.removeExtensions();
     removeExtensionPoint(this.id);
     removeShowCallback(this.showCallback);
+    this.cancelListeners();
   }
 
   /**
@@ -187,15 +231,81 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
     }
   }
 
-  async run(extensionIds?: string[]): Promise<void> {
+  /**
+   * DO NOT CALL DIRECTLY - call debouncedRefreshPanels
+   */
+  private async refreshPanels(): Promise<void> {
+    const reader = await this.defaultReader();
+
+    const readerContext = await reader.read(document);
+
+    const errors: unknown[] = [];
+
+    // OK to run in parallel because we've fixed the order the panels appear in reservePanels
+    await Promise.all(
+      this.extensions.map(async (extension) => {
+        try {
+          await this.runExtension(readerContext, extension);
+        } catch (error) {
+          errors.push(error);
+          this.logger
+            .childLogger({
+              deploymentId: extension._deployment?.id,
+              extensionId: extension.id,
+            })
+            .error(error);
+        }
+      })
+    );
+
+    if (errors.length > 0) {
+      notify.error(`An error occurred adding ${errors.length} panels(s)`);
+    }
+  }
+
+  addCancelHandler(callback: () => void): void {
+    this.abortController.signal.addEventListener("abort", callback);
+  }
+
+  cancelListeners(): void {
+    // Inform registered listeners
+    this.abortController.abort();
+
+    // Allow new registrations
+    this.abortController = new AbortController();
+
+    this.installedListeners = false;
+  }
+
+  /**
+   * Shared event handler for DOM event triggers
+   */
+  private readonly eventHandler: JQuery.EventHandler<unknown> = async () =>
+    this.debouncedRefreshPanelsAndNotify();
+
+  private attachEventTrigger(eventName: string): void {
+    const $document = $(document);
+
+    $document.off(eventName, this.boundEventHandler);
+
+    // Install the DOM trigger
+    $document.on(eventName, this.boundEventHandler);
+
+    this.addCancelHandler(() => {
+      $document.off(eventName, this.boundEventHandler);
+    });
+  }
+
+  async run({ reason }: RunArgs): Promise<void> {
     if (!(await this.isAvailable())) {
+      // Keep sidebar up-to-date regardless of trigger policy
       removeExtensionPoint(this.id);
       return;
     }
 
     if (this.extensions.length === 0) {
       console.debug(
-        "sidebar extension point %s has no installed extensions",
+        "Sidebar extension point %s has no installed extensions",
         this.id
       );
       return;
@@ -217,38 +327,25 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
       }))
     );
 
-    const reader = await this.defaultReader();
-
-    const readerContext = await reader.read(document);
-    if (readerContext == null) {
-      throw new Error("Reader returned null/undefined");
+    // On the initial run or a manual run, run directly
+    if (
+      this.trigger === "load" ||
+      [RunReason.MANUAL, RunReason.INITIAL_LOAD].includes(reason)
+    ) {
+      void this.debouncedRefreshPanelsAndNotify();
     }
 
-    const errors: unknown[] = [];
+    if (!this.installedListeners) {
+      if (this.trigger === "selectionchange") {
+        this.attachEventTrigger(this.trigger);
+      } else if (
+        this.trigger === "custom" &&
+        this.customTriggerOptions?.eventName
+      ) {
+        this.attachEventTrigger(this.customTriggerOptions?.eventName);
+      }
 
-    const toRun = this.extensions.filter(
-      (x) => extensionIds == null || extensionIds.includes(x.id)
-    );
-
-    // OK to run in parallel because we've fixed the order the panels appear in reservePanels
-    await Promise.all(
-      toRun.map(async (extension) => {
-        try {
-          await this.runExtension(readerContext, extension);
-        } catch (error) {
-          errors.push(error);
-          this.logger
-            .childLogger({
-              deploymentId: extension._deployment?.id,
-              extensionId: extension.id,
-            })
-            .error(error);
-        }
-      })
-    );
-
-    if (errors.length > 0) {
-      notify.error(`An error occurred adding ${errors.length} panels(s)`);
+      this.installedListeners = true;
     }
   }
 
@@ -260,11 +357,40 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
       removeExtensionPoint(this.id);
     }
 
+    const boundRefresh = this.refreshPanels.bind(this);
+
+    this.debouncedRefreshPanelsAndNotify = this.debounceOptions
+      ? debounce(boundRefresh, this.debounceOptions.waitMillis ?? 0, {
+          ...this.debounceOptions,
+        })
+      : boundRefresh;
+
     return available;
   }
 }
 
-export type PanelDefinition = ExtensionPointDefinition;
+export interface PanelDefinition extends ExtensionPointDefinition {
+  /**
+   * The trigger to refresh the panel
+   *
+   * @since 1.6.5
+   */
+  trigger?: Trigger;
+
+  /**
+   * For `custom` trigger, the custom event trigger options.
+   *
+   * @since 1.6.5
+   */
+  customEvent?: CustomEventOptions;
+
+  /**
+   * Options for debouncing the overall refresh of the panel
+   *
+   * @since 1.6.5
+   */
+  debounce?: DebounceOptions;
+}
 
 class RemotePanelExtensionPoint extends SidebarExtensionPoint {
   private readonly definition: PanelDefinition;
@@ -281,6 +407,19 @@ class RemotePanelExtensionPoint extends SidebarExtensionPoint {
 
   override async defaultReader(): Promise<IReader> {
     return mergeReaders(this.definition.reader);
+  }
+
+  get debounceOptions(): DebounceOptions | null {
+    return this.definition.debounce;
+  }
+
+  get customTriggerOptions(): CustomEventOptions | null {
+    return this.definition.customEvent;
+  }
+
+  get trigger(): Trigger {
+    // Default to load for backward compatability
+    return this.definition.trigger ?? "load";
   }
 
   async isAvailable(): Promise<boolean> {

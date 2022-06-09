@@ -32,7 +32,6 @@ import { mergePermissions } from "@/utils/permissions";
 import { Permissions } from "webextension-polyfill";
 import { IExtension, RegistryId, UUID } from "@/core";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
-import chromeP from "webext-polyfill-kinda";
 import extensionsSlice from "@/store/extensionsSlice";
 import useFlags from "@/hooks/useFlags";
 import {
@@ -190,7 +189,7 @@ function useDeployments(): DeploymentState {
     }
 
     if (checkExtensionUpdateRequired(deployments)) {
-      await chromeP.runtime.requestUpdateCheck();
+      await browser.runtime.requestUpdateCheck();
       notify.warning(
         "You must update the PixieBrix browser extension to activate the deployment"
       );
@@ -226,7 +225,7 @@ function useDeployments(): DeploymentState {
   }, [deployments, dispatch, installedExtensions]);
 
   const updateExtension = useCallback(async () => {
-    await chromeP.runtime.requestUpdateCheck();
+    await browser.runtime.requestUpdateCheck();
     browser.runtime.reload();
   }, []);
 
