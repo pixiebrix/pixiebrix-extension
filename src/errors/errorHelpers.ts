@@ -273,6 +273,18 @@ export function selectErrorFromRejectionEvent(
  * The result is suitable for passing to Rollbar (which treats Errors and objects differently.)
  */
 export function selectError(originalError: unknown): Error {
+  // Be defensive here for ErrorEvent. The method should only be called with errors, though.
+  // See reportUncaughtErrors
+  if (originalError instanceof ErrorEvent) {
+    return selectErrorFromEvent(originalError);
+  }
+
+  // Be defensive here for PromiseRejectionEvent. The method should only be called with errors, though.
+  // See reportUncaughtErrors
+  if (originalError instanceof PromiseRejectionEvent) {
+    return selectErrorFromRejectionEvent(originalError);
+  }
+
   const error = originalError;
 
   if (error instanceof Error) {
