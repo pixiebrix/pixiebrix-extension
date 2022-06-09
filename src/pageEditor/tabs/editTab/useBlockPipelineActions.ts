@@ -27,7 +27,7 @@ import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
+import { NodeId } from "@/pageEditor/tabs/editTab/editorNodes/EditorNode";
 import { createNewBlock } from "@/pageEditor/createNewBlock";
 import { PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
 import { getIn } from "formik";

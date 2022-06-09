@@ -31,7 +31,7 @@ import {
   OptionsDefinition,
   RecipeMetadataFormState,
 } from "@/types/definitions";
-import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
+import { NodeId } from "@/pageEditor/tabs/editTab/editorNodes/EditorNode";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";

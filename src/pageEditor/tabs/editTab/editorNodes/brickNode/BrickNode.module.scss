@@ -25,7 +25,6 @@ $openHandleHeight: $closedHandleSize + $closedHandleMarginBottom;
   display: flex;
   align-items: center;
   font-size: 0.875rem;
-  padding: 20px 0 20px $defaultNodePaddingLeft;
   cursor: pointer;
 
   &.expanded {
@@ -33,8 +32,13 @@ $openHandleHeight: $closedHandleSize + $closedHandleMarginBottom;
   }
 }
 
+.handleContainer {
+  width: 0;
+  position: relative; // Allow handle to be positioned relative
+}
+
 .closedHandle {
-  position: absolute;
+  position: relative;
   bottom: $closedHandleMarginBottom;
   left: $pipeLineOffset;
   width: $closedHandleSize;
@@ -46,14 +50,10 @@ $openHandleHeight: $closedHandleSize + $closedHandleMarginBottom;
   &.active {
     border-color: white;
   }
-
-  &.nested {
-    left: calc(#{$pipeLineOffset} * 2 + #{$pipeLineBorderWidth});
-  }
 }
 
 .openHandle {
-  position: absolute;
+  position: relative;
   bottom: 0;
   left: 0;
   width: $pipeLineOffset;
@@ -63,39 +63,8 @@ $openHandleHeight: $closedHandleSize + $closedHandleMarginBottom;
   &.active {
     border-color: white;
   }
-
-  &.nested {
-    left: $pipeLineOffset;
-  }
 }
-
-.moveButtons {
-  margin-left: auto;
-}
-
-.moveButton {
-  border: none;
-  background: none;
-  color: inherit;
-  display: block;
-  padding: 0.4em;
-  svg {
-    display: block;
-  }
-
-  &:enabled:hover {
-    background-color: #0002;
-
-    .activeNode & {
-      background-color: #fff6;
-    }
-  }
-
-  &:disabled {
-    opacity: 0.5;
-  }
-}
-
-.nestedNode {
-  padding-left: $contentOffset;
+.trailingMessage {
+  padding: 0 2em 1em;
+  text-align: center;
 }

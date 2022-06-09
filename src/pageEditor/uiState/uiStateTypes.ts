@@ -16,7 +16,7 @@
  */
 
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
-import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
+import { NodeId } from "@/pageEditor/tabs/editTab/editorNodes/EditorNode";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { RegistryId, UUID } from "@/core";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";

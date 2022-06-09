@@ -46,16 +46,15 @@ import TooltipIconButton from "@/components/TooltipIconButton";
 import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import useFlags from "@/hooks/useFlags";
-import { BlockType } from "@/runtime/runtimeTypes";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import useReportTraceError from "./useReportTraceError";
-import useNodes from "./useNodes";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { get } from "lodash";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import { useNodeAdapter } from "@/pageEditor/tabs/editTab/useNodeAdapter";
+import Loader from "@/components/Loader";
+import { BlockType } from "@/runtime/runtimeTypes";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -74,16 +73,34 @@ const EditTab: React.FC<{
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
-  const { label, icon, EditorNode } = useMemo(
-    () => ADAPTERS.get(extensionPointType),
-    [extensionPointType]
-  );
+  const {
+    label: extensionPointLabel,
+    icon: extensionPointIcon,
+    EditorNode,
+  } = useMemo(() => ADAPTERS.get(extensionPointType), [extensionPointType]);
 
-  const [allBlocks] = useAsyncState<TypedBlockMap>(
+  const [allBlocks, isLoadingAllBlocks] = useAsyncState<TypedBlockMap>(
     async () => blockRegistry.allTyped(),
     [],
     new Map()
   );
+
+  const [relevantBlocksForRootPipeline, isLoadingRelevantBlocks] =
+    useAsyncState(
+      async () => {
+        const excludeType: BlockType = ["actionPanel", "panel"].includes(
+          extensionPointType
+        )
+          ? "effect"
+          : "renderer";
+
+        return [...allBlocks.values()]
+          .filter(({ type }) => type != null && type !== excludeType)
+          .map(({ block }) => block);
+      },
+      [allBlocks, extensionPointType],
+      []
+    );
 
   const { blockPipeline, blockPipelineErrors, errorTraceEntry } =
     usePipelineField(allBlocks, extensionPointType);
@@ -101,40 +118,6 @@ const EditTab: React.FC<{
     copyBlock,
     pasteBlock,
   } = useBlockPipelineActions(pipelineMap, values, setFormValues);
-
-  const nodes = useNodes({
-    pipeline: blockPipeline,
-    pipelineErrors: blockPipelineErrors,
-    errorTraceEntry,
-    label,
-    icon,
-    allBlocks,
-  });
-
-  const [relevantBlocksToAdd] = useAsyncState(
-    async () => {
-      const excludeType: BlockType = ["actionPanel", "panel"].includes(
-        extensionPointType
-      )
-        ? "effect"
-        : "renderer";
-
-      return [...allBlocks.values()]
-        .filter(({ type }) => type != null && type !== excludeType)
-        .map(({ block }) => block);
-    },
-    [allBlocks, extensionPointType],
-    []
-  );
-
-  const renderNode = useNodeAdapter({
-    addBlock,
-    moveBlockUp,
-    moveBlockDown,
-    pasteBlock,
-    relevantBlocksToAdd,
-    allBlocks,
-  });
 
   // The value of formikErrorForBlock can be object or string.
   const formikErrorForBlock = get(blockPipelineErrors, fieldName);
@@ -179,11 +162,23 @@ const EditTab: React.FC<{
             />
           </div>
           <div className={styles.nodeLayout}>
-            <EditorNodeLayout
-              nodes={nodes}
-              renderNode={renderNode}
-              allBlocks={allBlocks}
-            />
+            {isLoadingAllBlocks || isLoadingRelevantBlocks ? (
+              <Loader />
+            ) : (
+              <EditorNodeLayout
+                allBlocks={allBlocks}
+                relevantBlocksForRootPipeline={relevantBlocksForRootPipeline}
+                pipeline={blockPipeline}
+                pipelineErrors={blockPipelineErrors}
+                errorTraceEntry={errorTraceEntry}
+                extensionPointLabel={extensionPointLabel}
+                extensionPointIcon={extensionPointIcon}
+                addBlock={addBlock}
+                moveBlockUp={moveBlockUp}
+                moveBlockDown={moveBlockDown}
+                pasteBlock={pasteBlock}
+              />
+            )}
           </div>
         </div>
         <div className={styles.configPanel}>

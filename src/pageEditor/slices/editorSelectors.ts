@@ -26,7 +26,7 @@ import {
   NodeUIState,
   TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
-import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
+import { NodeId } from "@/pageEditor/tabs/editTab/editorNodes/EditorNode";
 import { BlockConfig } from "@/blocks/types";
 
 type RootState = { editor: EditorState };

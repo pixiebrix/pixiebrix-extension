@@ -15,40 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.icon {
-  display: inline-flex;
-  flex-shrink: 0;
-  flex-grow: 0;
-  place-items: center;
-  place-content: center;
-  width: 1.1em;
-  margin-right: 10px;
+@import "@/pageEditor/tabs/editTab/editTabVariables.scss";
 
-  // External icon
-  img {
-    // !important is to override the inline CSS
-    width: 1.1em !important;
-    height: 1.1em !important;
+.pipeLine {
+  width: $pipeLineOffset;
+  border-right: $pipeLineBorderWidth solid black;
+
+  &.active {
+    border-color: white;
   }
-  svg {
-    font-size: inherit;
-  }
-}
-
-.text {
-  line-height: 1.2;
-}
-
-.badge {
-  width: 0;
-  img {
-    font-size: 0.7em;
-    transform: translate(-0.7em, -0.8em);
-  }
-}
-
-.outputKey {
-  margin-top: 0.4em;
-  font-size: 0.9em !important;
-  font-family: monospace;
 }

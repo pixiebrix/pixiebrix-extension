@@ -19,73 +19,17 @@
 
 $headerOffsetX: $pipeLineOffset / 2;
 $headerOffsetY: 0.5rem;
+$headerPipeLineHeight: 4px;
 
-.actions {
-  height: 0;
+.root {
   display: flex;
-  place-content: center;
-  place-items: center;
-  gap: 0.2em;
-
-  position: relative;
-  z-index: 3; // Above Bootstrap’s .list-item.active
-
-  --size: 22px;
-  button {
-    display: block;
-    border: none;
-    color: gray;
-    background-color: white;
-    border-radius: 50%;
-    padding: 0;
-    outline: none;
-    &:focus,
-    &:hover {
-      color: var(--blue);
-    }
-  }
-
-  svg {
-    display: block;
-    font-size: var(--size);
-    border: solid 3px white;
-    border-radius: 50%;
-  }
 }
 
-// Align the top action with the inner content
-$topPipelineLeft: calc(
-  #{$contentOffset} - #{$headerOffsetX} + #{$defaultNodePaddingLeft}
-);
-.topPipelineActions {
-  left: $topPipelineLeft;
-  width: calc(100% - #{$topPipelineLeft});
-}
-
-.pipelineBottom {
-  margin-bottom: 1.5rem;
-}
-
-.biggerActions {
-  --size: 40px;
-  height: auto;
-  margin: 0.4em 0;
-  gap: 0.6em;
-}
-
-.appendInfo {
-  padding: 0 2em 1em;
-  text-align: center;
-}
-
-.subPipelineHeader {
+.header {
+  flex-grow: 1;
   position: relative; // Allow children to position relative to this element
   background: #ebebf1;
   padding: $headerOffsetY 0 0 $headerOffsetX;
-
-  &.nestedHeader {
-    margin-left: $pipeLineOffset;
-  }
 }
 
 .subPipelineLabel {
@@ -96,8 +40,6 @@ $topPipelineLeft: calc(
   background: white;
   border-radius: 3px;
 }
-
-$headerPipeLineHeight: 4px;
 
 .headerPipeLineTop {
   position: absolute;
@@ -115,27 +57,4 @@ $headerPipeLineHeight: 4px;
   width: $pipeLineOffset;
   height: $headerPipeLineHeight;
   border-right: $pipeLineBorderWidth solid black;
-}
-
-.subPipeline {
-  padding: 0;
-}
-
-.subPipelineNode {
-  padding-right: 0;
-  padding-left: $contentOffset;
-}
-
-.pipeLine {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  z-index: 4;
-  width: $pipeLineOffset;
-  border-right: $pipeLineBorderWidth solid black;
-
-  &.active {
-    border-color: white;
-  }
 }

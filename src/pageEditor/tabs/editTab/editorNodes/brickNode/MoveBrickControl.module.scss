@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,22 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { faBook } from "@fortawesome/free-solid-svg-icons";
-import EditorNode from "./EditorNode";
+.moveButton {
+  border: none;
+  background: none;
+  color: inherit;
+  display: block;
+  padding: 0.4em;
+  svg {
+    display: block;
+  }
 
-export default {
-  title: "PageEditor/EditorNode",
-  component: EditorNode,
-} as ComponentMeta<typeof EditorNode>;
+  &:enabled:hover {
+    background-color: #0002;
 
-const Story: ComponentStory<typeof EditorNode> = (args) => (
-  <EditorNode {...args} />
-);
+    .activeNode & {
+      background-color: #fff6;
+    }
+  }
 
-export const Reader = Story.bind({});
-Reader.args = {
-  title: "Read",
-  icon: faBook,
-};
+  &:disabled {
+    opacity: 0.5;
+  }
+}

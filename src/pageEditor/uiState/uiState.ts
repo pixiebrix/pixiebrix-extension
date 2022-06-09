@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
+import { NodeId } from "@/pageEditor/tabs/editTab/editorNodes/EditorNode";
 import { UUID } from "@/core";
 import {
   ElementUIState,

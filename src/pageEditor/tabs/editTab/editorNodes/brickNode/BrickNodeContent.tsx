@@ -18,7 +18,9 @@
 import React from "react";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import styles from "./EditorNodeContent.module.scss";
+import styles from "./BrickNodeContent.module.scss";
+import OutputKeyView from "@/pageEditor/tabs/editTab/editorNodes/OutputKeyView";
+import { OutputKey } from "@/core";
 
 export enum RunStatus {
   NONE,
@@ -28,11 +30,11 @@ export enum RunStatus {
   ERROR,
 }
 
-export type EditorNodeContentProps = {
-  title: string;
-  outputKey?: string;
+export type BrickNodeContentProps = {
   icon?: IconProp | React.ReactNode;
   runStatus?: RunStatus;
+  brickLabel: string;
+  outputKey?: OutputKey;
 };
 
 function isFontAwesomeIcon(
@@ -44,13 +46,12 @@ function isFontAwesomeIcon(
   );
 }
 
-const EditorNodeContent: React.FC<EditorNodeContentProps> = ({
-  title,
-  outputKey,
+const BrickNodeContent: React.FC<BrickNodeContentProps> = ({
   icon: iconProp,
   runStatus,
+  brickLabel,
+  outputKey,
 }) => {
-  const outputName = outputKey ? `@${outputKey}` : "";
   const icon = isFontAwesomeIcon(iconProp) ? (
     <FontAwesomeIcon icon={iconProp as IconProp} fixedWidth />
   ) : (
@@ -83,17 +84,17 @@ const EditorNodeContent: React.FC<EditorNodeContentProps> = ({
   ) : null;
 
   return (
-    <>
+    <div className={styles.root}>
       <div className={styles.icon}>
         {icon}
         {badge}
       </div>
       <div className={styles.text}>
-        <div>{title}</div>
-        {outputName && <div className={styles.outputKey}>{outputName}</div>}
+        <div>{brickLabel}</div>
+        {outputKey && <OutputKeyView outputKey={outputKey} />}
       </div>
-    </>
+    </div>
   );
 };
 
-export default EditorNodeContent;
+export default BrickNodeContent;
