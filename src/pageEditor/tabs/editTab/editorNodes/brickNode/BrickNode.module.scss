@@ -17,7 +17,7 @@
 
 @import "@/pageEditor/tabs/editTab/editTabVariables.scss";
 
-$closedHandleHeight: 30px;
+$closedHandleHeight: 38px;
 $closedHandleWidth: 24px;
 $closedHandleMarginBottom: 2px;
 $openHandleHeight: 24px;
@@ -42,7 +42,7 @@ $openHandleHeight: 24px;
 .closedHandle {
   position: absolute;
   bottom: $closedHandleMarginBottom;
-  left: $pipeLineOffset;
+  left: calc(#{$pipeLineOffset} - #{$pipeLineBorderWidth});
   width: $closedHandleWidth;
   height: $closedHandleHeight;
   border-radius: 0 0 0 $closedHandleWidth/2;

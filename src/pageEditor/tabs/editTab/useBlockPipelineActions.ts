@@ -36,7 +36,7 @@ type BlockPipelineActions = {
     block: IBlock,
     pipelinePath: string,
     pipelineIndex: number
-  ) => void;
+  ) => Promise<void>;
   removeBlock: (nodeIdToRemove: UUID) => void;
   moveBlockUp: (instanceId: UUID) => void;
   moveBlockDown: (instanceId: UUID) => void;
@@ -154,22 +154,19 @@ function useBlockPipelineActions(
     }
 
     return (pipelinePath: string, pipelineIndex: number) => {
-      const nextState = produce(values, (draft) => {
-        const pipeline: BlockPipeline = getIn(draft, pipelinePath);
-        // Give the block a new instanceId
-        const newInstanceId = uuidv4();
-        const pastedBlock: BlockConfig = {
-          ...copiedBlock,
-          instanceId: newInstanceId,
-        };
-        // Insert the block
-        pipeline.splice(pipelineIndex, 0, pastedBlock);
-        dispatch(actions.setElementActiveNodeId(newInstanceId));
-      });
-      setFormValues(nextState);
+      // Give the block a new instanceId
+      const newInstanceId = uuidv4();
+      const blockToPaste: BlockConfig = {
+        ...copiedBlock,
+        instanceId: newInstanceId,
+      };
+      // Insert the block
+      dispatch(
+        actions.addNode({ block: blockToPaste, pipelinePath, pipelineIndex })
+      );
       dispatch(actions.clearCopiedBlockConfig());
     };
-  }, [copiedBlock, dispatch, setFormValues, values]);
+  }, [copiedBlock, dispatch]);
 
   return {
     addBlock,

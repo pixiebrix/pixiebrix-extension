@@ -61,9 +61,9 @@ const ADD_MESSAGE = "Add more bricks with the plus button";
 const ROOT_PATH = "extension.blockPipeline";
 
 type EditorNodeProps =
-  | (BrickNodeProps & { type: "brick" })
-  | (PipelineHeaderNodeProps & { type: "header" })
-  | (PipelineFooterNodeProps & { type: "footer" });
+  | (BrickNodeProps & { type: "brick"; key: string })
+  | (PipelineHeaderNodeProps & { type: "header"; key: string })
+  | (PipelineFooterNodeProps & { type: "footer"; key: string });
 
 export type EditorNodeLayoutProps = {
   allBlocks: TypedBlockMap;
@@ -302,7 +302,6 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
         BrickNodeProps,
         keyof BrickNodeContentProps
       > = {
-        blockInstanceId: blockConfig.instanceId,
         onClickMoveUp,
         onClickMoveDown,
         onClick,
@@ -317,6 +316,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
 
       nodes.push({
         type: "brick",
+        key: blockConfig.instanceId,
         ...contentProps,
         ...restBrickNodeProps,
       });
@@ -353,7 +353,6 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           }
 
           const headerNodeProps: PipelineHeaderNodeProps = {
-            pipelinePath,
             headerLabel,
             nestingLevel,
             nodeActions: headerActions,
@@ -362,6 +361,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           nodes.push(
             {
               type: "header",
+              key: subPipelinePath,
               ...headerNodeProps,
             },
             ...mapPipelineToNodes(
@@ -373,7 +373,6 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
         }
 
         const footerNodeProps: PipelineFooterNodeProps = {
-          blockInstanceId: blockConfig.instanceId,
           outputKey: blockConfig.outputKey,
           nodeActions: brickNodeActions,
           showBiggerActions,
@@ -383,6 +382,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
         };
         nodes.push({
           type: "footer",
+          key: `${blockConfig.instanceId}-footer`,
           ...footerNodeProps,
         });
       }
@@ -417,7 +417,6 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   const showBiggerFoundationActions = isEmpty(pipeline);
 
   const foundationNodeProps: BrickNodeProps = {
-    blockInstanceId: FOUNDATION_NODE_ID,
     icon: extensionPointIcon,
     runStatus: foundationRunStatus,
     brickLabel: extensionPointLabel,
@@ -435,21 +434,27 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   return (
     <ListGroup variant="flush">
       <BrickNode key={FOUNDATION_NODE_ID} {...foundationNodeProps} />
-      {mapPipelineToNodes(pipeline).map(({ type, ...nodeProps }) => {
+      {mapPipelineToNodes(pipeline).map(({ type, key, ...nodeProps }) => {
         switch (type) {
           case "brick": {
-            return <BrickNode {...(nodeProps as BrickNodeProps)} />;
+            return <BrickNode key={key} {...(nodeProps as BrickNodeProps)} />;
           }
 
           case "header": {
             return (
-              <PipelineHeaderNode {...(nodeProps as PipelineHeaderNodeProps)} />
+              <PipelineHeaderNode
+                key={key}
+                {...(nodeProps as PipelineHeaderNodeProps)}
+              />
             );
           }
 
           case "footer": {
             return (
-              <PipelineFooterNode {...(nodeProps as PipelineFooterNodeProps)} />
+              <PipelineFooterNode
+                key={key}
+                {...(nodeProps as PipelineFooterNodeProps)}
+              />
             );
           }
 

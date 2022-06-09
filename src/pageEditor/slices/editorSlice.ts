@@ -622,9 +622,7 @@ export const editorSlice = createSlice({
       const element = state.elements.find(
         (x) => x.uuid === state.activeElementId
       );
-      const pipeline = isEmpty(pipelinePath)
-        ? element.extension.blockPipeline
-        : get(element.extension.blockPipeline, pipelinePath);
+      const pipeline = get(element, pipelinePath);
 
       pipeline.splice(pipelineIndex, 0, block);
       syncElementNodeUIStates(state, element);

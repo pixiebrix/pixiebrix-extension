@@ -23,11 +23,10 @@ import cx from "classnames";
 import styles from "./PipelineFooterNode.module.scss";
 import OutputKeyView from "@/pageEditor/tabs/editTab/editorNodes/OutputKeyView";
 import PipelineOffsetView from "@/pageEditor/tabs/editTab/editorNodes/PipelineOffsetView";
-import { OutputKey, UUID } from "@/core";
+import { OutputKey } from "@/core";
 import TrailingMessage from "@/pageEditor/tabs/editTab/editorNodes/TrailingMessage";
 
 export type PipelineFooterNodeProps = {
-  blockInstanceId: UUID;
   outputKey: OutputKey;
   nodeActions: NodeAction[];
   showBiggerActions?: boolean;
@@ -37,7 +36,6 @@ export type PipelineFooterNodeProps = {
 };
 
 const PipelineFooterNode: React.VFC<PipelineFooterNodeProps> = ({
-  blockInstanceId,
   outputKey,
   nodeActions,
   showBiggerActions,
@@ -45,7 +43,7 @@ const PipelineFooterNode: React.VFC<PipelineFooterNodeProps> = ({
   nestingLevel,
   active,
 }) => (
-  <React.Fragment key={`${blockInstanceId}-footer`}>
+  <>
     <div className={styles.footer}>
       <PipelineOffsetView nestingLevel={nestingLevel} />
       <div className={styles.pipelineContainer}>
@@ -58,7 +56,7 @@ const PipelineFooterNode: React.VFC<PipelineFooterNodeProps> = ({
       showBiggerActions={showBiggerActions}
     />
     {trailingMessage && <TrailingMessage message={trailingMessage} />}
-  </React.Fragment>
+  </>
 );
 
 export default PipelineFooterNode;
