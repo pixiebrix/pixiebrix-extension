@@ -36,15 +36,17 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   nodeActions,
   active,
 }) => (
-  <div className={styles.root}>
-    <PipelineOffsetView nestingLevel={nestingLevel} parentIsActive={active} />
-    <div className={cx(styles.header, { [styles.active]: active })}>
-      <div className={styles.headerPipeLineTop} />
-      <div className={styles.subPipelineLabel}>{headerLabel}</div>
-      <div className={styles.headerPipeLineBottom} />
-      <NodeActionsView nodeActions={nodeActions} />
+  <>
+    <div className={styles.root}>
+      <PipelineOffsetView nestingLevel={nestingLevel} parentIsActive={active} />
+      <div className={cx(styles.header, { [styles.active]: active })}>
+        <div className={styles.headerPipeLineTop} />
+        <div className={styles.subPipelineLabel}>{headerLabel}</div>
+        <div className={styles.headerPipeLineBottom} />
+      </div>
     </div>
-  </div>
+    <NodeActionsView nodeActions={nodeActions} />
+  </>
 );
 
 export default PipelineHeaderNode;
