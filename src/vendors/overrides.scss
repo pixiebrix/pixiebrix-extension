@@ -18,3 +18,9 @@
 span.page-title-icon {
   line-height: 36px;
 }
+
+html {
+  /* Ensure that long words don't break the UI */
+  /* https://github.com/pixiebrix/pixiebrix-extension/issues/3597 */
+  overflow-wrap: anywhere;
+}
