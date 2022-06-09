@@ -55,10 +55,9 @@ import PasteBrickAction from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/
 import BrickIcon from "@/components/BrickIcon";
 import { Except } from "type-fest";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
+import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
-
-const ROOT_PATH = "extension.blockPipeline";
 
 type EditorNodeProps =
   | (BrickNodeProps & { type: "brick"; key: string })
@@ -128,10 +127,10 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
 
   function mapPipelineToNodes(
     pipeline: BlockPipeline,
-    pipelinePath = ROOT_PATH,
+    pipelinePath = PIPELINE_BLOCKS_FIELD_NAME,
     nestingLevel = 0
   ): EditorNodeProps[] {
-    const isRootPipeline = pipelinePath === ROOT_PATH;
+    const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
     const relevantBlocks = isRootPipeline
       ? relevantBlocksForRootPipeline
       : allBlocksAsRelevant;

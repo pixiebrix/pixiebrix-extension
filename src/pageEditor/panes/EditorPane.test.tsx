@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render } from "@/pageEditor/testHelpers";
+import { render, screen } from "@/pageEditor/testHelpers";
 import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { blockConfigFactory, formStateFactory } from "@/testUtils/factories";
@@ -83,7 +83,11 @@ describe("sanity check", () => {
     await waitForEffect();
 
     // Hitting the last (Foundation node plus 2 bricks) Add Node button
-    await userEvent.click(rendered.getByTestId("icon-button-add-node-2"));
+    const addButtons = screen.getAllByTestId("icon-button-add-node", {
+      exact: false,
+    });
+    const last = addButtons[addButtons.length - 1];
+    await userEvent.click(last);
 
     // Add the first (and the only) available block
     await userEvent.click(
