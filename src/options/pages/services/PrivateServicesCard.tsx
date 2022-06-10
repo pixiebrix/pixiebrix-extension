@@ -19,6 +19,7 @@ import { useSelector } from "react-redux";
 import { Button } from "react-bootstrap";
 import React, { useCallback, useMemo } from "react";
 import { Column, Row } from "react-table";
+import { isEqual } from "lodash";
 import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
 import { IService, RawServiceConfiguration, UUID } from "@/core";
 import { RootState } from "@/options/store";
@@ -134,6 +135,7 @@ const columnFactory = ({
     },
   },
   {
+    disableSortBy: true,
     Header: "Actions",
     accessor: "id",
     width: 100,
@@ -183,7 +185,8 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   navigate,
 }) => {
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
-    selectConfiguredServices
+    selectConfiguredServices,
+    isEqual
   );
 
   const resetAuth = useCallback(async (authId: UUID) => {
