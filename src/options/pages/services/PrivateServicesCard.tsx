@@ -62,34 +62,32 @@ const Actions: React.VoidFunctionComponent<{
       </Button>
     );
   }
- 
-    return (
-      <EllipsisMenu
-        items={[
-          {
-            title: (
-              <>
-                <FontAwesomeIcon fixedWidth icon={faEdit} /> Configure
-              </>
-            ),
-            action() {
-              navigate(`/services/${encodeURIComponent(id)}`);
-            },
+
+  return (
+    <EllipsisMenu
+      items={[
+        {
+          title: (
+            <>
+              <FontAwesomeIcon fixedWidth icon={faEdit} /> Configure
+            </>
+          ),
+          action() {
+            navigate(`/services/${encodeURIComponent(id)}`);
           },
-          {
-            title: (
-              <>
-                <FontAwesomeIcon fixedWidth icon={faSignOutAlt} /> Reset Token
-              </>
-            ),
-            action: async () => resetAuth(id),
-            hide:
-              !row.original.service.isOAuth2 && !row.original.service.isToken,
-          },
-        ]}
-      />
-    );
-  
+        },
+        {
+          title: (
+            <>
+              <FontAwesomeIcon fixedWidth icon={faSignOutAlt} /> Reset Token
+            </>
+          ),
+          action: async () => resetAuth(id),
+          hide: !row.original.service.isOAuth2 && !row.original.service.isToken,
+        },
+      ]}
+    />
+  );
 };
 
 const columnFactory = ({
@@ -119,21 +117,20 @@ const columnFactory = ({
       if (row.index === 0) {
         return <div className="text-muted">N/A</div>;
       }
- 
-        return (
-          <>
-            <BrickIcon brick={row.original.service} size="1x" />
-            <div className="ml-2">
-              <div className="text-wrap">{row.original.service.name}</div>
-              <div className="text-wrap">
-                <code className="p-0" style={{ fontSize: "0.7rem" }}>
-                  {row.original.service.id}
-                </code>
-              </div>
+
+      return (
+        <>
+          <BrickIcon brick={row.original.service} size="1x" />
+          <div className="ml-2">
+            <div className="text-wrap">{row.original.service.name}</div>
+            <div className="text-wrap">
+              <code className="p-0" style={{ fontSize: "0.7rem" }}>
+                {row.original.service.id}
+              </code>
             </div>
-          </>
-        );
-      
+          </div>
+        </>
+      );
     },
   },
   {
