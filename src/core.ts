@@ -832,7 +832,7 @@ export interface OAuth2Context {
 }
 
 /** Service configuration provided by a user. */
-export interface RawServiceConfiguration {
+export type RawServiceConfiguration = {
   // Nominal typing to distinguish from SanitizedServiceConfiguration
   _rawServiceConfigurationBrand: null;
 
@@ -856,7 +856,7 @@ export interface RawServiceConfiguration {
    * Configuration including all data
    */
   config: ServiceConfig;
-}
+};
 
 export interface SanitizedServiceConfiguration {
   // Nominal typing to distinguish from RawServiceConfiguration
