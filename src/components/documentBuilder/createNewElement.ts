@@ -80,6 +80,7 @@ export function createNewElement(elementType: DocumentElementType) {
 
     default:
       throw new Error(
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
         `Can't create new element. Type "${elementType} is not supported.`
       );
   }
