@@ -271,7 +271,15 @@ export async function proxyService<TData>(
       );
     }
 
-    return serializableAxiosRequest<TData>(requestConfig);
+    try {
+      return await serializableAxiosRequest<TData>(requestConfig);
+    } catch (error) {
+      console.debug("Error making request without service config", {
+        requestConfig,
+        error,
+      });
+      throw error;
+    }
   }
 
   try {
