@@ -53,6 +53,7 @@ import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { get } from "lodash";
 import Loader from "@/components/Loader";
+import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
 import { BlockType } from "@/runtime/runtimeTypes";
 
 const EditTab: React.FC<{
@@ -191,6 +192,9 @@ const EditTab: React.FC<{
               {isApiAtLeastV2 ? (
                 activeNodeId === FOUNDATION_NODE_ID ? (
                   <>
+                    {extensionPointType === "quickBar" && (
+                      <UnconfiguredQuickBarAlert />
+                    )}
                     <ConnectedFieldTemplate
                       name="label"
                       label="Extension Name"

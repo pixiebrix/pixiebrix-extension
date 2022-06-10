@@ -1,0 +1,69 @@
+.paginatedTable {
+  display: block;
+  overflow-x: auto;
+  .th {
+    overflow: hidden;
+    &:not(:last-of-type) {
+      .resize {
+        background-color: #ebedf2;
+      }
+    }
+    .resize {
+      display: inline-block;
+      width: 2px;
+      height: 100%;
+      position: absolute;
+      right: 0;
+      top: 0;
+      transform: translateX(50%);
+      z-index: 1;
+      cursor: col-resize;
+    }
+    transition: background-color 0.2s ease-in-out;
+    white-space: normal !important;
+    &:hover {
+      background-color: #f6f6f7;
+      .resize {
+        width: 3px;
+        background-color: #8b8b96;
+      }
+      .sortIcon {
+        color: #595969;
+      }
+    }
+  }
+  .td {
+    white-space: normal;
+    display: flex;
+    align-items: center;
+    text-align: start;
+    p {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3; /* -webkit-prefix needed for all browsers */
+      overflow: hidden;
+      font-size: 0.875rem;
+      line-height: 1;
+      margin-bottom: 0px;
+    }
+  }
+}
+.tfoot {
+  display: block;
+  width: 100%;
+  position: sticky;
+  left: 0;
+}
+.overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+
+.truncatedCell {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

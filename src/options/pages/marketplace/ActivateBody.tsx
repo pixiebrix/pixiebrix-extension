@@ -34,8 +34,8 @@ import PermissionsBody from "@/options/pages/marketplace/PermissionsBody";
 import { resolveRecipe } from "@/registry/internal";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { useAsyncState } from "@/hooks/common";
-import { isEmpty } from "lodash";
 import { allSettledValues } from "@/utils";
+import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 
 const QuickBarAlert = () => (
   <Alert variant="warning">
@@ -68,13 +68,7 @@ const ActivateBody: React.FunctionComponent<{
     selectedAuths
   );
 
-  const [hasShortcut] = useAsyncState(async () => {
-    const commands = await browser.commands.getAll();
-    return commands.some(
-      (command) =>
-        command.name === "toggle-quick-bar" && !isEmpty(command.shortcut)
-    );
-  }, []);
+  const { isConfigured: isShortcutConfigured } = useQuickbarShortcut();
 
   const [hasQuickBar] = useAsyncState(
     async () => {
@@ -98,7 +92,7 @@ const ActivateBody: React.FunctionComponent<{
       <Card.Body className="mb-0 p-3">
         <Card.Title>Review Permissions & Activate</Card.Title>
 
-        {hasQuickBar && !hasShortcut ? (
+        {hasQuickBar && !isShortcutConfigured ? (
           <QuickBarAlert />
         ) : (
           <p className="text-info">
