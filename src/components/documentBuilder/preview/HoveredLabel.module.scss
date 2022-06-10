@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,22 +18,11 @@
 @import "@/components/documentBuilder/preview/previewVariables.scss";
 
 .root {
-  margin: $preview-margin;
-  min-height: 30px;
-  border-radius: $border-radius;
-}
-
-.addElement {
-  position: absolute !important;
-  top: 2px;
-  right: 2px;
-}
-
-.active {
-  box-shadow: 0 0 3px 1px $color-decisions-blue-focus,
-    inset 0 0 1px 1px $color-decisions-blue-focus;
-}
-
-.hovered {
-  box-shadow: 0 0 1px 1px $color-decisions-blue-focus;
+  background-color: $color-decisions-blue-focus;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0px 5px;
+  border-radius: $border-radius $border-radius 0 0;
+  color: white;
 }
