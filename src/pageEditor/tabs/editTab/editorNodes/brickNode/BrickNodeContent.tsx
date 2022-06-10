@@ -20,15 +20,10 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./BrickNodeContent.module.scss";
 import OutputKeyView from "@/pageEditor/tabs/editTab/editorNodes/OutputKeyView";
-import { OutputKey } from "@/core";
-import { RunStatus } from "@/pageEditor/tabs/editTab/editTabTypes";
-
-export type BrickNodeContentProps = {
-  icon?: IconProp | React.ReactNode;
-  runStatus?: RunStatus;
-  brickLabel: string;
-  outputKey?: OutputKey;
-};
+import {
+  BrickNodeContentProps,
+  RunStatus,
+} from "@/pageEditor/tabs/editTab/editTabTypes";
 
 function isFontAwesomeIcon(
   maybeIcon: IconProp | React.ReactNode

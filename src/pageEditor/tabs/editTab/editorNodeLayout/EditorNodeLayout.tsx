@@ -26,6 +26,7 @@ import PipelineFooterNode, {
 } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
 import { BlockPipeline } from "@/blocks/types";
 import {
+  BrickNodeContentProps,
   BrickNodeProps,
   FormikError,
   RunStatus,
@@ -36,7 +37,6 @@ import { TypedBlockMap } from "@/blocks/registry";
 import { IBlock, OutputKey, UUID } from "@/core";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
-import { BrickNodeContentProps } from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNodeContent";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
