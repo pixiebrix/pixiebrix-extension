@@ -25,7 +25,12 @@ import {
   selectNetworkErrorMessage,
   selectServerErrorMessage,
 } from "@/errors/networkErrorHelpers";
-import { errorTabDoesntExist, errorTargetClosedEarly } from "webext-messenger";
+
+// From "webext-messenger". Cannot import because the webextension polyfill can only run in an extension context
+// TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3641
+const errorTargetClosedEarly =
+  "The target was closed before receiving a response";
+const errorTabDoesntExist = "The tab doesn't exist";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
