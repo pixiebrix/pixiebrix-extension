@@ -21,7 +21,6 @@ import { DocumentElement } from "@/components/documentBuilder/documentBuilderTyp
 import Tree, {
   ItemId,
   RenderItemParams,
-  TreeData,
   TreeDestinationPosition,
   TreeSourcePosition,
 } from "@atlaskit/tree";
@@ -30,15 +29,11 @@ import { RootState } from "@/pageEditor/pageEditorTypes";
 import { selectNodeDataPanelTabState } from "@/pageEditor/slices/editorSelectors";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
-import { TreeItem } from "@atlaskit/tree/types";
-import { Button } from "react-bootstrap";
-import cx from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
-import styles from "./DocumentOutline.module.scss";
-import { joinElementName } from "@/components/documentBuilder/utils";
 import { moveElement } from "@/components/documentBuilder/edit/useMoveElement";
+import { selectTreeData } from "@/components/documentBuilder/outline/outlineHelpers";
+import OutlineItem, {
+  LEVEL_PADDING_PX,
+} from "@/components/documentBuilder/outline/OutlineItem";
 
 type DocumentOutlineProps = {
   /**
@@ -48,82 +43,6 @@ type DocumentOutlineProps = {
   activeElement: string;
   setActiveElement: (activeElement: string) => void;
 };
-
-type ElementArgs = {
-  element: DocumentElement;
-  elementName: string;
-  treeExpandedState: TreeExpandedState;
-};
-
-function selectTreeEntries({
-  element,
-  elementName,
-  treeExpandedState,
-}: ElementArgs): Array<[ItemId, TreeItem]> {
-  const children = element?.children ?? [];
-
-  return [
-    [
-      elementName,
-      {
-        id: elementName,
-        hasChildren: children.length > 0,
-        // eslint-disable-next-line security/detect-object-injection -- builder element type
-        isExpanded: Boolean(treeExpandedState[elementName] ?? false),
-        isChildrenLoading: false,
-        data: {
-          elementName,
-          element,
-        },
-        children: children.map((child, index) =>
-          joinElementName(elementName, "children", String(index))
-        ),
-      },
-    ],
-    ...children.flatMap((child, index) =>
-      selectTreeEntries({
-        element: child,
-        elementName: joinElementName(elementName, "children", String(index)),
-        treeExpandedState,
-      })
-    ),
-  ];
-}
-
-function selectTreeData(
-  body: DocumentElement[],
-  treeExpandedState: TreeExpandedState
-): TreeData {
-  const children = body.flatMap((element, index) =>
-    selectTreeEntries({
-      element,
-      elementName: String(index),
-      treeExpandedState,
-    })
-  );
-
-  const entries: Array<[ItemId, TreeItem]> = [
-    [
-      "body",
-      {
-        id: "body",
-        children: body.map((element, index) => String(index)),
-        hasChildren: body.length > 0,
-        isExpanded: true,
-        isChildrenLoading: false,
-        data: null,
-      },
-    ],
-    ...children,
-  ];
-
-  return {
-    rootId: "body",
-    items: Object.fromEntries(entries),
-  };
-}
-
-const LEVEL_PADDING_PX = 10;
 
 const DocumentOutline = ({
   documentBodyName,
@@ -144,47 +63,16 @@ const DocumentOutline = ({
   );
 
   const renderItem = useCallback(
-    ({ depth, item, onCollapse, onExpand, provided }: RenderItemParams) => {
-      if (item.id === "body") {
-        return <div>body</div>;
-      }
-
-      return (
-        <div
-          style={{ paddingLeft: depth * LEVEL_PADDING_PX }}
-          className={cx(styles.item, {
-            [styles.activeItem]: activeElement === item.data.elementName,
-          })}
-          onClick={() => {
-            setActiveElement(item.data.elementName as string);
-          }}
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-        >
-          {item.hasChildren && (
-            <Button
-              variant="light"
-              size="sm"
-              onClick={() => {
-                if (item.isExpanded) {
-                  onCollapse(item.id);
-                } else {
-                  onExpand(item.id);
-                }
-              }}
-            >
-              <FontAwesomeIcon
-                fixedWidth
-                icon={item.isExpanded ? faCaretDown : faCaretRight}
-              />
-            </Button>
-          )}
-
-          <span>{item.data.element.type}</span>
-        </div>
-      );
-    },
+    (params: RenderItemParams) => (
+      // Don't need to handle "body" synthetic element b/c it won't be rendered
+      <OutlineItem
+        {...params}
+        isActive={activeElement === params.item.data.elementName}
+        onSelect={() => {
+          setActiveElement(params.item.data.elementName as string);
+        }}
+      />
+    ),
     [activeElement, setActiveElement]
   );
 
@@ -200,25 +88,13 @@ const DocumentOutline = ({
     [dispatch, treeExpandedState]
   );
 
-  console.debug("Tree", { tree });
-
   const onDragEnd = (
     sourcePosition: TreeSourcePosition,
     destinationPosition?: TreeDestinationPosition
   ) => {
-    console.debug("drop", {
-      sourcePosition,
-      destinationPosition,
-    });
-
     if (destinationPosition) {
       setValue(moveElement(body, sourcePosition, destinationPosition));
     }
-
-    console.debug("drop:done", {
-      sourcePosition,
-      destinationPosition,
-    });
   };
 
   return (
