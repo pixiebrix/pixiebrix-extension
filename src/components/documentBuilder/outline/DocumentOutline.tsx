@@ -71,6 +71,9 @@ const DocumentOutline = ({
         onSelect={() => {
           setActiveElement(params.item.data.elementName as string);
         }}
+        onDelete={() => {
+          throw new Error("Not implemented yet");
+        }}
       />
     ),
     [activeElement, setActiveElement]

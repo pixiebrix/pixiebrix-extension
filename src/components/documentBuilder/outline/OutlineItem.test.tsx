@@ -24,6 +24,7 @@ import {
 import { action } from "@storybook/addon-actions";
 import OutlineItem from "@/components/documentBuilder/outline/OutlineItem";
 import React from "react";
+import { noop } from "lodash";
 
 describe("OutlineItem", () => {
   test("smoke test", () => {
@@ -58,6 +59,7 @@ describe("OutlineItem", () => {
                   <OutlineItem
                     {...args}
                     provided={provided}
+                    onDelete={noop}
                     snapshot={{ isDragging: false, isDropAnimating: false }}
                   />
                 )}

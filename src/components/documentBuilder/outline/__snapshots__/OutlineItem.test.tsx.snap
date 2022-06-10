@@ -16,29 +16,34 @@ Object {
           draggable="false"
           tabindex="0"
         >
-          <button
-            class="btn btn-light btn-sm"
-            type="button"
+          <div
+            class="d-flex"
           >
-            <svg
-              aria-hidden="true"
-              class="svg-inline--fa fa-caret-right fa-w-6 fa-fw "
-              data-icon="caret-right"
-              data-prefix="fas"
-              focusable="false"
-              role="img"
-              viewBox="0 0 192 512"
-              xmlns="http://www.w3.org/2000/svg"
+            <div>
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-caret-right fa-w-6 fa-fw "
+                data-icon="caret-right"
+                data-prefix="fas"
+                focusable="false"
+                role="button"
+                viewBox="0 0 192 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
+                  fill="currentColor"
+                />
+              </svg>
+            </div>
+            <div
+              class="flex-grow-1"
             >
-              <path
-                d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
-                fill="currentColor"
-              />
-            </svg>
-          </button>
-          <span>
-            row
-          </span>
+              <span>
+                row
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -62,29 +67,34 @@ Object {
         draggable="false"
         tabindex="0"
       >
-        <button
-          class="btn btn-light btn-sm"
-          type="button"
+        <div
+          class="d-flex"
         >
-          <svg
-            aria-hidden="true"
-            class="svg-inline--fa fa-caret-right fa-w-6 fa-fw "
-            data-icon="caret-right"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            viewBox="0 0 192 512"
-            xmlns="http://www.w3.org/2000/svg"
+          <div>
+            <svg
+              aria-hidden="true"
+              class="svg-inline--fa fa-caret-right fa-w-6 fa-fw "
+              data-icon="caret-right"
+              data-prefix="fas"
+              focusable="false"
+              role="button"
+              viewBox="0 0 192 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
+                fill="currentColor"
+              />
+            </svg>
+          </div>
+          <div
+            class="flex-grow-1"
           >
-            <path
-              d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
-              fill="currentColor"
-            />
-          </svg>
-        </button>
-        <span>
-          row
-        </span>
+            <span>
+              row
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   </div>,

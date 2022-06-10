@@ -15,11 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+$color-active: #007bff;
+
 .activeItem {
-  background-color: blue;
+  background-color: $color-active;
   color: white;
+}
+
+.dropTarget {
+  background-color: $color-active;
 }
 
 .item {
   cursor: pointer;
+  line-height: 1.5rem;
 }
