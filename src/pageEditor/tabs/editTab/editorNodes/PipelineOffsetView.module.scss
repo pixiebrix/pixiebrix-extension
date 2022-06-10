@@ -28,4 +28,8 @@
   &.parentIsActive {
     background-color: $activeHeaderBackgroundColor;
   }
+
+  &.isHeader:not(.parentIsActive) {
+    background-color: $headerBackgroundColor;
+  }
 }

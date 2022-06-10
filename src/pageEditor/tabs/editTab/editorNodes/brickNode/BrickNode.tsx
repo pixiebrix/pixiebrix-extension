@@ -33,6 +33,7 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
   onClick,
   active,
   parentIsActive,
+  onHoverChange,
   icon,
   runStatus,
   brickLabel,
@@ -71,6 +72,12 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
             : undefined
         }
         data-testid="editor-node"
+        onMouseOver={() => {
+          onHoverChange(true);
+        }}
+        onMouseOut={() => {
+          onHoverChange(false);
+        }}
       >
         <PipelineOffsetView nestingLevel={nestingLevel} active={active} />
         {hasSubPipelines && (

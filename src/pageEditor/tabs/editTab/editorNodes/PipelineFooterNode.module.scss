@@ -23,6 +23,7 @@ $pipeLineFooterWidth: 17px;
   display: flex;
   align-items: stretch;
   border-bottom: 1px solid lightgrey;
+  cursor: pointer;
 
   &.active {
     background-color: $selectedListItemBackgroundColor;
@@ -30,6 +31,10 @@ $pipeLineFooterWidth: 17px;
 
   &.parentIsActive {
     background-color: $parentActiveBackgroundColor;
+  }
+
+  &.hovered {
+    backdrop-filter: brightness(0.975) !important;
   }
 }
 
@@ -57,6 +62,6 @@ $pipeLineFooterWidth: 17px;
   padding: 15px 0;
 
   &.active {
-    color: white;
+    color: white !important; // Need to override text-muted
   }
 }

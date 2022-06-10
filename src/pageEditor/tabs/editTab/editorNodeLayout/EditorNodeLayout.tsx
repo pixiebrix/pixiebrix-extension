@@ -109,6 +109,8 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
     {}
   );
 
+  const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});
+
   const allBlocksAsRelevant = useMemo(
     () => [...allBlocks.values()].map(({ block }) => block),
     [allBlocks]
@@ -232,6 +234,14 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           }
         : undefined;
 
+      const hovered = hoveredState[blockConfig.instanceId];
+      const onHoverChange = (hovered: boolean) => {
+        setHoveredState((previousState) => ({
+          ...previousState,
+          [blockConfig.instanceId]: hovered,
+        }));
+      };
+
       const showAddBlock = isApiAtLeastV2 && (index < lastIndex || showAppend);
       const showBiggerActions = index === lastIndex && isRootPipeline;
       const showAddMessage = showAddBlock && showBiggerActions;
@@ -303,6 +313,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
         onClickMoveDown,
         onClick,
         active: nodeIsActive,
+        onHoverChange,
         parentIsActive,
         nestingLevel,
         hasSubPipelines,
@@ -380,6 +391,9 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           nestingLevel,
           active: nodeIsActive,
           parentIsActive,
+          hovered,
+          onHoverChange,
+          onClick,
         };
         nodes.push({
           type: "footer",
@@ -426,6 +440,12 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       setActiveNodeId(FOUNDATION_NODE_ID);
     },
     active: activeNodeId === FOUNDATION_NODE_ID,
+    onHoverChange(hovered) {
+      setHoveredState((previousState) => ({
+        ...previousState,
+        [FOUNDATION_NODE_ID]: hovered,
+      }));
+    },
     nestingLevel: 0,
     nodeActions: foundationNodeActions,
     showBiggerActions: showBiggerFoundationActions,

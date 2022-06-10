@@ -25,7 +25,11 @@ const OutputKeyView: React.VFC<{
   className?: string;
 }> = ({ outputKey, className }) =>
   outputKey ? (
-    <div className={cx(styles.root, className)}>@{outputKey}</div>
-  ) : null;
+    <div className={cx(styles.key, className)}>@{outputKey}</div>
+  ) : (
+    <div className={cx(styles.noKey, className, "text-muted")}>
+      No output produced
+    </div>
+  );
 
 export default OutputKeyView;

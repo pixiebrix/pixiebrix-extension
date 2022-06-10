@@ -79,7 +79,9 @@ const BrickNodeContent: React.FC<BrickNodeContentProps> = ({
       </div>
       <div className={styles.text}>
         <div>{brickLabel}</div>
-        {outputKey && <OutputKeyView outputKey={outputKey} />}
+        {outputKey && (
+          <OutputKeyView outputKey={outputKey} className={styles.outputKey} />
+        )}
       </div>
     </div>
   );

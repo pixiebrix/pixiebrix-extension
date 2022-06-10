@@ -17,10 +17,10 @@
 
 @import "@/pageEditor/tabs/editTab/editTabVariables.scss";
 
-$closedHandleHeight: 38px;
+$closedHandleHeight: 28px;
 $closedHandleWidth: 24px;
 $closedHandleMarginBottom: 2px;
-$openHandleHeight: 24px;
+$openHandleHeight: 20px;
 
 .root {
   display: flex;
