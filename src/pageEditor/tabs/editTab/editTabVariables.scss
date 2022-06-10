@@ -15,9 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Dimensions
 $pipeLineOffset: 1.1rem;
 $pipeLineBorderWidth: 1px;
 $defaultNodePaddingLeft: 10px;
 $contentOffset: calc(
   #{$pipeLineOffset} + #{$pipeLineBorderWidth} + #{$defaultNodePaddingLeft}
 );
+
+// Colors
+$selectedListItemBackgroundColor: #007bff;
+$headerBackgroundColor: #ebebf1;
+$activeHeaderBackgroundColor: #b8dbf6;
+$parentActiveBackgroundColor: #e8f3fc;
