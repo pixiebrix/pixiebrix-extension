@@ -100,7 +100,9 @@ exports[`renders empty table 1`] = `
     <table
       class="table"
     >
-      <thead>
+      <thead
+        class="tableHead"
+      >
         <tr>
           <th>
              
@@ -117,9 +119,7 @@ exports[`renders empty table 1`] = `
           <th>
             Block/Service
           </th>
-          <th
-            class="w-100"
-          >
+          <th>
             Message/Error
           </th>
         </tr>
