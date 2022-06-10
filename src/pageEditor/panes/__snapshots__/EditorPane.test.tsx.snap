@@ -1,5 +1,1401 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`sanity check it renders extension with sub pipeline 1`] = `
+<DocumentFragment>
+  <form
+    autocomplete="off"
+    class="form full-height"
+    novalidate=""
+  >
+    <div
+      class="nav nav nav-pills"
+      role="tablist"
+    >
+      <div
+        class="d-flex align-items-stretch nav-item"
+      >
+        <a
+          aria-selected="true"
+          class="d-flex align-items-center nav-link active"
+          data-rb-event-key="Edit"
+          href="#"
+          role="tab"
+        >
+          Edit
+        </a>
+      </div>
+      <div
+        class="d-flex align-items-stretch nav-item"
+      >
+        <a
+          aria-selected="false"
+          class="d-flex align-items-center nav-link"
+          data-rb-event-key="Logs"
+          href="#"
+          role="tab"
+        >
+          Logs
+        </a>
+      </div>
+      <div
+        class="mr-2"
+      />
+      <button
+        class="btn btn-info"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-question-circle fa-w-16 "
+          data-icon="question-circle"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 512 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zM262.655 90c-54.497 0-89.255 22.957-116.549 63.758-3.536 5.286-2.353 12.415 2.715 16.258l34.699 26.31c5.205 3.947 12.621 3.008 16.665-2.122 17.864-22.658 30.113-35.797 57.303-35.797 20.429 0 45.698 13.148 45.698 32.958 0 14.976-12.363 22.667-32.534 33.976C247.128 238.528 216 254.941 216 296v4c0 6.627 5.373 12 12 12h56c6.627 0 12-5.373 12-12v-1.333c0-28.462 83.186-29.647 83.186-106.667 0-58.002-60.165-102-116.531-102zM256 338c-25.365 0-46 20.635-46 46 0 25.364 20.635 46 46 46s46-20.636 46-46c0-25.365-20.635-46-46-46z"
+            fill="currentColor"
+          />
+        </svg>
+         Ask a question
+      </button>
+      <div
+        class="flex-grow-1"
+      />
+      <div
+        class="btn-group"
+        role="group"
+      >
+        <button
+          class="btn btn-primary btn-sm"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-shield-alt fa-w-16 "
+            data-icon="shield-alt"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M466.5 83.7l-192-80a48.15 48.15 0 0 0-36.9 0l-192 80C27.7 91.1 16 108.6 16 128c0 198.5 114.5 335.7 221.5 380.3 11.8 4.9 25.1 4.9 36.9 0C360.1 472.6 496 349.3 496 128c0-19.4-11.7-36.9-29.5-44.3zM256.1 446.3l-.1-381 175.9 73.3c-3.3 151.4-82.1 261.1-175.8 307.7z"
+              fill="currentColor"
+            />
+          </svg>
+           Grant Permissions
+        </button>
+      </div>
+      <label
+        class="small my-auto mx-2 text-center"
+      >
+        Auto-Render
+      </label>
+      <div
+        class="switch btn off btn-light btn-xs align-self-center"
+      >
+        <div
+          class="switch-group"
+        >
+          <span
+            class="switch-on btn btn-info btn-xs"
+          >
+             
+          </span>
+          <span
+            class="switch-off btn btn-light btn-xs"
+          >
+             
+          </span>
+          <span
+            class="switch-handle btn btn-lightbtn-xs"
+          />
+        </div>
+      </div>
+      <button
+        class="mx-2 btn btn-info btn-sm"
+        type="button"
+      >
+        Render Panel
+      </button>
+      <div
+        class="ml-2 btn-group"
+        role="group"
+      >
+        <button
+          class="btn btn-primary btn-sm"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-save fa-w-14 "
+            data-icon="save"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M433.941 129.941l-83.882-83.882A48 48 0 0 0 316.118 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48V163.882a48 48 0 0 0-14.059-33.941zM224 416c-35.346 0-64-28.654-64-64 0-35.346 28.654-64 64-64s64 28.654 64 64c0 35.346-28.654 64-64 64zm96-304.52V212c0 6.627-5.373 12-12 12H76c-6.627 0-12-5.373-12-12V108c0-6.627 5.373-12 12-12h228.52c3.183 0 6.235 1.264 8.485 3.515l3.48 3.48A11.996 11.996 0 0 1 320 111.48z"
+              fill="currentColor"
+            />
+          </svg>
+           Save
+        </button>
+        <button
+          class="btn btn-warning btn-sm"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-history fa-w-16 "
+            data-icon="history"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M504 255.531c.253 136.64-111.18 248.372-247.82 248.468-59.015.042-113.223-20.53-155.822-54.911-11.077-8.94-11.905-25.541-1.839-35.607l11.267-11.267c8.609-8.609 22.353-9.551 31.891-1.984C173.062 425.135 212.781 440 256 440c101.705 0 184-82.311 184-184 0-101.705-82.311-184-184-184-48.814 0-93.149 18.969-126.068 49.932l50.754 50.754c10.08 10.08 2.941 27.314-11.313 27.314H24c-8.837 0-16-7.163-16-16V38.627c0-14.254 17.234-21.393 27.314-11.314l49.372 49.372C129.209 34.136 189.552 8 256 8c136.81 0 247.747 110.78 248 247.531zm-180.912 78.784l9.823-12.63c8.138-10.463 6.253-25.542-4.21-33.679L288 256.349V152c0-13.255-10.745-24-24-24h-16c-13.255 0-24 10.745-24 24v135.651l65.409 50.874c10.463 8.137 25.541 6.253 33.679-4.21z"
+              fill="currentColor"
+            />
+          </svg>
+           Reset
+        </button>
+        <button
+          class="btn btn-danger btn-sm"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-trash fa-w-14 "
+            data-icon="trash"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"
+              fill="currentColor"
+            />
+          </svg>
+           Remove
+        </button>
+      </div>
+    </div>
+    <div
+      class="content tab-content"
+    >
+      <div
+        aria-hidden="false"
+        class="fade tabPane tab-pane active show"
+        role="tabpanel"
+      >
+        <div
+          class="paneContent"
+        >
+          <div
+            class="nodePanel"
+          >
+            <div
+              class="nodeHeader"
+            >
+              <span
+                class="nodeHeaderTitle disabledTitle"
+              >
+                Brick Actions
+              </span>
+              <button
+                class="copyButton"
+                data-testid="icon-button-copyNode"
+                disabled=""
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-copy fa-w-14 fa-1x "
+                  data-icon="copy"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 448 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+              <button
+                class="removeButton"
+                data-testid="icon-button-removeNode"
+                disabled=""
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-trash fa-w-14 fa-1x "
+                  data-icon="trash"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 448 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div
+              class="nodeLayout"
+            >
+              <div
+                class="list-group list-group-flush"
+              >
+                <div
+                  class="root list-group-item-action list-group-item active"
+                  data-testid="editor-node"
+                >
+                  <div
+                    class="root"
+                  >
+                    <div
+                      class="icon"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-window-maximize fa-w-16 fa-fw "
+                        data-icon="window-maximize"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 512 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M464 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-16 160H64v-84c0-6.6 5.4-12 12-12h360c6.6 0 12 5.4 12 12v84z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </div>
+                    <div
+                      class="text"
+                    >
+                      <div>
+                        Panel
+                      </div>
+                      <div
+                        class="root"
+                      >
+                        @input
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="root"
+                >
+                  <button
+                    data-testid="icon-button-add-node-foundation"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="svg-inline--fa fa-plus-circle fa-w-16 fa-1x "
+                      data-icon="plus-circle"
+                      data-prefix="fas"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 512 512"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm144 276c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92h-92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div
+                  class="root list-group-item-action list-group-item"
+                  data-testid="editor-node"
+                >
+                  <div
+                    class="root"
+                  >
+                    <div
+                      class="icon"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-cube fa-w-16 fa-fw fa-2x "
+                        color="inherit"
+                        data-icon="cube"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 512 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </div>
+                    <div
+                      class="text"
+                    >
+                      <div>
+                        Echo Block
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="root"
+                  >
+                    <button
+                      class="moveButton"
+                      disabled=""
+                      title="Move brick higher"
+                      type="button"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-arrow-up fa-w-14 fa-sm "
+                        data-icon="arrow-up"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 448 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      class="moveButton"
+                      title="Move brick lower"
+                      type="button"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-arrow-down fa-w-14 fa-sm "
+                        data-icon="arrow-down"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 448 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M413.1 222.5l22.2 22.2c9.4 9.4 9.4 24.6 0 33.9L241 473c-9.4 9.4-24.6 9.4-33.9 0L12.7 278.6c-9.4-9.4-9.4-24.6 0-33.9l22.2-22.2c9.5-9.5 25-9.3 34.3.4L184 343.4V56c0-13.3 10.7-24 24-24h32c13.3 0 24 10.7 24 24v287.4l114.8-120.5c9.3-9.8 24.8-10 34.3-.4z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="root"
+                >
+                  <button
+                    data-testid="icon-button-add-node-00000003-0000-4000-A000-000000000000"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="svg-inline--fa fa-plus-circle fa-w-16 fa-1x "
+                      data-icon="plus-circle"
+                      data-prefix="fas"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 512 512"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm144 276c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92h-92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div
+                  class="root list-group-item-action expanded list-group-item"
+                  data-testid="editor-node"
+                >
+                  <div
+                    class="handleContainer"
+                  >
+                    <div
+                      class="openHandle"
+                    />
+                  </div>
+                  <div
+                    class="root"
+                  >
+                    <div
+                      class="icon"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-random fa-w-16 fa-fw fa-2x "
+                        color="inherit"
+                        data-icon="random"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 512 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M504.971 359.029c9.373 9.373 9.373 24.569 0 33.941l-80 79.984c-15.01 15.01-40.971 4.49-40.971-16.971V416h-58.785a12.004 12.004 0 0 1-8.773-3.812l-70.556-75.596 53.333-57.143L352 336h32v-39.981c0-21.438 25.943-31.998 40.971-16.971l80 79.981zM12 176h84l52.781 56.551 53.333-57.143-70.556-75.596A11.999 11.999 0 0 0 122.785 96H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12zm372 0v39.984c0 21.46 25.961 31.98 40.971 16.971l80-79.984c9.373-9.373 9.373-24.569 0-33.941l-80-79.981C409.943 24.021 384 34.582 384 56.019V96h-58.785a12.004 12.004 0 0 0-8.773 3.812L96 336H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12h110.785c3.326 0 6.503-1.381 8.773-3.812L352 176h32z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </div>
+                    <div
+                      class="text"
+                    >
+                      <div>
+                        For-Each Loop
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="root"
+                  >
+                    <button
+                      class="moveButton"
+                      title="Move brick higher"
+                      type="button"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-arrow-up fa-w-14 fa-sm "
+                        data-icon="arrow-up"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 448 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      class="moveButton"
+                      disabled=""
+                      title="Move brick lower"
+                      type="button"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-arrow-down fa-w-14 fa-sm "
+                        data-icon="arrow-down"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 448 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M413.1 222.5l22.2 22.2c9.4 9.4 9.4 24.6 0 33.9L241 473c-9.4 9.4-24.6 9.4-33.9 0L12.7 278.6c-9.4-9.4-9.4-24.6 0-33.9l22.2-22.2c9.5-9.5 25-9.3 34.3.4L184 343.4V56c0-13.3 10.7-24 24-24h32c13.3 0 24 10.7 24 24v287.4l114.8-120.5c9.3-9.8 24.8-10 34.3-.4z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="root"
+                />
+                <div
+                  class="root"
+                >
+                  <div
+                    class="header"
+                  >
+                    <div
+                      class="headerPipeLineTop"
+                    />
+                    <div
+                      class="subPipelineLabel"
+                    >
+                      body
+                    </div>
+                    <div
+                      class="headerPipeLineBottom"
+                    />
+                    <div
+                      class="root"
+                    >
+                      <button
+                        data-testid="icon-button-add-node-extension.blockPipeline.1.config.body.__value__-header"
+                        type="button"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="svg-inline--fa fa-plus-circle fa-w-16 fa-1x "
+                          data-icon="plus-circle"
+                          data-prefix="fas"
+                          focusable="false"
+                          role="img"
+                          viewBox="0 0 512 512"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm144 276c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92h-92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="root list-group-item-action list-group-item"
+                  data-testid="editor-node"
+                >
+                  <div
+                    class="pipeLine"
+                  />
+                  <div
+                    class="root"
+                  >
+                    <div
+                      class="icon"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-cube fa-w-16 fa-fw fa-2x "
+                        color="inherit"
+                        data-icon="cube"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 512 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                      <span
+                        class="badge"
+                      >
+                        <img
+                          alt=""
+                          src="/img/fa-exclamation-triangle-custom.svg"
+                        />
+                      </span>
+                    </div>
+                    <div
+                      class="text"
+                    >
+                      <div>
+                        Echo Block
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="root"
+                >
+                  <button
+                    data-testid="icon-button-add-node-undefined"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="svg-inline--fa fa-plus-circle fa-w-16 fa-1x "
+                      data-icon="plus-circle"
+                      data-prefix="fas"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 512 512"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm144 276c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92h-92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div
+                  class="footer"
+                >
+                  <div
+                    class="pipelineContainer"
+                  >
+                    <div
+                      class="pipelineEnd"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="root biggerActions"
+                >
+                  <button
+                    data-testid="icon-button-add-node-00000004-0000-4000-A000-000000000000"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="svg-inline--fa fa-plus-circle fa-w-16 fa-1x "
+                      data-icon="plus-circle"
+                      data-prefix="fas"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 512 512"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm144 276c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92h-92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <p
+                  class="root"
+                >
+                  <small
+                    class="text-muted"
+                  >
+                    Add more bricks with the plus button
+                  </small>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div
+            class="configPanel"
+          >
+            <div
+              class="col"
+            >
+              <div
+                class="formGroup form-group row"
+              >
+                <label
+                  class="label form-label col-form-label col-xl-2 col-lg-3"
+                  for="label"
+                >
+                  Extension Name
+                </label>
+                <div
+                  class="col-xl-10 col-lg-9"
+                >
+                  <input
+                    class="form-control"
+                    id="label"
+                    name="label"
+                    value="Element 2"
+                  />
+                </div>
+              </div>
+              <div
+                class="card"
+              >
+                <div
+                  class="cardHeader card-header"
+                >
+                  Configuration
+                </div>
+                <div
+                  class="cardBody card-body"
+                >
+                  <div
+                    class="formGroup form-group row"
+                  >
+                    <label
+                      class="label form-label col-form-label col-xl-2 col-lg-3"
+                      for="extension.heading"
+                    >
+                      Heading
+                    </label>
+                    <div
+                      class="col-xl-10 col-lg-9"
+                    >
+                      <input
+                        class="form-control"
+                        id="extension.heading"
+                        name="extension.heading"
+                        value=""
+                      />
+                      <small
+                        class="text-muted form-text"
+                      >
+                        Panel heading
+                      </small>
+                    </div>
+                  </div>
+                  <div
+                    class="formGroup form-group row"
+                  >
+                    <label
+                      class="label form-label col-form-label col-xl-2 col-lg-3"
+                      for="extensionPoint.definition.containerSelector"
+                    >
+                      <span>
+                        Location 
+                        <svg
+                          aria-hidden="true"
+                          class="svg-inline--fa fa-lock fa-w-14 "
+                          data-icon="lock"
+                          data-prefix="fas"
+                          focusable="false"
+                          role="img"
+                          viewBox="0 0 448 512"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </span>
+                    </label>
+                    <div
+                      class="col-xl-10 col-lg-9"
+                    >
+                      <div
+                        class="root"
+                      >
+                        <button
+                          aria-label="Select element"
+                          class="btn btn-info"
+                          disabled=""
+                          type="button"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            class="svg-inline--fa fa-mouse-pointer fa-w-10 "
+                            data-icon="mouse-pointer"
+                            data-prefix="fas"
+                            focusable="false"
+                            role="img"
+                            viewBox="0 0 320 512"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M302.189 329.126H196.105l55.831 135.993c3.889 9.428-.555 19.999-9.444 23.999l-49.165 21.427c-9.165 4-19.443-.571-23.332-9.714l-53.053-129.136-86.664 89.138C18.729 472.71 0 463.554 0 447.977V18.299C0 1.899 19.921-6.096 30.277 5.443l284.412 292.542c11.472 11.179 3.007 31.141-12.5 31.141z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                        </button>
+                        <div
+                          aria-expanded="false"
+                          aria-haspopup="listbox"
+                          aria-owns="react-autowhatever-1"
+                          role="combobox"
+                        >
+                          <input
+                            aria-autocomplete="list"
+                            aria-controls="react-autowhatever-1"
+                            autocomplete="off"
+                            class="form-control input notClearable"
+                            disabled=""
+                            placeholder="Choose a selector..."
+                            type="search"
+                            value=""
+                          />
+                          <div
+                            class="dropdown"
+                            id="react-autowhatever-1"
+                            role="listbox"
+                          />
+                        </div>
+                      </div>
+                      <small
+                        class="text-muted form-text"
+                      >
+                        Location on the page
+                      </small>
+                    </div>
+                  </div>
+                  <div
+                    class="formGroup form-group row"
+                  >
+                    <label
+                      class="label form-label col-form-label col-xl-2 col-lg-3"
+                      for="extensionPoint.definition.isAvailable.matchPatterns"
+                    >
+                      <span>
+                        Sites 
+                        <svg
+                          aria-hidden="true"
+                          class="svg-inline--fa fa-lock fa-w-14 "
+                          data-icon="lock"
+                          data-prefix="fas"
+                          focusable="false"
+                          role="img"
+                          viewBox="0 0 448 512"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </span>
+                    </label>
+                    <div
+                      class="col-xl-10 col-lg-9"
+                    >
+                      <ul
+                        class="list-group mb-2"
+                      >
+                        <li
+                          class="list-group-item py-1"
+                        >
+                          <div
+                            class="formGroup mb-0 form-group row"
+                          >
+                            <div
+                              class="col-xl-12 col-lg-12"
+                            >
+                              <div
+                                class="root"
+                              >
+                                <div
+                                  class="field"
+                                >
+                                  <textarea
+                                    class="form-control"
+                                    id="extensionPoint.definition.isAvailable.matchPatterns.0"
+                                    name="extensionPoint.definition.isAvailable.matchPatterns.0"
+                                    rows="1"
+                                  >
+                                    https://www.mySite2.com/*
+                                  </textarea>
+                                </div>
+                                <div
+                                  class="dropdown dropdown"
+                                  data-test-selected="Text"
+                                  data-testid="toggle-extensionPoint.definition.isAvailable.matchPatterns.0"
+                                >
+                                  <button
+                                    aria-expanded="false"
+                                    aria-haspopup="true"
+                                    class="dropdown-toggle btn btn-link"
+                                    type="button"
+                                  >
+                                    <span
+                                      class="symbol"
+                                    >
+                                      <test-file-stub
+                                        classname="root"
+                                      />
+                                    </span>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                      <button
+                        class="btn btn-primary"
+                        type="button"
+                      >
+                        Add Site
+                      </button>
+                      <small
+                        class="text-muted form-text"
+                      >
+                        <span>
+                          URL match patterns permitting the extension to run on a site. If PixieBrix does not already have access to a site, your browser will prompt you to grant access. See 
+                          <a
+                            href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            <code>
+                              match_patterns
+                            </code>
+                             Documentation
+                          </a>
+                           for examples.
+                        </span>
+                      </small>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="cardHeader card-header"
+                >
+                  Advanced
+                </div>
+                <div
+                  class="cardBody card-body"
+                >
+                  <div
+                    class="formGroup form-group row"
+                  >
+                    <label
+                      class="label form-label col-form-label col-xl-2 col-lg-3"
+                      for="extension.collapsible"
+                    >
+                      Collapsible
+                    </label>
+                    <div
+                      class="col-xl-10 col-lg-9"
+                    >
+                      <div
+                        class="root"
+                      >
+                        <div
+                          class="switch btn off btn-light"
+                        >
+                          <div
+                            class="switch-group"
+                          >
+                            <span
+                              class="switch-on btn btn-primary"
+                            >
+                               
+                            </span>
+                            <span
+                              class="switch-off btn btn-light"
+                            >
+                               
+                            </span>
+                            <span
+                              class="switch-handle btn btn-light"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <small
+                        class="text-muted form-text"
+                      >
+                        Render the panel as a collapsible drawer
+                      </small>
+                    </div>
+                  </div>
+                  <div
+                    class="formGroup form-group row"
+                  >
+                    <label
+                      class="label form-label col-form-label col-xl-2 col-lg-3"
+                      for="extension.shadowDOM"
+                    >
+                      Shadow DOM
+                    </label>
+                    <div
+                      class="col-xl-10 col-lg-9"
+                    >
+                      <div
+                        class="root"
+                      >
+                        <div
+                          class="switch btn off btn-light"
+                        >
+                          <div
+                            class="switch-group"
+                          >
+                            <span
+                              class="switch-on btn btn-primary"
+                            >
+                               
+                            </span>
+                            <span
+                              class="switch-off btn btn-light"
+                            >
+                               
+                            </span>
+                            <span
+                              class="switch-handle btn btn-light"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <small
+                        class="text-muted form-text"
+                      >
+                        Isolate the panel style with a Shadow DOM
+                      </small>
+                    </div>
+                  </div>
+                  <div
+                    class="formGroup form-group row"
+                  >
+                    <label
+                      class="label form-label col-form-label col-xl-2 col-lg-3"
+                      for="extensionPoint.definition.template"
+                    >
+                      <span>
+                        Template 
+                        <svg
+                          aria-hidden="true"
+                          class="svg-inline--fa fa-lock fa-w-14 "
+                          data-icon="lock"
+                          data-prefix="fas"
+                          focusable="false"
+                          role="img"
+                          viewBox="0 0 448 512"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </span>
+                    </label>
+                    <div
+                      class="col-xl-10 col-lg-9"
+                    >
+                      <div>
+                        <textarea
+                          class="form-control"
+                          disabled=""
+                          id="extensionPoint.definition.template"
+                          name="extensionPoint.definition.template"
+                          rows="4"
+                        />
+                      </div>
+                      <small
+                        class="text-muted form-text"
+                      >
+                        A template for the item, with a placeholder for the heading and body
+                      </small>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="cardHeader card-header"
+                >
+                  Advanced: Match Rules
+                </div>
+                <div
+                  class="cardBody card-body"
+                >
+                  <div
+                    class="formGroup form-group row"
+                  >
+                    <label
+                      class="label form-label col-form-label col-xl-2 col-lg-3"
+                      for="extensionPoint.definition.isAvailable.urlPatterns"
+                    >
+                      <span>
+                        URL Patterns 
+                        <svg
+                          aria-hidden="true"
+                          class="svg-inline--fa fa-lock fa-w-14 "
+                          data-icon="lock"
+                          data-prefix="fas"
+                          focusable="false"
+                          role="img"
+                          viewBox="0 0 448 512"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </span>
+                    </label>
+                    <div
+                      class="col-xl-10 col-lg-9"
+                    >
+                      <ul
+                        class="list-group mb-2"
+                      />
+                      <button
+                        class="btn btn-primary"
+                        type="button"
+                      >
+                        Add URL Pattern
+                      </button>
+                      <small
+                        class="text-muted form-text"
+                      >
+                        <span>
+                          URL pattern rules restricting when the extension runs. If provided, at least one of the rules must match for the extension to run. See 
+                          <a
+                            href="https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API"
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            URL Pattern API Documentation
+                          </a>
+                           for examples.
+                        </span>
+                      </small>
+                    </div>
+                  </div>
+                  <div
+                    class="formGroup form-group row"
+                  >
+                    <label
+                      class="label form-label col-form-label col-xl-2 col-lg-3"
+                      for="extensionPoint.definition.isAvailable.selectors"
+                    >
+                      <span>
+                        Selectors 
+                        <svg
+                          aria-hidden="true"
+                          class="svg-inline--fa fa-lock fa-w-14 "
+                          data-icon="lock"
+                          data-prefix="fas"
+                          focusable="false"
+                          role="img"
+                          viewBox="0 0 448 512"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </span>
+                    </label>
+                    <div
+                      class="col-xl-10 col-lg-9"
+                    >
+                      <ul
+                        class="list-group mb-2"
+                      />
+                      <button
+                        class="btn btn-primary"
+                        type="button"
+                      >
+                        Add Selector
+                      </button>
+                      <small
+                        class="text-muted form-text"
+                      >
+                        <span>
+                          Selectors restricting when the extension runs. If provided, at least one of the selectors must match 
+                          <i>
+                            on page load
+                          </i>
+                           for the extension to run.
+                        </span>
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dataPanel"
+          >
+            <div
+              class="nav nav-tabs"
+              role="tablist"
+            >
+              <div
+                class="tabNav nav-item"
+              >
+                <a
+                  aria-selected="false"
+                  class="nav-link"
+                  data-rb-event-key="context"
+                  href="#"
+                  role="tab"
+                >
+                  Context
+                </a>
+              </div>
+              <div
+                class="tabNav nav-item"
+              >
+                <a
+                  aria-selected="false"
+                  class="nav-link"
+                  data-rb-event-key="rendered"
+                  href="#"
+                  role="tab"
+                >
+                  Rendered
+                </a>
+              </div>
+              <div
+                class="tabNav nav-item"
+              >
+                <a
+                  aria-selected="false"
+                  class="nav-link"
+                  data-rb-event-key="output"
+                  href="#"
+                  role="tab"
+                >
+                  Output
+                </a>
+              </div>
+              <div
+                class="tabNav nav-item"
+              >
+                <a
+                  aria-selected="true"
+                  class="nav-link active"
+                  data-rb-event-key="preview"
+                  href="#"
+                  role="tab"
+                >
+                  Preview
+                </a>
+              </div>
+              <div
+                class="tabNav nav-item"
+              >
+                <a
+                  aria-selected="false"
+                  class="nav-link"
+                  data-rb-event-key="pageState"
+                  href="#"
+                  role="tab"
+                >
+                  Page State
+                </a>
+              </div>
+            </div>
+            <div
+              class="tab-content"
+            >
+              <div
+                aria-hidden="true"
+                class="fade tabPane tab-pane"
+                role="tabpanel"
+              >
+                <div
+                  class="text-muted"
+                >
+                  A foundation is the first step in the execution flow, they do not receive inputs
+                </div>
+              </div>
+              <div
+                aria-hidden="true"
+                class="fade tabPane tab-pane"
+                role="tabpanel"
+              >
+                <div
+                  class="text-muted"
+                >
+                  A foundation is the first step in the execution flow, they do not receive inputs
+                </div>
+              </div>
+              <div
+                aria-hidden="false"
+                class="fade tabPane tab-pane active show"
+                role="tabpanel"
+              >
+                <div>
+                  <div
+                    class="root"
+                  >
+                    <div
+                      class="formGroup form-group row"
+                    >
+                      <label
+                        class="label form-label col-form-label col-lg-auto"
+                        for="traceSearch"
+                      >
+                        Search
+                      </label>
+                      <div
+                        class="col-lg"
+                      >
+                        <input
+                          class="form-control"
+                          id="traceSearch"
+                          name="traceSearch"
+                          placeholder="Search for a property or value"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <ul
+                      style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(253, 255, 255);"
+                    >
+                      <li
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        <ul
+                          style="padding: 0px; margin: 0px; list-style: none;"
+                        >
+                          <li
+                            style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                          >
+                            <label
+                              style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                            >
+                              <div>
+                                <span>
+                                  @input
+                                </span>
+                                : 
+                                <a
+                                  aria-label="copy path"
+                                  class="copyPath p-0 btn btn-text"
+                                  href="#"
+                                  role="button"
+                                >
+                                  <svg
+                                    aria-hidden="true"
+                                    class="svg-inline--fa fa-copy fa-w-14 "
+                                    data-icon="copy"
+                                    data-prefix="fas"
+                                    focusable="false"
+                                    role="img"
+                                    viewBox="0 0 448 512"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"
+                                      fill="currentColor"
+                                    />
+                                  </svg>
+                                </a>
+                              </div>
+                            </label>
+                            <span
+                              style="color: rgb(241, 89, 80);"
+                            >
+                              undefined
+                            </span>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
 exports[`sanity check it renders first selected node 1`] = `
 <DocumentFragment>
   <form
