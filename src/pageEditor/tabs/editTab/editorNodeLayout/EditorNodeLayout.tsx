@@ -17,9 +17,7 @@
 
 import React, { useCallback, useMemo, useState } from "react";
 import { ListGroup } from "react-bootstrap";
-import BrickNode, {
-  BrickNodeProps,
-} from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNode";
+import BrickNode from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNode";
 import PipelineHeaderNode, {
   PipelineHeaderNodeProps,
 } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
@@ -27,17 +25,18 @@ import PipelineFooterNode, {
   PipelineFooterNodeProps,
 } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
 import { BlockPipeline } from "@/blocks/types";
-import { FormikError } from "@/pageEditor/tabs/editTab/editTabTypes";
+import {
+  BrickNodeProps,
+  FormikError,
+  RunStatus,
+} from "@/pageEditor/tabs/editTab/editTabTypes";
 import { TraceError } from "@/telemetry/trace";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { TypedBlockMap } from "@/blocks/registry";
 import { IBlock, OutputKey, UUID } from "@/core";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
-import {
-  BrickNodeContentProps,
-  RunStatus,
-} from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNodeContent";
+import { BrickNodeContentProps } from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNodeContent";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
@@ -64,7 +63,7 @@ type EditorNodeProps =
   | (PipelineHeaderNodeProps & { type: "header"; key: string })
   | (PipelineFooterNodeProps & { type: "footer"; key: string });
 
-export type EditorNodeLayoutProps = {
+type EditorNodeLayoutProps = {
   allBlocks: TypedBlockMap;
   relevantBlocksForRootPipeline: IBlock[];
   pipeline: BlockPipeline;

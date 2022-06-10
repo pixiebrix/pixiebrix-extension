@@ -16,34 +16,18 @@
  */
 
 import React, { useEffect, useRef } from "react";
-import BrickNodeContent, {
-  BrickNodeContentProps,
-  RunStatus,
-} from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNodeContent";
+import BrickNodeContent from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNodeContent";
 import styles from "./BrickNode.module.scss";
-import MoveBrickControl, {
-  MoveBrickControlProps,
-} from "@/pageEditor/tabs/editTab/editorNodes/brickNode/MoveBrickControl";
+import MoveBrickControl from "@/pageEditor/tabs/editTab/editorNodes/brickNode/MoveBrickControl";
 import cx from "classnames";
 import { ListGroup } from "react-bootstrap";
-import NodeActionsView, {
-  NodeAction,
-} from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
+import NodeActionsView from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import PipelineOffsetView from "@/pageEditor/tabs/editTab/editorNodes/PipelineOffsetView";
 import TrailingMessage from "@/pageEditor/tabs/editTab/editorNodes/TrailingMessage";
-
-export type BrickNodeProps = BrickNodeContentProps &
-  MoveBrickControlProps & {
-    onClick?: () => void;
-    active?: boolean;
-    parentIsActive?: boolean;
-    nestingLevel: number;
-    hasSubPipelines?: boolean;
-    collapsed?: boolean;
-    nodeActions: NodeAction[];
-    showBiggerActions?: boolean;
-    trailingMessage?: string;
-  };
+import {
+  BrickNodeProps,
+  RunStatus,
+} from "@/pageEditor/tabs/editTab/editTabTypes";
 
 const BrickNode: React.VFC<BrickNodeProps> = ({
   onClick,

@@ -21,14 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./BrickNodeContent.module.scss";
 import OutputKeyView from "@/pageEditor/tabs/editTab/editorNodes/OutputKeyView";
 import { OutputKey } from "@/core";
-
-export enum RunStatus {
-  NONE,
-  SUCCESS,
-  SKIPPED,
-  WARNING,
-  ERROR,
-}
+import { RunStatus } from "@/pageEditor/tabs/editTab/editTabTypes";
 
 export type BrickNodeContentProps = {
   icon?: IconProp | React.ReactNode;
