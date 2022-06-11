@@ -46,27 +46,25 @@ const Preview: React.VFC = () => {
 
 const Template: Story<
   typeof CssClassWidget & { initialValues: { cssClass: string | Expression } }
-> = ({ initialValues }) => {
-  return (
-    <Formik initialValues={initialValues} onSubmit={action("submit")}>
-      <>
-        <div className="mb-4">
-          <Preview />
-        </div>
+> = ({ initialValues }) => (
+  <Formik initialValues={initialValues} onSubmit={action("submit")}>
+    <>
+      <div className="mb-4">
+        <Preview />
+      </div>
 
-        <div>
-          <CssClassWidget
-            inputModeOptions={getCssClassInputFieldOptions()}
-            schema={{
-              type: "string",
-            }}
-            name="cssClass"
-          />
-        </div>
-      </>
-    </Formik>
-  );
-};
+      <div>
+        <CssClassWidget
+          inputModeOptions={getCssClassInputFieldOptions()}
+          schema={{
+            type: "string",
+          }}
+          name="cssClass"
+        />
+      </div>
+    </>
+  </Formik>
+);
 
 export const BlankLiteral = Template.bind({});
 BlankLiteral.args = {
