@@ -14,6 +14,7 @@ Object {
           data-react-beautiful-dnd-drag-handle="0"
           data-react-beautiful-dnd-draggable="0"
           draggable="false"
+          role="treeitem"
           tabindex="0"
         >
           <div
@@ -65,6 +66,7 @@ Object {
         data-react-beautiful-dnd-drag-handle="0"
         data-react-beautiful-dnd-draggable="0"
         draggable="false"
+        role="treeitem"
         tabindex="0"
       >
         <div
