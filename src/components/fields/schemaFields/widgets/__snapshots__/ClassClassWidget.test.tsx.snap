@@ -7,39 +7,6 @@ Object {
     <div>
       <div>
         <div
-          class="root"
-        >
-          <div
-            class="field"
-          >
-            <textarea
-              class="form-control"
-              name="cssClass"
-              rows="1"
-            />
-          </div>
-          <div
-            class="dropdown dropdown"
-            data-test-selected="Text"
-            data-testid="toggle-cssClass"
-          >
-            <button
-              aria-expanded="false"
-              aria-haspopup="true"
-              class="dropdown-toggle btn btn-link"
-              type="button"
-            >
-              <span
-                class="symbol"
-              >
-                <test-file-stub
-                  classname="root"
-                />
-              </span>
-            </button>
-          </div>
-        </div>
-        <div
           class="mt-2"
         >
           <div
@@ -102,26 +69,6 @@ Object {
               >
                 <path
                   d="M16 224h416a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16H16a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16zm416 192H16a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm3.17-384H172.83A12.82 12.82 0 0 0 160 44.83v38.34A12.82 12.82 0 0 0 172.83 96h262.34A12.82 12.82 0 0 0 448 83.17V44.83A12.82 12.82 0 0 0 435.17 32zm0 256H172.83A12.82 12.82 0 0 0 160 300.83v38.34A12.82 12.82 0 0 0 172.83 352h262.34A12.82 12.82 0 0 0 448 339.17v-38.34A12.82 12.82 0 0 0 435.17 288z"
-                  fill="currentColor"
-                />
-              </svg>
-            </button>
-            <button
-              class="btn btn-light btn-sm"
-              type="button"
-            >
-              <svg
-                aria-hidden="true"
-                class="svg-inline--fa fa-align-justify fa-w-14 "
-                data-icon="align-justify"
-                data-prefix="fas"
-                focusable="false"
-                role="img"
-                viewBox="0 0 448 512"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M432 416H16a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0-128H16a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0-128H16a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0-128H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16z"
                   fill="currentColor"
                 />
               </svg>
@@ -205,45 +152,173 @@ Object {
               </button>
             </div>
           </div>
+          <div
+            class="mx-2 btn-group"
+            role="group"
+          >
+            <div
+              class="dropdown"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-light btn-sm"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-border-style fa-w-14 "
+                  data-icon="border-style"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 448 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M240 416h-32a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm-96 0h-32a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm192 0h-32a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm96-192h-32a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0 96h-32a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0 96h-32a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0-288h-32a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0-96H32A32 32 0 0 0 0 64v400a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16V96h368a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="d-flex my-2"
+        >
+          <div
+            class="mr-2"
+          >
+            <div
+              class="d-flex align-items-center"
+            >
+              <div
+                role="button"
+                tabindex="0"
+              >
+                Margin
+                 
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-caret-right fa-w-6 "
+                  data-icon="caret-right"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 192 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </div>
+              <div>
+                <input
+                  class="form-control"
+                  max="5"
+                  min="0"
+                  type="number"
+                  value=""
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="mx-2"
+          >
+            <div
+              class="d-flex align-items-center"
+            >
+              <div
+                role="button"
+                tabindex="0"
+              >
+                Padding
+                 
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-caret-right fa-w-6 "
+                  data-icon="caret-right"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 192 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </div>
+              <div>
+                <input
+                  class="form-control"
+                  max="5"
+                  min="0"
+                  type="number"
+                  value=""
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div
+            class="text-muted"
+          >
+            Advanced: use a variable or text template to apply conditional formatting. PixieBrix supports the
+             
+            <a
+              href="https://getbootstrap.com/docs/4.6/utilities/"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Bootstrap utilities
+            </a>
+          </div>
+          <div
+            class="root"
+          >
+            <div
+              class="field"
+            >
+              <textarea
+                class="form-control"
+                name="cssClass"
+                rows="1"
+              />
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Text"
+              data-testid="toggle-cssClass"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <test-file-stub
+                    classname="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </body>,
   "container": <div>
     <div>
-      <div
-        class="root"
-      >
-        <div
-          class="field"
-        >
-          <textarea
-            class="form-control"
-            name="cssClass"
-            rows="1"
-          />
-        </div>
-        <div
-          class="dropdown dropdown"
-          data-test-selected="Text"
-          data-testid="toggle-cssClass"
-        >
-          <button
-            aria-expanded="false"
-            aria-haspopup="true"
-            class="dropdown-toggle btn btn-link"
-            type="button"
-          >
-            <span
-              class="symbol"
-            >
-              <test-file-stub
-                classname="root"
-              />
-            </span>
-          </button>
-        </div>
-      </div>
       <div
         class="mt-2"
       >
@@ -307,26 +382,6 @@ Object {
             >
               <path
                 d="M16 224h416a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16H16a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16zm416 192H16a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm3.17-384H172.83A12.82 12.82 0 0 0 160 44.83v38.34A12.82 12.82 0 0 0 172.83 96h262.34A12.82 12.82 0 0 0 448 83.17V44.83A12.82 12.82 0 0 0 435.17 32zm0 256H172.83A12.82 12.82 0 0 0 160 300.83v38.34A12.82 12.82 0 0 0 172.83 352h262.34A12.82 12.82 0 0 0 448 339.17v-38.34A12.82 12.82 0 0 0 435.17 288z"
-                fill="currentColor"
-              />
-            </svg>
-          </button>
-          <button
-            class="btn btn-light btn-sm"
-            type="button"
-          >
-            <svg
-              aria-hidden="true"
-              class="svg-inline--fa fa-align-justify fa-w-14 "
-              data-icon="align-justify"
-              data-prefix="fas"
-              focusable="false"
-              role="img"
-              viewBox="0 0 448 512"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M432 416H16a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0-128H16a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0-128H16a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0-128H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16z"
                 fill="currentColor"
               />
             </svg>
@@ -406,6 +461,167 @@ Object {
                     fill="currentColor"
                   />
                 </svg>
+              </span>
+            </button>
+          </div>
+        </div>
+        <div
+          class="mx-2 btn-group"
+          role="group"
+        >
+          <div
+            class="dropdown"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="dropdown-toggle btn btn-light btn-sm"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-border-style fa-w-14 "
+                data-icon="border-style"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 448 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M240 416h-32a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm-96 0h-32a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm192 0h-32a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm96-192h-32a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0 96h-32a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0 96h-32a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0-288h-32a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0-96H32A32 32 0 0 0 0 64v400a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16V96h368a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div
+        class="d-flex my-2"
+      >
+        <div
+          class="mr-2"
+        >
+          <div
+            class="d-flex align-items-center"
+          >
+            <div
+              role="button"
+              tabindex="0"
+            >
+              Margin
+               
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-caret-right fa-w-6 "
+                data-icon="caret-right"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 192 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
+                  fill="currentColor"
+                />
+              </svg>
+            </div>
+            <div>
+              <input
+                class="form-control"
+                max="5"
+                min="0"
+                type="number"
+                value=""
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="mx-2"
+        >
+          <div
+            class="d-flex align-items-center"
+          >
+            <div
+              role="button"
+              tabindex="0"
+            >
+              Padding
+               
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-caret-right fa-w-6 "
+                data-icon="caret-right"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 192 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
+                  fill="currentColor"
+                />
+              </svg>
+            </div>
+            <div>
+              <input
+                class="form-control"
+                max="5"
+                min="0"
+                type="number"
+                value=""
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div
+          class="text-muted"
+        >
+          Advanced: use a variable or text template to apply conditional formatting. PixieBrix supports the
+           
+          <a
+            href="https://getbootstrap.com/docs/4.6/utilities/"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Bootstrap utilities
+          </a>
+        </div>
+        <div
+          class="root"
+        >
+          <div
+            class="field"
+          >
+            <textarea
+              class="form-control"
+              name="cssClass"
+              rows="1"
+            />
+          </div>
+          <div
+            class="dropdown dropdown"
+            data-test-selected="Text"
+            data-testid="toggle-cssClass"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="dropdown-toggle btn btn-link"
+              type="button"
+            >
+              <span
+                class="symbol"
+              >
+                <test-file-stub
+                  classname="root"
+                />
               </span>
             </button>
           </div>

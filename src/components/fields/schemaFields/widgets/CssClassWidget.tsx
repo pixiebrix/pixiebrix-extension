@@ -589,7 +589,7 @@ const CssClassWidget: React.VFC<
           <a
             target="_blank"
             rel="noopener noreferrer"
-            href="https://getbootstrap.com/docs/4.6/utilities/borders/"
+            href="https://getbootstrap.com/docs/4.6/utilities/"
           >
             Bootstrap utilities
           </a>
