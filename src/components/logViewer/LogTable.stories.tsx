@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { ContextError } from "@/errors/genericErrors";
+
 Object.assign(global, { chrome: { runtime: { id: 42 } } });
 
 import React from "react";
@@ -23,7 +25,6 @@ import { validateRegistryId, uuidv4 } from "@/types/helpers";
 import LogTable from "@/components/logViewer/LogTable";
 import { serializeError } from "serialize-error";
 import { Card } from "react-bootstrap";
-import { ContextError } from "@/errors";
 import { InputValidationError } from "@/blocks/errors";
 import { Schema } from "@/core";
 import type { LogEntry } from "@/background/logging";
@@ -78,6 +79,22 @@ const ERROR_MESSAGE: LogEntry = {
   error: serializeError(new Error("Simple error")),
 };
 
+const NESTED_ERROR_MESSAGE: LogEntry = {
+  uuid: uuidv4(),
+  timestamp: Date.now().toString(),
+  message: "Sample error with cause chain",
+  level: "error",
+  context: {
+    // Just the context that will show up in the table
+    blockId,
+  },
+  error: serializeError(
+    new Error("Simple error", {
+      cause: new Error("Cause error", { cause: new Error("Cause error #2") }),
+    })
+  ),
+};
+
 const sampleSchema: Schema = {
   type: "object",
   properties: {
@@ -123,5 +140,10 @@ const CONTEXT_ERROR_MESSAGE: LogEntry = {
 export const Populated = Template.bind({});
 Populated.args = {
   hasEntries: true,
-  pageEntries: [DEBUG_MESSAGE, ERROR_MESSAGE, CONTEXT_ERROR_MESSAGE],
+  pageEntries: [
+    DEBUG_MESSAGE,
+    ERROR_MESSAGE,
+    NESTED_ERROR_MESSAGE,
+    CONTEXT_ERROR_MESSAGE,
+  ],
 };

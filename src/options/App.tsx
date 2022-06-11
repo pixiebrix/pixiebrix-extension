@@ -51,7 +51,7 @@ import BrowserBanner from "./pages/BrowserBanner";
 import useFlags from "@/hooks/useFlags";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import RequireAuth from "@/auth/RequireAuth";
-import useTheme, { useGetTheme } from "@/hooks/useTheme";
+import useTheme from "@/hooks/useTheme";
 
 // Register the built-in bricks
 registerEditors();
@@ -68,8 +68,7 @@ const RefreshBricks: React.VFC = () => {
 };
 
 const Layout = () => {
-  const theme = useGetTheme();
-  useTheme(theme);
+  useTheme();
   const { permit } = useFlags();
 
   return (

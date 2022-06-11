@@ -16,7 +16,7 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { RecipeMetadata, RegistryId, UUID } from "@/core";
 import {
@@ -31,13 +31,13 @@ import {
   OptionsDefinition,
   RecipeMetadataFormState,
 } from "@/types/definitions";
-import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
-import { isEmpty } from "lodash";
+import { get, isEmpty } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
+import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -65,19 +65,20 @@ export const initialState: EditorState = {
 };
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
+
 function ensureElementUIState(
   state: WritableDraft<EditorState>,
   elementId: UUID
 ) {
   if (!state.elementUIStates[elementId]) {
     state.elementUIStates[elementId] = makeInitialElementUIState();
+    const pipeline = state.elements.find((x) => x.uuid === elementId).extension
+      .blockPipeline;
+    state.elementUIStates[elementId].pipelineMap = getPipelineMap(pipeline);
   }
 }
 
-function ensureNodeUIState(
-  state: WritableDraft<ElementUIState>,
-  nodeId: NodeId
-) {
+function ensureNodeUIState(state: WritableDraft<ElementUIState>, nodeId: UUID) {
   if (!state.nodeUIStates[nodeId]) {
     state.nodeUIStates[nodeId] = makeInitialNodeUIState(nodeId);
   }
@@ -88,31 +89,31 @@ function syncElementNodeUIStates(
   element: FormState
 ) {
   const elementUIState = state.elementUIStates[element.uuid];
-  const blockPipelineIds = element.extension.blockPipeline.map(
-    (x) => x.instanceId
-  );
+
+  const pipelineMap = getPipelineMap(element.extension.blockPipeline);
+
+  elementUIState.pipelineMap = pipelineMap;
 
   // Pipeline block instance IDs may have changed
-  if (!blockPipelineIds.includes(elementUIState.activeNodeId)) {
+  if (pipelineMap[elementUIState.activeNodeId] == null) {
     elementUIState.activeNodeId = FOUNDATION_NODE_ID;
   }
 
   // Remove NodeUIStates for invalid IDs
-  for (const key of Object.keys(elementUIState.nodeUIStates)) {
-    const nodeId = key as NodeId;
+  for (const nodeId of Object.keys(elementUIState.nodeUIStates) as UUID[]) {
     // Don't remove the foundation NodeUIState
-    if (nodeId !== FOUNDATION_NODE_ID && !blockPipelineIds.includes(nodeId)) {
+    if (nodeId !== FOUNDATION_NODE_ID && pipelineMap[nodeId] == null) {
       delete elementUIState.nodeUIStates[nodeId];
     }
   }
 
   // Add missing NodeUIStates
-  for (const uuid of blockPipelineIds) {
-    ensureNodeUIState(elementUIState, uuid);
+  for (const nodeId of Object.keys(pipelineMap) as UUID[]) {
+    ensureNodeUIState(elementUIState, nodeId);
   }
 }
 
-function setActiveNodeId(state: WritableDraft<EditorState>, nodeId: NodeId) {
+function setActiveNodeId(state: WritableDraft<EditorState>, nodeId: UUID) {
   const elementUIState = state.elementUIStates[state.activeElementId];
   ensureNodeUIState(elementUIState, nodeId);
   elementUIState.activeNodeId = nodeId;
@@ -207,7 +208,8 @@ export const editorSlice = createSlice({
       state.activeRecipeId = null;
       state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
       state.selectionSeq++;
-      state.elementUIStates[element.uuid] = makeInitialElementUIState();
+
+      ensureElementUIState(state, element.uuid);
     },
     betaError(state, action: PayloadAction<{ error: string }>) {
       state.error = action.payload.error;
@@ -339,8 +341,8 @@ export const editorSlice = createSlice({
     removeElementNodeUIState(
       state,
       action: PayloadAction<{
-        nodeIdToRemove: NodeId;
-        newActiveNodeId?: NodeId;
+        nodeIdToRemove: UUID;
+        newActiveNodeId?: UUID;
       }>
     ) {
       const elementUIState = state.elementUIStates[state.activeElementId];
@@ -351,7 +353,7 @@ export const editorSlice = createSlice({
 
       delete elementUIState.nodeUIStates[nodeIdToRemove];
     },
-    setElementActiveNodeId(state, action: PayloadAction<NodeId>) {
+    setElementActiveNodeId(state, action: PayloadAction<UUID>) {
       setActiveNodeId(state, action.payload);
     },
     setNodeDataPanelTabSelected(state, action: PayloadAction<DataPanelTabKey>) {
@@ -398,10 +400,16 @@ export const editorSlice = createSlice({
     setNodePreviewActiveElement(state, action: PayloadAction<string>) {
       const activeElement = action.payload;
       const elementUIState = state.elementUIStates[state.activeElementId];
+
       elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
         DataPanelTabKey.Preview
       ].activeElement = activeElement;
+
+      elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
+        DataPanelTabKey.Outline
+      ].activeElement = activeElement;
     },
+
     copyBlockConfig(state, action: PayloadAction<BlockConfig>) {
       const copy = { ...action.payload };
       delete copy.instanceId;
@@ -607,6 +615,52 @@ export const editorSlice = createSlice({
       // Clean up the old metadata and options
       delete state.dirtyRecipeMetadataById[oldRecipeId];
       delete state.dirtyRecipeOptionsById[oldRecipeId];
+    },
+    addNode(
+      state,
+      action: PayloadAction<{
+        block: BlockConfig;
+        pipelinePath: string;
+        pipelineIndex: number;
+      }>
+    ) {
+      const { block, pipelinePath, pipelineIndex } = action.payload;
+      const element = state.elements.find(
+        (x) => x.uuid === state.activeElementId
+      );
+      const pipeline = get(element, pipelinePath);
+
+      pipeline.splice(pipelineIndex, 0, block);
+      syncElementNodeUIStates(state, element);
+      setActiveNodeId(state, block.instanceId);
+
+      // This change should re-initialize the Page Editor Formik form
+      state.selectionSeq++;
+    },
+    removeNode(state, action: PayloadAction<UUID>) {
+      const nodeIdToRemove = action.payload;
+      const element = state.elements.find(
+        (x) => x.uuid === state.activeElementId
+      );
+      const elementUiState = state.elementUIStates[state.activeElementId];
+      const { pipelinePath, index } =
+        elementUiState.pipelineMap[nodeIdToRemove];
+      const pipeline = get(element, pipelinePath);
+
+      // TODO: this fails when the brick is the last in a pipeline, need to select parent node
+      const nextActiveNode =
+        index + 1 === pipeline.length
+          ? pipeline[index - 1] // Last item, select previous
+          : pipeline[index + 1]; // Not last item, select next
+      pipeline.splice(index, 1);
+
+      syncElementNodeUIStates(state, element);
+
+      elementUiState.activeNodeId =
+        nextActiveNode?.instanceId ?? FOUNDATION_NODE_ID;
+
+      // This change should re-initialize the Page Editor Formik form
+      state.selectionSeq++;
     },
   },
 });

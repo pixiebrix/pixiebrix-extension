@@ -23,11 +23,9 @@ import {
   ServiceConfig,
 } from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
-import { ProxiedRemoteServiceError } from "@/services/errors";
 import serviceRegistry from "@/services/registry";
 import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
-import { BusinessError, ContextError, ExtensionNotLinkedError } from "@/errors";
 import { isEmpty } from "lodash";
 import {
   deleteCachedAuthData,
@@ -35,7 +33,7 @@ import {
   getToken,
   launchOAuth2Flow,
 } from "@/background/auth";
-import { assertHttpsUrl, isAbsoluteUrl } from "@/utils";
+import { isAbsoluteUrl } from "@/utils";
 import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
@@ -45,7 +43,13 @@ import {
   proxyResponseToAxiosResponse,
 } from "@/background/proxyUtils";
 import { selectAxiosError } from "@/services/requestErrorUtils";
-import { safeGuessStatusText } from "@/types/errorContract";
+import {
+  BusinessError,
+  ProxiedRemoteServiceError,
+} from "@/errors/businessErrors";
+import { ContextError, ExtensionNotLinkedError } from "@/errors/genericErrors";
+import { assertHttpsUrl } from "@/errors/assertHttpsUrl";
+import { safeGuessStatusText } from "@/errors/networkErrorHelpers";
 
 type SanitizedResponse<T = unknown> = Pick<
   AxiosResponse<T>,

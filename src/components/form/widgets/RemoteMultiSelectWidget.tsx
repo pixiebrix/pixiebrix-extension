@@ -24,7 +24,7 @@ import {
   OptionsFactory,
   useOptionsResolver,
 } from "@/components/form/widgets/RemoteSelectWidget";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import useReportError from "@/hooks/useReportError";
 
 type RemoteMultiSelectWidgetProps = {

@@ -45,10 +45,6 @@ import metadataSchema from "@schemas/metadata.json";
 import refSchema from "@schemas/ref.json";
 import componentSchema from "@schemas/component.json";
 import pipelineSchema from "@schemas/pipeline.json";
-import {
-  MissingConfigurationError,
-  NotConfiguredError,
-} from "@/services/errors";
 import { resolveDefinitions } from "@/registry/internal";
 import Lazy from "yup/lib/Lazy";
 import * as Yup from "yup";
@@ -57,6 +53,10 @@ import { isUUID, validateRegistryId } from "@/types/helpers";
 import { DoesNotExistError } from "@/baseRegistry";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { UnknownObject } from "@/types";
+import {
+  MissingConfigurationError,
+  NotConfiguredError,
+} from "@/errors/businessErrors";
 
 const SCHEMA_URLS: Record<string, UnknownObject> = {
   "http://json-schema.org/draft-07/schema": draft07,

@@ -18,9 +18,9 @@
 import { Schema, SchemaProperties } from "@/core";
 import {
   getErrorMessage,
-  InvalidSelectorError,
   JQUERY_INVALID_SELECTOR_ERROR,
-} from "@/errors";
+} from "@/errors/errorHelpers";
+import { InvalidSelectorError } from "@/errors/businessErrors";
 
 /**
  * Return the names of top-level required properties that are missing

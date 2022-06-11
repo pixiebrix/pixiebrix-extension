@@ -17,9 +17,15 @@
 
 import { loadOptions } from "@/store/extensionsStorage";
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { ResolvedExtension, IExtensionPoint, RegistryId, UUID } from "@/core";
+import {
+  IExtensionPoint,
+  RegistryId,
+  ResolvedExtension,
+  RunReason,
+  UUID,
+} from "@/core";
 import * as context from "@/contentScript/context";
-import * as sidebar from "@/contentScript/sidebar";
+import * as sidebar from "@/contentScript/sidebarController";
 import { sleep } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";
@@ -29,8 +35,10 @@ import { resolveDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deployment";
 import { $safeFind } from "@/helpers";
-import { PromiseCancelled } from "@/errors";
+import { PromiseCancelled } from "@/errors/genericErrors";
+import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 
+let _initialLoadNavigation = true;
 let _scriptPromise: Promise<void> | undefined;
 const _dynamic: Map<UUID, IExtensionPoint> = new Map();
 const _frameHref: Map<number, string> = new Map();
@@ -65,6 +73,7 @@ async function installScriptOnce(): Promise<void> {
 
 async function runExtensionPoint(
   extensionPoint: IExtensionPoint,
+  reason: RunReason,
   isCancelled: () => boolean
 ): Promise<void> {
   let installed = false;
@@ -99,7 +108,7 @@ async function runExtensionPoint(
   console.debug(`Installed extension: ${extensionPoint.id}`);
   _installedExtensionPoints.push(extensionPoint);
 
-  await extensionPoint.run();
+  await extensionPoint.run({ reason });
 }
 
 export function getInstalled(): IExtensionPoint[] {
@@ -195,16 +204,28 @@ function makeCancelOnNavigate(): () => boolean {
 }
 
 export async function runDynamic(
-  uuid: UUID,
+  elementId: UUID,
   extensionPoint: IExtensionPoint
 ): Promise<void> {
   // Uninstall the previous extension point instance (in favor of the updated extensionPoint)
-  if (_dynamic.has(uuid)) {
-    _dynamic.get(uuid).uninstall();
+  const previousExtensionPoint = _dynamic.get(elementId);
+
+  if (previousExtensionPoint) {
+    if (previousExtensionPoint.kind === "actionPanel") {
+      const sidebar = previousExtensionPoint as SidebarExtensionPoint;
+      // eslint-disable-next-line new-cap -- hack for action panels
+      sidebar.HACK_uninstallExceptExtension(elementId);
+    } else {
+      previousExtensionPoint.uninstall();
+    }
   }
 
-  _dynamic.set(uuid, extensionPoint);
-  await runExtensionPoint(extensionPoint, makeCancelOnNavigate());
+  _dynamic.set(elementId, extensionPoint);
+  await runExtensionPoint(
+    extensionPoint,
+    RunReason.MANUAL,
+    makeCancelOnNavigate()
+  );
 }
 
 /**
@@ -309,12 +330,27 @@ async function waitLoaded(cancel: () => boolean): Promise<void> {
   }
 }
 
+function decideRunReason({ force }: { force: boolean }): RunReason {
+  if (force) {
+    return RunReason.MANUAL;
+  }
+
+  if (_initialLoadNavigation) {
+    return RunReason.INITIAL_LOAD;
+  }
+
+  return RunReason.NAVIGATE;
+}
+
 /**
  * Handle a website navigation, e.g., page load or a URL change in an SPA.
  */
 export async function handleNavigate({
   force,
 }: { force?: boolean } = {}): Promise<void> {
+  const runReason = decideRunReason({ force });
+  _initialLoadNavigation = false;
+
   if (context.frameId == null) {
     console.debug(
       "Ignoring handleNavigate because context.frameId is not set yet"
@@ -355,13 +391,15 @@ export async function handleNavigate({
       extensionPoints.map(async (extensionPoint) => {
         // Don't await each extension point since the extension point may never appear. For example, an
         // extension point that runs on the contact information modal on LinkedIn
-        const runPromise = runExtensionPoint(extensionPoint, cancel).catch(
-          (error) => {
-            console.error(`Error installing/running: ${extensionPoint.id}`, {
-              error,
-            });
-          }
-        );
+        const runPromise = runExtensionPoint(
+          extensionPoint,
+          runReason,
+          cancel
+        ).catch((error) => {
+          console.error(`Error installing/running: ${extensionPoint.id}`, {
+            error,
+          });
+        });
 
         if (extensionPoint.syncInstall) {
           await runPromise;

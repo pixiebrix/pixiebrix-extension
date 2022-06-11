@@ -31,13 +31,13 @@ import store, { persistor } from "@/sidebar/store";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import Loader from "@/components/Loader";
 import { PersistGate } from "redux-persist/integration/react";
-import { FormEntry, PanelEntry } from "@/sidebar/types";
+import { ActivatePanelOptions, FormEntry, PanelEntry } from "@/sidebar/types";
 import Tabs from "@/sidebar/Tabs";
 import sidebarSlice, { SidebarState } from "./sidebarSlice";
 import { AnyAction } from "redux";
 import { hideSidebar } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
-import useTheme, { useGetTheme } from "@/hooks/useTheme";
+import useTheme from "@/hooks/useTheme";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -53,13 +53,16 @@ function getConnectedListener(dispatch: Dispatch<AnyAction>): SidebarListener {
     onHideForm({ nonce }: Partial<FormEntry>) {
       dispatch(sidebarSlice.actions.removeForm(nonce));
     },
+    onActivatePanel(options: ActivatePanelOptions) {
+      dispatch(sidebarSlice.actions.activatePanel(options));
+    },
   };
 }
 
 const selectState = ({ sidebar }: { sidebar: SidebarState }) => sidebar;
 
 const ConnectedSidebar: React.VFC = () => {
-  const { logo } = useTheme(useGetTheme());
+  const { logo } = useTheme();
   const dispatch = useDispatch();
   const sidebarState = useSelector(selectState);
 

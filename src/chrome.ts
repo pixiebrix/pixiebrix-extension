@@ -39,16 +39,6 @@ export type ReduxStorageKey = string & {
   _reduxStorageKeyBrand: never;
 };
 
-export class RequestError extends Error {
-  override name = "RequestError";
-  readonly response: unknown;
-
-  constructor(message: string, response: unknown) {
-    super(message);
-    this.response = response;
-  }
-}
-
 export function isBrowserSidebar(): boolean {
   return isExtensionContext() && location.pathname === "/sidebar.html";
 }

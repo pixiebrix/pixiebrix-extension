@@ -33,9 +33,10 @@ import {
   faSearch,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
-import BlockModal from "@/components/brickModal/BrickModal";
+import BrickModal from "@/components/brickModalNoTags/BrickModal";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import useAddExisting from "@/pageEditor/panes/insert/useAddExisting";
+import useFlags from "@/hooks/useFlags";
 
 type MenuItemWithConfig = MenuItemExtensionPoint & {
   rawConfig: ExtensionPointConfig<MenuDefinition>;
@@ -44,6 +45,8 @@ type MenuItemWithConfig = MenuItemExtensionPoint & {
 const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
   cancel,
 }) => {
+  const { flagOn } = useFlags();
+
   const menuItemExtensionPoints = useAvailableExtensionPoints(
     MenuItemExtensionPoint
   );
@@ -71,20 +74,22 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
         </div>
       </div>
       <div>
-        <BlockModal
-          bricks={menuItemExtensionPoints ?? []}
-          caption="Select button foundation"
-          renderButton={(onClick) => (
-            <Button
-              variant="info"
-              onClick={onClick}
-              disabled={!menuItemExtensionPoints?.length}
-            >
-              <FontAwesomeIcon icon={faSearch} /> Search Marketplace
-            </Button>
-          )}
-          onSelect={async (block) => addExisting(block as MenuItemWithConfig)}
-        />
+        {flagOn("page-editor-extension-point-marketplace") && (
+          <BrickModal
+            bricks={menuItemExtensionPoints ?? []}
+            caption="Select button foundation"
+            renderButton={(onClick) => (
+              <Button
+                variant="info"
+                onClick={onClick}
+                disabled={!menuItemExtensionPoints?.length}
+              >
+                <FontAwesomeIcon icon={faSearch} /> Search Marketplace
+              </Button>
+            )}
+            onSelect={async (block) => addExisting(block as MenuItemWithConfig)}
+          />
+        )}
 
         <Button variant="danger" className="ml-2" onClick={cancel}>
           <FontAwesomeIcon icon={faTimes} /> Cancel

@@ -25,7 +25,7 @@
   position: relative;
   flex-grow: 0;
   flex-shrink: 0;
-  width: 200px;
+  width: 220px;
   border-right: 1px solid lightgrey;
   display: flex;
   flex-direction: column;
@@ -104,10 +104,6 @@
   padding: 10px;
   overflow: auto;
   max-width: 360px;
-}
-
-.brickFaIcon {
-  color: inherit;
 }
 
 .tabPane {

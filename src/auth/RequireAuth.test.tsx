@@ -55,6 +55,7 @@ describe("RequireAuth", () => {
       </Provider>
     );
 
+    expect(screen.queryByTestId("loader")).toBeNull();
     expect(
       screen.getByText("Only authenticated users should see me!")
     ).not.toBeNull();
@@ -73,7 +74,11 @@ describe("RequireAuth", () => {
       </Provider>
     );
 
+    expect(screen.queryByTestId("loader")).toBeNull();
     expect(screen.getByText("Login")).not.toBeNull();
+    expect(
+      screen.queryByText("Only authenticated users should see me!")
+    ).toBeNull();
   });
 
   test("loading state does not flash content", () => {
@@ -90,5 +95,8 @@ describe("RequireAuth", () => {
     );
 
     expect(screen.getByTestId("loader")).not.toBeNull();
+    expect(
+      screen.queryByText("Only authenticated users should see me!")
+    ).toBeNull();
   });
 });

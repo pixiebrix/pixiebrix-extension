@@ -25,7 +25,7 @@ import { ExtensionPointConfig } from "@/extensionPoints/types";
 import React from "react";
 import useAvailableExtensionPoints from "@/pageEditor/hooks/useAvailableExtensionPoints";
 import Centered from "@/pageEditor/components/Centered";
-import BlockModal from "@/components/brickModal/BrickModal";
+import BrickModal from "@/components/brickModalNoTags/BrickModal";
 import { Alert, Button } from "react-bootstrap";
 import config from "@/pageEditor/extensionPoints/panel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -36,6 +36,7 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import useAddExisting from "@/pageEditor/panes/insert/useAddExisting";
+import useFlags from "@/hooks/useFlags";
 
 type PanelWithConfig = PanelExtensionPoint & {
   rawConfig: ExtensionPointConfig<PanelDefinition>;
@@ -46,6 +47,8 @@ const InsertPanelPane: React.FunctionComponent<{
 }> = ({ cancel }) => {
   const panelExtensionPoints = useAvailableExtensionPoints(PanelExtensionPoint);
   const addExistingPanel = useAddExisting(config, cancel);
+
+  const { flagOn } = useFlags();
 
   return (
     <Centered isScrollable>
@@ -68,20 +71,24 @@ const InsertPanelPane: React.FunctionComponent<{
         </div>
       </div>
       <div>
-        <BlockModal
-          bricks={panelExtensionPoints ?? []}
-          caption="Select panel foundation"
-          renderButton={(onClick) => (
-            <Button
-              variant="info"
-              onClick={onClick}
-              disabled={!panelExtensionPoints?.length}
-            >
-              <FontAwesomeIcon icon={faSearch} /> Search Marketplace
-            </Button>
-          )}
-          onSelect={async (block) => addExistingPanel(block as PanelWithConfig)}
-        />
+        {flagOn("page-editor-extension-point-marketplace") && (
+          <BrickModal
+            bricks={panelExtensionPoints ?? []}
+            caption="Select panel foundation"
+            renderButton={(onClick) => (
+              <Button
+                variant="info"
+                onClick={onClick}
+                disabled={!panelExtensionPoints?.length}
+              >
+                <FontAwesomeIcon icon={faSearch} /> Search Marketplace
+              </Button>
+            )}
+            onSelect={async (block) =>
+              addExistingPanel(block as PanelWithConfig)
+            }
+          />
+        )}
 
         <Button className="ml-2" variant="danger" onClick={cancel}>
           <FontAwesomeIcon icon={faTimes} /> Cancel

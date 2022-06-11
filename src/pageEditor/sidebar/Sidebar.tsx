@@ -65,7 +65,7 @@ import {
   selectIsAddToRecipeModalVisible,
 } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
-import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useGetRecipesQuery } from "@/services/api";
 import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
@@ -79,8 +79,9 @@ const ReloadButton: React.VoidFunctionComponent = () => (
     className="mt-auto"
     onClick={async (event) => {
       if (event.shiftKey) {
-        browser.runtime?.reload(); // Not guaranteed
         await browser.tabs.reload(browser.devtools.inspectedWindow.tabId);
+
+        browser.runtime?.reload(); // Not guaranteed
 
         // We must wait before reloading or else the loading fails
         // https://github.com/pixiebrix/pixiebrix-extension/pull/2381
@@ -166,9 +167,6 @@ const SidebarExpanded: React.VoidFunctionComponent<{
   const { data: allRecipes, isLoading: isLoadingRecipes } =
     useGetRecipesQuery();
 
-  const isInsertingElement = useSelector((state: EditorState) =>
-    Boolean(state.inserting)
-  );
   const activeElementId = useSelector(selectActiveElementId);
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const expandedRecipeId = useSelector(selectExpandedRecipeId);
@@ -348,7 +346,7 @@ const SidebarExpanded: React.VoidFunctionComponent<{
               <Logo />
             </a>
             <DropdownButton
-              disabled={isInsertingElement || !hasPermissions}
+              disabled={!hasPermissions}
               variant="info"
               size="sm"
               title="Add"

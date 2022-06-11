@@ -80,7 +80,7 @@ jest.mock("@/components/form/widgets/RemoteSelectWidget", () => {
 const serviceId = validateRegistryId("@uipath/cloud");
 
 function makeBaseState() {
-  const baseFormState = menuItemFormStateFactory({});
+  const baseFormState = menuItemFormStateFactory();
   baseFormState.services = [
     { id: serviceId, outputKey: "uipath" as OutputKey },
   ];

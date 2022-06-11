@@ -18,12 +18,12 @@
 import { Effect } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { BusinessError, CancelError } from "@/errors";
 import { attachStylesheet } from "@/blocks/util";
 // Can't get introjs.scss directly with loadAsUrl because the browser doesn't understand sass/scss
 import stylesheetUrl from "@/vendors/intro.js/introjs.css?loadAsUrl";
 import { $safeFind } from "@/helpers";
 import pDefer from "p-defer";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 
 type Step = {
   title: string;

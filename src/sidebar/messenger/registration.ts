@@ -17,7 +17,12 @@
 
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
-import { hideForm, renderPanels, showForm } from "@/sidebar/protocol";
+import {
+  activatePanel,
+  hideForm,
+  renderPanels,
+  showForm,
+} from "@/sidebar/protocol";
 import { isBrowserSidebar } from "@/chrome";
 
 // TODO: Use `expectContext("sidebar")` when it’s supported
@@ -27,6 +32,7 @@ if (!isBrowserSidebar()) {
 
 declare global {
   interface MessengerMethods {
+    SIDEBAR_ACTIVATE_PANEL: typeof activatePanel;
     SIDEBAR_RENDER_PANELS: typeof renderPanels;
     SIDEBAR_SHOW_FORM: typeof showForm;
     SIDEBAR_HIDE_FORM: typeof hideForm;
@@ -35,6 +41,7 @@ declare global {
 
 export default function registerMessenger(): void {
   registerMethods({
+    SIDEBAR_ACTIVATE_PANEL: activatePanel,
     SIDEBAR_RENDER_PANELS: renderPanels,
     SIDEBAR_SHOW_FORM: showForm,
     SIDEBAR_HIDE_FORM: hideForm,

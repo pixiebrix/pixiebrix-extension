@@ -22,7 +22,7 @@ import { DocumentElementType } from "@/components/documentBuilder/documentBuilde
 export function getClassNameEdit(elementName: string): SchemaFieldProps {
   return {
     name: joinName(elementName, "config", "className"),
-    schema: { type: "string" },
+    schema: { type: "string", format: "bootstrap-class" },
     label: "CSS Class",
   };
 }

@@ -25,3 +25,11 @@ enrichAxiosErrors();
 
 // https://webpack.js.org/guides/public-path/#on-the-fly
 __webpack_public_path__ = chrome.runtime.getURL("/");
+
+// @ts-expect-error For debugging only
+globalThis.$ = $;
+
+if (!("browser" in globalThis)) {
+  // @ts-expect-error For debugging only
+  globalThis.browser = browser;
+}

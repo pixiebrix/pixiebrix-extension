@@ -33,7 +33,7 @@ import { ApiVersion } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { serializeError } from "serialize-error";
-import { ContextError } from "@/errors";
+import { ContextError } from "@/errors/genericErrors";
 
 jest.mock("@/background/messenger/api");
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({

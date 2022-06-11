@@ -26,7 +26,6 @@ import {
   NodeUIState,
   TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
-import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { BlockConfig } from "@/blocks/types";
 
 type RootState = { editor: EditorState };
@@ -197,11 +196,23 @@ export const selectActiveNodeUIState: (rootState: RootState) => NodeUIState =
     (elementUIState) => elementUIState.nodeUIStates[elementUIState.activeNodeId]
   );
 
-export const selectActiveNodeId: (rootState: RootState) => NodeId =
+export const selectActiveNodeId: (rootState: RootState) => UUID =
   createSelector(
     selectActiveElementUIState,
     (elementUIState) => elementUIState.activeNodeId
   );
+
+export const selectPipelineMap = createSelector(
+  selectActiveElementUIState,
+  (uiState: ElementUIState) => uiState.pipelineMap
+);
+
+export const selectActiveNodeInfo = createSelector(
+  selectActiveElementUIState,
+  selectActiveNodeId,
+  (uiState: ElementUIState, activeNodeId: UUID) =>
+    uiState.pipelineMap[activeNodeId]
+);
 
 export const selectActiveNode: (rootState: RootState) => BlockConfig =
   createSelector(selectActiveElement, selectActiveNodeId, (element, nodeId) =>

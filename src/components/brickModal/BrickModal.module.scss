@@ -15,29 +15,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$maxHeight: calc(100vh - 50px);
+$maxHeight: calc(100vh - 100px);
 $bootstrapPadding: 15px;
 
 .root {
-  display: grid;
+  display: grid !important;
   place-content: center center;
   & > :first-child {
-    margin: 20px auto;
+    margin: auto;
     width: 89vw;
     max-width: 1220px; // Fits 3 "recommended bricks" columns
   }
+}
+
+.title {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.25rem;
+  line-height: 28px;
+  color: #595969;
+  flex-shrink: 0;
+  align-self: center;
+  padding: 0.25rem 0;
+}
+
+.searchInput {
+  width: 50%;
 }
 
 .body {
   padding: 0;
 }
 
-.results {
+.tagList {
   height: $maxHeight;
-  display: grid;
-  grid-template-rows: min-content 1fr;
-  padding-top: $bootstrapPadding;
-  gap: $bootstrapPadding;
+  min-width: 185px;
+  overflow: auto;
+}
+
+.results {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 
 .brickDetail {

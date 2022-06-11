@@ -18,7 +18,7 @@
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { CancelError } from "@/errors";
+import { CancelError } from "@/errors/businessErrors";
 
 export class Prompt extends Transformer {
   constructor() {

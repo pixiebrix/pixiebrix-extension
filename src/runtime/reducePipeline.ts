@@ -26,7 +26,6 @@ import {
   UUID,
 } from "@/core";
 import { castArray, isPlainObject } from "lodash";
-import { BusinessError, ContextError } from "@/errors";
 import {
   clearExtensionDebugLogs,
   getLoggingConfig,
@@ -59,6 +58,8 @@ import { UnknownObject } from "@/types";
 import { RunBlock } from "@/contentScript/runBlockTypes";
 import { resolveBlockConfig } from "@/blocks/registry";
 import { isObject } from "@/utils";
+import { BusinessError } from "@/errors/businessErrors";
+import { ContextError } from "@/errors/genericErrors";
 
 type CommonOptions = ApiVersionOptions & {
   /**
@@ -252,7 +253,7 @@ async function executeBlockWithValidatedProps(
         ...commonOptions,
         ...options,
         root,
-        async runPipeline(pipeline, extraContext) {
+        async runPipeline(pipeline, extraContext, root) {
           if (!isObject(commonOptions.ctxt)) {
             throw new Error("Expected object context for v3+ runtime");
           }

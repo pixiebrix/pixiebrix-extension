@@ -17,7 +17,7 @@
 
 import pTimeout from "p-timeout";
 import { Menus, Tabs } from "webextension-polyfill";
-import { getErrorMessage, hasCancelRootCause } from "@/errors";
+import { getErrorMessage, hasSpecificErrorCause } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 import { noop } from "lodash";
 import { handleMenuAction, notify } from "@/contentScript/messenger/api";
@@ -33,6 +33,7 @@ import {
 import { loadOptions } from "@/store/extensionsStorage";
 import { resolveDefinitions } from "@/registry/internal";
 import { allSettledValues } from "@/utils";
+import { CancelError } from "@/errors/businessErrors";
 
 type ExtensionId = UUID;
 // This is the type the browser API has for menu ids. In practice they should be strings because that's what we're
@@ -94,7 +95,7 @@ async function dispatchMenu(
     });
     notify.success(target, "Ran content menu item action");
   } catch (error) {
-    if (hasCancelRootCause(error)) {
+    if (hasSpecificErrorCause(error, CancelError)) {
       notify.info(target, "The action was cancelled");
     } else {
       // Report the original error here. The stack trace will point to this block anyway, but its origin will be

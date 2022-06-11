@@ -4,12 +4,12 @@ import { BlockArgContext, ServiceContext, UserOptions, UUID } from "@/core";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { expectContext } from "@/utils/expectContext";
 import { HeadlessModeError } from "@/blocks/errors";
-import { BusinessError } from "@/errors";
 import { RendererPayload } from "@/runtime/runtimeTypes";
 import { Args, mapArgs, MapOptions } from "@/runtime/mapArgs";
 import { Except } from "type-fest";
 import { UnknownObject } from "@/types";
 import { ApiVersionOptions } from "@/runtime/apiVersionOptions";
+import { BusinessError } from "@/errors/businessErrors";
 
 type RunPipelineParams = {
   nonce: UUID;

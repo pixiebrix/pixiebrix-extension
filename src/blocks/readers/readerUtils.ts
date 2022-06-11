@@ -22,7 +22,7 @@ import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import { isPlainObject, mapValues } from "lodash";
 import CompositeReader from "@/blocks/readers/CompositeReader";
 import { resolveObj } from "@/utils";
-import { BusinessError } from "@/errors";
+import { BusinessError } from "@/errors/businessErrors";
 
 export function selectReaderIds(config: ReaderConfig): RegistryId[] {
   if (typeof config === "string") {

@@ -26,17 +26,18 @@ import { allowsTrack } from "@/telemetry/dnt";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
   getErrorMessage,
-  hasBusinessRootCause,
-  hasCancelRootCause,
+  hasSpecificErrorCause,
   IGNORED_ERROR_PATTERNS,
   isContextError,
-} from "@/errors";
+  selectSpecificError,
+} from "@/errors/errorHelpers";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { matchesAnyPattern } from "@/utils";
 import {
   reportToErrorService,
   selectExtraContext,
 } from "@/services/errorService";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -235,7 +236,7 @@ async function reportToRollbar(
   flatContext: MessageContext,
   message: string
 ): Promise<void> {
-  if (hasCancelRootCause(error)) {
+  if (hasSpecificErrorCause(error, CancelError)) {
     return;
   }
 
@@ -252,7 +253,7 @@ async function reportToRollbar(
   const details = await selectExtraContext(error);
 
   // Send business errors debug level so it doesn't trigger devops notifications
-  if (hasBusinessRootCause(error)) {
+  if (selectSpecificError(error, BusinessError)) {
     rollbar.debug(message, error, { ...flatContext, ...details });
   } else {
     rollbar.error(message, error, { ...flatContext, ...details });

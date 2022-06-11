@@ -29,7 +29,7 @@ describe("DataPanel", () => {
     const { formState, records } = formStateWithTraceDataFactory();
     const extensionId = formState.uuid;
     const { instanceId } = formState.extension.blockPipeline[1];
-    const rendered = render(<DataPanel instanceId={instanceId} />, {
+    const rendered = render(<DataPanel />, {
       initialValues: formState,
       setupRedux(dispatch) {
         dispatch(editorActions.addElement(formState));

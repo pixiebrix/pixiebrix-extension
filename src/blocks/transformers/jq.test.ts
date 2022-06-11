@@ -19,8 +19,8 @@ import { JQTransformer } from "@/blocks/transformers/jq";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { InputValidationError } from "@/blocks/errors";
-import { BusinessError } from "@/errors";
 import { neverPromise } from "@/testUtils/testHelpers";
+import { BusinessError } from "@/errors/businessErrors";
 
 describe("smoke tests", () => {
   test("passes input to filter", async () => {

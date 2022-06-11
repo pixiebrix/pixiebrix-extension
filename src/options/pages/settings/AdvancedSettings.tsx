@@ -21,13 +21,17 @@ import { Button, Card, Form } from "react-bootstrap";
 import { DEFAULT_SERVICE_URL, useConfiguredHost } from "@/services/baseService";
 import React, { useCallback } from "react";
 import { clearExtensionAuth } from "@/auth/token";
-import chromeP from "webext-polyfill-kinda";
-import { isEmpty } from "lodash";
 import notify from "@/utils/notify";
 import useFlags from "@/hooks/useFlags";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { assertHttpsUrl } from "@/errors/assertHttpsUrl";
 import { selectSettings } from "@/store/settingsSelectors";
+import { uuidv4 } from "@/types/helpers";
+import pTimeout from "p-timeout";
+
+const SAVING_URL_NOTIFICATION_ID = uuidv4();
+const SAVING_URL_TIMEOUT_MS = 4000;
 
 const AdvancedSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
@@ -50,8 +54,8 @@ const AdvancedSettings: React.FunctionComponent = () => {
     browser.runtime.reload();
   }, []);
 
-  const update = useCallback(async () => {
-    const status = await chromeP.runtime.requestUpdateCheck();
+  const requestExtensionUpdate = useCallback(async () => {
+    const status = await browser.runtime.requestUpdateCheck();
     if (status === "update_available") {
       browser.runtime.reload();
     } else if (status === "throttled") {
@@ -61,16 +65,52 @@ const AdvancedSettings: React.FunctionComponent = () => {
     }
   }, []);
 
-  const handleUpdate = useCallback(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newURL = event.target.value;
-      console.debug("Update service URL", { newURL, serviceURL });
-      if (newURL === serviceURL || (isEmpty(newURL) && isEmpty(serviceURL))) {
+  const handleServiceURLUpdate = useCallback(
+    async (event: React.FocusEvent<HTMLInputElement>) => {
+      const newPixiebrixUrl = event.target.value.trim();
+      console.debug("Update service URL", { newPixiebrixUrl, serviceURL });
+
+      try {
+        // Ensure it's a valid URL
+        if (newPixiebrixUrl) {
+          assertHttpsUrl(newPixiebrixUrl);
+        }
+      } catch (error) {
+        notify.error({
+          id: SAVING_URL_NOTIFICATION_ID,
+          error,
+          reportError: false,
+        });
         return;
       }
 
-      await setServiceURL(newURL);
-      notify.success("Updated the service URL");
+      try {
+        if (newPixiebrixUrl) {
+          // Ensure it's connectable
+          const response = await pTimeout(
+            fetch(new URL("api/me", newPixiebrixUrl).href),
+            SAVING_URL_TIMEOUT_MS
+          );
+
+          // Ensure it returns a JSON response. It's just `{}` when the user is logged out.
+          await response.json();
+        }
+      } catch {
+        notify.error({
+          id: SAVING_URL_NOTIFICATION_ID,
+          message: "The URL does not appear to point to a PixieBrix server",
+          reportError: false,
+        });
+        return;
+      }
+
+      await setServiceURL(newPixiebrixUrl);
+      notify.success({
+        id: SAVING_URL_NOTIFICATION_ID,
+        message: "Service URL updated. The extension must be reloaded",
+        dismissable: false,
+        duration: Number.POSITIVE_INFINITY,
+      });
     },
     [serviceURL, setServiceURL]
   );
@@ -80,8 +120,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
       <Card.Header>Advanced Settings</Card.Header>
       <Card.Body>
         <Card.Text>
-          Only change these settings if you know what you&apos;re doing!{" "}
-          <b>After making changes, reload the extension.</b>
+          Only change these settings if you know what you&apos;re doing!
         </Card.Text>
         <Form>
           <Form.Group controlId="formServiceURL">
@@ -90,12 +129,9 @@ const AdvancedSettings: React.FunctionComponent = () => {
               type="text"
               placeholder={DEFAULT_SERVICE_URL}
               defaultValue={serviceURL}
-              onBlur={handleUpdate}
+              onBlur={handleServiceURLUpdate}
               disabled={restrict("service-url")}
             />
-            <Form.Text className="text-muted">
-              The PixieBrix service URL
-            </Form.Text>
           </Form.Group>
           {flagOn("partner-theming") && (
             <Form.Group controlId="partnerId">
@@ -104,7 +140,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
                 type="text"
                 placeholder="my-company"
                 defaultValue={partnerId ?? ""}
-                onBlur={(event: React.ChangeEvent<HTMLInputElement>) => {
+                onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
                   dispatch(
                     settingsSlice.actions.setPartnerId({
                       partnerId: event.target.value,
@@ -112,9 +148,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
                   );
                 }}
               />
-              <Form.Text className="text-muted">
-                The partner id of a PixieBrix partner
-              </Form.Text>
+              <Form.Text muted>The partner id of a PixieBrix partner</Form.Text>
             </Form.Group>
           )}
         </Form>
@@ -124,7 +158,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
           Reload Extension
         </Button>
 
-        <Button variant="info" onClick={update}>
+        <Button variant="info" onClick={requestExtensionUpdate}>
           Check Updates
         </Button>
 

@@ -31,6 +31,7 @@ import {
   Database,
   Group,
   MarketplaceListing,
+  MarketplaceTag,
   Me,
   Organization,
   Package,
@@ -147,6 +148,7 @@ export const appApi = createApi({
     "Organizations",
     "Groups",
     "MarketplaceListings",
+    "MarketplaceTags",
     "Recipes",
     "EditablePackages",
     "Invitations",
@@ -256,7 +258,7 @@ export const appApi = createApi({
       void
     >({
       query: () => ({
-        url: "/api/marketplace/listings/?show_detail=true",
+        url: "/api/marketplace/listings/",
         method: "get",
         // Returns public marketplace
         requireLinked: false,
@@ -269,6 +271,10 @@ export const appApi = createApi({
           baseQueryReturnValue.map((x) => [x.package.name as RegistryId, x])
         );
       },
+    }),
+    getMarketplaceTags: builder.query<MarketplaceTag[], void>({
+      query: () => ({ url: "/api/marketplace/tags/", method: "get" }),
+      providesTags: ["MarketplaceTags"],
     }),
     // ToDo use this query in places where "/api/bricks/" is called
     getEditablePackages: builder.query<EditablePackage[], void>({
@@ -390,6 +396,7 @@ export const {
   useGetServicesQuery,
   useGetServiceAuthsQuery,
   useGetMarketplaceListingsQuery,
+  useGetMarketplaceTagsQuery,
   useGetOrganizationsQuery,
   useGetGroupsQuery,
   useGetRecipesQuery,

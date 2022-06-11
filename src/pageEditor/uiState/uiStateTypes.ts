@@ -16,8 +16,37 @@
  */
 
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
-import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { RegistryId, UUID } from "@/core";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
+
+type PipelineMapBlock = {
+  blockId: RegistryId;
+  /**
+   * The property name path relative to the pipeline root
+   */
+  path: string;
+  blockConfig: BlockConfig;
+  /**
+   * Index of the block in its pipeline
+   */
+  index: number;
+
+  /**
+   * The path of the pipeline relative to the pipeline root
+   */
+  pipelinePath: string;
+
+  /**
+   * The block's pipeline
+   */
+  pipeline: BlockPipeline;
+};
+
+/**
+ * The map of pipeline blocks. The key is the instanceId of the block.
+ */
+export type PipelineMap = Record<UUID, PipelineMapBlock>;
 
 export type TabUIState = {
   /**
@@ -40,7 +69,7 @@ export type NodeUIState = {
   /**
    * Identifier for the node in the editor, either the foundation or a block uuid
    */
-  nodeId: NodeId;
+  nodeId: UUID;
 
   /**
    * UI state of the Tabs in the data panel
@@ -55,14 +84,20 @@ export type NodeUIState = {
 
 export type ElementUIState = {
   /**
+   * Flat map of all pipeline blocks including sub pipelines.
+   * Key is the block instanceId.
+   */
+  pipelineMap: PipelineMap;
+
+  /**
    * The instanceId of the active node in the editor,
    *  or:
    *  @see FOUNDATION_NODE_ID
    */
-  activeNodeId: NodeId;
+  activeNodeId: UUID;
 
   /**
    * UI state of foundation and blocks in the extension pipeline
    */
-  nodeUIStates: Record<NodeId, NodeUIState>;
+  nodeUIStates: Record<UUID, NodeUIState>;
 };

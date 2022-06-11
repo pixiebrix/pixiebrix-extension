@@ -24,7 +24,7 @@ import { validateInput } from "@/validators/generic";
 import { Webhook } from "@/contrib/zapier/contract";
 import { Permissions } from "webextension-polyfill";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { BusinessError } from "@/errors";
+import { BusinessError } from "@/errors/businessErrors";
 
 export const ZAPIER_ID = validateRegistryId("@pixiebrix/zapier/push-data");
 

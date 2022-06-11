@@ -38,7 +38,7 @@ import {
 } from "@/extensionPoints/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/blocks/available";
-import { BusinessError, hasCancelRootCause } from "@/errors";
+import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 import notify, {
   DEFAULT_ACTION_RESULTS,
@@ -57,6 +57,7 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
 import { guessSelectedElement } from "@/utils/selectionController";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 
 export type QuickBarTargetMode = "document" | "eventTarget";
 
@@ -235,7 +236,7 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
             ...apiVersionOptions(extension.apiVersion),
           });
         } catch (error) {
-          if (hasCancelRootCause(error)) {
+          if (hasSpecificErrorCause(error, CancelError)) {
             showNotification(DEFAULT_ACTION_RESULTS.cancel);
           } else {
             extensionLogger.error(error);

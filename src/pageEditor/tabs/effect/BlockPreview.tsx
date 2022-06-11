@@ -22,7 +22,7 @@ import blockRegistry from "@/blocks/registry";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "react-bootstrap";
 import Loader from "@/components/Loader";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationTriangle,
@@ -281,6 +281,7 @@ const BlockPreview: React.FunctionComponent<{
           searchable
           copyable
           tabKey={DataPanelTabKey.Preview}
+          label="Output Preview"
         />
       )}
 

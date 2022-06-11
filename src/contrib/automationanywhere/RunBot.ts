@@ -18,7 +18,6 @@
 import { Transformer, UnknownObject } from "@/types";
 import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
-import { PropError } from "@/errors";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import {
   pollEnterpriseResult,
@@ -26,6 +25,7 @@ import {
   runEnterpriseBot,
 } from "@/contrib/automationanywhere/aaApi";
 import { BotArgs } from "@/contrib/automationanywhere/aaTypes";
+import { PropError } from "@/errors/businessErrors";
 
 export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
   "@pixiebrix/automation-anywhere/run-bot"

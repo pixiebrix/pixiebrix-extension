@@ -16,8 +16,9 @@
  */
 
 import { Effect } from "@/types";
-import { Schema } from "@/core";
-import { hideSidebar, showSidebar } from "@/contentScript/sidebar";
+import { BlockArg, BlockOptions, Schema } from "@/core";
+import { hideSidebar, showSidebar } from "@/contentScript/sidebarController";
+import { propertiesToSchema } from "@/validators/generic";
 
 const NO_PARAMS: Schema = {
   $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -34,10 +35,40 @@ export class ShowSidebar extends Effect {
     );
   }
 
-  inputSchema: Schema = NO_PARAMS;
+  inputSchema: Schema = propertiesToSchema(
+    {
+      panelHeading: {
+        type: "string",
+        description:
+          "The panel to show in the sidebar. If not provided, defaults to a sidebar panel in this extension's blueprint",
+      },
+      forcePanel: {
+        type: "boolean",
+        description:
+          "If the sidebar is already showing a panel, force switch the active panel",
+        default: false,
+      },
+    },
+    []
+  );
 
-  async effect(): Promise<void> {
-    showSidebar();
+  async effect(
+    {
+      panelHeading,
+      forcePanel = false,
+    }: BlockArg<{
+      panelHeading?: string;
+      forcePanel?: boolean;
+    }>,
+    { logger }: BlockOptions
+  ): Promise<void> {
+    // Don't pass extensionId here because the extensionId in showOptions refers to the extensionId of the panel,
+    // not the extensionId of the extension toggling the sidebar
+    showSidebar({
+      force: forcePanel,
+      panelHeading,
+      blueprintId: logger.context.blueprintId,
+    });
   }
 }
 

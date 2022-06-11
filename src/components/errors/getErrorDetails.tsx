@@ -17,14 +17,16 @@
 
 import React from "react";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
-import { selectSpecificError, getRootCause } from "@/errors";
+import {
+  getErrorMessageWithCauses,
+  selectSpecificError,
+} from "@/errors/errorHelpers";
 import { ErrorObject } from "serialize-error";
 import InputValidationErrorDetail from "./InputValidationErrorDetail";
 import NetworkErrorDetail from "./NetworkErrorDetail";
 import OutputValidationErrorDetail from "./OutputValidationErrorDetail";
 import { Col, Row } from "react-bootstrap";
-import { UnknownObject } from "@/types";
-import { ClientRequestError } from "@/services/errors";
+import { ClientRequestError } from "@/errors/clientRequestErrors";
 
 type ErrorDetails = {
   title: string;
@@ -56,24 +58,19 @@ export default function getErrorDetails(error: ErrorObject): ErrorDetails {
   }
 
   const networkError = selectSpecificError(error, ClientRequestError);
-  if (networkError) {
+  // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3613
+  if (networkError?.cause) {
     return {
       title: "Network error",
       detailsElement: <NetworkErrorDetail error={networkError.cause} />,
     };
   }
 
-  // TODO: Use getErrorMessage instead, or something that combines the whole error cause stack
-  const { name = "Error", message = "Unknown error" } = (getRootCause(error) ??
-    {}) as UnknownObject;
-
   return {
     title: "Error",
     detailsElement: (
       <Row>
-        <Col>
-          {name}: {message}
-        </Col>
+        <Col>{getErrorMessageWithCauses(error)}</Col>
       </Row>
     ),
   };

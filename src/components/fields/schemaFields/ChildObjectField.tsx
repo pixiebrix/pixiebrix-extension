@@ -21,7 +21,7 @@ import { Card } from "react-bootstrap";
 import { inputProperties } from "@/helpers";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import Loader from "@/components/Loader";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 import { Schema } from "@/core";
 import { isEmpty } from "lodash";

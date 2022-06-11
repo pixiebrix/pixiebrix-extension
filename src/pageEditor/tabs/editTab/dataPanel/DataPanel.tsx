@@ -17,11 +17,10 @@
  */
 
 import React, { useMemo } from "react";
-import { UUID } from "@/core";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isEmpty, isEqual, pickBy } from "lodash";
 import { useFormikContext } from "formik";
-import { Button, Nav, Tab } from "react-bootstrap";
+import { Nav, Tab } from "react-bootstrap";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -38,15 +37,23 @@ import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DataTab from "./DataTab";
 import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import DocumentPreview from "@/components/documentBuilder/preview/DocumentPreview";
-import copy from "copy-to-clipboard";
 import useFlags from "@/hooks/useFlags";
 import ErrorDisplay from "./ErrorDisplay";
 import PageStateTab from "./PageStateTab";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
-import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveElement,
+  selectActiveNodeId,
+  selectActiveNodeInfo,
+  selectNodePreviewActiveElement,
+} from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import Alert from "@/components/Alert";
+import { CustomFormRenderer } from "@/blocks/renderers/customForm";
+import { FormTransformer } from "@/blocks/transformers/ephemeralForm/formTransformer";
+import { DocumentRenderer } from "@/blocks/renderers/document";
+import DocumentOutline from "@/components/documentBuilder/outline/DocumentOutline";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -66,24 +73,23 @@ const contextFilter = (value: unknown, key: string) => {
 
 const pageStateBlockIds = ["@pixiebrix/state/set", "@pixiebrix/state/get"];
 
-const DataPanel: React.FC<{
-  instanceId: UUID;
-}> = ({ instanceId }) => {
+const DataPanel: React.FC = () => {
+  const activeNodeId = useSelector(selectActiveNodeId);
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
 
-  const { values: formState, errors } = useFormikContext<FormState>();
-  const formikData = { errors, ...formState };
+  const { errors: formikErrors } = useFormikContext<FormState>();
+  const activeElement = useSelector(selectActiveElement);
 
-  const { blockPipeline } = formState.extension;
-  const blockIndex = blockPipeline.findIndex(
-    (x) => x.instanceId === instanceId
-  );
-  // eslint-disable-next-line security/detect-object-injection
-  const block = blockPipeline[blockIndex];
+  const {
+    blockId,
+    blockConfig,
+    index: blockIndex,
+    pipeline,
+  } = useSelector(selectActiveNodeInfo);
 
   const traces = useSelector(selectExtensionTrace);
-  const record = traces.find((trace) => trace.blockInstanceId === instanceId);
+  const record = traces.find((trace) => trace.blockInstanceId === activeNodeId);
 
   const isInputStale = useMemo(() => {
     // Don't show the warning if there are no traces. Also, this block can't have a
@@ -92,7 +98,7 @@ const DataPanel: React.FC<{
       return false;
     }
 
-    const currentInput = blockPipeline.slice(0, blockIndex);
+    const currentInput = pipeline.slice(0, blockIndex);
     const tracedInput = currentInput.map(
       (block) =>
         traces.find((trace) => trace.blockInstanceId === block.instanceId)
@@ -100,7 +106,7 @@ const DataPanel: React.FC<{
     );
 
     return !isEqual(currentInput, tracedInput);
-  }, [blockIndex, blockPipeline, record, traces]);
+  }, [blockIndex, pipeline, record, traces]);
 
   const isCurrentStale = useMemo(() => {
     if (isInputStale) {
@@ -111,14 +117,15 @@ const DataPanel: React.FC<{
       return false;
     }
 
-    return !isEqual(record.blockConfig, block);
-  }, [isInputStale, record, block]);
+    return !isEqual(record.blockConfig, blockConfig);
+  }, [isInputStale, record, blockConfig]);
 
   const relevantContext = useMemo(
     () => pickBy(record?.templateContext ?? {}, contextFilter),
     [record?.templateContext]
   );
 
+  // TODO refactor this to work with nested pipelines
   const documentBodyName = `extension.blockPipeline.${blockIndex}.config.body`;
 
   const outputObj: JsonObject =
@@ -128,12 +135,14 @@ const DataPanel: React.FC<{
         : record.output
       : null;
 
-  const [previewInfo] = usePreviewInfo(block?.id);
+  const [previewInfo] = usePreviewInfo(blockId);
 
-  const showFormPreview = block.config?.schema && block.config?.uiSchema;
-  const showDocumentPreview = block.config?.body;
+  const showFormPreview =
+    blockId === CustomFormRenderer.BLOCK_ID ||
+    blockId === FormTransformer.BLOCK_ID;
+  const showDocumentPreview = blockId === DocumentRenderer.BLOCK_ID;
   const showBlockPreview = record || previewInfo?.traceOptional;
-  const showPageState = pageStateBlockIds.includes(block.id);
+  const showPageState = pageStateBlockIds.includes(blockId);
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
     showFormPreview || showDocumentPreview
@@ -141,7 +150,7 @@ const DataPanel: React.FC<{
       : DataPanelTabKey.Output
   );
 
-  const [activeElement, setActiveElement] = useReduxState(
+  const [nodePreviewActiveElement, setNodePreviewActiveElement] = useReduxState(
     selectNodePreviewActiveElement,
     editorActions.setNodePreviewActiveElement
   );
@@ -152,25 +161,28 @@ const DataPanel: React.FC<{
 
   const isRenderedPanelStale = useMemo(() => {
     // Only show alert for Panel and Side Panel extensions
-    if (formState.type !== "panel" && formState.type !== "actionPanel") {
+    if (
+      activeElement.type !== "panel" &&
+      activeElement.type !== "actionPanel"
+    ) {
       return false;
     }
 
     const trace = traces.find(
-      (trace) => trace.blockInstanceId === block?.instanceId
+      (trace) => trace.blockInstanceId === activeNodeId
     );
 
     // No traces or no changes since the last render, we are good, no alert
     if (
       traces.length === 0 ||
       trace == null ||
-      isEqual(trace.blockConfig, block)
+      isEqual(trace.blockConfig, blockConfig)
     ) {
       return false;
     }
 
     return true;
-  }, [formState, traces, block]);
+  }, [activeNodeId, activeElement, traces, blockConfig]);
 
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
@@ -207,6 +219,11 @@ const DataPanel: React.FC<{
           <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey={DataPanelTabKey.Preview}>Preview</Nav.Link>
           </Nav.Item>
+          {showDocumentPreview && (
+            <Nav.Item className={dataPanelStyles.tabNav}>
+              <Nav.Link eventKey={DataPanelTabKey.Outline}>Outline</Nav.Link>
+            </Nav.Item>
+          )}
         </Nav>
         <Tab.Content className={dataPanelStyles.tabContent}>
           <DataTab eventKey={DataPanelTabKey.Context} isTraceEmpty={!record}>
@@ -220,6 +237,7 @@ const DataPanel: React.FC<{
               copyable
               searchable
               tabKey={DataPanelTabKey.Context}
+              label="Context"
             />
           </DataTab>
           {showPageState && (
@@ -235,9 +253,10 @@ const DataPanel: React.FC<{
                   visible to developers
                 </div>
                 <DataTabJsonTree
-                  data={formikData ?? {}}
+                  data={{ ...activeElement, ...formikErrors }}
                   searchable
                   tabKey={DataPanelTabKey.Formik}
+                  label="Formik State"
                 />
               </DataTab>
               <DataTab eventKey={DataPanelTabKey.BlockConfig}>
@@ -246,17 +265,10 @@ const DataPanel: React.FC<{
                   visible to developers
                 </div>
                 <DataTabJsonTree
-                  data={block ?? {}}
+                  data={blockConfig ?? {}}
                   tabKey={DataPanelTabKey.BlockConfig}
+                  label="Configuration"
                 />
-                <Button
-                  onClick={() => {
-                    copy(JSON.stringify(block, undefined, 2));
-                  }}
-                  size="sm"
-                >
-                  Copy JSON
-                </Button>
               </DataTab>
             </>
           )}
@@ -316,7 +328,7 @@ const DataPanel: React.FC<{
                   copyable
                   searchable
                   tabKey={DataPanelTabKey.Output}
-                  label="Data"
+                  label="Output Data"
                 />
               </>
             )}
@@ -326,7 +338,7 @@ const DataPanel: React.FC<{
           </DataTab>
           <DataTab eventKey={DataPanelTabKey.Preview} isTraceEmpty={false}>
             {/* The value of block.if can be `false`, in this case we also need to show the warning */}
-            {block.if != null && (
+            {blockConfig?.if != null && (
               <Alert variant="info">
                 This brick has a condition. The brick will not execute if the
                 condition is not met
@@ -337,23 +349,23 @@ const DataPanel: React.FC<{
                 {isRenderedPanelStale && (
                   <Alert variant="info">
                     The rendered{" "}
-                    {formState.type === "panel" ? "Panel" : "Sidebar Panel"} is
-                    out of date with the preview
+                    {activeElement.type === "panel" ? "Panel" : "Sidebar Panel"}{" "}
+                    is out of date with the preview
                   </Alert>
                 )}
                 {showFormPreview ? (
                   <div className={dataPanelStyles.selectablePreviewContainer}>
                     <FormPreview
-                      rjsfSchema={block.config as RJSFSchema}
-                      activeField={activeElement}
-                      setActiveField={setActiveElement}
+                      rjsfSchema={blockConfig?.config as RJSFSchema}
+                      activeField={nodePreviewActiveElement}
+                      setActiveField={setNodePreviewActiveElement}
                     />
                   </div>
                 ) : (
                   <DocumentPreview
                     name={documentBodyName}
-                    activeElement={activeElement}
-                    setActiveElement={setActiveElement}
+                    activeElement={nodePreviewActiveElement}
+                    setActiveElement={setNodePreviewActiveElement}
                     menuBoundary={popupBoundary}
                   />
                 )}
@@ -362,8 +374,8 @@ const DataPanel: React.FC<{
               <ErrorBoundary>
                 <BlockPreview
                   traceRecord={record}
-                  blockConfig={block}
-                  extensionPoint={formState.extensionPoint}
+                  blockConfig={blockConfig}
+                  extensionPoint={activeElement.extensionPoint}
                 />
               </ErrorBoundary>
             ) : (
@@ -371,6 +383,23 @@ const DataPanel: React.FC<{
                 Run the extension once to enable live preview
               </div>
             )}
+          </DataTab>
+
+          <DataTab eventKey={DataPanelTabKey.Outline} isTraceEmpty={false}>
+            <ErrorBoundary>
+              {isRenderedPanelStale && (
+                <Alert variant="info">
+                  The rendered{" "}
+                  {activeElement.type === "panel" ? "Panel" : "Sidebar Panel"}{" "}
+                  is out of date with the outline
+                </Alert>
+              )}
+              <DocumentOutline
+                documentBodyName={documentBodyName}
+                activeElement={nodePreviewActiveElement}
+                setActiveElement={setNodePreviewActiveElement}
+              />
+            </ErrorBoundary>
           </DataTab>
         </Tab.Content>
       </div>

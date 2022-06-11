@@ -17,38 +17,31 @@
 
 import styles from "./BrickModal.module.scss";
 
-import React, {
-  CSSProperties,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import {
-  Button,
-  Col,
-  Container,
-  Form,
-  InputGroup,
-  Modal,
-  Row,
-} from "react-bootstrap";
-import { compact, sortBy } from "lodash";
+import React, { CSSProperties, useCallback, useMemo, useState } from "react";
+import { Button, Col, Container, Modal, Row } from "react-bootstrap";
+import { isEmpty, sortBy } from "lodash";
 import { IBlock, IBrick, RegistryId } from "@/core";
 import { useDebounce } from "use-debounce";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
-import { FixedSizeList as LazyList } from "react-window";
+import { FixedSizeGrid as LazyGrid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-import BrickResult from "./BrickResult";
-import BrickDetail from "./BrickDetail";
-import QuickAdd from "@/components/brickModal/QuickAdd";
+import BrickResult, { BRICK_RESULT_FIXED_HEIGHT_PX } from "./BrickResult";
 import { Except } from "type-fest";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faPlus } from "@fortawesome/free-solid-svg-icons";
+import TagSearchInput from "@/components/brickModal/TagSearchInput";
+import TagList, { TagItem } from "@/components/brickModal/TagList";
+import {
+  useGetMarketplaceListingsQuery,
+  useGetMarketplaceTagsQuery,
+} from "@/services/api";
+import { MarketplaceListing } from "@/types/contract";
+import BrickDetail from "@/components/brickModal/BrickDetail";
+import Loader from "@/components/Loader";
+
+const TAG_ALL = "All Categories";
 
 type BrickOption<T extends IBrick = IBlock> = {
   data: T;
@@ -66,18 +59,32 @@ function makeBlockOption<T extends IBrick>(brick: T): BrickOption<T> {
 
 function useSearch<T extends IBrick>(
   bricks: T[],
-  query: string
+  taggedBrickIds: Record<string, Set<string>>,
+  query: string,
+  searchTag: string | null
 ): Array<BrickOption<T>> {
   const [debouncedQuery] = useDebounce(query, 100, {
     trailing: true,
     leading: false,
   });
 
+  const brickHasTag = useCallback(
+    (brick: IBrick) => {
+      if (searchTag == null || searchTag === TAG_ALL) {
+        return true;
+      }
+
+      // eslint-disable-next-line security/detect-object-injection -- tag values come from the API
+      return taggedBrickIds[searchTag].has(brick.id);
+    },
+    [searchTag, taggedBrickIds]
+  );
+
   const { fuse, brickOptions } = useMemo(() => {
     const brickOptions = sortBy(
-      // We should never show @internal bricks to users. However, they'll sometimes find their way in from the registry
       (bricks ?? [])
-        .filter((x) => !x.id.startsWith("@internal/"))
+        // We should never show @internal bricks to users. They'll sometimes find their way in from the registry
+        .filter((x) => !x.id.startsWith("@internal/") && brickHasTag(x))
         .map((x) => makeBlockOption(x)),
       (x) => x.label
     );
@@ -86,7 +93,7 @@ function useSearch<T extends IBrick>(
     });
 
     return { brickOptions, fuse };
-  }, [bricks]);
+  }, [brickHasTag, bricks]);
 
   return useMemo(
     () =>
@@ -101,7 +108,6 @@ type ModalProps<T extends IBrick = IBlock> = {
   bricks: T[];
   onSelect: (brick: T) => void;
   selectCaption?: React.ReactNode;
-  recommendations?: RegistryId[];
   close: () => void;
   modalClassName?: string;
 };
@@ -113,62 +119,73 @@ type ButtonProps = {
 
 type ItemType = {
   searchResults: BrickOption[];
-  setDetailBrick: (brick: IBrick) => void;
-  selectCaption: React.ReactNode;
+  onSetDetailBrick: (brick: IBrick, rowIndex: number) => void;
   onSelect: (brick: IBrick) => void;
   close: () => void;
-  activeBrick: IBrick | null;
 };
+
+const RESULT_COLUMN_COUNT = 2;
+
+function getFlatArrayIndex(rowIndex: number, columnIndex: number): number {
+  // Layout items in the grid left to right, top to bottom
+  return rowIndex * RESULT_COLUMN_COUNT + columnIndex;
+}
 
 // The item renderer must be its own separate component to react-window from re-mounting the results
 // https://github.com/bvaughn/react-window/issues/420#issuecomment-585813335
 const ItemRenderer = ({
-  index,
+  columnIndex,
+  rowIndex,
   style,
-  data: {
-    searchResults,
-    setDetailBrick,
-    selectCaption,
-    onSelect,
-    close,
-    activeBrick,
-  },
+  data: { searchResults, onSetDetailBrick, onSelect, close },
 }: {
-  index: number;
+  columnIndex: number;
+  rowIndex: number;
   style: CSSProperties;
   data: ItemType;
 }) => {
+  const index = getFlatArrayIndex(rowIndex, columnIndex);
   // eslint-disable-next-line security/detect-object-injection -- numeric value from library
-  const { data: brick } = searchResults[index];
+  const { data: brick } = searchResults[index] ?? {};
   return (
     <div style={style}>
-      <BrickResult
-        brick={brick}
-        onShowDetail={() => {
-          setDetailBrick(brick);
-        }}
-        onSelect={() => {
-          onSelect(brick);
-          close();
-        }}
-        selectCaption={selectCaption}
-        active={activeBrick?.id === brick.id}
-      />
+      {brick && (
+        <BrickResult
+          brick={brick}
+          onShowDetail={() => {
+            onSetDetailBrick(brick, rowIndex);
+          }}
+          onSelect={() => {
+            onSelect(brick);
+            close();
+          }}
+        />
+      )}
     </div>
   );
 };
 
 // Need to provide a key because we reorder elements on search
-// See https://react-window.vercel.app/#/api/FixedSizeList
-function itemKey(index: number, { searchResults }: ItemType): RegistryId {
-  // Find the item at the specified index.
-  // In this case "data" is an Array that was passed to List as "itemData".
-  // eslint-disable-next-line security/detect-object-injection -- numeric value
-  const item = searchResults[index];
+// See https://react-window.vercel.app/#/api/FixedSizeGrid
+type ItemKeyInput = {
+  columnIndex: number;
+  data: ItemType;
+  rowIndex: number;
+};
+// Here, we use the brick id as the key, which is the "value" prop on the search result option
+function itemKey({
+  columnIndex,
+  data: { searchResults },
+  rowIndex,
+}: ItemKeyInput): RegistryId | number {
+  const resultIndex = getFlatArrayIndex(rowIndex, columnIndex);
+  // Number of bricks for the last Grid row could be less than the number of columns
+  // Returning the index here, ItemRenderer will render an empty cell
+  if (resultIndex >= searchResults.length) {
+    return resultIndex;
+  }
 
-  // Return a value that uniquely identifies this item.
-  // Typically this will be a UID of some sort.
-  return item.value;
+  return searchResults[resultIndex]?.value;
 }
 
 const defaultAddCaption = (
@@ -182,46 +199,58 @@ function ActualModal<T extends IBrick>({
   close,
   onSelect,
   selectCaption = defaultAddCaption,
-  recommendations = [],
   modalClassName,
 }: ModalProps<T>): React.ReactElement<T> {
   const [query, setQuery] = useState("");
   const [detailBrick, setDetailBrick] = useState<T>(null);
-  const searchInput = useRef(null);
-  // The react-window library requires exact height
-  const brickResultSizePx = 87;
+  const [detailBrickRow, setDetailBrickRow] = useState(0);
 
-  // Auto-focus search input upon opening Modal
-  useEffect(() => {
-    searchInput.current.focus();
-  }, []);
+  const refCallback = (element: LazyGrid) => {
+    if (element != null && detailBrickRow > 0 && detailBrick == null) {
+      element.scrollToItem({ rowIndex: detailBrickRow });
+      setDetailBrickRow(0);
+    }
+  };
 
-  const { data: listings = {} } = useGetMarketplaceListingsQuery();
+  const { data: marketplaceTags = [], isLoading: isLoadingTags } =
+    useGetMarketplaceTagsQuery();
+  const {
+    data: listings = {} as Record<RegistryId, MarketplaceListing>,
+    isLoading: isLoadingListings,
+  } = useGetMarketplaceListingsQuery();
 
-  const searchResults = useSearch(bricks, query);
-
-  const recommendedBricks = useMemo(() => {
-    if (recommendations.length === 0) {
-      return;
+  const taggedBrickIds = useMemo<Record<string, Set<string>>>(() => {
+    if (isEmpty(marketplaceTags) || isEmpty(listings)) {
+      return {};
     }
 
-    // Retain the same order that the recommendations were passed in
-    const brickMap = new Map(bricks.map((brick) => [brick.id, brick]));
-    return compact(
-      recommendations.map((registryId) => brickMap.get(registryId))
+    return Object.fromEntries(
+      marketplaceTags.map((tag) => [
+        tag.name,
+        new Set(
+          Object.entries(listings)
+            .filter(([, listing]) =>
+              listing.tags.some((lTag) => lTag.name === tag.name)
+            )
+            .map(([id]) => id)
+        ),
+      ])
     );
-  }, [recommendations, bricks]);
+  }, [marketplaceTags, listings]);
 
-  useEffect(
-    () => {
-      // If there's no recommendations, default to the first brick so the right side isn't blank
-      if (recommendations.length === 0 && searchResults.length > 0) {
-        setDetailBrick(searchResults[0].data);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- run on initial mount
-    []
-  );
+  const tagItems: TagItem[] = [
+    { tag: TAG_ALL },
+    ...marketplaceTags
+      .filter((tag) => tag.subtype === "role")
+      .map((tag) => ({
+        tag: tag.name,
+        icon: tag.fa_icon,
+      })),
+  ];
+
+  const [searchTag, setSearchTag] = useState<string>(TAG_ALL);
+
+  const searchResults = useSearch(bricks, taggedBrickIds, query, searchTag);
 
   return (
     <Modal
@@ -233,78 +262,109 @@ function ActualModal<T extends IBrick>({
       backdrop
       keyboard={false}
     >
-      <Modal.Body className={styles.body}>
+      <Modal.Header closeButton>
         <Container fluid>
           <Row>
-            <Col xs={5} className={styles.results}>
-              <Form>
-                <InputGroup>
-                  <InputGroup.Prepend>
-                    <InputGroup.Text>Search</InputGroup.Text>
-                  </InputGroup.Prepend>
-                  <Form.Control
-                    ref={searchInput}
-                    placeholder="Start typing to find results"
+            {detailBrick ? (
+              <Button
+                variant="link"
+                onClick={() => {
+                  setDetailBrick(null);
+                }}
+              >
+                <FontAwesomeIcon icon={faChevronLeft} /> Back
+              </Button>
+            ) : (
+              <>
+                <Col xs={2}>
+                  <Modal.Title className={styles.title}>Add Brick</Modal.Title>
+                </Col>
+                <Col xs={10}>
+                  <TagSearchInput
+                    name={"brickSearch"}
                     value={query}
-                    onChange={({ target }) => {
-                      setQuery(target.value);
+                    onValueChange={setQuery}
+                    placeholder={"Search"}
+                    tag={searchTag === TAG_ALL ? null : searchTag}
+                    onClearTag={() => {
+                      setSearchTag(TAG_ALL);
                     }}
+                    focusInput
+                    className={styles.searchInput}
                   />
-                </InputGroup>
-              </Form>
-              <div>
-                <AutoSizer>
-                  {({ height, width }) => (
-                    <LazyList
-                      height={height}
-                      width={width}
-                      itemCount={searchResults.length}
-                      itemSize={brickResultSizePx}
-                      itemKey={itemKey}
-                      itemData={
-                        {
-                          searchResults,
-                          setDetailBrick,
-                          activeBrick: detailBrick,
-                          selectCaption,
-                          onSelect,
-                          close,
-                        } as ItemType
-                      }
-                    >
-                      {ItemRenderer}
-                    </LazyList>
-                  )}
-                </AutoSizer>
-              </div>
-            </Col>
-            <Col
-              xs={7}
-              className={cx(styles.brickDetail)}
-              key={detailBrick?.id}
-            >
-              {detailBrick ? (
-                <BrickDetail
-                  brick={detailBrick}
-                  listing={listings[detailBrick.id]}
-                  selectCaption={selectCaption}
-                  onSelect={() => {
-                    onSelect(detailBrick);
-                    close();
-                  }}
-                />
-              ) : (
-                <QuickAdd
-                  onSelect={(brick) => {
-                    // XXX: need to rewrite the signature of QuickAdd to work with generics
-                    onSelect(brick as T);
-                    close();
-                  }}
-                  recommendations={recommendedBricks}
-                />
-              )}
-            </Col>
+                </Col>
+              </>
+            )}
           </Row>
+        </Container>
+      </Modal.Header>
+      <Modal.Body className={styles.body}>
+        <Container
+          fluid
+          className={cx({ [styles.brickDetail]: Boolean(detailBrick) })}
+        >
+          {detailBrick ? (
+            <BrickDetail
+              brick={detailBrick}
+              listing={listings[detailBrick.id]}
+              selectCaption={selectCaption}
+              onSelect={() => {
+                onSelect(detailBrick);
+                close();
+              }}
+            />
+          ) : (
+            <Row>
+              <Col xs={2} className={styles.tagList}>
+                {isLoadingTags ? (
+                  <Loader />
+                ) : (
+                  <TagList
+                    tagItems={tagItems}
+                    activeTag={searchTag}
+                    onSelectTag={setSearchTag}
+                  />
+                )}
+              </Col>
+              <Col xs={10} className={styles.results}>
+                {isLoadingListings ? (
+                  <Loader />
+                ) : (
+                  <AutoSizer>
+                    {({ height, width }) => (
+                      <LazyGrid
+                        height={height}
+                        width={width}
+                        columnWidth={width / RESULT_COLUMN_COUNT}
+                        rowHeight={BRICK_RESULT_FIXED_HEIGHT_PX}
+                        columnCount={RESULT_COLUMN_COUNT}
+                        rowCount={Math.ceil(
+                          searchResults.length / RESULT_COLUMN_COUNT
+                        )}
+                        itemKey={itemKey}
+                        itemData={
+                          {
+                            searchResults,
+                            onSetDetailBrick(brick: T, rowIndex: number) {
+                              setDetailBrick(brick);
+                              setDetailBrickRow(rowIndex);
+                            },
+                            activeBrick: detailBrick,
+                            selectCaption,
+                            onSelect,
+                            close,
+                          } as ItemType
+                        }
+                        ref={refCallback}
+                      >
+                        {ItemRenderer}
+                      </LazyGrid>
+                    )}
+                  </AutoSizer>
+                )}
+              </Col>
+            </Row>
+          )}
         </Container>
       </Modal.Body>
     </Modal>

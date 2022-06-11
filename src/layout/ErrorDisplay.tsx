@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 export const ErrorDisplay: React.VFC<{ error: unknown }> = ({ error }) => (
   <div>

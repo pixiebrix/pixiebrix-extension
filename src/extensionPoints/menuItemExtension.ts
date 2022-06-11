@@ -23,12 +23,7 @@ import {
   reduceExtensionPipeline,
   reducePipeline,
 } from "@/runtime/reducePipeline";
-import {
-  hasCancelRootCause,
-  MultipleElementsFoundError,
-  NoElementsFoundError,
-  PromiseCancelled,
-} from "@/errors";
+import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import {
   acquireElement,
   awaitElementOnce,
@@ -48,6 +43,8 @@ import {
   Metadata,
   ReaderOutput,
   ResolvedExtension,
+  RunArgs,
+  RunReason,
   Schema,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
@@ -59,7 +56,6 @@ import notify, {
   showNotification,
 } from "@/utils/notify";
 import { getNavigationId } from "@/contentScript/context";
-import { rejectOnCancelled } from "@/utils";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { selectEventData } from "@/telemetry/deployments";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
@@ -77,6 +73,13 @@ import { EXTENSION_POINT_DATA_ATTR } from "@/common";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import reportError from "@/telemetry/reportError";
 import pluralize from "@/utils/pluralize";
+import {
+  CancelError,
+  MultipleElementsFoundError,
+  NoElementsFoundError,
+} from "@/errors/businessErrors";
+import { PromiseCancelled } from "@/errors/genericErrors";
+import { rejectOnCancelled } from "@/errors/rejectOnCancelled";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -372,7 +375,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       this.menus.delete(uuid);
       // Re-install the menus (will wait for the menu selector to re-appear)
       await this.installMenus();
-      await this.run();
+      await this.run({ reason: RunReason.MUTATION });
     }
   }
 
@@ -571,7 +574,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           ...pick(onSuccess, "message", "type"),
         });
       } catch (error) {
-        if (hasCancelRootCause(error)) {
+        if (hasSpecificErrorCause(error, CancelError)) {
           showNotification({
             ...DEFAULT_ACTION_RESULTS.cancel,
             ...pick(onCancel, "message", "type"),
@@ -622,7 +625,10 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     if (dependencies.length > 0) {
       const rerun = once(() => {
         console.debug("Dependency changed, re-running extension");
-        void this.run([extension.id]);
+        void this.run({
+          reason: RunReason.DEPENDENCY_CHANGED,
+          extensionIds: [extension.id],
+        });
       });
 
       const observer = new MutationObserver(rerun);
@@ -674,7 +680,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
   }
 
-  async run(extensionIds?: string[]): Promise<void> {
+  async run({ extensionIds = null }: RunArgs): Promise<void> {
     if (this.menus.size === 0 || this.extensions.length === 0) {
       return;
     }

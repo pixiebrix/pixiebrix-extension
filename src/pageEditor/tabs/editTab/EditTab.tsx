@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { useFormikContext } from "formik";
@@ -24,24 +24,19 @@ import { useAsyncState } from "@/hooks/common";
 import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
 import EditorNodeConfigPanel from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
-import { actions } from "@/pageEditor/slices/editorSlice";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import BrickIcon from "@/components/BrickIcon";
-import { isNullOrBlank } from "@/utils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
 import useExtensionTrace from "@/pageEditor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationDataPanel";
-import usePipelineField, {
-  PIPELINE_BLOCKS_FIELD_NAME,
-} from "@/pageEditor/hooks/usePipelineField";
-import {
-  EditorNodeProps,
-  NodeId,
-} from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
-import { useDispatch, useSelector } from "react-redux";
+import usePipelineField from "@/pageEditor/hooks/usePipelineField";
+import { useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveNodeId,
+  selectActiveNodeInfo,
+  selectPipelineMap,
+} from "@/pageEditor/slices/editorSelectors";
 import ApiVersionField from "@/pageEditor/fields/ApiVersionField";
 import useBlockPipelineActions from "@/pageEditor/tabs/editTab/useBlockPipelineActions";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
@@ -51,13 +46,15 @@ import TooltipIconButton from "@/components/TooltipIconButton";
 import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import useFlags from "@/hooks/useFlags";
-import { BlockType } from "@/runtime/runtimeTypes";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
-import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import useReportTraceError from "./useReportTraceError";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
+import { get } from "lodash";
+import Loader from "@/components/Loader";
+import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
+import { BlockType } from "@/runtime/runtimeTypes";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -76,62 +73,41 @@ const EditTab: React.FC<{
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
-  const { label, icon, EditorNode } = useMemo(
-    () => ADAPTERS.get(extensionPointType),
-    [extensionPointType]
-  );
+  const {
+    label: extensionPointLabel,
+    icon: extensionPointIcon,
+    EditorNode,
+  } = useMemo(() => ADAPTERS.get(extensionPointType), [extensionPointType]);
 
-  const [allBlocks] = useAsyncState<TypedBlockMap>(
+  const [allBlocks, isLoadingAllBlocks] = useAsyncState<TypedBlockMap>(
     async () => blockRegistry.allTyped(),
     [],
     new Map()
   );
 
+  const [relevantBlocksForRootPipeline, isLoadingRelevantBlocks] =
+    useAsyncState(
+      async () => {
+        const excludeType: BlockType = ["actionPanel", "panel"].includes(
+          extensionPointType
+        )
+          ? "effect"
+          : "renderer";
+
+        return [...allBlocks.values()]
+          .filter(({ type }) => type != null && type !== excludeType)
+          .map(({ block }) => block);
+      },
+      [allBlocks, extensionPointType],
+      []
+    );
+
   const { blockPipeline, blockPipelineErrors, errorTraceEntry } =
     usePipelineField(allBlocks, extensionPointType);
 
   const activeNodeId = useSelector(selectActiveNodeId);
-  const dispatch = useDispatch();
-  const setActiveNodeId = useCallback(
-    (nodeId: NodeId) => {
-      dispatch(actions.setElementActiveNodeId(nodeId));
-    },
-    [dispatch]
-  );
-
-  const activeBlockIndex = useMemo(() => {
-    if (activeNodeId === FOUNDATION_NODE_ID) {
-      return 0;
-    }
-
-    return blockPipeline.findIndex(
-      (block) => block.instanceId === activeNodeId
-    );
-  }, [activeNodeId, blockPipeline]);
-
-  const blockFieldName = `${PIPELINE_BLOCKS_FIELD_NAME}[${activeBlockIndex}]`;
-
-  const lastBlockPipelineId = blockPipeline[blockPipeline.length - 1]?.id;
-  const lastBlock = useMemo(
-    () =>
-      lastBlockPipelineId ? allBlocks.get(lastBlockPipelineId) : undefined,
-    [allBlocks, lastBlockPipelineId]
-  );
-  const [showAppendNode] = useAsyncState(
-    async () => {
-      if (!lastBlock) {
-        return true;
-      }
-
-      if (!lastBlock?.block) {
-        return true;
-      }
-
-      return lastBlock.type !== "renderer";
-    },
-    [lastBlock],
-    false
-  );
+  const { blockId, path: fieldName } = useSelector(selectActiveNodeInfo) ?? {};
+  const pipelineMap = useSelector(selectPipelineMap);
 
   const {
     addBlock,
@@ -140,120 +116,13 @@ const EditTab: React.FC<{
     moveBlockDown,
     copyBlock,
     pasteBlock,
-  } = useBlockPipelineActions(
-    blockPipeline,
-    values,
-    setFormValues,
-    setActiveNodeId
-  );
+  } = useBlockPipelineActions(pipelineMap, values, setFormValues);
 
-  const traces = useSelector(selectExtensionTrace);
-
-  const nodes = useMemo<EditorNodeProps[]>(() => {
-    // A flag that shows if there are trace records related to any of the current nodes.
-    let blockNodesHaveTraces = false;
-    const blockNodes: EditorNodeProps[] = blockPipeline.map(
-      (blockConfig, index) => {
-        const block = allBlocks.get(blockConfig.id)?.block;
-        const nodeId = blockConfig.instanceId;
-        const traceRecord = traces.find(
-          (trace) => trace.blockInstanceId === nodeId
-        );
-        if (traceRecord != null) {
-          blockNodesHaveTraces = true;
-        }
-
-        if (!block) {
-          return {
-            nodeId,
-            title: "Loading...",
-          };
-        }
-
-        const newBlock: EditorNodeProps = {
-          nodeId,
-          title: isNullOrBlank(blockConfig.label)
-            ? block?.name
-            : blockConfig.label,
-          icon: (
-            <BrickIcon
-              brick={block}
-              size="2x"
-              // This makes brick icons that use basic font awesome icons
-              //   inherit the editor node layout color scheme.
-              // Customized SVG icons are unaffected and keep their branded
-              //   color schemes.
-              faIconClass={styles.brickFaIcon}
-            />
-          ),
-          hasError:
-            // If blockPipelineErrors is a string, it means the error is on the pipeline level
-            typeof blockPipelineErrors !== "string" &&
-            // eslint-disable-next-line security/detect-object-injection
-            Boolean(blockPipelineErrors?.[index]),
-          hasWarning:
-            errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
-          skippedRun: traceRecord?.skippedRun,
-          ran: traceRecord != null,
-          onClick() {
-            setActiveNodeId(blockConfig.instanceId);
-          },
-        };
-
-        if (blockConfig.outputKey) {
-          newBlock.outputKey = blockConfig.outputKey;
-        }
-
-        return newBlock;
-      }
-    );
-
-    const foundationNode: EditorNodeProps = {
-      nodeId: FOUNDATION_NODE_ID,
-      outputKey: "input",
-      title: label,
-      icon,
-      // Foundation Node doesn't have its own trace record, so we use the traces flag.
-      ran: blockNodesHaveTraces,
-      onClick() {
-        setActiveNodeId(FOUNDATION_NODE_ID);
-      },
-    };
-
-    return [foundationNode, ...blockNodes];
-  }, [
-    allBlocks,
-    blockPipeline,
-    blockPipelineErrors,
-    errorTraceEntry?.blockInstanceId,
-    icon,
-    label,
-    setActiveNodeId,
-    traces,
-  ]);
-
-  const [relevantBlocksToAdd] = useAsyncState(
-    async () => {
-      const excludeType: BlockType = ["actionPanel", "panel"].includes(
-        extensionPointType
-      )
-        ? "effect"
-        : "renderer";
-
-      return [...allBlocks.values()]
-        .filter(({ type }) => type != null && type !== excludeType)
-        .map(({ block }) => block);
-    },
-    [allBlocks, extensionPointType],
-    []
-  );
-
+  // The value of formikErrorForBlock can be object or string.
+  const formikErrorForBlock = get(blockPipelineErrors, fieldName);
+  // If formikErrorForBlock is a string, it means that this exact block has an error.
   const blockError: string =
-    // eslint-disable-next-line security/detect-object-injection
-    typeof blockPipelineErrors?.[activeBlockIndex] === "string"
-      ? // eslint-disable-next-line security/detect-object-injection
-        (blockPipelineErrors[activeBlockIndex] as string)
-      : null;
+    typeof formikErrorForBlock === "string" ? formikErrorForBlock : null;
 
   const { flagOn } = useFlags();
   const showVersionField = flagOn("page-editor-developer");
@@ -292,16 +161,23 @@ const EditTab: React.FC<{
             />
           </div>
           <div className={styles.nodeLayout}>
-            <EditorNodeLayout
-              nodes={nodes}
-              activeNodeId={activeNodeId}
-              relevantBlocksToAdd={relevantBlocksToAdd}
-              addBlock={addBlock}
-              showAppend={showAppendNode}
-              moveBlockUp={moveBlockUp}
-              moveBlockDown={moveBlockDown}
-              pasteBlock={pasteBlock}
-            />
+            {isLoadingAllBlocks || isLoadingRelevantBlocks ? (
+              <Loader />
+            ) : (
+              <EditorNodeLayout
+                allBlocks={allBlocks}
+                relevantBlocksForRootPipeline={relevantBlocksForRootPipeline}
+                pipeline={blockPipeline}
+                pipelineErrors={blockPipelineErrors}
+                errorTraceEntry={errorTraceEntry}
+                extensionPointLabel={extensionPointLabel}
+                extensionPointIcon={extensionPointIcon}
+                addBlock={addBlock}
+                moveBlockUp={moveBlockUp}
+                moveBlockDown={moveBlockDown}
+                pasteBlock={pasteBlock}
+              />
+            )}
           </div>
         </div>
         <div className={styles.configPanel}>
@@ -316,6 +192,9 @@ const EditTab: React.FC<{
               {isApiAtLeastV2 ? (
                 activeNodeId === FOUNDATION_NODE_ID ? (
                   <>
+                    {extensionPointType === "quickBar" && (
+                      <UnconfiguredQuickBarAlert />
+                    )}
                     <ConnectedFieldTemplate
                       name="label"
                       label="Extension Name"
@@ -329,11 +208,8 @@ const EditTab: React.FC<{
                 ) : (
                   <EditorNodeConfigPanel
                     key={activeNodeId}
-                    blockFieldName={blockFieldName}
-                    blockId={
-                      blockPipeline.find((x) => x.instanceId === activeNodeId)
-                        ?.id
-                    }
+                    blockFieldName={fieldName}
+                    blockId={blockId}
                     blockError={blockError}
                   />
                 )
@@ -349,7 +225,7 @@ const EditTab: React.FC<{
               firstBlockInstanceId={blockPipeline[0]?.instanceId}
             />
           ) : (
-            <DataPanel key={activeNodeId} instanceId={activeNodeId} />
+            <DataPanel key={activeNodeId} />
           )}
         </div>
       </div>

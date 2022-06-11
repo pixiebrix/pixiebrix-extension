@@ -16,11 +16,21 @@
  */
 
 import { IBlock, OutputKey, RegistryId, SafeString } from "@/core";
-import { freshIdentifier } from "@/utils";
+import { freshIdentifier, joinName } from "@/utils";
 import { selectReaderIds } from "@/blocks/readers/readerUtils";
 import getType from "@/runtime/getType";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import {
+  getDocumentPipelinePaths,
+  getPipelinePropNames,
+} from "@/pageEditor/utils";
+import { BlockPipeline, BlockConfig } from "@/blocks/types";
+import { PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
+import { get } from "lodash";
+import { DocumentRenderer } from "@/blocks/renderers/document";
+import { joinElementName } from "@/components/documentBuilder/utils";
+import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
 export function collectRegistryIds(form: FormState): RegistryId[] {
   return [
@@ -70,4 +80,74 @@ export async function generateFreshOutputKey(
   }
 
   return freshIdentifier(type as SafeString, outputKeys) as OutputKey;
+}
+
+type BlockAction = (blockInfo: {
+  blockConfig: BlockConfig;
+  index: number;
+  path: string;
+  pipelinePath: string;
+  pipeline: BlockPipeline;
+}) => void;
+
+export function traversePipeline(
+  blockPipeline: BlockPipeline,
+  parentPath: string,
+  action: BlockAction
+) {
+  for (const [index, blockConfig] of Object.entries(blockPipeline)) {
+    const fieldName = joinName(parentPath, index);
+    action({
+      blockConfig,
+      index: Number(index),
+      path: fieldName,
+      pipelinePath: parentPath,
+      pipeline: blockPipeline,
+    });
+
+    if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
+      for (const subPipelinePath of getDocumentPipelinePaths(blockConfig)) {
+        const subPipelineAccessor = joinElementName(
+          subPipelinePath,
+          "__value__"
+        );
+        const subPipeline = get(blockConfig, subPipelineAccessor);
+        traversePipeline(
+          subPipeline,
+          joinElementName(fieldName, subPipelineAccessor),
+          action
+        );
+      }
+    } else {
+      for (const subPipelineField of getPipelinePropNames(blockConfig)) {
+        const subPipelineAccessor = ["config", subPipelineField, "__value__"];
+        const subPipeline = get(blockConfig, subPipelineAccessor);
+        traversePipeline(
+          subPipeline,
+          joinName(fieldName, ...subPipelineAccessor),
+          action
+        );
+      }
+    }
+  }
+}
+
+export function getPipelineMap(blockPipeline: BlockPipeline) {
+  const pipelineMap: PipelineMap = {};
+  traversePipeline(
+    blockPipeline,
+    PIPELINE_BLOCKS_FIELD_NAME,
+    ({ blockConfig, index, path, pipelinePath, pipeline }) => {
+      pipelineMap[blockConfig.instanceId] = {
+        blockId: blockConfig.id,
+        path,
+        blockConfig,
+        index,
+        pipelinePath,
+        pipeline,
+      };
+    }
+  );
+
+  return pipelineMap;
 }

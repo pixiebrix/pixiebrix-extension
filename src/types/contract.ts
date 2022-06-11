@@ -37,8 +37,8 @@ import {
 
 import { components } from "@/types/swagger";
 import { Except } from "type-fest";
-import { FortAwesomeLibrary } from "@/components/AsyncIcon";
 import { AxiosResponse } from "axios";
+import { IconName, IconPrefix } from "@fortawesome/free-solid-svg-icons";
 
 export type Kind = "block" | "foundation" | "service" | "blueprint" | "reader";
 
@@ -179,21 +179,23 @@ export type BlueprintResponse = {
   updated_at: Timestamp;
 };
 
+// The fa_icon database value is a string with Font Awesome prefix and name, e.g. "fas fa-coffee"
+export type IconStringDefinition = `${IconPrefix} ${IconName}`;
+
 /**
- * Detailed MarketplaceListing
- * TODO: generate type using swagger
+ * @See components["schemas"]["Tag"]
  */
-export type MarketplaceListing = {
-  id: string;
-  package: Record<string, unknown>;
-  fa_icon: `${FortAwesomeLibrary} ${string}`;
-  icon_color: string;
-  image?: {
-    url: string;
-    alt_text: string;
-  };
-  instructions: string;
-  assets: unknown[];
+export type MarketplaceTag = Omit<components["schemas"]["Tag"], "fa_icon"> & {
+  // See IconStringDefinition for type explanation
+  fa_icon: IconStringDefinition | null;
+};
+
+export type MarketplaceListing = Omit<
+  components["schemas"]["MarketplaceListing"],
+  "fa_icon"
+> & {
+  // See IconStringDefinition for type explanation
+  fa_icon: IconStringDefinition | null;
 };
 
 export type ProxyResponseSuccessData = {

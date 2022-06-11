@@ -34,3 +34,11 @@
     }
   }
 }
+
+.customRow {
+  cursor: pointer;
+  &:hover {
+    color: #fff;
+    background-color: #b66dff;
+  }
+}

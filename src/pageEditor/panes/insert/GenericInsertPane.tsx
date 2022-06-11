@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import paneStyles from "@/pageEditor/panes/Pane.module.scss";
 import styles from "./GenericInsertPane.module.scss";
 import { useDispatch } from "react-redux";
 import useAvailableExtensionPoints from "@/pageEditor/hooks/useAvailableExtensionPoints";
 import Centered from "@/pageEditor/components/Centered";
 import { Button, Row } from "react-bootstrap";
-import BlockModal from "@/components/brickModal/BrickModal";
+import BrickModal from "@/components/brickModalNoTags/BrickModal";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -37,6 +37,8 @@ import {
 } from "@/contentScript/messenger/api";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { getExampleBlockPipeline } from "@/pageEditor/exampleExtensionConfig";
+import useFlags from "@/hooks/useFlags";
+import GridLoader from "react-spinners/GridLoader";
 
 const { addElement } = editorSlice.actions;
 
@@ -44,7 +46,11 @@ const GenericInsertPane: React.FunctionComponent<{
   cancel: () => void;
   config: ElementConfig;
 }> = ({ cancel, config }) => {
+  const { flagOn } = useFlags();
   const dispatch = useDispatch();
+
+  const showMarketplace = flagOn("page-editor-extension-point-marketplace");
+
   const start = useCallback(
     async (state: FormState) => {
       try {
@@ -113,7 +119,25 @@ const GenericInsertPane: React.FunctionComponent<{
     }
   }, [start, config]);
 
+  useEffect(() => {
+    if (!showMarketplace) {
+      // Add the extension directly since there's no options for the user. The insert pane will flash up quickly.
+      void addNew();
+    }
+  }, [showMarketplace, addNew]);
+
   const extensionPoints = useAvailableExtensionPoints(config.baseClass);
+
+  if (!showMarketplace) {
+    // The insert pane will flash up quickly while the addNew is running.
+    return (
+      <Centered isScrollable>
+        <Row className={styles.loadingRow}>
+          <GridLoader />
+        </Row>
+      </Centered>
+    );
+  }
 
   return (
     <Centered isScrollable>
@@ -128,7 +152,7 @@ const GenericInsertPane: React.FunctionComponent<{
           <FontAwesomeIcon icon={faPlus} /> Create new {config.label}
         </Button>
 
-        <BlockModal
+        <BrickModal
           bricks={extensionPoints ?? []}
           renderButton={(onClick) => (
             <Button

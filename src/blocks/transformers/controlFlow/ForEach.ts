@@ -24,7 +24,7 @@ import { validateRegistryId } from "@/types/helpers";
 
 class ForEach extends Transformer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/for-each");
-  defaultOutputKey = "result";
+  defaultOutputKey = "forEachOutput";
 
   constructor() {
     super(
@@ -57,6 +57,8 @@ class ForEach extends Transformer {
       elementKey: {
         type: "string",
         default: "element",
+        description:
+          "The element key/variable for the body of the loop, without the leading @",
       },
     },
     ["elements", "body"]

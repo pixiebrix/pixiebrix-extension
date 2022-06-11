@@ -19,20 +19,21 @@ import React from "react";
 import { Table } from "react-bootstrap";
 import type { LogEntry } from "@/background/logging";
 import EntryRow from "@/components/logViewer/EntryRow";
+import styles from "./LogTable.module.scss";
 
 const LogTable: React.FunctionComponent<{
   pageEntries: LogEntry[];
   hasEntries: boolean;
 }> = ({ pageEntries, hasEntries }) => (
   <Table responsive>
-    <thead>
+    <thead className={styles.tableHead}>
       <tr>
         <th>&nbsp;</th>
         <th>Timestamp</th>
         <th>Level</th>
         <th>Label</th>
         <th>Block/Service</th>
-        <th className="w-100">Message/Error</th>
+        <th>Message/Error</th>
       </tr>
     </thead>
     <tbody>

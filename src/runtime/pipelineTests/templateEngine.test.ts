@@ -28,7 +28,8 @@ import {
 // Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandledrejection errors since we call
 // them with `void` instead of awaiting them in the reducePipeline methods
 import * as logging from "@/background/messenger/api";
-import { BusinessError, getRootCause } from "@/errors";
+import { selectSpecificError } from "@/errors/errorHelpers";
+import { BusinessError } from "@/errors/businessErrors";
 
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
@@ -204,7 +205,9 @@ describe("Error handling", () => {
       );
       throw new Error("reducePipeline should have thrown");
     } catch (error: any) {
-      expect(getRootCause(error)).toBeInstanceOf(BusinessError);
+      expect(selectSpecificError(error, BusinessError)).toBeInstanceOf(
+        BusinessError
+      );
       expect(error.message).toEqual(
         `Invalid template: (unknown path) [Line 1, Column 14]
   expected variable end. Template: "{{@input }"`

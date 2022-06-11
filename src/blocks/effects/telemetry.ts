@@ -17,9 +17,9 @@
 
 import { Effect } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
-import { PropError } from "@/errors";
 import { reportEvent } from "@/telemetry/events";
 import { getDNT } from "@/telemetry/dnt";
+import { PropError } from "@/errors/businessErrors";
 
 export class TelemetryEffect extends Effect {
   constructor() {
