@@ -27,7 +27,7 @@ const SelectorSelectorField: React.FunctionComponent<
   SelectorSelectorProps & { name?: string }
 > = (props) => {
   // Some properties (e.g., the menuItem's container prop) support providing an array of selectors.
-  // See awaitElementOnce for for the difference in the semantics vs. nested CSS selectors
+  // See awaitElementOnce for the difference in the semantics vs. nested CSS selectors
   const [field] = useField<string | string[]>(props.name);
 
   const isArray = Array.isArray(field.value);
