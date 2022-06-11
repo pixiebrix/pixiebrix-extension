@@ -20,22 +20,10 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./BrickNodeContent.module.scss";
 import OutputKeyView from "@/pageEditor/tabs/editTab/editorNodes/OutputKeyView";
-import { OutputKey } from "@/core";
-
-export enum RunStatus {
-  NONE,
-  SUCCESS,
-  SKIPPED,
-  WARNING,
-  ERROR,
-}
-
-export type BrickNodeContentProps = {
-  icon?: IconProp | React.ReactNode;
-  runStatus?: RunStatus;
-  brickLabel: string;
-  outputKey?: OutputKey;
-};
+import {
+  BrickNodeContentProps,
+  RunStatus,
+} from "@/pageEditor/tabs/editTab/editTabTypes";
 
 function isFontAwesomeIcon(
   maybeIcon: IconProp | React.ReactNode
@@ -91,7 +79,9 @@ const BrickNodeContent: React.FC<BrickNodeContentProps> = ({
       </div>
       <div className={styles.text}>
         <div>{brickLabel}</div>
-        {outputKey && <OutputKeyView outputKey={outputKey} />}
+        {outputKey && (
+          <OutputKeyView outputKey={outputKey} className={styles.outputKey} />
+        )}
       </div>
     </div>
   );

@@ -33,6 +33,10 @@ export type PipelineFooterNodeProps = {
   trailingMessage?: string;
   nestingLevel: number;
   active?: boolean;
+  parentIsActive?: boolean;
+  hovered?: boolean;
+  onHoverChange: (hovered: boolean) => void;
+  onClick: () => void;
 };
 
 const PipelineFooterNode: React.VFC<PipelineFooterNodeProps> = ({
@@ -42,14 +46,53 @@ const PipelineFooterNode: React.VFC<PipelineFooterNodeProps> = ({
   trailingMessage,
   nestingLevel,
   active,
+  parentIsActive,
+  hovered,
+  onHoverChange,
+  onClick,
 }) => (
   <>
-    <div className={styles.footer}>
-      <PipelineOffsetView nestingLevel={nestingLevel} />
+    <div
+      role="button"
+      tabIndex={0}
+      onKeyPress={(event) => {
+        if (event.key === "Enter") {
+          onClick();
+        }
+      }}
+      className={cx(styles.footer, {
+        [styles.active]: active,
+        [styles.parentIsActive]: parentIsActive,
+        [styles.hovered]: hovered,
+      })}
+      onMouseOver={() => {
+        onHoverChange(true);
+      }}
+      onFocus={() => {
+        onHoverChange(true);
+      }}
+      onMouseOut={() => {
+        onHoverChange(false);
+      }}
+      onBlur={() => {
+        onHoverChange(false);
+      }}
+      onClick={onClick}
+    >
+      <PipelineOffsetView nestingLevel={nestingLevel} active={active} />
       <div className={styles.pipelineContainer}>
-        <div className={cx(styles.pipelineEnd, { [styles.active]: active })} />
+        <div
+          className={cx(styles.pipelineEnd, {
+            [styles.active]: active && !parentIsActive,
+          })}
+        />
       </div>
-      <OutputKeyView outputKey={outputKey} className={styles.outputKey} />
+      <OutputKeyView
+        outputKey={outputKey}
+        className={cx(styles.outputKey, {
+          [styles.active]: active && !parentIsActive,
+        })}
+      />
     </div>
     <NodeActionsView
       nodeActions={nodeActions}

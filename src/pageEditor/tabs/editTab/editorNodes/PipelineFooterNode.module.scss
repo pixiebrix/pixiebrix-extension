@@ -23,6 +23,19 @@ $pipeLineFooterWidth: 17px;
   display: flex;
   align-items: stretch;
   border-bottom: 1px solid lightgrey;
+  cursor: pointer;
+
+  &.active {
+    background-color: $selectedListItemBackgroundColor;
+  }
+
+  &.parentIsActive {
+    background-color: $parentActiveBackgroundColor;
+  }
+
+  &.hovered {
+    backdrop-filter: brightness(0.975) !important;
+  }
 }
 
 .pipelineContainer {
@@ -47,4 +60,8 @@ $pipeLineFooterWidth: 17px;
 
 .outputKey {
   padding: 15px 0;
+
+  &.active {
+    color: white !important; // Need to override text-muted
+  }
 }

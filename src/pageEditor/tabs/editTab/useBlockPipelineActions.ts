@@ -136,7 +136,7 @@ function useBlockPipelineActions(
   const copyBlock = useCallback(
     (instanceId: UUID) => {
       // eslint-disable-next-line security/detect-object-injection -- UUID
-      const blockToCopy = pipelineMap[instanceId].blockConfig;
+      const blockToCopy = pipelineMap[instanceId]?.blockConfig;
       if (blockToCopy) {
         dispatch(actions.copyBlockConfig(blockToCopy));
       }

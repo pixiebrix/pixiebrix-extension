@@ -400,10 +400,16 @@ export const editorSlice = createSlice({
     setNodePreviewActiveElement(state, action: PayloadAction<string>) {
       const activeElement = action.payload;
       const elementUIState = state.elementUIStates[state.activeElementId];
+
       elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
         DataPanelTabKey.Preview
       ].activeElement = activeElement;
+
+      elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
+        DataPanelTabKey.Outline
+      ].activeElement = activeElement;
     },
+
     copyBlockConfig(state, action: PayloadAction<BlockConfig>) {
       const copy = { ...action.payload };
       delete copy.instanceId;

@@ -295,7 +295,7 @@ exports[`sanity check it renders first selected node 1`] = `
                         Panel
                       </div>
                       <div
-                        class="root"
+                        class="key outputKey"
                       >
                         @input
                       </div>

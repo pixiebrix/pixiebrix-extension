@@ -44,6 +44,7 @@ const DocumentOptions: React.FC<{
     if (!Array.isArray(value)) {
       setValue([]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- exclude setValue because reference changes on render
   }, [value]);
 
   return (
