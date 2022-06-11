@@ -23,6 +23,7 @@ import { Schema } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import OptionIcon from "@/components/fields/schemaFields/optionIcon/OptionIcon";
 import { CustomFieldDefinitions } from "@/components/fields/schemaFields/schemaFieldTypes";
+import CssClassWidget from "@/components/fields/schemaFields/widgets/CssClassWidget";
 
 export const ClearableSelectorWidget: React.FunctionComponent<{
   name: string;
@@ -44,6 +45,12 @@ const devtoolFieldOverrides: CustomFieldDefinitions = {
     {
       match: hasAnySelectorField,
       Component: ClearableSelectorWidget,
+    },
+    {
+      // See getElementEditSchemas.ts:getClassNameEdit
+      match: (schema) =>
+        schema.type === "string" && schema.format === "bootstrap-class",
+      Component: CssClassWidget,
     },
   ],
   customToggleModes: [
