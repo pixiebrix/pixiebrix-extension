@@ -15,21 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
+import React from "react";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
 
-const elementTypeLabels: Record<DocumentElementType, string> = {
-  header_1: "Header 1",
-  header_2: "Header 2",
-  header_3: "Header 3",
-  container: "Container",
-  row: "Row",
-  column: "Column",
-  card: "Card",
-  text: "Text",
-  image: "Image",
-  button: "Button",
-  pipeline: "Brick",
-  list: "List",
+import ImagePlaceholder from "@/components/imagePlaceholder/ImagePlaceholder";
+
+export default {
+  title: "Components/ImagePlaceholder",
+  component: ImagePlaceholder,
+} as ComponentMeta<typeof ImagePlaceholder>;
+
+const Template: ComponentStory<typeof ImagePlaceholder> = (args) => (
+  <ImagePlaceholder {...args} />
+);
+
+export const SquareImage = Template.bind({});
+SquareImage.args = {
+  height: 50,
+  width: 50,
 };
-
-export default elementTypeLabels;

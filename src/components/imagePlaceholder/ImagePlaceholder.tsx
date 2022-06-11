@@ -15,21 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
+import React, { useEffect, useRef } from "react";
+import { run as runHolder } from "holderjs";
+import { Image } from "react-bootstrap";
 
-const elementTypeLabels: Record<DocumentElementType, string> = {
-  header_1: "Header 1",
-  header_2: "Header 2",
-  header_3: "Header 3",
-  container: "Container",
-  row: "Row",
-  column: "Column",
-  card: "Card",
-  text: "Text",
-  image: "Image",
-  button: "Button",
-  pipeline: "Brick",
-  list: "List",
+const ImagePlaceholder: React.VoidFunctionComponent<{
+  height: number | string;
+  width: number | string;
+}> = ({ width, height }) => {
+  const imageRef = useRef();
+
+  useEffect(() => {
+    runHolder({
+      images: imageRef.current,
+    });
+  }, []);
+
+  // https://github.com/imsky/holder/issues/225#issuecomment-770261030
+  return (
+    <Image
+      alt="Placeholder"
+      ref={imageRef}
+      src={`holder.js/${height}x${width}`}
+    />
+  );
 };
 
-export default elementTypeLabels;
+export default ImagePlaceholder;

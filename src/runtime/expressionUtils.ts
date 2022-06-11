@@ -15,21 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
+import { isTemplateExpression } from "@/runtime/mapArgs";
 
-const elementTypeLabels: Record<DocumentElementType, string> = {
-  header_1: "Header 1",
-  header_2: "Header 2",
-  header_3: "Header 3",
-  container: "Container",
-  row: "Row",
-  column: "Column",
-  card: "Card",
-  text: "Text",
-  image: "Image",
-  button: "Button",
-  pipeline: "Brick",
-  list: "List",
-};
+function usesTemplateDirectives(value: string): boolean {
+  return value.includes("{{") || value.includes("{%");
+}
 
-export default elementTypeLabels;
+export function trySelectStringLiteral(value: unknown): string | null {
+  if (value == null) {
+    return null;
+  }
+
+  if (typeof value === "string") {
+    // Already a string literal
+    return value;
+  }
+
+  if (isTemplateExpression(value) && !usesTemplateDirectives(value.__value__)) {
+    return value.__value__;
+  }
+
+  return null;
+}

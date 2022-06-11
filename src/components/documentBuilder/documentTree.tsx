@@ -20,7 +20,7 @@ import BlockElement from "@/components/documentBuilder/render/BlockElement";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { get } from "lodash";
-import { Card, Col, Container, Row } from "react-bootstrap";
+import { Card, Col, Container, Row, Image } from "react-bootstrap";
 import {
   BuildDocumentBranch,
   DocumentComponent,
@@ -73,6 +73,12 @@ export function getComponentDefinition(
       props.children = text;
 
       return { Component: "p", props };
+    }
+
+    case "image": {
+      const { url, ...props } = config;
+      props.src = url;
+      return { Component: Image, props };
     }
 
     case "container":

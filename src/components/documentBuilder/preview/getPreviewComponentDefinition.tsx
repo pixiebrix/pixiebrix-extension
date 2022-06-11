@@ -27,9 +27,12 @@ import { UnknownObject } from "@/types";
 import { isExpression } from "@/runtime/mapArgs";
 import cx from "classnames";
 import React from "react";
-import { Button } from "react-bootstrap";
+import { Button, Image } from "react-bootstrap";
 import { getComponentDefinition } from "@/components/documentBuilder/documentTree";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
+import { trySelectStringLiteral } from "@/runtime/expressionUtils";
+import ImagePlaceholder from "@/components/imagePlaceholder/ImagePlaceholder";
+import { isValidUrl } from "@/utils";
 
 type PreviewComponentProps = {
   className?: string;
@@ -50,6 +53,32 @@ function getPreviewComponentDefinition(
     case "header_3":
     case "text": {
       return getComponentDefinition(element);
+    }
+
+    case "image": {
+      const url = trySelectStringLiteral(element.config.url);
+      const height = trySelectStringLiteral(element.config.height);
+      const width = trySelectStringLiteral(element.config.width);
+
+      // If it's a valid URL, show the image
+      if (isValidUrl(url, { protocols: ["https:"] })) {
+        return {
+          Component: Image,
+          props: {
+            src: url,
+            height: height ?? 50,
+            width,
+          },
+        };
+      }
+
+      return {
+        Component: ImagePlaceholder,
+        props: {
+          height: height ?? 50,
+          width: width ?? 100,
+        },
+      };
     }
 
     case "container":
@@ -161,8 +190,9 @@ function getPreviewComponentDefinition(
       return { Component: PreviewComponent };
     }
 
-    default:
+    default: {
       return getComponentDefinition(element);
+    }
   }
 }
 

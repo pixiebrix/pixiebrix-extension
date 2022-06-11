@@ -52,6 +52,25 @@ function getElementEditSchemas(
       return [textEdit, getClassNameEdit(elementName)];
     }
 
+    case "image": {
+      const imageUrl: SchemaFieldProps = {
+        name: joinName(elementName, "config", "url"),
+        schema: { type: "string", format: "uri" },
+        label: "Image URL",
+      };
+      const height: SchemaFieldProps = {
+        name: joinName(elementName, "config", "height"),
+        schema: { type: ["string", "number"] },
+        label: "Height",
+      };
+      const width: SchemaFieldProps = {
+        name: joinName(elementName, "config", "width"),
+        schema: { type: ["string", "number"] },
+        label: "Width",
+      };
+      return [imageUrl, height, width, getClassNameEdit(elementName)];
+    }
+
     case "card": {
       const headingEdit: SchemaFieldProps = {
         name: joinName(elementName, "config", "heading"),
