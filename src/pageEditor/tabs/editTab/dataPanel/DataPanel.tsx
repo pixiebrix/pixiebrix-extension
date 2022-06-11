@@ -182,7 +182,7 @@ const DataPanel: React.FC = () => {
     }
 
     return true;
-  }, [activeElement, traces, blockConfig]);
+  }, [activeNodeId, activeElement, traces, blockConfig]);
 
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
@@ -387,6 +387,13 @@ const DataPanel: React.FC = () => {
 
           <DataTab eventKey={DataPanelTabKey.Outline} isTraceEmpty={false}>
             <ErrorBoundary>
+              {isRenderedPanelStale && (
+                <Alert variant="info">
+                  The rendered{" "}
+                  {activeElement.type === "panel" ? "Panel" : "Sidebar Panel"}{" "}
+                  is out of date with the outline
+                </Alert>
+              )}
               <DocumentOutline
                 documentBodyName={documentBodyName}
                 activeElement={nodePreviewActiveElement}
