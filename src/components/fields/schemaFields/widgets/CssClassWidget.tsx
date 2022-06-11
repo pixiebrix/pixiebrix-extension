@@ -15,23 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { Button, ButtonGroup, Dropdown, DropdownButton } from "react-bootstrap";
+import {
+  Button,
+  ButtonGroup,
+  Dropdown,
+  DropdownButton,
+  Form,
+} from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAlignCenter,
-  faAlignJustify,
   faAlignLeft,
   faAlignRight,
   faBold,
+  faBorderStyle,
+  faCaretDown,
+  faCaretRight,
+  faCheck,
   faFont,
   faItalic,
 } from "@fortawesome/free-solid-svg-icons";
 import { useField } from "formik";
 import { Expression, TemplateEngine } from "@/core";
 import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
-import { uniq } from "lodash";
+import { compact, partition, uniq } from "lodash";
 import TemplateToggleWidget from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
 import { InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
 
@@ -48,9 +57,19 @@ type ClassFlag = {
    * Title node to render for the element (in a button/dropdown)
    */
   title: React.ReactNode;
+
+  /**
+   * True if the flag is exclusive for it's group (default=true)
+   */
+  exclusive?: boolean;
+
+  /**
+   * Other flags in the same group that the flag implies
+   */
+  implies?: string[];
 };
 
-const flags = {
+export const flags = {
   bold: {
     className: "font-weight-bold",
     title: <FontAwesomeIcon icon={faBold} />,
@@ -61,7 +80,7 @@ const flags = {
   },
 };
 
-const optionsGroups = {
+export const optionsGroups = {
   textAlign: [
     { className: "text-left", title: <FontAwesomeIcon icon={faAlignLeft} /> },
     {
@@ -69,10 +88,11 @@ const optionsGroups = {
       title: <FontAwesomeIcon icon={faAlignCenter} />,
     },
     { className: "text-right", title: <FontAwesomeIcon icon={faAlignRight} /> },
-    {
-      className: "text-justify",
-      title: <FontAwesomeIcon icon={faAlignJustify} />,
-    },
+    // Justify doesn't seem to do anything - it might be the default for p?
+    // {
+    //   className: "text-justify",
+    //   title: <FontAwesomeIcon icon={faAlignJustify} />,
+    // },
   ],
   textVariant: [
     {
@@ -95,6 +115,34 @@ const optionsGroups = {
     {
       className: "text-success",
       title: <span className="text-success">Success</span>,
+    },
+  ],
+  borders: [
+    {
+      className: "border",
+      title: "All Borders",
+      implies: ["border-top", "border-right", "border-bottom", "border-left"],
+      exclusive: true,
+    },
+    {
+      className: "border-top",
+      title: "Border Top",
+      exclusive: false,
+    },
+    {
+      className: "border-right",
+      title: "Border Right",
+      exclusive: false,
+    },
+    {
+      className: "border-bottom",
+      title: "Border Bottom",
+      exclusive: false,
+    },
+    {
+      className: "border-left",
+      title: "Border Left",
+      exclusive: false,
     },
   ],
 };
@@ -142,7 +190,16 @@ const FlagItem: React.VFC<
         toggleClass(className, !active, group);
       }}
     >
-      {title}
+      {active ? (
+        <FontAwesomeIcon icon={faCheck} fixedWidth />
+      ) : (
+        <FontAwesomeIcon
+          icon={faCheck}
+          fixedWidth
+          style={{ visibility: "hidden" }}
+        />
+      )}
+      <span className="ml-2">{title}</span>
     </Dropdown.Item>
   );
 };
@@ -205,7 +262,150 @@ export function parseValue(value: Value): {
   throw new Error("Unexpected value");
 }
 
-function calculateNextValue(
+type Spacing = {
+  side: string | null;
+  size: number;
+};
+
+function createSpacingRegex(prefix: string): RegExp {
+  return new RegExp(`${prefix}(?<side>[tblrxy])?-(?<size>\\d)`);
+}
+
+export function extractSpacing(prefix: string, classes: string[]): Spacing[] {
+  const re = createSpacingRegex(prefix);
+
+  return compact(classes.map((x) => re.exec(x))).map((x) => ({
+    side: x.groups.side ?? null,
+    size: Number(x.groups.size),
+  })) as Spacing[];
+}
+
+const spacingSides = [
+  { label: "Top", side: "t" },
+  { label: "Right", side: "r" },
+  { label: "Bottom", side: "b" },
+  { label: "Left", side: "l" },
+];
+
+const SpacingControl: React.VFC<{
+  prefix: string;
+  label: string;
+  className?: string;
+  classes: string[];
+  onUpdate: (update: Spacing) => void;
+}> = ({ prefix, label, className, classes, onUpdate }) => {
+  const [expand, setExpand] = useState(false);
+
+  const spacing = extractSpacing(prefix, classes);
+
+  return (
+    <div className={className}>
+      <div className="d-flex align-items-center">
+        <div
+          role="button"
+          tabIndex={0}
+          onKeyPress={() => {
+            setExpand(!expand);
+          }}
+          onClick={() => {
+            setExpand(!expand);
+          }}
+        >
+          {label}&nbsp;
+          <FontAwesomeIcon icon={expand ? faCaretDown : faCaretRight} />
+        </div>
+        <div>
+          <Form.Control
+            type="number"
+            min="0"
+            max="5"
+            value={spacing.find((x) => x.side == null)?.size}
+            onChange={(event) => {
+              onUpdate({
+                side: null,
+                size: Number(event.target.value),
+              });
+            }}
+          />
+        </div>
+      </div>
+      {expand && (
+        <div>
+          {spacingSides.map((direction) => (
+            <div
+              key={direction.side}
+              className="ml-4 d-flex align-items-center"
+            >
+              <div>
+                {label} {direction.label}
+              </div>
+              <div>
+                <Form.Control
+                  type="number"
+                  min="0"
+                  max="5"
+                  value={spacing.find((x) => x.side === direction.side)?.size}
+                  onChange={(event) => {
+                    onUpdate({
+                      side: direction.side,
+                      size: Number(event.target.value),
+                    });
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export function calculateNextSpacing(
+  previousValue: Value,
+  prefix: string,
+  spacingUpdate: Spacing
+): Value {
+  const { isVar, isTemplate, classes, includesTemplate } =
+    parseValue(previousValue);
+
+  if (isVar || includesTemplate) {
+    throw new Error("Not supported");
+  }
+
+  const regex = createSpacingRegex(prefix);
+
+  const [spacingClasses, otherClasses] = partition(classes, (x) =>
+    regex.test(x)
+  );
+  const spacingRules = extractSpacing(prefix, spacingClasses);
+
+  // Don't try to be smart for now. Just update the rule
+  const existingRule = spacingRules.find((x) => x.side === spacingUpdate.side);
+  if (existingRule) {
+    existingRule.size = spacingUpdate.size;
+  } else {
+    spacingRules.push(spacingUpdate);
+  }
+
+  const nextClasses = [
+    ...otherClasses,
+    ...spacingRules.map((x) => `${prefix}${x.side ?? ""}-${x.size}`),
+  ];
+
+  const nextValue = compact(uniq(nextClasses)).join(" ");
+
+  if (isTemplate) {
+    return {
+      __type__: (previousValue as Expression).__type__ as TemplateEngine,
+      __value__: nextValue,
+    };
+  }
+
+  return nextValue;
+}
+
+export function calculateNextValue(
   previousValue: Value,
   className: string,
   on: boolean,
@@ -221,11 +421,24 @@ function calculateNextValue(
   let nextClasses;
 
   if (on && group) {
+    const rule = group.find((x) => x.className === className);
+
+    if (rule == null) {
+      throw new Error(`Class ${className} not found in group`);
+    }
+
+    const isExclusive = rule.exclusive ?? true;
+    const implies = rule.implies ?? [];
+
     const inactiveClasses = group
       .map((x) => x.className)
       .filter((x) => x !== className);
+
     nextClasses = [
-      ...classes.filter((x) => !inactiveClasses.includes(x)),
+      ...classes.filter(
+        (x) =>
+          (!isExclusive || !inactiveClasses.includes(x)) && !implies.includes(x)
+      ),
       className,
     ];
   } else if (on) {
@@ -234,7 +447,7 @@ function calculateNextValue(
     nextClasses = classes.filter((x) => x !== className);
   }
 
-  const nextValue = uniq(nextClasses).join(" ");
+  const nextValue = compact(uniq(nextClasses)).join(" ");
 
   if (isTemplate) {
     return {
@@ -273,12 +486,6 @@ const CssClassWidget: React.VFC<
 
   return (
     <div>
-      <TemplateToggleWidget
-        {...props}
-        defaultType="string"
-        setFieldDescription={() => "CSS class names for the element"}
-      />
-
       <div className="mt-2">
         <ButtonGroup>
           {optionsGroups.textAlign.map((flag) => (
@@ -333,6 +540,65 @@ const CssClassWidget: React.VFC<
             ))}
           </DropdownButton>
         </ButtonGroup>
+
+        <ButtonGroup className="mx-2">
+          <DropdownButton
+            title={<FontAwesomeIcon icon={faBorderStyle} />}
+            disabled={disableControls}
+            variant="light"
+            size="sm"
+          >
+            {optionsGroups.borders.map((flag) => (
+              <FlagItem
+                key={flag.className}
+                {...flag}
+                classes={classes}
+                toggleClass={toggleClass}
+                group={optionsGroups.borders}
+              />
+            ))}
+          </DropdownButton>
+        </ButtonGroup>
+      </div>
+
+      <div className="d-flex my-2">
+        <SpacingControl
+          prefix="m"
+          label="Margin"
+          className="mr-2"
+          classes={classes}
+          onUpdate={(update) => {
+            setValue(calculateNextSpacing(value, "m", update));
+          }}
+        />
+        <SpacingControl
+          prefix="p"
+          label="Padding"
+          className="mx-2"
+          classes={classes}
+          onUpdate={(update) => {
+            setValue(calculateNextSpacing(value, "p", update));
+          }}
+        />
+      </div>
+
+      <div>
+        <div className="text-muted">
+          Advanced: use a variable or text template to apply conditional
+          formatting. PixieBrix supports the{" "}
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://getbootstrap.com/docs/4.6/utilities/"
+          >
+            Bootstrap utilities
+          </a>
+        </div>
+        <TemplateToggleWidget
+          {...props}
+          defaultType="string"
+          setFieldDescription={() => "CSS class names for the element"}
+        />
       </div>
     </div>
   );

@@ -23,7 +23,7 @@ export function getClassNameEdit(elementName: string): SchemaFieldProps {
   return {
     name: joinName(elementName, "config", "className"),
     schema: { type: "string", format: "bootstrap-class" },
-    label: "CSS Class",
+    label: "Layout/Style",
   };
 }
 
