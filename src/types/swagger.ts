@@ -191,15 +191,11 @@ export interface paths {
     get: operations["listInvitations"];
     post: operations["createInvitation"];
   };
-  "/api/invited/recipes/": {
-    /** List config of current version of each package. */
-    get: operations["listInvitedRecipes"];
-  };
   "/api/marketplace/listings/": {
-    get: operations["listListingMetadatas"];
+    get: operations["listMarketplaceListings"];
   };
   "/api/marketplace/listings/{id}/": {
-    get: operations["retrieveListingMetadata"];
+    get: operations["retrieveMarketplaceListing"];
   };
   "/api/marketplace/tags/": {
     get: operations["listTags"];
@@ -254,17 +250,17 @@ export interface paths {
   };
   "/api/organizations/{organization_pk}/databases/{id}/": {
     get: operations["retrieveDatabaseStatistics"];
-    put: operations["updateDatabaseStatistics"];
-    delete: operations["destroyDatabaseStatistics"];
-    patch: operations["partialUpdateDatabaseStatistics"];
+    put: operations["updateDatabase"];
+    delete: operations["destroyDatabase"];
+    patch: operations["partialUpdateDatabase"];
   };
   "/api/organizations/{organization_pk}/databases/{database_pk}/schema/": {
     get: operations["retrieveDatabaseSchema"];
     put: operations["updateDatabaseSchema"];
   };
   "/api/organizations/{organization_pk}/databases/": {
-    get: operations["listDatabaseStatistics"];
-    post: operations["createDatabaseStatistics"];
+    get: operations["listDatabases"];
+    post: operations["createDatabase"];
   };
   "/api/organizations/{organization_pk}/subscriptions/": {
     get: operations["listSubscriptions"];
@@ -288,6 +284,10 @@ export interface paths {
     put: operations["updateOrganizationContact"];
     delete: operations["destroyOrganizationContact"];
     patch: operations["partialUpdateOrganizationContact"];
+  };
+  "/api/partner/control-rooms/{id}/": {
+    get: operations["retrieveControlRoom"];
+    patch: operations["partialUpdateControlRoom"];
   };
   "/api/permissions/{id}/": {
     get: operations["retrieveGroupPackagePermission"];
@@ -389,6 +389,9 @@ export interface paths {
   "/api/onboarding/": {
     post: operations["createOnboarding"];
   };
+  "/api/partner/control-rooms/": {
+    post: operations["createControlRoom"];
+  };
   "/api/proxy/": {
     /** API authentication proxy. */
     post: operations["createProxiedRequest"];
@@ -476,8 +479,10 @@ export interface components {
       name?: string;
       kind: string;
       version?: string;
+      /** @default false */
       share_dependencies?: boolean;
       config: string;
+      /** @default false */
       public?: boolean;
       organizations?: string[];
       /** Format: date-time */
@@ -503,6 +508,10 @@ export interface components {
       organization_id?: string;
       /** Format: date-time */
       created_at?: string;
+      /** @description Enforce the JSON Schema for database records */
+      enforce_schema?: boolean;
+      /** @description Field indicating the record owner */
+      owner_field?: string | null;
     };
     ExportedRecord: {
       id: string;
@@ -913,7 +922,7 @@ export interface components {
       /** @enum {integer} */
       status?: 1 | 2 | 3 | 4;
     };
-    ListingMetadata: {
+    MarketplaceListing: {
       /**
        * Format: uuid
        * @description Surrogate key of the listing
@@ -928,8 +937,36 @@ export interface components {
         name?: string;
         kind: string;
         description: string;
+        /** @description Human-readable name */
+        verbose_name?: string | null;
         version?: string;
+        config: { [key: string]: unknown };
+        author: {
+          scope?: string | null;
+        };
+        organization: {
+          scope?: string | null;
+        };
       };
+      /** @description Markdown-formatted instructions */
+      instructions?: string;
+      assets: {
+        /** Format: uuid */
+        id?: string;
+        listing: string;
+        /** @description A plain-text caption for the asset */
+        caption?: string | null;
+        url?: string;
+        /** @description The order in which the asset will appear in the listing */
+        order?: number;
+        /** Format: date-time */
+        created_at?: string;
+        /** Format: date-time */
+        updated_at?: string;
+      }[];
+      /** @description Font Awesome 5 icon and css class to show with the tag, e.g., fas fa-coffee */
+      fa_icon?: string | null;
+      icon_color?: string;
       tags: {
         /**
          * Format: uuid
@@ -946,12 +983,14 @@ export interface components {
          * @description The sub-type/category of the tag
          * @enum {string}
          */
-        subtype?: "generic" | "role" | "service";
+        subtype?: "generic" | "role" | "service" | "other";
         /** Format: date-time */
         created_at?: string;
         /** Format: date-time */
         updated_at?: string;
       }[];
+      depends_on?: string;
+      used_by?: string;
       image: {
         /** @description Alt text for the logo */
         alt_text?: string | null;
@@ -979,7 +1018,7 @@ export interface components {
        * @description The sub-type/category of the tag
        * @enum {string}
        */
-      subtype?: "generic" | "role" | "service";
+      subtype?: "generic" | "role" | "service" | "other";
       /** Format: date-time */
       created_at?: string;
       /** Format: date-time */
@@ -998,6 +1037,8 @@ export interface components {
         name: string;
         scope?: string | null;
         control_room?: {
+          /** Format: uuid */
+          id?: string;
           /**
            * Format: uri
            * @description The control room url
@@ -1011,6 +1052,8 @@ export interface components {
         name: string;
         scope?: string | null;
         control_room?: {
+          /** Format: uuid */
+          id?: string;
           /**
            * Format: uri
            * @description The control room url
@@ -1027,6 +1070,15 @@ export interface components {
         scope: string | null;
         /** @description True if user is a manager of one or more team deployments */
         is_deployment_manager?: string;
+        control_room: {
+          /** Format: uuid */
+          id?: string;
+          /**
+           * Format: uri
+           * @description The control room url
+           */
+          url: string;
+        };
       }[];
       group_memberships?: {
         /** Format: uuid */
@@ -1172,13 +1224,13 @@ export interface components {
       organization_id?: string;
       /** Format: date-time */
       created_at?: string;
-      /** Format: date-time */
-      last_write_at?: string;
-      num_records?: number;
       /** @description Enforce the JSON Schema for database records */
       enforce_schema?: boolean;
       /** @description Field indicating the record owner */
       owner_field?: string | null;
+      /** Format: date-time */
+      last_write_at?: string;
+      num_records?: number;
     };
     DatabaseSchema: {
       database_id?: string;
@@ -1217,6 +1269,19 @@ export interface components {
       created_at?: string;
       /** Format: date-time */
       updated_at?: string;
+    };
+    ControlRoomConfiguration: {
+      /** Format: uuid */
+      id?: string;
+      /**
+       * Format: uri
+       * @description The control room url
+       */
+      url: string;
+      /** Format: uuid */
+      tenant_id?: string | null;
+      service_account_token: string;
+      organization: string;
     };
     PackageConfig: {
       /**
@@ -1332,7 +1397,7 @@ export interface components {
        * @enum {string}
        */
       media_type?: "application/xlsx" | "application/json" | "text/csv";
-      /** @default [object Object] */
+      /** @default {} */
       filters?: { [key: string]: unknown };
     };
     DeploymentMessage: {
@@ -3046,26 +3111,7 @@ export interface operations {
       };
     };
   };
-  /** List config of current version of each package. */
-  listInvitedRecipes: {
-    parameters: {
-      query: {
-        /** A page number within the paginated result set. */
-        page?: number;
-        /** Number of results to return per page. */
-        page_size?: number;
-      };
-    };
-    responses: {
-      200: {
-        content: {
-          "application/json": components["schemas"]["PackageConfigList"][];
-          "application/vnd.pixiebrix.api+json": components["schemas"]["PackageConfigList"][];
-        };
-      };
-    };
-  };
-  listListingMetadatas: {
+  listMarketplaceListings: {
     parameters: {
       query: {
         /** A page number within the paginated result set. */
@@ -3078,13 +3124,13 @@ export interface operations {
       200: {
         headers: {};
         content: {
-          "application/json; version=2.0": components["schemas"]["ListingMetadata"][];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["ListingMetadata"][];
+          "application/json; version=2.0": components["schemas"]["MarketplaceListing"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["MarketplaceListing"][];
         };
       };
     };
   };
-  retrieveListingMetadata: {
+  retrieveMarketplaceListing: {
     parameters: {
       path: {
         id: string;
@@ -3093,8 +3139,8 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json; version=2.0": components["schemas"]["ListingMetadata"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["ListingMetadata"];
+          "application/json; version=2.0": components["schemas"]["MarketplaceListing"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["MarketplaceListing"];
         };
       };
     };
@@ -3496,7 +3542,7 @@ export interface operations {
       };
     };
   };
-  updateDatabaseStatistics: {
+  updateDatabase: {
     parameters: {
       path: {
         organization_pk: string;
@@ -3506,20 +3552,20 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json; version=2.0": components["schemas"]["DatabaseStatistics"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DatabaseStatistics"];
+          "application/json; version=2.0": components["schemas"]["Database"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["DatabaseStatistics"];
-        "application/x-www-form-urlencoded": components["schemas"]["DatabaseStatistics"];
-        "multipart/form-data": components["schemas"]["DatabaseStatistics"];
+        "application/json": components["schemas"]["Database"];
+        "application/x-www-form-urlencoded": components["schemas"]["Database"];
+        "multipart/form-data": components["schemas"]["Database"];
       };
     };
   };
-  destroyDatabaseStatistics: {
+  destroyDatabase: {
     parameters: {
       path: {
         organization_pk: string;
@@ -3530,7 +3576,7 @@ export interface operations {
       204: never;
     };
   };
-  partialUpdateDatabaseStatistics: {
+  partialUpdateDatabase: {
     parameters: {
       path: {
         organization_pk: string;
@@ -3540,16 +3586,16 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json; version=2.0": components["schemas"]["DatabaseStatistics"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DatabaseStatistics"];
+          "application/json; version=2.0": components["schemas"]["Database"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["DatabaseStatistics"];
-        "application/x-www-form-urlencoded": components["schemas"]["DatabaseStatistics"];
-        "multipart/form-data": components["schemas"]["DatabaseStatistics"];
+        "application/json": components["schemas"]["Database"];
+        "application/x-www-form-urlencoded": components["schemas"]["Database"];
+        "multipart/form-data": components["schemas"]["Database"];
       };
     };
   };
@@ -3592,7 +3638,7 @@ export interface operations {
       };
     };
   };
-  listDatabaseStatistics: {
+  listDatabases: {
     parameters: {
       path: {
         organization_pk: string;
@@ -3608,13 +3654,13 @@ export interface operations {
       200: {
         headers: {};
         content: {
-          "application/json; version=2.0": components["schemas"]["DatabaseStatistics"][];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DatabaseStatistics"][];
+          "application/json; version=2.0": components["schemas"]["Database"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"][];
         };
       };
     };
   };
-  createDatabaseStatistics: {
+  createDatabase: {
     parameters: {
       path: {
         organization_pk: string;
@@ -3623,16 +3669,16 @@ export interface operations {
     responses: {
       201: {
         content: {
-          "application/json; version=2.0": components["schemas"]["DatabaseStatistics"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DatabaseStatistics"];
+          "application/json; version=2.0": components["schemas"]["Database"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["DatabaseStatistics"];
-        "application/x-www-form-urlencoded": components["schemas"]["DatabaseStatistics"];
-        "multipart/form-data": components["schemas"]["DatabaseStatistics"];
+        "application/json": components["schemas"]["Database"];
+        "application/x-www-form-urlencoded": components["schemas"]["Database"];
+        "multipart/form-data": components["schemas"]["Database"];
       };
     };
   };
@@ -3811,6 +3857,45 @@ export interface operations {
         "application/json": components["schemas"]["OrganizationContact"];
         "application/x-www-form-urlencoded": components["schemas"]["OrganizationContact"];
         "multipart/form-data": components["schemas"]["OrganizationContact"];
+      };
+    };
+  };
+  retrieveControlRoom: {
+    parameters: {
+      path: {
+        /** A UUID string identifying this control room. */
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
+        };
+      };
+    };
+  };
+  partialUpdateControlRoom: {
+    parameters: {
+      path: {
+        /** A UUID string identifying this control room. */
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ControlRoomConfiguration"];
+        "application/x-www-form-urlencoded": components["schemas"]["ControlRoomConfiguration"];
+        "multipart/form-data": components["schemas"]["ControlRoomConfiguration"];
       };
     };
   };
@@ -4474,6 +4559,24 @@ export interface operations {
         "application/json": components["schemas"]["Onboarding"];
         "application/x-www-form-urlencoded": components["schemas"]["Onboarding"];
         "multipart/form-data": components["schemas"]["Onboarding"];
+      };
+    };
+  };
+  createControlRoom: {
+    parameters: {};
+    responses: {
+      201: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ControlRoomConfiguration"];
+        "application/x-www-form-urlencoded": components["schemas"]["ControlRoomConfiguration"];
+        "multipart/form-data": components["schemas"]["ControlRoomConfiguration"];
       };
     };
   };
