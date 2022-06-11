@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/interactive-supports-focus,jsx-a11y/click-events-have-key-events -- events from library */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -60,6 +61,7 @@ const OutlineItem: React.FunctionComponent<
 
   return (
     <div
+      role="treeitem"
       style={{ paddingLeft: depth * LEVEL_PADDING_PX }}
       className={cx(styles.item, {
         [styles.activeItem]: isActive,
@@ -112,10 +114,10 @@ const OutlineItem: React.FunctionComponent<
           <div>
             <span
               role="button"
+              tabIndex={-1}
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
-
                 onDelete();
               }}
               className="text-danger"

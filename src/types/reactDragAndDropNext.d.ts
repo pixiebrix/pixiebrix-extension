@@ -85,11 +85,11 @@ declare module "react-beautiful-dnd-next" {
 
   export interface DragUpdate extends DragStart {
     destination?: DraggableLocation | undefined;
-    // populated when a draggable is dragging over another in combine mode
+    // Populated when a draggable is dragging over another in combine mode
     combine?: Combine | undefined;
   }
 
-  // details of the item that is being combined with
+  // Details of the item that is being combined with
   export interface Combine {
     draggableId: DraggableId;
     droppableId: DroppableId;
@@ -115,7 +115,7 @@ declare module "react-beautiful-dnd-next" {
    */
 
   export interface DroppableProvidedProps {
-    // used for shared global styles
+    // Used for shared global styles
     "data-react-beautiful-dnd-droppable": string;
   }
   export interface DroppableProvided {
@@ -169,9 +169,9 @@ declare module "react-beautiful-dnd-next" {
   }
 
   export interface DraggableProvidedDraggableProps {
-    // inline style
+    // Inline style
     style?: DraggingStyle | NotDraggingStyle | undefined;
-    // used for shared global styles
+    // Used for shared global styles
     "data-react-beautiful-dnd-draggable": string;
   }
 
@@ -192,7 +192,7 @@ declare module "react-beautiful-dnd-next" {
     draggableProps: DraggableProvidedDraggableProps;
     dragHandleProps: DraggableProvidedDragHandleProps | null;
 
-    // will be removed after move to react 16
+    // Will be removed after move to react 16
     innerRef(element?: HTMLElement | null): any;
     placeholder?: React.ReactElement<HTMLElement> | null | undefined;
   }
@@ -202,9 +202,9 @@ declare module "react-beautiful-dnd-next" {
     isDropAnimating: boolean;
     draggingOver?: DroppableId | undefined;
     dropAnimation?: DropAnimation | undefined;
-    // the id of a draggable that you are combining with
+    // The id of a draggable that you are combining with
     combineWith?: DraggableId | undefined;
-    // a combine target is being dragged over by
+    // A combine target is being dragged over by
     combineTargetFor?: DraggableId | undefined;
     // What type of movement is being done: 'FLUID' or 'SNAP'
     mode?: MovementMode | undefined;
