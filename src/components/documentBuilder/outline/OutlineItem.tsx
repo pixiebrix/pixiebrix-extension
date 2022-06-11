@@ -26,18 +26,24 @@ import {
   faSquare,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
+import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
+import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
+import { TreeItem } from "@atlaskit/tree/types";
+import { acceptDrop } from "@/components/documentBuilder/hooks/useMoveElement";
 
-export const LEVEL_PADDING_PX = 10;
+export const LEVEL_PADDING_PX = 15;
 
 const OutlineItem: React.FunctionComponent<
   RenderItemParams & {
     isActive: boolean;
+    dragItem: TreeItem | null;
     onSelect: () => void;
     onDelete: () => void;
   }
 > = ({
   depth,
   item,
+  dragItem,
   onCollapse,
   onExpand,
   provided,
@@ -48,11 +54,17 @@ const OutlineItem: React.FunctionComponent<
 }) => {
   const [hover, setHover] = useState(false);
 
+  const allow = dragItem
+    ? acceptDrop(dragItem.data.element, item.data.element)
+    : false;
+
   return (
     <div
       style={{ paddingLeft: depth * LEVEL_PADDING_PX }}
       className={cx(styles.item, {
         [styles.activeItem]: isActive,
+        [styles.hover]: hover && !isActive,
+        [styles.allowDrop]: allow,
       })}
       onClick={() => {
         onSelect();
@@ -75,7 +87,10 @@ const OutlineItem: React.FunctionComponent<
             <FontAwesomeIcon
               role="button"
               fixedWidth
-              onClick={() => {
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
                 if (item.isExpanded) {
                   onCollapse(item.id);
                 } else {
@@ -89,13 +104,18 @@ const OutlineItem: React.FunctionComponent<
           )}
         </div>
         <div className="flex-grow-1">
-          <span>{item.data.element.type}</span>
+          <span>
+            {elementTypeLabels[item.data.element.type as DocumentElementType]}
+          </span>
         </div>
         {hover && (
           <div>
             <span
               role="button"
-              onClick={() => {
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
                 onDelete();
               }}
               className="text-danger"

@@ -18,7 +18,7 @@
 import {
   arrayMove,
   moveElement,
-} from "@/components/documentBuilder/edit/useMoveElement";
+} from "@/components/documentBuilder/hooks/useMoveElement";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 
 const data = {
@@ -99,7 +99,7 @@ describe("moveElement", () => {
     const result = moveElement(
       data.config.body as DocumentElement[],
       {
-        parentId: "0.children.1",
+        parentId: "0.children.1.children.0",
         index: 0,
       },
       {
@@ -109,7 +109,7 @@ describe("moveElement", () => {
     );
 
     expect(result[0].children[0].children[0].children).toHaveLength(2);
-    expect(result[0].children[1].children).toHaveLength(0);
+    expect(result[0].children[1].children).toHaveLength(1);
   });
 
   test("can move elements earlier in container", () => {

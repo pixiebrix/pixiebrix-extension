@@ -22,8 +22,13 @@ $color-active: #007bff;
   color: white;
 }
 
-.dropTarget {
-  background-color: $color-active;
+.allowDrop {
+  color: $color-active;
+}
+
+.hover {
+  // XXX: I couldn't find the hover state for the node layout nodes
+  background-color: lightgrey;
 }
 
 .item {

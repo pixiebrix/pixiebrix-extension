@@ -16,7 +16,7 @@
  */
 
 import { useField } from "formik";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import Tree, {
   ItemId,
@@ -29,11 +29,12 @@ import { RootState } from "@/pageEditor/pageEditorTypes";
 import { selectNodeDataPanelTabState } from "@/pageEditor/slices/editorSelectors";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { moveElement } from "@/components/documentBuilder/edit/useMoveElement";
 import { selectTreeData } from "@/components/documentBuilder/outline/outlineHelpers";
 import OutlineItem, {
   LEVEL_PADDING_PX,
 } from "@/components/documentBuilder/outline/OutlineItem";
+import useMoveElement from "@/components/documentBuilder/hooks/useMoveElement";
+import useDeleteElement from "@/components/documentBuilder/hooks/useDeleteElement";
 
 type DocumentOutlineProps = {
   /**
@@ -50,8 +51,10 @@ const DocumentOutline = ({
   setActiveElement,
 }: DocumentOutlineProps) => {
   const dispatch = useDispatch();
-  const [{ value: body }, , { setValue }] =
-    useField<DocumentElement[]>(documentBodyName);
+
+  const [dragItemId, setDragItemId] = useState<ItemId | null>();
+
+  const [{ value: body }] = useField<DocumentElement[]>(documentBodyName);
 
   const { treeExpandedState } = useSelector((state: RootState) =>
     selectNodeDataPanelTabState(state, DataPanelTabKey.Outline)
@@ -62,6 +65,9 @@ const DocumentOutline = ({
     [treeExpandedState, body]
   );
 
+  const onDelete = useDeleteElement(documentBodyName);
+  const onMove = useMoveElement(documentBodyName);
+
   const renderItem = useCallback(
     (params: RenderItemParams) => (
       // Don't need to handle "body" synthetic element b/c it won't be rendered
@@ -71,12 +77,13 @@ const DocumentOutline = ({
         onSelect={() => {
           setActiveElement(params.item.data.elementName as string);
         }}
+        dragItem={dragItemId ? tree.items[dragItemId] : null}
         onDelete={() => {
-          throw new Error("Not implemented yet");
+          onDelete(params.item.data.elementName);
         }}
       />
     ),
-    [activeElement, setActiveElement]
+    [activeElement, setActiveElement, dragItemId, tree, onDelete]
   );
 
   const toggleExpand = useCallback(
@@ -95,8 +102,10 @@ const DocumentOutline = ({
     sourcePosition: TreeSourcePosition,
     destinationPosition?: TreeDestinationPosition
   ) => {
+    setDragItemId(null);
+
     if (destinationPosition) {
-      setValue(moveElement(body, sourcePosition, destinationPosition));
+      onMove(sourcePosition, destinationPosition);
     }
   };
 
@@ -110,8 +119,11 @@ const DocumentOutline = ({
         toggleExpand(item, false);
       }}
       onDragEnd={onDragEnd}
+      onDragStart={(itemId) => {
+        setDragItemId(itemId);
+      }}
       isDragEnabled
-      isNestingEnabled={false}
+      isNestingEnabled
       renderItem={renderItem}
       offsetPerLevel={LEVEL_PADDING_PX}
     />

@@ -40,7 +40,7 @@ Object {
               class="flex-grow-1"
             >
               <span>
-                row
+                Row
               </span>
             </div>
           </div>
@@ -91,7 +91,7 @@ Object {
             class="flex-grow-1"
           >
             <span>
-              row
+              Row
             </span>
           </div>
         </div>

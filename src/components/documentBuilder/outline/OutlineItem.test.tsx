@@ -58,6 +58,7 @@ describe("OutlineItem", () => {
                 {(provided) => (
                   <OutlineItem
                     {...args}
+                    dragItem={null}
                     provided={provided}
                     onDelete={noop}
                     snapshot={{ isDragging: false, isDropAnimating: false }}

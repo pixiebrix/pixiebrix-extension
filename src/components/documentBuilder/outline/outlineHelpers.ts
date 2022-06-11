@@ -15,11 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import {
+  DocumentElement,
+  isListElement,
+} from "@/components/documentBuilder/documentBuilderTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { ItemId, TreeData } from "@atlaskit/tree";
 import { TreeItem } from "@atlaskit/tree/types";
 import { joinElementName } from "@/components/documentBuilder/utils";
+import { PARENT_ELEMENT_TYPES } from "@/components/documentBuilder/allowedElementTypes";
 
 type ElementArgs = {
   element: DocumentElement;
@@ -27,19 +31,45 @@ type ElementArgs = {
   treeExpandedState: TreeExpandedState;
 };
 
+function getChildren(
+  element: DocumentElement,
+  elementName: string
+): Array<{ element: DocumentElement; elementName: string }> {
+  if (isListElement(element)) {
+    return [
+      {
+        element: element.config.element.__value__,
+        elementName: joinElementName(
+          elementName,
+          "config",
+          "element",
+          "__value__"
+        ),
+      },
+    ];
+  }
+
+  const children = element?.children ?? [];
+
+  return children.map((child, index) => ({
+    element: child,
+    elementName: joinElementName(elementName, "children", String(index)),
+  }));
+}
+
 function selectTreeEntries({
   element,
   elementName,
   treeExpandedState,
 }: ElementArgs): Array<[ItemId, TreeItem]> {
-  const children = element?.children ?? [];
+  const children = getChildren(element, elementName);
 
   return [
     [
       elementName,
       {
         id: elementName,
-        hasChildren: children.length > 0,
+        hasChildren: PARENT_ELEMENT_TYPES.includes(element.type),
         // Default to expanded to the user doesn't need to expand everything
         // eslint-disable-next-line security/detect-object-injection -- builder element type
         isExpanded: Boolean(treeExpandedState[elementName] ?? true),
@@ -48,15 +78,13 @@ function selectTreeEntries({
           elementName,
           element,
         },
-        children: children.map((child, index) =>
-          joinElementName(elementName, "children", String(index))
-        ),
+        children: children.map(({ elementName }) => elementName),
       },
     ],
-    ...children.flatMap((child, index) =>
+    ...children.flatMap((child) =>
       selectTreeEntries({
-        element: child,
-        elementName: joinElementName(elementName, "children", String(index)),
+        element: child.element,
+        elementName: child.elementName,
         treeExpandedState,
       })
     ),

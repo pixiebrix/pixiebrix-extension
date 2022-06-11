@@ -18,7 +18,12 @@
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import { TreeDestinationPosition, TreeSourcePosition } from "@atlaskit/tree";
 import { produce } from "immer";
-import { getIn } from "formik";
+import { getIn, useField } from "formik";
+import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
+import { useCallback } from "react";
+import useReduxState from "@/hooks/useReduxState";
+import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 // https://stackoverflow.com/a/6470794/402560
 export function arrayMove(
@@ -32,10 +37,11 @@ export function arrayMove(
   array.splice(toIndex, 0, element);
 }
 
-function acceptDrop(element: DocumentElement): boolean {
-  return ["container", "row", "column", "card", "list", "card"].includes(
-    element.type
-  );
+export function acceptDrop(
+  element: DocumentElement,
+  parentElement: DocumentElement
+): boolean {
+  return getAllowedChildTypes(parentElement).includes(element.type);
 }
 
 export function moveElement(
@@ -47,10 +53,13 @@ export function moveElement(
     const sourceParent = getIn(draft, source.parentId as string);
     const destinationParent = getIn(draft, destination.parentId as string);
 
-    if (!acceptDrop(destinationParent)) {
+    const element = sourceParent.children[source.index];
+
+    if (!acceptDrop(element, destinationParent)) {
       console.warn(
-        "Destination element does not support drop: %s",
+        "Destination element does not support drop: %s for %s",
         destinationParent.type,
+        element.type,
         {
           sourceParent,
           destinationParent,
@@ -80,7 +89,32 @@ export function moveElement(
       destination,
     });
 
-    const [element] = getIn(sourceParent, "children").splice(source.index, 1);
+    getIn(sourceParent, "children").splice(source.index, 1);
     getIn(destinationParent, "children").splice(destination.index, 0, element);
   });
 }
+
+function useMoveElement(documentBodyName: string) {
+  const [{ value: body }, , { setValue }] =
+    useField<DocumentElement[]>(documentBodyName);
+
+  const [, setActiveElement] = useReduxState(
+    selectNodePreviewActiveElement,
+    editorActions.setNodePreviewActiveElement
+  );
+
+  return useCallback(
+    (
+      sourcePosition: TreeSourcePosition,
+      destinationPosition?: TreeDestinationPosition
+    ) => {
+      // For now, just clear out the active element to ensure the active elementName is valid in the new tree
+      setActiveElement(null);
+
+      setValue(moveElement(body, sourcePosition, destinationPosition));
+    },
+    [body, setValue, setActiveElement]
+  );
+}
+
+export default useMoveElement;
