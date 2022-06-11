@@ -35,6 +35,7 @@ type Widgets = {
   SchemaSelectWidget: React.VFC<SchemaFieldProps>;
   TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps>;
   TextWidget: React.VFC<SchemaFieldProps & FormControlProps>;
+  CssClassWidget: React.VFC<SchemaFieldProps>;
   UnsupportedWidget: React.VFC<SchemaFieldProps>;
   UrlMatchPatternWidget: React.VFC<SchemaFieldProps & FormControlProps>;
   UrlPatternWidget: React.VFC<SchemaFieldProps>;
@@ -42,11 +43,15 @@ type Widgets = {
   WorkshopMessageWidget: React.VFC<Partial<SchemaFieldProps>>;
 };
 
-const UnsetWidget: React.VFC = () => {
-  throw new Error(
-    "An input widget not set. Did you forget to register it in registerDefaultWidgets?"
-  );
-};
+function unsetWidgetFactory(label: string): React.VFC {
+  const UnsetWidget: React.VFC = () => {
+    throw new Error(
+      `Input widget ${label} not set. Did you forget to register it in registerDefaultWidgets?`
+    );
+  };
+
+  return UnsetWidget;
+}
 
 /**
  * The container that holds references to all the widgets.
@@ -54,20 +59,21 @@ const UnsetWidget: React.VFC = () => {
  * When you add a new widget, add it here, register in the `registerDefaultWidgets` function.
  */
 const widgetsRegistry: Widgets = {
-  ArrayWidget: UnsetWidget,
-  BooleanWidget: UnsetWidget,
-  IntegerWidget: UnsetWidget,
-  NumberWidget: UnsetWidget,
-  ObjectWidget: UnsetWidget,
-  OmitFieldWidget: UnsetWidget,
-  SchemaSelectWidget: UnsetWidget,
-  TemplateToggleWidget: UnsetWidget,
-  TextWidget: UnsetWidget,
-  UnsupportedWidget: UnsetWidget,
-  UrlMatchPatternWidget: UnsetWidget,
-  UrlPatternWidget: UnsetWidget,
-  SelectorMatchWidget: UnsetWidget,
-  WorkshopMessageWidget: UnsetWidget,
+  ArrayWidget: unsetWidgetFactory("ArrayWidget"),
+  BooleanWidget: unsetWidgetFactory("BooleanWidget"),
+  IntegerWidget: unsetWidgetFactory("IntegerWidget"),
+  NumberWidget: unsetWidgetFactory("NumberWidget"),
+  ObjectWidget: unsetWidgetFactory("ObjectWidget"),
+  OmitFieldWidget: unsetWidgetFactory("OmitFieldWidget"),
+  SchemaSelectWidget: unsetWidgetFactory("SchemaSelectWidget"),
+  TemplateToggleWidget: unsetWidgetFactory("TemplateToggleWidget"),
+  TextWidget: unsetWidgetFactory("TextWidget"),
+  CssClassWidget: unsetWidgetFactory("CssClassWidget"),
+  UnsupportedWidget: unsetWidgetFactory("UnsupportedWidget"),
+  UrlMatchPatternWidget: unsetWidgetFactory("UrlMatchPatternWidget"),
+  UrlPatternWidget: unsetWidgetFactory("UrlPatternWidget"),
+  SelectorMatchWidget: unsetWidgetFactory("SelectorMatchWidget"),
+  WorkshopMessageWidget: unsetWidgetFactory("WorkshopMessageWidget"),
 };
 
 export default widgetsRegistry;
