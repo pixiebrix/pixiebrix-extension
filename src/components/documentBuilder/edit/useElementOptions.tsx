@@ -35,41 +35,48 @@ const useElementOptions = (
 ): React.FC => {
   const elementType = element.type;
 
-  const ElementOptions = useMemo(() => {
-    if (isListElement(element)) {
-      const ListOptionsFields = () => <ListOptions elementName={elementName} />;
-      return ListOptionsFields;
-    }
+  const ElementOptions = useMemo(
+    () => {
+      if (isListElement(element)) {
+        const ListOptionsFields = () => (
+          <ListOptions elementName={elementName} />
+        );
+        return ListOptionsFields;
+      }
 
-    if (isPipelineElement(element)) {
-      const PipelineOptionsFields = () => <PipelineOptions />;
-      return PipelineOptionsFields;
-    }
+      if (isPipelineElement(element)) {
+        const PipelineOptionsFields = () => <PipelineOptions />;
+        return PipelineOptionsFields;
+      }
 
-    if (isButtonElement(element)) {
-      const ButtonOptionsFields = () => (
-        <ButtonOptions elementName={elementName} />
+      if (isButtonElement(element)) {
+        const ButtonOptionsFields = () => (
+          <ButtonOptions elementName={elementName} />
+        );
+
+        return ButtonOptionsFields;
+      }
+
+      const editSchemas = getElementEditSchemas(elementType, elementName);
+      const OptionsFields: React.FC = () => (
+        <>
+          {editSchemas.map((editSchema) =>
+            editSchema.schema.type === "string" &&
+            editSchema.schema.format === "bootstrap-class" ? (
+              <CssClassField key={editSchema.name} {...editSchema} />
+            ) : (
+              <SchemaField key={editSchema.name} {...editSchema} />
+            )
+          )}
+        </>
       );
 
-      return ButtonOptionsFields;
-    }
-
-    const editSchemas = getElementEditSchemas(elementType, elementName);
-    const OptionsFields: React.FC = () => (
-      <>
-        {editSchemas.map((editSchema) =>
-          editSchema.schema.type === "string" &&
-          editSchema.schema.format === "bootstrap-class" ? (
-            <CssClassField key={editSchema.name} {...editSchema} />
-          ) : (
-            <SchemaField key={editSchema.name} {...editSchema} />
-          )
-        )}
-      </>
-    );
-
-    return OptionsFields;
-  }, [element, elementType, elementName]);
+      return OptionsFields;
+    },
+    // The element type can't change, so this is OK
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- leaving element off to prevent remounting
+    [elementType, elementName]
+  );
 
   return ElementOptions;
 };
