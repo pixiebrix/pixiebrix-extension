@@ -33,6 +33,14 @@ export const ROOT_ELEMENT_TYPES: DocumentElementType[] = [
   "list",
 ];
 
+export const PARENT_ELEMENT_TYPES: DocumentElementType[] = [
+  "row",
+  "column",
+  "container",
+  "card",
+  "list",
+];
+
 const allowedChildTypes: Record<string, DocumentElementType[]> = {
   container: ["row", "list"],
   row: ["column", "list"],
