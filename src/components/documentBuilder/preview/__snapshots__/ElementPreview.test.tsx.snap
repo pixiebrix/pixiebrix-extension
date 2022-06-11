@@ -235,6 +235,16 @@ exports[`can preview default header_3 1`] = `
 </DocumentFragment>
 `;
 
+exports[`can preview default image 1`] = `
+<DocumentFragment>
+  <img
+    alt="Placeholder"
+    class=""
+    src="holder.js/50x100"
+  />
+</DocumentFragment>
+`;
+
 exports[`can preview default list 1`] = `
 <DocumentFragment>
   <div
