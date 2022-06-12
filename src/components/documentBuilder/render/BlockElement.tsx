@@ -26,6 +26,7 @@ import { uuidv4 } from "@/types/helpers";
 import PanelBody from "@/sidebar/PanelBody";
 import { RendererPayload } from "@/runtime/runtimeTypes";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { serializeError } from "serialize-error";
 
 type BlockElementProps = { pipeline: BlockPipeline };
 
@@ -62,7 +63,7 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline }) => {
       <PanelBody
         payload={{
           key: `error-${getErrorMessage(error)}`,
-          error: getErrorMessage(error),
+          error: serializeError(error),
         }}
       />
     );

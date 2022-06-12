@@ -55,7 +55,6 @@ import {
 } from "@/contentScript/sidebarController";
 import Mustache from "mustache";
 import { uuidv4 } from "@/types/helpers";
-import { getErrorMessage } from "@/errors/errorHelpers";
 import { HeadlessModeError } from "@/blocks/errors";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { cloneDeep, debounce } from "lodash";
@@ -66,6 +65,7 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { BusinessError } from "@/errors/businessErrors";
+import { serializeError } from "serialize-error";
 
 export type SidebarConfig = {
   heading: string;
@@ -225,7 +225,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
         extensionLogger.error(error);
         upsertPanel(ref, heading, {
           key: uuidv4(),
-          error: getErrorMessage(error as Error),
+          error: serializeError(error),
         });
       }
     }
