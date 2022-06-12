@@ -182,9 +182,13 @@ type PermissionOptions = {
 
 /**
  * Returns browser permissions required to run the extension
+ * - Extension
  * - Blocks
  * - Services (optional, default=true)
  * - Extension point (optional, default=true)
+ *
+ * @see IExtension.permissions
+ * @see IExtensionPoint.permissions
  */
 export async function extensionPermissions(
   extension: IExtension,
@@ -214,6 +218,7 @@ export async function extensionPermissions(
 
   return mergePermissions(
     compact([
+      extension.permissions ?? {},
       includeExtensionPoint ? extensionPoint.permissions : null,
       ...servicePermissions,
       ...blockPermissions,

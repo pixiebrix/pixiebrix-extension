@@ -25,6 +25,7 @@ import LocationWidget from "@/pageEditor/fields/LocationWidget";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
+import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 
 const panelSnippets: Snippet[] = [
   { label: "heading", value: "{{{heading}}}" },
@@ -80,6 +81,8 @@ const PanelConfiguration: React.FC<{
     </FieldSection>
 
     <MatchRulesSection isLocked={isLocked} />
+
+    <ExtraPermissionsSection />
   </Card>
 );
 

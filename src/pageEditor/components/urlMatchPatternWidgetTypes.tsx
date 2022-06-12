@@ -26,4 +26,5 @@ export type Shortcut = {
 export type UrlMatchPatternWidgetProps = SchemaFieldProps &
   FormControlProps & {
     shortcuts: Shortcut[];
+    addButtonCaption?: string;
   };

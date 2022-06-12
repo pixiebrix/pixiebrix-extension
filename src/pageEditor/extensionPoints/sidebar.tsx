@@ -152,6 +152,7 @@ export async function fromExtensionPoint(
     label: heading,
 
     services: [],
+    permissions: {},
 
     optionsArgs: {},
 
