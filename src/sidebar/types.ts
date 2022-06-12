@@ -18,7 +18,6 @@
 import { RegistryId, UUID } from "@/core";
 import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 import { RendererPayload } from "@/runtime/runtimeTypes";
-import { ErrorObject } from "serialize-error";
 
 export type RendererError = {
   /**
@@ -28,7 +27,8 @@ export type RendererError = {
   /**
    * The error message to show in the panel
    */
-  error: ErrorObject;
+  // TypeScript was having problems handling the type SerializedError here
+  error: unknown;
 };
 
 /**

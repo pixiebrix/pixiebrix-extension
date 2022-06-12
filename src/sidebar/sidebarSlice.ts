@@ -123,7 +123,6 @@ const sidebarSlice = createSlice({
     removeForm(state, action: PayloadAction<UUID>) {
       const nonce = action.payload;
       state.forms = state.forms.filter((x) => x.nonce !== nonce);
-      // @ts-expect-error -- getting instantiation is excessively deep and possibly infinite
       state.activeKey = defaultEventKey(state);
     },
     // In the future, we might want to have ActivatePanelOptions support a "enqueue" prop for controlling whether the
