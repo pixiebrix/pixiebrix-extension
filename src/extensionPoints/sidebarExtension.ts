@@ -68,7 +68,7 @@ import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { BusinessError } from "@/errors/businessErrors";
+import { NoRendererError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 
 export type SidebarConfig = {
@@ -216,7 +216,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
       });
       // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
       // noinspection ExceptionCaughtLocallyJS
-      throw new BusinessError("No renderer brick attached to body");
+      throw new NoRendererError();
     } catch (error) {
       const ref = {
         extensionId: extension.id,

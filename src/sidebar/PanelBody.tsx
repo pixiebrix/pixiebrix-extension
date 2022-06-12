@@ -29,6 +29,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useAsyncEffect } from "use-async-effect";
 import GridLoader from "react-spinners/GridLoader";
 import styles from "./PanelBody.module.scss";
+import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
+import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 
 type BodyProps = {
   blockId: RegistryId;
@@ -106,9 +108,10 @@ const slice = createSlice({
 });
 
 const PanelBody: React.FunctionComponent<{
+  isRootPanel?: boolean;
   payload: PanelPayload;
   context: MessageContext;
-}> = ({ payload, context }) => {
+}> = ({ payload, context, isRootPanel = false }) => {
   const [state, dispatch] = useReducer(slice.reducer, initialPanelState);
 
   useAsyncEffect(async () => {
@@ -165,7 +168,9 @@ const PanelBody: React.FunctionComponent<{
   }
 
   if (state.error) {
-    if (selectSpecificError(state.error, CancelError)) {
+    const cancelError = selectSpecificError(state.error, CancelError);
+
+    if (cancelError) {
       return (
         <>
           {state.isFetching && (
@@ -173,9 +178,13 @@ const PanelBody: React.FunctionComponent<{
               <GridLoader size={8} />
             </span>
           )}
-          <div className="text-muted">
-            This panel is not available: {getErrorMessage(state.error)}
-          </div>
+          {isRootPanel ? (
+            <RootCancelledPanel error={cancelError} />
+          ) : (
+            <div className="text-muted">
+              This panel is not available: {getErrorMessage(state.error)}
+            </div>
+          )}
         </>
       );
     }
@@ -187,9 +196,13 @@ const PanelBody: React.FunctionComponent<{
             <GridLoader size={8} />
           </span>
         )}
-        <div className="text-danger">
-          Error rendering panel: {getErrorMessage(state.error)}
-        </div>
+        {isRootPanel ? (
+          <RootErrorPanel error={state.error} />
+        ) : (
+          <div className="text-danger">
+            Error rendering panel: {getErrorMessage(state.error)}
+          </div>
+        )}
       </>
     );
   }

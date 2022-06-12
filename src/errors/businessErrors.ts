@@ -59,6 +59,14 @@ export class CancelError extends BusinessError {
   }
 }
 
+export class NoRendererError extends BusinessError {
+  override name = "NoRendererError";
+
+  constructor(message?: string) {
+    super(message ?? "No renderer brick attached");
+  }
+}
+
 export class NoElementsFoundError extends BusinessError {
   override name = "NoElementsFoundError";
   readonly selector: string;
