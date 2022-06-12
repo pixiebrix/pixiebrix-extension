@@ -120,6 +120,7 @@ export function hasSpecificErrorCause<
 const BUSINESS_ERROR_NAMES = new Set([
   "PropError",
   "BusinessError",
+  "NoRendererError",
   "NoElementsFoundError",
   "MultipleElementsFoundError",
   "InputValidationError",

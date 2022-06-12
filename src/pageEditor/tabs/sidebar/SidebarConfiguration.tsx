@@ -93,6 +93,7 @@ const SidebarConfiguration: React.FC<{
         >
           <option value="load">Page Load / Navigation</option>
           <option value="selectionchange">Selection Change</option>
+          <option value="statechange">State Change</option>
           <option value="custom">Custom Event</option>
           <option value="manual">Manual</option>
         </ConnectedFieldTemplate>

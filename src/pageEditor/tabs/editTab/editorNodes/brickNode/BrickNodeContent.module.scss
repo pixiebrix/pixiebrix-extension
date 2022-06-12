@@ -24,12 +24,15 @@
 }
 
 .icon {
+  display: flex;
   flex-shrink: 0;
   flex-grow: 0;
   place-items: center;
   place-content: center;
   width: 1.1em;
-  margin-right: 10px;
+  margin-right: 8px;
+
+  font-size: 1rem;
 
   // External icon
   img {
@@ -50,7 +53,11 @@
 .badge {
   width: 0;
   img {
-    font-size: 0.7em;
-    transform: translate(-0.7em, -0.8em);
+    font-size: 1em;
+    transform: translate(-0.6em, -0.8em);
   }
+}
+
+.outputKey {
+  margin-top: 0.4em;
 }

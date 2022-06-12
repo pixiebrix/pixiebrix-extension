@@ -17,9 +17,7 @@
 
 import React, { useCallback, useMemo, useState } from "react";
 import { ListGroup } from "react-bootstrap";
-import BrickNode, {
-  BrickNodeProps,
-} from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNode";
+import BrickNode from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNode";
 import PipelineHeaderNode, {
   PipelineHeaderNodeProps,
 } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
@@ -27,21 +25,22 @@ import PipelineFooterNode, {
   PipelineFooterNodeProps,
 } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
 import { BlockPipeline } from "@/blocks/types";
-import { FormikError } from "@/pageEditor/tabs/editTab/editTabTypes";
+import {
+  BrickNodeContentProps,
+  BrickNodeProps,
+  FormikError,
+  RunStatus,
+} from "@/pageEditor/tabs/editTab/editTabTypes";
 import { TraceError } from "@/telemetry/trace";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { TypedBlockMap } from "@/blocks/registry";
 import { IBlock, OutputKey, UUID } from "@/core";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
-import {
-  BrickNodeContentProps,
-  RunStatus,
-} from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNodeContent";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
-import { get, isEmpty, join } from "lodash";
+import { get, isEmpty } from "lodash";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import {
   getDocumentPipelinePaths,
@@ -64,7 +63,7 @@ type EditorNodeProps =
   | (PipelineHeaderNodeProps & { type: "header"; key: string })
   | (PipelineFooterNodeProps & { type: "footer"; key: string });
 
-export type EditorNodeLayoutProps = {
+type EditorNodeLayoutProps = {
   allBlocks: TypedBlockMap;
   relevantBlocksForRootPipeline: IBlock[];
   pipeline: BlockPipeline;
@@ -106,9 +105,11 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectExtensionTrace);
 
-  const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>(
+  const [collapsedState, setCollapsedState] = useState<Record<UUID, boolean>>(
     {}
   );
+
+  const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});
 
   const allBlocksAsRelevant = useMemo(
     () => [...allBlocks.values()].map(({ block }) => block),
@@ -128,7 +129,8 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   function mapPipelineToNodes(
     pipeline: BlockPipeline,
     pipelinePath = PIPELINE_BLOCKS_FIELD_NAME,
-    nestingLevel = 0
+    nestingLevel = 0,
+    parentIsActive = false
   ): EditorNodeProps[] {
     const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
     const relevantBlocks = isRootPipeline
@@ -198,9 +200,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       }
 
       const hasSubPipelines = !isEmpty(subPipelines);
-      const collapsedKey = join([pipelinePath, index], ".");
-      // eslint-disable-next-line security/detect-object-injection -- constructed key
-      const collapsed = collapsedState[collapsedKey];
+      const collapsed = collapsedState[blockConfig.instanceId];
       const expanded = hasSubPipelines && !collapsed;
 
       const onClick = () => {
@@ -208,7 +208,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           if (hasSubPipelines) {
             setCollapsedState((previousState) => ({
               ...previousState,
-              [collapsedKey]: !collapsed,
+              [blockConfig.instanceId]: !collapsed,
             }));
           }
         } else {
@@ -233,6 +233,14 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             moveBlockDown(blockConfig.instanceId);
           }
         : undefined;
+
+      const hovered = hoveredState[blockConfig.instanceId];
+      const onHoverChange = (hovered: boolean) => {
+        setHoveredState((previousState) => ({
+          ...previousState,
+          [blockConfig.instanceId]: hovered,
+        }));
+      };
 
       const showAddBlock = isApiAtLeastV2 && (index < lastIndex || showAppend);
       const showBiggerActions = index === lastIndex && isRootPipeline;
@@ -260,7 +268,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             key={`${nodeName}-add`}
             nodeName={nodeName}
             onClickPaste={() => {
-              pasteBlock(pipelinePath, index);
+              pasteBlock(pipelinePath, index + 1);
             }}
           />
         );
@@ -305,6 +313,8 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
         onClickMoveDown,
         onClick,
         active: nodeIsActive,
+        onHoverChange,
+        parentIsActive,
         nestingLevel,
         hasSubPipelines,
         collapsed,
@@ -355,6 +365,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             headerLabel,
             nestingLevel,
             nodeActions: headerActions,
+            active: nodeIsActive || parentIsActive,
           };
 
           nodes.push(
@@ -366,7 +377,8 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             ...mapPipelineToNodes(
               subPipeline,
               subPipelinePath,
-              nestingLevel + 1
+              nestingLevel + 1,
+              nodeIsActive || parentIsActive
             )
           );
         }
@@ -378,6 +390,10 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           trailingMessage,
           nestingLevel,
           active: nodeIsActive,
+          parentIsActive,
+          hovered,
+          onHoverChange,
+          onClick,
         };
         nodes.push({
           type: "footer",
@@ -424,6 +440,12 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       setActiveNodeId(FOUNDATION_NODE_ID);
     },
     active: activeNodeId === FOUNDATION_NODE_ID,
+    onHoverChange(hovered) {
+      setHoveredState((previousState) => ({
+        ...previousState,
+        [FOUNDATION_NODE_ID]: hovered,
+      }));
+    },
     nestingLevel: 0,
     nodeActions: foundationNodeActions,
     showBiggerActions: showBiggerFoundationActions,

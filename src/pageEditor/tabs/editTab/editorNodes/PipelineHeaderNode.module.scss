@@ -23,13 +23,18 @@ $headerPipeLineHeight: 4px;
 
 .root {
   display: flex;
+  border-bottom: 1px solid lightgrey;
 }
 
 .header {
   flex-grow: 1;
   position: relative; // Allow children to position relative to this element
-  background: #ebebf1;
+  background: $headerBackgroundColor;
   padding: $headerOffsetY 0 0 $headerOffsetX;
+
+  &.active {
+    background-color: $activeHeaderBackgroundColor;
+  }
 }
 
 .subPipelineLabel {
@@ -39,6 +44,7 @@ $headerPipeLineHeight: 4px;
   padding: 0 0.25rem;
   background: white;
   border-radius: 3px;
+  font-size: 0.8em;
 }
 
 .headerPipeLineTop {

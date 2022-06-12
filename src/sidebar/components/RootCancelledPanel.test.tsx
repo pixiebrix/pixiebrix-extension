@@ -14,27 +14,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import React from "react";
 
-import { BlockOptions, RegistryId, UUID } from "@/core";
-import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { GetPageState, Namespace } from "./pageState";
+import { render } from "@testing-library/react";
+import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
+import { CancelError } from "@/errors/businessErrors";
 
-export async function getStateValue<TResult>(
-  namespace: Namespace,
-  blueprintId?: RegistryId | null,
-  extensionId?: UUID | null
-): Promise<TResult> {
-  const getState = new GetPageState();
-  const logger = new ConsoleLogger({
-    extensionId,
-    blueprintId,
+describe("RootCancelledPanel", () => {
+  it("should render", () => {
+    const result = render(<RootCancelledPanel error={new CancelError()} />);
+    expect(result).toMatchSnapshot();
   });
-
-  const result: TResult = (await getState.transform(
-    unsafeAssumeValidArg({ namespace }),
-    { logger } as BlockOptions
-  )) as TResult;
-
-  return result;
-}
+});

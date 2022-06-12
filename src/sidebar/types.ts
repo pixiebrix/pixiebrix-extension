@@ -27,7 +27,8 @@ export type RendererError = {
   /**
    * The error message to show in the panel
    */
-  error: string;
+  // TypeScript was having problems handling the type SerializedError here
+  error: unknown;
 };
 
 /**
@@ -115,6 +116,16 @@ export type ActivatePanelOptions = {
    * @since 1.6.5
    */
   force?: boolean;
+
+  /**
+   * Refresh the panel content (default=true).
+   *
+   * Has not effect if the sidebar is not already showing
+   *
+   * @since 1.7.0
+   */
+  refresh?: boolean;
+
   /**
    * The id of the extension panel to show. Included so the Page Editor can request a specific panel to show when
    * editing the extension

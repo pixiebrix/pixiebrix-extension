@@ -26,20 +26,30 @@ import { faExternalLinkAlt, faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "react-bootstrap";
 import { useSelector } from "react-redux";
+import { UnknownObject } from "@/types";
 
 const alwaysExpandNode = () => true;
 
 const PageStateTab: React.VFC = () => {
   const activeElement = useSelector(selectActiveElement);
 
-  const [state, isLoading, error, refresh] = useAsyncState(
+  const [state, isLoading, error, refresh] = useAsyncState<{
+    extension: UnknownObject | string;
+    blueprint: UnknownObject | string;
+    shared: UnknownObject | string;
+  }>(
     async () => {
+      const context = {
+        extensionId: activeElement.uuid,
+        blueprintId: activeElement.recipe?.id,
+      };
+
       const [shared, blueprint, extension] = await Promise.all([
-        getPageState(thisTab, "shared"),
+        getPageState(thisTab, { namespace: "shared", ...context }),
         activeElement.recipe
-          ? getPageState(thisTab, "blueprint", activeElement.recipe.id)
+          ? getPageState(thisTab, { namespace: "blueprint", ...context })
           : Promise.resolve("Extension is not in a blueprint"),
-        getPageState(thisTab, "extension", null, activeElement.uuid),
+        getPageState(thisTab, { namespace: "extension", ...context }),
       ]);
 
       return {

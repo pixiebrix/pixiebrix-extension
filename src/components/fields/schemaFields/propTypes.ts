@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as PropTypes from "prop-types";
 import { Schema, UiSchema } from "@/core";
 import React from "react";
 import { FieldInputMode } from "./fieldInputMode";
@@ -23,13 +22,6 @@ import { FieldInputMode } from "./fieldInputMode";
 // https://json-schema.org/understanding-json-schema/reference/generic.html
 
 export type SchemaFieldComponent = React.FunctionComponent<SchemaFieldProps>;
-
-export const schemaPropTypes = {
-  type: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired,
-  description: PropTypes.string,
-  default: PropTypes.any,
-  enum: PropTypes.array,
-};
 
 export interface SchemaFieldProps {
   /**
