@@ -29,7 +29,7 @@ import {
 } from "@/core";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { JsonObject } from "type-fest";
-import { dataStore, proxyService } from "@/background/messenger/api";
+import { dataStore, proxyService, whoAmI } from "@/background/messenger/api";
 import notify from "@/utils/notify";
 import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
@@ -42,7 +42,7 @@ import { validateRegistryId } from "@/types/helpers";
 import BootstrapStylesheet from "@/blocks/renderers/BootstrapStylesheet";
 import { isObject } from "@/utils";
 import { BusinessError, PropError } from "@/errors/businessErrors";
-import { getPageState, setPageState } from "@/blocks/effects/pageState";
+import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import safeJsonStringify from "json-stringify-safe";
 import { isEmpty } from "lodash";
 
@@ -117,7 +117,13 @@ async function getInitialData(
 
     case "state": {
       const namespace = storage.namespace ?? "blueprint";
-      return getPageState({ namespace, blueprintId, extensionId });
+      const me = await whoAmI();
+      // Target the top level frame. Inline panels aren't generally available, so the renderer will always be in the
+      // sidebar which runs in the context of the top-level frame
+      return getPageState(
+        { tabId: me.tab.id, frameId: 0 },
+        { namespace, blueprintId, extensionId }
+      );
     }
 
     case "database": {
@@ -174,13 +180,19 @@ async function setData(
     }
 
     case "state": {
-      setPageState({
-        namespace: storage.namespace ?? "blueprint",
-        data: cleanValues,
-        mergeStrategy: "shallow",
-        extensionId,
-        blueprintId,
-      });
+      const me = await whoAmI();
+      // Target the top level frame. Inline panels aren't generally available, so the renderer will always be in the
+      // sidebar which runs in the context of the top-level frame
+      await setPageState(
+        { tabId: me.tab.id, frameId: 0 },
+        {
+          namespace: storage.namespace ?? "blueprint",
+          data: cleanValues,
+          mergeStrategy: "shallow",
+          extensionId,
+          blueprintId,
+        }
+      );
       return;
     }
 
