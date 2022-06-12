@@ -72,7 +72,7 @@ export async function serializableAxiosRequest<T>(
 
   const { data, status, statusText } = await axios(config);
 
-  // Firefox won't send response objects from the background page to the content script. So strip out the
+  // Firefox won't send response objects from the background page to the content script. Strip out the
   // potentially sensitive parts of the response (the request, headers, etc.)
   return JSON.parse(JSON.stringify({ data, status, statusText }));
 }
@@ -271,7 +271,15 @@ export async function proxyService<TData>(
       );
     }
 
-    return serializableAxiosRequest<TData>(requestConfig);
+    try {
+      return await serializableAxiosRequest<TData>(requestConfig);
+    } catch (error) {
+      console.debug("Error making request without service config", {
+        requestConfig,
+        error,
+      });
+      throw error;
+    }
   }
 
   try {
