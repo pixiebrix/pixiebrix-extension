@@ -17,14 +17,14 @@
 
 import React from "react";
 import { OutputValidationError } from "@/blocks/errors";
-import { Col, Row } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
+import styles from "./ErrorDetail.module.scss";
 
 const OutputValidationErrorDetail: React.FunctionComponent<{
   error: OutputValidationError;
 }> = ({ error }) => (
-  <Row>
-    <Col>
+  <div className={styles.root}>
+    <div className={styles.column}>
       <span>Errors</span>
       <ul>
         {error.errors.map((x) => (
@@ -33,16 +33,16 @@ const OutputValidationErrorDetail: React.FunctionComponent<{
           </li>
         ))}
       </ul>
-    </Col>
-    <Col>
+    </div>
+    <div className={styles.column}>
       <span>Output</span>
       <JsonTree data={error.instance} />
-    </Col>
-    <Col>
+    </div>
+    <div className={styles.column}>
       <span>Schema</span>
       <JsonTree data={error.schema} />
-    </Col>
-  </Row>
+    </div>
+  </div>
 );
 
 export default OutputValidationErrorDetail;

@@ -17,14 +17,14 @@
 
 import React from "react";
 import { InputValidationError } from "@/blocks/errors";
-import { Col, Row } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
+import styles from "./ErrorDetail.module.scss";
 
 const InputValidationErrorDetail: React.FunctionComponent<{
   error: InputValidationError;
 }> = ({ error }) => (
-  <Row>
-    <Col>
+  <div className={styles.root}>
+    <div className={styles.column}>
       <span>Errors</span>
       <ul>
         {error.errors.map((x) => (
@@ -33,16 +33,16 @@ const InputValidationErrorDetail: React.FunctionComponent<{
           </li>
         ))}
       </ul>
-    </Col>
-    <Col>
+    </div>
+    <div className={styles.column}>
       <span>Rendered Args</span>
       <JsonTree data={error.input} />
-    </Col>
-    <Col>
+    </div>
+    <div className={styles.column}>
       <span>Schema</span>
       <JsonTree data={error.schema} />
-    </Col>
-  </Row>
+    </div>
+  </div>
 );
 
 export default InputValidationErrorDetail;

@@ -17,7 +17,6 @@
 
 import React, { useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
-import { Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -29,6 +28,7 @@ import {
   safeGuessStatusText,
   SerializableAxiosError,
 } from "@/errors/networkErrorHelpers";
+import styles from "./ErrorDetail.module.scss";
 
 function tryParse(value: unknown): unknown {
   if (typeof value === "string") {
@@ -84,8 +84,8 @@ const NetworkErrorDetail: React.FunctionComponent<{
   const permissionsReady = !permissionsError && !permissionsPending;
 
   return (
-    <Row>
-      <Col>
+    <div className={styles.root}>
+      <div className={styles.column}>
         <span>Response</span>
         {permissionsReady && !hasPermissions && (
           <div className="text-warning">
@@ -121,12 +121,12 @@ const NetworkErrorDetail: React.FunctionComponent<{
         ) : (
           <JsonTree data={cleanResponse} />
         )}
-      </Col>
-      <Col>
+      </div>
+      <div className={styles.column}>
         <span>Request Config</span>
         <JsonTree data={cleanConfig} />
-      </Col>
-    </Row>
+      </div>
+    </div>
   );
 };
 
