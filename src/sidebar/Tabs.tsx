@@ -102,6 +102,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
               >
                 <ErrorBoundary>
                   <PanelBody
+                    isRootPanel
                     payload={panel.payload}
                     context={{
                       extensionId: panel.extensionId,
