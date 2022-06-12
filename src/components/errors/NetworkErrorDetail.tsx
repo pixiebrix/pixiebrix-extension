@@ -72,7 +72,7 @@ const NetworkErrorDetail: React.FunctionComponent<{
   const cleanResponse = useMemo(() => {
     if (error.response) {
       const { request, config, data, ...rest } = error.response;
-      // Don't include request, since we're showing it the other column
+      // Don't include request or config, since we're showing it the other column
       return {
         ...rest,
         data: tryParse(data),
