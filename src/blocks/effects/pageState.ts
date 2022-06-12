@@ -19,7 +19,9 @@ import { Transformer, UnknownObject } from "@/types";
 import { BlockArg, BlockOptions, RegistryId, Schema, UUID } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { merge, cloneDeep } from "lodash";
-import { BusinessError, PropError } from "@/errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
+import { JsonObject } from "type-fest";
+import { expectContext } from "@/utils/expectContext";
 
 const extensionState = new Map<UUID, UnknownObject>();
 
@@ -54,6 +56,54 @@ function mergeState(
     default: {
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never type
       throw new BusinessError(`Unknown merge strategy: ${strategy}`);
+    }
+  }
+}
+
+export function setPageState({
+  namespace,
+  data,
+  mergeStrategy,
+  extensionId,
+  // Normalize undefined to null for lookup
+  blueprintId = null,
+}: {
+  namespace: string;
+  data: JsonObject;
+  mergeStrategy: MergeStrategy;
+  extensionId: UUID;
+  blueprintId: RegistryId | null;
+}) {
+  expectContext("contentScript");
+
+  switch (namespace) {
+    case "shared": {
+      const previous = blueprintState.get(null) ?? {};
+      const next = mergeState(previous, data, mergeStrategy);
+      blueprintState.set(null, next);
+      return next;
+    }
+
+    case "blueprint": {
+      const previous = blueprintState.get(blueprintId) ?? {};
+      const next = mergeState(previous, data, mergeStrategy);
+      blueprintState.set(blueprintId, next);
+      return next;
+    }
+
+    case "extension": {
+      if (extensionId == null) {
+        throw new Error("Invalid context: extensionId not found");
+      }
+
+      const previous = extensionState.get(extensionId) ?? {};
+      const next = mergeState(previous, data, mergeStrategy);
+      extensionState.set(extensionId, next);
+      return next;
+    }
+
+    default: {
+      throw new BusinessError(`Invalid namespace: ${namespace}`);
     }
   }
 }
@@ -96,7 +146,7 @@ export class SetPageState extends Transformer {
       mergeStrategy = "shallow",
       namespace = "blueprint",
     }: BlockArg<{
-      data: UnknownObject;
+      data: JsonObject;
       namespace?: Namespace;
       mergeStrategy?: MergeStrategy;
     }>,
@@ -104,41 +154,47 @@ export class SetPageState extends Transformer {
   ): Promise<UnknownObject> {
     const { blueprintId = null, extensionId } = logger.context;
 
-    switch (namespace) {
-      case "shared": {
-        const previous = blueprintState.get(null) ?? {};
-        const next = mergeState(previous, data, mergeStrategy);
-        blueprintState.set(null, next);
-        return next;
+    return setPageState({
+      namespace,
+      data,
+      mergeStrategy,
+      extensionId,
+      blueprintId,
+    });
+  }
+}
+
+export function getPageState({
+  namespace,
+  extensionId,
+  // Normalize undefined to null for lookup
+  blueprintId = null,
+}: {
+  namespace: string;
+  extensionId: UUID;
+  blueprintId: RegistryId | null;
+}) {
+  expectContext("contentScript");
+
+  switch (namespace) {
+    case "shared": {
+      return blueprintState.get(null) ?? {};
+    }
+
+    case "blueprint": {
+      return blueprintState.get(blueprintId) ?? {};
+    }
+
+    case "extension": {
+      if (extensionId == null) {
+        throw new Error("Invalid context: extensionId not found");
       }
 
-      case "blueprint": {
-        const previous = blueprintState.get(blueprintId) ?? {};
-        const next = mergeState(previous, data, mergeStrategy);
-        blueprintState.set(blueprintId, next);
-        return next;
-      }
+      return extensionState.get(extensionId) ?? {};
+    }
 
-      case "extension": {
-        if (extensionId == null) {
-          throw new Error("Invalid context: extensionId not found");
-        }
-
-        const previous = extensionState.get(extensionId) ?? {};
-        const next = mergeState(previous, data, mergeStrategy);
-        extensionState.set(extensionId, next);
-        return next;
-      }
-
-      default: {
-        throw new PropError(
-          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-          `Invalid namespace: ${namespace}`,
-          this.id,
-          "namespace",
-          namespace
-        );
-      }
+    default: {
+      throw new BusinessError(`Invalid namespace: ${namespace}`);
     }
   }
 }
@@ -170,33 +226,6 @@ export class GetPageState extends Transformer {
     { logger }: BlockOptions
   ): Promise<UnknownObject> {
     const { blueprintId = null, extensionId } = logger.context;
-
-    switch (namespace) {
-      case "shared": {
-        return blueprintState.get(null) ?? {};
-      }
-
-      case "blueprint": {
-        return blueprintState.get(blueprintId) ?? {};
-      }
-
-      case "extension": {
-        if (extensionId == null) {
-          throw new Error("Invalid context: extensionId not found");
-        }
-
-        return extensionState.get(extensionId) ?? {};
-      }
-
-      default: {
-        throw new PropError(
-          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-          `Invalid namespace: ${namespace}`,
-          this.id,
-          "namespace",
-          namespace
-        );
-      }
-    }
+    return getPageState({ namespace, blueprintId, extensionId });
   }
 }
