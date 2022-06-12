@@ -97,8 +97,13 @@ const InstalledEntry: React.FunctionComponent<{
         dispatch(actions.selectInstalled(state));
 
         if (type === "actionPanel") {
-          // Switch the sidepanel over to the panel
-          void showSidebar(thisTab, { extensionId: extension.id, force: true });
+          // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
+          // frequently between extensions within the same blueprint.
+          void showSidebar(thisTab, {
+            extensionId: extension.id,
+            force: true,
+            refresh: false,
+          });
         }
       } catch (error) {
         reportError(error);
