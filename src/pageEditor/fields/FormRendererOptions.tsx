@@ -17,21 +17,26 @@
 
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { Schema } from "@/core";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { validateRegistryId } from "@/types/helpers";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import { useField } from "formik";
+import { useField, useFormikContext } from "formik";
 import { joinName } from "@/utils";
 import { partial } from "lodash";
-import { Storage } from "@/blocks/renderers/customForm";
+import {
+  customFormRendererSchema,
+  Storage,
+} from "@/blocks/renderers/customForm";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
 import DatabaseField from "@/pageEditor/fields/DatabaseField";
 import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { FormState } from "@/pageEditor/pageEditorTypes";
+import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
@@ -44,6 +49,17 @@ const serviceSchema: Schema = {
   $ref: `${SERVICE_BASE_SCHEMA}${PIXIEBRIX_SERVICE_ID}`,
 };
 
+function usePruneUnusedServiceDependencies() {
+  const { values: formState, setValues: setFormState } =
+    useFormikContext<FormState>();
+
+  return useCallback(() => {
+    const nextState = produceExcludeUnusedDependencies(formState);
+
+    setFormState(nextState);
+  }, [formState, setFormState]);
+}
+
 const FormRendererOptions: React.FC<{
   name: string;
   configKey: string;
@@ -51,14 +67,38 @@ const FormRendererOptions: React.FC<{
   const makeName = partial(joinName, name, configKey);
   const configName = makeName();
 
+  const pruneDependencies = usePruneUnusedServiceDependencies();
+
   const [activeElement, setActiveElement] = useReduxState(
     selectNodePreviewActiveElement,
     editorActions.setNodePreviewActiveElement
   );
 
-  const [{ value: storage }] = useField<Storage>(makeName("storage"));
+  const [{ value: storage }, , { setValue: setStorageValue }] =
+    useField<Storage>(makeName("storage"));
+  const storageType = storage?.type ?? "localStorage";
+  const [previousStorageType, setPreviousStorageType] = useState(storageType);
 
-  // FIXME: perform state cleanup when switching between storage types
+  useEffect(() => {
+    if (storageType !== previousStorageType) {
+      // Clear out any other values the user might have configured
+      setStorageValue({ type: "database" } as Storage);
+
+      if (previousStorageType === "database") {
+        // I was a bit surprised this works. I would have thought the pruneDependencies call would have seen
+        // a stale copy of the form state.
+        pruneDependencies();
+      }
+
+      setPreviousStorageType(storageType);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- setStorageValue reference changes on each render
+  }, [
+    pruneDependencies,
+    storageType,
+    previousStorageType,
+    setPreviousStorageType,
+  ]);
 
   return (
     <div>
@@ -72,7 +112,7 @@ const FormRendererOptions: React.FC<{
         }}
       />
 
-      {storage.type === "database" && (
+      {storageType === "database" && (
         <>
           <DatabaseField name={makeName("storage", "databaseId")} />
           <AppServiceField
@@ -82,20 +122,17 @@ const FormRendererOptions: React.FC<{
         </>
       )}
 
-      {storage.type === "state" && (
+      {storageType === "state" && (
         <SchemaField
           name={makeName("storage", "namespace")}
-          schema={{
-            type: "string",
-            enum: ["blueprint", "extension", "shared"],
-            default: "blueprint",
-            description:
-              "The namespace for the storage, to avoid conflicts. If set to blueprint and the extension is not part of a blueprint, defaults to shared",
-          }}
+          schema={
+            customFormRendererSchema.properties.storage.oneOf[1].properties
+              .namespace
+          }
         />
       )}
 
-      {["localStorage", "database"].includes(storage.type) && (
+      {["localStorage", "database"].includes(storageType) && (
         <SchemaField
           name={makeName("recordId")}
           label="Record ID"
@@ -107,12 +144,7 @@ const FormRendererOptions: React.FC<{
       <SchemaField
         name={makeName("successMessage")}
         label="Success Message"
-        schema={{
-          type: "string",
-          default: "Submitted form",
-          description:
-            "An optional message to display if the form submitted successfully",
-        }}
+        schema={customFormRendererSchema.properties.successMessage as Schema}
       />
 
       <ConfigErrorBoundary>

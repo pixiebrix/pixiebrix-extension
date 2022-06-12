@@ -207,6 +207,84 @@ async function setData(
   }
 }
 
+export const customFormRendererSchema = {
+  type: "object",
+  properties: {
+    storage: {
+      oneOf: [
+        {
+          type: "object",
+          properties: {
+            type: {
+              type: "string",
+              const: "database",
+            },
+            databaseId: {
+              type: "string",
+              format: "uuid",
+            },
+            service: {
+              $ref: "https://app.pixiebrix.com/schemas/services/@pixiebrix/api",
+            },
+          },
+          required: ["type", "service", "databaseId"],
+        },
+        {
+          type: "object",
+          properties: {
+            type: {
+              type: "string",
+              const: "state",
+            },
+            namespace: {
+              description:
+                "The namespace for the storage, to avoid conflicts. If set to blueprint and the extension is not part of a blueprint, defaults to shared",
+              enum: ["blueprint", "extension", "shared"],
+              default: "blueprint",
+            },
+          },
+          required: ["type"],
+        },
+        {
+          type: "object",
+          properties: {
+            type: {
+              type: "string",
+              const: "localStorage",
+            },
+          },
+          required: ["type"],
+        },
+      ],
+    },
+    submitCaption: {
+      type: "string",
+      description: "The submit button caption (default='Submit')",
+      default: "Submit",
+    },
+    successMessage: {
+      type: "string",
+      default: "Successfully submitted form",
+      description:
+        "An optional message to display if the form submitted successfully",
+    },
+    recordId: {
+      type: "string",
+      description:
+        "Unique identifier for the data record. Required if using a database or local storage",
+    },
+    schema: {
+      type: "object",
+      additionalProperties: true,
+    },
+    uiSchema: {
+      type: "object",
+      additionalProperties: true,
+    },
+  },
+  required: ["schema"],
+};
+
 export class CustomFormRenderer extends Renderer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/form");
   constructor() {
@@ -217,82 +295,7 @@ export class CustomFormRenderer extends Renderer {
     );
   }
 
-  inputSchema: Schema = {
-    type: "object",
-    properties: {
-      storage: {
-        oneOf: [
-          {
-            type: "object",
-            properties: {
-              type: {
-                type: "string",
-                const: "database",
-              },
-              databaseId: {
-                type: "string",
-                format: "uuid",
-              },
-              service: {
-                $ref: "https://app.pixiebrix.com/schemas/services/@pixiebrix/api",
-              },
-            },
-            required: ["type", "service", "databaseId"],
-          },
-          {
-            type: "object",
-            properties: {
-              type: {
-                type: "string",
-                const: "state",
-              },
-              namespace: {
-                description:
-                  "The namespace for the storage, to avoid conflicts. If set to blueprint and the extension is not part of a blueprint, defaults to shared",
-                enum: ["blueprint", "extension", "shared"],
-                default: "blueprint",
-              },
-            },
-            required: ["type"],
-          },
-          {
-            type: "object",
-            properties: {
-              type: {
-                type: "string",
-                const: "localStorage",
-              },
-            },
-            required: ["type"],
-          },
-        ],
-      },
-      submitCaption: {
-        type: "string",
-        description: "The submit button caption (default='Submit')",
-        default: "Submit",
-      },
-      successMessage: {
-        type: "string",
-        description:
-          "An optional message to display if the form submitted successfully",
-      },
-      recordId: {
-        type: "string",
-        description:
-          "Unique identifier for the data record. Required if using a database or local storage",
-      },
-      schema: {
-        type: "object",
-        additionalProperties: true,
-      },
-      uiSchema: {
-        type: "object",
-        additionalProperties: true,
-      },
-    },
-    required: ["schema"],
-  };
+  inputSchema: Schema = customFormRendererSchema as Schema;
 
   async render(
     {
@@ -300,7 +303,7 @@ export class CustomFormRenderer extends Renderer {
       recordId,
       schema,
       uiSchema,
-      successMessage,
+      successMessage = "Successfully submitted form",
       submitCaption = "Submit",
     }: BlockArg<{
       storage?: Storage;
@@ -349,7 +352,7 @@ export class CustomFormRenderer extends Renderer {
               blueprintId,
               extensionId,
             });
-            if (successMessage) {
+            if (!isEmpty(successMessage)) {
               notify.success(successMessage);
             }
           } catch (error) {
