@@ -36,7 +36,9 @@ import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
 import { DebounceOptions } from "@/extensionPoints/types";
 
 function supportsSelector(trigger: Trigger) {
-  return !["load", "interval", "selectionchange"].includes(trigger);
+  return !["load", "interval", "selectionchange", "statechange"].includes(
+    trigger
+  );
 }
 
 function supportsTargetMode(trigger: Trigger) {
@@ -122,6 +124,7 @@ const TriggerConfiguration: React.FC<{
           <option value="keyup">Keyup</option>
           <option value="keypress">Keypress</option>
           <option value="change">Change</option>
+          <option value="statechange">State Change</option>
           <option value="custom">Custom Event</option>
         </ConnectedFieldTemplate>
 

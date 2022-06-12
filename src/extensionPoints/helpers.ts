@@ -15,22 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { castArray, noop, once } from "lodash";
+import { castArray, noop, once, stubFalse } from "lodash";
 import initialize from "@/vendors/initialize";
-import { MessageContext, ResolvedExtension } from "@/core";
+import { IExtension, MessageContext, ResolvedExtension } from "@/core";
 import { $safeFind } from "@/helpers";
 import { EXTENSION_POINT_DATA_ATTR } from "@/common";
 import { JsonObject } from "type-fest";
 import { ensureJsonObject, isObject } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import selectionController from "@/utils/selectionController";
-
-export function isHost(hostname: string): boolean {
-  return (
-    window.location.hostname === hostname ||
-    window.location.hostname.endsWith(`.${hostname}`)
-  );
-}
 
 function getAncestors(node: Node): Node[] {
   const ancestors = [node];
@@ -95,18 +88,6 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
 
     observers.clear();
   };
-}
-
-/**
- * Returns true if the browser natively supports the CSS selector
- */
-export function isNativeCssSelector(selector: string): boolean {
-  try {
-    document.body.matches(selector);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 function mutationSelector(
@@ -279,4 +260,20 @@ export function pickEventProperties(nativeEvent: Event): JsonObject {
   }
 
   return {};
+}
+
+export function makeShouldRunExtensionForStateChange(
+  event: Event
+): (extension: IExtension) => boolean {
+  if (event instanceof CustomEvent) {
+    const { detail } = event;
+
+    // Ignore state changes from shared state and unrelated extensions/blueprints
+    return (extension: IExtension) =>
+      detail?.extensionId === extension.id ||
+      (extension._recipe?.id != null &&
+        extension._recipe?.id === detail?.blueprintId);
+  }
+
+  return stubFalse;
 }

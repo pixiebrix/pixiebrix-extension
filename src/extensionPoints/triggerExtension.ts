@@ -21,6 +21,7 @@ import {
 } from "@/runtime/reducePipeline";
 import {
   IBlock,
+  IExtension,
   IExtensionPoint,
   Logger,
   Metadata,
@@ -39,12 +40,21 @@ import {
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { Permissions } from "webextension-polyfill";
-import { castArray, cloneDeep, compact, debounce, isEmpty, noop } from "lodash";
+import {
+  castArray,
+  cloneDeep,
+  compact,
+  debounce,
+  isEmpty,
+  noop,
+  stubTrue,
+} from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
 import {
   awaitElementOnce,
+  makeShouldRunExtensionForStateChange,
   pickEventProperties,
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
@@ -107,7 +117,9 @@ export type Trigger =
   | "change"
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
   | "selectionchange"
-  // A custom event configured by the user
+  // The PixieBrix page state changed
+  | "statechange"
+  // A custom event configured by the user. Can also be an external event from the page
   | "custom";
 
 /**
@@ -243,7 +255,13 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   // Can't set in constructor because the constructor doesn't have access to debounceOptions
   private debouncedRunTriggersAndNotify?: (
     roots: ReaderRoot[],
-    { nativeEvent }: { nativeEvent: Event | null }
+    {
+      nativeEvent,
+      shouldRunExtension,
+    }: {
+      nativeEvent: Event | null;
+      shouldRunExtension?: (extension: IExtension) => boolean;
+    }
   ) => Promise<void>;
 
   protected constructor(metadata: Metadata, logger: Logger) {
@@ -421,6 +439,10 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     await this.debouncedRunTriggersAndNotify([element], {
       nativeEvent: event.originalEvent,
+      shouldRunExtension:
+        this.trigger === "statechange"
+          ? makeShouldRunExtensionForStateChange(event.originalEvent)
+          : stubTrue,
     });
   };
 
@@ -435,8 +457,23 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   private async _runTrigger(
     root: ReaderRoot,
     // Force parameter to be included to make it explicit which types of triggers pass nativeEvent
-    { nativeEvent }: { nativeEvent: Event | null }
+    {
+      nativeEvent,
+      shouldRunExtension = stubTrue,
+    }: {
+      nativeEvent: Event | null;
+      shouldRunExtension?: (extension: IExtension) => boolean;
+    }
   ): Promise<unknown[]> {
+    const extensionsToRun = this.extensions.filter((extension) =>
+      shouldRunExtension(extension)
+    );
+
+    // Don't bother running the reader if no extensions match
+    if (extensionsToRun.length === 0) {
+      return [];
+    }
+
     const reader = await this.defaultReader();
 
     const readerContext = {
@@ -446,7 +483,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     };
 
     const errors = await Promise.all(
-      this.extensions.map(async (extension) => {
+      extensionsToRun.map(async (extension) => {
         const extensionLogger = this.logger.childLogger(
           selectExtensionContext(extension)
         );
@@ -641,7 +678,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     });
   }
 
-  private attachSelectionTrigger(): void {
+  private attachDocumentTrigger(): void {
     const $document = $(document);
 
     $document.off(this.trigger, this.boundEventHandler);
@@ -760,7 +797,12 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       }
 
       case "selectionchange": {
-        this.attachSelectionTrigger();
+        this.attachDocumentTrigger();
+        break;
+      }
+
+      case "statechange": {
+        this.attachDocumentTrigger();
         break;
       }
 

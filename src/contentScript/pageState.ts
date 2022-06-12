@@ -17,7 +17,7 @@
 
 import { RegistryId, UUID } from "@/core";
 import { UnknownObject } from "@/types";
-import { cloneDeep, merge } from "lodash";
+import { cloneDeep, isEqual, merge } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 import { JsonObject } from "type-fest";
 import { expectContext } from "@/utils/expectContext";
@@ -58,6 +58,34 @@ function mergeState(
   }
 }
 
+function dispatchStageChangeEventOnChange({
+  previous,
+  next,
+  namespace,
+  extensionId,
+  blueprintId,
+}: {
+  previous: unknown;
+  next: unknown;
+  namespace: string;
+  extensionId: UUID;
+  blueprintId: RegistryId;
+}) {
+  if (!isEqual(previous, next)) {
+    // For now, leave off the event data because we're using a public channel
+    const detail = {
+      namespace,
+      extensionId,
+      blueprintId,
+    };
+
+    console.debug("Dispatching statechange", detail);
+
+    const event = new CustomEvent("statechange", { detail, bubbles: true });
+    document.dispatchEvent(event);
+  }
+}
+
 export function setPageState({
   namespace,
   data,
@@ -74,11 +102,26 @@ export function setPageState({
 }) {
   expectContext("contentScript");
 
+  if (extensionId == null) {
+    throw new Error("extensionId is required");
+  }
+
+  const notifyOnChange = (previous: unknown, next: unknown) => {
+    dispatchStageChangeEventOnChange({
+      previous,
+      next,
+      namespace,
+      extensionId,
+      blueprintId,
+    });
+  };
+
   switch (namespace) {
     case "shared": {
       const previous = blueprintState.get(null) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
       blueprintState.set(null, next);
+      notifyOnChange(previous, next);
       return next;
     }
 
@@ -86,17 +129,15 @@ export function setPageState({
       const previous = blueprintState.get(blueprintId) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
       blueprintState.set(blueprintId, next);
+      notifyOnChange(previous, next);
       return next;
     }
 
     case "extension": {
-      if (extensionId == null) {
-        throw new Error("Invalid context: extensionId not found");
-      }
-
       const previous = extensionState.get(extensionId) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
       extensionState.set(extensionId, next);
+      notifyOnChange(previous, next);
       return next;
     }
 

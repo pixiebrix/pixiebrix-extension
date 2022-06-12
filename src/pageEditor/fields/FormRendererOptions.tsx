@@ -82,7 +82,11 @@ const FormRendererOptions: React.FC<{
   useEffect(() => {
     if (storageType !== previousStorageType) {
       // Clear out any other values the user might have configured
-      setStorageValue({ type: "database" } as Storage);
+      if (storageType === "state") {
+        setStorageValue({ type: "state", namespace: "blueprint" } as Storage);
+      } else {
+        setStorageValue({ type: storageType } as Storage);
+      }
 
       if (previousStorageType === "database") {
         // I was a bit surprised this works. I would have thought the pruneDependencies call would have seen
@@ -125,9 +129,10 @@ const FormRendererOptions: React.FC<{
       {storageType === "state" && (
         <SchemaField
           name={makeName("storage", "namespace")}
+          isRequired
           schema={
             customFormRendererSchema.properties.storage.oneOf[1].properties
-              .namespace
+              .namespace as Schema
           }
         />
       )}
