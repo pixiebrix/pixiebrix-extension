@@ -27,7 +27,8 @@ export type RendererError = {
   /**
    * The error message to show in the panel
    */
-  error: string;
+  // TypeScript was having problems handling the type SerializedError here
+  error: unknown;
 };
 
 /**

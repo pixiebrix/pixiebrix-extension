@@ -20,11 +20,11 @@ import Loader from "@/components/Loader";
 import blockRegistry from "@/blocks/registry";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import ReactShadowRoot from "react-shadow-root";
-import { getErrorMessage } from "@/errors/errorHelpers";
+import { getErrorMessage, selectSpecificError } from "@/errors/errorHelpers";
 import { BlockArg, RegistryId, RendererOutput } from "@/core";
 import { PanelPayload } from "@/sidebar/types";
 import RendererComponent from "@/sidebar/RendererComponent";
-import { BusinessError } from "@/errors/businessErrors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useAsyncEffect } from "use-async-effect";
 import GridLoader from "react-spinners/GridLoader";
@@ -158,6 +158,21 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
   }
 
   if (state.error) {
+    if (selectSpecificError(state.error, CancelError)) {
+      return (
+        <>
+          {state.isFetching && (
+            <span className={styles.loader}>
+              <GridLoader size={8} />
+            </span>
+          )}
+          <div className="text-muted">
+            This panel is not available: {getErrorMessage(state.error)}
+          </div>
+        </>
+      );
+    }
+
     return (
       <>
         {state.isFetching && (
