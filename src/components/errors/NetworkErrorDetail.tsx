@@ -86,7 +86,7 @@ const NetworkErrorDetail: React.FunctionComponent<{
   return (
     <div className={styles.root}>
       <div className={styles.column}>
-        <span>Response</span>
+        <h5>Response</h5>
         {permissionsReady && !hasPermissions && (
           <div className="text-warning">
             <FontAwesomeIcon icon={faExclamationTriangle} /> PixieBrix does not
@@ -123,7 +123,7 @@ const NetworkErrorDetail: React.FunctionComponent<{
         )}
       </div>
       <div className={styles.column}>
-        <span>Request Config</span>
+        <h5>Request Config</h5>
         <JsonTree data={cleanConfig} />
       </div>
     </div>

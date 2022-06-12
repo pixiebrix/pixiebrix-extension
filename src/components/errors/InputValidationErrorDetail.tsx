@@ -25,7 +25,7 @@ const InputValidationErrorDetail: React.FunctionComponent<{
 }> = ({ error }) => (
   <div className={styles.root}>
     <div className={styles.column}>
-      <span>Errors</span>
+      <h5>Errors</h5>
       <ul>
         {error.errors.map((x) => (
           <li key={`${x.keywordLocation}-${x.error}`}>
@@ -35,11 +35,11 @@ const InputValidationErrorDetail: React.FunctionComponent<{
       </ul>
     </div>
     <div className={styles.column}>
-      <span>Rendered Args</span>
+      <h5>Rendered Args</h5>
       <JsonTree data={error.input} />
     </div>
     <div className={styles.column}>
-      <span>Schema</span>
+      <h5>Schema</h5>
       <JsonTree data={error.schema} />
     </div>
   </div>
