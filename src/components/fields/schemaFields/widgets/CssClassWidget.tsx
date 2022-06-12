@@ -27,6 +27,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAlignCenter,
+  faAlignJustify,
   faAlignLeft,
   faAlignRight,
   faBold,
@@ -94,11 +95,10 @@ export const optionsGroups = {
       title: <FontAwesomeIcon icon={faAlignCenter} />,
     },
     { className: "text-right", title: <FontAwesomeIcon icon={faAlignRight} /> },
-    // Justify doesn't seem to do anything - it might be the default for p?
-    // {
-    //   className: "text-justify",
-    //   title: <FontAwesomeIcon icon={faAlignJustify} />,
-    // },
+    {
+      className: "text-justify",
+      title: <FontAwesomeIcon icon={faAlignJustify} />,
+    },
   ],
   textVariant: [
     {
