@@ -39,6 +39,7 @@ export type FormikErrorTree = {
 
 export enum RunStatus {
   NONE,
+  PENDING,
   SUCCESS,
   SKIPPED,
   WARNING,
