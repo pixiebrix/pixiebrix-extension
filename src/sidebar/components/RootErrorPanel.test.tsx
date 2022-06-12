@@ -17,24 +17,24 @@
 import React from "react";
 
 import { render } from "@testing-library/react";
-import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
 import { BusinessError, NoRendererError } from "@/errors/businessErrors";
+import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 
 describe("RootErrorPanel", () => {
   it("should render business error", () => {
-    const result = render(<RootCancelledPanel error={new BusinessError()} />);
+    const result = render(<RootErrorPanel error={new BusinessError()} />);
     expect(result).toMatchSnapshot();
   });
 
   it("should render application error", () => {
     const result = render(
-      <RootCancelledPanel error={new Error("Unknown error")} />
+      <RootErrorPanel error={new Error("Unknown error")} />
     );
     expect(result).toMatchSnapshot();
   });
 
   it("should render no renderer error", () => {
-    const result = render(<RootCancelledPanel error={new NoRendererError()} />);
+    const result = render(<RootErrorPanel error={new NoRendererError()} />);
     expect(result).toMatchSnapshot();
   });
 });
