@@ -21,7 +21,7 @@ import blockRegistry from "@/blocks/registry";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import ReactShadowRoot from "react-shadow-root";
 import { getErrorMessage, selectSpecificError } from "@/errors/errorHelpers";
-import { BlockArg, RegistryId, RendererOutput } from "@/core";
+import { BlockArg, MessageContext, RegistryId, RendererOutput } from "@/core";
 import { PanelPayload } from "@/sidebar/types";
 import RendererComponent from "@/sidebar/RendererComponent";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
@@ -105,9 +105,10 @@ const slice = createSlice({
   },
 });
 
-const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
-  payload,
-}) => {
+const PanelBody: React.FunctionComponent<{
+  payload: PanelPayload;
+  context: MessageContext;
+}> = ({ payload, context }) => {
   const [state, dispatch] = useReducer(slice.reducer, initialPanelState);
 
   useAsyncEffect(async () => {
@@ -126,13 +127,19 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
       dispatch(slice.actions.reactivate());
 
       const { blockId, ctxt, args } = payload;
+
+      console.debug("Running panel body for panel payload", payload);
+
       const block = await blockRegistry.lookup(blockId);
       // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/1939
       const body = await block.run(args as BlockArg, {
         ctxt,
         root: null,
         // TODO: use the correct logger here so the errors show up in the logs
-        logger: new ConsoleLogger({ blockId }),
+        logger: new ConsoleLogger({
+          ...context,
+          blockId,
+        }),
         async runPipeline() {
           throw new BusinessError(
             "Support for running pipelines in panels not implemented"

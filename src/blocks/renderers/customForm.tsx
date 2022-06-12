@@ -237,6 +237,7 @@ export const customFormRendererSchema = {
               const: "state",
             },
             namespace: {
+              type: "string",
               description:
                 "The namespace for the storage, to avoid conflicts. If set to blueprint and the extension is not part of a blueprint, defaults to shared",
               enum: ["blueprint", "extension", "shared"],
@@ -315,6 +316,10 @@ export class CustomFormRenderer extends Renderer {
     }>,
     { logger }: BlockOptions
   ): Promise<ComponentRef> {
+    if (logger.context.extensionId == null) {
+      throw new Error("extensionId is required");
+    }
+
     if (
       isEmpty(recordId) &&
       ["database", "localStorage"].includes(storage.type)

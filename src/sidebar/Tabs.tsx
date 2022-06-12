@@ -101,7 +101,14 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
                 eventKey={mapTabEventKey("panel", panel)}
               >
                 <ErrorBoundary>
-                  <PanelBody payload={panel.payload} />
+                  <PanelBody
+                    payload={panel.payload}
+                    context={{
+                      extensionId: panel.extensionId,
+                      extensionPointId: panel.extensionPointId,
+                      blueprintId: panel.blueprintId,
+                    }}
+                  />
                 </ErrorBoundary>
               </Tab.Pane>
             ))}

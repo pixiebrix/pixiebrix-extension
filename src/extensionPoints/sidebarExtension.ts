@@ -21,6 +21,7 @@ import {
 } from "@/runtime/reducePipeline";
 import {
   IBlock,
+  IExtension,
   IExtensionPoint,
   IReader,
   Logger,
@@ -56,8 +57,11 @@ import {
 import Mustache from "mustache";
 import { uuidv4 } from "@/types/helpers";
 import { HeadlessModeError } from "@/blocks/errors";
-import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { cloneDeep, debounce } from "lodash";
+import {
+  makeShouldRunExtensionForStateChange,
+  selectExtensionContext,
+} from "@/extensionPoints/helpers";
+import { cloneDeep, debounce, stubTrue } from "lodash";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
@@ -77,6 +81,8 @@ export type Trigger =
   | "load"
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
   | "selectionchange"
+  // A change in the shared page state
+  | "statechange"
   // Manually, e.g., via the Page Editor or Show Sidebar brick
   | "manual"
   // A custom event configured by the user
@@ -119,7 +125,11 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
    * @private
    */
   // Can't set in constructor because the constructor doesn't have access to debounceOptions
-  private debouncedRefreshPanelsAndNotify?: () => Promise<void>;
+  private debouncedRefreshPanelsAndNotify: ({
+    shouldRunExtension,
+  }: {
+    shouldRunExtension: (extension: IExtension) => boolean;
+  }) => Promise<void>;
 
   inputSchema: Schema = propertiesToSchema(
     {
@@ -234,7 +244,20 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   /**
    * DO NOT CALL DIRECTLY - call debouncedRefreshPanels
    */
-  private async refreshPanels(): Promise<void> {
+  private async refreshPanels({
+    shouldRunExtension = stubTrue,
+  }: {
+    shouldRunExtension?: (extension: IExtension) => boolean;
+  }): Promise<void> {
+    const extensionsToRefresh = this.extensions.filter((extension) =>
+      shouldRunExtension(extension)
+    );
+
+    if (extensionsToRefresh.length === 0) {
+      // Skip overhead of calling reader if no extensions should run
+      return;
+    }
+
     const reader = await this.defaultReader();
 
     const readerContext = await reader.read(document);
@@ -243,7 +266,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
 
     // OK to run in parallel because we've fixed the order the panels appear in reservePanels
     await Promise.all(
-      this.extensions.map(async (extension) => {
+      extensionsToRefresh.map(async (extension) => {
         try {
           await this.runExtension(readerContext, extension);
         } catch (error) {
@@ -280,8 +303,16 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   /**
    * Shared event handler for DOM event triggers
    */
-  private readonly eventHandler: JQuery.EventHandler<unknown> = async () =>
-    this.debouncedRefreshPanelsAndNotify();
+  private readonly eventHandler: JQuery.EventHandler<unknown> = async (
+    event
+  ) => {
+    await this.debouncedRefreshPanelsAndNotify({
+      shouldRunExtension:
+        this.trigger === "statechange"
+          ? makeShouldRunExtensionForStateChange(event.originalEvent)
+          : stubTrue,
+    });
+  };
 
   private attachEventTrigger(eventName: string): void {
     const $document = $(document);
@@ -332,11 +363,16 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
       this.trigger === "load" ||
       [RunReason.MANUAL, RunReason.INITIAL_LOAD].includes(reason)
     ) {
-      void this.debouncedRefreshPanelsAndNotify();
+      void this.debouncedRefreshPanelsAndNotify({
+        shouldRunExtension: stubTrue,
+      });
     }
 
     if (!this.installedListeners) {
-      if (this.trigger === "selectionchange") {
+      if (
+        this.trigger === "selectionchange" ||
+        this.trigger === "statechange"
+      ) {
         this.attachEventTrigger(this.trigger);
       } else if (
         this.trigger === "custom" &&
