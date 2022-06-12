@@ -29,6 +29,9 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import PanelBody from "@/sidebar/PanelBody";
 import FormBody from "@/sidebar/FormBody";
 
+import styles from "./Tabs.module.scss";
+import cx from "classnames";
+
 type SidebarTabsProps = SidebarEntries & {
   activeKey: string;
   onSelectTab: (eventKey: string) => void;
@@ -96,7 +99,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
           <Tab.Content className="p-0 border-0 full-height">
             {panels.map((panel: PanelEntry) => (
               <Tab.Pane
-                className="full-height flex-grow"
+                className={cx(styles.paneOverrides, "full-height flex-grow")}
                 key={panel.extensionId}
                 eventKey={mapTabEventKey("panel", panel)}
               >
