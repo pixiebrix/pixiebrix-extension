@@ -22,8 +22,8 @@ import { DocumentElementType } from "@/components/documentBuilder/documentBuilde
 export function getClassNameEdit(elementName: string): SchemaFieldProps {
   return {
     name: joinName(elementName, "config", "className"),
-    schema: { type: "string" },
-    label: "CSS Class",
+    schema: { type: "string", format: "bootstrap-class" },
+    label: "Layout/Style",
   };
 }
 

@@ -21,28 +21,41 @@ import {
 } from "@/runtime/reducePipeline";
 import {
   IBlock,
-  ResolvedExtension,
+  IExtension,
   IExtensionPoint,
+  Logger,
+  Metadata,
   ReaderOutput,
   ReaderRoot,
+  ResolvedExtension,
   Schema,
-  Metadata,
-  Logger,
   UUID,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
+  CustomEventOptions,
+  DebounceOptions,
   ExtensionPoint,
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { Permissions } from "webextension-polyfill";
-import { castArray, cloneDeep, compact, debounce, isEmpty, noop } from "lodash";
+import {
+  castArray,
+  cloneDeep,
+  compact,
+  debounce,
+  isEmpty,
+  noop,
+  stubTrue,
+} from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
 import {
   awaitElementOnce,
+  makeShouldRunExtensionForStateChange,
+  pickEventProperties,
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import notify from "@/utils/notify";
@@ -52,17 +65,14 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
-import { ensureJsonObject, isObject, sleep } from "@/utils";
+import { sleep } from "@/utils";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import pluralize from "@/utils/pluralize";
-import { JsonObject } from "type-fest";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { BusinessError } from "@/errors/businessErrors";
-import selectionController, {
-  guessSelectedElement,
-} from "@/utils/selectionController";
+import { guessSelectedElement } from "@/utils/selectionController";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -107,7 +117,9 @@ export type Trigger =
   | "change"
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
   | "selectionchange"
-  // A custom event configured by the user
+  // The PixieBrix page state changed
+  | "statechange"
+  // A custom event configured by the user. Can also be an external event from the page
   | "custom";
 
 /**
@@ -192,46 +204,6 @@ async function interval({
   console.debug("interval:completed");
 }
 
-function pickEventProperties(nativeEvent: Event): JsonObject {
-  if (nativeEvent instanceof KeyboardEvent) {
-    // Can't use Object.entries because they're on the prototype. Can't use lodash's pick because the type isn't
-    // precise enough (per-picked property) to support the JsonObject return type.
-    const { key, keyCode, metaKey, altKey, shiftKey, ctrlKey } = nativeEvent;
-
-    return {
-      key,
-      keyCode,
-      metaKey,
-      altKey,
-      shiftKey,
-      ctrlKey,
-    };
-  }
-
-  if (nativeEvent instanceof CustomEvent) {
-    const { detail = {} } = nativeEvent;
-
-    if (isObject(detail)) {
-      // Ensure detail is a serialized/a JSON object. The custom trigger can also pick up JS custom event, which could
-      // have real JS data in them (vs. a JsonObject the user has provided via our @pixiebrix/event brick)
-      return ensureJsonObject(detail);
-    }
-
-    throw new BusinessError("Custom event detail is not an object");
-  }
-
-  // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
-  if (nativeEvent.type === "selectionchange") {
-    // https://developer.mozilla.org/en-US/docs/Web/API/Selection
-    return {
-      // Match the behavior for contextMenu and quickBar
-      selectionText: selectionController.get(),
-    };
-  }
-
-  return {};
-}
-
 export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig> {
   abstract get trigger(): Trigger;
 
@@ -283,7 +255,13 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   // Can't set in constructor because the constructor doesn't have access to debounceOptions
   private debouncedRunTriggersAndNotify?: (
     roots: ReaderRoot[],
-    { nativeEvent }: { nativeEvent: Event | null }
+    {
+      nativeEvent,
+      shouldRunExtension,
+    }: {
+      nativeEvent: Event | null;
+      shouldRunExtension?: (extension: IExtension) => boolean;
+    }
   ) => Promise<void>;
 
   protected constructor(metadata: Metadata, logger: Logger) {
@@ -461,6 +439,10 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     await this.debouncedRunTriggersAndNotify([element], {
       nativeEvent: event.originalEvent,
+      shouldRunExtension:
+        this.trigger === "statechange"
+          ? makeShouldRunExtensionForStateChange(event.originalEvent)
+          : stubTrue,
     });
   };
 
@@ -475,8 +457,23 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   private async _runTrigger(
     root: ReaderRoot,
     // Force parameter to be included to make it explicit which types of triggers pass nativeEvent
-    { nativeEvent }: { nativeEvent: Event | null }
+    {
+      nativeEvent,
+      shouldRunExtension = stubTrue,
+    }: {
+      nativeEvent: Event | null;
+      shouldRunExtension?: (extension: IExtension) => boolean;
+    }
   ): Promise<unknown[]> {
+    const extensionsToRun = this.extensions.filter((extension) =>
+      shouldRunExtension(extension)
+    );
+
+    // Don't bother running the reader if no extensions match
+    if (extensionsToRun.length === 0) {
+      return [];
+    }
+
     const reader = await this.defaultReader();
 
     const readerContext = {
@@ -486,7 +483,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     };
 
     const errors = await Promise.all(
-      this.extensions.map(async (extension) => {
+      extensionsToRun.map(async (extension) => {
         const extensionLogger = this.logger.childLogger(
           selectExtensionContext(extension)
         );
@@ -681,7 +678,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     });
   }
 
-  private attachSelectionTrigger(): void {
+  private attachDocumentTrigger(): void {
     const $document = $(document);
 
     $document.off(this.trigger, this.boundEventHandler);
@@ -800,7 +797,12 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       }
 
       case "selectionchange": {
-        this.attachSelectionTrigger();
+        this.attachDocumentTrigger();
+        break;
+      }
+
+      case "statechange": {
+        this.attachDocumentTrigger();
         break;
       }
 
@@ -824,37 +826,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 }
 
 type TriggerDefinitionOptions = Record<string, string>;
-
-/**
- * Follows the semantics of lodash's debounce: https://lodash.com/docs/4.17.15#debounce
- */
-export type DebounceOptions = {
-  /**
-   * The number of milliseconds to delay.
-   */
-  waitMillis?: number;
-
-  /**
-   * Specify invoking on the leading edge of the timeout.
-   */
-  leading?: boolean;
-
-  /**
-   *  Specify invoking on the trailing edge of the timeout.
-   */
-  trailing?: boolean;
-};
-
-/**
- * Custom options for the `custom` trigger
- * @since 1.6.5
- */
-export type CustomEventOptions = {
-  /**
-   * The name of the event.
-   */
-  eventName: "string";
-};
 
 export interface TriggerDefinition extends ExtensionPointDefinition {
   defaultOptions?: TriggerDefinitionOptions;

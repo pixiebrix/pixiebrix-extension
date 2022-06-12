@@ -15,18 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { castArray, noop, once } from "lodash";
+import { castArray, noop, once, stubFalse } from "lodash";
 import initialize from "@/vendors/initialize";
-import { MessageContext, ResolvedExtension } from "@/core";
+import { IExtension, MessageContext, ResolvedExtension } from "@/core";
 import { $safeFind } from "@/helpers";
 import { EXTENSION_POINT_DATA_ATTR } from "@/common";
-
-export function isHost(hostname: string): boolean {
-  return (
-    window.location.hostname === hostname ||
-    window.location.hostname.endsWith(`.${hostname}`)
-  );
-}
+import { JsonObject } from "type-fest";
+import { ensureJsonObject, isObject } from "@/utils";
+import { BusinessError } from "@/errors/businessErrors";
+import selectionController from "@/utils/selectionController";
 
 function getAncestors(node: Node): Node[] {
   const ancestors = [node];
@@ -91,18 +88,6 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
 
     observers.clear();
   };
-}
-
-/**
- * Returns true if the browser natively supports the CSS selector
- */
-export function isNativeCssSelector(selector: string): boolean {
-  try {
-    document.body.matches(selector);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 function mutationSelector(
@@ -235,4 +220,60 @@ export function selectExtensionContext(
     blueprintId: extension._recipe?.id,
     blueprintVersion: extension._recipe?.version,
   };
+}
+
+export function pickEventProperties(nativeEvent: Event): JsonObject {
+  if (nativeEvent instanceof KeyboardEvent) {
+    // Can't use Object.entries because they're on the prototype. Can't use lodash's pick because the type isn't
+    // precise enough (per-picked property) to support the JsonObject return type.
+    const { key, keyCode, metaKey, altKey, shiftKey, ctrlKey } = nativeEvent;
+
+    return {
+      key,
+      keyCode,
+      metaKey,
+      altKey,
+      shiftKey,
+      ctrlKey,
+    };
+  }
+
+  if (nativeEvent instanceof CustomEvent) {
+    const { detail = {} } = nativeEvent;
+
+    if (isObject(detail)) {
+      // Ensure detail is a serialized/a JSON object. The custom trigger can also pick up JS custom event, which could
+      // have real JS data in them (vs. a JsonObject the user has provided via our @pixiebrix/event brick)
+      return ensureJsonObject(detail);
+    }
+
+    throw new BusinessError("Custom event detail is not an object");
+  }
+
+  // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
+  if (nativeEvent.type === "selectionchange") {
+    // https://developer.mozilla.org/en-US/docs/Web/API/Selection
+    return {
+      // Match the behavior for contextMenu and quickBar
+      selectionText: selectionController.get(),
+    };
+  }
+
+  return {};
+}
+
+export function makeShouldRunExtensionForStateChange(
+  event: Event
+): (extension: IExtension) => boolean {
+  if (event instanceof CustomEvent) {
+    const { detail } = event;
+
+    // Ignore state changes from shared state and unrelated extensions/blueprints
+    return (extension: IExtension) =>
+      detail?.extensionId === extension.id ||
+      (extension._recipe?.id != null &&
+        extension._recipe?.id === detail?.blueprintId);
+  }
+
+  return stubFalse;
 }

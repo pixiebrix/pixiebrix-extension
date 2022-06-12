@@ -16,6 +16,6 @@
  */
 
 export function joinElementName(...nameParts: Array<string | number>): string {
-  // Don't use lodash.compact since it treats 0 as falsy
-  return nameParts.filter((x) => x != null).join(".");
+  // Don't use lodash.compact and lodash.isEmpty since they treat 0 as falsy
+  return nameParts.filter((x) => x != null && x !== "").join(".");
 }

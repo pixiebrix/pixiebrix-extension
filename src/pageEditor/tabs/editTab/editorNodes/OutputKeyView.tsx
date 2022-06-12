@@ -15,26 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlockOptions, RegistryId, UUID } from "@/core";
-import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { GetPageState, Namespace } from "./pageState";
+import React from "react";
+import { OutputKey } from "@/core";
+import styles from "./OutputKeyView.module.scss";
+import cx from "classnames";
 
-export async function getStateValue<TResult>(
-  namespace: Namespace,
-  blueprintId?: RegistryId | null,
-  extensionId?: UUID | null
-): Promise<TResult> {
-  const getState = new GetPageState();
-  const logger = new ConsoleLogger({
-    extensionId,
-    blueprintId,
-  });
+const OutputKeyView: React.VFC<{
+  outputKey: OutputKey;
+  className?: string;
+}> = ({ outputKey, className }) =>
+  outputKey ? (
+    <div className={cx(styles.key, className)}>@{outputKey}</div>
+  ) : (
+    <div className={cx(styles.noKey, className, "text-muted")}>
+      No output produced
+    </div>
+  );
 
-  const result: TResult = (await getState.transform(
-    unsafeAssumeValidArg({ namespace }),
-    { logger } as BlockOptions
-  )) as TResult;
-
-  return result;
-}
+export default OutputKeyView;

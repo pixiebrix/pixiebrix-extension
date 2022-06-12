@@ -27,24 +27,25 @@ import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { createNewBlock } from "@/pageEditor/createNewBlock";
+import { PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
+import { getIn } from "formik";
 
 type BlockPipelineActions = {
   addBlock: (
     block: IBlock,
     pipelinePath: string,
     pipelineIndex: number
-  ) => void;
-  removeBlock: (nodeIdToRemove: NodeId) => void;
+  ) => Promise<void>;
+  removeBlock: (nodeIdToRemove: UUID) => void;
   moveBlockUp: (instanceId: UUID) => void;
   moveBlockDown: (instanceId: UUID) => void;
   copyBlock: (instanceId: UUID) => void;
-  pasteBlock?: (pipelineIndex: number) => void;
+  pasteBlock?: (pipelinePath: string, pipelineIndex: number) => void;
 };
 
 function useBlockPipelineActions(
-  blockPipeline: BlockPipeline,
+  pipelineMap: PipelineMap,
   values: FormState,
   setFormValues: (
     values: React.SetStateAction<FormState>,
@@ -64,7 +65,7 @@ function useBlockPipelineActions(
         block,
         compact([
           "input" as OutputKey,
-          ...blockPipeline.map((x) => x.outputKey),
+          ...Object.values(pipelineMap).map((x) => x.blockConfig.outputKey),
         ])
       );
       const newBlock = createNewBlock(block.id, block.inputSchema);
@@ -83,24 +84,20 @@ function useBlockPipelineActions(
         source: "PageEditor-BrickSearchModal",
       });
     },
-    [blockPipeline, values, sessionId, dispatch]
+    [pipelineMap, dispatch, sessionId, values.uuid]
   );
 
-  const removeBlock = (nodeIdToRemove: NodeId) => {
+  const removeBlock = (nodeIdToRemove: UUID) => {
     dispatch(actions.removeNode(nodeIdToRemove));
   };
 
   const moveBlockUp = useCallback(
     (instanceId: UUID) => {
-      const index = blockPipeline.findIndex(
-        (block) => block.instanceId === instanceId
-      );
-      if (index < 1 || index + 1 > blockPipeline.length) {
-        return;
-      }
+      // eslint-disable-next-line security/detect-object-injection -- UUID
+      const { index, pipelinePath } = pipelineMap[instanceId];
 
       const nextState = produce(values, (draft) => {
-        const pipeline = draft.extension.blockPipeline;
+        const pipeline: BlockPipeline = getIn(draft, pipelinePath);
         // Swap the prev and current index values in the pipeline array, "up" in
         //  the UI means a lower index in the array
         // eslint-disable-next-line security/detect-object-injection -- from findIndex()
@@ -112,20 +109,16 @@ function useBlockPipelineActions(
       });
       setFormValues(nextState, true);
     },
-    [blockPipeline, setFormValues, values]
+    [pipelineMap, setFormValues, values]
   );
 
   const moveBlockDown = useCallback(
     (instanceId: UUID) => {
-      const index = blockPipeline.findIndex(
-        (block) => block.instanceId === instanceId
-      );
-      if (index + 1 === blockPipeline.length) {
-        return;
-      }
+      // eslint-disable-next-line security/detect-object-injection -- UUID
+      const { index, pipelinePath } = pipelineMap[instanceId];
 
       const nextState = produce(values, (draft) => {
-        const pipeline = draft.extension.blockPipeline;
+        const pipeline: BlockPipeline = getIn(draft, pipelinePath);
         // Swap the current and next index values in the pipeline array, "down"
         //  in the UI means a higher index in the array
         // eslint-disable-next-line security/detect-object-injection -- from findIndex()
@@ -137,19 +130,18 @@ function useBlockPipelineActions(
       });
       setFormValues(nextState, true);
     },
-    [blockPipeline, setFormValues, values]
+    [pipelineMap, setFormValues, values]
   );
 
   const copyBlock = useCallback(
     (instanceId: UUID) => {
-      const blockToCopy = blockPipeline.find(
-        (block) => block.instanceId === instanceId
-      );
+      // eslint-disable-next-line security/detect-object-injection -- UUID
+      const blockToCopy = pipelineMap[instanceId]?.blockConfig;
       if (blockToCopy) {
         dispatch(actions.copyBlockConfig(blockToCopy));
       }
     },
-    [blockPipeline, dispatch]
+    [dispatch, pipelineMap]
   );
 
   const copiedBlock = useSelector(
@@ -161,23 +153,20 @@ function useBlockPipelineActions(
       return;
     }
 
-    return (pipelineIndex: number) => {
-      const nextState = produce(values, (draft) => {
-        const pipeline = draft.extension.blockPipeline;
-        // Give the block a new instanceId
-        const newInstanceId = uuidv4();
-        const pastedBlock: BlockConfig = {
-          ...copiedBlock,
-          instanceId: newInstanceId,
-        };
-        // Insert the block
-        pipeline.splice(pipelineIndex, 0, pastedBlock);
-        dispatch(actions.setElementActiveNodeId(newInstanceId));
-      });
-      setFormValues(nextState);
+    return (pipelinePath: string, pipelineIndex: number) => {
+      // Give the block a new instanceId
+      const newInstanceId = uuidv4();
+      const blockToPaste: BlockConfig = {
+        ...copiedBlock,
+        instanceId: newInstanceId,
+      };
+      // Insert the block
+      dispatch(
+        actions.addNode({ block: blockToPaste, pipelinePath, pipelineIndex })
+      );
       dispatch(actions.clearCopiedBlockConfig());
     };
-  }, [copiedBlock, dispatch, setFormValues, values]);
+  }, [copiedBlock, dispatch]);
 
   return {
     addBlock,

@@ -22,26 +22,97 @@ import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
+import { partial } from "lodash";
+import { joinName } from "@/utils";
+import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
+import { Trigger } from "@/extensionPoints/sidebarExtension";
+import { useField, useFormikContext } from "formik";
+import { TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { DebounceOptions } from "@/extensionPoints/types";
 
 const SidebarConfiguration: React.FC<{
   isLocked: boolean;
-}> = ({ isLocked = false }) => (
-  <Card>
-    <FieldSection title="Configuration">
-      <ConnectedFieldTemplate
-        name="extension.heading"
-        label="Heading"
-        description="Panel heading to show in the sidebar"
-      />
+}> = ({ isLocked = false }) => {
+  const fieldName = partial(joinName, "extensionPoint.definition");
 
-      <UrlMatchPatternField
-        name="extensionPoint.definition.isAvailable.matchPatterns"
-        {...makeLockableFieldProps("Sites", isLocked)}
-      />
-    </FieldSection>
+  const [{ value: trigger }] = useField<Trigger>(fieldName("trigger"));
 
-    <MatchRulesSection isLocked={isLocked} />
-  </Card>
-);
+  const [{ value: debounce }] = useField<DebounceOptions | null>(
+    fieldName("debounce")
+  );
+
+  const { setFieldValue } = useFormikContext<TriggerFormState>();
+
+  const onTriggerChange = ({
+    currentTarget,
+  }: React.FormEvent<HTMLSelectElement>) => {
+    const nextTrigger = currentTarget.value as Trigger;
+
+    if (nextTrigger === "custom") {
+      setFieldValue(fieldName("customEvent"), { eventName: "" });
+    } else {
+      setFieldValue(fieldName("customEvent"), null);
+    }
+
+    if (nextTrigger !== "manual" && debounce == null) {
+      // Add debounce by default, because the selection event fires for every event when clicking and dragging
+      setFieldValue(fieldName("debounce"), {
+        waitMillis: 250,
+        leading: false,
+        trailing: true,
+      });
+    } else if (nextTrigger === "manual") {
+      setFieldValue(fieldName("debounce"), null);
+    }
+
+    setFieldValue(fieldName("trigger"), currentTarget.value);
+  };
+
+  return (
+    <Card>
+      <FieldSection title="Configuration">
+        <ConnectedFieldTemplate
+          name="extension.heading"
+          label="Heading"
+          description="Panel heading to show in the sidebar"
+        />
+
+        <UrlMatchPatternField
+          name="extensionPoint.definition.isAvailable.matchPatterns"
+          {...makeLockableFieldProps("Sites", isLocked)}
+        />
+      </FieldSection>
+
+      <FieldSection title="Panel Refresh">
+        <ConnectedFieldTemplate
+          name={fieldName("trigger")}
+          as="select"
+          description="Event to refresh the panel"
+          onChange={onTriggerChange}
+          {...makeLockableFieldProps("Trigger", isLocked)}
+        >
+          <option value="load">Page Load / Navigation</option>
+          <option value="selectionchange">Selection Change</option>
+          <option value="statechange">State Change</option>
+          <option value="custom">Custom Event</option>
+          <option value="manual">Manual</option>
+        </ConnectedFieldTemplate>
+
+        {trigger === "custom" && (
+          <ConnectedFieldTemplate
+            title="Custom Event"
+            name={fieldName("customEvent", "eventName")}
+            description="The custom event name"
+            {...makeLockableFieldProps("Custom Event", isLocked)}
+          />
+        )}
+
+        <DebounceFieldSet isLocked={isLocked} />
+      </FieldSection>
+
+      <MatchRulesSection isLocked={isLocked} />
+    </Card>
+  );
+};
 
 export default SidebarConfiguration;

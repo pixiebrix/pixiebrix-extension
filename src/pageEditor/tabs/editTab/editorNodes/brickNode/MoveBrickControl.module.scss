@@ -15,58 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.actions {
-  height: 0;
+.root {
   display: flex;
+  flex-direction: column;
   place-content: center;
-  place-items: center;
-  gap: 0.2em;
+}
 
-  position: relative;
-  z-index: 3; // Above Bootstrap’s .list-item.active
-
-  --size: 22px;
-  button {
+.moveButton {
+  border: none;
+  background: none;
+  color: inherit;
+  display: block;
+  padding: 0.4em;
+  svg {
     display: block;
-    border: none;
-    color: gray;
-    background-color: white;
-    border-radius: 50%;
-    padding: 0;
-    outline: none;
-    &:focus,
-    &:hover {
-      color: var(--blue);
+  }
+
+  &:enabled:hover {
+    background-color: #0002;
+
+    .activeNode & {
+      background-color: #fff6;
     }
   }
 
-  svg {
-    display: block;
-    font-size: var(--size);
-    border: solid 3px white;
-    border-radius: 50%;
+  &:disabled {
+    opacity: 0.5;
   }
-}
-
-.biggerActions {
-  --size: 40px;
-  height: auto;
-  margin: 0.4em 0;
-  gap: 0.6em;
-}
-
-.appendInfo {
-  padding: 0 2em 1em;
-  text-align: center;
-}
-
-.subPipelineContainer {
-  padding-right: 0;
-  padding-bottom: 1.5rem;
-}
-.subPipelineLabel {
-  padding: 0;
-  border-left: none;
-  border-right: none;
-  border-top: none;
 }

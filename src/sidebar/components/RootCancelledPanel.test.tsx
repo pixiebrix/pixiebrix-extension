@@ -14,23 +14,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 import React from "react";
-import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { faBook } from "@fortawesome/free-solid-svg-icons";
-import EditorNode from "./EditorNode";
 
-export default {
-  title: "PageEditor/Node",
-  component: EditorNode,
-} as ComponentMeta<typeof EditorNode>;
+import { render } from "@testing-library/react";
+import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
+import { CancelError } from "@/errors/businessErrors";
 
-const Story: ComponentStory<typeof EditorNode> = (args) => (
-  <EditorNode {...args} />
-);
-
-export const Reader = Story.bind({});
-Reader.args = {
-  title: "Read",
-  icon: faBook,
-};
+describe("RootCancelledPanel", () => {
+  it("should render", () => {
+    const result = render(<RootCancelledPanel error={new CancelError()} />);
+    expect(result).toMatchSnapshot();
+  });
+});

@@ -30,8 +30,21 @@ import UnsupportedWidget from "./UnsupportedWidget";
 import widgetsRegistry from "./widgetsRegistry";
 import WorkshopMessageWidget from "./WorkshopMessageWidget";
 import SelectorMatchWidget from "@/pageEditor/components/SelectorMatchWidget";
+import CssClassWidget from "@/components/fields/schemaFields/widgets/CssClassWidget";
 
 function registerDefaultWidgets() {
+  if (typeof TextWidget === "undefined" || TextWidget == null) {
+    throw new Error(
+      "Error registering default widgets. TextWidget is undefined. Is there a circular dependency?"
+    );
+  }
+
+  if (typeof OmitFieldWidget === "undefined" || OmitFieldWidget == null) {
+    throw new Error(
+      "Error registering default widgets. OmitFieldWidget is undefined. Is there a circular dependency?"
+    );
+  }
+
   widgetsRegistry.ArrayWidget = ArrayWidget;
   widgetsRegistry.BooleanWidget = BooleanWidget;
   widgetsRegistry.IntegerWidget = IntegerWidget;
@@ -45,6 +58,7 @@ function registerDefaultWidgets() {
   widgetsRegistry.UrlMatchPatternWidget = UrlMatchPatternWidget;
   widgetsRegistry.UrlPatternWidget = UrlPatternWidget;
   widgetsRegistry.SelectorMatchWidget = SelectorMatchWidget;
+  widgetsRegistry.CssClassWidget = CssClassWidget;
   widgetsRegistry.WorkshopMessageWidget = WorkshopMessageWidget;
 }
 

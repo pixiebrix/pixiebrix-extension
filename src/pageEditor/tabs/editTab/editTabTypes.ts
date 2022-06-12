@@ -23,9 +23,45 @@
  * Keep in mind that despite it looks like an array (the top-level may look like an array - have numbers for property names), it is an object.
  * For instance, it doesn't have a `length` property.
  */
+
+import { MoveBrickControlProps } from "@/pageEditor/tabs/editTab/editorNodes/brickNode/MoveBrickControl";
+import { NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import React from "react";
+import { OutputKey } from "@/core";
+
 export type FormikError = string | FormikErrorTree;
 
 // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record creates a circular ref
 export type FormikErrorTree = {
   [key: number | string]: FormikError;
 };
+
+export enum RunStatus {
+  NONE,
+  SUCCESS,
+  SKIPPED,
+  WARNING,
+  ERROR,
+}
+
+export type BrickNodeContentProps = {
+  icon?: IconProp | React.ReactNode;
+  runStatus?: RunStatus;
+  brickLabel: string;
+  outputKey?: OutputKey;
+};
+
+export type BrickNodeProps = BrickNodeContentProps &
+  MoveBrickControlProps & {
+    onClick?: () => void;
+    active?: boolean;
+    parentIsActive?: boolean;
+    onHoverChange: (hovered: boolean) => void;
+    nestingLevel: number;
+    hasSubPipelines?: boolean;
+    collapsed?: boolean;
+    nodeActions: NodeAction[];
+    showBiggerActions?: boolean;
+    trailingMessage?: string;
+  };

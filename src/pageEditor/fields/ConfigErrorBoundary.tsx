@@ -21,6 +21,10 @@ import reportError from "@/telemetry/reportError";
 import { UnknownObject } from "@/types";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { isEmpty } from "lodash";
+
+// eslint-disable-next-line prefer-destructuring -- process.env substitution
+const DEBUG = process.env.DEBUG;
 
 interface State {
   hasError: boolean;
@@ -59,6 +63,29 @@ class ConfigErrorBoundary extends Component<UnknownObject, State> {
             are not currently supported in the Page Editor. Please visit the
             Workshop to modify the configuration
           </div>
+
+          {DEBUG && (
+            <div>
+              <h4 className="my-4">Debug-Mode Information</h4>
+              {!isEmpty(this.state.errorMessage) && (
+                <div className="text-danger">
+                  <p>{this.state.errorMessage}</p>
+                </div>
+              )}
+              {this.state.stack && (
+                <pre className="mt-2 small text-secondary">
+                  {this.state.stack
+                    // In the app
+                    .replaceAll(location.origin + "/", "")
+                    // In the content script
+                    .replaceAll(
+                      `chrome-extension://${process.env.CHROME_EXTENSION_ID}/`,
+                      ""
+                    )}
+                </pre>
+              )}
+            </div>
+          )}
         </div>
       );
     }

@@ -4,7 +4,7 @@ exports[`can preview default button 1`] = `
 <DocumentFragment>
   <div>
     <div
-      class="root inlineWrapper"
+      class="root inlineWrapper wrapperShiftRight"
     >
       <button
         class="btn btn-primary"
@@ -20,7 +20,7 @@ exports[`can preview default button 1`] = `
 exports[`can preview default card 1`] = `
 <DocumentFragment>
   <div
-    class="root"
+    class="wrapperShiftRight root"
   >
     <div
       class="card"
@@ -207,31 +207,37 @@ exports[`can preview default container 1`] = `
 
 exports[`can preview default header_1 1`] = `
 <DocumentFragment>
-  <h1
-    class="root"
+  <div
+    class="wrapperShiftRight root"
   >
-    Header
-  </h1>
+    <h1>
+      Header
+    </h1>
+  </div>
 </DocumentFragment>
 `;
 
 exports[`can preview default header_2 1`] = `
 <DocumentFragment>
-  <h2
-    class="root"
+  <div
+    class="wrapperShiftRight root"
   >
-    Header
-  </h2>
+    <h2>
+      Header
+    </h2>
+  </div>
 </DocumentFragment>
 `;
 
 exports[`can preview default header_3 1`] = `
 <DocumentFragment>
-  <h3
-    class="root"
+  <div
+    class="wrapperShiftRight root"
   >
-    Header
-  </h3>
+    <h3>
+      Header
+    </h3>
+  </div>
 </DocumentFragment>
 `;
 
@@ -250,11 +256,13 @@ exports[`can preview default list 1`] = `
     >
       Element key: @element
     </div>
-    <p
-      class="root"
+    <div
+      class="wrapperShiftRight root"
     >
-      Paragraph text.
-    </p>
+      <p>
+        Paragraph text.
+      </p>
+    </div>
   </div>
 </DocumentFragment>
 `;
@@ -262,14 +270,11 @@ exports[`can preview default list 1`] = `
 exports[`can preview default pipeline 1`] = `
 <DocumentFragment>
   <div
-    class="root"
+    class="wrapperShiftRight root"
   >
     <h3>
-      Block
+      Brick
     </h3>
-    <p>
-      @pixiebrix/markdown
-    </p>
   </div>
 </DocumentFragment>
 `;
@@ -346,10 +351,30 @@ exports[`can preview default row 1`] = `
 
 exports[`can preview default text 1`] = `
 <DocumentFragment>
-  <p
-    class="root"
+  <div
+    class="wrapperShiftRight root"
   >
-    Paragraph text.
-  </p>
+    <p>
+      Paragraph text.
+    </p>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`can preview pipeline element with bricks 1`] = `
+<DocumentFragment>
+  <div
+    class="wrapperShiftRight root"
+  >
+    <h3>
+      Brick
+    </h3>
+    <p>
+      testing/block-id_1
+    </p>
+    <p>
+      @pixiebrix/markdown
+    </p>
+  </div>
 </DocumentFragment>
 `;

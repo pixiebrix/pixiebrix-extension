@@ -58,10 +58,21 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
     ...base,
     extensionPoint: {
       metadata,
+
       definition: {
         type: "actionPanel",
         isAvailable: makeIsAvailable(url),
         reader: getImplicitReader("actionPanel"),
+
+        trigger: "load",
+
+        debounce: {
+          waitMillis: 250,
+          leading: false,
+          trailing: true,
+        },
+
+        customEvent: null,
       },
     },
     extension: {
@@ -76,7 +87,7 @@ function selectExtensionPoint(
 ): ExtensionPointConfig {
   const { extensionPoint } = formState;
   const {
-    definition: { isAvailable, reader },
+    definition: { isAvailable, reader, trigger, debounce, customEvent },
   } = extensionPoint;
   return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
@@ -84,6 +95,9 @@ function selectExtensionPoint(
       type: "actionPanel",
       reader,
       isAvailable,
+      trigger,
+      debounce,
+      customEvent,
     },
   });
 }
@@ -115,13 +129,20 @@ function asDynamicElement(element: SidebarFormState): DynamicDefinition {
 
 export async function fromExtensionPoint(
   url: string,
-  extensionPoint: ExtensionPointConfig
+  extensionPoint: ExtensionPointConfig<PanelDefinition>
 ): Promise<SidebarFormState> {
   if (extensionPoint.definition.type !== "actionPanel") {
     throw new Error("Expected actionPanel extension point type");
   }
 
   const heading = `${getDomain(url)} side panel`;
+
+  const {
+    trigger = "load",
+    debounce,
+    customEvent,
+    reader,
+  } = extensionPoint.definition;
 
   return {
     uuid: uuidv4(),
@@ -143,7 +164,10 @@ export async function fromExtensionPoint(
       metadata: extensionPoint.metadata,
       definition: {
         ...extensionPoint.definition,
-        reader: readerTypeHack(extensionPoint.definition.reader),
+        trigger,
+        debounce,
+        customEvent,
+        reader: readerTypeHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -163,6 +187,13 @@ async function fromExtension(
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = extensionWithNormalizedPipeline(config.config, "body");
 
+  const {
+    trigger = "load",
+    debounce,
+    customEvent,
+    reader,
+  } = extensionPoint.definition;
+
   return {
     ...base,
 
@@ -172,7 +203,10 @@ async function fromExtension(
       metadata: extensionPoint.metadata,
       definition: {
         ...extensionPoint.definition,
-        reader: readerTypeHack(extensionPoint.definition.reader),
+        trigger,
+        debounce,
+        customEvent,
+        reader: readerTypeHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },

@@ -16,56 +16,28 @@
  */
 
 import { Transformer, UnknownObject } from "@/types";
-import { BlockArg, BlockOptions, RegistryId, Schema, UUID } from "@/core";
+import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { merge, cloneDeep } from "lodash";
-import { BusinessError, PropError } from "@/errors/businessErrors";
-
-const extensionState = new Map<UUID, UnknownObject>();
-
-/**
- * The blueprint page state, or null for shared state
- */
-const blueprintState = new Map<RegistryId | null, UnknownObject>();
+import { JsonObject } from "type-fest";
+import { getPageState, setPageState } from "@/contentScript/pageState";
 
 type MergeStrategy = "shallow" | "replace" | "deep";
 export type Namespace = "blueprint" | "extension" | "shared";
-
-function mergeState(
-  previous: UnknownObject,
-  update: UnknownObject,
-  strategy: MergeStrategy
-): UnknownObject {
-  const cloned = cloneDeep(update);
-
-  switch (strategy) {
-    case "replace": {
-      return cloned;
-    }
-
-    case "deep": {
-      return merge(previous, cloned);
-    }
-
-    case "shallow": {
-      return { ...previous, ...cloned };
-    }
-
-    default: {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never type
-      throw new BusinessError(`Unknown merge strategy: ${strategy}`);
-    }
-  }
-}
 
 export class SetPageState extends Transformer {
   constructor() {
     super(
       "@pixiebrix/state/set",
       "Set shared page state",
-      "Set shared page state values"
+      "Set shared page state values and returns the updated state"
     );
   }
+
+  override async isPure(): Promise<boolean> {
+    return false;
+  }
+
+  defaultOutputKey = "state";
 
   inputSchema: Schema = propertiesToSchema(
     {
@@ -96,7 +68,7 @@ export class SetPageState extends Transformer {
       mergeStrategy = "shallow",
       namespace = "blueprint",
     }: BlockArg<{
-      data: UnknownObject;
+      data: JsonObject;
       namespace?: Namespace;
       mergeStrategy?: MergeStrategy;
     }>,
@@ -104,42 +76,13 @@ export class SetPageState extends Transformer {
   ): Promise<UnknownObject> {
     const { blueprintId = null, extensionId } = logger.context;
 
-    switch (namespace) {
-      case "shared": {
-        const previous = blueprintState.get(null) ?? {};
-        const next = mergeState(previous, data, mergeStrategy);
-        blueprintState.set(null, next);
-        return next;
-      }
-
-      case "blueprint": {
-        const previous = blueprintState.get(blueprintId) ?? {};
-        const next = mergeState(previous, data, mergeStrategy);
-        blueprintState.set(blueprintId, next);
-        return next;
-      }
-
-      case "extension": {
-        if (extensionId == null) {
-          throw new Error("Invalid context: extensionId not found");
-        }
-
-        const previous = extensionState.get(extensionId) ?? {};
-        const next = mergeState(previous, data, mergeStrategy);
-        extensionState.set(extensionId, next);
-        return next;
-      }
-
-      default: {
-        throw new PropError(
-          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-          `Invalid namespace: ${namespace}`,
-          this.id,
-          "namespace",
-          namespace
-        );
-      }
-    }
+    return setPageState({
+      namespace,
+      data,
+      mergeStrategy,
+      extensionId,
+      blueprintId,
+    });
   }
 }
 
@@ -151,6 +94,8 @@ export class GetPageState extends Transformer {
       "Get shared page state values"
     );
   }
+
+  defaultOutputKey = "state";
 
   inputSchema: Schema = propertiesToSchema(
     {
@@ -165,38 +110,16 @@ export class GetPageState extends Transformer {
     []
   );
 
+  override async isPure(): Promise<boolean> {
+    // Doesn't have a side effect, but may return a different result each time
+    return false;
+  }
+
   async transform(
     { namespace = "blueprint" }: BlockArg<{ namespace?: Namespace }>,
     { logger }: BlockOptions
   ): Promise<UnknownObject> {
     const { blueprintId = null, extensionId } = logger.context;
-
-    switch (namespace) {
-      case "shared": {
-        return blueprintState.get(null) ?? {};
-      }
-
-      case "blueprint": {
-        return blueprintState.get(blueprintId) ?? {};
-      }
-
-      case "extension": {
-        if (extensionId == null) {
-          throw new Error("Invalid context: extensionId not found");
-        }
-
-        return extensionState.get(extensionId) ?? {};
-      }
-
-      default: {
-        throw new PropError(
-          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-          `Invalid namespace: ${namespace}`,
-          this.id,
-          "namespace",
-          namespace
-        );
-      }
-    }
+    return getPageState({ namespace, blueprintId, extensionId });
   }
 }

@@ -108,7 +108,11 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
 }) => {
   const dispatch = useDispatch();
   const [query, setQuery] = useState("");
-  const { data: remoteBricks } = useFetch<Brick[]>("/api/bricks/");
+  const {
+    data: remoteBricks,
+    isLoading,
+    error,
+  } = useFetch<Brick[]>("/api/bricks/");
   const {
     scopes = [],
     collections = [],
@@ -223,7 +227,12 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
       </Row>
       <Row>
         <Col className="mt-4" md="12" xl="8">
-          <CustomBricksCard navigate={navigate} bricks={sortedBricks} />
+          <CustomBricksCard
+            navigate={navigate}
+            bricks={sortedBricks}
+            isFetching={isLoading}
+            error={error}
+          />
         </Col>
       </Row>
     </>

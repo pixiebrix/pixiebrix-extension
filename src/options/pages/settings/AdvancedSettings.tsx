@@ -21,7 +21,6 @@ import { Button, Card, Form } from "react-bootstrap";
 import { DEFAULT_SERVICE_URL, useConfiguredHost } from "@/services/baseService";
 import React, { useCallback } from "react";
 import { clearExtensionAuth } from "@/auth/token";
-import chromeP from "webext-polyfill-kinda";
 import notify from "@/utils/notify";
 import useFlags from "@/hooks/useFlags";
 import settingsSlice from "@/store/settingsSlice";
@@ -56,7 +55,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
   }, []);
 
   const requestExtensionUpdate = useCallback(async () => {
-    const status = await chromeP.runtime.requestUpdateCheck();
+    const status = await browser.runtime.requestUpdateCheck();
     if (status === "update_available") {
       browser.runtime.reload();
     } else if (status === "throttled") {

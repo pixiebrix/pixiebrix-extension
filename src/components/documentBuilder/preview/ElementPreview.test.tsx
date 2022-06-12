@@ -28,6 +28,10 @@ import ElementPreview, {
 } from "@/components/documentBuilder/preview/ElementPreview";
 import { fireEvent, render } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
+import { blockConfigFactory } from "@/testUtils/factories";
+import { defaultBlockConfig } from "@/blocks/util";
+import { MarkdownRenderer } from "@/blocks/renderers/markdown";
+import { PipelineExpression } from "@/runtime/mapArgs";
 
 const renderElementPreview = (
   element: DocumentElement,
@@ -75,7 +79,7 @@ test("adds a CSS class to an active element", async () => {
     activeElement: "element",
   });
 
-  expect(container.querySelector("p")).toHaveClass("active");
+  expect(container.querySelector("div")).toHaveClass("active");
 });
 
 test("calls setHoveredElement callback on hover", async () => {
@@ -112,7 +116,7 @@ test("adds a CSS class to a hovered element", async () => {
     hoveredElement: "element",
   });
 
-  expect(container.querySelector("p")).toHaveClass("hovered");
+  expect(container.querySelector("div")).toHaveClass("hovered");
 });
 
 test.each(DOCUMENT_ELEMENT_TYPES)(
@@ -123,3 +127,19 @@ test.each(DOCUMENT_ELEMENT_TYPES)(
     expect(rendered.asFragment()).toMatchSnapshot();
   }
 );
+
+test("can preview pipeline element with bricks", () => {
+  const testBlock = blockConfigFactory();
+  const markdownBlock = new MarkdownRenderer();
+  const markdownConfig = blockConfigFactory({
+    id: markdownBlock.id,
+    config: defaultBlockConfig(markdownBlock.inputSchema),
+  });
+
+  const element = createNewElement("pipeline");
+  const pipeline = element.config.pipeline as PipelineExpression;
+  pipeline.__value__.push(testBlock, markdownConfig);
+  const rendered = renderElementPreview(element);
+
+  expect(rendered.asFragment()).toMatchSnapshot();
+});

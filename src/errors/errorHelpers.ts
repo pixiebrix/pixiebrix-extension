@@ -16,7 +16,7 @@
  */
 
 import { deserializeError, ErrorObject } from "serialize-error";
-import { isObject, matchesAnyPattern } from "@/utils";
+import { isObject, matchesAnyPattern, smartAppendPeriod } from "@/utils";
 import safeJsonStringify from "json-stringify-safe";
 import { truncate } from "lodash";
 import type { ContextError } from "@/errors/genericErrors";
@@ -25,6 +25,12 @@ import {
   selectNetworkErrorMessage,
   selectServerErrorMessage,
 } from "@/errors/networkErrorHelpers";
+
+// From "webext-messenger". Cannot import because the webextension polyfill can only run in an extension context
+// TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3641
+const errorTargetClosedEarly =
+  "The target was closed before receiving a response";
+const errorTabDoesntExist = "The tab doesn't exist";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
@@ -57,6 +63,8 @@ export const IGNORED_ERROR_PATTERNS = [
   /No frame with id \d+ in tab \d+/,
   /^No tab with id/,
   "The tab was closed.",
+  errorTabDoesntExist,
+  errorTargetClosedEarly,
   ...CONNECTION_ERROR_MESSAGES,
 ];
 
@@ -112,6 +120,7 @@ export function hasSpecificErrorCause<
 const BUSINESS_ERROR_NAMES = new Set([
   "PropError",
   "BusinessError",
+  "NoRendererError",
   "NoElementsFoundError",
   "MultipleElementsFoundError",
   "InputValidationError",
@@ -136,6 +145,7 @@ export function isBusinessError(error: unknown): boolean {
 // - because not all of our errors can be deserialized with the right class:
 //   https://github.com/sindresorhus/serialize-error/issues/72
 const CLIENT_REQUEST_ERROR_NAMES = new Set([
+  "ClientRequestError",
   "RemoteServiceError",
   "ClientNetworkPermissionError",
   "ClientNetworkError",
@@ -208,11 +218,39 @@ export function getErrorMessage(
   return String(selectError(error).message ?? defaultMessage);
 }
 
+export function getErrorMessageWithCauses(
+  error: unknown,
+  defaultMessage = DEFAULT_ERROR_MESSAGE
+): string {
+  if (isErrorObject(error) && error.cause) {
+    return getErrorCauseList(error)
+      .map((error) => smartAppendPeriod(getErrorMessage(error)))
+      .join("\n");
+  }
+
+  // Handle cause-less messages more simply, they don't need to end with a period.
+  return getErrorMessage(error, defaultMessage);
+}
+
+/***
+ * Return chain of error causes (including the top-level error)
+ */
+export function getErrorCauseList(error: unknown): unknown[] {
+  const errors = [];
+
+  while (error != null) {
+    errors.push(error);
+    error = (error as Error)?.cause;
+  }
+
+  return errors;
+}
+
 /**
  * Handle ErrorEvents, i.e., generated from window.onerror
  * @param event the error event
  */
-function selectErrorFromEvent(event: ErrorEvent): Error {
+export function selectErrorFromEvent(event: ErrorEvent): Error {
   // https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onerror
   // https://developer.mozilla.org/en-US/docs/Web/API/ErrorEvent
 
@@ -251,7 +289,9 @@ function selectErrorFromEvent(event: ErrorEvent): Error {
  * Handle unhandled promise rejections
  * @param event the promise rejection event
  */
-function selectErrorFromRejectionEvent(event: PromiseRejectionEvent): Error {
+export function selectErrorFromRejectionEvent(
+  event: PromiseRejectionEvent
+): Error {
   // WARNING: don't prefix the error message, e.g., with "Asynchronous error:" because that breaks
   // message-based error filtering via IGNORED_ERROR_PATTERNS
   if (typeof event.reason === "string" || event.reason == null) {
@@ -262,15 +302,19 @@ function selectErrorFromRejectionEvent(event: PromiseRejectionEvent): Error {
 }
 
 /**
- * Finds or creates an Error starting from strings, error event, or real Errors.
+ * Finds or creates an Error starting from strings or real Errors.
  *
  * The result is suitable for passing to Rollbar (which treats Errors and objects differently.)
  */
 export function selectError(originalError: unknown): Error {
+  // Be defensive here for ErrorEvent. In practice, this method will only be called with errors (as opposed to events,
+  // though.) See reportUncaughtErrors
   if (originalError instanceof ErrorEvent) {
     return selectErrorFromEvent(originalError);
   }
 
+  // Be defensive here for PromiseRejectionEvent. In practice, this method will only be called with errors (as opposed
+  // to events, though.) See reportUncaughtErrors
   if (originalError instanceof PromiseRejectionEvent) {
     return selectErrorFromRejectionEvent(originalError);
   }

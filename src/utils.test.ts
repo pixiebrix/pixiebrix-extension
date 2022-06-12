@@ -23,6 +23,7 @@ import {
   matchesAnyPattern,
   makeURL,
   getScopeAndId,
+  smartAppendPeriod,
 } from "@/utils";
 import type { RegistryId, SafeString } from "@/core";
 import { BusinessError } from "@/errors/businessErrors";
@@ -227,5 +228,46 @@ describe("getScopeAndId", () => {
   test("scope without id", () => {
     const id = "@foo" as RegistryId;
     expect(getScopeAndId(id)).toStrictEqual(["@foo", undefined]);
+  });
+});
+
+describe("smartAppendPeriod", () => {
+  it("adds when missing", () => {
+    expect(smartAppendPeriod("add")).toBe("add.");
+
+    // After ])
+    expect(smartAppendPeriod("append (parens)")).toBe("append (parens).");
+    expect(smartAppendPeriod("append [bracket]")).toBe("append [bracket].");
+
+    // Before "'
+    expect(smartAppendPeriod("prepend 'apos'")).toBe("prepend 'apos.'");
+    expect(smartAppendPeriod('prepend "quotes"')).toBe('prepend "quotes."');
+  });
+
+  it("keeps it if present", () => {
+    const punctuation = ",.;:?!";
+    const strings = [
+      "keep",
+      "keep (parens)",
+      "keep [bracket]",
+      "keep 'apos'",
+      'keep "quotes"',
+    ];
+
+    for (const string of strings) {
+      for (const piece of punctuation) {
+        // Test trailing punctuation
+        expect(smartAppendPeriod(string + piece)).toBe(string + piece);
+
+        // Test punctuation to the left of )]"'
+        if (/\W$/.test(string)) {
+          const punctuationBeforeWrapper = [...string];
+          punctuationBeforeWrapper.splice(-1, 0, piece); // Add punctuation
+          expect(smartAppendPeriod(punctuationBeforeWrapper.join(""))).toBe(
+            punctuationBeforeWrapper.join("")
+          );
+        }
+      }
+    }
   });
 });

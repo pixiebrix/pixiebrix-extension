@@ -26,6 +26,7 @@ import { uuidv4 } from "@/types/helpers";
 import PanelBody from "@/sidebar/PanelBody";
 import { RendererPayload } from "@/runtime/runtimeTypes";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { serializeError } from "serialize-error";
 
 type BlockElementProps = { pipeline: BlockPipeline };
 
@@ -34,7 +35,7 @@ type BlockElementProps = { pipeline: BlockPipeline };
  */
 const BlockElement: React.FC<BlockElementProps> = ({ pipeline }) => {
   const {
-    options: { ctxt },
+    options: { ctxt, logger },
   } = useContext(DocumentContext);
 
   const [payload, isLoading, error] =
@@ -54,21 +55,22 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline }) => {
     }, [pipeline]);
 
   if (isLoading) {
-    return <PanelBody payload={null} />;
+    return <PanelBody payload={null} context={logger.context} />;
   }
 
   if (error) {
     return (
       <PanelBody
+        context={logger.context}
         payload={{
           key: `error-${getErrorMessage(error)}`,
-          error: getErrorMessage(error),
+          error: serializeError(error),
         }}
       />
     );
   }
 
-  return <PanelBody payload={payload} />;
+  return <PanelBody context={logger.context} payload={payload} />;
 };
 
 export default BlockElement;

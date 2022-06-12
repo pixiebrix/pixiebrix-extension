@@ -177,7 +177,7 @@ const Editor: React.FunctionComponent = () => {
   return (
     <>
       <div className={styles.root}>
-        <Sidebar />
+        {inserting ? null : <Sidebar />}
         {body}
       </div>
 
