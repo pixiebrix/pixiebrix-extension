@@ -3,14 +3,14 @@
 exports[`Input validation error 1`] = `
 <DocumentFragment>
   <div
-    class="row"
+    class="root"
   >
     <div
-      class="col"
+      class="column"
     >
-      <span>
+      <h5>
         Errors
-      </span>
+      </h5>
       <ul>
         <li>
           #/properties: Property "message" does not match schema.
@@ -21,11 +21,11 @@ exports[`Input validation error 1`] = `
       </ul>
     </div>
     <div
-      class="col"
+      class="column"
     >
-      <span>
+      <h5>
         Rendered Args
-      </span>
+      </h5>
       <div
         class="root"
       >
@@ -111,11 +111,11 @@ exports[`Input validation error 1`] = `
       </div>
     </div>
     <div
-      class="col"
+      class="column"
     >
-      <span>
+      <h5>
         Schema
-      </span>
+      </h5>
       <div
         class="root"
       >
@@ -242,14 +242,14 @@ exports[`Input validation error 1`] = `
 exports[`Network error 1`] = `
 <DocumentFragment>
   <div
-    class="row"
+    class="root"
   >
     <div
-      class="col"
+      class="column"
     >
-      <span>
+      <h5>
         Response
-      </span>
+      </h5>
       <div
         class="text-warning"
       >
@@ -291,11 +291,11 @@ exports[`Network error 1`] = `
       </div>
     </div>
     <div
-      class="col"
+      class="column"
     >
-      <span>
+      <h5>
         Request Config
-      </span>
+      </h5>
       <div
         class="root"
       >
@@ -569,15 +569,11 @@ exports[`Network error 1`] = `
 
 exports[`Template render error 1`] = `
 <DocumentFragment>
-  <div
-    class="row"
-  >
-    <div
-      class="col"
-    >
+  <div>
+    <span>
       (unknown path) [Line 1, Column 3]
   parseAggregate: expected colon after dict key
-    </div>
+    </span>
   </div>
 </DocumentFragment>
 `;

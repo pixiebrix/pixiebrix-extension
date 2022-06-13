@@ -17,7 +17,6 @@
 
 import React, { useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
-import { Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -29,6 +28,7 @@ import {
   safeGuessStatusText,
   SerializableAxiosError,
 } from "@/errors/networkErrorHelpers";
+import styles from "./ErrorDetail.module.scss";
 
 function tryParse(value: unknown): unknown {
   if (typeof value === "string") {
@@ -84,9 +84,9 @@ const NetworkErrorDetail: React.FunctionComponent<{
   const permissionsReady = !permissionsError && !permissionsPending;
 
   return (
-    <Row>
-      <Col>
-        <span>Response</span>
+    <div className={styles.root}>
+      <div className={styles.column}>
+        <h5>Response</h5>
         {permissionsReady && !hasPermissions && (
           <div className="text-warning">
             <FontAwesomeIcon icon={faExclamationTriangle} /> PixieBrix does not
@@ -121,12 +121,12 @@ const NetworkErrorDetail: React.FunctionComponent<{
         ) : (
           <JsonTree data={cleanResponse} />
         )}
-      </Col>
-      <Col>
-        <span>Request Config</span>
+      </div>
+      <div className={styles.column}>
+        <h5>Request Config</h5>
         <JsonTree data={cleanConfig} />
-      </Col>
-    </Row>
+      </div>
+    </div>
   );
 };
 
