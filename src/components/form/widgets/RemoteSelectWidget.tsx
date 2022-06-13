@@ -26,6 +26,9 @@ import { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import isPromise from "is-promise";
 import useReportError from "@/hooks/useReportError";
 import { BusinessError } from "@/errors/businessErrors";
+import { Button } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSync } from "@fortawesome/free-solid-svg-icons";
 
 export type OptionsFactory<T = unknown> = (
   config: SanitizedServiceConfiguration
@@ -70,7 +73,7 @@ const RemoteSelectWidget: React.FC<RemoteSelectWidgetProps> = ({
   optionsFactory,
   ...selectProps
 }) => {
-  const [options, isLoading, error] = useOptionsResolver(
+  const [options, isLoading, error, refreshOptions] = useOptionsResolver(
     config,
     optionsFactory
   );
@@ -78,12 +81,24 @@ const RemoteSelectWidget: React.FC<RemoteSelectWidgetProps> = ({
   useReportError(error);
 
   return (
-    <SelectWidget
-      options={options}
-      isLoading={isLoading}
-      loadError={error}
-      {...selectProps}
-    />
+    <div className="d-flex">
+      <div className="flex-grow-1">
+        <SelectWidget
+          options={options}
+          isLoading={isLoading}
+          loadError={error}
+          {...selectProps}
+        />
+      </div>
+
+      {!isPromise(optionsFactory) && (
+        <div>
+          <Button onClick={refreshOptions} variant="info" title="Refresh">
+            <FontAwesomeIcon icon={faSync} />
+          </Button>
+        </div>
+      )}
+    </div>
   );
 };
 

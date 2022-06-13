@@ -191,6 +191,7 @@ async function fromExtensionPoint(
     label: `My ${getDomain(url)} quick bar item`,
 
     services: [],
+    permissions: {},
     optionsArgs: {},
 
     extension: {

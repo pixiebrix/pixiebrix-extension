@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,26 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { ErrorObject } from "serialize-error";
-import getErrorDetails from "@/components/errors/getErrorDetails";
-import styles from "./ErrorDisplay.module.scss";
+.mainRow {
+  td:not(.caret):not(.level) {
+    min-width: 180px;
+  }
 
-type ErrorDisplayProps = {
-  error: ErrorObject;
-};
+  .caret {
+    width: auto;
+    padding-left: 6px;
+    padding-right: 6px;
+    text-align: center;
+    vertical-align: middle;
+  }
 
-const ErrorDisplay: React.VoidFunctionComponent<ErrorDisplayProps> = ({
-  error,
-}) => {
-  const { title, detailsElement } = getErrorDetails(error);
+  .level {
+    min-width: 100px;
+  }
 
-  return (
-    <div className={styles.root}>
-      <span className={styles.title}>{title}</span>
-      {detailsElement}
-    </div>
-  );
-};
-
-export default ErrorDisplay;
+  &.expandable {
+    cursor: pointer;
+  }
+}

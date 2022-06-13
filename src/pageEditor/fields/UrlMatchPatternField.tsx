@@ -26,6 +26,7 @@ export type UrlMatchPatternFieldProps = {
   label?: React.ReactNode;
   description?: React.ReactNode;
   shortcuts?: Shortcut[];
+  addButtonCaption?: string;
 };
 
 const defaultDescription = (
@@ -50,6 +51,7 @@ const UrlMatchPatternField: React.VFC<UrlMatchPatternFieldProps> = ({
   label = "Sites",
   description = defaultDescription,
   shortcuts,
+  addButtonCaption = "Add Site",
 }) => (
   <ConnectedFieldTemplate
     name={name}
@@ -58,6 +60,7 @@ const UrlMatchPatternField: React.VFC<UrlMatchPatternFieldProps> = ({
     label={label}
     description={description}
     shortcuts={shortcuts}
+    addButtonCaption={addButtonCaption}
   />
 );
 

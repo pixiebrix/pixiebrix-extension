@@ -60,7 +60,7 @@ export type Availability = {
 };
 
 /**
- * Availability with consistent shape (i.e., all fields are arrays if provded)
+ * Availability with consistent shape (i.e., all fields are arrays if provided)
  * @see Availability
  */
 export type NormalizedAvailability = {

@@ -15,26 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { ErrorObject } from "serialize-error";
-import getErrorDetails from "@/components/errors/getErrorDetails";
-import styles from "./ErrorDisplay.module.scss";
-
-type ErrorDisplayProps = {
-  error: ErrorObject;
-};
-
-const ErrorDisplay: React.VoidFunctionComponent<ErrorDisplayProps> = ({
-  error,
-}) => {
-  const { title, detailsElement } = getErrorDetails(error);
-
-  return (
-    <div className={styles.root}>
-      <span className={styles.title}>{title}</span>
-      {detailsElement}
-    </div>
-  );
-};
-
-export default ErrorDisplay;
+.spacingControlContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}

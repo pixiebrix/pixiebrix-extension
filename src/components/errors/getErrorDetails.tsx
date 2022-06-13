@@ -25,7 +25,6 @@ import { ErrorObject } from "serialize-error";
 import InputValidationErrorDetail from "./InputValidationErrorDetail";
 import NetworkErrorDetail from "./NetworkErrorDetail";
 import OutputValidationErrorDetail from "./OutputValidationErrorDetail";
-import { Col, Row } from "react-bootstrap";
 import { ClientRequestError } from "@/errors/clientRequestErrors";
 
 type ErrorDetails = {
@@ -69,9 +68,9 @@ export default function getErrorDetails(error: ErrorObject): ErrorDetails {
   return {
     title: "Error",
     detailsElement: (
-      <Row>
-        <Col>{getErrorMessageWithCauses(error)}</Col>
-      </Row>
+      <div>
+        <span>{getErrorMessageWithCauses(error)}</span>
+      </div>
     ),
   };
 }

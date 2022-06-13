@@ -23,6 +23,7 @@ import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import TemplateWidget, { Snippet } from "@/pageEditor/fields/TemplateWidget";
 import MultiSelectWidget from "@/pageEditor/fields/MultiSelectWidget";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
+import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 
 const menuSnippets: Snippet[] = [{ label: "selected text", value: "%s" }];
 
@@ -127,6 +128,8 @@ const ContextMenuConfiguration: React.FC<{
         {...makeLockableFieldProps("Automatic Permissions", isLocked)}
       />
     </FieldSection>
+
+    <ExtraPermissionsSection />
   </Card>
 );
 

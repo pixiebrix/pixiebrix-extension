@@ -15,26 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { ErrorObject } from "serialize-error";
-import getErrorDetails from "@/components/errors/getErrorDetails";
-import styles from "./ErrorDisplay.module.scss";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { RandomNumber } from "@/blocks/transformers/randomNumber";
 
-type ErrorDisplayProps = {
-  error: ErrorObject;
-};
+describe("random number", () => {
+  it("returns a random integer", async () => {
+    const { value } = await new RandomNumber().transform(
+      unsafeAssumeValidArg({ lower: 0, upper: 5 })
+    );
+    expect(value).toBeInteger();
+  });
 
-const ErrorDisplay: React.VoidFunctionComponent<ErrorDisplayProps> = ({
-  error,
-}) => {
-  const { title, detailsElement } = getErrorDetails(error);
-
-  return (
-    <div className={styles.root}>
-      <span className={styles.title}>{title}</span>
-      {detailsElement}
-    </div>
-  );
-};
-
-export default ErrorDisplay;
+  it("returns a random float", async () => {
+    const { value } = await new RandomNumber().transform(
+      unsafeAssumeValidArg({ lower: 0, upper: 5, floating: true })
+    );
+    expect(value).not.toBeInteger();
+    expect(value).toBeNumber();
+  });
+});
