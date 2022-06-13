@@ -115,7 +115,7 @@ function getElementsPipelinePropNames(
     } else if (isListElement(element)) {
       propNames.push(
         ...getElementsPipelinePropNames(
-          joinElementName(parentPath, index, "element"),
+          joinElementName(parentPath, index, "config", "element", "__value__"),
           element.config.element.__value__
         )
       );
