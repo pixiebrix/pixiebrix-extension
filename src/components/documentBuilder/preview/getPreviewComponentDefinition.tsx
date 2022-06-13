@@ -86,8 +86,8 @@ function getPreviewComponentDefinition(
       ) {
         Component = ImagePlaceholder;
         // Don't let empty values (including null, empty string, and 0)
-        props.height = props.height || "100";
-        props.width = props.width || "50";
+        props.height = props.height || "50";
+        props.width = props.width || "100";
       }
 
       const PreviewComponent: React.FC<PreviewComponentProps> = ({

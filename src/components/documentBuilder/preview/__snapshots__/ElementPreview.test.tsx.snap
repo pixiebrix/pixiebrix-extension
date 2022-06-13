@@ -4,7 +4,7 @@ exports[`can preview default button 1`] = `
 <DocumentFragment>
   <div>
     <div
-      class="root inlineWrapper wrapperShiftRight"
+      class="root inlineWrapper"
     >
       <button
         class="btn btn-primary"
@@ -20,7 +20,7 @@ exports[`can preview default button 1`] = `
 exports[`can preview default card 1`] = `
 <DocumentFragment>
   <div
-    class="wrapperShiftRight root"
+    class="shiftRightWrapper root"
   >
     <div
       class="card"
@@ -208,7 +208,7 @@ exports[`can preview default container 1`] = `
 exports[`can preview default header_1 1`] = `
 <DocumentFragment>
   <div
-    class="wrapperShiftRight root"
+    class="shiftRightWrapper root"
   >
     <h1>
       Header
@@ -220,7 +220,7 @@ exports[`can preview default header_1 1`] = `
 exports[`can preview default header_2 1`] = `
 <DocumentFragment>
   <div
-    class="wrapperShiftRight root"
+    class="shiftRightWrapper root"
   >
     <h2>
       Header
@@ -232,7 +232,7 @@ exports[`can preview default header_2 1`] = `
 exports[`can preview default header_3 1`] = `
 <DocumentFragment>
   <div
-    class="wrapperShiftRight root"
+    class="shiftRightWrapper root"
   >
     <h3>
       Header
@@ -243,11 +243,17 @@ exports[`can preview default header_3 1`] = `
 
 exports[`can preview default image 1`] = `
 <DocumentFragment>
-  <img
-    alt="Placeholder"
-    class=""
-    src="holder.js/50x100"
-  />
+  <div
+    class="imageWrapper root"
+    height="50"
+    width="100"
+  >
+    <img
+      alt="Placeholder"
+      class=""
+      src="holder.js/100x50"
+    />
+  </div>
 </DocumentFragment>
 `;
 
@@ -267,7 +273,7 @@ exports[`can preview default list 1`] = `
       Element key: @element
     </div>
     <div
-      class="wrapperShiftRight root"
+      class="shiftRightWrapper root"
     >
       <p>
         Paragraph text.
@@ -280,7 +286,7 @@ exports[`can preview default list 1`] = `
 exports[`can preview default pipeline 1`] = `
 <DocumentFragment>
   <div
-    class="wrapperShiftRight root"
+    class="shiftRightWrapper root"
   >
     <h3>
       Brick
@@ -362,7 +368,7 @@ exports[`can preview default row 1`] = `
 exports[`can preview default text 1`] = `
 <DocumentFragment>
   <div
-    class="wrapperShiftRight root"
+    class="shiftRightWrapper root"
   >
     <p>
       Paragraph text.
@@ -374,7 +380,7 @@ exports[`can preview default text 1`] = `
 exports[`can preview pipeline element with bricks 1`] = `
 <DocumentFragment>
   <div
-    class="wrapperShiftRight root"
+    class="shiftRightWrapper root"
   >
     <h3>
       Brick
