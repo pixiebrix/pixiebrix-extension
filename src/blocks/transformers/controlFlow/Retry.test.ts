@@ -55,9 +55,9 @@ describe("Retry", () => {
       },
     };
 
-    expect(
+    return expect(
       reducePipeline(pipeline, simpleInput({}), testOptions("v3"))
-    ).rejects.toReject();
+    ).rejects.toThrow();
   });
 
   test("returns result on success", async () => {

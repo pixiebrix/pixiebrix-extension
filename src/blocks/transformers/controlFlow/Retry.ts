@@ -78,6 +78,7 @@ class Retry extends Transformer {
 
     while (retryCount < maxRetries) {
       if (retryCount > 0) {
+        // eslint-disable-next-line no-await-in-loop -- retry loop
         await sleep(intervalMillis);
       }
 
