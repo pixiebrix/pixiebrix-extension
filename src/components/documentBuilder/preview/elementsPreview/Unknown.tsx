@@ -18,21 +18,16 @@
 import React from "react";
 import {
   DocumentComponent,
-  DocumentElementType,
   PreviewComponentProps,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
 import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
-import HoveredLabel from "@/components/documentBuilder/preview/HoveredLabel";
-import ActiveLabel from "@/components/documentBuilder/preview/ActiveLabel";
 
-type BasicProps = PreviewComponentProps & {
-  elementType: DocumentElementType;
+type UnknownProps = PreviewComponentProps & {
   documentComponent: DocumentComponent;
 };
 
-const Basic: React.FunctionComponent<BasicProps> = ({
-  elementType,
+const Unknown: React.FunctionComponent<UnknownProps> = ({
   documentComponent: { Component, props },
   children,
   className,
@@ -45,20 +40,8 @@ const Basic: React.FunctionComponent<BasicProps> = ({
     className={cx(documentTreeStyles.wrapperShiftRight, className)}
     {...restPreviewProps}
   >
-    {isHovered && (
-      <HoveredLabel
-        className={documentTreeStyles.labelShiftRight}
-        elementType={elementType}
-      />
-    )}
-    {isActive && (
-      <ActiveLabel
-        className={documentTreeStyles.labelShiftRight}
-        selectParent={onSelectParent}
-      />
-    )}
     <Component {...props} />
   </div>
 );
 
-export default Basic;
+export default Unknown;

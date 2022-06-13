@@ -32,6 +32,7 @@ import { getComponentDefinition } from "@/components/documentBuilder/documentTre
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import HoveredLabel from "./HoveredLabel";
 import ActiveLabel from "./ActiveLabel";
+import Unknown from "./elementsPreview/Unknown";
 import Basic from "./elementsPreview/Basic";
 
 function getPreviewComponentDefinition(
@@ -45,36 +46,13 @@ function getPreviewComponentDefinition(
     case "header_2":
     case "header_3":
     case "text": {
-      const { Component, props } = getComponentDefinition(element);
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        children,
-        className,
-        isHovered,
-        isActive,
-        onSelectParent,
-        ...restPreviewProps
-      }) => (
-        <div
-          className={cx(documentTreeStyles.wrapperShiftRight, className)}
-          {...restPreviewProps}
-        >
-          {isHovered && (
-            <HoveredLabel
-              className={documentTreeStyles.labelShiftRight}
-              elementType={element.type}
-            />
-          )}
-          {isActive && (
-            <ActiveLabel
-              className={documentTreeStyles.labelShiftRight}
-              selectParent={onSelectParent}
-            />
-          )}
-          <Component {...props} />
-        </div>
-      );
-
-      return { Component: PreviewComponent, props };
+      const documentComponent = getComponentDefinition(element);
+      return {
+        Component: Basic,
+        props: {
+          documentComponent,
+        },
+      };
     }
 
     case "container":
@@ -98,6 +76,12 @@ function getPreviewComponentDefinition(
             <HoveredLabel
               className={documentTreeStyles.labelShiftUp}
               elementType={element.type}
+            />
+          )}
+          {isActive && (
+            <ActiveLabel
+              className={documentTreeStyles.labelShiftUp}
+              selectParent={onSelectParent}
             />
           )}
           {children}
@@ -124,6 +108,8 @@ function getPreviewComponentDefinition(
         children,
         className,
         isHovered,
+        isActive,
+        onSelectParent,
         ...restPreviewProps
       }) => (
         <div
@@ -134,6 +120,12 @@ function getPreviewComponentDefinition(
             <HoveredLabel
               className={documentTreeStyles.labelShiftRight}
               elementType={element.type}
+            />
+          )}
+          {isActive && (
+            <ActiveLabel
+              className={documentTreeStyles.labelShiftRight}
+              selectParent={onSelectParent}
             />
           )}
           <Component {...props}>{children}</Component>
@@ -148,6 +140,8 @@ function getPreviewComponentDefinition(
       const PreviewComponent: React.FC<PreviewComponentProps> = ({
         className,
         isHovered,
+        isActive,
+        onSelectParent,
         ...restPreviewProps
       }) => (
         <div
@@ -158,6 +152,12 @@ function getPreviewComponentDefinition(
             <HoveredLabel
               className={documentTreeStyles.labelShiftRight}
               elementType={element.type}
+            />
+          )}
+          {isActive && (
+            <ActiveLabel
+              className={documentTreeStyles.labelShiftRight}
+              selectParent={onSelectParent}
             />
           )}
           <h3>{elementTypeLabels.pipeline}</h3>
@@ -174,6 +174,8 @@ function getPreviewComponentDefinition(
       const PreviewComponent: React.FC<PreviewComponentProps> = ({
         className,
         isHovered,
+        isActive,
+        onSelectParent,
         ...restPreviewProps
       }) => {
         // Destructure disabled from button props. If the button is disabled in the preview the user can't select it
@@ -194,6 +196,12 @@ function getPreviewComponentDefinition(
                 <HoveredLabel
                   className={documentTreeStyles.labelShiftRight}
                   elementType={element.type}
+                />
+              )}
+              {isActive && (
+                <ActiveLabel
+                  className={documentTreeStyles.labelShiftRight}
+                  selectParent={onSelectParent}
                 />
               )}
               <Button onClick={() => {}} {...buttonProps}>
@@ -251,11 +259,11 @@ function getPreviewComponentDefinition(
     }
 
     default: {
-      const previewDocumentComponent = getComponentDefinition(element);
+      const documentComponent = getComponentDefinition(element);
       return {
-        Component: Basic,
+        Component: Unknown,
         props: {
-          previewDocumentComponent,
+          documentComponent,
         },
       };
     }

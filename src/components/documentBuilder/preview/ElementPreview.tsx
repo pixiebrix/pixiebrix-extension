@@ -86,11 +86,6 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
   const onSelectParent = () => {
     const parentElementName = getParentElementName(elementName);
 
-    console.log("onSelectParent", {
-      elementName,
-      parentElementName,
-    });
-
     setActiveElement(parentElementName);
   };
 
