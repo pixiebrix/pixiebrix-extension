@@ -26,11 +26,13 @@ import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
 import {
   DocumentElement,
   isButtonElement,
+  isListElement,
   isPipelineElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { joinElementName } from "@/components/documentBuilder/utils";
 import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 import Retry from "@/blocks/transformers/controlFlow/Retry";
+import { castArray } from "lodash";
 
 export async function getCurrentURL(): Promise<string> {
   if (!browser.devtools) {
@@ -91,16 +93,32 @@ export function getPipelinePropNames(block: BlockConfig): string[] {
   }
 }
 
+/**
+ * Returns Formik path names to pipeline expressions
+ * @param parentPath the parent Formik path
+ * @param elements the document element or elements
+ */
 function getElementsPipelinePropNames(
   parentPath: string,
-  elements: DocumentElement[]
+  elements: DocumentElement | DocumentElement[]
 ): string[] {
+  const isArray = Array.isArray(elements);
+
   const propNames: string[] = [];
-  for (const [index, element] of Object.entries(elements)) {
+  for (const [elementIndex, element] of Object.entries(castArray(elements))) {
+    const index = isArray ? elementIndex : null;
+
     if (isButtonElement(element)) {
       propNames.push(joinElementName(parentPath, index, "config", "onClick"));
     } else if (isPipelineElement(element)) {
       propNames.push(joinElementName(parentPath, index, "config", "pipeline"));
+    } else if (isListElement(element)) {
+      propNames.push(
+        ...getElementsPipelinePropNames(
+          joinElementName(parentPath, index, "element"),
+          element.config.element.__value__
+        )
+      );
     } else if (element.children?.length > 0) {
       propNames.push(
         ...getElementsPipelinePropNames(
