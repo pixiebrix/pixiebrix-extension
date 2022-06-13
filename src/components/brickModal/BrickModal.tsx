@@ -18,7 +18,7 @@
 import styles from "./BrickModal.module.scss";
 
 import React, { CSSProperties, useCallback, useMemo, useState } from "react";
-import { Button, Col, Container, Modal, Row } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import { isEmpty, sortBy } from "lodash";
 import { IBlock, IBrick, RegistryId } from "@/core";
 import { useDebounce } from "use-debounce";
@@ -262,110 +262,112 @@ function ActualModal<T extends IBrick>({
       backdrop
       keyboard={false}
     >
-      <Modal.Header closeButton>
-        <Container fluid>
-          <Row>
-            {detailBrick ? (
-              <Button
-                variant="link"
-                onClick={() => {
-                  setDetailBrick(null);
+      <Modal.Header className={styles.header}>
+        {detailBrick ? (
+          <Button
+            variant="link"
+            onClick={() => {
+              setDetailBrick(null);
+            }}
+          >
+            <FontAwesomeIcon icon={faChevronLeft} /> Back
+          </Button>
+        ) : (
+          <>
+            <Modal.Title className={styles.title}>Add Brick</Modal.Title>
+            <div className={styles.searchContainer}>
+              <TagSearchInput
+                name={"brickSearch"}
+                value={query}
+                onValueChange={setQuery}
+                placeholder={"Search"}
+                tag={searchTag === TAG_ALL ? null : searchTag}
+                onClearTag={() => {
+                  setSearchTag(TAG_ALL);
                 }}
+                focusInput
+                className={styles.searchInput}
+              />
+              {/* Copied from react-bootstrap's header close button */}
+              <button
+                type="button"
+                onClick={close}
+                className={cx("close", styles.closeButton)}
               >
-                <FontAwesomeIcon icon={faChevronLeft} /> Back
-              </Button>
-            ) : (
-              <>
-                <Col xs={2}>
-                  <Modal.Title className={styles.title}>Add Brick</Modal.Title>
-                </Col>
-                <Col xs={10}>
-                  <TagSearchInput
-                    name={"brickSearch"}
-                    value={query}
-                    onValueChange={setQuery}
-                    placeholder={"Search"}
-                    tag={searchTag === TAG_ALL ? null : searchTag}
-                    onClearTag={() => {
-                      setSearchTag(TAG_ALL);
-                    }}
-                    focusInput
-                    className={styles.searchInput}
-                  />
-                </Col>
-              </>
-            )}
-          </Row>
-        </Container>
+                <span aria-hidden="true">×</span>
+                <span className="sr-only">Close</span>
+              </button>
+            </div>
+          </>
+        )}
       </Modal.Header>
-      <Modal.Body className={styles.body}>
-        <Container
-          fluid
-          className={cx({ [styles.brickDetail]: Boolean(detailBrick) })}
-        >
-          {detailBrick ? (
-            <BrickDetail
-              brick={detailBrick}
-              listing={listings[detailBrick.id]}
-              selectCaption={selectCaption}
-              onSelect={() => {
-                onSelect(detailBrick);
-                close();
-              }}
-            />
-          ) : (
-            <Row>
-              <Col xs={2} className={styles.tagList}>
-                {isLoadingTags ? (
-                  <Loader />
-                ) : (
-                  <TagList
-                    tagItems={tagItems}
-                    activeTag={searchTag}
-                    onSelectTag={setSearchTag}
-                  />
-                )}
-              </Col>
-              <Col xs={10}>
-                {isLoadingListings ? (
-                  <Loader />
-                ) : (
-                  <AutoSizer>
-                    {({ height, width }) => (
-                      <LazyGrid
-                        height={height}
-                        width={width}
-                        columnWidth={(width - 15) / RESULT_COLUMN_COUNT} // 15px for the scroll bar width
-                        rowHeight={BRICK_RESULT_FIXED_HEIGHT_PX}
-                        columnCount={RESULT_COLUMN_COUNT}
-                        rowCount={Math.ceil(
-                          searchResults.length / RESULT_COLUMN_COUNT
-                        )}
-                        itemKey={itemKey}
-                        itemData={
-                          {
-                            searchResults,
-                            onSetDetailBrick(brick: T, rowIndex: number) {
-                              setDetailBrick(brick);
-                              setDetailBrickRow(rowIndex);
-                            },
-                            activeBrick: detailBrick,
-                            selectCaption,
-                            onSelect,
-                            close,
-                          } as ItemType
-                        }
-                        ref={refCallback}
-                      >
-                        {ItemRenderer}
-                      </LazyGrid>
-                    )}
-                  </AutoSizer>
-                )}
-              </Col>
-            </Row>
-          )}
-        </Container>
+      <Modal.Body
+        className={cx(styles.body, {
+          [styles.brickDetail]: Boolean(detailBrick),
+        })}
+      >
+        {detailBrick ? (
+          <BrickDetail
+            brick={detailBrick}
+            listing={listings[detailBrick.id]}
+            selectCaption={selectCaption}
+            onSelect={() => {
+              onSelect(detailBrick);
+              close();
+            }}
+          />
+        ) : (
+          <>
+            <div className={styles.tagList}>
+              {isLoadingTags ? (
+                <Loader />
+              ) : (
+                <TagList
+                  tagItems={tagItems}
+                  activeTag={searchTag}
+                  onSelectTag={setSearchTag}
+                />
+              )}
+            </div>
+            <div className={styles.brickResults}>
+              {isLoadingListings ? (
+                <Loader />
+              ) : (
+                <AutoSizer>
+                  {({ height, width }) => (
+                    <LazyGrid
+                      height={height}
+                      width={width}
+                      columnWidth={width / RESULT_COLUMN_COUNT}
+                      rowHeight={BRICK_RESULT_FIXED_HEIGHT_PX}
+                      columnCount={RESULT_COLUMN_COUNT}
+                      rowCount={Math.ceil(
+                        searchResults.length / RESULT_COLUMN_COUNT
+                      )}
+                      itemKey={itemKey}
+                      itemData={
+                        {
+                          searchResults,
+                          onSetDetailBrick(brick: T, rowIndex: number) {
+                            setDetailBrick(brick);
+                            setDetailBrickRow(rowIndex);
+                          },
+                          activeBrick: detailBrick,
+                          selectCaption,
+                          onSelect,
+                          close,
+                        } as ItemType
+                      }
+                      ref={refCallback}
+                    >
+                      {ItemRenderer}
+                    </LazyGrid>
+                  )}
+                </AutoSizer>
+              )}
+            </div>
+          </>
+        )}
       </Modal.Body>
     </Modal>
   );

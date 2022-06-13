@@ -15,9 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "@/components/brickModal/brickModalVariables.scss";
+
 .root {
   border: none;
-  padding: 6px 8px; // Need to use exact px for fixed height grid items
+  padding: $verticalSpacing $horizontalSpacing;
 }
 
 .card {

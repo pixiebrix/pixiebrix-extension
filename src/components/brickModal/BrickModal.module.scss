@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "@/components/brickModal/brickModalVariables.scss";
+
 $bodyHeight: calc(100vh - 100px);
-$bootstrapPadding: 15px;
+$tagListWidth: 180px;
 
 .root {
   display: grid !important;
@@ -28,33 +30,63 @@ $bootstrapPadding: 15px;
   }
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
 .title {
+  width: $tagListWidth; // Align with list below
+  flex-shrink: 0;
+  flex-grow: 0;
+
   font-style: normal;
   font-weight: 400;
   font-size: 1.25rem;
   line-height: 28px;
   color: #595969;
-  flex-shrink: 0;
-  align-self: center;
   padding: 0.25rem 0;
+}
+
+.searchContainer {
+  flex-grow: 1;
+  display: flex;
 }
 
 .searchInput {
   width: 50%;
 }
 
+.closeButton {
+  margin-left: auto;
+}
+
 .body {
-  padding: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  padding: 0 0 0 $horizontalSpacing;
 }
 
 .tagList {
   height: $bodyHeight;
+  width: $tagListWidth;
   overflow: auto;
+  flex-grow: 0;
+  flex-shrink: 0;
+  padding-top: $verticalSpacing;
+}
+
+.brickResults {
+  height: $bodyHeight;
+  flex-grow: 1;
+  overflow-y: auto;
 }
 
 .brickDetail {
   height: $bodyHeight;
-  padding-top: $bootstrapPadding;
-  padding-bottom: $bootstrapPadding;
+  flex-grow: 1;
+  padding: 0.5rem;
   overflow: auto;
 }
