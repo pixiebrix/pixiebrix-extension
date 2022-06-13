@@ -30,7 +30,6 @@ import { Button, Image } from "react-bootstrap";
 import { getComponentDefinition } from "@/components/documentBuilder/documentTree";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import HoveredLabel from "./HoveredLabel";
-import { trySelectStringLiteral } from "@/runtime/expressionUtils";
 import ImagePlaceholder from "@/components/imagePlaceholder/ImagePlaceholder";
 import { isValidUrl } from "@/utils";
 
@@ -78,29 +77,42 @@ function getPreviewComponentDefinition(
     }
 
     case "image": {
-      const url = trySelectStringLiteral(element.config.url);
-      const height = trySelectStringLiteral(element.config.height);
-      const width = trySelectStringLiteral(element.config.width);
+      let { Component, props } = getComponentDefinition(element);
 
-      // If it's a valid URL, show the image
-      if (isValidUrl(url, { protocols: ["https:"] })) {
-        return {
-          Component: Image,
-          props: {
-            src: url,
-            height: height ?? 50,
-            width,
-          },
-        };
+      console.log("image preview", {
+        props,
+      });
+
+      // If it's not a valid URL, show a placeholder
+      if (
+        typeof props.src !== "string" ||
+        !isValidUrl(props.src, { protocols: ["https:"] })
+      ) {
+        Component = ImagePlaceholder;
+        props.width = props.width ?? "100";
       }
 
-      return {
-        Component: ImagePlaceholder,
-        props: {
-          height: height ?? 50,
-          width: width ?? 100,
-        },
-      };
+      const PreviewComponent: React.FC<PreviewComponentProps> = ({
+        children,
+        className,
+        isHovered,
+        ...restPreviewProps
+      }) => (
+        <div
+          className={cx(documentTreeStyles.wrapperShiftRight, className)}
+          {...restPreviewProps}
+        >
+          {isHovered && (
+            <HoveredLabel
+              className={documentTreeStyles.labelShiftRight}
+              elementType={element.type}
+            />
+          )}
+          <Component {...props} />
+        </div>
+      );
+
+      return { Component: PreviewComponent, props };
     }
 
     case "container":
