@@ -66,7 +66,7 @@ $tagListWidth: 180px;
 .body {
   display: flex;
   flex-wrap: nowrap;
-  padding: 0 0 0 $horizontalSpacing;
+  padding: 0 0 0 calc(#{$horizontalSpacing} + 15px); // 15px to match other side accounting for scrollbars
 }
 
 .tagList {
@@ -87,6 +87,6 @@ $tagListWidth: 180px;
 .brickDetail {
   height: $bodyHeight;
   flex-grow: 1;
-  padding: 0.5rem;
+  padding: 1rem;
   overflow: auto;
 }

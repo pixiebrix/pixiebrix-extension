@@ -338,7 +338,7 @@ function ActualModal<T extends IBrick>({
                     <LazyGrid
                       height={height}
                       width={width}
-                      columnWidth={width / RESULT_COLUMN_COUNT}
+                      columnWidth={(width - 15) / RESULT_COLUMN_COUNT} // 15px to make space for scrollbars
                       rowHeight={BRICK_RESULT_FIXED_HEIGHT_PX}
                       columnCount={RESULT_COLUMN_COUNT}
                       rowCount={Math.ceil(
