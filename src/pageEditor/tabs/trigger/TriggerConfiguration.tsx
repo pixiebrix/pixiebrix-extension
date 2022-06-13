@@ -34,6 +34,7 @@ import { joinName } from "@/utils";
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
 import { DebounceOptions } from "@/extensionPoints/types";
+import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 
 function supportsSelector(trigger: Trigger) {
   return !["load", "interval", "selectionchange", "statechange"].includes(
@@ -232,6 +233,8 @@ const TriggerConfiguration: React.FC<{
       </FieldSection>
 
       <MatchRulesSection isLocked={isLocked} />
+
+      <ExtraPermissionsSection />
     </Card>
   );
 };

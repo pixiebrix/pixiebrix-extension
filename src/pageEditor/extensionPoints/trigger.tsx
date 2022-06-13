@@ -173,6 +173,7 @@ async function fromExtensionPoint(
     label: `My ${getDomain(url)} ${trigger} trigger`,
 
     services: [],
+    permissions: {},
 
     optionsArgs: {},
 

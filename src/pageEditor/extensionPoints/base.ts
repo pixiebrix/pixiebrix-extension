@@ -65,6 +65,7 @@ import {
   isInnerExtensionPoint,
 } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
+import { Permissions } from "webextension-polyfill";
 
 export interface WizardStep {
   step: string;
@@ -107,6 +108,7 @@ export function baseFromExtension<T extends ExtensionPointType>(
   | "installed"
   | "label"
   | "services"
+  | "permissions"
   | "optionsArgs"
   | "recipe"
 > & { type: T } {
@@ -117,6 +119,7 @@ export function baseFromExtension<T extends ExtensionPointType>(
     label: config.label,
     // Normalize here because the fields aren't optional/nullable on the BaseFormState destination type.
     services: config.services ?? [],
+    permissions: config.permissions ?? {},
     optionsArgs: config.optionsArgs ?? {},
     type,
     recipe: config._recipe,
@@ -156,6 +159,7 @@ export function baseSelectExtension({
   label,
   optionsArgs,
   services,
+  permissions,
   extensionPoint,
   recipe,
 }: BaseFormState): Pick<
@@ -166,6 +170,7 @@ export function baseSelectExtension({
   | "_recipe"
   | "label"
   | "services"
+  | "permissions"
   | "optionsArgs"
 > {
   return {
@@ -175,6 +180,7 @@ export function baseSelectExtension({
     _recipe: recipe,
     label,
     services,
+    permissions,
     optionsArgs,
   };
 }
@@ -186,6 +192,7 @@ export function makeInitialBaseState(
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     services: [],
+    permissions: {},
     optionsArgs: {},
     extension: {
       blockPipeline: [],
@@ -252,6 +259,16 @@ export function cleanIsAvailable({
     matchPatterns: matchPatterns.filter((x) => !isNullOrBlank(x)),
     urlPatterns: urlPatterns.filter((x) => isEmpty(x)),
     selectors: selectors.filter((x) => !isNullOrBlank(x)),
+  };
+}
+
+export function cleanExtraPermissions({
+  permissions = [],
+  origins = [],
+}: Permissions.Permissions = {}) {
+  return {
+    permissions: permissions.filter((x) => !isNullOrBlank(x)),
+    origins: origins.filter((x) => !isNullOrBlank(x)),
   };
 }
 

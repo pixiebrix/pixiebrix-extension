@@ -268,7 +268,7 @@ exports[`Network error 1`] = `
             fill="currentColor"
           />
         </svg>
-         PixieBrix does not have permission to access https://fail.com
+         PixieBrix does not have permission to access https://fail.com. Specify an Integration to access the API, or add an Extra Permissions rule to the extension.
       </div>
       <div>
         <div>
