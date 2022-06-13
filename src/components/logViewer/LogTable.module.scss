@@ -18,5 +18,9 @@
 .tableHead {
   th {
     white-space: nowrap;
+
+    &:last-child {
+      width: 100%;
+    }
   }
 }

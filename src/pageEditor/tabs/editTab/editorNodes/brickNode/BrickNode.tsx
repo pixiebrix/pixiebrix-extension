@@ -87,6 +87,7 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
                 [styles.active]: active,
                 [styles.closedHandle]: collapsed,
                 [styles.openHandle]: !collapsed,
+                [styles.noOutputKey]: !outputKey,
               })}
             />
           </div>

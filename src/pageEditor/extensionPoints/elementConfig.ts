@@ -35,6 +35,7 @@ import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import { Target } from "@/types";
 import { OptionsDefinition } from "@/types/definitions";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
+import type { Permissions } from "webextension-polyfill";
 
 /**
  * A simplified type for ReaderConfig to prevent TypeScript reporting problems with infinite type instantiation
@@ -105,6 +106,12 @@ export interface BaseFormState<
   optionsArgs: UserOptions;
 
   services: ServiceDependency[];
+
+  /**
+   * The extra permissions required by the extension
+   * @since 1.7.0
+   */
+  permissions: Permissions.Permissions;
 
   extensionPoint: TExtensionPoint;
 

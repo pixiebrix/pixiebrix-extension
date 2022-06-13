@@ -15,26 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { ErrorObject } from "serialize-error";
-import getErrorDetails from "@/components/errors/getErrorDetails";
-import styles from "./ErrorDisplay.module.scss";
+import { BusinessError } from "@/errors/businessErrors";
+import { serializeError } from "serialize-error";
 
-type ErrorDisplayProps = {
-  error: ErrorObject;
-};
-
-const ErrorDisplay: React.VoidFunctionComponent<ErrorDisplayProps> = ({
-  error,
-}) => {
-  const { title, detailsElement } = getErrorDetails(error);
-
-  return (
-    <div className={styles.root}>
-      <span className={styles.title}>{title}</span>
-      {detailsElement}
-    </div>
-  );
-};
-
-export default ErrorDisplay;
+describe("BusinessError", () => {
+  it("records cause", () => {
+    const cause = new Error("Pylon Error");
+    const error = new BusinessError("You Must Construct Additional Pylons", {
+      cause,
+    });
+    expect(serializeError(error).cause).toStrictEqual(serializeError(cause));
+  });
+});

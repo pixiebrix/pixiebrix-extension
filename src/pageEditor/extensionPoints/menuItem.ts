@@ -137,6 +137,7 @@ async function fromExtensionPoint(
     label: `My ${getDomain(url)} button`,
 
     services: [],
+    permissions: {},
 
     optionsArgs: {},
 

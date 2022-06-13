@@ -49,14 +49,57 @@ import {
 } from "@/errors/businessErrors";
 import { ContextError, ExtensionNotLinkedError } from "@/errors/genericErrors";
 import { assertHttpsUrl } from "@/errors/assertHttpsUrl";
-import { safeGuessStatusText } from "@/errors/networkErrorHelpers";
+import {
+  isAxiosError,
+  safeGuessStatusText,
+} from "@/errors/networkErrorHelpers";
+import safeJsonStringify from "json-stringify-safe";
+import { deserializeError, serializeError } from "serialize-error";
 
+// Firefox won't send response objects from the background page to the content script. Strip out the
+// potentially sensitive parts of the response (the request, headers, etc.)
 type SanitizedResponse<T = unknown> = Pick<
   AxiosResponse<T>,
   "data" | "status" | "statusText"
 > & {
   _sanitizedResponseBrand: null;
 };
+
+function sanitizeResponse<T>(
+  response: AxiosResponse<T> | null
+): SanitizedResponse<T> | null {
+  if (response == null) {
+    return null;
+  }
+
+  const { data, status, statusText } = response;
+  return JSON.parse(safeJsonStringify({ data, status, statusText }));
+}
+
+/**
+ * Prepare the error with an AxiosError in the cause chain for being sent across messenger boundaries.
+ * @SanitizedResponse
+ */
+function prepareErrorForMessenger(error: unknown): unknown {
+  if (error == null) {
+    return null;
+  }
+
+  if (isAxiosError((error as Error)?.cause)) {
+    const parentError = error as Error;
+    // See https://github.com/pixiebrix/pixiebrix-extension/pull/3645
+    // Chrome 102 + serializeError 11.0.0 was really struggling with automatically serializing correctly. The response
+    // and request properties were getting dropped. (Potentially because AxiosError is sometimes missing a stack, or
+    // it may depend on which properties are enumerable)
+    parentError.cause = deserializeError(
+      serializeError(parentError.cause, { useToJSON: false })
+    );
+  }
+
+  prepareErrorForMessenger((error as Error)?.cause);
+
+  return error;
+}
 
 export async function serializableAxiosRequest<T>(
   config: AxiosRequestConfig
@@ -70,11 +113,9 @@ export async function serializableAxiosRequest<T>(
   // Axios does not perform validation, so call before the axios call.
   assertHttpsUrl(config.url, config.baseURL);
 
-  const { data, status, statusText } = await axios(config);
+  const response = await axios(config);
 
-  // Firefox won't send response objects from the background page to the content script. So strip out the
-  // potentially sensitive parts of the response (the request, headers, etc.)
-  return JSON.parse(JSON.stringify({ data, status, statusText }));
+  return sanitizeResponse(response);
 }
 
 async function authenticate(
@@ -271,7 +312,17 @@ export async function proxyService<TData>(
       );
     }
 
-    return serializableAxiosRequest<TData>(requestConfig);
+    try {
+      return await serializableAxiosRequest<TData>(requestConfig);
+    } catch (error) {
+      const preparedError = prepareErrorForMessenger(error);
+      console.debug("Error making request without service config", {
+        requestConfig,
+        preparedError,
+        error,
+      });
+      throw preparedError;
+    }
   }
 
   try {
@@ -281,7 +332,7 @@ export async function proxyService<TData>(
     )) as RemoteResponse<TData>;
   } catch (error) {
     throw new ContextError("Error performing request", {
-      cause: error,
+      cause: prepareErrorForMessenger(error),
       context: await getServiceMessageContext(serviceConfig),
     });
   }
