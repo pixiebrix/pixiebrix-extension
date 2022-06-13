@@ -21,7 +21,7 @@ import {
   DocumentElement,
   PipelineDocumentConfig,
 } from "@/components/documentBuilder/documentBuilderTypes";
-import { get } from "lodash";
+import { get, isEmpty } from "lodash";
 import { UnknownObject } from "@/types";
 import { isExpression } from "@/runtime/mapArgs";
 import cx from "classnames";
@@ -86,8 +86,8 @@ function getPreviewComponentDefinition(
       ) {
         Component = ImagePlaceholder;
         // Don't let empty values (including null, empty string, and 0)
-        props.height = props.height || "50";
-        props.width = props.width || "100";
+        props.height = isEmpty(props.height) ? "50" : props.height;
+        props.width = isEmpty(props.width) ? "100" : props.width;
       }
 
       const PreviewComponent: React.FC<PreviewComponentProps> = ({
