@@ -18,7 +18,7 @@
 import { UnknownObject } from "@/types";
 import { Expression } from "@/core";
 import { DeferExpression, PipelineExpression } from "@/runtime/mapArgs";
-import { ElementType } from "react";
+import { ElementType, MouseEventHandler } from "react";
 
 export const DOCUMENT_ELEMENT_TYPES = [
   "header_1",
@@ -97,3 +97,13 @@ export type DocumentComponent = {
 };
 
 export type BuildDocumentBranch = (root: DocumentElement) => DocumentComponent;
+
+export type PreviewComponentProps = {
+  className?: string;
+  isHovered: boolean;
+  isActive: boolean;
+  onClick: MouseEventHandler<HTMLDivElement>;
+  onMouseEnter: MouseEventHandler<HTMLDivElement>;
+  onMouseLeave: MouseEventHandler<HTMLDivElement>;
+  onSelectParent: () => void;
+};

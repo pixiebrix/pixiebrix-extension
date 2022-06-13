@@ -15,31 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { MouseEventHandler } from "react";
+import React from "react";
+import {
+  DocumentComponent,
+  PreviewComponentProps,
+} from "@/components/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
-import styles from "./ActiveLabel.module.scss";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLevelUpAlt } from "@fortawesome/free-solid-svg-icons";
+import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
 
-type ActiveLabelProps = {
-  className?: string;
-  selectParent: () => void;
+type BasicProps = PreviewComponentProps & {
+  previewDocumentComponent: DocumentComponent;
 };
 
-const ActiveLabel: React.FunctionComponent<ActiveLabelProps> = ({
+const Basic: React.FunctionComponent<BasicProps> = ({
+  previewDocumentComponent: { Component, props },
+  children,
   className,
-  selectParent,
-}) => {
-  const onSelectParent: MouseEventHandler<SVGSVGElement> = (event) => {
-    event.stopPropagation();
-    selectParent();
-  };
+  isHovered,
+  isActive,
+  onSelectParent,
+  ...restPreviewProps
+}) => (
+  <div
+    className={cx(documentTreeStyles.wrapperShiftRight, className)}
+    {...restPreviewProps}
+  >
+    <Component {...props} />
+  </div>
+);
 
-  return (
-    <div className={cx(styles.root, className)}>
-      <FontAwesomeIcon icon={faLevelUpAlt} onClick={onSelectParent} />
-    </div>
-  );
-};
-
-export default ActiveLabel;
+export default Basic;

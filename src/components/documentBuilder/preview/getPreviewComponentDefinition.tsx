@@ -20,6 +20,7 @@ import {
   DocumentComponent,
   DocumentElement,
   PipelineDocumentConfig,
+  PreviewComponentProps,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { get } from "lodash";
 import { UnknownObject } from "@/types";
@@ -31,15 +32,7 @@ import { getComponentDefinition } from "@/components/documentBuilder/documentTre
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import HoveredLabel from "./HoveredLabel";
 import ActiveLabel from "./ActiveLabel";
-
-type PreviewComponentProps = {
-  className?: string;
-  isHovered: boolean;
-  isActive: boolean;
-  onClick: React.MouseEventHandler<HTMLDivElement>;
-  onMouseEnter: React.MouseEventHandler<HTMLDivElement>;
-  onMouseLeave: React.MouseEventHandler<HTMLDivElement>;
-};
+import Basic from "./elementsPreview/Basic";
 
 function getPreviewComponentDefinition(
   element: DocumentElement
@@ -58,6 +51,7 @@ function getPreviewComponentDefinition(
         className,
         isHovered,
         isActive,
+        onSelectParent,
         ...restPreviewProps
       }) => (
         <div
@@ -73,7 +67,7 @@ function getPreviewComponentDefinition(
           {isActive && (
             <ActiveLabel
               className={documentTreeStyles.labelShiftRight}
-              elementType={element.type}
+              selectParent={onSelectParent}
             />
           )}
           <Component {...props} />
@@ -95,6 +89,8 @@ function getPreviewComponentDefinition(
       const PreviewComponent: React.FC<PreviewComponentProps> = ({
         children,
         isHovered,
+        isActive,
+        onSelectParent,
         ...restPreviewProps
       }) => (
         <Component {...restPreviewProps}>
@@ -219,6 +215,8 @@ function getPreviewComponentDefinition(
         children,
         className,
         isHovered,
+        isActive,
+        onSelectParent,
         ...restPreviewProps
       }) => (
         <div
@@ -235,6 +233,12 @@ function getPreviewComponentDefinition(
               elementType={element.type}
             />
           )}
+          {isActive && (
+            <ActiveLabel
+              className={documentTreeStyles.labelShiftUp}
+              selectParent={onSelectParent}
+            />
+          )}
           <div className="text-muted">List: {arrayValue}</div>
           <div className="text-muted">
             Element key: @{config.elementKey || "element"}
@@ -246,8 +250,15 @@ function getPreviewComponentDefinition(
       return { Component: PreviewComponent };
     }
 
-    default:
-      return getComponentDefinition(element);
+    default: {
+      const previewDocumentComponent = getComponentDefinition(element);
+      return {
+        Component: Basic,
+        props: {
+          previewDocumentComponent,
+        },
+      };
+    }
   }
 }
 

@@ -25,6 +25,7 @@ import {
 import AddElementAction from "./AddElementAction";
 import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
 import getPreviewComponentDefinition from "./getPreviewComponentDefinition";
+import getParentElementName from "./getParentElementName";
 
 export type ElementPreviewProps = {
   /**
@@ -82,6 +83,17 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
     }
   };
 
+  const onSelectParent = () => {
+    const parentElementName = getParentElementName(elementName);
+
+    console.log("onSelectParent", {
+      elementName,
+      parentElementName,
+    });
+
+    setActiveElement(parentElementName);
+  };
+
   // Render children and Add Menu for the container element
   const isContainer = Array.isArray(previewElement.children);
 
@@ -103,24 +115,28 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
       })}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
+      onSelectParent={onSelectParent}
       isHovered={isHovered}
       isActive={isActive}
     >
       {props?.children}
       {isContainer &&
-        previewElement.children.map((childElement, i) => (
-          <ElementPreview
-            key={`${elementName}.children.${i}`}
-            name={name}
-            elementName={`${elementName}.children.${i}`}
-            previewElement={childElement}
-            activeElement={activeElement}
-            setActiveElement={setActiveElement}
-            menuBoundary={menuBoundary}
-            hoveredElement={hoveredElement}
-            setHoveredElement={setHoveredElement}
-          />
-        ))}
+        previewElement.children.map((childElement, i) => {
+          const childElementName = `${elementName}.children.${i}`;
+          return (
+            <ElementPreview
+              key={childElementName}
+              name={name}
+              elementName={childElementName}
+              previewElement={childElement}
+              activeElement={activeElement}
+              setActiveElement={setActiveElement}
+              menuBoundary={menuBoundary}
+              hoveredElement={hoveredElement}
+              setHoveredElement={setHoveredElement}
+            />
+          );
+        })}
       {isContainer && (
         <AddElementAction
           elementsCollectionName={`${name}.${elementName}.children`}
