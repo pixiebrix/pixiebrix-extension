@@ -22,7 +22,7 @@ import {
   PipelineDocumentConfig,
   PreviewComponentProps,
 } from "@/components/documentBuilder/documentBuilderTypes";
-import { get } from "lodash";
+import { get, isEmpty } from "lodash";
 import { UnknownObject } from "@/types";
 import { isExpression } from "@/runtime/mapArgs";
 import cx from "classnames";
@@ -31,6 +31,9 @@ import { Button } from "react-bootstrap";
 import { getComponentDefinition } from "@/components/documentBuilder/documentTree";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import HoveredLabel from "./HoveredLabel";
+import ImagePlaceholder from "@/components/imagePlaceholder/ImagePlaceholder";
+import { isValidUrl } from "@/utils";
+
 import ActiveLabel from "./ActiveLabel";
 import Unknown from "./elementsPreview/Unknown";
 import Basic from "./elementsPreview/Basic";
@@ -53,6 +56,43 @@ function getPreviewComponentDefinition(
           documentComponent,
         },
       };
+    }
+
+    case "image": {
+      let { Component, props } = getComponentDefinition(element);
+
+      // If it's not a valid URL, show a placeholder
+      if (
+        typeof props.src !== "string" ||
+        !isValidUrl(props.src, { protocols: ["https:"] })
+      ) {
+        Component = ImagePlaceholder;
+        // Don't let empty values (including null, empty string, and 0)
+        props.height = isEmpty(props.height) ? "50" : props.height;
+        props.width = isEmpty(props.width) ? "100" : props.width;
+      }
+
+      const PreviewComponent: React.FC<PreviewComponentProps> = ({
+        children,
+        className,
+        isHovered,
+        ...restPreviewProps
+      }) => (
+        <div
+          className={cx(documentTreeStyles.imageWrapper, className)}
+          {...restPreviewProps}
+        >
+          {isHovered && (
+            <HoveredLabel
+              className={documentTreeStyles.labelShiftRight}
+              elementType={element.type}
+            />
+          )}
+          <Component {...props} />
+        </div>
+      );
+
+      return { Component: PreviewComponent, props };
     }
 
     case "container":
@@ -113,7 +153,7 @@ function getPreviewComponentDefinition(
         ...restPreviewProps
       }) => (
         <div
-          className={cx(documentTreeStyles.wrapperShiftRight, className)}
+          className={cx(documentTreeStyles.shiftRightWrapper, className)}
           {...restPreviewProps}
         >
           {isHovered && (
@@ -145,7 +185,7 @@ function getPreviewComponentDefinition(
         ...restPreviewProps
       }) => (
         <div
-          className={cx(documentTreeStyles.wrapperShiftRight, className)}
+          className={cx(documentTreeStyles.shiftRightWrapper, className)}
           {...restPreviewProps}
         >
           {isHovered && (
@@ -185,11 +225,7 @@ function getPreviewComponentDefinition(
         return (
           <div>
             <div
-              className={cx(
-                className,
-                documentTreeStyles.inlineWrapper,
-                documentTreeStyles.wrapperShiftRight
-              )}
+              className={cx(className, documentTreeStyles.inlineWrapper)}
               {...restPreviewProps}
             >
               {isHovered && (

@@ -95,6 +95,13 @@ export type TraceExitData = TraceRecordMeta &
      * If a condition was specified and not met, this is `true`, otherwise `false`.
      */
     skippedRun: boolean;
+
+    /**
+     * `true` if the brick was skipped or finished running. Introduced to avoid gotchas with effect bricks which
+     * produce a null/undefined result.
+     * @since 1.7.0
+     */
+    isFinal: boolean;
   };
 
 export type TraceRecord = TraceEntryData & Partial<TraceExitData>;

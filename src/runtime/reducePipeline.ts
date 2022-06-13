@@ -506,6 +506,7 @@ export async function blockReducer(
     outputKey: blockConfig.outputKey,
     output: null,
     skippedRun: false,
+    isFinal: true,
   };
 
   if (
@@ -614,6 +615,7 @@ function throwBlockError(
     blockInstanceId: blockConfig.instanceId,
     error: serializeError(error),
     skippedRun: false,
+    isFinal: true,
   });
 
   if (blockConfig.onError?.alert) {

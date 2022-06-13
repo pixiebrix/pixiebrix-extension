@@ -24,14 +24,14 @@ import PipelineHeaderNode, {
 import PipelineFooterNode, {
   PipelineFooterNodeProps,
 } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
-import { BlockPipeline } from "@/blocks/types";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import {
   BrickNodeContentProps,
   BrickNodeProps,
   FormikError,
   RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
-import { TraceError } from "@/telemetry/trace";
+import { TraceError, TraceRecord } from "@/telemetry/trace";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { TypedBlockMap } from "@/blocks/registry";
 import { IBlock, OutputKey, UUID } from "@/core";
@@ -86,6 +86,45 @@ type SubPipeline = {
   subPipeline: BlockPipeline;
   subPipelinePath: string;
 };
+
+function decideBrickStatus({
+  index,
+  blockConfig,
+  pipelineErrors,
+  traceRecord,
+  errorTraceEntry,
+}: {
+  index: number;
+  blockConfig: BlockConfig;
+  pipelineErrors: FormikError;
+  traceRecord: TraceRecord;
+  errorTraceEntry: TraceError;
+}): RunStatus {
+  // If blockPipelineErrors is a string, it means the error is on the pipeline level
+  // eslint-disable-next-line security/detect-object-injection -- index is a number
+  if (typeof pipelineErrors !== "string" && Boolean(pipelineErrors?.[index])) {
+    return RunStatus.ERROR;
+  }
+
+  if (errorTraceEntry?.blockInstanceId === blockConfig.instanceId) {
+    return RunStatus.WARNING;
+  }
+
+  if (traceRecord?.skippedRun) {
+    return RunStatus.SKIPPED;
+  }
+
+  if (traceRecord == null) {
+    return RunStatus.NONE;
+  }
+
+  // We already checked for errors from pipelineErrors
+  if (traceRecord.isFinal) {
+    return RunStatus.SUCCESS;
+  }
+
+  return RunStatus.PENDING;
+}
 
 const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   allBlocks,
@@ -281,23 +320,15 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       };
 
       if (block) {
-        const runStatus: RunStatus =
-          // If blockPipelineErrors is a string, it means the error is on the pipeline level
-          typeof pipelineErrors !== "string" &&
-          // eslint-disable-next-line security/detect-object-injection
-          Boolean(pipelineErrors?.[index])
-            ? RunStatus.ERROR
-            : errorTraceEntry?.blockInstanceId === blockConfig.instanceId
-            ? RunStatus.WARNING
-            : traceRecord?.skippedRun
-            ? RunStatus.SKIPPED
-            : traceRecord == null
-            ? RunStatus.NONE
-            : RunStatus.SUCCESS;
-
         contentProps = {
           icon: <BrickIcon brick={block} size="2x" inheritColor />,
-          runStatus,
+          runStatus: decideBrickStatus({
+            index,
+            blockConfig,
+            pipelineErrors,
+            traceRecord,
+            errorTraceEntry,
+          }),
           brickLabel: isNullOrBlank(blockConfig.label)
             ? block?.name
             : blockConfig.label,
@@ -479,9 +510,11 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             );
           }
 
-          default:
+          default: {
             // Impossible code branch
-            return null;
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
+            throw new Error(`Unexpected type: ${type}`);
+          }
         }
       })}
     </ListGroup>

@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,40 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "@/components/brickModal/brickModalVariables.scss";
+import React, { useEffect, useRef } from "react";
+import { run as runHolder } from "holderjs";
+import { Image } from "react-bootstrap";
 
-.root {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: stretch;
-}
+const ImagePlaceholder: React.VoidFunctionComponent<{
+  height: number | string;
+  width: number | string;
+}> = ({ width, height }) => {
+  const imageRef = useRef();
 
-.item {
-  border-radius: 4px;
-  border: none;
-  font-weight: 400;
-  font-size: 16px;
-  color: #7674ab;
-  background: none;
-  text-align: start;
-  padding: 0.25rem 0.5rem;
+  useEffect(() => {
+    runHolder({
+      images: imageRef.current,
+    });
+  }, []);
 
-  &:hover {
-    background: #fbe5ff !important;
-  }
-}
+  // https://github.com/imsky/holder/issues/225#issuecomment-770261030
+  return (
+    <Image
+      alt="Placeholder"
+      ref={imageRef}
+      src={`holder.js/${width}x${height}`}
+    />
+  );
+};
 
-.itemActive {
-  color: #fae5ff !important;
-  background: #6462aa;
-
-  &:hover {
-    background: #6462aa !important;
-  }
-}
-
-.iconContainer {
-  display: inline-block;
-  width: 1.5rem;
-}
+export default ImagePlaceholder;

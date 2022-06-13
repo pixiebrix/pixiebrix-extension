@@ -249,6 +249,7 @@ describe("Trace normal execution", () => {
       outputKey: undefined,
       output: { message: "hello" },
       skippedRun: false,
+      isFinal: true,
     };
 
     expect(traces.addEntry).toHaveBeenCalledTimes(1);
@@ -301,6 +302,7 @@ describe("Trace normal execution", () => {
       outputKey,
       output: { message: "hello" },
       skippedRun: false,
+      isFinal: true,
     };
 
     expect(traces.addExit).toHaveBeenCalledTimes(2);

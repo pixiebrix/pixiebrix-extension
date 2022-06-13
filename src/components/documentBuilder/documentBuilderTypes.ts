@@ -25,6 +25,7 @@ export const DOCUMENT_ELEMENT_TYPES = [
   "header_2",
   "header_3",
   "text",
+  "image",
   "container",
   "row",
   "column",
