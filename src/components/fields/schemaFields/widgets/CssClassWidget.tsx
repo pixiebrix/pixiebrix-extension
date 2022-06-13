@@ -46,6 +46,7 @@ import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
 import { compact, partition, uniq } from "lodash";
 import TemplateToggleWidget from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
 import { InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
+import styles from "./CssClassWidget.module.scss";
 
 /**
  * An independent class name
@@ -356,7 +357,7 @@ const SpacingControl: React.VFC<{
 
   return (
     <div className={className}>
-      <div className="d-flex align-items-center">
+      <div className={styles.spacingControlContainer}>
         <div
           role="button"
           tabIndex={0}
@@ -370,7 +371,7 @@ const SpacingControl: React.VFC<{
           {label}&nbsp;
           <FontAwesomeIcon icon={expand ? faCaretDown : faCaretRight} />
         </div>
-        <div>
+        <div className="ml-1">
           <Form.Control
             type="number"
             min="0"
@@ -386,16 +387,16 @@ const SpacingControl: React.VFC<{
         </div>
       </div>
       {expand && (
-        <div>
+        <div className="pl-2">
           {spacingSides.map((direction) => (
             <div
               key={direction.side}
-              className="ml-4 d-flex align-items-center"
+              className={styles.spacingControlContainer}
             >
               <div>
                 {label} {direction.label}
               </div>
-              <div>
+              <div className="ml-1">
                 <Form.Control
                   type="number"
                   min="0"
