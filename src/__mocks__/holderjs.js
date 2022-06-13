@@ -15,21 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
-
-const elementTypeLabels: Record<DocumentElementType, string> = {
-  header_1: "Header 1",
-  header_2: "Header 2",
-  header_3: "Header 3",
-  container: "Container",
-  row: "Row",
-  column: "Column",
-  card: "Card",
-  text: "Text",
-  image: "Image",
-  button: "Button",
-  pipeline: "Brick",
-  list: "List",
-};
-
-export default elementTypeLabels;
+export function run(...args) {
+  console.debug("holderjs:run", args);
+}
