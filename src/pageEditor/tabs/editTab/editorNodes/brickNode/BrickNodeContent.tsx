@@ -62,7 +62,7 @@ const BrickNodeContent: React.FC<BrickNodeContentProps> = ({
       badgeSource = "/img/fa-exclamation-circle-custom.svg";
       break;
     case RunStatus.PENDING:
-      badgeSource = "/img/fa-circle-play-custom.svg";
+      badgeSource = "/img/fa-circle-solid-loading-custom.svg";
       break;
     default:
       badgeSource = null;
