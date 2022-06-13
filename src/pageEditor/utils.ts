@@ -30,6 +30,7 @@ import {
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { joinElementName } from "@/components/documentBuilder/utils";
 import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
+import Retry from "@/blocks/transformers/controlFlow/Retry";
 
 export async function getCurrentURL(): Promise<string> {
   if (!browser.devtools) {
@@ -65,6 +66,10 @@ export function getRecipeIdForElement(
 export function getPipelinePropNames(block: BlockConfig): string[] {
   switch (block.id) {
     case ForEach.BLOCK_ID: {
+      return ["body"];
+    }
+
+    case Retry.BLOCK_ID: {
       return ["body"];
     }
 
