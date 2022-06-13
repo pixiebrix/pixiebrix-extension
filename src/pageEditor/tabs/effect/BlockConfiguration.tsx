@@ -51,7 +51,8 @@ const targetOptions: Array<Option<BlockWindow>> = [
   { label: "Target Tab (target)", value: "target" },
   { label: "Top-level Frame (top)", value: "top" },
   { label: "All Tabs (broadcast)", value: "broadcast" },
-  { label: "Server (remote)", value: "remote" },
+  // Not currently generally available
+  // { label: "Server (remote)", value: "remote" },
 ];
 
 const BlockConfiguration: React.FunctionComponent<{
@@ -155,7 +156,7 @@ const BlockConfiguration: React.FunctionComponent<{
                 as={SelectWidget}
                 options={targetOptions}
                 blankValue={DEFAULT_WINDOW_VALUE}
-                description="Where to execute the brick."
+                description="The tab/frame to run the brick. To ensure PixieBrix has permission to run on the tab, add an Extra Permissions pattern that matches the target tab URL"
               />
             </>
           )}
