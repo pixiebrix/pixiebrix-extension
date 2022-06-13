@@ -33,6 +33,7 @@ import { testMatchPatterns } from "@/blocks/available";
 import { isQuickBarExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
 
 export interface InstallState {
+  loading: boolean;
   availableInstalledIds: Set<UUID> | undefined;
   availableDynamicIds: Set<UUID> | undefined;
   unavailableCount: number | null;
@@ -46,7 +47,7 @@ function useInstallState(
     tabState: { navSequence, meta, error },
   } = useContext(PageEditorTabContext);
 
-  const [availableInstalledIds] = useAsyncState(
+  const [availableInstalledIds, availableInstalledIdsLoading] = useAsyncState(
     async () => {
       if (meta && !error) {
         const installedExtensionPoints = new Map(
@@ -97,7 +98,7 @@ function useInstallState(
     new Set<UUID>()
   );
 
-  const [availableDynamicIds] = useAsyncState(
+  const [availableDynamicIds, availableDynamicIdsLoading] = useAsyncState(
     async () => {
       // At this point, if the extensionPoint is an inner extension point (without its own id), then it will have
       // been expanded to extensionPoint
@@ -147,6 +148,7 @@ function useInstallState(
   );
 
   return {
+    loading: availableInstalledIdsLoading || availableDynamicIdsLoading,
     availableInstalledIds,
     availableDynamicIds,
     unavailableCount: meta
