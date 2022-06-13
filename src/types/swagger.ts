@@ -285,7 +285,7 @@ export interface paths {
     delete: operations["destroyOrganizationContact"];
     patch: operations["partialUpdateOrganizationContact"];
   };
-  "/api/partner/control-rooms/{id}/": {
+  "/api/control-rooms/{id}/": {
     get: operations["retrieveControlRoom"];
     patch: operations["partialUpdateControlRoom"];
   };
@@ -389,7 +389,7 @@ export interface paths {
   "/api/onboarding/": {
     post: operations["createOnboarding"];
   };
-  "/api/partner/control-rooms/": {
+  "/api/control-rooms/": {
     post: operations["createControlRoom"];
   };
   "/api/proxy/": {
