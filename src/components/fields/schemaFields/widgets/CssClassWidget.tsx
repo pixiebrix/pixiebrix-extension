@@ -27,6 +27,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAlignCenter,
+  faAlignJustify,
   faAlignLeft,
   faAlignRight,
   faBold,
@@ -34,6 +35,8 @@ import {
   faCaretDown,
   faCaretRight,
   faCheck,
+  faEyeSlash,
+  faFill,
   faFont,
   faItalic,
 } from "@fortawesome/free-solid-svg-icons";
@@ -78,6 +81,10 @@ export const flags = {
     className: "font-italic",
     title: <FontAwesomeIcon icon={faItalic} />,
   },
+  hide: {
+    className: "d-none",
+    title: <FontAwesomeIcon icon={faEyeSlash} />,
+  },
 };
 
 export const optionsGroups = {
@@ -88,11 +95,10 @@ export const optionsGroups = {
       title: <FontAwesomeIcon icon={faAlignCenter} />,
     },
     { className: "text-right", title: <FontAwesomeIcon icon={faAlignRight} /> },
-    // Justify doesn't seem to do anything - it might be the default for p?
-    // {
-    //   className: "text-justify",
-    //   title: <FontAwesomeIcon icon={faAlignJustify} />,
-    // },
+    {
+      className: "text-justify",
+      title: <FontAwesomeIcon icon={faAlignJustify} />,
+    },
   ],
   textVariant: [
     {
@@ -102,6 +108,10 @@ export const optionsGroups = {
     {
       className: "text-primary",
       title: <span className="text-primary">Primary</span>,
+    },
+    {
+      className: "text-secondary",
+      title: <span className="secondary">Secondary</span>,
     },
     { className: "text-info", title: <span className="text-info">Info</span> },
     {
@@ -115,6 +125,52 @@ export const optionsGroups = {
     {
       className: "text-success",
       title: <span className="text-success">Success</span>,
+    },
+    {
+      className: "text-muted",
+      title: <span className="text-muted">Muted</span>,
+    },
+    {
+      className: "text-white",
+      title: <span>White</span>,
+    },
+  ],
+  backgroundColor: [
+    {
+      className: "bg-primary",
+      title: <span className="bg-primary text-white">Primary</span>,
+    },
+    {
+      className: "bg-secondary",
+      title: <span className="bg-secondary text-white">Secondary</span>,
+    },
+    {
+      className: "bg-success",
+      title: <span className="bg-success text-white">Success</span>,
+    },
+    {
+      className: "bg-info",
+      title: <span className="bg-info text-white">Info</span>,
+    },
+    {
+      className: "bg-warning",
+      title: <span className="bg-warning">Warning</span>,
+    },
+    {
+      className: "bg-danger",
+      title: <span className="bg-danger text-white">Danger</span>,
+    },
+    {
+      className: "bg-dark",
+      title: <span className="bg-dark text-white">Dark</span>,
+    },
+    {
+      className: "bg-light",
+      title: <span className="bg-light">Light</span>,
+    },
+    {
+      className: "bg-white",
+      title: <span className="bg-white">White</span>,
     },
   ],
   borders: [
@@ -543,6 +599,35 @@ const CssClassWidget: React.VFC<
 
         <ButtonGroup className="mx-2">
           <DropdownButton
+            title={
+              <span
+                className={
+                  optionsGroups.backgroundColor.find((x) =>
+                    classes.includes(x.className)
+                  )?.className
+                }
+              >
+                <FontAwesomeIcon icon={faFill} />
+              </span>
+            }
+            disabled={disableControls}
+            variant="light"
+            size="sm"
+          >
+            {optionsGroups.backgroundColor.map((flag) => (
+              <FlagItem
+                key={flag.className}
+                {...flag}
+                classes={classes}
+                toggleClass={toggleClass}
+                group={optionsGroups.backgroundColor}
+              />
+            ))}
+          </DropdownButton>
+        </ButtonGroup>
+
+        <ButtonGroup className="mx-2">
+          <DropdownButton
             title={<FontAwesomeIcon icon={faBorderStyle} />}
             disabled={disableControls}
             variant="light"
@@ -558,6 +643,18 @@ const CssClassWidget: React.VFC<
               />
             ))}
           </DropdownButton>
+        </ButtonGroup>
+
+        <ButtonGroup className="mx-2">
+          {[flags.hide].map((flag) => (
+            <FlagButton
+              key={flag.className}
+              {...flag}
+              disabled={disableControls}
+              classes={classes}
+              toggleClass={toggleClass}
+            />
+          ))}
         </ButtonGroup>
       </div>
 

@@ -79,7 +79,7 @@ test("adds a CSS class to an active element", async () => {
     activeElement: "element",
   });
 
-  expect(container.querySelector("p")).toHaveClass("active");
+  expect(container.querySelector("div")).toHaveClass("active");
 });
 
 test("calls setHoveredElement callback on hover", async () => {
@@ -116,7 +116,7 @@ test("adds a CSS class to a hovered element", async () => {
     hoveredElement: "element",
   });
 
-  expect(container.querySelector("p")).toHaveClass("hovered");
+  expect(container.querySelector("div")).toHaveClass("hovered");
 });
 
 test.each(DOCUMENT_ELEMENT_TYPES)(

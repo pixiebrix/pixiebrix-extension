@@ -23,6 +23,8 @@ import { isErrorObject } from "@/errors/errorHelpers";
 import InputDetail from "@/components/logViewer/details/InputDetail";
 import OutputDetail from "@/components/logViewer/details/OutputDetail";
 import getErrorDetails from "@/components/errors/getErrorDetails";
+import styles from "./EntryRow.module.scss";
+import cx from "classnames";
 
 const dateFormat = new Intl.DateTimeFormat("en-US", {
   dateStyle: "short",
@@ -71,9 +73,9 @@ const EntryRow: React.FunctionComponent<{ entry: LogEntry }> = ({ entry }) => {
         onClick={() => {
           setExpanded(!expanded);
         }}
-        style={{ cursor: expandable ? "pointer" : "" }}
+        className={cx(styles.mainRow, { [styles.expandable]: expandable })}
       >
-        <td>
+        <td className={styles.caret}>
           {expandable && (
             <span>
               <FontAwesomeIcon icon={expanded ? faCaretDown : faCaretRight} />
@@ -81,7 +83,7 @@ const EntryRow: React.FunctionComponent<{ entry: LogEntry }> = ({ entry }) => {
           )}
         </td>
         <td>{dateFormat.format(new Date(Number(entry.timestamp)))}</td>
-        <td>{entry.level.toUpperCase()}</td>
+        <td className={styles.level}>{entry.level.toUpperCase()}</td>
         <td>{entry.context?.label}</td>
         <td>{entry.context?.blockId ?? entry.context?.serviceId ?? ""}</td>
         <td>{entry.message}</td>

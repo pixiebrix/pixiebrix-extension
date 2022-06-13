@@ -34,9 +34,12 @@ import { joinName } from "@/utils";
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
 import { DebounceOptions } from "@/extensionPoints/types";
+import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 
 function supportsSelector(trigger: Trigger) {
-  return !["load", "interval", "selectionchange"].includes(trigger);
+  return !["load", "interval", "selectionchange", "statechange"].includes(
+    trigger
+  );
 }
 
 function supportsTargetMode(trigger: Trigger) {
@@ -122,6 +125,7 @@ const TriggerConfiguration: React.FC<{
           <option value="keyup">Keyup</option>
           <option value="keypress">Keypress</option>
           <option value="change">Change</option>
+          <option value="statechange">State Change</option>
           <option value="custom">Custom Event</option>
         </ConnectedFieldTemplate>
 
@@ -229,6 +233,8 @@ const TriggerConfiguration: React.FC<{
       </FieldSection>
 
       <MatchRulesSection isLocked={isLocked} />
+
+      <ExtraPermissionsSection />
     </Card>
   );
 };

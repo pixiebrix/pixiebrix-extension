@@ -20,15 +20,17 @@ import Loader from "@/components/Loader";
 import blockRegistry from "@/blocks/registry";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import ReactShadowRoot from "react-shadow-root";
-import { getErrorMessage } from "@/errors/errorHelpers";
-import { BlockArg, RegistryId, RendererOutput } from "@/core";
+import { getErrorMessage, selectSpecificError } from "@/errors/errorHelpers";
+import { BlockArg, MessageContext, RegistryId, RendererOutput } from "@/core";
 import { PanelPayload } from "@/sidebar/types";
 import RendererComponent from "@/sidebar/RendererComponent";
-import { BusinessError } from "@/errors/businessErrors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useAsyncEffect } from "use-async-effect";
 import GridLoader from "react-spinners/GridLoader";
 import styles from "./PanelBody.module.scss";
+import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
+import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 
 type BodyProps = {
   blockId: RegistryId;
@@ -105,9 +107,11 @@ const slice = createSlice({
   },
 });
 
-const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
-  payload,
-}) => {
+const PanelBody: React.FunctionComponent<{
+  isRootPanel?: boolean;
+  payload: PanelPayload;
+  context: MessageContext;
+}> = ({ payload, context, isRootPanel = false }) => {
   const [state, dispatch] = useReducer(slice.reducer, initialPanelState);
 
   useAsyncEffect(async () => {
@@ -126,13 +130,19 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
       dispatch(slice.actions.reactivate());
 
       const { blockId, ctxt, args } = payload;
+
+      console.debug("Running panel body for panel payload", payload);
+
       const block = await blockRegistry.lookup(blockId);
       // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/1939
       const body = await block.run(args as BlockArg, {
         ctxt,
         root: null,
         // TODO: use the correct logger here so the errors show up in the logs
-        logger: new ConsoleLogger({ blockId }),
+        logger: new ConsoleLogger({
+          ...context,
+          blockId,
+        }),
         async runPipeline() {
           throw new BusinessError(
             "Support for running pipelines in panels not implemented"
@@ -158,6 +168,27 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
   }
 
   if (state.error) {
+    const cancelError = selectSpecificError(state.error, CancelError);
+
+    if (cancelError) {
+      return (
+        <>
+          {state.isFetching && (
+            <span className={styles.loader}>
+              <GridLoader size={8} />
+            </span>
+          )}
+          {isRootPanel ? (
+            <RootCancelledPanel error={cancelError} />
+          ) : (
+            <div className="text-muted">
+              This panel is not available: {getErrorMessage(state.error)}
+            </div>
+          )}
+        </>
+      );
+    }
+
     return (
       <>
         {state.isFetching && (
@@ -165,9 +196,13 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
             <GridLoader size={8} />
           </span>
         )}
-        <div className="text-danger">
-          Error rendering panel: {getErrorMessage(state.error)}
-        </div>
+        {isRootPanel ? (
+          <RootErrorPanel error={state.error} />
+        ) : (
+          <div className="text-danger">
+            Error rendering panel: {getErrorMessage(state.error)}
+          </div>
+        )}
       </>
     );
   }

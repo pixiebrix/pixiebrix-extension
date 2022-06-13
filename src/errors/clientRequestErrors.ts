@@ -29,11 +29,14 @@ import { SerializableAxiosError } from "@/errors/networkErrorHelpers";
  */
 export class ClientRequestError extends BusinessError {
   override name = "ClientRequestError";
+  // Specialize the cause type
   override readonly cause: SerializableAxiosError;
 
-  // eslint-disable-next-line @typescript-eslint/no-useless-constructor -- Required to make the types stricter
   constructor(message: string, options: { cause: SerializableAxiosError }) {
     super(message, options);
+    // This assignment seems to be required in Chrome 102 to ensure the cause is serialized by serialize-error
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/3613
+    this.cause = options.cause;
   }
 }
 

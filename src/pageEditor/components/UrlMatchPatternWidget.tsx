@@ -65,7 +65,12 @@ export const DEFAULT_SHORTCUTS: Shortcut[] = [
 const UrlMatchPatternWidget: React.VFC<UrlMatchPatternWidgetProps> = (
   props
 ) => {
-  const { name, disabled, shortcuts = DEFAULT_SHORTCUTS } = props;
+  const {
+    name,
+    disabled,
+    shortcuts = DEFAULT_SHORTCUTS,
+    addButtonCaption = "Add Site",
+  } = props;
 
   const { values: formState } = useFormikContext<FormState>();
   const [{ value }, , { setValue }] = useField<string[]>(name);
@@ -95,7 +100,7 @@ const UrlMatchPatternWidget: React.VFC<UrlMatchPatternWidgetProps> = (
       >
         <ArrayWidget
           schema={{ items: { type: "string" } }}
-          addButtonCaption="Add Site"
+          addButtonCaption={addButtonCaption}
           {...props}
         />
       </FieldRuntimeContext.Provider>

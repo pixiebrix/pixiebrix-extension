@@ -23,7 +23,7 @@ let timer: NodeJS.Timeout;
 
 function updateBadge(errorMessage: string | null): void {
   void chrome.browserAction.setTitle({
-    title: errorMessage,
+    title: errorMessage ?? "Unknown error (no error message provided)",
   });
   void chrome.browserAction.setBadgeText({
     text: counter ? String(counter) : undefined,

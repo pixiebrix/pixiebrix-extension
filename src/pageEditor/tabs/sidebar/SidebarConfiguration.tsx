@@ -29,6 +29,7 @@ import { Trigger } from "@/extensionPoints/sidebarExtension";
 import { useField, useFormikContext } from "formik";
 import { TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { DebounceOptions } from "@/extensionPoints/types";
+import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 
 const SidebarConfiguration: React.FC<{
   isLocked: boolean;
@@ -93,6 +94,7 @@ const SidebarConfiguration: React.FC<{
         >
           <option value="load">Page Load / Navigation</option>
           <option value="selectionchange">Selection Change</option>
+          <option value="statechange">State Change</option>
           <option value="custom">Custom Event</option>
           <option value="manual">Manual</option>
         </ConnectedFieldTemplate>
@@ -110,6 +112,8 @@ const SidebarConfiguration: React.FC<{
       </FieldSection>
 
       <MatchRulesSection isLocked={isLocked} />
+
+      <ExtraPermissionsSection />
     </Card>
   );
 };

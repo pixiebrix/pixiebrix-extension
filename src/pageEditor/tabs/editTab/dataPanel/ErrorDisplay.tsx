@@ -17,8 +17,8 @@
 
 import React from "react";
 import { ErrorObject } from "serialize-error";
-import { Col, Container, Row } from "react-bootstrap";
 import getErrorDetails from "@/components/errors/getErrorDetails";
+import styles from "./ErrorDisplay.module.scss";
 
 type ErrorDisplayProps = {
   error: ErrorObject;
@@ -30,14 +30,10 @@ const ErrorDisplay: React.VoidFunctionComponent<ErrorDisplayProps> = ({
   const { title, detailsElement } = getErrorDetails(error);
 
   return (
-    <Container>
-      <Row>
-        <Col>
-          <p>{title}</p>
-        </Col>
-      </Row>
+    <div className={styles.root}>
+      <span className={styles.title}>{title}</span>
       {detailsElement}
-    </Container>
+    </div>
   );
 };
 

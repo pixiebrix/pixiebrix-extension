@@ -15,26 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlockOptions, RegistryId, UUID } from "@/core";
-import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { GetPageState, Namespace } from "./pageState";
+import { BusinessError } from "@/errors/businessErrors";
+import { serializeError } from "serialize-error";
 
-export async function getStateValue<TResult>(
-  namespace: Namespace,
-  blueprintId?: RegistryId | null,
-  extensionId?: UUID | null
-): Promise<TResult> {
-  const getState = new GetPageState();
-  const logger = new ConsoleLogger({
-    extensionId,
-    blueprintId,
+describe("BusinessError", () => {
+  it("records cause", () => {
+    const cause = new Error("Pylon Error");
+    const error = new BusinessError("You Must Construct Additional Pylons", {
+      cause,
+    });
+    expect(serializeError(error).cause).toStrictEqual(serializeError(cause));
   });
-
-  const result: TResult = (await getState.transform(
-    unsafeAssumeValidArg({ namespace }),
-    { logger } as BlockOptions
-  )) as TResult;
-
-  return result;
-}
+});

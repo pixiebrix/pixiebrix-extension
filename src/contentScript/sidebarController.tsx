@@ -138,15 +138,17 @@ export function showSidebar(
     nonce = insertSidebar();
   }
 
-  // Run the extension points available on the page. If the sidebar is already in the page, running
-  // all the callbacks ensures the content is up-to-date
-  for (const callback of callbacks) {
-    try {
-      callback({ reason: RunReason.MANUAL });
-    } catch (error) {
-      // The callbacks should each have their own error handling. But wrap in a try-catch to ensure running
-      // the callbacks does not interfere prevent showing the sidebar
-      reportError(error);
+  if (!isShowing || (activateOptions.refresh ?? true)) {
+    // Run the extension points available on the page. If the sidebar is already in the page, running
+    // all the callbacks ensures the content is up-to-date
+    for (const callback of callbacks) {
+      try {
+        callback({ reason: RunReason.MANUAL });
+      } catch (error) {
+        // The callbacks should each have their own error handling. But wrap in a try-catch to ensure running
+        // the callbacks does not interfere prevent showing the sidebar
+        reportError(error);
+      }
     }
   }
 
