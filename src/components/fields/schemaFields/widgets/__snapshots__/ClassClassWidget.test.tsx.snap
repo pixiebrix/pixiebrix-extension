@@ -269,7 +269,7 @@ Object {
             class="mr-2"
           >
             <div
-              class="d-flex align-items-center"
+              class="spacingControlContainer"
             >
               <div
                 role="button"
@@ -293,7 +293,9 @@ Object {
                   />
                 </svg>
               </div>
-              <div>
+              <div
+                class="ml-1"
+              >
                 <input
                   class="form-control"
                   max="5"
@@ -308,7 +310,7 @@ Object {
             class="mx-2"
           >
             <div
-              class="d-flex align-items-center"
+              class="spacingControlContainer"
             >
               <div
                 role="button"
@@ -332,7 +334,9 @@ Object {
                   />
                 </svg>
               </div>
-              <div>
+              <div
+                class="ml-1"
+              >
                 <input
                   class="form-control"
                   max="5"
@@ -660,7 +664,7 @@ Object {
           class="mr-2"
         >
           <div
-            class="d-flex align-items-center"
+            class="spacingControlContainer"
           >
             <div
               role="button"
@@ -684,7 +688,9 @@ Object {
                 />
               </svg>
             </div>
-            <div>
+            <div
+              class="ml-1"
+            >
               <input
                 class="form-control"
                 max="5"
@@ -699,7 +705,7 @@ Object {
           class="mx-2"
         >
           <div
-            class="d-flex align-items-center"
+            class="spacingControlContainer"
           >
             <div
               role="button"
@@ -723,7 +729,9 @@ Object {
                 />
               </svg>
             </div>
-            <div>
+            <div
+              class="ml-1"
+            >
               <input
                 class="form-control"
                 max="5"

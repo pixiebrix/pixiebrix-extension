@@ -15,12 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  getLatestRunByExtensionId,
-  TraceError,
-  TraceRecord,
-  TraceSuccess,
-} from "@/telemetry/trace";
+import { getLatestRunByExtensionId, TraceRecord } from "@/telemetry/trace";
 import useInterval from "@/hooks/useInterval";
 import { useDispatch, useSelector } from "react-redux";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
@@ -41,8 +36,7 @@ function selectTraceMetadata(record: TraceRecord) {
   return {
     runId: record.runId,
     timestamp: record.timestamp,
-    isError: Boolean((record as TraceError).error),
-    isSuccess: Boolean((record as TraceSuccess).output),
+    isFinal: record.isFinal,
   };
 }
 
