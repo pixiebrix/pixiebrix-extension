@@ -19,6 +19,7 @@ import { Transformer } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg } from "@/core";
 import { random } from "lodash";
+import { BusinessError } from "@/errors/businessErrors";
 
 export class RandomNumber extends Transformer {
   constructor() {
@@ -38,17 +39,18 @@ export class RandomNumber extends Transformer {
     {
       lower: {
         type: "number",
-        description: "The lower bound",
+        description: "The lower bound (inclusive)",
         default: 0,
       },
       upper: {
         type: "number",
-        description: "The upper bound",
+        description: "The upper bound (exclusive)",
         default: 1,
       },
       floating: {
         type: "boolean",
-        description: "Specify returning a floating-point number.",
+        description:
+          "Flag to return a decimal (floating point) number instead of an integer.",
       },
     },
     []
@@ -69,6 +71,10 @@ export class RandomNumber extends Transformer {
     upper?: number;
     floating?: boolean;
   }>): Promise<{ value: number }> {
+    if (lower > upper) {
+      throw new BusinessError("lower bound cannot be greater than upper bound");
+    }
+
     return {
       value: random(lower, upper, floating),
     };
