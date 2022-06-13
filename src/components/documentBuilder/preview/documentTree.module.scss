@@ -41,10 +41,18 @@
 
 .inlineWrapper {
   display: inline-block;
+  position: relative;
 }
 
-.wrapperShiftRight {
+.shiftRightWrapper {
   position: relative;
+}
+
+.imageWrapper {
+  padding: 2px;
+  display: inline-block;
+  position: relative;
+  min-width: 75px; // restrict min width so the popup label doesn't overflow
 }
 
 .labelShiftRight {

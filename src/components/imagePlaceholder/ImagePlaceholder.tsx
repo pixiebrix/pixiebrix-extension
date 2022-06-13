@@ -36,7 +36,7 @@ const ImagePlaceholder: React.VoidFunctionComponent<{
     <Image
       alt="Placeholder"
       ref={imageRef}
-      src={`holder.js/${height}x${width}`}
+      src={`holder.js/${width}x${height}`}
     />
   );
 };
