@@ -30,10 +30,12 @@ import { Button } from "react-bootstrap";
 import { getComponentDefinition } from "@/components/documentBuilder/documentTree";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import HoveredLabel from "./HoveredLabel";
+import ActiveLabel from "./ActiveLabel";
 
 type PreviewComponentProps = {
   className?: string;
   isHovered: boolean;
+  isActive: boolean;
   onClick: React.MouseEventHandler<HTMLDivElement>;
   onMouseEnter: React.MouseEventHandler<HTMLDivElement>;
   onMouseLeave: React.MouseEventHandler<HTMLDivElement>;
@@ -55,6 +57,7 @@ function getPreviewComponentDefinition(
         children,
         className,
         isHovered,
+        isActive,
         ...restPreviewProps
       }) => (
         <div
@@ -63,6 +66,12 @@ function getPreviewComponentDefinition(
         >
           {isHovered && (
             <HoveredLabel
+              className={documentTreeStyles.labelShiftRight}
+              elementType={element.type}
+            />
+          )}
+          {isActive && (
+            <ActiveLabel
               className={documentTreeStyles.labelShiftRight}
               elementType={element.type}
             />

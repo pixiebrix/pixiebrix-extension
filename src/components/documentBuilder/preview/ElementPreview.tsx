@@ -104,6 +104,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
       isHovered={isHovered}
+      isActive={isActive}
     >
       {props?.children}
       {isContainer &&
