@@ -1,4 +1,4 @@
-import { BlockPipeline } from "@/blocks/types";
+import { BlockPipeline, Branch } from "@/blocks/types";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { BlockArgContext, ServiceContext, UserOptions, UUID } from "@/core";
 import ConsoleLogger from "@/utils/ConsoleLogger";
@@ -11,11 +11,27 @@ import { UnknownObject } from "@/types";
 import { ApiVersionOptions } from "@/runtime/apiVersionOptions";
 import { BusinessError } from "@/errors/businessErrors";
 
+type RunMetadata = {
+  /**
+   * The extension id
+   */
+  extensionId: UUID;
+  /**
+   * The extension runId
+   */
+  runId: UUID;
+  /**
+   * The accumulated trace branches
+   */
+  branches: Branch[];
+};
+
 type RunPipelineParams = {
   nonce: UUID;
   pipeline: BlockPipeline;
   context: BlockArgContext;
   options: ApiVersionOptions;
+  meta: RunMetadata;
 };
 
 /**
@@ -24,14 +40,16 @@ type RunPipelineParams = {
  * @param context the context, including @input, @options, and services
  * @param nonce a nonce to help the caller correlate requests/responses. (This shouldn't be necessary in practice though
  *  because the messaging framework takes care of the correlation. In this case we're just using it as a key on
- *  RendererPayload
+ *  RendererPayload)
  * @param options pipeline options to pass to reducePipeline
+ * @param meta run/trace metadata
  */
 export async function runRendererPipeline({
   pipeline,
   context,
   nonce,
   options,
+  meta,
 }: RunPipelineParams): Promise<RendererPayload> {
   expectContext("contentScript");
 
@@ -42,7 +60,7 @@ export async function runRendererPipeline({
         input: context["@input"] ?? {},
         optionsArgs: (context["@options"] ?? {}) as UserOptions,
         // Pass null here to force the runtime to handle correctly. Passing `document` here wouldn't make sense because
-        // it would be the page that contains the react tree (i.e., the frame of the sidebar)
+        // it would be the page that contains the React tree (i.e., the frame of the sidebar)
         root: null,
         // `reducePipeline` just spreads the serviceContext. If we needed to pick out the actual services we could do the
         // following. However, we actually want to pass through the rest of the context and we don't have an affordance
@@ -54,6 +72,7 @@ export async function runRendererPipeline({
         logger: new ConsoleLogger(),
         headless: true,
         ...options,
+        ...meta,
       }
     );
   } catch (error) {
@@ -63,6 +82,7 @@ export async function runRendererPipeline({
         blockId: error.blockId,
         args: error.args,
         ctxt: error.ctxt,
+        ...meta,
       };
     }
 
@@ -76,6 +96,7 @@ export async function runEffectPipeline({
   pipeline,
   context,
   options,
+  meta,
 }: RunPipelineParams): Promise<void> {
   expectContext("contentScript");
 
@@ -95,6 +116,7 @@ export async function runEffectPipeline({
     },
     {
       ...options,
+      ...meta,
       logger: new ConsoleLogger(),
       headless: true,
     }

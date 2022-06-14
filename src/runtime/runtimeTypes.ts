@@ -16,7 +16,7 @@
  */
 
 import { BlockConfig } from "@/blocks/types";
-import { BlockArg, IBlock, OutputKey, RegistryId } from "@/core";
+import { BlockArg, IBlock, OutputKey, RegistryId, UUID } from "@/core";
 
 export type BlockType = "reader" | "effect" | "transform" | "renderer";
 /**
@@ -38,6 +38,15 @@ export type RendererPayload = {
    * The registry id of the renderer block, e.g., @pixiebrix/table
    */
   blockId: RegistryId;
+  /**
+   * The extension run that produced the payload
+   * @since 1.7.0
+   */
+  runId: UUID;
+  /**
+   * The extension the produced the payload.
+   */
+  extensionId: UUID;
   /**
    * A unique id for the content, used control re-rendering (similar to `key` in React)
    */

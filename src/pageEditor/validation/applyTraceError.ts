@@ -21,25 +21,27 @@ import applyTraceBlockError from "./applyTraceBlockError";
 import applyTraceInputError from "./applyTraceInputError";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 
-function applyTraceError(
+function applyTraceErrors(
   pipelineErrors: FormikErrorTree,
-  errorTraceEntry: TraceError,
+  traceErrors: TraceError[],
   pipeline: BlockPipeline
 ) {
-  if (!errorTraceEntry) {
+  if (traceErrors.length === 0) {
     return;
   }
 
-  const { blockInstanceId } = errorTraceEntry;
-  const blockIndex = pipeline.findIndex(
-    (block) => block.instanceId === blockInstanceId
-  );
-  if (blockIndex === -1) {
-    return;
-  }
+  for (const traceError of traceErrors) {
+    const { blockInstanceId } = traceError;
+    const blockIndex = pipeline.findIndex(
+      (block) => block.instanceId === blockInstanceId
+    );
+    if (blockIndex === -1) {
+      return;
+    }
 
-  applyTraceInputError(pipelineErrors, errorTraceEntry, blockIndex);
-  applyTraceBlockError(pipelineErrors, errorTraceEntry, blockIndex);
+    applyTraceInputError(pipelineErrors, traceError, blockIndex);
+    applyTraceBlockError(pipelineErrors, traceError, blockIndex);
+  }
 }
 
-export default applyTraceError;
+export default applyTraceErrors;

@@ -27,14 +27,20 @@ import PanelBody from "@/sidebar/PanelBody";
 import { RendererPayload } from "@/runtime/runtimeTypes";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { serializeError } from "serialize-error";
+import { DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
+import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
 
-type BlockElementProps = { pipeline: BlockPipeline };
+type BlockElementProps = {
+  pipeline: BlockPipeline;
+  tracePath: DynamicPath;
+};
 
 /**
- * A React component that messages the contentScript to run a pipeline and then shows the result
+ * A React component that messages the contentScript to run a pipeline and then displays the result
  */
-const BlockElement: React.FC<BlockElementProps> = ({ pipeline }) => {
+const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
   const {
+    meta,
     options: { ctxt, logger },
   } = useContext(DocumentContext);
 
@@ -50,6 +56,11 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline }) => {
         context: ctxt,
         pipeline,
         // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will break for v4+
+        meta: {
+          ...meta,
+          // The pipeline is static, so don't need to maintain run counter on branches
+          branches: mapPathToTraceBranches(tracePath),
+        },
         options: apiVersionOptions("v3"),
       });
     }, [pipeline]);
@@ -65,6 +76,7 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline }) => {
         payload={{
           key: `error-${getErrorMessage(error)}`,
           error: serializeError(error),
+          ...meta,
         }}
       />
     );

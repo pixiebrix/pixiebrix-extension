@@ -16,11 +16,15 @@
  */
 
 import React from "react";
-import { BlockArgContext, BlockOptions } from "@/core";
+import { BlockArgContext, BlockOptions, UUID } from "@/core";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { BusinessError } from "@/errors/businessErrors";
 
 type DocumentState = {
+  meta: {
+    runId: UUID;
+    extensionId: UUID;
+  };
   options: BlockOptions<BlockArgContext>;
 };
 
@@ -29,7 +33,11 @@ const blankContext = {
   "@options": {},
 } as BlockArgContext;
 
-const initialValue: DocumentState = {
+export const initialValue: DocumentState = {
+  meta: {
+    runId: null,
+    extensionId: null,
+  },
   options: {
     ctxt: blankContext,
     // The root should correspond to the host page's content script. If we passed document here, it would end up being

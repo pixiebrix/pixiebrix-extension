@@ -79,6 +79,7 @@ import {
   OrganizationAuthState,
 } from "@/auth/authTypes";
 import { JsonObject } from "type-fest";
+import objectHash from "object-hash";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -246,9 +247,14 @@ export const traceRecordFactory = define<TraceRecord>({
   timestamp: timestampFactory,
   extensionId: uuidSequence,
   runId: uuidSequence,
+  branches(): TraceRecord["branches"] {
+    return [];
+  },
+  // XXX: callId should be derived from branches
+  callId: objectHash([]),
   blockInstanceId: uuidSequence,
   blockId: TEST_BLOCK_ID,
-  templateContext(): JsonObject {
+  templateContext(): TraceRecord["templateContext"] {
     return {};
   },
   renderedArgs(): RenderedArgs {
@@ -263,11 +269,14 @@ export const traceRecordFactory = define<TraceRecord>({
   },
 });
 
-export const traceErrorFactory = (config?: FactoryConfig<TraceError>) =>
+export const traceErrorFactory = (config?: FactoryConfig<TraceRecord>) =>
   traceRecordFactory({
     error: {
       message: "Trace error for tests",
     },
+    skippedRun: false,
+    isFinal: true,
+    isRenderer: false,
     ...config,
   }) as TraceError;
 

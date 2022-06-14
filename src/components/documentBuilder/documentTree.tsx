@@ -25,10 +25,12 @@ import {
   BuildDocumentBranch,
   DocumentComponent,
   DocumentElement,
+  DynamicPath,
 } from "./documentBuilderTypes";
 import ButtonElement from "@/components/documentBuilder/render/ButtonElement";
 import ListElement from "@/components/documentBuilder/render/ListElement";
 import { BusinessError } from "@/errors/businessErrors";
+import { joinElementName } from "@/components/documentBuilder/utils";
 
 const headerComponents = {
   header_1: "h1",
@@ -49,7 +51,8 @@ const UnknownType: React.FC<{ componentType: string }> = ({
 );
 
 export function getComponentDefinition(
-  element: DocumentElement
+  element: DocumentElement,
+  tracePath: DynamicPath
 ): DocumentComponent {
   const componentType = element.type;
   const config = get(element, "config", {} as UnknownObject);
@@ -122,6 +125,7 @@ export function getComponentDefinition(
         Component: BlockElement,
         props: {
           pipeline: pipeline.__value__,
+          tracePath,
         },
       };
     }
@@ -141,6 +145,7 @@ export function getComponentDefinition(
         props: {
           children: title,
           onClick: onClick.__value__,
+          tracePath,
           ...props,
         },
       };
@@ -151,6 +156,7 @@ export function getComponentDefinition(
         array: config.array,
         elementKey: config.elementKey,
         config: config.element,
+        tracePath,
         buildDocumentBranch,
       };
 
@@ -169,11 +175,15 @@ export function getComponentDefinition(
   }
 }
 
-export const buildDocumentBranch: BuildDocumentBranch = (root) => {
-  const componentDefinition = getComponentDefinition(root);
+export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
+  const { staticId, branches } = tracePath;
+  const componentDefinition = getComponentDefinition(root, tracePath);
   if (root.children?.length > 0) {
     componentDefinition.props.children = root.children.map((child, index) => {
-      const { Component, props } = buildDocumentBranch(child);
+      const { Component, props } = buildDocumentBranch(child, {
+        staticId: joinElementName(staticId, root.type, "children"),
+        branches: [...branches, { staticId, index }],
+      });
       return <Component key={index} {...props} />;
     });
   }

@@ -278,6 +278,11 @@ export type BlockOptions<
     // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3477
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- brick is responsible for providing shape
     pipeline: any,
+    // The branch for tracing. Used to determine order of pipeline runs
+    branch: {
+      key: string;
+      counter: number;
+    },
     // Should be UnknownObject, but can't use to introduce a circular dependency
     extraContext?: Record<string, unknown>,
     root?: ReaderRoot
