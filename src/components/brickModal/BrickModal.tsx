@@ -55,7 +55,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const TAG_ALL = "All Categories";
 
-const POPULAR_BRICK_TAG_ID = "35367896-b38f-447e-9444-ecfecb258468";
+export const POPULAR_BRICK_TAG_ID = "35367896-b38f-447e-9444-ecfecb258468";
 
 type BrickOption<T extends IBrick = IBlock> = {
   data: T;
@@ -212,7 +212,7 @@ const defaultAddCaption = (
   </span>
 );
 
-function groupListingsByTag(
+export function groupListingsByTag(
   marketplaceTags: MarketplaceTag[],
   listings: Record<RegistryId, MarketplaceListing>
 ): {

@@ -66,7 +66,13 @@ import {
   FrameConnectionState,
 } from "@/pageEditor/context";
 import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
-import { CloudExtension, Deployment, UserRole } from "@/types/contract";
+import {
+  CloudExtension,
+  Deployment,
+  MarketplaceListing,
+  MarketplaceTag,
+  UserRole,
+} from "@/types/contract";
 import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
 import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/pageEditorTypes";
@@ -670,4 +676,27 @@ export const formStateWithTraceDataFactory = define<{
       });
     });
   }, "formState"),
+});
+
+export const marketplaceTagFactory = define<MarketplaceTag>({
+  id: uuidSequence,
+  name: (n: number) => `Tag ${n}`,
+  slug: (n: number) => `tag-${n}`,
+  subtype: "generic",
+  fa_icon: "fab abacus",
+});
+
+export const marketplaceListingFactory = define<MarketplaceListing>({
+  id: uuidSequence,
+  fa_icon: "fab abacus",
+  image: (n: number) => ({
+    url: `https://marketplace.dev/${n}`,
+  }),
+  assets: () => [] as MarketplaceListing["assets"],
+  tags: () => [] as MarketplaceListing["tags"],
+  package: (n: number) =>
+    ({
+      id: uuidSequence,
+      name: `@test/test-${n}`,
+    } as unknown as MarketplaceListing["package"]),
 });
