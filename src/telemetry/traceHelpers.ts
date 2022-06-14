@@ -34,16 +34,20 @@ export function hasBranchPrefix(
   prefix: Branch[],
   record: TraceRecord
 ): boolean {
-  // eslint-disable-next-line security/detect-object-injection -- index is a number
   return prefix.every(
     (branch, index) =>
+      // eslint-disable-next-line security/detect-object-injection -- index is a number
       index < record.branches.length && isEqual(branch, record.branches[index])
   );
 }
 
 export function filterTracesByCall(
   records: TraceRecord[],
-  callBranches: Branch[]
+  callBranches: Branch[] | null
 ): TraceRecord[] {
+  if (callBranches == null) {
+    return [];
+  }
+
   return records.filter((record) => hasBranchPrefix(callBranches, record));
 }
