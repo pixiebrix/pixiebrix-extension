@@ -16,7 +16,7 @@
  */
 
 import { useFormikContext } from "formik";
-import React, { useState } from "react";
+import React from "react";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import DocumentEditor from "./DocumentEditor";
@@ -35,7 +35,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
-import useReduxState from "@/hooks/useReduxState";
+import { useSelector } from "react-redux";
 
 jest.mock("@/blocks/registry");
 
@@ -48,18 +48,12 @@ describe("move element", () => {
     documentElements: DocumentElement[],
     initialActiveElement: string = null
   ) {
-    const DocumentEditorContainer = () => {
-      const [activeElement, setActiveElement] = useState<string | null>(
-        initialActiveElement
-      );
-      return (
-        <DocumentEditor
-          name="documentElements"
-          activeElement={activeElement}
-          setActiveElement={setActiveElement}
-        />
-      );
-    };
+    const DocumentEditorContainer = () => (
+      <DocumentEditor
+        documentBodyName="documentElements"
+        activeElement={initialActiveElement}
+      />
+    );
 
     return render(<DocumentEditorContainer />, {
       initialValues: { documentElements },
@@ -134,19 +128,15 @@ describe("remove element", () => {
     };
 
     const WrappedEditor = () => {
-      const [activeElement, setActiveElement] = useReduxState(
-        selectNodePreviewActiveElement,
-        actions.setNodePreviewActiveElement
-      );
+      const activeElement = useSelector(selectNodePreviewActiveElement);
 
       const { values } = useFormikContext<FormState>();
       formikStateRef.current = values;
 
       return (
         <DocumentEditor
-          name="extension.blockPipeline.0.config.config.body"
+          documentBodyName="extension.blockPipeline.0.config.config.body"
           activeElement={activeElement}
-          setActiveElement={setActiveElement}
         />
       );
     };

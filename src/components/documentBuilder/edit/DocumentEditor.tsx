@@ -24,25 +24,22 @@ type DocumentEditorProps = {
   /**
    * Formik name of the root element
    */
-  name: string;
+  documentBodyName: string;
 
   /**
    * The active element relative to the root element (i.e. "name" is not included)
    */
   activeElement: string;
-  setActiveElement: (activeElement: string) => void;
 };
 
 const DocumentEditor: React.FC<DocumentEditorProps> = ({
-  name,
+  documentBodyName,
   activeElement,
-  setActiveElement,
 }) =>
   activeElement ? (
     <ElementEditor
-      name={name}
+      documentBodyName={documentBodyName}
       activeElement={activeElement}
-      setActiveElement={setActiveElement}
     />
   ) : (
     <Row className={styles.currentFieldRow}>

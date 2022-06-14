@@ -28,17 +28,15 @@ import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import useElementOptions from "@/components/documentBuilder/edit/useElementOptions";
 
 type ElementEditorProps = {
-  name: string;
+  documentBodyName: string;
   activeElement: string;
-  setActiveElement: (activeElement: string) => void;
 };
 
 const ElementEditor: React.FC<ElementEditorProps> = ({
-  name,
+  documentBodyName,
   activeElement,
-  setActiveElement,
 }) => {
-  const elementName = `${name}.${activeElement}`;
+  const elementName = `${documentBodyName}.${activeElement}`;
   const [{ value: documentElement }] = useField<DocumentElement>(elementName);
   console.log("ElementEditor", { documentElement, elementName });
   const ElementOptions = useElementOptions(documentElement, elementName);
@@ -53,7 +51,10 @@ const ElementEditor: React.FC<ElementEditorProps> = ({
           </h6>
         </Col>
         <Col xl>
-          <RemoveElement documentBodyName={name} elementName={activeElement} />
+          <RemoveElement
+            documentBodyName={documentBodyName}
+            elementName={activeElement}
+          />
         </Col>
         <Col xl>
           <small className="text-muted">
@@ -69,11 +70,7 @@ const ElementEditor: React.FC<ElementEditorProps> = ({
       </Row>
       <Row>
         <Col>
-          <MoveElement
-            name={name}
-            activeElement={activeElement}
-            setActiveElement={setActiveElement}
-          />
+          <MoveElement documentBodyName={documentBodyName} />
         </Col>
       </Row>
     </>
