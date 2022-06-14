@@ -46,8 +46,20 @@ const ActiveLabel: React.FunctionComponent<ActiveLabelProps> = ({
 
   return (
     <div className={cx(styles.root, className)}>
-      <FontAwesomeIcon icon={faLevelUpAlt} onClick={onSelectParent} />
-      <FontAwesomeIcon icon={faTrash} onClick={onDelete} />
+      <FontAwesomeIcon
+        role="button"
+        title="Select parent"
+        icon={faLevelUpAlt}
+        onClick={onSelectParent}
+        fixedWidth
+      />
+      <FontAwesomeIcon
+        role="button"
+        title="Delete element"
+        icon={faTrash}
+        onClick={onDelete}
+        fixedWidth
+      />
     </div>
   );
 };
