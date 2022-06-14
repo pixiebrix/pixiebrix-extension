@@ -22,14 +22,14 @@ import { Image } from "react-bootstrap";
 const ImagePlaceholder: React.VoidFunctionComponent<{
   height: number | string;
   width: number | string;
-}> = ({ width, height }) => {
+}> = ({ height, width }) => {
   const imageRef = useRef();
 
   useEffect(() => {
     runHolder({
       images: imageRef.current,
     });
-  }, []);
+  }, [height, width]);
 
   // https://github.com/imsky/holder/issues/225#issuecomment-770261030
   return (

@@ -54,10 +54,10 @@ const Container: React.FunctionComponent<ContainerProps> = ({
       isHovered={isHovered}
       isActive={isActive}
     />
-    {children}
     {!element.children?.length && (
       <span className="text-muted">{elementTypeLabels[element.type]}</span>
     )}
+    {children}
   </Component>
 );
 

@@ -45,15 +45,9 @@ const Image: React.FunctionComponent<ImageProps> = ({
   ...restPreviewProps
 }) => {
   // If it's not a valid URL, show a placeholder
-  if (
+  const renderPlaceholder =
     typeof props.src !== "string" ||
-    !isValidUrl(props.src, { protocols: ["https:"] })
-  ) {
-    Component = ImagePlaceholder;
-    // Don't let empty values (including null, empty string, and 0)
-    props.height = isEmpty(props.height) ? "50" : props.height;
-    props.width = isEmpty(props.width) ? "100" : props.width;
-  }
+    !isValidUrl(props.src, { protocols: ["https:"] });
 
   return (
     <div
@@ -68,7 +62,14 @@ const Image: React.FunctionComponent<ImageProps> = ({
         isHovered={isHovered}
         isActive={isActive}
       />
-      <Component {...props} />
+      {renderPlaceholder ? (
+        <ImagePlaceholder
+          height={isEmpty(props.height) ? "50" : (props.height as number)}
+          width={isEmpty(props.width) ? "100" : (props.width as number)}
+        />
+      ) : (
+        <Component {...props} />
+      )}
     </div>
   );
 };
