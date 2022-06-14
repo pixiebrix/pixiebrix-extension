@@ -39,7 +39,7 @@ type PersistedServicesState = {
 export async function readRawConfigurations(): Promise<
   RawServiceConfiguration[]
 > {
-  const base = (await readReduxStorage(storageKey)) as PersistedServicesState;
+  const base: PersistedServicesState = await readReduxStorage(storageKey);
 
   if (typeof base?.configured === "string") {
     // Not really sure why redux-persist stores the next level down as escaped JSON?

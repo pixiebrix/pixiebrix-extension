@@ -29,7 +29,7 @@ const { setExtensionTrace } = runtimeSlice.actions;
 const TRACE_RELOAD_MILLIS = 350;
 
 /**
- * Select sufficient data from trace to determine if two traces include the same data (i.e., they include both they
+ * Select minimal set of data from trace to determine if two traces include the same data (i.e., they include both they
  * entry and exit data).
  */
 function selectTraceMetadata(record: TraceRecord) {
@@ -37,6 +37,7 @@ function selectTraceMetadata(record: TraceRecord) {
     runId: record.runId,
     timestamp: record.timestamp,
     isFinal: record.isFinal,
+    callId: record.callId,
   };
 }
 
@@ -63,6 +64,7 @@ function useExtensionTrace() {
         extensionTrace.map((x) => selectTraceMetadata(x))
       )
     ) {
+      console.debug("Updating extension trace in Redux slice: %s", extensionId);
       dispatch(setExtensionTrace({ extensionId, records: lastRun }));
     }
 
