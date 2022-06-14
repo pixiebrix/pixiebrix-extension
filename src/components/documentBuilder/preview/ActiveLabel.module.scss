@@ -22,7 +22,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  padding: 0px 5px;
+  padding: 0 5px;
   border-radius: $border-radius $border-radius 0 0;
   color: white;
 
@@ -32,5 +32,9 @@
 
   svg[data-disabled="true"] {
     color: lightgray;
+  }
+
+  svg:not([data-disabled="true"]):hover {
+    background: darken($color-decisions-blue-focus, 10%);
   }
 }
