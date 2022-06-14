@@ -48,14 +48,14 @@ import {
   useGetMarketplaceListingsQuery,
   useGetMarketplaceTagsQuery,
 } from "@/services/api";
-import { MarketplaceListing } from "@/types/contract";
+import { MarketplaceListing, MarketplaceTag } from "@/types/contract";
 import BrickDetail from "@/components/brickModal/BrickDetail";
 import Loader from "@/components/Loader";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const TAG_ALL = "All Categories";
 
-const POPULAR_BRICK_TAG_ID = "35367896-b38f-447e-9444-ecfecb258468";
+export const POPULAR_BRICK_TAG_ID = "35367896-b38f-447e-9444-ecfecb258468";
 
 type BrickOption<T extends IBrick = IBlock> = {
   data: T;
@@ -212,17 +212,48 @@ const defaultAddCaption = (
   </span>
 );
 
-type BrickIdMemoResult = {
+export function groupListingsByTag(
+  marketplaceTags: MarketplaceTag[],
+  listings: Record<RegistryId, MarketplaceListing>
+): {
   /**
-   * A record with tag names as the keys, and a set of applicable brick ids as the values
+   * A record with tag names as the keys, and a set of applicable brick registry ids as the values
    */
-  taggedBrickIds: Record<string, Set<string>>;
+  taggedBrickIds: Record<string, Set<RegistryId>>;
 
   /**
    * A set of brick ids that have been tagged as "popular"
    */
-  popularBrickIds: Set<string>;
-};
+  popularBrickIds: Set<RegistryId>;
+} {
+  if (isEmpty(marketplaceTags) || isEmpty(listings)) {
+    return {
+      taggedBrickIds: {},
+      popularBrickIds: new Set<RegistryId>(),
+    };
+  }
+
+  const categoryTags = marketplaceTags.filter((tag) => tag.subtype === "role");
+
+  const taggedBrickIds = Object.fromEntries(
+    categoryTags.map((tag) => [tag.name, new Set<RegistryId>()])
+  );
+  const popularBrickIds = new Set<RegistryId>();
+
+  for (const [id, listing] of Object.entries(listings)) {
+    const registryId = id as RegistryId;
+
+    for (const listingTag of listing.tags) {
+      if (listingTag.id === POPULAR_BRICK_TAG_ID) {
+        popularBrickIds.add(registryId);
+      }
+
+      taggedBrickIds[listingTag.name]?.add(registryId);
+    }
+  }
+
+  return { taggedBrickIds, popularBrickIds };
+}
 
 type State = {
   query: string;
@@ -306,35 +337,10 @@ function ActualModal<T extends IBrick>({
     isLoading: isLoadingListings,
   } = useGetMarketplaceListingsQuery();
 
-  const { taggedBrickIds, popularBrickIds } = useMemo<BrickIdMemoResult>(() => {
-    if (isEmpty(marketplaceTags) || isEmpty(listings)) {
-      return {
-        taggedBrickIds: {},
-        popularBrickIds: new Set<string>(),
-      };
-    }
-
-    const tags = marketplaceTags.filter((tag) => tag.subtype === "role");
-
-    const taggedBrickIds: BrickIdMemoResult["taggedBrickIds"] =
-      Object.fromEntries(tags.map((tag) => [tag.name, new Set<string>()]));
-    const popularBrickIds: BrickIdMemoResult["popularBrickIds"] =
-      new Set<string>();
-
-    for (const [id, listing] of Object.entries(listings)) {
-      for (const tag of tags) {
-        if (listing.tags.some((lTag) => lTag.id === tag.id)) {
-          taggedBrickIds[tag.name]?.add(id);
-        }
-      }
-
-      if (listing.tags.some((tag) => tag.id === POPULAR_BRICK_TAG_ID)) {
-        popularBrickIds.add(id);
-      }
-    }
-
-    return { taggedBrickIds, popularBrickIds };
-  }, [marketplaceTags, listings]);
+  const { taggedBrickIds, popularBrickIds } = useMemo(
+    () => groupListingsByTag(marketplaceTags, listings),
+    [marketplaceTags, listings]
+  );
 
   const tagItems: TagItem[] = [
     { tag: TAG_ALL },
