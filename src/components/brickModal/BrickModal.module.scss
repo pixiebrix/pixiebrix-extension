@@ -19,6 +19,9 @@
 
 $bodyHeight: calc(100vh - 100px);
 $tagListWidth: 180px;
+$modalPaddingX: calc(
+  #{$horizontalSpacing} + 15px
+); // 15px to account for scrollbars
 
 .root {
   display: grid !important;
@@ -33,8 +36,7 @@ $tagListWidth: 180px;
 .header {
   display: flex;
   align-items: center;
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
+  padding: 0.75rem $modalPaddingX;
 }
 
 .title {
@@ -53,6 +55,7 @@ $tagListWidth: 180px;
 .searchContainer {
   flex-grow: 1;
   display: flex;
+  padding-left: $horizontalSpacing;
 }
 
 .searchInput {
@@ -66,7 +69,7 @@ $tagListWidth: 180px;
 .body {
   display: flex;
   flex-wrap: nowrap;
-  padding: 0 0 0 calc(#{$horizontalSpacing} + 15px); // 15px to match other side accounting for scrollbars
+  padding: 0 0 0 $modalPaddingX;
 }
 
 .tagList {

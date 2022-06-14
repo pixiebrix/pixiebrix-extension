@@ -26,7 +26,10 @@ import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
 import { FixedSizeGrid as LazyGrid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-import BrickResult, { BRICK_RESULT_FIXED_HEIGHT_PX } from "./BrickResult";
+import BrickResultItem, {
+  BRICK_RESULT_FIXED_HEIGHT_PX,
+  BrickResult,
+} from "./BrickResultItem";
 import { Except } from "type-fest";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -42,6 +45,8 @@ import BrickDetail from "@/components/brickModal/BrickDetail";
 import Loader from "@/components/Loader";
 
 const TAG_ALL = "All Categories";
+
+const POPULAR_BRICK_TAG_ID = "35367896-b38f-447e-9444-ecfecb258468";
 
 type BrickOption<T extends IBrick = IBlock> = {
   data: T;
@@ -83,7 +88,7 @@ function useSearch<T extends IBrick>(
   const { fuse, brickOptions } = useMemo(() => {
     const brickOptions = sortBy(
       (bricks ?? [])
-        // We should never show @internal bricks to users. They'll sometimes find their way in from the registry
+        // We should never show @internal bricks to users. They'll sometimes find their way in from the registry.
         .filter((x) => !x.id.startsWith("@internal/") && brickHasTag(x))
         .map((x) => makeBlockOption(x)),
       (x) => x.label
@@ -117,8 +122,8 @@ type ButtonProps = {
   renderButton?: (onClick: () => void) => React.ReactNode;
 };
 
-type ItemType = {
-  searchResults: BrickOption[];
+type ItemType<T extends IBrick> = {
+  brickResults: Array<BrickOption<BrickResult<T>>>;
   onSetDetailBrick: (brick: IBrick, rowIndex: number) => void;
   onSelect: (brick: IBrick) => void;
   close: () => void;
@@ -133,30 +138,31 @@ function getFlatArrayIndex(rowIndex: number, columnIndex: number): number {
 
 // The item renderer must be its own separate component to react-window from re-mounting the results
 // https://github.com/bvaughn/react-window/issues/420#issuecomment-585813335
-const ItemRenderer = ({
+const ItemRenderer = <T extends IBrick>({
   columnIndex,
   rowIndex,
   style,
-  data: { searchResults, onSetDetailBrick, onSelect, close },
+  data: { brickResults, onSetDetailBrick, onSelect, close },
 }: {
   columnIndex: number;
   rowIndex: number;
   style: CSSProperties;
-  data: ItemType;
+  data: ItemType<T>;
 }) => {
   const index = getFlatArrayIndex(rowIndex, columnIndex);
   // eslint-disable-next-line security/detect-object-injection -- numeric value from library
-  const { data: brick } = searchResults[index] ?? {};
+  const brickResult = brickResults[index]?.data;
+
   return (
     <div style={style}>
-      {brick && (
-        <BrickResult
-          brick={brick}
+      {brickResult && (
+        <BrickResultItem
+          brick={brickResult}
           onShowDetail={() => {
-            onSetDetailBrick(brick, rowIndex);
+            onSetDetailBrick(brickResult, rowIndex);
           }}
           onSelect={() => {
-            onSelect(brick);
+            onSelect(brickResult);
             close();
           }}
         />
@@ -167,25 +173,26 @@ const ItemRenderer = ({
 
 // Need to provide a key because we reorder elements on search
 // See https://react-window.vercel.app/#/api/FixedSizeGrid
-type ItemKeyInput = {
+type ItemKeyInput<T extends IBrick> = {
   columnIndex: number;
-  data: ItemType;
+  data: ItemType<T>;
   rowIndex: number;
 };
 // Here, we use the brick id as the key, which is the "value" prop on the search result option
-function itemKey({
+function itemKey<T extends IBrick>({
   columnIndex,
-  data: { searchResults },
+  data: { brickResults },
   rowIndex,
-}: ItemKeyInput): RegistryId | number {
+}: ItemKeyInput<T>): RegistryId | number {
   const resultIndex = getFlatArrayIndex(rowIndex, columnIndex);
   // Number of bricks for the last Grid row could be less than the number of columns
   // Returning the index here, ItemRenderer will render an empty cell
-  if (resultIndex >= searchResults.length) {
+  if (resultIndex >= brickResults.length) {
     return resultIndex;
   }
 
-  return searchResults[resultIndex]?.value;
+  // eslint-disable-next-line security/detect-object-injection -- index is a number
+  return brickResults[resultIndex]?.value;
 }
 
 const defaultAddCaption = (
@@ -193,6 +200,18 @@ const defaultAddCaption = (
     <FontAwesomeIcon icon={faPlus} className="mr-1" /> Add
   </span>
 );
+
+type BrickIdMemoResult = {
+  /**
+   * A record with tag names as the keys, and a set of applicable brick ids as the values
+   */
+  taggedBrickIds: Record<string, Set<string>>;
+
+  /**
+   * A set of brick ids that have been tagged as "popular"
+   */
+  popularBrickIds: Set<string>;
+};
 
 function ActualModal<T extends IBrick>({
   bricks = [],
@@ -219,23 +238,34 @@ function ActualModal<T extends IBrick>({
     isLoading: isLoadingListings,
   } = useGetMarketplaceListingsQuery();
 
-  const taggedBrickIds = useMemo<Record<string, Set<string>>>(() => {
+  const { taggedBrickIds, popularBrickIds } = useMemo<BrickIdMemoResult>(() => {
     if (isEmpty(marketplaceTags) || isEmpty(listings)) {
-      return {};
+      return {
+        taggedBrickIds: {},
+        popularBrickIds: new Set<string>(),
+      };
     }
 
-    return Object.fromEntries(
-      marketplaceTags.map((tag) => [
-        tag.name,
-        new Set(
-          Object.entries(listings)
-            .filter(([, listing]) =>
-              listing.tags.some((lTag) => lTag.name === tag.name)
-            )
-            .map(([id]) => id)
-        ),
-      ])
-    );
+    const tags = marketplaceTags.filter((tag) => tag.subtype === "role");
+
+    const taggedBrickIds: BrickIdMemoResult["taggedBrickIds"] =
+      Object.fromEntries(tags.map((tag) => [tag.name, new Set<string>()]));
+    const popularBrickIds: BrickIdMemoResult["popularBrickIds"] =
+      new Set<string>();
+
+    for (const [id, listing] of Object.entries(listings)) {
+      for (const tag of tags) {
+        if (listing.tags.some((lTag) => lTag.id === tag.id)) {
+          taggedBrickIds[tag.name]?.add(id);
+        }
+      }
+
+      if (listing.tags.some((tag) => tag.id === POPULAR_BRICK_TAG_ID)) {
+        popularBrickIds.add(id);
+      }
+    }
+
+    return { taggedBrickIds, popularBrickIds };
   }, [marketplaceTags, listings]);
 
   const tagItems: TagItem[] = [
@@ -251,6 +281,44 @@ function ActualModal<T extends IBrick>({
   const [searchTag, setSearchTag] = useState<string>(TAG_ALL);
 
   const searchResults = useSearch(bricks, taggedBrickIds, query, searchTag);
+
+  const brickResults = useMemo<ItemType<T>["brickResults"]>(() => {
+    if (isEmpty(searchResults)) {
+      return [];
+    }
+
+    const popular: ItemType<T>["brickResults"] = [];
+    const regular: ItemType<T>["brickResults"] = [];
+
+    for (const result of searchResults) {
+      if (popularBrickIds.has(result.data.id)) {
+        popular.push({
+          ...result,
+          data: {
+            ...result.data,
+            isPopular: true,
+          },
+        });
+      } else {
+        regular.push(result);
+      }
+    }
+
+    return [...popular, ...regular];
+  }, [popularBrickIds, searchResults]);
+
+  const itemData = useMemo<ItemType<T>>(
+    () => ({
+      brickResults,
+      onSetDetailBrick(brick: T, rowIndex: number) {
+        setDetailBrick(brick);
+        setDetailBrickRow(rowIndex);
+      },
+      onSelect,
+      close,
+    }),
+    [brickResults, close, onSelect]
+  );
 
   return (
     <Modal
@@ -345,19 +413,7 @@ function ActualModal<T extends IBrick>({
                         searchResults.length / RESULT_COLUMN_COUNT
                       )}
                       itemKey={itemKey}
-                      itemData={
-                        {
-                          searchResults,
-                          onSetDetailBrick(brick: T, rowIndex: number) {
-                            setDetailBrick(brick);
-                            setDetailBrickRow(rowIndex);
-                          },
-                          activeBrick: detailBrick,
-                          selectCaption,
-                          onSelect,
-                          close,
-                        } as ItemType
-                      }
+                      itemData={itemData}
                       ref={refCallback}
                     >
                       {ItemRenderer}
