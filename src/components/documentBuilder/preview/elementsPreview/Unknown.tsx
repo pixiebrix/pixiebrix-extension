@@ -16,30 +16,33 @@
  */
 
 import React from "react";
-import { Button } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import useDeleteElement from "@/components/documentBuilder/hooks/useDeleteElement";
+import {
+  DocumentComponent,
+  PreviewComponentProps,
+} from "@/components/documentBuilder/documentBuilderTypes";
+import cx from "classnames";
+import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
 
-type RemoveElementProps = {
-  documentBodyName: string;
-  elementName: string;
+type UnknownProps = PreviewComponentProps & {
+  documentComponent: DocumentComponent;
 };
 
-const RemoveElement: React.FC<RemoveElementProps> = ({
+const Unknown: React.FunctionComponent<UnknownProps> = ({
+  documentComponent: { Component, props },
+  children,
+  className,
   documentBodyName,
   elementName,
-}) => {
-  const deleteElement = useDeleteElement(documentBodyName);
-  const onDelete = () => {
-    deleteElement(elementName);
-  };
+  isHovered,
+  isActive,
+  ...restPreviewProps
+}) => (
+  <div
+    className={cx(documentTreeStyles.shiftRightWrapper, className)}
+    {...restPreviewProps}
+  >
+    <Component {...props} />
+  </div>
+);
 
-  return (
-    <Button onClick={onDelete} variant="danger" size="sm">
-      <FontAwesomeIcon icon={faTrash} /> Remove element
-    </Button>
-  );
-};
-
-export default RemoveElement;
+export default Unknown;

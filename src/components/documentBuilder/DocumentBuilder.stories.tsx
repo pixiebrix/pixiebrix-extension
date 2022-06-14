@@ -56,7 +56,7 @@ const DocumentBuilder: React.FC = () => {
               </Col>
               <Col>
                 <DocumentPreview
-                  name="body"
+                  documentBodyName="body"
                   activeElement={activeElement}
                   setActiveElement={setActiveElement}
                 />

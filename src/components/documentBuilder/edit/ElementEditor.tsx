@@ -40,6 +40,7 @@ const ElementEditor: React.FC<ElementEditorProps> = ({
 }) => {
   const elementName = `${name}.${activeElement}`;
   const [{ value: documentElement }] = useField<DocumentElement>(elementName);
+  console.log("ElementEditor", { documentElement, elementName });
   const ElementOptions = useElementOptions(documentElement, elementName);
 
   return (
@@ -52,12 +53,7 @@ const ElementEditor: React.FC<ElementEditorProps> = ({
           </h6>
         </Col>
         <Col xl>
-          <RemoveElement
-            elementName={elementName}
-            resetActiveElement={() => {
-              setActiveElement(null);
-            }}
-          />
+          <RemoveElement documentBodyName={name} elementName={activeElement} />
         </Col>
         <Col xl>
           <small className="text-muted">

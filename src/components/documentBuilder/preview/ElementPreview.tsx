@@ -30,7 +30,7 @@ export type ElementPreviewProps = {
   /**
    * Formik name of the root element
    */
-  name: string;
+  documentBodyName: string;
 
   /**
    * The name of the element relative to the root element (i.e. "name" is not included)
@@ -50,7 +50,7 @@ export type ElementPreviewProps = {
 };
 
 const ElementPreview: React.FC<ElementPreviewProps> = ({
-  name,
+  documentBodyName,
   elementName,
   previewElement,
   activeElement,
@@ -103,26 +103,32 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
       })}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
+      documentBodyName={documentBodyName}
+      elementName={elementName}
       isHovered={isHovered}
+      isActive={isActive}
     >
       {props?.children}
       {isContainer &&
-        previewElement.children.map((childElement, i) => (
-          <ElementPreview
-            key={`${elementName}.children.${i}`}
-            name={name}
-            elementName={`${elementName}.children.${i}`}
-            previewElement={childElement}
-            activeElement={activeElement}
-            setActiveElement={setActiveElement}
-            menuBoundary={menuBoundary}
-            hoveredElement={hoveredElement}
-            setHoveredElement={setHoveredElement}
-          />
-        ))}
+        previewElement.children.map((childElement, i) => {
+          const childElementName = `${elementName}.children.${i}`;
+          return (
+            <ElementPreview
+              key={childElementName}
+              documentBodyName={documentBodyName}
+              elementName={childElementName}
+              previewElement={childElement}
+              activeElement={activeElement}
+              setActiveElement={setActiveElement}
+              menuBoundary={menuBoundary}
+              hoveredElement={hoveredElement}
+              setHoveredElement={setHoveredElement}
+            />
+          );
+        })}
       {isContainer && (
         <AddElementAction
-          elementsCollectionName={`${name}.${elementName}.children`}
+          elementsCollectionName={`${documentBodyName}.${elementName}.children`}
           allowedTypes={getAllowedChildTypes(previewElement)}
           className={styles.addElement}
           menuBoundary={menuBoundary}
@@ -130,7 +136,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
       )}
       {isList && (
         <ElementPreview
-          name={name}
+          documentBodyName={documentBodyName}
           elementName={`${elementName}.config.element.__value__`}
           previewElement={previewElement.config.element.__value__}
           activeElement={activeElement}

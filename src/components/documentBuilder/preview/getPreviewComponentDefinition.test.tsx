@@ -15,12 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import {
   DocumentElement,
   DocumentElementType,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import getPreviewComponentDefinition from "./getPreviewComponentDefinition";
 import { render, screen } from "@testing-library/react";
+import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 
 test.each(["container", "row", "column"])(
   "shows name of an empty %s",
@@ -31,10 +33,10 @@ test.each(["container", "row", "column"])(
       children: [],
     };
 
-    const actual = getPreviewComponentDefinition(element);
+    const { Component, props } = getPreviewComponentDefinition(element);
 
-    render(actual.props.children as any);
-    expect(screen.getByText(elementType)).not.toBeNull();
+    render(<Component {...props} />);
+    expect(screen.getByText(elementTypeLabels[elementType])).not.toBeNull();
   }
 );
 
@@ -54,9 +56,9 @@ test.each(["container", "row", "column"])(
       ],
     };
 
-    const actual = getPreviewComponentDefinition(element);
+    const { Component, props } = getPreviewComponentDefinition(element);
 
-    render(actual.props.children as any);
-    expect(screen.queryByText(elementType)).toBeNull();
+    render(<Component {...props} />);
+    expect(screen.queryByText(elementTypeLabels[elementType])).toBeNull();
   }
 );

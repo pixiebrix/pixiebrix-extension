@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render } from "@testing-library/react";
 import { useFormikContext } from "formik";
 import React, { useState } from "react";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
@@ -33,11 +32,10 @@ import { toExpression } from "@/testUtils/testHelpers";
 import { OutputKey, ServiceDependency } from "@/core";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { validateRegistryId } from "@/types/helpers";
-import { createFormikTemplate } from "@/testUtils/formHelpers";
-
-jest.mock("react-redux", () => ({
-  useSelector: jest.fn(),
-}));
+import { render } from "@/pageEditor/testHelpers";
+import { actions } from "@/pageEditor/slices/editorSlice";
+import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
+import useReduxState from "@/hooks/useReduxState";
 
 jest.mock("@/blocks/registry");
 
@@ -63,15 +61,9 @@ describe("move element", () => {
       );
     };
 
-    const FormikTemplate = createFormikTemplate({
-      documentElements,
+    return render(<DocumentEditorContainer />, {
+      initialValues: { documentElements },
     });
-
-    return render(
-      <FormikTemplate>
-        <DocumentEditorContainer />
-      </FormikTemplate>
-    );
   }
 
   test("can move text element down", async () => {
@@ -142,8 +134,9 @@ describe("remove element", () => {
     };
 
     const WrappedEditor = () => {
-      const [activeElement, setActiveElement] = useState<string | null>(
-        initialActiveElement
+      const [activeElement, setActiveElement] = useReduxState(
+        selectNodePreviewActiveElement,
+        actions.setNodePreviewActiveElement
       );
 
       const { values } = useFormikContext<FormState>();
@@ -158,18 +151,19 @@ describe("remove element", () => {
       );
     };
 
-    const FormikTemplate = createFormikTemplate(formState);
-
-    const rendered = render(
-      <FormikTemplate>
-        <WrappedEditor />
-      </FormikTemplate>
-    );
-
-    return {
-      rendered,
-      formikStateRef,
-    };
+    return render(<WrappedEditor />, {
+      initialValues: formState,
+      setupRedux(dispatch) {
+        dispatch(actions.addElement(formState));
+        dispatch(actions.selectElement(formState.uuid));
+        dispatch(
+          actions.setElementActiveNodeId(
+            formState.extension.blockPipeline[0].instanceId
+          )
+        );
+        dispatch(actions.setNodePreviewActiveElement(initialActiveElement));
+      },
+    });
   }
 
   test("removes service dependency", async () => {
@@ -219,13 +213,11 @@ describe("remove element", () => {
       }),
     });
 
-    const { rendered, formikStateRef } = renderDocumentEditorWithFormState(
-      formState,
-      "0"
-    );
+    const rendered = renderDocumentEditorWithFormState(formState, "0");
 
     await userEvent.click(rendered.getByText("Remove element"));
 
-    expect(formikStateRef.current.services).toStrictEqual([]);
+    const actualFormState = await rendered.getFormState();
+    expect(actualFormState.services).toStrictEqual([]);
   });
 });

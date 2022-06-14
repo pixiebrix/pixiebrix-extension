@@ -16,30 +16,52 @@
  */
 
 import React from "react";
-import { Button } from "react-bootstrap";
+import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faLevelUpAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
 import useDeleteElement from "@/components/documentBuilder/hooks/useDeleteElement";
+import styles from "./ActiveLabel.module.scss";
+import useSelectParentElement from "@/components/documentBuilder/hooks/useSelectParentElement";
 
-type RemoveElementProps = {
+type ActiveLabelProps = {
+  className?: string;
   documentBodyName: string;
   elementName: string;
 };
 
-const RemoveElement: React.FC<RemoveElementProps> = ({
+const ActiveLabel: React.FunctionComponent<ActiveLabelProps> = ({
+  className,
   documentBodyName,
   elementName,
 }) => {
+  const selectParent = useSelectParentElement();
+  const onSelectParent = () => {
+    selectParent(elementName);
+  };
+
   const deleteElement = useDeleteElement(documentBodyName);
   const onDelete = () => {
     deleteElement(elementName);
   };
 
   return (
-    <Button onClick={onDelete} variant="danger" size="sm">
-      <FontAwesomeIcon icon={faTrash} /> Remove element
-    </Button>
+    <div className={cx(styles.root, className)}>
+      <FontAwesomeIcon
+        role="button"
+        title="Select parent"
+        icon={faLevelUpAlt}
+        onClick={onSelectParent}
+        fixedWidth
+      />
+      <FontAwesomeIcon
+        role="button"
+        title="Delete element"
+        icon={faTrash}
+        onClick={onDelete}
+        fixedWidth
+      />
+    </div>
   );
 };
 
-export default RemoveElement;
+export default ActiveLabel;

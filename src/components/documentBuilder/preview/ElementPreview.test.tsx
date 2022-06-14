@@ -22,23 +22,23 @@ import {
   DocumentElementType,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
-import { Formik } from "formik";
 import ElementPreview, {
   ElementPreviewProps,
 } from "@/components/documentBuilder/preview/ElementPreview";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { blockConfigFactory } from "@/testUtils/factories";
 import { defaultBlockConfig } from "@/blocks/util";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import { PipelineExpression } from "@/runtime/mapArgs";
+import { render } from "@/pageEditor/testHelpers";
 
 const renderElementPreview = (
   element: DocumentElement,
   elementPreviewProps?: Partial<ElementPreviewProps>
 ) => {
   const props: ElementPreviewProps = {
-    name: "",
+    documentBodyName: "",
     elementName: "element",
     previewElement: element,
     activeElement: null,
@@ -48,16 +48,7 @@ const renderElementPreview = (
     ...elementPreviewProps,
   };
 
-  return render(
-    <Formik
-      initialValues={{
-        element,
-      }}
-      onSubmit={jest.fn()}
-    >
-      <ElementPreview {...props} />
-    </Formik>
-  );
+  return render(<ElementPreview {...props} />, { initialValues: { element } });
 };
 
 test("calls setActiveElement callback on click", async () => {

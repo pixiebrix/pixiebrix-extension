@@ -363,7 +363,7 @@ const DataPanel: React.FC = () => {
                   </div>
                 ) : (
                   <DocumentPreview
-                    name={documentBodyName}
+                    documentBodyName={documentBodyName}
                     activeElement={nodePreviewActiveElement}
                     setActiveElement={setNodePreviewActiveElement}
                     menuBoundary={popupBoundary}

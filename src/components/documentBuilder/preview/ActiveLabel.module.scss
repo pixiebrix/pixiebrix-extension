@@ -15,30 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef } from "react";
-import { run as runHolder } from "holderjs";
-import { Image } from "react-bootstrap";
+@import "@/components/documentBuilder/preview/previewVariables.scss";
 
-const ImagePlaceholder: React.VoidFunctionComponent<{
-  height: number | string;
-  width: number | string;
-}> = ({ height, width }) => {
-  const imageRef = useRef();
+.root {
+  background-color: $color-decisions-blue-focus;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0px 5px;
+  border-radius: $border-radius $border-radius 0 0;
+  color: white;
 
-  useEffect(() => {
-    runHolder({
-      images: imageRef.current,
-    });
-  }, [height, width]);
-
-  // https://github.com/imsky/holder/issues/225#issuecomment-770261030
-  return (
-    <Image
-      alt="Placeholder"
-      ref={imageRef}
-      src={`holder.js/${width}x${height}`}
-    />
-  );
-};
-
-export default ImagePlaceholder;
+  svg + svg {
+    margin-left: 0.5rem;
+  }
+}

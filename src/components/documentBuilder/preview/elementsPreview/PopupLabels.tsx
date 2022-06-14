@@ -16,30 +16,39 @@
  */
 
 import React from "react";
-import { Button } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import useDeleteElement from "@/components/documentBuilder/hooks/useDeleteElement";
+import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
+import HoveredLabel from "@/components/documentBuilder/preview/HoveredLabel";
+import ActiveLabel from "@/components/documentBuilder/preview/ActiveLabel";
 
-type RemoveElementProps = {
+type PopupLabelsProps = {
+  className?: string;
+  elementType: DocumentElementType;
   documentBodyName: string;
   elementName: string;
+  isHovered: boolean;
+  isActive: boolean;
 };
 
-const RemoveElement: React.FC<RemoveElementProps> = ({
+const PopupLabels: React.FunctionComponent<PopupLabelsProps> = ({
+  className,
+  elementType,
   documentBodyName,
   elementName,
-}) => {
-  const deleteElement = useDeleteElement(documentBodyName);
-  const onDelete = () => {
-    deleteElement(elementName);
-  };
+  isHovered,
+  isActive,
+}) => (
+  <>
+    {isHovered && (
+      <HoveredLabel className={className} elementType={elementType} />
+    )}
+    {isActive && (
+      <ActiveLabel
+        className={className}
+        documentBodyName={documentBodyName}
+        elementName={elementName}
+      />
+    )}
+  </>
+);
 
-  return (
-    <Button onClick={onDelete} variant="danger" size="sm">
-      <FontAwesomeIcon icon={faTrash} /> Remove element
-    </Button>
-  );
-};
-
-export default RemoveElement;
+export default PopupLabels;
