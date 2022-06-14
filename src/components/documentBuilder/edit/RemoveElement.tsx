@@ -30,13 +30,13 @@ const RemoveElement: React.FC<RemoveElementProps> = ({
   documentBodyName,
   elementName,
 }) => {
-  const onDelete = useDeleteElement(documentBodyName);
-  const removeElement = () => {
-    onDelete(elementName);
+  const deleteElement = useDeleteElement(documentBodyName);
+  const onDelete = () => {
+    deleteElement(elementName);
   };
 
   return (
-    <Button onClick={removeElement} variant="danger" size="sm">
+    <Button onClick={onDelete} variant="danger" size="sm">
       <FontAwesomeIcon icon={faTrash} /> Remove element
     </Button>
   );
