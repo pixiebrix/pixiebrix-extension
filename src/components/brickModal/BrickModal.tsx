@@ -17,7 +17,15 @@
 
 import styles from "./BrickModal.module.scss";
 
-import React, { CSSProperties, useCallback, useMemo, useState } from "react";
+import React, {
+  CSSProperties,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import { Button, Modal } from "react-bootstrap";
 import { isEmpty, sortBy } from "lodash";
 import { IBlock, IBrick, RegistryId } from "@/core";
@@ -43,6 +51,7 @@ import {
 import { MarketplaceListing } from "@/types/contract";
 import BrickDetail from "@/components/brickModal/BrickDetail";
 import Loader from "@/components/Loader";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const TAG_ALL = "All Categories";
 
@@ -122,9 +131,11 @@ type ButtonProps = {
   renderButton?: (onClick: () => void) => React.ReactNode;
 };
 
+type BrickResultsArray<T extends IBrick> = Array<BrickOption<BrickResult<T>>>;
+
 type ItemType<T extends IBrick> = {
-  brickResults: Array<BrickOption<BrickResult<T>>>;
-  onSetDetailBrick: (brick: IBrick, rowIndex: number) => void;
+  brickResults: BrickResultsArray<T>;
+  onSetDetailBrick: (brick: IBrick) => void;
   onSelect: (brick: IBrick) => void;
   close: () => void;
 };
@@ -159,7 +170,7 @@ const ItemRenderer = <T extends IBrick>({
         <BrickResultItem
           brick={brickResult}
           onShowDetail={() => {
-            onSetDetailBrick(brickResult, rowIndex);
+            onSetDetailBrick(brickResult);
           }}
           onSelect={() => {
             onSelect(brickResult);
@@ -213,6 +224,54 @@ type BrickIdMemoResult = {
   popularBrickIds: Set<string>;
 };
 
+type State = {
+  query: string;
+  searchTag: string;
+  scrollPosition: number;
+  detailBrick: IBrick | null;
+  scrollTo: number | null;
+};
+
+const initialState: State = {
+  query: "",
+  searchTag: TAG_ALL,
+  scrollPosition: 0,
+  detailBrick: null,
+  scrollTo: null,
+};
+
+const slice = createSlice({
+  name: "brickModalSlice",
+  initialState,
+  reducers: {
+    setQuery(state, action: PayloadAction<string>) {
+      state.query = action.payload;
+      state.scrollTo = 0;
+    },
+    setSearchTag(state, action: PayloadAction<string>) {
+      state.searchTag = action.payload;
+      state.scrollTo = 0;
+    },
+    setScrollPosition(state, action: PayloadAction<number>) {
+      state.scrollPosition = action.payload;
+    },
+    onSetDetailBrick(state, action: PayloadAction<IBrick>) {
+      state.detailBrick = action.payload;
+      state.scrollTo = state.scrollPosition;
+    },
+    onClearDetailBrick(state) {
+      state.detailBrick = null;
+    },
+    onClearScrollTo(state) {
+      state.scrollTo = null;
+    },
+    onClearSearchTag(state) {
+      state.searchTag = TAG_ALL;
+      state.scrollTo = 0;
+    },
+  },
+});
+
 function ActualModal<T extends IBrick>({
   bricks = [],
   close,
@@ -220,16 +279,25 @@ function ActualModal<T extends IBrick>({
   selectCaption = defaultAddCaption,
   modalClassName,
 }: ModalProps<T>): React.ReactElement<T> {
-  const [query, setQuery] = useState("");
-  const [detailBrick, setDetailBrick] = useState<T>(null);
-  const [detailBrickRow, setDetailBrickRow] = useState(0);
+  const [state, dispatch] = useReducer(slice.reducer, initialState);
 
-  const refCallback = (element: LazyGrid) => {
-    if (element != null && detailBrickRow > 0 && detailBrick == null) {
-      element.scrollToItem({ rowIndex: detailBrickRow });
-      setDetailBrickRow(0);
+  const gridRef = useRef<LazyGrid>();
+
+  useEffect(() => {
+    if (!gridRef.current) {
+      return;
     }
-  };
+
+    if (
+      state.scrollTo != null &&
+      state.scrollPosition !== state.scrollTo &&
+      state.detailBrick == null
+    ) {
+      const scrollTo = { scrollTop: state.scrollTo };
+      dispatch(slice.actions.onClearScrollTo());
+      gridRef.current.scrollTo(scrollTo);
+    }
+  }, [state.detailBrick, state.scrollPosition, state.scrollTo]);
 
   const { data: marketplaceTags = [], isLoading: isLoadingTags } =
     useGetMarketplaceTagsQuery();
@@ -278,17 +346,20 @@ function ActualModal<T extends IBrick>({
       })),
   ];
 
-  const [searchTag, setSearchTag] = useState<string>(TAG_ALL);
+  const searchResults = useSearch(
+    bricks,
+    taggedBrickIds,
+    state.query,
+    state.searchTag
+  );
 
-  const searchResults = useSearch(bricks, taggedBrickIds, query, searchTag);
-
-  const brickResults = useMemo<ItemType<T>["brickResults"]>(() => {
+  const brickResults = useMemo<BrickResultsArray<T>>(() => {
     if (isEmpty(searchResults)) {
       return [];
     }
 
-    const popular: ItemType<T>["brickResults"] = [];
-    const regular: ItemType<T>["brickResults"] = [];
+    const popular: BrickResultsArray<T> = [];
+    const regular: BrickResultsArray<T> = [];
 
     for (const result of searchResults) {
       if (popularBrickIds.has(result.data.id)) {
@@ -310,9 +381,8 @@ function ActualModal<T extends IBrick>({
   const itemData = useMemo<ItemType<T>>(
     () => ({
       brickResults,
-      onSetDetailBrick(brick: T, rowIndex: number) {
-        setDetailBrick(brick);
-        setDetailBrickRow(rowIndex);
+      onSetDetailBrick(brick: T) {
+        dispatch(slice.actions.onSetDetailBrick(brick));
       },
       onSelect,
       close,
@@ -331,11 +401,11 @@ function ActualModal<T extends IBrick>({
       keyboard={false}
     >
       <Modal.Header className={styles.header}>
-        {detailBrick ? (
+        {state.detailBrick ? (
           <Button
             variant="link"
             onClick={() => {
-              setDetailBrick(null);
+              dispatch(slice.actions.onClearDetailBrick());
             }}
           >
             <FontAwesomeIcon icon={faChevronLeft} /> Back
@@ -346,12 +416,14 @@ function ActualModal<T extends IBrick>({
             <div className={styles.searchContainer}>
               <TagSearchInput
                 name={"brickSearch"}
-                value={query}
-                onValueChange={setQuery}
+                value={state.query}
+                onValueChange={(value) => {
+                  dispatch(slice.actions.setQuery(value));
+                }}
                 placeholder={"Search"}
-                tag={searchTag === TAG_ALL ? null : searchTag}
+                tag={state.searchTag === TAG_ALL ? null : state.searchTag}
                 onClearTag={() => {
-                  setSearchTag(TAG_ALL);
+                  dispatch(slice.actions.onClearSearchTag());
                 }}
                 focusInput
                 className={styles.searchInput}
@@ -371,16 +443,16 @@ function ActualModal<T extends IBrick>({
       </Modal.Header>
       <Modal.Body
         className={cx(styles.body, {
-          [styles.brickDetail]: Boolean(detailBrick),
+          [styles.brickDetail]: state.detailBrick != null,
         })}
       >
-        {detailBrick ? (
+        {state.detailBrick ? (
           <BrickDetail
-            brick={detailBrick}
-            listing={listings[detailBrick.id]}
+            brick={state.detailBrick}
+            listing={listings[state.detailBrick.id]}
             selectCaption={selectCaption}
             onSelect={() => {
-              onSelect(detailBrick);
+              onSelect(state.detailBrick as T);
               close();
             }}
           />
@@ -392,8 +464,10 @@ function ActualModal<T extends IBrick>({
               ) : (
                 <TagList
                   tagItems={tagItems}
-                  activeTag={searchTag}
-                  onSelectTag={setSearchTag}
+                  activeTag={state.searchTag}
+                  onSelectTag={(tag) => {
+                    dispatch(slice.actions.setSearchTag(tag));
+                  }}
                 />
               )}
             </div>
@@ -414,7 +488,10 @@ function ActualModal<T extends IBrick>({
                       )}
                       itemKey={itemKey}
                       itemData={itemData}
-                      ref={refCallback}
+                      onScroll={({ scrollTop }) => {
+                        dispatch(slice.actions.setScrollPosition(scrollTop));
+                      }}
+                      ref={gridRef}
                     >
                       {ItemRenderer}
                     </LazyGrid>
