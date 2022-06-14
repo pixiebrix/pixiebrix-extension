@@ -76,13 +76,20 @@ class TryExcept extends Transformer {
     options: BlockOptions
   ): Promise<unknown> {
     try {
-      return await options.runPipeline(tryPipeline.__value__);
+      return await options.runPipeline(tryPipeline.__value__, {
+        key: "try",
+        counter: 0,
+      });
     } catch (error: unknown) {
       options.logger.debug("Caught error", { error });
 
-      return options.runPipeline(exceptPipeline?.__value__ ?? [], {
-        [`@${errorKey}`]: serializeError(error, { useToJSON: false }),
-      });
+      return options.runPipeline(
+        exceptPipeline?.__value__ ?? [],
+        { key: "catch", counter: 0 },
+        {
+          [`@${errorKey}`]: serializeError(error, { useToJSON: false }),
+        }
+      );
     }
   }
 }

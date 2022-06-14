@@ -118,8 +118,10 @@ const EditTab: React.FC<{
       []
     );
 
-  const { blockPipeline, blockPipelineErrors, errorTraceEntry } =
-    usePipelineField(allBlocks, extensionPointType);
+  const { blockPipeline, blockPipelineErrors, traceErrors } = usePipelineField(
+    allBlocks,
+    extensionPointType
+  );
 
   const activeNodeId = useSelector(selectActiveNodeId);
   const { blockId, path: fieldName } = useSelector(selectActiveNodeInfo) ?? {};
@@ -185,7 +187,7 @@ const EditTab: React.FC<{
                 relevantBlocksForRootPipeline={relevantBlocksForRootPipeline}
                 pipeline={blockPipeline}
                 pipelineErrors={blockPipelineErrors}
-                errorTraceEntry={errorTraceEntry}
+                traceErrors={traceErrors}
                 extensionPointLabel={extensionPointLabel}
                 extensionPointIcon={extensionPointIcon}
                 addBlock={addBlock}

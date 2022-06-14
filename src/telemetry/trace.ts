@@ -20,10 +20,11 @@ import { JsonObject } from "type-fest";
 import { DBSchema, openDB } from "idb/with-async-ittr";
 import { sortBy } from "lodash";
 import { BlockConfig } from "@/blocks/types";
+import objectHash from "object-hash";
 
 const STORAGE_KEY = "TRACE";
 const ENTRY_OBJECT_STORE = "traces";
-const DB_VERSION_NUMBER = 1;
+const DB_VERSION_NUMBER = 3;
 
 export type TraceRecordMeta = {
   /**
@@ -34,12 +35,32 @@ export type TraceRecordMeta = {
   extensionId: UUID | null;
 
   /**
-   * Unique run id to correlate trace elements from the same run.
+   * Extension run id. Unique run id to correlate trace elements from the same extension run.
    */
   runId: UUID;
 
   /**
-   * Unique id to identify the block across runs.
+   * Branches to the brick execution
+   *
+   * Currently, two kinds of branches tracked
+   * 1. defer
+   * 2. pipeline (e.g., in if/else, document builder button, etc.)
+   *
+   * @since 1.7.0
+   */
+  branches: Array<{
+    /**
+     * Identifier for the branch. (Distinct from other branch ids for blockInstanceId, but not globally unique)
+     */
+    key: string;
+    /**
+     * Monotonically increasing counter
+     */
+    counter: number;
+  }>;
+
+  /**
+   * Unique id to identify the block in the Page Editor across runs.
    */
   blockInstanceId: UUID;
 
@@ -102,12 +123,25 @@ export type TraceExitData = TraceRecordMeta &
      * @since 1.7.0
      */
     isFinal: boolean;
+
+    /**
+     * `true` if the exit is because the result will run in the renderer
+     * @since 1.7.0
+     */
+    isRenderer: boolean;
   };
 
-export type TraceRecord = TraceEntryData & Partial<TraceExitData>;
+type DerivedData = {
+  /**
+   * Unique identifier to distinguish calls to the same static brick in the same run
+   * @since 1.7.0
+   */
+  callId: string;
+};
 
-export type TraceSuccess = TraceEntryData & Output;
-export type TraceError = TraceEntryData & ErrorOutput;
+export type TraceRecord = TraceEntryData & Partial<TraceExitData> & DerivedData;
+
+export type TraceError = TraceEntryData & ErrorOutput & DerivedData;
 
 const indexKeys: Array<
   keyof Pick<TraceRecordMeta, "runId" | "blockInstanceId" | "extensionId">
@@ -142,7 +176,7 @@ async function getDB() {
 
       // Create a store of objects
       const store = db.createObjectStore(ENTRY_OBJECT_STORE, {
-        keyPath: ["runId", "blockInstanceId"],
+        keyPath: ["runId", "blockInstanceId", "callId"],
       });
 
       // Create individual indexes
@@ -167,7 +201,8 @@ export async function addTraceEntry(record: TraceEntryData): Promise<void> {
   }
 
   const db = await getDB();
-  await db.add(ENTRY_OBJECT_STORE, record);
+  const callId = objectHash(record.branches);
+  await db.add(ENTRY_OBJECT_STORE, { ...record, callId });
 }
 
 export async function addTraceExit(record: TraceExitData): Promise<void> {
@@ -181,6 +216,8 @@ export async function addTraceExit(record: TraceExitData): Promise<void> {
     return;
   }
 
+  const callId = objectHash(record.branches);
+
   const db = await getDB();
 
   const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
@@ -188,13 +225,23 @@ export async function addTraceExit(record: TraceExitData): Promise<void> {
   const data = await tx.store.get([
     record.runId,
     record.blockInstanceId,
+    callId,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- types are wrong in idb?
   ] as any);
 
-  await tx.store.put({
-    ...data,
-    ...record,
-  });
+  if (data) {
+    await tx.store.put({
+      ...data,
+      ...record,
+      callId,
+    });
+  } else {
+    console.warn("Trace entry record not found", {
+      runId: record.runId,
+      blockInstanceId: record.blockInstanceId,
+      callId,
+    });
+  }
 }
 
 export async function clearTraces(): Promise<void> {

@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./PrivateServicesCard.module.scss";
-
 import { useSelector } from "react-redux";
-import { Button, Card, Table } from "react-bootstrap";
-import React, { useCallback, useMemo, useState } from "react";
+import { Button } from "react-bootstrap";
+import React, { useCallback, useMemo } from "react";
+import { Column, Row } from "react-table";
+import { isEqual } from "lodash";
+import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
 import { IService, RawServiceConfiguration, UUID } from "@/core";
 import { RootState } from "@/options/store";
 import { faEdit, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
@@ -29,8 +30,11 @@ import { ServicesState } from "@/store/servicesSlice";
 import notify from "@/utils/notify";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import BrickIcon from "@/components/BrickIcon";
-import Pagination from "@/components/pagination/Pagination";
 
+type TableData = {
+  service: IService;
+} & RawServiceConfiguration;
+type TableColumn = Column<TableData>;
 const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
   Object.values(services.configured);
 
@@ -39,16 +43,150 @@ type OwnProps = {
   navigate: (url: string) => void;
 };
 
-const SERVICES_PER_PAGE = 10;
+const Actions: React.VoidFunctionComponent<{
+  row: Row<TableData>;
+  id: UUID;
+  navigate: (url: string) => void;
+  resetAuth: (authId: UUID) => Promise<void>;
+}> = ({ row, id, navigate, resetAuth }) => {
+  if (row.index === 0) {
+    return (
+      <Button
+        style={{ width: 100 }}
+        variant="info"
+        size="sm"
+        onClick={() => {
+          navigate("/services/zapier/");
+        }}
+      >
+        View Key
+      </Button>
+    );
+  }
+
+  return (
+    <EllipsisMenu
+      items={[
+        {
+          title: (
+            <>
+              <FontAwesomeIcon fixedWidth icon={faEdit} /> Configure
+            </>
+          ),
+          action() {
+            navigate(`/services/${encodeURIComponent(id)}`);
+          },
+        },
+        {
+          title: (
+            <>
+              <FontAwesomeIcon fixedWidth icon={faSignOutAlt} /> Reset Token
+            </>
+          ),
+          action: async () => resetAuth(id),
+          hide: !row.original.service.isOAuth2 && !row.original.service.isToken,
+        },
+      ]}
+    />
+  );
+};
+
+const columnFactory = ({
+  navigate,
+  resetAuth,
+}: {
+  navigate: (url: string) => void;
+  resetAuth: (authId: UUID) => Promise<void>;
+}): TableColumn[] => [
+  {
+    Header: "Label",
+    accessor: "label",
+    Cell: ({ value }) => (
+      <>
+        {value ? (
+          <span>{value}</span>
+        ) : (
+          <span className="text-muted">No label provided</span>
+        )}
+      </>
+    ),
+  },
+  {
+    Header: "Type",
+    accessor: "serviceId",
+    Cell({ row }) {
+      if (row.index === 0) {
+        return <div className="text-muted">N/A</div>;
+      }
+
+      return (
+        <>
+          <BrickIcon brick={row.original.service} size="1x" />
+          <div className="ml-2">
+            <div className="text-wrap">{row.original.service.name}</div>
+            <div className="text-wrap">
+              <code className="p-0" style={{ fontSize: "0.7rem" }}>
+                {row.original.service.id}
+              </code>
+            </div>
+          </div>
+        </>
+      );
+    },
+  },
+  {
+    disableSortBy: true,
+    Header: "Actions",
+    accessor: "id",
+    width: 100,
+    Cell({ row, value }) {
+      return (
+        <Actions
+          row={row}
+          id={value}
+          navigate={navigate}
+          resetAuth={resetAuth}
+        />
+      );
+    },
+  },
+];
+
+const dataFactory = ({
+  configuredServices,
+  services,
+}: {
+  configuredServices: RawServiceConfiguration[];
+  services: IService[];
+}): TableData[] => [
+  {
+    label: "Zapier - use to connect to PixieBrix from Zapier",
+    serviceId: null,
+    _rawServiceConfigurationBrand: null,
+    id: null,
+    config: null,
+    service: null,
+  },
+  ...configuredServices.map((configuredService) => {
+    const service = services.find((x) => x.id === configuredService.serviceId);
+    if (!service) {
+      throw new Error(`Unknown service ${configuredService.serviceId}`);
+    }
+
+    return {
+      service,
+      ...configuredService,
+    };
+  }),
+];
 
 const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   services,
   navigate,
 }) => {
-  const [page, setPage] = useState(0);
-
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
-    selectConfiguredServices
+    selectConfiguredServices,
+    isEqual
   );
 
   const resetAuth = useCallback(async (authId: UUID) => {
@@ -59,131 +197,22 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
       notify.error({ message: "Error resetting login for integration", error });
     }
   }, []);
-
-  const numPages = useMemo(
-    () => Math.ceil(configuredServices.length / SERVICES_PER_PAGE),
-    [configuredServices]
+  const columns = useMemo(
+    () => columnFactory({ navigate, resetAuth }),
+    [navigate, resetAuth]
   );
-
-  const pageServices = useMemo(
-    () =>
-      configuredServices.slice(
-        page * SERVICES_PER_PAGE,
-        (page + 1) * SERVICES_PER_PAGE
-      ),
-    [configuredServices, page]
+  const data = useMemo(
+    () => dataFactory({ configuredServices, services }),
+    [configuredServices, services]
   );
-
   return (
     <>
-      <Table className={styles.integrationsTable}>
-        <thead>
-          <tr>
-            <th>Label</th>
-            <th>Type</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            {/* Text-wrap because ellipsis menu popover will get hidden if `Table responsive`
-              solution is used for mobile-friendly table
-              https://stackoverflow.com/questions/6421966/css-overflow-x-visible-and-overflow-y-hidden-causing-scrollbar-issue */}
-            <td className="text-wrap">
-              Zapier <i>&ndash; use to connect to PixieBrix from Zapier</i>
-            </td>
-            <td className="text-muted small">N/A</td>
-            <td>
-              <Button
-                style={{ width: 100 }}
-                variant="info"
-                size="sm"
-                onClick={() => {
-                  navigate("/services/zapier/");
-                }}
-              >
-                View Key
-              </Button>
-            </td>
-          </tr>
-
-          {pageServices.map((configuredService) => {
-            const service = services.find(
-              (x) => x.id === configuredService.serviceId
-            );
-            if (!service) {
-              throw new Error(`Unknown service ${configuredService.serviceId}`);
-            }
-
-            return (
-              <tr
-                key={`${configuredService.serviceId}-${configuredService.id}`}
-              >
-                <td>
-                  {configuredService.label ? (
-                    <span>{configuredService.label}</span>
-                  ) : (
-                    <span className="text-muted">No label provided</span>
-                  )}
-                </td>
-                <td className="d-flex align-items-center">
-                  <BrickIcon brick={service} size="1x" />
-                  <div className="ml-2">
-                    <div className="text-wrap">{service.name}</div>
-                    <div className="text-wrap">
-                      <code className="p-0" style={{ fontSize: "0.7rem" }}>
-                        {service.id}
-                      </code>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <EllipsisMenu
-                    items={[
-                      {
-                        title: (
-                          <>
-                            <FontAwesomeIcon fixedWidth icon={faEdit} />{" "}
-                            Configure
-                          </>
-                        ),
-                        action() {
-                          navigate(
-                            `/services/${encodeURIComponent(
-                              configuredService.id
-                            )}`
-                          );
-                        },
-                      },
-                      {
-                        title: (
-                          <>
-                            <FontAwesomeIcon fixedWidth icon={faSignOutAlt} />{" "}
-                            Reset Token
-                          </>
-                        ),
-                        action: async () => resetAuth(configuredService.id),
-                        hide: !service.isOAuth2 && !service.isToken,
-                      },
-                    ]}
-                  />
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
-      <Card.Footer className="d-flex align-items-center justify-content-between">
-        <span className="text-muted">
-          Showing{" "}
-          {Math.min(page * SERVICES_PER_PAGE + 1, configuredServices.length)} to{" "}
-          {SERVICES_PER_PAGE * page + pageServices.length} of{" "}
-          {configuredServices.length} integrations
-        </span>
-        {configuredServices.length > SERVICES_PER_PAGE && (
-          <Pagination page={page} setPage={setPage} numPages={numPages} />
-        )}
-      </Card.Footer>
+      <PaginatedTable
+        actions={{}}
+        columns={columns}
+        data={data}
+        showSearchFilter
+      />
     </>
   );
 };

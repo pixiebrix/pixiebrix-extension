@@ -24,6 +24,7 @@ import Loader from "@/components/Loader";
 import {
   BuildDocumentBranch,
   DocumentElement,
+  DynamicPath,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { produce } from "immer";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -32,12 +33,14 @@ import { runMapArgs } from "@/contentScript/messenger/api";
 import { isNullOrBlank } from "@/utils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { whoAmI } from "@/background/messenger/api";
+import { joinElementName } from "@/components/documentBuilder/utils";
 
 type DocumentListProps = {
   array: UnknownObject[];
   elementKey?: string;
   config: Args;
   buildDocumentBranch: BuildDocumentBranch;
+  tracePath: DynamicPath;
 };
 
 const ListElementInternal: React.FC<DocumentListProps> = ({
@@ -45,8 +48,11 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
   elementKey,
   config,
   buildDocumentBranch,
+  tracePath,
 }) => {
-  // Should be 'element' for any falsy value including empty string.
+  const { staticId, branches } = tracePath;
+
+  // Should be "element" for any falsy value including empty string.
   elementKey = isNullOrBlank(elementKey) ? "element" : elementKey;
 
   const documentContext = useContext(DocumentContext);
@@ -120,7 +126,11 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
     <>
       {rootDefinitions.map(({ documentElement, elementContext }, index) => {
         const { Component, props } = buildDocumentBranch(
-          documentElement as DocumentElement
+          documentElement as DocumentElement,
+          {
+            staticId: joinElementName(staticId, "list", "children"),
+            branches: [...branches, { staticId, index }],
+          }
         );
         return (
           <DocumentContext.Provider key={index} value={elementContext}>

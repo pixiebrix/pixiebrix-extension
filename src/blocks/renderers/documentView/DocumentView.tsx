@@ -21,15 +21,26 @@ import ReactShadowRoot from "react-shadow-root";
 import BootstrapStylesheet from "@/blocks/renderers/BootstrapStylesheet";
 import { DocumentViewProps } from "./DocumentViewProps";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
+import { joinElementName } from "@/components/documentBuilder/utils";
 
-const DocumentView: React.FC<DocumentViewProps> = ({ body, options }) => {
+const DocumentView: React.FC<DocumentViewProps> = ({ body, options, meta }) => {
   // Track style loading to avoid a FOUC
   const [styleLoaded, setStyleLoaded] = useState(false);
+
+  if (!meta?.runId) {
+    // The sidebar panel should dynamically pass the prop through
+    throw new Error("meta.runId is required for DocumentView");
+  }
+
+  if (!meta?.extensionId) {
+    // The sidebar panel should dynamically pass the prop through
+    throw new Error("meta.extensionId is required for DocumentView");
+  }
 
   return (
     // Wrap in a React context provider that passes BlockOptions down to any embedded bricks
     // ReactShadowRoot needs to be inside an HTMLElement to attach to something
-    <DocumentContext.Provider value={{ options }}>
+    <DocumentContext.Provider value={{ options, meta }}>
       <div className="h-100">
         <ReactShadowRoot>
           <BootstrapStylesheet
@@ -39,7 +50,10 @@ const DocumentView: React.FC<DocumentViewProps> = ({ body, options }) => {
           />
           {styleLoaded &&
             body.map((documentElement, index) => {
-              const { Component, props } = buildDocumentBranch(documentElement);
+              const { Component, props } = buildDocumentBranch(
+                documentElement,
+                { staticId: joinElementName("body", "children"), branches: [] }
+              );
               return <Component key={index} {...props} />;
             })}
         </ReactShadowRoot>

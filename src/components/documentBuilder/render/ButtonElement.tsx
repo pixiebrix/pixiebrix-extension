@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext } from "react";
+import React, { useContext, useState } from "react";
 import { BlockPipeline } from "@/blocks/types";
 import AsyncButton, { AsyncButtonProps } from "@/components/AsyncButton";
 import { whoAmI } from "@/background/messenger/api";
@@ -24,18 +24,30 @@ import { uuidv4 } from "@/types/helpers";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { Except } from "type-fest";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
 
 type ButtonElementProps = Except<AsyncButtonProps, "onClick"> & {
   onClick: BlockPipeline;
+  elementName: string;
+  tracePath: DynamicPath;
 };
 
 const ButtonElement: React.FC<ButtonElementProps> = ({
   onClick,
+  tracePath,
   ...restProps
 }) => {
   const context = useContext(DocumentContext);
+  const [counter, setCounter] = useState(0);
 
-  const handler = useCallback(async () => {
+  if (!context.meta.extensionId) {
+    throw new Error("ButtonElement requires meta.extensionId");
+  }
+
+  const handler = async () => {
+    const currentCounter = counter;
+    setCounter((previous) => previous + 1);
+
     const me = await whoAmI();
     // We currently only support associating the sidebar with the content script in the top-level frame (frameId: 0)
     return runEffectPipeline(
@@ -46,9 +58,19 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
         pipeline: onClick,
         // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will break for v4+
         options: apiVersionOptions("v3"),
+        meta: {
+          ...context.meta,
+          branches: [
+            ...tracePath.branches.map(({ staticId, index }) => ({
+              key: staticId,
+              counter: index,
+            })),
+            { key: "onClick", counter: currentCounter },
+          ],
+        },
       }
     );
-  }, [onClick, context]);
+  };
 
   return <AsyncButton onClick={handler} {...restProps} />;
 };

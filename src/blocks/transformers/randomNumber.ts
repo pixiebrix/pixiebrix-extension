@@ -31,6 +31,8 @@ export class RandomNumber extends Transformer {
     );
   }
 
+  defaultOutputKey = "random";
+
   override async isPure(): Promise<boolean> {
     return false;
   }

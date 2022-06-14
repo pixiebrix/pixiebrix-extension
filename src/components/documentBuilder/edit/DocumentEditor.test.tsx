@@ -217,6 +217,7 @@ describe("remove element", () => {
 
     await userEvent.click(rendered.getByText("Remove element"));
 
-    expect((await rendered.getFormState()).services).toStrictEqual([]);
+    const actualFormState = await rendered.getFormState();
+    expect(actualFormState.services).toStrictEqual([]);
   });
 });
