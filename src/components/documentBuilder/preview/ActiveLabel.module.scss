@@ -29,4 +29,8 @@
   svg + svg {
     margin-left: 0.5rem;
   }
+
+  svg[data-disabled="true"] {
+    color: lightgray;
+  }
 }
