@@ -24,7 +24,7 @@ import PipelineHeaderNode, {
 import PipelineFooterNode, {
   PipelineFooterNodeProps,
 } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { BlockPipeline } from "@/blocks/types";
 import {
   BrickNodeContentProps,
   BrickNodeProps,
@@ -55,6 +55,7 @@ import BrickIcon from "@/components/BrickIcon";
 import { Except } from "type-fest";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { getLatestCall } from "@/telemetry/traceHelpers";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -68,7 +69,7 @@ type EditorNodeLayoutProps = {
   relevantBlocksForRootPipeline: IBlock[];
   pipeline: BlockPipeline;
   pipelineErrors: FormikError;
-  errorTraceEntry: TraceError;
+  traceErrors: TraceError[];
   extensionPointLabel: string;
   extensionPointIcon: IconProp;
   addBlock: (
@@ -89,16 +90,12 @@ type SubPipeline = {
 
 function decideBrickStatus({
   index,
-  blockConfig,
   pipelineErrors,
   traceRecord,
-  errorTraceEntry,
 }: {
   index: number;
-  blockConfig: BlockConfig;
   pipelineErrors: FormikError;
   traceRecord: TraceRecord;
-  errorTraceEntry: TraceError;
 }): RunStatus {
   // If blockPipelineErrors is a string, it means the error is on the pipeline level
   // eslint-disable-next-line security/detect-object-injection -- index is a number
@@ -106,16 +103,16 @@ function decideBrickStatus({
     return RunStatus.ERROR;
   }
 
-  if (errorTraceEntry?.blockInstanceId === blockConfig.instanceId) {
+  if (traceRecord == null) {
+    return RunStatus.NONE;
+  }
+
+  if ("error" in traceRecord && traceRecord.error) {
     return RunStatus.WARNING;
   }
 
   if (traceRecord?.skippedRun) {
     return RunStatus.SKIPPED;
-  }
-
-  if (traceRecord == null) {
-    return RunStatus.NONE;
   }
 
   // We already checked for errors from pipelineErrors
@@ -131,7 +128,6 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   relevantBlocksForRootPipeline,
   pipeline,
   pipelineErrors,
-  errorTraceEntry,
   extensionPointLabel,
   extensionPointIcon,
   addBlock,
@@ -188,10 +184,15 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       const subPipelines: SubPipeline[] = [];
       const block = allBlocks.get(blockConfig.id)?.block;
       const nodeIsActive = blockConfig.instanceId === activeNodeId;
-      const traceRecord = traces.find(
-        (trace) => trace.blockInstanceId === blockConfig.instanceId
+      const traceRecord = getLatestCall(
+        traces.filter(
+          (trace) => trace.blockInstanceId === blockConfig.instanceId
+        )
       );
+
       if (traceRecord != null) {
+        // The runtime doesn't directly trace the extension point. However, if there's a trace from a brick, we
+        // know the extension point ran successfully
         foundationRunStatus = RunStatus.SUCCESS;
       }
 
@@ -324,10 +325,8 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           icon: <BrickIcon brick={block} size="2x" inheritColor />,
           runStatus: decideBrickStatus({
             index,
-            blockConfig,
             pipelineErrors,
             traceRecord,
-            errorTraceEntry,
           }),
           brickLabel: isNullOrBlank(blockConfig.label)
             ? block?.name

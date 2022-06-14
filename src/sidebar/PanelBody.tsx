@@ -22,7 +22,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import ReactShadowRoot from "react-shadow-root";
 import { getErrorMessage, selectSpecificError } from "@/errors/errorHelpers";
 import { BlockArg, MessageContext, RegistryId, RendererOutput } from "@/core";
-import { PanelPayload } from "@/sidebar/types";
+import { PanelPayload, PanelRunMeta } from "@/sidebar/types";
 import RendererComponent from "@/sidebar/RendererComponent";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -35,12 +35,14 @@ import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 type BodyProps = {
   blockId: RegistryId;
   body: RendererOutput;
+  meta: PanelRunMeta;
 };
 
 const BodyContainer: React.FC<BodyProps & { isFetching: boolean }> = ({
   blockId,
   body,
   isFetching,
+  meta,
 }) => (
   <>
     {isFetching && (
@@ -51,7 +53,7 @@ const BodyContainer: React.FC<BodyProps & { isFetching: boolean }> = ({
 
     <div className="full-height" data-block-id={blockId}>
       <ReactShadowRoot>
-        <RendererComponent body={body} />
+        <RendererComponent body={body} meta={meta} />
       </ReactShadowRoot>
     </div>
   </>
@@ -152,7 +154,11 @@ const PanelBody: React.FunctionComponent<{
 
       dispatch(
         slice.actions.success({
-          data: { blockId, body: body as RendererOutput },
+          data: {
+            blockId,
+            body: body as RendererOutput,
+            meta: { runId: payload.runId, extensionId: payload.extensionId },
+          },
         })
       );
     } catch (error) {

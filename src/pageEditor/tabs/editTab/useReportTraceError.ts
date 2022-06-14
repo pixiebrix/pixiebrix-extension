@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectTraceError } from "@/pageEditor/slices/runtimeSelectors";
+import { selectTraceErrors } from "@/pageEditor/slices/runtimeSelectors";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
 import { useEffect } from "react";
@@ -23,17 +23,19 @@ import { useSelector } from "react-redux";
 
 function useReportTraceError() {
   const sessionId = useSelector(selectSessionId);
-  const errorTraceEntry = useSelector(selectTraceError);
-  const runId = errorTraceEntry?.runId ?? null;
+  const traceErrors = useSelector(selectTraceErrors);
+
+  const traceError = traceErrors.find((x) => x.runId);
+  const runId = traceError?.runId ?? null;
 
   useEffect(() => {
-    if (errorTraceEntry) {
+    if (traceError) {
       reportEvent("PageEditorExtensionError", {
         sessionId,
-        extensionId: errorTraceEntry.extensionId,
+        extensionId: traceError.extensionId,
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- errorTraceEntry is not required, runId is sufficient
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- traceError is not required, runId is sufficient
   }, [runId, sessionId]);
 }
 

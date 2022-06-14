@@ -19,6 +19,7 @@ import documentTreeStyles from "./documentTree.module.scss";
 import {
   DocumentComponent,
   DocumentElement,
+  DynamicPath,
   PipelineDocumentConfig,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { get, isEmpty } from "lodash";
@@ -41,6 +42,10 @@ type PreviewComponentProps = {
   onMouseLeave: React.MouseEventHandler<HTMLDivElement>;
 };
 
+// Bookkeeping trace paths for preview is not necessary. But, we need to provide a value for the previews that use
+// getComponentDefinition under the hood
+const DUMMY_TRACE_PATH: DynamicPath = { staticId: "preview", branches: [] };
+
 function getPreviewComponentDefinition(
   element: DocumentElement
 ): DocumentComponent {
@@ -52,7 +57,10 @@ function getPreviewComponentDefinition(
     case "header_2":
     case "header_3":
     case "text": {
-      const { Component, props } = getComponentDefinition(element);
+      const { Component, props } = getComponentDefinition(
+        element,
+        DUMMY_TRACE_PATH
+      );
       const PreviewComponent: React.FC<PreviewComponentProps> = ({
         children,
         className,
@@ -77,7 +85,10 @@ function getPreviewComponentDefinition(
     }
 
     case "image": {
-      let { Component, props } = getComponentDefinition(element);
+      let { Component, props } = getComponentDefinition(
+        element,
+        DUMMY_TRACE_PATH
+      );
 
       // If it's not a valid URL, show a placeholder
       if (
@@ -116,7 +127,10 @@ function getPreviewComponentDefinition(
     case "container":
     case "row":
     case "column": {
-      const { Component, props } = getComponentDefinition(element);
+      const { Component, props } = getComponentDefinition(
+        element,
+        DUMMY_TRACE_PATH
+      );
       props.className = cx(props.className, documentTreeStyles.container);
       if (!element.children?.length) {
         props.children = <span className="text-muted">{componentType}</span>;
@@ -153,7 +167,10 @@ function getPreviewComponentDefinition(
         },
       };
 
-      const { Component, props } = getComponentDefinition(previewElement);
+      const { Component, props } = getComponentDefinition(
+        previewElement,
+        DUMMY_TRACE_PATH
+      );
       const PreviewComponent: React.FC<PreviewComponentProps> = ({
         children,
         className,
@@ -273,7 +290,7 @@ function getPreviewComponentDefinition(
     }
 
     default: {
-      return getComponentDefinition(element);
+      return getComponentDefinition(element, DUMMY_TRACE_PATH);
     }
   }
 }

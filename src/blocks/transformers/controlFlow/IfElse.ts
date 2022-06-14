@@ -78,9 +78,17 @@ class IfElse extends Transformer {
 
     options.logger.debug("Condition", { condition, rawCondition });
 
-    return options.runPipeline(
-      condition ? ifPipeline.__value__ : elsePipeline?.__value__ ?? []
-    );
+    if (condition) {
+      return options.runPipeline(ifPipeline.__value__, {
+        key: "if",
+        counter: 0,
+      });
+    }
+
+    return options.runPipeline(elsePipeline.__value__, {
+      key: "else",
+      counter: 0,
+    });
   }
 }
 

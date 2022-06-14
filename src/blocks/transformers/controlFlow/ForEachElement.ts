@@ -21,6 +21,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { PipelineExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
 import { $safeFind } from "@/helpers";
+import { castArray } from "lodash";
 
 class ForEachElement extends Transformer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/for-each-element");
@@ -72,9 +73,14 @@ class ForEachElement extends Transformer {
 
     let last: unknown;
 
-    for (const element of elements.get()) {
+    for (const [index, element] of castArray(elements.get()).entries()) {
       // eslint-disable-next-line no-await-in-loop -- synchronous for-loop brick
-      last = await options.runPipeline(bodyPipeline.__value__, {}, element);
+      last = await options.runPipeline(
+        bodyPipeline.__value__,
+        { key: "body", counter: index },
+        {},
+        element
+      );
     }
 
     return last;

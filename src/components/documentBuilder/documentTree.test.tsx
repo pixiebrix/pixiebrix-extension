@@ -44,7 +44,10 @@ describe("When rendered in panel", () => {
   });
 
   const renderDocument = (config: any) => {
-    const { Component, props } = buildDocumentBranch(config);
+    const { Component, props } = buildDocumentBranch(config, {
+      staticId: "body",
+      branches: [],
+    });
     return render(<Component {...props} />);
   };
 

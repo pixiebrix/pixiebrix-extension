@@ -97,4 +97,22 @@ export type DocumentComponent = {
   props?: UnknownObject | undefined;
 };
 
-export type BuildDocumentBranch = (root: DocumentElement) => DocumentComponent;
+export type DynamicPath = {
+  /**
+   * The static path to the element in the pre-document.
+   */
+  staticId: string;
+
+  /**
+   * The branches to reach the element in the rendered document
+   */
+  branches: Array<{
+    staticId: string;
+    index: number;
+  }>;
+};
+
+export type BuildDocumentBranch = (
+  root: DocumentElement,
+  tracePath: DynamicPath
+) => DocumentComponent;

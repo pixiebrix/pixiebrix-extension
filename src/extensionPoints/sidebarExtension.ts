@@ -188,6 +188,8 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
     readerContext: ReaderOutput,
     extension: ResolvedExtension<SidebarConfig>
   ) {
+    const runId = uuidv4();
+
     const extensionLogger = this.logger.childLogger(
       selectExtensionContext(extension)
     );
@@ -213,6 +215,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
         headless: true,
         logger: extensionLogger,
         ...apiVersionOptions(extension.apiVersion),
+        runId,
       });
       // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
       // noinspection ExceptionCaughtLocallyJS
@@ -227,15 +230,19 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
       if (error instanceof HeadlessModeError) {
         upsertPanel(ref, heading, {
           blockId: error.blockId,
+          extensionId: extension.id,
           key: uuidv4(),
           ctxt: error.ctxt,
           args: error.args,
+          runId,
         });
       } else {
         extensionLogger.error(error);
         upsertPanel(ref, heading, {
           key: uuidv4(),
+          extensionId: extension.id,
           error: serializeError(error),
+          runId,
         });
       }
     }

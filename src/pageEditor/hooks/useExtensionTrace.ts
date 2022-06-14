@@ -37,6 +37,7 @@ function selectTraceMetadata(record: TraceRecord) {
     runId: record.runId,
     timestamp: record.timestamp,
     isFinal: record.isFinal,
+    callId: record.callId,
   };
 }
 
@@ -63,6 +64,7 @@ function useExtensionTrace() {
         extensionTrace.map((x) => selectTraceMetadata(x))
       )
     ) {
+      console.debug("Updating extension trace in Redux slice: %s", extensionId);
       dispatch(setExtensionTrace({ extensionId, records: lastRun }));
     }
 

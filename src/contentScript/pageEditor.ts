@@ -113,6 +113,7 @@ export async function runBlock({
 
   const options: ReduceOptions = {
     ...versionOptions,
+    branches: [],
     headless: true,
     logValues: false,
     logger: new ConsoleLogger(),

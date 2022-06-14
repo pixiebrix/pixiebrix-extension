@@ -29,6 +29,11 @@ export type RendererError = {
    */
   // TypeScript was having problems handling the type SerializedError here
   error: unknown;
+  /**
+   * The extension run id.
+   * @since 1.7.0
+   */
+  runId: UUID;
 };
 
 /**
@@ -120,7 +125,7 @@ export type ActivatePanelOptions = {
   /**
    * Refresh the panel content (default=true).
    *
-   * Has not effect if the sidebar is not already showing
+   * Has no effect if the sidebar is not already showing
    *
    * @since 1.7.0
    */
@@ -145,4 +150,13 @@ export type ActivatePanelOptions = {
    * @since 1.6.5
    */
   panelHeading?: string;
+};
+
+/**
+ * Metadata about the extension that produced the panel content
+ * @since 1.7.0
+ */
+export type PanelRunMeta = {
+  runId: UUID;
+  extensionId: UUID;
 };

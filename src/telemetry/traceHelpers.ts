@@ -15,21 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
-import { Branch } from "@/blocks/types";
+import { TraceRecord } from "@/telemetry/trace";
+import { reverse, sortBy } from "lodash";
 
 /**
- * Join parts of a document builder element name, ignoring null/blank parts.
- * @param nameParts the parts of the name
+ * Given records for a single runId and blockInstanceId, return the latest call to a given blockInstanceId.
+ * @param records the trace records
  */
-export function joinElementName(...nameParts: Array<string | number>): string {
-  // Don't use lodash.compact and lodash.isEmpty since they treat 0 as falsy
-  return nameParts.filter((x) => x != null && x !== "").join(".");
-}
-
-export function mapPathToTraceBranches(tracePath: DynamicPath): Branch[] {
-  return tracePath.branches.map(({ staticId, index }) => ({
-    key: staticId,
-    counter: index,
-  }));
+export function getLatestCall(records: TraceRecord[]): TraceRecord | null {
+  return reverse(sortBy(records, (x) => x.branches))[0];
 }
