@@ -42,7 +42,6 @@ const ActiveLabel: React.FunctionComponent<ActiveLabelProps> = ({
   const deleteElement = useDeleteElement(documentBodyName);
   const onDelete = () => {
     deleteElement(elementName);
-    selectParent(elementName);
   };
 
   return (
