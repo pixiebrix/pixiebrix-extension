@@ -18,16 +18,21 @@
 import React from "react";
 import {
   DocumentComponent,
+  DocumentElement,
   PreviewComponentProps,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
 import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
+import PopupLabels from "./PopupLabels";
+import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 
-type UnknownProps = PreviewComponentProps & {
+type ContainerProps = PreviewComponentProps & {
+  element: DocumentElement;
   documentComponent: DocumentComponent;
 };
 
-const Unknown: React.FunctionComponent<UnknownProps> = ({
+const Container: React.FunctionComponent<ContainerProps> = ({
+  element,
   documentComponent: { Component, props },
   children,
   className,
@@ -37,12 +42,23 @@ const Unknown: React.FunctionComponent<UnknownProps> = ({
   isActive,
   ...restPreviewProps
 }) => (
-  <div
-    className={cx(documentTreeStyles.shiftRightWrapper, className)}
+  <Component
     {...restPreviewProps}
+    className={cx(props.className, className, documentTreeStyles.container)}
   >
-    <Component {...props} />
-  </div>
+    <PopupLabels
+      className={documentTreeStyles.labelShiftUp}
+      elementType={element.type}
+      documentBodyName={documentBodyName}
+      elementName={elementName}
+      isHovered={isHovered}
+      isActive={isActive}
+    />
+    {children}
+    {!element.children?.length && (
+      <span className="text-muted">{elementTypeLabels[element.type]}</span>
+    )}
+  </Component>
 );
 
-export default Unknown;
+export default Container;

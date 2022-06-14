@@ -28,19 +28,19 @@ import cx from "classnames";
 import { getPreviewValues } from "@/components/fields/fieldUtils";
 
 type DocumentPreviewProps = {
-  name: string;
+  documentBodyName: string;
   activeElement: string;
   setActiveElement: (activeElement: string) => void;
   menuBoundary?: Element;
 };
 
 const DocumentPreview = ({
-  name,
+  documentBodyName,
   activeElement,
   setActiveElement,
   menuBoundary,
 }: DocumentPreviewProps) => {
-  const [{ value: body }] = useField<DocumentElement[]>(name);
+  const [{ value: body }] = useField<DocumentElement[]>(documentBodyName);
   const bodyPreview = useMemo(() => getPreviewValues(body), [body]);
 
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
@@ -80,8 +80,8 @@ const DocumentPreview = ({
     >
       {bodyPreview.map((childElement, i) => (
         <ElementPreview
-          key={`${name}.${i}`}
-          name={name}
+          key={`${documentBodyName}.${i}`}
+          documentBodyName={documentBodyName}
           elementName={String(i)}
           previewElement={childElement}
           activeElement={activeElement}
@@ -93,7 +93,7 @@ const DocumentPreview = ({
       ))}
       {body.length === 0 && <span className="text-muted">body</span>}
       <AddElementAction
-        elementsCollectionName={name}
+        elementsCollectionName={documentBodyName}
         allowedTypes={ROOT_ELEMENT_TYPES}
         className={previewStyles.addElement}
         menuBoundary={menuBoundary}

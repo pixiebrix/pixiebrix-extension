@@ -25,4 +25,8 @@
   padding: 0px 5px;
   border-radius: $border-radius $border-radius 0 0;
   color: white;
+
+  svg + svg {
+    margin-left: 0.5rem;
+  }
 }

@@ -30,11 +30,11 @@ import React from "react";
 import { Button } from "react-bootstrap";
 import { getComponentDefinition } from "@/components/documentBuilder/documentTree";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
-import HoveredLabel from "./HoveredLabel";
-import ActiveLabel from "./ActiveLabel";
 import Unknown from "./elementsPreview/Unknown";
 import Basic from "./elementsPreview/Basic";
 import Image from "./elementsPreview/Image";
+import Container from "./elementsPreview/Container";
+import PopupLabels from "./elementsPreview/PopupLabels";
 
 function getPreviewComponentDefinition(
   element: DocumentElement
@@ -71,37 +71,14 @@ function getPreviewComponentDefinition(
     case "container":
     case "row":
     case "column": {
-      const { Component, props } = getComponentDefinition(element);
-      props.className = cx(props.className, documentTreeStyles.container);
-      if (!element.children?.length) {
-        props.children = <span className="text-muted">{componentType}</span>;
-      }
-
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        children,
-        isHovered,
-        isActive,
-        selectParent,
-        ...restPreviewProps
-      }) => (
-        <Component {...restPreviewProps}>
-          {isHovered && (
-            <HoveredLabel
-              className={documentTreeStyles.labelShiftUp}
-              elementType={element.type}
-            />
-          )}
-          {isActive && (
-            <ActiveLabel
-              className={documentTreeStyles.labelShiftUp}
-              selectParent={selectParent}
-            />
-          )}
-          {children}
-        </Component>
-      );
-
-      return { Component: PreviewComponent, props };
+      const documentComponent = getComponentDefinition(element);
+      return {
+        Component: Container,
+        props: {
+          element,
+          documentComponent,
+        },
+      };
     }
 
     case "card": {
@@ -122,25 +99,22 @@ function getPreviewComponentDefinition(
         className,
         isHovered,
         isActive,
-        selectParent,
+        documentBodyName,
+        elementName,
         ...restPreviewProps
       }) => (
         <div
           className={cx(documentTreeStyles.shiftRightWrapper, className)}
           {...restPreviewProps}
         >
-          {isHovered && (
-            <HoveredLabel
-              className={documentTreeStyles.labelShiftRight}
-              elementType={element.type}
-            />
-          )}
-          {isActive && (
-            <ActiveLabel
-              className={documentTreeStyles.labelShiftRight}
-              selectParent={selectParent}
-            />
-          )}
+          <PopupLabels
+            className={documentTreeStyles.labelShiftRight}
+            elementType={element.type}
+            documentBodyName={documentBodyName}
+            elementName={elementName}
+            isHovered={isHovered}
+            isActive={isActive}
+          />
           <Component {...props}>{children}</Component>
         </div>
       );
@@ -154,25 +128,22 @@ function getPreviewComponentDefinition(
         className,
         isHovered,
         isActive,
-        selectParent,
+        documentBodyName,
+        elementName,
         ...restPreviewProps
       }) => (
         <div
           className={cx(documentTreeStyles.shiftRightWrapper, className)}
           {...restPreviewProps}
         >
-          {isHovered && (
-            <HoveredLabel
-              className={documentTreeStyles.labelShiftRight}
-              elementType={element.type}
-            />
-          )}
-          {isActive && (
-            <ActiveLabel
-              className={documentTreeStyles.labelShiftRight}
-              selectParent={selectParent}
-            />
-          )}
+          <PopupLabels
+            className={documentTreeStyles.labelShiftRight}
+            elementType={element.type}
+            documentBodyName={documentBodyName}
+            elementName={elementName}
+            isHovered={isHovered}
+            isActive={isActive}
+          />
           <h3>{elementTypeLabels.pipeline}</h3>
           {pipeline.__value__.map(({ id }) => (
             <p key={id}>{id}</p>
@@ -188,7 +159,8 @@ function getPreviewComponentDefinition(
         className,
         isHovered,
         isActive,
-        selectParent,
+        documentBodyName,
+        elementName,
         ...restPreviewProps
       }) => {
         // Destructure disabled from button props. If the button is disabled in the preview the user can't select it
@@ -201,18 +173,14 @@ function getPreviewComponentDefinition(
               className={cx(className, documentTreeStyles.inlineWrapper)}
               {...restPreviewProps}
             >
-              {isHovered && (
-                <HoveredLabel
-                  className={documentTreeStyles.labelShiftRight}
-                  elementType={element.type}
-                />
-              )}
-              {isActive && (
-                <ActiveLabel
-                  className={documentTreeStyles.labelShiftRight}
-                  selectParent={selectParent}
-                />
-              )}
+              <PopupLabels
+                className={documentTreeStyles.labelShiftRight}
+                elementType={element.type}
+                documentBodyName={documentBodyName}
+                elementName={elementName}
+                isHovered={isHovered}
+                isActive={isActive}
+              />
               <Button onClick={() => {}} {...buttonProps}>
                 {title}
               </Button>
@@ -233,7 +201,8 @@ function getPreviewComponentDefinition(
         className,
         isHovered,
         isActive,
-        selectParent,
+        documentBodyName,
+        elementName,
         ...restPreviewProps
       }) => (
         <div
@@ -244,18 +213,14 @@ function getPreviewComponentDefinition(
           )}
           {...restPreviewProps}
         >
-          {isHovered && (
-            <HoveredLabel
-              className={documentTreeStyles.labelShiftUp}
-              elementType={element.type}
-            />
-          )}
-          {isActive && (
-            <ActiveLabel
-              className={documentTreeStyles.labelShiftUp}
-              selectParent={selectParent}
-            />
-          )}
+          <PopupLabels
+            className={documentTreeStyles.labelShiftUp}
+            elementType={element.type}
+            documentBodyName={documentBodyName}
+            elementName={elementName}
+            isHovered={isHovered}
+            isActive={isActive}
+          />
           <div className="text-muted">List: {arrayValue}</div>
           <div className="text-muted">
             Element key: @{config.elementKey || "element"}

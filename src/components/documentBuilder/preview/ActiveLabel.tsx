@@ -34,7 +34,7 @@ const ActiveLabel: React.FunctionComponent<ActiveLabelProps> = ({
   documentBodyName,
   elementName,
 }) => {
-  const selectParent = useSelectParentElement(documentBodyName);
+  const selectParent = useSelectParentElement();
   const onSelectParent = () => {
     selectParent(elementName);
   };

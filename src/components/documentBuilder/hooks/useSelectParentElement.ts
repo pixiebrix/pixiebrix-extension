@@ -15,13 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
-import { FormState } from "@/pageEditor/pageEditorTypes";
-import { useFormikContext, getIn } from "formik";
-import produce from "immer";
-import { useCallback } from "react";
 import { useDispatch } from "react-redux";
-import getElementCollectionName from "../edit/getElementCollectionName";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 const elementsParentRegexp =
@@ -40,15 +34,12 @@ const getParentElementName = (elementName: string): string | null => {
   return parentElementName;
 };
 
-function useSelectParentElement(documentBodyName: string) {
+function useSelectParentElement() {
   const dispatch = useDispatch();
-  return useCallback(
-    (elementName: string) => {
-      const parentElementName = getParentElementName(elementName);
-      dispatch(editorActions.setNodePreviewActiveElement(parentElementName));
-    },
-    [dispatch]
-  );
+  return (elementName: string) => {
+    const parentElementName = getParentElementName(elementName);
+    dispatch(editorActions.setNodePreviewActiveElement(parentElementName));
+  };
 }
 
 export default useSelectParentElement;

@@ -41,7 +41,7 @@ function renderDocumentPreview(documentElement: DocumentElement) {
         onSubmit={jest.fn()}
       >
         <DocumentPreview
-          name="document.body"
+          documentBodyName="document.body"
           activeElement={activeElement}
           setActiveElement={setActiveElement}
         />

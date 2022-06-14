@@ -38,7 +38,7 @@ const renderElementPreview = (
   elementPreviewProps?: Partial<ElementPreviewProps>
 ) => {
   const props: ElementPreviewProps = {
-    name: "",
+    documentBodyName: "",
     elementName: "element",
     previewElement: element,
     activeElement: null,
