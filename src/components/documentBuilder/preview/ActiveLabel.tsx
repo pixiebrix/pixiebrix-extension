@@ -15,29 +15,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { MouseEventHandler } from "react";
+import React from "react";
 import cx from "classnames";
-import styles from "./ActiveLabel.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLevelUpAlt } from "@fortawesome/free-solid-svg-icons";
+import { faLevelUpAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
+import useDeleteElement from "@/components/documentBuilder/hooks/useDeleteElement";
+import styles from "./ActiveLabel.module.scss";
+import useSelectParentElement from "@/components/documentBuilder/hooks/useSelectParentElement";
 
 type ActiveLabelProps = {
   className?: string;
-  selectParent: () => void;
+  documentBodyName: string;
+  elementName: string;
 };
 
 const ActiveLabel: React.FunctionComponent<ActiveLabelProps> = ({
   className,
-  selectParent,
+  documentBodyName,
+  elementName,
 }) => {
-  const onSelectParent: MouseEventHandler<SVGSVGElement> = (event) => {
-    event.stopPropagation();
-    selectParent();
+  const selectParent = useSelectParentElement(documentBodyName);
+  const onSelectParent = () => {
+    selectParent(elementName);
+  };
+
+  const deleteElement = useDeleteElement(documentBodyName);
+  const onDelete = () => {
+    deleteElement(elementName);
+    selectParent(elementName);
   };
 
   return (
     <div className={cx(styles.root, className)}>
       <FontAwesomeIcon icon={faLevelUpAlt} onClick={onSelectParent} />
+      <FontAwesomeIcon icon={faTrash} onClick={onDelete} />
     </div>
   );
 };

@@ -21,26 +21,22 @@ import getElementCollectionName from "@/components/documentBuilder/edit/getEleme
 import { produce } from "immer";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
 import { useCallback } from "react";
-import useReduxState from "@/hooks/useReduxState";
-import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { useDispatch } from "react-redux";
 
 function useDeleteElement(documentBodyName: string) {
   const { values: formState, setValues: setFormState } =
     useFormikContext<FormState>();
 
-  const [, setActiveElement] = useReduxState(
-    selectNodePreviewActiveElement,
-    editorActions.setNodePreviewActiveElement
-  );
+  const dispatch = useDispatch();
 
   return useCallback(
     (elementName: string) => {
+      dispatch(editorActions.setNodePreviewActiveElement(null));
+
       const { collectionName, elementIndex } = getElementCollectionName(
         [documentBodyName, elementName].join(".")
       );
-
-      setActiveElement(null);
 
       // Remove the element from the form state
       let nextState = produce(formState, (draft) => {
@@ -53,7 +49,7 @@ function useDeleteElement(documentBodyName: string) {
 
       setFormState(nextState);
     },
-    [setFormState, formState, setActiveElement, documentBodyName]
+    [setFormState, formState, dispatch, documentBodyName]
   );
 }
 

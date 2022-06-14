@@ -38,9 +38,10 @@ const Image: React.FunctionComponent<ImageProps> = ({
   documentComponent: { Component, props },
   children,
   className,
+  documentBodyName,
+  elementName,
   isHovered,
   isActive,
-  selectParent,
   ...restPreviewProps
 }) => {
   // If it's not a valid URL, show a placeholder
@@ -62,9 +63,10 @@ const Image: React.FunctionComponent<ImageProps> = ({
       <PopupLabels
         className={documentTreeStyles.labelShiftRight}
         elementType={elementType}
+        documentBodyName={documentBodyName}
+        elementName={elementName}
         isHovered={isHovered}
         isActive={isActive}
-        selectParent={selectParent}
       />
       <Component {...props} />
     </div>

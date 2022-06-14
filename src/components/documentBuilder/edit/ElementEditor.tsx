@@ -52,12 +52,7 @@ const ElementEditor: React.FC<ElementEditorProps> = ({
           </h6>
         </Col>
         <Col xl>
-          <RemoveElement
-            elementName={elementName}
-            resetActiveElement={() => {
-              setActiveElement(null);
-            }}
-          />
+          <RemoveElement documentBodyName={name} elementName={activeElement} />
         </Col>
         <Col xl>
           <small className="text-muted">

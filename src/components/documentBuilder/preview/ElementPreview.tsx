@@ -25,7 +25,6 @@ import {
 import AddElementAction from "./AddElementAction";
 import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
 import getPreviewComponentDefinition from "./getPreviewComponentDefinition";
-import getParentElementName from "./getParentElementName";
 
 export type ElementPreviewProps = {
   /**
@@ -83,12 +82,6 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
     }
   };
 
-  const selectParent = () => {
-    const parentElementName = getParentElementName(elementName);
-
-    setActiveElement(parentElementName);
-  };
-
   // Render children and Add Menu for the container element
   const isContainer = Array.isArray(previewElement.children);
 
@@ -110,7 +103,8 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
       })}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
-      selectParent={selectParent}
+      documentBodyName={name}
+      elementName={elementName}
       isHovered={isHovered}
       isActive={isActive}
     >

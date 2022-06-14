@@ -23,8 +23,7 @@ import {
 } from "@/components/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
 import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
-import HoveredLabel from "@/components/documentBuilder/preview/HoveredLabel";
-import ActiveLabel from "@/components/documentBuilder/preview/ActiveLabel";
+import PopupLabels from "./PopupLabels";
 
 type BasicProps = PreviewComponentProps & {
   elementType: DocumentElementType;
@@ -36,27 +35,24 @@ const Basic: React.FunctionComponent<BasicProps> = ({
   documentComponent: { Component, props },
   children,
   className,
+  documentBodyName,
+  elementName,
   isHovered,
   isActive,
-  selectParent: onSelectParent,
   ...restPreviewProps
 }) => (
   <div
     className={cx(documentTreeStyles.shiftRightWrapper, className)}
     {...restPreviewProps}
   >
-    {isHovered && (
-      <HoveredLabel
-        className={documentTreeStyles.labelShiftRight}
-        elementType={elementType}
-      />
-    )}
-    {isActive && (
-      <ActiveLabel
-        className={documentTreeStyles.labelShiftRight}
-        selectParent={onSelectParent}
-      />
-    )}
+    <PopupLabels
+      className={documentTreeStyles.labelShiftRight}
+      elementType={elementType}
+      documentBodyName={documentBodyName}
+      elementName={elementName}
+      isHovered={isHovered}
+      isActive={isActive}
+    />
     <Component {...props} />
   </div>
 );

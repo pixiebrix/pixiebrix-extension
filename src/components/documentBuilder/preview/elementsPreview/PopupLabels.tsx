@@ -23,24 +23,30 @@ import ActiveLabel from "@/components/documentBuilder/preview/ActiveLabel";
 type PopupLabelsProps = {
   className?: string;
   elementType: DocumentElementType;
+  documentBodyName: string;
+  elementName: string;
   isHovered: boolean;
   isActive: boolean;
-  selectParent: () => void;
 };
 
 const PopupLabels: React.FunctionComponent<PopupLabelsProps> = ({
   className,
   elementType,
+  documentBodyName,
+  elementName,
   isHovered,
   isActive,
-  selectParent,
 }) => (
   <>
     {isHovered && (
       <HoveredLabel className={className} elementType={elementType} />
     )}
     {isActive && (
-      <ActiveLabel className={className} selectParent={selectParent} />
+      <ActiveLabel
+        className={className}
+        documentBodyName={documentBodyName}
+        elementName={elementName}
+      />
     )}
   </>
 );

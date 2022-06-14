@@ -101,10 +101,11 @@ export type BuildDocumentBranch = (root: DocumentElement) => DocumentComponent;
 
 export type PreviewComponentProps = {
   className?: string;
+  documentBodyName: string;
+  elementName: string;
   isHovered: boolean;
   isActive: boolean;
   onClick: MouseEventHandler<HTMLDivElement>;
   onMouseEnter: MouseEventHandler<HTMLDivElement>;
   onMouseLeave: MouseEventHandler<HTMLDivElement>;
-  selectParent: () => void;
 };
