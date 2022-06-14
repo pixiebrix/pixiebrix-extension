@@ -37,6 +37,10 @@
       justify-content: flex-end;
       align-items: center;
     }
+
+    .popularIcon {
+      display: none;
+    }
   }
 
   &:focus {
@@ -99,4 +103,9 @@
 
 .addButton {
   white-space: nowrap;
+}
+
+.popularIcon {
+  margin-left: auto;
+  color: darkgoldenrod;
 }

@@ -20,8 +20,9 @@ import { IBrick } from "@/core";
 import { Button, Card, ListGroup } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
 import styles from "./BrickResultItem.module.scss";
-import { faPlus, faTrophy } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "@/icons/Icon";
 
 export const BRICK_RESULT_FIXED_HEIGHT_PX = 89;
 
@@ -48,14 +49,11 @@ const BrickResultItem = <T extends IBrick>({
           <BrickIcon brick={brick} faIconClass={styles.icon} />
           <span className={styles.name}>{brick.name}</span>
           {brick.isPopular && (
-            <>
-              {" "}
-              <FontAwesomeIcon
-                icon={faTrophy}
-                color="gold"
-                title="This brick is trending!"
-              />
-            </>
+            <Icon
+              icon="icon-sparkles"
+              library="custom"
+              className={styles.popularIcon}
+            />
           )}
         </div>
         {brick.description ? (
