@@ -226,6 +226,7 @@ describe("Trace normal execution", () => {
       ...testOptions("v2"),
       runId,
       logger,
+      extensionId,
     });
 
     const meta: TraceRecordMeta = {

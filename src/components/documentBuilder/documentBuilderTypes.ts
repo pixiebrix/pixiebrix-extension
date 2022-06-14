@@ -97,6 +97,10 @@ export type DocumentComponent = {
   props?: UnknownObject | undefined;
 };
 
+/**
+ * Document path information for keep tracking of brick call sites/calls for tracing
+ * @since 1.7.0
+ */
 export type DynamicPath = {
   /**
    * The static path to the element in the pre-document.

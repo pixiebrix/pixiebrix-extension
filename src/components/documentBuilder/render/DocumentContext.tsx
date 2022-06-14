@@ -33,7 +33,7 @@ const blankContext = {
   "@options": {},
 } as BlockArgContext;
 
-const initialValue: DocumentState = {
+export const initialValue: DocumentState = {
   meta: {
     runId: null,
     extensionId: null,
