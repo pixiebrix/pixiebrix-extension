@@ -20,6 +20,8 @@
 .pipeLine {
   width: $pipeLineOffset;
   border-right: $pipeLineBorderWidth solid black;
+  flex-shrink: 0;
+  flex-grow: 0;
 
   &.active {
     border-color: white;
