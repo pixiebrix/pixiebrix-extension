@@ -106,5 +106,5 @@ export type PreviewComponentProps = {
   onClick: MouseEventHandler<HTMLDivElement>;
   onMouseEnter: MouseEventHandler<HTMLDivElement>;
   onMouseLeave: MouseEventHandler<HTMLDivElement>;
-  onSelectParent: () => void;
+  selectParent: () => void;
 };

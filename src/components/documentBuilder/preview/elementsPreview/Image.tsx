@@ -23,42 +23,52 @@ import {
 } from "@/components/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
 import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
-import HoveredLabel from "@/components/documentBuilder/preview/HoveredLabel";
-import ActiveLabel from "@/components/documentBuilder/preview/ActiveLabel";
+import { isValidUrl } from "@/utils";
+import ImagePlaceholder from "@/components/imagePlaceholder/ImagePlaceholder";
+import { isEmpty } from "lodash";
+import PopupLabels from "./PopupLabels";
 
-type BasicProps = PreviewComponentProps & {
+type ImageProps = PreviewComponentProps & {
   elementType: DocumentElementType;
   documentComponent: DocumentComponent;
 };
 
-const Basic: React.FunctionComponent<BasicProps> = ({
+const Image: React.FunctionComponent<ImageProps> = ({
   elementType,
   documentComponent: { Component, props },
   children,
   className,
   isHovered,
   isActive,
-  selectParent: onSelectParent,
+  selectParent,
   ...restPreviewProps
-}) => (
-  <div
-    className={cx(documentTreeStyles.shiftRightWrapper, className)}
-    {...restPreviewProps}
-  >
-    {isHovered && (
-      <HoveredLabel
+}) => {
+  // If it's not a valid URL, show a placeholder
+  if (
+    typeof props.src !== "string" ||
+    !isValidUrl(props.src, { protocols: ["https:"] })
+  ) {
+    Component = ImagePlaceholder;
+    // Don't let empty values (including null, empty string, and 0)
+    props.height = isEmpty(props.height) ? "50" : props.height;
+    props.width = isEmpty(props.width) ? "100" : props.width;
+  }
+
+  return (
+    <div
+      className={cx(documentTreeStyles.imageWrapper, className)}
+      {...restPreviewProps}
+    >
+      <PopupLabels
         className={documentTreeStyles.labelShiftRight}
         elementType={elementType}
+        isHovered={isHovered}
+        isActive={isActive}
+        selectParent={selectParent}
       />
-    )}
-    {isActive && (
-      <ActiveLabel
-        className={documentTreeStyles.labelShiftRight}
-        selectParent={onSelectParent}
-      />
-    )}
-    <Component {...props} />
-  </div>
-);
+      <Component {...props} />
+    </div>
+  );
+};
 
-export default Basic;
+export default Image;

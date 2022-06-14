@@ -22,7 +22,7 @@ import {
   PipelineDocumentConfig,
   PreviewComponentProps,
 } from "@/components/documentBuilder/documentBuilderTypes";
-import { get, isEmpty } from "lodash";
+import { get } from "lodash";
 import { UnknownObject } from "@/types";
 import { isExpression } from "@/runtime/mapArgs";
 import cx from "classnames";
@@ -31,12 +31,10 @@ import { Button } from "react-bootstrap";
 import { getComponentDefinition } from "@/components/documentBuilder/documentTree";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import HoveredLabel from "./HoveredLabel";
-import ImagePlaceholder from "@/components/imagePlaceholder/ImagePlaceholder";
-import { isValidUrl } from "@/utils";
-
 import ActiveLabel from "./ActiveLabel";
 import Unknown from "./elementsPreview/Unknown";
 import Basic from "./elementsPreview/Basic";
+import Image from "./elementsPreview/Image";
 
 function getPreviewComponentDefinition(
   element: DocumentElement
@@ -53,46 +51,21 @@ function getPreviewComponentDefinition(
       return {
         Component: Basic,
         props: {
+          elementType: element.type,
           documentComponent,
         },
       };
     }
 
     case "image": {
-      let { Component, props } = getComponentDefinition(element);
-
-      // If it's not a valid URL, show a placeholder
-      if (
-        typeof props.src !== "string" ||
-        !isValidUrl(props.src, { protocols: ["https:"] })
-      ) {
-        Component = ImagePlaceholder;
-        // Don't let empty values (including null, empty string, and 0)
-        props.height = isEmpty(props.height) ? "50" : props.height;
-        props.width = isEmpty(props.width) ? "100" : props.width;
-      }
-
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        children,
-        className,
-        isHovered,
-        ...restPreviewProps
-      }) => (
-        <div
-          className={cx(documentTreeStyles.imageWrapper, className)}
-          {...restPreviewProps}
-        >
-          {isHovered && (
-            <HoveredLabel
-              className={documentTreeStyles.labelShiftRight}
-              elementType={element.type}
-            />
-          )}
-          <Component {...props} />
-        </div>
-      );
-
-      return { Component: PreviewComponent, props };
+      const documentComponent = getComponentDefinition(element);
+      return {
+        Component: Image,
+        props: {
+          elementType: element.type,
+          documentComponent,
+        },
+      };
     }
 
     case "container":
@@ -108,7 +81,7 @@ function getPreviewComponentDefinition(
         children,
         isHovered,
         isActive,
-        onSelectParent,
+        selectParent,
         ...restPreviewProps
       }) => (
         <Component {...restPreviewProps}>
@@ -121,7 +94,7 @@ function getPreviewComponentDefinition(
           {isActive && (
             <ActiveLabel
               className={documentTreeStyles.labelShiftUp}
-              selectParent={onSelectParent}
+              selectParent={selectParent}
             />
           )}
           {children}
@@ -149,7 +122,7 @@ function getPreviewComponentDefinition(
         className,
         isHovered,
         isActive,
-        onSelectParent,
+        selectParent,
         ...restPreviewProps
       }) => (
         <div
@@ -165,7 +138,7 @@ function getPreviewComponentDefinition(
           {isActive && (
             <ActiveLabel
               className={documentTreeStyles.labelShiftRight}
-              selectParent={onSelectParent}
+              selectParent={selectParent}
             />
           )}
           <Component {...props}>{children}</Component>
@@ -181,7 +154,7 @@ function getPreviewComponentDefinition(
         className,
         isHovered,
         isActive,
-        onSelectParent,
+        selectParent,
         ...restPreviewProps
       }) => (
         <div
@@ -197,7 +170,7 @@ function getPreviewComponentDefinition(
           {isActive && (
             <ActiveLabel
               className={documentTreeStyles.labelShiftRight}
-              selectParent={onSelectParent}
+              selectParent={selectParent}
             />
           )}
           <h3>{elementTypeLabels.pipeline}</h3>
@@ -215,7 +188,7 @@ function getPreviewComponentDefinition(
         className,
         isHovered,
         isActive,
-        onSelectParent,
+        selectParent,
         ...restPreviewProps
       }) => {
         // Destructure disabled from button props. If the button is disabled in the preview the user can't select it
@@ -237,7 +210,7 @@ function getPreviewComponentDefinition(
               {isActive && (
                 <ActiveLabel
                   className={documentTreeStyles.labelShiftRight}
-                  selectParent={onSelectParent}
+                  selectParent={selectParent}
                 />
               )}
               <Button onClick={() => {}} {...buttonProps}>
@@ -260,7 +233,7 @@ function getPreviewComponentDefinition(
         className,
         isHovered,
         isActive,
-        onSelectParent,
+        selectParent,
         ...restPreviewProps
       }) => (
         <div
@@ -280,7 +253,7 @@ function getPreviewComponentDefinition(
           {isActive && (
             <ActiveLabel
               className={documentTreeStyles.labelShiftUp}
-              selectParent={onSelectParent}
+              selectParent={selectParent}
             />
           )}
           <div className="text-muted">List: {arrayValue}</div>

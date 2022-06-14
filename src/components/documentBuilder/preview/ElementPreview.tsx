@@ -83,7 +83,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
     }
   };
 
-  const onSelectParent = () => {
+  const selectParent = () => {
     const parentElementName = getParentElementName(elementName);
 
     setActiveElement(parentElementName);
@@ -110,7 +110,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
       })}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
-      onSelectParent={onSelectParent}
+      selectParent={selectParent}
       isHovered={isHovered}
       isActive={isActive}
     >

@@ -16,32 +16,33 @@
  */
 
 import React from "react";
-import {
-  DocumentComponent,
-  PreviewComponentProps,
-} from "@/components/documentBuilder/documentBuilderTypes";
-import cx from "classnames";
-import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
+import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
+import HoveredLabel from "@/components/documentBuilder/preview/HoveredLabel";
+import ActiveLabel from "@/components/documentBuilder/preview/ActiveLabel";
 
-type UnknownProps = PreviewComponentProps & {
-  documentComponent: DocumentComponent;
+type PopupLabelsProps = {
+  className?: string;
+  elementType: DocumentElementType;
+  isHovered: boolean;
+  isActive: boolean;
+  selectParent: () => void;
 };
 
-const Unknown: React.FunctionComponent<UnknownProps> = ({
-  documentComponent: { Component, props },
-  children,
+const PopupLabels: React.FunctionComponent<PopupLabelsProps> = ({
   className,
+  elementType,
   isHovered,
   isActive,
-  selectParent: onSelectParent,
-  ...restPreviewProps
+  selectParent,
 }) => (
-  <div
-    className={cx(documentTreeStyles.shiftRightWrapper, className)}
-    {...restPreviewProps}
-  >
-    <Component {...props} />
-  </div>
+  <>
+    {isHovered && (
+      <HoveredLabel className={className} elementType={elementType} />
+    )}
+    {isActive && (
+      <ActiveLabel className={className} selectParent={selectParent} />
+    )}
+  </>
 );
 
-export default Unknown;
+export default PopupLabels;
