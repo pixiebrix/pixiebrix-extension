@@ -131,8 +131,10 @@ type ButtonProps = {
   renderButton?: (onClick: () => void) => React.ReactNode;
 };
 
+type BrickResultsArray<T extends IBrick> = Array<BrickOption<BrickResult<T>>>;
+
 type ItemType<T extends IBrick> = {
-  brickResults: Array<BrickOption<BrickResult<T>>>;
+  brickResults: BrickResultsArray<T>;
   onSetDetailBrick: (brick: IBrick) => void;
   onSelect: (brick: IBrick) => void;
   close: () => void;
@@ -351,13 +353,13 @@ function ActualModal<T extends IBrick>({
     state.searchTag
   );
 
-  const brickResults = useMemo<ItemType<T>["brickResults"]>(() => {
+  const brickResults = useMemo<BrickResultsArray<T>>(() => {
     if (isEmpty(searchResults)) {
       return [];
     }
 
-    const popular: ItemType<T>["brickResults"] = [];
-    const regular: ItemType<T>["brickResults"] = [];
+    const popular: BrickResultsArray<T> = [];
+    const regular: BrickResultsArray<T> = [];
 
     for (const result of searchResults) {
       if (popularBrickIds.has(result.data.id)) {
