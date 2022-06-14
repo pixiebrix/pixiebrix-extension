@@ -82,8 +82,7 @@ export async function runRendererPipeline({
         blockId: error.blockId,
         args: error.args,
         ctxt: error.ctxt,
-        runId: meta.runId,
-        extensionId: meta.extensionId,
+        ...meta,
       };
     }
 

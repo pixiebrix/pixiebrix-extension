@@ -18,7 +18,6 @@
 import React, { useReducer } from "react";
 import Loader from "@/components/Loader";
 import blockRegistry from "@/blocks/registry";
-import ConsoleLogger from "@/utils/ConsoleLogger";
 import ReactShadowRoot from "react-shadow-root";
 import { getErrorMessage, selectSpecificError } from "@/errors/errorHelpers";
 import { BlockArg, MessageContext, RegistryId, RendererOutput } from "@/core";
@@ -31,6 +30,7 @@ import GridLoader from "react-spinners/GridLoader";
 import styles from "./PanelBody.module.scss";
 import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
 import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
 
 type BodyProps = {
   blockId: RegistryId;
@@ -131,17 +131,17 @@ const PanelBody: React.FunctionComponent<{
       // In most cases reactivate would have already been called for the payload == null branch. But confirm it here
       dispatch(slice.actions.reactivate());
 
-      const { blockId, ctxt, args } = payload;
+      const { blockId, ctxt, args, runId, extensionId } = payload;
 
       console.debug("Running panel body for panel payload", payload);
 
       const block = await blockRegistry.lookup(blockId);
+      // In the future, the renderer brick should run in the contentScript, not the panel frame
       // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/1939
       const body = await block.run(args as BlockArg, {
         ctxt,
         root: null,
-        // TODO: use the correct logger here so the errors show up in the logs
-        logger: new ConsoleLogger({
+        logger: new BackgroundLogger({
           ...context,
           blockId,
         }),
@@ -152,12 +152,18 @@ const PanelBody: React.FunctionComponent<{
         },
       });
 
+      if (!runId || !extensionId) {
+        console.warn("PanelBody requires runId in RendererPayload", {
+          payload,
+        });
+      }
+
       dispatch(
         slice.actions.success({
           data: {
             blockId,
             body: body as RendererOutput,
-            meta: { runId: payload.runId, extensionId: payload.extensionId },
+            meta: { runId, extensionId },
           },
         })
       );

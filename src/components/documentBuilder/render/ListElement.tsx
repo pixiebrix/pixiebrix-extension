@@ -128,7 +128,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
         const { Component, props } = buildDocumentBranch(
           documentElement as DocumentElement,
           {
-            staticId: joinElementName(staticId, "children"),
+            staticId: joinElementName(staticId, "list", "children"),
             branches: [...branches, { staticId, index }],
           }
         );

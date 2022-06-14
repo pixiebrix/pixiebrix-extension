@@ -16,12 +16,34 @@
  */
 
 import { TraceRecord } from "@/telemetry/trace";
-import { reverse, sortBy } from "lodash";
+import { isEqual, reverse, sortBy } from "lodash";
+import { Branch } from "@/blocks/types";
 
 /**
  * Given records for a single runId and blockInstanceId, return the latest call to a given blockInstanceId.
  * @param records the trace records
  */
 export function getLatestCall(records: TraceRecord[]): TraceRecord | null {
-  return reverse(sortBy(records, (x) => x.branches))[0];
+  const ascending = sortBy(records, (x) =>
+    x.branches.flatMap((branch) => [branch.key, branch.counter])
+  );
+  return reverse(ascending)[0];
+}
+
+export function hasBranchPrefix(
+  prefix: Branch[],
+  record: TraceRecord
+): boolean {
+  // eslint-disable-next-line security/detect-object-injection -- index is a number
+  return prefix.every(
+    (branch, index) =>
+      index < record.branches.length && isEqual(branch, record.branches[index])
+  );
+}
+
+export function filterTracesByCall(
+  records: TraceRecord[],
+  callBranches: Branch[]
+): TraceRecord[] {
+  return records.filter((record) => hasBranchPrefix(callBranches, record));
 }

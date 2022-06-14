@@ -76,7 +76,7 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
         payload={{
           key: `error-${getErrorMessage(error)}`,
           error: serializeError(error),
-          runId: meta.runId,
+          ...meta,
         }}
       />
     );

@@ -188,6 +188,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
     readerContext: ReaderOutput,
     extension: ResolvedExtension<SidebarConfig>
   ) {
+    // Generate our own run id so that we know it (to pass to upsertPanel)
     const runId = uuidv4();
 
     const extensionLogger = this.logger.childLogger(
@@ -227,22 +228,25 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
         blueprintId: extension._recipe?.id,
       };
 
+      const meta = {
+        runId,
+        extensionId: extension.id,
+      };
+
       if (error instanceof HeadlessModeError) {
         upsertPanel(ref, heading, {
           blockId: error.blockId,
-          extensionId: extension.id,
           key: uuidv4(),
           ctxt: error.ctxt,
           args: error.args,
-          runId,
+          ...meta,
         });
       } else {
         extensionLogger.error(error);
         upsertPanel(ref, heading, {
           key: uuidv4(),
-          extensionId: extension.id,
           error: serializeError(error),
-          runId,
+          ...meta,
         });
       }
     }

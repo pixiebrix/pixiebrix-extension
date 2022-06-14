@@ -40,6 +40,10 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
   const context = useContext(DocumentContext);
   const [counter, setCounter] = useState(0);
 
+  if (!context.meta.extensionId) {
+    throw new Error("ButtonElement requires meta.extensionId");
+  }
+
   const handler = async () => {
     const currentCounter = counter;
     setCounter((previous) => previous + 1);

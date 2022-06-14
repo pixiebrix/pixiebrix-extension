@@ -34,6 +34,11 @@ export type RendererError = {
    * @since 1.7.0
    */
   runId: UUID;
+  /**
+   * The extension id that produced the error
+   * @since 1.7.0
+   */
+  extensionId: UUID;
 };
 
 /**

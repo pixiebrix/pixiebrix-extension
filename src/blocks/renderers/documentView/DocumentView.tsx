@@ -32,6 +32,11 @@ const DocumentView: React.FC<DocumentViewProps> = ({ body, options, meta }) => {
     throw new Error("meta.runId is required for DocumentView");
   }
 
+  if (!meta?.extensionId) {
+    // The sidebar panel should dynamically pass the prop through
+    throw new Error("meta.extensionId is required for DocumentView");
+  }
+
   return (
     // Wrap in a React context provider that passes BlockOptions down to any embedded bricks
     // ReactShadowRoot needs to be inside an HTMLElement to attach to something

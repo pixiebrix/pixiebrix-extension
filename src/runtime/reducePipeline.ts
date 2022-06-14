@@ -39,7 +39,7 @@ import { HeadlessModeError } from "@/blocks/errors";
 import { engineRenderer } from "@/runtime/renderers";
 import { TraceExitData, TraceRecordMeta } from "@/telemetry/trace";
 import { JsonObject } from "type-fest";
-import { uuidv4, validateSemVerString } from "@/types/helpers";
+import { UNSET_UUID, uuidv4, validateSemVerString } from "@/types/helpers";
 import { mapArgs } from "@/runtime/mapArgs";
 import {
   ApiVersionOptions,
@@ -85,6 +85,11 @@ export type RunMetadata = {
    * The extension UUID to correlate trace records for a brick.
    */
   runId: UUID;
+  /**
+   * The extension that's running the brick.
+   * @since 1.7.0
+   */
+  extensionId: UUID;
   /**
    * The control flow branch to correlate trace record for a brick.
    * @since 1.7.0
@@ -209,10 +214,14 @@ type BlockOutput = {
 
 type TraceMetadata = {
   /**
-   * The extension UUID to correlate trace records for a run
+   * The extension run UUID to correlate trace records for a run
    * @see ReduceOptions.runId
    */
   runId: UUID;
+  /**
+   * The extension UUID
+   */
+  extensionId: UUID;
   /**
    * The instanceId of the configured block
    * @see BlockConfig.instanceId
@@ -298,6 +307,7 @@ async function executeBlockWithValidatedProps(
             {
               ...options,
               runId: options.trace.runId,
+              extensionId: options.trace.extensionId,
               branches: [...options.trace.branches, branch],
             }
           );
@@ -399,7 +409,6 @@ function selectTraceRecordMeta(
   return {
     ...options.trace,
     blockId: resolvedConfig.config.id,
-    extensionId: options.logger.context.extensionId,
   };
 }
 
@@ -469,6 +478,7 @@ async function applyReduceDefaults({
   const globalLoggingConfig = await getLoggingConfig();
 
   return {
+    extensionId: UNSET_UUID,
     validateInput: true,
     headless: false,
     // Default to the `apiVersion: v1, v2` data passing behavior and renderer behavior
@@ -496,7 +506,8 @@ export async function blockReducer(
   options: ReduceOptions
 ): Promise<BlockOutput> {
   const { index, isLastBlock, previousOutput, context, root } = state;
-  const { runId, explicitDataFlow, logValues, logger, branches } = options;
+  const { runId, extensionId, explicitDataFlow, logValues, logger, branches } =
+    options;
 
   // Match the override behavior in v1, where the output from previous block would override anything in the context
   const contextWithPreviousOutput =
@@ -510,6 +521,7 @@ export async function blockReducer(
     ...options,
     trace: {
       runId,
+      extensionId,
       blockInstanceId: blockConfig.instanceId,
       branches,
     },

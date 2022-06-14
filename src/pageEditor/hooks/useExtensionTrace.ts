@@ -29,7 +29,7 @@ const { setExtensionTrace } = runtimeSlice.actions;
 const TRACE_RELOAD_MILLIS = 350;
 
 /**
- * Select sufficient data from trace to determine if two traces include the same data (i.e., they include both they
+ * Select minimal set of data from trace to determine if two traces include the same data (i.e., they include both they
  * entry and exit data).
  */
 function selectTraceMetadata(record: TraceRecord) {

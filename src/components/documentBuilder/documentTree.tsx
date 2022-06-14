@@ -181,7 +181,7 @@ export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
   if (root.children?.length > 0) {
     componentDefinition.props.children = root.children.map((child, index) => {
       const { Component, props } = buildDocumentBranch(child, {
-        staticId: joinElementName(staticId, "children"),
+        staticId: joinElementName(staticId, root.type, "children"),
         branches: [...branches, { staticId, index }],
       });
       return <Component key={index} {...props} />;
