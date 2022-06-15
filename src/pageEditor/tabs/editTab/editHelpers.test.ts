@@ -28,7 +28,7 @@ describe("traversePipeline", () => {
     const pipeline = pipelineFactory();
     const action = jest.fn();
 
-    traversePipeline(pipeline, "", action);
+    traversePipeline(pipeline, "", null, action);
 
     expect(action).toHaveBeenCalledTimes(pipeline.length);
     expect(action).toHaveBeenCalledWith({
@@ -37,6 +37,7 @@ describe("traversePipeline", () => {
       path: "0",
       pipelinePath: "",
       pipeline,
+      parentNodeId: null,
     });
     expect(action).toHaveBeenCalledWith({
       blockConfig: pipeline[1],
@@ -44,6 +45,7 @@ describe("traversePipeline", () => {
       path: "1",
       pipelinePath: "",
       pipeline,
+      parentNodeId: null,
     });
   });
 
@@ -60,7 +62,7 @@ describe("traversePipeline", () => {
 
     const action = jest.fn();
 
-    traversePipeline(pipeline, "", action);
+    traversePipeline(pipeline, "", null, action);
     expect(action).toHaveBeenCalledTimes(pipeline.length + subPipeline.length);
     expect(action).toHaveBeenCalledWith({
       blockConfig: subPipeline[0],
@@ -94,7 +96,7 @@ describe("traversePipeline", () => {
 
     const action = jest.fn();
 
-    traversePipeline(pipeline, "", action);
+    traversePipeline(pipeline, "", null, action);
     expect(action).toHaveBeenCalledTimes(2); // One Document brick and one brick in the pipeline
     expect(action).toHaveBeenCalledWith({
       blockConfig: documentBrick,
@@ -129,7 +131,7 @@ describe("traversePipeline", () => {
 
     const action = jest.fn();
 
-    traversePipeline(pipeline, "", action);
+    traversePipeline(pipeline, "", null, action);
     expect(action).toHaveBeenCalledTimes(2); // One Document brick and one brick in the pipeline
     expect(action).toHaveBeenCalledWith({
       blockConfig: documentBrick,

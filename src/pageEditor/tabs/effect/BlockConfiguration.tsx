@@ -105,7 +105,7 @@ const BlockConfiguration: React.FunctionComponent<{
       <AdvancedLinks name={name} scrollToRef={advancedOptionsRef} />
 
       <Card>
-        <FieldSection title={<ConfigurationTitle block={block} />}>
+        <FieldSection title={<ConfigurationTitle />}>
           <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
             {blockErrors?.id && (
               <div className="invalid-feedback d-block mb-4">
