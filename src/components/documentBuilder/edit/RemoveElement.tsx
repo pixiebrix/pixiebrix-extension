@@ -20,19 +20,18 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import useDeleteElement from "@/components/documentBuilder/hooks/useDeleteElement";
+import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { useSelector } from "react-redux";
 
 type RemoveElementProps = {
   documentBodyName: string;
-  elementName: string;
 };
 
-const RemoveElement: React.FC<RemoveElementProps> = ({
-  documentBodyName,
-  elementName,
-}) => {
+const RemoveElement: React.FC<RemoveElementProps> = ({ documentBodyName }) => {
+  const activeElement = useSelector(selectNodePreviewActiveElement);
   const deleteElement = useDeleteElement(documentBodyName);
   const onDelete = () => {
-    deleteElement(elementName);
+    deleteElement(activeElement);
   };
 
   return (

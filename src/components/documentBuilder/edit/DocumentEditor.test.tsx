@@ -34,8 +34,6 @@ import { FormState } from "@/pageEditor/pageEditorTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
-import { useSelector } from "react-redux";
 
 jest.mock("@/blocks/registry");
 
@@ -61,10 +59,7 @@ describe("move element", () => {
     });
 
     return render(
-      <DocumentEditor
-        documentBodyName="extension.blockPipeline.0.config.body"
-        activeElement={initialActiveElement}
-      />,
+      <DocumentEditor documentBodyName="extension.blockPipeline.0.config.body" />,
       {
         initialValues: formState,
         setupRedux(dispatch) {
@@ -156,16 +151,11 @@ describe("remove element", () => {
     };
 
     const WrappedEditor = () => {
-      const activeElement = useSelector(selectNodePreviewActiveElement);
-
       const { values } = useFormikContext<FormState>();
       formikStateRef.current = values;
 
       return (
-        <DocumentEditor
-          documentBodyName="extension.blockPipeline.0.config.body"
-          activeElement={activeElement}
-        />
+        <DocumentEditor documentBodyName="extension.blockPipeline.0.config.body" />
       );
     };
 

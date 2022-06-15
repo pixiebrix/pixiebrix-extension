@@ -22,8 +22,6 @@ import { useField } from "formik";
 import DocumentEditor from "@/components/documentBuilder/edit/DocumentEditor";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
-import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
-import { useSelector } from "react-redux";
 
 export const DOCUMENT_ID = validateRegistryId("@pixiebrix/document");
 
@@ -31,8 +29,6 @@ const DocumentOptions: React.FC<{
   name: string;
   configKey: string;
 }> = ({ name, configKey }) => {
-  const activeElement = useSelector(selectNodePreviewActiveElement);
-
   const documentBodyName = joinName(name, configKey, "body");
   const [{ value }, , { setValue }] =
     useField<DocumentElement[]>(documentBodyName);
@@ -46,10 +42,7 @@ const DocumentOptions: React.FC<{
 
   return (
     <ConfigErrorBoundary>
-      <DocumentEditor
-        documentBodyName={documentBodyName}
-        activeElement={activeElement}
-      />
+      <DocumentEditor documentBodyName={documentBodyName} />
     </ConfigErrorBoundary>
   );
 };

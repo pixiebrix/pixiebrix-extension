@@ -26,16 +26,15 @@ import RemoveElement from "./RemoveElement";
 import MoveElement from "./MoveElement";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import useElementOptions from "@/components/documentBuilder/edit/useElementOptions";
+import { useSelector } from "react-redux";
+import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 
 type ElementEditorProps = {
   documentBodyName: string;
-  activeElement: string;
 };
 
-const ElementEditor: React.FC<ElementEditorProps> = ({
-  documentBodyName,
-  activeElement,
-}) => {
+const ElementEditor: React.FC<ElementEditorProps> = ({ documentBodyName }) => {
+  const activeElement = useSelector(selectNodePreviewActiveElement);
   const elementName = `${documentBodyName}.${activeElement}`;
   const [{ value: documentElement }] = useField<DocumentElement>(elementName);
   const ElementOptions = useElementOptions(documentElement, elementName);
@@ -50,10 +49,7 @@ const ElementEditor: React.FC<ElementEditorProps> = ({
           </h6>
         </Col>
         <Col xl>
-          <RemoveElement
-            documentBodyName={documentBodyName}
-            elementName={activeElement}
-          />
+          <RemoveElement documentBodyName={documentBodyName} />
         </Col>
         <Col xl>
           <small className="text-muted">
