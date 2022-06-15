@@ -69,34 +69,30 @@ const ActiveLabel: React.FunctionComponent<ActiveLabelProps> = ({
         onClick={onDelete}
         fixedWidth
       />
-      {(canMoveUp || canMoveDown) && (
-        <>
-          <FontAwesomeIcon
-            role="button"
-            title="Move up"
-            icon={faArrowUp}
-            data-disabled={!canMoveUp}
-            onClick={() => {
-              if (canMoveUp) {
-                moveElement("up");
-              }
-            }}
-            fixedWidth
-          />
-          <FontAwesomeIcon
-            role="button"
-            title="Move down"
-            icon={faArrowDown}
-            data-disabled={!canMoveDown}
-            onClick={() => {
-              if (canMoveDown) {
-                moveElement("down");
-              }
-            }}
-            fixedWidth
-          />
-        </>
-      )}
+      <FontAwesomeIcon
+        role="button"
+        title="Move up"
+        icon={faArrowUp}
+        data-disabled={!canMoveUp}
+        onClick={() => {
+          if (canMoveUp) {
+            moveElement("up");
+          }
+        }}
+        fixedWidth
+      />
+      <FontAwesomeIcon
+        role="button"
+        title="Move down"
+        icon={faArrowDown}
+        data-disabled={!canMoveDown}
+        onClick={() => {
+          if (canMoveDown) {
+            moveElement("down");
+          }
+        }}
+        fixedWidth
+      />
     </div>
   );
 };
