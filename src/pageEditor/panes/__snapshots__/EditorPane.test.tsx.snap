@@ -645,7 +645,9 @@ exports[`sanity check it renders first selected node 1`] = `
                 <div
                   class="cardHeader card-header"
                 >
-                  <span>
+                  <span
+                    class="title"
+                  >
                     Input
                   </span>
                 </div>

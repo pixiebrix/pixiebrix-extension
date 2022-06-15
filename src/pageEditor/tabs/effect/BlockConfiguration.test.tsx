@@ -17,7 +17,6 @@
 
 import React from "react";
 import BlockConfiguration from "./BlockConfiguration";
-import { createFormikTemplate } from "@/testUtils/formHelpers";
 import {
   blockConfigFactory,
   blockFactory,
@@ -26,18 +25,25 @@ import {
 } from "@/testUtils/factories";
 import blockRegistry from "@/blocks/registry";
 import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { RegistryId } from "@/core";
 import { MarketplaceListing } from "@/types/contract";
+import { render } from "@/pageEditor/testHelpers";
+import { FormState } from "@/pageEditor/pageEditorTypes";
+import { actions } from "@/pageEditor/slices/editorSlice";
 
-jest.mock("@/services/api", () => ({
-  useGetMarketplaceListingsQuery: () => ({
-    data: {} as Record<RegistryId, MarketplaceListing>,
-  }),
-}));
+jest.mock("@/services/api", () => {
+  const actual = jest.requireActual("@/services/api");
+  return {
+    ...actual,
+    useGetMarketplaceListingsQuery: () => ({
+      data: {} as Record<RegistryId, MarketplaceListing>,
+    }),
+  };
+});
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -50,20 +56,33 @@ afterEach(() => {
   blockRegistry.clear();
 });
 
+function renderBlockConfiguration(
+  element: React.ReactElement,
+  initialValues: FormState
+) {
+  return render(element, {
+    initialValues,
+    setupRedux(dispatch) {
+      dispatch(actions.addElement(initialValues));
+      dispatch(actions.selectElement(initialValues.uuid));
+      dispatch(
+        actions.setElementActiveNodeId(
+          initialValues.extension.blockPipeline[0].instanceId
+        )
+      );
+    },
+  });
+}
+
 test("renders", async () => {
   const block = echoBlock;
   blockRegistry.register(block);
   const initialState = formStateFactory({ apiVersion: "v3" }, [
     blockConfigFactory({ id: block.id }),
   ]);
-  const FormikTemplate = createFormikTemplate(initialState);
-  const rendered = render(
-    <FormikTemplate>
-      <BlockConfiguration
-        name="extension.blockPipeline[0]"
-        blockId={block.id}
-      />
-    </FormikTemplate>
+  const rendered = renderBlockConfiguration(
+    <BlockConfiguration name="extension.blockPipeline[0]" blockId={block.id} />,
+    initialState
   );
 
   await waitForEffect();
@@ -77,14 +96,9 @@ test("shows root mode for trigger", async () => {
   const initialState = triggerFormStateFactory({ apiVersion: "v3" }, [
     blockConfigFactory({ id: block.id }),
   ]);
-  const FormikTemplate = createFormikTemplate(initialState);
-  render(
-    <FormikTemplate>
-      <BlockConfiguration
-        name="extension.blockPipeline[0]"
-        blockId={block.id}
-      />
-    </FormikTemplate>
+  renderBlockConfiguration(
+    <BlockConfiguration name="extension.blockPipeline[0]" blockId={block.id} />,
+    initialState
   );
 
   await waitForEffect();
@@ -116,14 +130,12 @@ test.each`
     const initialState = triggerFormStateFactory({ apiVersion: "v3" }, [
       blockConfigFactory({ id: block.id }),
     ]);
-    const FormikTemplate = createFormikTemplate(initialState);
-    render(
-      <FormikTemplate>
-        <BlockConfiguration
-          name="extension.blockPipeline[0]"
-          blockId={block.id}
-        />
-      </FormikTemplate>
+    renderBlockConfiguration(
+      <BlockConfiguration
+        name="extension.blockPipeline[0]"
+        blockId={block.id}
+      />,
+      initialState
     );
 
     await waitForEffect();
