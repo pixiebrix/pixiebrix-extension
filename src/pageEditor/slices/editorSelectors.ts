@@ -215,9 +215,7 @@ export const selectActiveNodeInfo = createSelector(
 );
 
 export const selectActiveNode: (rootState: RootState) => BlockConfig =
-  createSelector(selectActiveElement, selectActiveNodeId, (element, nodeId) =>
-    element.extension.blockPipeline.find((node) => node.instanceId === nodeId)
-  );
+  createSelector(selectActiveNodeInfo, (nodeInfo) => nodeInfo.blockConfig);
 
 export const selectNodeDataPanelTabSelected: (
   rootState: RootState

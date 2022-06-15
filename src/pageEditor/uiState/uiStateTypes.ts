@@ -22,11 +22,14 @@ import { BlockConfig, BlockPipeline } from "@/blocks/types";
 
 type PipelineMapBlock = {
   blockId: RegistryId;
+
   /**
    * The property name path relative to the pipeline root
    */
   path: string;
+
   blockConfig: BlockConfig;
+
   /**
    * Index of the block in its pipeline
    */
@@ -41,6 +44,11 @@ type PipelineMapBlock = {
    * The block's pipeline
    */
   pipeline: BlockPipeline;
+
+  /**
+   * Instance id of parent node
+   */
+  parentNodeId: UUID | null;
 };
 
 /**
