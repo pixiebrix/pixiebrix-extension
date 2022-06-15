@@ -92,11 +92,13 @@ const ConfigurationTitle: React.FunctionComponent = () => {
 
   let title: JSX.Element;
   if (isLoadingAllBlocks) {
+    // Not ready yet
     title = <PlainTitle />;
   } else if (
     blockId === DocumentRenderer.BLOCK_ID &&
     !isEmpty(activeNodePreviewElementName)
   ) {
+    // An element is selected in the document preview
     const activeDocumentElement = get(
       activeNode,
       joinElementName(DOCUMENT_BODY_PATH, activeNodePreviewElementName)
@@ -117,6 +119,7 @@ const ConfigurationTitle: React.FunctionComponent = () => {
     parentNodeId != null &&
     nodesPipelineMap[parentNodeId].blockId === DocumentRenderer.BLOCK_ID
   ) {
+    // Editing a direct descendant of a document node
     const documentBlock = allBlocks.get(DocumentRenderer.BLOCK_ID)?.block;
     title = (
       <BreadcrumbTitle
@@ -128,8 +131,10 @@ const ConfigurationTitle: React.FunctionComponent = () => {
       />
     );
   } else if (isEmpty(activeNode?.label)) {
+    // A brick with no label
     title = <PlainTitle />;
   } else {
+    // A brick with a label - show the brick type in the title
     title = <TextTitle title={block?.name} />;
   }
 
