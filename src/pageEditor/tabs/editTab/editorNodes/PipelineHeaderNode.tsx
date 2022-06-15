@@ -28,6 +28,7 @@ export type PipelineHeaderNodeProps = {
   nestingLevel: number;
   nodeActions: NodeAction[];
   active?: boolean;
+  nestedActive?: boolean;
 };
 
 const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
@@ -35,15 +36,21 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   nestingLevel,
   nodeActions,
   active,
+  nestedActive,
 }) => (
   <>
     <div className={styles.root}>
       <PipelineOffsetView
         nestingLevel={nestingLevel}
-        parentIsActive={active}
-        isHeader
+        nestedActive={active || nestedActive} // Color for this offset-view is chosen using the header flag
+        isHeader={!nestedActive} // Don't color deeply-nested pipeline headers as active headers
       />
-      <div className={cx(styles.header, { [styles.active]: active })}>
+      <div
+        className={cx(styles.header, {
+          [styles.active]: active,
+          [styles.nestedActive]: nestedActive,
+        })}
+      >
         <div className={styles.headerPipeLineTop} />
         <div className={styles.subPipelineLabel}>{headerLabel}</div>
         <div className={styles.headerPipeLineBottom} />
