@@ -54,32 +54,6 @@ import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldCont
 import { get } from "lodash";
 import Loader from "@/components/Loader";
 import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
-import { BlockType } from "@/runtime/runtimeTypes";
-import { validateRegistryId } from "@/types/helpers";
-
-function getRelevantBlocksForRootPipeline(
-  allBlocks: TypedBlockMap,
-  extensionPointType: string
-) {
-  const alwaysShow = new Set([
-    // Cancel/Error provide meaningful control flow for all bricks
-    validateRegistryId("@pixiebrix/cancel"),
-    validateRegistryId("@pixiebrix/error"),
-  ]);
-
-  const excludeType: BlockType = ["actionPanel", "panel"].includes(
-    extensionPointType
-  )
-    ? "effect"
-    : "renderer";
-
-  return [...allBlocks.values()]
-    .filter(
-      ({ type, block }) =>
-        (type != null && type !== excludeType) || alwaysShow.has(block.id)
-    )
-    .map(({ block }) => block);
-}
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -104,19 +78,13 @@ const EditTab: React.FC<{
     EditorNode,
   } = useMemo(() => ADAPTERS.get(extensionPointType), [extensionPointType]);
 
+  // PERFORMANCE: this is getting recalculated when switching between extensions which is slow and causes a loading
+  // indicator to show for a long time 🐢
   const [allBlocks, isLoadingAllBlocks] = useAsyncState<TypedBlockMap>(
     async () => blockRegistry.allTyped(),
     [],
     new Map()
   );
-
-  const [relevantBlocksForRootPipeline, isLoadingRelevantBlocks] =
-    useAsyncState(
-      async () =>
-        getRelevantBlocksForRootPipeline(allBlocks, extensionPointType),
-      [allBlocks, extensionPointType],
-      []
-    );
 
   const { blockPipeline, blockPipelineErrors, traceErrors } = usePipelineField(
     allBlocks,
@@ -179,15 +147,15 @@ const EditTab: React.FC<{
             />
           </div>
           <div className={styles.nodeLayout}>
-            {isLoadingAllBlocks || isLoadingRelevantBlocks ? (
+            {isLoadingAllBlocks ? (
               <Loader />
             ) : (
               <EditorNodeLayout
                 allBlocks={allBlocks}
-                relevantBlocksForRootPipeline={relevantBlocksForRootPipeline}
                 pipeline={blockPipeline}
                 pipelineErrors={blockPipelineErrors}
                 traceErrors={traceErrors}
+                extensionPointType={extensionPointType}
                 extensionPointLabel={extensionPointLabel}
                 extensionPointIcon={extensionPointIcon}
                 addBlock={addBlock}

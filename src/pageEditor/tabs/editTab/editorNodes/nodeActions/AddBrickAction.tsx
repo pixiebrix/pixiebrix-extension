@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { IBlock } from "@/core";
+import React, { useMemo } from "react";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { faPlus, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import BrickModal from "@/components/brickModal/BrickModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
+import { IBlock } from "@/core";
 
 const addBrickCaption = (
   <span>
@@ -29,29 +30,41 @@ const addBrickCaption = (
 );
 
 type AddBrickActionProps = {
-  relevantBlocksToAdd: IBlock[];
+  blocks: TypedBlockMap;
+  isBlockAllowed: (block: TypedBlock) => boolean;
   nodeName: string;
   onSelectBlock: (block: IBlock) => void;
 };
 
 const AddBrickAction: React.VFC<AddBrickActionProps> = ({
-  relevantBlocksToAdd,
+  blocks,
   nodeName,
   onSelectBlock,
-}) => (
-  <BrickModal
-    bricks={relevantBlocksToAdd}
-    renderButton={(onClick) => (
-      <TooltipIconButton
-        name={`add-node-${nodeName}`}
-        icon={faPlusCircle}
-        onClick={onClick}
-        tooltipText="Add a brick"
-      />
-    )}
-    selectCaption={addBrickCaption}
-    onSelect={onSelectBlock}
-  />
-);
+  isBlockAllowed,
+}) => {
+  const relevantBricks = useMemo(
+    () =>
+      [...blocks.values()]
+        .filter((x) => isBlockAllowed(x))
+        .map(({ block }) => block),
+    [blocks, isBlockAllowed]
+  );
+
+  return (
+    <BrickModal
+      bricks={relevantBricks}
+      renderButton={(onClick) => (
+        <TooltipIconButton
+          name={`add-node-${nodeName}`}
+          icon={faPlusCircle}
+          onClick={onClick}
+          tooltipText="Add a brick"
+        />
+      )}
+      selectCaption={addBrickCaption}
+      onSelect={onSelectBlock}
+    />
+  );
+};
 
 export default AddBrickAction;
