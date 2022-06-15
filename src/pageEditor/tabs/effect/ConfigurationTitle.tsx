@@ -51,7 +51,7 @@ const BreadcrumbTitle: React.FC<{
   title: string;
 }> = ({ crumbTitle, crumbAction, title }) => (
   <span className={styles.title}>
-    Input:{" "}
+    Input:
     <span className={styles.blockName}>
       <Button
         className={styles.parentBlockName}
@@ -141,7 +141,7 @@ const ConfigurationTitle: React.FunctionComponent = () => {
   return isEmpty(listing?.instructions) && isEmpty(listing?.assets) ? (
     title
   ) : (
-    <div className="d-flex justify-content-between">
+    <div className={styles.root}>
       {title}
       <a
         href={`https://www.pixiebrix.com/marketplace/${listing.id}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}

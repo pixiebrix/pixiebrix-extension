@@ -17,11 +17,17 @@
 
 @import "@/pageEditor/tabs/editTab/editTabVariables.scss";
 
+.root {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
 .title {
+  min-width: 0; // Allow flex-box to shrink this below its content size
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  flex: 0 1 50%;
+  display: flex; // Needs to be flex for nested text-ellipsize to work properly
 }
 
 .parentBlockName {
@@ -36,8 +42,16 @@
 
 .blockName {
   color: var(--gray);
+  margin-left: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .documentationLink {
   color: $configurationDocumentationLinkColor;
+  margin-left: auto;
+  padding-left: 1rem;
+  flex-basis: content;
+  flex-shrink: 0;
+  flex-grow: 0;
 }
