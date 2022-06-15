@@ -22,6 +22,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WebExtensionTarget = require("webpack-target-webextension");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const WebpackBuildNotifierPlugin = require("webpack-build-notifier");
+const TerserPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const CopyPlugin = require("copy-webpack-plugin");
