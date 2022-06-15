@@ -58,7 +58,7 @@ import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
 import { ExtensionPointType } from "@/extensionPoints/types";
 import {
-  IsBrickAllowedPredicate,
+  IsBlockAllowedPredicate,
   makeIsAllowedForRootPipeline,
 } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 
@@ -101,10 +101,10 @@ type SubPipeline = {
    */
   subPipelinePath: string;
   /**
-   * Predicate determining is a given brick is allowed in the pipeline.
+   * Predicate determining if a given block is allowed in the pipeline.
    */
   // In the future, we may want to return a message explaining why the brick isn't allowed
-  isBlockAllowed: IsBrickAllowedPredicate;
+  isBlockAllowed: IsBlockAllowedPredicate;
 };
 
 function decideBrickStatus({
@@ -182,10 +182,10 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
     isBlockAllowed = makeIsAllowedForRootPipeline(extensionPointType),
   }: {
     pipeline: BlockPipeline;
-    pipelinePath: string;
-    nestingLevel: number;
-    parentIsActive: boolean;
-    isBlockAllowed: IsBrickAllowedPredicate;
+    pipelinePath?: string;
+    nestingLevel?: number;
+    parentIsActive?: boolean;
+    isBlockAllowed?: IsBlockAllowedPredicate;
   }): EditorNodeProps[] {
     const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
 
@@ -256,14 +256,14 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           const subPipeline: BlockPipeline =
             get(pipeline, subPipelineAccessor) ?? [];
           const propName = docPipelinePath.split(".").pop();
+          const isButton = propName === "onClick";
           subPipelines.push({
             subPipeline,
             subPipelinePath,
-            headerLabel: propName === "onClick" ? "button" : "brick",
-            isBlockAllowed:
-              propName === "onClick"
-                ? (block: TypedBlock) => block.type !== "renderer"
-                : stubTrue,
+            headerLabel: isButton ? "button" : "brick",
+            isBlockAllowed: isButton
+              ? (block: TypedBlock) => block.type !== "renderer"
+              : stubTrue,
           });
         }
       } else {
@@ -539,7 +539,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   return (
     <ListGroup variant="flush">
       <BrickNode key={FOUNDATION_NODE_ID} {...foundationNodeProps} />
-      {mapPipelineToNodes(pipeline).map(({ type, key, ...nodeProps }) => {
+      {mapPipelineToNodes({ pipeline }).map(({ type, key, ...nodeProps }) => {
         switch (type) {
           case "brick": {
             return <BrickNode key={key} {...(nodeProps as BrickNodeProps)} />;

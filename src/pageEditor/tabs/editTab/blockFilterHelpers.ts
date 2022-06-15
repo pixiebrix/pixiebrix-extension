@@ -28,7 +28,7 @@ const alwaysShow = new Set([
   validateRegistryId("@pixiebrix/error"),
 ]);
 
-export type IsBrickAllowedPredicate = (block: TypedBlock) => boolean;
+export type IsBlockAllowedPredicate = (block: TypedBlock) => boolean;
 
 export function makeIsAllowedForRootPipeline(
   extensionPointType: ExtensionPointType
