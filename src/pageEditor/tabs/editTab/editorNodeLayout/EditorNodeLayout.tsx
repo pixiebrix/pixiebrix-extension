@@ -161,6 +161,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
 
   let foundationRunStatus: RunStatus = RunStatus.NONE;
 
+  // eslint-disable-next-line complexity
   function mapPipelineToNodes(
     pipeline: BlockPipeline,
     pipelinePath = PIPELINE_BLOCKS_FIELD_NAME,

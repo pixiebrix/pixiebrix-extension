@@ -28,7 +28,7 @@ describe("traversePipeline", () => {
     const pipeline = pipelineFactory();
     const action = jest.fn();
 
-    traversePipeline(pipeline, "", action);
+    traversePipeline(pipeline, "", null, action);
 
     expect(action).toHaveBeenCalledTimes(pipeline.length);
     expect(action).toHaveBeenCalledWith({
@@ -37,6 +37,7 @@ describe("traversePipeline", () => {
       path: "0",
       pipelinePath: "",
       pipeline,
+      parentNodeId: null,
     });
     expect(action).toHaveBeenCalledWith({
       blockConfig: pipeline[1],
@@ -44,6 +45,7 @@ describe("traversePipeline", () => {
       path: "1",
       pipelinePath: "",
       pipeline,
+      parentNodeId: null,
     });
   });
 
@@ -60,7 +62,7 @@ describe("traversePipeline", () => {
 
     const action = jest.fn();
 
-    traversePipeline(pipeline, "", action);
+    traversePipeline(pipeline, "", null, action);
     expect(action).toHaveBeenCalledTimes(pipeline.length + subPipeline.length);
     expect(action).toHaveBeenCalledWith({
       blockConfig: subPipeline[0],
@@ -68,6 +70,7 @@ describe("traversePipeline", () => {
       path: "0.config.body.__value__.0",
       pipelinePath: "0.config.body.__value__",
       pipeline: subPipeline,
+      parentNodeId: forEachBrick.instanceId,
     });
     expect(action).toHaveBeenCalledWith({
       blockConfig: subPipeline[1],
@@ -75,6 +78,7 @@ describe("traversePipeline", () => {
       path: "0.config.body.__value__.1",
       pipelinePath: "0.config.body.__value__",
       pipeline: subPipeline,
+      parentNodeId: forEachBrick.instanceId,
     });
   });
 
@@ -94,7 +98,7 @@ describe("traversePipeline", () => {
 
     const action = jest.fn();
 
-    traversePipeline(pipeline, "", action);
+    traversePipeline(pipeline, "", null, action);
     expect(action).toHaveBeenCalledTimes(2); // One Document brick and one brick in the pipeline
     expect(action).toHaveBeenCalledWith({
       blockConfig: documentBrick,
@@ -102,6 +106,7 @@ describe("traversePipeline", () => {
       path: "0",
       pipelinePath: "",
       pipeline,
+      parentNodeId: null,
     });
     expect(action).toHaveBeenCalledWith({
       blockConfig: subPipeline.__value__[0],
@@ -110,6 +115,7 @@ describe("traversePipeline", () => {
       pipelinePath:
         "0.config.body.0.children.0.children.0.children.0.config.onClick.__value__",
       pipeline: subPipeline.__value__,
+      parentNodeId: documentBrick.instanceId,
     });
   });
 
@@ -129,7 +135,7 @@ describe("traversePipeline", () => {
 
     const action = jest.fn();
 
-    traversePipeline(pipeline, "", action);
+    traversePipeline(pipeline, "", null, action);
     expect(action).toHaveBeenCalledTimes(2); // One Document brick and one brick in the pipeline
     expect(action).toHaveBeenCalledWith({
       blockConfig: documentBrick,
@@ -137,6 +143,7 @@ describe("traversePipeline", () => {
       path: "0",
       pipelinePath: "",
       pipeline,
+      parentNodeId: null,
     });
     expect(action).toHaveBeenCalledWith({
       blockConfig: subPipeline.__value__[0],
@@ -145,6 +152,7 @@ describe("traversePipeline", () => {
       pipelinePath:
         "0.config.body.0.children.0.children.0.children.0.config.pipeline.__value__",
       pipeline: subPipeline.__value__,
+      parentNodeId: documentBrick.instanceId,
     });
   });
 });
