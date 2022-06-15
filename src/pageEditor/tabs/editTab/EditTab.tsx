@@ -52,7 +52,6 @@ import useReportTraceError from "./useReportTraceError";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { get } from "lodash";
-import Loader from "@/components/Loader";
 import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
 
 const EditTab: React.FC<{
@@ -78,9 +77,8 @@ const EditTab: React.FC<{
     EditorNode,
   } = useMemo(() => ADAPTERS.get(extensionPointType), [extensionPointType]);
 
-  // PERFORMANCE: this is getting recalculated when switching between extensions which is slow and causes a loading
-  // indicator to show for a long time 🐢
-  const [allBlocks, isLoadingAllBlocks] = useAsyncState<TypedBlockMap>(
+  // PERFORMANCE: This is getting recalculated when switching between extensions, which is slow 🐢
+  const [allBlocks] = useAsyncState<TypedBlockMap>(
     async () => blockRegistry.allTyped(),
     [],
     new Map()
@@ -147,23 +145,19 @@ const EditTab: React.FC<{
             />
           </div>
           <div className={styles.nodeLayout}>
-            {isLoadingAllBlocks ? (
-              <Loader />
-            ) : (
-              <EditorNodeLayout
-                allBlocks={allBlocks}
-                pipeline={blockPipeline}
-                pipelineErrors={blockPipelineErrors}
-                traceErrors={traceErrors}
-                extensionPointType={extensionPointType}
-                extensionPointLabel={extensionPointLabel}
-                extensionPointIcon={extensionPointIcon}
-                addBlock={addBlock}
-                moveBlockUp={moveBlockUp}
-                moveBlockDown={moveBlockDown}
-                pasteBlock={pasteBlock}
-              />
-            )}
+            <EditorNodeLayout
+              allBlocks={allBlocks}
+              pipeline={blockPipeline}
+              pipelineErrors={blockPipelineErrors}
+              traceErrors={traceErrors}
+              extensionPointType={extensionPointType}
+              extensionPointLabel={extensionPointLabel}
+              extensionPointIcon={extensionPointIcon}
+              addBlock={addBlock}
+              moveBlockUp={moveBlockUp}
+              moveBlockDown={moveBlockDown}
+              pasteBlock={pasteBlock}
+            />
           </div>
         </div>
         <div className={styles.configPanel}>

@@ -34,7 +34,8 @@ $openHandleHeight: 20px;
   }
 
   &.parentIsActive {
-    background-color: $parentActiveBackgroundColor;
+    background-color: $nestedActiveColor;
+    border-bottom: 1px solid lightgrey !important; // override expanded state for nested nodes
   }
 }
 

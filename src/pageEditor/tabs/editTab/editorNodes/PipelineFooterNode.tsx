@@ -33,7 +33,7 @@ export type PipelineFooterNodeProps = {
   trailingMessage?: string;
   nestingLevel: number;
   active?: boolean;
-  parentIsActive?: boolean;
+  nestedActive?: boolean;
   hovered?: boolean;
   onHoverChange: (hovered: boolean) => void;
   onClick: () => void;
@@ -46,7 +46,7 @@ const PipelineFooterNode: React.VFC<PipelineFooterNodeProps> = ({
   trailingMessage,
   nestingLevel,
   active,
-  parentIsActive,
+  nestedActive,
   hovered,
   onHoverChange,
   onClick,
@@ -62,7 +62,7 @@ const PipelineFooterNode: React.VFC<PipelineFooterNodeProps> = ({
       }}
       className={cx(styles.footer, {
         [styles.active]: active,
-        [styles.parentIsActive]: parentIsActive,
+        [styles.nestedActive]: nestedActive,
         [styles.hovered]: hovered,
       })}
       onMouseOver={() => {
@@ -83,14 +83,14 @@ const PipelineFooterNode: React.VFC<PipelineFooterNodeProps> = ({
       <div className={styles.pipelineContainer}>
         <div
           className={cx(styles.pipelineEnd, {
-            [styles.active]: active && !parentIsActive,
+            [styles.active]: active && !nestedActive,
           })}
         />
       </div>
       <OutputKeyView
         outputKey={outputKey}
         className={cx(styles.outputKey, {
-          [styles.active]: active && !parentIsActive,
+          [styles.active]: active && !nestedActive,
         })}
       />
     </div>

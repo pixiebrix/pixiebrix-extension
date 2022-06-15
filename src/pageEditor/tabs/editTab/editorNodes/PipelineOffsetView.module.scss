@@ -27,11 +27,15 @@
     border-color: white;
   }
 
-  &.parentIsActive {
-    background-color: $activeHeaderBackgroundColor;
+  &.nestedActive {
+    background-color: $nestedActiveColor;
   }
 
-  &.isHeader:not(.parentIsActive) {
-    background-color: $headerBackgroundColor;
+  &.isHeader {
+    background-color: $defaultHeaderColor;
+
+    &.nestedActive {
+      background-color: $activeHeaderColor;
+    }
   }
 }
