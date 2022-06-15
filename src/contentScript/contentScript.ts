@@ -16,6 +16,13 @@
  */
 
 import "./contentScript.scss";
+import { uuidv4 } from "@/types/helpers";
+
+const PIXIEBRIX_CONTENT_SCRIPT_NONCE = "data-pb-nonce";
+const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
+const uuid = uuidv4();
+// Should set attribute as early as possible
+document.documentElement.setAttribute(PIXIEBRIX_CONTENT_SCRIPT_NONCE, uuid);
 
 const start = Date.now();
 // Importing for the side effects. Should import as early as possible
@@ -23,7 +30,6 @@ import "@/extensionContext";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
 
 // Normal imports
-import { uuidv4 } from "@/types/helpers";
 // eslint-disable-next-line import/no-restricted-paths -- Legacy code, needs https://github.com/pixiebrix/webext-messenger/issues/6
 import registerExternalMessenger from "@/background/messenger/external/registration";
 import registerMessenger from "@/contentScript/messenger/registration";
@@ -38,9 +44,6 @@ import { addListenerForUpdateSelectedElement } from "@/pageEditor/getSelectedEle
 import { initToaster } from "@/utils/notify";
 import { isConnectionError } from "@/errors/errorHelpers";
 import { showConnectionLost } from "@/contentScript/connection";
-
-const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
-const uuid = uuidv4();
 
 registerMessenger();
 registerExternalMessenger();
@@ -93,11 +96,23 @@ async function init(): Promise<void> {
   console.info(`contentScript ready in ${Date.now() - start}ms`);
 }
 
-// Make sure we don't install the content script multiple times
+// Make sure we don't install the content script multiple times. Using just the window may not be reliable because
+// the content script might be running in a different VM.
+// See discussion at https://github.com/pixiebrix/pixiebrix-extension/issues/3510
 // eslint-disable-next-line security/detect-object-injection -- using PIXIEBRIX_SYMBOL
-const existing: string = window[PIXIEBRIX_SYMBOL];
-if (existing) {
-  console.debug(`PixieBrix contentScript already installed: ${existing}`);
+const existingSymbol: string = window[PIXIEBRIX_SYMBOL];
+const existingAttribute = document.documentElement.getAttribute(
+  PIXIEBRIX_CONTENT_SCRIPT_NONCE
+);
+if (existingSymbol) {
+  console.debug(
+    `PixieBrix contentScript already installed (JS): ${existingSymbol}`
+  );
+  // eslint-disable-next-line no-negated-condition -- for consistency
+} else if (existingAttribute !== uuid) {
+  console.debug(
+    `PixieBrix contentScript already installed (DOM): ${existingAttribute}`
+  );
 } else {
   // eslint-disable-next-line security/detect-object-injection -- using PIXIEBRIX_SYMBOL
   window[PIXIEBRIX_SYMBOL] = uuid;
