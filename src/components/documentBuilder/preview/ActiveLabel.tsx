@@ -18,10 +18,16 @@
 import React from "react";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLevelUpAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowDown,
+  faArrowUp,
+  faLevelUpAlt,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import useDeleteElement from "@/components/documentBuilder/hooks/useDeleteElement";
 import styles from "./ActiveLabel.module.scss";
 import useSelectParentElement from "@/components/documentBuilder/hooks/useSelectParentElement";
+import useMoveWithinParent from "@/components/documentBuilder/hooks/useMoveWithinParent";
 
 type ActiveLabelProps = {
   className?: string;
@@ -44,6 +50,9 @@ const ActiveLabel: React.FunctionComponent<ActiveLabelProps> = ({
     deleteElement(elementName);
   };
 
+  const { canMoveUp, canMoveDown, moveElement } =
+    useMoveWithinParent(documentBodyName);
+
   return (
     <div className={cx(styles.root, className)}>
       <FontAwesomeIcon
@@ -58,6 +67,30 @@ const ActiveLabel: React.FunctionComponent<ActiveLabelProps> = ({
         title="Delete element"
         icon={faTrash}
         onClick={onDelete}
+        fixedWidth
+      />
+      <FontAwesomeIcon
+        role="button"
+        title="Move up"
+        icon={faArrowUp}
+        data-disabled={!canMoveUp}
+        onClick={() => {
+          if (canMoveUp) {
+            moveElement("up");
+          }
+        }}
+        fixedWidth
+      />
+      <FontAwesomeIcon
+        role="button"
+        title="Move down"
+        icon={faArrowDown}
+        data-disabled={!canMoveDown}
+        onClick={() => {
+          if (canMoveDown) {
+            moveElement("down");
+          }
+        }}
         fixedWidth
       />
     </div>

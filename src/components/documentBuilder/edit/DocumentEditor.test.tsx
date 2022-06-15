@@ -16,7 +16,7 @@
  */
 
 import { useFormikContext } from "formik";
-import React, { useState } from "react";
+import React from "react";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import DocumentEditor from "./DocumentEditor";
@@ -34,8 +34,6 @@ import { FormState } from "@/pageEditor/pageEditorTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
-import useReduxState from "@/hooks/useReduxState";
 
 jest.mock("@/blocks/registry");
 
@@ -48,22 +46,34 @@ describe("move element", () => {
     documentElements: DocumentElement[],
     initialActiveElement: string = null
   ) {
-    const DocumentEditorContainer = () => {
-      const [activeElement, setActiveElement] = useState<string | null>(
-        initialActiveElement
-      );
-      return (
-        <DocumentEditor
-          name="documentElements"
-          activeElement={activeElement}
-          setActiveElement={setActiveElement}
-        />
-      );
-    };
-
-    return render(<DocumentEditorContainer />, {
-      initialValues: { documentElements },
+    const formState = formStateFactory({
+      extension: baseExtensionStateFactory({
+        blockPipeline: [
+          blockConfigFactory({
+            config: {
+              body: documentElements,
+            },
+          }),
+        ],
+      }),
     });
+
+    return render(
+      <DocumentEditor documentBodyName="extension.blockPipeline.0.config.body" />,
+      {
+        initialValues: formState,
+        setupRedux(dispatch) {
+          dispatch(actions.addElement(formState));
+          dispatch(actions.selectElement(formState.uuid));
+          dispatch(
+            actions.setElementActiveNodeId(
+              formState.extension.blockPipeline[0].instanceId
+            )
+          );
+          dispatch(actions.setNodePreviewActiveElement(initialActiveElement));
+        },
+      }
+    );
   }
 
   test("can move text element down", async () => {
@@ -74,6 +84,9 @@ describe("move element", () => {
     documentElements[0].config.text = "test text 1";
     documentElements[1].config.text = "test text 2";
     const rendered = renderDocumentEditor(documentElements, "0");
+
+    // The first text element is active
+    expect(rendered.getByText("test text 1")).toBeInTheDocument();
 
     await userEvent.click(
       rendered.getByText("Move down", { selector: "button" })
@@ -92,6 +105,7 @@ describe("move element", () => {
       rendered.getByText("Move down", { selector: "button" })
     ).toBeDisabled();
   });
+
   test("can move text element up", async () => {
     const documentElements = [
       createNewElement("text"),
@@ -100,6 +114,9 @@ describe("move element", () => {
     documentElements[0].config.text = "test text 1";
     documentElements[1].config.text = "test text 2";
     const rendered = renderDocumentEditor(documentElements, "1");
+
+    // The second text element is active
+    expect(rendered.getByText("test text 2")).toBeInTheDocument();
 
     await userEvent.click(
       rendered.getByText("Move up", { selector: "button" })
@@ -134,20 +151,11 @@ describe("remove element", () => {
     };
 
     const WrappedEditor = () => {
-      const [activeElement, setActiveElement] = useReduxState(
-        selectNodePreviewActiveElement,
-        actions.setNodePreviewActiveElement
-      );
-
       const { values } = useFormikContext<FormState>();
       formikStateRef.current = values;
 
       return (
-        <DocumentEditor
-          name="extension.blockPipeline.0.config.config.body"
-          activeElement={activeElement}
-          setActiveElement={setActiveElement}
-        />
+        <DocumentEditor documentBodyName="extension.blockPipeline.0.config.body" />
       );
     };
 
@@ -178,27 +186,23 @@ describe("remove element", () => {
 
     // Document brick definition
     const documentWithButtonConfig = {
-      id: "@test/document",
-      config: {
-        body: [
-          {
-            type: "button",
-            config: {
-              title: "Action",
-              onClick: toExpression("pipeline", [
-                {
-                  id: "@test/action",
-                  instanceId: uuidSequence(2),
-                  config: {
-                    input: toExpression("var", "@serviceOutput"),
-                  },
+      body: [
+        {
+          type: "button",
+          config: {
+            title: "Action",
+            onClick: toExpression("pipeline", [
+              {
+                id: "@test/action",
+                instanceId: uuidSequence(2),
+                config: {
+                  input: toExpression("var", "@serviceOutput"),
                 },
-              ]),
-            },
+              },
+            ]),
           },
-        ],
-      },
-      instanceId: uuidSequence(3),
+        },
+      ],
     };
 
     // Form state for the test
@@ -206,9 +210,7 @@ describe("remove element", () => {
       services,
       extension: baseExtensionStateFactory({
         blockPipeline: [
-          blockConfigFactory({
-            config: documentWithButtonConfig,
-          }),
+          blockConfigFactory({ config: documentWithButtonConfig }),
         ],
       }),
     });

@@ -27,11 +27,16 @@ import ElementPreview, {
 } from "@/components/documentBuilder/preview/ElementPreview";
 import { fireEvent } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import { blockConfigFactory } from "@/testUtils/factories";
+import {
+  baseExtensionStateFactory,
+  blockConfigFactory,
+  formStateFactory,
+} from "@/testUtils/factories";
 import { defaultBlockConfig } from "@/blocks/util";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import { PipelineExpression } from "@/runtime/mapArgs";
 import { render } from "@/pageEditor/testHelpers";
+import { actions } from "@/pageEditor/slices/editorSlice";
 
 const renderElementPreview = (
   element: DocumentElement,
@@ -48,7 +53,31 @@ const renderElementPreview = (
     ...elementPreviewProps,
   };
 
-  return render(<ElementPreview {...props} />, { initialValues: { element } });
+  const formState = formStateFactory({
+    extension: baseExtensionStateFactory({
+      blockPipeline: [
+        blockConfigFactory({
+          config: {
+            body: [element],
+          },
+        }),
+      ],
+    }),
+  });
+
+  return render(<ElementPreview {...props} />, {
+    initialValues: formState,
+    setupRedux(dispatch) {
+      dispatch(actions.addElement(formState));
+      dispatch(actions.selectElement(formState.uuid));
+      dispatch(
+        actions.setElementActiveNodeId(
+          formState.extension.blockPipeline[0].instanceId
+        )
+      );
+      dispatch(actions.setNodePreviewActiveElement("0"));
+    },
+  });
 };
 
 test("calls setActiveElement callback on click", async () => {

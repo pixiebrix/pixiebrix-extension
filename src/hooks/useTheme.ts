@@ -85,8 +85,8 @@ export const useGetTheme = (): Theme => {
 };
 
 const useTheme = (theme?: Theme): { logo: ThemeLogo } => {
-  const themeLogo = getThemeLogo(theme);
   const inferredTheme = useGetTheme();
+  const themeLogo = getThemeLogo(theme ?? inferredTheme);
 
   useEffect(() => {
     void activateBackgroundTheme();
