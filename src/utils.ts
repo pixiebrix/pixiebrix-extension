@@ -597,3 +597,15 @@ export function smartAppendPeriod(string: string): string {
 
   return trimmed + ".";
 }
+
+export function isValidUrl(
+  value: string,
+  { protocols = ["http:", "https:"] }: { protocols?: string[] } = {}
+): boolean {
+  try {
+    const url = new URL(value);
+    return protocols.includes(url.protocol);
+  } catch {
+    return false;
+  }
+}

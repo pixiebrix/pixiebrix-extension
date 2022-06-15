@@ -18,13 +18,14 @@
 import { UnknownObject } from "@/types";
 import { Expression } from "@/core";
 import { DeferExpression, PipelineExpression } from "@/runtime/mapArgs";
-import { ElementType } from "react";
+import { ElementType, MouseEventHandler } from "react";
 
 export const DOCUMENT_ELEMENT_TYPES = [
   "header_1",
   "header_2",
   "header_3",
   "text",
+  "image",
   "container",
   "row",
   "column",
@@ -96,4 +97,37 @@ export type DocumentComponent = {
   props?: UnknownObject | undefined;
 };
 
-export type BuildDocumentBranch = (root: DocumentElement) => DocumentComponent;
+/**
+ * Document path information for keep tracking of brick call sites/calls for tracing
+ * @since 1.7.0
+ */
+export type DynamicPath = {
+  /**
+   * The static path to the element in the pre-document.
+   */
+  staticId: string;
+
+  /**
+   * The branches to reach the element in the rendered document
+   */
+  branches: Array<{
+    staticId: string;
+    index: number;
+  }>;
+};
+
+export type BuildDocumentBranch = (
+  root: DocumentElement,
+  tracePath: DynamicPath
+) => DocumentComponent;
+
+export type PreviewComponentProps = {
+  className?: string;
+  documentBodyName: string;
+  elementName: string;
+  isHovered: boolean;
+  isActive: boolean;
+  onClick: MouseEventHandler<HTMLDivElement>;
+  onMouseEnter: MouseEventHandler<HTMLDivElement>;
+  onMouseLeave: MouseEventHandler<HTMLDivElement>;
+};

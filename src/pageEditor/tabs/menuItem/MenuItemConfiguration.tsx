@@ -26,6 +26,7 @@ import LocationWidget from "@/pageEditor/fields/LocationWidget";
 import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
+import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 
 const menuSnippets: Snippet[] = [
   { label: "caption", value: "{{{caption}}}" },
@@ -89,6 +90,8 @@ const MenuItemConfiguration: React.FC<{
     </FieldSection>
 
     <MatchRulesSection isLocked={isLocked} />
+
+    <ExtraPermissionsSection />
   </Card>
 );
 

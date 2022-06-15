@@ -22,23 +22,28 @@ import {
   DocumentElementType,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
-import { Formik } from "formik";
 import ElementPreview, {
   ElementPreviewProps,
 } from "@/components/documentBuilder/preview/ElementPreview";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import { blockConfigFactory } from "@/testUtils/factories";
+import {
+  baseExtensionStateFactory,
+  blockConfigFactory,
+  formStateFactory,
+} from "@/testUtils/factories";
 import { defaultBlockConfig } from "@/blocks/util";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import { PipelineExpression } from "@/runtime/mapArgs";
+import { render } from "@/pageEditor/testHelpers";
+import { actions } from "@/pageEditor/slices/editorSlice";
 
 const renderElementPreview = (
   element: DocumentElement,
   elementPreviewProps?: Partial<ElementPreviewProps>
 ) => {
   const props: ElementPreviewProps = {
-    name: "",
+    documentBodyName: "",
     elementName: "element",
     previewElement: element,
     activeElement: null,
@@ -48,16 +53,31 @@ const renderElementPreview = (
     ...elementPreviewProps,
   };
 
-  return render(
-    <Formik
-      initialValues={{
-        element,
-      }}
-      onSubmit={jest.fn()}
-    >
-      <ElementPreview {...props} />
-    </Formik>
-  );
+  const formState = formStateFactory({
+    extension: baseExtensionStateFactory({
+      blockPipeline: [
+        blockConfigFactory({
+          config: {
+            body: [element],
+          },
+        }),
+      ],
+    }),
+  });
+
+  return render(<ElementPreview {...props} />, {
+    initialValues: formState,
+    setupRedux(dispatch) {
+      dispatch(actions.addElement(formState));
+      dispatch(actions.selectElement(formState.uuid));
+      dispatch(
+        actions.setElementActiveNodeId(
+          formState.extension.blockPipeline[0].instanceId
+        )
+      );
+      dispatch(actions.setNodePreviewActiveElement("0"));
+    },
+  });
 };
 
 test("calls setActiveElement callback on click", async () => {
@@ -79,7 +99,7 @@ test("adds a CSS class to an active element", async () => {
     activeElement: "element",
   });
 
-  expect(container.querySelector("p")).toHaveClass("active");
+  expect(container.querySelector("div")).toHaveClass("active");
 });
 
 test("calls setHoveredElement callback on hover", async () => {
@@ -116,7 +136,7 @@ test("adds a CSS class to a hovered element", async () => {
     hoveredElement: "element",
   });
 
-  expect(container.querySelector("p")).toHaveClass("hovered");
+  expect(container.querySelector("div")).toHaveClass("hovered");
 });
 
 test.each(DOCUMENT_ELEMENT_TYPES)(

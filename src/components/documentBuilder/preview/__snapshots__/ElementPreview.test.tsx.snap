@@ -2,37 +2,182 @@
 
 exports[`can preview default button 1`] = `
 <DocumentFragment>
-  <div>
-    <div
-      class="root inlineWrapper"
-    >
-      <button
-        class="btn btn-primary"
-        type="button"
+  <form
+    action="#"
+  >
+    <div>
+      <div
+        class="root inlineWrapper"
       >
-        Action
-      </button>
+        <button
+          class="btn btn-primary"
+          type="button"
+        >
+          Action
+        </button>
+      </div>
     </div>
-  </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
 </DocumentFragment>
 `;
 
 exports[`can preview default card 1`] = `
 <DocumentFragment>
-  <div
-    class="root"
+  <form
+    action="#"
   >
     <div
-      class="card"
+      class="shiftRightWrapper root"
     >
       <div
-        class="card-header"
+        class="card"
       >
-        Header
+        <div
+          class="card-header"
+        >
+          Header
+        </div>
+        <div
+          class="container card-body"
+        >
+          <div
+            class="addElement dropdown"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="toggle toggle dropdown-toggle btn btn-light btn-sm"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-ellipsis-v fa-w-6 "
+                data-icon="ellipsis-v"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 192 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
-      <div
-        class="container card-body"
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`can preview default column 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="root container col"
+    >
+      <span
+        class="text-muted"
       >
+        Column
+      </span>
+      <div
+        class="addElement dropdown"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          class="toggle toggle dropdown-toggle btn btn-light btn-sm"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-ellipsis-v fa-w-6 "
+            data-icon="ellipsis-v"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 192 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`can preview default container 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="root container container"
+    >
+      <div
+        class="root container row"
+      >
+        <div
+          class="root container col"
+        >
+          <span
+            class="text-muted"
+          >
+            Column
+          </span>
+          <div
+            class="addElement dropdown"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="toggle toggle dropdown-toggle btn btn-light btn-sm"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-ellipsis-v fa-w-6 "
+                data-icon="ellipsis-v"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 192 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
         <div
           class="addElement dropdown"
         >
@@ -60,66 +205,199 @@ exports[`can preview default card 1`] = `
           </button>
         </div>
       </div>
-    </div>
-  </div>
-</DocumentFragment>
-`;
-
-exports[`can preview default column 1`] = `
-<DocumentFragment>
-  <div
-    class="container root col"
-  >
-    <span
-      class="text-muted"
-    >
-      column
-    </span>
-    <div
-      class="addElement dropdown"
-    >
-      <button
-        aria-expanded="false"
-        aria-haspopup="true"
-        class="toggle toggle dropdown-toggle btn btn-light btn-sm"
-        type="button"
+      <div
+        class="addElement dropdown"
       >
-        <svg
-          aria-hidden="true"
-          class="svg-inline--fa fa-ellipsis-v fa-w-6 "
-          data-icon="ellipsis-v"
-          data-prefix="fas"
-          focusable="false"
-          role="img"
-          viewBox="0 0 192 512"
-          xmlns="http://www.w3.org/2000/svg"
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          class="toggle toggle dropdown-toggle btn btn-light btn-sm"
+          type="button"
         >
-          <path
-            d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
-            fill="currentColor"
-          />
-        </svg>
-      </button>
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-ellipsis-v fa-w-6 "
+            data-icon="ellipsis-v"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 192 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+      </div>
     </div>
-  </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
 </DocumentFragment>
 `;
 
-exports[`can preview default container 1`] = `
+exports[`can preview default header_1 1`] = `
 <DocumentFragment>
-  <div
-    class="container root container"
+  <form
+    action="#"
   >
     <div
-      class="container root row"
+      class="shiftRightWrapper root"
+    >
+      <h1>
+        Header
+      </h1>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`can preview default header_2 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="shiftRightWrapper root"
+    >
+      <h2>
+        Header
+      </h2>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`can preview default header_3 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="shiftRightWrapper root"
+    >
+      <h3>
+        Header
+      </h3>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`can preview default image 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="imageWrapper root"
+    >
+      <img
+        alt="Placeholder"
+        class=""
+        src="holder.js/100x50"
+      />
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`can preview default list 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="root container listContainer"
     >
       <div
-        class="container root col"
+        class="text-muted"
+      >
+        List: undefined
+      </div>
+      <div
+        class="text-muted"
+      >
+        Element key: @element
+      </div>
+      <div
+        class="shiftRightWrapper root"
+      >
+        <p>
+          Paragraph text.
+        </p>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`can preview default pipeline 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="shiftRightWrapper root"
+    >
+      <h3>
+        Brick
+      </h3>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`can preview default row 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="root container row"
+    >
+      <div
+        class="root container col"
       >
         <span
           class="text-muted"
         >
-          column
+          Column
         </span>
         <div
           class="addElement dropdown"
@@ -175,196 +453,59 @@ exports[`can preview default container 1`] = `
         </button>
       </div>
     </div>
-    <div
-      class="addElement dropdown"
+    <button
+      type="submit"
     >
-      <button
-        aria-expanded="false"
-        aria-haspopup="true"
-        class="toggle toggle dropdown-toggle btn btn-light btn-sm"
-        type="button"
-      >
-        <svg
-          aria-hidden="true"
-          class="svg-inline--fa fa-ellipsis-v fa-w-6 "
-          data-icon="ellipsis-v"
-          data-prefix="fas"
-          focusable="false"
-          role="img"
-          viewBox="0 0 192 512"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
-            fill="currentColor"
-          />
-        </svg>
-      </button>
-    </div>
-  </div>
-</DocumentFragment>
-`;
-
-exports[`can preview default header_1 1`] = `
-<DocumentFragment>
-  <h1
-    class="root"
-  >
-    Header
-  </h1>
-</DocumentFragment>
-`;
-
-exports[`can preview default header_2 1`] = `
-<DocumentFragment>
-  <h2
-    class="root"
-  >
-    Header
-  </h2>
-</DocumentFragment>
-`;
-
-exports[`can preview default header_3 1`] = `
-<DocumentFragment>
-  <h3
-    class="root"
-  >
-    Header
-  </h3>
-</DocumentFragment>
-`;
-
-exports[`can preview default list 1`] = `
-<DocumentFragment>
-  <div
-    class="root container listContainer"
-  >
-    <div
-      class="text-muted"
-    >
-      List: undefined
-    </div>
-    <div
-      class="text-muted"
-    >
-      Element key: @element
-    </div>
-    <p
-      class="root"
-    >
-      Paragraph text.
-    </p>
-  </div>
-</DocumentFragment>
-`;
-
-exports[`can preview default pipeline 1`] = `
-<DocumentFragment>
-  <div
-    class="root"
-  >
-    <h3>
-      Brick
-    </h3>
-  </div>
-</DocumentFragment>
-`;
-
-exports[`can preview default row 1`] = `
-<DocumentFragment>
-  <div
-    class="container root row"
-  >
-    <div
-      class="container root col"
-    >
-      <span
-        class="text-muted"
-      >
-        column
-      </span>
-      <div
-        class="addElement dropdown"
-      >
-        <button
-          aria-expanded="false"
-          aria-haspopup="true"
-          class="toggle toggle dropdown-toggle btn btn-light btn-sm"
-          type="button"
-        >
-          <svg
-            aria-hidden="true"
-            class="svg-inline--fa fa-ellipsis-v fa-w-6 "
-            data-icon="ellipsis-v"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            viewBox="0 0 192 512"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
-              fill="currentColor"
-            />
-          </svg>
-        </button>
-      </div>
-    </div>
-    <div
-      class="addElement dropdown"
-    >
-      <button
-        aria-expanded="false"
-        aria-haspopup="true"
-        class="toggle toggle dropdown-toggle btn btn-light btn-sm"
-        type="button"
-      >
-        <svg
-          aria-hidden="true"
-          class="svg-inline--fa fa-ellipsis-v fa-w-6 "
-          data-icon="ellipsis-v"
-          data-prefix="fas"
-          focusable="false"
-          role="img"
-          viewBox="0 0 192 512"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
-            fill="currentColor"
-          />
-        </svg>
-      </button>
-    </div>
-  </div>
+      Submit
+    </button>
+  </form>
 </DocumentFragment>
 `;
 
 exports[`can preview default text 1`] = `
 <DocumentFragment>
-  <p
-    class="root"
+  <form
+    action="#"
   >
-    Paragraph text.
-  </p>
+    <div
+      class="shiftRightWrapper root"
+    >
+      <p>
+        Paragraph text.
+      </p>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
 </DocumentFragment>
 `;
 
 exports[`can preview pipeline element with bricks 1`] = `
 <DocumentFragment>
-  <div
-    class="root"
+  <form
+    action="#"
   >
-    <h3>
-      Brick
-    </h3>
-    <p>
-      testing/block-id_1
-    </p>
-    <p>
-      @pixiebrix/markdown
-    </p>
-  </div>
+    <div
+      class="shiftRightWrapper root"
+    >
+      <h3>
+        Brick
+      </h3>
+      <p>
+        testing/block-id_18
+      </p>
+      <p>
+        @pixiebrix/markdown
+      </p>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
 </DocumentFragment>
 `;

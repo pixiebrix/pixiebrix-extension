@@ -55,6 +55,31 @@ import { get } from "lodash";
 import Loader from "@/components/Loader";
 import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
 import { BlockType } from "@/runtime/runtimeTypes";
+import { validateRegistryId } from "@/types/helpers";
+
+function getRelevantBlocksForRootPipeline(
+  allBlocks: TypedBlockMap,
+  extensionPointType: string
+) {
+  const alwaysShow = new Set([
+    // Cancel/Error provide meaningful control flow for all bricks
+    validateRegistryId("@pixiebrix/cancel"),
+    validateRegistryId("@pixiebrix/error"),
+  ]);
+
+  const excludeType: BlockType = ["actionPanel", "panel"].includes(
+    extensionPointType
+  )
+    ? "effect"
+    : "renderer";
+
+  return [...allBlocks.values()]
+    .filter(
+      ({ type, block }) =>
+        (type != null && type !== excludeType) || alwaysShow.has(block.id)
+    )
+    .map(({ block }) => block);
+}
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -87,23 +112,16 @@ const EditTab: React.FC<{
 
   const [relevantBlocksForRootPipeline, isLoadingRelevantBlocks] =
     useAsyncState(
-      async () => {
-        const excludeType: BlockType = ["actionPanel", "panel"].includes(
-          extensionPointType
-        )
-          ? "effect"
-          : "renderer";
-
-        return [...allBlocks.values()]
-          .filter(({ type }) => type != null && type !== excludeType)
-          .map(({ block }) => block);
-      },
+      async () =>
+        getRelevantBlocksForRootPipeline(allBlocks, extensionPointType),
       [allBlocks, extensionPointType],
       []
     );
 
-  const { blockPipeline, blockPipelineErrors, errorTraceEntry } =
-    usePipelineField(allBlocks, extensionPointType);
+  const { blockPipeline, blockPipelineErrors, traceErrors } = usePipelineField(
+    allBlocks,
+    extensionPointType
+  );
 
   const activeNodeId = useSelector(selectActiveNodeId);
   const { blockId, path: fieldName } = useSelector(selectActiveNodeInfo) ?? {};
@@ -169,7 +187,7 @@ const EditTab: React.FC<{
                 relevantBlocksForRootPipeline={relevantBlocksForRootPipeline}
                 pipeline={blockPipeline}
                 pipelineErrors={blockPipelineErrors}
-                errorTraceEntry={errorTraceEntry}
+                traceErrors={traceErrors}
                 extensionPointLabel={extensionPointLabel}
                 extensionPointIcon={extensionPointIcon}
                 addBlock={addBlock}

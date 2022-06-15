@@ -23,4 +23,5 @@ export enum DataPanelTabKey {
   Rendered = "rendered",
   Output = "output",
   Preview = "preview",
+  Outline = "outline",
 }

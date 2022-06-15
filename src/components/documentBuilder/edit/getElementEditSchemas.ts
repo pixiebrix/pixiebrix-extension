@@ -22,8 +22,8 @@ import { DocumentElementType } from "@/components/documentBuilder/documentBuilde
 export function getClassNameEdit(elementName: string): SchemaFieldProps {
   return {
     name: joinName(elementName, "config", "className"),
-    schema: { type: "string" },
-    label: "CSS Class",
+    schema: { type: "string", format: "bootstrap-class" },
+    label: "Layout/Style",
   };
 }
 
@@ -50,6 +50,25 @@ function getElementEditSchemas(
         label: "Text",
       };
       return [textEdit, getClassNameEdit(elementName)];
+    }
+
+    case "image": {
+      const imageUrl: SchemaFieldProps = {
+        name: joinName(elementName, "config", "url"),
+        schema: { type: "string", format: "uri" },
+        label: "Image URL",
+      };
+      const height: SchemaFieldProps = {
+        name: joinName(elementName, "config", "height"),
+        schema: { type: ["string", "number"] },
+        label: "Height",
+      };
+      const width: SchemaFieldProps = {
+        name: joinName(elementName, "config", "width"),
+        schema: { type: ["string", "number"] },
+        label: "Width",
+      };
+      return [imageUrl, height, width, getClassNameEdit(elementName)];
     }
 
     case "card": {

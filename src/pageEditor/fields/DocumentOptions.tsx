@@ -20,11 +20,8 @@ import { validateRegistryId } from "@/types/helpers";
 import { joinName } from "@/utils";
 import { useField } from "formik";
 import DocumentEditor from "@/components/documentBuilder/edit/DocumentEditor";
-import useReduxState from "@/hooks/useReduxState";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
-import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 export const DOCUMENT_ID = validateRegistryId("@pixiebrix/document");
 
@@ -32,27 +29,20 @@ const DocumentOptions: React.FC<{
   name: string;
   configKey: string;
 }> = ({ name, configKey }) => {
-  const [activeElement, setActiveElement] = useReduxState(
-    selectNodePreviewActiveElement,
-    editorActions.setNodePreviewActiveElement
-  );
-
-  const bodyName = joinName(name, configKey, "body");
-  const [{ value }, , { setValue }] = useField<DocumentElement[]>(bodyName);
+  const documentBodyName = joinName(name, configKey, "body");
+  const [{ value }, , { setValue }] =
+    useField<DocumentElement[]>(documentBodyName);
 
   useEffect(() => {
     if (!Array.isArray(value)) {
       setValue([]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- exclude setValue because reference changes on render
   }, [value]);
 
   return (
     <ConfigErrorBoundary>
-      <DocumentEditor
-        name={bodyName}
-        activeElement={activeElement}
-        setActiveElement={setActiveElement}
-      />
+      <DocumentEditor documentBodyName={documentBodyName} />
     </ConfigErrorBoundary>
   );
 };

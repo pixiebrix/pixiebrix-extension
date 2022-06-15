@@ -16,11 +16,12 @@
  */
 
 import documentTreeStyles from "./documentTree.module.scss";
-
 import {
   DocumentComponent,
   DocumentElement,
+  DynamicPath,
   PipelineDocumentConfig,
+  PreviewComponentProps,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { get } from "lodash";
 import { UnknownObject } from "@/types";
@@ -30,13 +31,15 @@ import React from "react";
 import { Button } from "react-bootstrap";
 import { getComponentDefinition } from "@/components/documentBuilder/documentTree";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
+import Unknown from "./elementsPreview/Unknown";
+import Basic from "./elementsPreview/Basic";
+import Image from "./elementsPreview/Image";
+import Container from "./elementsPreview/Container";
+import PopupLabels from "./elementsPreview/PopupLabels";
 
-type PreviewComponentProps = {
-  className?: string;
-  onClick: React.MouseEventHandler<HTMLDivElement>;
-  onMouseEnter: React.MouseEventHandler<HTMLDivElement>;
-  onMouseLeave: React.MouseEventHandler<HTMLDivElement>;
-};
+// Bookkeeping trace paths for preview is not necessary. But, we need to provide a value for the previews that use
+// getComponentDefinition under the hood
+const DUMMY_TRACE_PATH: DynamicPath = { staticId: "preview", branches: [] };
 
 function getPreviewComponentDefinition(
   element: DocumentElement
@@ -49,20 +52,47 @@ function getPreviewComponentDefinition(
     case "header_2":
     case "header_3":
     case "text": {
-      return getComponentDefinition(element);
+      const documentComponent = getComponentDefinition(
+        element,
+        DUMMY_TRACE_PATH
+      );
+      return {
+        Component: Basic,
+        props: {
+          elementType: element.type,
+          documentComponent,
+        },
+      };
+    }
+
+    case "image": {
+      const documentComponent = getComponentDefinition(
+        element,
+        DUMMY_TRACE_PATH
+      );
+      return {
+        Component: Image,
+        props: {
+          elementType: element.type,
+          documentComponent,
+        },
+      };
     }
 
     case "container":
     case "row":
     case "column": {
-      const { Component, props } = getComponentDefinition(element);
-      props.className = cx(props.className, documentTreeStyles.container);
-
-      if (!element.children?.length) {
-        props.children = <span className="text-muted">{componentType}</span>;
-      }
-
-      return { Component, props };
+      const documentComponent = getComponentDefinition(
+        element,
+        DUMMY_TRACE_PATH
+      );
+      return {
+        Component: Container,
+        props: {
+          element,
+          documentComponent,
+        },
+      };
     }
 
     case "card": {
@@ -77,12 +107,31 @@ function getPreviewComponentDefinition(
         },
       };
 
-      const { Component, props } = getComponentDefinition(previewElement);
+      const { Component, props } = getComponentDefinition(
+        previewElement,
+        DUMMY_TRACE_PATH
+      );
       const PreviewComponent: React.FC<PreviewComponentProps> = ({
         children,
+        className,
+        isHovered,
+        isActive,
+        documentBodyName,
+        elementName,
         ...restPreviewProps
       }) => (
-        <div {...restPreviewProps}>
+        <div
+          className={cx(documentTreeStyles.shiftRightWrapper, className)}
+          {...restPreviewProps}
+        >
+          <PopupLabels
+            className={documentTreeStyles.labelShiftRight}
+            elementType={element.type}
+            documentBodyName={documentBodyName}
+            elementName={elementName}
+            isHovered={isHovered}
+            isActive={isActive}
+          />
           <Component {...props}>{children}</Component>
         </div>
       );
@@ -94,9 +143,24 @@ function getPreviewComponentDefinition(
       const { pipeline } = config as PipelineDocumentConfig;
       const PreviewComponent: React.FC<PreviewComponentProps> = ({
         className,
+        isHovered,
+        isActive,
+        documentBodyName,
+        elementName,
         ...restPreviewProps
       }) => (
-        <div className={cx(className)} {...restPreviewProps}>
+        <div
+          className={cx(documentTreeStyles.shiftRightWrapper, className)}
+          {...restPreviewProps}
+        >
+          <PopupLabels
+            className={documentTreeStyles.labelShiftRight}
+            elementType={element.type}
+            documentBodyName={documentBodyName}
+            elementName={elementName}
+            isHovered={isHovered}
+            isActive={isActive}
+          />
           <h3>{elementTypeLabels.pipeline}</h3>
           {pipeline.__value__.map(({ id }) => (
             <p key={id}>{id}</p>
@@ -110,6 +174,10 @@ function getPreviewComponentDefinition(
     case "button": {
       const PreviewComponent: React.FC<PreviewComponentProps> = ({
         className,
+        isHovered,
+        isActive,
+        documentBodyName,
+        elementName,
         ...restPreviewProps
       }) => {
         // Destructure disabled from button props. If the button is disabled in the preview the user can't select it
@@ -122,6 +190,14 @@ function getPreviewComponentDefinition(
               className={cx(className, documentTreeStyles.inlineWrapper)}
               {...restPreviewProps}
             >
+              <PopupLabels
+                className={documentTreeStyles.labelShiftRight}
+                elementType={element.type}
+                documentBodyName={documentBodyName}
+                elementName={elementName}
+                isHovered={isHovered}
+                isActive={isActive}
+              />
               <Button onClick={() => {}} {...buttonProps}>
                 {title}
               </Button>
@@ -140,6 +216,10 @@ function getPreviewComponentDefinition(
       const PreviewComponent: React.FC<PreviewComponentProps> = ({
         children,
         className,
+        isHovered,
+        isActive,
+        documentBodyName,
+        elementName,
         ...restPreviewProps
       }) => (
         <div
@@ -150,6 +230,14 @@ function getPreviewComponentDefinition(
           )}
           {...restPreviewProps}
         >
+          <PopupLabels
+            className={documentTreeStyles.labelShiftUp}
+            elementType={element.type}
+            documentBodyName={documentBodyName}
+            elementName={elementName}
+            isHovered={isHovered}
+            isActive={isActive}
+          />
           <div className="text-muted">List: {arrayValue}</div>
           <div className="text-muted">
             Element key: @{config.elementKey || "element"}
@@ -161,8 +249,18 @@ function getPreviewComponentDefinition(
       return { Component: PreviewComponent };
     }
 
-    default:
-      return getComponentDefinition(element);
+    default: {
+      const documentComponent = getComponentDefinition(
+        element,
+        DUMMY_TRACE_PATH
+      );
+      return {
+        Component: Unknown,
+        props: {
+          documentComponent,
+        },
+      };
+    }
   }
 }
 

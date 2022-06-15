@@ -27,7 +27,7 @@ import {
 } from "./pipelineTestHelpers";
 import { uuidv4 } from "@/types/helpers";
 
-// Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandledrejection errors since we call
+// Mock the recordX trace methods. Otherwise, they'll fail and Jest will have unhandledrejection errors since we call
 // them with `void` instead of awaiting them in the reducePipeline methods
 import * as logging from "@/background/messenger/api";
 import { traces } from "@/background/messenger/api";
@@ -226,11 +226,13 @@ describe("Trace normal execution", () => {
       ...testOptions("v2"),
       runId,
       logger,
+      extensionId,
     });
 
     const meta: TraceRecordMeta = {
       extensionId,
       runId,
+      branches: [],
       blockInstanceId: instanceId,
       blockId: echoBlock.id,
     };
@@ -249,6 +251,8 @@ describe("Trace normal execution", () => {
       outputKey: undefined,
       output: { message: "hello" },
       skippedRun: false,
+      isRenderer: false,
+      isFinal: true,
     };
 
     expect(traces.addEntry).toHaveBeenCalledTimes(1);
@@ -292,6 +296,7 @@ describe("Trace normal execution", () => {
     const meta: TraceRecordMeta = {
       extensionId,
       runId,
+      branches: [],
       blockInstanceId: instanceId,
       blockId: echoBlock.id,
     };
@@ -301,6 +306,8 @@ describe("Trace normal execution", () => {
       outputKey,
       output: { message: "hello" },
       skippedRun: false,
+      isRenderer: false,
+      isFinal: true,
     };
 
     expect(traces.addExit).toHaveBeenCalledTimes(2);
@@ -343,6 +350,7 @@ describe("Trace normal execution", () => {
     const meta: TraceRecordMeta = {
       extensionId,
       runId,
+      branches: [],
       blockInstanceId: instanceId,
       blockId: throwBlock.id,
     };

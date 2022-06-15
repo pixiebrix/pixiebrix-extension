@@ -26,15 +26,22 @@ import { uuidv4 } from "@/types/helpers";
 import PanelBody from "@/sidebar/PanelBody";
 import { RendererPayload } from "@/runtime/runtimeTypes";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { serializeError } from "serialize-error";
+import { DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
+import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
 
-type BlockElementProps = { pipeline: BlockPipeline };
+type BlockElementProps = {
+  pipeline: BlockPipeline;
+  tracePath: DynamicPath;
+};
 
 /**
- * A React component that messages the contentScript to run a pipeline and then shows the result
+ * A React component that messages the contentScript to run a pipeline and then displays the result
  */
-const BlockElement: React.FC<BlockElementProps> = ({ pipeline }) => {
+const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
   const {
-    options: { ctxt },
+    meta,
+    options: { ctxt, logger },
   } = useContext(DocumentContext);
 
   const [payload, isLoading, error] =
@@ -49,26 +56,33 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline }) => {
         context: ctxt,
         pipeline,
         // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will break for v4+
+        meta: {
+          ...meta,
+          // The pipeline is static, so don't need to maintain run counter on branches
+          branches: mapPathToTraceBranches(tracePath),
+        },
         options: apiVersionOptions("v3"),
       });
     }, [pipeline]);
 
   if (isLoading) {
-    return <PanelBody payload={null} />;
+    return <PanelBody payload={null} context={logger.context} />;
   }
 
   if (error) {
     return (
       <PanelBody
+        context={logger.context}
         payload={{
           key: `error-${getErrorMessage(error)}`,
-          error: getErrorMessage(error),
+          error: serializeError(error),
+          ...meta,
         }}
       />
     );
   }
 
-  return <PanelBody payload={payload} />;
+  return <PanelBody context={logger.context} payload={payload} />;
 };
 
 export default BlockElement;

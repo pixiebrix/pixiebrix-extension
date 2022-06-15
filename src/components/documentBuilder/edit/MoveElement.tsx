@@ -15,47 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useField } from "formik";
 import React from "react";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import getElementCollectionName from "./getElementCollectionName";
-import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import LayoutWidget from "@/components/LayoutWidget";
-import { joinElementName } from "@/components/documentBuilder/utils";
+import useMoveWithinParent from "@/components/documentBuilder/hooks/useMoveWithinParent";
 
 type MoveElementProps = {
-  name: string;
-  activeElement: string;
-  setActiveElement: (activeElement: string) => void;
+  documentBodyName: string;
 };
 
-const MoveElement: React.FC<MoveElementProps> = ({
-  name,
-  activeElement,
-  setActiveElement,
-}) => {
-  const { collectionName, elementIndex } =
-    getElementCollectionName(activeElement);
-
-  const fullCollectionName = joinElementName(name, collectionName);
-
-  const [{ value: elementsCollection }, , { setValue }] =
-    useField<DocumentElement[]>(fullCollectionName);
-
-  const canMoveUp = elementIndex > 0;
-  const canMoveDown = elementIndex < elementsCollection.length - 1;
-
-  const moveElement = (direction: "up" | "down") => {
-    const newElementsCollection = [...elementsCollection];
-    const toIndex = direction === "up" ? elementIndex - 1 : elementIndex + 1;
-    // eslint-disable-next-line security/detect-object-injection
-    [newElementsCollection[elementIndex], newElementsCollection[toIndex]] = [
-      newElementsCollection[toIndex],
-      newElementsCollection[elementIndex],
-    ];
-    setValue(newElementsCollection);
-    setActiveElement(joinElementName(collectionName, toIndex));
-  };
+const MoveElement: React.FC<MoveElementProps> = ({ documentBodyName }) => {
+  const { canMoveUp, canMoveDown, moveElement } =
+    useMoveWithinParent(documentBodyName);
 
   return (
     (canMoveUp || canMoveDown) && (

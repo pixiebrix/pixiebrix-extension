@@ -35,6 +35,10 @@ export function createNewElement(elementType: DocumentElementType) {
       element.config.text = "Paragraph text.";
       break;
 
+    case "image":
+      element.config.url = null;
+      break;
+
     case "container":
       element.children = [createNewElement("row")];
       break;
@@ -80,6 +84,7 @@ export function createNewElement(elementType: DocumentElementType) {
 
     default:
       throw new Error(
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
         `Can't create new element. Type "${elementType} is not supported.`
       );
   }

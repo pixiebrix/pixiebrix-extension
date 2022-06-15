@@ -10,6 +10,7 @@ import {
   PipelineExpression,
 } from "@/runtime/mapArgs";
 import { BusinessError } from "@/errors/businessErrors";
+import { UNSET_UUID } from "@/types/helpers";
 
 const logger = new ConsoleLogger();
 
@@ -224,6 +225,7 @@ export function simpleInput(input: UnknownObject): InitialValues {
 export function testOptions(version: ApiVersion) {
   return {
     logger,
+    extensionId: UNSET_UUID,
     ...apiVersionOptions(version),
   };
 }

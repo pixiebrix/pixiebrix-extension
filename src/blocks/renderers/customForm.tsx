@@ -16,14 +16,22 @@
  */
 
 import React from "react";
-import { Renderer } from "@/types";
-import { BlockArg, ComponentRef, Schema, UiSchema } from "@/core";
+import { Renderer, UnknownObject } from "@/types";
+import {
+  BlockArg,
+  BlockOptions,
+  ComponentRef,
+  RegistryId,
+  SanitizedServiceConfiguration,
+  Schema,
+  UiSchema,
+  UUID,
+} from "@/core";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { JsonObject } from "type-fest";
-import { dataStore } from "@/background/messenger/api";
+import { dataStore, proxyService, whoAmI } from "@/background/messenger/api";
 import notify from "@/utils/notify";
 import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
-import BootstrapStylesheet from "./BootstrapStylesheet";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import ImageCropStylesheet from "@/blocks/renderers/ImageCropStylesheet";
 // eslint-disable-next-line import/no-named-as-default -- need default export here
@@ -31,6 +39,12 @@ import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { validateRegistryId } from "@/types/helpers";
+import BootstrapStylesheet from "@/blocks/renderers/BootstrapStylesheet";
+import { isObject } from "@/utils";
+import { BusinessError, PropError } from "@/errors/businessErrors";
+import { getPageState, setPageState } from "@/contentScript/messenger/api";
+import safeJsonStringify from "json-stringify-safe";
+import { isEmpty } from "lodash";
 
 const fields = {
   DescriptionField,
@@ -39,12 +53,22 @@ const uiWidgets = {
   imageCrop: ImageCropWidget,
 };
 
+export type Storage =
+  | { type: "localStorage" }
+  | {
+      type: "database";
+      databaseId: UUID;
+      service: SanitizedServiceConfiguration;
+    }
+  | { type: "state"; namespace?: "extension" | "blueprint" | "shared" };
+
 const CustomFormComponent: React.FunctionComponent<{
   schema: Schema;
   uiSchema: UiSchema;
+  submitCaption: string;
   formData: JsonObject;
   onSubmit: (values: JsonObject) => Promise<void>;
-}> = ({ schema, uiSchema, formData, onSubmit }) => (
+}> = ({ schema, uiSchema, submitCaption, formData, onSubmit }) => (
   <div className="CustomForm p-3">
     <ErrorBoundary>
       <BootstrapStylesheet />
@@ -63,13 +87,204 @@ const CustomFormComponent: React.FunctionComponent<{
       >
         <div>
           <button className="btn btn-primary" type="submit">
-            Save
+            {submitCaption}
           </button>
         </div>
       </JsonSchemaForm>
     </ErrorBoundary>
   </div>
 );
+
+function assertObject(value: unknown): asserts value is UnknownObject {
+  if (!isObject(value)) {
+    throw new BusinessError("Expected object for data");
+  }
+}
+
+type Context = { blueprintId: RegistryId | null; extensionId: UUID };
+
+async function getInitialData(
+  storage: Storage,
+  recordId: string,
+  { blueprintId, extensionId }: Context
+): Promise<UnknownObject> {
+  switch (storage.type) {
+    case "localStorage": {
+      const data = await dataStore.get(recordId);
+      assertObject(data);
+      return data;
+    }
+
+    case "state": {
+      const namespace = storage.namespace ?? "blueprint";
+      const me = await whoAmI();
+      // Target the top level frame. Inline panels aren't generally available, so the renderer will always be in the
+      // sidebar which runs in the context of the top-level frame
+      return getPageState(
+        { tabId: me.tab.id, frameId: 0 },
+        { namespace, blueprintId, extensionId }
+      );
+    }
+
+    case "database": {
+      const {
+        data: { data },
+      } = await proxyService(storage.service, {
+        url: `/api/databases/${storage.databaseId}/records/${encodeURIComponent(
+          recordId
+        )}/`,
+        params: {
+          missing_key: "blank",
+        },
+      });
+      assertObject(data);
+      return data;
+    }
+
+    default: {
+      throw new PropError(
+        "Invalid storage type",
+        CustomFormRenderer.BLOCK_ID,
+        "storage",
+        storage
+      );
+    }
+  }
+}
+
+async function setData(
+  storage: Storage,
+  recordId: string,
+  values: UnknownObject,
+  { blueprintId, extensionId }: Context
+): Promise<void> {
+  const cleanValues = JSON.parse(safeJsonStringify(values));
+
+  switch (storage.type) {
+    case "localStorage": {
+      await dataStore.set(recordId, cleanValues);
+      return;
+    }
+
+    case "database": {
+      await proxyService(storage.service, {
+        url: `/api/databases/${storage.databaseId}/records/`,
+        method: "put",
+        data: {
+          id: recordId,
+          data: cleanValues,
+          merge_strategy: "shallow",
+        },
+      });
+      return;
+    }
+
+    case "state": {
+      const me = await whoAmI();
+      // Target the top level frame. Inline panels aren't generally available, so the renderer will always be in the
+      // sidebar which runs in the context of the top-level frame
+      await setPageState(
+        { tabId: me.tab.id, frameId: 0 },
+        {
+          namespace: storage.namespace ?? "blueprint",
+          data: cleanValues,
+          mergeStrategy: "shallow",
+          extensionId,
+          blueprintId,
+        }
+      );
+      return;
+    }
+
+    default: {
+      throw new PropError(
+        "Invalid storage type",
+        CustomFormRenderer.BLOCK_ID,
+        "storage",
+        storage
+      );
+    }
+  }
+}
+
+export const customFormRendererSchema = {
+  type: "object",
+  properties: {
+    storage: {
+      oneOf: [
+        {
+          type: "object",
+          properties: {
+            type: {
+              type: "string",
+              const: "database",
+            },
+            databaseId: {
+              type: "string",
+              format: "uuid",
+            },
+            service: {
+              $ref: "https://app.pixiebrix.com/schemas/services/@pixiebrix/api",
+            },
+          },
+          required: ["type", "service", "databaseId"],
+        },
+        {
+          type: "object",
+          properties: {
+            type: {
+              type: "string",
+              const: "state",
+            },
+            namespace: {
+              type: "string",
+              description:
+                "The namespace for the storage, to avoid conflicts. If set to blueprint and the extension is not part of a blueprint, defaults to shared",
+              enum: ["blueprint", "extension", "shared"],
+              default: "blueprint",
+            },
+          },
+          required: ["type"],
+        },
+        {
+          type: "object",
+          properties: {
+            type: {
+              type: "string",
+              const: "localStorage",
+            },
+          },
+          required: ["type"],
+        },
+      ],
+    },
+    submitCaption: {
+      type: "string",
+      description: "The submit button caption (default='Submit')",
+      default: "Submit",
+    },
+    successMessage: {
+      type: "string",
+      default: "Successfully submitted form",
+      description:
+        "An optional message to display if the form submitted successfully",
+    },
+    recordId: {
+      type: "string",
+      description:
+        "Unique identifier for the data record. Required if using a database or local storage",
+    },
+    schema: {
+      type: "object",
+      additionalProperties: true,
+    },
+    uiSchema: {
+      type: "object",
+      additionalProperties: true,
+    },
+  },
+  required: ["schema"],
+};
 
 export class CustomFormRenderer extends Renderer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/form");
@@ -81,48 +296,74 @@ export class CustomFormRenderer extends Renderer {
     );
   }
 
-  inputSchema: Schema = {
-    type: "object",
-    properties: {
-      recordId: {
-        type: "string",
-        description: "Unique identifier for the data record",
-      },
-      schema: {
-        type: "object",
-        additionalProperties: true,
-      },
-      uiSchema: {
-        type: "object",
-        additionalProperties: true,
-      },
-    },
-  };
+  inputSchema: Schema = customFormRendererSchema as Schema;
 
-  async render({
-    recordId,
-    schema,
-    uiSchema,
-  }: BlockArg): Promise<ComponentRef> {
-    const formData = await dataStore.get(recordId);
+  async render(
+    {
+      storage = { type: "localStorage" },
+      recordId,
+      schema,
+      uiSchema,
+      successMessage = "Successfully submitted form",
+      submitCaption = "Submit",
+    }: BlockArg<{
+      storage?: Storage;
+      successMessage?: string;
+      recordId?: string | null;
+      submitCaption?: string;
+      schema: Schema;
+      uiSchema?: UiSchema;
+    }>,
+    { logger }: BlockOptions
+  ): Promise<ComponentRef> {
+    if (logger.context.extensionId == null) {
+      throw new Error("extensionId is required");
+    }
 
-    console.debug("Building panel for record: [[ %s ]]", recordId);
+    if (
+      isEmpty(recordId) &&
+      ["database", "localStorage"].includes(storage.type)
+    ) {
+      throw new PropError(
+        "recordId is required for database and localStorage",
+        this.id,
+        "recordId",
+        recordId
+      );
+    }
+
+    const { blueprintId, extensionId } = logger.context;
+
+    const initialData = await getInitialData(storage, recordId, {
+      blueprintId,
+      extensionId,
+    });
+
+    console.debug("Initial data for form", {
+      initialData,
+    });
 
     return {
       Component: CustomFormComponent,
       props: {
         recordId,
-        formData,
+        formData: initialData,
         schema,
         uiSchema,
+        submitCaption,
         async onSubmit(values: JsonObject) {
           try {
-            await dataStore.set(recordId, values);
-            notify.success("Saved record");
+            await setData(storage, recordId, values, {
+              blueprintId,
+              extensionId,
+            });
+            if (!isEmpty(successMessage)) {
+              notify.success(successMessage);
+            }
           } catch (error) {
             notify.error({
               error,
-              message: "Error saving record",
+              message: "Error submitting form",
               reportError: false,
             });
           }

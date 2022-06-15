@@ -24,6 +24,7 @@ import MultiSelectWidget from "@/pageEditor/fields/MultiSelectWidget";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import { contextOptions } from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
 import IconWidget from "@/components/fields/IconWidget";
+import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 
 const QuickBarConfiguration: React.FC<{
   isLocked: boolean;
@@ -108,6 +109,8 @@ const QuickBarConfiguration: React.FC<{
         {...makeLockableFieldProps("Automatic Permissions", isLocked)}
       />
     </FieldSection>
+
+    <ExtraPermissionsSection />
   </Card>
 );
 

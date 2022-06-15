@@ -24,14 +24,14 @@ import PipelineHeaderNode, {
 import PipelineFooterNode, {
   PipelineFooterNodeProps,
 } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
-import { BlockPipeline } from "@/blocks/types";
+import { BlockPipeline, Branch } from "@/blocks/types";
 import {
   BrickNodeContentProps,
   BrickNodeProps,
   FormikError,
   RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
-import { TraceError } from "@/telemetry/trace";
+import { TraceError, TraceRecord } from "@/telemetry/trace";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { TypedBlockMap } from "@/blocks/registry";
 import { IBlock, OutputKey, UUID } from "@/core";
@@ -55,6 +55,7 @@ import BrickIcon from "@/components/BrickIcon";
 import { Except } from "type-fest";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -68,7 +69,7 @@ type EditorNodeLayoutProps = {
   relevantBlocksForRootPipeline: IBlock[];
   pipeline: BlockPipeline;
   pipelineErrors: FormikError;
-  errorTraceEntry: TraceError;
+  traceErrors: TraceError[];
   extensionPointLabel: string;
   extensionPointIcon: IconProp;
   addBlock: (
@@ -87,12 +88,46 @@ type SubPipeline = {
   subPipelinePath: string;
 };
 
+function decideBrickStatus({
+  index,
+  pipelineErrors,
+  traceRecord,
+}: {
+  index: number;
+  pipelineErrors: FormikError;
+  traceRecord: TraceRecord;
+}): RunStatus {
+  // If blockPipelineErrors is a string, it means the error is on the pipeline level
+  // eslint-disable-next-line security/detect-object-injection -- index is a number
+  if (typeof pipelineErrors !== "string" && Boolean(pipelineErrors?.[index])) {
+    return RunStatus.ERROR;
+  }
+
+  if (traceRecord == null) {
+    return RunStatus.NONE;
+  }
+
+  if ("error" in traceRecord && traceRecord.error) {
+    return RunStatus.WARNING;
+  }
+
+  if (traceRecord?.skippedRun) {
+    return RunStatus.SKIPPED;
+  }
+
+  // We already checked for errors from pipelineErrors
+  if (traceRecord.isFinal) {
+    return RunStatus.SUCCESS;
+  }
+
+  return RunStatus.PENDING;
+}
+
 const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   allBlocks,
   relevantBlocksForRootPipeline,
   pipeline,
   pipelineErrors,
-  errorTraceEntry,
   extensionPointLabel,
   extensionPointIcon,
   addBlock,
@@ -135,7 +170,8 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
     const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
     const relevantBlocks = isRootPipeline
       ? relevantBlocksForRootPipeline
-      : allBlocksAsRelevant;
+      : // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3629
+        allBlocksAsRelevant;
 
     const lastIndex = pipeline.length - 1;
     // eslint-disable-next-line security/detect-object-injection -- just created the index
@@ -145,14 +181,48 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
 
     const nodes: EditorNodeProps[] = [];
 
+    // Determine which execution of the pipeline to show. Currently, getting the latest execution
+    let latestPipelineCall: Branch[];
+    if (pipeline.length > 0) {
+      // XXX: there seems to be a bug (race condition) where sometimes this isn't seeing the latest click of a
+      // button in the render document brick
+      latestPipelineCall = getLatestCall(
+        traces.filter(
+          // Use first block in pipeline to determine the latest run
+          (trace) => trace.blockInstanceId === pipeline[0].instanceId
+        )
+      )?.branches;
+    }
+
     for (const [index, blockConfig] of pipeline.entries()) {
       const subPipelines: SubPipeline[] = [];
       const block = allBlocks.get(blockConfig.id)?.block;
       const nodeIsActive = blockConfig.instanceId === activeNodeId;
-      const traceRecord = traces.find(
-        (trace) => trace.blockInstanceId === blockConfig.instanceId
+
+      const traceRecords = filterTracesByCall(
+        traces.filter(
+          (trace) => trace.blockInstanceId === blockConfig.instanceId
+        ),
+        latestPipelineCall
       );
+
+      if (traceRecords.length > 1) {
+        console.warn(
+          "filterTracesByCall for %s returned multiple trace records",
+          blockConfig.instanceId,
+          {
+            traces,
+            instanceId: blockConfig.instanceId,
+            lastPipelineCall: latestPipelineCall,
+          }
+        );
+      }
+
+      const traceRecord = traceRecords[0];
+
       if (traceRecord != null) {
+        // The runtime doesn't directly trace the extension point. However, if there's a trace from a brick, we
+        // know the extension point ran successfully
         foundationRunStatus = RunStatus.SUCCESS;
       }
 
@@ -281,23 +351,13 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       };
 
       if (block) {
-        const runStatus: RunStatus =
-          // If blockPipelineErrors is a string, it means the error is on the pipeline level
-          typeof pipelineErrors !== "string" &&
-          // eslint-disable-next-line security/detect-object-injection
-          Boolean(pipelineErrors?.[index])
-            ? RunStatus.ERROR
-            : errorTraceEntry?.blockInstanceId === blockConfig.instanceId
-            ? RunStatus.WARNING
-            : traceRecord?.skippedRun
-            ? RunStatus.SKIPPED
-            : traceRecord == null
-            ? RunStatus.NONE
-            : RunStatus.SUCCESS;
-
         contentProps = {
           icon: <BrickIcon brick={block} size="2x" inheritColor />,
-          runStatus,
+          runStatus: decideBrickStatus({
+            index,
+            pipelineErrors,
+            traceRecord,
+          }),
           brickLabel: isNullOrBlank(blockConfig.label)
             ? block?.name
             : blockConfig.label,
@@ -479,9 +539,11 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             );
           }
 
-          default:
+          default: {
             // Impossible code branch
-            return null;
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
+            throw new Error(`Unexpected type: ${type}`);
+          }
         }
       })}
     </ListGroup>

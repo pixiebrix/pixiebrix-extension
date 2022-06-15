@@ -61,6 +61,11 @@ export function getExampleBlockConfig(
 
   if (blockId === CustomFormRenderer.BLOCK_ID) {
     return {
+      storage: {
+        type: "state",
+        namespace: "blueprint",
+      },
+      successMessage: "Successfully submitted form",
       schema: {
         title: "Example Form",
         type: "object",

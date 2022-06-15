@@ -17,8 +17,16 @@
 
 import styles from "./BrickModal.module.scss";
 
-import React, { CSSProperties, useCallback, useMemo, useState } from "react";
-import { Button, Col, Container, Modal, Row } from "react-bootstrap";
+import React, {
+  CSSProperties,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
+import { Button, Modal } from "react-bootstrap";
 import { isEmpty, sortBy } from "lodash";
 import { IBlock, IBrick, RegistryId } from "@/core";
 import { useDebounce } from "use-debounce";
@@ -26,7 +34,10 @@ import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
 import { FixedSizeGrid as LazyGrid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-import BrickResult, { BRICK_RESULT_FIXED_HEIGHT_PX } from "./BrickResult";
+import BrickResultItem, {
+  BRICK_RESULT_FIXED_HEIGHT_PX,
+  BrickResult,
+} from "./BrickResultItem";
 import { Except } from "type-fest";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -37,11 +48,15 @@ import {
   useGetMarketplaceListingsQuery,
   useGetMarketplaceTagsQuery,
 } from "@/services/api";
-import { MarketplaceListing } from "@/types/contract";
+import { MarketplaceListing, MarketplaceTag } from "@/types/contract";
 import BrickDetail from "@/components/brickModal/BrickDetail";
 import Loader from "@/components/Loader";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { castDraft, produce } from "immer";
 
 const TAG_ALL = "All Categories";
+
+export const POPULAR_BRICK_TAG_ID = "35367896-b38f-447e-9444-ecfecb258468";
 
 type BrickOption<T extends IBrick = IBlock> = {
   data: T;
@@ -83,7 +98,7 @@ function useSearch<T extends IBrick>(
   const { fuse, brickOptions } = useMemo(() => {
     const brickOptions = sortBy(
       (bricks ?? [])
-        // We should never show @internal bricks to users. They'll sometimes find their way in from the registry
+        // We should never show @internal bricks to users. They'll sometimes find their way in from the registry.
         .filter((x) => !x.id.startsWith("@internal/") && brickHasTag(x))
         .map((x) => makeBlockOption(x)),
       (x) => x.label
@@ -117,9 +132,11 @@ type ButtonProps = {
   renderButton?: (onClick: () => void) => React.ReactNode;
 };
 
-type ItemType = {
-  searchResults: BrickOption[];
-  onSetDetailBrick: (brick: IBrick, rowIndex: number) => void;
+type BrickResultsArray<T extends IBrick> = Array<BrickOption<BrickResult<T>>>;
+
+type ItemType<T extends IBrick> = {
+  brickResults: BrickResultsArray<T>;
+  onSetDetailBrick: (brick: IBrick) => void;
   onSelect: (brick: IBrick) => void;
   close: () => void;
 };
@@ -133,30 +150,31 @@ function getFlatArrayIndex(rowIndex: number, columnIndex: number): number {
 
 // The item renderer must be its own separate component to react-window from re-mounting the results
 // https://github.com/bvaughn/react-window/issues/420#issuecomment-585813335
-const ItemRenderer = ({
+const ItemRenderer = <T extends IBrick>({
   columnIndex,
   rowIndex,
   style,
-  data: { searchResults, onSetDetailBrick, onSelect, close },
+  data: { brickResults, onSetDetailBrick, onSelect, close },
 }: {
   columnIndex: number;
   rowIndex: number;
   style: CSSProperties;
-  data: ItemType;
+  data: ItemType<T>;
 }) => {
   const index = getFlatArrayIndex(rowIndex, columnIndex);
   // eslint-disable-next-line security/detect-object-injection -- numeric value from library
-  const { data: brick } = searchResults[index] ?? {};
+  const brickResult = brickResults[index]?.data;
+
   return (
     <div style={style}>
-      {brick && (
-        <BrickResult
-          brick={brick}
+      {brickResult && (
+        <BrickResultItem
+          brick={brickResult}
           onShowDetail={() => {
-            onSetDetailBrick(brick, rowIndex);
+            onSetDetailBrick(brickResult);
           }}
           onSelect={() => {
-            onSelect(brick);
+            onSelect(brickResult);
             close();
           }}
         />
@@ -167,25 +185,26 @@ const ItemRenderer = ({
 
 // Need to provide a key because we reorder elements on search
 // See https://react-window.vercel.app/#/api/FixedSizeGrid
-type ItemKeyInput = {
+type ItemKeyInput<T extends IBrick> = {
   columnIndex: number;
-  data: ItemType;
+  data: ItemType<T>;
   rowIndex: number;
 };
 // Here, we use the brick id as the key, which is the "value" prop on the search result option
-function itemKey({
+function itemKey<T extends IBrick>({
   columnIndex,
-  data: { searchResults },
+  data: { brickResults },
   rowIndex,
-}: ItemKeyInput): RegistryId | number {
+}: ItemKeyInput<T>): RegistryId | number {
   const resultIndex = getFlatArrayIndex(rowIndex, columnIndex);
   // Number of bricks for the last Grid row could be less than the number of columns
   // Returning the index here, ItemRenderer will render an empty cell
-  if (resultIndex >= searchResults.length) {
+  if (resultIndex >= brickResults.length) {
     return resultIndex;
   }
 
-  return searchResults[resultIndex]?.value;
+  // eslint-disable-next-line security/detect-object-injection -- index is a number
+  return brickResults[resultIndex]?.value;
 }
 
 const defaultAddCaption = (
@@ -194,6 +213,97 @@ const defaultAddCaption = (
   </span>
 );
 
+export function groupListingsByTag(
+  marketplaceTags: MarketplaceTag[],
+  listings: Record<RegistryId, MarketplaceListing>
+): {
+  /**
+   * A record with tag names as the keys, and a set of applicable brick registry ids as the values
+   */
+  taggedBrickIds: Record<string, Set<RegistryId>>;
+
+  /**
+   * A set of brick ids that have been tagged as "popular"
+   */
+  popularBrickIds: Set<RegistryId>;
+} {
+  if (isEmpty(marketplaceTags) || isEmpty(listings)) {
+    return {
+      taggedBrickIds: {},
+      popularBrickIds: new Set<RegistryId>(),
+    };
+  }
+
+  const categoryTags = marketplaceTags.filter((tag) => tag.subtype === "role");
+
+  const taggedBrickIds = Object.fromEntries(
+    categoryTags.map((tag) => [tag.name, new Set<RegistryId>()])
+  );
+  const popularBrickIds = new Set<RegistryId>();
+
+  for (const [id, listing] of Object.entries(listings)) {
+    const registryId = id as RegistryId;
+
+    for (const listingTag of listing.tags) {
+      if (listingTag.id === POPULAR_BRICK_TAG_ID) {
+        popularBrickIds.add(registryId);
+      }
+
+      taggedBrickIds[listingTag.name]?.add(registryId);
+    }
+  }
+
+  return { taggedBrickIds, popularBrickIds };
+}
+
+type State = {
+  query: string;
+  searchTag: string;
+  scrollPosition: number;
+  detailBrick: IBrick | null;
+  scrollTo: number | null;
+};
+
+const initialState: State = {
+  query: "",
+  searchTag: TAG_ALL,
+  scrollPosition: 0,
+  detailBrick: null,
+  scrollTo: null,
+};
+
+const slice = createSlice({
+  name: "brickModalSlice",
+  initialState,
+  reducers: {
+    setQuery(state, action: PayloadAction<string>) {
+      state.query = action.payload;
+      state.scrollTo = 0;
+    },
+    setSearchTag(state, action: PayloadAction<string>) {
+      state.searchTag = action.payload;
+      state.scrollTo = 0;
+    },
+    setScrollPosition(state, action: PayloadAction<number>) {
+      state.scrollPosition = action.payload;
+    },
+    onSetDetailBrick(state, action: PayloadAction<IBrick>) {
+      state.detailBrick = action.payload;
+      state.scrollTo = state.scrollPosition;
+    },
+    onClearDetailBrick(state) {
+      state.detailBrick = null;
+    },
+    onClearScrollTo(state) {
+      state.scrollTo = null;
+    },
+    onClearSearchTag(state) {
+      state.searchTag = TAG_ALL;
+      state.scrollTo = 0;
+    },
+  },
+});
+
 function ActualModal<T extends IBrick>({
   bricks = [],
   close,
@@ -201,16 +311,25 @@ function ActualModal<T extends IBrick>({
   selectCaption = defaultAddCaption,
   modalClassName,
 }: ModalProps<T>): React.ReactElement<T> {
-  const [query, setQuery] = useState("");
-  const [detailBrick, setDetailBrick] = useState<T>(null);
-  const [detailBrickRow, setDetailBrickRow] = useState(0);
+  const [state, dispatch] = useReducer(slice.reducer, initialState);
 
-  const refCallback = (element: LazyGrid) => {
-    if (element != null && detailBrickRow > 0 && detailBrick == null) {
-      element.scrollToItem({ rowIndex: detailBrickRow });
-      setDetailBrickRow(0);
+  const gridRef = useRef<LazyGrid>();
+
+  useEffect(() => {
+    if (!gridRef.current) {
+      return;
     }
-  };
+
+    if (
+      state.scrollTo != null &&
+      state.scrollPosition !== state.scrollTo &&
+      state.detailBrick == null
+    ) {
+      const scrollTo = { scrollTop: state.scrollTo };
+      dispatch(slice.actions.onClearScrollTo());
+      gridRef.current.scrollTo(scrollTo);
+    }
+  }, [state.detailBrick, state.scrollPosition, state.scrollTo]);
 
   const { data: marketplaceTags = [], isLoading: isLoadingTags } =
     useGetMarketplaceTagsQuery();
@@ -219,24 +338,10 @@ function ActualModal<T extends IBrick>({
     isLoading: isLoadingListings,
   } = useGetMarketplaceListingsQuery();
 
-  const taggedBrickIds = useMemo<Record<string, Set<string>>>(() => {
-    if (isEmpty(marketplaceTags) || isEmpty(listings)) {
-      return {};
-    }
-
-    return Object.fromEntries(
-      marketplaceTags.map((tag) => [
-        tag.name,
-        new Set(
-          Object.entries(listings)
-            .filter(([, listing]) =>
-              listing.tags.some((lTag) => lTag.name === tag.name)
-            )
-            .map(([id]) => id)
-        ),
-      ])
-    );
-  }, [marketplaceTags, listings]);
+  const { taggedBrickIds, popularBrickIds } = useMemo(
+    () => groupListingsByTag(marketplaceTags, listings),
+    [marketplaceTags, listings]
+  );
 
   const tagItems: TagItem[] = [
     { tag: TAG_ALL },
@@ -248,9 +353,51 @@ function ActualModal<T extends IBrick>({
       })),
   ];
 
-  const [searchTag, setSearchTag] = useState<string>(TAG_ALL);
+  const searchResults = useSearch(
+    bricks,
+    taggedBrickIds,
+    state.query,
+    state.searchTag
+  );
 
-  const searchResults = useSearch(bricks, taggedBrickIds, query, searchTag);
+  const brickResults = useMemo<BrickResultsArray<T>>(() => {
+    if (isEmpty(searchResults)) {
+      return [];
+    }
+
+    const popular: BrickResultsArray<T> = [];
+    const regular: BrickResultsArray<T> = [];
+
+    for (const result of searchResults) {
+      if (popularBrickIds.has(result.data.id)) {
+        popular.push(
+          // Use immer to keep the class prototype and it's methods. There are downstream calls to runtime/getType which
+          // depend on certain methods (e.g., transform, etc.) being present on the brick
+          produce(result, (draft) => {
+            const brickResult = draft.data as BrickResult<T>;
+            brickResult.isPopular = true;
+            draft.data = castDraft(brickResult);
+          })
+        );
+      } else {
+        regular.push(result as BrickOption<BrickResult<T>>);
+      }
+    }
+
+    return [...popular, ...regular];
+  }, [popularBrickIds, searchResults]);
+
+  const itemData = useMemo<ItemType<T>>(
+    () => ({
+      brickResults,
+      onSetDetailBrick(brick: T) {
+        dispatch(slice.actions.onSetDetailBrick(brick));
+      },
+      onSelect,
+      close,
+    }),
+    [brickResults, close, onSelect]
+  );
 
   return (
     <Modal
@@ -262,110 +409,107 @@ function ActualModal<T extends IBrick>({
       backdrop
       keyboard={false}
     >
-      <Modal.Header closeButton>
-        <Container fluid>
-          <Row>
-            {detailBrick ? (
-              <Button
-                variant="link"
-                onClick={() => {
-                  setDetailBrick(null);
+      <Modal.Header className={styles.header}>
+        {state.detailBrick ? (
+          <Button
+            variant="link"
+            onClick={() => {
+              dispatch(slice.actions.onClearDetailBrick());
+            }}
+          >
+            <FontAwesomeIcon icon={faChevronLeft} /> Back
+          </Button>
+        ) : (
+          <>
+            <Modal.Title className={styles.title}>Add Brick</Modal.Title>
+            <div className={styles.searchContainer}>
+              <TagSearchInput
+                name={"brickSearch"}
+                value={state.query}
+                onValueChange={(value) => {
+                  dispatch(slice.actions.setQuery(value));
                 }}
+                placeholder={"Search"}
+                tag={state.searchTag === TAG_ALL ? null : state.searchTag}
+                onClearTag={() => {
+                  dispatch(slice.actions.onClearSearchTag());
+                }}
+                focusInput
+                className={styles.searchInput}
+              />
+              {/* Copied from react-bootstrap's header close button */}
+              <button
+                type="button"
+                onClick={close}
+                className={cx("close", styles.closeButton)}
               >
-                <FontAwesomeIcon icon={faChevronLeft} /> Back
-              </Button>
-            ) : (
-              <>
-                <Col xs={2}>
-                  <Modal.Title className={styles.title}>Add Brick</Modal.Title>
-                </Col>
-                <Col xs={10}>
-                  <TagSearchInput
-                    name={"brickSearch"}
-                    value={query}
-                    onValueChange={setQuery}
-                    placeholder={"Search"}
-                    tag={searchTag === TAG_ALL ? null : searchTag}
-                    onClearTag={() => {
-                      setSearchTag(TAG_ALL);
-                    }}
-                    focusInput
-                    className={styles.searchInput}
-                  />
-                </Col>
-              </>
-            )}
-          </Row>
-        </Container>
+                <span aria-hidden="true">×</span>
+                <span className="sr-only">Close</span>
+              </button>
+            </div>
+          </>
+        )}
       </Modal.Header>
-      <Modal.Body className={styles.body}>
-        <Container
-          fluid
-          className={cx({ [styles.brickDetail]: Boolean(detailBrick) })}
-        >
-          {detailBrick ? (
-            <BrickDetail
-              brick={detailBrick}
-              listing={listings[detailBrick.id]}
-              selectCaption={selectCaption}
-              onSelect={() => {
-                onSelect(detailBrick);
-                close();
-              }}
-            />
-          ) : (
-            <Row>
-              <Col xs={2} className={styles.tagList}>
-                {isLoadingTags ? (
-                  <Loader />
-                ) : (
-                  <TagList
-                    tagItems={tagItems}
-                    activeTag={searchTag}
-                    onSelectTag={setSearchTag}
-                  />
-                )}
-              </Col>
-              <Col xs={10} className={styles.results}>
-                {isLoadingListings ? (
-                  <Loader />
-                ) : (
-                  <AutoSizer>
-                    {({ height, width }) => (
-                      <LazyGrid
-                        height={height}
-                        width={width}
-                        columnWidth={width / RESULT_COLUMN_COUNT}
-                        rowHeight={BRICK_RESULT_FIXED_HEIGHT_PX}
-                        columnCount={RESULT_COLUMN_COUNT}
-                        rowCount={Math.ceil(
-                          searchResults.length / RESULT_COLUMN_COUNT
-                        )}
-                        itemKey={itemKey}
-                        itemData={
-                          {
-                            searchResults,
-                            onSetDetailBrick(brick: T, rowIndex: number) {
-                              setDetailBrick(brick);
-                              setDetailBrickRow(rowIndex);
-                            },
-                            activeBrick: detailBrick,
-                            selectCaption,
-                            onSelect,
-                            close,
-                          } as ItemType
-                        }
-                        ref={refCallback}
-                      >
-                        {ItemRenderer}
-                      </LazyGrid>
-                    )}
-                  </AutoSizer>
-                )}
-              </Col>
-            </Row>
-          )}
-        </Container>
+      <Modal.Body
+        className={cx(styles.body, {
+          [styles.brickDetail]: state.detailBrick != null,
+        })}
+      >
+        {state.detailBrick ? (
+          <BrickDetail
+            brick={state.detailBrick}
+            listing={listings[state.detailBrick.id]}
+            selectCaption={selectCaption}
+            onSelect={() => {
+              onSelect(state.detailBrick as T);
+              close();
+            }}
+          />
+        ) : (
+          <>
+            <div className={styles.tagList}>
+              {isLoadingTags ? (
+                <Loader />
+              ) : (
+                <TagList
+                  tagItems={tagItems}
+                  activeTag={state.searchTag}
+                  onSelectTag={(tag) => {
+                    dispatch(slice.actions.setSearchTag(tag));
+                  }}
+                />
+              )}
+            </div>
+            <div className={styles.brickResults}>
+              {isLoadingListings ? (
+                <Loader />
+              ) : (
+                <AutoSizer>
+                  {({ height, width }) => (
+                    <LazyGrid
+                      height={height}
+                      width={width}
+                      columnWidth={(width - 15) / RESULT_COLUMN_COUNT} // 15px to make space for scrollbars
+                      rowHeight={BRICK_RESULT_FIXED_HEIGHT_PX}
+                      columnCount={RESULT_COLUMN_COUNT}
+                      rowCount={Math.ceil(
+                        searchResults.length / RESULT_COLUMN_COUNT
+                      )}
+                      itemKey={itemKey}
+                      itemData={itemData}
+                      onScroll={({ scrollTop }) => {
+                        dispatch(slice.actions.setScrollPosition(scrollTop));
+                      }}
+                      ref={gridRef}
+                    >
+                      {ItemRenderer}
+                    </LazyGrid>
+                  )}
+                </AutoSizer>
+              )}
+            </div>
+          </>
+        )}
       </Modal.Body>
     </Modal>
   );

@@ -60,7 +60,7 @@ export type Availability = {
 };
 
 /**
- * Availability with consistent shape (i.e., all fields are arrays if provded)
+ * Availability with consistent shape (i.e., all fields are arrays if provided)
  * @see Availability
  */
 export type NormalizedAvailability = {
@@ -198,3 +198,13 @@ export type BlockConfig = {
  * A pipeline of blocks to execute sequentially
  */
 export type BlockPipeline = BlockConfig[];
+
+/**
+ * A control flow branch, for tracing. The array of branches is used to correlate runs of the same block in a pipeline
+ * @see TraceMetadata.blockInstanceId
+ * @see TraceMetadata.branches
+ */
+export type Branch = {
+  key: string;
+  counter: number;
+};

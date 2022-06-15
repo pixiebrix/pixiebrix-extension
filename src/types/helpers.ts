@@ -31,6 +31,9 @@ export function isUUID(uuid: string): uuid is UUID {
   return validate(uuid);
 }
 
+// Sentinel UUID
+export const UNSET_UUID = validateUUID("00000000-0000-4000-A000-000000000000");
+
 export function validateUUID(uuid: string): UUID {
   if (uuid == null) {
     // We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually

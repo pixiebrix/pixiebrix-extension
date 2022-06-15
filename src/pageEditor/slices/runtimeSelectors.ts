@@ -20,6 +20,7 @@ import { RuntimeState } from "@/pageEditor/slices/runtimeSlice";
 import { TraceError, TraceRecord } from "@/telemetry/trace";
 import { EditorState } from "@/pageEditor/pageEditorTypes";
 import { createSelector } from "reselect";
+import { getLatestCall } from "@/telemetry/traceHelpers";
 
 type RootState = { runtime: RuntimeState; editor: EditorState };
 
@@ -33,20 +34,23 @@ export const selectExtensionTrace: EditorSelector<TraceRecord[]> = ({
 }) => runtime.extensionTraces[editor.activeElementId] ?? EMPTY_TRACE;
 
 /**
- * The trace record corresponding to an error in the latest run, or null if there is no trace or the previous
- * run executed successfully
+ * Trace records corresponding to errors in the last run. May return multiple for because of sub-pipelines
  */
-export const selectTraceError = createSelector(
+export const selectTraceErrors = createSelector(
   selectExtensionTrace,
-  (records) => records.find((x) => "error" in x && x.error) as TraceError
+  (records) => records.filter((x) => "error" in x && x.error) as TraceError[]
 );
 
 export function makeSelectBlockTrace(
   blockInstanceId: UUID
-): EditorSelector<{ record: TraceRecord }> {
-  return ({ runtime, editor }: RootState) => ({
-    record: runtime.extensionTraces[editor.activeElementId]?.find(
-      (x) => x.blockInstanceId === blockInstanceId
-    ),
-  });
+): EditorSelector<{ record: TraceRecord | null }> {
+  return ({ runtime, editor }: RootState) => {
+    const callRecords = (
+      runtime.extensionTraces[editor.activeElementId] ?? []
+    ).filter((x) => x.blockInstanceId === blockInstanceId);
+
+    return {
+      record: getLatestCall(callRecords),
+    };
+  };
 }

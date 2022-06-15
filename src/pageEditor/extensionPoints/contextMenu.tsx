@@ -186,6 +186,7 @@ async function fromExtensionPoint(
     label: `My ${getDomain(url)} context menu`,
 
     services: [],
+    permissions: {},
     optionsArgs: {},
 
     extension: {

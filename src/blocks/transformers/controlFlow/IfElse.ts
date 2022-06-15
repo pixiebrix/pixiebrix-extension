@@ -76,11 +76,17 @@ class IfElse extends Transformer {
   ): Promise<unknown> {
     const condition = boolean(rawCondition);
 
-    options.logger.debug("Condition", { condition, rawCondition });
+    if (condition) {
+      return options.runPipeline(ifPipeline.__value__ ?? [], {
+        key: "if",
+        counter: 0,
+      });
+    }
 
-    return options.runPipeline(
-      condition ? ifPipeline.__value__ : elsePipeline?.__value__ ?? []
-    );
+    return options.runPipeline(elsePipeline?.__value__ ?? [], {
+      key: "else",
+      counter: 0,
+    });
   }
 }
 

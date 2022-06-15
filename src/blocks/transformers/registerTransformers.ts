@@ -44,6 +44,8 @@ import ForEach from "./controlFlow/ForEach";
 import IfElse from "./controlFlow/IfElse";
 import TryExcept from "./controlFlow/TryExcept";
 import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
+import { RandomNumber } from "@/blocks/transformers/randomNumber";
+import Retry from "@/blocks/transformers/controlFlow/Retry";
 
 function registerTransformers() {
   registerBlock(new JQTransformer());
@@ -71,12 +73,14 @@ function registerTransformers() {
   registerBlock(new ParseDataUrl());
   registerBlock(new ParseDate());
   registerBlock(new ScreenshotTab());
+  registerBlock(new RandomNumber());
 
   // Control Flow Bricks
   registerBlock(new ForEach());
   registerBlock(new IfElse());
   registerBlock(new TryExcept());
   registerBlock(new ForEachElement());
+  registerBlock(new Retry());
 }
 
 export default registerTransformers;

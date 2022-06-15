@@ -15,9 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "@/components/brickModal/brickModalVariables.scss";
+
 .root {
   border: none;
-  padding: 6px 8px; // Need to use exact px for fixed height grid items
+  padding: $verticalSpacing $horizontalSpacing;
 }
 
 .card {
@@ -35,6 +37,15 @@
       justify-content: flex-end;
       align-items: center;
     }
+
+    .popularIcon {
+      display: none;
+    }
+  }
+
+  &:focus {
+    border: 1px solid #3e66fb !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
   }
 }
 
@@ -92,4 +103,8 @@
 
 .addButton {
   white-space: nowrap;
+}
+
+.popularIcon {
+  margin-left: auto;
 }

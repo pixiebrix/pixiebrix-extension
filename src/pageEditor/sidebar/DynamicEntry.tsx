@@ -93,7 +93,13 @@ const DynamicEntry: React.FunctionComponent<{
         dispatch(actions.selectElement(item.uuid));
 
         if (item.type === "actionPanel") {
-          void showSidebar(thisTab, { extensionId: item.uuid, force: true });
+          // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
+          // frequently between extensions within the same blueprint.
+          void showSidebar(thisTab, {
+            extensionId: item.uuid,
+            force: true,
+            refresh: false,
+          });
         }
       }}
     >

@@ -15,51 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getIn, useFormikContext } from "formik";
 import React from "react";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import getElementCollectionName from "./getElementCollectionName";
-import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
-import { FormState } from "@/pageEditor/pageEditorTypes";
-import { produce } from "immer";
+import useDeleteElement from "@/components/documentBuilder/hooks/useDeleteElement";
+import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { useSelector } from "react-redux";
 
 type RemoveElementProps = {
-  elementName: string;
-  resetActiveElement: () => void;
+  documentBodyName: string;
 };
 
-const RemoveElement: React.FC<RemoveElementProps> = ({
-  elementName,
-  resetActiveElement,
-}) => {
-  const { values: formState, setValues: setFormState } =
-    useFormikContext<FormState>();
-
-  // Gives the name of the elements's collection
-  // In case of a list item element point to the collection of the list element,
-  // i.e. removing the item of the list will actually remove the list itself.
-  const { collectionName, elementIndex } =
-    getElementCollectionName(elementName);
-
-  const removeElement = () => {
-    resetActiveElement();
-
-    // Remove the element from the form state
-    let nextState = produce(formState, (draft) => {
-      const elementsCollection = getIn(draft, collectionName);
-      elementsCollection.splice(Number(elementIndex), 1);
-    });
-
-    // If the element used a service, remove the service link as well
-    nextState = produceExcludeUnusedDependencies(nextState);
-
-    setFormState(nextState);
+const RemoveElement: React.FC<RemoveElementProps> = ({ documentBodyName }) => {
+  const activeElement = useSelector(selectNodePreviewActiveElement);
+  const deleteElement = useDeleteElement(documentBodyName);
+  const onDelete = () => {
+    deleteElement(activeElement);
   };
 
   return (
-    <Button onClick={removeElement} variant="danger" size="sm">
+    <Button onClick={onDelete} variant="danger" size="sm">
       <FontAwesomeIcon icon={faTrash} /> Remove element
     </Button>
   );

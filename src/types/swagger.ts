@@ -285,6 +285,10 @@ export interface paths {
     delete: operations["destroyOrganizationContact"];
     patch: operations["partialUpdateOrganizationContact"];
   };
+  "/api/control-rooms/{id}/": {
+    get: operations["retrieveControlRoom"];
+    patch: operations["partialUpdateControlRoom"];
+  };
   "/api/permissions/{id}/": {
     get: operations["retrieveGroupPackagePermission"];
     put: operations["updateGroupPackagePermission"];
@@ -385,6 +389,9 @@ export interface paths {
   "/api/onboarding/": {
     post: operations["createOnboarding"];
   };
+  "/api/control-rooms/": {
+    post: operations["createControlRoom"];
+  };
   "/api/proxy/": {
     /** API authentication proxy. */
     post: operations["createProxiedRequest"];
@@ -472,8 +479,10 @@ export interface components {
       name?: string;
       kind: string;
       version?: string;
+      /** @default false */
       share_dependencies?: boolean;
       config: string;
+      /** @default false */
       public?: boolean;
       organizations?: string[];
       /** Format: date-time */
@@ -501,6 +510,8 @@ export interface components {
       created_at?: string;
       /** @description Enforce the JSON Schema for database records */
       enforce_schema?: boolean;
+      /** @description Field indicating the record owner */
+      owner_field?: string | null;
     };
     ExportedRecord: {
       id: string;
@@ -1026,6 +1037,8 @@ export interface components {
         name: string;
         scope?: string | null;
         control_room?: {
+          /** Format: uuid */
+          id?: string;
           /**
            * Format: uri
            * @description The control room url
@@ -1039,6 +1052,8 @@ export interface components {
         name: string;
         scope?: string | null;
         control_room?: {
+          /** Format: uuid */
+          id?: string;
           /**
            * Format: uri
            * @description The control room url
@@ -1055,6 +1070,15 @@ export interface components {
         scope: string | null;
         /** @description True if user is a manager of one or more team deployments */
         is_deployment_manager?: string;
+        control_room: {
+          /** Format: uuid */
+          id?: string;
+          /**
+           * Format: uri
+           * @description The control room url
+           */
+          url: string;
+        };
       }[];
       group_memberships?: {
         /** Format: uuid */
@@ -1200,13 +1224,13 @@ export interface components {
       organization_id?: string;
       /** Format: date-time */
       created_at?: string;
-      /** Format: date-time */
-      last_write_at?: string;
-      num_records?: number;
       /** @description Enforce the JSON Schema for database records */
       enforce_schema?: boolean;
       /** @description Field indicating the record owner */
       owner_field?: string | null;
+      /** Format: date-time */
+      last_write_at?: string;
+      num_records?: number;
     };
     DatabaseSchema: {
       database_id?: string;
@@ -1245,6 +1269,19 @@ export interface components {
       created_at?: string;
       /** Format: date-time */
       updated_at?: string;
+    };
+    ControlRoomConfiguration: {
+      /** Format: uuid */
+      id?: string;
+      /**
+       * Format: uri
+       * @description The control room url
+       */
+      url: string;
+      /** Format: uuid */
+      tenant_id?: string | null;
+      service_account_token: string;
+      organization: string;
     };
     PackageConfig: {
       /**
@@ -1360,7 +1397,7 @@ export interface components {
        * @enum {string}
        */
       media_type?: "application/xlsx" | "application/json" | "text/csv";
-      /** @default [object Object] */
+      /** @default {} */
       filters?: { [key: string]: unknown };
     };
     DeploymentMessage: {
@@ -3823,6 +3860,45 @@ export interface operations {
       };
     };
   };
+  retrieveControlRoom: {
+    parameters: {
+      path: {
+        /** A UUID string identifying this control room. */
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
+        };
+      };
+    };
+  };
+  partialUpdateControlRoom: {
+    parameters: {
+      path: {
+        /** A UUID string identifying this control room. */
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ControlRoomConfiguration"];
+        "application/x-www-form-urlencoded": components["schemas"]["ControlRoomConfiguration"];
+        "multipart/form-data": components["schemas"]["ControlRoomConfiguration"];
+      };
+    };
+  };
   retrieveGroupPackagePermission: {
     parameters: {
       path: {
@@ -4483,6 +4559,24 @@ export interface operations {
         "application/json": components["schemas"]["Onboarding"];
         "application/x-www-form-urlencoded": components["schemas"]["Onboarding"];
         "multipart/form-data": components["schemas"]["Onboarding"];
+      };
+    };
+  };
+  createControlRoom: {
+    parameters: {};
+    responses: {
+      201: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ControlRoomConfiguration"];
+        "application/x-www-form-urlencoded": components["schemas"]["ControlRoomConfiguration"];
+        "multipart/form-data": components["schemas"]["ControlRoomConfiguration"];
       };
     };
   };

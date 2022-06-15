@@ -19,6 +19,11 @@ import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Action, AnyAction, Dispatch } from "redux";
 
+/**
+ * Hook to simplify getting and setting value in the Redux store.
+ * This is a shortcut that you can use instead of 2 separate hooks: useSelector and useDispatch.
+ * If you need read only or write only access to state, use the respective hook instead.
+ */
 const useReduxState = <TValue, TState, TAction extends Action = AnyAction>(
   selector: (state: TState) => TValue,
   actionCreator: (nextValue: TValue) => TAction

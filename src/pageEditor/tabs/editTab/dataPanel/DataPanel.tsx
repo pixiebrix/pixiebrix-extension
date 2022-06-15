@@ -53,6 +53,7 @@ import Alert from "@/components/Alert";
 import { CustomFormRenderer } from "@/blocks/renderers/customForm";
 import { FormTransformer } from "@/blocks/transformers/ephemeralForm/formTransformer";
 import { DocumentRenderer } from "@/blocks/renderers/document";
+import DocumentOutline from "@/components/documentBuilder/outline/DocumentOutline";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -181,7 +182,7 @@ const DataPanel: React.FC = () => {
     }
 
     return true;
-  }, [activeElement, traces, blockConfig]);
+  }, [activeNodeId, activeElement, traces, blockConfig]);
 
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
@@ -218,6 +219,11 @@ const DataPanel: React.FC = () => {
           <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey={DataPanelTabKey.Preview}>Preview</Nav.Link>
           </Nav.Item>
+          {showDocumentPreview && (
+            <Nav.Item className={dataPanelStyles.tabNav}>
+              <Nav.Link eventKey={DataPanelTabKey.Outline}>Outline</Nav.Link>
+            </Nav.Item>
+          )}
         </Nav>
         <Tab.Content className={dataPanelStyles.tabContent}>
           <DataTab eventKey={DataPanelTabKey.Context} isTraceEmpty={!record}>
@@ -357,7 +363,7 @@ const DataPanel: React.FC = () => {
                   </div>
                 ) : (
                   <DocumentPreview
-                    name={documentBodyName}
+                    documentBodyName={documentBodyName}
                     activeElement={nodePreviewActiveElement}
                     setActiveElement={setNodePreviewActiveElement}
                     menuBoundary={popupBoundary}
@@ -377,6 +383,23 @@ const DataPanel: React.FC = () => {
                 Run the extension once to enable live preview
               </div>
             )}
+          </DataTab>
+
+          <DataTab eventKey={DataPanelTabKey.Outline} isTraceEmpty={false}>
+            <ErrorBoundary>
+              {isRenderedPanelStale && (
+                <Alert variant="info">
+                  The rendered{" "}
+                  {activeElement.type === "panel" ? "Panel" : "Sidebar Panel"}{" "}
+                  is out of date with the outline
+                </Alert>
+              )}
+              <DocumentOutline
+                documentBodyName={documentBodyName}
+                activeElement={nodePreviewActiveElement}
+                setActiveElement={setNodePreviewActiveElement}
+              />
+            </ErrorBoundary>
           </DataTab>
         </Tab.Content>
       </div>

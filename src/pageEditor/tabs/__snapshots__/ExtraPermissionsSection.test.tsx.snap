@@ -1,0 +1,218 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ExtraPermissionsSection render empty section 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="cardHeader card-header"
+    >
+      Advanced: Extra Permissions
+    </div>
+    <div
+      class="cardBody card-body"
+    >
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="permissions.origins"
+        >
+          Sites/APIs
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="small"
+          >
+            <span>
+              Shortcuts:
+            </span>
+            <button
+              class="root ml-2 btn btn-link"
+              type="button"
+            >
+              Site
+            </button>
+            <button
+              class="root ml-2 btn btn-link"
+              type="button"
+            >
+              Domain
+            </button>
+            <button
+              class="root ml-2 btn btn-link"
+              type="button"
+            >
+              HTTPS
+            </button>
+            <button
+              class="root ml-2 btn btn-link"
+              type="button"
+            >
+              All URLs
+            </button>
+          </div>
+          <ul
+            class="list-group mb-2"
+          />
+          <button
+            class="btn btn-primary"
+            type="button"
+          >
+            Add Allowed Origin
+          </button>
+          <small
+            class="text-muted form-text"
+          >
+            <div>
+              URL match patterns permitting the extension to run on a site or call an API. Provide URL match patterns here if the extension either 1) calls an API without using an Integration, or 2) performs actions on a target tab not included in the Site match patterns
+            </div>
+          </small>
+        </div>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`ExtraPermissionsSection render populated section 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="cardHeader card-header"
+    >
+      Advanced: Extra Permissions
+    </div>
+    <div
+      class="cardBody card-body"
+    >
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="permissions.origins"
+        >
+          Sites/APIs
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="small"
+          >
+            <span>
+              Shortcuts:
+            </span>
+            <button
+              class="root ml-2 btn btn-link"
+              type="button"
+            >
+              Site
+            </button>
+            <button
+              class="root ml-2 btn btn-link"
+              type="button"
+            >
+              Domain
+            </button>
+            <button
+              class="root ml-2 btn btn-link"
+              type="button"
+            >
+              HTTPS
+            </button>
+            <button
+              class="root ml-2 btn btn-link"
+              type="button"
+            >
+              All URLs
+            </button>
+          </div>
+          <ul
+            class="list-group mb-2"
+          >
+            <li
+              class="list-group-item py-1"
+            >
+              <div
+                class="formGroup mb-0 form-group row"
+              >
+                <div
+                  class="col-xl-12 col-lg-12"
+                >
+                  <div
+                    class="root"
+                  >
+                    <div
+                      class="field"
+                    >
+                      <textarea
+                        class="form-control"
+                        id="permissions.origins.0"
+                        name="permissions.origins.0"
+                        rows="1"
+                      >
+                        http://web.archive.org/web/20150905193945/http://www.hamsterdance.com/
+                      </textarea>
+                    </div>
+                    <div
+                      class="dropdown dropdown"
+                      data-test-selected="Text"
+                      data-testid="toggle-permissions.origins.0"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        class="dropdown-toggle btn btn-link"
+                        type="button"
+                      >
+                        <span
+                          class="symbol"
+                        >
+                          <test-file-stub
+                            classname="root"
+                          />
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <button
+            class="btn btn-primary"
+            type="button"
+          >
+            Add Allowed Origin
+          </button>
+          <small
+            class="text-muted form-text"
+          >
+            <div>
+              URL match patterns permitting the extension to run on a site or call an API. Provide URL match patterns here if the extension either 1) calls an API without using an Integration, or 2) performs actions on a target tab not included in the Site match patterns
+            </div>
+          </small>
+        </div>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;

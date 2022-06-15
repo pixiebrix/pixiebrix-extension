@@ -34,10 +34,11 @@ import {
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
-import { get, isEmpty } from "lodash";
+import { cloneDeep, get, isEmpty } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
+import { getInvalidPath } from "@/utils/debugUtils";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -400,10 +401,16 @@ export const editorSlice = createSlice({
     setNodePreviewActiveElement(state, action: PayloadAction<string>) {
       const activeElement = action.payload;
       const elementUIState = state.elementUIStates[state.activeElementId];
+
       elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
         DataPanelTabKey.Preview
       ].activeElement = activeElement;
+
+      elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
+        DataPanelTabKey.Outline
+      ].activeElement = activeElement;
     },
+
     copyBlockConfig(state, action: PayloadAction<BlockConfig>) {
       const copy = { ...action.payload };
       delete copy.instanceId;
@@ -619,10 +626,22 @@ export const editorSlice = createSlice({
       }>
     ) {
       const { block, pipelinePath, pipelineIndex } = action.payload;
+
       const element = state.elements.find(
         (x) => x.uuid === state.activeElementId
       );
+
       const pipeline = get(element, pipelinePath);
+      if (pipeline == null) {
+        console.error("Invalid pipeline path for element: %s", pipelinePath, {
+          block,
+          invalidPath: getInvalidPath(cloneDeep(element), pipelinePath),
+          element: cloneDeep(element),
+          pipelinePath,
+          pipelineIndex,
+        });
+        throw new Error(`Invalid pipeline path for element: ${pipelinePath}`);
+      }
 
       pipeline.splice(pipelineIndex, 0, block);
       syncElementNodeUIStates(state, element);

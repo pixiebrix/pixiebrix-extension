@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "@/components/documentBuilder/preview/previewVariables.scss";
+
 .container {
   border: 2px dashed darkgray;
   border-radius: 0.25rem;
@@ -39,4 +41,25 @@
 
 .inlineWrapper {
   display: inline-block;
+  position: relative;
+}
+
+.shiftRightWrapper {
+  position: relative;
+}
+
+.imageWrapper {
+  padding: 2px;
+  display: inline-block;
+  position: relative;
+  min-width: 75px; // restrict min width so the popup label doesn't overflow
+}
+
+.labelShiftRight {
+  transform: translate3d($border-radius, -100%, 0px);
+}
+
+.labelShiftUp {
+  // 3px - width of the container border
+  transform: translate3d(2px, calc(-100% - 2px), 0px);
 }

@@ -15,26 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlockOptions, RegistryId, UUID } from "@/core";
-import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { GetPageState, Namespace } from "./pageState";
+import { getInvalidPath } from "@/utils/debugUtils";
 
-export async function getStateValue<TResult>(
-  namespace: Namespace,
-  blueprintId?: RegistryId | null,
-  extensionId?: UUID | null
-): Promise<TResult> {
-  const getState = new GetPageState();
-  const logger = new ConsoleLogger({
-    extensionId,
-    blueprintId,
+describe("getInvalidPath", () => {
+  it("returns invalid path", () => {
+    expect(getInvalidPath({ foo: { baz: 42 } }, "foo.bar")).toStrictEqual({
+      invalidPath: "foo.bar",
+      values: { baz: 42 },
+    });
+    expect(getInvalidPath({ foo: { baz: 42 } }, "quoz.bar")).toStrictEqual({
+      invalidPath: "quoz",
+      values: { foo: { baz: 42 } },
+    });
   });
-
-  const result: TResult = (await getState.transform(
-    unsafeAssumeValidArg({ namespace }),
-    { logger } as BlockOptions
-  )) as TResult;
-
-  return result;
-}
+});

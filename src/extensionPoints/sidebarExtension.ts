@@ -21,6 +21,7 @@ import {
 } from "@/runtime/reducePipeline";
 import {
   IBlock,
+  IExtension,
   IExtensionPoint,
   IReader,
   Logger,
@@ -55,17 +56,20 @@ import {
 } from "@/contentScript/sidebarController";
 import Mustache from "mustache";
 import { uuidv4 } from "@/types/helpers";
-import { getErrorMessage } from "@/errors/errorHelpers";
 import { HeadlessModeError } from "@/blocks/errors";
-import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { cloneDeep, debounce } from "lodash";
+import {
+  makeShouldRunExtensionForStateChange,
+  selectExtensionContext,
+} from "@/extensionPoints/helpers";
+import { cloneDeep, debounce, stubTrue } from "lodash";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { BusinessError } from "@/errors/businessErrors";
+import { NoRendererError } from "@/errors/businessErrors";
+import { serializeError } from "serialize-error";
 
 export type SidebarConfig = {
   heading: string;
@@ -77,6 +81,8 @@ export type Trigger =
   | "load"
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
   | "selectionchange"
+  // A change in the shared page state
+  | "statechange"
   // Manually, e.g., via the Page Editor or Show Sidebar brick
   | "manual"
   // A custom event configured by the user
@@ -119,7 +125,11 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
    * @private
    */
   // Can't set in constructor because the constructor doesn't have access to debounceOptions
-  private debouncedRefreshPanelsAndNotify?: () => Promise<void>;
+  private debouncedRefreshPanelsAndNotify: ({
+    shouldRunExtension,
+  }: {
+    shouldRunExtension: (extension: IExtension) => boolean;
+  }) => Promise<void>;
 
   inputSchema: Schema = propertiesToSchema(
     {
@@ -178,6 +188,9 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
     readerContext: ReaderOutput,
     extension: ResolvedExtension<SidebarConfig>
   ) {
+    // Generate our own run id so that we know it (to pass to upsertPanel)
+    const runId = uuidv4();
+
     const extensionLogger = this.logger.childLogger(
       selectExtensionContext(extension)
     );
@@ -203,15 +216,21 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
         headless: true,
         logger: extensionLogger,
         ...apiVersionOptions(extension.apiVersion),
+        runId,
       });
       // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
       // noinspection ExceptionCaughtLocallyJS
-      throw new BusinessError("No renderer brick attached to body");
+      throw new NoRendererError();
     } catch (error) {
       const ref = {
         extensionId: extension.id,
         extensionPointId: this.id,
         blueprintId: extension._recipe?.id,
+      };
+
+      const meta = {
+        runId,
+        extensionId: extension.id,
       };
 
       if (error instanceof HeadlessModeError) {
@@ -220,12 +239,14 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
           key: uuidv4(),
           ctxt: error.ctxt,
           args: error.args,
+          ...meta,
         });
       } else {
         extensionLogger.error(error);
         upsertPanel(ref, heading, {
           key: uuidv4(),
-          error: getErrorMessage(error as Error),
+          error: serializeError(error),
+          ...meta,
         });
       }
     }
@@ -234,7 +255,20 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   /**
    * DO NOT CALL DIRECTLY - call debouncedRefreshPanels
    */
-  private async refreshPanels(): Promise<void> {
+  private async refreshPanels({
+    shouldRunExtension = stubTrue,
+  }: {
+    shouldRunExtension?: (extension: IExtension) => boolean;
+  }): Promise<void> {
+    const extensionsToRefresh = this.extensions.filter((extension) =>
+      shouldRunExtension(extension)
+    );
+
+    if (extensionsToRefresh.length === 0) {
+      // Skip overhead of calling reader if no extensions should run
+      return;
+    }
+
     const reader = await this.defaultReader();
 
     const readerContext = await reader.read(document);
@@ -243,7 +277,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
 
     // OK to run in parallel because we've fixed the order the panels appear in reservePanels
     await Promise.all(
-      this.extensions.map(async (extension) => {
+      extensionsToRefresh.map(async (extension) => {
         try {
           await this.runExtension(readerContext, extension);
         } catch (error) {
@@ -280,8 +314,16 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   /**
    * Shared event handler for DOM event triggers
    */
-  private readonly eventHandler: JQuery.EventHandler<unknown> = async () =>
-    this.debouncedRefreshPanelsAndNotify();
+  private readonly eventHandler: JQuery.EventHandler<unknown> = async (
+    event
+  ) => {
+    await this.debouncedRefreshPanelsAndNotify({
+      shouldRunExtension:
+        this.trigger === "statechange"
+          ? makeShouldRunExtensionForStateChange(event.originalEvent)
+          : stubTrue,
+    });
+  };
 
   private attachEventTrigger(eventName: string): void {
     const $document = $(document);
@@ -332,11 +374,16 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
       this.trigger === "load" ||
       [RunReason.MANUAL, RunReason.INITIAL_LOAD].includes(reason)
     ) {
-      void this.debouncedRefreshPanelsAndNotify();
+      void this.debouncedRefreshPanelsAndNotify({
+        shouldRunExtension: stubTrue,
+      });
     }
 
     if (!this.installedListeners) {
-      if (this.trigger === "selectionchange") {
+      if (
+        this.trigger === "selectionchange" ||
+        this.trigger === "statechange"
+      ) {
         this.attachEventTrigger(this.trigger);
       } else if (
         this.trigger === "custom" &&

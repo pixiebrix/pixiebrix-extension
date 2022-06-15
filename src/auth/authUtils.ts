@@ -30,12 +30,14 @@ export function selectOrganizations(
     ({
       organization,
       organization_name,
+      control_room,
       role,
       scope,
       is_deployment_manager,
     }) => ({
       id: organization,
       name: organization_name,
+      control_room,
       role,
       scope,
       isDeploymentManager: is_deployment_manager,
