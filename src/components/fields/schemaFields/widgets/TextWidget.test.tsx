@@ -26,8 +26,6 @@ import { stringToExpression } from "@/pageEditor/extensionPoints/upgrade";
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";
 
-jest.setTimeout(100000);
-
 describe("TextWidget", () => {
   beforeAll(() => {
     registerDefaultWidgets();
