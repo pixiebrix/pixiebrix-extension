@@ -208,6 +208,31 @@ class LazyLocatorFactory {
     return this.local.find((x) => x.id === authId);
   }
 
+  async locateAllForService(
+    serviceId: RegistryId
+  ): Promise<SanitizedServiceConfiguration[]> {
+    if (!this.initialized) {
+      await this.refresh();
+    }
+
+    if (serviceId === PIXIEBRIX_SERVICE_ID) {
+      // HACK: for now use the separate storage for the extension key
+      return [await pixieServiceFactory()];
+    }
+
+    const service = await registry.lookup(serviceId);
+
+    return this.options
+      .filter((x) => x.serviceId === serviceId)
+      .map((match) => ({
+        _sanitizedServiceConfigurationBrand: undefined,
+        id: match.id,
+        serviceId,
+        proxy: service.hasAuth && !match.local,
+        config: excludeSecrets(service, match.config),
+      }));
+  }
+
   async locate(
     serviceId: RegistryId,
     authId: UUID

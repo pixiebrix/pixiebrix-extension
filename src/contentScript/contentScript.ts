@@ -44,6 +44,7 @@ import { addListenerForUpdateSelectedElement } from "@/pageEditor/getSelectedEle
 import { initToaster } from "@/utils/notify";
 import { isConnectionError } from "@/errors/errorHelpers";
 import { showConnectionLost } from "@/contentScript/connection";
+import { initPartnerIntegrations } from "@/contentScript/partnerIntegrations";
 
 registerMessenger();
 registerExternalMessenger();
@@ -92,6 +93,9 @@ async function init(): Promise<void> {
 
   // Inform `ensureContentScript`
   void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
+
+  // Let the partner page know
+  initPartnerIntegrations();
 
   console.info(`contentScript ready in ${Date.now() - start}ms`);
 }
