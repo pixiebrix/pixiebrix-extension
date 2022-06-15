@@ -22,11 +22,19 @@
   position: absolute;
   top: 0;
   left: 0;
-  padding: 0px 5px;
+  padding: 0 5px;
   border-radius: $border-radius $border-radius 0 0;
   color: white;
 
-  svg + svg {
-    margin-left: 0.5rem;
+  svg {
+    margin: 0 0.25rem;
+  }
+
+  svg[data-disabled="true"] {
+    color: lightgray;
+  }
+
+  svg:not([data-disabled="true"]):hover {
+    background: darken($color-decisions-blue-focus, 10%);
   }
 }

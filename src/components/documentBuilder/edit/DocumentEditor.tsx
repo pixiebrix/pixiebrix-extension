@@ -19,31 +19,23 @@ import React from "react";
 import styles from "./DocumentEditor.module.scss";
 import ElementEditor from "./ElementEditor";
 import { Row, Col } from "react-bootstrap";
+import { useSelector } from "react-redux";
+import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 
 type DocumentEditorProps = {
   /**
    * Formik name of the root element
    */
-  name: string;
-
-  /**
-   * The active element relative to the root element (i.e. "name" is not included)
-   */
-  activeElement: string;
-  setActiveElement: (activeElement: string) => void;
+  documentBodyName: string;
 };
 
 const DocumentEditor: React.FC<DocumentEditorProps> = ({
-  name,
-  activeElement,
-  setActiveElement,
-}) =>
-  activeElement ? (
-    <ElementEditor
-      name={name}
-      activeElement={activeElement}
-      setActiveElement={setActiveElement}
-    />
+  documentBodyName,
+}) => {
+  const activeElement = useSelector(selectNodePreviewActiveElement);
+
+  return activeElement ? (
+    <ElementEditor documentBodyName={documentBodyName} />
   ) : (
     <Row className={styles.currentFieldRow}>
       <Col xl="3" className={styles.currentField}>
@@ -56,5 +48,6 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
       </Col>
     </Row>
   );
+};
 
 export default DocumentEditor;
