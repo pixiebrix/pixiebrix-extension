@@ -52,6 +52,7 @@ import { MarketplaceListing, MarketplaceTag } from "@/types/contract";
 import BrickDetail from "@/components/brickModal/BrickDetail";
 import Loader from "@/components/Loader";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { castDraft, produce } from "immer";
 
 const TAG_ALL = "All Categories";
 
@@ -369,15 +370,15 @@ function ActualModal<T extends IBrick>({
 
     for (const result of searchResults) {
       if (popularBrickIds.has(result.data.id)) {
-        popular.push({
-          ...result,
-          data: {
-            ...result.data,
-            isPopular: true,
-          },
-        });
+        popular.push(
+          produce(result, (draft) => {
+            const brickResult = draft.data as BrickResult<T>;
+            brickResult.isPopular = true;
+            draft.data = castDraft(brickResult);
+          })
+        );
       } else {
-        regular.push(result);
+        regular.push(result as BrickOption<BrickResult<T>>);
       }
     }
 
