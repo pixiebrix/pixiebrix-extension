@@ -52,7 +52,6 @@ import useReportTraceError from "./useReportTraceError";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { get } from "lodash";
-import Loader from "@/components/Loader";
 import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { validateRegistryId } from "@/types/helpers";
@@ -104,19 +103,17 @@ const EditTab: React.FC<{
     EditorNode,
   } = useMemo(() => ADAPTERS.get(extensionPointType), [extensionPointType]);
 
-  const [allBlocks, isLoadingAllBlocks] = useAsyncState<TypedBlockMap>(
+  const [allBlocks] = useAsyncState<TypedBlockMap>(
     async () => blockRegistry.allTyped(),
     [],
     new Map()
   );
 
-  const [relevantBlocksForRootPipeline, isLoadingRelevantBlocks] =
-    useAsyncState(
-      async () =>
-        getRelevantBlocksForRootPipeline(allBlocks, extensionPointType),
-      [allBlocks, extensionPointType],
-      []
-    );
+  const [relevantBlocksForRootPipeline] = useAsyncState(
+    async () => getRelevantBlocksForRootPipeline(allBlocks, extensionPointType),
+    [allBlocks, extensionPointType],
+    []
+  );
 
   const { blockPipeline, blockPipelineErrors, traceErrors } = usePipelineField(
     allBlocks,
@@ -179,23 +176,19 @@ const EditTab: React.FC<{
             />
           </div>
           <div className={styles.nodeLayout}>
-            {isLoadingAllBlocks || isLoadingRelevantBlocks ? (
-              <Loader />
-            ) : (
-              <EditorNodeLayout
-                allBlocks={allBlocks}
-                relevantBlocksForRootPipeline={relevantBlocksForRootPipeline}
-                pipeline={blockPipeline}
-                pipelineErrors={blockPipelineErrors}
-                traceErrors={traceErrors}
-                extensionPointLabel={extensionPointLabel}
-                extensionPointIcon={extensionPointIcon}
-                addBlock={addBlock}
-                moveBlockUp={moveBlockUp}
-                moveBlockDown={moveBlockDown}
-                pasteBlock={pasteBlock}
-              />
-            )}
+            <EditorNodeLayout
+              allBlocks={allBlocks}
+              relevantBlocksForRootPipeline={relevantBlocksForRootPipeline}
+              pipeline={blockPipeline}
+              pipelineErrors={blockPipelineErrors}
+              traceErrors={traceErrors}
+              extensionPointLabel={extensionPointLabel}
+              extensionPointIcon={extensionPointIcon}
+              addBlock={addBlock}
+              moveBlockUp={moveBlockUp}
+              moveBlockDown={moveBlockDown}
+              pasteBlock={pasteBlock}
+            />
           </div>
         </div>
         <div className={styles.configPanel}>

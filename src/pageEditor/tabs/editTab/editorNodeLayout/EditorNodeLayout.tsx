@@ -426,7 +426,8 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             headerLabel,
             nestingLevel,
             nodeActions: headerActions,
-            active: nodeIsActive || parentIsActive,
+            active: nodeIsActive,
+            nestedActive: parentIsActive,
           };
 
           nodes.push(
@@ -451,7 +452,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           trailingMessage,
           nestingLevel,
           active: nodeIsActive,
-          parentIsActive,
+          nestedActive: parentIsActive,
           hovered,
           onHoverChange,
           onClick,
