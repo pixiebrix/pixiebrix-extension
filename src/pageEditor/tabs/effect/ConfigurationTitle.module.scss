@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "@/pageEditor/tabs/editTab/editTabVariables.scss";
+
 .title {
   white-space: nowrap;
   overflow: hidden;
@@ -22,11 +24,19 @@
   flex: 0 1 50%;
 }
 
+.parentBlockName {
+  padding: 0;
+  margin: 0;
+  border: none;
+  text-decoration: underline;
+  vertical-align: baseline;
+  color: var(--gray);
+}
+
 .blockName {
   color: var(--gray);
 }
 
 .documentationLink {
-  // TODO move this color to a variable; need to settle on how to use variables with Page Editor
-  color: #7abbef;
+  color: $configurationDocumentationLinkColor;
 }

@@ -19,18 +19,27 @@ import React from "react";
 import { IBlock } from "@/core";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { isEmpty } from "lodash";
+import { get, isEmpty } from "lodash";
 import styles from "./ConfigurationTitle.module.scss";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import {
-  selectActiveElement,
   selectActiveNode,
+  selectNodePreviewActiveElement,
 } from "@/pageEditor/slices/editorSelectors";
 import { useSelector } from "react-redux";
+import { DocumentRenderer } from "@/blocks/renderers/document";
+import { joinElementName } from "@/components/documentBuilder/utils";
+import { getProperty } from "@/utils";
+import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
+import { Button } from "react-bootstrap";
+import { actions as pageEditorActions } from "@/pageEditor/slices/editorSlice";
+import useReduxState from "@/hooks/useReduxState";
 
 type ConfigurationTitleProps = {
   block: IBlock | null;
 };
+
+const DOCUMENT_BODY_PATH = "config.body";
 
 const ConfigurationTitle: React.FunctionComponent<ConfigurationTitleProps> = ({
   block,
@@ -39,26 +48,58 @@ const ConfigurationTitle: React.FunctionComponent<ConfigurationTitleProps> = ({
   const blockId = activeNode.id;
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
   const listing = listings[blockId];
-  const showBlockLabel = !isEmpty(activeNode?.label);
 
-  console.log("ConfigurationTitle", {
-    activeNode,
-    showBlockLabel,
-  });
+  const [activeNodePreviewElementName, setActiveNodePreviewElementName] =
+    useReduxState(
+      selectNodePreviewActiveElement,
+      pageEditorActions.setNodePreviewActiveElement
+    );
 
-  const configurationTitle = showBlockLabel ? (
-    <span className={styles.title}>
-      Input: <span className={styles.blockName}>{block?.name}</span>
-    </span>
-  ) : (
-    <span>Input</span>
-  );
+  let title: JSX.Element;
+  if (
+    blockId === DocumentRenderer.BLOCK_ID &&
+    !isEmpty(activeNodePreviewElementName)
+  ) {
+    const activeDocumentElement = get(
+      activeNode,
+      joinElementName(DOCUMENT_BODY_PATH, activeNodePreviewElementName)
+    );
+    const activeDocumentElementName =
+      getProperty(elementTypeLabels, activeDocumentElement.type) ??
+      "Unknown element";
+
+    title = (
+      <span className={styles.title}>
+        Input:{" "}
+        <span className={styles.blockName}>
+          <Button
+            className={styles.parentBlockName}
+            onClick={() => {
+              setActiveNodePreviewElementName(null);
+            }}
+            variant="link"
+          >
+            {block?.name}
+          </Button>{" "}
+          / {activeDocumentElementName}
+        </span>
+      </span>
+    );
+  } else if (isEmpty(activeNode?.label)) {
+    title = <span className={styles.title}>Input</span>;
+  } else {
+    title = (
+      <span className={styles.title}>
+        Input: <span className={styles.blockName}>{block?.name}</span>
+      </span>
+    );
+  }
 
   return isEmpty(listing?.instructions) && isEmpty(listing?.assets) ? (
-    configurationTitle
+    title
   ) : (
     <div className="d-flex justify-content-between">
-      {configurationTitle}
+      {title}
       <a
         href={`https://www.pixiebrix.com/marketplace/${listing.id}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}
         target="_blank"
