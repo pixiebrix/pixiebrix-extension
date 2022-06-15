@@ -41,7 +41,7 @@ import * as registry from "@/registry/localRegistry";
 import { ensureContentScript } from "@/background/util";
 import serviceRegistry from "@/services/registry";
 import { deleteCachedAuthData } from "@/background/auth";
-import { serializableAxiosRequest, proxyService } from "@/background/requests";
+import { proxyService } from "@/background/requests";
 import { readQuery } from "@/contrib/google/bigquery/handlers";
 import { getRecord, setRecord } from "@/background/dataStore";
 import { getAvailableVersion } from "@/background/installer";
@@ -71,6 +71,7 @@ import {
 } from "@/background/telemetry";
 import { captureTab } from "@/background/capture";
 import { getUserData } from "@/auth/token";
+import { getPartnerPrincipals } from "@/background/partnerIntegrations";
 
 expectContext("background");
 
@@ -93,6 +94,7 @@ declare global {
     OPEN_POPUP_PROMPT: typeof openPopupPrompt;
 
     ACTIVATE_PARTNER_THEME: typeof initPartnerTheme;
+    GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
 
     GET_UID: typeof uid;
     ECHO_SENDER: typeof whoAmI;
@@ -115,7 +117,6 @@ declare global {
     REQUEST_RUN_IN_TOP: typeof requestRunInTop;
     REQUEST_RUN_IN_ALL: typeof requestRunInBroadcast;
 
-    HTTP_REQUEST: typeof serializableAxiosRequest;
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
     PROXY: typeof proxyService;
     CLEAR_SERVICE_CACHE: VoidFunction;
@@ -157,6 +158,7 @@ export default function registerMessenger(): void {
     GOOGLE_SHEETS_BATCH_GET: sheets.batchGet,
 
     ACTIVATE_PARTNER_THEME: initPartnerTheme,
+    GET_PARTNER_PRINCIPALS: getPartnerPrincipals,
 
     GET_AVAILABLE_VERSION: getAvailableVersion,
     INJECT_SCRIPT: ensureContentScript,
@@ -188,7 +190,6 @@ export default function registerMessenger(): void {
     REQUEST_RUN_IN_TOP: requestRunInTop,
     REQUEST_RUN_IN_ALL: requestRunInBroadcast,
 
-    HTTP_REQUEST: serializableAxiosRequest,
     DELETE_CACHED_AUTH: deleteCachedAuthData,
     CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
     PROXY: proxyService,
