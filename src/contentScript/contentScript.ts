@@ -18,7 +18,7 @@
 import "./contentScript.scss";
 import { uuidv4 } from "@/types/helpers";
 
-const PIXIEBRIX_CONTENT_SCRIPT_NONCE = "pb-nonce";
+const PIXIEBRIX_CONTENT_SCRIPT_NONCE = "data-pb-nonce";
 const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
 const uuid = uuidv4();
 // Should set attribute as early as possible
