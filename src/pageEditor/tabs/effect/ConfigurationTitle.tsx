@@ -17,23 +17,35 @@
 
 import React from "react";
 import { IBlock } from "@/core";
-import { MarketplaceListing } from "@/types/contract";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { isEmpty } from "lodash";
 import styles from "./ConfigurationTitle.module.scss";
+import { useGetMarketplaceListingsQuery } from "@/services/api";
+import {
+  selectActiveElement,
+  selectActiveNode,
+} from "@/pageEditor/slices/editorSelectors";
+import { useSelector } from "react-redux";
 
 type ConfigurationTitleProps = {
   block: IBlock | null;
-  listing: MarketplaceListing | null;
-  showBlockLabel?: boolean;
 };
 
 const ConfigurationTitle: React.FunctionComponent<ConfigurationTitleProps> = ({
   block,
-  listing,
-  showBlockLabel = false,
 }) => {
+  const activeNode = useSelector(selectActiveNode);
+  const blockId = activeNode.id;
+  const { data: listings = {} } = useGetMarketplaceListingsQuery();
+  const listing = listings[blockId];
+  const showBlockLabel = !isEmpty(activeNode?.label);
+
+  console.log("ConfigurationTitle", {
+    activeNode,
+    showBlockLabel,
+  });
+
   const configurationTitle = showBlockLabel ? (
     <span className={styles.title}>
       Input: <span className={styles.blockName}>{block?.name}</span>
