@@ -371,6 +371,8 @@ function ActualModal<T extends IBrick>({
     for (const result of searchResults) {
       if (popularBrickIds.has(result.data.id)) {
         popular.push(
+          // Use immer to keep the class prototype and it's methods. There are downstream calls to runtime/getType which
+          // depend on certain methods (e.g., transform, etc.) being present on the brick
           produce(result, (draft) => {
             const brickResult = draft.data as BrickResult<T>;
             brickResult.isPopular = true;
