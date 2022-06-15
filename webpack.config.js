@@ -276,7 +276,14 @@ module.exports = (env, options) =>
       },
 
       minimizer: [
-        "...", // Preserve native JS minification
+        new TerserPlugin({
+          parallel: true,
+          terserOptions: {
+            // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
+            // Keep error classnames because we perform name comparison (see selectSpecificError)
+            keep_classnames: ".*Error",
+          },
+        }),
         new CssMinimizerPlugin(),
       ],
     },

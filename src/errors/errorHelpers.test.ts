@@ -448,4 +448,45 @@ describe("serialization", () => {
     expect(isPlainObject(serializedError)).toBeTruthy();
     expect(isPlainObject(serializedError.cause)).toBeTruthy();
   });
+
+  test("detect cancellation error in context error", () => {
+    const contextError = new ContextError("text context error", {
+      cause: new CancelError(),
+    });
+
+    const serializedError = serializeError(contextError);
+    expect(isPlainObject(serializedError.cause)).toBeTruthy();
+
+    expect(selectSpecificError(serializedError, CancelError)).not.toBeNull();
+    expect(selectSpecificError(serializedError, BusinessError)).not.toBeNull();
+    expect(hasSpecificErrorCause(serializedError, CancelError)).toBeTrue();
+
+    const deserialized = deserializeError(serializedError);
+    expect(hasSpecificErrorCause(deserialized, CancelError)).toBeTrue();
+  });
+
+  test("hasSpecificErrorCause on serialized error", () => {
+    const error = {
+      name: "ContextError",
+      context: {
+        extensionPointId: "@internal/c28568c9-9efa-4eed-bc5c-530faffa342e",
+        label: "Cancel current action",
+        extensionLabel: "ycombinator.com side panel",
+        extensionId: "3f95b12b-d104-4f74-ab5e-bcb6384709d8",
+        blockId: "@pixiebrix/cancel",
+        blockVersion: "1.7.0",
+      },
+      message: "Action cancelled",
+      stack:
+        "ContextError: Action cancelled\n    at E (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:2:841650)\n    at k (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:2:842810)\n    at async S.runExtension (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:2:809937)\n    at async chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:2:810518\n    at async Promise.all (index 0)\n    at async S.refreshPanels (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:2:810479)",
+      cause: {
+        name: "CancelError",
+        message: "Action cancelled",
+        stack:
+          "CancelError: Action cancelled\n    at Y.effect (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:2:597161)\n    at Y.run (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:2:861221)\n    at chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:2:839698\n    at chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:2:840404\n    at async x (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:2:838831)\n    at async k (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:2:842786)\n    at async S.runExtension (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:2:809937)\n    at async chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:2:810518\n    at async Promise.all (index 0)\n    at async S.refreshPanels (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:2:810479)",
+      },
+    };
+
+    expect(hasSpecificErrorCause(error, CancelError)).toBeTrue();
+  });
 });

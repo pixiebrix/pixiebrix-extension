@@ -75,7 +75,11 @@ class BackgroundLogger implements Logger {
       showConnectionLost();
     }
 
-    console.error({ error, context: this.context, data });
+    console.error("BackgroundLogger:error", {
+      error,
+      context: this.context,
+      data,
+    });
     reportError(error, this.context, { logToConsole: false });
   }
 }

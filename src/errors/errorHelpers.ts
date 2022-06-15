@@ -120,6 +120,7 @@ export function hasSpecificErrorCause<
 const BUSINESS_ERROR_NAMES = new Set([
   "PropError",
   "BusinessError",
+  "CancelError",
   "NoRendererError",
   "NoElementsFoundError",
   "MultipleElementsFoundError",
@@ -168,21 +169,6 @@ export function isConnectionError(possibleError: unknown): boolean {
   return matchesAnyPattern(
     getErrorMessage(possibleError),
     CONNECTION_ERROR_MESSAGES
-  );
-}
-
-/**
- * Some pages are off-limits to extension. This function can find out if an error is due to this limitation.
- *
- * Example error messages:
- * - Cannot access a chrome:// URL
- * - Cannot access a chrome-extension:// URL of different extension
- * - Cannot access contents of url "chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/options.html#/". Extension manifest must request permission to access this host.
- * - The extensions gallery cannot be scripted.
- */
-export function isPrivatePageError(error: unknown): boolean {
-  return /cannot be scripted|(chrome|about|extension):\/\//.test(
-    getErrorMessage(error)
   );
 }
 
