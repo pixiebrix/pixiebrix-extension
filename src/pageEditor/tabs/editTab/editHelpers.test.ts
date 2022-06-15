@@ -70,6 +70,7 @@ describe("traversePipeline", () => {
       path: "0.config.body.__value__.0",
       pipelinePath: "0.config.body.__value__",
       pipeline: subPipeline,
+      parentNodeId: forEachBrick.instanceId,
     });
     expect(action).toHaveBeenCalledWith({
       blockConfig: subPipeline[1],
@@ -77,6 +78,7 @@ describe("traversePipeline", () => {
       path: "0.config.body.__value__.1",
       pipelinePath: "0.config.body.__value__",
       pipeline: subPipeline,
+      parentNodeId: forEachBrick.instanceId,
     });
   });
 
@@ -104,6 +106,7 @@ describe("traversePipeline", () => {
       path: "0",
       pipelinePath: "",
       pipeline,
+      parentNodeId: null,
     });
     expect(action).toHaveBeenCalledWith({
       blockConfig: subPipeline.__value__[0],
@@ -112,6 +115,7 @@ describe("traversePipeline", () => {
       pipelinePath:
         "0.config.body.0.children.0.children.0.children.0.config.onClick.__value__",
       pipeline: subPipeline.__value__,
+      parentNodeId: documentBrick.instanceId,
     });
   });
 
@@ -139,6 +143,7 @@ describe("traversePipeline", () => {
       path: "0",
       pipelinePath: "",
       pipeline,
+      parentNodeId: null,
     });
     expect(action).toHaveBeenCalledWith({
       blockConfig: subPipeline.__value__[0],
@@ -147,6 +152,7 @@ describe("traversePipeline", () => {
       pipelinePath:
         "0.config.body.0.children.0.children.0.children.0.config.pipeline.__value__",
       pipeline: subPipeline.__value__,
+      parentNodeId: documentBrick.instanceId,
     });
   });
 });
