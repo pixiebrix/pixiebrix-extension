@@ -164,7 +164,6 @@ describe("can add a node", () => {
 
     // Selecting the last node (that was just added)
     const newNode = nodes[3];
-    expect(newNode).toBeInTheDocument();
     expect(newNode).toHaveClass("active");
     expect(newNode).toHaveTextContent(/jq - json processor/i);
   });
@@ -188,7 +187,6 @@ describe("can add a node", () => {
 
     // Selecting the last node (that was just added)
     const newNode = nodes[1];
-    expect(newNode).toBeInTheDocument();
     expect(newNode).toHaveClass("active");
     expect(newNode).toHaveTextContent(/jq - json processor/i);
   });
@@ -216,7 +214,6 @@ describe("can add a node", () => {
 
     // Selecting the jq - JSON processor node
     const jqNode = nodes[3];
-    expect(jqNode).toBeInTheDocument();
     expect(jqNode).toHaveClass("active");
     expect(jqNode).toHaveTextContent(/jq - json processor/i);
 
@@ -239,8 +236,60 @@ describe("can add a node", () => {
 
     // Selecting the Teapot node
     const teapotNode = nodes[4];
-    expect(teapotNode).toBeInTheDocument();
     expect(teapotNode).toHaveClass("active");
     expect(teapotNode).toHaveTextContent(/teapot block/i);
+  });
+});
+
+describe("can remove a node", () => {
+  test("from root pipeline", async () => {
+    const element = getFormStateWithSubPipelines();
+    render(<EditorPane />, {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addElement(element));
+        dispatch(editorActions.selectElement(element.uuid));
+        dispatch(
+          editorActions.setElementActiveNodeId(
+            element.extension.blockPipeline[0].instanceId
+          )
+        );
+      },
+    });
+
+    await waitForEffect();
+
+    await userEvent.click(screen.getByTestId("icon-button-removeNode"));
+
+    // Nodes. Root: Foundation, ForEach: Echo
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(3);
+    expect(nodes[1]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[2]).toHaveTextContent(/echo/i);
+  });
+
+  test("from sub pipeline", async () => {
+    const element = getFormStateWithSubPipelines();
+    render(<EditorPane />, {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addElement(element));
+        dispatch(editorActions.selectElement(element.uuid));
+        const subPipelineNodeId = (
+          element.extension.blockPipeline[1].config.body as PipelineExpression
+        ).__value__[0].instanceId;
+        dispatch(editorActions.setElementActiveNodeId(subPipelineNodeId));
+      },
+    });
+
+    await waitForEffect();
+
+    await userEvent.click(screen.getByTestId("icon-button-removeNode"));
+
+    // Nodes. Root: Foundation, ForEach: Echo
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(3);
+
+    // Selecting the first node after Foundation
+    expect(nodes[1]).toHaveTextContent(/echo/i);
+    expect(nodes[2]).toHaveTextContent(/for-each loop/i);
   });
 });
