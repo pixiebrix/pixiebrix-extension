@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { ListGroup } from "react-bootstrap";
 import BrickNode from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNode";
 import PipelineHeaderNode, {
@@ -33,14 +33,14 @@ import {
 } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { TraceError, TraceRecord } from "@/telemetry/trace";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { TypedBlockMap } from "@/blocks/registry";
+import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
 import { IBlock, OutputKey, UUID } from "@/core";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
-import { get, isEmpty } from "lodash";
+import { get, isEmpty, stubTrue } from "lodash";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import {
   getDocumentPipelinePaths,
@@ -56,6 +56,11 @@ import { Except } from "type-fest";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
+import { ExtensionPointType } from "@/extensionPoints/types";
+import {
+  IsBlockAllowedPredicate,
+  makeIsAllowedForRootPipeline,
+} from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -66,7 +71,7 @@ type EditorNodeProps =
 
 type EditorNodeLayoutProps = {
   allBlocks: TypedBlockMap;
-  relevantBlocksForRootPipeline: IBlock[];
+  extensionPointType: ExtensionPointType;
   pipeline: BlockPipeline;
   pipelineErrors: FormikError;
   traceErrors: TraceError[];
@@ -83,9 +88,23 @@ type EditorNodeLayoutProps = {
 };
 
 type SubPipeline = {
+  /**
+   * Label to show in the node layout
+   */
   headerLabel: string;
+  /**
+   * The pipeline of blocks
+   */
   subPipeline: BlockPipeline;
+  /**
+   * Formik path to the pipeline
+   */
   subPipelinePath: string;
+  /**
+   * Predicate determining if a given block is allowed in the pipeline.
+   */
+  // In the future, we may want to return a message explaining why the brick isn't allowed
+  isBlockAllowed: IsBlockAllowedPredicate;
 };
 
 function decideBrickStatus({
@@ -125,7 +144,7 @@ function decideBrickStatus({
 
 const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   allBlocks,
-  relevantBlocksForRootPipeline,
+  extensionPointType,
   pipeline,
   pipelineErrors,
   extensionPointLabel,
@@ -135,6 +154,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   moveBlockDown,
   pasteBlock,
 }) => {
+  const dispatch = useDispatch();
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
   const showPaste = pasteBlock && isApiAtLeastV2;
   const activeNodeId = useSelector(selectActiveNodeId);
@@ -143,15 +163,8 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   const [collapsedState, setCollapsedState] = useState<Record<UUID, boolean>>(
     {}
   );
-
   const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});
 
-  const allBlocksAsRelevant = useMemo(
-    () => [...allBlocks.values()].map(({ block }) => block),
-    [allBlocks]
-  );
-
-  const dispatch = useDispatch();
   const setActiveNodeId = useCallback(
     (nodeId: UUID) => {
       dispatch(actions.setElementActiveNodeId(nodeId));
@@ -161,18 +174,20 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
 
   let foundationRunStatus: RunStatus = RunStatus.NONE;
 
-  // eslint-disable-next-line complexity
-  function mapPipelineToNodes(
-    pipeline: BlockPipeline,
+  function mapPipelineToNodes({
+    pipeline,
     pipelinePath = PIPELINE_BLOCKS_FIELD_NAME,
     nestingLevel = 0,
-    parentIsActive = false
-  ): EditorNodeProps[] {
+    parentIsActive = false,
+    isBlockAllowed = makeIsAllowedForRootPipeline(extensionPointType),
+  }: {
+    pipeline: BlockPipeline;
+    pipelinePath?: string;
+    nestingLevel?: number;
+    parentIsActive?: boolean;
+    isBlockAllowed?: IsBlockAllowedPredicate;
+  }): EditorNodeProps[] {
     const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
-    const relevantBlocks = isRootPipeline
-      ? relevantBlocksForRootPipeline
-      : // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3629
-        allBlocksAsRelevant;
 
     const lastIndex = pipeline.length - 1;
     // eslint-disable-next-line security/detect-object-injection -- just created the index
@@ -241,11 +256,14 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           const subPipeline: BlockPipeline =
             get(pipeline, subPipelineAccessor) ?? [];
           const propName = docPipelinePath.split(".").pop();
-          const headerLabel = propName === "onClick" ? "button" : "brick";
+          const isButton = propName === "onClick";
           subPipelines.push({
-            headerLabel,
             subPipeline,
             subPipelinePath,
+            headerLabel: isButton ? "button" : "brick",
+            isBlockAllowed: isButton
+              ? (block: TypedBlock) => block.type !== "renderer"
+              : stubTrue,
           });
         }
       } else {
@@ -260,12 +278,12 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             pipelinePath,
             ...subPipelineAccessor
           );
-          const subPipeline: BlockPipeline =
-            get(pipeline, subPipelineAccessor) ?? [];
           subPipelines.push({
             headerLabel: propName,
-            subPipeline,
+            subPipeline: get(pipeline, subPipelineAccessor) ?? [],
             subPipelinePath,
+            // PixieBrix doesn't currently support renderers in control flow bricks
+            isBlockAllowed: (block) => block.type !== "renderer",
           });
         }
       }
@@ -324,7 +342,8 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
         brickNodeActions.push(
           <AddBrickAction
             key={`${nodeName}-add`}
-            relevantBlocksToAdd={relevantBlocks}
+            blocks={allBlocks}
+            isBlockAllowed={isBlockAllowed}
             nodeName={nodeName}
             onSelectBlock={(block) => {
               addBlock(block, pipelinePath, index + 1);
@@ -396,13 +415,15 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           headerLabel,
           subPipeline,
           subPipelinePath,
+          isBlockAllowed: isBlockAllowedInPipeline,
         } of subPipelines) {
           const nodeName = `${subPipelinePath}-header`;
 
           const headerActions: NodeAction[] = [
             <AddBrickAction
               key={nodeName}
-              relevantBlocksToAdd={allBlocksAsRelevant}
+              blocks={allBlocks}
+              isBlockAllowed={isBlockAllowedInPipeline}
               nodeName={nodeName}
               onSelectBlock={(block) => {
                 addBlock(block, subPipelinePath, 0);
@@ -436,12 +457,13 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
               key: subPipelinePath,
               ...headerNodeProps,
             },
-            ...mapPipelineToNodes(
-              subPipeline,
-              subPipelinePath,
-              nestingLevel + 1,
-              nodeIsActive || parentIsActive
-            )
+            ...mapPipelineToNodes({
+              pipeline: subPipeline,
+              pipelinePath: subPipelinePath,
+              nestingLevel: nestingLevel + 1,
+              parentIsActive: nodeIsActive || parentIsActive,
+              isBlockAllowed: isBlockAllowedInPipeline,
+            })
           );
         }
 
@@ -471,7 +493,8 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   const foundationNodeActions: NodeAction[] = [
     <AddBrickAction
       key={`${FOUNDATION_NODE_ID}-add`}
-      relevantBlocksToAdd={relevantBlocksForRootPipeline}
+      blocks={allBlocks}
+      isBlockAllowed={makeIsAllowedForRootPipeline(extensionPointType)}
       nodeName={FOUNDATION_NODE_ID}
       onSelectBlock={(block) => {
         addBlock(block, PIPELINE_BLOCKS_FIELD_NAME, 0);
@@ -517,7 +540,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   return (
     <ListGroup variant="flush">
       <BrickNode key={FOUNDATION_NODE_ID} {...foundationNodeProps} />
-      {mapPipelineToNodes(pipeline).map(({ type, key, ...nodeProps }) => {
+      {mapPipelineToNodes({ pipeline }).map(({ type, key, ...nodeProps }) => {
         switch (type) {
           case "brick": {
             return <BrickNode key={key} {...(nodeProps as BrickNodeProps)} />;

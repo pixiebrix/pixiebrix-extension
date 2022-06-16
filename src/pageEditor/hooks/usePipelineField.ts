@@ -44,6 +44,7 @@ function usePipelineField(
   traceErrors: TraceError[];
 } {
   const traceErrors = useSelector(selectTraceErrors);
+  const formikContext = useFormikContext();
 
   const validatePipelineBlocks = useCallback(
     (pipeline: BlockPipeline): void | FormikErrorTree => {
@@ -66,7 +67,6 @@ function usePipelineField(
       validate: validatePipelineBlocks,
     });
 
-  const formikContext = useFormikContext();
   useAsyncEffect(
     async (isMounted) => {
       const validationErrors = await formikContext.validateForm();
