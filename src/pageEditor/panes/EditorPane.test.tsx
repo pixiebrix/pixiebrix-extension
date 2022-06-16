@@ -37,17 +37,26 @@ import {
   makePipelineExpression,
   makeTemplateExpression,
 } from "@/testUtils/expressionTestHelpers";
-import { sleep } from "@/utils";
 import { PipelineExpression } from "@/runtime/mapArgs";
+import { act } from "react-dom/test-utils";
 
 const jqBlock = new JQTransformer();
 const forEachBlock = new ForEach();
 
+// Using events without delays with jest fake timers
+const immediateUserEvent = userEvent.setup({ delay: null });
+
 beforeAll(async () => {
+  jest.useFakeTimers();
+
   registerDefaultWidgets();
   blockRegistry.clear();
   blockRegistry.register(echoBlock, teapotBlock, jqBlock, forEachBlock);
   await blockRegistry.allTyped();
+});
+
+afterAll(() => {
+  jest.useRealTimers();
 });
 
 const getPlainFormState = (): FormState =>
@@ -87,8 +96,8 @@ const getFormStateWithSubPipelines = (): FormState =>
     }),
   ]);
 
-describe("sanity check", () => {
-  test("it renders first selected node", async () => {
+describe("renders", () => {
+  test("the first selected node", async () => {
     const formState = getPlainFormState();
     const { instanceId } = formState.extension.blockPipeline[0];
     const rendered = render(<EditorPane />, {
@@ -104,7 +113,7 @@ describe("sanity check", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it renders extension with sub pipeline", async () => {
+  test("an extension with sub pipeline", async () => {
     const formState = getFormStateWithSubPipelines();
     const rendered = render(<EditorPane />, {
       setupRedux(dispatch) {
@@ -120,20 +129,21 @@ describe("sanity check", () => {
 });
 
 describe("can add a node", () => {
-  // FIXME: AddBrickModal 1. throws "not wrapped in act(...)" warning, 2. uses a sleep function.
   async function addABlock(addButton: Element, blockName: string) {
-    await userEvent.click(addButton);
+    await immediateUserEvent.click(addButton);
 
     // Filter for the specified block
-    await userEvent.type(
+    await immediateUserEvent.type(
       screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
       blockName
     );
 
-    // Wait for the debounced search. Ideally should change for jest fake timers
-    await sleep(110);
+    // Run the debounced search
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
 
-    await userEvent.click(
+    await immediateUserEvent.click(
       screen.getAllByRole("button", {
         name: /add/i,
       })[0]
@@ -255,13 +265,15 @@ describe("can remove a node", () => {
         );
       },
     });
-
     await waitForEffect();
 
-    await userEvent.click(screen.getByTestId("icon-button-removeNode"));
+    await immediateUserEvent.click(
+      screen.getByTestId("icon-button-removeNode")
+    );
 
     // Nodes. Root: Foundation, ForEach: Echo
     const nodes = screen.getAllByTestId("editor-node");
+    console.log("after get nodes");
     expect(nodes).toHaveLength(3);
     expect(nodes[1]).toHaveTextContent(/for-each loop/i);
     expect(nodes[2]).toHaveTextContent(/echo/i);
@@ -279,10 +291,11 @@ describe("can remove a node", () => {
         dispatch(editorActions.setElementActiveNodeId(subPipelineNodeId));
       },
     });
-
     await waitForEffect();
 
-    await userEvent.click(screen.getByTestId("icon-button-removeNode"));
+    await immediateUserEvent.click(
+      screen.getByTestId("icon-button-removeNode")
+    );
 
     // Nodes. Root: Foundation, ForEach: Echo
     const nodes = screen.getAllByTestId("editor-node");
