@@ -67,6 +67,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
   const onSubmit = useCallback<OnSubmit<RawServiceConfiguration>>(
     async (values, helpers) => {
       helpers.setSubmitting(true);
+      onClose();
       await onSave(values);
     },
     [onSave]

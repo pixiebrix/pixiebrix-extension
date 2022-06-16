@@ -157,8 +157,6 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
           error,
         });
       }
-
-      navigate("/services");
     },
     [deleteServiceConfig, navigate, activeService]
   );
