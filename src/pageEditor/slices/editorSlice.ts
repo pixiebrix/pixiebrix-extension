@@ -646,6 +646,7 @@ export const editorSlice = createSlice({
       pipeline.splice(pipelineIndex, 0, block);
       syncElementNodeUIStates(state, element);
       setActiveNodeId(state, block.instanceId);
+      state.dirty[element.uuid] = true;
 
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
@@ -671,6 +672,8 @@ export const editorSlice = createSlice({
 
       elementUiState.activeNodeId =
         nextActiveNode?.instanceId ?? FOUNDATION_NODE_ID;
+
+      state.dirty[element.uuid] = true;
 
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
