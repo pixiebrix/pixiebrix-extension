@@ -50,7 +50,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
   const activeKey = filters[0]?.value ?? "All";
 
   return (
-    <Col sm={3} xl={2} className={styles.root}>
+    <Col md={3} sm={12} xl={2} className={styles.root}>
       <Form className="mb-4 mr-3">
         <Form.Control
           id="query"
