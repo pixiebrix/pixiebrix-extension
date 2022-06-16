@@ -30,7 +30,8 @@ export type RestrictedFeature =
   | "marketplace"
   | "uninstall"
   | "clear-token"
-  | "service-url";
+  | "service-url"
+  | "page-editor";
 
 type Restrict = {
   permit: (area: RestrictedFeature) => boolean;
