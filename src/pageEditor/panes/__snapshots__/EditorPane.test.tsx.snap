@@ -297,7 +297,7 @@ exports[`sanity check it renders extension with sub pipeline 1`] = `
                         Panel
                       </div>
                       <div
-                        class="root"
+                        class="key outputKey"
                       >
                         @input
                       </div>
@@ -443,7 +443,7 @@ exports[`sanity check it renders extension with sub pipeline 1`] = `
                     class="handleContainer"
                   >
                     <div
-                      class="openHandle"
+                      class="openHandle noOutputKey"
                     />
                   </div>
                   <div
@@ -545,31 +545,31 @@ exports[`sanity check it renders extension with sub pipeline 1`] = `
                     <div
                       class="headerPipeLineBottom"
                     />
-                    <div
-                      class="root"
-                    >
-                      <button
-                        data-testid="icon-button-add-node-extension.blockPipeline.1.config.body.__value__-header"
-                        type="button"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="svg-inline--fa fa-plus-circle fa-w-16 fa-1x "
-                          data-icon="plus-circle"
-                          data-prefix="fas"
-                          focusable="false"
-                          role="img"
-                          viewBox="0 0 512 512"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm144 276c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92h-92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"
-                            fill="currentColor"
-                          />
-                        </svg>
-                      </button>
-                    </div>
                   </div>
+                </div>
+                <div
+                  class="root"
+                >
+                  <button
+                    data-testid="icon-button-add-node-extension.blockPipeline.1.config.body.__value__-header"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="svg-inline--fa fa-plus-circle fa-w-16 fa-1x "
+                      data-icon="plus-circle"
+                      data-prefix="fas"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 512 512"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm144 276c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92h-92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </button>
                 </div>
                 <div
                   class="root list-group-item-action list-group-item"
@@ -600,14 +600,6 @@ exports[`sanity check it renders extension with sub pipeline 1`] = `
                           fill="currentColor"
                         />
                       </svg>
-                      <span
-                        class="badge"
-                      >
-                        <img
-                          alt=""
-                          src="/img/fa-exclamation-triangle-custom.svg"
-                        />
-                      </span>
                     </div>
                     <div
                       class="text"
@@ -644,6 +636,8 @@ exports[`sanity check it renders extension with sub pipeline 1`] = `
                 </div>
                 <div
                   class="footer"
+                  role="button"
+                  tabindex="0"
                 >
                   <div
                     class="pipelineContainer"
@@ -651,6 +645,11 @@ exports[`sanity check it renders extension with sub pipeline 1`] = `
                     <div
                       class="pipelineEnd"
                     />
+                  </div>
+                  <div
+                    class="noKey outputKey text-muted"
+                  >
+                    No output produced
                   </div>
                 </div>
                 <div
@@ -1200,6 +1199,76 @@ exports[`sanity check it renders extension with sub pipeline 1`] = `
                     </div>
                   </div>
                 </div>
+                <div
+                  class="cardHeader card-header"
+                >
+                  Advanced: Extra Permissions
+                </div>
+                <div
+                  class="cardBody card-body"
+                >
+                  <div
+                    class="formGroup form-group row"
+                  >
+                    <label
+                      class="label form-label col-form-label col-xl-2 col-lg-3"
+                      for="permissions.origins"
+                    >
+                      Sites/APIs
+                    </label>
+                    <div
+                      class="col-xl-10 col-lg-9"
+                    >
+                      <div
+                        class="small"
+                      >
+                        <span>
+                          Shortcuts:
+                        </span>
+                        <button
+                          class="root ml-2 btn btn-link"
+                          type="button"
+                        >
+                          Site
+                        </button>
+                        <button
+                          class="root ml-2 btn btn-link"
+                          type="button"
+                        >
+                          Domain
+                        </button>
+                        <button
+                          class="root ml-2 btn btn-link"
+                          type="button"
+                        >
+                          HTTPS
+                        </button>
+                        <button
+                          class="root ml-2 btn btn-link"
+                          type="button"
+                        >
+                          All URLs
+                        </button>
+                      </div>
+                      <ul
+                        class="list-group mb-2"
+                      />
+                      <button
+                        class="btn btn-primary"
+                        type="button"
+                      >
+                        Add Allowed Origin
+                      </button>
+                      <small
+                        class="text-muted form-text"
+                      >
+                        <div>
+                          URL match patterns permitting the extension to run on a site or call an API. Provide URL match patterns here if the extension either 1) calls an API without using an Integration, or 2) performs actions on a target tab not included in the Site match patterns
+                        </div>
+                      </small>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1331,6 +1400,31 @@ exports[`sanity check it renders extension with sub pipeline 1`] = `
                         />
                       </div>
                     </div>
+                    <span>
+                      Output Preview 
+                      <a
+                        aria-label="copy data"
+                        class="copyPath p-0 btn btn-text"
+                        href="#"
+                        role="button"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="svg-inline--fa fa-code fa-w-20 "
+                          data-icon="code"
+                          data-prefix="fas"
+                          focusable="false"
+                          role="img"
+                          viewBox="0 0 640 512"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M278.9 511.5l-61-17.7c-6.4-1.8-10-8.5-8.2-14.9L346.2 8.7c1.8-6.4 8.5-10 14.9-8.2l61 17.7c6.4 1.8 10 8.5 8.2 14.9L293.8 503.3c-1.9 6.4-8.5 10.1-14.9 8.2zm-114-112.2l43.5-46.4c4.6-4.9 4.3-12.7-.8-17.2L117 256l90.6-79.7c5.1-4.5 5.5-12.3.8-17.2l-43.5-46.4c-4.5-4.8-12.1-5.1-17-.5L3.8 247.2c-5.1 4.7-5.1 12.8 0 17.5l144.1 135.1c4.9 4.6 12.5 4.4 17-.5zm327.2.6l144.1-135.1c5.1-4.7 5.1-12.8 0-17.5L492.1 112.1c-4.8-4.5-12.4-4.3-17 .5L431.6 159c-4.6 4.9-4.3 12.7.8 17.2L523 256l-90.6 79.7c-5.1 4.5-5.5 12.3-.8 17.2l43.5 46.4c4.5 4.9 12.1 5.1 17 .6z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </a>
+                    </span>
                     <ul
                       style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(253, 255, 255);"
                     >
