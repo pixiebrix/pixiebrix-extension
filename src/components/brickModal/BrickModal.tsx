@@ -52,7 +52,7 @@ import { MarketplaceListing, MarketplaceTag } from "@/types/contract";
 import BrickDetail from "@/components/brickModal/BrickDetail";
 import Loader from "@/components/Loader";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { castDraft, produce } from "immer";
+import { produce } from "immer";
 
 const TAG_ALL = "All Categories";
 
@@ -373,9 +373,7 @@ function ActualModal<T extends IBrick>({
         // Use immer to keep the class prototype and it's methods. There are downstream calls to runtime/getType which
         // depend on certain methods (e.g., transform, etc.) being present on the brick
         const newResult = produce(result, (draft) => {
-          const brickResult = draft.data as BrickResult<T>;
-          brickResult.isPopular = true;
-          draft.data = castDraft(brickResult);
+          (draft.data as BrickResult<T>).isPopular = true;
         });
         // Do not sort popular bricks on top if the user has typed a search query
         if (isEmpty(state.query)) {
