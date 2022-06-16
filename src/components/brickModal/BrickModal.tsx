@@ -370,22 +370,26 @@ function ActualModal<T extends IBrick>({
 
     for (const result of searchResults) {
       if (popularBrickIds.has(result.data.id)) {
-        popular.push(
-          // Use immer to keep the class prototype and it's methods. There are downstream calls to runtime/getType which
-          // depend on certain methods (e.g., transform, etc.) being present on the brick
-          produce(result, (draft) => {
-            const brickResult = draft.data as BrickResult<T>;
-            brickResult.isPopular = true;
-            draft.data = castDraft(brickResult);
-          })
-        );
+        // Use immer to keep the class prototype and it's methods. There are downstream calls to runtime/getType which
+        // depend on certain methods (e.g., transform, etc.) being present on the brick
+        const newResult = produce(result, (draft) => {
+          const brickResult = draft.data as BrickResult<T>;
+          brickResult.isPopular = true;
+          draft.data = castDraft(brickResult);
+        });
+        // Do not sort popular bricks on top if the user has typed a search query
+        if (isEmpty(state.query)) {
+          popular.push(newResult);
+        } else {
+          regular.push(newResult);
+        }
       } else {
         regular.push(result as BrickOption<BrickResult<T>>);
       }
     }
 
     return [...popular, ...regular];
-  }, [popularBrickIds, searchResults]);
+  }, [popularBrickIds, searchResults, state.query]);
 
   const itemData = useMemo<ItemType<T>>(
     () => ({
