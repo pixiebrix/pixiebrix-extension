@@ -19,6 +19,7 @@ import React from "react";
 import { render, screen } from "@/pageEditor/testHelpers";
 import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { blockConfigFactory, formStateFactory } from "@/testUtils/factories";
 import blockRegistry from "@/blocks/registry";
 import { FormState } from "@/pageEditor/pageEditorTypes";
@@ -36,8 +37,8 @@ import {
   makePipelineExpression,
   makeTemplateExpression,
 } from "@/testUtils/expressionTestHelpers";
-import { fireTextInput } from "@/testUtils/formHelpers";
 import { sleep } from "@/utils";
+import { PipelineExpression } from "@/runtime/mapArgs";
 
 const jqBlock = new JQTransformer();
 const forEachBlock = new ForEach();
@@ -72,7 +73,7 @@ const getFormStateWithSubPipelines = (): FormState =>
       config: {
         elements: makeTemplateExpression("var", "@input.elements"),
         body: makePipelineExpression([
-          {
+          blockConfigFactory({
             id: echoBlock.id,
             config: {
               message: makeTemplateExpression(
@@ -80,7 +81,7 @@ const getFormStateWithSubPipelines = (): FormState =>
                 "iteration {{ @element }}"
               ),
             },
-          },
+          }),
         ]),
       },
     }),
@@ -114,28 +115,28 @@ describe("sanity check", () => {
 
     await waitForEffect();
 
-    // TODO fix add button: data-testid="icon-button-add-node-undefined"
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 });
 
 describe("can add a node", () => {
-  async function addJqBlock(addButton: Element) {
+  // FIXME: AddBrickModal 1. throws "not wrapped in act(...)" warning, 2. uses a sleep function.
+  async function addABlock(addButton: Element, blockName: string) {
     await userEvent.click(addButton);
 
-    // Filter for "jq - JSON processor" block
+    // Filter for the specified block
     await userEvent.type(
-      screen.getByRole("dialog").querySelector(`input[name="brickSearch"]`),
-      "jq - json processor"
+      screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
+      blockName
     );
 
     // Wait for the debounced search. Ideally should change for jest fake timers
     await sleep(110);
 
     await userEvent.click(
-      screen.getByRole("button", {
+      screen.getAllByRole("button", {
         name: /add/i,
-      })
+      })[0]
     );
   }
 
@@ -155,7 +156,7 @@ describe("can add a node", () => {
       exact: false,
     });
     const last = addButtons[addButtons.length - 1];
-    await addJqBlock(last);
+    await addABlock(last, "jq - json processor");
 
     const nodes = screen.getAllByTestId("editor-node");
     // Nodes: Foundation, 2 initial nodes, new JQ node
@@ -180,7 +181,7 @@ describe("can add a node", () => {
     await waitForEffect();
 
     const addButton = screen.getByTestId("icon-button-add-node-foundation");
-    await addJqBlock(addButton);
+    await addABlock(addButton, "jq - json processor");
 
     const nodes = screen.getAllByTestId("editor-node");
     expect(nodes).toHaveLength(2);
@@ -194,7 +195,7 @@ describe("can add a node", () => {
 
   test("to sub pipeline", async () => {
     const element = getFormStateWithSubPipelines();
-    render(<EditorPane />, {
+    const { getReduxStore } = render(<EditorPane />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addElement(element));
         dispatch(editorActions.selectElement(element.uuid));
@@ -203,14 +204,14 @@ describe("can add a node", () => {
 
     await waitForEffect();
 
+    // Adding a node at the very beginning of the sub pipeline
     const addButtonUnderSubPipelineHeader = screen.getByTestId(
       /icon-button-add-node-[\w.]+-header/i
     );
-    await addJqBlock(addButtonUnderSubPipelineHeader);
-
-    const nodes = screen.getAllByTestId("editor-node");
+    await addABlock(addButtonUnderSubPipelineHeader, "jq - json processor");
 
     // Nodes. Root: Foundation, Echo, ForEach: new JQ node, Echo
+    let nodes = screen.getAllByTestId("editor-node");
     expect(nodes).toHaveLength(5);
 
     // Selecting the jq - JSON processor node
@@ -218,5 +219,28 @@ describe("can add a node", () => {
     expect(jqNode).toBeInTheDocument();
     expect(jqNode).toHaveClass("active");
     expect(jqNode).toHaveTextContent(/jq - json processor/i);
+
+    // Adding a node in the middle of the sub pipeline, between JQ and Echo nodes
+    const reduxState = getReduxStore().getState() as any;
+    const currentElement = selectActiveElement(reduxState);
+    const jqNodeId = (
+      currentElement.extension.blockPipeline[1].config
+        .body as PipelineExpression
+    ).__value__[0].instanceId;
+    const addButtonInSubPipeline = screen.getByTestId(
+      `icon-button-add-node-${jqNodeId}`
+    );
+
+    // The name of the block is "Teapot Block", searching for "Teapot" to get a single result in the Add Brick Dialog
+    await addABlock(addButtonInSubPipeline, "Teapot");
+    // Nodes. Root: Foundation, Echo, ForEach: JQ node, new Teapot node, Echo
+    nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(6);
+
+    // Selecting the Teapot node
+    const teapotNode = nodes[4];
+    expect(teapotNode).toBeInTheDocument();
+    expect(teapotNode).toHaveClass("active");
+    expect(teapotNode).toHaveTextContent(/teapot block/i);
   });
 });

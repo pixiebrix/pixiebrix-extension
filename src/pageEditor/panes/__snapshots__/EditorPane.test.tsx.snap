@@ -614,7 +614,7 @@ exports[`sanity check it renders extension with sub pipeline 1`] = `
                   class="root"
                 >
                   <button
-                    data-testid="icon-button-add-node-undefined"
+                    data-testid="icon-button-add-node-00000004-0000-4000-A000-000000000000"
                     type="button"
                   >
                     <svg
@@ -656,7 +656,7 @@ exports[`sanity check it renders extension with sub pipeline 1`] = `
                   class="root biggerActions"
                 >
                   <button
-                    data-testid="icon-button-add-node-00000004-0000-4000-A000-000000000000"
+                    data-testid="icon-button-add-node-00000005-0000-4000-A000-000000000000"
                     type="button"
                   >
                     <svg
