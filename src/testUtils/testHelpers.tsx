@@ -126,7 +126,14 @@ type WrapperOptions = Omit<RenderOptions, "wrapper"> & {
   setupRedux?: SetupRedux;
 };
 
-type WrapperResult = RenderResult & {
+type WrapperResult<
+  S = UnknownObject,
+  A extends Action = AnyAction,
+  M extends ReadonlyArray<Middleware<UnknownObject, S>> = [
+    ThunkMiddlewareFor<S>
+  ]
+> = RenderResult & {
+  getReduxStore: () => EnhancedStore<S, A, M>;
   getFormState: () => Promise<FormikValues>;
 };
 
@@ -173,6 +180,9 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
 
     return {
       ...renderResult,
+      getReduxStore() {
+        return store;
+      },
       async getFormState() {
         // Wire-up a handler to grab the form state
         let formState: FormikValues = null;

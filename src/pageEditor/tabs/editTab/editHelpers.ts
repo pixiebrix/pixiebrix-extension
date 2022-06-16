@@ -91,6 +91,18 @@ type BlockAction = (blockInfo: {
   parentNodeId: UUID | null;
 }) => void;
 
+function getDocumentSubPipelineAccessors(blockConfig: BlockConfig) {
+  return getDocumentPipelinePaths(blockConfig).map((subPipelinePath) =>
+    joinElementName(subPipelinePath, "__value__")
+  );
+}
+
+function getBlockSubPipelineAccessors(blockConfig: BlockConfig) {
+  return getPipelinePropNames(blockConfig).map((subPipelineField) =>
+    joinName("config", subPipelineField, "__value__")
+  );
+}
+
 export function traversePipeline(
   blockPipeline: BlockPipeline,
   blockPipelinePath: string,
@@ -108,31 +120,19 @@ export function traversePipeline(
       parentNodeId,
     });
 
-    if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
-      for (const subPipelinePath of getDocumentPipelinePaths(blockConfig)) {
-        const subPipelineAccessor = joinElementName(
-          subPipelinePath,
-          "__value__"
-        );
-        const subPipeline = get(blockConfig, subPipelineAccessor);
-        traversePipeline(
-          subPipeline,
-          joinElementName(fieldName, subPipelineAccessor),
-          blockConfig.instanceId,
-          action
-        );
-      }
-    } else {
-      for (const subPipelineField of getPipelinePropNames(blockConfig)) {
-        const subPipelineAccessor = ["config", subPipelineField, "__value__"];
-        const subPipeline = get(blockConfig, subPipelineAccessor);
-        traversePipeline(
-          subPipeline,
-          joinName(fieldName, ...subPipelineAccessor),
-          blockConfig.instanceId,
-          action
-        );
-      }
+    const subPipelineAccessors =
+      blockConfig.id === DocumentRenderer.BLOCK_ID
+        ? getDocumentSubPipelineAccessors(blockConfig)
+        : getBlockSubPipelineAccessors(blockConfig);
+
+    for (const subPipelineAccessor of subPipelineAccessors) {
+      const subPipeline = get(blockConfig, subPipelineAccessor);
+      traversePipeline(
+        subPipeline,
+        joinElementName(fieldName, subPipelineAccessor),
+        blockConfig.instanceId,
+        action
+      );
     }
   }
 }
