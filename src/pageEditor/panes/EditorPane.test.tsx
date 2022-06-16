@@ -59,6 +59,13 @@ afterAll(() => {
   jest.useRealTimers();
 });
 
+beforeEach(() => {
+  jest.clearAllTimers();
+});
+afterEach(() => {
+  jest.runOnlyPendingTimers();
+});
+
 const getPlainFormState = (): FormState =>
   formStateFactory(undefined, [
     blockConfigFactory({
