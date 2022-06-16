@@ -206,6 +206,12 @@ type BlockOutput = {
   output: unknown;
 
   /**
+   * The output of the block (even if it has an outputKey)
+   * @since 1.7.0
+   */
+  blockOutput: unknown;
+
+  /**
    * The updated context, i.e., with the new outputKey.
    * @see BlockConfig.outputKey
    */
@@ -578,7 +584,7 @@ export async function blockReducer(
       skippedRun: true,
     });
 
-    return { output: previousOutput, context };
+    return { output: previousOutput, context, blockOutput: undefined };
   }
 
   // Above we had wrapped the call to renderBlockArg in a try-catch to always have an entry trace entry
@@ -627,7 +633,7 @@ export async function blockReducer(
       logger.warn(`Ignoring output produced by effect ${blockConfig.id}`);
     }
 
-    return { output: previousOutput, context };
+    return { output: previousOutput, context, blockOutput: undefined };
   }
 
   if (blockConfig.outputKey) {
@@ -638,6 +644,7 @@ export async function blockReducer(
         // Keys overwrite any previous keys with the same name
         [`@${blockConfig.outputKey}`]: output,
       },
+      blockOutput: output,
     };
   }
 
@@ -648,7 +655,7 @@ export async function blockReducer(
     );
   }
 
-  return { output, context };
+  return { output, context, blockOutput: output };
 }
 
 function throwBlockError(
@@ -810,6 +817,8 @@ export async function reducePipeline(
 
 /**
  * Reduce a pipeline of bricks declared in a !pipeline expression.
+ *
+ * Returns the output of the last brick, even if that brick has an output key.
  */
 export async function reducePipelineExpression(
   pipeline: BlockPipeline,
@@ -825,14 +834,16 @@ export async function reducePipelineExpression(
     );
   }
 
-  let output: unknown = null;
+  // The implicit output flowing from the bricks
+  let legacyOutput: unknown = null;
+  let lastBlockOutput: unknown = null;
 
   for (const [index, blockConfig] of pipeline.entries()) {
     const state: IntermediateState = {
       root,
       index,
       isLastBlock: index === pipeline.length - 1,
-      previousOutput: output,
+      previousOutput: legacyOutput,
       // Assume @input and @options are present
       context: context as BlockArgContext,
     };
@@ -853,9 +864,10 @@ export async function reducePipelineExpression(
       throwBlockError(blockConfig, state, error, stepOptions);
     }
 
-    output = nextValues.output;
+    legacyOutput = nextValues.output;
+    lastBlockOutput = nextValues.blockOutput;
     context = nextValues.context;
   }
 
-  return output;
+  return lastBlockOutput;
 }
