@@ -40,6 +40,8 @@ import {
 import { PipelineExpression } from "@/runtime/mapArgs";
 import { act } from "react-dom/test-utils";
 
+jest.setTimeout(30_000); // This test is flaky with the default timeout of 5000 ms
+
 const jqBlock = new JQTransformer();
 const forEachBlock = new ForEach();
 
@@ -57,6 +59,7 @@ beforeAll(async () => {
 
 afterAll(() => {
   jest.useRealTimers();
+  jest.setTimeout(5000);
 });
 
 beforeEach(() => {
