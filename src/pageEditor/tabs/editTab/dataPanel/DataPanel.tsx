@@ -334,7 +334,6 @@ const DataPanel: React.FC = () => {
                     date
                   </Alert>
                 )}
-                {}
                 <DataTabJsonTree
                   data={outputObj}
                   copyable
