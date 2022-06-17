@@ -16,18 +16,20 @@
  */
 
 import React from "react";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
 import GridLoader from "react-spinners/GridLoader";
 
-const DEFAULT_STYLE = {
-  margin: "auto", // Center
-  padding: "20px",
-  display: "flex",
-  justifyContent: "center",
-};
-const Loader: React.FunctionComponent = () => (
-  <div style={DEFAULT_STYLE} data-testid="loader">
-    <GridLoader />
+export default {
+  title: "Common/Loader",
+  component: GridLoader,
+  argTypes: {},
+} as ComponentMeta<typeof GridLoader>;
+
+const Template: ComponentStory<typeof GridLoader> = (args) => (
+  <div>
+    <GridLoader {...args} />
   </div>
 );
 
-export default React.memo(Loader);
+export const ReactSpinnerImport = Template.bind({});
+ReactSpinnerImport.args = {};
