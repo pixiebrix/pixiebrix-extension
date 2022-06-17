@@ -42,6 +42,8 @@ interface TableProps<
   initialPageSize?: number;
   rowProps?: (row: Record<string, unknown>) => RowProps;
   showSearchFilter: boolean;
+  isNewIntegration?: boolean;
+  setIsNewIntegration?: React.Dispatch<React.SetStateAction<boolean>>;
 
   /**
    * Track pagination in the URL `page` query parameter. WARNING: opt-in, because if there are multiple multi-page
@@ -125,6 +127,8 @@ function PaginatedTable<
   syncURL = false,
   rowProps,
   showSearchFilter,
+  isNewIntegration,
+  setIsNewIntegration,
 }: TableProps<Row, Actions>): React.ReactElement {
   const history = useHistory();
   const location = useLocation();
@@ -175,6 +179,13 @@ function PaginatedTable<
       });
     }
   }, [pageIndex, history, location, pageCount, gotoPage, urlPageIndex]);
+
+  useEffect(() => {
+    if (isNewIntegration && data && data.length > 10) {
+      gotoPage(Math.floor(data.length / pageSize));
+      setIsNewIntegration(false);
+    }
+  }, [data, isNewIntegration]);
 
   return (
     <>

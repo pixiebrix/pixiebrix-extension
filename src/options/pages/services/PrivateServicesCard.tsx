@@ -41,6 +41,8 @@ const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
 type OwnProps = {
   services: IService[];
   navigate: (url: string) => void;
+  isNewIntegration: boolean;
+  setIsNewIntegration: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const Actions: React.VoidFunctionComponent<{
@@ -183,6 +185,8 @@ const dataFactory = ({
 const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   services,
   navigate,
+  isNewIntegration,
+  setIsNewIntegration,
 }) => {
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
     selectConfiguredServices,
@@ -212,6 +216,8 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
         columns={columns}
         data={data}
         showSearchFilter
+        isNewIntegration={isNewIntegration}
+        setIsNewIntegration={setIsNewIntegration}
       />
     </>
   );

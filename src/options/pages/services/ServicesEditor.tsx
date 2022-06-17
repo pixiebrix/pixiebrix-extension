@@ -54,7 +54,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   navigate,
 }) => {
   const { id: configurationId } = useParams<{ id: UUID }>();
-
+  const [isNewIntegration, setIsNewIntegration] = useState<boolean>(false);
   const [newConfigurationService, setNewConfigurationService] =
     useState<IService>(null);
   const [newConfiguration, setNewConfiguration] =
@@ -86,7 +86,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
 
       setNewConfiguration(null);
       setNewConfigurationService(null);
-
+      setIsNewIntegration(true);
       await persistor.flush();
 
       try {
@@ -217,6 +217,8 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
             <PrivateServicesCard
               navigate={navigate}
               services={serviceDefinitions}
+              isNewIntegration={isNewIntegration}
+              setIsNewIntegration={setIsNewIntegration}
             />
           </Card>
         </Col>
