@@ -52,34 +52,7 @@ import useReportTraceError from "./useReportTraceError";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { get } from "lodash";
-import Loader from "@/components/Loader";
 import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
-import { BlockType } from "@/runtime/runtimeTypes";
-import { validateRegistryId } from "@/types/helpers";
-
-function getRelevantBlocksForRootPipeline(
-  allBlocks: TypedBlockMap,
-  extensionPointType: string
-) {
-  const alwaysShow = new Set([
-    // Cancel/Error provide meaningful control flow for all bricks
-    validateRegistryId("@pixiebrix/cancel"),
-    validateRegistryId("@pixiebrix/error"),
-  ]);
-
-  const excludeType: BlockType = ["actionPanel", "panel"].includes(
-    extensionPointType
-  )
-    ? "effect"
-    : "renderer";
-
-  return [...allBlocks.values()]
-    .filter(
-      ({ type, block }) =>
-        (type != null && type !== excludeType) || alwaysShow.has(block.id)
-    )
-    .map(({ block }) => block);
-}
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -104,22 +77,17 @@ const EditTab: React.FC<{
     EditorNode,
   } = useMemo(() => ADAPTERS.get(extensionPointType), [extensionPointType]);
 
-  const [allBlocks, isLoadingAllBlocks] = useAsyncState<TypedBlockMap>(
+  // PERFORMANCE: This is getting recalculated when switching between extensions, which is slow 🐢
+  const [allBlocks] = useAsyncState<TypedBlockMap>(
     async () => blockRegistry.allTyped(),
     [],
     new Map()
   );
 
-  const [relevantBlocksForRootPipeline, isLoadingRelevantBlocks] =
-    useAsyncState(
-      async () =>
-        getRelevantBlocksForRootPipeline(allBlocks, extensionPointType),
-      [allBlocks, extensionPointType],
-      []
-    );
-
-  const { blockPipeline, blockPipelineErrors, errorTraceEntry } =
-    usePipelineField(allBlocks, extensionPointType);
+  const { blockPipeline, blockPipelineErrors, traceErrors } = usePipelineField(
+    allBlocks,
+    extensionPointType
+  );
 
   const activeNodeId = useSelector(selectActiveNodeId);
   const { blockId, path: fieldName } = useSelector(selectActiveNodeInfo) ?? {};
@@ -177,23 +145,19 @@ const EditTab: React.FC<{
             />
           </div>
           <div className={styles.nodeLayout}>
-            {isLoadingAllBlocks || isLoadingRelevantBlocks ? (
-              <Loader />
-            ) : (
-              <EditorNodeLayout
-                allBlocks={allBlocks}
-                relevantBlocksForRootPipeline={relevantBlocksForRootPipeline}
-                pipeline={blockPipeline}
-                pipelineErrors={blockPipelineErrors}
-                errorTraceEntry={errorTraceEntry}
-                extensionPointLabel={extensionPointLabel}
-                extensionPointIcon={extensionPointIcon}
-                addBlock={addBlock}
-                moveBlockUp={moveBlockUp}
-                moveBlockDown={moveBlockDown}
-                pasteBlock={pasteBlock}
-              />
-            )}
+            <EditorNodeLayout
+              allBlocks={allBlocks}
+              pipeline={blockPipeline}
+              pipelineErrors={blockPipelineErrors}
+              traceErrors={traceErrors}
+              extensionPointType={extensionPointType}
+              extensionPointLabel={extensionPointLabel}
+              extensionPointIcon={extensionPointIcon}
+              addBlock={addBlock}
+              moveBlockUp={moveBlockUp}
+              moveBlockDown={moveBlockDown}
+              pasteBlock={pasteBlock}
+            />
           </div>
         </div>
         <div className={styles.configPanel}>

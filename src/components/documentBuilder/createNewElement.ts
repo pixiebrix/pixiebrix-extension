@@ -35,6 +35,10 @@ export function createNewElement(elementType: DocumentElementType) {
       element.config.text = "Paragraph text.";
       break;
 
+    case "image":
+      element.config.url = null;
+      break;
+
     case "container":
       element.children = [createNewElement("row")];
       break;

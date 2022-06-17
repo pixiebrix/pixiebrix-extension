@@ -16,15 +16,14 @@
  */
 
 import { useSelector } from "react-redux";
-import { selectTraceError } from "@/pageEditor/slices/runtimeSelectors";
+import { selectTraceErrors } from "@/pageEditor/slices/runtimeSelectors";
 import { useCallback } from "react";
 import { BlockPipeline } from "@/blocks/types";
 import { useField, useFormikContext, setNestedObjectValues } from "formik";
-import { TraceError } from "@/telemetry/trace";
 import { useAsyncEffect } from "use-async-effect";
 import validateOutputKey from "@/pageEditor/validation/validateOutputKey";
 import validateRenderers from "@/pageEditor/validation/validateRenderers";
-import applyTraceError from "@/pageEditor/validation/applyTraceError";
+import applyTraceErrors from "@/pageEditor/validation/applyTraceError";
 import { isEmpty } from "lodash";
 import {
   FormikError,
@@ -34,6 +33,7 @@ import { TypedBlockMap } from "@/blocks/registry";
 import { ExtensionPointType } from "@/extensionPoints/types";
 import validateStringTemplates from "@/pageEditor/validation/validateStringTemplates";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import type { TraceError } from "@/telemetry/trace";
 
 function usePipelineField(
   allBlocks: TypedBlockMap,
@@ -41,9 +41,10 @@ function usePipelineField(
 ): {
   blockPipeline: BlockPipeline;
   blockPipelineErrors: FormikError;
-  errorTraceEntry: TraceError;
+  traceErrors: TraceError[];
 } {
-  const errorTraceEntry = useSelector(selectTraceError);
+  const traceErrors = useSelector(selectTraceErrors);
+  const formikContext = useFormikContext();
 
   const validatePipelineBlocks = useCallback(
     (pipeline: BlockPipeline): void | FormikErrorTree => {
@@ -52,11 +53,11 @@ function usePipelineField(
       validateOutputKey(formikErrors, pipeline, allBlocks);
       validateRenderers(formikErrors, pipeline, allBlocks, extensionPointType);
       validateStringTemplates(formikErrors, pipeline);
-      applyTraceError(formikErrors, errorTraceEntry, pipeline);
+      applyTraceErrors(formikErrors, traceErrors, pipeline);
 
       return isEmpty(formikErrors) ? undefined : formikErrors;
     },
-    [allBlocks, extensionPointType, errorTraceEntry]
+    [allBlocks, extensionPointType, traceErrors]
   );
 
   const [{ value: blockPipeline }, { error: blockPipelineErrors }] =
@@ -66,7 +67,6 @@ function usePipelineField(
       validate: validatePipelineBlocks,
     });
 
-  const formikContext = useFormikContext();
   useAsyncEffect(
     async (isMounted) => {
       const validationErrors = await formikContext.validateForm();
@@ -78,13 +78,13 @@ function usePipelineField(
         formikContext.setTouched(setNestedObjectValues(validationErrors, true));
       }
     },
-    [errorTraceEntry]
+    [traceErrors]
   );
 
   return {
     blockPipeline,
     blockPipelineErrors,
-    errorTraceEntry,
+    traceErrors,
   };
 }
 

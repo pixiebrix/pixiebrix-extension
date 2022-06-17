@@ -26,6 +26,7 @@ const elementTypeLabels: Record<DocumentElementType, string> = {
   column: "Column",
   card: "Card",
   text: "Text",
+  image: "Image",
   button: "Button",
   pipeline: "Brick",
   list: "List",

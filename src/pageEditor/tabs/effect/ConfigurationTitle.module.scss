@@ -15,18 +15,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "@/pageEditor/tabs/editTab/editTabVariables.scss";
+
+.root {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
 .title {
+  min-width: 0; // Allow flex-box to shrink this below its content size
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  flex: 0 1 50%;
+  display: flex; // Needs to be flex for nested text-ellipsize to work properly
+}
+
+.parentBlockName {
+  padding: 0;
+  margin: 0;
+  border: none;
+  text-decoration: underline;
+  vertical-align: baseline;
+  color: var(--gray);
+  box-shadow: none !important;
 }
 
 .blockName {
   color: var(--gray);
+  margin-left: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .documentationLink {
-  // TODO move this color to a variable; need to settle on how to use variables with Page Editor
-  color: #7abbef;
+  color: $configurationDocumentationLinkColor;
+  margin-left: auto;
+  padding-left: 1rem;
+  flex-basis: content;
+  flex-shrink: 0;
+  flex-grow: 0;
 }

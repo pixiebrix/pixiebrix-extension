@@ -66,7 +66,13 @@ import {
   FrameConnectionState,
 } from "@/pageEditor/context";
 import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
-import { CloudExtension, Deployment, UserRole } from "@/types/contract";
+import {
+  CloudExtension,
+  Deployment,
+  MarketplaceListing,
+  MarketplaceTag,
+  UserRole,
+} from "@/types/contract";
 import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
 import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/pageEditorTypes";
@@ -79,6 +85,7 @@ import {
   OrganizationAuthState,
 } from "@/auth/authTypes";
 import { JsonObject } from "type-fest";
+import objectHash from "object-hash";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -246,9 +253,14 @@ export const traceRecordFactory = define<TraceRecord>({
   timestamp: timestampFactory,
   extensionId: uuidSequence,
   runId: uuidSequence,
+  branches(): TraceRecord["branches"] {
+    return [];
+  },
+  // XXX: callId should be derived from branches
+  callId: objectHash([]),
   blockInstanceId: uuidSequence,
   blockId: TEST_BLOCK_ID,
-  templateContext(): JsonObject {
+  templateContext(): TraceRecord["templateContext"] {
     return {};
   },
   renderedArgs(): RenderedArgs {
@@ -263,11 +275,14 @@ export const traceRecordFactory = define<TraceRecord>({
   },
 });
 
-export const traceErrorFactory = (config?: FactoryConfig<TraceError>) =>
+export const traceErrorFactory = (config?: FactoryConfig<TraceRecord>) =>
   traceRecordFactory({
     error: {
       message: "Trace error for tests",
     },
+    skippedRun: false,
+    isFinal: true,
+    isRenderer: false,
     ...config,
   }) as TraceError;
 
@@ -661,4 +676,27 @@ export const formStateWithTraceDataFactory = define<{
       });
     });
   }, "formState"),
+});
+
+export const marketplaceTagFactory = define<MarketplaceTag>({
+  id: uuidSequence,
+  name: (n: number) => `Tag ${n}`,
+  slug: (n: number) => `tag-${n}`,
+  subtype: "generic",
+  fa_icon: "fab abacus",
+});
+
+export const marketplaceListingFactory = define<MarketplaceListing>({
+  id: uuidSequence,
+  fa_icon: "fab abacus",
+  image: (n: number) => ({
+    url: `https://marketplace.dev/${n}`,
+  }),
+  assets: () => [] as MarketplaceListing["assets"],
+  tags: () => [] as MarketplaceListing["tags"],
+  package: (n: number) =>
+    ({
+      id: uuidSequence,
+      name: `@test/test-${n}`,
+    } as unknown as MarketplaceListing["package"]),
 });

@@ -15,14 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$bootstrapPadding: 15px;
+@import "@/components/brickModal/brickModalVariables.scss";
 
 .root {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   align-items: stretch;
-  padding: $bootstrapPadding 0;
 }
 
 .item {

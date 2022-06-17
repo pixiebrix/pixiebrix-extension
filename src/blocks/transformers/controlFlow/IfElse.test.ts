@@ -26,6 +26,7 @@ import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import * as logging from "@/background/messenger/api";
 import { makePipelineExpression } from "@/testUtils/expressionTestHelpers";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
@@ -46,6 +47,35 @@ describe("IfElse", () => {
         condition: true,
         if: makePipelineExpression([{ id: teapotBlock.id, config: {} }]),
         else: makePipelineExpression([{ id: throwBlock.id, config: {} }]),
+      },
+    };
+    const result = await reducePipeline(
+      pipeline,
+      simpleInput({}),
+      testOptions("v3")
+    );
+    expect(result).toStrictEqual({ prop: "I'm a teapot" });
+  });
+
+  test("if branch with output key", async () => {
+    const pipeline = {
+      id: ifElseBlock.id,
+      config: {
+        condition: true,
+        if: makePipelineExpression([
+          {
+            id: teapotBlock.id,
+            config: {},
+            outputKey: validateOutputKey("branchResult"),
+          },
+        ]),
+        else: makePipelineExpression([
+          {
+            id: throwBlock.id,
+            config: {},
+            outputKey: validateOutputKey("branchResult"),
+          },
+        ]),
       },
     };
     const result = await reducePipeline(

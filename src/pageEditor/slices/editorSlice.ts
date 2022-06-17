@@ -34,10 +34,11 @@ import {
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
-import { get, isEmpty } from "lodash";
+import { cloneDeep, get, isEmpty } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
+import { getInvalidPath } from "@/utils/debugUtils";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -625,14 +626,27 @@ export const editorSlice = createSlice({
       }>
     ) {
       const { block, pipelinePath, pipelineIndex } = action.payload;
+
       const element = state.elements.find(
         (x) => x.uuid === state.activeElementId
       );
+
       const pipeline = get(element, pipelinePath);
+      if (pipeline == null) {
+        console.error("Invalid pipeline path for element: %s", pipelinePath, {
+          block,
+          invalidPath: getInvalidPath(cloneDeep(element), pipelinePath),
+          element: cloneDeep(element),
+          pipelinePath,
+          pipelineIndex,
+        });
+        throw new Error(`Invalid pipeline path for element: ${pipelinePath}`);
+      }
 
       pipeline.splice(pipelineIndex, 0, block);
       syncElementNodeUIStates(state, element);
       setActiveNodeId(state, block.instanceId);
+      state.dirty[element.uuid] = true;
 
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
@@ -658,6 +672,8 @@ export const editorSlice = createSlice({
 
       elementUiState.activeNodeId =
         nextActiveNode?.instanceId ?? FOUNDATION_NODE_ID;
+
+      state.dirty[element.uuid] = true;
 
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;

@@ -38,6 +38,7 @@ export const whoAmI = getMethod("ECHO_SENDER", bg);
 export const waitForTargetByUrl = getMethod("WAIT_FOR_TARGET_BY_URL", bg);
 
 export const activatePartnerTheme = getMethod("ACTIVATE_PARTNER_THEME", bg);
+export const getPartnerPrincipals = getMethod("GET_PARTNER_PRINCIPALS", bg);
 
 export const activateTab = getMethod("ACTIVATE_TAB", bg);
 export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);
@@ -58,7 +59,7 @@ export const sheets = {
 };
 
 /**
- * Uninstall context menu and return whether or not the context menu was uninstalled.
+ * Uninstall context menu and return whether the context menu was uninstalled.
  */
 export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU", bg);
 export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU", bg);
@@ -92,8 +93,6 @@ export const services = {
   refresh: getMethod("REFRESH_SERVICES", bg),
   refreshLocal: getMethod("LOCATOR_REFRESH_LOCAL", bg),
 };
-
-export const httpRequest = getMethod("HTTP_REQUEST", bg);
 
 // `getMethod` currently strips generics, so we must copy the function signature here
 export const proxyService = getMethod("PROXY", bg) as <TData>(

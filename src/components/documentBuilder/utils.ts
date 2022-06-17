@@ -15,7 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
+import { Branch } from "@/blocks/types";
+
+/**
+ * Join parts of a document builder element name, ignoring null/blank parts.
+ * @param nameParts the parts of the name
+ */
 export function joinElementName(...nameParts: Array<string | number>): string {
   // Don't use lodash.compact and lodash.isEmpty since they treat 0 as falsy
   return nameParts.filter((x) => x != null && x !== "").join(".");
+}
+
+export function mapPathToTraceBranches(tracePath: DynamicPath): Branch[] {
+  return tracePath.branches.map(({ staticId, index }) => ({
+    key: staticId,
+    counter: index,
+  }));
 }

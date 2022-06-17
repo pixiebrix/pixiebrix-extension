@@ -19,23 +19,28 @@ import React from "react";
 import { IBrick } from "@/core";
 import { Button, Card, ListGroup } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
-import styles from "./BrickResult.module.scss";
+import styles from "./BrickResultItem.module.scss";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "@/icons/Icon";
 
 export const BRICK_RESULT_FIXED_HEIGHT_PX = 89;
 
-export type BrickResultProps = {
-  brick: IBrick;
+export type BrickResult<T extends IBrick = IBrick> = T & {
+  isPopular?: boolean;
+};
+
+export type BrickResultItemProps<T extends IBrick> = {
+  brick: BrickResult<T>;
   onSelect: () => void;
   onShowDetail: () => void;
 };
 
-const BrickResult: React.FunctionComponent<BrickResultProps> = ({
+const BrickResultItem = <T extends IBrick>({
   brick,
   onSelect,
   onShowDetail,
-}) => (
+}: BrickResultItemProps<T>) => (
   <ListGroup.Item onClick={onShowDetail} className={styles.root}>
     <Card className={styles.card}>
       {/* Main Content */}
@@ -43,6 +48,13 @@ const BrickResult: React.FunctionComponent<BrickResultProps> = ({
         <div className={styles.nameRow}>
           <BrickIcon brick={brick} faIconClass={styles.icon} />
           <span className={styles.name}>{brick.name}</span>
+          {brick.isPopular && (
+            <Icon
+              icon="icon-sparkles"
+              library="custom"
+              className={styles.popularIcon}
+            />
+          )}
         </div>
         {brick.description ? (
           <div className={styles.description}>{brick.description}</div>
@@ -70,4 +82,4 @@ const BrickResult: React.FunctionComponent<BrickResultProps> = ({
   </ListGroup.Item>
 );
 
-export default BrickResult;
+export default BrickResultItem;

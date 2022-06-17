@@ -39,7 +39,7 @@ import { HeadlessModeError } from "@/blocks/errors";
 import { engineRenderer } from "@/runtime/renderers";
 import { TraceExitData, TraceRecordMeta } from "@/telemetry/trace";
 import { JsonObject } from "type-fest";
-import { uuidv4, validateSemVerString } from "@/types/helpers";
+import { UNSET_UUID, uuidv4, validateSemVerString } from "@/types/helpers";
 import { mapArgs } from "@/runtime/mapArgs";
 import {
   ApiVersionOptions,
@@ -75,17 +75,29 @@ type CommonOptions = ApiVersionOptions & {
   logger: Logger;
   /**
    * `true` to throw an error if a renderer is encountered. Used to abort execution in the contentScript to pass
-   * data over to be rendered in a PixieBrix sidebar sidebar.
+   * data over to be rendered in a PixieBrix sidebar.
    */
   headless: boolean;
 };
 
-export type ReduceOptions = CommonOptions & {
+export type RunMetadata = {
   /**
-   * UUID to correlate trace records for a brick
+   * The extension UUID to correlate trace records for a brick.
    */
   runId: UUID;
+  /**
+   * The extension that's running the brick.
+   * @since 1.7.0
+   */
+  extensionId: UUID;
+  /**
+   * The control flow branch to correlate trace record for a brick.
+   * @since 1.7.0
+   */
+  branches: Branch[];
 };
+
+export type ReduceOptions = CommonOptions & RunMetadata;
 
 export type InitialValues = {
   /**
@@ -169,12 +181,35 @@ type BlockProps<TArgs extends RenderedArgs | BlockArg = RenderedArgs> = {
   root: ReaderRoot | null;
 };
 
+/**
+ * An execution branch (defer, pipeline, etc.).
+ * @since 1.7.0
+ */
+type Branch = {
+  /**
+   * A static identifier for the branch.
+   * @since 1.7.0
+   */
+  key: string;
+  /**
+   * A monotonically increasing counter for executions of branch with key
+   * @since 1.7.0
+   */
+  counter: number;
+};
+
 type BlockOutput = {
   /**
    * The output of the block to pass to the next block. If a block uses an outputKey, output will be the output of the
    * previous block in the BlockPipeline.
    */
   output: unknown;
+
+  /**
+   * The output of the block (even if it has an outputKey)
+   * @since 1.7.0
+   */
+  blockOutput: unknown;
 
   /**
    * The updated context, i.e., with the new outputKey.
@@ -185,14 +220,24 @@ type BlockOutput = {
 
 type TraceMetadata = {
   /**
+   * The extension run UUID to correlate trace records for a run
    * @see ReduceOptions.runId
    */
   runId: UUID;
+  /**
+   * The extension UUID
+   */
+  extensionId: UUID;
   /**
    * The instanceId of the configured block
    * @see BlockConfig.instanceId
    */
   blockInstanceId: UUID;
+  /**
+   * The branch information for the block run
+   * @since 1.7.0
+   */
+  branches: Branch[];
 };
 
 type RunBlockOptions = CommonOptions & {
@@ -253,7 +298,7 @@ async function executeBlockWithValidatedProps(
         ...commonOptions,
         ...options,
         root,
-        async runPipeline(pipeline, extraContext, root) {
+        async runPipeline(pipeline, branch, extraContext, root) {
           if (!isObject(commonOptions.ctxt)) {
             throw new Error("Expected object context for v3+ runtime");
           }
@@ -268,6 +313,8 @@ async function executeBlockWithValidatedProps(
             {
               ...options,
               runId: options.trace.runId,
+              extensionId: options.trace.extensionId,
+              branches: [...options.trace.branches, branch],
             }
           );
         },
@@ -368,7 +415,6 @@ function selectTraceRecordMeta(
   return {
     ...options.trace,
     blockId: resolvedConfig.config.id,
-    extensionId: options.logger.context.extensionId,
   };
 }
 
@@ -377,7 +423,7 @@ export async function runBlock(
   props: BlockProps,
   options: RunBlockOptions
 ): Promise<unknown> {
-  const { validateInput, logger, headless } = options;
+  const { validateInput, logger, headless, trace } = options;
 
   const { config: stage, block, type } = resolvedConfig;
 
@@ -395,6 +441,17 @@ export async function runBlock(
   }
 
   if (type === "renderer" && headless) {
+    traces.addExit({
+      ...trace,
+      extensionId: logger.context.extensionId,
+      blockId: block.id,
+      isFinal: true,
+      isRenderer: true,
+      error: null,
+      output: null,
+      skippedRun: false,
+    });
+
     throw new HeadlessModeError(
       block.id,
       props.args,
@@ -427,6 +484,7 @@ async function applyReduceDefaults({
   const globalLoggingConfig = await getLoggingConfig();
 
   return {
+    extensionId: UNSET_UUID,
     validateInput: true,
     headless: false,
     // Default to the `apiVersion: v1, v2` data passing behavior and renderer behavior
@@ -442,6 +500,7 @@ async function applyReduceDefaults({
         : logValues,
     // For stylistic consistency, default here instead of destructured parameters
     runId: runId ?? uuidv4(),
+    branches: [],
     logger: logger ?? new ConsoleLogger(),
     ...overrides,
   };
@@ -453,7 +512,8 @@ export async function blockReducer(
   options: ReduceOptions
 ): Promise<BlockOutput> {
   const { index, isLastBlock, previousOutput, context, root } = state;
-  const { runId, explicitDataFlow, logValues, logger } = options;
+  const { runId, extensionId, explicitDataFlow, logValues, logger, branches } =
+    options;
 
   // Match the override behavior in v1, where the output from previous block would override anything in the context
   const contextWithPreviousOutput =
@@ -467,7 +527,9 @@ export async function blockReducer(
     ...options,
     trace: {
       runId,
+      extensionId,
       blockInstanceId: blockConfig.instanceId,
+      branches,
     },
   };
 
@@ -500,12 +562,15 @@ export async function blockReducer(
 
   const preconfiguredTraceExit: TraceExitData = {
     runId,
+    branches,
     extensionId: logger.context.extensionId,
     blockId: blockConfig.id,
     blockInstanceId: blockConfig.instanceId,
     outputKey: blockConfig.outputKey,
     output: null,
     skippedRun: false,
+    isRenderer: false,
+    isFinal: true,
   };
 
   if (
@@ -519,7 +584,7 @@ export async function blockReducer(
       skippedRun: true,
     });
 
-    return { output: previousOutput, context };
+    return { output: previousOutput, context, blockOutput: undefined };
   }
 
   // Above we had wrapped the call to renderBlockArg in a try-catch to always have an entry trace entry
@@ -568,7 +633,7 @@ export async function blockReducer(
       logger.warn(`Ignoring output produced by effect ${blockConfig.id}`);
     }
 
-    return { output: previousOutput, context };
+    return { output: previousOutput, context, blockOutput: undefined };
   }
 
   if (blockConfig.outputKey) {
@@ -579,6 +644,7 @@ export async function blockReducer(
         // Keys overwrite any previous keys with the same name
         [`@${blockConfig.outputKey}`]: output,
       },
+      blockOutput: output,
     };
   }
 
@@ -589,7 +655,7 @@ export async function blockReducer(
     );
   }
 
-  return { output, context };
+  return { output, context, blockOutput: output };
 }
 
 function throwBlockError(
@@ -600,7 +666,7 @@ function throwBlockError(
 ) {
   const { index, context } = state;
 
-  const { runId, logger } = options;
+  const { runId, logger, branches } = options;
 
   if (error instanceof HeadlessModeError) {
     // An "expected" error, let the caller deal with it
@@ -609,11 +675,14 @@ function throwBlockError(
 
   traces.addExit({
     runId,
+    branches,
     extensionId: logger.context.extensionId,
     blockId: blockConfig.id,
     blockInstanceId: blockConfig.instanceId,
     error: serializeError(error),
     skippedRun: false,
+    isRenderer: false,
+    isFinal: true,
   });
 
   if (blockConfig.onError?.alert) {
@@ -748,6 +817,8 @@ export async function reducePipeline(
 
 /**
  * Reduce a pipeline of bricks declared in a !pipeline expression.
+ *
+ * Returns the output of the last brick, even if that brick has an output key.
  */
 export async function reducePipelineExpression(
   pipeline: BlockPipeline,
@@ -763,14 +834,16 @@ export async function reducePipelineExpression(
     );
   }
 
-  let output: unknown = null;
+  // The implicit output flowing from the bricks
+  let legacyOutput: unknown = null;
+  let lastBlockOutput: unknown = null;
 
   for (const [index, blockConfig] of pipeline.entries()) {
     const state: IntermediateState = {
       root,
       index,
       isLastBlock: index === pipeline.length - 1,
-      previousOutput: output,
+      previousOutput: legacyOutput,
       // Assume @input and @options are present
       context: context as BlockArgContext,
     };
@@ -791,9 +864,10 @@ export async function reducePipelineExpression(
       throwBlockError(blockConfig, state, error, stepOptions);
     }
 
-    output = nextValues.output;
+    legacyOutput = nextValues.output;
+    lastBlockOutput = nextValues.blockOutput;
     context = nextValues.context;
   }
 
-  return output;
+  return lastBlockOutput;
 }

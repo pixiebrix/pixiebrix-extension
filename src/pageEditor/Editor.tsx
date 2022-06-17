@@ -52,6 +52,8 @@ import AddToRecipeModal from "@/pageEditor/sidebar/AddToRecipeModal";
 import RemoveFromRecipeModal from "@/pageEditor/sidebar/RemoveFromRecipeModal";
 import CreateRecipeModal from "@/pageEditor/sidebar/CreateRecipeModal";
 import SaveAsNewRecipeModal from "@/pageEditor/sidebar/SaveAsNewRecipeModal";
+import useFlags from "@/hooks/useFlags";
+import RestrictedPane from "@/pageEditor/panes/RestrictedPane";
 
 const selectEditor = ({ editor }: RootState) => editor;
 
@@ -59,6 +61,7 @@ const Editor: React.FunctionComponent = () => {
   const { tabState, connecting } = useContext(PageEditorTabContext);
   const installed = useSelector(selectExtensions);
   const dispatch = useDispatch();
+  const { restrict } = useFlags();
 
   const sessionId = useSelector(selectSessionId);
   useEffect(() => {
@@ -92,7 +95,7 @@ const Editor: React.FunctionComponent = () => {
 
   useEscapeHandler(cancelInsert, inserting != null);
 
-  const { availableDynamicIds, unavailableCount } = useInstallState(
+  const { availableDynamicIds, unavailableCount, loading } = useInstallState(
     installed,
     elements
   );
@@ -111,6 +114,10 @@ const Editor: React.FunctionComponent = () => {
   );
 
   const body = useMemo(() => {
+    if (restrict("page-editor")) {
+      return <RestrictedPane />;
+    }
+
     // Need to explicitly check for `false` because hasPermissions will be undefined if pending/error
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
     if (tabState.hasPermissions === false && !connecting) {
@@ -146,6 +153,9 @@ const Editor: React.FunctionComponent = () => {
       return <EditorPane />;
     } else if (activeRecipeId) {
       return <RecipePane />;
+    } else if (connecting || loading) {
+      // Don't show anything while it's loading
+      return null;
     } else if (
       availableDynamicIds?.size ||
       installed.length > unavailableCount
@@ -157,6 +167,8 @@ const Editor: React.FunctionComponent = () => {
       return <WelcomePane />;
     }
   }, [
+    restrict,
+    loading,
     tabState.hasPermissions,
     connecting,
     editorError,
@@ -173,7 +185,7 @@ const Editor: React.FunctionComponent = () => {
   return (
     <>
       <div className={styles.root}>
-        {inserting ? null : <Sidebar />}
+        {!(inserting || restrict("page-editor")) && <Sidebar />}
         {body}
       </div>
 

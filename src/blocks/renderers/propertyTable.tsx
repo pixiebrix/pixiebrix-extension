@@ -20,6 +20,7 @@ import { Renderer } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg, BlockOptions, SafeHTML } from "@/core";
 import { sortBy, isPlainObject } from "lodash";
+import { isValidUrl } from "@/utils";
 
 interface Item {
   key: string;
@@ -28,15 +29,6 @@ interface Item {
     value: unknown;
   };
   children: Item[];
-}
-
-function isValidUrl(value: string): boolean {
-  try {
-    const url = new URL(value);
-    return url.protocol === "http:" || url.protocol === "https:";
-  } catch {
-    return false;
-  }
 }
 
 function richValue(value: unknown): unknown {

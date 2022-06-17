@@ -78,11 +78,15 @@ class ForEach extends Transformer {
   ): Promise<unknown> {
     let last: unknown;
 
-    for (const element of elements) {
+    for (const [index, element] of elements.entries()) {
       // eslint-disable-next-line no-await-in-loop -- synchronous for-loop brick
-      last = await options.runPipeline(bodyPipeline.__value__, {
-        [`@${elementKey}`]: element,
-      });
+      last = await options.runPipeline(
+        bodyPipeline.__value__,
+        { key: "body", counter: index },
+        {
+          [`@${elementKey}`]: element,
+        }
+      );
     }
 
     return last;

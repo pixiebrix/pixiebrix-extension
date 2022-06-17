@@ -20,16 +20,22 @@
 .pipeLine {
   width: $pipeLineOffset;
   border-right: $pipeLineBorderWidth solid black;
+  flex-shrink: 0;
+  flex-grow: 0;
 
   &.active {
     border-color: white;
   }
 
-  &.parentIsActive {
-    background-color: $activeHeaderBackgroundColor;
+  &.nestedActive {
+    background-color: $nestedActiveColor;
   }
 
-  &.isHeader:not(.parentIsActive) {
-    background-color: $headerBackgroundColor;
+  &.isHeader {
+    background-color: $defaultHeaderColor;
+
+    &.nestedActive {
+      background-color: $activeHeaderColor;
+    }
   }
 }

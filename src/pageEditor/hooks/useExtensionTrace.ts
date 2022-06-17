@@ -15,12 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  getLatestRunByExtensionId,
-  TraceError,
-  TraceRecord,
-  TraceSuccess,
-} from "@/telemetry/trace";
+import { getLatestRunByExtensionId, TraceRecord } from "@/telemetry/trace";
 import useInterval from "@/hooks/useInterval";
 import { useDispatch, useSelector } from "react-redux";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
@@ -34,15 +29,15 @@ const { setExtensionTrace } = runtimeSlice.actions;
 const TRACE_RELOAD_MILLIS = 350;
 
 /**
- * Select sufficient data from trace to determine if two traces include the same data (i.e., they include both they
+ * Select minimal set of data from trace to determine if two traces include the same data (i.e., they include both they
  * entry and exit data).
  */
 function selectTraceMetadata(record: TraceRecord) {
   return {
     runId: record.runId,
     timestamp: record.timestamp,
-    isError: Boolean((record as TraceError).error),
-    isSuccess: Boolean((record as TraceSuccess).output),
+    isFinal: record.isFinal,
+    callId: record.callId,
   };
 }
 
@@ -69,6 +64,7 @@ function useExtensionTrace() {
         extensionTrace.map((x) => selectTraceMetadata(x))
       )
     ) {
+      console.debug("Updating extension trace in Redux slice: %s", extensionId);
       dispatch(setExtensionTrace({ extensionId, records: lastRun }));
     }
 

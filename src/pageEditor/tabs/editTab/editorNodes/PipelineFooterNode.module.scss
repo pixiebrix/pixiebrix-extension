@@ -26,11 +26,11 @@ $pipeLineFooterWidth: 17px;
   cursor: pointer;
 
   &.active {
-    background-color: $selectedListItemBackgroundColor;
+    background-color: $activeListItemColor;
   }
 
-  &.parentIsActive {
-    background-color: $parentActiveBackgroundColor;
+  &.nestedActive {
+    background-color: $nestedActiveColor;
   }
 
   &.hovered {
