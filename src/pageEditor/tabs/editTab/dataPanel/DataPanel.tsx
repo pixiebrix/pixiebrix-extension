@@ -184,6 +184,11 @@ const DataPanel: React.FC = () => {
     return true;
   }, [activeNodeId, activeElement, traces, blockConfig]);
 
+  console.log("data panel", {
+    activeTabKey,
+    record,
+    outputObj,
+  });
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
       <div className={dataPanelStyles.tabContainer}>
@@ -315,6 +320,11 @@ const DataPanel: React.FC = () => {
                 The brick did not run because the condition was not met
               </Alert>
             )}
+            {!record?.skippedRun && outputObj == null && (
+              <Alert variant="info">
+                Output is not available in Data Panel
+              </Alert>
+            )}
             {!record?.skippedRun && outputObj && (
               <>
                 {isCurrentStale && (
@@ -323,6 +333,7 @@ const DataPanel: React.FC = () => {
                     date
                   </Alert>
                 )}
+                {}
                 <DataTabJsonTree
                   data={outputObj}
                   copyable
@@ -332,7 +343,7 @@ const DataPanel: React.FC = () => {
                 />
               </>
             )}
-            {record && "error" in record && (
+            {record && "error" in record && record.error != null && (
               <ErrorDisplay error={record.error} />
             )}
           </DataTab>
