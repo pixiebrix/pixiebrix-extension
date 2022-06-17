@@ -20,8 +20,6 @@ import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { useFormikContext } from "formik";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { useAsyncState } from "@/hooks/common";
-import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
 import EditorNodeConfigPanel from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -53,6 +51,7 @@ import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { get } from "lodash";
 import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
+import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -78,11 +77,7 @@ const EditTab: React.FC<{
   } = useMemo(() => ADAPTERS.get(extensionPointType), [extensionPointType]);
 
   // PERFORMANCE: This is getting recalculated when switching between extensions, which is slow 🐢
-  const [allBlocks] = useAsyncState<TypedBlockMap>(
-    async () => blockRegistry.allTyped(),
-    [],
-    new Map()
-  );
+  const [allBlocks] = useAllBlocks();
 
   const { blockPipeline, blockPipelineErrors, traceErrors } = usePipelineField(
     allBlocks,
