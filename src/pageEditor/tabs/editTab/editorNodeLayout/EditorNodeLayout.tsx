@@ -516,6 +516,9 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
 
   const showBiggerFoundationActions = isEmpty(pipeline);
 
+  // It's important to run mapPipelineToNodes before adding the foundation node
+  // because it will calculate foundationRunStatus for the foundation node
+  const nodes = mapPipelineToNodes({ pipeline });
   const foundationNodeProps: BrickNodeProps = {
     icon: extensionPointIcon,
     runStatus: foundationRunStatus,
@@ -540,7 +543,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   return (
     <ListGroup variant="flush">
       <BrickNode key={FOUNDATION_NODE_ID} {...foundationNodeProps} />
-      {mapPipelineToNodes({ pipeline }).map(({ type, key, ...nodeProps }) => {
+      {nodes.map(({ type, key, ...nodeProps }) => {
         switch (type) {
           case "brick": {
             return <BrickNode key={key} {...(nodeProps as BrickNodeProps)} />;
