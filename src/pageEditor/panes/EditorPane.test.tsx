@@ -59,7 +59,6 @@ beforeAll(async () => {
 
 afterAll(() => {
   jest.useRealTimers();
-  jest.setTimeout(5000);
 });
 
 beforeEach(() => {
