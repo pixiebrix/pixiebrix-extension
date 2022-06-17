@@ -54,6 +54,7 @@ import { CustomFormRenderer } from "@/blocks/renderers/customForm";
 import { FormTransformer } from "@/blocks/transformers/ephemeralForm/formTransformer";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import DocumentOutline from "@/components/documentBuilder/outline/DocumentOutline";
+import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -87,6 +88,9 @@ const DataPanel: React.FC = () => {
     index: blockIndex,
     pipeline,
   } = useSelector(selectActiveNodeInfo);
+
+  const [allBlocks] = useAllBlocks();
+  const blockType = allBlocks.get(blockId)?.type;
 
   const traces = useSelector(selectExtensionTrace);
   const record = traces.find((trace) => trace.blockInstanceId === activeNodeId);
@@ -184,11 +188,6 @@ const DataPanel: React.FC = () => {
     return true;
   }, [activeNodeId, activeElement, traces, blockConfig]);
 
-  console.log("data panel", {
-    activeTabKey,
-    record,
-    outputObj,
-  });
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
       <div className={dataPanelStyles.tabContainer}>
@@ -320,11 +319,13 @@ const DataPanel: React.FC = () => {
                 The brick did not run because the condition was not met
               </Alert>
             )}
-            {!record?.skippedRun && outputObj == null && (
-              <Alert variant="info">
-                Output is not available in Data Panel
-              </Alert>
-            )}
+            {!record?.skippedRun &&
+              outputObj == null &&
+              blockType === "renderer" && (
+                <Alert variant="info">
+                  Renderer brick output is not available in Data Panel
+                </Alert>
+              )}
             {!record?.skippedRun && outputObj && (
               <>
                 {isCurrentStale && (
