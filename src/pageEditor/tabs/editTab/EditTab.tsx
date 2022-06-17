@@ -76,7 +76,6 @@ const EditTab: React.FC<{
     EditorNode,
   } = useMemo(() => ADAPTERS.get(extensionPointType), [extensionPointType]);
 
-  // PERFORMANCE: This is getting recalculated when switching between extensions, which is slow 🐢
   const [allBlocks] = useAllBlocks();
 
   const { blockPipeline, blockPipelineErrors, traceErrors } = usePipelineField(

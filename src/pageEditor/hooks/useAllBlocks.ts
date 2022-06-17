@@ -18,11 +18,20 @@
 import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
 import { useAsyncState } from "@/hooks/common";
 
+let allBlocksCache: TypedBlockMap | undefined;
+
 function useAllBlocks() {
   const [allBlocks, isLoadingAllBlocks] = useAsyncState<TypedBlockMap>(
-    async () => blockRegistry.allTyped(),
+    async () => {
+      if (allBlocksCache != null) {
+        return allBlocksCache;
+      }
+
+      allBlocksCache = await blockRegistry.allTyped();
+      return allBlocksCache;
+    },
     [],
-    new Map()
+    allBlocksCache ?? new Map()
   );
   return [allBlocks, isLoadingAllBlocks] as const;
 }
