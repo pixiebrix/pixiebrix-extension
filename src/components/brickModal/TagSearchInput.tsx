@@ -53,7 +53,7 @@ const TagSearchInput: React.VFC<{
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>();
 
-  const [realTimeValue, setRealTimeValue] = useState(value);
+  const [internalValue, setInternalValue] = useState(value);
   const handleChangeDebounced = useDebouncedCallback(onValueChange, 150);
 
   useEffect(() => {
@@ -65,8 +65,9 @@ const TagSearchInput: React.VFC<{
   }, []);
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
-    setRealTimeValue(event.target.value);
-    handleChangeDebounced(event.target.value);
+    const nextValue = event.target.value;
+    setInternalValue(nextValue);
+    handleChangeDebounced(nextValue);
   };
 
   const handleFocus: React.FocusEventHandler<HTMLInputElement> = () => {
@@ -95,13 +96,13 @@ const TagSearchInput: React.VFC<{
         name={name}
         ref={inputRef}
         placeholder={placeholder}
-        value={realTimeValue}
+        value={internalValue}
         onChange={handleChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
         className={styles.input}
         onKeyDown={(event) => {
-          if (event.key === "Backspace" && value === "") {
+          if (event.key === "Backspace" && internalValue === "") {
             onClearTag();
           }
         }}
