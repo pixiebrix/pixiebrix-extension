@@ -216,8 +216,8 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
         columns={columns}
         data={data}
         showSearchFilter
-        isNewIntegration={isNewIntegration}
-        setIsNewIntegration={setIsNewIntegration}
+        isNewRecord={isNewIntegration}
+        setIsNewRecord={setIsNewIntegration}
       />
     </>
   );
