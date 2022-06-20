@@ -60,14 +60,14 @@ const useElementOptions = (
       const editSchemas = getElementEditSchemas(elementType, elementName);
       const OptionsFields: React.FC = () => (
         <>
-          {editSchemas.map((editSchema) =>
-            editSchema.schema.type === "string" &&
-            editSchema.schema.format === "bootstrap-class" ? (
-              <CssClassField key={editSchema.name} {...editSchema} />
-            ) : (
-              <SchemaField key={editSchema.name} {...editSchema} />
-            )
-          )}
+          {editSchemas.map((editSchema) => {
+            const Field =
+              editSchema.schema.type === "string" &&
+              editSchema.schema.format === "bootstrap-class"
+                ? CssClassField
+                : SchemaField;
+            return <Field key={editSchema.name} {...editSchema} />;
+          })}
         </>
       );
 

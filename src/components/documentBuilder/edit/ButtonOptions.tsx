@@ -19,6 +19,7 @@ import React, { useMemo } from "react";
 import { Col, Row } from "react-bootstrap";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import getElementEditSchemas from "@/components/documentBuilder/edit/getElementEditSchemas";
+import CssClassField from "@/components/fields/schemaFields/CssClassField";
 
 type ButtonOptionsProps = {
   elementName: string;
@@ -27,9 +28,14 @@ type ButtonOptionsProps = {
 const ButtonOptions: React.FC<ButtonOptionsProps> = ({ elementName }) => {
   const schemaFields = useMemo(
     () =>
-      getElementEditSchemas("button", elementName).map((schema) => (
-        <SchemaField key={schema.name} {...schema} />
-      )),
+      getElementEditSchemas("button", elementName).map((editSchema) => {
+        const Field =
+          editSchema.schema.type === "string" &&
+          editSchema.schema.format === "bootstrap-class"
+            ? CssClassField
+            : SchemaField;
+        return <Field key={editSchema.name} {...editSchema} />;
+      }),
     [elementName]
   );
 
