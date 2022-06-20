@@ -20,6 +20,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import styles from "./TagSearchInput.module.scss";
+import { useDebouncedCallback } from "use-debounce";
 
 const TagBadge: React.VFC<{
   tag: string;
@@ -52,6 +53,9 @@ const TagSearchInput: React.VFC<{
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>();
 
+  const [realTimeValue, setRealTimeValue] = useState(value);
+  const handleChangeDebounced = useDebouncedCallback(onValueChange, 150);
+
   useEffect(() => {
     if (focusInput) {
       inputRef.current?.focus();
@@ -61,7 +65,8 @@ const TagSearchInput: React.VFC<{
   }, []);
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
-    onValueChange(event.target.value);
+    setRealTimeValue(event.target.value);
+    handleChangeDebounced(event.target.value);
   };
 
   const handleFocus: React.FocusEventHandler<HTMLInputElement> = () => {
@@ -90,7 +95,7 @@ const TagSearchInput: React.VFC<{
         name={name}
         ref={inputRef}
         placeholder={placeholder}
-        value={value}
+        value={realTimeValue}
         onChange={handleChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
