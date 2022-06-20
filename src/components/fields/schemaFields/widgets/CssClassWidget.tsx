@@ -349,8 +349,9 @@ const SpacingControl: React.VFC<{
   label: string;
   className?: string;
   classes: string[];
+  disabled: boolean;
   onUpdate: (update: Spacing) => void;
-}> = ({ prefix, label, className, classes, onUpdate }) => {
+}> = ({ prefix, label, className, classes, disabled, onUpdate }) => {
   const [expand, setExpand] = useState(false);
 
   const spacing = extractSpacing(prefix, classes);
@@ -377,6 +378,7 @@ const SpacingControl: React.VFC<{
             min="0"
             max="5"
             value={spacing.find((x) => x.side == null)?.size}
+            disabled={disabled}
             onChange={(event) => {
               onUpdate({
                 side: null,
@@ -402,6 +404,7 @@ const SpacingControl: React.VFC<{
                   min="0"
                   max="5"
                   value={spacing.find((x) => x.side === direction.side)?.size}
+                  disabled={disabled}
                   onChange={(event) => {
                     onUpdate({
                       side: direction.side,
@@ -665,6 +668,7 @@ const CssClassWidget: React.VFC<
           label="Margin"
           className="mr-2"
           classes={classes}
+          disabled={disableControls}
           onUpdate={(update) => {
             setValue(calculateNextSpacing(value, "m", update));
           }}
@@ -674,6 +678,7 @@ const CssClassWidget: React.VFC<
           label="Padding"
           className="mx-2"
           classes={classes}
+          disabled={disableControls}
           onUpdate={(update) => {
             setValue(calculateNextSpacing(value, "p", update));
           }}
