@@ -218,6 +218,7 @@ const FlagButton: React.VFC<
 
   return (
     <Button
+      className={styles.flagButton}
       disabled={disabled}
       variant="light"
       size="sm"
