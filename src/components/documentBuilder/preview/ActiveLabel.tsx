@@ -64,13 +64,6 @@ const ActiveLabel: React.FunctionComponent<ActiveLabelProps> = ({
       />
       <FontAwesomeIcon
         role="button"
-        title="Delete element"
-        icon={faTrash}
-        onClick={onDelete}
-        fixedWidth
-      />
-      <FontAwesomeIcon
-        role="button"
         title="Move up"
         icon={faArrowUp}
         data-disabled={!canMoveUp}
@@ -91,6 +84,13 @@ const ActiveLabel: React.FunctionComponent<ActiveLabelProps> = ({
             moveElement("down");
           }
         }}
+        fixedWidth
+      />
+      <FontAwesomeIcon
+        role="button"
+        title="Delete element"
+        icon={faTrash}
+        onClick={onDelete}
         fixedWidth
       />
     </div>

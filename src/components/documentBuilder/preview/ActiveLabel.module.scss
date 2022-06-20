@@ -18,13 +18,15 @@
 @import "@/components/documentBuilder/preview/previewVariables.scss";
 
 .root {
+  display: flex;
   background-color: $color-decisions-blue-focus;
   position: absolute;
   top: 0;
   left: 0;
-  padding: 0 5px;
-  border-radius: $border-radius $border-radius 0 0;
+  padding: 4px 5px;
+  border-radius: $border-radius;
   color: white;
+  z-index: 1;
 
   svg {
     margin: 0 0.25rem;

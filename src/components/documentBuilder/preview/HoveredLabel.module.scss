@@ -18,11 +18,14 @@
 @import "@/components/documentBuilder/preview/previewVariables.scss";
 
 .root {
+  display: flex;
   background-color: $color-decisions-blue-focus;
   position: absolute;
   top: 0;
   left: 0;
   padding: 0px 5px;
-  border-radius: $border-radius $border-radius 0 0;
+  border-radius: $border-radius;
   color: white;
+  white-space: nowrap;
+  z-index: 1;
 }
