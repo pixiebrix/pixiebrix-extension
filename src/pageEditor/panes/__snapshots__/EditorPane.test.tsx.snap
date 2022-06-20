@@ -361,6 +361,11 @@ exports[`renders an extension with sub pipeline 1`] = `
                       <div>
                         Echo Block
                       </div>
+                      <div
+                        class="key outputKey"
+                      >
+                        @echoOutput
+                      </div>
                     </div>
                   </div>
                   <div
@@ -607,6 +612,11 @@ exports[`renders an extension with sub pipeline 1`] = `
                       <div>
                         Echo Block
                       </div>
+                      <div
+                        class="key outputKey"
+                      >
+                        @subEchoOutput
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -647,9 +657,9 @@ exports[`renders an extension with sub pipeline 1`] = `
                     />
                   </div>
                   <div
-                    class="noKey outputKey text-muted"
+                    class="key outputKey"
                   >
-                    No output produced
+                    @forEachOutput
                   </div>
                 </div>
                 <div
@@ -1807,6 +1817,11 @@ exports[`renders the first selected node 1`] = `
                       <div>
                         Echo Block
                       </div>
+                      <div
+                        class="key outputKey"
+                      >
+                        @echoOutput
+                      </div>
                     </div>
                   </div>
                   <div
@@ -2080,7 +2095,7 @@ exports[`renders the first selected node 1`] = `
                           class="form-control"
                           id="extension.blockPipeline.0.outputKey"
                           name="extension.blockPipeline.0.outputKey"
-                          value=""
+                          value="echoOutput"
                         />
                       </div>
                     </div>

@@ -39,6 +39,7 @@ import {
 } from "@/testUtils/expressionTestHelpers";
 import { PipelineExpression } from "@/runtime/mapArgs";
 import { act } from "react-dom/test-utils";
+import { OutputKey } from "@/core";
 
 jest.setTimeout(30_000); // This test is flaky with the default timeout of 5000 ms
 
@@ -72,6 +73,7 @@ const getPlainFormState = (): FormState =>
   formStateFactory(undefined, [
     blockConfigFactory({
       id: echoBlock.id,
+      outputKey: "echoOutput" as OutputKey,
       config: defaultBlockConfig(echoBlock.inputSchema),
     }),
     blockConfigFactory({
@@ -84,15 +86,18 @@ const getFormStateWithSubPipelines = (): FormState =>
   formStateFactory(undefined, [
     blockConfigFactory({
       id: echoBlock.id,
+      outputKey: "echoOutput" as OutputKey,
       config: defaultBlockConfig(echoBlock.inputSchema),
     }),
     blockConfigFactory({
       id: forEachBlock.id,
+      outputKey: "forEachOutput" as OutputKey,
       config: {
         elements: makeTemplateExpression("var", "@input.elements"),
         body: makePipelineExpression([
           blockConfigFactory({
             id: echoBlock.id,
+            outputKey: "subEchoOutput" as OutputKey,
             config: {
               message: makeTemplateExpression(
                 "nunjucks",
