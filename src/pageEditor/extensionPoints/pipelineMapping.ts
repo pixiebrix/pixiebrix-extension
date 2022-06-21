@@ -36,17 +36,14 @@ export function normalizePipelineForEditor(
       visitBlock({ blockConfig }) {
         blockConfig.instanceId = uuidv4();
       },
-      preTraverseSubPipeline({ parentBlock, subPipelineProperty }) {
+      preVisitSubPipeline({ parentBlock, subPipelineProperty }) {
         const subPipeline = get(parentBlock, subPipelineProperty);
-        if (isPipelineExpression(subPipeline)) {
-          return true;
+        if (!isPipelineExpression(subPipeline)) {
+          set(parentBlock, subPipelineProperty, {
+            __type__: "pipeline",
+            __value__: [],
+          });
         }
-
-        set(parentBlock, subPipelineProperty, {
-          __type__: "pipeline",
-          __value__: [],
-        });
-        return false;
       },
     });
   });

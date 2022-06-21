@@ -104,38 +104,36 @@ describe("traversePipeline", () => {
     });
     const pipeline = [forEachBrick];
     const visitBlock = jest.fn();
-    const preTraverseSubPipeline = jest.fn().mockReturnValue(true);
+    const preVisitSubPipeline = jest.fn();
 
     traversePipeline({
       blockPipeline: pipeline,
       visitBlock,
-      preTraverseSubPipeline,
+      preVisitSubPipeline,
     });
 
-    expect(preTraverseSubPipeline).toHaveBeenCalledTimes(1);
-    expect(preTraverseSubPipeline).toHaveBeenCalledWith({
+    expect(preVisitSubPipeline).toHaveBeenCalledTimes(1);
+    expect(preVisitSubPipeline).toHaveBeenCalledWith({
       parentBlock: forEachBrick,
       subPipelineProperty: "config.body",
     });
   });
 
-  test("should not invoke visitBlock when canceled by preTraverseSubPipeline", () => {
-    const subPipeline = pipelineFactory();
+  test("should not invoke visitBlock when sub pipeline is empty", () => {
     const forEachBrick = blockConfigFactory({
       id: ForEach.BLOCK_ID,
       config: {
         elements: toExpression("var", "@elements"),
-        body: toExpression("pipeline", subPipeline),
+        body: toExpression("pipeline", []),
       },
     });
     const pipeline = [forEachBrick];
     const visitBlock = jest.fn();
-    const preTraverseSubPipeline = jest.fn().mockReturnValue(false);
 
     traversePipeline({
       blockPipeline: pipeline,
       visitBlock,
-      preTraverseSubPipeline,
+      preVisitSubPipeline: jest.fn(),
     });
 
     expect(visitBlock).toHaveBeenCalledTimes(pipeline.length);

@@ -146,7 +146,7 @@ type TraversePipelineArgs = {
   blockPipelinePath?: string;
   parentNodeId?: UUID | null;
   visitBlock: BlockAction;
-  preTraverseSubPipeline?: PreTraverseSubPipeline;
+  preVisitSubPipeline?: PreVisitSubPipeline;
 };
 
 type BlockAction = (blockInfo: {
@@ -158,10 +158,10 @@ type BlockAction = (blockInfo: {
   parentNodeId: UUID | null;
 }) => void;
 
-type PreTraverseSubPipeline = (subPipelineInfo: {
+type PreVisitSubPipeline = (subPipelineInfo: {
   parentBlock: BlockConfig;
   subPipelineProperty: string;
-}) => boolean;
+}) => void;
 
 function getDocumentSubPipelineProperties(blockConfig: BlockConfig) {
   return getDocumentPipelinePaths(blockConfig);
@@ -178,7 +178,7 @@ export function traversePipeline({
   blockPipelinePath = "",
   parentNodeId = null,
   visitBlock,
-  preTraverseSubPipeline = () => true,
+  preVisitSubPipeline,
 }: TraversePipelineArgs) {
   for (const [index, blockConfig] of Object.entries(blockPipeline)) {
     const fieldName = joinName(blockPipelinePath, index);
@@ -197,13 +197,11 @@ export function traversePipeline({
         : getBlockSubPipelineProperties(blockConfig);
 
     for (const subPipelineProperty of subPipelineProperties) {
-      if (
-        !preTraverseSubPipeline({
+      if (preVisitSubPipeline) {
+        preVisitSubPipeline({
           parentBlock: blockConfig,
           subPipelineProperty,
-        })
-      ) {
-        continue;
+        });
       }
 
       const subPipelineAccessor = joinElementName(
@@ -211,13 +209,16 @@ export function traversePipeline({
         "__value__"
       );
       const subPipeline = get(blockConfig, subPipelineAccessor);
-      traversePipeline({
-        blockPipeline: subPipeline,
-        blockPipelinePath: joinElementName(fieldName, subPipelineAccessor),
-        parentNodeId: blockConfig.instanceId,
-        visitBlock,
-        preTraverseSubPipeline,
-      });
+
+      if (subPipeline?.length > 0) {
+        traversePipeline({
+          blockPipeline: subPipeline,
+          blockPipelinePath: joinElementName(fieldName, subPipelineAccessor),
+          parentNodeId: blockConfig.instanceId,
+          visitBlock,
+          preVisitSubPipeline,
+        });
+      }
     }
   }
 }
