@@ -26,7 +26,7 @@ import documentTreeStyles from "@/components/documentBuilder/preview/documentTre
 import { isValidUrl } from "@/utils";
 import ImagePlaceholder from "@/components/imagePlaceholder/ImagePlaceholder";
 import { isEmpty } from "lodash";
-import PopupLabels from "./PopupLabels";
+import Flaps from "@/components/documentBuilder/preview/flaps/Flaps";
 
 type ImageProps = PreviewComponentProps & {
   elementType: DocumentElementType;
@@ -54,8 +54,8 @@ const Image: React.FunctionComponent<ImageProps> = ({
       className={cx(documentTreeStyles.imageWrapper, className)}
       {...restPreviewProps}
     >
-      <PopupLabels
-        className={documentTreeStyles.labelShiftRight}
+      <Flaps
+        className={documentTreeStyles.flapShiftRight}
         elementType={elementType}
         documentBodyName={documentBodyName}
         elementName={elementName}

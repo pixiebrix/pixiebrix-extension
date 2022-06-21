@@ -35,7 +35,7 @@ import Unknown from "./elementsPreview/Unknown";
 import Basic from "./elementsPreview/Basic";
 import Image from "./elementsPreview/Image";
 import Container from "./elementsPreview/Container";
-import PopupLabels from "./elementsPreview/PopupLabels";
+import Flaps from "./flaps/Flaps";
 
 // Bookkeeping trace paths for preview is not necessary. But, we need to provide a value for the previews that use
 // getComponentDefinition under the hood
@@ -124,8 +124,8 @@ function getPreviewComponentDefinition(
           className={cx(documentTreeStyles.shiftRightWrapper, className)}
           {...restPreviewProps}
         >
-          <PopupLabels
-            className={documentTreeStyles.labelShiftRight}
+          <Flaps
+            className={documentTreeStyles.flapShiftRight}
             elementType={element.type}
             documentBodyName={documentBodyName}
             elementName={elementName}
@@ -153,8 +153,8 @@ function getPreviewComponentDefinition(
           className={cx(documentTreeStyles.shiftRightWrapper, className)}
           {...restPreviewProps}
         >
-          <PopupLabels
-            className={documentTreeStyles.labelShiftRight}
+          <Flaps
+            className={documentTreeStyles.flapShiftRight}
             elementType={element.type}
             documentBodyName={documentBodyName}
             elementName={elementName}
@@ -190,8 +190,8 @@ function getPreviewComponentDefinition(
               className={cx(className, documentTreeStyles.inlineWrapper)}
               {...restPreviewProps}
             >
-              <PopupLabels
-                className={documentTreeStyles.labelShiftRight}
+              <Flaps
+                className={documentTreeStyles.flapShiftRight}
                 elementType={element.type}
                 documentBodyName={documentBodyName}
                 elementName={elementName}
@@ -230,8 +230,8 @@ function getPreviewComponentDefinition(
           )}
           {...restPreviewProps}
         >
-          <PopupLabels
-            className={documentTreeStyles.labelShiftUp}
+          <Flaps
+            className={documentTreeStyles.flapShiftUp}
             elementType={element.type}
             documentBodyName={documentBodyName}
             elementName={elementName}

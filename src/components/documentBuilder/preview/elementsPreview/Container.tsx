@@ -23,7 +23,7 @@ import {
 } from "@/components/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
 import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
-import PopupLabels from "./PopupLabels";
+import Flaps from "@/components/documentBuilder/preview/flaps/Flaps";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 
 type ContainerProps = PreviewComponentProps & {
@@ -46,8 +46,8 @@ const Container: React.FunctionComponent<ContainerProps> = ({
     {...restPreviewProps}
     className={cx(props.className, className, documentTreeStyles.container)}
   >
-    <PopupLabels
-      className={documentTreeStyles.labelShiftUp}
+    <Flaps
+      className={documentTreeStyles.flapShiftUp}
       elementType={element.type}
       documentBodyName={documentBodyName}
       elementName={elementName}
