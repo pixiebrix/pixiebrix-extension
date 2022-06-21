@@ -54,23 +54,13 @@ export function normalizePipelineForEditor(
   });
 }
 
-function omitMetaInPipelineDraft(pipeline: WritableDraft<BlockPipeline>) {
-  for (const block of pipeline) {
-    delete block.instanceId;
-
-    const pipelineProps = getPipelinePropNames(block);
-    for (const prop of pipelineProps) {
-      const pipeline = block.config[prop];
-      if (isPipelineExpression(pipeline)) {
-        omitMetaInPipelineDraft(pipeline.__value__);
-      }
-    }
-  }
-}
-
 /**
  * Remove the automatically generated tracing ids.
  */
 export function omitEditorMetadata(pipeline: BlockPipeline): BlockPipeline {
-  return produce(pipeline, omitMetaInPipelineDraft);
+  return produce(pipeline, (pipeline: WritableDraft<BlockPipeline>) => {
+    traversePipeline(pipeline, "", null, ({ blockConfig }) => {
+      delete blockConfig.instanceId;
+    });
+  });
 }
