@@ -78,11 +78,17 @@ export async function generateFreshOutputKey(
 
 export function getPipelineMap(blockPipeline: BlockPipeline) {
   const pipelineMap: PipelineMap = {};
-  traversePipeline(
+  traversePipeline({
     blockPipeline,
-    PIPELINE_BLOCKS_FIELD_NAME,
-    null,
-    ({ blockConfig, index, path, pipelinePath, pipeline, parentNodeId }) => {
+    blockPipelinePath: PIPELINE_BLOCKS_FIELD_NAME,
+    visitBlock({
+      blockConfig,
+      index,
+      path,
+      pipelinePath,
+      pipeline,
+      parentNodeId,
+    }) {
       pipelineMap[blockConfig.instanceId] = {
         blockId: blockConfig.id,
         path,
@@ -92,8 +98,8 @@ export function getPipelineMap(blockPipeline: BlockPipeline) {
         pipeline,
         parentNodeId,
       };
-    }
-  );
+    },
+  });
 
   return pipelineMap;
 }

@@ -20,7 +20,7 @@ import { BlockPipeline } from "@/blocks/types";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 import { produce } from "immer";
 import { WritableDraft } from "immer/dist/types/types-external";
-import { getPipelinePropNames, traversePipeline } from "@/pageEditor/utils";
+import { traversePipeline } from "@/pageEditor/utils";
 import { get, set } from "lodash";
 
 /**
@@ -31,14 +31,12 @@ export function normalizePipelineForEditor(
   pipeline: BlockPipeline
 ): BlockPipeline {
   return produce(pipeline, (pipeline: WritableDraft<BlockPipeline>) => {
-    traversePipeline(
-      pipeline,
-      "",
-      null,
-      ({ blockConfig }) => {
+    traversePipeline({
+      blockPipeline: pipeline,
+      visitBlock({ blockConfig }) {
         blockConfig.instanceId = uuidv4();
       },
-      ({ parentBlock, subPipelineProperty }) => {
+      preTraverseSubPipeline({ parentBlock, subPipelineProperty }) {
         const subPipeline = get(parentBlock, subPipelineProperty);
         if (isPipelineExpression(subPipeline)) {
           return true;
@@ -49,8 +47,8 @@ export function normalizePipelineForEditor(
           __value__: [],
         });
         return false;
-      }
-    );
+      },
+    });
   });
 }
 
@@ -59,8 +57,11 @@ export function normalizePipelineForEditor(
  */
 export function omitEditorMetadata(pipeline: BlockPipeline): BlockPipeline {
   return produce(pipeline, (pipeline: WritableDraft<BlockPipeline>) => {
-    traversePipeline(pipeline, "", null, ({ blockConfig }) => {
-      delete blockConfig.instanceId;
+    traversePipeline({
+      blockPipeline: pipeline,
+      visitBlock({ blockConfig }) {
+        delete blockConfig.instanceId;
+      },
     });
   });
 }

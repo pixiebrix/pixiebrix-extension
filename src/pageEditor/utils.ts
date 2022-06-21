@@ -141,6 +141,14 @@ export function getDocumentPipelinePaths(block: BlockConfig): string[] {
   );
 }
 
+type TraversePipelineArgs = {
+  blockPipeline: BlockPipeline;
+  blockPipelinePath?: string;
+  parentNodeId?: UUID | null;
+  visitBlock: BlockAction;
+  preTraverseSubPipeline?: PreTraverseSubPipeline;
+};
+
 type BlockAction = (blockInfo: {
   blockConfig: BlockConfig;
   index: number;
@@ -165,13 +173,13 @@ function getBlockSubPipelineProperties(blockConfig: BlockConfig) {
   );
 }
 
-export function traversePipeline(
-  blockPipeline: BlockPipeline,
-  blockPipelinePath: string,
-  parentNodeId: UUID | null,
-  visitBlock: BlockAction,
-  preTraverseSubPipeline: PreTraverseSubPipeline = () => true
-) {
+export function traversePipeline({
+  blockPipeline,
+  blockPipelinePath = "",
+  parentNodeId = null,
+  visitBlock,
+  preTraverseSubPipeline = () => true,
+}: TraversePipelineArgs) {
   for (const [index, blockConfig] of Object.entries(blockPipeline)) {
     const fieldName = joinName(blockPipelinePath, index);
     visitBlock({
@@ -203,13 +211,13 @@ export function traversePipeline(
         "__value__"
       );
       const subPipeline = get(blockConfig, subPipelineAccessor);
-      traversePipeline(
-        subPipeline,
-        joinElementName(fieldName, subPipelineAccessor),
-        blockConfig.instanceId,
+      traversePipeline({
+        blockPipeline: subPipeline,
+        blockPipelinePath: joinElementName(fieldName, subPipelineAccessor),
+        parentNodeId: blockConfig.instanceId,
         visitBlock,
-        preTraverseSubPipeline
-      );
+        preTraverseSubPipeline,
+      });
     }
   }
 }
