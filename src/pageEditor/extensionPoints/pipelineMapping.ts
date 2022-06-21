@@ -20,27 +20,8 @@ import { BlockPipeline } from "@/blocks/types";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 import { produce } from "immer";
 import { WritableDraft } from "immer/dist/types/types-external";
-import { getPipelinePropNames } from "@/pageEditor/utils";
-
-function normalizePipelineDraft(pipeline: WritableDraft<BlockPipeline>) {
-  for (const block of pipeline) {
-    block.instanceId = uuidv4();
-
-    const pipelineProps = getPipelinePropNames(block);
-    for (const prop of pipelineProps) {
-      const pipeline = block.config[prop];
-      if (isPipelineExpression(pipeline)) {
-        normalizePipelineDraft(pipeline.__value__);
-      } else {
-        // Normalizing am empty pipeline
-        block.config[prop] = {
-          __type__: "pipeline",
-          __value__: [],
-        };
-      }
-    }
-  }
-}
+import { getPipelinePropNames, traversePipeline } from "@/pageEditor/utils";
+import { get, set } from "lodash";
 
 /**
  * Enrich a BlockPipeline with instanceIds for use in tracing
@@ -49,7 +30,28 @@ function normalizePipelineDraft(pipeline: WritableDraft<BlockPipeline>) {
 export function normalizePipelineForEditor(
   pipeline: BlockPipeline
 ): BlockPipeline {
-  return produce(pipeline, normalizePipelineDraft);
+  return produce(pipeline, (pipeline: WritableDraft<BlockPipeline>) => {
+    traversePipeline(
+      pipeline,
+      "",
+      null,
+      ({ blockConfig }) => {
+        blockConfig.instanceId = uuidv4();
+      },
+      ({ parentBlock, subPipelineProperty }) => {
+        const subPipeline = get(parentBlock, subPipelineProperty);
+        if (isPipelineExpression(subPipeline)) {
+          return true;
+        }
+
+        set(parentBlock, subPipelineProperty, {
+          __type__: "pipeline",
+          __value__: [],
+        });
+        return false;
+      }
+    );
+  });
 }
 
 function omitMetaInPipelineDraft(pipeline: WritableDraft<BlockPipeline>) {

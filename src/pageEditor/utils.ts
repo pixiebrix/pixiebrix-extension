@@ -19,7 +19,7 @@ import { Target } from "@/types";
 import { IExtension, RegistryId, UUID } from "@/core";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isExtension } from "@/pageEditor/sidebar/common";
-import { BlockConfig } from "@/blocks/types";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
@@ -32,7 +32,9 @@ import {
 import { joinElementName } from "@/components/documentBuilder/utils";
 import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 import Retry from "@/blocks/transformers/controlFlow/Retry";
-import { castArray } from "lodash";
+import { castArray, get } from "lodash";
+import { joinName } from "@/utils";
+import { DocumentRenderer } from "@/blocks/renderers/document";
 
 export async function getCurrentURL(): Promise<string> {
   if (!browser.devtools) {
@@ -137,4 +139,77 @@ export function getDocumentPipelinePaths(block: BlockConfig): string[] {
     "config.body",
     (block.config.body ?? []) as DocumentElement[]
   );
+}
+
+type BlockAction = (blockInfo: {
+  blockConfig: BlockConfig;
+  index: number;
+  path: string;
+  pipelinePath: string;
+  pipeline: BlockPipeline;
+  parentNodeId: UUID | null;
+}) => void;
+
+type PreTraverseSubPipeline = (subPipelineInfo: {
+  parentBlock: BlockConfig;
+  subPipelineProperty: string;
+}) => boolean;
+
+function getDocumentSubPipelineProperties(blockConfig: BlockConfig) {
+  return getDocumentPipelinePaths(blockConfig);
+}
+
+function getBlockSubPipelineProperties(blockConfig: BlockConfig) {
+  return getPipelinePropNames(blockConfig).map((subPipelineField) =>
+    joinName("config", subPipelineField)
+  );
+}
+
+export function traversePipeline(
+  blockPipeline: BlockPipeline,
+  blockPipelinePath: string,
+  parentNodeId: UUID | null,
+  visitBlock: BlockAction,
+  preTraverseSubPipeline: PreTraverseSubPipeline = () => true
+) {
+  for (const [index, blockConfig] of Object.entries(blockPipeline)) {
+    const fieldName = joinName(blockPipelinePath, index);
+    visitBlock({
+      blockConfig,
+      index: Number(index),
+      path: fieldName,
+      pipelinePath: blockPipelinePath,
+      pipeline: blockPipeline,
+      parentNodeId,
+    });
+
+    const subPipelineProperties =
+      blockConfig.id === DocumentRenderer.BLOCK_ID
+        ? getDocumentSubPipelineProperties(blockConfig)
+        : getBlockSubPipelineProperties(blockConfig);
+
+    for (const subPipelineProperty of subPipelineProperties) {
+      if (
+        !preTraverseSubPipeline({
+          parentBlock: blockConfig,
+          subPipelineProperty,
+        })
+      ) {
+        continue;
+      }
+
+      const subPipelineAccessor = joinElementName(
+        subPipelineProperty,
+        "__value__"
+      );
+      const subPipeline = get(blockConfig, subPipelineAccessor);
+      traversePipeline(
+        subPipeline,
+        joinElementName(fieldName, subPipelineAccessor),
+        blockConfig.instanceId,
+        visitBlock,
+        preTraverseSubPipeline
+      );
+    }
+  }
 }
