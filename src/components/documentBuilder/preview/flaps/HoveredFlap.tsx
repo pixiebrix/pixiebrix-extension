@@ -15,26 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "@/components/documentBuilder/preview/previewVariables.scss";
+import React from "react";
+import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
+import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
+import cx from "classnames";
+import flapStyles from "./Flaps.module.scss";
 
-.root {
-  background-color: $color-decisions-blue-focus;
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 0 5px;
-  border-radius: $border-radius $border-radius 0 0;
-  color: white;
+type HoveredFlapProps = {
+  className?: string;
+  elementType: DocumentElementType;
+};
 
-  svg {
-    margin: 0 0.25rem;
-  }
+const HoveredFlap: React.FunctionComponent<HoveredFlapProps> = ({
+  className,
+  elementType,
+}) => (
+  <div className={cx(flapStyles.root, className)}>
+    {elementTypeLabels[elementType]}
+  </div>
+);
 
-  svg[data-disabled="true"] {
-    color: lightgray;
-  }
-
-  svg:not([data-disabled="true"]):hover {
-    background: darken($color-decisions-blue-focus, 10%);
-  }
-}
+export default HoveredFlap;
