@@ -17,25 +17,23 @@
 
 import React from "react";
 import cx from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowDown,
-  faArrowUp,
-  faLevelUpAlt,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import SelectParentIcon from "@/icons/select-parent.svg?loadAsComponent";
+import ArrowUpwardIcon from "@/icons/arrow-upward.svg?loadAsComponent";
+import ArrowDownwardIcon from "@/icons/arrow-downward.svg?loadAsComponent";
+import DeleteIcon from "@/icons/delete.svg?loadAsComponent";
 import useDeleteElement from "@/components/documentBuilder/hooks/useDeleteElement";
-import styles from "./ActiveLabel.module.scss";
 import useSelectParentElement from "@/components/documentBuilder/hooks/useSelectParentElement";
 import useMoveWithinParent from "@/components/documentBuilder/hooks/useMoveWithinParent";
+import styles from "./ActiveElementFlap.module.scss";
+import flapStyles from "./Flaps.module.scss";
 
-type ActiveLabelProps = {
+type ActiveElementFlapProps = {
   className?: string;
   documentBodyName: string;
   elementName: string;
 };
 
-const ActiveLabel: React.FunctionComponent<ActiveLabelProps> = ({
+const ActiveElementFlap: React.FunctionComponent<ActiveElementFlapProps> = ({
   className,
   documentBodyName,
   elementName,
@@ -54,47 +52,38 @@ const ActiveLabel: React.FunctionComponent<ActiveLabelProps> = ({
     useMoveWithinParent(documentBodyName);
 
   return (
-    <div className={cx(styles.root, className)}>
-      <FontAwesomeIcon
+    <div className={cx(flapStyles.root, className)}>
+      <SelectParentIcon
+        className={styles.icon}
         role="button"
-        title="Select parent"
-        icon={faLevelUpAlt}
         onClick={onSelectParent}
-        fixedWidth
       />
-      <FontAwesomeIcon
+
+      <ArrowUpwardIcon
+        className={styles.icon}
         role="button"
-        title="Move up"
-        icon={faArrowUp}
         data-disabled={!canMoveUp}
         onClick={() => {
           if (canMoveUp) {
             moveElement("up");
           }
         }}
-        fixedWidth
       />
-      <FontAwesomeIcon
+
+      <ArrowDownwardIcon
+        className={styles.icon}
         role="button"
-        title="Move down"
-        icon={faArrowDown}
         data-disabled={!canMoveDown}
         onClick={() => {
           if (canMoveDown) {
             moveElement("down");
           }
         }}
-        fixedWidth
       />
-      <FontAwesomeIcon
-        role="button"
-        title="Delete element"
-        icon={faTrash}
-        onClick={onDelete}
-        fixedWidth
-      />
+
+      <DeleteIcon className={styles.icon} role="button" onClick={onDelete} />
     </div>
   );
 };
 
-export default ActiveLabel;
+export default ActiveElementFlap;

@@ -19,20 +19,20 @@ import React from "react";
 import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import cx from "classnames";
-import styles from "./HoveredLabel.module.scss";
+import flapStyles from "./Flaps.module.scss";
 
-type HoveredLabelProps = {
+type HoveredFlapProps = {
   className?: string;
   elementType: DocumentElementType;
 };
 
-const HoveredLabel: React.FunctionComponent<HoveredLabelProps> = ({
+const HoveredFlap: React.FunctionComponent<HoveredFlapProps> = ({
   className,
   elementType,
 }) => (
-  <div className={cx(styles.root, className)}>
+  <div className={cx(flapStyles.root, className)}>
     {elementTypeLabels[elementType]}
   </div>
 );
 
-export default HoveredLabel;
+export default HoveredFlap;
