@@ -157,7 +157,7 @@ const BlueprintsCard: React.FunctionComponent<{
   return (
     <BootstrapRow className={styles.root}>
       <ListFilters teamFilters={teamFilters} tableInstance={tableInstance} />
-      <Col className={styles.mainContainer}>
+      <Col className={styles.mainContainer} sm={12} md={9} xl={10}>
         <BlueprintsToolbar tableInstance={tableInstance} />
         {/* This wrapper prevents AutoSizer overflow in a flex box container */}
         <div style={{ flex: "1 1 auto" }}>
