@@ -119,25 +119,28 @@ describe("traversePipeline", () => {
     });
   });
 
-  test("should not invoke visitBlock when sub pipeline is empty", () => {
-    const forEachBrick = blockConfigFactory({
-      id: ForEach.BLOCK_ID,
-      config: {
-        elements: toExpression("var", "@elements"),
-        body: toExpression("pipeline", []),
-      },
-    });
-    const pipeline = [forEachBrick];
-    const visitBlock = jest.fn();
+  test.each([toExpression("pipeline", []), undefined])(
+    "should not invoke visitBlock when sub pipeline is empty",
+    (subPipelineProperty) => {
+      const forEachBrick = blockConfigFactory({
+        id: ForEach.BLOCK_ID,
+        config: {
+          elements: toExpression("var", "@elements"),
+          body: subPipelineProperty,
+        },
+      });
+      const pipeline = [forEachBrick];
+      const visitBlock = jest.fn();
 
-    traversePipeline({
-      blockPipeline: pipeline,
-      visitBlock,
-      preVisitSubPipeline: jest.fn(),
-    });
+      traversePipeline({
+        blockPipeline: pipeline,
+        visitBlock,
+        preVisitSubPipeline: jest.fn(),
+      });
 
-    expect(visitBlock).toHaveBeenCalledTimes(pipeline.length);
-  });
+      expect(visitBlock).toHaveBeenCalledTimes(pipeline.length);
+    }
+  );
 
   test("should invoke the callback for the Document button pipeline", () => {
     const buttonElement = createNewElement("button");

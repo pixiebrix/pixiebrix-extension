@@ -208,6 +208,7 @@ export function traversePipeline({
         subPipelineProperty,
         "__value__"
       );
+
       const subPipeline = get(blockConfig, subPipelineAccessor);
 
       if (subPipeline?.length > 0) {
