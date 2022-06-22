@@ -102,6 +102,8 @@ export function produceExcludeUnusedDependencies<
   T extends ServiceSlice = ServiceSlice
 >(state: T): T {
   const used = selectVariables(state);
+
+  console.log("vars", used);
   return produce(state, (draft) => {
     draft.services = draft.services.filter((x) =>
       used.has(keyToFieldValue(x.outputKey).__value__)

@@ -53,14 +53,22 @@ const uiWidgets = {
   imageCrop: ImageCropWidget,
 };
 
-export type Storage =
-  | { type: "localStorage" }
-  | {
-      type: "database";
-      databaseId: UUID;
-      service: SanitizedServiceConfiguration;
-    }
-  | { type: "state"; namespace?: "extension" | "blueprint" | "shared" };
+type LocalStorage = {
+  type: "localStorage";
+};
+
+export type DatabaseStorage = {
+  type: "database";
+  databaseId: UUID;
+  service: SanitizedServiceConfiguration;
+};
+
+type StateStorage = {
+  type: "state";
+  namespace?: "extension" | "blueprint" | "shared";
+};
+
+export type Storage = LocalStorage | DatabaseStorage | StateStorage;
 
 const CustomFormComponent: React.FunctionComponent<{
   schema: Schema;

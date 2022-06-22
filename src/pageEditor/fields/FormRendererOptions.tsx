@@ -33,8 +33,6 @@ import {
 } from "@/blocks/renderers/customForm";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
 import DatabaseField from "@/pageEditor/fields/DatabaseField";
-import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
 
@@ -43,10 +41,6 @@ export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 const recordIdSchema: Schema = {
   type: "string",
   description: "Unique identifier for the data record",
-};
-
-const serviceSchema: Schema = {
-  $ref: `${SERVICE_BASE_SCHEMA}${PIXIEBRIX_SERVICE_ID}`,
 };
 
 function usePruneUnusedServiceDependencies() {
@@ -84,6 +78,9 @@ const FormRendererOptions: React.FC<{
       // Clear out any other values the user might have configured
       if (storageType === "state") {
         setStorageValue({ type: "state", namespace: "blueprint" } as Storage);
+      } else if (storageType === "database") {
+        // The database field is also updated by the AppServiceField that sets the 'service' value
+        // Current value in this component is stale, so skip the update
       } else {
         setStorageValue({ type: storageType } as Storage);
       }
@@ -119,10 +116,7 @@ const FormRendererOptions: React.FC<{
       {storageType === "database" && (
         <>
           <DatabaseField name={makeName("storage", "databaseId")} />
-          <AppServiceField
-            name={makeName("storage", "service")}
-            schema={serviceSchema}
-          />
+          <AppServiceField name={makeName("storage", "service")} />
         </>
       )}
 
