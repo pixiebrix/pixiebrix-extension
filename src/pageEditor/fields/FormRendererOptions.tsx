@@ -98,13 +98,17 @@ const FormRendererOptions: React.FC<{
     }
   };
 
-  // If the storage type changes and it's not "database", ensure the service record at root is cleared
-  // We also could keep the record of previous type and just clear it if it was "database"
+  // If the storage type changes from "database" to something else, ensure the service record at root is cleared
+  const [previousStorageType, setPreviousStorageType] = useState(storageType);
   useEffect(() => {
-    if (storageType !== "database") {
+    if (
+      previousStorageType === "database" &&
+      storageType !== previousStorageType
+    ) {
+      setPreviousStorageType(storageType);
       pruneDependencies();
     }
-  }, [storageType]);
+  }, [storageType, pruneDependencies]);
 
   // Set the default storage type
   if (storageType == null) {

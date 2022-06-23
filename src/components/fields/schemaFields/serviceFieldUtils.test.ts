@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { OutputKey, UUID } from "@/core";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import {
   blockConfigFactory,
@@ -22,6 +23,7 @@ import {
   uuidSequence,
 } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
+import { validateRegistryId } from "@/types/helpers";
 import { selectServiceVariables } from "./serviceFieldUtils";
 
 describe("selectVariables", () => {
@@ -156,25 +158,27 @@ describe("selectVariables", () => {
   });
 
   test("document with Form with database storage", () => {
-    const formState = {
-      uuid: "a98f5c19-96a2-4c69-89ed-c8e9b7059000",
+    // This is a sample of an actual form state with Custom form inside a Document
+    const formState: FormState = {
+      uuid: "a98f5c19-96a2-4c69-89ed-c8e9b7059000" as UUID,
       apiVersion: "v3",
       installed: true,
       label: "Document",
       services: [
         {
-          id: "@pixiebrix/api",
-          outputKey: "pixiebrix",
+          id: validateRegistryId("@pixiebrix/api"),
+          outputKey: "pixiebrix" as OutputKey,
           config: null,
         },
       ],
       permissions: {},
       optionsArgs: {},
       type: "actionPanel",
+      recipe: null,
       extension: {
         blockPipeline: [
           {
-            id: "@pixiebrix/document",
+            id: validateRegistryId("@pixiebrix/document"),
             config: {
               body: [
                 {
@@ -184,7 +188,7 @@ describe("selectVariables", () => {
                       __type__: "pipeline",
                       __value__: [
                         {
-                          id: "@pixiebrix/form",
+                          id: validateRegistryId("@pixiebrix/form"),
                           config: {
                             storage: {
                               type: "database",
@@ -225,19 +229,21 @@ describe("selectVariables", () => {
                 },
               ],
             },
-            instanceId: "aa24a55a-2d4e-43d5-85c0-6632e0a2d000",
+            instanceId: "aa24a55a-2d4e-43d5-85c0-6632e0a2d000" as UUID,
           },
         ],
         heading: "Document",
       },
       extensionPoint: {
         metadata: {
-          id: "@internal/52d42d87-4382-4c78-b00e-bbdd21d75000",
+          id: validateRegistryId(
+            "@internal/52d42d87-4382-4c78-b00e-bbdd21d75000"
+          ),
           name: "Temporary extension point",
         },
         definition: {
           type: "actionPanel",
-          reader: ["@pixiebrix/document-metadata"],
+          reader: [validateRegistryId("@pixiebrix/document-metadata")],
           isAvailable: {
             matchPatterns: ["https://pbx.vercel.app/*"],
             urlPatterns: [],
@@ -254,7 +260,7 @@ describe("selectVariables", () => {
       },
     };
 
-    const actual = selectServiceVariables(formState as FormState);
+    const actual = selectServiceVariables(formState);
     expect(actual).toEqual(new Set(["@pixiebrix"]));
   });
 });
