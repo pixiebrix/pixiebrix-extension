@@ -286,6 +286,22 @@ export const customFormRendererSchema = {
   required: ["schema"],
 };
 
+function normalizeDataForForm(schema: Schema, data: UnknownObject) {
+  const normalizedData = { ...data };
+  for (const [key, property] of Object.entries(schema.properties)) {
+    if (
+      typeof property === "object" &&
+      property.type === "string" &&
+      isEmpty(property.default) &&
+      isEmpty(normalizedData[key])
+    ) {
+      normalizedData[key] = "";
+    }
+  }
+
+  return normalizedData;
+}
+
 export class CustomFormRenderer extends Renderer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/form");
   constructor() {
@@ -339,15 +355,19 @@ export class CustomFormRenderer extends Renderer {
       extensionId,
     });
 
+    const normalizedData = normalizeDataForForm(schema, initialData);
+
     console.debug("Initial data for form", {
+      recordId,
       initialData,
+      normalizedData,
     });
 
     return {
       Component: CustomFormComponent,
       props: {
         recordId,
-        formData: initialData,
+        formData: normalizedData,
         schema,
         uiSchema,
         submitCaption,
