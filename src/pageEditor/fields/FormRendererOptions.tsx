@@ -108,6 +108,7 @@ const FormRendererOptions: React.FC<{
       setPreviousStorageType(storageType);
       pruneDependencies();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- useEffect is the only place that changes the previousStorageType, no need to depend on it
   }, [storageType, pruneDependencies]);
 
   // Set the default storage type
