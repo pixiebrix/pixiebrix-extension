@@ -121,7 +121,7 @@
     "react-select": "^5.2.1",
     "react-select-virtualized": "^5.1.0",
     "react-shadow-root": "^6.1.0",
-    "react-spinners": "0.13.0-beta.5",
+    "react-spinners": "^0.13.0",
     "react-table": "^7.7.0",
     "react-transition-group": "^4.4.2",
     "react-virtualized": "^9.22.3",
