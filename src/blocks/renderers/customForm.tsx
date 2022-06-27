@@ -44,7 +44,7 @@ import { isObject } from "@/utils";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import safeJsonStringify from "json-stringify-safe";
-import { isEmpty } from "lodash";
+import { get, isEmpty, set } from "lodash";
 
 const fields = {
   DescriptionField,
@@ -173,6 +173,7 @@ async function setData(
         data: {
           id: recordId,
           data: cleanValues,
+          // Using shallow strategy to support partial data views
           merge_strategy: "shallow",
         },
       });
@@ -188,6 +189,7 @@ async function setData(
         {
           namespace: storage.namespace ?? "blueprint",
           data: cleanValues,
+          // Using shallow strategy to support partial data views
           mergeStrategy: "shallow",
           extensionId,
           blueprintId,
@@ -286,16 +288,35 @@ export const customFormRendererSchema = {
   required: ["schema"],
 };
 
-function normalizeDataForForm(schema: Schema, data: UnknownObject) {
-  const normalizedData = { ...data };
+// Initialize all empty string fields to empty string
+// so the form updates the displayed values of the input correctly
+export function normalizeIncomingFormData(schema: Schema, data: UnknownObject) {
+  const normalizedData: UnknownObject = {};
   for (const [key, property] of Object.entries(schema.properties)) {
-    if (
-      typeof property === "object" &&
-      property.type === "string" &&
-      isEmpty(property.default) &&
-      isEmpty(normalizedData[key])
-    ) {
-      normalizedData[key] = "";
+    const fieldValue = get(data, key);
+    if (fieldValue == null) {
+      if (
+        typeof property === "object" &&
+        property.type === "string" &&
+        isEmpty(property.default)
+      ) {
+        set(normalizedData, key, "");
+      }
+    } else {
+      set(normalizedData, key, fieldValue);
+    }
+  }
+
+  return normalizedData;
+}
+
+// Setting all the empty fields to null to override the values on the server
+// b/c the server uses shallow merge strategy and ignores undefined values returned for empty fields from the form
+export function normalizeOutgoingFormData(schema: Schema, data: UnknownObject) {
+  const normalizedData = { ...data };
+  for (const key of Object.keys(schema.properties)) {
+    if (typeof normalizedData[key] === "undefined") {
+      normalizedData[key] = null;
     }
   }
 
@@ -355,7 +376,7 @@ export class CustomFormRenderer extends Renderer {
       extensionId,
     });
 
-    const normalizedData = normalizeDataForForm(schema, initialData);
+    const normalizedData = normalizeIncomingFormData(schema, initialData);
 
     console.debug("Initial data for form", {
       recordId,
@@ -373,7 +394,8 @@ export class CustomFormRenderer extends Renderer {
         submitCaption,
         async onSubmit(values: JsonObject) {
           try {
-            await setData(storage, recordId, values, {
+            const normalizedValues = normalizeOutgoingFormData(schema, values);
+            await setData(storage, recordId, normalizedValues, {
               blueprintId,
               extensionId,
             });
