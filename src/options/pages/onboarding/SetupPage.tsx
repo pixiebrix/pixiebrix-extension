@@ -23,7 +23,14 @@ import { useAsyncState } from "@/hooks/common";
 import { useTitle } from "@/hooks/title";
 import DefaultSetupCard from "@/options/pages/onboarding/DefaultSetupCard";
 import PartnerSetupCard from "@/options/pages/onboarding/PartnerSetupCard";
-import { useRequiredAuth, useRequiredPartnerAuth } from "@/auth/RequireAuth";
+import { useRequiredAuth } from "@/auth/RequireAuth";
+import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
+import { useSelector } from "react-redux";
+import { selectSettings } from "@/store/settingsSelectors";
+import PartnerOAuthSetupCard from "@/options/pages/onboarding/PartnerOAuthSetupCard";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { isEmpty } from "lodash";
+import Loader from "@/components/Loader";
 
 const SetupPage: React.FunctionComponent = () => {
   useTitle("Setup");
@@ -33,26 +40,39 @@ const SetupPage: React.FunctionComponent = () => {
     hasConfiguredIntegration,
     isLoading: isPartnerLoading,
   } = useRequiredPartnerAuth();
+
   const { isAccountUnlinked } = useRequiredAuth();
+  const { authServiceId } = useSelector(selectSettings);
 
   const [installURL, installURLPending] = useAsyncState(getInstallURL, []);
 
   if (installURLPending || isPartnerLoading) {
-    return null;
+    return (
+      <Row className="w-100 mx-0">
+        <Col className="mt-5 col-md-10 col-lg-7 col-sm-12 mx-auto">
+          <Loader />
+        </Col>
+      </Row>
+    );
   }
 
-  const setupCard = hasPartner ? (
-    <PartnerSetupCard
-      installURL={installURL}
-      isAccountUnlinked={isAccountUnlinked}
-      needsConfiguration={
-        !requiresIntegration ||
-        (requiresIntegration && !hasConfiguredIntegration)
-      }
-    />
-  ) : (
-    <DefaultSetupCard installURL={installURL} />
-  );
+  let setupCard = <DefaultSetupCard installURL={installURL} />;
+
+  if (!isEmpty(authServiceId) && authServiceId !== PIXIEBRIX_SERVICE_ID) {
+    setupCard = <PartnerOAuthSetupCard />;
+  } else if (hasPartner) {
+    // Token-based partner setup
+    setupCard = (
+      <PartnerSetupCard
+        installURL={installURL}
+        isAccountUnlinked={isAccountUnlinked}
+        needsConfiguration={
+          !requiresIntegration ||
+          (requiresIntegration && !hasConfiguredIntegration)
+        }
+      />
+    );
+  }
 
   return (
     <Row className="w-100 mx-0">

@@ -16,6 +16,7 @@
  */
 
 import { Theme } from "@/options/types";
+import { RegistryId } from "@/core";
 
 export type InstallMode = "local" | "remote";
 
@@ -43,6 +44,15 @@ export type SettingsState = SkunkworksSettings & {
    * Partner id for the user, if any
    */
   partnerId: string | null;
+
+  /**
+   * Registry id of the integration to use for authentication with the PixieBrix server.
+   *
+   * For partner integrations, we're supporting using partner JWT for authenticating.
+   *
+   * @since 1.7.1
+   */
+  authServiceId: RegistryId | null;
 
   /**
    * Theme name for the extension

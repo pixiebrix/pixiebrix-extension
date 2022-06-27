@@ -65,8 +65,7 @@
           "additionalProperties": false,
           "properties": {
             "baseURL": {
-              "type": "string",
-              "format": "uri"
+              "type": "string"
             },
             "params": {
               "type": "object",
@@ -99,8 +98,7 @@
               }
             },
             "baseURL": {
-              "type": "string",
-              "format": "uri"
+              "type": "string"
             },
             "headers": {
               "type": "object",
@@ -119,12 +117,10 @@
               "type": "object",
               "properties": {
                 "tokenUrl": {
-                  "type": "string",
-                  "format": "uri"
+                  "type": "string"
                 },
                 "authorizeUrl": {
-                  "type": "string",
-                  "format": "uri"
+                  "type": "string"
                 },
                 "client_id": {
                   "type": "string"
@@ -135,8 +131,7 @@
               }
             },
             "baseURL": {
-              "type": "string",
-              "format": "uri"
+              "type": "string"
             },
             "headers": {
               "type": "object",

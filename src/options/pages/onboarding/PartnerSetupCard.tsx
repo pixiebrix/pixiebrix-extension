@@ -21,98 +21,11 @@ import OnboardingChecklistCard, {
   OnboardingStep,
 } from "@/components/onboarding/OnboardingChecklistCard";
 import { useGetMeQuery } from "@/services/api";
-import servicesSlice from "@/store/servicesSlice";
-import { uuidv4 } from "@/types/helpers";
-import { GridLoader } from "react-spinners";
-import notify from "@/utils/notify";
-import { persistor } from "@/options/store";
-import { services } from "@/background/messenger/api";
-import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
-import * as Yup from "yup";
-import Form, { RenderBody, RenderSubmit } from "@/components/form/Form";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-
-const CONTROL_ROOM_SERVICE_ID = "automation-anywhere/control-room";
-
-type ControlRoomConfiguration = {
-  controlRoomUrl: string;
-  username: string;
-  password: string;
-};
-
-const validationSchema = Yup.object().shape({
-  controlRoomUrl: Yup.string().url().required(),
-  username: Yup.string().required(),
-  password: Yup.string().required(),
-});
-
-const AutomationAnywhereControlRoomForm: React.FunctionComponent<{
-  initialValues: ControlRoomConfiguration;
-}> = ({ initialValues }) => {
-  const { updateServiceConfig } = servicesSlice.actions;
-  const dispatch = useDispatch();
-
-  const handleSubmit = async (formValues: ControlRoomConfiguration) => {
-    dispatch(
-      updateServiceConfig({
-        id: uuidv4(),
-        serviceId: CONTROL_ROOM_SERVICE_ID,
-        label: "My AA Control Room",
-        config: formValues,
-      })
-    );
-
-    notify.success("Successfully set up PixieBrix!");
-
-    await persistor.flush();
-
-    try {
-      await services.refresh();
-    } catch (error) {
-      notify.error({
-        message:
-          "Error refreshing your account configuration, please restart the PixieBrix extension",
-        error,
-      });
-    }
-  };
-
-  const renderBody: RenderBody = () => (
-    <>
-      <ConnectedFieldTemplate
-        name="controlRoomUrl"
-        label="Control Room URL"
-        type="text"
-      />
-      <ConnectedFieldTemplate name="username" label="Username" type="text" />
-      <ConnectedFieldTemplate
-        name="password"
-        label="Password"
-        type="password"
-      />
-    </>
-  );
-
-  const renderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
-    <div className="text-right">
-      <Button type="submit" disabled={isSubmitting || !isValid}>
-        Connect
-      </Button>
-    </div>
-  );
-
-  return (
-    <Form
-      validationSchema={validationSchema}
-      initialValues={initialValues}
-      onSubmit={handleSubmit}
-      renderBody={renderBody}
-      renderSubmit={renderSubmit}
-    />
-  );
-};
+import AutomationAnywhereTokenForm, {
+  ControlRoomConfiguration,
+} from "@/options/pages/onboarding/AutomationAnywhereTokenForm";
 
 const PartnerSetupCard: React.FunctionComponent<{
   installURL: string;
@@ -157,12 +70,9 @@ const PartnerSetupCard: React.FunctionComponent<{
         title="Connect your AARI account"
         active={!isAccountUnlinked && needsConfiguration}
         completed={!needsConfiguration}
+        isLoading={isLoading}
       >
-        {isLoading ? (
-          <GridLoader />
-        ) : (
-          <AutomationAnywhereControlRoomForm initialValues={initialValues} />
-        )}
+        <AutomationAnywhereTokenForm initialValues={initialValues} />
       </OnboardingStep>
     </OnboardingChecklistCard>
   );

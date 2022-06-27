@@ -21,6 +21,7 @@ import reportError from "@/telemetry/reportError";
 import { once } from "lodash";
 import { DEFAULT_THEME } from "@/options/types";
 import { isValidTheme } from "@/utils/themeUtils";
+import { RegistryId } from "@/core";
 
 const initialSettingsState: SettingsState = {
   mode: "remote",
@@ -28,6 +29,7 @@ const initialSettingsState: SettingsState = {
   suggestElements: false,
   browserWarningDismissed: false,
   partnerId: null,
+  authServiceId: null,
   theme: DEFAULT_THEME,
 };
 
@@ -61,6 +63,12 @@ const settingsSlice = createSlice({
       { payload: { partnerId } }: { payload: { partnerId: string } }
     ) {
       state.partnerId = partnerId;
+    },
+    setAuthServiceId(
+      state,
+      { payload: { serviceId } }: { payload: { serviceId: RegistryId } }
+    ) {
+      state.authServiceId = serviceId;
     },
     setTheme(state, { payload: { theme } }: { payload: { theme: string } }) {
       if (isValidTheme(theme)) {

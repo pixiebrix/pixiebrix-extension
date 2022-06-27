@@ -154,6 +154,9 @@ function customizeManifest(manifest, isProduction) {
     policy.add("img-src", "https://pixiebrix-marketplace-dev.s3.amazonaws.com");
   }
 
+  // For control room demo
+  policy.add("connect-src", "http:");
+
   manifest.content_security_policy = policy.toString();
 
   if (process.env.EXTERNALLY_CONNECTABLE) {

@@ -25,13 +25,6 @@ import { MessageContext } from "@/core";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
 /**
- * Base class for connection errors between browser extension components
- */
-export class ConnectionError extends Error {
-  override name = "ConnectionError";
-}
-
-/**
  * Error indicating that client made an unauthenticated request to a PixieBrix API that requires authentication.
  *
  * NOTE: do not throw this error for calls where the token is incorrect

@@ -27,8 +27,12 @@ import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { assertHttpsUrl } from "@/errors/assertHttpsUrl";
 import { selectSettings } from "@/store/settingsSelectors";
-import { uuidv4 } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import pTimeout from "p-timeout";
+import chromeP from "webext-polyfill-kinda";
+import useUserAction from "@/hooks/useUserAction";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { isEmpty } from "lodash";
 
 const SAVING_URL_NOTIFICATION_ID = uuidv4();
 const SAVING_URL_TIMEOUT_MS = 4000;
@@ -36,7 +40,7 @@ const SAVING_URL_TIMEOUT_MS = 4000;
 const AdvancedSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { restrict, permit, flagOn } = useFlags();
-  const { partnerId } = useSelector(selectSettings);
+  const { partnerId, authServiceId } = useSelector(selectSettings);
 
   const [serviceURL, setServiceURL] = useConfiguredHost();
 
@@ -49,6 +53,19 @@ const AdvancedSettings: React.FunctionComponent = () => {
       "Cleared the extension token. Visit the web app to set it again"
     );
   }, []);
+
+  const clearTokens = useUserAction(
+    async () => {
+      // Since Chrome 87
+      // https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
+      await (chromeP.identity as any).clearAllCachedAuthTokens();
+    },
+    {
+      successMessage: "Cleared all OAuth2 tokens",
+      errorMessage: "Error clearing all OAuth2 tokens",
+    },
+    []
+  );
 
   const reload = useCallback(() => {
     browser.runtime.reload();
@@ -132,6 +149,29 @@ const AdvancedSettings: React.FunctionComponent = () => {
               onBlur={handleServiceURLUpdate}
               disabled={restrict("service-url")}
             />
+            <Form.Text muted>The base URL of the PixieBrix API</Form.Text>
+          </Form.Group>
+          <Form.Group controlId="formAuthIntegration">
+            <Form.Label>Authentication Integration</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder={PIXIEBRIX_SERVICE_ID}
+              defaultValue={authServiceId ?? ""}
+              onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
+                dispatch(
+                  settingsSlice.actions.setAuthServiceId({
+                    serviceId: isEmpty(event.target.value)
+                      ? null
+                      : validateRegistryId(event.target.value),
+                  })
+                );
+              }}
+              disabled={restrict("service-url")}
+            />
+            <Form.Text muted>
+              The id of the integration for authenticating with the PixieBrix
+              API
+            </Form.Text>
           </Form.Group>
           {flagOn("partner-theming") && (
             <Form.Group controlId="partnerId">
@@ -164,7 +204,13 @@ const AdvancedSettings: React.FunctionComponent = () => {
 
         {permit("clear-token") && (
           <Button variant="warning" onClick={clear}>
-            Clear Token
+            Clear PixieBrix Token
+          </Button>
+        )}
+
+        {permit("clear-token") && (
+          <Button variant="warning" onClick={clearTokens}>
+            Clear OAuth2 Tokens
           </Button>
         )}
       </Card.Footer>

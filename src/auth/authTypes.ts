@@ -84,6 +84,17 @@ export interface TokenAuthData extends UserData {
   token: string;
 }
 
+export type PartnerAuthData = {
+  /**
+   * The service auth token to use for authenticating with the PixieBrix API.
+   */
+  authId: UUID | null;
+  /**
+   * The bearer token for the authId.
+   */
+  token: string | null;
+};
+
 export type OrganizationAuthState = {
   readonly id: string;
   readonly name: string;

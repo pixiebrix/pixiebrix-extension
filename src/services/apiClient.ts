@@ -17,7 +17,7 @@
 
 import axios, { AxiosInstance } from "axios";
 import { getBaseURL } from "@/services/baseService";
-import { getExtensionToken } from "@/auth/token";
+import { getAuthHeaders } from "@/auth/token";
 import { isAbsoluteUrl } from "@/utils";
 import { IExtension } from "@/core";
 import {
@@ -53,16 +53,16 @@ export async function absoluteApiUrl(
  * @throws ExtensionNotLinkedError if the extension has not been linked to the API yet
  */
 export async function getLinkedApiClient(): Promise<AxiosInstance> {
-  const token = await getExtensionToken();
+  const headers = await getAuthHeaders();
 
-  if (!token) {
+  if (!headers) {
     throw new ExtensionNotLinkedError();
   }
 
   return axios.create({
     baseURL: await getBaseURL(),
     headers: {
-      Authorization: `Token ${token}`,
+      ...headers,
       // Version 2.0 is paginated. Explicitly pass version so we can switch the default version on the server when
       // once clients are all passing an explicit version number
       Accept: "application/json; version=1.0",
@@ -90,12 +90,12 @@ export async function maybeGetLinkedApiClient(): Promise<AxiosInstance | null> {
  * Returns an Axios client for making (optionally) authenticated API requests to PixieBrix.
  */
 export async function getApiClient(): Promise<AxiosInstance> {
-  const token = await getExtensionToken();
+  const headers = await getAuthHeaders();
 
   return axios.create({
     baseURL: await getBaseURL(),
     headers: {
-      Authorization: token ? `Token ${token}` : undefined,
+      ...headers,
       // Version 2.0 is paginated. Explicitly pass version so we can switch the default version on the server when
       // once clients are all passing an explicit version number
       Accept: "application/json; version=1.0",

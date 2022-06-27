@@ -32,47 +32,16 @@ import {
 } from "@/auth/authUtils";
 import { authActions } from "@/auth/authSlice";
 import { anonAuth } from "@/auth/authConstants";
-import { selectAuth, selectIsLoggedIn } from "@/auth/authSelectors";
+import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Me } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
 import { AxiosError } from "axios";
-import { RootState } from "@/options/store";
-import { RawServiceConfiguration } from "@/core";
-import { selectConfiguredServices } from "@/store/servicesSelectors";
+import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
+import { useRouteMatch } from "react-router";
 
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
   LoginPage: React.VFC;
-};
-
-const AA_CONTROL_ROOM_SERVICE_ID = "automation-anywhere/control-room";
-
-export const useRequiredPartnerAuth = () => {
-  const { isLoading, data: me, error } = useGetMeQuery();
-  const { partner, organization } = useSelector(selectAuth);
-
-  const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
-    selectConfiguredServices
-  );
-
-  const configuredAAIntegration = configuredServices.some(
-    (service) => service.serviceId === AA_CONTROL_ROOM_SERVICE_ID
-  );
-
-  const hasPartner = me ? Boolean(me?.partner) : Boolean(partner);
-  const requiresIntegration =
-    hasPartner &&
-    (me
-      ? Boolean(me?.organization?.control_room)
-      : Boolean(organization?.control_room));
-
-  return {
-    hasPartner,
-    requiresIntegration,
-    hasConfiguredIntegration: requiresIntegration && configuredAAIntegration,
-    isLoading,
-    error,
-  };
 };
 
 export const useRequiredAuth = () => {
@@ -81,7 +50,7 @@ export const useRequiredAuth = () => {
   const hasCachedLoggedIn = useSelector(selectIsLoggedIn);
 
   // See component documentation for why both isLinked and useGetMeQuery are required
-  const [hasToken, tokenLoading, tokenError, refreshToken] = useAsyncState(
+  const [hasToken, tokenLoading, tokenError, refreshTokenState] = useAsyncState(
     async () => isLinked(),
     []
   );
@@ -90,7 +59,7 @@ export const useRequiredAuth = () => {
     // Listen for token invalidation
     const handler = async () => {
       console.debug("Auth state changed, checking for token");
-      void refreshToken();
+      void refreshTokenState();
     };
 
     addAuthListener(handler);
@@ -98,7 +67,7 @@ export const useRequiredAuth = () => {
     return () => {
       removeAuthListener(handler);
     };
-  }, [refreshToken]);
+  }, [refreshTokenState]);
 
   const {
     isLoading: meLoading,
@@ -144,14 +113,25 @@ export const useRequiredAuth = () => {
   const isUnauthenticated = (meError as AxiosError)?.response?.status === 401;
 
   if (isUnauthenticated) {
+    console.warn("Clearing extension auth state because token was rejected");
     void clearExtensionAuth();
   }
 
+  const isAccountUnlinked =
+    isUnauthenticated ||
+    (!hasCachedLoggedIn && !meLoading) ||
+    (!hasToken && !tokenLoading);
+
+  console.debug("isAccountUnlinked", {
+    isUnauthenticated,
+    hasCachedLoggedIn,
+    meLoading,
+    hasToken,
+    tokenLoading,
+  });
+
   return {
-    isAccountUnlinked:
-      isUnauthenticated ||
-      (!hasCachedLoggedIn && !meLoading) ||
-      (!hasToken && !tokenLoading),
+    isAccountUnlinked,
     hasToken,
     tokenError,
     hasCachedLoggedIn,
@@ -170,6 +150,8 @@ export const useRequiredAuth = () => {
  * - Therefore, also check the extension has the Authentication header token from the server.
  */
 const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
+  const matchSettings = useRouteMatch({ path: "/settings", exact: true });
+
   const {
     isAccountUnlinked,
     tokenError,
@@ -177,11 +159,17 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     isLoading: isRequiredAuthLoading,
     meError,
   } = useRequiredAuth();
+
   const {
     requiresIntegration,
     hasConfiguredIntegration,
     isLoading: isPartnerAuthLoading,
   } = useRequiredPartnerAuth();
+
+  if (process.env.DEBUG && matchSettings) {
+    // Always let developers see the settings page in order to fix broken settings
+    return <>{children}</>;
+  }
 
   // Show SetupPage if there is auth error or user not logged in
   if (
@@ -193,6 +181,12 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     isAccountUnlinked ||
     (requiresIntegration && !hasConfiguredIntegration)
   ) {
+    console.debug("Showing login page", {
+      isAccountUnlinked,
+      requiresIntegration,
+      hasConfiguredIntegration,
+    });
+
     return <LoginPage />;
   }
 
