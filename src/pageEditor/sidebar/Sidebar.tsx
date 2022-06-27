@@ -182,15 +182,16 @@ const SidebarExpanded: React.VoidFunctionComponent<{
     [allElements, deletedElementIds]
   );
 
-  const recipes = useMemo(
-    () =>
+  const recipes = useMemo(() => {
+    const installedAndElements = [...installed, ...elements];
+    return (
       allRecipes?.filter((recipe) =>
-        [...installed, ...elements].some(
+        installedAndElements.some(
           (element) => getRecipeIdForElement(element) === recipe.metadata.id
         )
-      ) ?? [],
-    [allRecipes, elements, installed]
-  );
+      ) ?? []
+    );
+  }, [allRecipes, elements, installed]);
 
   const { flagOn } = useFlags();
   const showDeveloperUI =

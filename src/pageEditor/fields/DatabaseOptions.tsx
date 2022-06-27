@@ -21,8 +21,6 @@ import { joinName } from "@/utils";
 import { partial } from "lodash";
 import React from "react";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
 import DatabaseField from "@/pageEditor/fields/DatabaseField";
 
 const keySchema: Schema = {
@@ -53,10 +51,6 @@ const missingKeySchema: Schema = {
   description: "Behavior if the key does not exist",
   enum: ["blank", "error"],
   default: "error",
-};
-
-const serviceSchema: Schema = {
-  $ref: `${SERVICE_BASE_SCHEMA}${PIXIEBRIX_SERVICE_ID}`,
 };
 
 export type DatabaseGetPutOptionsProps = {
@@ -100,7 +94,7 @@ const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
         />
       )}
 
-      <AppServiceField name={configName("service")} schema={serviceSchema} />
+      <AppServiceField name={configName("service")} />
     </div>
   );
 };
