@@ -41,13 +41,7 @@ export class PageMetadataReader extends Reader {
     const { getMetadata } = await import(
       /* webpackChunkName: "page-metadata-parser" */ "page-metadata-parser"
     );
-
-    // The function getMetadata returns canonical URL of the page, reads it from document
-    // This value doesn't change when a navigation event (in SPA) happens
-    return {
-      ...getMetadata(document, location.href),
-      url: String(location.href),
-    };
+    return getMetadata(document, location.href);
   }
 
   override outputSchema: Schema = {
