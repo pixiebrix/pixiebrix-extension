@@ -166,8 +166,8 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     isLoading: isPartnerAuthLoading,
   } = useRequiredPartnerAuth();
 
-  if (process.env.DEBUG && matchSettings) {
-    // Always let developers see the settings page in order to fix broken settings
+  if (matchSettings) {
+    // Always let people see the settings page in order to fix broken settings
     return <>{children}</>;
   }
 
