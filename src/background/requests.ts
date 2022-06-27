@@ -48,7 +48,6 @@ import {
   ProxiedRemoteServiceError,
 } from "@/errors/businessErrors";
 import { ContextError, ExtensionNotLinkedError } from "@/errors/genericErrors";
-import { assertHttpsUrl } from "@/errors/assertHttpsUrl";
 import {
   isAxiosError,
   safeGuessStatusText,
@@ -111,7 +110,8 @@ export async function serializableAxiosRequest<T>(
   );
 
   // Axios does not perform validation, so call before the axios call.
-  assertHttpsUrl(config.url, config.baseURL);
+  // FIXME: can't block because POC server doesn't have HTTPS
+  // assertHttpsUrl(config.url, config.baseURL);
 
   const response = await axios(config);
 
