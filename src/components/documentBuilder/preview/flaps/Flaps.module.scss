@@ -15,24 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
-import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
-import cx from "classnames";
-import styles from "./HoveredLabel.module.scss";
+@import "@/components/documentBuilder/preview/previewVariables.scss";
 
-type HoveredLabelProps = {
-  className?: string;
-  elementType: DocumentElementType;
-};
-
-const HoveredLabel: React.FunctionComponent<HoveredLabelProps> = ({
-  className,
-  elementType,
-}) => (
-  <div className={cx(styles.root, className)}>
-    {elementTypeLabels[elementType]}
-  </div>
-);
-
-export default HoveredLabel;
+.root {
+  display: flex;
+  background-color: $color-decisions-blue-focus;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0px 5px;
+  border-radius: $border-radius;
+  color: white;
+  white-space: nowrap;
+  z-index: 1;
+}

@@ -20,8 +20,13 @@ import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFiel
 import CssClassWidget from "@/components/fields/schemaFields/widgets/CssClassWidget";
 import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { Schema } from "@/core";
 
 const RawCssClassField = defaultFieldFactory(CssClassWidget);
+
+export const isCssClassField = (fieldDefinition: Schema) =>
+  fieldDefinition.type === "string" &&
+  fieldDefinition.format === "bootstrap-class";
 
 // Can't be constant because getToggleOptions needs the widgets registry to be initialized
 export const getCssClassInputFieldOptions = () =>

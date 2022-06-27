@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,18 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-}
+import React from "react";
+import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
+import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
+import cx from "classnames";
+import flapStyles from "./Flaps.module.scss";
 
-.cardBody {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 700px;
-}
+type HoveredFlapProps = {
+  className?: string;
+  elementType: DocumentElementType;
+};
+
+const HoveredFlap: React.FunctionComponent<HoveredFlapProps> = ({
+  className,
+  elementType,
+}) => (
+  <div className={cx(flapStyles.root, className)}>
+    {elementTypeLabels[elementType]}
+  </div>
+);
+
+export default HoveredFlap;

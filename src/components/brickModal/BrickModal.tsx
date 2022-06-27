@@ -29,7 +29,6 @@ import React, {
 import { Button, Modal } from "react-bootstrap";
 import { isEmpty, sortBy } from "lodash";
 import { IBlock, IBrick, RegistryId } from "@/core";
-import { useDebounce } from "use-debounce";
 import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
 import { FixedSizeGrid as LazyGrid } from "react-window";
@@ -78,11 +77,6 @@ function useSearch<T extends IBrick>(
   query: string,
   searchTag: string | null
 ): Array<BrickOption<T>> {
-  const [debouncedQuery] = useDebounce(query, 100, {
-    trailing: true,
-    leading: false,
-  });
-
   const brickHasTag = useCallback(
     (brick: IBrick) => {
       if (searchTag == null || searchTag === TAG_ALL) {
@@ -112,10 +106,10 @@ function useSearch<T extends IBrick>(
 
   return useMemo(
     () =>
-      isNullOrBlank(debouncedQuery)
+      isNullOrBlank(query)
         ? brickOptions
-        : fuse.search(debouncedQuery).map((x) => x.item),
-    [debouncedQuery, fuse, brickOptions]
+        : fuse.search(query).map((x) => x.item),
+    [query, fuse, brickOptions]
   );
 }
 

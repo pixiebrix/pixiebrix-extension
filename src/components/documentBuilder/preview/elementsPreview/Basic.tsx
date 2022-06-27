@@ -23,7 +23,7 @@ import {
 } from "@/components/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
 import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
-import PopupLabels from "./PopupLabels";
+import Flaps from "@/components/documentBuilder/preview/flaps/Flaps";
 
 type BasicProps = PreviewComponentProps & {
   elementType: DocumentElementType;
@@ -45,8 +45,8 @@ const Basic: React.FunctionComponent<BasicProps> = ({
     className={cx(documentTreeStyles.shiftRightWrapper, className)}
     {...restPreviewProps}
   >
-    <PopupLabels
-      className={documentTreeStyles.labelShiftRight}
+    <Flaps
+      className={documentTreeStyles.flapShiftRight}
       elementType={elementType}
       documentBodyName={documentBodyName}
       elementName={elementName}

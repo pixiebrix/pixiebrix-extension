@@ -17,8 +17,8 @@
 
 import React from "react";
 import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
-import HoveredLabel from "@/components/documentBuilder/preview/HoveredLabel";
-import ActiveLabel from "@/components/documentBuilder/preview/ActiveLabel";
+import HoveredFlap from "./HoveredFlap";
+import ActiveElementFlap from "./ActiveElementFlap";
 
 type PopupLabelsProps = {
   className?: string;
@@ -29,7 +29,7 @@ type PopupLabelsProps = {
   isActive: boolean;
 };
 
-const PopupLabels: React.FunctionComponent<PopupLabelsProps> = ({
+const Flaps: React.FunctionComponent<PopupLabelsProps> = ({
   className,
   elementType,
   documentBodyName,
@@ -39,10 +39,10 @@ const PopupLabels: React.FunctionComponent<PopupLabelsProps> = ({
 }) => (
   <>
     {isHovered && (
-      <HoveredLabel className={className} elementType={elementType} />
+      <HoveredFlap className={className} elementType={elementType} />
     )}
     {isActive && (
-      <ActiveLabel
+      <ActiveElementFlap
         className={className}
         documentBodyName={documentBodyName}
         elementName={elementName}
@@ -51,4 +51,4 @@ const PopupLabels: React.FunctionComponent<PopupLabelsProps> = ({
   </>
 );
 
-export default PopupLabels;
+export default Flaps;

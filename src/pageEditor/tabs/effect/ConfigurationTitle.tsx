@@ -34,8 +34,7 @@ import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import { Button } from "react-bootstrap";
 import { actions as pageEditorActions } from "@/pageEditor/slices/editorSlice";
 import useReduxState from "@/hooks/useReduxState";
-import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
-import { useAsyncState } from "@/hooks/common";
+import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 
 const DOCUMENT_BODY_PATH = "config.body";
 
@@ -66,11 +65,7 @@ const BreadcrumbTitle: React.FC<{
 );
 
 const ConfigurationTitle: React.FunctionComponent = () => {
-  const [allBlocks, isLoadingAllBlocks] = useAsyncState<TypedBlockMap>(
-    async () => blockRegistry.allTyped(),
-    [],
-    new Map()
-  );
+  const [allBlocks, isLoadingAllBlocks] = useAllBlocks();
 
   const nodesPipelineMap = useSelector(selectPipelineMap);
   const [activeNodeId, setActiveNodeId] = useReduxState(

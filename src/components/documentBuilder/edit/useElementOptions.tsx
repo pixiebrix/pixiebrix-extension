@@ -27,7 +27,6 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import getElementEditSchemas from "@/components/documentBuilder/edit/getElementEditSchemas";
 import PipelineOptions from "@/components/documentBuilder/edit/PipelineOptions";
 import ButtonOptions from "@/components/documentBuilder/edit/ButtonOptions";
-import CssClassField from "@/components/fields/schemaFields/CssClassField";
 
 const useElementOptions = (
   element: DocumentElement,
@@ -60,14 +59,9 @@ const useElementOptions = (
       const editSchemas = getElementEditSchemas(elementType, elementName);
       const OptionsFields: React.FC = () => (
         <>
-          {editSchemas.map((editSchema) =>
-            editSchema.schema.type === "string" &&
-            editSchema.schema.format === "bootstrap-class" ? (
-              <CssClassField key={editSchema.name} {...editSchema} />
-            ) : (
-              <SchemaField key={editSchema.name} {...editSchema} />
-            )
-          )}
+          {editSchemas.map((editSchema) => (
+            <SchemaField key={editSchema.name} {...editSchema} />
+          ))}
         </>
       );
 
