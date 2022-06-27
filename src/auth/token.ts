@@ -207,8 +207,8 @@ export async function linkExtension(auth: TokenAuthData): Promise<boolean> {
 if (isExtensionContext()) {
   browser.storage.onChanged.addListener((changes, storage) => {
     if (storage === "local") {
-      // eslint-disable-next-line security/detect-object-injection -- compile time constant
       const change =
+        // eslint-disable-next-line security/detect-object-injection -- compile time constants
         changes[STORAGE_EXTENSION_KEY] ?? changes[STORAGE_PARTNER_TOKEN];
 
       if (change) {
