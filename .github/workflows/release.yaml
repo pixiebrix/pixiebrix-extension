@@ -33,13 +33,13 @@ jobs:
           ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_PROD_PUBLIC_KEY }}
-        #      - run: bash scripts/upload-sourcemaps.sh
-        #        env:
-        #          AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
-        #          AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
-        #          AWS_DEFAULT_REGION: "us-east-2"
-        #          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
-        #      - name: Save extension
+      #      - run: bash scripts/upload-sourcemaps.sh
+      #        env:
+      #          AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
+      #          AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
+      #          AWS_DEFAULT_REGION: "us-east-2"
+      #          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
+      - name: Save extension
         uses: ./.github/actions/upload-zipped-artifact
         with:
           name: build-production
