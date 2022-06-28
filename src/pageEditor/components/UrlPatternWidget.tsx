@@ -55,15 +55,18 @@ export const urlSchemaProject: Schema = {
   },
 };
 
-const hostname = Yup.string()
-  .nullable()
-  .transform((x) => (x === "" ? null : x))
-  .matches(
-    /^(\*|http|https|file|ftp|urn)$/,
-    'Can be one of: "http", "https", "file", "ftp", "urn",  "*" (stands for "http" or "https")'
-  );
 const validationSchema = Yup.object().shape({
-  hostname,
+  hostname: Yup.string()
+    .nullable()
+    .transform((x) => (x === "" ? null : x))
+    .matches(
+      /^((?<scheme>\*|http|https|ftp|urn):\/\/(?<host>\*|(\*\.)?[^\/\*]+))|(?<file>file:\/\/)$/,
+      'Should match the pattern <scheme>://<host>, for example "https://example.org" or "*://*.google.com"'
+    ),
+  pathname: Yup.string()
+    .nullable()
+    .transform((x) => (x === "" ? null : x))
+    .matches(/^\/.*$/, 'Should match the pattern "/" <any chars>'),
 });
 
 const UrlPatternWidget: React.VFC<SchemaFieldProps> = (props) => {
