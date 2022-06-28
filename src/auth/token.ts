@@ -152,8 +152,10 @@ export async function getExtensionAuth(): Promise<
  */
 export async function clearExtensionAuth(): Promise<void> {
   console.debug("Clearing extension auth");
-  await browser.storage.local.remove(STORAGE_EXTENSION_KEY);
-  await browser.storage.local.remove(STORAGE_PARTNER_TOKEN);
+  await Promise.allSettled([
+    browser.storage.local.remove(STORAGE_EXTENSION_KEY),
+    browser.storage.local.remove(STORAGE_PARTNER_TOKEN),
+  ]);
   Cookies.remove("csrftoken");
   Cookies.remove("sessionid");
 }

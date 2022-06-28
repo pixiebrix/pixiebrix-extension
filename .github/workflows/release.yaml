@@ -10,43 +10,6 @@ env:
   PUBLIC_RELEASE: true
 
 jobs:
-  build-for-store:
-    runs-on: ubuntu-latest
-    env:
-      SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
-      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          # 16.15.1 was having problems with peer dependency conflicts
-          # https://github.com/pixiebrix/pixiebrix-extension/pull/3598#issuecomment-1148930727
-          node-version: "16.15.0"
-          cache: npm
-      - run: npm ci
-      - run: npm run build
-        env:
-          GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
-          ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
-          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
-
-      - run: bash scripts/upload-sourcemaps.sh
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
-          AWS_DEFAULT_REGION: "us-east-2"
-          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
-      - name: Save extension
-        uses: ./.github/actions/upload-zipped-artifact
-        with:
-          name: build-for-store
-          directory: dist
-          exclusions: "*.map"
-          retention-days: 5
-
   build:
     runs-on: ubuntu-latest
     env:
@@ -70,22 +33,22 @@ jobs:
           ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_PROD_PUBLIC_KEY }}
-      - run: bash scripts/upload-sourcemaps.sh
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
-          AWS_DEFAULT_REGION: "us-east-2"
-          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
-      - name: Save extension
+        #      - run: bash scripts/upload-sourcemaps.sh
+        #        env:
+        #          AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
+        #          AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
+        #          AWS_DEFAULT_REGION: "us-east-2"
+        #          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
+        #      - name: Save extension
         uses: ./.github/actions/upload-zipped-artifact
         with:
           name: build-production
           directory: dist
           exclusions: "*.map"
           retention-days: 5
-      - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_CHANNEL: "release"
-          SLACK_MESSAGE: "Chrome release build succeeded :rocket:"
+#      - name: Slack Notification
+#        uses: rtCamp/action-slack-notify@v2
+#        env:
+#          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+#          SLACK_CHANNEL: "release"
+#          SLACK_MESSAGE: "Chrome release build succeeded :rocket:"
