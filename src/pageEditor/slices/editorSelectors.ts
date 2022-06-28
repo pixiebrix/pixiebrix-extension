@@ -17,7 +17,7 @@
 
 import { RecipeMetadata, RegistryId, UUID } from "@/core";
 import { createSelector } from "reselect";
-import { EditorState } from "@/pageEditor/pageEditorTypes";
+import { EditorState, PipelineType } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { flatMap, isEmpty, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
@@ -53,10 +53,10 @@ export const selectShowV3UpgradeMessageForActiveElement = createSelector(
     showV3UpgradeMessageByElement[activeElementId] ?? false
 );
 
-export const selectDirty = (state: RootState) => state.editor.dirty;
+export const selectDirty = ({ editor }: RootState) => editor.dirty;
 
-export const selectDirtyRecipeOptions = (state: RootState) =>
-  state.editor.dirtyRecipeOptionsById;
+export const selectDirtyRecipeOptions = ({ editor }: RootState) =>
+  editor.dirtyRecipeOptionsById;
 
 const dirtyOptionsForRecipeIdSelector = createSelector(
   selectDirtyRecipeOptions,
@@ -70,8 +70,8 @@ export const selectDirtyOptionsForRecipeId =
   (recipeId: RegistryId) => (state: RootState) =>
     dirtyOptionsForRecipeIdSelector(state, recipeId);
 
-export const selectDirtyRecipeMetadata = (state: RootState) =>
-  state.editor.dirtyRecipeMetadataById;
+export const selectDirtyRecipeMetadata = ({ editor }: RootState) =>
+  editor.dirtyRecipeMetadataById;
 
 const dirtyMetadataForRecipeIdSelector = createSelector(
   selectDirtyRecipeMetadata,
@@ -85,14 +85,12 @@ export const selectDirtyMetadataForRecipeId =
   (recipeId: RegistryId) => (state: RootState) =>
     dirtyMetadataForRecipeIdSelector(state, recipeId);
 
-export const selectDeletedElements = (state: RootState) =>
-  state.editor.deletedElementsByRecipeId;
+export const selectDeletedElements = ({ editor }: RootState) =>
+  editor.deletedElementsByRecipeId;
 
-export const selectAllDeletedElementIds = (state: RootState) =>
+export const selectAllDeletedElementIds = ({ editor }: RootState) =>
   new Set(
-    flatMap(state.editor.deletedElementsByRecipeId).map(
-      (formState) => formState.uuid
-    )
+    flatMap(editor.deletedElementsByRecipeId).map((formState) => formState.uuid)
   );
 
 const elementIsDirtySelector = createSelector(
@@ -141,17 +139,25 @@ export const selectRecipeIsDirty =
   (recipeId?: RegistryId) => (state: RootState) =>
     Boolean(recipeId) && recipeIsDirtySelector(state, recipeId);
 
-export const selectIsAddToRecipeModalVisible = (state: RootState) =>
-  state.editor.isAddToRecipeModalVisible;
+export const selectIsAddToRecipeModalVisible = ({ editor }: RootState) =>
+  editor.isAddToRecipeModalVisible;
 
-export const selectIsRemoveFromRecipeModalVisible = (state: RootState) =>
-  state.editor.isRemoveFromRecipeModalVisible;
+export const selectIsRemoveFromRecipeModalVisible = ({ editor }: RootState) =>
+  editor.isRemoveFromRecipeModalVisible;
 
-export const selectIsSaveAsNewRecipeModalVisible = (state: RootState) =>
-  state.editor.isSaveAsNewRecipeModalVisible;
+export const selectIsSaveAsNewRecipeModalVisible = ({ editor }: RootState) =>
+  editor.isSaveAsNewRecipeModalVisible;
 
-export const selectIsCreateRecipeModalVisible = (state: RootState) =>
-  state.editor.isCreateRecipeModalVisible;
+export const selectIsCreateRecipeModalVisible = ({ editor }: RootState) =>
+  editor.isCreateRecipeModalVisible;
+
+export const selectEditorModalVisibilities = ({ editor }: RootState) => ({
+  isAddToRecipeModalVisible: editor.isAddToRecipeModalVisible,
+  isRemoveFromRecipeModalVisible: editor.isRemoveFromRecipeModalVisible,
+  isSaveAsNewRecipeModalVisible: editor.isSaveAsNewRecipeModalVisible,
+  isCreateRecipeModalVisible: editor.isCreateRecipeModalVisible,
+  isAddBlockModalVisible: editor.isAddBlockModalVisible,
+});
 
 export const selectInstalledRecipeMetadatas = createSelector(
   selectElements,
@@ -239,4 +245,28 @@ export function selectNodeDataPanelTabState(
 export function selectNodePreviewActiveElement(rootState: RootState): string {
   return selectNodeDataPanelTabState(rootState, DataPanelTabKey.Preview)
     .activeElement;
+}
+
+export function selectAddBlockModalContext(rootState: RootState): {
+  pipelinePath: string;
+  pipelineType: PipelineType;
+  pipelineIndex: number;
+} {
+  if (rootState.editor.addBlockPipelinePath === undefined) {
+    throw new Error("addBlockPipelinePath not found");
+  }
+
+  if (rootState.editor.addBlockPipelineType === undefined) {
+    throw new Error("addBlockPipelineType not found");
+  }
+
+  if (rootState.editor.addBlockPipelineIndex === undefined) {
+    throw new Error("addBlockPipelineIndex not found");
+  }
+
+  return {
+    pipelinePath: rootState.editor.addBlockPipelinePath,
+    pipelineType: rootState.editor.addBlockPipelineType,
+    pipelineIndex: rootState.editor.addBlockPipelineIndex,
+  };
 }

@@ -33,14 +33,14 @@ import {
 } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { TraceError, TraceRecord } from "@/telemetry/trace";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
-import { IBlock, OutputKey, UUID } from "@/core";
+import { TypedBlockMap } from "@/blocks/registry";
+import { OutputKey, UUID } from "@/core";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
-import { get, isEmpty, stubTrue } from "lodash";
+import { get, isEmpty } from "lodash";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import {
   getDocumentPipelinePaths,
@@ -49,18 +49,13 @@ import {
 import { joinElementName } from "@/components/documentBuilder/utils";
 import { isNullOrBlank, joinName } from "@/utils";
 import { NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
-import AddBrickAction from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/AddBrickAction";
-import PasteBrickAction from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/PasteBrickAction";
 import BrickIcon from "@/components/BrickIcon";
 import { Except } from "type-fest";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
-import { ExtensionPointType } from "@/extensionPoints/types";
-import {
-  IsBlockAllowedPredicate,
-  makeIsAllowedForRootPipeline,
-} from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
+import { PipelineType } from "@/pageEditor/pageEditorTypes";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -71,17 +66,11 @@ type EditorNodeProps =
 
 type EditorNodeLayoutProps = {
   allBlocks: TypedBlockMap;
-  extensionPointType: ExtensionPointType;
   pipeline: BlockPipeline;
   pipelineErrors: FormikError;
   traceErrors: TraceError[];
   extensionPointLabel: string;
   extensionPointIcon: IconProp;
-  addBlock: (
-    block: IBlock,
-    pipelinePath: string,
-    pipelineIndex: number
-  ) => void;
   moveBlockUp: (instanceId: UUID) => void;
   moveBlockDown: (instanceId: UUID) => void;
   pasteBlock?: (pipelinePath: string, pipelineIndex: number) => void;
@@ -101,10 +90,9 @@ type SubPipeline = {
    */
   subPipelinePath: string;
   /**
-   * Predicate determining if a given block is allowed in the pipeline.
+   * The pipeline type
    */
-  // In the future, we may want to return a message explaining why the brick isn't allowed
-  isBlockAllowed: IsBlockAllowedPredicate;
+  subPipelineType: PipelineType;
 };
 
 function decideBrickStatus({
@@ -144,12 +132,10 @@ function decideBrickStatus({
 
 const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   allBlocks,
-  extensionPointType,
   pipeline,
   pipelineErrors,
   extensionPointLabel,
   extensionPointIcon,
-  addBlock,
   moveBlockUp,
   moveBlockDown,
   pasteBlock,
@@ -177,15 +163,15 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   function mapPipelineToNodes({
     pipeline,
     pipelinePath = PIPELINE_BLOCKS_FIELD_NAME,
+    pipelineType = PipelineType.Root,
     nestingLevel = 0,
     parentIsActive = false,
-    isBlockAllowed = makeIsAllowedForRootPipeline(extensionPointType),
   }: {
     pipeline: BlockPipeline;
     pipelinePath?: string;
     nestingLevel?: number;
     parentIsActive?: boolean;
-    isBlockAllowed?: IsBlockAllowedPredicate;
+    pipelineType?: PipelineType;
   }): EditorNodeProps[] {
     const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
 
@@ -258,12 +244,10 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           const propName = docPipelinePath.split(".").pop();
           const isButton = propName === "onClick";
           subPipelines.push({
+            headerLabel: isButton ? "button" : "brick",
             subPipeline,
             subPipelinePath,
-            headerLabel: isButton ? "button" : "brick",
-            isBlockAllowed: isButton
-              ? (block: TypedBlock) => block.type !== "renderer"
-              : stubTrue,
+            subPipelineType: PipelineType.DocumentBuilder,
           });
         }
       } else {
@@ -282,8 +266,9 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             headerLabel: propName,
             subPipeline: get(pipeline, subPipelineAccessor) ?? [],
             subPipelinePath,
-            // PixieBrix doesn't currently support renderers in control flow bricks
-            isBlockAllowed: (block) => block.type !== "renderer",
+            subPipelineType: PipelineType.ControlFlow,
+            // // PixieBrix doesn't currently support renderers in control flow bricks
+            // isBlockAllowed: (block) => block.type !== "renderer",
           });
         }
       }
@@ -338,30 +323,33 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       const brickNodeActions: NodeAction[] = [];
       const nodeName: string = blockConfig.instanceId;
 
+      // TODO: Refactoring - remove code duplication in the node actions here
       if (showAddBlock) {
-        brickNodeActions.push(
-          <AddBrickAction
-            key={`${nodeName}-add`}
-            blocks={allBlocks}
-            isBlockAllowed={isBlockAllowed}
-            nodeName={nodeName}
-            onSelectBlock={(block) => {
-              addBlock(block, pipelinePath, index + 1);
-            }}
-          />
-        );
+        brickNodeActions.push({
+          name: `${nodeName}-add-brick`,
+          icon: faPlusCircle,
+          tooltipText: "Add a brick",
+          onClick() {
+            dispatch(
+              actions.showAddBlockModal({
+                pipelinePath,
+                pipelineType,
+                pipelineIndex: index + 1,
+              })
+            );
+          },
+        });
       }
 
       if (showPaste) {
-        brickNodeActions.push(
-          <PasteBrickAction
-            key={`${nodeName}-add`}
-            nodeName={nodeName}
-            onClickPaste={() => {
-              pasteBlock(pipelinePath, index + 1);
-            }}
-          />
-        );
+        brickNodeActions.push({
+          name: `${nodeName}-paste-brick`,
+          icon: faPaste,
+          tooltipText: "Paste copied brick",
+          onClick() {
+            pasteBlock(pipelinePath, index + 1);
+          },
+        });
       }
 
       const trailingMessage = showAddMessage ? ADD_MESSAGE : undefined;
@@ -415,32 +403,36 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           headerLabel,
           subPipeline,
           subPipelinePath,
-          isBlockAllowed: isBlockAllowedInPipeline,
+          subPipelineType,
         } of subPipelines) {
           const nodeName = `${subPipelinePath}-header`;
 
           const headerActions: NodeAction[] = [
-            <AddBrickAction
-              key={nodeName}
-              blocks={allBlocks}
-              isBlockAllowed={isBlockAllowedInPipeline}
-              nodeName={nodeName}
-              onSelectBlock={(block) => {
-                addBlock(block, subPipelinePath, 0);
-              }}
-            />,
+            {
+              name: `${nodeName}-add-brick`,
+              icon: faPlusCircle,
+              tooltipText: "Add a brick",
+              onClick() {
+                dispatch(
+                  actions.showAddBlockModal({
+                    pipelinePath: subPipelinePath,
+                    pipelineType: subPipelineType,
+                    pipelineIndex: 0,
+                  })
+                );
+              },
+            },
           ];
 
           if (showPaste) {
-            headerActions.push(
-              <PasteBrickAction
-                key={nodeName}
-                nodeName={nodeName}
-                onClickPaste={() => {
-                  pasteBlock(subPipelinePath, 0);
-                }}
-              />
-            );
+            headerActions.push({
+              name: `${nodeName}-paste-brick`,
+              icon: faPaste,
+              tooltipText: "Paste copied brick",
+              onClick() {
+                pasteBlock(subPipelinePath, 0);
+              },
+            });
           }
 
           const headerNodeProps: PipelineHeaderNodeProps = {
@@ -460,9 +452,9 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             ...mapPipelineToNodes({
               pipeline: subPipeline,
               pipelinePath: subPipelinePath,
+              pipelineType: subPipelineType,
               nestingLevel: nestingLevel + 1,
               parentIsActive: nodeIsActive || parentIsActive,
-              isBlockAllowed: isBlockAllowedInPipeline,
             })
           );
         }
@@ -491,27 +483,31 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   }
 
   const foundationNodeActions: NodeAction[] = [
-    <AddBrickAction
-      key={`${FOUNDATION_NODE_ID}-add`}
-      blocks={allBlocks}
-      isBlockAllowed={makeIsAllowedForRootPipeline(extensionPointType)}
-      nodeName={FOUNDATION_NODE_ID}
-      onSelectBlock={(block) => {
-        addBlock(block, PIPELINE_BLOCKS_FIELD_NAME, 0);
-      }}
-    />,
+    {
+      name: `${FOUNDATION_NODE_ID}-add-brick`,
+      icon: faPlusCircle,
+      tooltipText: "Add a brick",
+      onClick() {
+        dispatch(
+          actions.showAddBlockModal({
+            pipelinePath: PIPELINE_BLOCKS_FIELD_NAME,
+            pipelineType: PipelineType.Root,
+            pipelineIndex: 0,
+          })
+        );
+      },
+    },
   ];
 
   if (showPaste) {
-    foundationNodeActions.push(
-      <PasteBrickAction
-        key={`${FOUNDATION_NODE_ID}-paste`}
-        nodeName={FOUNDATION_NODE_ID}
-        onClickPaste={() => {
-          pasteBlock(PIPELINE_BLOCKS_FIELD_NAME, 0);
-        }}
-      />
-    );
+    foundationNodeActions.push({
+      name: `${FOUNDATION_NODE_ID}-paste-brick`,
+      icon: faPaste,
+      tooltipText: "Paste copied brick",
+      onClick() {
+        pasteBlock(PIPELINE_BLOCKS_FIELD_NAME, 0);
+      },
+    });
   }
 
   const showBiggerFoundationActions = isEmpty(pipeline);

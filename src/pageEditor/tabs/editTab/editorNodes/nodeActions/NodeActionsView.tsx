@@ -19,8 +19,15 @@ import React from "react";
 import cx from "classnames";
 import styles from "./NodeActionsView.module.scss";
 import { isEmpty } from "lodash";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import TooltipIconButton from "@/components/TooltipIconButton";
 
-export type NodeAction = React.ReactNode;
+export type NodeAction = {
+  name: string;
+  icon: IconProp;
+  tooltipText: string;
+  onClick: () => void;
+};
 
 type NodeActionsProps = {
   nodeActions: NodeAction[];
@@ -36,7 +43,15 @@ const NodeActionsView: React.VFC<NodeActionsProps> = ({
       [styles.biggerActions]: showBiggerActions && !isEmpty(nodeActions),
     })}
   >
-    {nodeActions}
+    {nodeActions.map(({ name, icon, onClick, tooltipText }, index) => (
+      <TooltipIconButton
+        key={index} // Actions are not re-ordered, so using index key is fine
+        name={name}
+        icon={icon}
+        onClick={onClick}
+        tooltipText={tooltipText}
+      />
+    ))}
   </div>
 );
 

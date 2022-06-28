@@ -16,39 +16,35 @@
  */
 
 import React from "react";
-import { IBrick } from "@/core";
 import { Button, Card, ListGroup } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
-import styles from "./BrickResultItem.module.scss";
+import styles from "./BlockGridItem.module.scss";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Icon from "@/icons/Icon";
+import { BlockResult } from "@/components/addBlockModal/addBlockModalCore";
 
-export const BRICK_RESULT_FIXED_HEIGHT_PX = 89;
+export const BLOCK_ITEM_FIXED_HEIGHT_PX = 89;
 
-export type BrickResult<T extends IBrick = IBrick> = T & {
-  isPopular?: boolean;
-};
-
-export type BrickResultItemProps<T extends IBrick> = {
-  brick: BrickResult<T>;
+export type BlockItemProps = {
+  block: BlockResult;
   onSelect: () => void;
   onShowDetail: () => void;
 };
 
-const BrickResultItem = <T extends IBrick>({
-  brick,
+const BlockGridItem: React.VFC<BlockItemProps> = ({
+  block,
   onSelect,
   onShowDetail,
-}: BrickResultItemProps<T>) => (
+}) => (
   <ListGroup.Item onClick={onShowDetail} className={styles.root}>
     <Card className={styles.card}>
       {/* Main Content */}
       <div className={styles.cardContent}>
         <div className={styles.nameRow}>
-          <BrickIcon brick={brick} faIconClass={styles.icon} />
-          <span className={styles.name}>{brick.name}</span>
-          {brick.isPopular && (
+          <BrickIcon brick={block} faIconClass={styles.icon} />
+          <span className={styles.name}>{block.name}</span>
+          {block.isPopular && (
             <Icon
               icon="icon-sparkles"
               library="custom"
@@ -56,8 +52,8 @@ const BrickResultItem = <T extends IBrick>({
             />
           )}
         </div>
-        {brick.description ? (
-          <div className={styles.description}>{brick.description}</div>
+        {block.description ? (
+          <div className={styles.description}>{block.description}</div>
         ) : (
           <small className="text-muted font-italic">
             No description provided.
@@ -82,4 +78,4 @@ const BrickResultItem = <T extends IBrick>({
   </ListGroup.Item>
 );
 
-export default BrickResultItem;
+export default BlockGridItem;

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "@/components/brickModal/brickModalVariables.scss";
+@import "@/components/addBlockModal/addBlockModalVariables.scss";
 
 $bodyHeight: calc(100vh - 100px);
 $tagListWidth: 180px;
@@ -87,7 +87,7 @@ $modalPaddingX: calc(
   overflow-y: auto;
 }
 
-.brickDetail {
+.blockDetail {
   height: $bodyHeight;
   flex-grow: 1;
   padding: 1rem;

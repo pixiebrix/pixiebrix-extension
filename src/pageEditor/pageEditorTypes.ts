@@ -46,6 +46,12 @@ export type FormState =
   | ContextMenuFormState
   | QuickBarFormState;
 
+export enum PipelineType {
+  Root,
+  DocumentBuilder,
+  ControlFlow,
+}
+
 export interface EditorState {
   /**
    * A sequence number that changes whenever a new element is selected.
@@ -145,6 +151,26 @@ export interface EditorState {
    * Are we showing the "create blueprint" modal?
    */
   isCreateRecipeModalVisible: boolean;
+
+  /**
+   * Are we showing the (pipeline) add block modal?
+   */
+  isAddBlockModalVisible: boolean;
+
+  /**
+   * The pipeline path where a block will be added by the add block modal
+   */
+  addBlockPipelinePath?: string;
+
+  /**
+   * The type of pipeline where a block will be added by the add block modal
+   */
+  addBlockPipelineType?: PipelineType;
+
+  /**
+   * The pipeline index where a block will be added by the add block modal
+   */
+  addBlockPipelineIndex?: number;
 
   /**
    * When creating a new blueprint from an existing extension, should we keep a separate copy of the extension?

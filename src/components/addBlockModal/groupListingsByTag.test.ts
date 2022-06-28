@@ -16,13 +16,11 @@
  */
 
 import {
-  groupListingsByTag,
-  POPULAR_BRICK_TAG_ID,
-} from "@/components/brickModal/BrickModal";
-import {
   marketplaceListingFactory,
   marketplaceTagFactory,
 } from "@/testUtils/factories";
+import { POPULAR_BRICK_TAG_ID } from "@/components/addBlockModal/addBlockModalCore";
+import groupListingsByTag from "@/components/addBlockModal/groupListingsByTag";
 
 describe("groupListingsByTag", () => {
   it("groups tags", () => {

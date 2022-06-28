@@ -87,14 +87,8 @@ const EditTab: React.FC<{
   const { blockId, path: fieldName } = useSelector(selectActiveNodeInfo) ?? {};
   const pipelineMap = useSelector(selectPipelineMap);
 
-  const {
-    addBlock,
-    removeBlock,
-    moveBlockUp,
-    moveBlockDown,
-    copyBlock,
-    pasteBlock,
-  } = useBlockPipelineActions(pipelineMap, values, setFormValues);
+  const { removeBlock, moveBlockUp, moveBlockDown, copyBlock, pasteBlock } =
+    useBlockPipelineActions(pipelineMap, values, setFormValues);
 
   // The value of formikErrorForBlock can be object or string.
   const formikErrorForBlock = get(blockPipelineErrors, fieldName);
@@ -144,10 +138,8 @@ const EditTab: React.FC<{
               pipeline={blockPipeline}
               pipelineErrors={blockPipelineErrors}
               traceErrors={traceErrors}
-              extensionPointType={extensionPointType}
               extensionPointLabel={extensionPointLabel}
               extensionPointIcon={extensionPointIcon}
-              addBlock={addBlock}
               moveBlockUp={moveBlockUp}
               moveBlockDown={moveBlockDown}
               pasteBlock={pasteBlock}

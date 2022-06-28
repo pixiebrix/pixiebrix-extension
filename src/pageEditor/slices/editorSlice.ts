@@ -31,7 +31,11 @@ import {
   OptionsDefinition,
   RecipeMetadataFormState,
 } from "@/types/definitions";
-import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
+import {
+  EditorState,
+  FormState,
+  PipelineType,
+} from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
 import { cloneDeep, get, isEmpty } from "lodash";
@@ -60,6 +64,7 @@ export const initialState: EditorState = {
   isRemoveFromRecipeModalVisible: false,
   isSaveAsNewRecipeModalVisible: false,
   isCreateRecipeModalVisible: false,
+  isAddBlockModalVisible: false,
   keepLocalCopyOnCreateRecipe: false,
   deletedElementsByRecipeId: {},
   newRecipeIds: [],
@@ -677,6 +682,26 @@ export const editorSlice = createSlice({
 
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
+    },
+    showAddBlockModal(
+      state,
+      action: PayloadAction<{
+        pipelinePath: string;
+        pipelineType: PipelineType;
+        pipelineIndex: number;
+      }>
+    ) {
+      const { pipelinePath, pipelineType, pipelineIndex } = action.payload;
+      state.addBlockPipelinePath = pipelinePath;
+      state.addBlockPipelineType = pipelineType;
+      state.addBlockPipelineIndex = pipelineIndex;
+      state.isAddBlockModalVisible = true;
+    },
+    hideAddBlockModal(state) {
+      state.isAddBlockModalVisible = false;
+      delete state.addBlockPipelinePath;
+      delete state.addBlockPipelineType;
+      delete state.addBlockPipelineIndex;
     },
   },
 });
