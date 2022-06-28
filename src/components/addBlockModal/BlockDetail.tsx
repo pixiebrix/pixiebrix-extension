@@ -1,7 +1,7 @@
 import React from "react";
 import { IBlock } from "@/core";
 import { MarketplaceListing } from "@/types/contract";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
