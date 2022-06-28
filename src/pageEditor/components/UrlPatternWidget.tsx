@@ -23,6 +23,7 @@ import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoi
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Schema } from "@/core";
+import * as Yup from "yup";
 
 /**
  * https://developer.mozilla.org/en-US/docs/Web/API/URLPattern
@@ -54,6 +55,17 @@ export const urlSchemaProject: Schema = {
   },
 };
 
+const hostname = Yup.string()
+  .nullable()
+  .transform((x) => (x === "" ? null : x))
+  .matches(
+    /^(\*|http|https|file|ftp|urn)$/,
+    'Can be one of: "http", "https", "file", "ftp", "urn",  "*" (stands for "http" or "https")'
+  );
+const validationSchema = Yup.object().shape({
+  hostname,
+});
+
 const UrlPatternWidget: React.VFC<SchemaFieldProps> = (props) => {
   const { values: formState } = useFormikContext<FormState>();
 
@@ -67,6 +79,7 @@ const UrlPatternWidget: React.VFC<SchemaFieldProps> = (props) => {
     >
       <ArrayWidget
         schema={{ items: urlSchemaProject }}
+        validationSchema={validationSchema}
         addButtonCaption="Add URL Pattern"
         {...props}
       />

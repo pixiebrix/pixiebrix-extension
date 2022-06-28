@@ -21,12 +21,13 @@ import { Button, Form, Table } from "react-bootstrap";
 import { SafeString, Schema } from "@/core";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { isEmpty } from "lodash";
-import { useField, useFormikContext } from "formik";
+import { FieldValidator, useField, useFormikContext } from "formik";
 import { produce } from "immer";
 import { freshIdentifier, joinName } from "@/utils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 import { UnknownObject } from "@/types";
+import * as Yup from "yup";
 
 type PropertyRowProps = {
   name: string;
@@ -35,10 +36,12 @@ type PropertyRowProps = {
   onDelete?: () => void;
   onRename?: (newName: string) => void;
   isRequired?: boolean;
+  validate?: FieldValidator;
 };
 
 type RowProps = {
   parentSchema: Schema;
+  parentValidationSchema?: Yup.ObjectSchema<any>;
   name: string;
   property: string;
   defined: boolean;
@@ -109,6 +112,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
 
 const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
   parentSchema,
+  parentValidationSchema,
   defined,
   name,
   property,
@@ -148,6 +152,26 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
     [property, onRename]
   );
 
+  let validate: FieldValidator;
+  if (parentValidationSchema) {
+    try {
+      const propertyValidationSchema = Yup.reach(
+        parentValidationSchema,
+        property
+      );
+      validate = async (fieldValue) => {
+        try {
+          await propertyValidationSchema.validate(fieldValue);
+        } catch (error) {
+          return error.message as string;
+        }
+      };
+    } catch (error) {
+      // The most likely reason for the error is that the parent schema does not contain the property
+      console.debug(error);
+    }
+  }
+
   return (
     <PropertyRowComponent
       key={property}
@@ -157,6 +181,7 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
       onDelete={defined ? undefined : deleteProp}
       onRename={defined ? undefined : renameProp}
       isRequired={isRequired}
+      validate={validate}
     />
   );
 };
@@ -177,7 +202,7 @@ export function getPropertyRow(
 type ObjectValue = UnknownObject;
 
 const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
-  const { name, schema } = props;
+  const { name, schema, validationSchema } = props;
 
   // Allow additional properties for empty schema (empty schema allows shape)
   const additionalProperties = isEmpty(schema) || schema.additionalProperties;
@@ -264,6 +289,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
             <ObjectFieldRow
               key={property}
               parentSchema={schema}
+              parentValidationSchema={validationSchema}
               name={
                 // Always use nesting even if property name is empty
                 property == null || property === ""

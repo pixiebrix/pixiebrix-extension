@@ -37,11 +37,13 @@ import { isExpression } from "@/runtime/mapArgs";
 
 const BasicSchemaField: SchemaFieldComponent = ({
   omitIfEmpty = false,
+  onBlur: onBlurProp,
   ...restProps
 }) => {
   const {
     name,
     schema,
+    validationSchema,
     isRequired,
     description,
     isObjectProperty = false,
@@ -137,13 +139,17 @@ const BasicSchemaField: SchemaFieldComponent = ({
     );
   }
 
-  const onBlur = () => {
+  const onBlur = (event: React.FocusEvent) => {
+    formikOnBlur(event);
+
     if (
       omitIfEmpty &&
       (isEmpty(value) || (isExpression(value) && isEmpty(value.__value__)))
     ) {
       onOmitField();
     }
+
+    onBlurProp?.(event);
   };
 
   return (
@@ -157,10 +163,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
       as={widgetsRegistry.TemplateToggleWidget}
       inputModeOptions={inputModeOptions}
       setFieldDescription={updateFieldDescription}
-      onBlur={(event: React.FocusEvent) => {
-        formikOnBlur(event);
-        onBlur();
-      }}
+      onBlur={onBlur}
       {...restProps}
       // Pass in schema after spreading props to override the non-normalized schema in props
       schema={normalizedSchema}

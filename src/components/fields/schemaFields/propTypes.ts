@@ -18,6 +18,7 @@
 import { Schema, UiSchema } from "@/core";
 import React from "react";
 import { FieldInputMode } from "./fieldInputMode";
+import * as Yup from "yup";
 
 // https://json-schema.org/understanding-json-schema/reference/generic.html
 
@@ -33,6 +34,11 @@ export interface SchemaFieldProps {
    * The JSON Schema for the field property
    */
   schema: Schema;
+
+  /**
+   * Field validation schema
+   */
+  validationSchema?: Yup.ObjectSchema<any>;
 
   /**
    * Is this field required?
