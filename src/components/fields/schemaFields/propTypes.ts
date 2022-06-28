@@ -86,6 +86,11 @@ export interface SchemaFieldProps {
   onClick?: () => void;
 
   /**
+   * Blur handler for this field
+   */
+  onBlur?: (event: React.FocusEvent) => void;
+
+  /**
    * Set this input to be focused
    */
   focusInput?: boolean;
