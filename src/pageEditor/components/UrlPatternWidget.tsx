@@ -61,12 +61,12 @@ const validationSchema = Yup.object().shape({
     .transform((x) => (x === "" ? null : x))
     .matches(
       /^((?<scheme>\*|http|https|ftp|urn):\/\/(?<host>\*|(\*\.)?[^\/\*]+))|(?<file>file:\/\/)$/,
-      'Should match the pattern <scheme>://<host>, for example "https://example.org" or "*://*.google.com"'
+      'Hostname should match the pattern <scheme>://<host>, for example "https://example.org" or "*://*.google.com"'
     ),
   pathname: Yup.string()
     .nullable()
     .transform((x) => (x === "" ? null : x))
-    .matches(/^\/.*$/, 'Should match the pattern "/" <any chars>'),
+    .matches(/^\/.*$/, 'Pathname should match the pattern "/" <any chars>'),
 });
 
 const UrlPatternWidget: React.VFC<SchemaFieldProps> = (props) => {

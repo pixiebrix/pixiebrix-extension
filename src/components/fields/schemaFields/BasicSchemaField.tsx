@@ -25,7 +25,7 @@ import React, {
 import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
-import { useField } from "formik";
+import { FieldValidator, useField } from "formik";
 import { isEmpty } from "lodash";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import cx from "classnames";
@@ -110,8 +110,22 @@ const BasicSchemaField: SchemaFieldComponent = ({
     ]
   );
 
+  let validate: FieldValidator;
+  if (validationSchema) {
+    validate = async (fieldValue) => {
+      try {
+        await validationSchema.validate(fieldValue);
+      } catch (error) {
+        return error.message as string;
+      }
+    };
+  }
+
   const [{ value, onBlur: formikOnBlur }, { error, touched }, { setValue }] =
-    useField(name);
+    useField({
+      name,
+      validate,
+    });
 
   useEffect(() => {
     // Initialize any undefined required fields to prevent inferring an "omit" input
