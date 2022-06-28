@@ -173,7 +173,9 @@ async function setData(
         data: {
           id: recordId,
           data: cleanValues,
-          // Using shallow strategy to support partial data views
+          // Using shallow strategy to support partial data forms
+          // In case when a form contains (and submits) only a subset of all the fields of a record,
+          // the fields missing in the form will not be removed from the DB record
           merge_strategy: "shallow",
         },
       });
@@ -189,7 +191,6 @@ async function setData(
         {
           namespace: storage.namespace ?? "blueprint",
           data: cleanValues,
-          // Using shallow strategy to support partial data views
           mergeStrategy: "shallow",
           extensionId,
           blueprintId,
@@ -288,7 +289,7 @@ export const customFormRendererSchema = {
   required: ["schema"],
 };
 
-// Initialize all empty string fields to empty string
+// Ensure that all string fields contain string values (can be empty string "", but not null or undefined)
 // so the form updates the displayed values of the input correctly
 export function normalizeIncomingFormData(schema: Schema, data: UnknownObject) {
   const normalizedData: UnknownObject = {};
@@ -310,8 +311,8 @@ export function normalizeIncomingFormData(schema: Schema, data: UnknownObject) {
   return normalizedData;
 }
 
-// Setting all the empty fields to null to override the values on the server
-// b/c the server uses shallow merge strategy and ignores undefined values returned for empty fields from the form
+// The server uses a shallow merge strategy that ignores undefined values,
+// so we need to make all the undefined field values null instead, so that the server will clear those fields instead of ignoring them
 export function normalizeOutgoingFormData(schema: Schema, data: UnknownObject) {
   const normalizedData = { ...data };
   for (const key of Object.keys(schema.properties)) {
