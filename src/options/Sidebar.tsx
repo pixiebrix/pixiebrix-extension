@@ -31,9 +31,13 @@ import cx from "classnames";
 import { SidebarLink } from "./SidebarLink";
 import { closeSidebarOnSmallScreen, SIDEBAR_ID } from "./toggleSidebar";
 import useFlags from "@/hooks/useFlags";
+import { useGetMeQuery } from "@/services/api";
+
+const DEFAULT_DOCUMENTATION_URL = "https://docs.pixiebrix.com/";
 
 const Sidebar: React.FunctionComponent = () => {
   const { permit } = useFlags();
+  const { data: me } = useGetMeQuery();
 
   return (
     <OutsideClickHandler onOutsideClick={closeSidebarOnSmallScreen}>
@@ -97,7 +101,7 @@ const Sidebar: React.FunctionComponent = () => {
 
           <li className={cx("nav-item")}>
             <a
-              href="https://docs.pixiebrix.com/"
+              href={me?.partner?.documentation_url ?? DEFAULT_DOCUMENTATION_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="nav-link"

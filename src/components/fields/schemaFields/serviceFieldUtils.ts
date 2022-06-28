@@ -20,11 +20,9 @@ import { FormState } from "@/pageEditor/pageEditorTypes";
 import {
   isExpression,
   isPipelineExpression,
-  PipelineExpression,
+  isVarExpression,
 } from "@/runtime/mapArgs";
-import { UnknownObject } from "@/types";
 import { produce } from "immer";
-import { castArray, uniq } from "lodash";
 
 export type ServiceSlice = Pick<FormState, "services" | "extension">;
 
@@ -33,57 +31,41 @@ export type ServiceSlice = Pick<FormState, "services" | "extension">;
  */
 const SERVICE_VAR_REGEX = /^@\w+$/;
 
-/**
- * Return the next level of pipeline expressions. Does not recurse inside the pipeline expression.
- */
-export function selectPipelines(obj: unknown): PipelineExpression[] {
+function deepFindServiceVariables(obj: unknown, variables: Set<string>) {
   if (typeof obj !== "object" || obj == null) {
-    return [];
+    return;
   }
 
-  // NOTE: not recursing insides the pipeline expression. The caller is responsible for calling recursively
+  if (!isExpression(obj)) {
+    for (const value of Object.values(obj)) {
+      deepFindServiceVariables(value, variables);
+    }
+
+    return;
+  }
+
+  if (isVarExpression(obj)) {
+    if (SERVICE_VAR_REGEX.test(obj.__value__)) {
+      variables.add(obj.__value__);
+    }
+
+    return;
+  }
+
   if (isPipelineExpression(obj)) {
-    return [obj];
+    deepFindServiceVariables(obj.__value__, variables);
   }
-
-  // This works on Arrays too, since arrays are objects
-  return Object.values(obj).flatMap((x) => selectPipelines(x));
-}
-
-function selectVariablesFromConfig(config: UnknownObject): string[] {
-  const configValues = Object.values(config);
-
-  const variableExpressions = configValues.filter(
-    (x) => isExpression(x) && x.__type__ === "var"
-  ) as Expression[];
-
-  // Service variables and any other variable expressions without `.` path separators
-  const directVariables = variableExpressions
-    .map((x) => x.__value__)
-    .filter((value) => SERVICE_VAR_REGEX.test(value));
-
-  // Get the next level of !pipeline expressions and recurse to get the variables they reference
-  const pipelines: PipelineExpression[] = configValues.flatMap((value) =>
-    selectPipelines(value)
-  );
-  const nestedPipelineVariables = pipelines.flatMap(({ __value__: configs }) =>
-    configs.flatMap(({ config }) => selectVariablesFromConfig(config))
-  );
-
-  return uniq([...directVariables, ...nestedPipelineVariables]);
 }
 
 /**
  * Return set of service variables referenced by the extension. Variables include the `@`-prefix
  */
-export function selectVariables(
+export function selectServiceVariables(
   state: Pick<FormState, "extension">
 ): Set<string> {
-  const pipeline = castArray(state.extension.blockPipeline ?? []);
-  const identifiers = pipeline.flatMap((x) =>
-    selectVariablesFromConfig(x.config)
-  );
-  return new Set(identifiers);
+  const variables = new Set<string>();
+  deepFindServiceVariables(state.extension.blockPipeline, variables);
+  return variables;
 }
 
 export function keyToFieldValue(key: OutputKey): Expression<ServiceKeyVar> {
@@ -101,7 +83,8 @@ export function keyToFieldValue(key: OutputKey): Expression<ServiceKeyVar> {
 export function produceExcludeUnusedDependencies<
   T extends ServiceSlice = ServiceSlice
 >(state: T): T {
-  const used = selectVariables(state);
+  const used = selectServiceVariables(state);
+
   return produce(state, (draft) => {
     draft.services = draft.services.filter((x) =>
       used.has(keyToFieldValue(x.outputKey).__value__)

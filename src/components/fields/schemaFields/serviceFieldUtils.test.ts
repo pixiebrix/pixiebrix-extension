@@ -15,40 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { OutputKey, UUID } from "@/core";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 import {
   blockConfigFactory,
   formStateFactory,
   uuidSequence,
 } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
-import { selectPipelines, selectVariables } from "./serviceFieldUtils";
-
-describe("selectPipelines", () => {
-  test("handle blank", () => {
-    expect(selectPipelines([])).toStrictEqual([]);
-  });
-
-  test("handle top-level pipeline", () => {
-    const value = toExpression("pipeline", [blockConfigFactory()]);
-
-    expect(selectPipelines([value, { foo: 42 }])).toStrictEqual([value]);
-  });
-
-  test("do not select nested pipeline", () => {
-    // The caller is responsible for recursing into the pipelines
-
-    const innerPipeline = toExpression("pipeline", [blockConfigFactory()]);
-    const outerPipeline = toExpression("pipeline", [
-      blockConfigFactory({
-        config: {
-          pipelineArg: innerPipeline,
-        },
-      }),
-    ]);
-
-    expect(selectPipelines([outerPipeline])).toStrictEqual([outerPipeline]);
-  });
-});
+import { validateRegistryId } from "@/types/helpers";
+import { selectServiceVariables } from "./serviceFieldUtils";
 
 describe("selectVariables", () => {
   test("selects nothing when no services used", () => {
@@ -65,7 +41,7 @@ describe("selectVariables", () => {
       }),
     ]);
 
-    const actual = selectVariables(formState);
+    const actual = selectServiceVariables(formState);
     expect(actual).toEqual(new Set());
   });
 
@@ -82,7 +58,7 @@ describe("selectVariables", () => {
       }),
     ]);
 
-    const actual = selectVariables(formState);
+    const actual = selectServiceVariables(formState);
     expect(actual).toEqual(new Set(["@foo"]));
   });
 
@@ -95,7 +71,7 @@ describe("selectVariables", () => {
       }),
     ]);
 
-    const actual = selectVariables(formState);
+    const actual = selectServiceVariables(formState);
     expect(actual).toEqual(new Set([]));
   });
 
@@ -130,7 +106,7 @@ describe("selectVariables", () => {
       }),
     ]);
 
-    const actual = selectVariables(formState);
+    const actual = selectServiceVariables(formState);
     expect(actual).toEqual(new Set(["@foo"]));
   });
 
@@ -177,7 +153,114 @@ describe("selectVariables", () => {
       }),
     ]);
 
-    const actual = selectVariables(formState);
+    const actual = selectServiceVariables(formState);
     expect(actual).toEqual(new Set(["@foo", "@bar"]));
+  });
+
+  test("document with Form with database storage", () => {
+    // This is a sample of an actual form state with Custom form inside a Document
+    const formState: FormState = {
+      uuid: "a98f5c19-96a2-4c69-89ed-c8e9b7059000" as UUID,
+      apiVersion: "v3",
+      installed: true,
+      label: "Document",
+      services: [
+        {
+          id: validateRegistryId("@pixiebrix/api"),
+          outputKey: "pixiebrix" as OutputKey,
+          config: null,
+        },
+      ],
+      permissions: {},
+      optionsArgs: {},
+      type: "actionPanel",
+      recipe: null,
+      extension: {
+        blockPipeline: [
+          {
+            id: validateRegistryId("@pixiebrix/document"),
+            config: {
+              body: [
+                {
+                  type: "pipeline",
+                  config: {
+                    pipeline: {
+                      __type__: "pipeline",
+                      __value__: [
+                        {
+                          id: validateRegistryId("@pixiebrix/form"),
+                          config: {
+                            storage: {
+                              type: "database",
+                              service: {
+                                __type__: "var",
+                                __value__: "@pixiebrix",
+                              },
+                              databaseId:
+                                "964c3a9b-fc42-40bf-9516-25b5d18a5000",
+                            },
+                            successMessage: "Successfully submitted form",
+                            schema: {
+                              title: "Example Form",
+                              type: "object",
+                              properties: {
+                                notes: {
+                                  title: "Example Notes Field",
+                                  type: "string",
+                                  description: "An example notes field",
+                                },
+                              },
+                            },
+                            uiSchema: {
+                              notes: {
+                                "ui:widget": "textarea",
+                              },
+                            },
+                            recordId: {
+                              __type__: "nunjucks",
+                              __value__: "formData",
+                            },
+                          },
+                          instanceId: "c419abc2-66b0-4c91-acee-9ee5b10e5000",
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
+            },
+            instanceId: "aa24a55a-2d4e-43d5-85c0-6632e0a2d000" as UUID,
+          },
+        ],
+        heading: "Document",
+      },
+      extensionPoint: {
+        metadata: {
+          id: validateRegistryId(
+            "@internal/52d42d87-4382-4c78-b00e-bbdd21d75000"
+          ),
+          name: "Temporary extension point",
+        },
+        definition: {
+          type: "actionPanel",
+          reader: [validateRegistryId("@pixiebrix/document-metadata")],
+          isAvailable: {
+            matchPatterns: ["https://pbx.vercel.app/*"],
+            urlPatterns: [],
+            selectors: [],
+          },
+          trigger: "load",
+          debounce: {
+            waitMillis: 250,
+            leading: false,
+            trailing: true,
+          },
+          customEvent: null,
+        },
+      },
+    };
+
+    const actual = selectServiceVariables(formState);
+    expect(actual).toEqual(new Set(["@pixiebrix"]));
   });
 });
