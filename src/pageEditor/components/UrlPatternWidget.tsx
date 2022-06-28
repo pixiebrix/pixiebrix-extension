@@ -60,7 +60,7 @@ const validationSchema = Yup.object().shape({
     .nullable()
     .transform((x) => (x === "" ? null : x))
     .matches(
-      /^((?<scheme>\*|http|https|ftp|urn):\/\/(?<host>\*|(\*\.)?[^\/\*]+))|(?<file>file:\/\/)$/,
+      /^((?<scheme>\*|http|https|ftp|urn):\/\/(?<host>\*|(\*\.)?[^*/]+))|(?<file>file:\/\/)$/,
       'Hostname should match the pattern <scheme>://<host>, for example "https://example.org" or "*://*.google.com"'
     ),
   pathname: Yup.string()
