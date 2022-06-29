@@ -81,7 +81,10 @@ const FieldTemplate: React.FC<FieldProps> = ({
   className,
   ...restFieldProps
 }) => {
-  const isInvalid = touched && Boolean(error);
+  // If error is an object, it means that children fields have errors.
+  // If error is a string, it means that the field has an error.
+  const isInvalid =
+    touched && (typeof error === "object" || typeof error === "string");
 
   // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
   const nonUndefinedValue = typeof value === "undefined" ? blankValue : value;

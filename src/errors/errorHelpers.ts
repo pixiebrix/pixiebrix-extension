@@ -25,6 +25,7 @@ import {
   selectNetworkErrorMessage,
   selectServerErrorMessage,
 } from "@/errors/networkErrorHelpers";
+import { ValidationError } from "yup";
 
 // From "webext-messenger". Cannot import because the webextension polyfill can only run in an extension context
 // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3641
@@ -201,6 +202,10 @@ export function getErrorMessage(
     }
   }
 
+  if (error instanceof ValidationError) {
+    return error.errors.join(". ");
+  }
+
   return String(selectError(error).message ?? defaultMessage);
 }
 
@@ -305,27 +310,25 @@ export function selectError(originalError: unknown): Error {
     return selectErrorFromRejectionEvent(originalError);
   }
 
-  const error = originalError;
-
-  if (error instanceof Error) {
-    return error;
+  if (originalError instanceof Error) {
+    return originalError;
   }
 
-  if (isErrorObject(error)) {
+  if (isErrorObject(originalError)) {
     // RTK has to store serialized error, so we can end up here (e.g. the error is thrown because of a call to unwrap)
-    return deserializeError(error);
+    return deserializeError(originalError);
   }
 
   console.warn("A non-Error was thrown", {
-    error,
+    error: originalError,
   });
 
   // Wrap error if an unknown primitive or object
   // e.g. `throw 'Error string message'`, which should never be written
-  const errorMessage = isObject(error)
+  const errorMessage = isObject(originalError)
     ? // Use safeJsonStringify vs. JSON.stringify because it handles circular references
-      safeJsonStringify(error)
-    : String(error);
+      safeJsonStringify(originalError)
+    : String(originalError);
 
   // Truncate error message in case it's an excessively-long JSON string
   return new Error(truncate(errorMessage, { length: 2000 }));

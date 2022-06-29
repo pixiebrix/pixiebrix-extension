@@ -34,7 +34,7 @@ import { getToggleOptions } from "./getToggleOptions";
 import widgetsRegistry from "./widgets/widgetsRegistry";
 import useToggleFormField from "@/pageEditor/hooks/useToggleFormField";
 import { isExpression } from "@/runtime/mapArgs";
-import { ValidationError } from "yup";
+import { getFieldValidator } from "../fieldUtils";
 
 const BasicSchemaField: SchemaFieldComponent = ({
   omitIfEmpty = false,
@@ -111,20 +111,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
     ]
   );
 
-  let validate: FieldValidator;
-  if (validationSchema) {
-    validate = async (fieldValue) => {
-      try {
-        await validationSchema.validate(fieldValue);
-      } catch (error) {
-        if (error instanceof ValidationError) {
-          return error.errors.join(". ");
-        }
-
-        return String(error);
-      }
-    };
-  }
+  const validate = getFieldValidator(validationSchema);
 
   const [{ value, onBlur: formikOnBlur }, { error, touched }, { setValue }] =
     useField({

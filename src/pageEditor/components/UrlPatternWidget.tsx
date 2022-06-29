@@ -24,6 +24,7 @@ import { FormState } from "@/pageEditor/pageEditorTypes";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Schema } from "@/core";
 import * as Yup from "yup";
+import { ValidationError } from "yup";
 
 /**
  * https://developer.mozilla.org/en-US/docs/Web/API/URLPattern
@@ -57,6 +58,7 @@ export const urlSchemaProject: Schema = {
 
 const validationSchema = Yup.object().test({
   test(value, { createError }) {
+    const errors: ValidationError[] = [];
     for (const [key, pattern] of Object.entries(value)) {
       if (pattern == null || pattern === "") {
         continue;
@@ -65,13 +67,15 @@ const validationSchema = Yup.object().test({
       try {
         void new URLPattern({ [key]: pattern });
       } catch {
-        return createError({
-          message: `Pattern for ${key} not recognized as a valid url pattern`,
-        });
+        errors.push(
+          createError({
+            message: `Invalid pattern for ${key}`,
+          })
+        );
       }
     }
 
-    return true;
+    return errors.length > 0 ? new ValidationError(errors) : true;
   },
 });
 
