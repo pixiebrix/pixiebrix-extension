@@ -25,7 +25,7 @@ import React, {
 import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
-import { FieldValidator, useField } from "formik";
+import { useField } from "formik";
 import { isEmpty } from "lodash";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import cx from "classnames";
@@ -34,7 +34,7 @@ import { getToggleOptions } from "./getToggleOptions";
 import widgetsRegistry from "./widgets/widgetsRegistry";
 import useToggleFormField from "@/pageEditor/hooks/useToggleFormField";
 import { isExpression } from "@/runtime/mapArgs";
-import { getFieldValidator } from "../fieldUtils";
+import { getFieldValidator } from "@/components/fields/fieldUtils";
 
 const BasicSchemaField: SchemaFieldComponent = ({
   omitIfEmpty = false,
