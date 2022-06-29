@@ -1,7 +1,12 @@
 import { BlockPipeline, Branch } from "@/blocks/types";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { BlockArgContext, ServiceContext, UserOptions, UUID } from "@/core";
-import ConsoleLogger from "@/utils/ConsoleLogger";
+import {
+  BlockArgContext,
+  MessageContext,
+  ServiceContext,
+  UserOptions,
+  UUID,
+} from "@/core";
 import { expectContext } from "@/utils/expectContext";
 import { HeadlessModeError } from "@/blocks/errors";
 import { RendererPayload } from "@/runtime/runtimeTypes";
@@ -10,10 +15,11 @@ import { Except } from "type-fest";
 import { UnknownObject } from "@/types";
 import { ApiVersionOptions } from "@/runtime/apiVersionOptions";
 import { BusinessError } from "@/errors/businessErrors";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
 
 type RunMetadata = {
   /**
-   * The extension id
+   * The extension id.
    */
   extensionId: UUID;
   /**
@@ -32,6 +38,7 @@ type RunPipelineParams = {
   context: BlockArgContext;
   options: ApiVersionOptions;
   meta: RunMetadata;
+  messageContext: MessageContext;
 };
 
 /**
@@ -43,6 +50,7 @@ type RunPipelineParams = {
  *  RendererPayload)
  * @param options pipeline options to pass to reducePipeline
  * @param meta run/trace metadata
+ * @param messageContext the message context for the logger
  */
 export async function runRendererPipeline({
   pipeline,
@@ -50,6 +58,7 @@ export async function runRendererPipeline({
   nonce,
   options,
   meta,
+  messageContext,
 }: RunPipelineParams): Promise<RendererPayload> {
   expectContext("contentScript");
 
@@ -69,7 +78,7 @@ export async function runRendererPipeline({
         serviceContext: context as ServiceContext,
       },
       {
-        logger: new ConsoleLogger(),
+        logger: new BackgroundLogger(messageContext),
         headless: true,
         ...options,
         ...meta,
@@ -97,8 +106,13 @@ export async function runEffectPipeline({
   context,
   options,
   meta,
+  messageContext,
 }: RunPipelineParams): Promise<void> {
   expectContext("contentScript");
+
+  if (meta.extensionId == null) {
+    throw new Error("runEffectPipeline requires meta.extensionId");
+  }
 
   await reducePipeline(
     pipeline,
@@ -117,7 +131,7 @@ export async function runEffectPipeline({
     {
       ...options,
       ...meta,
-      logger: new ConsoleLogger(),
+      logger: new BackgroundLogger(messageContext),
       headless: true,
     }
   );
