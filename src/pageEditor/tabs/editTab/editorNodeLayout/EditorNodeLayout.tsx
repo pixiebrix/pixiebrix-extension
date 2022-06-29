@@ -267,8 +267,6 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             subPipeline: get(pipeline, subPipelineAccessor) ?? [],
             subPipelinePath,
             subPipelineType: PipelineType.ControlFlow,
-            // // PixieBrix doesn't currently support renderers in control flow bricks
-            // isBlockAllowed: (block) => block.type !== "renderer",
           });
         }
       }

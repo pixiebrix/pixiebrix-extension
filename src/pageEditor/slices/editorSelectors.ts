@@ -17,7 +17,7 @@
 
 import { RecipeMetadata, RegistryId, UUID } from "@/core";
 import { createSelector } from "reselect";
-import { EditorState, PipelineType } from "@/pageEditor/pageEditorTypes";
+import { EditorState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { flatMap, isEmpty, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
@@ -247,26 +247,5 @@ export function selectNodePreviewActiveElement(rootState: RootState): string {
     .activeElement;
 }
 
-export function selectAddBlockModalContext(rootState: RootState): {
-  pipelinePath: string;
-  pipelineType: PipelineType;
-  pipelineIndex: number;
-} {
-  if (rootState.editor.addBlockPipelinePath === undefined) {
-    throw new Error("addBlockPipelinePath not found");
-  }
-
-  if (rootState.editor.addBlockPipelineType === undefined) {
-    throw new Error("addBlockPipelineType not found");
-  }
-
-  if (rootState.editor.addBlockPipelineIndex === undefined) {
-    throw new Error("addBlockPipelineIndex not found");
-  }
-
-  return {
-    pipelinePath: rootState.editor.addBlockPipelinePath,
-    pipelineType: rootState.editor.addBlockPipelineType,
-    pipelineIndex: rootState.editor.addBlockPipelineIndex,
-  };
-}
+export const selectAddBlockPipelineInfo = ({ editor }: RootState) =>
+  editor.addBlockPipelineInfo;

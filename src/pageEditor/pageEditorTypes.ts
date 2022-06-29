@@ -52,6 +52,23 @@ export enum PipelineType {
   ControlFlow,
 }
 
+export type PipelineInfo = {
+  /**
+   * The pipeline path where a block will be added by the add block modal
+   */
+  pipelinePath: string;
+
+  /**
+   * The type of pipeline where a block will be added by the add block modal
+   */
+  pipelineType: PipelineType;
+
+  /**
+   * The pipeline index where a block will be added by the add block modal
+   */
+  pipelineIndex: number;
+};
+
 export interface EditorState {
   /**
    * A sequence number that changes whenever a new element is selected.
@@ -158,19 +175,9 @@ export interface EditorState {
   isAddBlockModalVisible: boolean;
 
   /**
-   * The pipeline path where a block will be added by the add block modal
+   * @see PipelineInfo
    */
-  addBlockPipelinePath?: string;
-
-  /**
-   * The type of pipeline where a block will be added by the add block modal
-   */
-  addBlockPipelineType?: PipelineType;
-
-  /**
-   * The pipeline index where a block will be added by the add block modal
-   */
-  addBlockPipelineIndex?: number;
+  addBlockPipelineInfo?: PipelineInfo;
 
   /**
    * When creating a new blueprint from an existing extension, should we keep a separate copy of the extension?

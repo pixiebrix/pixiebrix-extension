@@ -61,7 +61,7 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import {
   selectActiveElement,
   selectActiveElementId,
-  selectAddBlockModalContext,
+  selectAddBlockPipelineInfo,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
@@ -133,7 +133,7 @@ const AddBlockModal: React.VFC = () => {
   }, [reduxDispatch]);
 
   const { pipelinePath, pipelineType, pipelineIndex } = useSelector(
-    selectAddBlockModalContext
+    selectAddBlockPipelineInfo
   );
   const pipelineMap = useSelector(selectPipelineMap);
   const activeExtensionId = useSelector(selectActiveElementId);
@@ -312,7 +312,7 @@ const AddBlockModal: React.VFC = () => {
         void onSelectBlock(block);
       },
     }),
-    [addBlock, blockOptions, closeModal]
+    [blockOptions, onSelectBlock]
   );
 
   return (

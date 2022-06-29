@@ -308,7 +308,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="root"
                 >
                   <button
-                    data-testid="icon-button-add-node-foundation"
+                    data-testid="icon-button-foundation-add-brick"
                     type="button"
                   >
                     <svg
@@ -420,7 +420,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="root"
                 >
                   <button
-                    data-testid="icon-button-add-node-00000003-0000-4000-A000-000000000000"
+                    data-testid="icon-button-00000003-0000-4000-A000-000000000000-add-brick"
                     type="button"
                   >
                     <svg
@@ -556,7 +556,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="root"
                 >
                   <button
-                    data-testid="icon-button-add-node-extension.blockPipeline.1.config.body.__value__-header"
+                    data-testid="icon-button-extension.blockPipeline.1.config.body.__value__-header-add-brick"
                     type="button"
                   >
                     <svg
@@ -624,7 +624,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="root"
                 >
                   <button
-                    data-testid="icon-button-add-node-00000004-0000-4000-A000-000000000000"
+                    data-testid="icon-button-00000004-0000-4000-A000-000000000000-add-brick"
                     type="button"
                   >
                     <svg
@@ -666,7 +666,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="root biggerActions"
                 >
                   <button
-                    data-testid="icon-button-add-node-00000005-0000-4000-A000-000000000000"
+                    data-testid="icon-button-00000005-0000-4000-A000-000000000000-add-brick"
                     type="button"
                   >
                     <svg
@@ -1764,7 +1764,7 @@ exports[`renders the first selected node 1`] = `
                   class="root"
                 >
                   <button
-                    data-testid="icon-button-add-node-foundation"
+                    data-testid="icon-button-foundation-add-brick"
                     type="button"
                   >
                     <svg
@@ -1876,7 +1876,7 @@ exports[`renders the first selected node 1`] = `
                   class="root"
                 >
                   <button
-                    data-testid="icon-button-add-node-00000001-0000-4000-A000-000000000000"
+                    data-testid="icon-button-00000001-0000-4000-A000-000000000000-add-brick"
                     type="button"
                   >
                     <svg
@@ -1983,7 +1983,7 @@ exports[`renders the first selected node 1`] = `
                   class="root biggerActions"
                 >
                   <button
-                    data-testid="icon-button-add-node-00000002-0000-4000-A000-000000000000"
+                    data-testid="icon-button-00000002-0000-4000-A000-000000000000-add-brick"
                     type="button"
                   >
                     <svg

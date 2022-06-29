@@ -34,7 +34,7 @@ import {
 import {
   EditorState,
   FormState,
-  PipelineType,
+  PipelineInfo,
 } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
@@ -683,25 +683,13 @@ export const editorSlice = createSlice({
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
     },
-    showAddBlockModal(
-      state,
-      action: PayloadAction<{
-        pipelinePath: string;
-        pipelineType: PipelineType;
-        pipelineIndex: number;
-      }>
-    ) {
-      const { pipelinePath, pipelineType, pipelineIndex } = action.payload;
-      state.addBlockPipelinePath = pipelinePath;
-      state.addBlockPipelineType = pipelineType;
-      state.addBlockPipelineIndex = pipelineIndex;
+    showAddBlockModal(state, action: PayloadAction<PipelineInfo>) {
+      state.addBlockPipelineInfo = action.payload;
       state.isAddBlockModalVisible = true;
     },
     hideAddBlockModal(state) {
       state.isAddBlockModalVisible = false;
-      delete state.addBlockPipelinePath;
-      delete state.addBlockPipelineType;
-      delete state.addBlockPipelineIndex;
+      delete state.addBlockPipelineInfo;
     },
   },
 });
