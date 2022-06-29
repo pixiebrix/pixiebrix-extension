@@ -62,6 +62,7 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
         },
         // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will break for v4+
         options: apiVersionOptions("v3"),
+        messageContext: logger.context,
       });
     }, [pipeline]);
 

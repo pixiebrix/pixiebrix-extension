@@ -37,10 +37,13 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
   tracePath,
   ...restProps
 }) => {
-  const context = useContext(DocumentContext);
+  const {
+    meta,
+    options: { ctxt, logger },
+  } = useContext(DocumentContext);
   const [counter, setCounter] = useState(0);
 
-  if (!context.meta.extensionId) {
+  if (!meta.extensionId) {
     throw new Error("ButtonElement requires meta.extensionId");
   }
 
@@ -54,12 +57,13 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
       { tabId: me.tab.id, frameId: 0 },
       {
         nonce: uuidv4(),
-        context: context.options.ctxt,
+        context: ctxt,
         pipeline: onClick,
         // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will break for v4+
         options: apiVersionOptions("v3"),
+        messageContext: logger.context,
         meta: {
-          ...context.meta,
+          ...meta,
           branches: [
             ...tracePath.branches.map(({ staticId, index }) => ({
               key: staticId,
