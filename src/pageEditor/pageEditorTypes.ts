@@ -69,6 +69,14 @@ export type PipelineInfo = {
   pipelineIndex: number;
 };
 
+export type ModalKey =
+  | null
+  | "addToRecipe"
+  | "removeFromRecipe"
+  | "saveAsNewRecipe"
+  | "createRecipe"
+  | "addBlock";
+
 export interface EditorState {
   /**
    * A sequence number that changes whenever a new element is selected.
@@ -147,32 +155,10 @@ export interface EditorState {
    */
   dirtyRecipeMetadataById: Record<RegistryId, RecipeMetadataFormState>;
 
-  // XXX: refactor the is<Modal>Visible state: https://github.com/pixiebrix/pixiebrix-extension/issues/3264
-
   /**
-   * Are we showing the "add extension to blueprint" modal?
+   * Which modal are we showing, if any?
    */
-  isAddToRecipeModalVisible: boolean;
-
-  /**
-   * Are we showing the "remove extension from blueprint" modal?
-   */
-  isRemoveFromRecipeModalVisible: boolean;
-
-  /**
-   * Are we showing the "save as new blueprint" modal?
-   */
-  isSaveAsNewRecipeModalVisible: boolean;
-
-  /**
-   * Are we showing the "create blueprint" modal?
-   */
-  isCreateRecipeModalVisible: boolean;
-
-  /**
-   * Are we showing the (pipeline) add block modal?
-   */
-  isAddBlockModalVisible: boolean;
+  visibleModalKey: ModalKey;
 
   /**
    * @see PipelineInfo

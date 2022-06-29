@@ -403,11 +403,11 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           subPipelinePath,
           subPipelineType,
         } of subPipelines) {
-          const nodeName = `${subPipelinePath}-header`;
+          const headerName = `${nodeName}-header`;
 
           const headerActions: NodeAction[] = [
             {
-              name: `${nodeName}-add-brick`,
+              name: `${headerName}-add-brick`,
               icon: faPlusCircle,
               tooltipText: "Add a brick",
               onClick() {
@@ -424,7 +424,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
 
           if (showPaste) {
             headerActions.push({
-              name: `${nodeName}-paste-brick`,
+              name: `${headerName}-paste-brick`,
               icon: faPaste,
               tooltipText: "Paste copied brick",
               onClick() {

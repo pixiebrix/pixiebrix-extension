@@ -556,7 +556,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="root"
                 >
                   <button
-                    data-testid="icon-button-extension.blockPipeline.1.config.body.__value__-header-add-brick"
+                    data-testid="icon-button-00000005-0000-4000-A000-000000000000-header-add-brick"
                     type="button"
                   >
                     <svg

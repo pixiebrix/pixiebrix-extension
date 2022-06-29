@@ -140,23 +140,14 @@ export const selectRecipeIsDirty =
     Boolean(recipeId) && recipeIsDirtySelector(state, recipeId);
 
 export const selectIsAddToRecipeModalVisible = ({ editor }: RootState) =>
-  editor.isAddToRecipeModalVisible;
-
-export const selectIsRemoveFromRecipeModalVisible = ({ editor }: RootState) =>
-  editor.isRemoveFromRecipeModalVisible;
-
-export const selectIsSaveAsNewRecipeModalVisible = ({ editor }: RootState) =>
-  editor.isSaveAsNewRecipeModalVisible;
-
-export const selectIsCreateRecipeModalVisible = ({ editor }: RootState) =>
-  editor.isCreateRecipeModalVisible;
+  editor.visibleModalKey === "addToRecipe";
 
 export const selectEditorModalVisibilities = ({ editor }: RootState) => ({
-  isAddToRecipeModalVisible: editor.isAddToRecipeModalVisible,
-  isRemoveFromRecipeModalVisible: editor.isRemoveFromRecipeModalVisible,
-  isSaveAsNewRecipeModalVisible: editor.isSaveAsNewRecipeModalVisible,
-  isCreateRecipeModalVisible: editor.isCreateRecipeModalVisible,
-  isAddBlockModalVisible: editor.isAddBlockModalVisible,
+  isAddToRecipeModalVisible: editor.visibleModalKey === "addToRecipe",
+  isRemoveFromRecipeModalVisible: editor.visibleModalKey === "removeFromRecipe",
+  isSaveAsNewRecipeModalVisible: editor.visibleModalKey === "saveAsNewRecipe",
+  isCreateRecipeModalVisible: editor.visibleModalKey === "createRecipe",
+  isAddBlockModalVisible: editor.visibleModalKey === "addBlock",
 });
 
 export const selectInstalledRecipeMetadatas = createSelector(

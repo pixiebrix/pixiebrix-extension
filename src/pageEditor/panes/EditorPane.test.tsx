@@ -175,8 +175,8 @@ describe("can add a node", () => {
 
     await waitForEffect();
 
-    // Hitting the last (Foundation node plus 2 bricks) Add Node button
-    const addButtons = screen.getAllByTestId("icon-button-add-node", {
+    // Hitting the last (Foundation node plus 2 bricks) Add Brick button
+    const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
       exact: false,
     });
     const last = addButtons[addButtons.length - 1];
@@ -203,7 +203,7 @@ describe("can add a node", () => {
 
     await waitForEffect();
 
-    const addButton = screen.getByTestId("icon-button-add-node-foundation");
+    const addButton = screen.getByTestId("icon-button-foundation-add-brick");
     await addABlock(addButton, "jq - json processor");
 
     const nodes = screen.getAllByTestId("editor-node");
@@ -228,7 +228,7 @@ describe("can add a node", () => {
 
     // Adding a node at the very beginning of the sub pipeline
     const addButtonUnderSubPipelineHeader = screen.getByTestId(
-      /icon-button-add-node-[\w.]+-header/i
+      /icon-button-[\w-]+-header-add-brick/i
     );
     await addABlock(addButtonUnderSubPipelineHeader, "jq - json processor");
 

@@ -129,7 +129,7 @@ const AddBlockModal: React.VFC = () => {
   const [allBlocks, isLoadingAllBlocks] = useAllBlocks();
 
   const closeModal = useCallback(() => {
-    reduxDispatch(actions.hideAddBlockModal());
+    reduxDispatch(actions.hideModal());
   }, [reduxDispatch]);
 
   const { pipelinePath, pipelineType, pipelineIndex } = useSelector(
