@@ -18,7 +18,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { DeploymentState } from "@/hooks/useDeployments";
 import AsyncButton from "@/components/AsyncButton";
-import { Dropdown, DropdownButton, Modal } from "react-bootstrap";
+import { Alert, Dropdown, DropdownButton, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import settingsSlice from "@/store/settingsSlice";
 import notify from "@/utils/notify";
@@ -30,13 +30,17 @@ import {
   selectUpdatePromptState,
   StateWithSettings,
 } from "@/store/settingsSelectors";
+import pluralize from "@/utils/pluralize";
 
 const FIFTEEN_MINUTES_MILLIS = 900_000;
 const ONE_HOUR_MILLIS = FIFTEEN_MINUTES_MILLIS * 4;
 const ONE_DAY_MILLIS = ONE_HOUR_MILLIS * 24;
 const MINUTES_TO_MILLIS = 60 * 1000;
 
-const CountdownTimer: React.FunctionComponent<{
+/**
+ * Countdown time that automatically calls `onFinish` on countdown.
+ */
+export const CountdownTimer: React.FunctionComponent<{
   duration: number;
   start: number;
   onFinish?: () => void;
@@ -68,16 +72,17 @@ const CountdownTimer: React.FunctionComponent<{
       (remaining - minutes * MINUTES_TO_MILLIS) / 1000
     );
     return (
-      <div>
-        You have {minutes} minute(s) and {seconds} second(s) to update.
-      </div>
+      <Alert variant="info">
+        You have {minutes} {pluralize(minutes, "minute")} and {seconds}{" "}
+        {pluralize(seconds, "second")} remaining to update.
+      </Alert>
     );
   }
 
   return (
-    <div>
-      Your Admin has set a policy requiring you to update within 30 minutes.
-    </div>
+    <Alert variant="info">
+      Your team admin has set a policy requiring you to apply updates.
+    </Alert>
   );
 };
 
@@ -159,7 +164,7 @@ const DeploymentModal: React.FC<
     [dispatch]
   );
 
-  if (isSnoozed && !(isDeploymentUpdateOverdue || isDeploymentUpdateOverdue)) {
+  if (isSnoozed && !(isDeploymentUpdateOverdue || isBrowserExtensionOverdue)) {
     // Snoozed
     return null;
   }

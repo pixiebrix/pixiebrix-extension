@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React from "react";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import DeploymentModal from "@/options/pages/deployments/DeploymentModal";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
@@ -24,16 +24,25 @@ import MockDate from "mockdate";
 import { SettingsState } from "@/store/settingsTypes";
 import { authSlice } from "@/auth/authSlice";
 import { useUpdateAvailable } from "@/options/pages/UpdateBanner";
+import { AuthState } from "@/auth/authTypes";
 
 jest.mock("@/options/pages/UpdateBanner", () => ({
   useUpdateAvailable: jest.fn(),
 }));
 
+browser.runtime.reload = jest.fn();
+
+const reloadMock = browser.runtime.reload as jest.Mock;
 const useUpdateAvailableMock = useUpdateAvailable as jest.Mock;
+
+beforeEach(() => {
+  reloadMock.mockReset();
+});
 
 const renderModal = (
   { extensionUpdateRequired }: { extensionUpdateRequired: boolean },
-  settings: SettingsState
+  settings: Partial<SettingsState>,
+  auth: Partial<AuthState>
 ) => {
   const store = configureStore({
     reducer: {
@@ -41,8 +50,8 @@ const renderModal = (
       auth: authSlice.reducer,
     },
     preloadedState: {
-      settings,
-      auth: authSlice.getInitialState(),
+      settings: { ...settingsSlice.getInitialState(), ...settings },
+      auth: { ...authSlice.getInitialState(), ...auth },
     },
   });
 
@@ -65,17 +74,18 @@ describe("DeploymentModal", () => {
 
     (useUpdateAvailable as jest.Mock).mockReturnValue(true);
 
-    const rendered = renderModal(
+    renderModal(
       {
         extensionUpdateRequired: false,
       },
       {
         ...initialSettingsState,
         nextUpdate: date.getTime() + 1,
-      }
+      },
+      {}
     );
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(screen.queryAllByRole("dialog")).toHaveLength(0);
   });
 
   it("should render modal when snooze expired", async () => {
@@ -84,16 +94,107 @@ describe("DeploymentModal", () => {
 
     useUpdateAvailableMock.mockReturnValue(true);
 
-    const rendered = renderModal(
+    renderModal(
       {
         extensionUpdateRequired: false,
       },
       {
         ...initialSettingsState,
         nextUpdate: snoozeDate.getTime(),
-      }
+      },
+      {}
     );
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(await screen.findAllByRole("dialog")).toMatchSnapshot();
+    expect(
+      screen.queryAllByText(
+        "An update to the PixieBrix browser extension is available"
+      )
+    ).not.toBeNull();
+    expect(screen.getByText("Remind Me Later")).not.toBeDisabled();
+  });
+
+  it("should render when browser extension update is enforced", async () => {
+    // Tonight I'm going to party like it's 1999
+    const date = new Date("12/31/1998");
+    MockDate.set(date);
+
+    (useUpdateAvailable as jest.Mock).mockReturnValue(true);
+
+    renderModal(
+      {
+        extensionUpdateRequired: false,
+      },
+      {
+        ...initialSettingsState,
+        // It is snoozed
+        nextUpdate: date.getTime() + 1,
+        updatePromptTimestamps: {
+          browserExtension: new Date(date.getTime() - 2).getTime(),
+          deployments: null,
+        },
+      },
+      { enforceUpdateMillis: 1 }
+    );
+
+    expect(reloadMock).toHaveBeenCalledTimes(1);
+    expect(await screen.findAllByRole("dialog")).toMatchSnapshot();
+    expect(screen.getByText("Remind Me Later")).toBeDisabled();
+  });
+
+  it("should render deployment update if update is enforced", async () => {
+    // Tonight I'm going to party like it's 1999
+    const date = new Date("12/31/1998");
+    MockDate.set(date);
+
+    (useUpdateAvailable as jest.Mock).mockReturnValue(false);
+
+    renderModal(
+      {
+        extensionUpdateRequired: false,
+      },
+      {
+        ...initialSettingsState,
+        // It is snoozed
+        nextUpdate: date.getTime() + 1,
+        updatePromptTimestamps: {
+          browserExtension: null,
+          deployments: new Date(date.getTime() - 2).getTime(),
+        },
+      },
+      { enforceUpdateMillis: 1 }
+    );
+
+    expect(reloadMock).toHaveBeenCalledTimes(0);
+    expect(await screen.findAllByRole("dialog")).toMatchSnapshot();
+    expect(screen.getByText("Remind Me Later")).toBeDisabled();
+  });
+
+  it("should reload browser extension if extension update required for deployment", async () => {
+    // Tonight I'm going to party like it's 1999
+    const date = new Date("12/31/1998");
+    MockDate.set(date);
+
+    (useUpdateAvailable as jest.Mock).mockReturnValue(false);
+
+    renderModal(
+      {
+        extensionUpdateRequired: true,
+      },
+      {
+        ...initialSettingsState,
+        // It is snoozed
+        nextUpdate: date.getTime() + 1,
+        updatePromptTimestamps: {
+          browserExtension: null,
+          deployments: new Date(date.getTime() - 2).getTime(),
+        },
+      },
+      { enforceUpdateMillis: 1 }
+    );
+
+    expect(reloadMock).toHaveBeenCalledTimes(1);
+    expect(await screen.findAllByRole("dialog")).toMatchSnapshot();
+    expect(screen.getByText("Remind Me Later")).toBeDisabled();
   });
 });

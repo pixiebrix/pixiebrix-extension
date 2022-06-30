@@ -23,24 +23,8 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settingsSlice";
-
-const extensionsStore = configureStore({
-  reducer: {
-    options: extensionsSlice.reducer,
-    settings: settingsSlice.reducer,
-  },
-  preloadedState: {
-    options: { extensions: [] },
-    settings: {
-      mode: "remote",
-      nextUpdate: null,
-      browserWarningDismissed: false,
-      theme: undefined,
-      partnerId: null,
-      updatePromptTimestamps: null,
-    },
-  },
-});
+import { authSlice } from "@/auth/authSlice";
+import { SettingsState } from "@/store/settingsTypes";
 
 export default {
   title: "Options/DeploymentModal",
@@ -49,23 +33,42 @@ export default {
 
 type StoryType = ComponentProps<typeof DeploymentModal> & {
   updateAvailable?: boolean;
+  enforceUpdateMillis?: number | null;
+  updatePromptTimestamps?: SettingsState["updatePromptTimestamps"];
 };
 
-const Template: Story<StoryType> = ({ extensionUpdateRequired }) => (
-  <Provider store={extensionsStore}>
-    <DeploymentModal
-      update={async () => {
-        action("update");
-      }}
-      extensionUpdateRequired={extensionUpdateRequired}
-      updateExtension={async () => {
-        action("updateExtension");
-      }}
-    />
-  </Provider>
-);
+const Template: Story<StoryType> = ({
+  extensionUpdateRequired,
+  enforceUpdateMillis,
+  updatePromptTimestamps,
+}) => {
+  const extensionsStore = configureStore({
+    reducer: {
+      options: extensionsSlice.reducer,
+      settings: settingsSlice.reducer,
+      auth: authSlice.reducer,
+    },
+    preloadedState: {
+      options: extensionsSlice.getInitialState(),
+      settings: { ...settingsSlice.getInitialState(), updatePromptTimestamps },
+      auth: { ...authSlice.getInitialState(), enforceUpdateMillis },
+    },
+  });
 
-// TODO: add story for upgrade modal
+  return (
+    <Provider store={extensionsStore}>
+      <DeploymentModal
+        extensionUpdateRequired={extensionUpdateRequired}
+        update={async () => {
+          action("update");
+        }}
+        updateExtension={async () => {
+          action("updateExtension");
+        }}
+      />
+    </Provider>
+  );
+};
 
 export const ExtensionUpdateRequired = Template.bind({});
 ExtensionUpdateRequired.args = {
