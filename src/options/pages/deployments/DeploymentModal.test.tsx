@@ -88,6 +88,30 @@ describe("DeploymentModal", () => {
     expect(screen.queryAllByRole("dialog")).toHaveLength(0);
   });
 
+  it("should render if snoozed if not shown to user yet", async () => {
+    // Tonight I'm going to party like it's 1999
+    const date = new Date("12/31/1998");
+    MockDate.set(date);
+
+    (useUpdateAvailable as jest.Mock).mockReturnValue(true);
+
+    renderModal(
+      {
+        extensionUpdateRequired: false,
+      },
+      {
+        ...initialSettingsState,
+        nextUpdate: date.getTime() + 1,
+        updatePromptTimestamp: null,
+      },
+      {
+        enforceUpdateMillis: 1,
+      }
+    );
+
+    expect(screen.queryAllByRole("dialog")).toHaveLength(1);
+  });
+
   it("should render modal when snooze expired", async () => {
     const snoozeDate = new Date("12/31/1998");
     MockDate.set(new Date(snoozeDate.getTime() + 1));

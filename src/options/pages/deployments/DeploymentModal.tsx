@@ -150,10 +150,21 @@ const DeploymentModal: React.FC<
       selectUpdatePromptState(state, { now: currentTime, enforceUpdateMillis })
   );
 
+  // Need to track the initial value because the useEffect is potentially overriding it
+  const [initialUpdatePromptTimestamp] = useState(updatePromptTimestamp);
+
+  // When an update is available and a time period is enabled, always show the modal once
+  const hideModal =
+    isSnoozed &&
+    !isUpdateOverdue &&
+    !(enforceUpdateMillis && initialUpdatePromptTimestamp == null);
+
   useEffect(() => {
     // The modal is only rendered if there is something to update
-    dispatch(settingsSlice.actions.recordUpdatePromptTimestamp());
-  }, [dispatch, hasUpdatesAvailable, extensionUpdateRequired]);
+    if (!hideModal) {
+      dispatch(settingsSlice.actions.recordUpdatePromptTimestamp());
+    }
+  }, [hideModal, dispatch]);
 
   const snooze = useCallback(
     (durationMillis: number) => {
@@ -164,7 +175,7 @@ const DeploymentModal: React.FC<
     [dispatch]
   );
 
-  if (isSnoozed && !isUpdateOverdue) {
+  if (hideModal) {
     return null;
   }
 

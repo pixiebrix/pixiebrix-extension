@@ -334,10 +334,14 @@ describe("updateDeployments", () => {
     expect(refreshRegistriesMock.mock.calls.length).toBe(0);
   });
 
-  // FIXME: double check this
-  test("open options page on update if enforce_update_millis is set", async () => {
+  test("open options page on update if enforce_update_millis is set even if snoozed", async () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(true);
+
+    getSettingsStateMock.mockResolvedValue({
+      nextUpdate: Date.now() + 1_000_000,
+      updatePromptTimestamp: null,
+    });
 
     axiosMock.onGet().reply(200, {
       flags: [],
@@ -348,7 +352,7 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
+    expect(isUpdateAvailableMock.mock.calls.length).toBe(0);
     expect(openOptionsPageMock.mock.calls.length).toBe(1);
     expect(refreshRegistriesMock.mock.calls.length).toBe(0);
   });

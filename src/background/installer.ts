@@ -22,7 +22,6 @@ import { getUID } from "@/background/messenger/api";
 import { DNT_STORAGE_KEY, allowsTrack } from "@/telemetry/dnt";
 import { gt } from "semver";
 import { getInstallURL } from "@/services/baseService";
-import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
 
 const UNINSTALL_URL = "https://www.pixiebrix.com/uninstall/";
 
@@ -95,29 +94,10 @@ async function setUninstallURL(): Promise<void> {
   await browser.runtime.setUninstallURL(url.href);
 }
 
-/**
- * Reset the update countdown timer on startup.
- *
- * - If there was a Browser Extension update, it would have been applied
- * - We don't currently separately track timestamps for showing an update modal for deployments vs. browser extension
- * upgrades. However, in enterprise scenarios where enforceUpdateMillis is set, the IT policy is generally such
- * that IT can't reset the extension.
- */
-async function initUpdatePromptTimestamp() {
-  // There could be a race here, but unlikely because this is run on startup
-  const settings = await getSettingsState();
-  await saveSettingsState({
-    ...settings,
-    updatePromptTimestamp: null,
-  });
-}
-
 function initInstaller() {
   browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
   browser.runtime.onInstalled.addListener(install);
   browser.runtime.onStartup.addListener(initTelemetry);
-  browser.runtime.onStartup.addListener(initUpdatePromptTimestamp);
-
   browser.storage.onChanged.addListener((changes) => {
     if (DNT_STORAGE_KEY in changes) {
       void setUninstallURL();

@@ -347,13 +347,14 @@ export async function updateDeployments(): Promise<void> {
     "/api/me/"
   );
 
-  const { isSnoozed, isUpdateOverdue } = selectUpdatePromptState(
-    { settings },
-    {
-      now,
-      enforceUpdateMillis: profile.enforce_update_millis,
-    }
-  );
+  const { isSnoozed, isUpdateOverdue, updatePromptTimestamp } =
+    selectUpdatePromptState(
+      { settings },
+      {
+        now,
+        enforceUpdateMillis: profile.enforce_update_millis,
+      }
+    );
 
   if (profileResponseStatus >= 400) {
     // If our server is acting up, check again later
@@ -389,6 +390,16 @@ export async function updateDeployments(): Promise<void> {
 
   // Always uninstall unmatched deployments
   await uninstallUnmatchedDeployments(deployments);
+
+  if (
+    isSnoozed &&
+    profile.enforce_update_millis &&
+    updatePromptTimestamp == null
+  ) {
+    // There are new updates, so inform the user even though they have snoozed updates
+    void browser.runtime.openOptionsPage();
+    return;
+  }
 
   if (isSnoozed && !isUpdateOverdue) {
     console.debug("Skipping deployments update because updates are snoozed");
@@ -463,8 +474,27 @@ export async function updateDeployments(): Promise<void> {
   }
 }
 
+/**
+ * Reset the update countdown timer on startup.
+ *
+ * - If there was a Browser Extension update, it would have been applied
+ * - We don't currently separately track timestamps for showing an update modal for deployments vs. browser extension
+ * upgrades. However, in enterprise scenarios where enforceUpdateMillis is set, the IT policy is generally such
+ * that IT can't reset the extension.
+ */
+async function resetUpdatePromptTimestamp() {
+  // There could be a race here, but unlikely because this is run on startup
+  console.debug("Resetting updatePromptTimestamp");
+  const settings = await getSettingsState();
+  await saveSettingsState({
+    ...settings,
+    updatePromptTimestamp: null,
+  });
+}
+
 function initDeploymentUpdater(): void {
   setInterval(updateDeployments, UPDATE_INTERVAL_MS);
+  void resetUpdatePromptTimestamp();
   void updateDeployments();
 }
 
