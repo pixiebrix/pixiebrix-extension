@@ -114,7 +114,7 @@ describe("DeploymentModal", () => {
     expect(screen.getByText("Remind Me Later")).not.toBeDisabled();
   });
 
-  it("should render when browser extension update is enforced", async () => {
+  it("should render when is enforced", async () => {
     // Tonight I'm going to party like it's 1999
     const date = new Date("12/31/1998");
     MockDate.set(date);
@@ -129,10 +129,7 @@ describe("DeploymentModal", () => {
         ...initialSettingsState,
         // It is snoozed
         nextUpdate: date.getTime() + 1,
-        updatePromptTimestamps: {
-          browserExtension: new Date(date.getTime() - 2).getTime(),
-          deployments: null,
-        },
+        updatePromptTimestamp: new Date(date.getTime() - 2).getTime(),
       },
       { enforceUpdateMillis: 1 }
     );
@@ -157,10 +154,7 @@ describe("DeploymentModal", () => {
         ...initialSettingsState,
         // It is snoozed
         nextUpdate: date.getTime() + 1,
-        updatePromptTimestamps: {
-          browserExtension: null,
-          deployments: new Date(date.getTime() - 2).getTime(),
-        },
+        updatePromptTimestamp: new Date(date.getTime() - 2).getTime(),
       },
       { enforceUpdateMillis: 1 }
     );
@@ -185,10 +179,7 @@ describe("DeploymentModal", () => {
         ...initialSettingsState,
         // It is snoozed
         nextUpdate: date.getTime() + 1,
-        updatePromptTimestamps: {
-          browserExtension: null,
-          deployments: new Date(date.getTime() - 2).getTime(),
-        },
+        updatePromptTimestamp: new Date(date.getTime() - 2).getTime(),
       },
       { enforceUpdateMillis: 1 }
     );

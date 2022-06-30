@@ -31,31 +31,17 @@ export const selectUpdatePromptState = createSelector(
     ) => args,
   ],
   (state, { now, enforceUpdateMillis }) => {
-    const { nextUpdate, updatePromptTimestamps } = state;
-    const {
-      deployments: deploymentsTimestamp = null,
-      browserExtension: browserExtensionTimestamp = null,
-    } = updatePromptTimestamps ?? {};
+    const { nextUpdate, updatePromptTimestamp } = state;
 
-    const isDeploymentUpdateOverdue =
-      deploymentsTimestamp != null &&
+    const isUpdateOverdue =
+      updatePromptTimestamp != null &&
       enforceUpdateMillis &&
-      now - deploymentsTimestamp > enforceUpdateMillis;
-
-    const isBrowserExtensionOverdue =
-      browserExtensionTimestamp != null &&
-      enforceUpdateMillis &&
-      now - browserExtensionTimestamp > enforceUpdateMillis;
+      now - updatePromptTimestamp > enforceUpdateMillis;
 
     return {
-      isSnoozed:
-        nextUpdate != null &&
-        nextUpdate > now &&
-        !(isDeploymentUpdateOverdue || isDeploymentUpdateOverdue),
-      isBrowserExtensionOverdue,
-      isDeploymentUpdateOverdue,
-      deploymentsTimestamp,
-      browserExtensionTimestamp,
+      isSnoozed: nextUpdate != null && nextUpdate > now,
+      isUpdateOverdue,
+      updatePromptTimestamp,
     };
   }
 );

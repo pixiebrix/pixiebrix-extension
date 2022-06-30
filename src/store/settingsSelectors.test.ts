@@ -21,26 +21,7 @@ import settingsSlice from "@/store/settingsSlice";
 import { SettingsState } from "@/store/settingsTypes";
 
 describe("selectUpdatePromptState", () => {
-  it("handles null timestamp state from previous versions", () => {
-    const settings: SettingsState = {
-      ...settingsSlice.getInitialState(),
-      updatePromptTimestamps: null,
-    };
-
-    const result = selectUpdatePromptState(
-      { settings },
-      { now: Date.now(), enforceUpdateMillis: 1 }
-    );
-    expect(result).toStrictEqual({
-      isSnoozed: false,
-      isBrowserExtensionOverdue: false,
-      isDeploymentUpdateOverdue: false,
-      deploymentsTimestamp: null,
-      browserExtensionTimestamp: null,
-    });
-  });
-
-  it("snooze considers deployment enforcement", () => {
+  it("snooze independent of deployment enforcement", () => {
     const now = Date.now();
 
     MockDate.set(now);
@@ -50,37 +31,7 @@ describe("selectUpdatePromptState", () => {
     const settings: SettingsState = {
       ...settingsSlice.getInitialState(),
       nextUpdate: now + 3,
-      updatePromptTimestamps: {
-        deployments: timestamp,
-        browserExtension: null,
-      },
-    };
-
-    const result = selectUpdatePromptState(
-      { settings },
-      { now, enforceUpdateMillis: 1 }
-    );
-    expect(result).toStrictEqual({
-      isSnoozed: false,
-      isBrowserExtensionOverdue: false,
-      isDeploymentUpdateOverdue: true,
-      deploymentsTimestamp: timestamp,
-      browserExtensionTimestamp: null,
-    });
-  });
-
-  it("snoozes", () => {
-    const now = Date.now();
-
-    MockDate.set(now);
-
-    const settings: SettingsState = {
-      ...settingsSlice.getInitialState(),
-      nextUpdate: now + 3,
-      updatePromptTimestamps: {
-        deployments: null,
-        browserExtension: null,
-      },
+      updatePromptTimestamp: timestamp,
     };
 
     const result = selectUpdatePromptState(
@@ -89,10 +40,30 @@ describe("selectUpdatePromptState", () => {
     );
     expect(result).toStrictEqual({
       isSnoozed: true,
-      isBrowserExtensionOverdue: false,
-      isDeploymentUpdateOverdue: false,
-      deploymentsTimestamp: null,
-      browserExtensionTimestamp: null,
+      updatePromptTimestamp: timestamp,
+      isUpdateOverdue: true,
+    });
+  });
+
+  it("no snooze or previous prompt", () => {
+    const now = Date.now();
+
+    MockDate.set(now);
+
+    const settings: SettingsState = {
+      ...settingsSlice.getInitialState(),
+      nextUpdate: null,
+      updatePromptTimestamp: null,
+    };
+
+    const result = selectUpdatePromptState(
+      { settings },
+      { now, enforceUpdateMillis: 1 }
+    );
+    expect(result).toStrictEqual({
+      isSnoozed: false,
+      updatePromptTimestamp: null,
+      isUpdateOverdue: false,
     });
   });
 });

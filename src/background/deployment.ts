@@ -34,12 +34,13 @@ import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { expectContext } from "@/utils/expectContext";
-import { getSettingsState } from "@/store/settingsStorage";
+import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
 import { isUpdateAvailable } from "@/background/installer";
 import { selectUserDataUpdate } from "@/auth/authUtils";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import { makeUpdatedFilter } from "@/utils/deployment";
 import { selectUpdatePromptState } from "@/store/settingsSelectors";
+import settingsSlice from "@/store/settingsSlice";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -246,6 +247,15 @@ async function selectUpdatedDeployments(
   return deployments.filter((deployment) => updatePredicate(deployment));
 }
 
+async function markAllAsInstalled() {
+  const settings = await getSettingsState();
+  const next = settingsSlice.reducer(
+    settings,
+    settingsSlice.actions.resetUpdatePromptTimestamp()
+  );
+  await saveSettingsState(next);
+}
+
 /**
  * Sync local deployments with provisioned deployments.
  *
@@ -337,7 +347,7 @@ export async function updateDeployments(): Promise<void> {
     "/api/me/"
   );
 
-  const { isSnoozed } = selectUpdatePromptState(
+  const { isSnoozed, isUpdateOverdue } = selectUpdatePromptState(
     { settings },
     {
       now,
@@ -380,7 +390,7 @@ export async function updateDeployments(): Promise<void> {
   // Always uninstall unmatched deployments
   await uninstallUnmatchedDeployments(deployments);
 
-  if (isSnoozed) {
+  if (isSnoozed && !isUpdateOverdue) {
     console.debug("Skipping deployments update because updates are snoozed");
     return;
   }
@@ -441,6 +451,10 @@ export async function updateDeployments(): Promise<void> {
       reportError(error);
       automaticError = true;
     }
+  }
+
+  if (manual.length === 0) {
+    void markAllAsInstalled();
   }
 
   // We only want to call openOptionsPage a single time

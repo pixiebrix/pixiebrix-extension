@@ -35,6 +35,7 @@ const axiosMock = new MockAdapter(axios);
 
 jest.mock("@/store/settingsStorage", () => ({
   getSettingsState: jest.fn(),
+  saveSettingsState: jest.fn(),
 }));
 
 jest.mock("@/hooks/useRefresh", () => ({
@@ -99,7 +100,7 @@ jest.mock("@/background/installer", () => ({
 import { isLinked, readAuthData } from "@/auth/token";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { isUpdateAvailable } from "@/background/installer";
-import { getSettingsState } from "@/store/settingsStorage";
+import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
 
 const isLinkedMock = isLinked as jest.Mock;
 const readAuthDataMock = readAuthData as jest.Mock;
@@ -110,6 +111,7 @@ const containsPermissionsMock = browser.permissions.contains as jest.Mock;
 const refreshRegistriesMock = refreshRegistries as jest.Mock;
 const isUpdateAvailableMock = isUpdateAvailable as jest.Mock;
 const getSettingsStateMock = getSettingsState as jest.Mock;
+const saveSettingsStateMock = saveSettingsState as jest.Mock;
 
 beforeEach(async () => {
   jest.resetModules();
@@ -123,6 +125,7 @@ beforeEach(async () => {
   readAuthDataMock.mockClear();
 
   getSettingsStateMock.mockClear();
+  saveSettingsStateMock.mockClear();
 
   getSettingsStateMock.mockResolvedValue({
     nextUpdate: undefined,
@@ -192,6 +195,7 @@ describe("updateDeployments", () => {
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(1);
+    expect(saveSettingsStateMock).toHaveBeenCalledTimes(1);
   });
 
   test("ignore other user extensions", async () => {
@@ -293,6 +297,7 @@ describe("updateDeployments", () => {
 
     expect((uninstallAllDeployments as jest.Mock).mock.calls.length).toBe(0);
     expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+    expect(saveSettingsStateMock).toHaveBeenCalledTimes(0);
   });
 
   test("do not open options page on update if restricted-version flag not set", async () => {
@@ -329,6 +334,7 @@ describe("updateDeployments", () => {
     expect(refreshRegistriesMock.mock.calls.length).toBe(0);
   });
 
+  // FIXME: double check this
   test("open options page on update if enforce_update_millis is set", async () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(true);

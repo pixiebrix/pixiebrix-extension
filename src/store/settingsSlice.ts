@@ -29,10 +29,7 @@ export const initialSettingsState: SettingsState = {
   browserWarningDismissed: false,
   partnerId: null,
   theme: DEFAULT_THEME,
-  updatePromptTimestamps: {
-    browserExtension: null,
-    deployments: null,
-  },
+  updatePromptTimestamp: null,
 };
 
 const settingsSlice = createSlice({
@@ -66,29 +63,14 @@ const settingsSlice = createSlice({
     ) {
       state.partnerId = partnerId;
     },
-    updateBrowserExtensionPromptTimestamp(state) {
-      if (state.updatePromptTimestamps == null) {
-        state.updatePromptTimestamps = {
-          deployments: null,
-          browserExtension: null,
-        };
-      }
-
-      if (state.updatePromptTimestamps.browserExtension == null) {
-        state.updatePromptTimestamps.browserExtension = Date.now();
+    recordUpdatePromptTimestamp(state) {
+      // Don't overwrite the old timestamp
+      if (state.updatePromptTimestamp == null) {
+        state.updatePromptTimestamp = Date.now();
       }
     },
-    updateDeploymentsPromptTimestamp(state) {
-      if (state.updatePromptTimestamps == null) {
-        state.updatePromptTimestamps = {
-          deployments: null,
-          browserExtension: null,
-        };
-      }
-
-      if (state.updatePromptTimestamps.deployments == null) {
-        state.updatePromptTimestamps.deployments = Date.now();
-      }
+    resetUpdatePromptTimestamp(state) {
+      state.updatePromptTimestamp = null;
     },
     setTheme(state, { payload: { theme } }: { payload: { theme: string } }) {
       if (isValidTheme(theme)) {

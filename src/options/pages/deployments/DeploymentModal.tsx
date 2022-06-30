@@ -145,23 +145,15 @@ const DeploymentModal: React.FC<
 
   const currentTime = Date.now();
 
-  const {
-    isSnoozed,
-    isBrowserExtensionOverdue,
-    isDeploymentUpdateOverdue,
-    deploymentsTimestamp,
-    browserExtensionTimestamp,
-  } = useSelector((state: StateWithSettings) =>
-    selectUpdatePromptState(state, { now: currentTime, enforceUpdateMillis })
+  const { isSnoozed, isUpdateOverdue, updatePromptTimestamp } = useSelector(
+    (state: StateWithSettings) =>
+      selectUpdatePromptState(state, { now: currentTime, enforceUpdateMillis })
   );
 
   useEffect(() => {
-    if (hasUpdatesAvailable || extensionUpdateRequired) {
-      dispatch(settingsSlice.actions.updateBrowserExtensionPromptTimestamp());
-    } else {
-      dispatch(settingsSlice.actions.updateDeploymentsPromptTimestamp());
-    }
-  }, [dispatch, hasUpdatesAvailable, extensionUpdateRequired, isSnoozed]);
+    // The modal is only rendered if there is something to update
+    dispatch(settingsSlice.actions.recordUpdatePromptTimestamp());
+  }, [dispatch, hasUpdatesAvailable, extensionUpdateRequired]);
 
   const snooze = useCallback(
     (durationMillis: number) => {
@@ -172,7 +164,7 @@ const DeploymentModal: React.FC<
     [dispatch]
   );
 
-  if (isSnoozed) {
+  if (isSnoozed && !isUpdateOverdue) {
     return null;
   }
 
@@ -192,7 +184,7 @@ const DeploymentModal: React.FC<
           <Modal.Body>
             <CountdownTimer
               duration={enforceUpdateMillis}
-              start={browserExtensionTimestamp}
+              start={updatePromptTimestamp}
               onFinish={() => {
                 browser.runtime.reload();
               }}
@@ -201,7 +193,7 @@ const DeploymentModal: React.FC<
         )}
 
         <Modal.Footer>
-          <SnoozeButton disabled={isBrowserExtensionOverdue} snooze={snooze} />
+          <SnoozeButton disabled={isUpdateOverdue} snooze={snooze} />
 
           <AsyncButton variant="primary" onClick={updateExtension}>
             Update
@@ -227,7 +219,7 @@ const DeploymentModal: React.FC<
           <Modal.Body>
             <CountdownTimer
               duration={enforceUpdateMillis}
-              start={deploymentsTimestamp}
+              start={updatePromptTimestamp}
               onFinish={() => {
                 browser.runtime.reload();
               }}
@@ -236,7 +228,7 @@ const DeploymentModal: React.FC<
         )}
 
         <Modal.Footer>
-          <SnoozeButton disabled={isDeploymentUpdateOverdue} snooze={snooze} />
+          <SnoozeButton disabled={isUpdateOverdue} snooze={snooze} />
           <AsyncButton variant="primary" onClick={updateExtension}>
             Update
           </AsyncButton>
@@ -256,13 +248,13 @@ const DeploymentModal: React.FC<
         <Modal.Body>
           <CountdownTimer
             duration={enforceUpdateMillis}
-            start={deploymentsTimestamp}
+            start={updatePromptTimestamp}
           />
         </Modal.Body>
       )}
 
       <Modal.Footer>
-        <SnoozeButton disabled={isDeploymentUpdateOverdue} snooze={snooze} />
+        <SnoozeButton disabled={isUpdateOverdue} snooze={snooze} />
         <AsyncButton variant="primary" onClick={update}>
           Activate
         </AsyncButton>

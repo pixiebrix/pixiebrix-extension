@@ -40,21 +40,7 @@ export type SettingsState = SkunkworksSettings & {
    * @since 1.7.1
    * @see AuthState.enforceUpdateMillis
    */
-  updatePromptTimestamps: {
-    /**
-     * Time (in milliseconds from the epoch) that the update deployment modal was first shown
-     *
-     * Reset when no deployment check indicates no deployment updates are available.
-     */
-    deployments: number | null;
-
-    /**
-     * Time (in milliseconds from the epoch) that the update PixieBrix browser extension modal was first shown
-     *
-     * Reset when extension check indicates no browser extension update is available.
-     */
-    browserExtension: number | null;
-  };
+  updatePromptTimestamp: number | null;
 
   /**
    * Whether the non-Chrome browser warning has been dismissed.

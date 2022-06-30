@@ -173,7 +173,6 @@ Array [
           class="modal-footer"
         >
           <div
-            aria-disabled="false"
             class="dropdown"
           >
             <button
@@ -199,7 +198,7 @@ Array [
 ]
 `;
 
-exports[`DeploymentModal should render when browser extension update is enforced 1`] = `
+exports[`DeploymentModal should render when is enforced 1`] = `
 Array [
   <div
     aria-modal="true"

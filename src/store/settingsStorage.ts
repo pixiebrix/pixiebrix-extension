@@ -16,7 +16,7 @@
  */
 
 import { localStorage } from "redux-persist-webextension-storage";
-import { readReduxStorage, ReduxStorageKey } from "@/chrome";
+import { readReduxStorage, ReduxStorageKey, setReduxStorage } from "@/chrome";
 import { SettingsState } from "@/store/settingsTypes";
 import { mapValues } from "lodash";
 
@@ -38,6 +38,16 @@ export async function getSettingsState(): Promise<SettingsState> {
   return parsedSettings;
 }
 
+/**
+ * Save extension options to local storage (without going through redux-persistor).
+ */
+export async function saveSettingsState(state: SettingsState): Promise<void> {
+  // `persist` library expects values as stringified values
+  await setReduxStorage(
+    SETTINGS_STORAGE_KEY,
+    mapValues(state, (value) => JSON.stringify(value))
+  );
+}
 export const persistSettingsConfig = {
   key: "settings",
   storage: localStorage,

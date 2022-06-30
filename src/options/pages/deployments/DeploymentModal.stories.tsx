@@ -24,7 +24,6 @@ import { configureStore } from "@reduxjs/toolkit";
 import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settingsSlice";
 import { authSlice } from "@/auth/authSlice";
-import { SettingsState } from "@/store/settingsTypes";
 
 export default {
   title: "Options/DeploymentModal",
@@ -34,13 +33,13 @@ export default {
 type StoryType = ComponentProps<typeof DeploymentModal> & {
   updateAvailable?: boolean;
   enforceUpdateMillis?: number | null;
-  updatePromptTimestamps?: SettingsState["updatePromptTimestamps"];
+  updatePromptTimestamp?: number | null;
 };
 
 const Template: Story<StoryType> = ({
   extensionUpdateRequired,
   enforceUpdateMillis,
-  updatePromptTimestamps,
+  updatePromptTimestamp,
 }) => {
   const extensionsStore = configureStore({
     reducer: {
@@ -50,7 +49,7 @@ const Template: Story<StoryType> = ({
     },
     preloadedState: {
       options: extensionsSlice.getInitialState(),
-      settings: { ...settingsSlice.getInitialState(), updatePromptTimestamps },
+      settings: { ...settingsSlice.getInitialState(), updatePromptTimestamp },
       auth: { ...authSlice.getInitialState(), enforceUpdateMillis },
     },
   });
