@@ -21,7 +21,6 @@ import {
   ColProps,
   Form as BootstrapForm,
   FormControlProps,
-  FormLabelProps,
   Row,
 } from "react-bootstrap";
 import styles from "./FieldTemplate.module.scss";
@@ -74,7 +73,7 @@ function hasOwnOrNestedError(error: unknown) {
   );
 }
 
-function computeLabelAndColSize(
+export function computeLabelAndColSize(
   fitLabelWidth: boolean,
   widerLabel: boolean,
   label: ReactNode
