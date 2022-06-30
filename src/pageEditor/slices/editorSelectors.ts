@@ -19,7 +19,7 @@ import { RecipeMetadata, RegistryId, UUID } from "@/core";
 import { createSelector } from "reselect";
 import { EditorState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { flatMap, isEmpty, uniqBy } from "lodash";
+import { flatMap, get, isEmpty, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
   ElementUIState,
@@ -211,7 +211,7 @@ export const selectActiveNodeInfo = createSelector(
   selectActiveElementUIState,
   selectActiveNodeId,
   (uiState: ElementUIState, activeNodeId: UUID) =>
-    uiState.pipelineMap[activeNodeId]
+    get(uiState.pipelineMap, activeNodeId)
 );
 
 export const selectActiveNode: (rootState: RootState) => BlockConfig =

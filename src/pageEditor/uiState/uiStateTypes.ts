@@ -24,7 +24,7 @@ type PipelineMapBlock = {
   blockId: RegistryId;
 
   /**
-   * The property name path relative to the pipeline root
+   * The property name path relative to the Formik root
    */
   path: string;
 
@@ -36,7 +36,7 @@ type PipelineMapBlock = {
   index: number;
 
   /**
-   * The path of the pipeline relative to the pipeline root
+   * The path of the pipeline relative to the Formik root
    */
   pipelinePath: string;
 
