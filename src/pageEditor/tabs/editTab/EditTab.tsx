@@ -51,6 +51,7 @@ import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { get } from "lodash";
 import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
+import { FormikError } from "./editTabTypes";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -144,7 +145,7 @@ const EditTab: React.FC<{
           <div className={styles.nodeLayout}>
             <EditorNodeLayout
               pipeline={blockPipeline}
-              errors={errors}
+              errors={errors as FormikError}
               extensionPointType={extensionPointType}
               extensionPointLabel={extensionPointLabel}
               extensionPointIcon={extensionPointIcon}
