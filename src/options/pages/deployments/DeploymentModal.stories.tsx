@@ -37,6 +37,7 @@ const extensionsStore = configureStore({
       browserWarningDismissed: false,
       theme: undefined,
       partnerId: null,
+      updatePromptTimestamps: null,
     },
   },
 });

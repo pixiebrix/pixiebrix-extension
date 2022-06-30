@@ -21,7 +21,7 @@ export type InstallMode = "local" | "remote";
 
 export type SettingsState = SkunkworksSettings & {
   /**
-   * Whether the extension is synced to the app for provisioning.*
+   * Whether the extension is synced to the app for provisioning.
    *
    * NOTE: `local` is broken in many places. The only current valid value is remote.
    */
@@ -33,6 +33,28 @@ export type SettingsState = SkunkworksSettings & {
    * The banners still show, however no modals will be shown for the browser extension or team deployments.
    */
   nextUpdate: number | null;
+
+  /**
+   * Timestamps the update modal was first shown. Used to calculate time remaining for enforceUpdateMillis
+   *
+   * @since 1.7.1
+   * @see AuthState.enforceUpdateMillis
+   */
+  updatePromptTimestamps: {
+    /**
+     * Time (in milliseconds from the epoch) that the update deployment modal was first shown
+     *
+     * Reset when no deployment check indicates no deployment updates are available.
+     */
+    deployments: number | null;
+
+    /**
+     * Time (in milliseconds from the epoch) that the update PixieBrix browser extension modal was first shown
+     *
+     * Reset when extension check indicates no browser extension update is available.
+     */
+    browserExtension: number | null;
+  };
 
   /**
    * Whether the non-Chrome browser warning has been dismissed.

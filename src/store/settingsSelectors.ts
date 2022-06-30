@@ -26,3 +26,13 @@ export const selectSettings = ({ settings }: StateWithSettings) => settings;
 export const selectBrowserWarningDismissed = ({
   settings,
 }: StateWithSettings) => settings.browserWarningDismissed;
+
+export const selectPromptTimestamps = ({
+  settings,
+}: StateWithSettings): {
+  updateDeploymentsTimestamp: SettingsState["updatePromptTimestamps"]["deployments"];
+  updateExtensionTimestamp: SettingsState["updatePromptTimestamps"]["browserExtension"];
+} => ({
+  updateDeploymentsTimestamp: settings.updatePromptTimestamps?.deployments,
+  updateExtensionTimestamp: settings.updatePromptTimestamps?.browserExtension,
+});

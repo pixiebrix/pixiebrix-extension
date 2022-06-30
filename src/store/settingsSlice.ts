@@ -29,6 +29,10 @@ const initialSettingsState: SettingsState = {
   browserWarningDismissed: false,
   partnerId: null,
   theme: DEFAULT_THEME,
+  updatePromptTimestamps: {
+    browserExtension: null,
+    deployments: null,
+  },
 };
 
 const settingsSlice = createSlice({
