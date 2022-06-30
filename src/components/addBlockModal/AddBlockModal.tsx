@@ -132,16 +132,14 @@ const AddBlockModal: React.VFC = () => {
     reduxDispatch(actions.hideModal());
   }, [reduxDispatch]);
 
-  const { pipelinePath, pipelineType, pipelineIndex } = useSelector(
-    selectAddBlockPipelineInfo
-  );
+  const addBlockPipelineInfo = useSelector(selectAddBlockPipelineInfo);
+  const pipelinePath = addBlockPipelineInfo?.path ?? "";
+  const pipelineType = addBlockPipelineInfo?.type ?? PipelineType.Root;
+  const pipelineIndex = addBlockPipelineInfo?.index ?? 0;
   const pipelineMap = useSelector(selectPipelineMap);
   const activeExtensionId = useSelector(selectActiveElementId);
-  const {
-    extensionPoint: {
-      definition: { type: extensionPointType },
-    },
-  } = useSelector(selectActiveElement);
+  const activeElement = useSelector(selectActiveElement);
+  const extensionPointType = activeElement?.extensionPoint?.definition?.type;
 
   const addBlock = useCallback(
     async (block: IBlock) => {
@@ -171,8 +169,8 @@ const AddBlockModal: React.VFC = () => {
     [
       activeExtensionId,
       pipelineIndex,
-      pipelineMap,
       pipelinePath,
+      pipelineMap,
       reduxDispatch,
       sessionId,
     ]

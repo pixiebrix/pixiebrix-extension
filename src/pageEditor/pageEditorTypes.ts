@@ -56,17 +56,18 @@ export type PipelineInfo = {
   /**
    * The pipeline path where a block will be added by the add block modal
    */
-  pipelinePath: string;
+  path: string;
 
   /**
    * The type of pipeline where a block will be added by the add block modal
+   * @see: PipelineType
    */
-  pipelineType: PipelineType;
+  type: PipelineType;
 
   /**
    * The pipeline index where a block will be added by the add block modal
    */
-  pipelineIndex: number;
+  index: number;
 };
 
 export type ModalKey =

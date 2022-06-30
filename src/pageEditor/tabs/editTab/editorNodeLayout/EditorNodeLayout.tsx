@@ -330,9 +330,9 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           onClick() {
             dispatch(
               actions.showAddBlockModal({
-                pipelinePath,
-                pipelineType,
-                pipelineIndex: index + 1,
+                path: pipelinePath,
+                type: pipelineType,
+                index: index + 1,
               })
             );
           },
@@ -413,9 +413,9 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
               onClick() {
                 dispatch(
                   actions.showAddBlockModal({
-                    pipelinePath: subPipelinePath,
-                    pipelineType: subPipelineType,
-                    pipelineIndex: 0,
+                    path: subPipelinePath,
+                    type: subPipelineType,
+                    index: 0,
                   })
                 );
               },
@@ -488,9 +488,9 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       onClick() {
         dispatch(
           actions.showAddBlockModal({
-            pipelinePath: PIPELINE_BLOCKS_FIELD_NAME,
-            pipelineType: PipelineType.Root,
-            pipelineIndex: 0,
+            path: PIPELINE_BLOCKS_FIELD_NAME,
+            type: PipelineType.Root,
+            index: 0,
           })
         );
       },

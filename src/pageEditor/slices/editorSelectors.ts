@@ -201,7 +201,7 @@ export const selectActiveNodeId: (rootState: RootState) => UUID =
 
 export const selectPipelineMap = createSelector(
   selectActiveElementUIState,
-  (uiState: ElementUIState) => uiState.pipelineMap
+  (uiState: ElementUIState) => uiState?.pipelineMap
 );
 
 export const selectActiveNodeInfo = createSelector(

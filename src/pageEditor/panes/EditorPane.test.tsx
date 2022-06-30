@@ -40,6 +40,7 @@ import {
 import { PipelineExpression } from "@/runtime/mapArgs";
 import { act } from "react-dom/test-utils";
 import { OutputKey } from "@/core";
+import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 
 jest.setTimeout(30_000); // This test is flaky with the default timeout of 5000 ms
 
@@ -166,12 +167,18 @@ describe("can add a node", () => {
 
   test("to root pipeline", async () => {
     const formState = getPlainFormState();
-    render(<EditorPane />, {
-      setupRedux(dispatch) {
-        dispatch(editorActions.addElement(formState));
-        dispatch(editorActions.selectElement(formState.uuid));
-      },
-    });
+    render(
+      <>
+        <EditorPane />
+        <AddBlockModal />
+      </>,
+      {
+        setupRedux(dispatch) {
+          dispatch(editorActions.addElement(formState));
+          dispatch(editorActions.selectElement(formState.uuid));
+        },
+      }
+    );
 
     await waitForEffect();
 
@@ -194,12 +201,18 @@ describe("can add a node", () => {
 
   test("to an empty extension", async () => {
     const element = formStateFactory(undefined, []);
-    render(<EditorPane />, {
-      setupRedux(dispatch) {
-        dispatch(editorActions.addElement(element));
-        dispatch(editorActions.selectElement(element.uuid));
-      },
-    });
+    render(
+      <>
+        <EditorPane />
+        <AddBlockModal />
+      </>,
+      {
+        setupRedux(dispatch) {
+          dispatch(editorActions.addElement(element));
+          dispatch(editorActions.selectElement(element.uuid));
+        },
+      }
+    );
 
     await waitForEffect();
 
@@ -217,12 +230,18 @@ describe("can add a node", () => {
 
   test("to sub pipeline", async () => {
     const element = getFormStateWithSubPipelines();
-    const { getReduxStore } = render(<EditorPane />, {
-      setupRedux(dispatch) {
-        dispatch(editorActions.addElement(element));
-        dispatch(editorActions.selectElement(element.uuid));
-      },
-    });
+    const { getReduxStore } = render(
+      <div>
+        <EditorPane />
+        <AddBlockModal />
+      </div>,
+      {
+        setupRedux(dispatch) {
+          dispatch(editorActions.addElement(element));
+          dispatch(editorActions.selectElement(element.uuid));
+        },
+      }
+    );
 
     await waitForEffect();
 
@@ -249,7 +268,7 @@ describe("can add a node", () => {
         .body as PipelineExpression
     ).__value__[0].instanceId;
     const addButtonInSubPipeline = screen.getByTestId(
-      `icon-button-add-node-${jqNodeId}`
+      `icon-button-${jqNodeId}-add-brick`
     );
 
     // The name of the block is "Teapot Block", searching for "Teapot" to get a single result in the Add Brick Dialog
