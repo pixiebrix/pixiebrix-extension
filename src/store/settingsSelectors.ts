@@ -16,23 +16,48 @@
  */
 
 import { SettingsState } from "./settingsTypes";
+import { createSelector } from "reselect";
 
-type StateWithSettings = {
+export type StateWithSettings = {
   settings: SettingsState;
 };
+
+export const selectUpdatePromptState = createSelector(
+  [
+    (state: StateWithSettings) => state.settings,
+    (
+      state: StateWithSettings,
+      args: { now: number; enforceUpdateMillis: number | null }
+    ) => args,
+  ],
+  (state, { now, enforceUpdateMillis }) => {
+    const { nextUpdate, updatePromptTimestamps } = state;
+    const {
+      deployments: deploymentsTimestamp,
+      browserExtension: browserExtensionTimestamp,
+    } = updatePromptTimestamps ?? {};
+
+    const isDeploymentUpdateOverdue =
+      deploymentsTimestamp &&
+      enforceUpdateMillis &&
+      now - deploymentsTimestamp > enforceUpdateMillis;
+    const isBrowserExtensionOverdue =
+      browserExtensionTimestamp &&
+      enforceUpdateMillis &&
+      now - browserExtensionTimestamp > enforceUpdateMillis;
+
+    return {
+      isSnoozed: nextUpdate && nextUpdate > now,
+      isBrowserExtensionOverdue,
+      isDeploymentUpdateOverdue,
+      deploymentsTimestamp,
+      browserExtensionTimestamp,
+    };
+  }
+);
 
 export const selectSettings = ({ settings }: StateWithSettings) => settings;
 
 export const selectBrowserWarningDismissed = ({
   settings,
 }: StateWithSettings) => settings.browserWarningDismissed;
-
-export const selectPromptTimestamps = ({
-  settings,
-}: StateWithSettings): {
-  updateDeploymentsTimestamp: SettingsState["updatePromptTimestamps"]["deployments"];
-  updateExtensionTimestamp: SettingsState["updatePromptTimestamps"]["browserExtension"];
-} => ({
-  updateDeploymentsTimestamp: settings.updatePromptTimestamps?.deployments,
-  updateExtensionTimestamp: settings.updatePromptTimestamps?.browserExtension,
-});

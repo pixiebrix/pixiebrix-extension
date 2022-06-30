@@ -22,7 +22,7 @@ import { once } from "lodash";
 import { DEFAULT_THEME } from "@/options/types";
 import { isValidTheme } from "@/utils/themeUtils";
 
-const initialSettingsState: SettingsState = {
+export const initialSettingsState: SettingsState = {
   mode: "remote",
   nextUpdate: null as number,
   suggestElements: false,

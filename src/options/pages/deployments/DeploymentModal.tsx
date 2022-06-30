@@ -18,16 +18,18 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { DeploymentState } from "@/hooks/useDeployments";
 import AsyncButton from "@/components/AsyncButton";
-import { DropdownButton, Dropdown, Modal } from "react-bootstrap";
+import { Dropdown, DropdownButton, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { SettingsState } from "@/store/settingsTypes";
 import settingsSlice from "@/store/settingsSlice";
 import notify from "@/utils/notify";
 import { useUpdateAvailable } from "@/options/pages/UpdateBanner";
 import { reportEvent } from "@/telemetry/events";
 import { selectAuth } from "@/auth/authSelectors";
 import { noop } from "lodash";
-import { selectPromptTimestamps } from "@/store/settingsSelectors";
+import {
+  selectUpdatePromptState,
+  StateWithSettings,
+} from "@/store/settingsSelectors";
 
 const FIFTEEN_MINUTES_MILLIS = 900_000;
 const ONE_HOUR_MILLIS = FIFTEEN_MINUTES_MILLIS * 4;
@@ -135,11 +137,17 @@ const DeploymentModal: React.FC<
   const dispatch = useDispatch();
   const hasUpdatesAvailable = useUpdateAvailable();
   const { enforceUpdateMillis } = useSelector(selectAuth);
-  const nextUpdate = useSelector<{ settings: SettingsState }, number | null>(
-    ({ settings }) => settings.nextUpdate
-  );
-  const { updateDeploymentsTimestamp, updateExtensionTimestamp } = useSelector(
-    selectPromptTimestamps
+
+  const currentTime = Date.now();
+
+  const {
+    isSnoozed,
+    isDeploymentUpdateOverdue,
+    isBrowserExtensionOverdue,
+    deploymentsTimestamp,
+    browserExtensionTimestamp,
+  } = useSelector((state: StateWithSettings) =>
+    selectUpdatePromptState(state, { now: currentTime, enforceUpdateMillis })
   );
 
   const snooze = useCallback(
@@ -150,17 +158,6 @@ const DeploymentModal: React.FC<
     },
     [dispatch]
   );
-
-  const currentTime = Date.now();
-  const isSnoozed = nextUpdate && nextUpdate > currentTime;
-  const isDeploymentUpdateOverdue =
-    updateDeploymentsTimestamp &&
-    enforceUpdateMillis &&
-    currentTime - updateDeploymentsTimestamp > enforceUpdateMillis;
-  const isExtensionUpdateOverdue =
-    updateExtensionTimestamp &&
-    enforceUpdateMillis &&
-    currentTime - updateExtensionTimestamp > enforceUpdateMillis;
 
   if (isSnoozed && !(isDeploymentUpdateOverdue || isDeploymentUpdateOverdue)) {
     // Snoozed
@@ -183,7 +180,7 @@ const DeploymentModal: React.FC<
           <Modal.Body>
             <CountdownTimer
               duration={enforceUpdateMillis}
-              start={updateExtensionTimestamp}
+              start={browserExtensionTimestamp}
               onFinish={() => {
                 browser.runtime.reload();
               }}
@@ -192,7 +189,7 @@ const DeploymentModal: React.FC<
         )}
 
         <Modal.Footer>
-          <SnoozeButton disabled={isExtensionUpdateOverdue} snooze={snooze} />
+          <SnoozeButton disabled={isBrowserExtensionOverdue} snooze={snooze} />
 
           <AsyncButton variant="primary" onClick={updateExtension}>
             Update
@@ -218,7 +215,7 @@ const DeploymentModal: React.FC<
           <Modal.Body>
             <CountdownTimer
               duration={enforceUpdateMillis}
-              start={updateDeploymentsTimestamp}
+              start={deploymentsTimestamp}
               onFinish={() => {
                 browser.runtime.reload();
               }}
@@ -247,7 +244,7 @@ const DeploymentModal: React.FC<
         <Modal.Body>
           <CountdownTimer
             duration={enforceUpdateMillis}
-            start={updateDeploymentsTimestamp}
+            start={deploymentsTimestamp}
           />
         </Modal.Body>
       )}

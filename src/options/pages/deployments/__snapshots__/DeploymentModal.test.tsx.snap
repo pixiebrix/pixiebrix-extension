@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DeploymentModal should not render when snoozed 1`] = `<div />`;
+
+exports[`DeploymentModal should render modal when snooze expired 1`] = `
+<div
+  aria-hidden="true"
+/>
+`;
+
+exports[`DeploymentModal should render when snooze expired 1`] = `<div />`;

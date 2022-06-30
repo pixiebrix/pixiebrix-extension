@@ -52,7 +52,7 @@ export function selectUserDataUpdate({
   organization_memberships: organizationMemberships = [],
   group_memberships = [],
   flags = [],
-  enforceUpdateMillis,
+  enforce_update_millis: enforceUpdateMillis,
 }: Me): UserDataUpdate {
   const organizations = selectOrganizations(organizationMemberships);
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
@@ -77,7 +77,7 @@ export function selectExtensionAuthState({
   flags = [],
   organization_memberships: organizationMemberships = [],
   group_memberships = [],
-  enforceUpdateMillis,
+  enforce_update_millis: enforceUpdateMillis,
 }: Me): AuthState {
   const organizations = selectOrganizations(organizationMemberships);
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
