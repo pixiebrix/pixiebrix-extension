@@ -329,6 +329,24 @@ describe("updateDeployments", () => {
     expect(refreshRegistriesMock.mock.calls.length).toBe(0);
   });
 
+  test("open options page on update if enforce_update_millis is set", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    isUpdateAvailableMock.mockReturnValue(true);
+
+    axiosMock.onGet().reply(200, {
+      flags: [],
+      enforce_update_millis: 5000,
+    });
+
+    axiosMock.onPost().reply(201, []);
+
+    await updateDeployments();
+
+    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
+    expect(openOptionsPageMock.mock.calls.length).toBe(1);
+    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+  });
+
   test("skip update if snoozed", async () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(true);

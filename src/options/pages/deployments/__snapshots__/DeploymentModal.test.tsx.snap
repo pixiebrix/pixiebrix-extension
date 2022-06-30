@@ -1,7 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DeploymentModal should not render when snoozed 1`] = `<div />`;
-
 exports[`DeploymentModal should reload browser extension if extension update required for deployment 1`] = `
 Array [
   <div
@@ -175,6 +173,7 @@ Array [
           class="modal-footer"
         >
           <div
+            aria-disabled="false"
             class="dropdown"
           >
             <button

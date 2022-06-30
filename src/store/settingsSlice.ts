@@ -66,6 +66,30 @@ const settingsSlice = createSlice({
     ) {
       state.partnerId = partnerId;
     },
+    updateBrowserExtensionPromptTimestamp(state) {
+      if (state.updatePromptTimestamps == null) {
+        state.updatePromptTimestamps = {
+          deployments: null,
+          browserExtension: null,
+        };
+      }
+
+      if (state.updatePromptTimestamps.browserExtension == null) {
+        state.updatePromptTimestamps.browserExtension = Date.now();
+      }
+    },
+    updateDeploymentsPromptTimestamp(state) {
+      if (state.updatePromptTimestamps == null) {
+        state.updatePromptTimestamps = {
+          deployments: null,
+          browserExtension: null,
+        };
+      }
+
+      if (state.updatePromptTimestamps.deployments == null) {
+        state.updatePromptTimestamps.deployments = Date.now();
+      }
+    },
     setTheme(state, { payload: { theme } }: { payload: { theme: string } }) {
       if (isValidTheme(theme)) {
         state.theme = theme;

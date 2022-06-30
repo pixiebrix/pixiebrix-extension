@@ -147,13 +147,21 @@ const DeploymentModal: React.FC<
 
   const {
     isSnoozed,
-    isDeploymentUpdateOverdue,
     isBrowserExtensionOverdue,
+    isDeploymentUpdateOverdue,
     deploymentsTimestamp,
     browserExtensionTimestamp,
   } = useSelector((state: StateWithSettings) =>
     selectUpdatePromptState(state, { now: currentTime, enforceUpdateMillis })
   );
+
+  useEffect(() => {
+    if (hasUpdatesAvailable || extensionUpdateRequired) {
+      dispatch(settingsSlice.actions.updateBrowserExtensionPromptTimestamp());
+    } else {
+      dispatch(settingsSlice.actions.updateDeploymentsPromptTimestamp());
+    }
+  }, [dispatch, hasUpdatesAvailable, extensionUpdateRequired, isSnoozed]);
 
   const snooze = useCallback(
     (durationMillis: number) => {
@@ -164,8 +172,7 @@ const DeploymentModal: React.FC<
     [dispatch]
   );
 
-  if (isSnoozed && !(isDeploymentUpdateOverdue || isBrowserExtensionOverdue)) {
-    // Snoozed
+  if (isSnoozed) {
     return null;
   }
 

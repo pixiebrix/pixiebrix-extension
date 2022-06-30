@@ -39,6 +39,7 @@ import { isUpdateAvailable } from "@/background/installer";
 import { selectUserDataUpdate } from "@/auth/authUtils";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import { makeUpdatedFilter } from "@/utils/deployment";
+import { selectUpdatePromptState } from "@/store/settingsSelectors";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -256,7 +257,7 @@ export async function updateDeployments(): Promise<void> {
 
   const now = Date.now();
 
-  const [linked, { organizationId }, { nextUpdate }] = await Promise.all([
+  const [linked, { organizationId }, settings] = await Promise.all([
     isLinked(),
     readAuthData(),
     getSettingsState(),
@@ -336,6 +337,14 @@ export async function updateDeployments(): Promise<void> {
     "/api/me/"
   );
 
+  const { isSnoozed } = selectUpdatePromptState(
+    { settings },
+    {
+      now,
+      enforceUpdateMillis: profile.enforce_update_millis,
+    }
+  );
+
   if (profileResponseStatus >= 400) {
     // If our server is acting up, check again later
     console.debug(
@@ -371,17 +380,16 @@ export async function updateDeployments(): Promise<void> {
   // Always uninstall unmatched deployments
   await uninstallUnmatchedDeployments(deployments);
 
-  if (nextUpdate && nextUpdate > now) {
-    console.debug("Skipping deployments update because updates are snoozed", {
-      nextUpdate,
-    });
+  if (isSnoozed) {
+    console.debug("Skipping deployments update because updates are snoozed");
     return;
   }
 
   if (
     isUpdateAvailable() &&
     // `restricted-version` is an implicit flag from the MeSerializer
-    profile.flags.includes("restricted-version")
+    (profile.flags.includes("restricted-version") ||
+      profile.enforce_update_millis)
   ) {
     console.info("Extension update available from the web store");
     // Have the user update their browser extension. (Since the new version might impact the deployment activation)
@@ -389,8 +397,8 @@ export async function updateDeployments(): Promise<void> {
     return;
   }
 
-  // Using the restricted-uninstall flag as a proxy for whether the user is a restricted user. The flag generally
-  // corresponds to whether the user is a restricted user or developer
+  // Using the restricted-uninstall flag as a proxy for whether the user is a restricted user. The flag currently
+  // corresponds to whether the user is a restricted user vs. developer
   const updatedDeployments = await selectUpdatedDeployments(deployments, {
     restricted: profile.flags.includes("restricted-uninstall"),
   });
