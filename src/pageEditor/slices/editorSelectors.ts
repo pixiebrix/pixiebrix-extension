@@ -142,6 +142,9 @@ export const selectRecipeIsDirty =
 export const selectIsAddToRecipeModalVisible = ({ editor }: RootState) =>
   editor.visibleModalKey === "addToRecipe";
 
+export const selectIsAddBlockModalVisible = ({ editor }: RootState) =>
+  editor.visibleModalKey === "addBlock";
+
 export const selectEditorModalVisibilities = ({ editor }: RootState) => ({
   isAddToRecipeModalVisible: editor.visibleModalKey === "addToRecipe",
   isRemoveFromRecipeModalVisible: editor.visibleModalKey === "removeFromRecipe",

@@ -101,7 +101,6 @@ const Editor: React.FunctionComponent = () => {
     isRemoveFromRecipeModalVisible,
     isSaveAsNewRecipeModalVisible,
     isCreateRecipeModalVisible,
-    isAddBlockModalVisible,
   } = useSelector(selectEditorModalVisibilities);
 
   const body = useMemo(() => {
@@ -194,7 +193,7 @@ const Editor: React.FunctionComponent = () => {
 
       {isCreateRecipeModalVisible && <CreateRecipeModal />}
 
-      {isAddBlockModalVisible && <AddBlockModal />}
+      <AddBlockModal />
     </>
   );
 };

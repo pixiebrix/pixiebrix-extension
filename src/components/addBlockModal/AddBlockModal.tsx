@@ -62,6 +62,7 @@ import {
   selectActiveElement,
   selectActiveElementId,
   selectAddBlockPipelineInfo,
+  selectIsAddBlockModalVisible,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
@@ -116,12 +117,16 @@ const slice = createSlice({
       state.searchTag = TAG_ALL;
       state.scrollTo = 0;
     },
+    resetState() {
+      return initialState;
+    },
   },
 });
 
 const AddBlockModal: React.VFC = () => {
   const reduxDispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
+  const show = useSelector(selectIsAddBlockModalVisible);
   const [state, dispatch] = useReducer(slice.reducer, initialState);
 
   const gridRef = useRef<LazyGrid>();
@@ -130,6 +135,7 @@ const AddBlockModal: React.VFC = () => {
 
   const closeModal = useCallback(() => {
     reduxDispatch(actions.hideModal());
+    dispatch(slice.actions.resetState);
   }, [reduxDispatch]);
 
   const addBlockPipelineInfo = useSelector(selectAddBlockPipelineInfo);
@@ -316,7 +322,7 @@ const AddBlockModal: React.VFC = () => {
   return (
     <Modal
       className={styles.root}
-      show
+      show={show}
       centered
       size="xl"
       onHide={closeModal}
