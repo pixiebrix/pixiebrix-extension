@@ -51,7 +51,6 @@ import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { get } from "lodash";
 import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
-import { FormikError } from "./editTabTypes";
 
 const EditTab: React.FC<{
   eventKey: string;
