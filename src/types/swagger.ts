@@ -1050,7 +1050,7 @@ export interface components {
           id?: string;
           /**
            * Format: uri
-           * @description The control room url
+           * @description The Control Room URL
            */
           url: string;
         };
@@ -1065,7 +1065,7 @@ export interface components {
           id?: string;
           /**
            * Format: uri
-           * @description The control room url
+           * @description The Control Room URL
            */
           url: string;
         };
@@ -1084,7 +1084,7 @@ export interface components {
           id?: string;
           /**
            * Format: uri
-           * @description The control room url
+           * @description The Control Room URL
            */
           url: string;
         };
@@ -1106,6 +1106,7 @@ export interface components {
         /** Format: uri */
         documentation_url?: string | null;
       };
+      enforce_update_millis?: number;
     };
     Membership: {
       id?: number;
@@ -1287,7 +1288,7 @@ export interface components {
       id?: string;
       /**
        * Format: uri
-       * @description The control room url
+       * @description The Control Room URL
        */
       url: string;
     };
@@ -1296,7 +1297,7 @@ export interface components {
       id?: string;
       /**
        * Format: uri
-       * @description The control room url
+       * @description The Control Room URL
        */
       url: string;
       /** Format: uuid */

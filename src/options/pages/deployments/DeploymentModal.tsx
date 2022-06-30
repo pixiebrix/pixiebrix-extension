@@ -15,25 +15,88 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { DeploymentState } from "@/hooks/useDeployments";
 import AsyncButton from "@/components/AsyncButton";
-import { DropdownButton, Dropdown, Modal } from "react-bootstrap";
+import { Alert, Dropdown, DropdownButton, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { SettingsState } from "@/store/settingsTypes";
 import settingsSlice from "@/store/settingsSlice";
 import notify from "@/utils/notify";
 import { useUpdateAvailable } from "@/options/pages/UpdateBanner";
 import { reportEvent } from "@/telemetry/events";
+import { selectAuth } from "@/auth/authSelectors";
+import { noop } from "lodash";
+import {
+  selectUpdatePromptState,
+  StateWithSettings,
+} from "@/store/settingsSelectors";
+import pluralize from "@/utils/pluralize";
 
 const FIFTEEN_MINUTES_MILLIS = 900_000;
 const ONE_HOUR_MILLIS = FIFTEEN_MINUTES_MILLIS * 4;
 const ONE_DAY_MILLIS = ONE_HOUR_MILLIS * 24;
+const MINUTES_TO_MILLIS = 60 * 1000;
 
-const SnoozeButton: React.FC<{ snooze: (durationMillis: number) => void }> = ({
-  snooze,
-}) => (
-  <DropdownButton variant="info" id="dropdown-snooze" title="Remind Me Later">
+/**
+ * Countdown time that automatically calls `onFinish` on countdown.
+ */
+export const CountdownTimer: React.FunctionComponent<{
+  duration: number;
+  start: number;
+  onFinish?: () => void;
+}> = ({ duration, start, onFinish = noop }) => {
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(Date.now());
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [duration, start]);
+
+  const remaining = duration - (now - start);
+  const isExpired = remaining < 0;
+
+  useEffect(() => {
+    if (isExpired && onFinish) {
+      onFinish();
+    }
+  }, [isExpired, onFinish]);
+
+  if (remaining > 0) {
+    const minutes = Math.floor(remaining / MINUTES_TO_MILLIS);
+    const seconds = Math.floor(
+      (remaining - minutes * MINUTES_TO_MILLIS) / 1000
+    );
+    return (
+      <Alert variant="info">
+        You have {minutes} {pluralize(minutes, "minute")} and {seconds}{" "}
+        {pluralize(seconds, "second")} remaining to update.
+      </Alert>
+    );
+  }
+
+  return (
+    <Alert variant="info">
+      Your team admin has set a policy requiring you to apply updates.
+    </Alert>
+  );
+};
+
+const SnoozeButton: React.FC<{
+  disabled: boolean;
+  snooze: (durationMillis: number) => void;
+}> = ({ disabled, snooze }) => (
+  <DropdownButton
+    aria-disabled={disabled}
+    disabled={disabled}
+    variant="info"
+    id="dropdown-snooze"
+    title="Remind Me Later"
+  >
     <Dropdown.Item
       onClick={() => {
         snooze(FIFTEEN_MINUTES_MILLIS);
@@ -78,10 +141,30 @@ const DeploymentModal: React.FC<
 > = ({ extensionUpdateRequired, updateExtension, update }) => {
   const dispatch = useDispatch();
   const hasUpdatesAvailable = useUpdateAvailable();
+  const { enforceUpdateMillis } = useSelector(selectAuth);
 
-  const nextUpdate = useSelector<{ settings: SettingsState }>(
-    (state) => state.settings.nextUpdate
+  const currentTime = Date.now();
+
+  const { isSnoozed, isUpdateOverdue, updatePromptTimestamp } = useSelector(
+    (state: StateWithSettings) =>
+      selectUpdatePromptState(state, { now: currentTime, enforceUpdateMillis })
   );
+
+  // Need to track the initial value because the useEffect is potentially overriding it
+  const [initialUpdatePromptTimestamp] = useState(updatePromptTimestamp);
+
+  // When an update is available and a time period is enabled, always show the modal once
+  const hideModal =
+    isSnoozed &&
+    !isUpdateOverdue &&
+    !(enforceUpdateMillis && initialUpdatePromptTimestamp == null);
+
+  useEffect(() => {
+    // The modal is only rendered if there is something to update
+    if (!hideModal) {
+      dispatch(settingsSlice.actions.recordUpdatePromptTimestamp());
+    }
+  }, [hideModal, dispatch]);
 
   const snooze = useCallback(
     (durationMillis: number) => {
@@ -92,8 +175,7 @@ const DeploymentModal: React.FC<
     [dispatch]
   );
 
-  if (nextUpdate && nextUpdate > Date.now()) {
-    // Snoozed
+  if (hideModal) {
     return null;
   }
 
@@ -108,8 +190,21 @@ const DeploymentModal: React.FC<
           updating, you will need need to reload any pages where PixieBrix is
           running.
         </Modal.Body>
+
+        {enforceUpdateMillis && (
+          <Modal.Body>
+            <CountdownTimer
+              duration={enforceUpdateMillis}
+              start={updatePromptTimestamp}
+              onFinish={() => {
+                browser.runtime.reload();
+              }}
+            />
+          </Modal.Body>
+        )}
+
         <Modal.Footer>
-          <SnoozeButton snooze={snooze} />
+          <SnoozeButton disabled={isUpdateOverdue} snooze={snooze} />
 
           <AsyncButton variant="primary" onClick={updateExtension}>
             Update
@@ -130,9 +225,21 @@ const DeploymentModal: React.FC<
           After updating, you will need need to reload any pages where PixieBrix
           is running
         </Modal.Body>
-        <Modal.Footer>
-          <SnoozeButton snooze={snooze} />
 
+        {enforceUpdateMillis && (
+          <Modal.Body>
+            <CountdownTimer
+              duration={enforceUpdateMillis}
+              start={updatePromptTimestamp}
+              onFinish={() => {
+                browser.runtime.reload();
+              }}
+            />
+          </Modal.Body>
+        )}
+
+        <Modal.Footer>
+          <SnoozeButton disabled={isUpdateOverdue} snooze={snooze} />
           <AsyncButton variant="primary" onClick={updateExtension}>
             Update
           </AsyncButton>
@@ -147,8 +254,18 @@ const DeploymentModal: React.FC<
         <Modal.Title>Team Deployments Available</Modal.Title>
       </Modal.Header>
       <Modal.Body>Team deployments are ready to activate</Modal.Body>
+
+      {enforceUpdateMillis && (
+        <Modal.Body>
+          <CountdownTimer
+            duration={enforceUpdateMillis}
+            start={updatePromptTimestamp}
+          />
+        </Modal.Body>
+      )}
+
       <Modal.Footer>
-        <SnoozeButton snooze={snooze} />
+        <SnoozeButton disabled={isUpdateOverdue} snooze={snooze} />
         <AsyncButton variant="primary" onClick={update}>
           Activate
         </AsyncButton>
