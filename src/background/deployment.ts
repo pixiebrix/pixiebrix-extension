@@ -391,12 +391,19 @@ export async function updateDeployments(): Promise<void> {
   // Always uninstall unmatched deployments
   await uninstallUnmatchedDeployments(deployments);
 
+  // Using the restricted-uninstall flag as a proxy for whether the user is a restricted user. The flag currently
+  // corresponds to whether the user is a restricted user vs. developer
+  const updatedDeployments = await selectUpdatedDeployments(deployments, {
+    restricted: profile.flags.includes("restricted-uninstall"),
+  });
+
   if (
     isSnoozed &&
     profile.enforce_update_millis &&
-    updatePromptTimestamp == null
+    updatePromptTimestamp == null &&
+    (isUpdateAvailable() || updatedDeployments.length > 0)
   ) {
-    // There are new updates, so inform the user even though they have snoozed updates
+    // There are updates, so inform the user even though they have snoozed updates because there will be a countdown
     void browser.runtime.openOptionsPage();
     return;
   }
@@ -417,12 +424,6 @@ export async function updateDeployments(): Promise<void> {
     void browser.runtime.openOptionsPage();
     return;
   }
-
-  // Using the restricted-uninstall flag as a proxy for whether the user is a restricted user. The flag currently
-  // corresponds to whether the user is a restricted user vs. developer
-  const updatedDeployments = await selectUpdatedDeployments(deployments, {
-    restricted: profile.flags.includes("restricted-uninstall"),
-  });
 
   if (updatedDeployments.length === 0) {
     console.debug("No deployment updates found");

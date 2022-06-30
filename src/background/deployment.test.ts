@@ -352,8 +352,31 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    expect(isUpdateAvailableMock.mock.calls.length).toBe(0);
+    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
     expect(openOptionsPageMock.mock.calls.length).toBe(1);
+    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+  });
+
+  test("do not open options page if enforce_update_millis is set but no updates available", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    isUpdateAvailableMock.mockReturnValue(false);
+
+    getSettingsStateMock.mockResolvedValue({
+      nextUpdate: Date.now() + 1_000_000,
+      updatePromptTimestamp: null,
+    });
+
+    axiosMock.onGet().reply(200, {
+      flags: [],
+      enforce_update_millis: 5000,
+    });
+
+    axiosMock.onPost().reply(201, []);
+
+    await updateDeployments();
+
+    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
+    expect(openOptionsPageMock.mock.calls.length).toBe(0);
     expect(refreshRegistriesMock.mock.calls.length).toBe(0);
   });
 
