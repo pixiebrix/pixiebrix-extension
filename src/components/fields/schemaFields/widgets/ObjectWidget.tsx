@@ -67,7 +67,6 @@ const CompositePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
 
 const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   readOnly,
-  onDelete,
   onRename,
   schema,
   isRequired,
