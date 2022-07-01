@@ -113,6 +113,7 @@ export const authStateFactory = define<AuthState>({
   isLoggedIn: true,
   isOnboarded: true,
   extension: true,
+  enforceUpdateMillis: null,
   organizations() {
     return [
       organizationFactory({

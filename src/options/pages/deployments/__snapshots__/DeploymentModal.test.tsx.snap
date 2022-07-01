@@ -1,0 +1,270 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DeploymentModal should reload browser extension if extension update required for deployment 1`] = `
+Array [
+  <div
+    aria-modal="true"
+    class="fade modal show"
+    role="dialog"
+    style="display: block;"
+    tabindex="-1"
+  >
+    <div
+      class="modal-dialog"
+    >
+      <div
+        class="modal-content"
+      >
+        <div
+          class="modal-header"
+        >
+          <div
+            class="modal-title h4"
+          >
+            Update Available
+          </div>
+        </div>
+        <div
+          class="modal-body"
+        >
+          Update the PixieBrix Browser Extension to activate team deployments. After updating, you will need need to reload any pages where PixieBrix is running
+        </div>
+        <div
+          class="modal-body"
+        >
+          <div
+            class="fade alert alert-info show"
+            role="alert"
+          >
+            Your team admin has set a policy requiring you to apply updates.
+          </div>
+        </div>
+        <div
+          class="modal-footer"
+        >
+          <div
+            aria-disabled="true"
+            class="dropdown"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="dropdown-toggle btn btn-info"
+              disabled=""
+              id="dropdown-snooze"
+              type="button"
+            >
+              Remind Me Later
+            </button>
+          </div>
+          <button
+            class="btn btn-primary"
+            type="button"
+          >
+            Update
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>,
+]
+`;
+
+exports[`DeploymentModal should render deployment update if update is enforced 1`] = `
+Array [
+  <div
+    aria-modal="true"
+    class="fade modal show"
+    role="dialog"
+    style="display: block;"
+    tabindex="-1"
+  >
+    <div
+      class="modal-dialog"
+    >
+      <div
+        class="modal-content"
+      >
+        <div
+          class="modal-header"
+        >
+          <div
+            class="modal-title h4"
+          >
+            Team Deployments Available
+          </div>
+        </div>
+        <div
+          class="modal-body"
+        >
+          Team deployments are ready to activate
+        </div>
+        <div
+          class="modal-body"
+        >
+          <div
+            class="fade alert alert-info show"
+            role="alert"
+          >
+            Your team admin has set a policy requiring you to apply updates.
+          </div>
+        </div>
+        <div
+          class="modal-footer"
+        >
+          <div
+            aria-disabled="true"
+            class="dropdown"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="dropdown-toggle btn btn-info"
+              disabled=""
+              id="dropdown-snooze"
+              type="button"
+            >
+              Remind Me Later
+            </button>
+          </div>
+          <button
+            class="btn btn-primary"
+            type="button"
+          >
+            Activate
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>,
+]
+`;
+
+exports[`DeploymentModal should render modal when snooze expired 1`] = `
+Array [
+  <div
+    aria-modal="true"
+    class="fade modal show"
+    role="dialog"
+    style="display: block;"
+    tabindex="-1"
+  >
+    <div
+      class="modal-dialog"
+    >
+      <div
+        class="modal-content"
+      >
+        <div
+          class="modal-header"
+        >
+          <div
+            class="modal-title h4"
+          >
+            Update Available
+          </div>
+        </div>
+        <div
+          class="modal-body"
+        >
+          An update to the PixieBrix browser extension is available. After updating, you will need need to reload any pages where PixieBrix is running.
+        </div>
+        <div
+          class="modal-footer"
+        >
+          <div
+            aria-disabled="false"
+            class="dropdown"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="dropdown-toggle btn btn-info"
+              id="dropdown-snooze"
+              type="button"
+            >
+              Remind Me Later
+            </button>
+          </div>
+          <button
+            class="btn btn-primary"
+            type="button"
+          >
+            Update
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>,
+]
+`;
+
+exports[`DeploymentModal should render when is enforced 1`] = `
+Array [
+  <div
+    aria-modal="true"
+    class="fade modal show"
+    role="dialog"
+    style="display: block;"
+    tabindex="-1"
+  >
+    <div
+      class="modal-dialog"
+    >
+      <div
+        class="modal-content"
+      >
+        <div
+          class="modal-header"
+        >
+          <div
+            class="modal-title h4"
+          >
+            Update Available
+          </div>
+        </div>
+        <div
+          class="modal-body"
+        >
+          An update to the PixieBrix browser extension is available. After updating, you will need need to reload any pages where PixieBrix is running.
+        </div>
+        <div
+          class="modal-body"
+        >
+          <div
+            class="fade alert alert-info show"
+            role="alert"
+          >
+            Your team admin has set a policy requiring you to apply updates.
+          </div>
+        </div>
+        <div
+          class="modal-footer"
+        >
+          <div
+            aria-disabled="true"
+            class="dropdown"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="dropdown-toggle btn btn-info"
+              disabled=""
+              id="dropdown-snooze"
+              type="button"
+            >
+              Remind Me Later
+            </button>
+          </div>
+          <button
+            class="btn btn-primary"
+            type="button"
+          >
+            Update
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>,
+]
+`;
