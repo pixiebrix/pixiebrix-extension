@@ -27,7 +27,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
 import useExtensionTrace from "@/pageEditor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationDataPanel";
-import usePipelineField from "@/pageEditor/hooks/usePipelineField";
+import usePipelineErrors from "@/pageEditor/hooks/usePipelineErrors";
 import { useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import {
@@ -51,7 +51,7 @@ import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { get } from "lodash";
 import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
-import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
+import { FormikError } from "./editTabTypes";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -59,8 +59,19 @@ const EditTab: React.FC<{
   useExtensionTrace();
   useReportTraceError();
 
-  const { values, setValues: setFormValues } = useFormikContext<FormState>();
-  const { extensionPoint, type: extensionPointType } = values;
+  const {
+    values,
+    setValues: setFormValues,
+    errors,
+  } = useFormikContext<FormState>();
+
+  const {
+    extensionPoint,
+    type: extensionPointType,
+    extension: { blockPipeline },
+  } = values;
+
+  usePipelineErrors();
 
   // For now, don't allow modifying extensionPoint packages via the Page Editor.
   const isLocked = useMemo(
@@ -76,13 +87,6 @@ const EditTab: React.FC<{
     EditorNode,
   } = useMemo(() => ADAPTERS.get(extensionPointType), [extensionPointType]);
 
-  const [allBlocks] = useAllBlocks();
-
-  const { blockPipeline, blockPipelineErrors, traceErrors } = usePipelineField(
-    allBlocks,
-    extensionPointType
-  );
-
   const activeNodeId = useSelector(selectActiveNodeId);
   const { blockId, path: fieldName } = useSelector(selectActiveNodeInfo) ?? {};
   const pipelineMap = useSelector(selectPipelineMap);
@@ -97,7 +101,7 @@ const EditTab: React.FC<{
   } = useBlockPipelineActions(pipelineMap, values, setFormValues);
 
   // The value of formikErrorForBlock can be object or string.
-  const formikErrorForBlock = get(blockPipelineErrors, fieldName);
+  const formikErrorForBlock = get(errors, fieldName);
   // If formikErrorForBlock is a string, it means that this exact block has an error.
   const blockError: string =
     typeof formikErrorForBlock === "string" ? formikErrorForBlock : null;
@@ -140,10 +144,8 @@ const EditTab: React.FC<{
           </div>
           <div className={styles.nodeLayout}>
             <EditorNodeLayout
-              allBlocks={allBlocks}
               pipeline={blockPipeline}
-              pipelineErrors={blockPipelineErrors}
-              traceErrors={traceErrors}
+              errors={errors as FormikError}
               extensionPointType={extensionPointType}
               extensionPointLabel={extensionPointLabel}
               extensionPointIcon={extensionPointIcon}
