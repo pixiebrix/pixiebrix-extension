@@ -261,6 +261,9 @@ async function markAllAsInstalled() {
  *
  * If PixieBrix does not have the permissions required to automatically activate a deployment, opens the Options page
  * so the user can click to activate the deployments.
+ *
+ * NOTE: if updates are snoozed, does not install updates automatically. (To not interrupt the current business
+ * process the team member is working on.)
  */
 export async function updateDeployments(): Promise<void> {
   expectContext("background");

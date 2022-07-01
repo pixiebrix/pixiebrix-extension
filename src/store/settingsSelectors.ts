@@ -33,15 +33,18 @@ export const selectUpdatePromptState = createSelector(
   (state, { now, enforceUpdateMillis }) => {
     const { nextUpdate, updatePromptTimestamp } = state;
 
-    const isUpdateOverdue =
-      updatePromptTimestamp != null &&
-      enforceUpdateMillis &&
-      now - updatePromptTimestamp > enforceUpdateMillis;
+    const timeRemaining =
+      updatePromptTimestamp != null && enforceUpdateMillis
+        ? enforceUpdateMillis - (now - updatePromptTimestamp)
+        : Number.MAX_SAFE_INTEGER;
+
+    const isUpdateOverdue = timeRemaining <= 0;
 
     return {
       isSnoozed: nextUpdate != null && nextUpdate > now,
       isUpdateOverdue,
       updatePromptTimestamp,
+      timeRemaining,
     };
   }
 );

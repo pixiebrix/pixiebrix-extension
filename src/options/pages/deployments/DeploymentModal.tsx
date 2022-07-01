@@ -32,19 +32,13 @@ import {
 } from "@/store/settingsSelectors";
 import pluralize from "@/utils/pluralize";
 
+const FIVE_MINUTES_MILLIS = 300_000;
 const FIFTEEN_MINUTES_MILLIS = 900_000;
 const ONE_HOUR_MILLIS = FIFTEEN_MINUTES_MILLIS * 4;
 const ONE_DAY_MILLIS = ONE_HOUR_MILLIS * 24;
 const MINUTES_TO_MILLIS = 60 * 1000;
 
-/**
- * Countdown time that automatically calls `onFinish` on countdown.
- */
-export const CountdownTimer: React.FunctionComponent<{
-  duration: number;
-  start: number;
-  onFinish?: () => void;
-}> = ({ duration, start, onFinish = noop }) => {
+function useCurrentTime() {
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
@@ -55,8 +49,20 @@ export const CountdownTimer: React.FunctionComponent<{
     return () => {
       clearInterval(interval);
     };
-  }, [duration, start]);
+  }, []);
 
+  return now;
+}
+
+/**
+ * Countdown time that automatically calls `onFinish` on countdown.
+ */
+export const CountdownTimer: React.FunctionComponent<{
+  duration: number;
+  start: number;
+  onFinish?: () => void;
+}> = ({ duration, start, onFinish = noop }) => {
+  const now = useCurrentTime();
   const remaining = duration - (now - start);
   const isExpired = remaining < 0;
 
@@ -86,47 +92,44 @@ export const CountdownTimer: React.FunctionComponent<{
   );
 };
 
+const SNOOZE_OPTIONS = [
+  { value: FIVE_MINUTES_MILLIS, label: "5 Minutes" },
+  { value: FIFTEEN_MINUTES_MILLIS, label: "15 Minutes" },
+  { value: ONE_HOUR_MILLIS, label: "1 Hour" },
+  { value: ONE_DAY_MILLIS, label: "1 Day" },
+  { value: ONE_DAY_MILLIS * 3, label: "3 Days" },
+];
+
 const SnoozeButton: React.FC<{
   disabled: boolean;
   snooze: (durationMillis: number) => void;
-}> = ({ disabled, snooze }) => (
-  <DropdownButton
-    aria-disabled={disabled}
-    disabled={disabled}
-    variant="info"
-    id="dropdown-snooze"
-    title="Remind Me Later"
-  >
-    <Dropdown.Item
-      onClick={() => {
-        snooze(FIFTEEN_MINUTES_MILLIS);
-      }}
+  timeRemaining: number | null;
+}> = ({ disabled, snooze, timeRemaining }) => {
+  const validOptions = SNOOZE_OPTIONS.filter(
+    ({ value }) => timeRemaining == null || timeRemaining >= value
+  );
+
+  return (
+    <DropdownButton
+      aria-disabled={disabled || validOptions.length === 0}
+      disabled={disabled || validOptions.length === 0}
+      variant="info"
+      id="dropdown-snooze"
+      title="Remind Me Later"
     >
-      15 Minutes
-    </Dropdown.Item>
-    <Dropdown.Item
-      onClick={() => {
-        snooze(ONE_HOUR_MILLIS);
-      }}
-    >
-      1 Hour
-    </Dropdown.Item>
-    <Dropdown.Item
-      onClick={() => {
-        snooze(ONE_DAY_MILLIS);
-      }}
-    >
-      1 Day
-    </Dropdown.Item>
-    <Dropdown.Item
-      onClick={() => {
-        snooze(ONE_DAY_MILLIS * 3);
-      }}
-    >
-      3 Days
-    </Dropdown.Item>
-  </DropdownButton>
-);
+      {validOptions.map(({ value, label }) => (
+        <Dropdown.Item
+          key={value}
+          onClick={() => {
+            snooze(value);
+          }}
+        >
+          {label}
+        </Dropdown.Item>
+      ))}
+    </DropdownButton>
+  );
+};
 
 /**
  * Modal to update the browser extension and/or deployments. Can be snoozed
@@ -143,14 +146,17 @@ const DeploymentModal: React.FC<
   const hasUpdatesAvailable = useUpdateAvailable();
   const { enforceUpdateMillis } = useSelector(selectAuth);
 
-  const currentTime = Date.now();
+  const currentTime = useCurrentTime();
 
-  const { isSnoozed, isUpdateOverdue, updatePromptTimestamp } = useSelector(
-    (state: StateWithSettings) =>
+  const { isSnoozed, isUpdateOverdue, updatePromptTimestamp, timeRemaining } =
+    useSelector((state: StateWithSettings) =>
       selectUpdatePromptState(state, { now: currentTime, enforceUpdateMillis })
-  );
+    );
 
-  // Need to track the initial value because the useEffect is potentially overriding it
+  // Keep track of this modal in case they snooze and leave the tab open
+  const [snoozedModal, setSnoozedModal] = useState(false);
+
+  // Need to track the initial value because actions.recordUpdatePromptTimestamp call overrides it
   const [initialUpdatePromptTimestamp] = useState(updatePromptTimestamp);
 
   // When an update is available and a time period is enabled, always show the modal once
@@ -169,13 +175,16 @@ const DeploymentModal: React.FC<
   const snooze = useCallback(
     (durationMillis: number) => {
       notify.success("Snoozed extensions and deployment updates");
-      reportEvent("SnoozeUpdates");
+      reportEvent("SnoozeUpdates", {
+        durationMillis,
+      });
       dispatch(settingsSlice.actions.snoozeUpdates({ durationMillis }));
+      setSnoozedModal(true);
     },
-    [dispatch]
+    [dispatch, setSnoozedModal]
   );
 
-  if (hideModal) {
+  if (hideModal || (snoozedModal && !isUpdateOverdue)) {
     return null;
   }
 
@@ -204,7 +213,11 @@ const DeploymentModal: React.FC<
         )}
 
         <Modal.Footer>
-          <SnoozeButton disabled={isUpdateOverdue} snooze={snooze} />
+          <SnoozeButton
+            disabled={isUpdateOverdue}
+            snooze={snooze}
+            timeRemaining={timeRemaining}
+          />
 
           <AsyncButton variant="primary" onClick={updateExtension}>
             Update
@@ -239,7 +252,11 @@ const DeploymentModal: React.FC<
         )}
 
         <Modal.Footer>
-          <SnoozeButton disabled={isUpdateOverdue} snooze={snooze} />
+          <SnoozeButton
+            disabled={isUpdateOverdue}
+            snooze={snooze}
+            timeRemaining={timeRemaining}
+          />
           <AsyncButton variant="primary" onClick={updateExtension}>
             Update
           </AsyncButton>
@@ -265,7 +282,11 @@ const DeploymentModal: React.FC<
       )}
 
       <Modal.Footer>
-        <SnoozeButton disabled={isUpdateOverdue} snooze={snooze} />
+        <SnoozeButton
+          disabled={isUpdateOverdue}
+          snooze={snooze}
+          timeRemaining={timeRemaining}
+        />
         <AsyncButton variant="primary" onClick={update}>
           Activate
         </AsyncButton>
