@@ -113,8 +113,8 @@ describe("DeploymentModal", () => {
   });
 
   it("should render modal when snooze expired", async () => {
-    const snoozeDate = new Date("12/31/1998");
-    MockDate.set(new Date(snoozeDate.getTime() + 1));
+    const nextUpdate = new Date("12/31/1998").getTime();
+    MockDate.set(new Date(nextUpdate + 1));
 
     useUpdateAvailableMock.mockReturnValue(true);
 
@@ -124,7 +124,7 @@ describe("DeploymentModal", () => {
       },
       {
         ...initialSettingsState,
-        nextUpdate: snoozeDate.getTime(),
+        nextUpdate,
       },
       {}
     );
@@ -140,8 +140,8 @@ describe("DeploymentModal", () => {
 
   it("should render when is enforced", async () => {
     // Tonight I'm going to party like it's 1999
-    const date = new Date("12/31/1998");
-    MockDate.set(date);
+    const time = new Date("12/31/1998").getTime();
+    MockDate.set(time);
 
     (useUpdateAvailable as jest.Mock).mockReturnValue(true);
 
@@ -152,8 +152,9 @@ describe("DeploymentModal", () => {
       {
         ...initialSettingsState,
         // It is snoozed
-        nextUpdate: date.getTime() + 1,
-        updatePromptTimestamp: new Date(date.getTime() - 2).getTime(),
+        nextUpdate: time + 1,
+        // But enforcement window is now enforced
+        updatePromptTimestamp: time - 3,
       },
       { enforceUpdateMillis: 1 }
     );

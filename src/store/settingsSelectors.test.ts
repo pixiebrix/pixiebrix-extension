@@ -21,17 +21,41 @@ import settingsSlice from "@/store/settingsSlice";
 import { SettingsState } from "@/store/settingsTypes";
 
 describe("selectUpdatePromptState", () => {
+  it("calculates time remaining", () => {
+    const now = Date.now();
+
+    MockDate.set(now);
+
+    const updatePromptTimestamp = now - 10;
+
+    const settings: SettingsState = {
+      ...settingsSlice.getInitialState(),
+      updatePromptTimestamp,
+    };
+
+    const result = selectUpdatePromptState(
+      { settings },
+      { now, enforceUpdateMillis: 5 }
+    );
+    expect(result).toStrictEqual({
+      isSnoozed: false,
+      updatePromptTimestamp,
+      isUpdateOverdue: true,
+      timeRemaining: -5,
+    });
+  });
+
   it("snooze independent of deployment enforcement", () => {
     const now = Date.now();
 
     MockDate.set(now);
 
-    const timestamp = now - 2;
+    const updatePromptTimestamp = now - 1;
 
     const settings: SettingsState = {
       ...settingsSlice.getInitialState(),
       nextUpdate: now + 3,
-      updatePromptTimestamp: timestamp,
+      updatePromptTimestamp,
     };
 
     const result = selectUpdatePromptState(
@@ -40,8 +64,9 @@ describe("selectUpdatePromptState", () => {
     );
     expect(result).toStrictEqual({
       isSnoozed: true,
-      updatePromptTimestamp: timestamp,
+      updatePromptTimestamp,
       isUpdateOverdue: true,
+      timeRemaining: 0,
     });
   });
 
@@ -63,6 +88,7 @@ describe("selectUpdatePromptState", () => {
     expect(result).toStrictEqual({
       isSnoozed: false,
       updatePromptTimestamp: null,
+      timeRemaining: Number.MAX_SAFE_INTEGER,
       isUpdateOverdue: false,
     });
   });

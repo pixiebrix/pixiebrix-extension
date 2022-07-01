@@ -173,6 +173,7 @@ Array [
           class="modal-footer"
         >
           <div
+            aria-disabled="false"
             class="dropdown"
           >
             <button
