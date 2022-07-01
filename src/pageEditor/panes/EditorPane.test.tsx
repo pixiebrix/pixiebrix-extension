@@ -287,7 +287,6 @@ describe("can remove a node", () => {
 
     // Nodes. Root: Foundation, ForEach: Echo
     const nodes = screen.getAllByTestId("editor-node");
-    console.log("after get nodes");
     expect(nodes).toHaveLength(3);
     expect(nodes[1]).toHaveTextContent(/for-each loop/i);
     expect(nodes[2]).toHaveTextContent(/echo/i);
