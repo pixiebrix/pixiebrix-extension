@@ -73,11 +73,17 @@ function hasOwnOrNestedError(error: unknown) {
   );
 }
 
-export function computeLabelAndColSize(
-  fitLabelWidth: boolean,
-  widerLabel: boolean,
-  label: ReactNode
-) {
+type ComputeLabelAndColSizeArgs = {
+  fitLabelWidth: boolean;
+  widerLabel: boolean;
+  label: ReactNode;
+};
+
+export function computeLabelAndColSize({
+  fitLabelWidth,
+  widerLabel,
+  label,
+}: ComputeLabelAndColSizeArgs) {
   const labelSize: ColProps = {};
   const colSize: ColProps = {};
 
@@ -165,11 +171,11 @@ const FieldTemplate: React.FC<FieldProps> = ({
     </AsControl>
   );
 
-  const { labelSize, colSize } = computeLabelAndColSize(
+  const { labelSize, colSize } = computeLabelAndColSize({
     fitLabelWidth,
     widerLabel,
-    label
-  );
+    label,
+  });
 
   return (
     <BootstrapForm.Group as={Row} className={cx(styles.formGroup, className)}>
