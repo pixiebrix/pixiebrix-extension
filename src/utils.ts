@@ -49,6 +49,7 @@ const specialCharsRegex = /[.[\]]/;
 
 /**
  * Create a Formik field name, validating the individual path parts.
+ * Wraps parts with special characters in brackets, so Formik treat it as a single property name.
  * @param baseFieldName The base field name
  * @param rest the other Formik field name path parts
  * @throws Error if a path part is invalid
@@ -77,6 +78,15 @@ export function joinName(
   }
 
   return path;
+}
+
+/**
+ * Join parts of a path, ignoring null/blank parts.
+ * @param nameParts the parts of the name
+ */
+export function joinPathParts(...nameParts: Array<string | number>): string {
+  // Don't use lodash.compact and lodash.isEmpty since they treat 0 as falsy
+  return nameParts.filter((x) => x != null && x !== "").join(".");
 }
 
 export function mostCommonElement<T>(items: T[]): T {

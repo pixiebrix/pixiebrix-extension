@@ -46,8 +46,7 @@ import {
   getDocumentPipelinePaths,
   getPipelinePropNames,
 } from "@/pageEditor/utils";
-import { joinElementName } from "@/components/documentBuilder/utils";
-import { isNullOrBlank, joinName } from "@/utils";
+import { isNullOrBlank, joinName, joinPathParts } from "@/utils";
 import { NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import AddBrickAction from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/AddBrickAction";
 import PasteBrickAction from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/PasteBrickAction";
@@ -236,12 +235,12 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
 
       if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
         for (const docPipelinePath of getDocumentPipelinePaths(blockConfig)) {
-          const subPipelineAccessor = joinElementName(
+          const subPipelineAccessor = joinPathParts(
             String(index),
             docPipelinePath,
             "__value__"
           );
-          const subPipelinePath = joinElementName(
+          const subPipelinePath = joinPathParts(
             pipelinePath,
             subPipelineAccessor
           );
@@ -365,7 +364,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       if (block) {
         const blockError = get(
           errors,
-          joinElementName(pipelinePath, String(index))
+          joinPathParts(pipelinePath, String(index))
         );
         contentProps = {
           icon: <BrickIcon brick={block} size="2x" inheritColor />,

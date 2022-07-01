@@ -57,6 +57,7 @@ function validateOutputKey(
         errorMessage =
           "Must start with a letter and only include letters and numbers.";
       }
+
       setPipelineBlockError(pipelineErrors, errorMessage, path, "outputKey");
     },
   });

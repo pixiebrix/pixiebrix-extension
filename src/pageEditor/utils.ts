@@ -29,11 +29,10 @@ import {
   isListElement,
   isPipelineElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
-import { joinElementName } from "@/components/documentBuilder/utils";
+import { joinName, joinPathParts } from "@/utils";
 import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 import Retry from "@/blocks/transformers/controlFlow/Retry";
 import { castArray, get } from "lodash";
-import { joinName } from "@/utils";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 
 export async function getCurrentURL(): Promise<string> {
@@ -111,20 +110,20 @@ function getElementsPipelinePropNames(
     const index = isArray ? elementIndex : null;
 
     if (isButtonElement(element)) {
-      propNames.push(joinElementName(parentPath, index, "config", "onClick"));
+      propNames.push(joinPathParts(parentPath, index, "config", "onClick"));
     } else if (isPipelineElement(element)) {
-      propNames.push(joinElementName(parentPath, index, "config", "pipeline"));
+      propNames.push(joinPathParts(parentPath, index, "config", "pipeline"));
     } else if (isListElement(element)) {
       propNames.push(
         ...getElementsPipelinePropNames(
-          joinElementName(parentPath, index, "config", "element", "__value__"),
+          joinPathParts(parentPath, index, "config", "element", "__value__"),
           element.config.element.__value__
         )
       );
     } else if (element.children?.length > 0) {
       propNames.push(
         ...getElementsPipelinePropNames(
-          joinElementName(parentPath, index, "children"),
+          joinPathParts(parentPath, index, "children"),
           element.children
         )
       );
@@ -222,7 +221,7 @@ export function traversePipeline({
         });
       }
 
-      const subPipelineAccessor = joinElementName(
+      const subPipelineAccessor = joinPathParts(
         subPipelineProperty,
         "__value__"
       );
@@ -232,7 +231,7 @@ export function traversePipeline({
       if (subPipeline?.length > 0) {
         traversePipeline({
           pipeline: subPipeline,
-          pipelinePath: joinElementName(fieldName, subPipelineAccessor),
+          pipelinePath: joinPathParts(fieldName, subPipelineAccessor),
           parentNode: blockConfig,
           visitBlock,
           visitPipeline,

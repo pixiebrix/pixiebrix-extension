@@ -21,7 +21,7 @@ import ReactShadowRoot from "react-shadow-root";
 import BootstrapStylesheet from "@/blocks/renderers/BootstrapStylesheet";
 import { DocumentViewProps } from "./DocumentViewProps";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
-import { joinElementName } from "@/components/documentBuilder/utils";
+import { joinPathParts } from "@/utils";
 
 const DocumentView: React.FC<DocumentViewProps> = ({ body, options, meta }) => {
   // Track style loading to avoid a FOUC
@@ -52,7 +52,7 @@ const DocumentView: React.FC<DocumentViewProps> = ({ body, options, meta }) => {
             body.map((documentElement, index) => {
               const { Component, props } = buildDocumentBranch(
                 documentElement,
-                { staticId: joinElementName("body", "children"), branches: [] }
+                { staticId: joinPathParts("body", "children"), branches: [] }
               );
               return <Component key={index} {...props} />;
             })}
