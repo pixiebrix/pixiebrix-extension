@@ -110,7 +110,6 @@ function decideBlockStatus(
   blockError: FormikError,
   traceRecord: TraceRecord
 ): RunStatus {
-  // If blockPipelineErrors is a string, it means the error is on the pipeline level
   if (blockError) {
     return RunStatus.ERROR;
   }
@@ -127,7 +126,6 @@ function decideBlockStatus(
     return RunStatus.SKIPPED;
   }
 
-  // We already checked for errors
   if (traceRecord.isFinal) {
     return RunStatus.SUCCESS;
   }

@@ -26,15 +26,16 @@ import validateRenderers from "@/pageEditor/validation/validateRenderers";
 import applyTraceErrors from "@/pageEditor/validation/applyTraceError";
 import { isEmpty } from "lodash";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
-import { ExtensionPointType } from "@/extensionPoints/types";
 import validateStringTemplates from "@/pageEditor/validation/validateStringTemplates";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 import useAllBlocks from "./useAllBlocks";
 
-function usePipelineErrors(extensionPointType: ExtensionPointType) {
+function usePipelineErrors() {
   const [allBlocks] = useAllBlocks();
   const traceErrors = useSelector(selectTraceErrors);
-  const formikContext = useFormikContext();
+  const formikContext = useFormikContext<FormState>();
+  const extensionPointType = formikContext.values.type;
 
   const validatePipelineBlocks = useCallback(
     (pipeline: BlockPipeline): void | FormikErrorTree => {

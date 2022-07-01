@@ -71,7 +71,7 @@ const EditTab: React.FC<{
     extension: { blockPipeline },
   } = values;
 
-  usePipelineErrors(extensionPointType);
+  usePipelineErrors();
 
   // For now, don't allow modifying extensionPoint packages via the Page Editor.
   const isLocked = useMemo(
