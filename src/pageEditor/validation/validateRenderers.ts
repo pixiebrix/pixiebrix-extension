@@ -41,11 +41,6 @@ function validateRenderers(
   traversePipeline({
     pipeline: extensionPipeline,
     visitPipeline({ pipeline, pipelinePath, parentNode }) {
-      console.log("validate renderer", {
-        parentNode,
-        pipelinePath,
-      });
-
       const isRootPipeline = parentNode === null;
       // Only run validation for root pipeline and document Brick sub pipeline
       if (
