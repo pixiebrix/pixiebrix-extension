@@ -16,25 +16,16 @@
  */
 
 import { BlockPipeline } from "@/blocks/types";
-import { joinName } from "@/utils";
-import { isEmpty, set } from "lodash";
+import { isEmpty } from "lodash";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { TypedBlockMap } from "@/blocks/registry";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { traversePipeline } from "@/pageEditor/utils";
+import { setPipelineBlockError } from "./setPipelineBlockError";
 
 const outputKeyRegex = /^[A-Za-z][\dA-Za-z]*$/;
 
 const blockTypesWithEmptyOutputKey: BlockType[] = ["effect", "renderer"];
-
-function setOutputKeyError(
-  pipelineErrors: FormikErrorTree,
-  blockPath: string,
-  errorMessage: string
-) {
-  const propertyNameInPipeline = joinName(blockPath, "outputKey");
-  set(pipelineErrors, propertyNameInPipeline, errorMessage);
-}
 
 function validateOutputKey(
   pipelineErrors: FormikErrorTree,
@@ -47,7 +38,7 @@ function validateOutputKey(
   }
 
   traversePipeline({
-    blockPipeline: pipeline,
+    pipeline,
     visitBlock({ blockConfig, path }) {
       let errorMessage: string;
       const { id, outputKey } = blockConfig;
@@ -66,8 +57,7 @@ function validateOutputKey(
         errorMessage =
           "Must start with a letter and only include letters and numbers.";
       }
-
-      setOutputKeyError(pipelineErrors, path, errorMessage);
+      setPipelineBlockError(pipelineErrors, errorMessage, path, "outputKey");
     },
   });
 }
