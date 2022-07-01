@@ -298,7 +298,7 @@ async function executeBlockWithValidatedProps(
         ...commonOptions,
         ...options,
         root,
-        async runPipeline(pipeline, branch, extraContext, root) {
+        async runPipeline(pipeline, branch, extraContext, rootOverride) {
           if (!isObject(commonOptions.ctxt)) {
             throw new Error("Expected object context for v3+ runtime");
           }
@@ -309,7 +309,7 @@ async function executeBlockWithValidatedProps(
               ...commonOptions.ctxt,
               ...extraContext,
             },
-            root,
+            rootOverride ?? root,
             {
               ...options,
               runId: options.trace.runId,
