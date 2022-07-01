@@ -43,8 +43,10 @@ type DocumentListProps = {
   tracePath: DynamicPath;
 };
 
+const defaultArray = Object.freeze([]);
+
 const ListElementInternal: React.FC<DocumentListProps> = ({
-  array,
+  array = defaultArray,
   elementKey,
   config,
   buildDocumentBranch,

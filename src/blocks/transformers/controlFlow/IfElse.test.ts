@@ -17,6 +17,7 @@
 
 import blockRegistry from "@/blocks/registry";
 import {
+  rootAwareBlock,
   simpleInput,
   teapotBlock,
   testOptions,
@@ -36,7 +37,7 @@ const ifElseBlock = new IfElse();
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register(teapotBlock, throwBlock, ifElseBlock);
+  blockRegistry.register(teapotBlock, throwBlock, rootAwareBlock, ifElseBlock);
 });
 
 describe("IfElse", () => {
@@ -119,5 +120,28 @@ describe("IfElse", () => {
       testOptions("v3")
     );
     expect(result).toStrictEqual(null);
+  });
+
+  test("root aware", async () => {
+    const pipeline = {
+      id: ifElseBlock.id,
+      config: {
+        condition: true,
+        if: makePipelineExpression([{ id: rootAwareBlock.id, config: {} }]),
+      },
+    };
+    const result = await reducePipeline(
+      pipeline,
+      {
+        root: document.createElement("div"),
+        input: {},
+        optionsArgs: {},
+        serviceContext: {},
+      },
+      testOptions("v3")
+    );
+    expect(result).toStrictEqual({
+      tagName: "DIV",
+    });
   });
 });

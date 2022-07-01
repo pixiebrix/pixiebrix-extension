@@ -98,7 +98,6 @@ function initInstaller() {
   browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
   browser.runtime.onInstalled.addListener(install);
   browser.runtime.onStartup.addListener(initTelemetry);
-
   browser.storage.onChanged.addListener((changes) => {
     if (DNT_STORAGE_KEY in changes) {
       void setUninstallURL();

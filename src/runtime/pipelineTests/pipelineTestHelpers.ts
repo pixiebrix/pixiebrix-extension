@@ -42,6 +42,20 @@ class EchoBlock extends Block {
   }
 }
 
+class RootAwareBlock extends Block {
+  constructor() {
+    super("test/root-aware", "Root Aware");
+  }
+
+  inputSchema = propertiesToSchema({});
+
+  async run(_arg: BlockArg, { root }: BlockOptions) {
+    return {
+      tagName: (root as HTMLElement).tagName,
+    };
+  }
+}
+
 /**
  * A block that returns a `prop` 🫖
  * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418
@@ -206,6 +220,7 @@ export const teapotBlock = new TeapotBlock();
 export const arrayBlock = new ArrayBlock();
 export const pipelineBlock = new PipelineBlock();
 export const deferBlock = new DeferBlock();
+export const rootAwareBlock = new RootAwareBlock();
 
 /**
  * Helper method to pass only `input` to reducePipeline.

@@ -34,11 +34,13 @@ import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { expectContext } from "@/utils/expectContext";
-import { getSettingsState } from "@/store/settingsStorage";
+import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
 import { isUpdateAvailable } from "@/background/installer";
 import { selectUserDataUpdate } from "@/auth/authUtils";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import { makeUpdatedFilter } from "@/utils/deployment";
+import { selectUpdatePromptState } from "@/store/settingsSelectors";
+import settingsSlice from "@/store/settingsSlice";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -245,18 +247,30 @@ async function selectUpdatedDeployments(
   return deployments.filter((deployment) => updatePredicate(deployment));
 }
 
+async function markAllAsInstalled() {
+  const settings = await getSettingsState();
+  const next = settingsSlice.reducer(
+    settings,
+    settingsSlice.actions.resetUpdatePromptTimestamp()
+  );
+  await saveSettingsState(next);
+}
+
 /**
  * Sync local deployments with provisioned deployments.
  *
  * If PixieBrix does not have the permissions required to automatically activate a deployment, opens the Options page
  * so the user can click to activate the deployments.
+ *
+ * NOTE: if updates are snoozed, does not install updates automatically. (To not interrupt the current business
+ * process the team member is working on.)
  */
 export async function updateDeployments(): Promise<void> {
   expectContext("background");
 
   const now = Date.now();
 
-  const [linked, { organizationId }, { nextUpdate }] = await Promise.all([
+  const [linked, { organizationId }, settings] = await Promise.all([
     isLinked(),
     readAuthData(),
     getSettingsState(),
@@ -336,6 +350,15 @@ export async function updateDeployments(): Promise<void> {
     "/api/me/"
   );
 
+  const { isSnoozed, isUpdateOverdue, updatePromptTimestamp } =
+    selectUpdatePromptState(
+      { settings },
+      {
+        now,
+        enforceUpdateMillis: profile.enforce_update_millis,
+      }
+    );
+
   if (profileResponseStatus >= 400) {
     // If our server is acting up, check again later
     console.debug(
@@ -371,29 +394,39 @@ export async function updateDeployments(): Promise<void> {
   // Always uninstall unmatched deployments
   await uninstallUnmatchedDeployments(deployments);
 
-  if (nextUpdate && nextUpdate > now) {
-    console.debug("Skipping deployments update because updates are snoozed", {
-      nextUpdate,
-    });
+  // Using the restricted-uninstall flag as a proxy for whether the user is a restricted user. The flag currently
+  // corresponds to whether the user is a restricted user vs. developer
+  const updatedDeployments = await selectUpdatedDeployments(deployments, {
+    restricted: profile.flags.includes("restricted-uninstall"),
+  });
+
+  if (
+    isSnoozed &&
+    profile.enforce_update_millis &&
+    updatePromptTimestamp == null &&
+    (isUpdateAvailable() || updatedDeployments.length > 0)
+  ) {
+    // There are updates, so inform the user even though they have snoozed updates because there will be a countdown
+    void browser.runtime.openOptionsPage();
+    return;
+  }
+
+  if (isSnoozed && !isUpdateOverdue) {
+    console.debug("Skipping deployments update because updates are snoozed");
     return;
   }
 
   if (
     isUpdateAvailable() &&
     // `restricted-version` is an implicit flag from the MeSerializer
-    profile.flags.includes("restricted-version")
+    (profile.flags.includes("restricted-version") ||
+      profile.enforce_update_millis)
   ) {
     console.info("Extension update available from the web store");
     // Have the user update their browser extension. (Since the new version might impact the deployment activation)
     void browser.runtime.openOptionsPage();
     return;
   }
-
-  // Using the restricted-uninstall flag as a proxy for whether the user is a restricted user. The flag generally
-  // corresponds to whether the user is a restricted user or developer
-  const updatedDeployments = await selectUpdatedDeployments(deployments, {
-    restricted: profile.flags.includes("restricted-uninstall"),
-  });
 
   if (updatedDeployments.length === 0) {
     console.debug("No deployment updates found");
@@ -435,14 +468,37 @@ export async function updateDeployments(): Promise<void> {
     }
   }
 
+  if (manual.length === 0) {
+    void markAllAsInstalled();
+  }
+
   // We only want to call openOptionsPage a single time
   if (manual.length > 0 || automaticError) {
     void browser.runtime.openOptionsPage();
   }
 }
 
+/**
+ * Reset the update countdown timer on startup.
+ *
+ * - If there was a Browser Extension update, it would have been applied
+ * - We don't currently separately track timestamps for showing an update modal for deployments vs. browser extension
+ * upgrades. However, in enterprise scenarios where enforceUpdateMillis is set, the IT policy is generally such
+ * that IT can't reset the extension.
+ */
+async function resetUpdatePromptTimestamp() {
+  // There could be a race here, but unlikely because this is run on startup
+  console.debug("Resetting updatePromptTimestamp");
+  const settings = await getSettingsState();
+  await saveSettingsState({
+    ...settings,
+    updatePromptTimestamp: null,
+  });
+}
+
 function initDeploymentUpdater(): void {
   setInterval(updateDeployments, UPDATE_INTERVAL_MS);
+  void resetUpdatePromptTimestamp();
   void updateDeployments();
 }
 
