@@ -41,8 +41,10 @@ function usePipelineErrors() {
     (pipeline: BlockPipeline): void | FormikErrorTree => {
       const formikErrors: FormikErrorTree = {};
 
+      // TODO move this to the OutputKey field level
       validateOutputKey(formikErrors, pipeline, allBlocks);
       validateRenderers(formikErrors, pipeline, allBlocks, extensionPointType);
+      // TODO move this to the TextField level
       validateStringTemplates(formikErrors, pipeline);
       applyTraceErrors(formikErrors, traceErrors, pipeline);
 
