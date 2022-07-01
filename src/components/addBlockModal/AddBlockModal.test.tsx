@@ -16,17 +16,46 @@
  */
 
 import React from "react";
-import { formStateFactory } from "@/testUtils/factories";
-import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { render } from "@/pageEditor/testHelpers";
+import {
+  formStateFactory,
+  marketplaceListingFactory,
+  marketplaceTagFactory,
+} from "@/testUtils/factories";
+import { render, screen } from "@/pageEditor/testHelpers";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
+import userEvent from "@testing-library/user-event";
+import { PipelineType } from "@/pageEditor/pageEditorTypes";
+import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import * as api from "@/services/api";
+import { RegistryId } from "@/core";
+import { MarketplaceListing } from "@/types/contract";
+
+jest.mock("@/services/api");
+
+beforeAll(() => {
+  const tags = [
+    marketplaceTagFactory({ subtype: "role" }),
+    marketplaceTagFactory({ subtype: "role" }),
+    marketplaceTagFactory({ subtype: "role" }),
+  ];
+  (api.useGetMarketplaceTagsQuery as jest.Mock).mockReturnValue({
+    data: tags,
+    isLoading: false,
+  });
+  const listings: Record<RegistryId, MarketplaceListing> = {};
+  for (let i = 0; i < 10; i++) {
+    const listing = marketplaceListingFactory({ tags });
+    listings[listing.id as RegistryId] = listing;
+  }
+
+  (api.useGetMarketplaceListingsQuery as jest.Mock).mockReturnValue({
+    data: listings,
+    isLoading: false,
+  });
+});
 
 describe("AddBlockModal", () => {
-  // beforeAll(() => {
-  //   registerDefaultWidgets();
-  // });
-
   test("it renders", () => {
     const formState = formStateFactory();
     expect(
@@ -34,8 +63,44 @@ describe("AddBlockModal", () => {
         setupRedux(dispatch) {
           dispatch(actions.addElement(formState));
           dispatch(actions.selectElement(formState.uuid));
+          dispatch(
+            actions.showAddBlockModal({
+              path: "",
+              type: PipelineType.Root,
+              index: 0,
+            })
+          );
         },
       }).asFragment()
     ).toMatchSnapshot();
+  });
+
+  test("it renders with tag selected and search query", async () => {
+    const formState = formStateFactory();
+
+    const rendered = render(<AddBlockModal />, {
+      setupRedux(dispatch) {
+        dispatch(actions.addElement(formState));
+        dispatch(actions.selectElement(formState.uuid));
+        dispatch(
+          actions.showAddBlockModal({
+            path: PIPELINE_BLOCKS_FIELD_NAME,
+            type: PipelineType.Root,
+            index: 0,
+          })
+        );
+      },
+    });
+
+    // Click the last tag
+    const tags = screen.getAllByTestId("search-tag-item", {
+      exact: false,
+    });
+    await userEvent.click(tags.at(-1));
+
+    // Enter a query
+    await userEvent.type(screen.getByTestId("tag-search-input"), "google");
+
+    expect(rendered.asFragment()).toMatchSnapshot();
   });
 });

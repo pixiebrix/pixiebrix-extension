@@ -1,3 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`AddBlockModal it renders 1`] = `<DocumentFragment />`;
+
+exports[`AddBlockModal it renders with tag selected and search query 1`] = `<DocumentFragment />`;
