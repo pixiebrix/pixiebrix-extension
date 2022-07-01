@@ -40,13 +40,15 @@ sed s/dist\\/// | \
 # etc
 #
 # `curl` automatically retries if the server is busy. --fail throws on HTTP errors
+# https://github.com/pixiebrix/pixiebrix-extension/issues/3828
 parallel curl https://api.rollbar.com/api/1/sourcemap/download \
 	--fail \
 	--no-progress-meter \
   --max-time 10 \
 	-F version="$SOURCE_VERSION" \
 	-F access_token="$ROLLBAR_POST_SERVER_ITEM_TOKEN" \
-	-F minified_url="$SOURCE_MAP_URL_BASE/$SOURCE_MAP_PATH/{}"
+	-F minified_url="$SOURCE_MAP_URL_BASE/$SOURCE_MAP_PATH/{}" \
+	|| true
 
 # TODO: Replace --fail with --fail-with-body when curl is updated on GitHub Actions (min 7.76.0)
 # https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-Readme.md
