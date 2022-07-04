@@ -1,0 +1,150 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`form data normalization renders normalized data 1`] = `
+<DocumentFragment>
+  <form
+    class="rjsf"
+  >
+    <div
+      class="form-group"
+    >
+      <div
+        class="p-0 container-fluid"
+      >
+        <div
+          class="row"
+          style="margin-bottom: 10px;"
+        >
+          <div
+            class="col-12"
+          >
+             
+            <div
+              class="form-group"
+            >
+              <div
+                class="mb-0 form-group"
+              >
+                <label
+                  class="form-label"
+                >
+                  name
+                </label>
+                <input
+                  class="form-control"
+                  id="root_name"
+                  placeholder=""
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="row"
+          style="margin-bottom: 10px;"
+        >
+          <div
+            class="col-12"
+          >
+             
+            <div
+              class="form-group"
+            >
+              <div
+                class="mb-0 form-group"
+              >
+                <label
+                  class="form-label"
+                >
+                  age
+                </label>
+                <input
+                  class="form-control"
+                  id="root_age"
+                  placeholder=""
+                  type="integer"
+                  value=""
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="row"
+          style="margin-bottom: 10px;"
+        >
+          <div
+            class="col-12"
+          >
+             
+            <div
+              class="form-group"
+            >
+              <div
+                class="checkbox  form-group"
+              >
+                <div
+                  class="form-check"
+                >
+                  <input
+                    class="form-check-input"
+                    id="root_isAdmin"
+                    type="checkbox"
+                  />
+                  <label
+                    class="form-check-label"
+                    for="root_isAdmin"
+                    title=""
+                  >
+                    isAdmin
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="row"
+          style="margin-bottom: 10px;"
+        >
+          <div
+            class="col-12"
+          >
+             
+            <div
+              class="form-group"
+            >
+              <div
+                class="mb-0 form-group"
+              >
+                <label
+                  class="form-label"
+                >
+                  rating
+                </label>
+                <input
+                  class="form-control"
+                  id="root_rating"
+                  placeholder=""
+                  type="number"
+                  value=""
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <button
+        class="btn btn-primary"
+        type="submit"
+      >
+        Submit
+      </button>
+    </div>
+  </form>
+</DocumentFragment>
+`;

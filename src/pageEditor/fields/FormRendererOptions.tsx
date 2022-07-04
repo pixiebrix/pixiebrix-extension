@@ -33,20 +33,16 @@ import {
 } from "@/blocks/renderers/customForm";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
 import DatabaseField from "@/pageEditor/fields/DatabaseField";
-import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
+import FieldTemplate from "@/components/form/FieldTemplate";
+import Select, { Options } from "react-select";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
 const recordIdSchema: Schema = {
   type: "string",
   description: "Unique identifier for the data record",
-};
-
-const serviceSchema: Schema = {
-  $ref: `${SERVICE_BASE_SCHEMA}${PIXIEBRIX_SERVICE_ID}`,
 };
 
 function usePruneUnusedServiceDependencies() {
@@ -59,6 +55,20 @@ function usePruneUnusedServiceDependencies() {
     setFormState(nextState);
   }, [formState, setFormState]);
 }
+
+const storageTypes = ["localStorage", "state", "database"];
+const DEFAULT_STORAGE_TYPE = "state";
+
+type StringOption = {
+  label: string;
+  value: string;
+};
+const storageTypeOptions: Options<StringOption> = storageTypes.map(
+  (storageType) => ({
+    label: storageType,
+    value: storageType,
+  })
+);
 
 const FormRendererOptions: React.FC<{
   name: string;
@@ -76,53 +86,54 @@ const FormRendererOptions: React.FC<{
 
   const [{ value: storage }, , { setValue: setStorageValue }] =
     useField<Storage>(makeName("storage"));
-  const storageType = storage?.type ?? "localStorage";
-  const [previousStorageType, setPreviousStorageType] = useState(storageType);
+  const storageType = storage?.type;
 
-  useEffect(() => {
-    if (storageType !== previousStorageType) {
-      // Clear out any other values the user might have configured
-      if (storageType === "state") {
-        setStorageValue({ type: "state", namespace: "blueprint" } as Storage);
-      } else {
-        setStorageValue({ type: storageType } as Storage);
-      }
-
-      if (previousStorageType === "database") {
-        // I was a bit surprised this works. I would have thought the pruneDependencies call would have seen
-        // a stale copy of the form state.
-        pruneDependencies();
-      }
-
-      setPreviousStorageType(storageType);
+  // Sets the storage type and clears out any other values the user might have configured
+  // If the next type is "database", the AppServiceField will initialize the "service" variable
+  const changeStorageType = (nextStorageType: string) => {
+    if (nextStorageType === "state") {
+      setStorageValue({ type: "state", namespace: "blueprint" } as Storage);
+    } else {
+      setStorageValue({ type: nextStorageType } as Storage);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- setStorageValue reference changes on each render
-  }, [
-    pruneDependencies,
-    storageType,
-    previousStorageType,
-    setPreviousStorageType,
-  ]);
+  };
+
+  // If the storage type changes from "database" to something else, ensure the service record at root is cleared
+  const [previousStorageType, setPreviousStorageType] = useState(storageType);
+  useEffect(() => {
+    if (
+      previousStorageType === "database" &&
+      storageType !== previousStorageType
+    ) {
+      setPreviousStorageType(storageType);
+      pruneDependencies();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- useEffect is the only place that changes the previousStorageType, no need to depend on it
+  }, [storageType, pruneDependencies]);
+
+  // Set the default storage type
+  if (storageType == null) {
+    changeStorageType(DEFAULT_STORAGE_TYPE);
+  }
 
   return (
     <div>
-      <SchemaField
+      <FieldTemplate
         name={makeName("storage", "type")}
-        schema={{
-          type: "string",
-          enum: ["localStorage", "state", "database"],
-          default: "state",
-          description: "The location to submit/store the form data",
+        label="Type"
+        description="The location to submit/store the form data"
+        as={Select}
+        options={storageTypeOptions}
+        value={storageTypeOptions.find((x) => x.value === storageType)}
+        onChange={({ value: nextStorageType }: StringOption) => {
+          changeStorageType(nextStorageType);
         }}
       />
 
       {storageType === "database" && (
         <>
           <DatabaseField name={makeName("storage", "databaseId")} />
-          <AppServiceField
-            name={makeName("storage", "service")}
-            schema={serviceSchema}
-          />
+          <AppServiceField name={makeName("storage", "service")} />
         </>
       )}
 

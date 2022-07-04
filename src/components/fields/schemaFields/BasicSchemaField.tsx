@@ -34,14 +34,17 @@ import { getToggleOptions } from "./getToggleOptions";
 import widgetsRegistry from "./widgets/widgetsRegistry";
 import useToggleFormField from "@/pageEditor/hooks/useToggleFormField";
 import { isExpression } from "@/runtime/mapArgs";
+import { getFieldValidator } from "@/components/fields/fieldUtils";
 
 const BasicSchemaField: SchemaFieldComponent = ({
   omitIfEmpty = false,
+  onBlur: onBlurProp,
   ...restProps
 }) => {
   const {
     name,
     schema,
+    validationSchema,
     isRequired,
     description,
     isObjectProperty = false,
@@ -108,8 +111,13 @@ const BasicSchemaField: SchemaFieldComponent = ({
     ]
   );
 
+  const validate = getFieldValidator(validationSchema);
+
   const [{ value, onBlur: formikOnBlur }, { error, touched }, { setValue }] =
-    useField(name);
+    useField({
+      name,
+      validate,
+    });
 
   useEffect(() => {
     // Initialize any undefined required fields to prevent inferring an "omit" input
@@ -137,13 +145,17 @@ const BasicSchemaField: SchemaFieldComponent = ({
     );
   }
 
-  const onBlur = () => {
+  const onBlur = (event: React.FocusEvent) => {
+    formikOnBlur(event);
+
     if (
       omitIfEmpty &&
       (isEmpty(value) || (isExpression(value) && isEmpty(value.__value__)))
     ) {
       onOmitField();
     }
+
+    onBlurProp?.(event);
   };
 
   return (
@@ -157,10 +169,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
       as={widgetsRegistry.TemplateToggleWidget}
       inputModeOptions={inputModeOptions}
       setFieldDescription={updateFieldDescription}
-      onBlur={(event: React.FocusEvent) => {
-        formikOnBlur(event);
-        onBlur();
-      }}
+      onBlur={onBlur}
       {...restProps}
       // Pass in schema after spreading props to override the non-normalized schema in props
       schema={normalizedSchema}

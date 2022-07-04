@@ -21,7 +21,6 @@ import {
   ColProps,
   Form as BootstrapForm,
   FormControlProps,
-  FormLabelProps,
   Row,
 } from "react-bootstrap";
 import styles from "./FieldTemplate.module.scss";
@@ -66,6 +65,46 @@ export type CustomFieldWidget<
   > = CustomFieldWidgetProps<TValue, TInputElement>
 > = React.ComponentType<TFieldWidgetProps>;
 
+function hasOwnOrNestedError(error: unknown) {
+  // If error is an object, it means that children fields have errors.
+  // If error is a string, it means that the field has an error.
+  return (
+    error != null && (typeof error === "object" || typeof error === "string")
+  );
+}
+
+type ComputeLabelAndColSizeArgs = {
+  fitLabelWidth: boolean;
+  widerLabel: boolean;
+  label: ReactNode;
+};
+
+export function computeLabelAndColSize({
+  fitLabelWidth,
+  widerLabel,
+  label,
+}: ComputeLabelAndColSizeArgs) {
+  const labelSize: ColProps = {};
+  const colSize: ColProps = {};
+
+  if (fitLabelWidth) {
+    labelSize.lg = "auto";
+    colSize.lg = true;
+  } else if (widerLabel) {
+    labelSize.lg = "4";
+    labelSize.xl = "3";
+    colSize.lg = label ? "8" : "12";
+    colSize.xl = label ? "9" : "12";
+  } else {
+    labelSize.lg = "3";
+    labelSize.xl = "2";
+    colSize.lg = label ? "9" : "12";
+    colSize.xl = label ? "10" : "12";
+  }
+
+  return { labelSize, colSize };
+}
+
 const FieldTemplate: React.FC<FieldProps> = ({
   name,
   label,
@@ -81,7 +120,7 @@ const FieldTemplate: React.FC<FieldProps> = ({
   className,
   ...restFieldProps
 }) => {
-  const isInvalid = touched && Boolean(error);
+  const isInvalid = touched && hasOwnOrNestedError(error);
 
   // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
   const nonUndefinedValue = typeof value === "undefined" ? blankValue : value;
@@ -132,40 +171,25 @@ const FieldTemplate: React.FC<FieldProps> = ({
     </AsControl>
   );
 
-  const labelProps: FormLabelProps = {
-    column: true,
-    className: styles.label,
-    htmlFor: controlId,
-  };
-
-  if (fitLabelWidth) {
-    labelProps.lg = "auto";
-  } else if (widerLabel) {
-    labelProps.lg = "4";
-    labelProps.xl = "3";
-  } else {
-    labelProps.lg = "3";
-    labelProps.xl = "2";
-  }
-
-  const colProps: ColProps = {};
-
-  if (fitLabelWidth) {
-    colProps.lg = true;
-  } else if (widerLabel) {
-    colProps.lg = label ? "8" : "12";
-    colProps.xl = label ? "9" : "12";
-  } else {
-    colProps.lg = label ? "9" : "12";
-    colProps.xl = label ? "10" : "12";
-  }
+  const { labelSize, colSize } = computeLabelAndColSize({
+    fitLabelWidth,
+    widerLabel,
+    label,
+  });
 
   return (
     <BootstrapForm.Group as={Row} className={cx(styles.formGroup, className)}>
       {label && (
-        <BootstrapForm.Label {...labelProps}>{label}</BootstrapForm.Label>
+        <BootstrapForm.Label
+          column
+          className={styles.label}
+          htmlFor={controlId}
+          {...labelSize}
+        >
+          {label}
+        </BootstrapForm.Label>
       )}
-      <Col {...colProps}>
+      <Col {...colSize}>
         {formControl}
         {description && (
           <BootstrapForm.Text className="text-muted">

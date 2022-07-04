@@ -55,13 +55,14 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
         nonce: uuidv4(),
         context: ctxt,
         pipeline,
-        // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will break for v4+
         meta: {
           ...meta,
           // The pipeline is static, so don't need to maintain run counter on branches
           branches: mapPathToTraceBranches(tracePath),
         },
+        // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will break for v4+
         options: apiVersionOptions("v3"),
+        messageContext: logger.context,
       });
     }, [pipeline]);
 

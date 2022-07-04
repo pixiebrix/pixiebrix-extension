@@ -22,13 +22,14 @@ import { once } from "lodash";
 import { DEFAULT_THEME } from "@/options/types";
 import { isValidTheme } from "@/utils/themeUtils";
 
-const initialSettingsState: SettingsState = {
+export const initialSettingsState: SettingsState = {
   mode: "remote",
   nextUpdate: null as number,
   suggestElements: false,
   browserWarningDismissed: false,
   partnerId: null,
   theme: DEFAULT_THEME,
+  updatePromptTimestamp: null,
 };
 
 const settingsSlice = createSlice({
@@ -61,6 +62,15 @@ const settingsSlice = createSlice({
       { payload: { partnerId } }: { payload: { partnerId: string } }
     ) {
       state.partnerId = partnerId;
+    },
+    recordUpdatePromptTimestamp(state) {
+      // Don't overwrite the old timestamp
+      if (state.updatePromptTimestamp == null) {
+        state.updatePromptTimestamp = Date.now();
+      }
+    },
+    resetUpdatePromptTimestamp(state) {
+      state.updatePromptTimestamp = null;
     },
     setTheme(state, { payload: { theme } }: { payload: { theme: string } }) {
       if (isValidTheme(theme)) {

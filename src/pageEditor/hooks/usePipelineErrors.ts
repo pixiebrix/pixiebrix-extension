@@ -25,26 +25,17 @@ import validateOutputKey from "@/pageEditor/validation/validateOutputKey";
 import validateRenderers from "@/pageEditor/validation/validateRenderers";
 import applyTraceErrors from "@/pageEditor/validation/applyTraceError";
 import { isEmpty } from "lodash";
-import {
-  FormikError,
-  FormikErrorTree,
-} from "@/pageEditor/tabs/editTab/editTabTypes";
-import { TypedBlockMap } from "@/blocks/registry";
-import { ExtensionPointType } from "@/extensionPoints/types";
+import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 import validateStringTemplates from "@/pageEditor/validation/validateStringTemplates";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import type { TraceError } from "@/telemetry/trace";
+import { FormState } from "@/pageEditor/pageEditorTypes";
+import useAllBlocks from "./useAllBlocks";
 
-function usePipelineField(
-  allBlocks: TypedBlockMap,
-  extensionPointType: ExtensionPointType
-): {
-  blockPipeline: BlockPipeline;
-  blockPipelineErrors: FormikError;
-  traceErrors: TraceError[];
-} {
+function usePipelineErrors() {
+  const [allBlocks] = useAllBlocks();
   const traceErrors = useSelector(selectTraceErrors);
-  const formikContext = useFormikContext();
+  const formikContext = useFormikContext<FormState>();
+  const extensionPointType = formikContext.values.type;
 
   const validatePipelineBlocks = useCallback(
     (pipeline: BlockPipeline): void | FormikErrorTree => {
@@ -60,12 +51,11 @@ function usePipelineField(
     [allBlocks, extensionPointType, traceErrors]
   );
 
-  const [{ value: blockPipeline }, { error: blockPipelineErrors }] =
-    useField<BlockPipeline>({
-      name: PIPELINE_BLOCKS_FIELD_NAME,
-      // @ts-expect-error working with nested errors
-      validate: validatePipelineBlocks,
-    });
+  useField<BlockPipeline>({
+    name: PIPELINE_BLOCKS_FIELD_NAME,
+    // @ts-expect-error working with nested errors
+    validate: validatePipelineBlocks,
+  });
 
   useAsyncEffect(
     async (isMounted) => {
@@ -75,17 +65,14 @@ function usePipelineField(
       }
 
       if (Object.keys(validationErrors).length > 0) {
-        formikContext.setTouched(setNestedObjectValues(validationErrors, true));
+        formikContext.setTouched(
+          setNestedObjectValues(validationErrors, true),
+          false
+        );
       }
     },
     [traceErrors]
   );
-
-  return {
-    blockPipeline,
-    blockPipelineErrors,
-    traceErrors,
-  };
 }
 
-export default usePipelineField;
+export default usePipelineErrors;

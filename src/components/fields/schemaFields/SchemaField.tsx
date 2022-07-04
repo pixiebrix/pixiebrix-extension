@@ -24,6 +24,7 @@ import ServiceField, {
 import AppServiceField, {
   isAppServiceField,
 } from "@/components/fields/schemaFields/AppServiceField";
+import CssClassField, { isCssClassField } from "./CssClassField";
 
 const SchemaField: SchemaFieldComponent = (props) => {
   const { schema } = props;
@@ -34,6 +35,10 @@ const SchemaField: SchemaFieldComponent = (props) => {
 
   if (isServiceField(schema)) {
     return <ServiceField {...props} />;
+  }
+
+  if (isCssClassField(schema)) {
+    return <CssClassField {...props} />;
   }
 
   return <BasicSchemaField {...props} />;

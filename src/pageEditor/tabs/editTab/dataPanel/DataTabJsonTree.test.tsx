@@ -69,17 +69,16 @@ test("renders the DataTabJsonTree component", () => {
 
 test("doesn't re-render internal JSONTree on expand", async () => {
   jest.useFakeTimers();
+  // No delay to run the click without setTimeout. Otherwise the test timeouts
+  // See: https://onestepcode.com/testing-library-user-event-with-fake-timers/?utm_source=rss&utm_medium=rss&utm_campaign=testing-library-user-event-with-fake-timers
+  const immediateUserEvent = userEvent.setup({ delay: null });
   const { renderCount } = perf(React);
   const rendered = renderJsonTree();
 
   // Get the element to expand the tree
   const bullet = rendered.container.querySelector("li > div > div");
 
-  await userEvent.click(bullet, {
-    // No delay to run the click without setTimeout. Otherwise the test timeouts
-    // See: https://onestepcode.com/testing-library-user-event-with-fake-timers/?utm_source=rss&utm_medium=rss&utm_campaign=testing-library-user-event-with-fake-timers
-    delay: null,
-  });
+  await immediateUserEvent.click(bullet);
 
   act(() => {
     // The redux action to update the expanded state is async, resolving all timeouts for it to fire

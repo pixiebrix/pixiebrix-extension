@@ -15,14 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "@/components/documentBuilder/preview/previewVariables.scss";
+import React from "react";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
 
-.root {
-  background-color: $color-decisions-blue-focus;
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 0px 5px;
-  border-radius: $border-radius $border-radius 0 0;
-  color: white;
-}
+import RestrictedPane from "./RestrictedPane";
+
+export default {
+  title: "PageEditor/RestrictedPane",
+  component: RestrictedPane,
+} as ComponentMeta<typeof RestrictedPane>;
+
+const Template: ComponentStory<typeof RestrictedPane> = (args) => (
+  <RestrictedPane {...args} />
+);
+
+export const Default = Template.bind({});
+Default.args = {};

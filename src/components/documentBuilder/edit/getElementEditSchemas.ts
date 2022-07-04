@@ -19,7 +19,7 @@ import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { joinName } from "@/utils";
 import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
 
-export function getClassNameEdit(elementName: string): SchemaFieldProps {
+function getClassNameEdit(elementName: string): SchemaFieldProps {
   return {
     name: joinName(elementName, "config", "className"),
     schema: { type: "string", format: "bootstrap-class" },

@@ -15,21 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IBlock, OutputKey, RegistryId, SafeString, UUID } from "@/core";
-import { freshIdentifier, joinName } from "@/utils";
+import { IBlock, OutputKey, RegistryId, SafeString } from "@/core";
+import { freshIdentifier } from "@/utils";
 import { selectReaderIds } from "@/blocks/readers/readerUtils";
 import getType from "@/runtime/getType";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { FormState } from "@/pageEditor/pageEditorTypes";
-import {
-  getDocumentPipelinePaths,
-  getPipelinePropNames,
-} from "@/pageEditor/utils";
-import { BlockPipeline, BlockConfig } from "@/blocks/types";
+import { traversePipeline } from "@/pageEditor/utils";
+import { BlockPipeline } from "@/blocks/types";
 import { PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
-import { get } from "lodash";
-import { DocumentRenderer } from "@/blocks/renderers/document";
-import { joinElementName } from "@/components/documentBuilder/utils";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
 export function collectRegistryIds(form: FormState): RegistryId[] {
@@ -82,68 +76,19 @@ export async function generateFreshOutputKey(
   return freshIdentifier(type as SafeString, outputKeys) as OutputKey;
 }
 
-type BlockAction = (blockInfo: {
-  blockConfig: BlockConfig;
-  index: number;
-  path: string;
-  pipelinePath: string;
-  pipeline: BlockPipeline;
-  parentNodeId: UUID | null;
-}) => void;
-
-export function traversePipeline(
-  blockPipeline: BlockPipeline,
-  blockPipelinePath: string,
-  parentNodeId: UUID | null,
-  action: BlockAction
-) {
-  for (const [index, blockConfig] of Object.entries(blockPipeline)) {
-    const fieldName = joinName(blockPipelinePath, index);
-    action({
-      blockConfig,
-      index: Number(index),
-      path: fieldName,
-      pipelinePath: blockPipelinePath,
-      pipeline: blockPipeline,
-      parentNodeId,
-    });
-
-    if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
-      for (const subPipelinePath of getDocumentPipelinePaths(blockConfig)) {
-        const subPipelineAccessor = joinElementName(
-          subPipelinePath,
-          "__value__"
-        );
-        const subPipeline = get(blockConfig, subPipelineAccessor);
-        traversePipeline(
-          subPipeline,
-          joinElementName(fieldName, subPipelineAccessor),
-          blockConfig.instanceId,
-          action
-        );
-      }
-    } else {
-      for (const subPipelineField of getPipelinePropNames(blockConfig)) {
-        const subPipelineAccessor = ["config", subPipelineField, "__value__"];
-        const subPipeline = get(blockConfig, subPipelineAccessor);
-        traversePipeline(
-          subPipeline,
-          joinName(fieldName, ...subPipelineAccessor),
-          blockConfig.instanceId,
-          action
-        );
-      }
-    }
-  }
-}
-
 export function getPipelineMap(blockPipeline: BlockPipeline) {
   const pipelineMap: PipelineMap = {};
-  traversePipeline(
+  traversePipeline({
     blockPipeline,
-    PIPELINE_BLOCKS_FIELD_NAME,
-    null,
-    ({ blockConfig, index, path, pipelinePath, pipeline, parentNodeId }) => {
+    blockPipelinePath: PIPELINE_BLOCKS_FIELD_NAME,
+    visitBlock({
+      blockConfig,
+      index,
+      path,
+      pipelinePath,
+      pipeline,
+      parentNodeId,
+    }) {
       pipelineMap[blockConfig.instanceId] = {
         blockId: blockConfig.id,
         path,
@@ -153,8 +98,8 @@ export function getPipelineMap(blockPipeline: BlockPipeline) {
         pipeline,
         parentNodeId,
       };
-    }
-  );
+    },
+  });
 
   return pipelineMap;
 }

@@ -55,11 +55,11 @@
   min-width: 75px; // restrict min width so the popup label doesn't overflow
 }
 
-.labelShiftRight {
-  transform: translate3d($border-radius, -100%, 0px);
+.flapShiftRight {
+  transform: translate3d(0px, -100%, 0px);
 }
 
-.labelShiftUp {
+.flapShiftUp {
   // 3px - width of the container border
-  transform: translate3d(2px, calc(-100% - 2px), 0px);
+  transform: translate3d(-3px, calc(-100% - 2px), 0px);
 }

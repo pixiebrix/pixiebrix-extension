@@ -71,13 +71,14 @@ jobs:
           retention-days: 5
           if-no-files-found: error
 
-      - run: bash scripts/upload-sourcemaps.sh
-        if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
-          AWS_DEFAULT_REGION: "us-east-2"
-          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
+  # Slow, and we don't use currently
+  #      - run: bash scripts/upload-sourcemaps.sh
+  #        if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
+  #        env:
+  #          AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
+  #          AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
+  #          AWS_DEFAULT_REGION: "us-east-2"
+  #          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
 
   generate-headers:
     runs-on: ubuntu-latest
