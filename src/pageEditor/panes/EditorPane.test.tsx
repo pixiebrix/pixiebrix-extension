@@ -50,23 +50,10 @@ const forEachBlock = new ForEach();
 const immediateUserEvent = userEvent.setup({ delay: null });
 
 beforeAll(async () => {
-  jest.useFakeTimers();
-
   registerDefaultWidgets();
   blockRegistry.clear();
   blockRegistry.register(echoBlock, teapotBlock, jqBlock, forEachBlock);
   await blockRegistry.allTyped();
-});
-
-afterAll(() => {
-  jest.useRealTimers();
-});
-
-beforeEach(() => {
-  jest.clearAllTimers();
-});
-afterEach(() => {
-  jest.runOnlyPendingTimers();
 });
 
 const getPlainFormState = (): FormState =>
@@ -143,6 +130,20 @@ describe("renders", () => {
 });
 
 describe("can add a node", () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
+  beforeEach(() => {
+    jest.clearAllTimers();
+  });
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+  });
+
   async function addABlock(addButton: Element, blockName: string) {
     await immediateUserEvent.click(addButton);
 
