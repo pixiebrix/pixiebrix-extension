@@ -14,6 +14,7 @@ import {
   FilterValue,
   useFlexLayout,
   useResizeColumns,
+  Row,
 } from "react-table";
 import { useLocation, useHistory } from "react-router";
 import { Pagination, Table, Form } from "react-bootstrap";
@@ -25,6 +26,7 @@ import {
   faSort,
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./PaginatedTable.module.scss";
+import { isFunction } from "lodash";
 
 type Action = (...args: unknown[]) => void;
 type RowProps = {
@@ -38,12 +40,15 @@ interface TableProps<
 > {
   data: Row[];
   columns: Array<Column<Row>>;
-  actions: Actions;
+  actions?: Actions;
   initialPageSize?: number;
   rowProps?: (row: Record<string, unknown>) => RowProps;
   showSearchFilter: boolean;
-  isNewRecord?: boolean;
-  setIsNewRecord?: React.Dispatch<React.SetStateAction<boolean>>;
+
+  /**
+   * The initial record to show ensure is showing.
+   */
+  initialRecord?: Row | ((x: Row) => boolean);
 
   /**
    * Track pagination in the URL `page` query parameter. WARNING: opt-in, because if there are multiple multi-page
@@ -112,9 +117,30 @@ export const CommaListCell: React.VoidFunctionComponent<{
     ))}
   </p>
 );
+
 export const TruncatedCell: React.VoidFunctionComponent<{
   children: React.ReactNode;
 }> = ({ children }) => <div className={styles.truncatedCell}>{children}</div>;
+
+export function findPageIndex<TRow extends Record<string, unknown>>({
+  record,
+  rows,
+  pageSize,
+}: {
+  record: unknown;
+  rows: Array<Row<TRow>>;
+  pageSize: number;
+}): number | null {
+  const predicate = isFunction(record) ? record : (x: unknown) => x === record;
+
+  const index = rows.findIndex((row) => predicate(row.original));
+
+  if (index >= 0) {
+    return Math.floor(index / pageSize);
+  }
+
+  return null;
+}
 
 function PaginatedTable<
   Row extends Record<string, unknown>,
@@ -122,13 +148,12 @@ function PaginatedTable<
 >({
   data,
   columns,
-  actions,
+  actions = {} as Actions,
   initialPageSize = 10,
   syncURL = false,
   rowProps,
   showSearchFilter,
-  isNewRecord,
-  setIsNewRecord,
+  initialRecord,
 }: TableProps<Row, Actions>): React.ReactElement {
   const history = useHistory();
   const location = useLocation();
@@ -180,12 +205,24 @@ function PaginatedTable<
     }
   }, [pageIndex, history, location, pageCount, gotoPage, urlPageIndex]);
 
-  useEffect(() => {
-    if (isNewRecord && data && data.length > pageSize) {
-      gotoPage(Math.floor(data.length / pageSize));
-      setIsNewRecord(false);
-    }
-  }, [data, isNewRecord]);
+  useEffect(
+    () => {
+      if (initialRecord && rows) {
+        const index = findPageIndex({ record: initialRecord, pageSize, rows });
+        console.debug("Setting table page to show record", {
+          initialRecord,
+          rows,
+          pageSize,
+          index,
+        });
+        if (index != null) {
+          gotoPage(index);
+        }
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only change when initial value changes
+    [initialRecord]
+  );
 
   return (
     <>

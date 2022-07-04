@@ -70,7 +70,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
       onClose();
       await onSave(values);
     },
-    [onSave]
+    [onSave, onClose]
   );
 
   const Editor = useMemo(() => {

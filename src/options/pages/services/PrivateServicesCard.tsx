@@ -41,8 +41,7 @@ const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
 type OwnProps = {
   services: IService[];
   navigate: (url: string) => void;
-  isNewIntegration: boolean;
-  setIsNewIntegration: React.Dispatch<React.SetStateAction<boolean>>;
+  initialService?: IService;
 };
 
 const Actions: React.VoidFunctionComponent<{
@@ -185,8 +184,7 @@ const dataFactory = ({
 const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   services,
   navigate,
-  isNewIntegration,
-  setIsNewIntegration,
+  initialService,
 }) => {
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
     selectConfiguredServices,
@@ -209,15 +207,19 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
     () => dataFactory({ configuredServices, services }),
     [configuredServices, services]
   );
+
+  const initialRecord: (x: unknown) => boolean = useMemo(
+    () => (initialService ? (x: IService) => x.id === initialService.id : null),
+    [initialService]
+  );
+
   return (
     <>
       <PaginatedTable
-        actions={{}}
         columns={columns}
         data={data}
         showSearchFilter
-        isNewRecord={isNewIntegration}
-        setIsNewRecord={setIsNewIntegration}
+        initialRecord={initialRecord}
       />
     </>
   );
