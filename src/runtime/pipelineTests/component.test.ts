@@ -25,14 +25,17 @@ import {
   testOptions,
 } from "./pipelineTestHelpers";
 
-// Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandledrejection errors since we call
-// them with `void` instead of awaiting them in the reducePipeline methods
-import * as logging from "@/background/messenger/api";
 import { fromJS } from "@/blocks/transformers/blockFactory";
 import { validateSemVerString } from "@/types/helpers";
 
-(logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
-  logValues: true,
+jest.mock("@/background/messenger/api", () => {
+  const actual = jest.requireActual("@/background/messenger/api");
+  return {
+    ...actual,
+    getLoggingConfig: jest.fn().mockResolvedValue({
+      logValues: true,
+    }),
+  };
 });
 
 beforeEach(() => {

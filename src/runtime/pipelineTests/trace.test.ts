@@ -26,10 +26,6 @@ import {
   throwBlock,
 } from "./pipelineTestHelpers";
 import { uuidv4 } from "@/types/helpers";
-
-// Mock the recordX trace methods. Otherwise, they'll fail and Jest will have unhandledrejection errors since we call
-// them with `void` instead of awaiting them in the reducePipeline methods
-import * as logging from "@/background/messenger/api";
 import { traces } from "@/background/messenger/api";
 import {
   TraceEntryData,
@@ -42,9 +38,14 @@ import { BlockPipeline } from "@/blocks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { makeTemplateExpression } from "@/testUtils/expressionTestHelpers";
 
-jest.mock("@/background/messenger/api");
-(logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
-  logValues: true,
+jest.mock("@/background/messenger/api", () => {
+  const actual = jest.requireActual("@/background/messenger/api");
+  return {
+    ...actual,
+    getLoggingConfig: jest.fn().mockResolvedValue({
+      logValues: true,
+    }),
+  };
 });
 
 beforeEach(() => {

@@ -25,12 +25,17 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import * as logging from "@/background/messenger/api";
 import { makePipelineExpression } from "@/testUtils/expressionTestHelpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 
-(logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
-  logValues: true,
+jest.mock("@/background/messenger/api", () => {
+  const actual = jest.requireActual("@/background/messenger/api");
+  return {
+    ...actual,
+    getLoggingConfig: jest.fn().mockResolvedValue({
+      logValues: true,
+    }),
+  };
 });
 
 const ifElseBlock = new IfElse();
