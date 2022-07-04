@@ -54,7 +54,8 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   navigate,
 }) => {
   const { id: configurationId } = useParams<{ id: UUID }>();
-
+  // Newly created integration (to ensure it's visible in the table)
+  const [newIntegration, setNewIntegration] = useState<IService | null>(null);
   const [newConfigurationService, setNewConfigurationService] =
     useState<IService>(null);
   const [newConfiguration, setNewConfiguration] =
@@ -86,7 +87,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
 
       setNewConfiguration(null);
       setNewConfigurationService(null);
-
+      setNewIntegration(config);
       await persistor.flush();
 
       try {
@@ -145,6 +146,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
     async (id) => {
       deleteServiceConfig({ id });
       notify.success(`Deleted private configuration for ${activeService.name}`);
+      navigate("/services/");
 
       await persistor.flush();
 
@@ -157,8 +159,6 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
           error,
         });
       }
-
-      navigate("/services");
     },
     [deleteServiceConfig, navigate, activeService]
   );
@@ -219,6 +219,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
             <PrivateServicesCard
               navigate={navigate}
               services={serviceDefinitions}
+              initialService={newIntegration}
             />
           </Card>
         </Col>

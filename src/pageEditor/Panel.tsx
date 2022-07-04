@@ -29,7 +29,6 @@ import { ModalProvider } from "@/components/ConfirmationModal";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import registerEditors from "@/contrib/editors";
-import Loader from "@/components/Loader";
 import ErrorBanner from "@/pageEditor/ErrorBanner";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import RequireAuth from "@/auth/RequireAuth";
@@ -52,7 +51,7 @@ const Panel: React.VoidFunctionComponent = () => {
 
   return (
     <Provider store={store}>
-      <PersistGate loading={<Loader />} persistor={persistor}>
+      <PersistGate persistor={persistor}>
         <PageEditorTabContext.Provider value={context}>
           <ModalProvider>
             <ErrorBoundary>
