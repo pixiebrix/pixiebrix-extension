@@ -33,15 +33,17 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { pixieServiceFactory } from "@/services/locator";
-
-// Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandledrejection errors since we call
-// them with `void` instead of awaiting them in the reducePipeline methods
-import * as logging from "@/background/messenger/api";
 import { services } from "@/background/messenger/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 
-(logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
-  logValues: true,
+jest.mock("@/background/messenger/api", () => {
+  const actual = jest.requireActual("@/background/messenger/api");
+  return {
+    ...actual,
+    getLoggingConfig: jest.fn().mockResolvedValue({
+      logValues: true,
+    }),
+  };
 });
 
 beforeEach(() => {
