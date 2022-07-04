@@ -117,10 +117,6 @@ function decideBlockStatus(
     return RunStatus.NONE;
   }
 
-  if ("error" in traceRecord && traceRecord.error) {
-    return RunStatus.WARNING;
-  }
-
   if (traceRecord?.skippedRun) {
     return RunStatus.SKIPPED;
   }
@@ -366,6 +362,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           errors,
           joinPathParts(pipelinePath, String(index))
         );
+
         contentProps = {
           icon: <BrickIcon brick={block} size="2x" inheritColor />,
           runStatus: decideBlockStatus(blockError, traceRecord),

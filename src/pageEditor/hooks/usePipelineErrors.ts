@@ -30,12 +30,14 @@ import validateStringTemplates from "@/pageEditor/validation/validateStringTempl
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import useAllBlocks from "./useAllBlocks";
+import { selectPipelineMap } from "@/pageEditor/slices/editorSelectors";
 
 function usePipelineErrors() {
   const [allBlocks] = useAllBlocks();
   const traceErrors = useSelector(selectTraceErrors);
   const formikContext = useFormikContext<FormState>();
   const extensionPointType = formikContext.values.type;
+  const pipelineMap = useSelector(selectPipelineMap);
 
   const validatePipelineBlocks = useCallback(
     (pipeline: BlockPipeline): void | FormikErrorTree => {
@@ -46,16 +48,16 @@ function usePipelineErrors() {
       validateRenderers(formikErrors, pipeline, allBlocks, extensionPointType);
       // TODO move this to the TextField level
       validateStringTemplates(formikErrors, pipeline);
-      applyTraceErrors(formikErrors, traceErrors, pipeline);
+      applyTraceErrors(formikErrors, traceErrors, pipelineMap);
 
       return isEmpty(formikErrors) ? undefined : formikErrors;
     },
-    [allBlocks, extensionPointType, traceErrors]
+    [allBlocks, extensionPointType, pipelineMap, traceErrors]
   );
 
   useField<BlockPipeline>({
     name: PIPELINE_BLOCKS_FIELD_NAME,
-    // @ts-expect-error working with nested errors
+    // @ts-expect-error -- validatePipelineBlocks can return an object b/c we're working with nested errors
     validate: validatePipelineBlocks,
   });
 
