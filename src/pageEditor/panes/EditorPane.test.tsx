@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { fireEvent, render, screen } from "@/pageEditor/testHelpers";
+import { render, screen } from "@/pageEditor/testHelpers";
 import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
@@ -40,12 +40,8 @@ import {
 import { PipelineExpression } from "@/runtime/mapArgs";
 import { act } from "react-dom/test-utils";
 import { OutputKey } from "@/core";
-import {
-  fireTextInput,
-  RJSF_SCHEMA_PROPERTY_NAME,
-  selectSchemaFieldType,
-} from "@/testUtils/formHelpers";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "../consts";
+import { fireTextInput, selectSchemaFieldType } from "@/testUtils/formHelpers";
+import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
 const jqBlock = new JQTransformer();
 const forEachBlock = new ForEach();
@@ -62,7 +58,7 @@ beforeAll(async () => {
 });
 
 afterAll(() => {
-  jest.setTimeout(5_000);
+  jest.setTimeout(5000);
 });
 
 const getPlainFormState = (): FormState =>
@@ -357,7 +353,7 @@ describe("validation", () => {
 
     expect(
       screen.getByText(
-        "Invalid string template. Read more about string templates: https://docs.pixiebrix.com/nunjucks-templates"
+        "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
       )
     ).toBeInTheDocument();
   });

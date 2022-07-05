@@ -25,8 +25,8 @@ import { joinName, joinPathParts } from "@/utils";
 import { traversePipeline } from "@/pageEditor/utils";
 import { setPipelineBlockError } from "./setPipelineBlockError";
 
-const MUSTACHE_ERROR_MESSAGE =
-  "Invalid string template. Read more about string templates: https://docs.pixiebrix.com/nunjucks-templates";
+const TEMPLATE_ERROR_MESSAGE =
+  "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";
 
 function validateObject(
   config: UnknownObject,
@@ -42,7 +42,7 @@ function validateObject(
       // We should use 'joinName' here b/c the form fields can have special chars
       setPipelineBlockError(
         errors,
-        MUSTACHE_ERROR_MESSAGE,
+        TEMPLATE_ERROR_MESSAGE,
         joinName(namePath, prop)
       );
     } else if (typeof value === "object" && !isExpression(value)) {
