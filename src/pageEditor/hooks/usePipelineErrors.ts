@@ -15,22 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectTraceErrors } from "@/pageEditor/slices/runtimeSelectors";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { BlockPipeline } from "@/blocks/types";
 import { useField, useFormikContext, setNestedObjectValues } from "formik";
 import { useAsyncEffect } from "use-async-effect";
 import validateOutputKey from "@/pageEditor/validation/validateOutputKey";
 import validateRenderers from "@/pageEditor/validation/validateRenderers";
 import applyTraceErrors from "@/pageEditor/validation/applyTraceError";
-import { isEmpty } from "lodash";
+import { isEmpty, uniq } from "lodash";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
-import validateStringTemplates from "@/pageEditor/validation/validateStringTemplates";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import useAllBlocks from "./useAllBlocks";
-import { selectPipelineMap } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveElementId,
+  selectErrorMap,
+  selectPipelineMap,
+} from "@/pageEditor/slices/editorSelectors";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import { UUID } from "@/core";
+import { TraceError } from "@/telemetry/trace";
 
 function usePipelineErrors() {
   const [allBlocks] = useAllBlocks();
@@ -38,6 +45,9 @@ function usePipelineErrors() {
   const formikContext = useFormikContext<FormState>();
   const extensionPointType = formikContext.values.type;
   const pipelineMap = useSelector(selectPipelineMap);
+  const errorMap = useSelector(selectErrorMap);
+  const dispatch = useDispatch();
+  const activeElementId = useSelector(selectActiveElementId);
 
   const validatePipelineBlocks = useCallback(
     (pipeline: BlockPipeline): void | FormikErrorTree => {
@@ -58,6 +68,45 @@ function usePipelineErrors() {
     // @ts-expect-error -- validatePipelineBlocks can return an object b/c we're working with nested errors
     validate: validatePipelineBlocks,
   });
+
+  useEffect(() => {
+    console.log("Applying trace errors", {
+      traceErrors,
+      errorMap,
+    });
+    // Applying trace errors to the error state
+
+    const ids: UUID[] = Object.keys(errorMap);
+    const traceErrorsMap: Record<UUID, TraceError> = {};
+    const ids2: UUID[] = traceErrors
+      .filter(({ extensionId }) => extensionId === activeElementId)
+      .map((traceError) => {
+        traceErrorsMap[traceError.blockInstanceId] = traceError;
+        return traceError.blockInstanceId;
+      });
+    for (const nodeId of uniq(ids.concat(ids2))) {
+      const nodeTraceError = traceErrorsMap[nodeId];
+      const error = errorMap[nodeId];
+
+      if (nodeTraceError == null) {
+        if (error?.message != null) {
+          dispatch(
+            editorActions.setError({
+              nodeId,
+              nodeError: null,
+            })
+          );
+        }
+      } else {
+        dispatch(
+          editorActions.setError({
+            nodeId,
+            nodeError: getErrorMessage(nodeTraceError.error),
+          })
+        );
+      }
+    }
+  }, [traceErrors]);
 
   useAsyncEffect(
     async (isMounted) => {

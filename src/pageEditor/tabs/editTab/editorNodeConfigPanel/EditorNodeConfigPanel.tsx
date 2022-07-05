@@ -28,6 +28,8 @@ import { showOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import getType from "@/runtime/getType";
+import { useSelector } from "react-redux";
+import { selectActiveNodeError } from "@/pageEditor/slices/editorSelectors";
 
 const PopoverOutputLabel: React.FC<{
   description: string;
@@ -68,11 +70,15 @@ const EditorNodeConfigPanel: React.FC<{
     [outputDescription]
   );
 
+  const newBlockError = useSelector(selectActiveNodeError);
+
   return (
     <>
-      {blockError && (
+      {(newBlockError?.message ?? blockError) && (
         <Row>
-          <Col className={styles.errorMessage}>{blockError}</Col>
+          <Col className="text-danger">
+            {newBlockError?.message ?? blockError}
+          </Col>
         </Row>
       )}
       <Row className={styles.topRow}>

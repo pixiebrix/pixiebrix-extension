@@ -34,11 +34,16 @@ import {
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
-import { cloneDeep, get, isEmpty } from "lodash";
+import { cloneDeep, get, isEmpty, set } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import { getInvalidPath } from "@/utils/debugUtils";
+import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
+import {
+  selectActiveElement,
+  selectActiveElementUIState,
+} from "./editorSelectors";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -571,7 +576,6 @@ export const editorSlice = createSlice({
     clearActiveRecipe(state) {
       state.activeRecipeId = null;
     },
-    // XXX:
     transitionSaveAsNewToCreateRecipeModal(state) {
       state.isSaveAsNewRecipeModalVisible = false;
       state.keepLocalCopyOnCreateRecipe = false;
@@ -653,10 +657,8 @@ export const editorSlice = createSlice({
     },
     removeNode(state, action: PayloadAction<UUID>) {
       const nodeIdToRemove = action.payload;
-      const element = state.elements.find(
-        (x) => x.uuid === state.activeElementId
-      );
-      const elementUiState = state.elementUIStates[state.activeElementId];
+      const element = selectActiveElement({ editor: state });
+      const elementUiState = selectActiveElementUIState({ editor: state });
       const { pipelinePath, index } =
         elementUiState.pipelineMap[nodeIdToRemove];
       const pipeline = get(element, pipelinePath);
@@ -677,6 +679,21 @@ export const editorSlice = createSlice({
 
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
+    },
+    setError(
+      state,
+      action: PayloadAction<{
+        nodeId: UUID;
+        nodeError?: string;
+        fieldErrors?: FormikErrorTree;
+      }>
+    ) {
+      const { nodeId, nodeError } = action.payload;
+      const elementUiState = selectActiveElementUIState({ editor: state });
+      const elementErrors = elementUiState.errorMap;
+      if (typeof nodeError !== "undefined") {
+        set(elementErrors, [nodeId, "message"], nodeError);
+      }
     },
   },
 });

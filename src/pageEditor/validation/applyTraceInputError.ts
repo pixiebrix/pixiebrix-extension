@@ -18,7 +18,7 @@
 import { isInputValidationError } from "@/blocks/errors";
 import { TraceError } from "@/telemetry/trace";
 import { joinName } from "@/utils";
-import { get, set } from "lodash";
+import { set } from "lodash";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 
 const requiredFieldRegex =
@@ -44,23 +44,23 @@ function applyTraceInputError(
     return;
   }
 
-  const errors: string[] = [];
-  for (const inputError of traceError.errors) {
-    const rootProperty = rootPropertyRegex.exec(inputError.instanceLocation)
-      ?.groups.property;
+  for (const maybeInputError of traceError.errors) {
+    const rootProperty = rootPropertyRegex.exec(
+      maybeInputError.instanceLocation
+    )?.groups.property;
     if (rootProperty) {
       const propertyNameInPipeline = joinName(
         blockPath,
         "config",
         rootProperty
       );
-      const errorMessage = inputError.error;
+      const errorMessage = maybeInputError.error;
       set(pipelineErrors, propertyNameInPipeline, errorMessage);
       continue;
     }
 
-    const requiredProperty = requiredFieldRegex.exec(inputError.error)?.groups
-      .property;
+    const requiredProperty = requiredFieldRegex.exec(maybeInputError.error)
+      ?.groups.property;
     if (requiredProperty) {
       const propertyNameInPipeline = joinName(
         blockPath,
@@ -72,18 +72,8 @@ function applyTraceInputError(
       continue;
     }
 
-    if (inputError.error) {
-      errors.push(inputError.error);
-    }
-  }
-
-  // If there are errors, but they didn't match the known inputs
-  // set the error message(s) on the block level
-  if (
-    typeof get(pipelineErrors, blockPath) === "undefined" &&
-    errors.length > 0
-  ) {
-    set(pipelineErrors, blockPath, errors.join(" "));
+    // This is not a known input error. Ignoring it here.
+    // It will be handled by the applyTraceBlockError
   }
 }
 

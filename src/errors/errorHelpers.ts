@@ -202,8 +202,8 @@ export function getErrorMessage(
     }
   }
 
-  if (error instanceof ValidationError) {
-    return error.errors.join(". ");
+  if (Array.isArray(error.errors)) {
+    return error.errors.filter((x) => typeof x === "string").join(". ");
   }
 
   return String(selectError(error).message ?? defaultMessage);

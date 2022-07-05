@@ -19,6 +19,7 @@ import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { RegistryId, UUID } from "@/core";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 
 type PipelineMapBlock = {
   blockId: RegistryId;
@@ -51,10 +52,18 @@ type PipelineMapBlock = {
   parentNodeId: UUID | null;
 };
 
+export type EditorError = {
+  __meta__: unknown;
+  message: string;
+  fieldErrors: FormikErrorTree;
+};
+
 /**
  * The map of pipeline blocks. The key is the instanceId of the block.
  */
 export type PipelineMap = Record<UUID, PipelineMapBlock>;
+
+export type ErrorMap = Record<UUID, EditorError>;
 
 export type TabUIState = {
   /**
@@ -93,9 +102,15 @@ export type NodeUIState = {
 export type ElementUIState = {
   /**
    * Flat map of all pipeline blocks including sub pipelines.
-   * Key is the block instanceId.
+   * Key is the block instanceI.
    */
   pipelineMap: PipelineMap;
+
+  /**
+   * Flat map of the errors for each block of the pipeline including sub pipelines.
+   * Key is the block instanceId
+   */
+  errorMap: ErrorMap;
 
   /**
    * The instanceId of the active node in the editor,
