@@ -65,6 +65,7 @@ function getDefaultArrayItem(schema: Schema): unknown {
 
 const ArrayWidget: React.VFC<ArrayWidgetProps> = ({
   schema,
+  validationSchema,
   name,
   addButtonCaption = "Add Item",
 }) => {
@@ -95,6 +96,7 @@ const ArrayWidget: React.VFC<ArrayWidgetProps> = ({
                   key={index}
                   name={joinName(name, String(index))}
                   schema={schemaItems}
+                  validationSchema={validationSchema}
                   hideLabel
                   isArrayItem
                 />

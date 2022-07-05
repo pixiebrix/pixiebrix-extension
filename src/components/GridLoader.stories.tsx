@@ -15,17 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AuthState } from "./authTypes";
+import React from "react";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
+import GridLoader from "react-spinners/GridLoader";
 
-export const anonAuth: AuthState = Object.freeze({
-  userId: undefined,
-  email: undefined,
-  isLoggedIn: false,
-  isOnboarded: false,
-  extension: true,
-  scope: null,
-  flags: [],
-  organizations: [],
-  groups: [],
-  enforceUpdateMillis: null,
-});
+export default {
+  title: "Common/Loader",
+  component: GridLoader,
+  argTypes: {},
+} as ComponentMeta<typeof GridLoader>;
+
+const Template: ComponentStory<typeof GridLoader> = (args) => (
+  <div>
+    <GridLoader {...args} />
+  </div>
+);
+
+export const ReactSpinnerImport = Template.bind({});
+ReactSpinnerImport.args = {};

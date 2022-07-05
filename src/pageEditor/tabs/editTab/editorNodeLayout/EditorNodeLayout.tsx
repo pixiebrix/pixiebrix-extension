@@ -31,10 +31,10 @@ import {
   FormikError,
   RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
-import { TraceError, TraceRecord } from "@/telemetry/trace";
+import { TraceRecord } from "@/telemetry/trace";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { TypedBlockMap } from "@/blocks/registry";
-import { OutputKey, UUID } from "@/core";
+import { TypedBlock } from "@/blocks/registry";
+import { IBlock, OutputKey, UUID } from "@/core";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
@@ -54,6 +54,12 @@ import { Except } from "type-fest";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
+import { ExtensionPointType } from "@/extensionPoints/types";
+import {
+  IsBlockAllowedPredicate,
+  makeIsAllowedForRootPipeline,
+} from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { PipelineType } from "@/pageEditor/pageEditorTypes";
 
@@ -65,10 +71,9 @@ type EditorNodeProps =
   | (PipelineFooterNodeProps & { type: "footer"; key: string });
 
 type EditorNodeLayoutProps = {
-  allBlocks: TypedBlockMap;
+  extensionPointType: ExtensionPointType;
   pipeline: BlockPipeline;
-  pipelineErrors: FormikError;
-  traceErrors: TraceError[];
+  errors: FormikError;
   extensionPointLabel: string;
   extensionPointIcon: IconProp;
   moveBlockUp: (instanceId: UUID) => void;
@@ -95,18 +100,11 @@ type SubPipeline = {
   subPipelineType: PipelineType;
 };
 
-function decideBrickStatus({
-  index,
-  pipelineErrors,
-  traceRecord,
-}: {
-  index: number;
-  pipelineErrors: FormikError;
-  traceRecord: TraceRecord;
-}): RunStatus {
-  // If blockPipelineErrors is a string, it means the error is on the pipeline level
-  // eslint-disable-next-line security/detect-object-injection -- index is a number
-  if (typeof pipelineErrors !== "string" && Boolean(pipelineErrors?.[index])) {
+function decideBlockStatus(
+  blockError: FormikError,
+  traceRecord: TraceRecord
+): RunStatus {
+  if (blockError) {
     return RunStatus.ERROR;
   }
 
@@ -122,7 +120,6 @@ function decideBrickStatus({
     return RunStatus.SKIPPED;
   }
 
-  // We already checked for errors from pipelineErrors
   if (traceRecord.isFinal) {
     return RunStatus.SUCCESS;
   }
@@ -131,9 +128,9 @@ function decideBrickStatus({
 }
 
 const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
-  allBlocks,
+  extensionPointType,
   pipeline,
-  pipelineErrors,
+  errors,
   extensionPointLabel,
   extensionPointIcon,
   moveBlockUp,
@@ -143,6 +140,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   const dispatch = useDispatch();
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
   const showPaste = pasteBlock && isApiAtLeastV2;
+  const [allBlocks] = useAllBlocks();
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectExtensionTrace);
 
@@ -160,6 +158,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
 
   let foundationRunStatus: RunStatus = RunStatus.NONE;
 
+  // eslint-disable-next-line complexity
   function mapPipelineToNodes({
     pipeline,
     pipelinePath = PIPELINE_BLOCKS_FIELD_NAME,
@@ -357,13 +356,13 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       };
 
       if (block) {
+        const blockError = get(
+          errors,
+          joinElementName(pipelinePath, String(index))
+        );
         contentProps = {
           icon: <BrickIcon brick={block} size="2x" inheritColor />,
-          runStatus: decideBrickStatus({
-            index,
-            pipelineErrors,
-            traceRecord,
-          }),
+          runStatus: decideBlockStatus(blockError, traceRecord),
           brickLabel: isNullOrBlank(blockConfig.label)
             ? block?.name
             : blockConfig.label,

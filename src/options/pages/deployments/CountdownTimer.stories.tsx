@@ -16,18 +16,29 @@
  */
 
 import React from "react";
-import GridLoader from "react-spinners/GridLoader";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
+import { CountdownTimer } from "@/options/pages/deployments/DeploymentModal";
+import { action } from "@storybook/addon-actions";
 
-const DEFAULT_STYLE = {
-  margin: "auto", // Center
-  padding: "20px",
-  display: "flex",
-  justifyContent: "center",
-};
-const Loader: React.FunctionComponent = () => (
-  <div style={DEFAULT_STYLE} data-testid="loader">
-    <GridLoader />
-  </div>
+export default {
+  title: "Options/CountdownTimer",
+  component: CountdownTimer,
+} as ComponentMeta<typeof CountdownTimer>;
+
+const Template: ComponentStory<typeof CountdownTimer> = (args) => (
+  <CountdownTimer {...args} />
 );
 
-export default React.memo(Loader);
+export const Running = Template.bind({});
+Running.args = {
+  start: Date.now() - 5000,
+  duration: 60 * 60 * 1000,
+  onFinish: action("finish"),
+};
+
+export const Completed = Template.bind({});
+Completed.args = {
+  start: Date.now() - 5000,
+  duration: 0,
+  onFinish: action("finish"),
+};

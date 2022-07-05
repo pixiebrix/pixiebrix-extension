@@ -22,12 +22,17 @@ import {
   testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import * as logging from "@/background/messenger/api";
 import { makePipelineExpression } from "@/testUtils/expressionTestHelpers";
 import ForEachElement from "./ForEachElement";
 
-(logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
-  logValues: true,
+jest.mock("@/background/messenger/api", () => {
+  const actual = jest.requireActual("@/background/messenger/api");
+  return {
+    ...actual,
+    getLoggingConfig: jest.fn().mockResolvedValue({
+      logValues: true,
+    }),
+  };
 });
 
 const forEachBlock = new ForEachElement();

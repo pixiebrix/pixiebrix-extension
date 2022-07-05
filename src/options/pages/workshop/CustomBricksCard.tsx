@@ -139,7 +139,6 @@ const CustomBricksCard: React.FunctionComponent<
     <AsyncCard header="Custom Bricks" isPending={isFetching} error={error}>
       {() => (
         <PaginatedTable
-          actions={{}}
           columns={columns}
           data={bricks}
           rowProps={(brick: EnrichedBrick) => ({
