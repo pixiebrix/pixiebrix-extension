@@ -46,8 +46,6 @@ function usePipelineErrors() {
       // TODO move this to the OutputKey field level
       validateOutputKey(formikErrors, pipeline, allBlocks);
       validateRenderers(formikErrors, pipeline, allBlocks, extensionPointType);
-      // TODO move this to the TextField level
-      validateStringTemplates(formikErrors, pipeline);
       applyTraceErrors(formikErrors, traceErrors, pipelineMap);
 
       return isEmpty(formikErrors) ? undefined : formikErrors;
