@@ -70,26 +70,23 @@ function usePipelineErrors() {
   });
 
   useEffect(() => {
-    console.log("Applying trace errors", {
-      traceErrors,
-      errorMap,
-    });
     // Applying trace errors to the error state
-
-    const ids: UUID[] = Object.keys(errorMap);
+    const nodesWithErrors: UUID[] = Object.keys(errorMap) as UUID[];
     const traceErrorsMap: Record<UUID, TraceError> = {};
-    const ids2: UUID[] = traceErrors
-      .filter(({ extensionId }) => extensionId === activeElementId)
-      .map((traceError) => {
-        traceErrorsMap[traceError.blockInstanceId] = traceError;
-        return traceError.blockInstanceId;
-      });
-    for (const nodeId of uniq(ids.concat(ids2))) {
-      const nodeTraceError = traceErrorsMap[nodeId];
-      const error = errorMap[nodeId];
+    const activeElementErrors = traceErrors.filter(
+      ({ extensionId }) => extensionId === activeElementId
+    );
+    for (const traceError of activeElementErrors) {
+      nodesWithErrors.push(traceError.blockInstanceId);
+      traceErrorsMap[traceError.blockInstanceId] = traceError;
+    }
 
-      if (nodeTraceError == null) {
-        if (error?.message != null) {
+    for (const nodeId of uniq(nodesWithErrors)) {
+      const traceError = traceErrorsMap[nodeId];
+      const nodeError = errorMap[nodeId];
+
+      if (traceError == null) {
+        if (nodeError?.message != null) {
           dispatch(
             editorActions.setError({
               nodeId,
@@ -101,7 +98,7 @@ function usePipelineErrors() {
         dispatch(
           editorActions.setError({
             nodeId,
-            nodeError: getErrorMessage(nodeTraceError.error),
+            nodeError: getErrorMessage(traceError.error),
           })
         );
       }
