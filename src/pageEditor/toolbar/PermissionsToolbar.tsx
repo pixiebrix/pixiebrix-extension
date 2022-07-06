@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button, ButtonGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
@@ -40,6 +40,15 @@ const PermissionsToolbar: React.FunctionComponent<{
   element: FormState;
   disabled: boolean;
 }> = ({ element, disabled }) => {
+  const isMounted = useRef(false);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
   const [state, setState] = useState<PermissionsState>({
     hasPermissions: true,
     permissions: {},
@@ -74,7 +83,10 @@ const PermissionsToolbar: React.FunctionComponent<{
       });
 
       const hasPermissions = await containsPermissions(permissions);
-      setState({ permissions, hasPermissions });
+
+      if (isMounted.current) {
+        setState({ permissions, hasPermissions });
+      }
     },
     [setState]
   );
