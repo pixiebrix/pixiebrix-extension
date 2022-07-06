@@ -16,7 +16,6 @@
  */
 
 import { TraceError } from "@/telemetry/trace";
-import applyTraceBlockError from "./applyTraceBlockError";
 import applyTraceInputError from "./applyTraceInputError";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
@@ -46,7 +45,6 @@ function applyTraceErrors(
     );
 
     applyTraceInputError(pipelineErrors, traceError, relativeBlockPath);
-    applyTraceBlockError(pipelineErrors, traceError, relativeBlockPath);
   }
 }
 
