@@ -17,29 +17,23 @@
 
 import styles from "./EditorNodeConfigPanel.module.scss";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Col, Row } from "react-bootstrap";
-import { RegistryId } from "@/core";
+import { RegistryId, UUID } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BlockConfiguration from "@/pageEditor/tabs/effect/BlockConfiguration";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { showOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
-import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import getType from "@/runtime/getType";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectActiveNodeError } from "@/pageEditor/slices/editorSelectors";
-
-const PopoverOutputLabel: React.FC<{
-  description: string;
-}> = ({ description }) => (
-  <PopoverInfoLabel
-    name="output-label"
-    label="Output"
-    description={description}
-  />
-);
+import PopoverOutputLabel from "./PopoverOutputLabel";
+import { setNestedObjectValues, useField } from "formik";
+import useDebouncedEffect from "@/pageEditor/hooks/useDebouncedEffect";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { isEqual } from "lodash";
 
 const EditorNodeConfigPanel: React.FC<{
   /**
@@ -48,8 +42,9 @@ const EditorNodeConfigPanel: React.FC<{
    */
   blockFieldName: string;
   blockId: RegistryId;
+  nodeId: UUID;
   blockError: string;
-}> = ({ blockFieldName, blockId, blockError }) => {
+}> = ({ blockFieldName, blockId, nodeId, blockError }) => {
   const [blockInfo] = useAsyncState(async () => {
     const block = await blockRegistry.lookup(blockId);
     return {
@@ -57,6 +52,56 @@ const EditorNodeConfigPanel: React.FC<{
       type: await getType(block),
     };
   }, [blockId]);
+
+  const dispatch = useDispatch();
+  const nodeError = useSelector(selectActiveNodeError);
+  const [{ value }, { error }, { setError, setTouched }] =
+    useField(blockFieldName);
+  useDebouncedEffect(
+    error,
+    () => {
+      if (!isEqual(nodeError?.fieldErrors, error)) {
+        console.log("setting error in Redux", {
+          blockFieldName,
+          reduxError: nodeError?.fieldErrors,
+          formikError: error,
+        });
+
+        dispatch(
+          editorActions.setError({
+            fieldErrors: error,
+          })
+        );
+      }
+    },
+    500
+  );
+
+  useEffect(() => {
+    // FIXME: don't use setTimeout here
+    // Formik seems to erase the error set on mount, so we wait a bit
+    // Figure out what's going on an fix it
+    setTimeout(() => {
+      if (
+        nodeError?.fieldErrors != null &&
+        !isEqual(nodeError.fieldErrors, error)
+      ) {
+        console.log("setting error in Formik with timeout", {
+          blockFieldName,
+          nodeError: nodeError.fieldErrors,
+        });
+        setError(nodeError.fieldErrors);
+        setTouched(setNestedObjectValues(nodeError.fieldErrors, true), false);
+      }
+    }, 1000);
+  }, [nodeId]);
+
+  console.log("NodeConfigPanel", {
+    blockFieldName,
+    blockError,
+    formikError: error,
+    nodeError,
+  });
 
   const isOutputDisabled = !(
     blockInfo === null || showOutputKey(blockInfo?.type)

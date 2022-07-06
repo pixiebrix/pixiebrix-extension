@@ -43,6 +43,7 @@ import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 import {
   selectActiveElement,
   selectActiveElementUIState,
+  selectActiveNodeId,
 } from "./editorSelectors";
 
 export const initialState: EditorState = {
@@ -683,16 +684,22 @@ export const editorSlice = createSlice({
     setError(
       state,
       action: PayloadAction<{
-        nodeId: UUID;
+        nodeId?: UUID;
         nodeError?: string;
         fieldErrors?: FormikErrorTree;
       }>
     ) {
-      const { nodeId, nodeError } = action.payload;
+      const { nodeError, fieldErrors } = action.payload;
+      const nodeId =
+        action.payload.nodeId ?? selectActiveNodeId({ editor: state });
       const elementUiState = selectActiveElementUIState({ editor: state });
       const elementErrors = elementUiState.errorMap;
       if (typeof nodeError !== "undefined") {
         set(elementErrors, [nodeId, "message"], nodeError);
+      }
+
+      if (typeof fieldErrors !== "undefined") {
+        set(elementErrors, [nodeId, "fieldErrors"], fieldErrors);
       }
     },
   },
