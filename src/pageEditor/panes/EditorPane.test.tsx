@@ -43,6 +43,8 @@ import { OutputKey } from "@/core";
 import { fireTextInput, selectSchemaFieldType } from "@/testUtils/formHelpers";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
+jest.setTimeout(30_000); // This test is flaky with the default timeout of 5000 ms
+
 const jqBlock = new JQTransformer();
 const forEachBlock = new ForEach();
 
@@ -50,15 +52,10 @@ const forEachBlock = new ForEach();
 const immediateUserEvent = userEvent.setup({ delay: null });
 
 beforeAll(async () => {
-  jest.setTimeout(30_000); // This test is flaky with the default timeout of 5000 ms
   registerDefaultWidgets();
   blockRegistry.clear();
   blockRegistry.register(echoBlock, teapotBlock, jqBlock, forEachBlock);
   await blockRegistry.allTyped();
-});
-
-afterAll(() => {
-  jest.setTimeout(5000);
 });
 
 const getPlainFormState = (): FormState =>
