@@ -102,7 +102,7 @@ export type NodeUIState = {
 export type ElementUIState = {
   /**
    * Flat map of all pipeline blocks including sub pipelines.
-   * Key is the block instanceI.
+   * Key is the block instanceId.
    */
   pipelineMap: PipelineMap;
 
