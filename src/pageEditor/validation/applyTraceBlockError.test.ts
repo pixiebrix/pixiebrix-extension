@@ -18,19 +18,24 @@
 import { traceErrorFactory } from "@/testUtils/factories";
 import applyTraceBlockError from "./applyTraceBlockError";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
+import { get } from "lodash";
 
-test("sets block error", () => {
-  const pipelineErrors: FormikErrorTree = {};
-  const errorTraceEntry = traceErrorFactory();
+// Test root pipeline and sub pipeline (path corresponds to storage config of a Custom Form in a Document)
+test.each(["0", "0.config.body.1.config.pipeline.__value__.0.config.recordId"])(
+  "sets block error",
+  (blockPath) => {
+    const pipelineErrors: FormikErrorTree = {};
+    const errorTraceEntry = traceErrorFactory();
 
-  applyTraceBlockError(pipelineErrors, errorTraceEntry, 0);
+    applyTraceBlockError(pipelineErrors, errorTraceEntry, blockPath);
 
-  expect(pipelineErrors[0]).toBe(errorTraceEntry.error.message);
-});
+    expect(get(pipelineErrors, blockPath)).toBe(errorTraceEntry.error.message);
+  }
+);
 
 test("doesn't override nested error", () => {
   const errorTraceEntry = traceErrorFactory();
-  const blockIndex = 5;
+  const blockPath = "5";
 
   const nestedBlockError = {
     config: {
@@ -38,10 +43,10 @@ test("doesn't override nested error", () => {
     },
   };
   const pipelineErrors = {
-    [blockIndex]: nestedBlockError,
+    [blockPath]: nestedBlockError,
   };
 
-  applyTraceBlockError(pipelineErrors, errorTraceEntry, blockIndex);
+  applyTraceBlockError(pipelineErrors, errorTraceEntry, blockPath);
 
-  expect(pipelineErrors[blockIndex]).toBe(nestedBlockError);
+  expect(pipelineErrors[blockPath]).toBe(nestedBlockError);
 });

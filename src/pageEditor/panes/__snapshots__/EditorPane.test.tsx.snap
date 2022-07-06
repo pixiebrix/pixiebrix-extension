@@ -1443,7 +1443,49 @@ exports[`renders an extension with sub pipeline 1`] = `
                       >
                         <ul
                           style="padding: 0px; margin: 0px; list-style: none;"
-                        />
+                        >
+                          <li
+                            style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                          >
+                            <label
+                              style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                            >
+                              <div>
+                                <span>
+                                  @input
+                                </span>
+                                : 
+                                <a
+                                  aria-label="copy path"
+                                  class="copyPath p-0 btn btn-text"
+                                  href="#"
+                                  role="button"
+                                >
+                                  <svg
+                                    aria-hidden="true"
+                                    class="svg-inline--fa fa-copy fa-w-14 "
+                                    data-icon="copy"
+                                    data-prefix="fas"
+                                    focusable="false"
+                                    role="img"
+                                    viewBox="0 0 448 512"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"
+                                      fill="currentColor"
+                                    />
+                                  </svg>
+                                </a>
+                              </div>
+                            </label>
+                            <span
+                              style="color: rgb(241, 89, 80);"
+                            >
+                              undefined
+                            </span>
+                          </li>
+                        </ul>
                       </li>
                     </ul>
                   </div>

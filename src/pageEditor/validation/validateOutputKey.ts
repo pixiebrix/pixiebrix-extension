@@ -16,24 +16,16 @@
  */
 
 import { BlockPipeline } from "@/blocks/types";
-import { joinName } from "@/utils";
-import { isEmpty, set } from "lodash";
+import { isEmpty } from "lodash";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { TypedBlockMap } from "@/blocks/registry";
 import { BlockType } from "@/runtime/runtimeTypes";
+import { traversePipeline } from "@/pageEditor/utils";
+import { setPipelineBlockError } from "./setPipelineBlockError";
 
 const outputKeyRegex = /^[A-Za-z][\dA-Za-z]*$/;
 
 const blockTypesWithEmptyOutputKey: BlockType[] = ["effect", "renderer"];
-
-function setOutputKeyError(
-  pipelineErrors: FormikErrorTree,
-  blockIndex: number,
-  errorMessage: string
-) {
-  const propertyNameInPipeline = joinName(String(blockIndex), "outputKey");
-  set(pipelineErrors, propertyNameInPipeline, errorMessage);
-}
 
 function validateOutputKey(
   pipelineErrors: FormikErrorTree,
@@ -45,29 +37,30 @@ function validateOutputKey(
     return;
   }
 
-  for (let blockIndex = 0; blockIndex !== pipeline.length; ++blockIndex) {
-    let errorMessage: string;
-    // eslint-disable-next-line security/detect-object-injection
-    const pipelineBlock = pipeline[blockIndex];
-    const blockType = allBlocks.get(pipelineBlock.id)?.type;
+  traversePipeline({
+    pipeline,
+    visitBlock({ blockConfig, path }) {
+      let errorMessage: string;
+      const { id, outputKey } = blockConfig;
+      const blockType = allBlocks.get(id)?.type;
+      if (blockTypesWithEmptyOutputKey.includes(blockType)) {
+        if (!outputKey) {
+          return;
+        }
 
-    if (blockTypesWithEmptyOutputKey.includes(blockType)) {
-      if (!pipelineBlock.outputKey) {
-        continue;
+        errorMessage = `OutputKey must be empty for "${blockType}" block.`;
+      } else if (!outputKey) {
+        errorMessage = "This field is required.";
+      } else if (outputKeyRegex.test(outputKey)) {
+        return;
+      } else {
+        errorMessage =
+          "Must start with a letter and only include letters and numbers.";
       }
 
-      errorMessage = `OutputKey must be empty for "${blockType}" block.`;
-    } else if (!pipelineBlock.outputKey) {
-      errorMessage = "This field is required.";
-    } else if (outputKeyRegex.test(pipelineBlock.outputKey)) {
-      continue;
-    } else {
-      errorMessage =
-        "Must start with a letter and only include letters and numbers.";
-    }
-
-    setOutputKeyError(pipelineErrors, blockIndex, errorMessage);
-  }
+      setPipelineBlockError(pipelineErrors, errorMessage, path, "outputKey");
+    },
+  });
 }
 
 export default validateOutputKey;

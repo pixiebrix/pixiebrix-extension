@@ -28,8 +28,7 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { useSelector } from "react-redux";
 import { DocumentRenderer } from "@/blocks/renderers/document";
-import { joinElementName } from "@/components/documentBuilder/utils";
-import { getProperty } from "@/utils";
+import { getProperty, joinPathParts } from "@/utils";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import { Button } from "react-bootstrap";
 import { actions as pageEditorActions } from "@/pageEditor/slices/editorSlice";
@@ -96,7 +95,7 @@ const ConfigurationTitle: React.FunctionComponent = () => {
     // An element is selected in the document preview
     const activeDocumentElement = get(
       activeNode,
-      joinElementName(DOCUMENT_BODY_PATH, activeNodePreviewElementName)
+      joinPathParts(DOCUMENT_BODY_PATH, activeNodePreviewElementName)
     );
     const activeDocumentElementName =
       getProperty<string>(elementTypeLabels, activeDocumentElement.type) ??

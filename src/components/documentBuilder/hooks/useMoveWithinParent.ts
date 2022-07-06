@@ -21,7 +21,7 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import { useField } from "formik";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import getElementCollectionName from "@/components/documentBuilder/edit/getElementCollectionName";
-import { joinElementName } from "@/components/documentBuilder/utils";
+import { joinPathParts } from "@/utils";
 
 type MoveWithinParent = {
   canMoveUp: boolean;
@@ -38,7 +38,7 @@ function useMoveWithinParent(documentBodyName: string): MoveWithinParent {
   const { collectionName, elementIndex } =
     getElementCollectionName(activeElement);
 
-  const fullCollectionName = joinElementName(documentBodyName, collectionName);
+  const fullCollectionName = joinPathParts(documentBodyName, collectionName);
 
   const [{ value: elementsCollection }, , { setValue: setElementsCollection }] =
     useField<DocumentElement[]>(fullCollectionName);
@@ -58,7 +58,7 @@ function useMoveWithinParent(documentBodyName: string): MoveWithinParent {
     /* eslint-enable security/detect-object-injection */
 
     setElementsCollection(newElementsCollection);
-    setActiveElement(joinElementName(collectionName, toIndex));
+    setActiveElement(joinPathParts(collectionName, toIndex));
   };
 
   return {
