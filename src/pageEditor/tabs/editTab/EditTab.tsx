@@ -23,7 +23,6 @@ import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import EditorNodeConfigPanel from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
 import useExtensionTrace from "@/pageEditor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationDataPanel";
@@ -35,22 +34,16 @@ import {
   selectActiveNodeInfo,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
-import ApiVersionField from "@/pageEditor/fields/ApiVersionField";
 import useBlockPipelineActions from "@/pageEditor/tabs/editTab/useBlockPipelineActions";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import UnsupportedApiV1 from "@/pageEditor/tabs/editTab/UnsupportedApiV1";
-import UpgradedToApiV3 from "@/pageEditor/tabs/editTab/UpgradedToApiV3";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import useFlags from "@/hooks/useFlags";
 import { FormState } from "@/pageEditor/pageEditorTypes";
-import { isInnerExtensionPoint } from "@/registry/internal";
 import useReportTraceError from "./useReportTraceError";
-import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
-import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { get } from "lodash";
-import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
+import FoundationNodeConfigPanel from "./FoundationNodeConfigPanel";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -71,12 +64,6 @@ const EditTab: React.FC<{
   } = values;
 
   usePipelineErrors();
-
-  // For now, don't allow modifying extensionPoint packages via the Page Editor.
-  const isLocked = useMemo(
-    () => !isInnerExtensionPoint(extensionPoint.metadata.id),
-    [extensionPoint.metadata.id]
-  );
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
@@ -104,9 +91,6 @@ const EditTab: React.FC<{
   // If formikErrorForBlock is a string, it means that this exact block has an error.
   const blockError: string =
     typeof formikErrorForBlock === "string" ? formikErrorForBlock : null;
-
-  const { flagOn } = useFlags();
-  const showVersionField = flagOn("page-editor-developer");
 
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
@@ -165,20 +149,10 @@ const EditTab: React.FC<{
             >
               {isApiAtLeastV2 ? (
                 activeNodeId === FOUNDATION_NODE_ID ? (
-                  <>
-                    {extensionPointType === "quickBar" && (
-                      <UnconfiguredQuickBarAlert />
-                    )}
-                    <ConnectedFieldTemplate
-                      name="label"
-                      label="Extension Name"
-                    />
-                    {showVersionField && <ApiVersionField />}
-                    <UpgradedToApiV3 />
-                    <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
-                      <EditorNode isLocked={isLocked} />
-                    </SchemaFieldContext.Provider>
-                  </>
+                  <FoundationNodeConfigPanel
+                    extensionPoint={extensionPoint}
+                    EditorNode={EditorNode}
+                  />
                 ) : (
                   <EditorNodeConfigPanel
                     key={activeNodeId}
