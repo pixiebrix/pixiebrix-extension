@@ -15,52 +15,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectTraceErrors } from "@/pageEditor/slices/runtimeSelectors";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { BlockPipeline } from "@/blocks/types";
 import { useField, useFormikContext, setNestedObjectValues } from "formik";
 import { useAsyncEffect } from "use-async-effect";
 import validateOutputKey from "@/pageEditor/validation/validateOutputKey";
-import validateRenderers from "@/pageEditor/validation/validateRenderers";
 import applyTraceErrors from "@/pageEditor/validation/applyTraceError";
-import { isEmpty, uniq } from "lodash";
+import { isEmpty } from "lodash";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import useAllBlocks from "./useAllBlocks";
-import {
-  selectActiveElementId,
-  selectErrorMap,
-  selectPipelineMap,
-} from "@/pageEditor/slices/editorSelectors";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import { getErrorMessage } from "@/errors/errorHelpers";
-import { UUID } from "@/core";
-import { TraceError } from "@/telemetry/trace";
+import { selectPipelineMap } from "@/pageEditor/slices/editorSelectors";
 
+/**
+ * Runs the validation that is applied on the fields level,
+ * meaning it's part of the Formik validation
+ */
 function usePipelineErrors() {
   const [allBlocks] = useAllBlocks();
   const traceErrors = useSelector(selectTraceErrors);
   const formikContext = useFormikContext<FormState>();
-  const extensionPointType = formikContext.values.type;
   const pipelineMap = useSelector(selectPipelineMap);
-  const errorMap = useSelector(selectErrorMap);
-  const dispatch = useDispatch();
-  const activeElementId = useSelector(selectActiveElementId);
 
+  // "validatePipelineBlocks" is invoked when Formik runs validation (currently onBlur)
   const validatePipelineBlocks = useCallback(
     (pipeline: BlockPipeline): void | FormikErrorTree => {
       const formikErrors: FormikErrorTree = {};
 
-      // TODO move this to the OutputKey field level
       validateOutputKey(formikErrors, pipeline, allBlocks);
-      validateRenderers(formikErrors, pipeline, allBlocks, extensionPointType);
       applyTraceErrors(formikErrors, traceErrors, pipelineMap);
 
       return isEmpty(formikErrors) ? undefined : formikErrors;
     },
-    [allBlocks, extensionPointType, pipelineMap, traceErrors]
+    [allBlocks, pipelineMap, traceErrors]
   );
 
   useField<BlockPipeline>({
@@ -69,42 +59,7 @@ function usePipelineErrors() {
     validate: validatePipelineBlocks,
   });
 
-  useEffect(() => {
-    // Applying trace errors to the error state
-    const nodesWithErrors: UUID[] = Object.keys(errorMap) as UUID[];
-    const traceErrorsMap: Record<UUID, TraceError> = {};
-    const activeElementErrors = traceErrors.filter(
-      ({ extensionId }) => extensionId === activeElementId
-    );
-    for (const traceError of activeElementErrors) {
-      nodesWithErrors.push(traceError.blockInstanceId);
-      traceErrorsMap[traceError.blockInstanceId] = traceError;
-    }
-
-    for (const nodeId of uniq(nodesWithErrors)) {
-      const traceError = traceErrorsMap[nodeId];
-      const nodeError = errorMap[nodeId];
-
-      if (traceError == null) {
-        if (nodeError?.message != null) {
-          dispatch(
-            editorActions.setError({
-              nodeId,
-              nodeError: null,
-            })
-          );
-        }
-      } else {
-        dispatch(
-          editorActions.setError({
-            nodeId,
-            nodeError: getErrorMessage(traceError.error),
-          })
-        );
-      }
-    }
-  }, [traceErrors]);
-
+  // When we get new traces, trigger the Formik validation which will invoke "validatePipelineBlocks"
   useAsyncEffect(
     async (isMounted) => {
       const validationErrors = await formikContext.validateForm();

@@ -36,7 +36,7 @@ function applyTraceErrors(
     const blockInfo = pipelineMap[blockInstanceId];
 
     if (blockInfo == null) {
-      return;
+      continue;
     }
 
     // Removing the path of the root pipeline (accounting for ".")

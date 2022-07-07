@@ -17,9 +17,8 @@
 
 import { isInputValidationError } from "@/blocks/errors";
 import { TraceError } from "@/telemetry/trace";
-import { joinName } from "@/utils";
-import { set } from "lodash";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
+import { setPipelineBlockError } from "./setPipelineBlockError";
 
 const requiredFieldRegex =
   /^Instance does not have required property "(?<property>.+)"\.$/;
@@ -49,31 +48,29 @@ function applyTraceInputError(
       maybeInputError.instanceLocation
     )?.groups.property;
     if (rootProperty) {
-      const propertyNameInPipeline = joinName(
+      const errorMessage = maybeInputError.error;
+      setPipelineBlockError(
+        pipelineErrors,
+        errorMessage,
         blockPath,
         "config",
         rootProperty
       );
-      const errorMessage = maybeInputError.error;
-      set(pipelineErrors, propertyNameInPipeline, errorMessage);
       continue;
     }
 
     const requiredProperty = requiredFieldRegex.exec(maybeInputError.error)
       ?.groups.property;
     if (requiredProperty) {
-      const propertyNameInPipeline = joinName(
+      const errorMessage = "Error from the last run: This field is required.";
+      setPipelineBlockError(
+        pipelineErrors,
+        errorMessage,
         blockPath,
         "config",
         requiredProperty
       );
-      const errorMessage = "Error from the last run: This field is required.";
-      set(pipelineErrors, propertyNameInPipeline, errorMessage);
-      continue;
     }
-
-    // This is not a known input error. Ignoring it here.
-    // It will be handled by the applyTraceBlockError
   }
 }
 

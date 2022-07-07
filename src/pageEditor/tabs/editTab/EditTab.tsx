@@ -42,12 +42,14 @@ import cx from "classnames";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import useReportTraceError from "./useReportTraceError";
 import FoundationNodeConfigPanel from "./FoundationNodeConfigPanel";
+import usePipelineErrors from "@/pageEditor/hooks/usePipelineErrors";
 
 const EditTab: React.FC<{
   eventKey: string;
 }> = ({ eventKey }) => {
   useExtensionTrace();
   useReportTraceError();
+  usePipelineErrors();
 
   const { values, setValues: setFormValues } = useFormikContext<FormState>();
 
