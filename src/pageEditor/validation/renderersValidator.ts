@@ -15,9 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlockPipeline } from "@/blocks/types";
-import { TypedBlockMap } from "@/blocks/registry";
-import { ExtensionPointType } from "@/extensionPoints/types";
 import { traversePipeline } from "@/pageEditor/utils";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { RootState } from "@/pageEditor/pageEditorTypes";

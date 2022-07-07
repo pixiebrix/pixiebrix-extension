@@ -17,8 +17,7 @@
 
 import { UUID } from "@/core";
 import { TraceError } from "@/telemetry/trace";
-import { createListenerMiddleware, isAnyOf } from "@reduxjs/toolkit";
-import { uniq } from "lodash";
+import { createListenerMiddleware } from "@reduxjs/toolkit";
 import { RootState } from "@/pageEditor/pageEditorTypes";
 import {
   selectActiveElement,
@@ -28,8 +27,6 @@ import { selectTraceErrors } from "@/pageEditor/slices/runtimeSelectors";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import validateRenderers from "./renderersValidator";
-import blockRegistry from "@/blocks/registry";
 import RenderersValidator from "./renderersValidator";
 
 const validationListenerMiddleware = createListenerMiddleware();
