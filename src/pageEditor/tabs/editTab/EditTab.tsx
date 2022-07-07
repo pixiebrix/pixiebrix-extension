@@ -63,8 +63,6 @@ const EditTab: React.FC<{
     extension: { blockPipeline },
   } = values;
 
-  usePipelineErrors();
-
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
   const {
