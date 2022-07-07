@@ -21,25 +21,37 @@ import { createListenerMiddleware } from "@reduxjs/toolkit";
 import { uniq } from "lodash";
 import { RootState } from "@/pageEditor/pageEditorTypes";
 import {
-  selectActiveElementId,
+  selectActiveElement,
   selectErrorMap,
-} from "../slices/editorSelectors";
-import { selectTraceErrors } from "../slices/runtimeSelectors";
-import runtimeSlice from "../slices/runtimeSlice";
+} from "@/pageEditor/slices/editorSelectors";
+import { selectTraceErrors } from "@/pageEditor/slices/runtimeSelectors";
+import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import validateRenderers from "./validateRenderers2";
+import blockRegistry from "@/blocks/registry";
 
 const validationListenerMiddleware = createListenerMiddleware();
 validationListenerMiddleware.startListening({
   actionCreator: runtimeSlice.actions.setExtensionTrace,
-  effect(action, listenerApi) {
+  async effect(action, listenerApi) {
     const state: RootState = listenerApi.getState() as RootState;
-    const activeElementId = selectActiveElementId(state);
+    const activeElement = selectActiveElement(state);
+    const activeElementId = activeElement.uuid;
     if (activeElementId !== action.payload.extensionId) {
       return;
     }
 
-    console.log("validationMiddleware.setExtensionTrace");
+    const allBlocks = await blockRegistry.allTyped();
+
+    validateRenderers(
+      activeElement.extensionPoint.definition.type,
+      activeElement.extension.blockPipeline,
+      allBlocks,
+      (actionPayload) => {
+        listenerApi.dispatch(editorActions.setError(actionPayload));
+      }
+    );
 
     // Applying trace errors to the error state
     const errorMap = selectErrorMap(state);
