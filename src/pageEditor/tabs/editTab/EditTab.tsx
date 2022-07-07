@@ -26,7 +26,6 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
 import useExtensionTrace from "@/pageEditor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationDataPanel";
-import usePipelineErrors from "@/pageEditor/hooks/usePipelineErrors";
 import { useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import {
@@ -42,7 +41,6 @@ import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import useReportTraceError from "./useReportTraceError";
-import { get } from "lodash";
 import FoundationNodeConfigPanel from "./FoundationNodeConfigPanel";
 
 const EditTab: React.FC<{
@@ -51,11 +49,7 @@ const EditTab: React.FC<{
   useExtensionTrace();
   useReportTraceError();
 
-  const {
-    values,
-    setValues: setFormValues,
-    errors,
-  } = useFormikContext<FormState>();
+  const { values, setValues: setFormValues } = useFormikContext<FormState>();
 
   const {
     extensionPoint,
@@ -83,12 +77,6 @@ const EditTab: React.FC<{
     copyBlock,
     pasteBlock,
   } = useBlockPipelineActions(pipelineMap, values, setFormValues);
-
-  // The value of formikErrorForBlock can be object or string.
-  const formikErrorForBlock = get(errors, fieldName);
-  // If formikErrorForBlock is a string, it means that this exact block has an error.
-  const blockError: string =
-    typeof formikErrorForBlock === "string" ? formikErrorForBlock : null;
 
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
@@ -157,7 +145,6 @@ const EditTab: React.FC<{
                     nodeId={activeNodeId}
                     blockFieldName={fieldName}
                     blockId={blockId}
-                    blockError={blockError}
                   />
                 )
               ) : (

@@ -54,7 +54,19 @@ type PipelineMapBlock = {
 
 export type EditorError = {
   __meta__: unknown;
+  /**
+   * @deprecated Use namespaced nodeErrors instead
+   */
   message: string;
+
+  /**
+   * Namespaced errors related to the Node
+   */
+  nodeErrors: Record<string, string>;
+
+  /**
+   * Formik errors of the node
+   */
   fieldErrors: FormikErrorTree;
 };
 

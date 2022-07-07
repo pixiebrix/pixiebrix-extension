@@ -702,6 +702,19 @@ export const editorSlice = createSlice({
         set(elementErrors, [nodeId, "fieldErrors"], fieldErrors);
       }
     },
+    setNodeError(
+      state,
+      action: PayloadAction<{
+        nodeId: UUID;
+        namespace: string;
+        message: string;
+      }>
+    ) {
+      const { nodeId, namespace, message } = action.payload;
+      const elementUiState = selectActiveElementUIState({ editor: state });
+      const elementErrors = elementUiState.errorMap;
+      set(elementErrors, [nodeId, "nodeErrors", namespace], message);
+    },
   },
 });
 /* eslint-enable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- re-enable rule */

@@ -43,8 +43,7 @@ const EditorNodeConfigPanel: React.FC<{
   blockFieldName: string;
   blockId: RegistryId;
   nodeId: UUID;
-  blockError: string;
-}> = ({ blockFieldName, blockId, nodeId, blockError }) => {
+}> = ({ blockFieldName, blockId, nodeId }) => {
   const [blockInfo] = useAsyncState(async () => {
     const block = await blockRegistry.lookup(blockId);
     return {
@@ -55,8 +54,7 @@ const EditorNodeConfigPanel: React.FC<{
 
   const dispatch = useDispatch();
   const nodeError = useSelector(selectActiveNodeError);
-  const [{ value }, { error }, { setError, setTouched }] =
-    useField(blockFieldName);
+  const [, { error }, { setError, setTouched }] = useField(blockFieldName);
   useDebouncedEffect(
     error,
     () => {
@@ -90,7 +88,7 @@ const EditorNodeConfigPanel: React.FC<{
           blockFieldName,
           nodeError: nodeError.fieldErrors,
         });
-        setError(nodeError.fieldErrors);
+        setError(nodeError.fieldErrors as any);
         setTouched(setNestedObjectValues(nodeError.fieldErrors, true), false);
       }
     }, 1000);
@@ -98,7 +96,6 @@ const EditorNodeConfigPanel: React.FC<{
 
   console.log("NodeConfigPanel", {
     blockFieldName,
-    blockError,
     formikError: error,
     nodeError,
   });
@@ -116,14 +113,16 @@ const EditorNodeConfigPanel: React.FC<{
   );
 
   const newBlockError = useSelector(selectActiveNodeError);
+  const blockError =
+    newBlockError?.nodeErrors == null
+      ? null
+      : Object.values(newBlockError.nodeErrors).filter(Boolean).join(" ");
 
   return (
     <>
-      {(newBlockError?.message ?? blockError) && (
+      {blockError && (
         <Row>
-          <Col className="text-danger">
-            {newBlockError?.message ?? blockError}
-          </Col>
+          <Col className="text-danger">{blockError}</Col>
         </Row>
       )}
       <Row className={styles.topRow}>

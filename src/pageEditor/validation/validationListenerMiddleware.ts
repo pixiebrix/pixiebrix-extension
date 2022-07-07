@@ -17,7 +17,7 @@
 
 import { UUID } from "@/core";
 import { TraceError } from "@/telemetry/trace";
-import { createListenerMiddleware } from "@reduxjs/toolkit";
+import { createListenerMiddleware, isAnyOf } from "@reduxjs/toolkit";
 import { uniq } from "lodash";
 import { RootState } from "@/pageEditor/pageEditorTypes";
 import {
@@ -28,10 +28,13 @@ import { selectTraceErrors } from "@/pageEditor/slices/runtimeSelectors";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import validateRenderers from "./validateRenderers2";
+import validateRenderers from "./renderersValidator";
 import blockRegistry from "@/blocks/registry";
+import RenderersValidator from "./renderersValidator";
 
 const validationListenerMiddleware = createListenerMiddleware();
+
+// Trace errors
 validationListenerMiddleware.startListening({
   actionCreator: runtimeSlice.actions.setExtensionTrace,
   async effect(action, listenerApi) {
@@ -42,54 +45,48 @@ validationListenerMiddleware.startListening({
       return;
     }
 
-    const allBlocks = await blockRegistry.allTyped();
+    // Clear the errors from the last run
+    // TODO: find a better way for this
+    const errorMap = selectErrorMap(state);
+    const nodesWithTraceErrors: UUID[] = Object.entries(errorMap)
+      .filter(([, error]) => error.nodeErrors?.trace != null)
+      .map(([nodeId]) => nodeId as UUID);
 
-    validateRenderers(
-      activeElement.extensionPoint.definition.type,
-      activeElement.extension.blockPipeline,
-      allBlocks,
-      (actionPayload) => {
-        listenerApi.dispatch(editorActions.setError(actionPayload));
-      }
-    );
+    for (const nodeId of nodesWithTraceErrors) {
+      listenerApi.dispatch(
+        editorActions.setNodeError({
+          nodeId,
+          namespace: "trace",
+          message: null,
+        })
+      );
+    }
 
     // Applying trace errors to the error state
-    const errorMap = selectErrorMap(state);
     const traceErrors = selectTraceErrors(state);
 
-    const nodesWithErrors: UUID[] = Object.keys(errorMap) as UUID[];
     const traceErrorsMap: Record<UUID, TraceError> = {};
     const activeElementErrors = traceErrors.filter(
       ({ extensionId }) => extensionId === activeElementId
     );
     for (const traceError of activeElementErrors) {
-      nodesWithErrors.push(traceError.blockInstanceId);
       traceErrorsMap[traceError.blockInstanceId] = traceError;
     }
 
-    for (const nodeId of uniq(nodesWithErrors)) {
-      const traceError = traceErrorsMap[nodeId];
-      const nodeError = errorMap[nodeId];
-
-      if (traceError == null) {
-        if (nodeError?.message != null) {
-          listenerApi.dispatch(
-            editorActions.setError({
-              nodeId,
-              nodeError: null,
-            })
-          );
-        }
-      } else {
-        listenerApi.dispatch(
-          editorActions.setError({
-            nodeId,
-            nodeError: getErrorMessage(traceError.error),
-          })
-        );
-      }
+    for (const [nodeId, traceError] of Object.entries(traceErrorsMap)) {
+      listenerApi.dispatch(
+        editorActions.setNodeError({
+          // @ts-expect-error -- nodeId is UUID
+          nodeId,
+          namespace: "trace",
+          message: getErrorMessage(traceError.error),
+        })
+      );
     }
   },
 });
+
+// Renderers
+validationListenerMiddleware.startListening(new RenderersValidator());
 
 export default validationListenerMiddleware.middleware;

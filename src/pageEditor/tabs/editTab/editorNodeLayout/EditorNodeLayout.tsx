@@ -111,7 +111,12 @@ function decideBlockStatus(
   blockError: EditorError,
   traceRecord: TraceRecord
 ): RunStatus {
-  if (blockError) {
+  if (
+    blockError != null &&
+    ((blockError.nodeErrors != null &&
+      Object.values(blockError.nodeErrors).some(Boolean)) ||
+      blockError?.fieldErrors)
+  ) {
     return RunStatus.ERROR;
   }
 
