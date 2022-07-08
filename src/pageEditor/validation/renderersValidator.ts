@@ -65,27 +65,21 @@ class RenderersValidator implements Validator {
       return;
     }
 
-    // Clear the errors from the last run
-    // TODO: find a better way for this
     const errorMap = selectErrorMap(state);
-    const nodesWithTraceErrors: UUID[] = Object.entries(errorMap)
-      .filter(
-        ([, error]) => error.nodeErrors?.[RenderersValidator.namespace] != null
+
+    /**
+     * Node IDs that have errors since the last run
+     */
+    const lastNodesWithErrors: UUID[] = Object.entries(errorMap)
+      .filter(([, errorInfo]) =>
+        errorInfo?.errors?.some(
+          (x) => x.namespace === RenderersValidator.namespace
+        )
       )
       .map(([nodeId]) => nodeId as UUID);
 
-    for (const nodeId of nodesWithTraceErrors) {
-      listenerApi.dispatch(
-        editorActions.setNodeError({
-          nodeId,
-          namespace: RenderersValidator.namespace,
-          message: null,
-        })
-      );
-    }
-
     const allBlocks = await blockRegistry.allTyped();
-
+    const nodesWithErrors = new Set<UUID>();
     traversePipeline({
       pipeline: activeElement.extension.blockPipeline,
       visitPipeline({ pipeline, pipelinePath, parentNode }) {
@@ -126,6 +120,8 @@ class RenderersValidator implements Validator {
           }
 
           if (blockErrors.length > 0) {
+            nodesWithErrors.add(pipelineBlock.instanceId);
+
             listenerApi.dispatch(
               editorActions.setNodeError({
                 nodeId: pipelineBlock.instanceId,
@@ -137,6 +133,18 @@ class RenderersValidator implements Validator {
         }
       },
     });
+
+    // Clear the errors from the last run for the blocks that do not longer have errors
+    for (const nodeId of lastNodesWithErrors.filter(
+      (x) => !nodesWithErrors.has(x)
+    )) {
+      listenerApi.dispatch(
+        editorActions.clearNodeError({
+          nodeId,
+          namespace: RenderersValidator.namespace,
+        })
+      );
+    }
   }
 }
 

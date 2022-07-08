@@ -84,14 +84,11 @@ const EditorNodeConfigPanel: React.FC<{
         nodeError?.fieldErrors != null &&
         !isEqual(nodeError.fieldErrors, error)
       ) {
-        console.log("setting error in Formik with timeout", {
-          blockFieldName,
-          nodeError: nodeError.fieldErrors,
-        });
         setError(nodeError.fieldErrors as any);
         setTouched(setNestedObjectValues(nodeError.fieldErrors, true), false);
       }
     }, 1000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- we want to push errors to Formik only on the initial load of a block
   }, [nodeId]);
 
   console.log("NodeConfigPanel", {
@@ -112,17 +109,14 @@ const EditorNodeConfigPanel: React.FC<{
     [outputDescription]
   );
 
-  const newBlockError = useSelector(selectActiveNodeError);
-  const blockError =
-    newBlockError?.nodeErrors == null
-      ? null
-      : Object.values(newBlockError.nodeErrors).filter(Boolean).join(" ");
+  const errorInfo = useSelector(selectActiveNodeError);
+  const blockErrorMessage = errorInfo?.errors?.map((x) => x.message).join(" ");
 
   return (
     <>
-      {blockError && (
+      {blockErrorMessage && (
         <Row>
-          <Col className="text-danger">{blockError}</Col>
+          <Col className="text-danger">{blockErrorMessage}</Col>
         </Row>
       )}
       <Row className={styles.topRow}>

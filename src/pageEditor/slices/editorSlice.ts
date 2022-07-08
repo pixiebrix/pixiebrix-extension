@@ -711,9 +711,32 @@ export const editorSlice = createSlice({
       }>
     ) {
       const { nodeId, namespace, message } = action.payload;
-      const elementUiState = selectActiveElementUIState({ editor: state });
-      const elementErrors = elementUiState.errorMap;
-      set(elementErrors, [nodeId, "nodeErrors", namespace], message);
+      const { errorMap } = selectActiveElementUIState({ editor: state });
+      const nodeErrors = errorMap[nodeId]?.errors;
+      if (typeof nodeErrors === "undefined") {
+        set(errorMap, [nodeId, "errors"], [{ namespace, message }]);
+      } else {
+        errorMap[nodeId].errors = [
+          ...nodeErrors.filter((x) => x.namespace !== namespace),
+          { namespace, message },
+        ];
+      }
+    },
+    clearNodeError(
+      state,
+      action: PayloadAction<{
+        nodeId: UUID;
+        namespace: string;
+      }>
+    ) {
+      const { nodeId, namespace } = action.payload;
+      const { errorMap } = selectActiveElementUIState({ editor: state });
+      const nodeErrors = errorMap[nodeId]?.errors;
+      if (typeof nodeErrors !== "undefined") {
+        errorMap[nodeId].errors = nodeErrors.filter(
+          (x) => x.namespace !== namespace
+        );
+      }
     },
   },
 });

@@ -21,7 +21,7 @@ import { RegistryId, UUID } from "@/core";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 
-type PipelineMapBlock = {
+type BlockInfo = {
   blockId: RegistryId;
 
   /**
@@ -52,17 +52,22 @@ type PipelineMapBlock = {
   parentNodeId: UUID | null;
 };
 
-export type EditorError = {
-  __meta__: unknown;
-  /**
-   * @deprecated Use namespaced nodeErrors instead
-   */
+type NamespacedError = {
+  namespace: string;
   message: string;
+};
+
+export type BlockErrorInfo = {
+  /**
+   * Namespaced errors related to the Node
+   * @deprecated
+   */
+  nodeErrors: Record<string, string>;
 
   /**
    * Namespaced errors related to the Node
    */
-  nodeErrors: Record<string, string>;
+  errors: NamespacedError[];
 
   /**
    * Formik errors of the node
@@ -73,9 +78,9 @@ export type EditorError = {
 /**
  * The map of pipeline blocks. The key is the instanceId of the block.
  */
-export type PipelineMap = Record<UUID, PipelineMapBlock>;
+export type PipelineMap = Record<UUID, BlockInfo>;
 
-export type ErrorMap = Record<UUID, EditorError>;
+export type ErrorMap = Record<UUID, BlockErrorInfo>;
 
 export type TabUIState = {
   /**

@@ -63,7 +63,7 @@ import {
   makeIsAllowedForRootPipeline,
 } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
-import { EditorError } from "@/pageEditor/uiState/uiStateTypes";
+import { BlockErrorInfo } from "@/pageEditor/uiState/uiStateTypes";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -108,14 +108,12 @@ type SubPipeline = {
 };
 
 function decideBlockStatus(
-  blockError: EditorError,
+  blockError: BlockErrorInfo,
   traceRecord: TraceRecord
 ): RunStatus {
   if (
     blockError != null &&
-    ((blockError.nodeErrors != null &&
-      Object.values(blockError.nodeErrors).some(Boolean)) ||
-      blockError?.fieldErrors)
+    (blockError.errors?.length > 0 || blockError?.fieldErrors)
   ) {
     return RunStatus.ERROR;
   }
