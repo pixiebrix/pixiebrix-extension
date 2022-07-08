@@ -41,7 +41,7 @@ const EditorNodeConfigPanel: React.FC<{
   blockId: RegistryId;
   nodeId: UUID;
 }> = ({ blockFieldName, blockId, nodeId }) => {
-  useNodeValidation(blockFieldName);
+  useNodeValidation(blockFieldName, nodeId);
 
   const [blockInfo] = useAsyncState(async () => {
     const block = await blockRegistry.lookup(blockId);
