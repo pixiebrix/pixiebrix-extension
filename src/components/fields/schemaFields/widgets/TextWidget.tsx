@@ -69,7 +69,6 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   isArrayItem,
   onClick,
   focusInput,
-  onBlur: onBlurProp,
   ...formControlProps
 }) => {
   const [{ value, ...restInputProps }, , { setValue }] = useField({
