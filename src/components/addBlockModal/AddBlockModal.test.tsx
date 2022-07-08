@@ -30,8 +30,14 @@ import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import * as api from "@/services/api";
 import { RegistryId } from "@/core";
 import { MarketplaceListing } from "@/types/contract";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { useAsyncIcon } from "@/components/asyncIcon";
+import { faCube } from "@fortawesome/free-solid-svg-icons";
 
 jest.mock("@/services/api");
+jest.mock("@/components/asyncIcon", () => ({
+  useAsyncIcon: jest.fn(),
+}));
 
 beforeAll(() => {
   const tags = [
@@ -53,26 +59,30 @@ beforeAll(() => {
     data: listings,
     isLoading: false,
   });
+
+  (useAsyncIcon as jest.Mock).mockReturnValue(faCube);
 });
 
 describe("AddBlockModal", () => {
-  test("it renders", () => {
+  test("it renders", async () => {
     const formState = formStateFactory();
-    expect(
-      render(<AddBlockModal />, {
-        setupRedux(dispatch) {
-          dispatch(actions.addElement(formState));
-          dispatch(actions.selectElement(formState.uuid));
-          dispatch(
-            actions.showAddBlockModal({
-              path: "",
-              type: PipelineType.Root,
-              index: 0,
-            })
-          );
-        },
-      }).asFragment()
-    ).toMatchSnapshot();
+    const rendered = render(<AddBlockModal />, {
+      setupRedux(dispatch) {
+        dispatch(actions.addElement(formState));
+        dispatch(actions.selectElement(formState.uuid));
+        dispatch(
+          actions.showAddBlockModal({
+            path: "",
+            type: PipelineType.Root,
+            index: 0,
+          })
+        );
+      },
+    });
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   test("it renders with tag selected and search query", async () => {
