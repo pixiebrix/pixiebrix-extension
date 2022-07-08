@@ -19,9 +19,8 @@ import React, { useCallback, useMemo } from "react";
 import { IBlock, OutputKey, UUID } from "@/core";
 import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import { compact } from "lodash";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { BlockConfig } from "@/blocks/types";
 import { uuidv4 } from "@/types/helpers";
-import { produce } from "immer";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,7 +28,6 @@ import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { createNewBlock } from "@/pageEditor/createNewBlock";
 import { PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
-import { getIn } from "formik";
 
 type BlockPipelineActions = {
   addBlock: (
@@ -93,56 +91,26 @@ function useBlockPipelineActions(
 
   const moveBlockUp = useCallback(
     (instanceId: UUID) => {
-      // eslint-disable-next-line security/detect-object-injection -- UUID
-      const { index, pipelinePath } = pipelineMap[instanceId];
-
-      const nextState = produce(values, (draft) => {
-        const pipeline: BlockPipeline = getIn(draft, pipelinePath);
-        // Swap the prev and current index values in the pipeline array, "up" in
-        //  the UI means a lower index in the array
-        // eslint-disable-next-line security/detect-object-injection -- from findIndex()
-        [pipeline[index - 1], pipeline[index]] = [
-          // eslint-disable-next-line security/detect-object-injection -- from findIndex()
-          pipeline[index],
-          pipeline[index - 1],
-        ];
-      });
-      // TODO: use Redux to update the pipeline
-      setFormValues(nextState, false);
-      // Dispatch to trigger validation
-      // Have to wait for the Redux state to sync with the Formik state
-      setTimeout(() => {
-        dispatch(actions.moveNode());
-      }, 500);
+      dispatch(
+        actions.moveNode({
+          nodeId: instanceId,
+          direction: "up",
+        })
+      );
     },
-    [pipelineMap, setFormValues, values]
+    [dispatch]
   );
 
   const moveBlockDown = useCallback(
     (instanceId: UUID) => {
-      // eslint-disable-next-line security/detect-object-injection -- UUID
-      const { index, pipelinePath } = pipelineMap[instanceId];
-
-      const nextState = produce(values, (draft) => {
-        const pipeline: BlockPipeline = getIn(draft, pipelinePath);
-        // Swap the current and next index values in the pipeline array, "down"
-        //  in the UI means a higher index in the array
-        // eslint-disable-next-line security/detect-object-injection -- from findIndex()
-        [pipeline[index], pipeline[index + 1]] = [
-          pipeline[index + 1],
-          // eslint-disable-next-line security/detect-object-injection -- from findIndex()
-          pipeline[index],
-        ];
-      });
-      // TODO: use Redux to update the pipeline
-      setFormValues(nextState, false);
-      // Dispatch to trigger validation
-      // Have to wait for the Redux state to sync with the Formik state
-      setTimeout(() => {
-        dispatch(actions.moveNode());
-      }, 500);
+      dispatch(
+        actions.moveNode({
+          nodeId: instanceId,
+          direction: "down",
+        })
+      );
     },
-    [pipelineMap, setFormValues, values]
+    [dispatch]
   );
 
   const copyBlock = useCallback(

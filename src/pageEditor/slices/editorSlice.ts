@@ -656,8 +656,37 @@ export const editorSlice = createSlice({
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
     },
-    moveNode() {
-      // Empty action needed to trigger the Renderers validation on move
+    moveNode(
+      state,
+      action: PayloadAction<{
+        nodeId: UUID;
+        direction: "up" | "down";
+      }>
+    ) {
+      const { nodeId, direction } = action.payload;
+      const element = selectActiveElement({ editor: state });
+      const elementUiState = selectActiveElementUIState({ editor: state });
+      const { pipelinePath, index } = elementUiState.pipelineMap[nodeId];
+      const pipeline = get(element, pipelinePath);
+
+      if (direction === "up") {
+        // Swap the prev and current index values in the pipeline array, "up" in
+        //  the UI means a lower index in the array
+        [pipeline[index - 1], pipeline[index]] = [
+          pipeline[index],
+          pipeline[index - 1],
+        ];
+      } else {
+        // Swap the current and next index values in the pipeline array, "down"
+        //  in the UI means a higher index in the array
+        [pipeline[index], pipeline[index + 1]] = [
+          pipeline[index + 1],
+          pipeline[index],
+        ];
+      }
+
+      // This change should re-initialize the Page Editor Formik form
+      state.selectionSeq++;
     },
     removeNode(state, action: PayloadAction<UUID>) {
       const nodeIdToRemove = action.payload;
