@@ -33,8 +33,7 @@ import {
 } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { TraceRecord } from "@/telemetry/trace";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { TypedBlock } from "@/blocks/registry";
-import { IBlock, OutputKey, UUID } from "@/core";
+import { OutputKey, UUID } from "@/core";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
@@ -53,11 +52,6 @@ import { Except } from "type-fest";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
-import { ExtensionPointType } from "@/extensionPoints/types";
-import {
-  IsBlockAllowedPredicate,
-  makeIsAllowedForRootPipeline,
-} from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { PipelineType } from "@/pageEditor/pageEditorTypes";
@@ -70,7 +64,6 @@ type EditorNodeProps =
   | (PipelineFooterNodeProps & { type: "footer"; key: string });
 
 type EditorNodeLayoutProps = {
-  extensionPointType: ExtensionPointType;
   pipeline: BlockPipeline;
   errors: FormikError;
   extensionPointLabel: string;
@@ -123,7 +116,6 @@ function decideBlockStatus(
 }
 
 const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
-  extensionPointType,
   pipeline,
   errors,
   extensionPointLabel,

@@ -140,7 +140,6 @@ const EditTab: React.FC<{
             <EditorNodeLayout
               pipeline={blockPipeline}
               errors={errors as FormikError}
-              extensionPointType={extensionPointType}
               extensionPointLabel={extensionPointLabel}
               extensionPointIcon={extensionPointIcon}
               moveBlockUp={moveBlockUp}
