@@ -47,13 +47,6 @@ import { produce } from "immer";
 import { useDispatch, useSelector } from "react-redux";
 import { PipelineType } from "@/pageEditor/pageEditorTypes";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
-import {
-  BLOCK_RESULT_COLUMN_COUNT,
-  BlockGridData,
-  BlockOption,
-  getFlatArrayIndex,
-  TAG_ALL,
-} from "@/components/addBlockModal/addBlockModalCore";
 import useBlockSearch from "@/components/addBlockModal/useBlockSearch";
 import BlockGridItemRenderer from "@/components/addBlockModal/BlockGridItemRenderer";
 import groupListingsByTag from "@/components/addBlockModal/groupListingsByTag";
@@ -71,6 +64,15 @@ import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { TypedBlock } from "@/blocks/registry";
 import { makeIsAllowedForRootPipeline } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import {
+  BLOCK_RESULT_COLUMN_COUNT,
+  TAG_ALL,
+} from "@/components/addBlockModal/addBlockModalConstants";
+import {
+  BlockGridData,
+  BlockOption,
+} from "@/components/addBlockModal/addBlockModalTypes";
+import { getFlatArrayIndex } from "@/components/addBlockModal/addBlockModalHelpers";
 
 type State = {
   query: string;

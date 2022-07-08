@@ -18,7 +18,7 @@
 import { MarketplaceListing, MarketplaceTag } from "@/types/contract";
 import { RegistryId } from "@/core";
 import { isEmpty } from "lodash";
-import { POPULAR_BRICK_TAG_ID } from "@/components/addBlockModal/addBlockModalCore";
+import { POPULAR_BRICK_TAG_ID } from "@/components/addBlockModal/addBlockModalConstants";
 
 function groupListingsByTag(
   marketplaceTags: MarketplaceTag[],

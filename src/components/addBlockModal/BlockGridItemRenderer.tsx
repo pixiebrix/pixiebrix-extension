@@ -16,11 +16,9 @@
  */
 
 import React, { CSSProperties } from "react";
-import {
-  BlockGridData,
-  getFlatArrayIndex,
-} from "@/components/addBlockModal/addBlockModalCore";
 import BlockGridItem from "@/components/addBlockModal/BlockGridItem";
+import { BlockGridData } from "./addBlockModalTypes";
+import { getFlatArrayIndex } from "@/components/addBlockModal/addBlockModalHelpers";
 
 type ItemRendererProps = {
   columnIndex: number;

@@ -16,15 +16,15 @@
  */
 
 import { IBlock } from "@/core";
-import {
-  BlockOption,
-  BlockResult,
-  TAG_ALL,
-} from "@/components/addBlockModal/addBlockModalCore";
 import { useCallback, useMemo } from "react";
 import { sortBy } from "lodash";
 import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
+import {
+  BlockOption,
+  BlockResult,
+} from "@/components/addBlockModal/addBlockModalTypes";
+import { TAG_ALL } from "@/components/addBlockModal/addBlockModalConstants";
 
 function makeBlockOption(block: IBlock): BlockOption {
   return {

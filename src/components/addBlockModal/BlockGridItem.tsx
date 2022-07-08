@@ -22,7 +22,7 @@ import styles from "./BlockGridItem.module.scss";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Icon from "@/icons/Icon";
-import { BlockResult } from "@/components/addBlockModal/addBlockModalCore";
+import { BlockResult } from "@/components/addBlockModal/addBlockModalTypes";
 
 export const BLOCK_ITEM_FIXED_HEIGHT_PX = 89;
 

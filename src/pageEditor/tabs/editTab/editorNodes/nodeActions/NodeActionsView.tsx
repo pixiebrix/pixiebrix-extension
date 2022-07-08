@@ -23,6 +23,10 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import TooltipIconButton from "@/components/TooltipIconButton";
 
 export type NodeAction = {
+  /**
+   * This is used to construct the data-testid for the button
+   * @see TooltipIconButton
+   */
   name: string;
   icon: IconProp;
   tooltipText: string;
