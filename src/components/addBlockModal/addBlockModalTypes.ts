@@ -32,3 +32,9 @@ export type BlockGridData = {
   onSetDetailBlock: (block: IBlock) => void;
   onSelectBlock: (block: IBlock) => void;
 };
+
+export type ItemKeyInput = {
+  columnIndex: number;
+  data: BlockGridData;
+  rowIndex: number;
+};

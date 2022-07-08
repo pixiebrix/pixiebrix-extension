@@ -72,7 +72,7 @@ import {
   BlockGridData,
   BlockOption,
 } from "@/components/addBlockModal/addBlockModalTypes";
-import { getFlatArrayIndex } from "@/components/addBlockModal/addBlockModalHelpers";
+import { getItemKey } from "@/components/addBlockModal/addBlockModalHelpers";
 
 type State = {
   query: string;
@@ -442,27 +442,3 @@ const AddBlockModal: React.VFC = () => {
 };
 
 export default AddBlockModal;
-
-// We need to provide an item key because we reorder elements on search
-// See https://react-window.vercel.app/#/api/FixedSizeGrid
-type ItemKeyInput = {
-  columnIndex: number;
-  data: BlockGridData;
-  rowIndex: number;
-};
-// Here, we use the brick id as the key, which is the "value" prop on the search result option
-function getItemKey({
-  columnIndex,
-  data: { blockOptions },
-  rowIndex,
-}: ItemKeyInput): RegistryId | number {
-  const resultIndex = getFlatArrayIndex({ rowIndex, columnIndex });
-  // Number of bricks for the last Grid row could be less than the number of columns
-  // Returning the index here, ItemRenderer will render an empty cell
-  if (resultIndex >= blockOptions.length) {
-    return resultIndex;
-  }
-
-  // eslint-disable-next-line security/detect-object-injection -- index is a number
-  return blockOptions[resultIndex]?.value;
-}
