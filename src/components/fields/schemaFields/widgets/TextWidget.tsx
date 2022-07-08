@@ -57,6 +57,7 @@ function isVarValue(value: string): boolean {
 const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   name,
   schema,
+  validationSchema,
   isRequired,
   label,
   description,
