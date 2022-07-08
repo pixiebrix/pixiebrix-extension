@@ -15,13 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createListenerMiddleware } from "@reduxjs/toolkit";
-import RenderersValidator from "./renderersValidator";
-import TracesValidator from "./tracesValidator";
+import { AnyAction, ListenerEffect, ThunkDispatch } from "@reduxjs/toolkit";
+import {
+  MatchFunction,
+  TypedActionCreator,
+} from "@reduxjs/toolkit/dist/listenerMiddleware/types";
 
-const validationListenerMiddleware = createListenerMiddleware();
-
-validationListenerMiddleware.startListening(new TracesValidator());
-validationListenerMiddleware.startListening(new RenderersValidator());
-
-export default validationListenerMiddleware.middleware;
+export type ValidatorEffect = ListenerEffect<
+  AnyAction,
+  unknown,
+  ThunkDispatch<unknown, unknown, AnyAction>
+>;
+export type Validator = {
+  actionCreator?: TypedActionCreator<any>;
+  matcher?: MatchFunction<AnyAction>;
+  effect: ValidatorEffect;
+};

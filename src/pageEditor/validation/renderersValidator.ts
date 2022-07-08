@@ -19,35 +19,19 @@ import { traversePipeline } from "@/pageEditor/utils";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { RootState } from "@/pageEditor/pageEditorTypes";
 import { UUID } from "@/core";
-import {
-  Dispatch as ReduxDispatch,
-  AnyAction,
-  ThunkDispatch,
-  isAnyOf,
-} from "@reduxjs/toolkit";
-import {
-  ListenerEffect,
-  MatchFunction,
-} from "@reduxjs/toolkit/dist/listenerMiddleware/types";
+import { isAnyOf } from "@reduxjs/toolkit";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import {
   selectActiveElement,
   selectErrorMap,
 } from "@/pageEditor/slices/editorSelectors";
 import blockRegistry from "@/blocks/registry";
+import { Validator, ValidatorEffect } from "./validationTypes";
 
 export const MULTIPLE_RENDERERS_ERROR_MESSAGE =
   "A panel can only have one renderer. There are one or more renderers configured after this brick.";
 export const RENDERER_MUST_BE_LAST_BLOCK_ERROR_MESSAGE =
   "A renderer must be the last brick.";
-
-type Validator<
-  State = unknown,
-  Dispatch extends ReduxDispatch = ThunkDispatch<State, unknown, AnyAction>
-> = {
-  matcher: MatchFunction<AnyAction>;
-  effect: ListenerEffect<AnyAction, State, Dispatch>;
-};
 
 class RenderersValidator implements Validator {
   static namespace = "renderers";
@@ -58,7 +42,7 @@ class RenderersValidator implements Validator {
     editorActions.removeNode
   );
 
-  async effect(action, listenerApi) {
+  effect: ValidatorEffect = async (action, listenerApi) => {
     const state: RootState = listenerApi.getState() as RootState;
     const activeElement = selectActiveElement(state);
     const extensionPointType = activeElement.extensionPoint.definition.type;
@@ -149,7 +133,7 @@ class RenderersValidator implements Validator {
         })
       );
     }
-  }
+  };
 }
 
 export default RenderersValidator;
