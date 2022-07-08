@@ -20,7 +20,13 @@ import { render, screen } from "@/pageEditor/testHelpers";
 import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
-import { blockConfigFactory, formStateFactory } from "@/testUtils/factories";
+import {
+  blockConfigFactory,
+  formStateFactory,
+  marketplaceListingFactory,
+  marketplaceTagFactory,
+  uuidSequence,
+} from "@/testUtils/factories";
 import blockRegistry from "@/blocks/registry";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import {
@@ -39,10 +45,34 @@ import {
 } from "@/testUtils/expressionTestHelpers";
 import { PipelineExpression } from "@/runtime/mapArgs";
 import { act } from "react-dom/test-utils";
-import { OutputKey } from "@/core";
+import { OutputKey, RegistryId } from "@/core";
+import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
+import * as api from "@/services/api";
+import { MarketplaceListing } from "@/types/contract";
+import { EditablePackage } from "@/types/definitions";
 import { fireTextInput, selectSchemaFieldType } from "@/testUtils/formHelpers";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
+import { useAsyncIcon } from "@/components/asyncIcon";
+import { faCube } from "@fortawesome/free-solid-svg-icons";
+
+jest.mock("@/services/api", () => ({
+  appApi: {
+    endpoints: {
+      getMarketplaceListings: {
+        useQueryState: jest.fn(),
+      },
+    },
+  },
+  useGetMarketplaceTagsQuery: jest.fn(),
+  useGetMarketplaceListingsQuery: jest.fn(),
+  useGetEditablePackagesQuery: jest.fn(),
+  useGetRecipesQuery: jest.fn(),
+  useCreateRecipeMutation: jest.fn(),
+  useUpdateRecipeMutation: jest.fn(),
+}));
+jest.mock("@/components/asyncIcon", () => ({
+  useAsyncIcon: jest.fn(),
+}));
 
 jest.setTimeout(30_000); // This test is flaky with the default timeout of 5000 ms
 
@@ -57,6 +87,51 @@ beforeAll(async () => {
   blockRegistry.clear();
   blockRegistry.register(echoBlock, teapotBlock, jqBlock, forEachBlock);
   await blockRegistry.allTyped();
+
+  const tags = [
+    marketplaceTagFactory({ subtype: "role" }),
+    marketplaceTagFactory({ subtype: "role" }),
+    marketplaceTagFactory({ subtype: "role" }),
+  ];
+  (api.useGetMarketplaceTagsQuery as jest.Mock).mockReturnValue({
+    data: tags,
+    isLoading: false,
+  });
+
+  const listings: Record<RegistryId, MarketplaceListing> = {};
+  const packages: EditablePackage[] = [];
+  for (let i = 0; i < 10; i++) {
+    const listing = marketplaceListingFactory({ tags });
+    const registryId = listing.id as RegistryId;
+    listings[registryId] = listing;
+    packages.push({
+      id: uuidSequence(i),
+      name: registryId,
+    });
+  }
+
+  (api.useGetMarketplaceListingsQuery as jest.Mock).mockReturnValue({
+    data: listings,
+    isLoading: false,
+  });
+  (
+    api.appApi.endpoints.getMarketplaceListings.useQueryState as jest.Mock
+  ).mockReturnValue({
+    data: listings,
+    isLoading: false,
+  });
+  (api.useGetEditablePackagesQuery as jest.Mock).mockReturnValue({
+    data: packages,
+    isLoading: false,
+  });
+  (api.useGetRecipesQuery as jest.Mock).mockReturnValue({
+    data: [],
+    isLoading: false,
+  });
+  (api.useCreateRecipeMutation as jest.Mock).mockReturnValue([jest.fn()]);
+  (api.useUpdateRecipeMutation as jest.Mock).mockReturnValue([jest.fn()]);
+
+  (useAsyncIcon as jest.Mock).mockReturnValue(faCube);
 });
 
 const getPlainFormState = (): FormState =>
