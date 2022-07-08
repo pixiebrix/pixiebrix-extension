@@ -52,7 +52,11 @@ type Validator<
 class RenderersValidator implements Validator {
   static namespace = "renderers";
 
-  matcher = isAnyOf(editorActions.addNode, editorActions.removeNode);
+  matcher = isAnyOf(
+    editorActions.addNode,
+    editorActions.moveNode,
+    editorActions.removeNode
+  );
 
   async effect(action, listenerApi) {
     const state: RootState = listenerApi.getState() as RootState;

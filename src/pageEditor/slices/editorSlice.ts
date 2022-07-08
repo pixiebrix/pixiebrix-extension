@@ -656,6 +656,9 @@ export const editorSlice = createSlice({
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
     },
+    moveNode() {
+      // Empty action needed to trigger the Renderers validation on move
+    },
     removeNode(state, action: PayloadAction<UUID>) {
       const nodeIdToRemove = action.payload;
       const element = selectActiveElement({ editor: state });
@@ -672,6 +675,7 @@ export const editorSlice = createSlice({
       pipeline.splice(index, 1);
 
       syncElementNodeUIStates(state, element);
+      delete elementUiState.errorMap[nodeIdToRemove];
 
       elementUiState.activeNodeId =
         nextActiveNode?.instanceId ?? FOUNDATION_NODE_ID;

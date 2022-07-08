@@ -107,7 +107,13 @@ function useBlockPipelineActions(
           pipeline[index - 1],
         ];
       });
-      setFormValues(nextState, true);
+      // TODO: use Redux to update the pipeline
+      setFormValues(nextState, false);
+      // Dispatch to trigger validation
+      // Have to wait for the Redux state to sync with the Formik state
+      setTimeout(() => {
+        dispatch(actions.moveNode());
+      }, 500);
     },
     [pipelineMap, setFormValues, values]
   );
@@ -128,7 +134,13 @@ function useBlockPipelineActions(
           pipeline[index],
         ];
       });
-      setFormValues(nextState, true);
+      // TODO: use Redux to update the pipeline
+      setFormValues(nextState, false);
+      // Dispatch to trigger validation
+      // Have to wait for the Redux state to sync with the Formik state
+      setTimeout(() => {
+        dispatch(actions.moveNode());
+      }, 500);
     },
     [pipelineMap, setFormValues, values]
   );
