@@ -78,17 +78,14 @@ type SubPipeline = {
    * Label to show in the node layout
    */
   headerLabel: string;
-  /**
-   * The pipeline of blocks
-   */
+
   subPipeline: BlockPipeline;
+
   /**
    * Formik path to the pipeline
    */
   subPipelinePath: string;
-  /**
-   * The pipeline type
-   */
+
   subPipelineType: PipelineType;
 };
 
