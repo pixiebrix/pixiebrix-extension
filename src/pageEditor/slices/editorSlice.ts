@@ -714,26 +714,12 @@ export const editorSlice = createSlice({
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
     },
-    setError(
-      state,
-      action: PayloadAction<{
-        nodeId?: UUID;
-        nodeError?: string;
-        fieldErrors?: FormikErrorTree;
-      }>
-    ) {
-      const { nodeError, fieldErrors } = action.payload;
-      const nodeId =
-        action.payload.nodeId ?? selectActiveNodeId({ editor: state });
+    setFieldsError(state, action: PayloadAction<FormikErrorTree>) {
+      const fieldErrors = action.payload;
+      const nodeId = selectActiveNodeId({ editor: state });
       const elementUiState = selectActiveElementUIState({ editor: state });
       const elementErrors = elementUiState.errorMap;
-      if (typeof nodeError !== "undefined") {
-        set(elementErrors, [nodeId, "message"], nodeError);
-      }
-
-      if (typeof fieldErrors !== "undefined") {
-        set(elementErrors, [nodeId, "fieldErrors"], fieldErrors);
-      }
+      set(elementErrors, [nodeId, "fieldErrors"], fieldErrors);
     },
     setNodeError(
       state,
@@ -765,7 +751,7 @@ export const editorSlice = createSlice({
       const { nodeId, namespace } = action.payload;
       const { errorMap } = selectActiveElementUIState({ editor: state });
       const nodeErrors = errorMap[nodeId]?.errors;
-      if (typeof nodeErrors !== "undefined") {
+      if (nodeErrors != null) {
         errorMap[nodeId].errors = nodeErrors.filter(
           (x) => x.namespace !== namespace
         );

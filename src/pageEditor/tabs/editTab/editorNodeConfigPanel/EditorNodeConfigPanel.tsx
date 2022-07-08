@@ -34,6 +34,7 @@ import { setNestedObjectValues, useField } from "formik";
 import useDebouncedEffect from "@/pageEditor/hooks/useDebouncedEffect";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { isEqual } from "lodash";
+import { FormikErrorTree } from "../editTabTypes";
 
 const EditorNodeConfigPanel: React.FC<{
   /**
@@ -54,22 +55,14 @@ const EditorNodeConfigPanel: React.FC<{
 
   const dispatch = useDispatch();
   const nodeError = useSelector(selectActiveNodeError);
-  const [, { error }, { setError, setTouched }] = useField(blockFieldName);
+  const [, { error: fieldError }, { setError, setTouched }] =
+    useField(blockFieldName);
   useDebouncedEffect(
-    error,
+    fieldError,
     () => {
-      if (!isEqual(nodeError?.fieldErrors, error)) {
-        console.log("setting error in Redux", {
-          blockFieldName,
-          reduxError: nodeError?.fieldErrors,
-          formikError: error,
-        });
-
-        dispatch(
-          editorActions.setError({
-            fieldErrors: error,
-          })
-        );
+      if (!isEqual(nodeError?.fieldErrors, fieldError)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- we get Error Tree from Formik
+        dispatch(editorActions.setFieldsError(fieldError as any));
       }
     },
     500
@@ -82,20 +75,15 @@ const EditorNodeConfigPanel: React.FC<{
     setTimeout(() => {
       if (
         nodeError?.fieldErrors != null &&
-        !isEqual(nodeError.fieldErrors, error)
+        !isEqual(nodeError.fieldErrors, fieldError)
       ) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- we set Error Tree in Formik
         setError(nodeError.fieldErrors as any);
         setTouched(setNestedObjectValues(nodeError.fieldErrors, true), false);
       }
     }, 1000);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- we want to push errors to Formik only on the initial load of a block
   }, [nodeId]);
-
-  console.log("NodeConfigPanel", {
-    blockFieldName,
-    formikError: error,
-    nodeError,
-  });
 
   const isOutputDisabled = !(
     blockInfo === null || showOutputKey(blockInfo?.type)

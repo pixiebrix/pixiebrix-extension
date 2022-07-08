@@ -51,7 +51,7 @@ const EditTab: React.FC<{
   useReportTraceError();
   usePipelineErrors();
 
-  const { values, setValues: setFormValues } = useFormikContext<FormState>();
+  const { values } = useFormikContext<FormState>();
 
   const {
     extensionPoint,
@@ -78,7 +78,7 @@ const EditTab: React.FC<{
     moveBlockDown,
     copyBlock,
     pasteBlock,
-  } = useBlockPipelineActions(pipelineMap, values, setFormValues);
+  } = useBlockPipelineActions(pipelineMap, values);
 
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>

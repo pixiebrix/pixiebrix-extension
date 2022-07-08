@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { IBlock, OutputKey, UUID } from "@/core";
 import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import { compact } from "lodash";
@@ -44,11 +44,7 @@ type BlockPipelineActions = {
 
 function useBlockPipelineActions(
   pipelineMap: PipelineMap,
-  values: FormState,
-  setFormValues: (
-    values: React.SetStateAction<FormState>,
-    shouldValidate?: boolean
-  ) => void
+  values: FormState
 ): BlockPipelineActions {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
