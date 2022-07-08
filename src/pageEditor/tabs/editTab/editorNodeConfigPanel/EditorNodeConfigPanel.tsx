@@ -17,7 +17,7 @@
 
 import styles from "./EditorNodeConfigPanel.module.scss";
 
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Col, Row } from "react-bootstrap";
 import { RegistryId, UUID } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -27,14 +27,10 @@ import blockRegistry from "@/blocks/registry";
 import { showOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import getType from "@/runtime/getType";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectActiveNodeError } from "@/pageEditor/slices/editorSelectors";
 import PopoverOutputLabel from "./PopoverOutputLabel";
-import { setNestedObjectValues, useField } from "formik";
-import useDebouncedEffect from "@/pageEditor/hooks/useDebouncedEffect";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import { isEqual } from "lodash";
-import { FormikErrorTree } from "../editTabTypes";
+import useNodeValidation from "@/pageEditor/validation/useNodeValidation";
 
 const EditorNodeConfigPanel: React.FC<{
   /**
@@ -45,6 +41,8 @@ const EditorNodeConfigPanel: React.FC<{
   blockId: RegistryId;
   nodeId: UUID;
 }> = ({ blockFieldName, blockId, nodeId }) => {
+  useNodeValidation(blockFieldName);
+
   const [blockInfo] = useAsyncState(async () => {
     const block = await blockRegistry.lookup(blockId);
     return {
@@ -52,38 +50,6 @@ const EditorNodeConfigPanel: React.FC<{
       type: await getType(block),
     };
   }, [blockId]);
-
-  const dispatch = useDispatch();
-  const nodeError = useSelector(selectActiveNodeError);
-  const [, { error: fieldError }, { setError, setTouched }] =
-    useField(blockFieldName);
-  useDebouncedEffect(
-    fieldError,
-    () => {
-      if (!isEqual(nodeError?.fieldErrors, fieldError)) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- we get Error Tree from Formik
-        dispatch(editorActions.setFieldsError(fieldError as any));
-      }
-    },
-    500
-  );
-
-  useEffect(() => {
-    // FIXME: don't use setTimeout here
-    // Formik seems to erase the error set on mount, so we wait a bit
-    // Figure out what's going on an fix it
-    setTimeout(() => {
-      if (
-        nodeError?.fieldErrors != null &&
-        !isEqual(nodeError.fieldErrors, fieldError)
-      ) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- we set Error Tree in Formik
-        setError(nodeError.fieldErrors as any);
-        setTouched(setNestedObjectValues(nodeError.fieldErrors, true), false);
-      }
-    }, 1000);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- we want to push errors to Formik only on the initial load of a block
-  }, [nodeId]);
 
   const isOutputDisabled = !(
     blockInfo === null || showOutputKey(blockInfo?.type)

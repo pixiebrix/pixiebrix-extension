@@ -27,14 +27,14 @@ import { isEmpty } from "lodash";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { FormState } from "@/pageEditor/pageEditorTypes";
-import useAllBlocks from "./useAllBlocks";
+import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 import { selectPipelineMap } from "@/pageEditor/slices/editorSelectors";
 
 /**
  * Runs the validation that is applied on the fields level,
  * meaning it's part of the Formik validation
  */
-function usePipelineErrors() {
+function usePipelineValidation() {
   const [allBlocks] = useAllBlocks();
   const traceErrors = useSelector(selectTraceErrors);
   const formikContext = useFormikContext<FormState>();
@@ -78,4 +78,4 @@ function usePipelineErrors() {
   );
 }
 
-export default usePipelineErrors;
+export default usePipelineValidation;
