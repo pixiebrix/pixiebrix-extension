@@ -17,32 +17,36 @@
 
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { BlockPipeline } from "@/blocks/types";
-import { isEmpty, set } from "lodash";
+import { isEmpty } from "lodash";
 import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import { UnknownObject } from "@/types";
-import { joinName } from "@/utils";
+import { joinName, joinPathParts } from "@/utils";
+import { traversePipeline } from "@/pageEditor/utils";
+import { setPipelineBlockError } from "./setPipelineBlockError";
 
-const MUSTACHE_ERROR_MESSAGE =
-  "Invalid string template. Read more about string templates: https://docs.pixiebrix.com/nunjucks-templates";
+const TEMPLATE_ERROR_MESSAGE =
+  "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";
 
 function validateObject(
   config: UnknownObject,
   namePath: string,
   errors: FormikErrorTree
 ) {
-  for (const prop of Object.keys(config)) {
-    const propNamePath = joinName(namePath, prop);
-    // eslint-disable-next-line security/detect-object-injection -- iterating through props
-    const value = config[prop];
+  for (const [prop, value] of Object.entries(config)) {
     if (
       isTemplateExpression(value) &&
       value.__type__ !== "mustache" &&
       isMustacheOnly(value.__value__)
     ) {
-      set(errors, propNamePath, MUSTACHE_ERROR_MESSAGE);
+      // We should use 'joinName' here b/c the form fields can have special chars
+      setPipelineBlockError(
+        errors,
+        TEMPLATE_ERROR_MESSAGE,
+        joinName(namePath, prop)
+      );
     } else if (typeof value === "object" && !isExpression(value)) {
-      validateObject(value as UnknownObject, propNamePath, errors);
+      validateObject(value as UnknownObject, joinName(namePath, prop), errors);
     }
   }
 }
@@ -55,13 +59,16 @@ function validateStringTemplates(
     return;
   }
 
-  for (const [index, block] of pipeline.entries()) {
-    validateObject(
-      block.config,
-      joinName(index.toString(), "config"),
-      pipelineErrors
-    );
-  }
+  traversePipeline({
+    pipeline,
+    visitBlock({ blockConfig, path }) {
+      validateObject(
+        blockConfig.config,
+        joinPathParts(path, "config"),
+        pipelineErrors
+      );
+    },
+  });
 }
 
 export default validateStringTemplates;

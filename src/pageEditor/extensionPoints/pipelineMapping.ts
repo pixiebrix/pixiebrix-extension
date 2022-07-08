@@ -32,7 +32,7 @@ export function normalizePipelineForEditor(
 ): BlockPipeline {
   return produce(pipeline, (pipeline: WritableDraft<BlockPipeline>) => {
     traversePipeline({
-      blockPipeline: pipeline,
+      pipeline,
       visitBlock({ blockConfig }) {
         blockConfig.instanceId = uuidv4();
       },
@@ -55,7 +55,7 @@ export function normalizePipelineForEditor(
 export function omitEditorMetadata(pipeline: BlockPipeline): BlockPipeline {
   return produce(pipeline, (pipeline: WritableDraft<BlockPipeline>) => {
     traversePipeline({
-      blockPipeline: pipeline,
+      pipeline,
       visitBlock({ blockConfig }) {
         delete blockConfig.instanceId;
       },

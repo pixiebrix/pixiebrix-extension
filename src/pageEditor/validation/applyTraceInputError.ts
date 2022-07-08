@@ -18,7 +18,7 @@
 import { isInputValidationError } from "@/blocks/errors";
 import { TraceError } from "@/telemetry/trace";
 import { joinName } from "@/utils";
-import { set } from "lodash";
+import { get, set } from "lodash";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 
 const requiredFieldRegex =
@@ -36,7 +36,7 @@ const rootPropertyRegex = /^#\/(?<property>.+)$/;
 function applyTraceInputError(
   pipelineErrors: FormikErrorTree,
   errorTraceEntry: TraceError,
-  blockIndex: number
+  blockPath: string
 ) {
   const { error: traceError } = errorTraceEntry;
 
@@ -50,7 +50,7 @@ function applyTraceInputError(
       ?.groups.property;
     if (rootProperty) {
       const propertyNameInPipeline = joinName(
-        String(blockIndex),
+        blockPath,
         "config",
         rootProperty
       );
@@ -63,7 +63,7 @@ function applyTraceInputError(
       .property;
     if (requiredProperty) {
       const propertyNameInPipeline = joinName(
-        String(blockIndex),
+        blockPath,
         "config",
         requiredProperty
       );
@@ -77,10 +77,13 @@ function applyTraceInputError(
     }
   }
 
-  // eslint-disable-next-line security/detect-object-injection -- accessing the error tree by index
-  if (typeof pipelineErrors[blockIndex] === "undefined" && errors.length > 0) {
-    // eslint-disable-next-line security/detect-object-injection -- accessing the error tree by index
-    pipelineErrors[blockIndex] = errors.join(" ");
+  // If there are errors, but they didn't match the known inputs
+  // set the error message(s) on the block level
+  if (
+    typeof get(pipelineErrors, blockPath) === "undefined" &&
+    errors.length > 0
+  ) {
+    set(pipelineErrors, blockPath, errors.join(" "));
   }
 }
 

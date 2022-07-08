@@ -30,10 +30,9 @@ import { produce } from "immer";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { runMapArgs } from "@/contentScript/messenger/api";
-import { isNullOrBlank } from "@/utils";
+import { isNullOrBlank, joinPathParts } from "@/utils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { whoAmI } from "@/background/messenger/api";
-import { joinElementName } from "@/components/documentBuilder/utils";
 
 type DocumentListProps = {
   array: UnknownObject[];
@@ -130,7 +129,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
         const { Component, props } = buildDocumentBranch(
           documentElement as DocumentElement,
           {
-            staticId: joinElementName(staticId, "list", "children"),
+            staticId: joinPathParts(staticId, "list", "children"),
             branches: [...branches, { staticId, index }],
           }
         );

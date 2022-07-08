@@ -16,6 +16,7 @@
  */
 
 import {
+  blockConfigFactory,
   blocksMapFactory,
   pipelineFactory,
   TEST_BLOCK_ID,
@@ -27,90 +28,142 @@ import validateRenderers, {
 } from "./validateRenderers";
 import { validateRegistryId } from "@/types/helpers";
 import { ExtensionPointType } from "@/extensionPoints/types";
+import { MarkdownRenderer } from "@/blocks/renderers/markdown";
+import { DocumentRenderer } from "@/blocks/renderers/document";
+import { createNewElement } from "@/components/documentBuilder/createNewElement";
+import { get } from "lodash";
+import { PipelineExpression } from "@/runtime/mapArgs";
 
-const elementTypesToSkipValidation: ExtensionPointType[] = [
-  "menuItem",
-  "trigger",
-  "contextMenu",
-];
 const elementTypesToValidate: ExtensionPointType[] = ["panel", "actionPanel"];
 
-test.each(elementTypesToSkipValidation)(
-  "skips validation for %s",
-  async (elementType) => {
-    const pipelineErrors: FormikErrorTree = {};
-    const allBlocks = await blocksMapFactory();
+describe("renderer validation", () => {
+  const elementTypesToSkipValidation: ExtensionPointType[] = [
+    "menuItem",
+    "trigger",
+    "contextMenu",
+  ];
 
-    validateRenderers(
-      pipelineErrors,
-      pipelineFactory(),
-      allBlocks,
-      elementType
-    );
+  test.each(elementTypesToSkipValidation)(
+    "skips validation for %s",
+    async (elementType) => {
+      const pipelineErrors: FormikErrorTree = {};
+      const allBlocks = await blocksMapFactory();
 
-    expect(pipelineErrors).toEqual({});
-  }
-);
+      validateRenderers(
+        pipelineErrors,
+        pipelineFactory(),
+        allBlocks,
+        elementType
+      );
 
-test.each(elementTypesToValidate)(
-  "successfully validates %s pipeline with one renderer",
-  async (elementType) => {
-    const pipelineErrors: FormikErrorTree = {};
+      expect(pipelineErrors).toEqual({});
+    }
+  );
 
-    const allBlocks = await blocksMapFactory();
-    ([...allBlocks.values()][1] as any).render = jest.fn();
+  test.each(elementTypesToValidate)(
+    "successfully validates %s pipeline with one renderer",
+    async (elementType) => {
+      const pipelineErrors: FormikErrorTree = {};
 
-    validateRenderers(
-      pipelineErrors,
-      pipelineFactory(),
-      allBlocks,
-      elementType
-    );
+      const allBlocks = await blocksMapFactory();
+      ([...allBlocks.values()][1] as any).render = jest.fn();
 
-    expect(pipelineErrors).toEqual({});
-  }
-);
+      validateRenderers(
+        pipelineErrors,
+        pipelineFactory(),
+        allBlocks,
+        elementType
+      );
 
-test.each(elementTypesToValidate)(
-  "reports the errors when have multiple renderers",
-  async (elementType) => {
-    const pipelineErrors: FormikErrorTree = {};
+      expect(pipelineErrors).toEqual({});
+    }
+  );
 
-    const allBlocks = await blocksMapFactory({
-      render: jest.fn(),
-    } as unknown);
+  test.each(elementTypesToValidate)(
+    "reports the errors for %s when have multiple renderers",
+    async (elementType) => {
+      const pipelineErrors: FormikErrorTree = {};
 
-    validateRenderers(
-      pipelineErrors,
-      pipelineFactory(),
-      allBlocks,
-      elementType
-    );
+      const allBlocks = await blocksMapFactory({
+        render: jest.fn(),
+      } as unknown);
 
-    expect(pipelineErrors[0]).toEqual(
-      `${MULTIPLE_RENDERERS_ERROR_MESSAGE} ${RENDERER_MUST_BE_LAST_BLOCK_ERROR_MESSAGE}`
-    );
-    expect(pipelineErrors[1]).toBeUndefined();
-  }
-);
+      validateRenderers(
+        pipelineErrors,
+        pipelineFactory(),
+        allBlocks,
+        elementType
+      );
 
-test.each(elementTypesToValidate)(
-  "reports the error when renderer is not at the end of the pipeline",
-  async (elementType) => {
-    const pipelineErrors: FormikErrorTree = {};
+      expect(pipelineErrors[0]).toEqual(
+        `${MULTIPLE_RENDERERS_ERROR_MESSAGE} ${RENDERER_MUST_BE_LAST_BLOCK_ERROR_MESSAGE}`
+      );
+      expect(pipelineErrors[1]).toBeUndefined();
+    }
+  );
 
-    const pipeline = pipelineFactory();
-    pipeline[1].id = validateRegistryId(`${TEST_BLOCK_ID}_2`);
+  test.each(elementTypesToValidate)(
+    "reports the error for %s when renderer is not at the end of the pipeline",
+    async (elementType) => {
+      const pipelineErrors: FormikErrorTree = {};
 
-    const allBlocks = await blocksMapFactory({
-      render: jest.fn(),
-    } as unknown);
+      const pipeline = pipelineFactory();
+      pipeline[1].id = validateRegistryId(`${TEST_BLOCK_ID}_2`);
 
-    validateRenderers(pipelineErrors, pipeline, allBlocks, elementType);
+      const allBlocks = await blocksMapFactory({
+        render: jest.fn(),
+      } as unknown);
 
-    expect(pipelineErrors[0]).toEqual(
-      RENDERER_MUST_BE_LAST_BLOCK_ERROR_MESSAGE
-    );
-    expect(pipelineErrors[1]).toBeUndefined();
-  }
-);
+      validateRenderers(pipelineErrors, pipeline, allBlocks, elementType);
+
+      expect(pipelineErrors[0]).toEqual(
+        RENDERER_MUST_BE_LAST_BLOCK_ERROR_MESSAGE
+      );
+      expect(pipelineErrors[1]).toBeUndefined();
+    }
+  );
+});
+
+describe("sub pipeline validation", () => {
+  test.each(elementTypesToValidate)(
+    "validates document brick for %s",
+    async (elementType) => {
+      const allBlocks = await blocksMapFactory([
+        {
+          id: DocumentRenderer.BLOCK_ID,
+          render: jest.fn(),
+        } as unknown,
+        {
+          id: MarkdownRenderer.BLOCK_ID,
+          render: jest.fn(),
+        } as unknown,
+      ]);
+
+      const brickElement = createNewElement("pipeline");
+      (brickElement.config.pipeline as PipelineExpression).__value__ =
+        pipelineFactory({
+          id: MarkdownRenderer.BLOCK_ID,
+        });
+
+      const pipeline = [
+        blockConfigFactory({
+          id: DocumentRenderer.BLOCK_ID,
+          config: {
+            body: [brickElement],
+          },
+        }),
+      ];
+
+      const pipelineErrors: FormikErrorTree = {};
+
+      validateRenderers(pipelineErrors, pipeline, allBlocks, elementType);
+
+      const subPipelineAccessor = "0.config.body.0.config.pipeline.__value__";
+      const subPipelineErrors = get(pipelineErrors, subPipelineAccessor);
+      expect(subPipelineErrors[0]).toEqual(
+        `${MULTIPLE_RENDERERS_ERROR_MESSAGE} ${RENDERER_MUST_BE_LAST_BLOCK_ERROR_MESSAGE}`
+      );
+      expect(subPipelineErrors[1]).toBeUndefined();
+    }
+  );
+});

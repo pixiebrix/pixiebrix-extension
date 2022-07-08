@@ -40,6 +40,8 @@ import {
 import { PipelineExpression } from "@/runtime/mapArgs";
 import { act } from "react-dom/test-utils";
 import { OutputKey } from "@/core";
+import { fireTextInput, selectSchemaFieldType } from "@/testUtils/formHelpers";
+import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 
 jest.setTimeout(30_000); // This test is flaky with the default timeout of 5000 ms
@@ -51,23 +53,10 @@ const forEachBlock = new ForEach();
 const immediateUserEvent = userEvent.setup({ delay: null });
 
 beforeAll(async () => {
-  jest.useFakeTimers();
-
   registerDefaultWidgets();
   blockRegistry.clear();
   blockRegistry.register(echoBlock, teapotBlock, jqBlock, forEachBlock);
   await blockRegistry.allTyped();
-});
-
-afterAll(() => {
-  jest.useRealTimers();
-});
-
-beforeEach(() => {
-  jest.clearAllTimers();
-});
-afterEach(() => {
-  jest.runOnlyPendingTimers();
 });
 
 const getPlainFormState = (): FormState =>
@@ -144,6 +133,20 @@ describe("renders", () => {
 });
 
 describe("can add a node", () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
+  beforeEach(() => {
+    jest.clearAllTimers();
+  });
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+  });
+
   async function addABlock(addButton: Element, blockName: string) {
     await immediateUserEvent.click(addButton);
 
@@ -336,5 +339,38 @@ describe("can remove a node", () => {
     // Selecting the first node after Foundation
     expect(nodes[1]).toHaveTextContent(/echo/i);
     expect(nodes[2]).toHaveTextContent(/for-each loop/i);
+  });
+});
+
+describe("validation", () => {
+  test("validates string templates", async () => {
+    const formState = getFormStateWithSubPipelines();
+    const subEchoNode = (
+      formState.extension.blockPipeline[1].config.body as PipelineExpression
+    ).__value__[0];
+    const rendered = render(<EditorPane />, {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.selectElement(formState.uuid));
+        dispatch(editorActions.setElementActiveNodeId(subEchoNode.instanceId));
+      },
+    });
+
+    await waitForEffect();
+
+    await selectSchemaFieldType(
+      `${PIPELINE_BLOCKS_FIELD_NAME}.1.config.body.__value__.0.config.message`,
+      "var"
+    );
+
+    // By some reason, the validation doesn't fire with userEvent.type
+    fireTextInput(rendered.getByLabelText("message"), "{{!");
+    await waitForEffect();
+
+    expect(
+      screen.getByText(
+        "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
+      )
+    ).toBeInTheDocument();
   });
 });

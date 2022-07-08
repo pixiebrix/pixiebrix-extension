@@ -17,16 +17,16 @@
 
 import { TraceError } from "@/telemetry/trace";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
+import { get, set } from "lodash";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 function applyTraceBlockError(
   pipelineErrors: FormikErrorTree,
   errorTraceEntry: TraceError,
-  blockIndex: number
+  blockPath: string
 ) {
-  // eslint-disable-next-line security/detect-object-injection
-  if (!pipelineErrors[blockIndex]) {
-    // eslint-disable-next-line security/detect-object-injection
-    pipelineErrors[blockIndex] = errorTraceEntry.error.message as string;
+  if (get(pipelineErrors, blockPath) == null) {
+    set(pipelineErrors, blockPath, getErrorMessage(errorTraceEntry.error));
   }
 }
 
