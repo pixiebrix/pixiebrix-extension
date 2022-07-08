@@ -49,13 +49,11 @@ function applyTraceInputError(
     )?.groups.property;
     if (rootProperty) {
       const errorMessage = maybeInputError.error;
-      setPipelineBlockError(
+      setPipelineBlockError({
         pipelineErrors,
         errorMessage,
-        blockPath,
-        "config",
-        rootProperty
-      );
+        path: [blockPath, "config", rootProperty],
+      });
       continue;
     }
 
@@ -63,13 +61,11 @@ function applyTraceInputError(
       ?.groups.property;
     if (requiredProperty) {
       const errorMessage = "Error from the last run: This field is required.";
-      setPipelineBlockError(
+      setPipelineBlockError({
         pipelineErrors,
         errorMessage,
-        blockPath,
-        "config",
-        requiredProperty
-      );
+        path: [blockPath, "config", requiredProperty],
+      });
     }
   }
 }
