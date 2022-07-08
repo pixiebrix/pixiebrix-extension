@@ -17,10 +17,13 @@
 
 import { BLOCK_RESULT_COLUMN_COUNT } from "@/components/addBlockModal/addBlockModalConstants";
 
-export function getFlatArrayIndex(
-  rowIndex: number,
-  columnIndex: number
-): number {
+export function getFlatArrayIndex({
+  rowIndex,
+  columnIndex,
+}: {
+  rowIndex: number;
+  columnIndex: number;
+}): number {
   // Layout items in the grid left to right, top to bottom
   return rowIndex * BLOCK_RESULT_COLUMN_COUNT + columnIndex;
 }

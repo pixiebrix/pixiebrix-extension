@@ -35,7 +35,7 @@ const BlockGridItemRenderer: React.VFC<ItemRendererProps> = ({
   style,
   data: { blockOptions, onSetDetailBlock, onSelectBlock },
 }) => {
-  const index = getFlatArrayIndex(rowIndex, columnIndex);
+  const index = getFlatArrayIndex({ rowIndex, columnIndex });
   // eslint-disable-next-line security/detect-object-injection -- number index from function call
   const blockResult = blockOptions[index]?.blockResult;
 
