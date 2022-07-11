@@ -25,7 +25,7 @@ import React, {
   useRef,
 } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { compact, isEmpty, split, stubTrue } from "lodash";
+import { compact, isEmpty } from "lodash";
 import { IBlock, OutputKey, RegistryId } from "@/core";
 import { FixedSizeGrid as LazyGrid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -62,8 +62,7 @@ import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import { createNewBlock } from "@/pageEditor/createNewBlock";
 import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { TypedBlock } from "@/blocks/registry";
-import { makeIsAllowedForRootPipeline } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import { makeBlockFilterPredicate } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 import {
   BLOCK_RESULT_COLUMN_COUNT,
   TAG_ALL,
@@ -196,33 +195,11 @@ const AddBlockModal: React.VFC = () => {
     [addBlock, closeModal]
   );
 
-  const blockFilterPredicate = useMemo(() => {
-    if (pipelineType === PipelineType.Root) {
-      return makeIsAllowedForRootPipeline(extensionPointType);
-    }
-
-    let isButton = false;
-
-    if (pipelineType === PipelineType.DocumentBuilder) {
-      // We need to find the pipeline prop name, assume path ends with .<propName>.__value__
-      const parts = split(pipelinePath, ".");
-      if (parts.length >= 3) {
-        const propName = parts[-2];
-        if (propName === "onClick") {
-          isButton = true;
-        }
-      }
-    }
-
-    // PixieBrix doesn't currently support renderers in control flow
-    // bricks or document builder buttons. Use a brick element to render
-    // something in the document builder.
-    if (pipelineType === PipelineType.ControlFlow || isButton) {
-      return (block: TypedBlock) => block.type !== "renderer";
-    }
-
-    return stubTrue;
-  }, [extensionPointType, pipelinePath, pipelineType]);
+  const blockFilterPredicate = useMemo(
+    () =>
+      makeBlockFilterPredicate(pipelineType, pipelinePath, extensionPointType),
+    [extensionPointType, pipelinePath, pipelineType]
+  );
 
   const filteredBlocks = useMemo<IBlock[]>(() => {
     if (isLoadingAllBlocks) {

@@ -19,6 +19,8 @@ import { TypedBlock } from "@/blocks/registry";
 import { validateRegistryId } from "@/types/helpers";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { ExtensionPointType } from "@/extensionPoints/types";
+import { PipelineType } from "@/pageEditor/pageEditorTypes";
+import { split, stubTrue } from "lodash";
 
 const PANEL_TYPES = ["actionPanel", "panel"];
 
@@ -39,4 +41,36 @@ export function makeIsAllowedForRootPipeline(
 
   return ({ type, block }: TypedBlock) =>
     (type != null && type !== excludeType) || alwaysShow.has(block.id);
+}
+
+export function makeBlockFilterPredicate(
+  pipelineType: PipelineType,
+  pipelinePath: string,
+  extensionPointType: ExtensionPointType
+): IsBlockAllowedPredicate {
+  if (pipelineType === PipelineType.Root) {
+    return makeIsAllowedForRootPipeline(extensionPointType);
+  }
+
+  let isButton = false;
+
+  if (pipelineType === PipelineType.DocumentBuilder) {
+    // We need to find the pipeline prop name, assume path ends with .<propName>.__value__
+    const parts = split(pipelinePath, ".");
+    if (parts.length >= 3) {
+      const propName = parts[-2];
+      if (propName === "onClick") {
+        isButton = true;
+      }
+    }
+  }
+
+  // PixieBrix doesn't currently support renderers in control flow
+  // bricks or document builder buttons. Use a brick element to render
+  // something in the document builder.
+  if (pipelineType === PipelineType.ControlFlow || isButton) {
+    return (block: TypedBlock) => block.type !== "renderer";
+  }
+
+  return stubTrue;
 }
