@@ -666,7 +666,7 @@ export const editorSlice = createSlice({
       state.selectionSeq++;
     },
     showAddBlockModal(state, action: PayloadAction<AddBlockLocation>) {
-      state.addBlockPipelineInfo = action.payload;
+      state.addBlockLocation = action.payload;
       state.visibleModalKey = "addBlock";
     },
     hideModal(state) {

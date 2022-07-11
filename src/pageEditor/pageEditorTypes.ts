@@ -54,7 +54,7 @@ export enum PipelineType {
 
 export type AddBlockLocation = {
   /**
-   * The pipeline path where a block will be added by the add block modal
+   * The object property path to the pipeline where a block will be added by the add block modal
    */
   path: string;
 
