@@ -47,9 +47,9 @@ const NodeActionsView: React.VFC<NodeActionsProps> = ({
       [styles.biggerActions]: showBiggerActions && !isEmpty(nodeActions),
     })}
   >
-    {nodeActions.map(({ name, icon, onClick, tooltipText }, index) => (
+    {nodeActions.map(({ name, icon, onClick, tooltipText }) => (
       <TooltipIconButton
-        key={index} // Actions are not re-ordered, so using index key is fine
+        key={name}
         name={name}
         icon={icon}
         onClick={onClick}
