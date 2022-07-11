@@ -57,13 +57,7 @@ type NamespacedError = {
   message: string;
 };
 
-export type BlockErrorInfo = {
-  /**
-   * Namespaced errors related to the Node
-   * @deprecated
-   */
-  nodeErrors: Record<string, string>;
-
+export type BlockError = {
   /**
    * Namespaced errors related to the Node
    */
@@ -80,7 +74,7 @@ export type BlockErrorInfo = {
  */
 export type PipelineMap = Record<UUID, BlockInfo>;
 
-export type ErrorMap = Record<UUID, BlockErrorInfo>;
+export type ErrorMap = Record<UUID, BlockError>;
 
 export type TabUIState = {
   /**

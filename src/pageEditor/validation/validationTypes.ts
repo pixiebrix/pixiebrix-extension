@@ -20,10 +20,11 @@ import {
   MatchFunction,
   TypedActionCreator,
 } from "@reduxjs/toolkit/dist/listenerMiddleware/types";
+import { RootState } from "@/pageEditor/pageEditorTypes";
 
 export type ValidatorEffect = ListenerEffect<
   AnyAction,
-  unknown,
+  RootState,
   ThunkDispatch<unknown, unknown, AnyAction>
 >;
 export type Validator = {

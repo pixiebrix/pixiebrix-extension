@@ -17,7 +17,6 @@
 
 import { traversePipeline } from "@/pageEditor/utils";
 import { DocumentRenderer } from "@/blocks/renderers/document";
-import { RootState } from "@/pageEditor/pageEditorTypes";
 import { UUID } from "@/core";
 import { isAnyOf } from "@reduxjs/toolkit";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
@@ -43,7 +42,7 @@ class RenderersValidator implements Validator {
   );
 
   effect: ValidatorEffect = async (action, listenerApi) => {
-    const state: RootState = listenerApi.getState() as RootState;
+    const state = listenerApi.getState();
     const activeElement = selectActiveElement(state);
     const extensionPointType = activeElement.extensionPoint.definition.type;
     if (
@@ -74,6 +73,7 @@ class RenderersValidator implements Validator {
         const isRootPipeline = parentNode === null;
 
         // Only run validation for root pipeline and document Brick sub pipeline
+        // Because control flow sub pipelines and document button sub pipeline can't have a renderer
         if (
           !isRootPipeline &&
           (parentNode.id !== DocumentRenderer.BLOCK_ID ||

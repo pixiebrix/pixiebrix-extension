@@ -735,10 +735,14 @@ export const editorSlice = createSlice({
       if (typeof nodeErrors === "undefined") {
         set(errorMap, [nodeId, "errors"], [{ namespace, message }]);
       } else {
-        errorMap[nodeId].errors = [
-          ...nodeErrors.filter((x) => x.namespace !== namespace),
-          { namespace, message },
-        ];
+        set(
+          errorMap,
+          [nodeId, "errors"],
+          [
+            ...nodeErrors.filter((x) => x.namespace !== namespace),
+            { namespace, message },
+          ]
+        );
       }
     },
     clearNodeError(

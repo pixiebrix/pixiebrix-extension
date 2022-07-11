@@ -18,7 +18,6 @@
 import { UUID } from "@/core";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
-import { RootState } from "@/pageEditor/pageEditorTypes";
 import {
   selectActiveElement,
   selectErrorMap,
@@ -33,7 +32,7 @@ class TracesValidator implements Validator {
   actionCreator = runtimeSlice.actions.setExtensionTrace;
 
   effect: ValidatorEffect = async (action, listenerApi) => {
-    const state: RootState = listenerApi.getState() as RootState;
+    const state = listenerApi.getState();
     const activeElement = selectActiveElement(state);
     const activeElementId = activeElement.uuid;
     if (activeElementId !== action.payload.extensionId) {
@@ -71,7 +70,7 @@ class TracesValidator implements Validator {
       );
     }
 
-    // Clear the errors from the last run for the blocks that do not longer have errors
+    // Clear the errors from the last run for the blocks that no longer have errors
     for (const nodeId of lastNodesWithErrors.filter(
       (x) => !nodesWithErrors.has(x)
     )) {

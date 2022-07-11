@@ -17,7 +17,7 @@
 
 import styles from "./EditorNodeConfigPanel.module.scss";
 
-import React, { useMemo } from "react";
+import React from "react";
 import { Col, Row } from "react-bootstrap";
 import { RegistryId, UUID } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -29,8 +29,8 @@ import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import getType from "@/runtime/getType";
 import { useSelector } from "react-redux";
 import { selectActiveNodeError } from "@/pageEditor/slices/editorSelectors";
-import PopoverOutputLabel from "./PopoverOutputLabel";
 import useNodeValidation from "@/pageEditor/validation/useNodeValidation";
+import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 
 const EditorNodeConfigPanel: React.FC<{
   /**
@@ -58,9 +58,12 @@ const EditorNodeConfigPanel: React.FC<{
     ? "Effect and renderer bricks do not produce outputs"
     : "Provide an output key to refer to the outputs of this block later.";
 
-  const outputKeyLabel = useMemo(
-    () => <PopoverOutputLabel description={outputDescription} />,
-    [outputDescription]
+  const PopoverOutputLabel = (
+    <PopoverInfoLabel
+      name="output-label"
+      label="Output"
+      description={outputDescription}
+    />
   );
 
   const errorInfo = useSelector(selectActiveNodeError);
@@ -85,7 +88,7 @@ const EditorNodeConfigPanel: React.FC<{
         <Col xl>
           <ConnectedFieldTemplate
             name={`${blockFieldName}.outputKey`}
-            label={outputKeyLabel}
+            label={PopoverOutputLabel}
             fitLabelWidth
             disabled={isOutputDisabled}
             as={KeyNameWidget}
