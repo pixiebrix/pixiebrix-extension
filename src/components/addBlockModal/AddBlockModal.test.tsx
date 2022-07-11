@@ -33,6 +33,7 @@ import { MarketplaceListing } from "@/types/contract";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
+import { array } from "cooky-cutter";
 
 jest.mock("@/services/api");
 jest.mock("@/components/asyncIcon", () => ({
@@ -40,11 +41,7 @@ jest.mock("@/components/asyncIcon", () => ({
 }));
 
 beforeAll(() => {
-  const tags = [
-    marketplaceTagFactory({ subtype: "role" }),
-    marketplaceTagFactory({ subtype: "role" }),
-    marketplaceTagFactory({ subtype: "role" }),
-  ];
+  const tags = array(marketplaceTagFactory, 3)({ subtype: "role" });
   (api.useGetMarketplaceTagsQuery as jest.Mock).mockReturnValue({
     data: tags,
     isLoading: false,
