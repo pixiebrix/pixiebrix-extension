@@ -25,8 +25,8 @@ import React, {
   useRef,
 } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { compact, isEmpty } from "lodash";
-import { IBlock, OutputKey, RegistryId } from "@/core";
+import { isEmpty } from "lodash";
+import { IBlock, RegistryId } from "@/core";
 import { FixedSizeGrid as LazyGrid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { BLOCK_ITEM_FIXED_HEIGHT_PX } from "./BlockGridItem";
@@ -53,15 +53,9 @@ import groupListingsByTag from "@/components/addBlockModal/groupListingsByTag";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import {
   selectActiveElement,
-  selectActiveElementId,
   selectAddBlockLocation,
   selectIsAddBlockModalVisible,
-  selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
-import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
-import { createNewBlock } from "@/pageEditor/createNewBlock";
-import { reportEvent } from "@/telemetry/events";
-import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { makeBlockFilterPredicate } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 import {
   BLOCK_RESULT_COLUMN_COUNT,
@@ -72,6 +66,7 @@ import {
   BlockOption,
 } from "@/components/addBlockModal/addBlockModalTypes";
 import { getItemKey } from "@/components/addBlockModal/addBlockModalHelpers";
+import useAddBlock from "@/components/addBlockModal/useAddBlock";
 
 type State = {
   query: string;
@@ -125,8 +120,6 @@ const slice = createSlice({
 });
 
 const AddBlockModal: React.VFC = () => {
-  const reduxDispatch = useDispatch();
-  const sessionId = useSelector(selectSessionId);
   const show = useSelector(selectIsAddBlockModalVisible);
   const [state, dispatch] = useReducer(slice.reducer, initialState);
 
@@ -134,6 +127,7 @@ const AddBlockModal: React.VFC = () => {
 
   const [allBlocks, isLoadingAllBlocks] = useAllBlocks();
 
+  const reduxDispatch = useDispatch();
   const closeModal = useCallback(() => {
     reduxDispatch(actions.hideModal());
     dispatch(slice.actions.resetState);
@@ -143,45 +137,10 @@ const AddBlockModal: React.VFC = () => {
   const pipelinePath = addBlockLocation?.path ?? "";
   const pipelineType = addBlockLocation?.type ?? PipelineType.Root;
   const pipelineIndex = addBlockLocation?.index ?? 0;
-  const pipelineMap = useSelector(selectPipelineMap);
-  const activeExtensionId = useSelector(selectActiveElementId);
   const activeElement = useSelector(selectActiveElement);
   const extensionPointType = activeElement?.extensionPoint?.definition?.type;
 
-  const addBlock = useCallback(
-    async (block: IBlock) => {
-      const outputKey = await generateFreshOutputKey(
-        block,
-        compact([
-          "input" as OutputKey,
-          ...Object.values(pipelineMap).map((x) => x.blockConfig.outputKey),
-        ])
-      );
-      const newBlock = createNewBlock(block.id, block.inputSchema);
-      if (outputKey) {
-        newBlock.outputKey = outputKey;
-      }
-
-      reduxDispatch(
-        actions.addNode({ block: newBlock, pipelinePath, pipelineIndex })
-      );
-
-      reportEvent("BrickAdd", {
-        brickId: block.id,
-        sessionId,
-        extensionId: activeExtensionId,
-        source: "PageEditor-BrickSearchModal",
-      });
-    },
-    [
-      activeExtensionId,
-      pipelineIndex,
-      pipelinePath,
-      pipelineMap,
-      reduxDispatch,
-      sessionId,
-    ]
-  );
+  const addBlock = useAddBlock(pipelinePath, pipelineIndex);
 
   const onSelectBlock = useCallback(
     async (block: IBlock) => {
