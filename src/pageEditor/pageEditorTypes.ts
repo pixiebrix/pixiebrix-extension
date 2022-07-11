@@ -162,6 +162,10 @@ export interface EditorState {
   visibleModalKey: ModalKey;
 
   /**
+   * The pipeline location where a new block will be added.
+   *
+   * Note: This will only have a value when visibleModalKey === "addBlock"
+   *
    * @see AddBlockLocation
    */
   addBlockLocation?: AddBlockLocation;
