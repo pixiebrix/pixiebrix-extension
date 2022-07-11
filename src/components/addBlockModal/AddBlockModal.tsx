@@ -282,7 +282,7 @@ const AddBlockModal: React.VFC = () => {
             <Modal.Title className={styles.title}>Add Brick</Modal.Title>
             <div className={styles.searchContainer}>
               <TagSearchInput
-                name={"brickSearch"}
+                name="brickSearch"
                 value={state.query}
                 onValueChange={(value) => {
                   dispatch(slice.actions.setQuery(value));
