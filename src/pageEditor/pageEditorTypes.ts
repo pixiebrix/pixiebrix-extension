@@ -52,7 +52,7 @@ export enum PipelineType {
   ControlFlow,
 }
 
-export type PipelineInfo = {
+export type AddBlockLocation = {
   /**
    * The pipeline path where a block will be added by the add block modal
    */
@@ -162,9 +162,9 @@ export interface EditorState {
   visibleModalKey: ModalKey;
 
   /**
-   * @see PipelineInfo
+   * @see AddBlockLocation
    */
-  addBlockPipelineInfo?: PipelineInfo;
+  addBlockLocation?: AddBlockLocation;
 
   /**
    * When creating a new blueprint from an existing extension, should we keep a separate copy of the extension?

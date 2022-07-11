@@ -34,7 +34,7 @@ import {
 import {
   EditorState,
   FormState,
-  PipelineInfo,
+  AddBlockLocation,
 } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
@@ -665,7 +665,7 @@ export const editorSlice = createSlice({
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
     },
-    showAddBlockModal(state, action: PayloadAction<PipelineInfo>) {
+    showAddBlockModal(state, action: PayloadAction<AddBlockLocation>) {
       state.addBlockPipelineInfo = action.payload;
       state.visibleModalKey = "addBlock";
     },

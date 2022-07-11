@@ -241,5 +241,5 @@ export function selectNodePreviewActiveElement(rootState: RootState): string {
     .activeElement;
 }
 
-export const selectAddBlockPipelineInfo = ({ editor }: RootState) =>
-  editor.addBlockPipelineInfo;
+export const selectAddBlockLocation = ({ editor }: RootState) =>
+  editor.addBlockLocation;

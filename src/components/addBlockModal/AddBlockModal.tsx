@@ -54,7 +54,7 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import {
   selectActiveElement,
   selectActiveElementId,
-  selectAddBlockPipelineInfo,
+  selectAddBlockLocation,
   selectIsAddBlockModalVisible,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
@@ -140,10 +140,10 @@ const AddBlockModal: React.VFC = () => {
     dispatch(slice.actions.resetState);
   }, [reduxDispatch]);
 
-  const addBlockPipelineInfo = useSelector(selectAddBlockPipelineInfo);
-  const pipelinePath = addBlockPipelineInfo?.path ?? "";
-  const pipelineType = addBlockPipelineInfo?.type ?? PipelineType.Root;
-  const pipelineIndex = addBlockPipelineInfo?.index ?? 0;
+  const addBlockLocation = useSelector(selectAddBlockLocation);
+  const pipelinePath = addBlockLocation?.path ?? "";
+  const pipelineType = addBlockLocation?.type ?? PipelineType.Root;
+  const pipelineIndex = addBlockLocation?.index ?? 0;
   const pipelineMap = useSelector(selectPipelineMap);
   const activeExtensionId = useSelector(selectActiveElementId);
   const activeElement = useSelector(selectActiveElement);
