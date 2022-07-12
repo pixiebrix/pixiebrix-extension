@@ -142,6 +142,6 @@ async function updatePerson(data: Partial<UserData>): Promise<void> {
 }
 
 // OK to memoize. The addAuthListener will modify the Rollbar instance in place
-export const getRollbar = pMemoize(initRollbar, {
-  cachePromiseRejection: false, // Keep trying to connect if it fails
-});
+// As of pMemoize 7.0.0, pMemoize does not cache rejections by default
+// https://github-redirect.dependabot.com/sindresorhus/p-memoize/pull/48
+export const getRollbar = pMemoize(initRollbar);

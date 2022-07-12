@@ -17,6 +17,7 @@
 
 import blockRegistry from "@/blocks/registry";
 import {
+  rootAwareBlock,
   simpleInput,
   teapotBlock,
   testOptions,
@@ -24,18 +25,24 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import * as logging from "@/background/messenger/api";
 import { makePipelineExpression } from "@/testUtils/expressionTestHelpers";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
-(logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
-  logValues: true,
+jest.mock("@/background/messenger/api", () => {
+  const actual = jest.requireActual("@/background/messenger/api");
+  return {
+    ...actual,
+    getLoggingConfig: jest.fn().mockResolvedValue({
+      logValues: true,
+    }),
+  };
 });
 
 const ifElseBlock = new IfElse();
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register(teapotBlock, throwBlock, ifElseBlock);
+  blockRegistry.register(teapotBlock, throwBlock, rootAwareBlock, ifElseBlock);
 });
 
 describe("IfElse", () => {
@@ -46,6 +53,35 @@ describe("IfElse", () => {
         condition: true,
         if: makePipelineExpression([{ id: teapotBlock.id, config: {} }]),
         else: makePipelineExpression([{ id: throwBlock.id, config: {} }]),
+      },
+    };
+    const result = await reducePipeline(
+      pipeline,
+      simpleInput({}),
+      testOptions("v3")
+    );
+    expect(result).toStrictEqual({ prop: "I'm a teapot" });
+  });
+
+  test("if branch with output key", async () => {
+    const pipeline = {
+      id: ifElseBlock.id,
+      config: {
+        condition: true,
+        if: makePipelineExpression([
+          {
+            id: teapotBlock.id,
+            config: {},
+            outputKey: validateOutputKey("branchResult"),
+          },
+        ]),
+        else: makePipelineExpression([
+          {
+            id: throwBlock.id,
+            config: {},
+            outputKey: validateOutputKey("branchResult"),
+          },
+        ]),
       },
     };
     const result = await reducePipeline(
@@ -89,5 +125,28 @@ describe("IfElse", () => {
       testOptions("v3")
     );
     expect(result).toStrictEqual(null);
+  });
+
+  test("root aware", async () => {
+    const pipeline = {
+      id: ifElseBlock.id,
+      config: {
+        condition: true,
+        if: makePipelineExpression([{ id: rootAwareBlock.id, config: {} }]),
+      },
+    };
+    const result = await reducePipeline(
+      pipeline,
+      {
+        root: document.createElement("div"),
+        input: {},
+        optionsArgs: {},
+        serviceContext: {},
+      },
+      testOptions("v3")
+    );
+    expect(result).toStrictEqual({
+      tagName: "DIV",
+    });
   });
 });

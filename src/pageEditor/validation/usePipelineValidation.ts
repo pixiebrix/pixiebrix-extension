@@ -22,51 +22,44 @@ import { BlockPipeline } from "@/blocks/types";
 import { useField, useFormikContext, setNestedObjectValues } from "formik";
 import { useAsyncEffect } from "use-async-effect";
 import validateOutputKey from "@/pageEditor/validation/validateOutputKey";
-import validateRenderers from "@/pageEditor/validation/validateRenderers";
 import applyTraceErrors from "@/pageEditor/validation/applyTraceError";
 import { isEmpty } from "lodash";
-import {
-  FormikError,
-  FormikErrorTree,
-} from "@/pageEditor/tabs/editTab/editTabTypes";
-import { TypedBlockMap } from "@/blocks/registry";
-import { ExtensionPointType } from "@/extensionPoints/types";
-import validateStringTemplates from "@/pageEditor/validation/validateStringTemplates";
+import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import type { TraceError } from "@/telemetry/trace";
+import { FormState } from "@/pageEditor/pageEditorTypes";
+import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
+import { selectPipelineMap } from "@/pageEditor/slices/editorSelectors";
 
-function usePipelineField(
-  allBlocks: TypedBlockMap,
-  extensionPointType: ExtensionPointType
-): {
-  blockPipeline: BlockPipeline;
-  blockPipelineErrors: FormikError;
-  traceErrors: TraceError[];
-} {
+/**
+ * Runs the validation that is applied on the fields level,
+ * meaning it's part of the Formik validation
+ */
+function usePipelineValidation() {
+  const [allBlocks] = useAllBlocks();
   const traceErrors = useSelector(selectTraceErrors);
+  const formikContext = useFormikContext<FormState>();
+  const pipelineMap = useSelector(selectPipelineMap);
 
+  // "validatePipelineBlocks" is invoked when Formik runs validation (currently onBlur)
   const validatePipelineBlocks = useCallback(
     (pipeline: BlockPipeline): void | FormikErrorTree => {
       const formikErrors: FormikErrorTree = {};
 
       validateOutputKey(formikErrors, pipeline, allBlocks);
-      validateRenderers(formikErrors, pipeline, allBlocks, extensionPointType);
-      validateStringTemplates(formikErrors, pipeline);
-      applyTraceErrors(formikErrors, traceErrors, pipeline);
+      applyTraceErrors(formikErrors, traceErrors, pipelineMap);
 
       return isEmpty(formikErrors) ? undefined : formikErrors;
     },
-    [allBlocks, extensionPointType, traceErrors]
+    [allBlocks, pipelineMap, traceErrors]
   );
 
-  const [{ value: blockPipeline }, { error: blockPipelineErrors }] =
-    useField<BlockPipeline>({
-      name: PIPELINE_BLOCKS_FIELD_NAME,
-      // @ts-expect-error working with nested errors
-      validate: validatePipelineBlocks,
-    });
+  useField<BlockPipeline>({
+    name: PIPELINE_BLOCKS_FIELD_NAME,
+    // @ts-expect-error -- validatePipelineBlocks can return an object b/c we're working with nested errors
+    validate: validatePipelineBlocks,
+  });
 
-  const formikContext = useFormikContext();
+  // When we get new traces, trigger the Formik validation which will invoke "validatePipelineBlocks"
   useAsyncEffect(
     async (isMounted) => {
       const validationErrors = await formikContext.validateForm();
@@ -75,17 +68,14 @@ function usePipelineField(
       }
 
       if (Object.keys(validationErrors).length > 0) {
-        formikContext.setTouched(setNestedObjectValues(validationErrors, true));
+        formikContext.setTouched(
+          setNestedObjectValues(validationErrors, true),
+          false
+        );
       }
     },
     [traceErrors]
   );
-
-  return {
-    blockPipeline,
-    blockPipelineErrors,
-    traceErrors,
-  };
 }
 
-export default usePipelineField;
+export default usePipelineValidation;

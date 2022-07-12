@@ -19,7 +19,7 @@ import { Target } from "@/types";
 import { IExtension, RegistryId, UUID } from "@/core";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isExtension } from "@/pageEditor/sidebar/common";
-import { BlockConfig } from "@/blocks/types";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
@@ -29,10 +29,11 @@ import {
   isListElement,
   isPipelineElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
-import { joinElementName } from "@/components/documentBuilder/utils";
+import { joinName, joinPathParts } from "@/utils";
 import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 import Retry from "@/blocks/transformers/controlFlow/Retry";
-import { castArray } from "lodash";
+import { castArray, get } from "lodash";
+import { DocumentRenderer } from "@/blocks/renderers/document";
 
 export async function getCurrentURL(): Promise<string> {
   if (!browser.devtools) {
@@ -109,20 +110,20 @@ function getElementsPipelinePropNames(
     const index = isArray ? elementIndex : null;
 
     if (isButtonElement(element)) {
-      propNames.push(joinElementName(parentPath, index, "config", "onClick"));
+      propNames.push(joinPathParts(parentPath, index, "config", "onClick"));
     } else if (isPipelineElement(element)) {
-      propNames.push(joinElementName(parentPath, index, "config", "pipeline"));
+      propNames.push(joinPathParts(parentPath, index, "config", "pipeline"));
     } else if (isListElement(element)) {
       propNames.push(
         ...getElementsPipelinePropNames(
-          joinElementName(parentPath, index, "config", "element", "__value__"),
+          joinPathParts(parentPath, index, "config", "element", "__value__"),
           element.config.element.__value__
         )
       );
     } else if (element.children?.length > 0) {
       propNames.push(
         ...getElementsPipelinePropNames(
-          joinElementName(parentPath, index, "children"),
+          joinPathParts(parentPath, index, "children"),
           element.children
         )
       );
@@ -137,4 +138,106 @@ export function getDocumentPipelinePaths(block: BlockConfig): string[] {
     "config.body",
     (block.config.body ?? []) as DocumentElement[]
   );
+}
+
+type TraversePipelineArgs = {
+  pipeline: BlockPipeline;
+  pipelinePath?: string;
+  parentNode?: BlockConfig | null;
+  visitBlock?: BlockAction;
+  visitPipeline?: VisitPipeline;
+  preVisitSubPipeline?: PreVisitSubPipeline;
+};
+
+type BlockAction = (blockInfo: {
+  blockConfig: BlockConfig;
+  index: number;
+  path: string;
+  pipelinePath: string;
+  pipeline: BlockPipeline;
+  parentNodeId: UUID | null;
+}) => void;
+
+type VisitPipeline = (pipelineInfo: {
+  pipeline: BlockPipeline;
+  pipelinePath: string;
+  parentNode?: BlockConfig | null;
+}) => void;
+
+type PreVisitSubPipeline = (subPipelineInfo: {
+  parentBlock: BlockConfig;
+  subPipelineProperty: string;
+}) => void;
+
+function getDocumentSubPipelineProperties(blockConfig: BlockConfig) {
+  return getDocumentPipelinePaths(blockConfig);
+}
+
+function getBlockSubPipelineProperties(blockConfig: BlockConfig) {
+  return getPipelinePropNames(blockConfig).map((subPipelineField) =>
+    joinName("config", subPipelineField)
+  );
+}
+
+export function traversePipeline({
+  pipeline,
+  pipelinePath = "",
+  parentNode = null,
+  visitBlock,
+  visitPipeline,
+  preVisitSubPipeline,
+}: TraversePipelineArgs) {
+  if (visitPipeline) {
+    visitPipeline({
+      pipeline,
+      pipelinePath,
+      parentNode,
+    });
+  }
+
+  for (const [index, blockConfig] of Object.entries(pipeline)) {
+    const fieldName = joinName(pipelinePath, index);
+    if (visitBlock) {
+      visitBlock({
+        blockConfig,
+        index: Number(index),
+        path: fieldName,
+        pipelinePath,
+        pipeline,
+        parentNodeId: parentNode?.instanceId ?? null,
+      });
+    }
+
+    const subPipelineProperties =
+      blockConfig.id === DocumentRenderer.BLOCK_ID
+        ? getDocumentSubPipelineProperties(blockConfig)
+        : getBlockSubPipelineProperties(blockConfig);
+
+    for (const subPipelineProperty of subPipelineProperties) {
+      if (preVisitSubPipeline) {
+        preVisitSubPipeline({
+          parentBlock: blockConfig,
+          subPipelineProperty,
+        });
+      }
+
+      const subPipelineAccessor = joinPathParts(
+        subPipelineProperty,
+        "__value__"
+      );
+
+      const subPipeline = get(blockConfig, subPipelineAccessor);
+
+      if (subPipeline?.length > 0) {
+        traversePipeline({
+          pipeline: subPipeline,
+          pipelinePath: joinPathParts(fieldName, subPipelineAccessor),
+          parentNode: blockConfig,
+          visitBlock,
+          visitPipeline,
+          preVisitSubPipeline,
+        });
+      }
+    }
+  }
 }

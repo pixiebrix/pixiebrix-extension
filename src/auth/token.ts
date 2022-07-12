@@ -114,9 +114,10 @@ export async function updateUserData(update: UserDataUpdate): Promise<void> {
   const updated = await readAuthData();
 
   for (const key of USER_DATA_UPDATE_KEYS) {
-    // Intentionally overwrite values with null/undefined from the update
+    // Intentionally overwrite values with null/undefined from the update. For some reason TypeScript was complaining
+    // about assigning any to never. It's not clear why update[key] was being typed as never
     // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-explicit-any -- keys from compile-time constant
-    updated[key] = update[key] as any;
+    (updated[key] as any) = update[key] as any;
   }
 
   await setStorage(STORAGE_EXTENSION_KEY, updated);

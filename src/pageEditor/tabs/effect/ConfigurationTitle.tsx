@@ -16,37 +16,127 @@
  */
 
 import React from "react";
-import { IBlock } from "@/core";
-import { MarketplaceListing } from "@/types/contract";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { isEmpty } from "lodash";
+import { get, isEmpty } from "lodash";
 import styles from "./ConfigurationTitle.module.scss";
+import { useGetMarketplaceListingsQuery } from "@/services/api";
+import {
+  selectActiveNodeId,
+  selectNodePreviewActiveElement,
+  selectPipelineMap,
+} from "@/pageEditor/slices/editorSelectors";
+import { useSelector } from "react-redux";
+import { DocumentRenderer } from "@/blocks/renderers/document";
+import { getProperty, joinPathParts } from "@/utils";
+import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
+import { Button } from "react-bootstrap";
+import { actions as pageEditorActions } from "@/pageEditor/slices/editorSlice";
+import useReduxState from "@/hooks/useReduxState";
+import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 
-type ConfigurationTitleProps = {
-  block: IBlock | null;
-  listing: MarketplaceListing | null;
-  showBlockLabel?: boolean;
-};
+const DOCUMENT_BODY_PATH = "config.body";
 
-const ConfigurationTitle: React.FunctionComponent<ConfigurationTitleProps> = ({
-  block,
-  listing,
-  showBlockLabel = false,
-}) => {
-  const configurationTitle = showBlockLabel ? (
-    <span className={styles.title}>
-      Input: <span className={styles.blockName}>{block?.name}</span>
+const PlainTitle: React.FC = () => <span className={styles.title}>Input</span>;
+const TextTitle: React.FC<{ title: string }> = ({ title }) => (
+  <span className={styles.title}>
+    Input: <span className={styles.blockName}>{title}</span>
+  </span>
+);
+const BreadcrumbTitle: React.FC<{
+  crumbTitle: string;
+  crumbAction: () => void;
+  title: string;
+}> = ({ crumbTitle, crumbAction, title }) => (
+  <span className={styles.title}>
+    Input:
+    <span className={styles.blockName}>
+      <Button
+        className={styles.parentBlockName}
+        onClick={crumbAction}
+        variant="link"
+      >
+        {crumbTitle}
+      </Button>{" "}
+      / {title}
     </span>
-  ) : (
-    <span>Input</span>
+  </span>
+);
+
+const ConfigurationTitle: React.FunctionComponent = () => {
+  const [allBlocks, isLoadingAllBlocks] = useAllBlocks();
+
+  const nodesPipelineMap = useSelector(selectPipelineMap);
+  const [activeNodeId, setActiveNodeId] = useReduxState(
+    selectActiveNodeId,
+    pageEditorActions.setElementActiveNodeId
   );
+  const activeNodeInfo = nodesPipelineMap[activeNodeId];
+  const { blockConfig: activeNode, parentNodeId } = activeNodeInfo;
+  const blockId = activeNode.id;
+  const block = allBlocks.get(blockId)?.block;
+  const { data: listings = {} } = useGetMarketplaceListingsQuery();
+  const listing = listings[blockId];
+
+  const [activeNodePreviewElementName, setActiveNodePreviewElementName] =
+    useReduxState(
+      selectNodePreviewActiveElement,
+      pageEditorActions.setNodePreviewActiveElement
+    );
+
+  let title: JSX.Element;
+  if (isLoadingAllBlocks) {
+    // Not ready yet
+    title = <PlainTitle />;
+  } else if (
+    blockId === DocumentRenderer.BLOCK_ID &&
+    !isEmpty(activeNodePreviewElementName)
+  ) {
+    // An element is selected in the document preview
+    const activeDocumentElement = get(
+      activeNode,
+      joinPathParts(DOCUMENT_BODY_PATH, activeNodePreviewElementName)
+    );
+    const activeDocumentElementName =
+      getProperty<string>(elementTypeLabels, activeDocumentElement.type) ??
+      "Unknown element";
+    title = (
+      <BreadcrumbTitle
+        crumbTitle={block?.name}
+        crumbAction={() => {
+          setActiveNodePreviewElementName(null);
+        }}
+        title={activeDocumentElementName}
+      />
+    );
+  } else if (
+    parentNodeId != null &&
+    nodesPipelineMap[parentNodeId].blockId === DocumentRenderer.BLOCK_ID
+  ) {
+    // Editing a direct descendant of a document node
+    const documentBlock = allBlocks.get(DocumentRenderer.BLOCK_ID)?.block;
+    title = (
+      <BreadcrumbTitle
+        crumbTitle={documentBlock?.name}
+        crumbAction={() => {
+          setActiveNodeId(parentNodeId);
+        }}
+        title={block?.name}
+      />
+    );
+  } else if (isEmpty(activeNode?.label)) {
+    // A brick with no label
+    title = <PlainTitle />;
+  } else {
+    // A brick with a label - show the brick type in the title
+    title = <TextTitle title={block?.name} />;
+  }
 
   return isEmpty(listing?.instructions) && isEmpty(listing?.assets) ? (
-    configurationTitle
+    title
   ) : (
-    <div className="d-flex justify-content-between">
-      {configurationTitle}
+    <div className={styles.root}>
+      {title}
       <a
         href={`https://www.pixiebrix.com/marketplace/${listing.id}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}
         target="_blank"

@@ -120,6 +120,7 @@ export function hasSpecificErrorCause<
 const BUSINESS_ERROR_NAMES = new Set([
   "PropError",
   "BusinessError",
+  "CancelError",
   "NoRendererError",
   "NoElementsFoundError",
   "MultipleElementsFoundError",
@@ -172,21 +173,6 @@ export function isConnectionError(possibleError: unknown): boolean {
 }
 
 /**
- * Some pages are off-limits to extension. This function can find out if an error is due to this limitation.
- *
- * Example error messages:
- * - Cannot access a chrome:// URL
- * - Cannot access a chrome-extension:// URL of different extension
- * - Cannot access contents of url "chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/options.html#/". Extension manifest must request permission to access this host.
- * - The extensions gallery cannot be scripted.
- */
-export function isPrivatePageError(error: unknown): boolean {
-  return /cannot be scripted|(chrome|about|extension):\/\//.test(
-    getErrorMessage(error)
-  );
-}
-
-/**
  * Return an error message corresponding to an error.
  */
 export function getErrorMessage(
@@ -213,6 +199,14 @@ export function getErrorMessage(
     if (serverMessage) {
       return String(serverMessage);
     }
+  }
+
+  // @ts-expect-error -- We're checking if errors is there and if it's an array
+  if (Array.isArray(error.errors)) {
+    // @ts-expect-error -- error does have "errors" property
+    return error.errors
+      .filter((x: unknown) => typeof x === "string")
+      .join(". ");
   }
 
   return String(selectError(error).message ?? defaultMessage);
@@ -319,27 +313,25 @@ export function selectError(originalError: unknown): Error {
     return selectErrorFromRejectionEvent(originalError);
   }
 
-  const error = originalError;
-
-  if (error instanceof Error) {
-    return error;
+  if (originalError instanceof Error) {
+    return originalError;
   }
 
-  if (isErrorObject(error)) {
+  if (isErrorObject(originalError)) {
     // RTK has to store serialized error, so we can end up here (e.g. the error is thrown because of a call to unwrap)
-    return deserializeError(error);
+    return deserializeError(originalError);
   }
 
   console.warn("A non-Error was thrown", {
-    error,
+    error: originalError,
   });
 
   // Wrap error if an unknown primitive or object
   // e.g. `throw 'Error string message'`, which should never be written
-  const errorMessage = isObject(error)
+  const errorMessage = isObject(originalError)
     ? // Use safeJsonStringify vs. JSON.stringify because it handles circular references
-      safeJsonStringify(error)
-    : String(error);
+      safeJsonStringify(originalError)
+    : String(originalError);
 
   // Truncate error message in case it's an excessively-long JSON string
   return new Error(truncate(errorMessage, { length: 2000 }));

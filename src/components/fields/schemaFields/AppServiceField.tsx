@@ -16,14 +16,13 @@
  */
 
 import React, { useEffect } from "react";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField, useFormikContext } from "formik";
 import { Expression, OutputKey, ServiceKeyVar } from "@/core";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { produce } from "immer";
 import { createTypePredicate } from "@/components/fields/fieldUtils";
 import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
-import { isEqual } from "lodash";
+import { isEqual, set } from "lodash";
 import { keyToFieldValue, ServiceSlice } from "./serviceFieldUtils";
 
 const PIXIEBRIX_OUTPUT_KEY = "pixiebrix" as OutputKey;
@@ -38,27 +37,26 @@ export const isAppServiceField = createTypePredicate(
  * - Does not render a DOM element
  * - Ensures a @pixiebrix/api dependency is included for the extension
  */
-const AppServiceField: React.FunctionComponent<SchemaFieldProps> = ({
-  schema,
-  uiSchema,
-  ...props
+const AppServiceField: React.FunctionComponent<{ name: string }> = ({
+  name,
 }) => {
   const { values: root, setValues: setRootValues } =
     useFormikContext<ServiceSlice>();
-  const [{ value }, , helpers] = useField<Expression<ServiceKeyVar>>(props);
+  const [{ value: serviceOutputKey }, , { setValue: setServiceOutputKey }] =
+    useField<Expression<ServiceKeyVar>>(name);
 
   // This currently happens when a brick is copy-pasted into a separate extension
   // that does not yet have root.services configured, but already has the service
   // key set up in the (copied) BlockConfig.
   const isBadValue =
-    value &&
+    serviceOutputKey &&
     !root.services.some((service) =>
-      isEqual(keyToFieldValue(service.outputKey), value)
+      isEqual(keyToFieldValue(service.outputKey), serviceOutputKey)
     );
 
   useEffect(
     () => {
-      if (value == null) {
+      if (serviceOutputKey == null) {
         const match = root.services.find(
           (service) => service.id === PIXIEBRIX_SERVICE_ID
         );
@@ -70,11 +68,9 @@ const AppServiceField: React.FunctionComponent<SchemaFieldProps> = ({
             match.outputKey,
             { root, match }
           );
-          helpers.setValue(keyToFieldValue(match.outputKey));
+          setServiceOutputKey(keyToFieldValue(match.outputKey));
         } else {
           console.debug("Adding PixieBrix API dependency");
-          // Try defaulting to the only option available. Use onChange instead of helpers.setValue b/c it automatically
-          // updates the services part of the form state
           setRootValues(
             produce(root, (draft) => {
               draft.services.push({
@@ -86,14 +82,15 @@ const AppServiceField: React.FunctionComponent<SchemaFieldProps> = ({
                 // PixieBrix service does not use an ID -- the auth is automatically handled based on the logged in user
                 config: null,
               });
+
+              set(draft, name, keyToFieldValue(PIXIEBRIX_OUTPUT_KEY));
             })
           );
-          helpers.setValue(keyToFieldValue(PIXIEBRIX_OUTPUT_KEY));
         }
       } else if (isBadValue) {
         // Clearing this "bad value" value will enable the preceding if-branch to
         // execute again, and that will configure root.services properly
-        helpers.setValue(null);
+        setServiceOutputKey(null);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run on mount, or if we detect a "bad value" (see comment above)

@@ -20,16 +20,12 @@ import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { useFormikContext } from "formik";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { useAsyncState } from "@/hooks/common";
-import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
 import EditorNodeConfigPanel from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
 import useExtensionTrace from "@/pageEditor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationDataPanel";
-import usePipelineField from "@/pageEditor/hooks/usePipelineField";
 import { useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import {
@@ -37,64 +33,31 @@ import {
   selectActiveNodeInfo,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
-import ApiVersionField from "@/pageEditor/fields/ApiVersionField";
 import useBlockPipelineActions from "@/pageEditor/tabs/editTab/useBlockPipelineActions";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import UnsupportedApiV1 from "@/pageEditor/tabs/editTab/UnsupportedApiV1";
-import UpgradedToApiV3 from "@/pageEditor/tabs/editTab/UpgradedToApiV3";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import useFlags from "@/hooks/useFlags";
 import { FormState } from "@/pageEditor/pageEditorTypes";
-import { isInnerExtensionPoint } from "@/registry/internal";
 import useReportTraceError from "./useReportTraceError";
-import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
-import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
-import { get } from "lodash";
-import Loader from "@/components/Loader";
-import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
-import { BlockType } from "@/runtime/runtimeTypes";
-import { validateRegistryId } from "@/types/helpers";
-
-function getRelevantBlocksForRootPipeline(
-  allBlocks: TypedBlockMap,
-  extensionPointType: string
-) {
-  const alwaysShow = new Set([
-    // Cancel/Error provide meaningful control flow for all bricks
-    validateRegistryId("@pixiebrix/cancel"),
-    validateRegistryId("@pixiebrix/error"),
-  ]);
-
-  const excludeType: BlockType = ["actionPanel", "panel"].includes(
-    extensionPointType
-  )
-    ? "effect"
-    : "renderer";
-
-  return [...allBlocks.values()]
-    .filter(
-      ({ type, block }) =>
-        (type != null && type !== excludeType) || alwaysShow.has(block.id)
-    )
-    .map(({ block }) => block);
-}
+import FoundationNodeConfigPanel from "./FoundationNodeConfigPanel";
+import usePipelineValidation from "@/pageEditor/validation/usePipelineValidation";
 
 const EditTab: React.FC<{
   eventKey: string;
 }> = ({ eventKey }) => {
   useExtensionTrace();
   useReportTraceError();
+  usePipelineValidation();
 
-  const { values, setValues: setFormValues } = useFormikContext<FormState>();
-  const { extensionPoint, type: extensionPointType } = values;
+  const { values } = useFormikContext<FormState>();
 
-  // For now, don't allow modifying extensionPoint packages via the Page Editor.
-  const isLocked = useMemo(
-    () => !isInnerExtensionPoint(extensionPoint.metadata.id),
-    [extensionPoint.metadata.id]
-  );
+  const {
+    extensionPoint,
+    type: extensionPointType,
+    extension: { blockPipeline },
+  } = values;
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
@@ -103,25 +66,6 @@ const EditTab: React.FC<{
     icon: extensionPointIcon,
     EditorNode,
   } = useMemo(() => ADAPTERS.get(extensionPointType), [extensionPointType]);
-
-  const [allBlocks, isLoadingAllBlocks] = useAsyncState<TypedBlockMap>(
-    async () => blockRegistry.allTyped(),
-    [],
-    new Map()
-  );
-
-  const [relevantBlocksForRootPipeline, isLoadingRelevantBlocks] =
-    useAsyncState(
-      async () =>
-        getRelevantBlocksForRootPipeline(allBlocks, extensionPointType),
-      [allBlocks, extensionPointType],
-      []
-    );
-
-  const { blockPipeline, blockPipelineErrors, traceErrors } = usePipelineField(
-    allBlocks,
-    extensionPointType
-  );
 
   const activeNodeId = useSelector(selectActiveNodeId);
   const { blockId, path: fieldName } = useSelector(selectActiveNodeInfo) ?? {};
@@ -134,16 +78,7 @@ const EditTab: React.FC<{
     moveBlockDown,
     copyBlock,
     pasteBlock,
-  } = useBlockPipelineActions(pipelineMap, values, setFormValues);
-
-  // The value of formikErrorForBlock can be object or string.
-  const formikErrorForBlock = get(blockPipelineErrors, fieldName);
-  // If formikErrorForBlock is a string, it means that this exact block has an error.
-  const blockError: string =
-    typeof formikErrorForBlock === "string" ? formikErrorForBlock : null;
-
-  const { flagOn } = useFlags();
-  const showVersionField = flagOn("page-editor-developer");
+  } = useBlockPipelineActions(pipelineMap, values);
 
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
@@ -179,23 +114,16 @@ const EditTab: React.FC<{
             />
           </div>
           <div className={styles.nodeLayout}>
-            {isLoadingAllBlocks || isLoadingRelevantBlocks ? (
-              <Loader />
-            ) : (
-              <EditorNodeLayout
-                allBlocks={allBlocks}
-                relevantBlocksForRootPipeline={relevantBlocksForRootPipeline}
-                pipeline={blockPipeline}
-                pipelineErrors={blockPipelineErrors}
-                traceErrors={traceErrors}
-                extensionPointLabel={extensionPointLabel}
-                extensionPointIcon={extensionPointIcon}
-                addBlock={addBlock}
-                moveBlockUp={moveBlockUp}
-                moveBlockDown={moveBlockDown}
-                pasteBlock={pasteBlock}
-              />
-            )}
+            <EditorNodeLayout
+              pipeline={blockPipeline}
+              extensionPointType={extensionPointType}
+              extensionPointLabel={extensionPointLabel}
+              extensionPointIcon={extensionPointIcon}
+              addBlock={addBlock}
+              moveBlockUp={moveBlockUp}
+              moveBlockDown={moveBlockDown}
+              pasteBlock={pasteBlock}
+            />
           </div>
         </div>
         <div className={styles.configPanel}>
@@ -209,26 +137,16 @@ const EditTab: React.FC<{
             >
               {isApiAtLeastV2 ? (
                 activeNodeId === FOUNDATION_NODE_ID ? (
-                  <>
-                    {extensionPointType === "quickBar" && (
-                      <UnconfiguredQuickBarAlert />
-                    )}
-                    <ConnectedFieldTemplate
-                      name="label"
-                      label="Extension Name"
-                    />
-                    {showVersionField && <ApiVersionField />}
-                    <UpgradedToApiV3 />
-                    <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
-                      <EditorNode isLocked={isLocked} />
-                    </SchemaFieldContext.Provider>
-                  </>
+                  <FoundationNodeConfigPanel
+                    extensionPoint={extensionPoint}
+                    EditorNode={EditorNode}
+                  />
                 ) : (
                   <EditorNodeConfigPanel
                     key={activeNodeId}
+                    nodeId={activeNodeId}
                     blockFieldName={fieldName}
                     blockId={blockId}
-                    blockError={blockError}
                   />
                 )
               ) : (

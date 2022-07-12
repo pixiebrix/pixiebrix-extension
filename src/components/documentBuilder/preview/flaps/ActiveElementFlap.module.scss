@@ -15,19 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TraceError } from "@/telemetry/trace";
-import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
+@import "@/components/documentBuilder/preview/previewVariables.scss";
 
-function applyTraceBlockError(
-  pipelineErrors: FormikErrorTree,
-  errorTraceEntry: TraceError,
-  blockIndex: number
-) {
-  // eslint-disable-next-line security/detect-object-injection
-  if (!pipelineErrors[blockIndex]) {
-    // eslint-disable-next-line security/detect-object-injection
-    pipelineErrors[blockIndex] = errorTraceEntry.error.message as string;
-  }
+.icon {
+  height: 24px;
 }
-
-export default applyTraceBlockError;
+.icon[data-disabled="true"] {
+  color: lightgray;
+}
+.icon:not([data-disabled="true"]):hover {
+  background: darken($color-decisions-blue-focus, 10%);
+}

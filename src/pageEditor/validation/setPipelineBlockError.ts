@@ -15,33 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { traceErrorFactory } from "@/testUtils/factories";
-import applyTraceBlockError from "./applyTraceBlockError";
+import { set } from "lodash";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
+import { joinPathParts } from "@/utils";
 
-test("sets block error", () => {
-  const pipelineErrors: FormikErrorTree = {};
-  const errorTraceEntry = traceErrorFactory();
+type SetPipelineBlockErrorArgs = {
+  pipelineErrors: FormikErrorTree;
+  errorMessage: string;
+  path: string[];
+};
 
-  applyTraceBlockError(pipelineErrors, errorTraceEntry, 0);
-
-  expect(pipelineErrors[0]).toBe(errorTraceEntry.error.message);
-});
-
-test("doesn't override nested error", () => {
-  const errorTraceEntry = traceErrorFactory();
-  const blockIndex = 5;
-
-  const nestedBlockError = {
-    config: {
-      name: "Nested Error",
-    },
-  };
-  const pipelineErrors = {
-    [blockIndex]: nestedBlockError,
-  };
-
-  applyTraceBlockError(pipelineErrors, errorTraceEntry, blockIndex);
-
-  expect(pipelineErrors[blockIndex]).toBe(nestedBlockError);
-});
+export function setPipelineBlockError({
+  pipelineErrors,
+  errorMessage,
+  path,
+}: SetPipelineBlockErrorArgs) {
+  const propertyNameInPipeline = joinPathParts(...path);
+  set(pipelineErrors, propertyNameInPipeline, errorMessage);
+}

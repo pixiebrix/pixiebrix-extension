@@ -49,6 +49,7 @@ const specialCharsRegex = /[.[\]]/;
 
 /**
  * Create a Formik field name, validating the individual path parts.
+ * Wraps parts with special characters in brackets, so Formik treat it as a single property name.
  * @param baseFieldName The base field name
  * @param rest the other Formik field name path parts
  * @throws Error if a path part is invalid
@@ -77,6 +78,18 @@ export function joinName(
   }
 
   return path;
+}
+
+/**
+ * Join parts of a path, ignoring null/blank parts.
+ * Works faster than joinName.
+ * Use this one when there're no special characters in the name parts or
+ * the parts contain already joined paths rather than individual property names
+ * @param nameParts the parts of the name
+ */
+export function joinPathParts(...nameParts: Array<string | number>): string {
+  // Don't use lodash.compact and lodash.isEmpty since they treat 0 as falsy
+  return nameParts.filter((x) => x != null && x !== "").join(".");
 }
 
 export function mostCommonElement<T>(items: T[]): T {
@@ -459,11 +472,14 @@ export function isApiVersionAtLeast(
   return isNum >= atLeastNum;
 }
 
-export function getProperty(obj: UnknownObject, property: string) {
+export function getProperty<TResult = unknown>(
+  obj: UnknownObject,
+  property: string
+): TResult {
   if (Object.prototype.hasOwnProperty.call(obj, property)) {
     // Checking for hasOwnProperty
     // eslint-disable-next-line security/detect-object-injection
-    return obj[property];
+    return obj[property] as TResult;
   }
 }
 

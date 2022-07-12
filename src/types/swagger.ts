@@ -265,6 +265,9 @@ export interface paths {
   "/api/organizations/{organization_pk}/subscriptions/": {
     get: operations["listSubscriptions"];
   };
+  "/api/organizations/{organization_pk}/subscriptions/jobs/{id}/": {
+    get: operations["retrieveOrganizationSubscriptionsJob"];
+  };
   "/api/organizations/{organization_pk}/backup/": {
     get: operations["exportOrganizationBackup"];
   };
@@ -285,9 +288,12 @@ export interface paths {
     delete: operations["destroyOrganizationContact"];
     patch: operations["partialUpdateOrganizationContact"];
   };
-  "/api/control-rooms/{id}/": {
+  "/api/control-rooms/": {
     get: operations["retrieveControlRoom"];
-    patch: operations["partialUpdateControlRoom"];
+  };
+  "/api/control-rooms/configurations/{id}/": {
+    get: operations["retrieveControlRoomConfiguration"];
+    patch: operations["partialUpdateControlRoomConfiguration"];
   };
   "/api/permissions/{id}/": {
     get: operations["retrieveGroupPackagePermission"];
@@ -389,8 +395,11 @@ export interface paths {
   "/api/onboarding/": {
     post: operations["createOnboarding"];
   };
-  "/api/control-rooms/": {
-    post: operations["createControlRoom"];
+  "/api/organizations/{organization_pk}/subscriptions/jobs/": {
+    post: operations["createOrganizationSubscriptionsJob"];
+  };
+  "/api/control-rooms/configurations/": {
+    post: operations["createControlRoomConfiguration"];
   };
   "/api/proxy/": {
     /** API authentication proxy. */
@@ -1041,7 +1050,7 @@ export interface components {
           id?: string;
           /**
            * Format: uri
-           * @description The control room url
+           * @description The Control Room URL
            */
           url: string;
         };
@@ -1056,7 +1065,7 @@ export interface components {
           id?: string;
           /**
            * Format: uri
-           * @description The control room url
+           * @description The Control Room URL
            */
           url: string;
         };
@@ -1075,7 +1084,7 @@ export interface components {
           id?: string;
           /**
            * Format: uri
-           * @description The control room url
+           * @description The Control Room URL
            */
           url: string;
         };
@@ -1094,7 +1103,10 @@ export interface components {
         id?: string;
         name: string;
         theme?: string;
+        /** Format: uri */
+        documentation_url?: string | null;
       };
+      enforce_update_millis?: number;
     };
     Membership: {
       id?: number;
@@ -1167,6 +1179,7 @@ export interface components {
       scope?: string | null;
       /** @enum {integer} */
       default_role?: 1 | 2 | 3 | 4 | 5;
+      partner?: string;
     };
     UserDetail: {
       /** Format: uuid */
@@ -1270,16 +1283,25 @@ export interface components {
       /** Format: date-time */
       updated_at?: string;
     };
+    ControlRoom: {
+      /** Format: uuid */
+      id?: string;
+      /**
+       * Format: uri
+       * @description The Control Room URL
+       */
+      url: string;
+    };
     ControlRoomConfiguration: {
       /** Format: uuid */
       id?: string;
       /**
        * Format: uri
-       * @description The control room url
+       * @description The Control Room URL
        */
       url: string;
       /** Format: uuid */
-      tenant_id?: string | null;
+      tenant_id: string;
       service_account_token: string;
       organization: string;
     };
@@ -3697,6 +3719,22 @@ export interface operations {
       };
     };
   };
+  retrieveOrganizationSubscriptionsJob: {
+    parameters: {
+      path: {
+        organization_pk: string;
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["Job"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Job"];
+        };
+      };
+    };
+  };
   exportOrganizationBackup: {
     parameters: {
       path: {
@@ -3861,6 +3899,17 @@ export interface operations {
     };
   };
   retrieveControlRoom: {
+    parameters: {};
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["ControlRoom"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ControlRoom"];
+        };
+      };
+    };
+  };
+  retrieveControlRoomConfiguration: {
     parameters: {
       path: {
         /** A UUID string identifying this control room. */
@@ -3876,7 +3925,7 @@ export interface operations {
       };
     };
   };
-  partialUpdateControlRoom: {
+  partialUpdateControlRoomConfiguration: {
     parameters: {
       path: {
         /** A UUID string identifying this control room. */
@@ -4562,7 +4611,29 @@ export interface operations {
       };
     };
   };
-  createControlRoom: {
+  createOrganizationSubscriptionsJob: {
+    parameters: {
+      path: {
+        organization_pk: string;
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["Job"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Job"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Job"];
+        "application/x-www-form-urlencoded": components["schemas"]["Job"];
+        "multipart/form-data": components["schemas"]["Job"];
+      };
+    };
+  };
+  createControlRoomConfiguration: {
     parameters: {};
     responses: {
       201: {

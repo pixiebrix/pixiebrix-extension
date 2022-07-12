@@ -215,9 +215,7 @@ export const selectActiveNodeInfo = createSelector(
 );
 
 export const selectActiveNode: (rootState: RootState) => BlockConfig =
-  createSelector(selectActiveElement, selectActiveNodeId, (element, nodeId) =>
-    element.extension.blockPipeline.find((node) => node.instanceId === nodeId)
-  );
+  createSelector(selectActiveNodeInfo, (nodeInfo) => nodeInfo.blockConfig);
 
 export const selectNodeDataPanelTabSelected: (
   rootState: RootState
@@ -242,3 +240,15 @@ export function selectNodePreviewActiveElement(rootState: RootState): string {
   return selectNodeDataPanelTabState(rootState, DataPanelTabKey.Preview)
     .activeElement;
 }
+
+export const selectErrorMap = createSelector(
+  selectActiveElementUIState,
+  (uiState: ElementUIState) => uiState.errorMap
+);
+
+export const selectActiveNodeError = createSelector(
+  selectActiveElementUIState,
+  selectActiveNodeId,
+  (uiState: ElementUIState, activeNodeId: UUID) =>
+    uiState.errorMap[activeNodeId]
+);

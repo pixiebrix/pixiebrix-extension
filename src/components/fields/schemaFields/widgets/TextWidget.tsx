@@ -39,6 +39,9 @@ import {
 } from "@/components/fields/schemaFields/getToggleOptions";
 import { useDebouncedCallback } from "use-debounce";
 
+const TEMPLATE_ERROR_MESSAGE =
+  "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";
+
 function schemaSupportsTemplates(schema: Schema): boolean {
   const options = getToggleOptions({
     fieldSchema: schema,
@@ -60,6 +63,7 @@ function isVarValue(value: string): boolean {
 const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   name,
   schema,
+  validationSchema,
   isRequired,
   label,
   description,
@@ -72,7 +76,19 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   ...formControlProps
 }) => {
   const [{ value, ...restInputProps }, , { setValue: setFieldValue }] =
-    useField(name);
+    useField({
+      name,
+      validate(value) {
+        if (
+          isTemplateExpression(value) &&
+          value.__type__ !== "mustache" &&
+          isMustacheOnly(value.__value__)
+        ) {
+          return TEMPLATE_ERROR_MESSAGE;
+        }
+      },
+    });
+
   const { allowExpressions: allowExpressionsContext } =
     useContext(FieldRuntimeContext);
   const allowExpressions = allowExpressionsContext && !isKeyStringField(schema);

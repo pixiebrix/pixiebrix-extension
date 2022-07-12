@@ -15,26 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "@/components/documentBuilder/preview/previewVariables.scss";
+import { createListenerMiddleware } from "@reduxjs/toolkit";
+import RenderersValidator from "./renderersValidator";
+import TracesValidator from "./tracesValidator";
 
-.root {
-  background-color: $color-decisions-blue-focus;
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 0 5px;
-  border-radius: $border-radius $border-radius 0 0;
-  color: white;
+const validationListenerMiddleware = createListenerMiddleware();
 
-  svg {
-    margin: 0 0.25rem;
-  }
+validationListenerMiddleware.startListening(new TracesValidator());
+validationListenerMiddleware.startListening(new RenderersValidator());
 
-  svg[data-disabled="true"] {
-    color: lightgray;
-  }
-
-  svg:not([data-disabled="true"]):hover {
-    background: darken($color-decisions-blue-focus, 10%);
-  }
-}
+export default validationListenerMiddleware.middleware;

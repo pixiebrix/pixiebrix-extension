@@ -60,12 +60,18 @@ export type UserData = Partial<{
     name: string;
   }>;
   /**
-   * Groups the user is a member of
+   * Groups the user is a member of.
    */
   groups: Array<{
     id: UUID;
     name: string;
   }>;
+  /**
+   * Number of milliseconds after which to enforce browser extension and manual deployment updates, or `null` to
+   * allow the user to snooze updates.
+   * @since 1.7.1
+   */
+  enforceUpdateMillis: number | null;
 }>;
 
 // Exclude tenant information in updates (these are only updated on linking)
@@ -78,6 +84,7 @@ export const USER_DATA_UPDATE_KEYS: Array<keyof UserDataUpdate> = [
   "organizations",
   "groups",
   "flags",
+  "enforceUpdateMillis",
 ];
 
 export interface TokenAuthData extends UserData {
@@ -154,6 +161,16 @@ export type AuthState = {
   readonly flags: string[];
 
   readonly partner?: Me["partner"];
+
+  /**
+   * Number of milliseconds after which to enforce browser extension and manual deployment updates, or `null` to
+   * allow the user to snooze updates.
+   *
+   * NOTE: applies to both deployments and browser extension updates.
+   *
+   * @since 1.7.1
+   */
+  readonly enforceUpdateMillis: number | null;
 };
 
 export type AuthRootState = {

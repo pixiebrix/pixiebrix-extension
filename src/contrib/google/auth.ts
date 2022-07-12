@@ -17,6 +17,7 @@
 
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { forbidContext } from "@/utils/expectContext";
+import chromeP from "webext-polyfill-kinda";
 
 export async function ensureAuth(
   scopes: string[],
@@ -32,7 +33,9 @@ export async function ensureAuth(
   }
 
   try {
-    const token = await browser.identity.getAuthToken({
+    // Does not work from browser.identity.getAuthToken. Returns null/undefined
+    // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3746
+    const token = await chromeP.identity.getAuthToken({
       interactive,
       scopes,
     });
@@ -45,7 +48,9 @@ export async function ensureAuth(
     throw new Error(`Cannot get Chrome OAuth token: ${getErrorMessage(error)}`);
   }
 
-  throw new Error("Cannot get Chrome OAuth token");
+  throw new Error(
+    "Cannot get Chrome OAuth token: chrome.identity.getAuthToken did not return a token."
+  );
 }
 
 class PermissionsError extends Error {

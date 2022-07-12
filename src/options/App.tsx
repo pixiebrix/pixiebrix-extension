@@ -19,7 +19,6 @@ import React, { useEffect } from "react";
 import store, { hashHistory, persistor } from "./store";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import Loader from "@/components/Loader";
 import { Container } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import ServicesEditor from "@/options/pages/services/ServicesEditor";
@@ -148,7 +147,7 @@ const App: React.FunctionComponent = () => {
 
   return (
     <Provider store={store}>
-      <PersistGate loading={<Loader />} persistor={persistor}>
+      <PersistGate persistor={persistor}>
         <ConnectedRouter history={hashHistory}>
           <ModalProvider>
             <Layout />

@@ -29,7 +29,6 @@ import React, {
 import { Button, Modal } from "react-bootstrap";
 import { isEmpty, sortBy } from "lodash";
 import { IBlock, IBrick, RegistryId } from "@/core";
-import { useDebounce } from "use-debounce";
 import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
 import { FixedSizeGrid as LazyGrid } from "react-window";
@@ -52,7 +51,7 @@ import { MarketplaceListing, MarketplaceTag } from "@/types/contract";
 import BrickDetail from "@/components/brickModal/BrickDetail";
 import Loader from "@/components/Loader";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { castDraft, produce } from "immer";
+import { produce } from "immer";
 
 const TAG_ALL = "All Categories";
 
@@ -78,11 +77,6 @@ function useSearch<T extends IBrick>(
   query: string,
   searchTag: string | null
 ): Array<BrickOption<T>> {
-  const [debouncedQuery] = useDebounce(query, 100, {
-    trailing: true,
-    leading: false,
-  });
-
   const brickHasTag = useCallback(
     (brick: IBrick) => {
       if (searchTag == null || searchTag === TAG_ALL) {
@@ -112,10 +106,10 @@ function useSearch<T extends IBrick>(
 
   return useMemo(
     () =>
-      isNullOrBlank(debouncedQuery)
+      isNullOrBlank(query)
         ? brickOptions
-        : fuse.search(debouncedQuery).map((x) => x.item),
-    [debouncedQuery, fuse, brickOptions]
+        : fuse.search(query).map((x) => x.item),
+    [query, fuse, brickOptions]
   );
 }
 
@@ -370,22 +364,24 @@ function ActualModal<T extends IBrick>({
 
     for (const result of searchResults) {
       if (popularBrickIds.has(result.data.id)) {
-        popular.push(
-          // Use immer to keep the class prototype and it's methods. There are downstream calls to runtime/getType which
-          // depend on certain methods (e.g., transform, etc.) being present on the brick
-          produce(result, (draft) => {
-            const brickResult = draft.data as BrickResult<T>;
-            brickResult.isPopular = true;
-            draft.data = castDraft(brickResult);
-          })
-        );
+        // Use immer to keep the class prototype and it's methods. There are downstream calls to runtime/getType which
+        // depend on certain methods (e.g., transform, etc.) being present on the brick
+        const newResult = produce(result, (draft) => {
+          (draft.data as BrickResult<T>).isPopular = true;
+        });
+        // Do not sort popular bricks on top if the user has typed a search query
+        if (isEmpty(state.query)) {
+          popular.push(newResult);
+        } else {
+          regular.push(newResult);
+        }
       } else {
         regular.push(result as BrickOption<BrickResult<T>>);
       }
     }
 
     return [...popular, ...regular];
-  }, [popularBrickIds, searchResults]);
+  }, [popularBrickIds, searchResults, state.query]);
 
   const itemData = useMemo<ItemType<T>>(
     () => ({

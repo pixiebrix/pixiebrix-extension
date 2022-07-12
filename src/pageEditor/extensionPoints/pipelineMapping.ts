@@ -20,27 +20,8 @@ import { BlockPipeline } from "@/blocks/types";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 import { produce } from "immer";
 import { WritableDraft } from "immer/dist/types/types-external";
-import { getPipelinePropNames } from "@/pageEditor/utils";
-
-function normalizePipelineDraft(pipeline: WritableDraft<BlockPipeline>) {
-  for (const block of pipeline) {
-    block.instanceId = uuidv4();
-
-    const pipelineProps = getPipelinePropNames(block);
-    for (const prop of pipelineProps) {
-      const pipeline = block.config[prop];
-      if (isPipelineExpression(pipeline)) {
-        normalizePipelineDraft(pipeline.__value__);
-      } else {
-        // Normalizing am empty pipeline
-        block.config[prop] = {
-          __type__: "pipeline",
-          __value__: [],
-        };
-      }
-    }
-  }
-}
+import { traversePipeline } from "@/pageEditor/utils";
+import { get, set } from "lodash";
 
 /**
  * Enrich a BlockPipeline with instanceIds for use in tracing
@@ -49,26 +30,35 @@ function normalizePipelineDraft(pipeline: WritableDraft<BlockPipeline>) {
 export function normalizePipelineForEditor(
   pipeline: BlockPipeline
 ): BlockPipeline {
-  return produce(pipeline, normalizePipelineDraft);
-}
-
-function omitMetaInPipelineDraft(pipeline: WritableDraft<BlockPipeline>) {
-  for (const block of pipeline) {
-    delete block.instanceId;
-
-    const pipelineProps = getPipelinePropNames(block);
-    for (const prop of pipelineProps) {
-      const pipeline = block.config[prop];
-      if (isPipelineExpression(pipeline)) {
-        omitMetaInPipelineDraft(pipeline.__value__);
-      }
-    }
-  }
+  return produce(pipeline, (pipeline: WritableDraft<BlockPipeline>) => {
+    traversePipeline({
+      pipeline,
+      visitBlock({ blockConfig }) {
+        blockConfig.instanceId = uuidv4();
+      },
+      preVisitSubPipeline({ parentBlock, subPipelineProperty }) {
+        const subPipeline = get(parentBlock, subPipelineProperty);
+        if (!isPipelineExpression(subPipeline)) {
+          set(parentBlock, subPipelineProperty, {
+            __type__: "pipeline",
+            __value__: [],
+          });
+        }
+      },
+    });
+  });
 }
 
 /**
  * Remove the automatically generated tracing ids.
  */
 export function omitEditorMetadata(pipeline: BlockPipeline): BlockPipeline {
-  return produce(pipeline, omitMetaInPipelineDraft);
+  return produce(pipeline, (pipeline: WritableDraft<BlockPipeline>) => {
+    traversePipeline({
+      pipeline,
+      visitBlock({ blockConfig }) {
+        delete blockConfig.instanceId;
+      },
+    });
+  });
 }

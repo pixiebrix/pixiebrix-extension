@@ -1,38 +1,60 @@
+/*
+ * Copyright (C) 2022 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import { traceErrorFactory } from "@/testUtils/factories";
 import applyTraceInputError from "./applyTraceInputError";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
+import { get } from "lodash";
 
 test("ignores non input errors", () => {
   const pipelineErrors: FormikErrorTree = {};
   const errorTraceEntry = traceErrorFactory();
 
-  applyTraceInputError(pipelineErrors, errorTraceEntry, 0);
+  applyTraceInputError(pipelineErrors, errorTraceEntry, "0");
 
   expect(pipelineErrors).toEqual({});
 });
 
-test("figures required property error", () => {
-  const pipelineErrors: FormikErrorTree = {};
-  const property = "testProp";
-  const traceError = {
-    schema: {},
-    errors: [
-      {
-        error: `Instance does not have required property "${property}".`,
-      },
-    ],
-  };
-  const errorTraceEntry = traceErrorFactory({
-    error: traceError,
-  });
+// Test root pipeline and sub pipeline (path corresponds to storage config of a Custom Form in a Document)
+test.each(["0", "0.config.body.1.config.pipeline.__value__.0.config.recordId"])(
+  "figures required property error",
+  (blockPath) => {
+    const pipelineErrors: FormikErrorTree = {};
+    const property = "testProp";
+    const traceError = {
+      schema: {},
+      errors: [
+        {
+          error: `Instance does not have required property "${property}".`,
+        },
+      ],
+    };
+    const errorTraceEntry = traceErrorFactory({
+      error: traceError,
+    });
 
-  applyTraceInputError(pipelineErrors, errorTraceEntry, 0);
+    applyTraceInputError(pipelineErrors, errorTraceEntry, blockPath);
 
-  // @ts-expect-error -- pipelineErrors[0] has 'config'
-  expect(pipelineErrors[0].config[property]).toEqual(
-    "Error from the last run: This field is required."
-  );
-});
+    // @ts-expect-error -- block error has 'config'
+    expect(get(pipelineErrors, blockPath).config[property]).toEqual(
+      "Error from the last run: This field is required."
+    );
+  }
+);
 
 test("applies input validation error", () => {
   const pipelineErrors: FormikErrorTree = {};
@@ -105,30 +127,10 @@ test("applies input validation error", () => {
     error: traceError,
   });
 
-  applyTraceInputError(pipelineErrors, errorTraceEntry, 0);
+  applyTraceInputError(pipelineErrors, errorTraceEntry, "0");
 
-  // @ts-expect-error -- pipelineErrors[0] has 'config'
-  expect(pipelineErrors[0].config[property]).toEqual(
+  // @ts-expect-error -- pipelineErrors["0"] has 'config'
+  expect(pipelineErrors["0"].config[property]).toEqual(
     'Instance type "object" is invalid. Expected "string", "number", "boolean".'
   );
-});
-
-test("sets unknown input error on the block level", () => {
-  const pipelineErrors: FormikErrorTree = {};
-  const errorMessage = "This is an unknown input validation error";
-  const traceError = {
-    schema: {},
-    errors: [
-      {
-        error: errorMessage,
-      },
-    ],
-  };
-  const errorTraceEntry = traceErrorFactory({
-    error: traceError,
-  });
-
-  applyTraceInputError(pipelineErrors, errorTraceEntry, 0);
-
-  expect(pipelineErrors[0]).toEqual(errorMessage);
 });

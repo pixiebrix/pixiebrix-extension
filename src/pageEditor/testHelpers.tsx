@@ -27,6 +27,7 @@ import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import { createRenderWithWrappers } from "@/testUtils/testHelpers";
 import { appApi } from "@/services/api";
+import validationListenerMiddleware from "@/pageEditor/validation/validationListenerMiddleware";
 
 const renderWithWrappers = createRenderWithWrappers(() =>
   configureStore({
@@ -41,6 +42,10 @@ const renderWithWrappers = createRenderWithWrappers(() =>
       runtime: runtimeSlice.reducer,
       logs: logSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
+    },
+    middleware(getDefaultMiddleware) {
+      // eslint-disable-next-line unicorn/prefer-spread -- use .concat for proper type inference
+      return getDefaultMiddleware().concat(validationListenerMiddleware);
     },
   })
 );

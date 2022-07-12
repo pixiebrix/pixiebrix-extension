@@ -30,7 +30,7 @@ import {
 import ButtonElement from "@/components/documentBuilder/render/ButtonElement";
 import ListElement from "@/components/documentBuilder/render/ListElement";
 import { BusinessError } from "@/errors/businessErrors";
-import { joinElementName } from "@/components/documentBuilder/utils";
+import { joinPathParts } from "@/utils";
 
 const headerComponents = {
   header_1: "h1",
@@ -181,7 +181,7 @@ export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
   if (root.children?.length > 0) {
     componentDefinition.props.children = root.children.map((child, index) => {
       const { Component, props } = buildDocumentBranch(child, {
-        staticId: joinElementName(staticId, root.type, "children"),
+        staticId: joinPathParts(staticId, root.type, "children"),
         branches: [...branches, { staticId, index }],
       });
       return <Component key={index} {...props} />;

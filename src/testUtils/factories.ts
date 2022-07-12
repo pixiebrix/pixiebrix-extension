@@ -113,6 +113,7 @@ export const authStateFactory = define<AuthState>({
   isLoggedIn: true,
   isOnboarded: true,
   extension: true,
+  enforceUpdateMillis: null,
   organizations() {
     return [
       organizationFactory({
@@ -296,14 +297,20 @@ export const blockFactory = define<IBlock>({
 });
 
 export const blocksMapFactory: (
-  blockProps?: Partial<IBlock>
+  blockProps?: Partial<IBlock> | Array<Partial<IBlock>>
 ) => Promise<TypedBlockMap> = async (blockProps) => {
-  const block1 = blockFactory(blockProps);
-  const block2 = blockFactory(blockProps);
+  const blocks: IBlock[] = [];
+  if (Array.isArray(blockProps)) {
+    for (const partialBlock of blockProps) {
+      blocks.push(blockFactory(partialBlock));
+    }
+  } else {
+    blocks.push(blockFactory(blockProps), blockFactory(blockProps));
+  }
 
   const map = new Map<RegistryId, TypedBlock>();
 
-  for (const block of [block1, block2]) {
+  for (const block of blocks) {
     map.set(block.id, {
       block,
       // eslint-disable-next-line no-await-in-loop -- test code, no performance considerations

@@ -17,62 +17,124 @@
 
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import FieldTemplate, { CustomFieldWidget, FieldProps } from "./FieldTemplate";
+import FieldTemplate, {
+  computeLabelAndColSize,
+  CustomFieldWidget,
+  FieldProps,
+} from "./FieldTemplate";
 import { fireTextInput } from "@/testUtils/formHelpers";
 
-const testLabel = "Test label";
-const testValue = "Test value";
+describe("FieldTemplate", () => {
+  const testLabel = "Test label";
+  const testValue = "Test value";
 
-const renderFieldTemplate = (partialProps?: Partial<FieldProps>) =>
-  render(
-    <FieldTemplate name={"testName"} onChange={jest.fn()} {...partialProps} />
-  );
+  const renderFieldTemplate = (partialProps?: Partial<FieldProps>) =>
+    render(
+      <FieldTemplate name="testName" onChange={jest.fn()} {...partialProps} />
+    );
 
-test.each([
-  ["BS FormControl", undefined],
-  [
-    "custom widget",
-    (({ id }) => (
-      <input type="text" id={id} onChange={jest.fn()} />
-    )) as CustomFieldWidget,
-  ],
-])("binds label and input for %s", (_caseName, as) => {
-  renderFieldTemplate({
-    label: testLabel,
-    as,
+  test.each([
+    ["BS FormControl", undefined],
+    [
+      "custom widget",
+      (({ id }) => (
+        <input type="text" id={id} onChange={jest.fn()} />
+      )) as CustomFieldWidget,
+    ],
+  ])("binds label and input for %s", (_caseName, as) => {
+    renderFieldTemplate({
+      label: testLabel,
+      as,
+    });
+
+    // Label
+    expect(screen.getByText(testLabel)).not.toBeNull();
+    // Input
+    expect(screen.getByLabelText(testLabel)).not.toBeNull();
   });
 
-  // Label
-  expect(screen.getByText(testLabel)).not.toBeNull();
-  // Input
-  expect(screen.getByLabelText(testLabel)).not.toBeNull();
+  test("passes value to custom widget", () => {
+    renderFieldTemplate({
+      label: testLabel,
+      value: testValue,
+      as: (({ id, value }) => (
+        <input type="text" id={id} value={value} onChange={jest.fn()} />
+      )) as CustomFieldWidget,
+    });
+
+    expect(screen.getByLabelText(testLabel)).toHaveValue(testValue);
+  });
+
+  test("emits onChange", () => {
+    const onChangeMock = jest.fn();
+
+    renderFieldTemplate({
+      label: testLabel,
+      onChange: onChangeMock,
+      as: (({ id, onChange }) => (
+        <input type="text" id={id} onChange={onChange} />
+      )) as CustomFieldWidget,
+    });
+
+    fireTextInput(screen.getByLabelText(testLabel), testValue);
+
+    expect(onChangeMock).toHaveBeenCalledTimes(1);
+    expect(onChangeMock.mock.calls[0][0].target.value).toBe(testValue);
+  });
 });
 
-test("passes value to custom widget", () => {
-  renderFieldTemplate({
-    label: testLabel,
-    value: testValue,
-    as: (({ id, value }) => (
-      <input type="text" id={id} value={value} onChange={jest.fn()} />
-    )) as CustomFieldWidget,
+describe("computeLabelAndColSize", () => {
+  test.each([true, false])("when fitLabelWidth", (widerLabel: boolean) => {
+    const { labelSize, colSize } = computeLabelAndColSize({
+      fitLabelWidth: true,
+      widerLabel,
+      label: "Test label",
+    });
+
+    expect(labelSize).toEqual({ lg: "auto" });
+    expect(colSize).toEqual({ lg: true });
   });
 
-  expect(screen.getByLabelText(testLabel)).toHaveValue(testValue);
-});
+  test("when not fitLabelWidth, widerLabel, and label", () => {
+    const { labelSize, colSize } = computeLabelAndColSize({
+      fitLabelWidth: false,
+      widerLabel: true,
+      label: "Test label",
+    });
 
-test("emits onChange", () => {
-  const onChangeMock = jest.fn();
-
-  renderFieldTemplate({
-    label: testLabel,
-    onChange: onChangeMock,
-    as: (({ id, onChange }) => (
-      <input type="text" id={id} onChange={onChange} />
-    )) as CustomFieldWidget,
+    expect(labelSize).toEqual({ lg: "4", xl: "3" });
+    expect(colSize).toEqual({ lg: "8", xl: "9" });
   });
 
-  fireTextInput(screen.getByLabelText(testLabel), testValue);
+  test("when not fitLabelWidth, not widerLabel, and label", () => {
+    const { labelSize, colSize } = computeLabelAndColSize({
+      fitLabelWidth: false,
+      widerLabel: false,
+      label: "Test label",
+    });
 
-  expect(onChangeMock).toHaveBeenCalledTimes(1);
-  expect(onChangeMock.mock.calls[0][0].target.value).toBe(testValue);
+    expect(labelSize).toEqual({ lg: "3", xl: "2" });
+    expect(colSize).toEqual({ lg: "9", xl: "10" });
+  });
+
+  test("when not fitLabelWidth, widerLabel, and no label", () => {
+    const { labelSize, colSize } = computeLabelAndColSize({
+      fitLabelWidth: false,
+      widerLabel: true,
+      label: null,
+    });
+
+    expect(labelSize).toEqual({ lg: "4", xl: "3" });
+    expect(colSize).toEqual({ lg: "12", xl: "12" });
+  });
+  test("when not fitLabelWidth, not widerLabel, and no label", () => {
+    const { labelSize, colSize } = computeLabelAndColSize({
+      fitLabelWidth: false,
+      widerLabel: false,
+      label: null,
+    });
+
+    expect(labelSize).toEqual({ lg: "3", xl: "2" });
+    expect(colSize).toEqual({ lg: "12", xl: "12" });
+  });
 });

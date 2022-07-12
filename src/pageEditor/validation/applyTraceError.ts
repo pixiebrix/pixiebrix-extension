@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlockPipeline } from "@/blocks/types";
 import { TraceError } from "@/telemetry/trace";
-import applyTraceBlockError from "./applyTraceBlockError";
 import applyTraceInputError from "./applyTraceInputError";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
+import { PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
+import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
 function applyTraceErrors(
   pipelineErrors: FormikErrorTree,
   traceErrors: TraceError[],
-  pipeline: BlockPipeline
+  pipelineMap: PipelineMap
 ) {
   if (traceErrors.length === 0) {
     return;
@@ -32,15 +32,19 @@ function applyTraceErrors(
 
   for (const traceError of traceErrors) {
     const { blockInstanceId } = traceError;
-    const blockIndex = pipeline.findIndex(
-      (block) => block.instanceId === blockInstanceId
-    );
-    if (blockIndex === -1) {
-      return;
+    // eslint-disable-next-line security/detect-object-injection
+    const blockInfo = pipelineMap[blockInstanceId];
+
+    if (blockInfo == null) {
+      continue;
     }
 
-    applyTraceInputError(pipelineErrors, traceError, blockIndex);
-    applyTraceBlockError(pipelineErrors, traceError, blockIndex);
+    // Removing the path of the root pipeline (accounting for ".")
+    const relativeBlockPath = blockInfo.path.slice(
+      PIPELINE_BLOCKS_FIELD_NAME.length + 1
+    );
+
+    applyTraceInputError(pipelineErrors, traceError, relativeBlockPath);
   }
 }
 

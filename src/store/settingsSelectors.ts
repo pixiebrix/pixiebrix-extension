@@ -16,10 +16,38 @@
  */
 
 import { SettingsState } from "./settingsTypes";
+import { createSelector } from "reselect";
 
-type StateWithSettings = {
+export type StateWithSettings = {
   settings: SettingsState;
 };
+
+export const selectUpdatePromptState = createSelector(
+  [
+    (state: StateWithSettings) => state.settings,
+    (
+      state: StateWithSettings,
+      args: { now: number; enforceUpdateMillis: number | null }
+    ) => args,
+  ],
+  (state, { now, enforceUpdateMillis }) => {
+    const { nextUpdate, updatePromptTimestamp } = state;
+
+    const timeRemaining =
+      updatePromptTimestamp != null && enforceUpdateMillis
+        ? enforceUpdateMillis - (now - updatePromptTimestamp)
+        : Number.MAX_SAFE_INTEGER;
+
+    const isUpdateOverdue = timeRemaining <= 0;
+
+    return {
+      isSnoozed: nextUpdate != null && nextUpdate > now,
+      isUpdateOverdue,
+      updatePromptTimestamp,
+      timeRemaining,
+    };
+  }
+);
 
 export const selectSettings = ({ settings }: StateWithSettings) => settings;
 
