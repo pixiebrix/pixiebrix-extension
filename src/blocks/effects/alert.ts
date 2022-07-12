@@ -54,7 +54,20 @@ export class AlertEffect extends Effect {
   );
 
   inputValidationSchema = Yup.object().shape({
-    message: Yup.string().required("Message is required"),
+    message: Yup.mixed()
+      .test(
+        "message",
+        "this must be one of the following types: string, number, or boolean",
+        (value) =>
+          typeof value === "string" ||
+          typeof value === "number" ||
+          typeof value === "boolean"
+      )
+      .test(
+        "message",
+        "this is required",
+        (value) => value != null && value !== ""
+      ),
   });
 
   async effect({
