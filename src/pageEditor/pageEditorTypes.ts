@@ -46,6 +46,38 @@ export type FormState =
   | ContextMenuFormState
   | QuickBarFormState;
 
+export enum PipelineType {
+  Root,
+  DocumentBuilder,
+  ControlFlow,
+}
+
+export type AddBlockLocation = {
+  /**
+   * The object property path to the pipeline where a block will be added by the add block modal
+   */
+  path: string;
+
+  /**
+   * The type of pipeline where a block will be added by the add block modal
+   * @see: PipelineType
+   */
+  type: PipelineType;
+
+  /**
+   * The pipeline index where a block will be added by the add block modal
+   */
+  index: number;
+};
+
+export enum ModalKey {
+  ADD_TO_RECIPE,
+  REMOVE_FROM_RECIPE,
+  SAVE_AS_NEW_RECIPE,
+  CREATE_RECIPE,
+  ADD_BLOCK,
+}
+
 export interface EditorState {
   /**
    * A sequence number that changes whenever a new element is selected.
@@ -124,27 +156,19 @@ export interface EditorState {
    */
   dirtyRecipeMetadataById: Record<RegistryId, RecipeMetadataFormState>;
 
-  // XXX: refactor the is<Modal>Visible state: https://github.com/pixiebrix/pixiebrix-extension/issues/3264
+  /**
+   * Which modal are we showing, if any?
+   */
+  visibleModalKey?: ModalKey;
 
   /**
-   * Are we showing the "add extension to blueprint" modal?
+   * The pipeline location where a new block will be added.
+   *
+   * Note: This will only have a value when visibleModalKey === "addBlock"
+   *
+   * @see AddBlockLocation
    */
-  isAddToRecipeModalVisible: boolean;
-
-  /**
-   * Are we showing the "remove extension from blueprint" modal?
-   */
-  isRemoveFromRecipeModalVisible: boolean;
-
-  /**
-   * Are we showing the "save as new blueprint" modal?
-   */
-  isSaveAsNewRecipeModalVisible: boolean;
-
-  /**
-   * Are we showing the "create blueprint" modal?
-   */
-  isCreateRecipeModalVisible: boolean;
+  addBlockLocation?: AddBlockLocation;
 
   /**
    * When creating a new blueprint from an existing extension, should we keep a separate copy of the extension?

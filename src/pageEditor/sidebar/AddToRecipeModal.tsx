@@ -72,7 +72,7 @@ const AddToRecipeModal: React.VFC = () => {
   const dispatch = useDispatch();
 
   const hideModal = useCallback(() => {
-    dispatch(editorActions.hideAddToRecipeModal());
+    dispatch(editorActions.hideModal());
   }, [dispatch]);
 
   const onSubmit = useCallback<OnSubmit<FormState>>(
@@ -121,7 +121,13 @@ const AddToRecipeModal: React.VFC = () => {
         helpers.setSubmitting(false);
       }
     },
-    [activeElement.uuid, dispatch, hideModal, recipeMetadataById]
+    [
+      activeElement.uuid,
+      dispatch,
+      hideModal,
+      recipeMetadataById,
+      removeExtension,
+    ]
   );
 
   const selectOptions = [

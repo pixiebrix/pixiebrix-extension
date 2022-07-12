@@ -20,7 +20,13 @@ import { render, screen } from "@/pageEditor/testHelpers";
 import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
-import { blockConfigFactory, formStateFactory } from "@/testUtils/factories";
+import {
+  blockConfigFactory,
+  formStateFactory,
+  marketplaceListingFactory,
+  marketplaceTagFactory,
+  uuidSequence,
+} from "@/testUtils/factories";
 import blockRegistry from "@/blocks/registry";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import {
@@ -39,9 +45,34 @@ import {
 } from "@/testUtils/expressionTestHelpers";
 import { PipelineExpression } from "@/runtime/mapArgs";
 import { act } from "react-dom/test-utils";
-import { OutputKey } from "@/core";
+import { OutputKey, RegistryId } from "@/core";
+import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
+import * as api from "@/services/api";
+import { MarketplaceListing } from "@/types/contract";
+import { EditablePackage } from "@/types/definitions";
 import { fireTextInput, selectSchemaFieldType } from "@/testUtils/formHelpers";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { useAsyncIcon } from "@/components/asyncIcon";
+import { faCube } from "@fortawesome/free-solid-svg-icons";
+
+jest.mock("@/services/api", () => ({
+  appApi: {
+    endpoints: {
+      getMarketplaceListings: {
+        useQueryState: jest.fn(),
+      },
+    },
+  },
+  useGetMarketplaceTagsQuery: jest.fn(),
+  useGetMarketplaceListingsQuery: jest.fn(),
+  useGetEditablePackagesQuery: jest.fn(),
+  useGetRecipesQuery: jest.fn(),
+  useCreateRecipeMutation: jest.fn(),
+  useUpdateRecipeMutation: jest.fn(),
+}));
+jest.mock("@/components/asyncIcon", () => ({
+  useAsyncIcon: jest.fn(),
+}));
 
 jest.setTimeout(30_000); // This test is flaky with the default timeout of 5000 ms
 
@@ -56,6 +87,51 @@ beforeAll(async () => {
   blockRegistry.clear();
   blockRegistry.register(echoBlock, teapotBlock, jqBlock, forEachBlock);
   await blockRegistry.allTyped();
+
+  const tags = [
+    marketplaceTagFactory({ subtype: "role" }),
+    marketplaceTagFactory({ subtype: "role" }),
+    marketplaceTagFactory({ subtype: "role" }),
+  ];
+  (api.useGetMarketplaceTagsQuery as jest.Mock).mockReturnValue({
+    data: tags,
+    isLoading: false,
+  });
+
+  const listings: Record<RegistryId, MarketplaceListing> = {};
+  const packages: EditablePackage[] = [];
+  for (let i = 0; i < 10; i++) {
+    const listing = marketplaceListingFactory({ tags });
+    const registryId = listing.id as RegistryId;
+    listings[registryId] = listing;
+    packages.push({
+      id: uuidSequence(i),
+      name: registryId,
+    });
+  }
+
+  (api.useGetMarketplaceListingsQuery as jest.Mock).mockReturnValue({
+    data: listings,
+    isLoading: false,
+  });
+  (
+    api.appApi.endpoints.getMarketplaceListings.useQueryState as jest.Mock
+  ).mockReturnValue({
+    data: listings,
+    isLoading: false,
+  });
+  (api.useGetEditablePackagesQuery as jest.Mock).mockReturnValue({
+    data: packages,
+    isLoading: false,
+  });
+  (api.useGetRecipesQuery as jest.Mock).mockReturnValue({
+    data: [],
+    isLoading: false,
+  });
+  (api.useCreateRecipeMutation as jest.Mock).mockReturnValue([jest.fn()]);
+  (api.useUpdateRecipeMutation as jest.Mock).mockReturnValue([jest.fn()]);
+
+  (useAsyncIcon as jest.Mock).mockReturnValue(faCube);
 });
 
 const getPlainFormState = (): FormState =>
@@ -174,17 +250,23 @@ describe("can add a node", () => {
 
   test("to root pipeline", async () => {
     const formState = getPlainFormState();
-    render(<EditorPane />, {
-      setupRedux(dispatch) {
-        dispatch(editorActions.addElement(formState));
-        dispatch(editorActions.selectElement(formState.uuid));
-      },
-    });
+    render(
+      <>
+        <EditorPane />
+        <AddBlockModal />
+      </>,
+      {
+        setupRedux(dispatch) {
+          dispatch(editorActions.addElement(formState));
+          dispatch(editorActions.selectElement(formState.uuid));
+        },
+      }
+    );
 
     await waitForEffect();
 
-    // Hitting the last (Foundation node plus 2 bricks) Add Node button
-    const addButtons = screen.getAllByTestId("icon-button-add-node", {
+    // Hitting the last (Foundation node plus 2 bricks) Add Brick button
+    const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
       exact: false,
     });
     const last = addButtons[addButtons.length - 1];
@@ -202,16 +284,22 @@ describe("can add a node", () => {
 
   test("to an empty extension", async () => {
     const element = formStateFactory(undefined, []);
-    render(<EditorPane />, {
-      setupRedux(dispatch) {
-        dispatch(editorActions.addElement(element));
-        dispatch(editorActions.selectElement(element.uuid));
-      },
-    });
+    render(
+      <>
+        <EditorPane />
+        <AddBlockModal />
+      </>,
+      {
+        setupRedux(dispatch) {
+          dispatch(editorActions.addElement(element));
+          dispatch(editorActions.selectElement(element.uuid));
+        },
+      }
+    );
 
     await waitForEffect();
 
-    const addButton = screen.getByTestId("icon-button-add-node-foundation");
+    const addButton = screen.getByTestId("icon-button-foundation-add-brick");
     await addABlock(addButton, "jq - json processor");
 
     const nodes = screen.getAllByTestId("editor-node");
@@ -225,18 +313,24 @@ describe("can add a node", () => {
 
   test("to sub pipeline", async () => {
     const element = getFormStateWithSubPipelines();
-    const { getReduxStore } = render(<EditorPane />, {
-      setupRedux(dispatch) {
-        dispatch(editorActions.addElement(element));
-        dispatch(editorActions.selectElement(element.uuid));
-      },
-    });
+    const { getReduxStore } = render(
+      <div>
+        <EditorPane />
+        <AddBlockModal />
+      </div>,
+      {
+        setupRedux(dispatch) {
+          dispatch(editorActions.addElement(element));
+          dispatch(editorActions.selectElement(element.uuid));
+        },
+      }
+    );
 
     await waitForEffect();
 
     // Adding a node at the very beginning of the sub pipeline
     const addButtonUnderSubPipelineHeader = screen.getByTestId(
-      /icon-button-add-node-[\w.]+-header/i
+      /icon-button-[\w-]+-header-add-brick/i
     );
     await addABlock(addButtonUnderSubPipelineHeader, "jq - json processor");
 
@@ -257,7 +351,7 @@ describe("can add a node", () => {
         .body as PipelineExpression
     ).__value__[0].instanceId;
     const addButtonInSubPipeline = screen.getByTestId(
-      `icon-button-add-node-${jqNodeId}`
+      `icon-button-${jqNodeId}-add-brick`
     );
 
     // The name of the block is "Teapot Block", searching for "Teapot" to get a single result in the Add Brick Dialog

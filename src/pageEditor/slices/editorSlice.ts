@@ -31,7 +31,12 @@ import {
   OptionsDefinition,
   RecipeMetadataFormState,
 } from "@/types/definitions";
-import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
+import {
+  EditorState,
+  FormState,
+  AddBlockLocation,
+  ModalKey,
+} from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
 import { cloneDeep, get, isEmpty, set } from "lodash";
@@ -62,10 +67,7 @@ export const initialState: EditorState = {
   showV3UpgradeMessageByElement: {},
   dirtyRecipeOptionsById: {},
   dirtyRecipeMetadataById: {},
-  isAddToRecipeModalVisible: false,
-  isRemoveFromRecipeModalVisible: false,
-  isSaveAsNewRecipeModalVisible: false,
-  isCreateRecipeModalVisible: false,
+  visibleModalKey: null,
   keepLocalCopyOnCreateRecipe: false,
   deletedElementsByRecipeId: {},
   newRecipeIds: [],
@@ -457,10 +459,7 @@ export const editorSlice = createSlice({
       }
     },
     showAddToRecipeModal(state) {
-      state.isAddToRecipeModalVisible = true;
-    },
-    hideAddToRecipeModal(state) {
-      state.isAddToRecipeModalVisible = false;
+      state.visibleModalKey = ModalKey.ADD_TO_RECIPE;
     },
     addElementToRecipe(
       state,
@@ -503,10 +502,7 @@ export const editorSlice = createSlice({
       }
     },
     showRemoveFromRecipeModal(state) {
-      state.isRemoveFromRecipeModalVisible = true;
-    },
-    hideRemoveFromRecipeModal(state) {
-      state.isRemoveFromRecipeModalVisible = false;
+      state.visibleModalKey = ModalKey.REMOVE_FROM_RECIPE;
     },
     removeElementFromRecipe(
       state,
@@ -550,10 +546,7 @@ export const editorSlice = createSlice({
       }
     },
     showSaveAsNewRecipeModal(state) {
-      state.isSaveAsNewRecipeModalVisible = true;
-    },
-    hideSaveAsNewRecipeModal(state) {
-      state.isSaveAsNewRecipeModalVisible = false;
+      state.visibleModalKey = ModalKey.SAVE_AS_NEW_RECIPE;
     },
     clearDeletedElementsForRecipe(state, action: PayloadAction<RegistryId>) {
       const recipeId = action.payload;
@@ -578,17 +571,12 @@ export const editorSlice = createSlice({
       state.activeRecipeId = null;
     },
     transitionSaveAsNewToCreateRecipeModal(state) {
-      state.isSaveAsNewRecipeModalVisible = false;
+      state.visibleModalKey = ModalKey.CREATE_RECIPE;
       state.keepLocalCopyOnCreateRecipe = false;
-      state.isCreateRecipeModalVisible = true;
     },
     transitionAddToCreateRecipeModal(state, action: PayloadAction<boolean>) {
-      state.isAddToRecipeModalVisible = false;
+      state.visibleModalKey = ModalKey.CREATE_RECIPE;
       state.keepLocalCopyOnCreateRecipe = action.payload;
-      state.isCreateRecipeModalVisible = true;
-    },
-    hideCreateRecipeModal(state) {
-      state.isCreateRecipeModalVisible = false;
     },
     finishSaveAsNewRecipe(
       state,
@@ -760,6 +748,13 @@ export const editorSlice = createSlice({
           (x) => x.namespace !== namespace
         );
       }
+    },
+    showAddBlockModal(state, action: PayloadAction<AddBlockLocation>) {
+      state.addBlockLocation = action.payload;
+      state.visibleModalKey = ModalKey.ADD_BLOCK;
+    },
+    hideModal(state) {
+      state.visibleModalKey = null;
     },
   },
 });

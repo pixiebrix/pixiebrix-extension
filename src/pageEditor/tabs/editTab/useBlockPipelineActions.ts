@@ -29,6 +29,9 @@ import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { createNewBlock } from "@/pageEditor/createNewBlock";
 import { PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
 
+// TODO: Refactoring - break these out into separate hooks so they can
+//  be pushed down into the specific UI components where they are used.
+//  (See: AddBlockModal)
 type BlockPipelineActions = {
   addBlock: (
     block: IBlock,

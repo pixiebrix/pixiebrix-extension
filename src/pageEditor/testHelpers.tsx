@@ -26,7 +26,6 @@ import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSli
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import { createRenderWithWrappers } from "@/testUtils/testHelpers";
-import { appApi } from "@/services/api";
 import validationListenerMiddleware from "@/pageEditor/validation/validationListenerMiddleware";
 
 const renderWithWrappers = createRenderWithWrappers(() =>
@@ -41,7 +40,9 @@ const renderWithWrappers = createRenderWithWrappers(() =>
       savingExtension: savingExtensionSlice.reducer,
       runtime: runtimeSlice.reducer,
       logs: logSlice.reducer,
-      [appApi.reducerPath]: appApi.reducer,
+      // This api reducer may be needed at some point, but it's not mocked properly yet, so
+      //  we're not including it for now, until it becomes an issue.
+      // [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
       // eslint-disable-next-line unicorn/prefer-spread -- use .concat for proper type inference

@@ -1,0 +1,361 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AddBlockModal it renders 1`] = `
+<DocumentFragment>
+  <div
+    class="fade modal-backdrop show"
+  />
+  <div
+    aria-modal="true"
+    class="fade root modal show"
+    role="dialog"
+    style="display: block;"
+    tabindex="-1"
+  >
+    <div
+      class="modal-dialog modal-xl modal-dialog-centered"
+    >
+      <div
+        class="modal-content"
+      >
+        <div
+          class="header modal-header"
+        >
+          <div
+            class="title modal-title h4"
+          >
+            Add Brick
+          </div>
+          <div
+            class="searchContainer"
+          >
+            <div
+              class="root searchInput rootFocused"
+            >
+              <input
+                class="input"
+                data-testid="tag-search-input"
+                name="brickSearch"
+                placeholder="Search"
+                value=""
+              />
+            </div>
+          </div>
+          <button
+            class="close closeButton"
+            type="button"
+          >
+            <span
+              aria-hidden="true"
+            >
+              ×
+            </span>
+            <span
+              class="sr-only"
+            >
+              Close
+            </span>
+          </button>
+        </div>
+        <div
+          class="body modal-body"
+        >
+          <div
+            class="tagList"
+          >
+            <div
+              class="root"
+            >
+              <button
+                class="item itemActive"
+                data-testid="search-tag-item-All Categories"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-cube fa-w-16 fa-fw "
+                  data-icon="cube"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                    fill="currentColor"
+                  />
+                </svg>
+                 All Categories
+              </button>
+              <button
+                class="item"
+                data-testid="search-tag-item-Tag 1"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-cube fa-w-16 fa-fw "
+                  data-icon="cube"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                    fill="currentColor"
+                  />
+                </svg>
+                 Tag 1
+              </button>
+              <button
+                class="item"
+                data-testid="search-tag-item-Tag 2"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-cube fa-w-16 fa-fw "
+                  data-icon="cube"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                    fill="currentColor"
+                  />
+                </svg>
+                 Tag 2
+              </button>
+              <button
+                class="item"
+                data-testid="search-tag-item-Tag 3"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-cube fa-w-16 fa-fw "
+                  data-icon="cube"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                    fill="currentColor"
+                  />
+                </svg>
+                 Tag 3
+              </button>
+            </div>
+          </div>
+          <div
+            class="brickResults"
+          >
+            <div
+              style="position: relative; height: 600px; width: 600px; overflow: auto; will-change: transform; direction: ltr;"
+            >
+              <div
+                style="height: 0px; width: 585px;"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AddBlockModal it renders with tag selected and search query 1`] = `
+<DocumentFragment>
+  <div
+    class="fade modal-backdrop show"
+  />
+  <div
+    aria-modal="true"
+    class="fade root modal show"
+    role="dialog"
+    style="display: block;"
+    tabindex="-1"
+  >
+    <div
+      class="modal-dialog modal-xl modal-dialog-centered"
+    >
+      <div
+        class="modal-content"
+      >
+        <div
+          class="header modal-header"
+        >
+          <div
+            class="title modal-title h4"
+          >
+            Add Brick
+          </div>
+          <div
+            class="searchContainer"
+          >
+            <div
+              class="root searchInput rootFocused"
+            >
+              <span
+                class="badge"
+              >
+                Tag 3 
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-times-circle fa-w-16 "
+                  data-icon="times-circle"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </span>
+              <input
+                class="input"
+                data-testid="tag-search-input"
+                name="brickSearch"
+                placeholder="Search"
+                value="google"
+              />
+            </div>
+          </div>
+          <button
+            class="close closeButton"
+            type="button"
+          >
+            <span
+              aria-hidden="true"
+            >
+              ×
+            </span>
+            <span
+              class="sr-only"
+            >
+              Close
+            </span>
+          </button>
+        </div>
+        <div
+          class="body modal-body"
+        >
+          <div
+            class="tagList"
+          >
+            <div
+              class="root"
+            >
+              <button
+                class="item"
+                data-testid="search-tag-item-All Categories"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-cube fa-w-16 fa-fw "
+                  data-icon="cube"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                    fill="currentColor"
+                  />
+                </svg>
+                 All Categories
+              </button>
+              <button
+                class="item"
+                data-testid="search-tag-item-Tag 1"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-cube fa-w-16 fa-fw "
+                  data-icon="cube"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                    fill="currentColor"
+                  />
+                </svg>
+                 Tag 1
+              </button>
+              <button
+                class="item"
+                data-testid="search-tag-item-Tag 2"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-cube fa-w-16 fa-fw "
+                  data-icon="cube"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                    fill="currentColor"
+                  />
+                </svg>
+                 Tag 2
+              </button>
+              <button
+                class="item itemActive"
+                data-testid="search-tag-item-Tag 3"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-cube fa-w-16 fa-fw "
+                  data-icon="cube"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                    fill="currentColor"
+                  />
+                </svg>
+                 Tag 3
+              </button>
+            </div>
+          </div>
+          <div
+            class="brickResults"
+          >
+            <div
+              style="position: relative; height: 600px; width: 600px; overflow: auto; will-change: transform; direction: ltr;"
+            >
+              <div
+                style="height: 0px; width: 585px;"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

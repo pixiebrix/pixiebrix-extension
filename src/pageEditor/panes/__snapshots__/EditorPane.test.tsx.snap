@@ -308,7 +308,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="root"
                 >
                   <button
-                    data-testid="icon-button-add-node-foundation"
+                    data-testid="icon-button-foundation-add-brick"
                     type="button"
                   >
                     <svg
@@ -420,7 +420,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="root"
                 >
                   <button
-                    data-testid="icon-button-add-node-00000003-0000-4000-A000-000000000000"
+                    data-testid="icon-button-00000003-0000-4000-A000-000000000000-add-brick"
                     type="button"
                   >
                     <svg
@@ -459,9 +459,9 @@ exports[`renders an extension with sub pipeline 1`] = `
                     >
                       <svg
                         aria-hidden="true"
-                        class="svg-inline--fa fa-random fa-w-16 fa-fw fa-2x "
+                        class="svg-inline--fa fa-cube fa-w-16 fa-fw fa-2x "
                         color="inherit"
-                        data-icon="random"
+                        data-icon="cube"
                         data-prefix="fas"
                         focusable="false"
                         role="img"
@@ -469,7 +469,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
-                          d="M504.971 359.029c9.373 9.373 9.373 24.569 0 33.941l-80 79.984c-15.01 15.01-40.971 4.49-40.971-16.971V416h-58.785a12.004 12.004 0 0 1-8.773-3.812l-70.556-75.596 53.333-57.143L352 336h32v-39.981c0-21.438 25.943-31.998 40.971-16.971l80 79.981zM12 176h84l52.781 56.551 53.333-57.143-70.556-75.596A11.999 11.999 0 0 0 122.785 96H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12zm372 0v39.984c0 21.46 25.961 31.98 40.971 16.971l80-79.984c9.373-9.373 9.373-24.569 0-33.941l-80-79.981C409.943 24.021 384 34.582 384 56.019V96h-58.785a12.004 12.004 0 0 0-8.773 3.812L96 336H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12h110.785c3.326 0 6.503-1.381 8.773-3.812L352 176h32z"
+                          d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
                           fill="currentColor"
                         />
                       </svg>
@@ -556,7 +556,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="root"
                 >
                   <button
-                    data-testid="icon-button-add-node-extension.blockPipeline.1.config.body.__value__-header"
+                    data-testid="icon-button-00000005-0000-4000-A000-000000000000-header-add-brick"
                     type="button"
                   >
                     <svg
@@ -624,7 +624,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="root"
                 >
                   <button
-                    data-testid="icon-button-add-node-00000004-0000-4000-A000-000000000000"
+                    data-testid="icon-button-00000004-0000-4000-A000-000000000000-add-brick"
                     type="button"
                   >
                     <svg
@@ -666,7 +666,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="root biggerActions"
                 >
                   <button
-                    data-testid="icon-button-add-node-00000005-0000-4000-A000-000000000000"
+                    data-testid="icon-button-00000005-0000-4000-A000-000000000000-add-brick"
                     type="button"
                   >
                     <svg
@@ -1806,7 +1806,7 @@ exports[`renders the first selected node 1`] = `
                   class="root"
                 >
                   <button
-                    data-testid="icon-button-add-node-foundation"
+                    data-testid="icon-button-foundation-add-brick"
                     type="button"
                   >
                     <svg
@@ -1918,7 +1918,7 @@ exports[`renders the first selected node 1`] = `
                   class="root"
                 >
                   <button
-                    data-testid="icon-button-add-node-00000001-0000-4000-A000-000000000000"
+                    data-testid="icon-button-00000001-0000-4000-A000-000000000000-add-brick"
                     type="button"
                   >
                     <svg
@@ -2025,7 +2025,7 @@ exports[`renders the first selected node 1`] = `
                   class="root biggerActions"
                 >
                   <button
-                    data-testid="icon-button-add-node-00000002-0000-4000-A000-000000000000"
+                    data-testid="icon-button-00000002-0000-4000-A000-000000000000-add-brick"
                     type="button"
                   >
                     <svg

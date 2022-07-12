@@ -1,5 +1,5 @@
 import React from "react";
-import { IBrick } from "@/core";
+import { IBlock } from "@/core";
 import { MarketplaceListing } from "@/types/contract";
 import { Button, Col, Row } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
@@ -7,20 +7,20 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 
-const BrickDetail: React.FunctionComponent<{
-  brick: IBrick;
+const BlockDetail: React.FunctionComponent<{
+  block: IBlock;
   listing?: MarketplaceListing;
   onSelect: () => void;
   selectCaption: React.ReactNode;
-}> = ({ brick, selectCaption = "Select", listing, onSelect }) => (
-  <Row>
+}> = ({ block, selectCaption = "Select", listing, onSelect }) => (
+  <Row className="w-100">
     <Col xs={12} className="d-flex justify-content-between mb-3">
       <div>
         <h4>
-          {brick.name} <BrickIcon brick={brick} />
+          {block.name} <BrickIcon brick={block} />
         </h4>
-        <code>{brick.id}</code>
-        <p>{brick.description}</p>
+        <code>{block.id}</code>
+        <p>{block.description}</p>
         {listing && (
           <a
             href={`https://pixiebrix.com/marketplace/${listing.id}`}
@@ -40,25 +40,18 @@ const BrickDetail: React.FunctionComponent<{
       </div>
     </Col>
 
-    {"inputSchema" in brick && (
-      <Col xs={12} className="small mb-3">
-        <h6 className="my-3">Input Schema</h6>
-        <SchemaTree schema={brick.inputSchema} />
-      </Col>
-    )}
-    {"outputSchema" in brick && (
+    <Col xs={12} className="small mb-3">
+      <h6 className="my-3">Input Schema</h6>
+      <SchemaTree schema={block.inputSchema} />
+    </Col>
+
+    {block.outputSchema && (
       <Col xs={12} className="small mb-3">
         <h6 className="my-3">Output Schema</h6>
-        <SchemaTree schema={brick.outputSchema} />
-      </Col>
-    )}
-    {"schema" in brick && (
-      <Col xs={12} className="small mb-3">
-        <h6 className="my-3">Schema</h6>
-        <SchemaTree schema={brick.schema} />
+        <SchemaTree schema={block.outputSchema} />
       </Col>
     )}
   </Row>
 );
 
-export default BrickDetail;
+export default BlockDetail;
