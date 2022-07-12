@@ -72,16 +72,7 @@ const EditTab: React.FC<{
   const pipelineMap = useSelector(selectPipelineMap);
 
   const { removeBlock, moveBlockUp, moveBlockDown, copyBlock, pasteBlock } =
-    useBlockPipelineActions(pipelineMap, values, setFormValues);
-
-  // The value of formikErrorForBlock can be object or string.
-  const formikErrorForBlock = get(errors, fieldName);
-  // If formikErrorForBlock is a string, it means that this exact block has an error.
-  const blockError: string =
-    typeof formikErrorForBlock === "string" ? formikErrorForBlock : null;
-
-  const { flagOn } = useFlags();
-  const showVersionField = flagOn("page-editor-developer");
+    useBlockPipelineActions(pipelineMap, values);
 
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
@@ -119,7 +110,6 @@ const EditTab: React.FC<{
           <div className={styles.nodeLayout}>
             <EditorNodeLayout
               pipeline={blockPipeline}
-              errors={errors as FormikError}
               extensionPointLabel={extensionPointLabel}
               extensionPointIcon={extensionPointIcon}
               moveBlockUp={moveBlockUp}

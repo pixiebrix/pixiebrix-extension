@@ -389,7 +389,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           subPipelinePath,
           subPipelineType,
         } of subPipelines) {
-          const headerName = `${nodeName}-header`;
+          const headerName = `${nodeId}-header`;
 
           const headerActions: NodeAction[] = [
             {
