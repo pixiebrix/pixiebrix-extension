@@ -134,23 +134,3 @@ test("applies input validation error", () => {
     'Instance type "object" is invalid. Expected "string", "number", "boolean".'
   );
 });
-
-test("sets unknown input error on the block level", () => {
-  const pipelineErrors: FormikErrorTree = {};
-  const errorMessage = "This is an unknown input validation error";
-  const traceError = {
-    schema: {},
-    errors: [
-      {
-        error: errorMessage,
-      },
-    ],
-  };
-  const errorTraceEntry = traceErrorFactory({
-    error: traceError,
-  });
-
-  applyTraceInputError(pipelineErrors, errorTraceEntry, "0");
-
-  expect(pipelineErrors["0"]).toEqual(errorMessage);
-});

@@ -28,7 +28,6 @@ import { BlockPipeline, Branch } from "@/blocks/types";
 import {
   BrickNodeContentProps,
   BrickNodeProps,
-  FormikError,
   RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { TraceRecord } from "@/telemetry/trace";
@@ -38,7 +37,10 @@ import { IBlock, OutputKey, UUID } from "@/core";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveNodeId,
+  selectErrorMap,
+} from "@/pageEditor/slices/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { get, isEmpty, stubTrue } from "lodash";
 import { DocumentRenderer } from "@/blocks/renderers/document";
@@ -61,6 +63,7 @@ import {
   makeIsAllowedForRootPipeline,
 } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
+import { BlockError } from "@/pageEditor/uiState/uiStateTypes";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -72,7 +75,6 @@ type EditorNodeProps =
 type EditorNodeLayoutProps = {
   extensionPointType: ExtensionPointType;
   pipeline: BlockPipeline;
-  errors: FormikError;
   extensionPointLabel: string;
   extensionPointIcon: IconProp;
   addBlock: (
@@ -106,10 +108,13 @@ type SubPipeline = {
 };
 
 function decideBlockStatus(
-  blockError: FormikError,
+  blockError: BlockError,
   traceRecord: TraceRecord
 ): RunStatus {
-  if (blockError) {
+  if (
+    blockError != null &&
+    (blockError.errors?.length > 0 || blockError?.fieldErrors)
+  ) {
     return RunStatus.ERROR;
   }
 
@@ -131,7 +136,6 @@ function decideBlockStatus(
 const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   extensionPointType,
   pipeline,
-  errors,
   extensionPointLabel,
   extensionPointIcon,
   addBlock,
@@ -145,6 +149,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   const [allBlocks] = useAllBlocks();
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectExtensionTrace);
+  const errors = useSelector(selectErrorMap);
 
   const [collapsedState, setCollapsedState] = useState<Record<UUID, boolean>>(
     {}
@@ -323,15 +328,15 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       const showAddMessage = showAddBlock && showBiggerActions;
 
       const brickNodeActions: NodeAction[] = [];
-      const nodeName: string = blockConfig.instanceId;
+      const nodeId = blockConfig.instanceId;
 
       if (showAddBlock) {
         brickNodeActions.push(
           <AddBrickAction
-            key={`${nodeName}-add`}
+            key={`${nodeId}-add`}
             blocks={allBlocks}
             isBlockAllowed={isBlockAllowed}
-            nodeName={nodeName}
+            nodeName={nodeId}
             onSelectBlock={(block) => {
               addBlock(block, pipelinePath, index + 1);
             }}
@@ -342,8 +347,8 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       if (showPaste) {
         brickNodeActions.push(
           <PasteBrickAction
-            key={`${nodeName}-add`}
-            nodeName={nodeName}
+            key={`${nodeId}-add`}
+            nodeName={nodeId}
             onClickPaste={() => {
               pasteBlock(pipelinePath, index + 1);
             }}
@@ -358,10 +363,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       };
 
       if (block) {
-        const blockError = get(
-          errors,
-          joinPathParts(pipelinePath, String(index))
-        );
+        const blockError = errors[nodeId];
 
         contentProps = {
           icon: <BrickIcon brick={block} size="2x" inheritColor />,

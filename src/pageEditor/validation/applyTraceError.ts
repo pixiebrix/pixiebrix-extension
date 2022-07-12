@@ -16,7 +16,6 @@
  */
 
 import { TraceError } from "@/telemetry/trace";
-import applyTraceBlockError from "./applyTraceBlockError";
 import applyTraceInputError from "./applyTraceInputError";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
@@ -37,7 +36,7 @@ function applyTraceErrors(
     const blockInfo = pipelineMap[blockInstanceId];
 
     if (blockInfo == null) {
-      return;
+      continue;
     }
 
     // Removing the path of the root pipeline (accounting for ".")
@@ -46,7 +45,6 @@ function applyTraceErrors(
     );
 
     applyTraceInputError(pipelineErrors, traceError, relativeBlockPath);
-    applyTraceBlockError(pipelineErrors, traceError, relativeBlockPath);
   }
 }
 

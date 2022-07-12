@@ -139,11 +139,8 @@ type WrapperResult<
 
 type ConfigureStore<
   S = UnknownObject,
-  A extends Action = AnyAction,
-  M extends ReadonlyArray<Middleware<UnknownObject, S>> = [
-    ThunkMiddlewareFor<S>
-  ]
-> = () => EnhancedStore<S, A, M>;
+  A extends Action = AnyAction
+> = () => EnhancedStore<S, A>;
 
 export function createRenderWithWrappers(configureStore: ConfigureStore) {
   return (

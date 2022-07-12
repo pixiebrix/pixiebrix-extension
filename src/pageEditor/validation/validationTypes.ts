@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,11 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.topRow {
-  align-items: center;
-}
+import { AnyAction, ListenerEffect, ThunkDispatch } from "@reduxjs/toolkit";
+import {
+  MatchFunction,
+  TypedActionCreator,
+} from "@reduxjs/toolkit/dist/listenerMiddleware/types";
+import { RootState } from "@/pageEditor/pageEditorTypes";
 
-.buttonRow {
-  align-items: center;
-  margin-bottom: 1em;
-}
+export type ValidatorEffect = ListenerEffect<
+  AnyAction,
+  RootState,
+  ThunkDispatch<unknown, unknown, AnyAction>
+>;
+export type Validator = {
+  actionCreator?: TypedActionCreator<any>;
+  matcher?: MatchFunction<AnyAction>;
+  effect: ValidatorEffect;
+};

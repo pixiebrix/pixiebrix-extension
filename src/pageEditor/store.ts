@@ -32,6 +32,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import { logActions, logSlice } from "@/components/logViewer/logSlice";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
+import validationListenerMiddleware from "./validation/validationListenerMiddleware";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -77,6 +78,7 @@ const store = configureStore({
       },
     })
       .concat(appApi.middleware)
+      .concat(validationListenerMiddleware)
       .concat(conditionalMiddleware);
     /* eslint-enable unicorn/prefer-spread */
   },

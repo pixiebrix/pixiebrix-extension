@@ -23,11 +23,9 @@ import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import EditorNodeConfigPanel from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
 import useExtensionTrace from "@/pageEditor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationDataPanel";
-import usePipelineErrors from "@/pageEditor/hooks/usePipelineErrors";
 import { useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import {
@@ -35,49 +33,31 @@ import {
   selectActiveNodeInfo,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
-import ApiVersionField from "@/pageEditor/fields/ApiVersionField";
 import useBlockPipelineActions from "@/pageEditor/tabs/editTab/useBlockPipelineActions";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import UnsupportedApiV1 from "@/pageEditor/tabs/editTab/UnsupportedApiV1";
-import UpgradedToApiV3 from "@/pageEditor/tabs/editTab/UpgradedToApiV3";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import useFlags from "@/hooks/useFlags";
 import { FormState } from "@/pageEditor/pageEditorTypes";
-import { isInnerExtensionPoint } from "@/registry/internal";
 import useReportTraceError from "./useReportTraceError";
-import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
-import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
-import { get } from "lodash";
-import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
-import { FormikError } from "./editTabTypes";
+import FoundationNodeConfigPanel from "./FoundationNodeConfigPanel";
+import usePipelineValidation from "@/pageEditor/validation/usePipelineValidation";
 
 const EditTab: React.FC<{
   eventKey: string;
 }> = ({ eventKey }) => {
   useExtensionTrace();
   useReportTraceError();
+  usePipelineValidation();
 
-  const {
-    values,
-    setValues: setFormValues,
-    errors,
-  } = useFormikContext<FormState>();
+  const { values } = useFormikContext<FormState>();
 
   const {
     extensionPoint,
     type: extensionPointType,
     extension: { blockPipeline },
   } = values;
-
-  usePipelineErrors();
-
-  // For now, don't allow modifying extensionPoint packages via the Page Editor.
-  const isLocked = useMemo(
-    () => !isInnerExtensionPoint(extensionPoint.metadata.id),
-    [extensionPoint.metadata.id]
-  );
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
@@ -98,16 +78,7 @@ const EditTab: React.FC<{
     moveBlockDown,
     copyBlock,
     pasteBlock,
-  } = useBlockPipelineActions(pipelineMap, values, setFormValues);
-
-  // The value of formikErrorForBlock can be object or string.
-  const formikErrorForBlock = get(errors, fieldName);
-  // If formikErrorForBlock is a string, it means that this exact block has an error.
-  const blockError: string =
-    typeof formikErrorForBlock === "string" ? formikErrorForBlock : null;
-
-  const { flagOn } = useFlags();
-  const showVersionField = flagOn("page-editor-developer");
+  } = useBlockPipelineActions(pipelineMap, values);
 
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
@@ -145,7 +116,6 @@ const EditTab: React.FC<{
           <div className={styles.nodeLayout}>
             <EditorNodeLayout
               pipeline={blockPipeline}
-              errors={errors as FormikError}
               extensionPointType={extensionPointType}
               extensionPointLabel={extensionPointLabel}
               extensionPointIcon={extensionPointIcon}
@@ -167,26 +137,16 @@ const EditTab: React.FC<{
             >
               {isApiAtLeastV2 ? (
                 activeNodeId === FOUNDATION_NODE_ID ? (
-                  <>
-                    {extensionPointType === "quickBar" && (
-                      <UnconfiguredQuickBarAlert />
-                    )}
-                    <ConnectedFieldTemplate
-                      name="label"
-                      label="Extension Name"
-                    />
-                    {showVersionField && <ApiVersionField />}
-                    <UpgradedToApiV3 />
-                    <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
-                      <EditorNode isLocked={isLocked} />
-                    </SchemaFieldContext.Provider>
-                  </>
+                  <FoundationNodeConfigPanel
+                    extensionPoint={extensionPoint}
+                    EditorNode={EditorNode}
+                  />
                 ) : (
                   <EditorNodeConfigPanel
                     key={activeNodeId}
+                    nodeId={activeNodeId}
                     blockFieldName={fieldName}
                     blockId={blockId}
-                    blockError={blockError}
                   />
                 )
               ) : (

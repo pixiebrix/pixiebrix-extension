@@ -34,11 +34,17 @@ import {
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
-import { cloneDeep, get, isEmpty } from "lodash";
+import { cloneDeep, get, isEmpty, set } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import { getInvalidPath } from "@/utils/debugUtils";
+import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
+import {
+  selectActiveElement,
+  selectActiveElementUIState,
+  selectActiveNodeId,
+} from "./editorSelectors";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -571,7 +577,6 @@ export const editorSlice = createSlice({
     clearActiveRecipe(state) {
       state.activeRecipeId = null;
     },
-    // XXX:
     transitionSaveAsNewToCreateRecipeModal(state) {
       state.isSaveAsNewRecipeModalVisible = false;
       state.keepLocalCopyOnCreateRecipe = false;
@@ -651,12 +656,42 @@ export const editorSlice = createSlice({
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
     },
+    moveNode(
+      state,
+      action: PayloadAction<{
+        nodeId: UUID;
+        direction: "up" | "down";
+      }>
+    ) {
+      const { nodeId, direction } = action.payload;
+      const element = selectActiveElement({ editor: state });
+      const elementUiState = selectActiveElementUIState({ editor: state });
+      const { pipelinePath, index } = elementUiState.pipelineMap[nodeId];
+      const pipeline = get(element, pipelinePath);
+
+      if (direction === "up") {
+        // Swap the prev and current index values in the pipeline array, "up" in
+        //  the UI means a lower index in the array
+        [pipeline[index - 1], pipeline[index]] = [
+          pipeline[index],
+          pipeline[index - 1],
+        ];
+      } else {
+        // Swap the current and next index values in the pipeline array, "down"
+        //  in the UI means a higher index in the array
+        [pipeline[index], pipeline[index + 1]] = [
+          pipeline[index + 1],
+          pipeline[index],
+        ];
+      }
+
+      // This change should re-initialize the Page Editor Formik form
+      state.selectionSeq++;
+    },
     removeNode(state, action: PayloadAction<UUID>) {
       const nodeIdToRemove = action.payload;
-      const element = state.elements.find(
-        (x) => x.uuid === state.activeElementId
-      );
-      const elementUiState = state.elementUIStates[state.activeElementId];
+      const element = selectActiveElement({ editor: state });
+      const elementUiState = selectActiveElementUIState({ editor: state });
       const { pipelinePath, index } =
         elementUiState.pipelineMap[nodeIdToRemove];
       const pipeline = get(element, pipelinePath);
@@ -669,6 +704,7 @@ export const editorSlice = createSlice({
       pipeline.splice(index, 1);
 
       syncElementNodeUIStates(state, element);
+      delete elementUiState.errorMap[nodeIdToRemove];
 
       elementUiState.activeNodeId =
         nextActiveNode?.instanceId ?? FOUNDATION_NODE_ID;
@@ -677,6 +713,53 @@ export const editorSlice = createSlice({
 
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
+    },
+    setFieldsError(state, action: PayloadAction<FormikErrorTree>) {
+      const fieldErrors = action.payload;
+      const nodeId = selectActiveNodeId({ editor: state });
+      const elementUiState = selectActiveElementUIState({ editor: state });
+      const elementErrors = elementUiState.errorMap;
+      set(elementErrors, [nodeId, "fieldErrors"], fieldErrors);
+    },
+    setNodeError(
+      state,
+      action: PayloadAction<{
+        nodeId: UUID;
+        namespace: string;
+        message: string;
+      }>
+    ) {
+      const { nodeId, namespace, message } = action.payload;
+      const { errorMap } = selectActiveElementUIState({ editor: state });
+      const nodeErrors = errorMap[nodeId]?.errors;
+      if (typeof nodeErrors === "undefined") {
+        set(errorMap, [nodeId, "errors"], [{ namespace, message }]);
+      } else {
+        set(
+          errorMap,
+          [nodeId, "errors"],
+          [
+            ...nodeErrors.filter((x) => x.namespace !== namespace),
+            { namespace, message },
+          ]
+        );
+      }
+    },
+    clearNodeError(
+      state,
+      action: PayloadAction<{
+        nodeId: UUID;
+        namespace: string;
+      }>
+    ) {
+      const { nodeId, namespace } = action.payload;
+      const { errorMap } = selectActiveElementUIState({ editor: state });
+      const nodeErrors = errorMap[nodeId]?.errors;
+      if (nodeErrors != null) {
+        errorMap[nodeId].errors = nodeErrors.filter(
+          (x) => x.namespace !== namespace
+        );
+      }
     },
   },
 });

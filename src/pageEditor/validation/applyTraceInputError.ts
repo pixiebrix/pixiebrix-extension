@@ -17,9 +17,8 @@
 
 import { isInputValidationError } from "@/blocks/errors";
 import { TraceError } from "@/telemetry/trace";
-import { joinName } from "@/utils";
-import { get, set } from "lodash";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
+import { setPipelineBlockError } from "./setPipelineBlockError";
 
 const requiredFieldRegex =
   /^Instance does not have required property "(?<property>.+)"\.$/;
@@ -44,46 +43,30 @@ function applyTraceInputError(
     return;
   }
 
-  const errors: string[] = [];
-  for (const inputError of traceError.errors) {
-    const rootProperty = rootPropertyRegex.exec(inputError.instanceLocation)
-      ?.groups.property;
+  for (const maybeInputError of traceError.errors) {
+    const rootProperty = rootPropertyRegex.exec(
+      maybeInputError.instanceLocation
+    )?.groups.property;
     if (rootProperty) {
-      const propertyNameInPipeline = joinName(
-        blockPath,
-        "config",
-        rootProperty
-      );
-      const errorMessage = inputError.error;
-      set(pipelineErrors, propertyNameInPipeline, errorMessage);
+      const errorMessage = maybeInputError.error;
+      setPipelineBlockError({
+        pipelineErrors,
+        errorMessage,
+        path: [blockPath, "config", rootProperty],
+      });
       continue;
     }
 
-    const requiredProperty = requiredFieldRegex.exec(inputError.error)?.groups
-      .property;
+    const requiredProperty = requiredFieldRegex.exec(maybeInputError.error)
+      ?.groups.property;
     if (requiredProperty) {
-      const propertyNameInPipeline = joinName(
-        blockPath,
-        "config",
-        requiredProperty
-      );
       const errorMessage = "Error from the last run: This field is required.";
-      set(pipelineErrors, propertyNameInPipeline, errorMessage);
-      continue;
+      setPipelineBlockError({
+        pipelineErrors,
+        errorMessage,
+        path: [blockPath, "config", requiredProperty],
+      });
     }
-
-    if (inputError.error) {
-      errors.push(inputError.error);
-    }
-  }
-
-  // If there are errors, but they didn't match the known inputs
-  // set the error message(s) on the block level
-  if (
-    typeof get(pipelineErrors, blockPath) === "undefined" &&
-    errors.length > 0
-  ) {
-    set(pipelineErrors, blockPath, errors.join(" "));
   }
 }
 
