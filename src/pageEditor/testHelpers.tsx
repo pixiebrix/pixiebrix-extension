@@ -26,7 +26,6 @@ import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSli
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import { createRenderWithWrappers } from "@/testUtils/testHelpers";
-import { appApi } from "@/services/api";
 import validationListenerMiddleware from "@/pageEditor/validation/validationListenerMiddleware";
 
 const renderWithWrappers = createRenderWithWrappers(() =>
