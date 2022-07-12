@@ -25,7 +25,6 @@ import {
   selectNetworkErrorMessage,
   selectServerErrorMessage,
 } from "@/errors/networkErrorHelpers";
-import { ValidationError } from "yup";
 
 // From "webext-messenger". Cannot import because the webextension polyfill can only run in an extension context
 // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3641
@@ -202,8 +201,12 @@ export function getErrorMessage(
     }
   }
 
-  if (error instanceof ValidationError) {
-    return error.errors.join(". ");
+  // @ts-expect-error -- We're checking if errors is there and if it's an array
+  if (Array.isArray(error.errors)) {
+    // @ts-expect-error -- error does have "errors" property
+    return error.errors
+      .filter((x: unknown) => typeof x === "string")
+      .join(". ");
   }
 
   return String(selectError(error).message ?? defaultMessage);

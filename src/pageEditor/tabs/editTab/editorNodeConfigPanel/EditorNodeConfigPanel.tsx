@@ -17,27 +17,20 @@
 
 import styles from "./EditorNodeConfigPanel.module.scss";
 
-import React, { useMemo } from "react";
+import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { RegistryId } from "@/core";
+import { RegistryId, UUID } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BlockConfiguration from "@/pageEditor/tabs/effect/BlockConfiguration";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { showOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
-import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import getType from "@/runtime/getType";
-
-const PopoverOutputLabel: React.FC<{
-  description: string;
-}> = ({ description }) => (
-  <PopoverInfoLabel
-    name="output-label"
-    label="Output"
-    description={description}
-  />
-);
+import { useSelector } from "react-redux";
+import { selectActiveNodeError } from "@/pageEditor/slices/editorSelectors";
+import useNodeValidation from "@/pageEditor/validation/useNodeValidation";
+import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 
 const EditorNodeConfigPanel: React.FC<{
   /**
@@ -46,8 +39,10 @@ const EditorNodeConfigPanel: React.FC<{
    */
   blockFieldName: string;
   blockId: RegistryId;
-  blockError: string;
-}> = ({ blockFieldName, blockId, blockError }) => {
+  nodeId: UUID;
+}> = ({ blockFieldName, blockId, nodeId }) => {
+  useNodeValidation(blockFieldName, nodeId);
+
   const [blockInfo] = useAsyncState(async () => {
     const block = await blockRegistry.lookup(blockId);
     return {
@@ -63,16 +58,22 @@ const EditorNodeConfigPanel: React.FC<{
     ? "Effect and renderer bricks do not produce outputs"
     : "Provide an output key to refer to the outputs of this block later.";
 
-  const outputKeyLabel = useMemo(
-    () => <PopoverOutputLabel description={outputDescription} />,
-    [outputDescription]
+  const PopoverOutputLabel = (
+    <PopoverInfoLabel
+      name="output-label"
+      label="Output"
+      description={outputDescription}
+    />
   );
+
+  const errorInfo = useSelector(selectActiveNodeError);
+  const blockErrorMessage = errorInfo?.errors?.map((x) => x.message).join(" ");
 
   return (
     <>
-      {blockError && (
+      {blockErrorMessage && (
         <Row>
-          <Col className={styles.errorMessage}>{blockError}</Col>
+          <Col className="text-danger">{blockErrorMessage}</Col>
         </Row>
       )}
       <Row className={styles.topRow}>
@@ -87,7 +88,7 @@ const EditorNodeConfigPanel: React.FC<{
         <Col xl>
           <ConnectedFieldTemplate
             name={`${blockFieldName}.outputKey`}
-            label={outputKeyLabel}
+            label={PopoverOutputLabel}
             fitLabelWidth
             disabled={isOutputDisabled}
             as={KeyNameWidget}

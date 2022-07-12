@@ -243,5 +243,17 @@ export function selectNodePreviewActiveElement(rootState: RootState): string {
     .activeElement;
 }
 
+export const selectErrorMap = createSelector(
+  selectActiveElementUIState,
+  (uiState: ElementUIState) => uiState.errorMap
+);
+
+export const selectActiveNodeError = createSelector(
+  selectActiveElementUIState,
+  selectActiveNodeId,
+  (uiState: ElementUIState, activeNodeId: UUID) =>
+    uiState.errorMap[activeNodeId]
+);
+
 export const selectAddBlockLocation = ({ editor }: RootState) =>
   editor.addBlockLocation;

@@ -241,6 +241,11 @@ describe("can add a node", () => {
         name: /add/i,
       })[0]
     );
+
+    // Run validation
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
   }
 
   test("to root pipeline", async () => {

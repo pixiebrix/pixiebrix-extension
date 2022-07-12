@@ -28,7 +28,6 @@ import { BlockPipeline, Branch } from "@/blocks/types";
 import {
   BrickNodeContentProps,
   BrickNodeProps,
-  FormikError,
   RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { TraceRecord } from "@/telemetry/trace";
@@ -37,7 +36,10 @@ import { OutputKey, UUID } from "@/core";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveNodeId,
+  selectErrorMap,
+} from "@/pageEditor/slices/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { get, isEmpty } from "lodash";
 import { DocumentRenderer } from "@/blocks/renderers/document";
@@ -53,6 +55,7 @@ import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
+import { BlockError } from "@/pageEditor/uiState/uiStateTypes";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { PipelineType } from "@/pageEditor/pageEditorTypes";
 
@@ -65,7 +68,6 @@ type EditorNodeProps =
 
 type EditorNodeLayoutProps = {
   pipeline: BlockPipeline;
-  errors: FormikError;
   extensionPointLabel: string;
   extensionPointIcon: IconProp;
   moveBlockUp: (instanceId: UUID) => void;
@@ -90,10 +92,13 @@ type SubPipeline = {
 };
 
 function decideBlockStatus(
-  blockError: FormikError,
+  blockError: BlockError,
   traceRecord: TraceRecord
 ): RunStatus {
-  if (blockError) {
+  if (
+    blockError != null &&
+    (blockError.errors?.length > 0 || blockError?.fieldErrors)
+  ) {
     return RunStatus.ERROR;
   }
 
@@ -114,7 +119,6 @@ function decideBlockStatus(
 
 const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   pipeline,
-  errors,
   extensionPointLabel,
   extensionPointIcon,
   moveBlockUp,
@@ -127,6 +131,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   const [allBlocks] = useAllBlocks();
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectExtensionTrace);
+  const errors = useSelector(selectErrorMap);
 
   const [collapsedState, setCollapsedState] = useState<Record<UUID, boolean>>(
     {}
@@ -302,12 +307,12 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       const showAddMessage = showAddBlock && showBiggerActions;
 
       const brickNodeActions: NodeAction[] = [];
-      const nodeName: string = blockConfig.instanceId;
+      const nodeId = blockConfig.instanceId;
 
       // TODO: Refactoring - remove code duplication in the node actions here
       if (showAddBlock) {
         brickNodeActions.push({
-          name: `${nodeName}-add-brick`,
+          name: `${nodeId}-add-brick`,
           icon: faPlusCircle,
           tooltipText: "Add a brick",
           onClick() {
@@ -324,7 +329,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
 
       if (showPaste) {
         brickNodeActions.push({
-          name: `${nodeName}-paste-brick`,
+          name: `${nodeId}-paste-brick`,
           icon: faPaste,
           tooltipText: "Paste copied brick",
           onClick() {
@@ -340,10 +345,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       };
 
       if (block) {
-        const blockError = get(
-          errors,
-          joinPathParts(pipelinePath, String(index))
-        );
+        const blockError = errors[nodeId];
 
         contentProps = {
           icon: <BrickIcon brick={block} size="2x" inheritColor />,

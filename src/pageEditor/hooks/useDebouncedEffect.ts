@@ -15,21 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { set } from "lodash";
-import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
-import { joinPathParts } from "@/utils";
+import { useEffect, useState } from "react";
+import { useDebounce } from "use-debounce";
+import { isEqual } from "lodash";
 
-type SetPipelineBlockErrorArgs = {
-  pipelineErrors: FormikErrorTree;
-  errorMessage: string;
-  path: string[];
+const useDebouncedEffect = (
+  values: unknown,
+  onChange: (values: unknown) => void,
+  delayMillis: number
+) => {
+  const [prev, setPrev] = useState(values);
+
+  const [debounced] = useDebounce(values, delayMillis, {
+    leading: false,
+    trailing: true,
+  });
+
+  useEffect(
+    () => {
+      if (!isEqual(prev, debounced)) {
+        onChange(debounced);
+        setPrev(debounced);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- leave off prev so it doesn't double-trigger the effect
+    [setPrev, debounced, onChange]
+  );
 };
 
-export function setPipelineBlockError({
-  pipelineErrors,
-  errorMessage,
-  path,
-}: SetPipelineBlockErrorArgs) {
-  const propertyNameInPipeline = joinPathParts(...path);
-  set(pipelineErrors, propertyNameInPipeline, errorMessage);
-}
+export default useDebouncedEffect;

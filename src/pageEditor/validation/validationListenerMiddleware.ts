@@ -15,19 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TraceError } from "@/telemetry/trace";
-import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
-import { get, set } from "lodash";
-import { getErrorMessage } from "@/errors/errorHelpers";
+import { createListenerMiddleware } from "@reduxjs/toolkit";
+import RenderersValidator from "./renderersValidator";
+import TracesValidator from "./tracesValidator";
 
-function applyTraceBlockError(
-  pipelineErrors: FormikErrorTree,
-  errorTraceEntry: TraceError,
-  blockPath: string
-) {
-  if (get(pipelineErrors, blockPath) == null) {
-    set(pipelineErrors, blockPath, getErrorMessage(errorTraceEntry.error));
-  }
-}
+const validationListenerMiddleware = createListenerMiddleware();
 
-export default applyTraceBlockError;
+validationListenerMiddleware.startListening(new TracesValidator());
+validationListenerMiddleware.startListening(new RenderersValidator());
+
+export default validationListenerMiddleware.middleware;
