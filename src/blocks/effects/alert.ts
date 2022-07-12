@@ -19,6 +19,7 @@ import { Effect } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { showNotification } from "@/utils/notify";
+import * as Yup from "yup";
 
 export class AlertEffect extends Effect {
   constructor() {
@@ -51,6 +52,10 @@ export class AlertEffect extends Effect {
     },
     ["message"]
   );
+
+  inputValidationSchema = Yup.object().shape({
+    message: Yup.string().required("Message is required"),
+  });
 
   async effect({
     message,

@@ -17,7 +17,7 @@
 
 import { Schema, SchemaDefinition } from "@/core";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { isTemplateExpression } from "@/runtime/mapArgs";
+import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { FieldValidator } from "formik";
 import { Draft, produce } from "immer";
@@ -89,9 +89,16 @@ export function getFieldValidator(
   }
 
   return async (fieldValue) => {
+    const value = isExpression(fieldValue) ? fieldValue.__value__ : fieldValue;
     try {
-      await validationSchema.validate(fieldValue);
+      await validationSchema.validate(value);
+      console.log("validationSchema.validate", { value, validationSchema });
     } catch (error) {
+      console.log("validationSchema.validate", {
+        value,
+        validationSchema,
+        error,
+      });
       return getErrorMessage(error);
     }
   };

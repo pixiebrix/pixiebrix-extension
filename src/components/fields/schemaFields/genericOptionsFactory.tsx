@@ -15,13 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { memo } from "react";
 import { inputProperties } from "@/helpers";
 import { Schema, UiSchema } from "@/core";
-import { isEmpty } from "lodash";
+import { cloneDeep, isEmpty } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
 import pipelineSchema from "@schemas/pipeline.json";
+import * as Yup from "yup";
+import { buildYup } from "schema-to-yup";
 
 export type BlockOptionProps = {
   /**
@@ -36,47 +38,74 @@ export type BlockOptionProps = {
   configKey?: string;
 };
 
+const NoOptions: React.FunctionComponent = () => (
+  <div>No options available</div>
+);
+
 /**
  * Return the Options fields for configuring a block with the given schema.
  */
 function genericOptionsFactory(
   schema: Schema,
-  uiSchema?: UiSchema
+  uiSchema?: UiSchema,
+  validationSchema?: Yup.ObjectSchema<any>
 ): React.FunctionComponent<BlockOptionProps> {
-  const OptionsFields = ({ name, configKey }: BlockOptionProps) => {
-    const optionSchema = inputProperties(schema);
-    if (isEmpty(optionSchema)) {
-      return <div>No options available</div>;
-    }
+  const optionSchema = inputProperties(schema);
+  if (isEmpty(optionSchema)) {
+    return NoOptions;
+  }
 
-    return (
-      <>
-        {Object.entries(optionSchema)
-          .filter(
-            ([, fieldSchema]) =>
-              typeof fieldSchema === "object" &&
-              fieldSchema.$ref !== pipelineSchema.$id
-          )
-          .map(([prop, fieldSchema]) => {
-            // Fine because coming from Object.entries for the schema
-            // eslint-disable-next-line security/detect-object-injection
-            const propUiSchema = uiSchema?.[prop];
-            return (
-              <SchemaField
-                key={prop}
-                name={joinName(name, configKey, prop)}
-                // The fieldSchema type has been filtered and is safe to assume it is Schema
-                schema={fieldSchema as Schema}
-                isRequired={schema.required?.includes(prop)}
-                uiSchema={propUiSchema}
-              />
-            );
-          })}
-      </>
-    );
-  };
+  const fieldsConfig = Object.entries(optionSchema)
+    .filter(
+      ([, fieldSchema]) =>
+        typeof fieldSchema === "object" &&
+        fieldSchema.$ref !== pipelineSchema.$id
+    )
+    .map(([prop, fieldSchema]) => {
+      let propValidationSchema: Yup.ObjectSchema<any>;
+      if (validationSchema != null) {
+        try {
+          propValidationSchema = Yup.reach(validationSchema, prop);
+        } catch (error) {
+          // It's ok if a property doesn't have a validation schema
+          console.debug("Error picking property schema", {
+            prop,
+            fieldSchema,
+            error,
+          });
+        }
+      }
 
-  OptionsFields.displayName = "OptionsFields";
+      // Fine because coming from Object.entries for the schema
+      // eslint-disable-next-line security/detect-object-injection
+      const propUiSchema = uiSchema?.[prop];
+
+      return {
+        prop,
+        fieldSchema,
+        propUiSchema,
+        propValidationSchema,
+      };
+    });
+
+  const OptionsFields = ({ name, configKey }: BlockOptionProps) => (
+    <>
+      {fieldsConfig.map(
+        ({ prop, fieldSchema, propUiSchema, propValidationSchema }) => (
+          <SchemaField
+            key={prop}
+            name={joinName(name, configKey, prop)}
+            // The fieldSchema type has been filtered and is safe to assume it is Schema
+            schema={fieldSchema as Schema}
+            isRequired={schema.required?.includes(prop)}
+            uiSchema={propUiSchema}
+            validationSchema={propValidationSchema}
+          />
+        )
+      )}
+    </>
+  );
+
   return OptionsFields;
 }
 

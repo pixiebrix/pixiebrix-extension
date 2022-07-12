@@ -40,6 +40,10 @@ function useBlockOptions(
 
   useAsyncEffect(
     async (isMounted) => {
+      console.log("useAsyncEffect", {
+        id,
+      });
+
       setBlock({ block: null, error: null });
       try {
         const block = await blockRegistry.lookup(id);
@@ -55,16 +59,28 @@ function useBlockOptions(
   );
 
   const BlockOptions = useMemo(() => {
+    console.log("use memo", {
+      id,
+      blockId: block?.id,
+    });
+
     // Only return the BlockOptions if 1) the block is available, 2) and it is actually the block with the requested id.
     // Must not return the BlockOptions for the previous block (when id has changed but the state hasn't been updated yet),
     // or the config parameters of the past block will become part of the configuration of the new block.
     if (id === block?.id) {
       const registered = optionsRegistry.get(block.id);
-      return registered ?? genericOptionsFactory(block.inputSchema);
+      return (
+        registered ??
+        genericOptionsFactory(
+          block.inputSchema,
+          undefined,
+          block.inputValidationSchema
+        )
+      );
     }
 
     return null;
-  }, [id, block?.id, block?.inputSchema]);
+  }, [id, block?.id]);
 
   return [{ block, error }, BlockOptions];
 }
