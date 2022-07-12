@@ -82,7 +82,7 @@ export function isMustacheOnly(value: string): boolean {
 }
 
 export function getFieldValidator(
-  validationSchema: Yup.ObjectSchema<any> | undefined
+  validationSchema: Yup.AnySchema | undefined
 ): FieldValidator | undefined {
   if (validationSchema == null) {
     return undefined;
@@ -92,13 +92,7 @@ export function getFieldValidator(
     const value = isExpression(fieldValue) ? fieldValue.__value__ : fieldValue;
     try {
       await validationSchema.validate(value);
-      console.log("validationSchema.validate", { value, validationSchema });
     } catch (error) {
-      console.log("validationSchema.validate", {
-        value,
-        validationSchema,
-        error,
-      });
       return getErrorMessage(error);
     }
   };
