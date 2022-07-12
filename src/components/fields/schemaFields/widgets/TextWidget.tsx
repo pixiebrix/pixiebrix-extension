@@ -22,22 +22,21 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState,
 } from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
 import { Form, FormControlProps } from "react-bootstrap";
 import fitTextarea from "fit-textarea";
-import { Expression, Schema, TemplateEngine } from "@/core";
+import { Schema, TemplateEngine } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
-import { isEmpty, trim } from "lodash";
+import { trim } from "lodash";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import {
   getToggleOptions,
   isKeyStringField,
 } from "@/components/fields/schemaFields/getToggleOptions";
-import { useDebouncedCallback } from "use-debounce";
+import useUndo from "@/hooks/useUndo";
 
 const TEMPLATE_ERROR_MESSAGE =
   "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";
@@ -129,44 +128,11 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     [schema]
   );
 
-  // Array used like a stack
-  const [history, setHistory] = useState<Array<string | Expression>>([]);
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  const setHistoryDebounced = useDebouncedCallback(
-    (newValue: string | Expression) => {
-      setHistory((previous) => [debouncedValue, ...previous]);
-      setDebouncedValue(newValue);
-    },
-    300,
-    {
-      leading: false,
-      trailing: true,
-      maxWait: 500,
-    }
-  );
-
-  const setValue = useCallback(
-    (newValue: string | Expression) => {
-      setHistoryDebounced(newValue);
-      setFieldValue(newValue);
-    },
-    [setFieldValue, setHistoryDebounced]
-  );
-
-  const onUndo = useCallback(() => {
-    if (isEmpty(history)) {
-      return;
-    }
-
-    const [oldValue, ...newHistory] = history;
-    setFieldValue(oldValue);
-    setHistory(newHistory);
-  }, [history, setFieldValue]);
+  const { setUndoableValue: setValue, undo } = useUndo(value, setFieldValue);
 
   const keyDownHandler: KeyboardEventHandler<HTMLTextAreaElement> = (event) => {
     if ((event.ctrlKey || event.metaKey) && event.key === "z") {
-      onUndo();
+      undo();
     }
   };
 
