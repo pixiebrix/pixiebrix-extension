@@ -35,6 +35,7 @@ import {
   EditorState,
   FormState,
   AddBlockLocation,
+  ModalKey,
 } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
@@ -452,7 +453,7 @@ export const editorSlice = createSlice({
       }
     },
     showAddToRecipeModal(state) {
-      state.visibleModalKey = "addToRecipe";
+      state.visibleModalKey = ModalKey.ADD_TO_RECIPE;
     },
     addElementToRecipe(
       state,
@@ -495,7 +496,7 @@ export const editorSlice = createSlice({
       }
     },
     showRemoveFromRecipeModal(state) {
-      state.visibleModalKey = "removeFromRecipe";
+      state.visibleModalKey = ModalKey.REMOVE_FROM_RECIPE;
     },
     removeElementFromRecipe(
       state,
@@ -539,7 +540,7 @@ export const editorSlice = createSlice({
       }
     },
     showSaveAsNewRecipeModal(state) {
-      state.visibleModalKey = "saveAsNewRecipe";
+      state.visibleModalKey = ModalKey.SAVE_AS_NEW_RECIPE;
     },
     clearDeletedElementsForRecipe(state, action: PayloadAction<RegistryId>) {
       const recipeId = action.payload;
@@ -565,11 +566,11 @@ export const editorSlice = createSlice({
     },
     // XXX:
     transitionSaveAsNewToCreateRecipeModal(state) {
-      state.visibleModalKey = "createRecipe";
+      state.visibleModalKey = ModalKey.CREATE_RECIPE;
       state.keepLocalCopyOnCreateRecipe = false;
     },
     transitionAddToCreateRecipeModal(state, action: PayloadAction<boolean>) {
-      state.visibleModalKey = "createRecipe";
+      state.visibleModalKey = ModalKey.CREATE_RECIPE;
       state.keepLocalCopyOnCreateRecipe = action.payload;
     },
     finishSaveAsNewRecipe(
@@ -667,7 +668,7 @@ export const editorSlice = createSlice({
     },
     showAddBlockModal(state, action: PayloadAction<AddBlockLocation>) {
       state.addBlockLocation = action.payload;
-      state.visibleModalKey = "addBlock";
+      state.visibleModalKey = ModalKey.ADD_BLOCK;
     },
     hideModal(state) {
       state.visibleModalKey = null;

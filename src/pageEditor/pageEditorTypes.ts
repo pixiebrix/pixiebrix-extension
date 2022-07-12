@@ -70,13 +70,13 @@ export type AddBlockLocation = {
   index: number;
 };
 
-export type ModalKey =
-  | null
-  | "addToRecipe"
-  | "removeFromRecipe"
-  | "saveAsNewRecipe"
-  | "createRecipe"
-  | "addBlock";
+export enum ModalKey {
+  ADD_TO_RECIPE,
+  REMOVE_FROM_RECIPE,
+  SAVE_AS_NEW_RECIPE,
+  CREATE_RECIPE,
+  ADD_BLOCK,
+}
 
 export interface EditorState {
   /**
@@ -159,7 +159,7 @@ export interface EditorState {
   /**
    * Which modal are we showing, if any?
    */
-  visibleModalKey: ModalKey;
+  visibleModalKey?: ModalKey;
 
   /**
    * The pipeline location where a new block will be added.

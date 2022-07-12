@@ -17,7 +17,7 @@
 
 import { RecipeMetadata, RegistryId, UUID } from "@/core";
 import { createSelector } from "reselect";
-import { EditorState } from "@/pageEditor/pageEditorTypes";
+import { EditorState, ModalKey } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { flatMap, isEmpty, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
@@ -140,17 +140,19 @@ export const selectRecipeIsDirty =
     Boolean(recipeId) && recipeIsDirtySelector(state, recipeId);
 
 export const selectIsAddToRecipeModalVisible = ({ editor }: RootState) =>
-  editor.visibleModalKey === "addToRecipe";
+  editor.visibleModalKey === ModalKey.ADD_TO_RECIPE;
 
 export const selectIsAddBlockModalVisible = ({ editor }: RootState) =>
-  editor.visibleModalKey === "addBlock";
+  editor.visibleModalKey === ModalKey.ADD_BLOCK;
 
 export const selectEditorModalVisibilities = ({ editor }: RootState) => ({
-  isAddToRecipeModalVisible: editor.visibleModalKey === "addToRecipe",
-  isRemoveFromRecipeModalVisible: editor.visibleModalKey === "removeFromRecipe",
-  isSaveAsNewRecipeModalVisible: editor.visibleModalKey === "saveAsNewRecipe",
-  isCreateRecipeModalVisible: editor.visibleModalKey === "createRecipe",
-  isAddBlockModalVisible: editor.visibleModalKey === "addBlock",
+  isAddToRecipeModalVisible: editor.visibleModalKey === ModalKey.ADD_TO_RECIPE,
+  isRemoveFromRecipeModalVisible:
+    editor.visibleModalKey === ModalKey.REMOVE_FROM_RECIPE,
+  isSaveAsNewRecipeModalVisible:
+    editor.visibleModalKey === ModalKey.SAVE_AS_NEW_RECIPE,
+  isCreateRecipeModalVisible: editor.visibleModalKey === ModalKey.CREATE_RECIPE,
+  isAddBlockModalVisible: editor.visibleModalKey === ModalKey.ADD_BLOCK,
 });
 
 export const selectInstalledRecipeMetadatas = createSelector(
