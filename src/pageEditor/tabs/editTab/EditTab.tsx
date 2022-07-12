@@ -144,7 +144,6 @@ const EditTab: React.FC<{
                 ) : (
                   <EditorNodeConfigPanel
                     key={activeNodeId}
-                    nodeId={activeNodeId}
                     blockFieldName={fieldName}
                     blockId={blockId}
                   />
