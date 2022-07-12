@@ -15,25 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { faPaste } from "@fortawesome/free-solid-svg-icons";
-import TooltipIconButton from "@/components/TooltipIconButton";
-
-type PasteBrickActionProps = {
-  nodeName: string;
-  onClickPaste: () => void;
-};
-
-const PasteBrickAction: React.VFC<PasteBrickActionProps> = ({
-  nodeName,
-  onClickPaste,
-}) => (
-  <TooltipIconButton
-    name={`paste-brick-${nodeName}`}
-    icon={faPaste}
-    onClick={onClickPaste}
-    tooltipText="Paste copied brick"
-  />
-);
-
-export default PasteBrickAction;
+export const TAG_ALL = "All Categories";
+export const BLOCK_RESULT_COLUMN_COUNT = 2;
+export const POPULAR_BRICK_TAG_ID = "35367896-b38f-447e-9444-ecfecb258468";

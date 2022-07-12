@@ -33,7 +33,7 @@ const SaveAsNewRecipeModal: React.VFC = () => {
   const dispatch = useDispatch();
 
   const hideModal = () => {
-    dispatch(actions.hideSaveAsNewRecipeModal());
+    dispatch(actions.hideModal());
   };
 
   const onConfirm = () => {

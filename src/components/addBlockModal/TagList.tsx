@@ -43,6 +43,7 @@ const TagListItem: React.VFC<{
       onClick={() => {
         onSelect();
       }}
+      data-testid={`search-tag-item-${item.tag}`}
     >
       {icon && (
         <>
