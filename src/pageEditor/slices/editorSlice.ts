@@ -37,7 +37,7 @@ import {
   AddBlockLocation,
   ModalKey,
 } from "@/pageEditor/pageEditorTypes";
-import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
+import { ElementUIState, ErrorLevel } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
 import { cloneDeep, get, isEmpty, set } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
@@ -715,20 +715,26 @@ export const editorSlice = createSlice({
         nodeId: UUID;
         namespace: string;
         message: string;
+        level?: ErrorLevel;
       }>
     ) {
-      const { nodeId, namespace, message } = action.payload;
+      const {
+        nodeId,
+        namespace,
+        message,
+        level = ErrorLevel.Blocking,
+      } = action.payload;
       const { errorMap } = selectActiveElementUIState({ editor: state });
       const nodeErrors = errorMap[nodeId]?.errors;
       if (typeof nodeErrors === "undefined") {
-        set(errorMap, [nodeId, "errors"], [{ namespace, message }]);
+        set(errorMap, [nodeId, "errors"], [{ namespace, message, level }]);
       } else {
         set(
           errorMap,
           [nodeId, "errors"],
           [
             ...nodeErrors.filter((x) => x.namespace !== namespace),
-            { namespace, message },
+            { namespace, message, level },
           ]
         );
       }

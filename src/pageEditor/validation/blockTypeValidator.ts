@@ -26,6 +26,7 @@ import {
 import blockRegistry from "@/blocks/registry";
 import { Validator, ValidatorEffect } from "./validationTypes";
 import { makeIsBlockAllowedForPipeline } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import { ErrorLevel } from "@/pageEditor/uiState/uiStateTypes";
 
 class BlockTypeValidator implements Validator {
   static namespace = "blockType";
@@ -72,6 +73,7 @@ class BlockTypeValidator implements Validator {
                 nodeId: pipelineBlock.instanceId,
                 namespace: BlockTypeValidator.namespace,
                 message: `Block of type "${typedBlock.type}" is not allowed in this pipeline`,
+                level: ErrorLevel.Warning,
               })
             );
           }

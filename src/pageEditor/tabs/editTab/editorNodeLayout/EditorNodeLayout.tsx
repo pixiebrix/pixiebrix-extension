@@ -55,7 +55,7 @@ import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
-import { BlockError } from "@/pageEditor/uiState/uiStateTypes";
+import { BlockError, ErrorLevel } from "@/pageEditor/uiState/uiStateTypes";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { PipelineType } from "@/pageEditor/pageEditorTypes";
 
@@ -97,9 +97,14 @@ function decideBlockStatus(
 ): RunStatus {
   if (
     blockError != null &&
-    (blockError.errors?.length > 0 || blockError?.fieldErrors)
+    (blockError.errors?.some((error) => error.level === ErrorLevel.Blocking) ||
+      blockError?.fieldErrors)
   ) {
     return RunStatus.ERROR;
+  }
+
+  if (blockError?.errors?.some((error) => error.level === ErrorLevel.Warning)) {
+    return RunStatus.WARNING;
   }
 
   if (traceRecord == null) {
