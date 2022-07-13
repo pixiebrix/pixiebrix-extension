@@ -21,6 +21,8 @@ import { BlockType } from "@/runtime/runtimeTypes";
 import { ExtensionPointType } from "@/extensionPoints/types";
 import { PipelineType } from "@/pageEditor/pageEditorTypes";
 import { split, stubTrue } from "lodash";
+import { BlockConfig } from "@/blocks/types";
+import { DocumentRenderer } from "@/blocks/renderers/document";
 
 const PANEL_TYPES = ["actionPanel", "panel"];
 
@@ -70,6 +72,33 @@ export function makeBlockFilterPredicate(
   // something in the document builder.
   if (pipelineType === PipelineType.ControlFlow || isButton) {
     return (block: TypedBlock) => block.type !== "renderer";
+  }
+
+  return stubTrue;
+}
+
+type GetPipelineTypeArgs = {
+  extensionPointType: ExtensionPointType;
+  pipelinePath: string;
+  parentNode: BlockConfig;
+};
+
+export function makeIsBlockAllowedForPipeline({
+  extensionPointType,
+  pipelinePath,
+  parentNode,
+}: GetPipelineTypeArgs) {
+  if (parentNode == null) {
+    // Root pipeline, look at the extensionPointType
+    return makeIsAllowedForRootPipeline(extensionPointType);
+  }
+
+  if (
+    parentNode.id !== DocumentRenderer.BLOCK_ID ||
+    pipelinePath.split(".").at(-2) === "onClick"
+  ) {
+    // Exclude renderers from effect sub pipeline (control flow or document builder buttons)
+    return ({ type }: TypedBlock) => type != null && type !== "renderer";
   }
 
   return stubTrue;
