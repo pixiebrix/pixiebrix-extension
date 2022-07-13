@@ -52,11 +52,10 @@ import BlockGridItemRenderer from "@/components/addBlockModal/BlockGridItemRende
 import groupListingsByTag from "@/components/addBlockModal/groupListingsByTag";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import {
-  selectActiveElement,
   selectAddBlockLocation,
   selectIsAddBlockModalVisible,
 } from "@/pageEditor/slices/editorSelectors";
-import { makeBlockFilterPredicate } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import { makeIsBlockAllowedForPipeline } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 import {
   BLOCK_RESULT_COLUMN_COUNT,
   TAG_ALL,
@@ -135,10 +134,8 @@ const AddBlockModal: React.VFC = () => {
 
   const addBlockLocation = useSelector(selectAddBlockLocation);
   const pipelinePath = addBlockLocation?.path ?? "";
-  const pipelineType = addBlockLocation?.type ?? PipelineType.Root;
+  const pipelineType = addBlockLocation?.type ?? PipelineType.Any;
   const pipelineIndex = addBlockLocation?.index ?? 0;
-  const activeElement = useSelector(selectActiveElement);
-  const extensionPointType = activeElement?.extensionPoint?.definition?.type;
 
   const addBlock = useAddBlock(pipelinePath, pipelineIndex);
 
@@ -154,21 +151,17 @@ const AddBlockModal: React.VFC = () => {
     [addBlock, closeModal]
   );
 
-  const blockFilterPredicate = useMemo(
-    () =>
-      makeBlockFilterPredicate(pipelineType, pipelinePath, extensionPointType),
-    [extensionPointType, pipelinePath, pipelineType]
-  );
-
   const filteredBlocks = useMemo<IBlock[]>(() => {
     if (isLoadingAllBlocks) {
       return [];
     }
 
+    const isBlockAllowed = makeIsBlockAllowedForPipeline(pipelineType);
+
     return [...allBlocks.entries()]
-      .filter(([_, typedBlock]) => blockFilterPredicate(typedBlock))
+      .filter(([_, typedBlock]) => isBlockAllowed(typedBlock))
       .map(([_, { block }]) => block);
-  }, [allBlocks, blockFilterPredicate, isLoadingAllBlocks]);
+  }, [allBlocks, pipelineType, isLoadingAllBlocks]);
 
   useEffect(() => {
     if (!gridRef.current) {

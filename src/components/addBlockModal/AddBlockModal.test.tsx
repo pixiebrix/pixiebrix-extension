@@ -69,7 +69,7 @@ describe("AddBlockModal", () => {
         dispatch(
           actions.showAddBlockModal({
             path: "",
-            type: PipelineType.Root,
+            type: PipelineType.Any,
             index: 0,
           })
         );
@@ -92,7 +92,7 @@ describe("AddBlockModal", () => {
         dispatch(
           actions.showAddBlockModal({
             path: PIPELINE_BLOCKS_FIELD_NAME,
-            type: PipelineType.Root,
+            type: PipelineType.Any,
             index: 0,
           })
         );

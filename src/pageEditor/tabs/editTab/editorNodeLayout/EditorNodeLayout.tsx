@@ -37,6 +37,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import {
+  selectActiveElement,
   selectActiveNodeId,
   selectErrorMap,
 } from "@/pageEditor/slices/editorSelectors";
@@ -58,6 +59,7 @@ import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 import { BlockError, ErrorLevel } from "@/pageEditor/uiState/uiStateTypes";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { PipelineType } from "@/pageEditor/pageEditorTypes";
+import { getRootPipelineType } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -137,6 +139,8 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectExtensionTrace);
   const errors = useSelector(selectErrorMap);
+  const activeElement = useSelector(selectActiveElement);
+  const extensionPointType = activeElement.extensionPoint.definition.type;
 
   const [collapsedState, setCollapsedState] = useState<Record<UUID, boolean>>(
     {}
@@ -156,7 +160,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   function mapPipelineToNodes({
     pipeline,
     pipelinePath = PIPELINE_BLOCKS_FIELD_NAME,
-    pipelineType = PipelineType.Root,
+    pipelineType,
     nestingLevel = 0,
     parentIsActive = false,
   }: {
@@ -240,7 +244,9 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             headerLabel: isButton ? "button" : "brick",
             subPipeline,
             subPipelinePath,
-            subPipelineType: PipelineType.DocumentBuilder,
+            subPipelineType: isButton
+              ? PipelineType.Effect
+              : PipelineType.Renderer,
           });
         }
       } else {
@@ -259,7 +265,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             headerLabel: propName,
             subPipeline: get(pipeline, subPipelineAccessor) ?? [],
             subPipelinePath,
-            subPipelineType: PipelineType.ControlFlow,
+            subPipelineType: PipelineType.Effect,
           });
         }
       }
@@ -471,6 +477,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
     return nodes;
   }
 
+  const rootPipelineType = getRootPipelineType(extensionPointType);
   const foundationNodeActions: NodeAction[] = [
     {
       name: `${FOUNDATION_NODE_ID}-add-brick`,
@@ -480,7 +487,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
         dispatch(
           actions.showAddBlockModal({
             path: PIPELINE_BLOCKS_FIELD_NAME,
-            type: PipelineType.Root,
+            type: rootPipelineType,
             index: 0,
           })
         );
@@ -503,7 +510,10 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
 
   // It's important to run mapPipelineToNodes before adding the foundation node
   // because it will calculate foundationRunStatus for the foundation node
-  const nodes = mapPipelineToNodes({ pipeline });
+  const nodes = mapPipelineToNodes({
+    pipeline,
+    pipelineType: rootPipelineType,
+  });
   const foundationNodeProps: BrickNodeProps = {
     icon: extensionPointIcon,
     runStatus: foundationRunStatus,

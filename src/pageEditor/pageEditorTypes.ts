@@ -47,9 +47,9 @@ export type FormState =
   | QuickBarFormState;
 
 export enum PipelineType {
-  Root,
-  DocumentBuilder,
-  ControlFlow,
+  Any,
+  Renderer,
+  Effect,
 }
 
 export type AddBlockLocation = {
