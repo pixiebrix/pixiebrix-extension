@@ -71,14 +71,8 @@ const EditTab: React.FC<{
   const { blockId, path: fieldName } = useSelector(selectActiveNodeInfo) ?? {};
   const pipelineMap = useSelector(selectPipelineMap);
 
-  const {
-    addBlock,
-    removeBlock,
-    moveBlockUp,
-    moveBlockDown,
-    copyBlock,
-    pasteBlock,
-  } = useBlockPipelineActions(pipelineMap, values);
+  const { removeBlock, moveBlockUp, moveBlockDown, copyBlock, pasteBlock } =
+    useBlockPipelineActions(pipelineMap, values);
 
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
@@ -116,10 +110,8 @@ const EditTab: React.FC<{
           <div className={styles.nodeLayout}>
             <EditorNodeLayout
               pipeline={blockPipeline}
-              extensionPointType={extensionPointType}
               extensionPointLabel={extensionPointLabel}
               extensionPointIcon={extensionPointIcon}
-              addBlock={addBlock}
               moveBlockUp={moveBlockUp}
               moveBlockDown={moveBlockDown}
               pasteBlock={pasteBlock}

@@ -106,6 +106,7 @@ const TagSearchInput: React.VFC<{
             onClearTag();
           }
         }}
+        data-testid="tag-search-input"
       />
     </div>
   );
