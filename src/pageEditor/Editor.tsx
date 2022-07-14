@@ -29,7 +29,7 @@ import InsertPanelPane from "@/pageEditor/panes/insert/InsertPanelPane";
 import NoExtensionSelectedPane from "@/pageEditor/panes/NoExtensionSelectedPane";
 import NoExtensionsPane from "@/pageEditor/panes/NoExtensionsPane";
 import WelcomePane from "@/pageEditor/panes/WelcomePane";
-import EditorPane from "@/pageEditor/panes/EditorPane";
+import EditorPane from "@/pageEditor/panes/editorPane/EditorPane2";
 import useInstallState from "@/pageEditor/hooks/useInstallState";
 import useEscapeHandler from "@/pageEditor/hooks/useEscapeHandler";
 import GenericInsertPane from "@/pageEditor/panes/insert/GenericInsertPane";
