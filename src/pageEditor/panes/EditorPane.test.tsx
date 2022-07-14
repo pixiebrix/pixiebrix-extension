@@ -16,10 +16,18 @@
  */
 
 import React from "react";
-import { render, screen } from "@/pageEditor/testHelpers";
+import {
+  getByText,
+  getByTitle,
+  render,
+  screen,
+} from "@/pageEditor/testHelpers";
 import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveElement,
+  selectErrorMap,
+} from "@/pageEditor/slices/editorSelectors";
 import {
   blockConfigFactory,
   formStateFactory,
@@ -54,6 +62,7 @@ import { fireTextInput, selectSchemaFieldType } from "@/testUtils/formHelpers";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
+import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 
 jest.mock("@/services/api", () => ({
   appApi: {
@@ -78,6 +87,7 @@ jest.setTimeout(30_000); // This test is flaky with the default timeout of 5000 
 
 const jqBlock = new JQTransformer();
 const forEachBlock = new ForEach();
+const markdownBlock = new MarkdownRenderer();
 
 // Using events without delays with jest fake timers
 const immediateUserEvent = userEvent.setup({ delay: null });
@@ -85,7 +95,13 @@ const immediateUserEvent = userEvent.setup({ delay: null });
 beforeAll(async () => {
   registerDefaultWidgets();
   blockRegistry.clear();
-  blockRegistry.register(echoBlock, teapotBlock, jqBlock, forEachBlock);
+  blockRegistry.register(
+    echoBlock,
+    teapotBlock,
+    jqBlock,
+    forEachBlock,
+    markdownBlock
+  );
   await blockRegistry.allTyped();
 
   const tags = [
@@ -452,5 +468,56 @@ describe("validation", () => {
         "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
       )
     ).toBeInTheDocument();
+  });
+
+  test("validates on move that renderer is the last node", async () => {
+    jest.useFakeTimers();
+
+    const formState = getPlainFormState();
+    formState.extension.blockPipeline.push(
+      blockConfigFactory({
+        id: MarkdownRenderer.BLOCK_ID,
+        config: {
+          markdown: makeTemplateExpression("nunjucks", "test"),
+        },
+      })
+    );
+
+    // Selecting the last node (renderer)
+    const { instanceId } = formState.extension.blockPipeline[2];
+    const rendered = render(<EditorPane />, {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.selectElement(formState.uuid));
+        dispatch(editorActions.setElementActiveNodeId(instanceId));
+      },
+    });
+
+    await waitForEffect();
+
+    const moveUpButton = getByTitle(
+      rendered.container.querySelector('.active[data-testid="editor-node"]'),
+      "Move brick higher"
+    );
+
+    await immediateUserEvent.click(moveUpButton);
+
+    // This enables the Formik re-rendering after the Element's change
+    jest.runOnlyPendingTimers();
+    await waitForEffect();
+
+    const errorBadge = rendered.container.querySelector(
+      '.active[data-testid="editor-node"] span.badge'
+    );
+    expect(errorBadge).toBeInTheDocument();
+
+    expect(
+      getByText(
+        rendered.container.querySelector(".configPanel"),
+        "A renderer must be the last brick."
+      )
+    ).toBeInTheDocument();
+
+    jest.useRealTimers();
   });
 });
