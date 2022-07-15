@@ -15,15 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { memo } from "react";
+import React from "react";
 import { inputProperties } from "@/helpers";
 import { Schema, UiSchema } from "@/core";
-import { cloneDeep, isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
 import pipelineSchema from "@schemas/pipeline.json";
 import * as Yup from "yup";
-import { buildYup } from "schema-to-yup";
 
 export type BlockOptionProps = {
   /**
