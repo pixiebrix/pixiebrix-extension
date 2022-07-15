@@ -57,8 +57,7 @@ import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import * as api from "@/services/api";
 import { MarketplaceListing } from "@/types/contract";
 import { EditablePackage } from "@/types/definitions";
-import { fireTextInput, selectSchemaFieldType } from "@/testUtils/formHelpers";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { fireTextInput } from "@/testUtils/formHelpers";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
@@ -478,15 +477,12 @@ describe("validation", () => {
 
     await waitForEffect();
 
-    await selectSchemaFieldType(
-      `${PIPELINE_BLOCKS_FIELD_NAME}.1.config.body.__value__.0.config.message`,
-      "var",
-      true
-    );
-
     // By some reason, the validation doesn't fire with userEvent.type
     fireTextInput(rendered.getByLabelText("message"), "{{!");
     await waitForEffect();
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
 
     expectEditorError(
       rendered.container,
@@ -494,7 +490,95 @@ describe("validation", () => {
     );
   });
 
-  test("validates multiple renderers", async () => {
+  test("preserves validation results when switching between extensions", async () => {
+    // The test adds 2 extensions.
+    // It creates an input field error to one node of the extension 1,
+    // then it creates a node level error on another node (adding a renderer at the beginning of the pipeline).
+    // Then we select the second extension and make sure there're no error badges displayed.
+    // Going back to extension 1.
+    // See the 2 error badges in the Node Layout.
+    // Select the Markdown node and check the error.
+    // Select the Echo block and check the error.
+    const extension1 = getPlainFormState();
+    const extension2 = getPlainFormState();
+
+    // Selecting the Echo block in the first extension
+    const { instanceId: echoBlockInstanceId } =
+      extension1.extension.blockPipeline[0];
+    const rendered = render(
+      <>
+        <EditorPane />
+        <AddBlockModal />
+      </>,
+      {
+        setupRedux(dispatch) {
+          dispatch(editorActions.addElement(extension1));
+          dispatch(editorActions.addElement(extension2));
+          dispatch(editorActions.selectElement(extension1.uuid));
+          dispatch(editorActions.setElementActiveNodeId(echoBlockInstanceId));
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    // Make invalid string template
+    // This is field level error, reported via Formik
+    fireTextInput(rendered.getByLabelText("message"), "{{!");
+    await waitForEffect();
+
+    // Adding a renderer in the first position in the pipeline
+    // This is a node level error, reported via Redux
+    const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
+      exact: false,
+    });
+    const addButton = addButtons.at(0);
+    await addABlock(addButton, "markdown");
+
+    // Select foundation node.
+    // For testing purposes we don't want a node with error to be active when we select extension1 again
+    await immediateUserEvent.click(rendered.queryAllByTestId("editor-node")[0]);
+
+    // Selecting another extension. Only possible with Redux
+    const store = rendered.getReduxStore();
+    store.dispatch(editorActions.selectElement(extension2.uuid));
+
+    // Ensure no error is displayed
+    const errorBadgesOfAnotherExtension = rendered.container.querySelectorAll(
+      '[data-testid="editor-node"] span.badge'
+    );
+    expect(errorBadgesOfAnotherExtension).toHaveLength(0);
+
+    // Selecting the first extension
+    store.dispatch(editorActions.selectElement(extension1.uuid));
+
+    // Should show 2 error in the Node Layout
+    const errorBadges = rendered.container.querySelectorAll(
+      '[data-testid="editor-node"] span.badge'
+    );
+    expect(errorBadges).toHaveLength(2);
+
+    const editorNodes = rendered.queryAllByTestId("editor-node");
+
+    // Selecting the markdown block in the first extension
+    await immediateUserEvent.click(editorNodes[1]);
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+    expectEditorError(rendered.container, "A renderer must be the last brick.");
+
+    // Selecting the echo block
+    await immediateUserEvent.click(editorNodes[2]);
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+    expectEditorError(
+      rendered.container,
+      "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
+    );
+  });
+
+  test("validates multiple renderers on add", async () => {
     const formState = getPlainFormState();
     formState.extension.blockPipeline.push(
       blockConfigFactory({
@@ -532,7 +616,7 @@ describe("validation", () => {
     );
   });
 
-  test("validates on move that renderer is the last node", async () => {
+  test("validates that renderer is the last node on move", async () => {
     const formState = getPlainFormState();
     formState.extension.blockPipeline.push(
       blockConfigFactory({

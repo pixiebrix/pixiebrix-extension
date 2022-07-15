@@ -15,44 +15,55 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useField } from "formik";
+import { useField, setNestedObjectValues } from "formik";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import useDebouncedEffect from "@/pageEditor/hooks/useDebouncedEffect";
 import { selectActiveNodeError } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { isEqual } from "lodash";
+import { UUID } from "@/core";
 
 /**
  * Synchronizes the active node Redux and Formik states
  * @param blockFieldName the name (path) of the block in the Formik state
  */
-function useNodeValidation(blockFieldName: string) {
+function useNodeValidation(blockFieldName: string, nodeId: UUID) {
   const dispatch = useDispatch();
   const nodeError = useSelector(selectActiveNodeError);
-  const [, { error: fieldError }] = useField({
-    name: blockFieldName,
-    validate() {
+  const [, { error: fieldError }, { setError, setTouched }] =
+    useField(blockFieldName);
+
+  // After Formik validation get the error state and push to Redux
+  useDebouncedEffect(
+    fieldError,
+    () => {
+      if (!isEqual(nodeError?.fieldErrors, fieldError)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- we get Error Tree from Formik
+        dispatch(editorActions.setFieldsError(fieldError as any));
+      }
+    },
+    500
+  );
+
+  // On load, get the error state from Redux and push to Formik
+  useEffect(() => {
+    // FIXME: don't use setTimeout here
+    // Formik seems to erase the error set on mount, so we wait a bit
+    // Figure out what's going on an fix it
+    // After the fix, double check the EditorPane validation tests,
+    // likely many usages of jest.runOnlyPendingTimers can be dropped
+    setTimeout(() => {
       if (
         nodeError?.fieldErrors != null &&
         !isEqual(nodeError.fieldErrors, fieldError)
       ) {
-        // When Formik gets the error from Redux it will push it through its pipeline and
-        // this hook will get the new fieldError that equals nodeError.fieldErrors
-        // so this doesn't get into any sort of infinite loop
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- we set Error Tree in Formik
-        return nodeError.fieldErrors as any;
+        setError(nodeError.fieldErrors as any);
+        setTouched(setNestedObjectValues(nodeError.fieldErrors, true), false);
       }
-    },
-  });
-
-  // After Formik validation get the error state and push to Redux
-  useEffect(() => {
-    if (!isEqual(nodeError?.fieldErrors, fieldError)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- we get Error Tree from Formik
-      dispatch(editorActions.setFieldsError(fieldError as any));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- pushing, error state to Redux, it's only fieldError that we care about here
-  }, [fieldError]);
+    }, 1000);
+  }, [nodeId]);
 }
 
 export default useNodeValidation;
