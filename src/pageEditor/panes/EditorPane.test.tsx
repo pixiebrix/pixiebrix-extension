@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectEditorError"] }] */
+
 import React from "react";
 import {
   getByText,
@@ -24,10 +26,7 @@ import {
 } from "@/pageEditor/testHelpers";
 import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import {
-  selectActiveElement,
-  selectErrorMap,
-} from "@/pageEditor/slices/editorSelectors";
+import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import {
   blockConfigFactory,
   formStateFactory,
@@ -191,6 +190,32 @@ const getFormStateWithSubPipelines = (): FormState =>
     }),
   ]);
 
+async function addABlock(addButton: Element, blockName: string) {
+  await immediateUserEvent.click(addButton);
+
+  // Filter for the specified block
+  await immediateUserEvent.type(
+    screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
+    blockName
+  );
+
+  // Run the debounced search
+  act(() => {
+    jest.runOnlyPendingTimers();
+  });
+
+  await immediateUserEvent.click(
+    screen.getAllByRole("button", {
+      name: /add/i,
+    })[0]
+  );
+
+  // Run validation
+  act(() => {
+    jest.runOnlyPendingTimers();
+  });
+}
+
 describe("renders", () => {
   test("the first selected node", async () => {
     const formState = getPlainFormState();
@@ -238,32 +263,6 @@ describe("can add a node", () => {
     jest.runOnlyPendingTimers();
   });
 
-  async function addABlock(addButton: Element, blockName: string) {
-    await immediateUserEvent.click(addButton);
-
-    // Filter for the specified block
-    await immediateUserEvent.type(
-      screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
-      blockName
-    );
-
-    // Run the debounced search
-    act(() => {
-      jest.runOnlyPendingTimers();
-    });
-
-    await immediateUserEvent.click(
-      screen.getAllByRole("button", {
-        name: /add/i,
-      })[0]
-    );
-
-    // Run validation
-    act(() => {
-      jest.runOnlyPendingTimers();
-    });
-  }
-
   test("to root pipeline", async () => {
     const formState = getPlainFormState();
     render(
@@ -285,7 +284,7 @@ describe("can add a node", () => {
     const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
       exact: false,
     });
-    const last = addButtons[addButtons.length - 1];
+    const last = addButtons.at(-1);
     await addABlock(last, "jq - json processor");
 
     const nodes = screen.getAllByTestId("editor-node");
@@ -439,6 +438,31 @@ describe("can remove a node", () => {
 });
 
 describe("validation", () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
+  beforeEach(() => {
+    jest.clearAllTimers();
+  });
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+  });
+
+  function expectEditorError(container: HTMLElement, errorMessage: string) {
+    const errorBadge = container.querySelector(
+      '.active[data-testid="editor-node"] span.badge'
+    );
+    expect(errorBadge).toBeInTheDocument();
+
+    expect(
+      getByText(container.querySelector(".configPanel"), errorMessage)
+    ).toBeInTheDocument();
+  }
+
   test("validates string templates", async () => {
     const formState = getFormStateWithSubPipelines();
     const subEchoNode = (
@@ -456,23 +480,59 @@ describe("validation", () => {
 
     await selectSchemaFieldType(
       `${PIPELINE_BLOCKS_FIELD_NAME}.1.config.body.__value__.0.config.message`,
-      "var"
+      "var",
+      true
     );
 
     // By some reason, the validation doesn't fire with userEvent.type
     fireTextInput(rendered.getByLabelText("message"), "{{!");
     await waitForEffect();
 
-    expect(
-      screen.getByText(
-        "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
-      )
-    ).toBeInTheDocument();
+    expectEditorError(
+      rendered.container,
+      "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
+    );
+  });
+
+  test("validates multiple renderers", async () => {
+    const formState = getPlainFormState();
+    formState.extension.blockPipeline.push(
+      blockConfigFactory({
+        id: MarkdownRenderer.BLOCK_ID,
+        config: {
+          markdown: makeTemplateExpression("nunjucks", "test"),
+        },
+      })
+    );
+    const rendered = render(
+      <>
+        <EditorPane />
+        <AddBlockModal />
+      </>,
+      {
+        setupRedux(dispatch) {
+          dispatch(editorActions.addElement(formState));
+          dispatch(editorActions.selectElement(formState.uuid));
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    // Hitting the second to last (Foundation node plus 2 bricks) Add Brick button
+    const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
+      exact: false,
+    });
+    const addButton = addButtons.at(0);
+    await addABlock(addButton, "markdown");
+
+    expectEditorError(
+      rendered.container,
+      "A panel can only have one renderer. There are one or more renderers configured after this brick. A renderer must be the last brick."
+    );
   });
 
   test("validates on move that renderer is the last node", async () => {
-    jest.useFakeTimers();
-
     const formState = getPlainFormState();
     formState.extension.blockPipeline.push(
       blockConfigFactory({
@@ -502,22 +562,11 @@ describe("validation", () => {
 
     await immediateUserEvent.click(moveUpButton);
 
-    // This enables the Formik re-rendering after the Element's change
-    jest.runOnlyPendingTimers();
-    await waitForEffect();
+    // This enables the Formik to re-render the form after the Element's change
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
 
-    const errorBadge = rendered.container.querySelector(
-      '.active[data-testid="editor-node"] span.badge'
-    );
-    expect(errorBadge).toBeInTheDocument();
-
-    expect(
-      getByText(
-        rendered.container.querySelector(".configPanel"),
-        "A renderer must be the last brick."
-      )
-    ).toBeInTheDocument();
-
-    jest.useRealTimers();
+    expectEditorError(rendered.container, "A renderer must be the last brick.");
   });
 });

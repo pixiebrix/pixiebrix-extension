@@ -23,6 +23,9 @@ import userEvent from "@testing-library/user-event";
 
 export const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
 
+// Using events without delays with jest fake timers
+const immediateUserEvent = userEvent.setup({ delay: null });
+
 export const createFormikTemplate = (
   initialValues: FormikValues,
   onSubmit = jest.fn()
@@ -53,17 +56,25 @@ export const fireTextInput = (input: Element, text: string) => {
   fireEvent.blur(input);
 };
 
+/**
+ * Changes the selected input type of a field with SchemaToggle
+ * @param useImmediateEvent Use immediate events with fake timers
+ */
 export const selectSchemaFieldType = async (
   fieldName: string,
-  typeToSelect: string
+  typeToSelect: string,
+  useImmediateEvent = false
 ) => {
+  const event = useImmediateEvent ? immediateUserEvent : userEvent;
+
   const fieldToggleButton = screen
     .getByTestId(`toggle-${fieldName}`)
     .querySelector("button");
-  await userEvent.click(fieldToggleButton);
+
+  await event.click(fieldToggleButton);
   await waitForEffect();
 
   const textOption = screen.getByTestId(typeToSelect);
-  await userEvent.click(textOption);
+  await event.click(textOption);
   await waitForEffect();
 };
