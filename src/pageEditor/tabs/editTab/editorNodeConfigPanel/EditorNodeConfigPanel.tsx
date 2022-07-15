@@ -19,7 +19,7 @@ import styles from "./EditorNodeConfigPanel.module.scss";
 
 import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { RegistryId } from "@/core";
+import { RegistryId, UUID } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BlockConfiguration from "@/pageEditor/tabs/effect/BlockConfiguration";
 import { useAsyncState } from "@/hooks/common";
@@ -39,8 +39,9 @@ const EditorNodeConfigPanel: React.FC<{
    */
   blockFieldName: string;
   blockId: RegistryId;
-}> = ({ blockFieldName, blockId }) => {
-  useNodeValidation(blockFieldName);
+  nodeId: UUID;
+}> = ({ blockFieldName, blockId, nodeId }) => {
+  useNodeValidation(blockFieldName, nodeId);
 
   const [blockInfo] = useAsyncState(async () => {
     const block = await blockRegistry.lookup(blockId);
