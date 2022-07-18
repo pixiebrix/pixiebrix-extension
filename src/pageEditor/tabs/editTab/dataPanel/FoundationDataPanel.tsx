@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { useFormikContext } from "formik";
 import { UUID } from "@/core";
 import { useSelector } from "react-redux";
 import { makeSelectBlockTrace } from "@/pageEditor/slices/runtimeSelectors";
@@ -25,12 +24,12 @@ import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import ExtensionPointPreview from "@/pageEditor/tabs/effect/ExtensionPointPreview";
 import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import useFlags from "@/hooks/useFlags";
-import { FormState } from "@/pageEditor/pageEditorTypes";
 import PageStateTab from "./PageStateTab";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import StateTab from "./tabs/StateTab";
 import ConfigurationTab from "./tabs/ConfigurationTab";
+import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 
 const FoundationDataPanel: React.FC<{
   firstBlockInstanceId?: UUID;
@@ -38,9 +37,8 @@ const FoundationDataPanel: React.FC<{
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
 
-  const { values: formState } = useFormikContext<FormState>();
-
-  const { extensionPoint } = formState;
+  const activeElement = useSelector(selectActiveElement);
+  const { extensionPoint } = activeElement;
 
   const { record: firstBlockTraceRecord } = useSelector(
     makeSelectBlockTrace(firstBlockInstanceId)
@@ -133,7 +131,7 @@ const FoundationDataPanel: React.FC<{
           mountOnEnter
           unmountOnExit
         >
-          <ExtensionPointPreview element={formState} />
+          <ExtensionPointPreview element={activeElement} />
         </Tab.Pane>
         <Tab.Pane
           eventKey={DataPanelTabKey.PageState}
