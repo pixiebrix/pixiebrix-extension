@@ -32,7 +32,7 @@ export class DoesNotExistError extends Error {
   public readonly id: string;
 
   constructor(id: string) {
-    super("Registry item does not exist");
+    super(`Registry item does not exist: ${id}`);
     this.id = id;
   }
 }
