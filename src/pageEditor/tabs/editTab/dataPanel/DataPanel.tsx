@@ -17,9 +17,7 @@
  */
 
 import React, { useMemo } from "react";
-import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isEmpty, isEqual, pickBy } from "lodash";
-import { useFormikContext } from "formik";
 import { Nav, Tab } from "react-bootstrap";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
@@ -46,6 +44,7 @@ import {
   selectActiveElement,
   selectActiveNodeId,
   selectActiveNodeInfo,
+  selectErrorMap,
   selectNodePreviewActiveElement,
 } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
@@ -79,7 +78,7 @@ const DataPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
 
-  const { errors: formikErrors } = useFormikContext<FormState>();
+  const errors = useSelector(selectErrorMap);
   const activeElement = useSelector(selectActiveElement);
 
   const {
@@ -257,7 +256,7 @@ const DataPanel: React.FC = () => {
                   visible to developers
                 </div>
                 <DataTabJsonTree
-                  data={{ ...activeElement, ...formikErrors }}
+                  data={{ activeElement, errors }}
                   searchable
                   tabKey={DataPanelTabKey.Formik}
                   label="Formik State"
