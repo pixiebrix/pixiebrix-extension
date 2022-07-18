@@ -26,8 +26,6 @@ import BlockPreview, {
   usePreviewInfo,
 } from "@/pageEditor/tabs/effect/BlockPreview";
 import useReduxState from "@/hooks/useReduxState";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { JsonObject } from "type-fest";
@@ -44,7 +42,6 @@ import {
   selectActiveElement,
   selectActiveNodeId,
   selectActiveNodeInfo,
-  selectErrorMap,
   selectNodePreviewActiveElement,
 } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
@@ -54,6 +51,8 @@ import { FormTransformer } from "@/blocks/transformers/ephemeralForm/formTransfo
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import DocumentOutline from "@/components/documentBuilder/outline/DocumentOutline";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
+import StateTab from "./tabs/StateTab";
+import ConfigurationTab from "./tabs/ConfigurationTab";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -78,7 +77,6 @@ const DataPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
 
-  const errors = useSelector(selectErrorMap);
   const activeElement = useSelector(selectActiveElement);
 
   const {
@@ -204,7 +202,7 @@ const DataPanel: React.FC = () => {
           {showDeveloperTabs && (
             <>
               <Nav.Item className={dataPanelStyles.tabNav}>
-                <Nav.Link eventKey={DataPanelTabKey.Formik}>Formik</Nav.Link>
+                <Nav.Link eventKey={DataPanelTabKey.Formik}>State</Nav.Link>
               </Nav.Item>
               <Nav.Item className={dataPanelStyles.tabNav}>
                 <Nav.Link eventKey={DataPanelTabKey.BlockConfig}>
@@ -250,29 +248,8 @@ const DataPanel: React.FC = () => {
           )}
           {showDeveloperTabs && (
             <>
-              <DataTab eventKey={DataPanelTabKey.Formik}>
-                <div className="text-info">
-                  <FontAwesomeIcon icon={faInfoCircle} /> This tab is only
-                  visible to developers
-                </div>
-                <DataTabJsonTree
-                  data={{ activeElement, errors }}
-                  searchable
-                  tabKey={DataPanelTabKey.Formik}
-                  label="Formik State"
-                />
-              </DataTab>
-              <DataTab eventKey={DataPanelTabKey.BlockConfig}>
-                <div className="text-info">
-                  <FontAwesomeIcon icon={faInfoCircle} /> This tab is only
-                  visible to developers
-                </div>
-                <DataTabJsonTree
-                  data={blockConfig ?? {}}
-                  tabKey={DataPanelTabKey.BlockConfig}
-                  label="Configuration"
-                />
-              </DataTab>
+              <StateTab />
+              <ConfigurationTab config={blockConfig} />
             </>
           )}
           <DataTab eventKey={DataPanelTabKey.Rendered} isTraceEmpty={!record}>
