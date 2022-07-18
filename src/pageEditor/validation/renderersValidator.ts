@@ -45,6 +45,7 @@ class RenderersValidator implements Validator {
     const state = listenerApi.getState();
     const activeElement = selectActiveElement(state);
     const extensionPointType = activeElement.extensionPoint.definition.type;
+
     if (
       extensionPointType !== "actionPanel" &&
       extensionPointType !== "panel"
