@@ -481,6 +481,7 @@ describe("validation", () => {
     fireTextInput(rendered.getByLabelText("message"), "{{!");
     await waitForEffect();
     act(() => {
+      // Run the timers of the Formik-Redux validation synchronization
       jest.runOnlyPendingTimers();
     });
 

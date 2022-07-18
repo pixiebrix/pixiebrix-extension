@@ -20,11 +20,9 @@ import React, { PropsWithChildren } from "react";
 import { fireEvent, screen } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
+import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 
 export const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
-
-// Using events without delays with jest fake timers
-const immediateUserEvent = userEvent.setup({ delay: null });
 
 export const createFormikTemplate = (
   initialValues: FormikValues,
@@ -58,23 +56,18 @@ export const fireTextInput = (input: Element, text: string) => {
 
 /**
  * Changes the selected input type of a field with SchemaToggle
- * @param useImmediateEvent Use immediate events with fake timers
  */
 export const selectSchemaFieldType = async (
   fieldName: string,
-  typeToSelect: string,
-  useImmediateEvent = false
+  typeToSelect: FieldInputMode
 ) => {
-  const event = useImmediateEvent ? immediateUserEvent : userEvent;
-
   const fieldToggleButton = screen
     .getByTestId(`toggle-${fieldName}`)
     .querySelector("button");
-
-  await event.click(fieldToggleButton);
+  await userEvent.click(fieldToggleButton);
   await waitForEffect();
 
   const textOption = screen.getByTestId(typeToSelect);
-  await event.click(textOption);
+  await userEvent.click(textOption);
   await waitForEffect();
 };
