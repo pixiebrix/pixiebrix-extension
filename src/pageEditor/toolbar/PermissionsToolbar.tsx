@@ -34,7 +34,7 @@ type PermissionsState = {
   permissions: Permissions.Permissions;
 };
 
-const initialState = {
+const defaultState = {
   hasPermissions: true,
   permissions: {},
 };
@@ -51,7 +51,7 @@ const PermissionsToolbar: React.FunctionComponent<{
   });
 
   const [
-    { hasPermissions, permissions } = initialState,
+    { hasPermissions, permissions } = defaultState,
     isLoadingPermissions,
     ,
     reloadPermissions,
@@ -76,7 +76,7 @@ const PermissionsToolbar: React.FunctionComponent<{
       return { hasPermissions, permissions };
     },
     [debouncedElement],
-    initialState
+    defaultState
   );
 
   const request = useCallback(async () => {
