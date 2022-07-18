@@ -202,7 +202,7 @@ const DataPanel: React.FC = () => {
           {showDeveloperTabs && (
             <>
               <Nav.Item className={dataPanelStyles.tabNav}>
-                <Nav.Link eventKey={DataPanelTabKey.Formik}>State</Nav.Link>
+                <Nav.Link eventKey={DataPanelTabKey.State}>State</Nav.Link>
               </Nav.Item>
               <Nav.Item className={dataPanelStyles.tabNav}>
                 <Nav.Link eventKey={DataPanelTabKey.BlockConfig}>

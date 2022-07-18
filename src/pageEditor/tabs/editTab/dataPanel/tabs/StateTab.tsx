@@ -32,7 +32,7 @@ const StateTab: React.FC = () => {
   const activeElement = useSelector(selectActiveElement);
 
   return (
-    <DataTab eventKey={DataPanelTabKey.Formik}>
+    <DataTab eventKey={DataPanelTabKey.State}>
       <div className="text-info">
         <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible to
         developers
@@ -40,7 +40,7 @@ const StateTab: React.FC = () => {
       <DataTabJsonTree
         data={{ activeElement, errors }}
         searchable
-        tabKey={DataPanelTabKey.Formik}
+        tabKey={DataPanelTabKey.State}
         label="Element State"
       />
     </DataTab>
