@@ -51,33 +51,32 @@ const PermissionsToolbar: React.FunctionComponent<{
   });
 
   const [
+    // We use defaultState as
+    // 1. initial state before the permissions are fetched
+    // 2. state in case of error; if the async callback fails, we fallback to this default permissions
     { hasPermissions, permissions } = defaultState,
     isLoadingPermissions,
     ,
     reloadPermissions,
-  ] = useAsyncState<PermissionsState>(
-    async () => {
-      const adapter = ADAPTERS.get(debouncedElement.type);
-      const { extension, extensionPoint: extensionPointConfig } =
-        adapter.asDynamicElement(debouncedElement);
-      const extensionPoint = extensionPointFactory(extensionPointConfig);
+  ] = useAsyncState<PermissionsState>(async () => {
+    const adapter = ADAPTERS.get(debouncedElement.type);
+    const { extension, extensionPoint: extensionPointConfig } =
+      adapter.asDynamicElement(debouncedElement);
+    const extensionPoint = extensionPointFactory(extensionPointConfig);
 
-      const permissions = await extensionPermissions(extension, {
-        extensionPoint,
-      });
+    const permissions = await extensionPermissions(extension, {
+      extensionPoint,
+    });
 
-      console.debug("Checking for extension permissions", {
-        extension,
-        permissions,
-      });
+    console.debug("Checking for extension permissions", {
+      extension,
+      permissions,
+    });
 
-      const hasPermissions = await containsPermissions(permissions);
+    const hasPermissions = await containsPermissions(permissions);
 
-      return { hasPermissions, permissions };
-    },
-    [debouncedElement],
-    defaultState
-  );
+    return { hasPermissions, permissions };
+  }, [debouncedElement]);
 
   const request = useCallback(async () => {
     if (await ensureAllPermissions(permissions)) {
