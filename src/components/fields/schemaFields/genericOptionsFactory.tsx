@@ -46,8 +46,7 @@ const NoOptions: React.FunctionComponent = () => (
  */
 function genericOptionsFactory(
   schema: Schema,
-  uiSchema?: UiSchema,
-  validationSchema?: Yup.ObjectSchema<any>
+  uiSchema?: UiSchema
 ): React.FunctionComponent<BlockOptionProps> {
   const optionSchema = inputProperties(schema);
   if (isEmpty(optionSchema)) {
@@ -61,20 +60,6 @@ function genericOptionsFactory(
         fieldSchema.$ref !== pipelineSchema.$id
     )
     .map(([prop, fieldSchema]) => {
-      let propValidationSchema: Yup.ObjectSchema<any>;
-      if (validationSchema != null) {
-        try {
-          propValidationSchema = Yup.reach(validationSchema, prop);
-        } catch (error) {
-          // It's ok if a property doesn't have a validation schema
-          console.debug("Error picking property schema", {
-            prop,
-            fieldSchema,
-            error,
-          });
-        }
-      }
-
       // Fine because coming from Object.entries for the schema
       // eslint-disable-next-line security/detect-object-injection
       const propUiSchema = uiSchema?.[prop];
@@ -83,25 +68,21 @@ function genericOptionsFactory(
         prop,
         fieldSchema,
         propUiSchema,
-        propValidationSchema,
       };
     });
 
   const OptionsFields = ({ name, configKey }: BlockOptionProps) => (
     <>
-      {fieldsConfig.map(
-        ({ prop, fieldSchema, propUiSchema, propValidationSchema }) => (
-          <SchemaField
-            key={prop}
-            name={joinName(name, configKey, prop)}
-            // The fieldSchema type has been filtered and is safe to assume it is Schema
-            schema={fieldSchema as Schema}
-            isRequired={schema.required?.includes(prop)}
-            uiSchema={propUiSchema}
-            validationSchema={propValidationSchema}
-          />
-        )
-      )}
+      {fieldsConfig.map(({ prop, fieldSchema, propUiSchema }) => (
+        <SchemaField
+          key={prop}
+          name={joinName(name, configKey, prop)}
+          // The fieldSchema type has been filtered and is safe to assume it is Schema
+          schema={fieldSchema as Schema}
+          isRequired={schema.required?.includes(prop)}
+          uiSchema={propUiSchema}
+        />
+      ))}
     </>
   );
 

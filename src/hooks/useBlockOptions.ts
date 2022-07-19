@@ -60,18 +60,11 @@ function useBlockOptions(
     // or the config parameters of the past block will become part of the configuration of the new block.
     if (id === block?.id) {
       const registered = optionsRegistry.get(block.id);
-      return (
-        registered ??
-        genericOptionsFactory(
-          block.inputSchema,
-          undefined,
-          block.inputValidationSchema
-        )
-      );
+      return registered ?? genericOptionsFactory(block.inputSchema);
     }
 
     return null;
-  }, [id, block?.id]);
+  }, [id, block?.id, block?.inputSchema]);
 
   return [{ block, error }, BlockOptions];
 }

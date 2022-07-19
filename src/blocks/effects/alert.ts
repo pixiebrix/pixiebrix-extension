@@ -19,7 +19,6 @@ import { Effect } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { showNotification } from "@/utils/notify";
-import * as Yup from "yup";
 
 export class AlertEffect extends Effect {
   constructor() {
@@ -52,23 +51,6 @@ export class AlertEffect extends Effect {
     },
     ["message"]
   );
-
-  inputValidationSchema = Yup.object().shape({
-    message: Yup.mixed()
-      .test(
-        "message",
-        "this must be one of the following types: string, number, or boolean",
-        (value) =>
-          typeof value === "string" ||
-          typeof value === "number" ||
-          typeof value === "boolean"
-      )
-      .test(
-        "message",
-        "this is required",
-        (value) => value != null && value !== ""
-      ),
-  });
 
   async effect({
     message,

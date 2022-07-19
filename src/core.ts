@@ -45,7 +45,6 @@ export const KEYS_OF_UI_SCHEMA = [
 export type SchemaDefinition = JSONSchema7Definition;
 export type SchemaProperties = Record<string, SchemaDefinition>;
 export type SchemaPropertyType = JSONSchema7TypeName;
-import * as Yup from "yup";
 
 /**
  * The PixieBrix brick definition API. Controls how the PixieBrix runtime interprets brick definitions.
@@ -724,9 +723,6 @@ export interface IExtensionPoint extends Metadata {
 export interface IBlock extends Metadata {
   /** A JSON schema of the inputs for the block */
   inputSchema: Schema;
-
-  /** A Validation schema of the inputs */
-  inputValidationSchema?: Yup.ObjectSchema<any>;
 
   /** An optional a JSON schema for the output of the block */
   outputSchema?: Schema;
