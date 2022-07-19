@@ -22,7 +22,6 @@ import { isEmpty } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
 import pipelineSchema from "@schemas/pipeline.json";
-import * as Yup from "yup";
 
 export type BlockOptionProps = {
   /**
