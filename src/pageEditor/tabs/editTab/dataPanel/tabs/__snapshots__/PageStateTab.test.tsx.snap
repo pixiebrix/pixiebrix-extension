@@ -2,7 +2,11 @@
 
 exports[`PageStateTab it renders with orphan extension 1`] = `
 <DocumentFragment>
-  <div>
+  <div
+    aria-hidden="false"
+    class="fade tabPane tab-pane active show"
+    role="tabpanel"
+  >
     <div
       class="mb-1 d-flex"
     >
@@ -232,7 +236,11 @@ exports[`PageStateTab it renders with orphan extension 1`] = `
 
 exports[`PageStateTab it renders with recipe extension 1`] = `
 <DocumentFragment>
-  <div>
+  <div
+    aria-hidden="false"
+    class="fade tabPane tab-pane active show"
+    role="tabpanel"
+  >
     <div
       class="mb-1 d-flex"
     >

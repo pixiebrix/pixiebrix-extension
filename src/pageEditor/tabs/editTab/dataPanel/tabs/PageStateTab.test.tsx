@@ -25,6 +25,9 @@ import {
   installedRecipeMetadataFactory,
 } from "@/testUtils/factories";
 import { getPageState } from "@/contentScript/messenger/api";
+import { FormState } from "@/pageEditor/pageEditorTypes";
+import { Tab } from "react-bootstrap";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 describe("PageStateTab", () => {
   beforeAll(() => {
@@ -34,17 +37,27 @@ describe("PageStateTab", () => {
     });
   });
 
-  test("it renders with orphan extension", async () => {
-    const formState = formStateFactory();
-    const rendered = render(<PageStateTab />, {
-      setupRedux(dispatch) {
-        dispatch(actions.addElement(formState));
-        dispatch(actions.selectElement(formState.uuid));
-      },
-    });
+  async function renderPageStateTab(formState: FormState) {
+    const rendered = render(
+      <Tab.Container activeKey={DataPanelTabKey.PageState}>
+        <PageStateTab />
+      </Tab.Container>,
+      {
+        setupRedux(dispatch) {
+          dispatch(actions.addElement(formState));
+          dispatch(actions.selectElement(formState.uuid));
+        },
+      }
+    );
 
     await waitForEffect();
 
+    return rendered;
+  }
+
+  test("it renders with orphan extension", async () => {
+    const formState = formStateFactory();
+    const rendered = await renderPageStateTab(formState);
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
@@ -52,15 +65,7 @@ describe("PageStateTab", () => {
     const formState = formStateFactory({
       recipe: installedRecipeMetadataFactory(),
     });
-    const rendered = render(<PageStateTab />, {
-      setupRedux(dispatch) {
-        dispatch(actions.addElement(formState));
-        dispatch(actions.selectElement(formState.uuid));
-      },
-    });
-
-    await waitForEffect();
-
+    const rendered = await renderPageStateTab(formState);
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 });
