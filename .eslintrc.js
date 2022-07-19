@@ -63,6 +63,14 @@ module.exports = {
 
     // Enabled for the IDE, but it's disabled in the `lint` script
     "import/no-cycle": "warn",
+    "jest/expect-expect": [
+      "error",
+      { additionalTestBlockFunctions: ["theoretically"] },
+    ],
+    "jest/no-standalone-expect": [
+      "error",
+      { additionalTestBlockFunctions: ["theoretically"] },
+    ],
   },
   overrides: [
     {

@@ -32,10 +32,11 @@ import {
   formStateFactory,
   marketplaceListingFactory,
   marketplaceTagFactory,
+  triggerFormStateFactory,
   uuidSequence,
 } from "@/testUtils/factories";
 import blockRegistry from "@/blocks/registry";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState, PipelineFlavour } from "@/pageEditor/pageEditorTypes";
 import {
   echoBlock,
   teapotBlock,
@@ -45,6 +46,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
 import { JQTransformer } from "@/blocks/transformers/jq";
+import { AlertEffect } from "@/blocks/effects/alert";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import {
   makePipelineExpression,
@@ -61,6 +63,7 @@ import { fireTextInput } from "@/testUtils/formHelpers";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
+import theoretically from "jest-theories";
 
 jest.mock("@/services/api", () => ({
   appApi: {
@@ -84,6 +87,7 @@ jest.mock("@/components/asyncIcon", () => ({
 jest.setTimeout(30_000); // This test is flaky with the default timeout of 5000 ms
 
 const jqBlock = new JQTransformer();
+const alertBlock = new AlertEffect();
 const forEachBlock = new ForEach();
 const markdownBlock = new MarkdownRenderer();
 
@@ -97,6 +101,7 @@ beforeAll(async () => {
     echoBlock,
     teapotBlock,
     jqBlock,
+    alertBlock,
     forEachBlock,
     markdownBlock
   );
@@ -654,4 +659,78 @@ describe("validation", () => {
 
     expectEditorError(rendered.container, "A renderer must be the last brick.");
   });
+});
+
+describe("node validation on add", () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
+  beforeEach(() => {
+    jest.clearAllTimers();
+  });
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+  });
+
+  const theories = [
+    {
+      pipelineFlavour: PipelineFlavour.NoRenderer,
+      formFactory: triggerFormStateFactory,
+      disallowedBlock: "markdown",
+    },
+    {
+      pipelineFlavour: PipelineFlavour.NoEffect,
+      formFactory: formStateFactory,
+      disallowedBlock: "Window Alert",
+    },
+  ];
+
+  theoretically(
+    "filters blocks for {pipelineFlavour} pipeline",
+    theories,
+    async ({ formFactory, disallowedBlock }) => {
+      const formState = formFactory();
+      render(
+        <>
+          <EditorPane />
+          <AddBlockModal />
+        </>,
+        {
+          setupRedux(dispatch) {
+            dispatch(editorActions.addElement(formState));
+            dispatch(editorActions.selectElement(formState.uuid));
+          },
+        }
+      );
+
+      await waitForEffect();
+
+      const addBrickButton = screen.getByTestId(
+        "icon-button-foundation-add-brick"
+      );
+
+      await immediateUserEvent.click(addBrickButton);
+
+      // Try to find the disallowed block and make sure it's not there
+      await immediateUserEvent.type(
+        screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
+        disallowedBlock
+      );
+
+      // Run the debounced search
+      act(() => {
+        jest.runOnlyPendingTimers();
+      });
+
+      expect(
+        screen.queryAllByRole("button", {
+          name: /add/i,
+        })
+      ).toHaveLength(0);
+    }
+  );
 });
