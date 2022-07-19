@@ -51,6 +51,8 @@ function useNodeValidation(blockFieldName: string, nodeId: UUID) {
     // FIXME: don't use setTimeout here
     // Formik seems to erase the error set on mount, so we wait a bit
     // Figure out what's going on an fix it
+    // After the fix, double check the EditorPane validation tests,
+    // likely many usages of jest.runOnlyPendingTimers can be dropped
     setTimeout(() => {
       if (
         nodeError?.fieldErrors != null &&

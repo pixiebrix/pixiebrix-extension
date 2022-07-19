@@ -15,8 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectEditorError"] }] */
+
 import React from "react";
-import { render, screen } from "@/pageEditor/testHelpers";
+import {
+  getByText,
+  getByTitle,
+  render,
+  screen,
+} from "@/pageEditor/testHelpers";
 import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
@@ -50,10 +57,10 @@ import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import * as api from "@/services/api";
 import { MarketplaceListing } from "@/types/contract";
 import { EditablePackage } from "@/types/definitions";
-import { fireTextInput, selectSchemaFieldType } from "@/testUtils/formHelpers";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { fireTextInput } from "@/testUtils/formHelpers";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
+import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 
 jest.mock("@/services/api", () => ({
   appApi: {
@@ -78,6 +85,7 @@ jest.setTimeout(30_000); // This test is flaky with the default timeout of 5000 
 
 const jqBlock = new JQTransformer();
 const forEachBlock = new ForEach();
+const markdownBlock = new MarkdownRenderer();
 
 // Using events without delays with jest fake timers
 const immediateUserEvent = userEvent.setup({ delay: null });
@@ -85,7 +93,13 @@ const immediateUserEvent = userEvent.setup({ delay: null });
 beforeAll(async () => {
   registerDefaultWidgets();
   blockRegistry.clear();
-  blockRegistry.register(echoBlock, teapotBlock, jqBlock, forEachBlock);
+  blockRegistry.register(
+    echoBlock,
+    teapotBlock,
+    jqBlock,
+    forEachBlock,
+    markdownBlock
+  );
   await blockRegistry.allTyped();
 
   const tags = [
@@ -175,6 +189,32 @@ const getFormStateWithSubPipelines = (): FormState =>
     }),
   ]);
 
+async function addABlock(addButton: Element, blockName: string) {
+  await immediateUserEvent.click(addButton);
+
+  // Filter for the specified block
+  await immediateUserEvent.type(
+    screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
+    blockName
+  );
+
+  // Run the debounced search
+  act(() => {
+    jest.runOnlyPendingTimers();
+  });
+
+  await immediateUserEvent.click(
+    screen.getAllByRole("button", {
+      name: /add/i,
+    })[0]
+  );
+
+  // Run validation
+  act(() => {
+    jest.runOnlyPendingTimers();
+  });
+}
+
 describe("renders", () => {
   test("the first selected node", async () => {
     const formState = getPlainFormState();
@@ -222,32 +262,6 @@ describe("can add a node", () => {
     jest.runOnlyPendingTimers();
   });
 
-  async function addABlock(addButton: Element, blockName: string) {
-    await immediateUserEvent.click(addButton);
-
-    // Filter for the specified block
-    await immediateUserEvent.type(
-      screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
-      blockName
-    );
-
-    // Run the debounced search
-    act(() => {
-      jest.runOnlyPendingTimers();
-    });
-
-    await immediateUserEvent.click(
-      screen.getAllByRole("button", {
-        name: /add/i,
-      })[0]
-    );
-
-    // Run validation
-    act(() => {
-      jest.runOnlyPendingTimers();
-    });
-  }
-
   test("to root pipeline", async () => {
     const formState = getPlainFormState();
     render(
@@ -269,7 +283,7 @@ describe("can add a node", () => {
     const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
       exact: false,
     });
-    const last = addButtons[addButtons.length - 1];
+    const last = addButtons.at(-1);
     await addABlock(last, "jq - json processor");
 
     const nodes = screen.getAllByTestId("editor-node");
@@ -423,6 +437,31 @@ describe("can remove a node", () => {
 });
 
 describe("validation", () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
+  beforeEach(() => {
+    jest.clearAllTimers();
+  });
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+  });
+
+  function expectEditorError(container: HTMLElement, errorMessage: string) {
+    const errorBadge = container.querySelector(
+      '.active[data-testid="editor-node"] span.badge'
+    );
+    expect(errorBadge).toBeInTheDocument();
+
+    expect(
+      getByText(container.querySelector(".configPanel"), errorMessage)
+    ).toBeInTheDocument();
+  }
+
   test("validates string templates", async () => {
     const formState = getFormStateWithSubPipelines();
     const subEchoNode = (
@@ -438,19 +477,181 @@ describe("validation", () => {
 
     await waitForEffect();
 
-    await selectSchemaFieldType(
-      `${PIPELINE_BLOCKS_FIELD_NAME}.1.config.body.__value__.0.config.message`,
-      "var"
-    );
-
     // By some reason, the validation doesn't fire with userEvent.type
     fireTextInput(rendered.getByLabelText("message"), "{{!");
     await waitForEffect();
+    act(() => {
+      // Run the timers of the Formik-Redux validation synchronization
+      jest.runOnlyPendingTimers();
+    });
 
-    expect(
-      screen.getByText(
-        "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
-      )
-    ).toBeInTheDocument();
+    expectEditorError(
+      rendered.container,
+      "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
+    );
+  });
+
+  test("preserves validation results when switching between extensions", async () => {
+    // The test adds 2 extensions.
+    // It creates an input field error to one node of the extension 1,
+    // then it creates a node level error on another node (adding a renderer at the beginning of the pipeline).
+    // Then we select the second extension and make sure there're no error badges displayed.
+    // Going back to extension 1.
+    // See the 2 error badges in the Node Layout.
+    // Select the Markdown node and check the error.
+    // Select the Echo block and check the error.
+    const extension1 = getPlainFormState();
+    const extension2 = getPlainFormState();
+
+    // Selecting the Echo block in the first extension
+    const { instanceId: echoBlockInstanceId } =
+      extension1.extension.blockPipeline[0];
+    const rendered = render(
+      <>
+        <EditorPane />
+        <AddBlockModal />
+      </>,
+      {
+        setupRedux(dispatch) {
+          dispatch(editorActions.addElement(extension1));
+          dispatch(editorActions.addElement(extension2));
+          dispatch(editorActions.selectElement(extension1.uuid));
+          dispatch(editorActions.setElementActiveNodeId(echoBlockInstanceId));
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    // Make invalid string template
+    // This is field level error, reported via Formik
+    fireTextInput(rendered.getByLabelText("message"), "{{!");
+    await waitForEffect();
+
+    // Adding a renderer in the first position in the pipeline
+    // This is a node level error, reported via Redux
+    const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
+      exact: false,
+    });
+    const addButton = addButtons.at(0);
+    await addABlock(addButton, "markdown");
+
+    // Select foundation node.
+    // For testing purposes we don't want a node with error to be active when we select extension1 again
+    await immediateUserEvent.click(rendered.queryAllByTestId("editor-node")[0]);
+
+    // Selecting another extension. Only possible with Redux
+    const store = rendered.getReduxStore();
+    store.dispatch(editorActions.selectElement(extension2.uuid));
+
+    // Ensure no error is displayed
+    const errorBadgesOfAnotherExtension = rendered.container.querySelectorAll(
+      '[data-testid="editor-node"] span.badge'
+    );
+    expect(errorBadgesOfAnotherExtension).toHaveLength(0);
+
+    // Selecting the first extension
+    store.dispatch(editorActions.selectElement(extension1.uuid));
+
+    // Should show 2 error in the Node Layout
+    const errorBadges = rendered.container.querySelectorAll(
+      '[data-testid="editor-node"] span.badge'
+    );
+    expect(errorBadges).toHaveLength(2);
+
+    const editorNodes = rendered.queryAllByTestId("editor-node");
+
+    // Selecting the markdown block in the first extension
+    await immediateUserEvent.click(editorNodes[1]);
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+    expectEditorError(rendered.container, "A renderer must be the last brick.");
+
+    // Selecting the echo block
+    await immediateUserEvent.click(editorNodes[2]);
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+    expectEditorError(
+      rendered.container,
+      "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
+    );
+  });
+
+  test("validates multiple renderers on add", async () => {
+    const formState = getPlainFormState();
+    formState.extension.blockPipeline.push(
+      blockConfigFactory({
+        id: MarkdownRenderer.BLOCK_ID,
+        config: {
+          markdown: makeTemplateExpression("nunjucks", "test"),
+        },
+      })
+    );
+    const rendered = render(
+      <>
+        <EditorPane />
+        <AddBlockModal />
+      </>,
+      {
+        setupRedux(dispatch) {
+          dispatch(editorActions.addElement(formState));
+          dispatch(editorActions.selectElement(formState.uuid));
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    // Hitting the second to last (Foundation node plus 2 bricks) Add Brick button
+    const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
+      exact: false,
+    });
+    const addButton = addButtons.at(0);
+    await addABlock(addButton, "markdown");
+
+    expectEditorError(
+      rendered.container,
+      "A panel can only have one renderer. There are one or more renderers configured after this brick. A renderer must be the last brick."
+    );
+  });
+
+  test("validates that renderer is the last node on move", async () => {
+    const formState = getPlainFormState();
+    formState.extension.blockPipeline.push(
+      blockConfigFactory({
+        id: MarkdownRenderer.BLOCK_ID,
+        config: {
+          markdown: makeTemplateExpression("nunjucks", "test"),
+        },
+      })
+    );
+
+    // Selecting the last node (renderer)
+    const { instanceId } = formState.extension.blockPipeline[2];
+    const rendered = render(<EditorPane />, {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.selectElement(formState.uuid));
+        dispatch(editorActions.setElementActiveNodeId(instanceId));
+      },
+    });
+
+    await waitForEffect();
+
+    const moveUpButton = getByTitle(
+      rendered.container.querySelector('.active[data-testid="editor-node"]'),
+      "Move brick higher"
+    );
+
+    await immediateUserEvent.click(moveUpButton);
+
+    // This enables the Formik to re-render the form after the Element's change
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+
+    expectEditorError(rendered.container, "A renderer must be the last brick.");
   });
 });

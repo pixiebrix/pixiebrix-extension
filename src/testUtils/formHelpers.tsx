@@ -20,6 +20,7 @@ import React, { PropsWithChildren } from "react";
 import { fireEvent, screen } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
+import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 
 export const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
 
@@ -53,9 +54,12 @@ export const fireTextInput = (input: Element, text: string) => {
   fireEvent.blur(input);
 };
 
+/**
+ * Changes the selected input type of a field with SchemaToggle
+ */
 export const selectSchemaFieldType = async (
   fieldName: string,
-  typeToSelect: string
+  typeToSelect: FieldInputMode
 ) => {
   const fieldToggleButton = screen
     .getByTestId(`toggle-${fieldName}`)

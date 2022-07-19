@@ -375,7 +375,7 @@ export const extensionPointDefinitionFactory = define<ExtensionPointDefinition>(
       }),
     definition(n: number) {
       const definition: ExtensionPointConfigDefinition = {
-        type: "menuItem",
+        type: "menuItem" as ExtensionPointType,
         isAvailable: {
           matchPatterns: [`https://www.mySite${n}.com/*`],
         },
@@ -555,7 +555,11 @@ const internalFormStateFactory = define<FormState>({
   type: "panel" as ExtensionPointType,
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
-  extensionPoint: extensionPointDefinitionFactory,
+  extensionPoint: derive<FormState, ExtensionPointDefinition>(({ type }) => {
+    const extensionPoint = extensionPointDefinitionFactory();
+    extensionPoint.definition.type = type;
+    return extensionPoint;
+  }, "type"),
 } as any);
 
 export const formStateFactory = (

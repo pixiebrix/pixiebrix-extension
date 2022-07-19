@@ -23,6 +23,7 @@ import { flatMap, isEmpty, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
   ElementUIState,
+  ErrorMap,
   NodeUIState,
   TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
@@ -249,10 +250,9 @@ export const selectErrorMap = createSelector(
 );
 
 export const selectActiveNodeError = createSelector(
-  selectActiveElementUIState,
+  selectErrorMap,
   selectActiveNodeId,
-  (uiState: ElementUIState, activeNodeId: UUID) =>
-    uiState.errorMap[activeNodeId]
+  (errorMap: ErrorMap, activeNodeId: UUID) => errorMap[activeNodeId]
 );
 
 export const selectAddBlockLocation = ({ editor }: RootState) =>
