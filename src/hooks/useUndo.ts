@@ -34,7 +34,7 @@ function useUndo<T>(
   const [history, setHistory] = useState<T[]>([]);
   const [debouncedValue, setDebouncedValue] = useState(initialValue);
 
-  const setHistoryDebounced = useDebouncedCallback(
+  const updateHistory = useDebouncedCallback(
     (newValue: T) => {
       setHistory((previous) => {
         if (previous.length === MAX_HISTORY_SIZE) {
@@ -55,10 +55,10 @@ function useUndo<T>(
 
   const setUndoableValue = useCallback(
     (newValue: T) => {
-      setHistoryDebounced(newValue);
+      updateHistory(newValue);
       setRealValue(newValue);
     },
-    [setRealValue, setHistoryDebounced]
+    [updateHistory, setRealValue]
   );
 
   const undo = useCallback(() => {
@@ -68,6 +68,7 @@ function useUndo<T>(
 
     const [oldValue, ...newHistory] = history;
     setRealValue(oldValue);
+    setDebouncedValue(oldValue);
     setHistory(newHistory);
   }, [history, setRealValue]);
 
