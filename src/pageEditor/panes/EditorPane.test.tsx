@@ -64,7 +64,7 @@ import { useAsyncIcon } from "@/components/asyncIcon";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import theoretically from "jest-theories";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "../consts";
+import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import getType from "@/runtime/getType";
 
 jest.mock("@/services/api", () => ({
