@@ -64,6 +64,8 @@ import { useAsyncIcon } from "@/components/asyncIcon";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import theoretically from "jest-theories";
+import { PIPELINE_BLOCKS_FIELD_NAME } from "../consts";
+import getType from "@/runtime/getType";
 
 jest.mock("@/services/api", () => ({
   appApi: {
@@ -659,9 +661,72 @@ describe("validation", () => {
 
     expectEditorError(rendered.container, "A renderer must be the last brick.");
   });
+
+  const disallowedBlockValidationTheories = [
+    {
+      pipelineFlavour: PipelineFlavour.NoRenderer,
+      formFactory: triggerFormStateFactory,
+      disallowedBlock: markdownBlock,
+    },
+    {
+      pipelineFlavour: PipelineFlavour.NoEffect,
+      formFactory: formStateFactory,
+      disallowedBlock: alertBlock,
+    },
+  ];
+
+  theoretically(
+    "validates a disallowed block in {pipelineFlavour} pipeline",
+    disallowedBlockValidationTheories,
+    async ({ formFactory, disallowedBlock }) => {
+      const formState = formFactory();
+      const disallowedBlockConfig = blockConfigFactory({
+        id: disallowedBlock.id,
+        config: defaultBlockConfig(disallowedBlock.inputSchema),
+      });
+
+      const rendered = render(
+        <>
+          <EditorPane />
+        </>,
+        {
+          setupRedux(dispatch) {
+            dispatch(editorActions.addElement(formState));
+            dispatch(editorActions.selectElement(formState.uuid));
+            // Adding the node will invoke validation (can't add with UI because of UI validation rules)
+            dispatch(
+              editorActions.addNode({
+                block: disallowedBlockConfig,
+                pipelinePath: PIPELINE_BLOCKS_FIELD_NAME,
+                pipelineIndex: 0,
+              })
+            );
+            dispatch(
+              editorActions.setElementActiveNodeId(
+                disallowedBlockConfig.instanceId
+              )
+            );
+          },
+        }
+      );
+
+      await waitForEffect();
+
+      // This enables the Formik to re-render the form after the Element's change
+      act(() => {
+        jest.runOnlyPendingTimers();
+      });
+
+      const blockType = await getType(disallowedBlock);
+      expectEditorError(
+        rendered.container,
+        `Block of type "${blockType}" is not allowed in this pipeline`
+      );
+    }
+  );
 });
 
-describe("node validation on add", () => {
+describe("block validation in Add Block Modal UI", () => {
   beforeAll(() => {
     jest.useFakeTimers();
   });
@@ -680,19 +745,19 @@ describe("node validation on add", () => {
     {
       pipelineFlavour: PipelineFlavour.NoRenderer,
       formFactory: triggerFormStateFactory,
-      disallowedBlock: "markdown",
+      disallowedBlockName: "markdown",
     },
     {
       pipelineFlavour: PipelineFlavour.NoEffect,
       formFactory: formStateFactory,
-      disallowedBlock: "Window Alert",
+      disallowedBlockName: "Window Alert",
     },
   ];
 
   theoretically(
     "filters blocks for {pipelineFlavour} pipeline",
     theories,
-    async ({ formFactory, disallowedBlock }) => {
+    async ({ formFactory, disallowedBlockName }) => {
       const formState = formFactory();
       render(
         <>
@@ -718,7 +783,7 @@ describe("node validation on add", () => {
       // Try to find the disallowed block and make sure it's not there
       await immediateUserEvent.type(
         screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
-        disallowedBlock
+        disallowedBlockName
       );
 
       // Run the debounced search
