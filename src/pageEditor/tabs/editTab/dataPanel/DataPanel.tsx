@@ -17,9 +17,7 @@
  */
 
 import React, { useMemo } from "react";
-import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isEmpty, isEqual, pickBy } from "lodash";
-import { useFormikContext } from "formik";
 import { Nav, Tab } from "react-bootstrap";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
@@ -28,8 +26,6 @@ import BlockPreview, {
   usePreviewInfo,
 } from "@/pageEditor/tabs/effect/BlockPreview";
 import useReduxState from "@/hooks/useReduxState";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { JsonObject } from "type-fest";
@@ -55,6 +51,8 @@ import { FormTransformer } from "@/blocks/transformers/ephemeralForm/formTransfo
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import DocumentOutline from "@/components/documentBuilder/outline/DocumentOutline";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
+import StateTab from "./tabs/StateTab";
+import ConfigurationTab from "./tabs/ConfigurationTab";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -79,7 +77,6 @@ const DataPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
 
-  const { errors: formikErrors } = useFormikContext<FormState>();
   const activeElement = useSelector(selectActiveElement);
 
   const {
@@ -205,7 +202,7 @@ const DataPanel: React.FC = () => {
           {showDeveloperTabs && (
             <>
               <Nav.Item className={dataPanelStyles.tabNav}>
-                <Nav.Link eventKey={DataPanelTabKey.Formik}>Formik</Nav.Link>
+                <Nav.Link eventKey={DataPanelTabKey.State}>State</Nav.Link>
               </Nav.Item>
               <Nav.Item className={dataPanelStyles.tabNav}>
                 <Nav.Link eventKey={DataPanelTabKey.BlockConfig}>
@@ -251,29 +248,8 @@ const DataPanel: React.FC = () => {
           )}
           {showDeveloperTabs && (
             <>
-              <DataTab eventKey={DataPanelTabKey.Formik}>
-                <div className="text-info">
-                  <FontAwesomeIcon icon={faInfoCircle} /> This tab is only
-                  visible to developers
-                </div>
-                <DataTabJsonTree
-                  data={{ ...activeElement, ...formikErrors }}
-                  searchable
-                  tabKey={DataPanelTabKey.Formik}
-                  label="Formik State"
-                />
-              </DataTab>
-              <DataTab eventKey={DataPanelTabKey.BlockConfig}>
-                <div className="text-info">
-                  <FontAwesomeIcon icon={faInfoCircle} /> This tab is only
-                  visible to developers
-                </div>
-                <DataTabJsonTree
-                  data={blockConfig ?? {}}
-                  tabKey={DataPanelTabKey.BlockConfig}
-                  label="Configuration"
-                />
-              </DataTab>
+              <StateTab />
+              <ConfigurationTab config={blockConfig} />
             </>
           )}
           <DataTab eventKey={DataPanelTabKey.Rendered} isTraceEmpty={!record}>

@@ -16,21 +16,20 @@
  */
 
 import React from "react";
-import { useFormikContext } from "formik";
 import { UUID } from "@/core";
 import { useSelector } from "react-redux";
 import { makeSelectBlockTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { Nav, Tab } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import ExtensionPointPreview from "@/pageEditor/tabs/effect/ExtensionPointPreview";
 import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import useFlags from "@/hooks/useFlags";
-import { FormState } from "@/pageEditor/pageEditorTypes";
 import PageStateTab from "./PageStateTab";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
+import StateTab from "./tabs/StateTab";
+import ConfigurationTab from "./tabs/ConfigurationTab";
+import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 
 const FoundationDataPanel: React.FC<{
   firstBlockInstanceId?: UUID;
@@ -38,9 +37,8 @@ const FoundationDataPanel: React.FC<{
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
 
-  const { values: formState } = useFormikContext<FormState>();
-
-  const { extensionPoint } = formState;
+  const activeElement = useSelector(selectActiveElement);
+  const { extensionPoint } = activeElement;
 
   const { record: firstBlockTraceRecord } = useSelector(
     makeSelectBlockTrace(firstBlockInstanceId)
@@ -59,7 +57,7 @@ const FoundationDataPanel: React.FC<{
         {showDeveloperTabs && (
           <>
             <Nav.Item className={dataPanelStyles.tabNav}>
-              <Nav.Link eventKey={DataPanelTabKey.Formik}>Formik</Nav.Link>
+              <Nav.Link eventKey={DataPanelTabKey.State}>State</Nav.Link>
             </Nav.Item>
             <Nav.Item className={dataPanelStyles.tabNav}>
               <Nav.Link eventKey={DataPanelTabKey.BlockConfig}>
@@ -93,39 +91,8 @@ const FoundationDataPanel: React.FC<{
         </Tab.Pane>
         {showDeveloperTabs && (
           <>
-            <Tab.Pane
-              eventKey={DataPanelTabKey.Formik}
-              className={dataPanelStyles.tabPane}
-              mountOnEnter
-              unmountOnExit
-            >
-              <div className="text-info">
-                <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
-                to developers
-              </div>
-              <DataTabJsonTree
-                data={formState ?? {}}
-                searchable
-                tabKey={DataPanelTabKey.Formik}
-                label="Formik State"
-              />
-            </Tab.Pane>
-            <Tab.Pane
-              eventKey={DataPanelTabKey.BlockConfig}
-              className={dataPanelStyles.tabPane}
-              mountOnEnter
-              unmountOnExit
-            >
-              <div className="text-info">
-                <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
-                to developers
-              </div>
-              <DataTabJsonTree
-                data={extensionPoint}
-                tabKey={DataPanelTabKey.BlockConfig}
-                label="Configuration"
-              />
-            </Tab.Pane>
+            <StateTab />
+            <ConfigurationTab config={extensionPoint} />
           </>
         )}
         <Tab.Pane
@@ -164,7 +131,7 @@ const FoundationDataPanel: React.FC<{
           mountOnEnter
           unmountOnExit
         >
-          <ExtensionPointPreview element={formState} />
+          <ExtensionPointPreview element={activeElement} />
         </Tab.Pane>
         <Tab.Pane
           eventKey={DataPanelTabKey.PageState}
