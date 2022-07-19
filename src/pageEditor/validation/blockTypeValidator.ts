@@ -26,7 +26,7 @@ import {
 import blockRegistry from "@/blocks/registry";
 import { Validator, ValidatorEffect } from "./validationTypes";
 import {
-  getPipelineType,
+  getPipelineFlavour,
   makeIsBlockAllowedForPipeline,
 } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 import { ErrorLevel } from "@/pageEditor/uiState/uiStateTypes";
@@ -58,13 +58,13 @@ class BlockTypeValidator implements Validator {
     traversePipeline({
       pipeline: activeElement.extension.blockPipeline,
       visitPipeline({ pipeline, pipelinePath, parentNode }) {
-        const pipelineType = getPipelineType({
+        const pipelineFlavour = getPipelineFlavour({
           extensionPointType,
           pipelinePath,
           parentNode,
         });
         const isBlockAllowedInPipeline =
-          makeIsBlockAllowedForPipeline(pipelineType);
+          makeIsBlockAllowedForPipeline(pipelineFlavour);
 
         for (const pipelineBlock of pipeline) {
           const typedBlock = allBlocks.get(pipelineBlock.id);

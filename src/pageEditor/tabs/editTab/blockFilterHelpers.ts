@@ -18,10 +18,11 @@
 import { TypedBlock } from "@/blocks/registry";
 import { validateRegistryId } from "@/types/helpers";
 import { ExtensionPointType } from "@/extensionPoints/types";
-import { PipelineType } from "@/pageEditor/pageEditorTypes";
+import { PipelineFlavour } from "@/pageEditor/pageEditorTypes";
 import { stubTrue } from "lodash";
 import { BlockConfig } from "@/blocks/types";
 import { DocumentRenderer } from "@/blocks/renderers/document";
+import { BlockType } from "@/runtime/runtimeTypes";
 
 const PANEL_TYPES = ["actionPanel", "panel"];
 
@@ -33,45 +34,50 @@ const alwaysShow = new Set([
 
 export type IsBlockAllowedPredicate = (block: TypedBlock) => boolean;
 
-export function getRootPipelineType(extensionPointType: ExtensionPointType) {
+export function getRootPipelineFlavour(extensionPointType: ExtensionPointType) {
   if (PANEL_TYPES.includes(extensionPointType)) {
-    return PipelineType.Renderer;
+    return PipelineFlavour.NoEffect;
   }
 
-  return PipelineType.Effect;
+  return PipelineFlavour.NoRenderer;
 }
 
-type GetPipelineTypeArgs = {
+type GetPipelineFlavourArgs = {
   extensionPointType: ExtensionPointType;
   pipelinePath: string;
   parentNode: BlockConfig;
 };
-export function getPipelineType({
+export function getPipelineFlavour({
   extensionPointType,
   pipelinePath,
   parentNode,
-}: GetPipelineTypeArgs): PipelineType {
+}: GetPipelineFlavourArgs): PipelineFlavour {
   if (parentNode == null) {
     // Root pipeline
-    return getRootPipelineType(extensionPointType);
+    return getRootPipelineFlavour(extensionPointType);
   }
 
   if (
-    parentNode.id !== DocumentRenderer.BLOCK_ID ||
-    pipelinePath.split(".").at(-2) === "onClick"
+    parentNode.id === DocumentRenderer.BLOCK_ID &&
+    pipelinePath.split(".").at(-2) === "pipeline"
   ) {
-    // Effect pipeline
-    return PipelineType.Effect;
+    // Document Brick pipeline, it renders, should have no side effects
+    return PipelineFlavour.NoEffect;
   }
 
-  return PipelineType.Renderer;
+  return PipelineFlavour.NoRenderer;
 }
 
-export function makeIsBlockAllowedForPipeline(pipelineType: PipelineType) {
-  if (pipelineType === PipelineType.Effect) {
-    return ({ type, block }: TypedBlock) =>
-      (type != null && type !== "renderer") || alwaysShow.has(block.id);
+export function makeIsBlockAllowedForPipeline(
+  pipelineFlavour: PipelineFlavour
+) {
+  if (pipelineFlavour === PipelineFlavour.Any) {
+    return stubTrue;
   }
 
-  return stubTrue;
+  const excludeType: BlockType =
+    pipelineFlavour === PipelineFlavour.NoEffect ? "effect" : "renderer";
+
+  return ({ type, block }: TypedBlock) =>
+    (type != null && type !== excludeType) || alwaysShow.has(block.id);
 }

@@ -58,8 +58,8 @@ import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 import { BlockError, ErrorLevel } from "@/pageEditor/uiState/uiStateTypes";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
-import { PipelineType } from "@/pageEditor/pageEditorTypes";
-import { getRootPipelineType } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import { PipelineFlavour } from "@/pageEditor/pageEditorTypes";
+import { getRootPipelineFlavour } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -90,7 +90,7 @@ type SubPipeline = {
    */
   subPipelinePath: string;
 
-  subPipelineType: PipelineType;
+  subPipelineFlavour: PipelineFlavour;
 };
 
 function decideBlockStatus(
@@ -160,7 +160,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   function mapPipelineToNodes({
     pipeline,
     pipelinePath = PIPELINE_BLOCKS_FIELD_NAME,
-    pipelineType,
+    pipelineFlavour,
     nestingLevel = 0,
     parentIsActive = false,
   }: {
@@ -168,7 +168,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
     pipelinePath?: string;
     nestingLevel?: number;
     parentIsActive?: boolean;
-    pipelineType?: PipelineType;
+    pipelineFlavour?: PipelineFlavour;
   }): EditorNodeProps[] {
     const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
 
@@ -244,9 +244,9 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             headerLabel: isButton ? "button" : "brick",
             subPipeline,
             subPipelinePath,
-            subPipelineType: isButton
-              ? PipelineType.Effect
-              : PipelineType.Renderer,
+            subPipelineFlavour: isButton
+              ? PipelineFlavour.NoRenderer
+              : PipelineFlavour.NoEffect,
           });
         }
       } else {
@@ -265,7 +265,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             headerLabel: propName,
             subPipeline: get(pipeline, subPipelineAccessor) ?? [],
             subPipelinePath,
-            subPipelineType: PipelineType.Effect,
+            subPipelineFlavour: PipelineFlavour.NoRenderer,
           });
         }
       }
@@ -330,7 +330,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             dispatch(
               actions.showAddBlockModal({
                 path: pipelinePath,
-                type: pipelineType,
+                flavour: pipelineFlavour,
                 index: index + 1,
               })
             );
@@ -398,7 +398,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           headerLabel,
           subPipeline,
           subPipelinePath,
-          subPipelineType,
+          subPipelineFlavour,
         } of subPipelines) {
           const headerName = `${nodeId}-header`;
 
@@ -411,7 +411,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
                 dispatch(
                   actions.showAddBlockModal({
                     path: subPipelinePath,
-                    type: subPipelineType,
+                    flavour: subPipelineFlavour,
                     index: 0,
                   })
                 );
@@ -447,7 +447,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             ...mapPipelineToNodes({
               pipeline: subPipeline,
               pipelinePath: subPipelinePath,
-              pipelineType: subPipelineType,
+              pipelineFlavour: subPipelineFlavour,
               nestingLevel: nestingLevel + 1,
               parentIsActive: nodeIsActive || parentIsActive,
             })
@@ -477,7 +477,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
     return nodes;
   }
 
-  const rootPipelineType = getRootPipelineType(extensionPointType);
+  const rootPipelineFlavour = getRootPipelineFlavour(extensionPointType);
   const foundationNodeActions: NodeAction[] = [
     {
       name: `${FOUNDATION_NODE_ID}-add-brick`,
@@ -487,7 +487,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
         dispatch(
           actions.showAddBlockModal({
             path: PIPELINE_BLOCKS_FIELD_NAME,
-            type: rootPipelineType,
+            flavour: rootPipelineFlavour,
             index: 0,
           })
         );
@@ -512,7 +512,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   // because it will calculate foundationRunStatus for the foundation node
   const nodes = mapPipelineToNodes({
     pipeline,
-    pipelineType: rootPipelineType,
+    pipelineFlavour: rootPipelineFlavour,
   });
   const foundationNodeProps: BrickNodeProps = {
     icon: extensionPointIcon,

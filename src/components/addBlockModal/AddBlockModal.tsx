@@ -45,7 +45,7 @@ import Loader from "@/components/Loader";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { produce } from "immer";
 import { useDispatch, useSelector } from "react-redux";
-import { PipelineType } from "@/pageEditor/pageEditorTypes";
+import { PipelineFlavour } from "@/pageEditor/pageEditorTypes";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 import useBlockSearch from "@/components/addBlockModal/useBlockSearch";
 import BlockGridItemRenderer from "@/components/addBlockModal/BlockGridItemRenderer";
@@ -134,7 +134,7 @@ const AddBlockModal: React.VFC = () => {
 
   const addBlockLocation = useSelector(selectAddBlockLocation);
   const pipelinePath = addBlockLocation?.path ?? "";
-  const pipelineType = addBlockLocation?.type ?? PipelineType.Any;
+  const pipelineFlavour = addBlockLocation?.flavour ?? PipelineFlavour.Any;
   const pipelineIndex = addBlockLocation?.index ?? 0;
 
   const addBlock = useAddBlock(pipelinePath, pipelineIndex);
@@ -156,12 +156,12 @@ const AddBlockModal: React.VFC = () => {
       return [];
     }
 
-    const isBlockAllowed = makeIsBlockAllowedForPipeline(pipelineType);
+    const isBlockAllowed = makeIsBlockAllowedForPipeline(pipelineFlavour);
 
     return [...allBlocks.entries()]
       .filter(([_, typedBlock]) => isBlockAllowed(typedBlock))
       .map(([_, { block }]) => block);
-  }, [allBlocks, pipelineType, isLoadingAllBlocks]);
+  }, [allBlocks, pipelineFlavour, isLoadingAllBlocks]);
 
   useEffect(() => {
     if (!gridRef.current) {
