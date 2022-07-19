@@ -28,7 +28,7 @@ import { Button } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { UnknownObject } from "@/types";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import DataTab from "./DataTab";
+import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
 
 const alwaysExpandNode = () => true;
 

@@ -35,7 +35,7 @@ import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDat
 import DocumentPreview from "@/components/documentBuilder/preview/DocumentPreview";
 import useFlags from "@/hooks/useFlags";
 import ErrorDisplay from "./ErrorDisplay";
-import PageStateTab from "./PageStateTab";
+import PageStateTab from "./tabs/PageStateTab";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import {

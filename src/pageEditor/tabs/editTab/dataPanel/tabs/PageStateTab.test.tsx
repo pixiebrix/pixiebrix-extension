@@ -18,7 +18,7 @@
 import React from "react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/pageEditor/testHelpers";
-import PageStateTab from "@/pageEditor/tabs/editTab/dataPanel/PageStateTab";
+import PageStateTab from "./PageStateTab";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import {
   formStateFactory,
