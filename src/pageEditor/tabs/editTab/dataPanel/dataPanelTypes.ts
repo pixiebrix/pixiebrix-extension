@@ -18,7 +18,7 @@
 export enum DataPanelTabKey {
   Context = "context",
   PageState = "pageState",
-  Formik = "formik",
+  State = "state",
   BlockConfig = "blockConfig",
   Rendered = "rendered",
   Output = "output",
