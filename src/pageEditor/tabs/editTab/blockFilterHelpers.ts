@@ -79,5 +79,5 @@ export function makeIsBlockAllowedForPipeline(
     pipelineFlavour === PipelineFlavour.NoEffect ? "effect" : "renderer";
 
   return ({ type, block }: TypedBlock) =>
-    (type != null && type !== excludeType) || alwaysShow.has(block.id);
+    type !== excludeType || alwaysShow.has(block.id);
 }
