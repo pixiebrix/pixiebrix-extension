@@ -133,14 +133,7 @@ const FoundationDataPanel: React.FC<{
         >
           <ExtensionPointPreview element={activeElement} />
         </Tab.Pane>
-        <Tab.Pane
-          eventKey={DataPanelTabKey.PageState}
-          className={dataPanelStyles.tabPane}
-          mountOnEnter
-          unmountOnExit
-        >
-          <PageStateTab />
-        </Tab.Pane>
+        <PageStateTab />
       </Tab.Content>
     </Tab.Container>
   );

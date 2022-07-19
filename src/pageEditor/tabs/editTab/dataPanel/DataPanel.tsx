@@ -53,6 +53,7 @@ import DocumentOutline from "@/components/documentBuilder/outline/DocumentOutlin
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 import StateTab from "./tabs/StateTab";
 import ConfigurationTab from "./tabs/ConfigurationTab";
+import { joinPathParts } from "@/utils";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -83,6 +84,7 @@ const DataPanel: React.FC = () => {
     blockId,
     blockConfig,
     index: blockIndex,
+    path: blockPath,
     pipeline,
   } = useSelector(selectActiveNodeInfo);
 
@@ -126,8 +128,7 @@ const DataPanel: React.FC = () => {
     [record?.templateContext]
   );
 
-  // TODO refactor this to work with nested pipelines
-  const documentBodyName = `extension.blockPipeline.${blockIndex}.config.body`;
+  const documentBodyName = joinPathParts(blockPath, "config.body");
 
   const outputObj: JsonObject =
     record !== undefined && "output" in record
@@ -241,11 +242,7 @@ const DataPanel: React.FC = () => {
               label="Context"
             />
           </DataTab>
-          {showPageState && (
-            <DataTab eventKey={DataPanelTabKey.PageState}>
-              <PageStateTab />
-            </DataTab>
-          )}
+          {showPageState && <PageStateTab />}
           {showDeveloperTabs && (
             <>
               <StateTab />
