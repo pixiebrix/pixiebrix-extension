@@ -78,7 +78,7 @@ class BlockTypeValidator implements Validator {
                 nodeId: pipelineBlock.instanceId,
                 namespace: BlockTypeValidator.namespace,
                 message: `Block of type "${typedBlock.type}" is not allowed in this pipeline`,
-                level: ErrorLevel.Warning,
+                level: ErrorLevel.Blocking,
               })
             );
           }
