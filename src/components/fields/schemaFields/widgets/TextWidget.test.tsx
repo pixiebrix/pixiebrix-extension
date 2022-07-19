@@ -70,29 +70,4 @@ describe("TextWidget", () => {
       [fieldName]: stringToExpression("abc", "nunjucks"),
     });
   });
-
-  // eslint-disable-next-line jest/no-commented-out-tests -- TODO: Fix this test
-  // test("can undo value changes", async () => {
-  //   const schema: Schema = {
-  //     type: "string",
-  //     description: fieldDescription,
-  //   };
-  //   const { getFormState } = render(<TextWidget name={fieldName} schema={schema} isRequired />, {
-  //     initialValues: {
-  //       [fieldName]: stringToExpression("", "nunjucks"),
-  //     },
-  //   });
-  //
-  //   await userEvent.type(screen.getByRole("textbox"), "abc");
-  //   await userEvent.type(screen.getByRole("textbox"), " def");
-  //   await userEvent.type(screen.getByRole("textbox"), " ghi");
-  //
-  //   await userEvent.keyboard("{Meta>}{z}{/Meta}");
-  //
-  //   const formState = await getFormState();
-  //
-  //   expect(formState).toStrictEqual({
-  //     [fieldName]: stringToExpression("abc def", "nunjucks")
-  //   });
-  // });
 });
