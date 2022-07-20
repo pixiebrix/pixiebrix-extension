@@ -34,6 +34,7 @@ import {
   renderPanels,
   showForm,
   activatePanel,
+  pingSidebar,
 } from "@/sidebar/messenger/api";
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
 import { isEmpty } from "lodash";
@@ -112,6 +113,7 @@ export async function showSidebar(
   if (!isShowing) {
     console.debug("SidePanel is not on the page, attaching side panel");
     insertSidebar();
+    await pingSidebar({ tabId: "this", page: "/sidebar.html" });
   }
 
   if (!isShowing || (activateOptions.refresh ?? true)) {

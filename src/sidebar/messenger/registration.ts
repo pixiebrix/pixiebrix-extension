@@ -25,6 +25,8 @@ import {
 } from "@/sidebar/protocol";
 import { isBrowserSidebar } from "@/chrome";
 
+async function noop() {}
+
 // TODO: Use `expectContext("sidebar")` when it’s supported
 if (!isBrowserSidebar()) {
   throw new Error('This code can only run in the "sidebar" context');
@@ -36,6 +38,7 @@ declare global {
     SIDEBAR_RENDER_PANELS: typeof renderPanels;
     SIDEBAR_SHOW_FORM: typeof showForm;
     SIDEBAR_HIDE_FORM: typeof hideForm;
+    SIDEBAR_PING: typeof noop;
   }
 }
 
@@ -45,5 +48,6 @@ export default function registerMessenger(): void {
     SIDEBAR_RENDER_PANELS: renderPanels,
     SIDEBAR_SHOW_FORM: showForm,
     SIDEBAR_HIDE_FORM: hideForm,
+    SIDEBAR_PING: noop,
   });
 }
