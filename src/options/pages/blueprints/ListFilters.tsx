@@ -51,7 +51,12 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
 
   return (
     <Col sm={12} md={3} xl={2} className={styles.root}>
-      <Form className="mb-4 mr-3">
+      <Form
+        className="mb-4 mr-3"
+        onSubmit={(event_: React.FormEvent<HTMLFormElement>) => {
+          event_.preventDefault();
+        }}
+      >
         <Form.Control
           id="query"
           placeholder="Search all blueprints"
