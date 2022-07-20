@@ -15,21 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import AnalysisVisitor from "@/analysis/AnalysisVisitor";
+import AnalysisVisitor, { nestedPosition } from "@/analysis/AnalysisVisitor";
 import {
   AbsolutePosition,
   Analysis,
   Annotation,
+  AnnotationType,
 } from "@/analysis/analysisTypes";
-import { TraceError, TraceRecord } from "@/telemetry/trace";
+import { isTraceError, TraceRecord } from "@/telemetry/trace";
 import { BlockConfig } from "@/blocks/types";
 import { UUID } from "@/core";
 import { groupBy } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isInputValidationError } from "@/blocks/errors";
 
+const requiredFieldRegex =
+  /^Instance does not have required property "(?<property>.+)"\.$/;
+
+const rootPropertyRegex = /^#\/(?<property>.+)$/;
+
 export class TraceAnalysis extends AnalysisVisitor implements Analysis {
-  readonly id: "trace";
+  get id() {
+    return "trace";
+  }
 
   private readonly traceMap = new Map<UUID, TraceRecord[]>();
   private readonly annotations: Annotation[] = [];
@@ -53,25 +61,59 @@ export class TraceAnalysis extends AnalysisVisitor implements Analysis {
 
   override async visitBlock(
     position: AbsolutePosition,
-    blockConfig: BlockConfig
+    blockConfig: BlockConfig,
+    options: { index: number }
   ): Promise<void> {
+    await super.visitBlock(position, blockConfig, options);
+
     const records = this.traceMap.get(blockConfig.instanceId);
     // TODO: fix if we need to get the last record for the block
-    const errorRecord: TraceError = records.find(
-      (x) => "error" in x
-    ) as TraceError;
+    // eslint-disable-next-line unicorn/no-array-callback-reference -- a proxy function breaks the type inference
+    const errorRecord = records?.find(isTraceError);
+    console.log("errorRecord", { errorRecord, records });
+    if (errorRecord == null) {
+      return;
+    }
 
     if (isInputValidationError(errorRecord)) {
-      // TODO: add logic from applyTraceInputError
-      // https://github.com/pixiebrix/pixiebrix-extension/blob/1aa42d7ef1f6652e3a3340e0138122d6ceb29378/src/pageEditor/validation/applyTraceInputError.ts#L35-L35
-    } else if (errorRecord) {
-      this.annotations.push({
-        position,
-        message: getErrorMessage(errorRecord.error.message),
-        analysisId: this.id,
-        type: "error",
-        detail: errorRecord.error,
-      });
+      for (const maybeInputError of errorRecord.errors) {
+        const rootProperty = rootPropertyRegex.exec(
+          maybeInputError.instanceLocation
+        )?.groups.property;
+        if (rootProperty) {
+          this.annotations.push({
+            position: nestedPosition(position, "config", rootProperty),
+            message: getErrorMessage(maybeInputError.error),
+            analysisId: this.id,
+            type: AnnotationType.Error,
+            detail: errorRecord.error,
+          });
+          continue;
+        }
+
+        const requiredProperty = requiredFieldRegex.exec(maybeInputError.error)
+          ?.groups.property;
+        if (requiredProperty) {
+          const errorMessage =
+            "Error from the last run: This field is required.";
+
+          this.annotations.push({
+            position: nestedPosition(position, "config", rootProperty),
+            message: errorMessage,
+            analysisId: this.id,
+            type: AnnotationType.Error,
+            detail: errorRecord.error,
+          });
+        }
+      }
     }
+
+    this.annotations.push({
+      position,
+      message: getErrorMessage(errorRecord.error),
+      analysisId: this.id,
+      type: AnnotationType.Error,
+      detail: errorRecord.error,
+    });
   }
 }

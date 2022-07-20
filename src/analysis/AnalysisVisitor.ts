@@ -17,19 +17,21 @@
 
 import { AbsolutePosition } from "@/analysis/analysisTypes";
 import { BlockConfig } from "@/blocks/types";
-import { joinName } from "@/utils";
+import { joinName, joinPathParts } from "@/utils";
 import { Expression, IBlock, Schema } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { JsonValue } from "type-fest";
 import { DocumentRenderer } from "@/blocks/renderers/document";
+import { getDocumentPipelinePaths } from "@/pageEditor/utils";
+import { get } from "lodash";
 
-function nestedPosition(
+export function nestedPosition(
   position: AbsolutePosition,
-  relativePath: string
+  ...rest: string[]
 ): AbsolutePosition {
   return {
-    path: joinName(position.path, relativePath),
+    path: joinName(position.path, ...rest),
   };
 }
 
@@ -68,6 +70,7 @@ abstract class AnalysisVisitor {
     blockConfig: BlockConfig,
     { index, block }: { index: number; block: IBlock }
   ): Promise<void> {
+    console.log("Visiting block", blockConfig);
     if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
       await this.visitRenderDocument(position, blockConfig);
       return;
@@ -105,12 +108,28 @@ abstract class AnalysisVisitor {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- subclass will override
   public async visitRenderDocument(
     position: AbsolutePosition,
     blockConfig: BlockConfig
   ): Promise<void> {
-    // TODO: implement the logic from traversePipeline
+    const subPipelineProperties = getDocumentPipelinePaths(blockConfig);
+    for await (const subPipelineProperty of subPipelineProperties) {
+      const subPipelineAccessor = joinPathParts(
+        subPipelineProperty,
+        "__value__"
+      );
+
+      const subPipeline = get(blockConfig, subPipelineAccessor);
+      console.log("Document pipeline", subPipeline);
+      if (subPipeline?.length > 0) {
+        await this.visitPipeline(
+          {
+            path: joinPathParts(position.path, subPipelineAccessor),
+          },
+          subPipeline
+        );
+      }
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- subclass will override
@@ -135,21 +154,21 @@ abstract class AnalysisVisitor {
     position: AbsolutePosition,
     pipeline: BlockConfig[]
   ): Promise<void> {
-    for (const [index, block] of pipeline.entries()) {
-      // eslint-disable-next-line no-await-in-loop -- run synchronously for now
+    console.log("Visiting pipeline", pipeline);
+    for await (const [index, block] of pipeline.entries()) {
+      console.log("Will Visit pipeline block", block);
       await this.visitBlock(nestedPosition(position, String(index)), block, {
         index,
       });
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- subclass will override
   public async visitRootPipeline(
-    position: AbsolutePosition,
     pipeline: BlockConfig[],
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- subclass will override
     { extensionType }: { extensionType: string }
   ): Promise<void> {
-    await this.visitPipeline(position, pipeline);
+    await this.visitPipeline({ path: "" }, pipeline);
   }
 }
 

@@ -15,13 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { UUID } from "@/core";
 import { UnknownObject } from "@/types";
 
 export type AbsolutePosition = {
   path: string;
 };
 
-export type AnnotationType = "error" | "warning" | "info";
+export enum AnnotationType {
+  Error = "error",
+  Warning = "warning",
+  Info = "info",
+}
 
 export type Annotation = {
   /**
@@ -57,3 +62,11 @@ export interface Analysis {
    */
   getAnnotations(): Annotation[];
 }
+
+export type AnalysisState = {
+  extensionAnnotations: Record<UUID, Annotation[]>;
+};
+
+export type AnalysisRootState = {
+  analysis: AnalysisState;
+};

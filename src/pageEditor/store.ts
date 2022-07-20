@@ -33,6 +33,8 @@ import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import { logActions, logSlice } from "@/components/logViewer/logSlice";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import validationListenerMiddleware from "./validation/validationListenerMiddleware";
+import analysisSlice from "@/analysis/analysisSlice";
+import EditorManager from "@/analysis/editorManager";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -53,6 +55,8 @@ if (typeof createLogger === "function") {
   );
 }
 
+const editorAnalysisManager = new EditorManager();
+
 const store = configureStore({
   reducer: {
     auth: persistReducer(persistAuthConfig, authSlice.reducer),
@@ -67,6 +71,7 @@ const store = configureStore({
     savingExtension: savingExtensionSlice.reducer,
     runtime: runtimeSlice.reducer,
     logs: logSlice.reducer,
+    analysis: analysisSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {
@@ -79,6 +84,7 @@ const store = configureStore({
     })
       .concat(appApi.middleware)
       .concat(validationListenerMiddleware)
+      .concat(editorAnalysisManager.middleware)
       .concat(conditionalMiddleware);
     /* eslint-enable unicorn/prefer-spread */
   },
