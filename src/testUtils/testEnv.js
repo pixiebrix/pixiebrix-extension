@@ -19,6 +19,9 @@
 // eslint-disable-next-line node/prefer-global/text-decoder, node/prefer-global/text-encoder
 import { TextEncoder, TextDecoder } from "util";
 
+// eslint-disable-next-line import/no-unassigned-import -- It's a polyfill
+import "urlpattern-polyfill";
+
 process.env.SERVICE_URL = "https://app.pixiebrix.com";
 
 global.TextEncoder = TextEncoder;
