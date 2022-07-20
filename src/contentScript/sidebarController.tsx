@@ -36,7 +36,6 @@ import {
   activatePanel,
 } from "@/sidebar/messenger/api";
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
-import { getHTMLElement } from "@/utils/domUtils";
 import { isEmpty } from "lodash";
 import { SimpleEventTarget } from "@/hooks/events";
 
@@ -57,28 +56,27 @@ const panels: PanelEntry[] = [];
 let originalMarginRight: number;
 
 function storeOriginalCSS() {
-  const $html = getHTMLElement();
-  originalMarginRight = Number.parseFloat($html.css("margin-right"));
+  originalMarginRight = Number.parseFloat($("html").css("margin-right"));
 }
 
-function adjustDocumentStyle(): void {
-  const $html = getHTMLElement();
-  $html.css(
-    SIDEBAR_WIDTH_CSS_PROPERTY,
-    `${originalMarginRight + SIDEBAR_WIDTH_PX}px`
-  );
-  $html.css("margin-right", `var(${SIDEBAR_WIDTH_CSS_PROPERTY})`);
+function removeSidebar(): void {
+  $(PANEL_CONTAINER_SELECTOR).remove();
+
+  $("html")
+    .css(SIDEBAR_WIDTH_CSS_PROPERTY, "")
+    .css("margin-right", originalMarginRight);
 }
 
-function restoreDocumentStyle(): void {
-  const $html = getHTMLElement();
-  $html.css(SIDEBAR_WIDTH_CSS_PROPERTY, "");
-  $html.css("margin-right", originalMarginRight);
-}
-
-function insertSidebar(): string {
+function insertSidebar(): void {
   const nonce = uuidv4();
   const actionURL = browser.runtime.getURL("sidebar.html");
+
+  $("html")
+    .css(
+      SIDEBAR_WIDTH_CSS_PROPERTY,
+      `${originalMarginRight + SIDEBAR_WIDTH_PX}px`
+    )
+    .css("margin-right", `var(${SIDEBAR_WIDTH_CSS_PROPERTY})`);
 
   $("<iframe>")
     .attr({
@@ -98,8 +96,6 @@ function insertSidebar(): string {
       background: "#f2edf3",
     })
     .appendTo("body");
-
-  return nonce;
 }
 
 /**
@@ -111,18 +107,11 @@ export async function showSidebar(
 ): Promise<void> {
   reportEvent("SidePanelShow");
 
-  const container: HTMLElement = document.querySelector(
-    PANEL_CONTAINER_SELECTOR
-  );
-
-  let nonce = container?.dataset?.nonce;
-
-  const isShowing = Boolean(nonce);
+  const isShowing = isSidebarVisible();
 
   if (!isShowing) {
     console.debug("SidePanel is not on the page, attaching side panel");
-    adjustDocumentStyle();
-    nonce = insertSidebar();
+    insertSidebar();
   }
 
   if (!isShowing || (activateOptions.refresh ?? true)) {
@@ -150,9 +139,6 @@ export async function showSidebar(
         );
       });
   }
-
-  // TODO: Drop `nonce` if not used by the caller
-  return nonce;
 }
 
 /**
@@ -188,9 +174,7 @@ export async function ensureSidebar(): Promise<void> {
 
 export function hideSidebar(): void {
   reportEvent("SidePanelHide");
-  restoreDocumentStyle();
-  $(PANEL_CONTAINER_SELECTOR).remove();
-
+  removeSidebar();
   window.dispatchEvent(new CustomEvent(PANEL_HIDING_EVENT));
 }
 
