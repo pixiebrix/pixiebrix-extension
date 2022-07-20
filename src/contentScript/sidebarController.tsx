@@ -36,7 +36,6 @@ import {
   activatePanel,
 } from "@/sidebar/messenger/api";
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
-import pDefer from "p-defer";
 import { getHTMLElement } from "@/utils/domUtils";
 import { isEmpty } from "lodash";
 
@@ -118,10 +117,10 @@ function insertSidebar(): string {
  * @param activateOptions options controlling the visible panel in the sidebar
  * @param callbacks callbacks to refresh the panels, leave blank to refresh all extension panels
  */
-export function showSidebar(
+export async function showSidebar(
   activateOptions: ActivatePanelOptions = {},
   callbacks = extensionCallbacks
-): string {
+): Promise<string> {
   reportEvent("SidePanelShow");
 
   const container: HTMLElement = document.querySelector(
@@ -201,18 +200,9 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
  * @see showSidebar
  */
 export async function ensureSidebar(): Promise<void> {
-  expectContext("contentScript");
-
-  const show = pDefer();
-
   if (!isSidebarVisible()) {
-    registerShowCallback(show.resolve);
-    try {
-      showSidebar();
-      await show.promise;
-    } finally {
-      removeShowCallback(show.resolve);
-    }
+    expectContext("contentScript");
+    await showSidebar();
   }
 }
 
@@ -224,9 +214,9 @@ export function hideSidebar(): void {
   window.dispatchEvent(new CustomEvent(PANEL_HIDING_EVENT));
 }
 
-export function toggleSidebar(): string | void {
+export async function toggleSidebar(): Promise<void> {
   if (!isSidebarVisible()) {
-    return showSidebar();
+    await showSidebar();
   }
 
   hideSidebar();
