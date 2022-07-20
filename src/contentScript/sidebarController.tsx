@@ -38,6 +38,7 @@ import {
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
 import { getHTMLElement } from "@/utils/domUtils";
 import { isEmpty } from "lodash";
+import { SimpleEventTarget } from "@/hooks/events";
 
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_SELECTOR = "#" + PANEL_FRAME_ID;
@@ -50,21 +51,10 @@ export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-margin-right";
 let renderSequenceNumber = 0;
 
 export type ShowCallback = (args: RunArgs) => void;
+export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
 
 const panels: PanelEntry[] = [];
-const extensionCallbacks: ShowCallback[] = [];
 let originalMarginRight: number;
-
-export function registerShowCallback(onShow: ShowCallback): void {
-  extensionCallbacks.push(onShow);
-}
-
-export function removeShowCallback(onShow: ShowCallback): void {
-  const index = extensionCallbacks.indexOf(onShow);
-  if (index > -1) {
-    extensionCallbacks.splice(index, 1);
-  }
-}
 
 function storeOriginalCSS() {
   const $html = getHTMLElement();
@@ -115,12 +105,10 @@ function insertSidebar(): string {
 /**
  * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
  * @param activateOptions options controlling the visible panel in the sidebar
- * @param callbacks callbacks to refresh the panels, leave blank to refresh all extension panels
  */
 export async function showSidebar(
-  activateOptions: ActivatePanelOptions = {},
-  callbacks = extensionCallbacks
-): Promise<string> {
+  activateOptions: ActivatePanelOptions = {}
+): Promise<void> {
   reportEvent("SidePanelShow");
 
   const container: HTMLElement = document.querySelector(
@@ -140,15 +128,7 @@ export async function showSidebar(
   if (!isShowing || (activateOptions.refresh ?? true)) {
     // Run the extension points available on the page. If the sidebar is already in the page, running
     // all the callbacks ensures the content is up-to-date
-    for (const callback of callbacks) {
-      try {
-        callback({ reason: RunReason.MANUAL });
-      } catch (error) {
-        // The callbacks should each have their own error handling. But wrap in a try-catch to ensure running
-        // the callbacks does not interfere prevent showing the sidebar
-        reportError(error);
-      }
-    }
+    sidebarShowEvents.emit({ reason: RunReason.MANUAL });
   }
 
   if (!isEmpty(activateOptions)) {
