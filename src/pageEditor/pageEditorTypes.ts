@@ -46,7 +46,7 @@ export type FormState =
   | ContextMenuFormState
   | QuickBarFormState;
 
-export enum PipelineFlavour {
+export enum PipelineFlavor {
   Any = "any",
   NoEffect = "noEffect",
   NoRenderer = "noRenderer",
@@ -60,9 +60,9 @@ export type AddBlockLocation = {
 
   /**
    * The flavor of pipeline where a block will be added by the add block modal
-   * @see: PipelineFlavour
+   * @see: PipelineFlavor
    */
-  flavour: PipelineFlavour;
+  flavor: PipelineFlavor;
 
   /**
    * The pipeline index where a block will be added by the add block modal

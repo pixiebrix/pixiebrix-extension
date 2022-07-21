@@ -36,7 +36,7 @@ import {
   uuidSequence,
 } from "@/testUtils/factories";
 import blockRegistry from "@/blocks/registry";
-import { FormState, PipelineFlavour } from "@/pageEditor/pageEditorTypes";
+import { FormState, PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import {
   echoBlock,
   teapotBlock,
@@ -63,7 +63,6 @@ import { fireTextInput } from "@/testUtils/formHelpers";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
-import theoretically from "jest-theories";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import getType from "@/runtime/getType";
 
@@ -664,20 +663,19 @@ describe("validation", () => {
 
   const disallowedBlockValidationTheories = [
     {
-      pipelineFlavour: PipelineFlavour.NoRenderer,
+      pipelineFlavor: PipelineFlavor.NoRenderer,
       formFactory: triggerFormStateFactory,
       disallowedBlock: markdownBlock,
     },
     {
-      pipelineFlavour: PipelineFlavour.NoEffect,
+      pipelineFlavor: PipelineFlavor.NoEffect,
       formFactory: formStateFactory,
       disallowedBlock: alertBlock,
     },
   ];
 
-  theoretically(
-    "validates a disallowed block in {pipelineFlavour} pipeline",
-    disallowedBlockValidationTheories,
+  test.each(disallowedBlockValidationTheories)(
+    "validates a disallowed block in $pipelineFlavor pipeline",
     async ({ formFactory, disallowedBlock }) => {
       const formState = formFactory();
       const disallowedBlockConfig = blockConfigFactory({
@@ -743,20 +741,19 @@ describe("block validation in Add Block Modal UI", () => {
 
   const theories = [
     {
-      pipelineFlavour: PipelineFlavour.NoRenderer,
+      pipelineFlavor: PipelineFlavor.NoRenderer,
       formFactory: triggerFormStateFactory,
       disallowedBlockName: "markdown",
     },
     {
-      pipelineFlavour: PipelineFlavour.NoEffect,
+      pipelineFlavor: PipelineFlavor.NoEffect,
       formFactory: formStateFactory,
       disallowedBlockName: "Window Alert",
     },
   ];
 
-  theoretically(
-    "filters blocks for {pipelineFlavour} pipeline",
-    theories,
+  test.each(theories)(
+    "filters blocks for $pipelineFlavor pipeline",
     async ({ formFactory, disallowedBlockName }) => {
       const formState = formFactory();
       render(

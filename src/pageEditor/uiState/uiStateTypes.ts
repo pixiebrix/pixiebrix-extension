@@ -53,8 +53,8 @@ type BlockInfo = {
 };
 
 export enum ErrorLevel {
-  Warning,
-  Blocking,
+  Warning = "warning",
+  Critical = "critical",
 }
 
 type NamespacedError = {

@@ -26,7 +26,7 @@ import {
 import blockRegistry from "@/blocks/registry";
 import { Validator, ValidatorEffect } from "./validationTypes";
 import {
-  getPipelineFlavour,
+  getPipelineFlavor,
   makeIsBlockAllowedForPipeline,
 } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 import { ErrorLevel } from "@/pageEditor/uiState/uiStateTypes";
@@ -58,13 +58,13 @@ class BlockTypeValidator implements Validator {
     traversePipeline({
       pipeline: activeElement.extension.blockPipeline,
       visitPipeline({ pipeline, pipelinePath, parentNode }) {
-        const pipelineFlavour = getPipelineFlavour({
+        const pipelineFlavor = getPipelineFlavor({
           extensionPointType,
           pipelinePath,
           parentNode,
         });
         const isBlockAllowedInPipeline =
-          makeIsBlockAllowedForPipeline(pipelineFlavour);
+          makeIsBlockAllowedForPipeline(pipelineFlavor);
 
         for (const pipelineBlock of pipeline) {
           const typedBlock = allBlocks.get(pipelineBlock.id);
@@ -78,7 +78,7 @@ class BlockTypeValidator implements Validator {
                 nodeId: pipelineBlock.instanceId,
                 namespace: BlockTypeValidator.namespace,
                 message: `Block of type "${typedBlock.type}" is not allowed in this pipeline`,
-                level: ErrorLevel.Blocking,
+                level: ErrorLevel.Critical,
               })
             );
           }

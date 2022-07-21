@@ -722,7 +722,7 @@ export const editorSlice = createSlice({
         nodeId,
         namespace,
         message,
-        level = ErrorLevel.Blocking,
+        level = ErrorLevel.Critical,
       } = action.payload;
       const { errorMap } = selectActiveElementUIState({ editor: state });
       const nodeErrors = errorMap[nodeId]?.errors;

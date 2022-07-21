@@ -69,7 +69,7 @@ const EditorNodeConfigPanel: React.FC<{
 
   const errorInfo = useSelector(selectActiveNodeError);
   const blockErrorMessage = errorInfo?.errors
-    ?.filter((error) => error.level === ErrorLevel.Blocking)
+    ?.filter((error) => error.level === ErrorLevel.Critical)
     ?.map((x) => x.message)
     .join(" ");
   const blockWarningMessage = errorInfo?.errors
