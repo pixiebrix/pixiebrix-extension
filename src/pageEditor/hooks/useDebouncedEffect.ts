@@ -19,16 +19,18 @@ import { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { isEqual } from "lodash";
 
-const useDebouncedEffect = (
-  values: unknown,
-  onChange: (values: unknown) => void,
-  delayMillis: number
+const useDebouncedEffect = <T>(
+  values: T,
+  onChange: (values: T) => void,
+  delayMillis: number,
+  maxWaitMillis?: number
 ) => {
   const [prev, setPrev] = useState(values);
 
   const [debounced] = useDebounce(values, delayMillis, {
     leading: false,
     trailing: true,
+    maxWait: maxWaitMillis,
   });
 
   useEffect(
