@@ -52,9 +52,15 @@ type BlockInfo = {
   parentNodeId: UUID | null;
 };
 
+export enum ErrorLevel {
+  Warning = "warning",
+  Critical = "critical",
+}
+
 type NamespacedError = {
   namespace: string;
   message: string;
+  level: ErrorLevel;
 };
 
 export type BlockError = {
