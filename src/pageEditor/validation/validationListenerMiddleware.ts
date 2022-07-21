@@ -16,6 +16,7 @@
  */
 
 import { createListenerMiddleware } from "@reduxjs/toolkit";
+import BlockTypeValidator from "./blockTypeValidator";
 import RenderersValidator from "./renderersValidator";
 import TracesValidator from "./tracesValidator";
 
@@ -23,5 +24,6 @@ const validationListenerMiddleware = createListenerMiddleware();
 
 validationListenerMiddleware.startListening(new TracesValidator());
 validationListenerMiddleware.startListening(new RenderersValidator());
+validationListenerMiddleware.startListening(new BlockTypeValidator());
 
 export default validationListenerMiddleware.middleware;

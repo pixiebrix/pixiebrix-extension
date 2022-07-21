@@ -37,6 +37,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import {
+  selectActiveElement,
   selectActiveNodeId,
   selectErrorMap,
 } from "@/pageEditor/slices/editorSelectors";
@@ -55,9 +56,10 @@ import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
-import { BlockError } from "@/pageEditor/uiState/uiStateTypes";
+import { BlockError, ErrorLevel } from "@/pageEditor/uiState/uiStateTypes";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
-import { PipelineType } from "@/pageEditor/pageEditorTypes";
+import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
+import { getRootPipelineFlavor } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -88,7 +90,7 @@ type SubPipeline = {
    */
   subPipelinePath: string;
 
-  subPipelineType: PipelineType;
+  subPipelineFlavor: PipelineFlavor;
 };
 
 function decideBlockStatus(
@@ -97,9 +99,14 @@ function decideBlockStatus(
 ): RunStatus {
   if (
     blockError != null &&
-    (blockError.errors?.length > 0 || blockError?.fieldErrors)
+    (blockError.errors?.some((error) => error.level === ErrorLevel.Critical) ||
+      blockError?.fieldErrors)
   ) {
     return RunStatus.ERROR;
+  }
+
+  if (blockError?.errors?.some((error) => error.level === ErrorLevel.Warning)) {
+    return RunStatus.WARNING;
   }
 
   if (traceRecord == null) {
@@ -132,6 +139,8 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectExtensionTrace);
   const errors = useSelector(selectErrorMap);
+  const activeElement = useSelector(selectActiveElement);
+  const extensionPointType = activeElement.extensionPoint.definition.type;
 
   const [collapsedState, setCollapsedState] = useState<Record<UUID, boolean>>(
     {}
@@ -151,7 +160,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   function mapPipelineToNodes({
     pipeline,
     pipelinePath = PIPELINE_BLOCKS_FIELD_NAME,
-    pipelineType = PipelineType.Root,
+    pipelineFlavor,
     nestingLevel = 0,
     parentIsActive = false,
   }: {
@@ -159,7 +168,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
     pipelinePath?: string;
     nestingLevel?: number;
     parentIsActive?: boolean;
-    pipelineType?: PipelineType;
+    pipelineFlavor?: PipelineFlavor;
   }): EditorNodeProps[] {
     const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
 
@@ -235,7 +244,9 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             headerLabel: isButton ? "button" : "brick",
             subPipeline,
             subPipelinePath,
-            subPipelineType: PipelineType.DocumentBuilder,
+            subPipelineFlavor: isButton
+              ? PipelineFlavor.NoRenderer
+              : PipelineFlavor.NoEffect,
           });
         }
       } else {
@@ -254,7 +265,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             headerLabel: propName,
             subPipeline: get(pipeline, subPipelineAccessor) ?? [],
             subPipelinePath,
-            subPipelineType: PipelineType.ControlFlow,
+            subPipelineFlavor: PipelineFlavor.NoRenderer,
           });
         }
       }
@@ -319,7 +330,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             dispatch(
               actions.showAddBlockModal({
                 path: pipelinePath,
-                type: pipelineType,
+                flavor: pipelineFlavor,
                 index: index + 1,
               })
             );
@@ -387,7 +398,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           headerLabel,
           subPipeline,
           subPipelinePath,
-          subPipelineType,
+          subPipelineFlavor,
         } of subPipelines) {
           const headerName = `${nodeId}-header`;
 
@@ -400,7 +411,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
                 dispatch(
                   actions.showAddBlockModal({
                     path: subPipelinePath,
-                    type: subPipelineType,
+                    flavor: subPipelineFlavor,
                     index: 0,
                   })
                 );
@@ -436,7 +447,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             ...mapPipelineToNodes({
               pipeline: subPipeline,
               pipelinePath: subPipelinePath,
-              pipelineType: subPipelineType,
+              pipelineFlavor: subPipelineFlavor,
               nestingLevel: nestingLevel + 1,
               parentIsActive: nodeIsActive || parentIsActive,
             })
@@ -466,6 +477,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
     return nodes;
   }
 
+  const rootPipelineFlavor = getRootPipelineFlavor(extensionPointType);
   const foundationNodeActions: NodeAction[] = [
     {
       name: `${FOUNDATION_NODE_ID}-add-brick`,
@@ -475,7 +487,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
         dispatch(
           actions.showAddBlockModal({
             path: PIPELINE_BLOCKS_FIELD_NAME,
-            type: PipelineType.Root,
+            flavor: rootPipelineFlavor,
             index: 0,
           })
         );
@@ -498,7 +510,10 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
 
   // It's important to run mapPipelineToNodes before adding the foundation node
   // because it will calculate foundationRunStatus for the foundation node
-  const nodes = mapPipelineToNodes({ pipeline });
+  const nodes = mapPipelineToNodes({
+    pipeline,
+    pipelineFlavor: rootPipelineFlavor,
+  });
   const foundationNodeProps: BrickNodeProps = {
     icon: extensionPointIcon,
     runStatus: foundationRunStatus,

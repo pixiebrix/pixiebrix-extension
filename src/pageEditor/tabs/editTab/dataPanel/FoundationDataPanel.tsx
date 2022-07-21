@@ -24,7 +24,7 @@ import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import ExtensionPointPreview from "@/pageEditor/tabs/effect/ExtensionPointPreview";
 import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import useFlags from "@/hooks/useFlags";
-import PageStateTab from "./PageStateTab";
+import PageStateTab from "./tabs/PageStateTab";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import StateTab from "./tabs/StateTab";
@@ -133,14 +133,7 @@ const FoundationDataPanel: React.FC<{
         >
           <ExtensionPointPreview element={activeElement} />
         </Tab.Pane>
-        <Tab.Pane
-          eventKey={DataPanelTabKey.PageState}
-          className={dataPanelStyles.tabPane}
-          mountOnEnter
-          unmountOnExit
-        >
-          <PageStateTab />
-        </Tab.Pane>
+        <PageStateTab />
       </Tab.Content>
     </Tab.Container>
   );

@@ -27,6 +27,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { UnknownObject } from "@/types";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
 
 const alwaysExpandNode = () => true;
 
@@ -67,7 +69,7 @@ const PageStateTab: React.VFC = () => {
   );
 
   return (
-    <div>
+    <DataTab eventKey={DataPanelTabKey.PageState}>
       <div className="mb-1 d-flex">
         <div>
           <Button
@@ -104,7 +106,7 @@ const PageStateTab: React.VFC = () => {
           shouldExpandNode={alwaysExpandNode}
         />
       )}
-    </div>
+    </DataTab>
   );
 };
 
