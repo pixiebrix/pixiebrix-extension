@@ -18,7 +18,7 @@
 import { TypedBlock } from "@/blocks/registry";
 import { validateRegistryId } from "@/types/helpers";
 import { ExtensionPointType } from "@/extensionPoints/types";
-import { PipelineFlavor as PipelineFlavor } from "@/pageEditor/pageEditorTypes";
+import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { stubTrue } from "lodash";
 import { BlockConfig } from "@/blocks/types";
 import { DocumentRenderer } from "@/blocks/renderers/document";
