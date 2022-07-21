@@ -20,5 +20,5 @@ import { AnalysisRootState } from "./analysisTypes";
 
 export function selectExtensionAnnotations(extensionId: UUID) {
   return ({ analysis }: AnalysisRootState) =>
-    analysis.extensionAnnotations[extensionId];
+    analysis.extensionAnnotations[extensionId] ?? [];
 }

@@ -32,6 +32,7 @@ import { selectActiveNodeError } from "@/pageEditor/slices/editorSelectors";
 import useNodeValidation from "@/pageEditor/validation/useNodeValidation";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import { ErrorLevel } from "@/pageEditor/uiState/uiStateTypes";
+import AnalysisResult from "@/pageEditor/tabs/editTab/AnalysisResult";
 
 const EditorNodeConfigPanel: React.FC<{
   /**
@@ -89,6 +90,7 @@ const EditorNodeConfigPanel: React.FC<{
           <Col className="text-warning">{blockWarningMessage}</Col>
         </Row>
       )}
+      <AnalysisResult />
       <Row className={styles.topRow}>
         <Col xl>
           <ConnectedFieldTemplate
