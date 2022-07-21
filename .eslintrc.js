@@ -63,9 +63,6 @@ module.exports = {
 
     // Enabled for the IDE, but it's disabled in the `lint` script
     "import/no-cycle": "warn",
-
-    // Sometimes there's no practical alternative
-    "@typescript-eslint/triple-slash-reference": "off",
   },
   overrides: [
     {
