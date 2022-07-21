@@ -17,21 +17,23 @@
 
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
-import { ListenerMiddleware, createListenerMiddleware } from "@reduxjs/toolkit";
+import { createListenerMiddleware } from "@reduxjs/toolkit";
 import { ValidatorEffect } from "@/pageEditor/validation/validationTypes";
 import { TraceAnalysis } from "./analysisVisitors";
 import analysisSlice from "./analysisSlice";
 
 class EditorManager {
-  middleware: ListenerMiddleware;
-
-  constructor() {
-    this.initializeMiddleware();
+  private readonly listenerMiddleware = createListenerMiddleware();
+  public get middleware() {
+    return this.listenerMiddleware.middleware;
   }
 
-  private initializeMiddleware() {
-    const listenerMiddleware = createListenerMiddleware();
+  constructor() {
+    this.registerTraceAnalysis();
+  }
 
+  // XXX: Registration of concrete analysis can be moved outside
+  private registerTraceAnalysis() {
     const effect: ValidatorEffect = async (action, listenerApi) => {
       const { extensionId, records } = action.payload;
       const state = listenerApi.getState();
@@ -66,12 +68,10 @@ class EditorManager {
       );
     };
 
-    listenerMiddleware.startListening({
+    this.listenerMiddleware.startListening({
       actionCreator: runtimeSlice.actions.setExtensionTrace,
       effect,
     });
-
-    this.middleware = listenerMiddleware.middleware;
   }
 }
 

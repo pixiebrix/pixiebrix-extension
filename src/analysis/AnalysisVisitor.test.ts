@@ -15,8 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { DocumentRenderer } from "@/blocks/renderers/document";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import { BlockConfig } from "@/blocks/types";
+import { createNewElement } from "@/components/documentBuilder/createNewElement";
+import { PipelineExpression } from "@/runtime/mapArgs";
 import { blockConfigFactory, pipelineFactory } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
 import { AbsolutePosition } from "./analysisTypes";
@@ -122,127 +125,49 @@ test("should invoke the callback for the sub pipeline bricks", async () => {
   );
 });
 
-/*
-  test("should invoke pre sub pipeline callback", () => {
-    const subPipeline = pipelineFactory();
-    const forEachBrick = blockConfigFactory({
-      id: ForEach.BLOCK_ID,
-      config: {
-        elements: toExpression("var", "@elements"),
-        body: toExpression("pipeline", subPipeline),
-      },
-    });
-    const pipeline = [forEachBrick];
-    const visitBlock = jest.fn();
-    const preVisitSubPipeline = jest.fn();
-
-    traversePipeline({
-      pipeline,
-      visitBlock,
-      preVisitSubPipeline,
-    });
-
-    expect(preVisitSubPipeline).toHaveBeenCalledTimes(1);
-    expect(preVisitSubPipeline).toHaveBeenCalledWith({
-      parentBlock: forEachBrick,
-      subPipelineProperty: "config.body",
-    });
+test("should invoke the callback for the Document button pipeline", async () => {
+  const buttonElement = createNewElement("button");
+  const subPipeline = buttonElement.config.onClick as PipelineExpression;
+  subPipeline.__value__.push(blockConfigFactory());
+  const containerElement = createNewElement("container");
+  containerElement.children[0].children[0].children.push(buttonElement);
+  const documentBrick = blockConfigFactory({
+    id: DocumentRenderer.BLOCK_ID,
+    config: {
+      body: [containerElement],
+    },
   });
+  const pipeline = [documentBrick];
 
-  test.each([toExpression("pipeline", []), undefined])(
-    "should not invoke visitBlock when sub pipeline is empty",
-    (subPipelineProperty) => {
-      const forEachBrick = blockConfigFactory({
-        id: ForEach.BLOCK_ID,
-        config: {
-          elements: toExpression("var", "@elements"),
-          body: subPipelineProperty,
-        },
-      });
-      const pipeline = [forEachBrick];
-      const visitBlock = jest.fn();
+  const visitBlock = jest.fn();
 
-      traversePipeline({
-        pipeline,
-        visitBlock,
-        preVisitSubPipeline: jest.fn(),
-      });
+  class Visitor extends AnalysisVisitor {
+    override async visitBlock(
+      position: AbsolutePosition,
+      blockConfig: BlockConfig,
+      extra: VisitBlockExtra
+    ) {
+      await super.visitBlock(position, blockConfig, extra);
 
-      expect(visitBlock).toHaveBeenCalledTimes(pipeline.length);
+      visitBlock(position, blockConfig, extra);
     }
-  );
+  }
+  const visitor = new Visitor();
+  await visitor.visitRootPipeline(pipeline, { extensionType: "test" });
 
-  test("should invoke the callback for the Document button pipeline", () => {
-    const buttonElement = createNewElement("button");
-    const subPipeline = buttonElement.config.onClick as PipelineExpression;
-    subPipeline.__value__.push(blockConfigFactory());
-    const containerElement = createNewElement("container");
-    containerElement.children[0].children[0].children.push(buttonElement);
-    const documentBrick = blockConfigFactory({
-      id: DocumentRenderer.BLOCK_ID,
-      config: {
-        body: [containerElement],
-      },
-    });
-    const pipeline = [documentBrick];
-
-    const visitBlock = jest.fn();
-
-    traversePipeline({ pipeline, visitBlock });
-    expect(visitBlock).toHaveBeenCalledTimes(2); // One Document brick and one brick in the pipeline
-    expect(visitBlock).toHaveBeenCalledWith({
-      blockConfig: documentBrick,
-      index: 0,
-      path: "0",
-      pipelinePath: "",
-      pipeline,
-      parentNodeId: null,
-    });
-    expect(visitBlock).toHaveBeenCalledWith({
-      blockConfig: subPipeline.__value__[0],
-      index: 0,
+  expect(visitBlock).toHaveBeenCalledTimes(2); // One Document brick and one brick in the pipeline
+  expect(visitBlock).toHaveBeenCalledWith(
+    {
       path: "0.config.body.0.children.0.children.0.children.0.config.onClick.__value__.0",
-      pipelinePath:
-        "0.config.body.0.children.0.children.0.children.0.config.onClick.__value__",
-      pipeline: subPipeline.__value__,
-      parentNodeId: documentBrick.instanceId,
-    });
-  });
-
-  test("should invoke the callback for the Document brick pipeline", () => {
-    const brickElement = createNewElement("pipeline");
-    const subPipeline = brickElement.config.pipeline as PipelineExpression;
-    subPipeline.__value__.push(blockConfigFactory());
-    const containerElement = createNewElement("container");
-    containerElement.children[0].children[0].children.push(brickElement);
-    const documentBrick = blockConfigFactory({
-      id: DocumentRenderer.BLOCK_ID,
-      config: {
-        body: [containerElement],
-      },
-    });
-    const pipeline = [documentBrick];
-
-    const visitBlock = jest.fn();
-
-    traversePipeline({ pipeline, visitBlock });
-    expect(visitBlock).toHaveBeenCalledTimes(2); // One Document brick and one brick in the pipeline
-    expect(visitBlock).toHaveBeenCalledWith({
-      blockConfig: documentBrick,
-      index: 0,
+    },
+    subPipeline.__value__[0],
+    { index: 0 }
+  );
+  expect(visitBlock).toHaveBeenCalledWith(
+    {
       path: "0",
-      pipelinePath: "",
-      pipeline,
-      parentNodeId: null,
-    });
-    expect(visitBlock).toHaveBeenCalledWith({
-      blockConfig: subPipeline.__value__[0],
-      index: 0,
-      path: "0.config.body.0.children.0.children.0.children.0.config.pipeline.__value__.0",
-      pipelinePath:
-        "0.config.body.0.children.0.children.0.children.0.config.pipeline.__value__",
-      pipeline: subPipeline.__value__,
-      parentNodeId: documentBrick.instanceId,
-    });
-  });
-  */
+    },
+    documentBrick,
+    { index: 0 }
+  );
+});
