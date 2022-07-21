@@ -35,6 +35,10 @@ export function nestedPosition(
   };
 }
 
+export type VisitBlockExtra = {
+  index: number;
+};
+
 /**
  * A base class for creating analysis visitors.
  *
@@ -51,8 +55,9 @@ abstract class AnalysisVisitor {
   public async visitBlock(
     position: AbsolutePosition,
     blockConfig: BlockConfig,
-    { index }: { index: number }
+    { index }: VisitBlockExtra
   ): Promise<void> {
+    console.log("Visiting block", blockConfig);
     try {
       const block = await blockRegistry.lookup(blockConfig.id);
       await this.visitResolvedBlock(position, blockConfig, { index, block });
@@ -70,34 +75,35 @@ abstract class AnalysisVisitor {
     blockConfig: BlockConfig,
     { index, block }: { index: number; block: IBlock }
   ): Promise<void> {
-    console.log("Visiting block", blockConfig);
+    console.log("Visiting resolved block", blockConfig);
     if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
       await this.visitRenderDocument(position, blockConfig);
       return;
     }
 
-    for (const [prop, value] of Object.entries(blockConfig.config)) {
+    for await (const [prop, value] of Object.entries(blockConfig.config)) {
       if (isPipelineExpression(value)) {
         // TODO: pass pipeline type restrictions
-        // eslint-disable-next-line no-await-in-loop -- run synchronously for now
         await this.visitPipeline(
-          nestedPosition(position, prop),
+          nestedPosition(position, "config", prop, "__value__"),
           value.__value__
         );
       } else if (isExpression(value)) {
         // eslint-disable-next-line security/detect-object-injection -- from parsed YAML or page editor
         const fieldSchema = block.inputSchema.properties?.[prop];
-        // eslint-disable-next-line no-await-in-loop -- run synchronously for now
-        await this.visitExpression(nestedPosition(position, prop), value, {
-          fieldSchema:
-            typeof fieldSchema === "boolean" ? undefined : fieldSchema,
-        });
+        await this.visitExpression(
+          nestedPosition(position, "config", prop, "__value__"),
+          value,
+          {
+            fieldSchema:
+              typeof fieldSchema === "boolean" ? undefined : fieldSchema,
+          }
+        );
       } else {
         // eslint-disable-next-line security/detect-object-injection -- from parsed YAML or page editor
         const fieldSchema = block.inputSchema.properties?.[prop];
-        // eslint-disable-next-line no-await-in-loop -- running synchronously for now
         await this.visitLiteral(
-          nestedPosition(position, prop),
+          nestedPosition(position, "config", prop),
           value as JsonValue,
           {
             fieldSchema:
@@ -155,11 +161,21 @@ abstract class AnalysisVisitor {
     pipeline: BlockConfig[]
   ): Promise<void> {
     console.log("Visiting pipeline", pipeline);
-    for await (const [index, block] of pipeline.entries()) {
-      console.log("Will Visit pipeline block", block);
-      await this.visitBlock(nestedPosition(position, String(index)), block, {
-        index,
+    for await (const [index, blockConfig] of pipeline.entries()) {
+      console.log("Will Visit pipeline block", {
+        position: nestedPosition(position, String(index)),
+        blockConfig,
+        extra: {
+          index,
+        },
       });
+      await this.visitBlock(
+        nestedPosition(position, String(index)),
+        blockConfig,
+        {
+          index,
+        }
+      );
     }
   }
 
