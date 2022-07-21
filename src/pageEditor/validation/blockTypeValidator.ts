@@ -86,7 +86,7 @@ class BlockTypeValidator implements Validator {
       },
     });
 
-    // Clear the errors from the last run for the blocks that do not longer have errors
+    // Clear the errors from the last run for the blocks that no longer have errors
     for (const nodeId of lastNodesWithErrors.filter(
       (x) => !nodesWithErrors.has(x)
     )) {
