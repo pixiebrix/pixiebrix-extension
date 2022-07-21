@@ -47,7 +47,7 @@ export type FormState =
   | QuickBarFormState;
 
 export enum PipelineFlavor {
-  Any = "any",
+  AllBlocks = "allBlocks",
   NoEffect = "noEffect",
   NoRenderer = "noRenderer",
 }

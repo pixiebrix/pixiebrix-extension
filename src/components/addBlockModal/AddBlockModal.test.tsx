@@ -69,7 +69,7 @@ describe("AddBlockModal", () => {
         dispatch(
           actions.showAddBlockModal({
             path: "",
-            flavor: PipelineFlavor.Any,
+            flavor: PipelineFlavor.AllBlocks,
             index: 0,
           })
         );
@@ -92,7 +92,7 @@ describe("AddBlockModal", () => {
         dispatch(
           actions.showAddBlockModal({
             path: PIPELINE_BLOCKS_FIELD_NAME,
-            flavor: PipelineFlavor.Any,
+            flavor: PipelineFlavor.AllBlocks,
             index: 0,
           })
         );

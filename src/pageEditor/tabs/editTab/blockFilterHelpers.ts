@@ -69,7 +69,7 @@ export function getPipelineFlavor({
 }
 
 export function makeIsBlockAllowedForPipeline(pipelineFlavor: PipelineFlavor) {
-  if (pipelineFlavor === PipelineFlavor.Any) {
+  if (pipelineFlavor === PipelineFlavor.AllBlocks) {
     return stubTrue;
   }
 

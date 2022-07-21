@@ -134,7 +134,7 @@ const AddBlockModal: React.VFC = () => {
 
   const addBlockLocation = useSelector(selectAddBlockLocation);
   const pipelinePath = addBlockLocation?.path ?? "";
-  const pipelineFlavor = addBlockLocation?.flavor ?? PipelineFlavor.Any;
+  const pipelineFlavor = addBlockLocation?.flavor ?? PipelineFlavor.AllBlocks;
   const pipelineIndex = addBlockLocation?.index ?? 0;
 
   const addBlock = useAddBlock(pipelinePath, pipelineIndex);
