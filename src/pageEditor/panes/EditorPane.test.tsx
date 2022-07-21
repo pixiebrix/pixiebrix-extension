@@ -661,7 +661,7 @@ describe("validation", () => {
     expectEditorError(rendered.container, "A renderer must be the last brick.");
   });
 
-  const disallowedBlockValidationTheories = [
+  const disallowedBlockValidationTestCases = [
     {
       pipelineFlavor: PipelineFlavor.NoRenderer,
       formFactory: triggerFormStateFactory,
@@ -674,7 +674,7 @@ describe("validation", () => {
     },
   ];
 
-  test.each(disallowedBlockValidationTheories)(
+  test.each(disallowedBlockValidationTestCases)(
     "validates a disallowed block in $pipelineFlavor pipeline",
     async ({ formFactory, disallowedBlock }) => {
       const formState = formFactory();
@@ -739,7 +739,7 @@ describe("block validation in Add Block Modal UI", () => {
     jest.runOnlyPendingTimers();
   });
 
-  const theories = [
+  const testCases = [
     {
       pipelineFlavor: PipelineFlavor.NoRenderer,
       formFactory: triggerFormStateFactory,
@@ -752,7 +752,7 @@ describe("block validation in Add Block Modal UI", () => {
     },
   ];
 
-  test.each(theories)(
+  test.each(testCases)(
     "filters blocks for $pipelineFlavor pipeline",
     async ({ formFactory, disallowedBlockName }) => {
       const formState = formFactory();
