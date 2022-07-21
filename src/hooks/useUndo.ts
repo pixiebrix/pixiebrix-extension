@@ -15,67 +15,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useCallback, useState } from "react";
-import { useDebouncedCallback } from "use-debounce";
+import { useCallback, useRef } from "react";
 import { isEmpty } from "lodash";
-
-type Undoable<T> = {
-  setUndoableValue: (value: T) => void;
-  undo: () => void;
-};
+import useDebouncedEffect from "@/pageEditor/hooks/useDebouncedEffect";
 
 const MAX_HISTORY_SIZE = 100;
 
 function useUndo<T>(
-  initialValue: T,
+  realValue: T,
   setRealValue: (value: T) => void
-): Undoable<T> {
+): () => void {
   // Array used like a stack
-  const [history, setHistory] = useState<T[]>([]);
-  const [debouncedValue, setDebouncedValue] = useState(initialValue);
+  const history = useRef<T[]>([]);
+  const debouncedValue = useRef(realValue);
 
-  const updateHistory = useDebouncedCallback(
-    (newValue: T) => {
-      setHistory((previous) => {
-        if (previous.length === MAX_HISTORY_SIZE) {
-          previous.pop();
-        }
+  useDebouncedEffect(
+    realValue,
+    (value) => {
+      if (value === debouncedValue.current) {
+        return;
+      }
 
-        return [debouncedValue, ...previous];
-      });
-      setDebouncedValue(newValue);
+      const oldHistory = history.current;
+      if (oldHistory.length >= MAX_HISTORY_SIZE) {
+        oldHistory.pop();
+      }
+
+      history.current = [debouncedValue.current, ...oldHistory];
+      debouncedValue.current = value;
     },
     300,
-    {
-      leading: false,
-      trailing: true,
-      maxWait: 500,
-    }
+    500
   );
 
-  const setUndoableValue = useCallback(
-    (newValue: T) => {
-      updateHistory(newValue);
-      setRealValue(newValue);
-    },
-    [updateHistory, setRealValue]
-  );
-
-  const undo = useCallback(() => {
+  return useCallback(() => {
     if (isEmpty(history)) {
       return;
     }
 
-    const [oldValue, ...newHistory] = history;
+    const [oldValue, ...newHistory] = history.current;
     setRealValue(oldValue);
-    setDebouncedValue(oldValue);
-    setHistory(newHistory);
+    debouncedValue.current = oldValue;
+    history.current = newHistory;
   }, [history, setRealValue]);
-
-  return {
-    setUndoableValue,
-    undo,
-  };
 }
 
 export default useUndo;

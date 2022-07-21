@@ -18,149 +18,178 @@
 import { act, renderHook } from "@testing-library/react-hooks";
 import useUndo from "@/hooks/useUndo";
 
-jest.useFakeTimers();
-
 describe("useUndo", () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   test("undo last typed text", () => {
-    let realValue = "";
-    const { result } = renderHook(() =>
-      useUndo("", (value) => {
-        realValue = value;
-      })
+    let value = "";
+    const setValue = (newValue: string) => {
+      value = newValue;
+    };
+
+    // We will need to rerender the hook between changes, since the value input comes
+    // from this variable outside the hook render.
+    const { result: undoRef, rerender } = renderHook(() =>
+      useUndo(value, setValue)
     );
 
     act(() => {
       // Simulate a user typing into an input
-      result.current.setUndoableValue("a");
-      result.current.setUndoableValue("ab");
-      result.current.setUndoableValue("abc");
-      // Run timers to fire debounce
+      setValue("a");
+      setValue("ab");
+      setValue("abc");
+      // Update the hook
+      rerender();
+      // Run timers to activate the debounce effect
       jest.runAllTimers();
     });
-    expect(realValue).toStrictEqual("abc");
+
+    expect(value).toStrictEqual("abc");
 
     act(() => {
-      result.current.setUndoableValue("abc ");
-      result.current.setUndoableValue("abc d");
-      result.current.setUndoableValue("abc de");
-      result.current.setUndoableValue("abc def");
+      setValue("abc ");
+      setValue("abc d");
+      setValue("abc de");
+      setValue("abc def");
+      rerender();
       jest.runAllTimers();
     });
-    expect(realValue).toStrictEqual("abc def");
+
+    expect(value).toStrictEqual("abc def");
 
     act(() => {
-      result.current.undo();
-      jest.runAllTimers();
+      undoRef.current();
     });
-    expect(realValue).toStrictEqual("abc");
+    expect(value).toStrictEqual("abc");
   });
 
   test("undo deleted text", () => {
-    let realValue = "";
-    const { result } = renderHook(() =>
-      useUndo("", (value) => {
-        realValue = value;
-      })
+    let value = "";
+    const setValue = (newValue: string) => {
+      value = newValue;
+    };
+
+    const { result: undoRef, rerender } = renderHook(() =>
+      useUndo(value, setValue)
     );
 
     act(() => {
-      result.current.setUndoableValue("abc def");
+      setValue("abc def");
+      rerender();
       jest.runAllTimers();
     });
-    expect(realValue).toStrictEqual("abc def");
+    expect(value).toStrictEqual("abc def");
 
     act(() => {
       // Delete the input value like a user would
-      result.current.setUndoableValue("abc de");
-      result.current.setUndoableValue("abc d");
-      result.current.setUndoableValue("abc ");
-      result.current.setUndoableValue("abc");
+      setValue("abc de");
+      setValue("abc d");
+      setValue("abc ");
+      setValue("abc");
+      rerender();
       jest.runAllTimers();
     });
-    expect(realValue).toStrictEqual("abc");
+    expect(value).toStrictEqual("abc");
 
     act(() => {
-      result.current.setUndoableValue("ab");
-      result.current.setUndoableValue("a");
-      result.current.setUndoableValue("");
+      setValue("ab");
+      setValue("a");
+      setValue("");
+      rerender();
       jest.runAllTimers();
     });
-    expect(realValue).toStrictEqual("");
+    expect(value).toStrictEqual("");
 
     act(() => {
-      result.current.undo();
-      jest.runAllTimers();
+      undoRef.current();
     });
-    expect(realValue).toStrictEqual("abc");
+    expect(value).toStrictEqual("abc");
 
     act(() => {
-      result.current.undo();
-      jest.runAllTimers();
+      undoRef.current();
     });
-    expect(realValue).toStrictEqual("abc def");
+    expect(value).toStrictEqual("abc def");
   });
 
   test("handles newlines", () => {
-    let realValue = "";
-    const { result } = renderHook(() =>
-      useUndo("", (value) => {
-        realValue = value;
-      })
+    let value = "";
+    const setValue = (newValue: string) => {
+      value = newValue;
+    };
+
+    const { result: undoRef, rerender } = renderHook(
+      () => useUndo(value, setValue),
+      {
+        initialProps: { value, setValue },
+      }
     );
 
     act(() => {
-      result.current.setUndoableValue("abc def");
+      setValue("abc def");
+      rerender();
       jest.runAllTimers();
     });
-    expect(realValue).toStrictEqual("abc def");
+    expect(value).toStrictEqual("abc def");
 
     act(() => {
-      result.current.setUndoableValue("abc def\n\naaa\nbbb");
+      setValue(`abc def
+
+aaa
+bbb`);
+      rerender();
       jest.runAllTimers();
     });
-    expect(realValue).toStrictEqual("abc def\n\naaa\nbbb");
+    expect(value).toStrictEqual("abc def\n\naaa\nbbb");
 
     act(() => {
-      result.current.undo();
+      undoRef.current();
     });
-    expect(realValue).toStrictEqual("abc def");
+    expect(value).toStrictEqual("abc def");
 
     act(() => {
-      result.current.undo();
+      undoRef.current();
     });
-    expect(realValue).toStrictEqual("");
+    expect(value).toStrictEqual("");
   });
 
   test("typing between undos", () => {
-    let realValue = "";
-    const { result } = renderHook(() =>
-      useUndo("", (value) => {
-        realValue = value;
-      })
+    let value = "";
+    const setValue = (newValue: string) => {
+      value = newValue;
+    };
+
+    const { result: undoRef, rerender } = renderHook(() =>
+      useUndo(value, setValue)
     );
 
     act(() => {
-      result.current.setUndoableValue("abc");
+      setValue("abc");
+      rerender();
       jest.runAllTimers();
     });
-    expect(realValue).toStrictEqual("abc");
+    expect(value).toStrictEqual("abc");
 
     act(() => {
-      result.current.undo();
-      jest.runAllTimers();
+      undoRef.current();
     });
-    expect(realValue).toStrictEqual("");
+    expect(value).toStrictEqual("");
 
     act(() => {
-      result.current.setUndoableValue("def");
+      setValue("def");
+      rerender();
       jest.runAllTimers();
     });
-    expect(realValue).toStrictEqual("def");
+    expect(value).toStrictEqual("def");
 
     act(() => {
-      result.current.undo();
-      jest.runAllTimers();
+      undoRef.current();
     });
-    expect(realValue).toStrictEqual("");
+    expect(value).toStrictEqual("");
   });
 });

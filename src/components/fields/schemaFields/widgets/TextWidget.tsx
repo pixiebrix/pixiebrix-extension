@@ -74,19 +74,18 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   focusInput,
   ...formControlProps
 }) => {
-  const [{ value, ...restInputProps }, , { setValue: setFieldValue }] =
-    useField({
-      name,
-      validate(value) {
-        if (
-          isTemplateExpression(value) &&
-          value.__type__ !== "mustache" &&
-          isMustacheOnly(value.__value__)
-        ) {
-          return TEMPLATE_ERROR_MESSAGE;
-        }
-      },
-    });
+  const [{ value, ...restInputProps }, , { setValue }] = useField({
+    name,
+    validate(value) {
+      if (
+        isTemplateExpression(value) &&
+        value.__type__ !== "mustache" &&
+        isMustacheOnly(value.__value__)
+      ) {
+        return TEMPLATE_ERROR_MESSAGE;
+      }
+    },
+  });
 
   const { allowExpressions: allowExpressionsContext } =
     useContext(FieldRuntimeContext);
@@ -128,7 +127,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     [schema]
   );
 
-  const { setUndoableValue: setValue, undo } = useUndo(value, setFieldValue);
+  const undo = useUndo(value, setValue);
 
   const keyDownHandler: KeyboardEventHandler<HTMLTextAreaElement> = (event) => {
     if ((event.ctrlKey || event.metaKey) && event.key === "z") {
