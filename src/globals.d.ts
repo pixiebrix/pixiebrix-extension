@@ -14,6 +14,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+// We only use this package for its types. URLPattern is Chrome 95+
+/// <reference types="urlpattern-polyfill" />
+
 // This cannot be a regular import because it turns `globals.d.ts` in a "module definition", which it isn't
 type Browser = import("webextension-polyfill").Browser;
 

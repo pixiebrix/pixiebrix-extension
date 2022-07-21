@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// eslint-disable-next-line import/no-unassigned-import -- It's a polyfill
-import "urlpattern-polyfill";
 import { patternToRegex } from "webext-patterns";
 import { castArray } from "lodash";
 import { Availability } from "@/blocks/types";

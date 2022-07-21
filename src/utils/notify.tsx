@@ -19,9 +19,8 @@ import styles from "./notify.module.scss";
 
 import React from "react";
 import { render } from "react-dom";
-import { toast, Toaster } from "react-hot-toast";
+import { toast, Toaster, DefaultToastOptions } from "react-hot-toast";
 import { uuidv4 } from "@/types/helpers";
-import { DefaultToastOptions } from "react-hot-toast/dist/core/types";
 import { NOTIFICATIONS_Z_INDEX } from "@/common";
 import reportError from "@/telemetry/reportError";
 import { Except, RequireAtLeastOne } from "type-fest";
