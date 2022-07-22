@@ -18,35 +18,8 @@
 import React from "react";
 import { useField } from "formik";
 import FieldTemplate, { FieldProps } from "./FieldTemplate";
-import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
-import { UUID } from "@/core";
-import { RootState } from "@/pageEditor/pageEditorTypes";
-import { selectActiveElementId } from "@/pageEditor/slices/editorSelectors";
-import { createSelector } from "reselect";
 import { useSelector } from "react-redux";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-
-const selectAnnotationsForPath = (path: string) =>
-  createSelector(
-    selectActiveElementId,
-    (state: RootState) => state,
-    (activeElementId: UUID, state: RootState) => {
-      const extensionAnnotations =
-        selectExtensionAnnotations(activeElementId)(state);
-      let relativeBlockPath: string;
-      if (path.startsWith(PIPELINE_BLOCKS_FIELD_NAME)) {
-        relativeBlockPath = path.slice(PIPELINE_BLOCKS_FIELD_NAME.length + 1);
-      } else {
-        relativeBlockPath = path;
-      }
-
-      const annotations = extensionAnnotations.filter(
-        (x) => x.position.path === relativeBlockPath
-      );
-
-      return annotations;
-    }
-  );
+import { selectAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
 
 const ConnectedFieldTemplate2: React.FunctionComponent<FieldProps> = ({
   name,

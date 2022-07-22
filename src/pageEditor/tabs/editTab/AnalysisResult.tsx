@@ -15,12 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 import { AnnotationType } from "@/analysis/analysisTypes";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import {
-  selectActiveElementId,
   selectActiveNodeInfo,
+  selectAnnotationsForPath,
 } from "@/pageEditor/slices/editorSelectors";
 import React from "react";
 import { Col, Row } from "react-bootstrap";
@@ -33,25 +31,16 @@ const messageCssClasses = {
 };
 
 const AnalysisResult: React.FunctionComponent = () => {
-  const activeElementId = useSelector(selectActiveElementId);
   const { path } = useSelector(selectActiveNodeInfo);
-  // Removing the path of the root pipeline (accounting for ".")
-  const relativeBlockPath = path.slice(PIPELINE_BLOCKS_FIELD_NAME.length + 1);
-  const extensionAnnotations = useSelector(
-    selectExtensionAnnotations(activeElementId)
-  );
-
-  const nodeAnalysis = extensionAnnotations.filter(
-    ({ position }) => position.path === relativeBlockPath
-  );
-  if (nodeAnalysis.length === 0) {
+  const annotations = useSelector(selectAnnotationsForPath(path));
+  if (annotations.length === 0) {
     return null;
   }
 
   return (
     <>
       {/* TODO: remove the header, added for dev purposes only */}
-      {nodeAnalysis.map(({ message, type }, index) => (
+      {annotations.map(({ message, type }, index) => (
         <Row key={index} style={{ border: "1px solid black" }}>
           <Col className={messageCssClasses[type]}>{message}</Col>
         </Row>

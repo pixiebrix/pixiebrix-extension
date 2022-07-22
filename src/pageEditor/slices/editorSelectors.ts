@@ -17,7 +17,7 @@
 
 import { RecipeMetadata, RegistryId, UUID } from "@/core";
 import { createSelector } from "reselect";
-import { EditorState, ModalKey } from "@/pageEditor/pageEditorTypes";
+import { ModalKey, RootState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { flatMap, isEmpty, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
@@ -28,8 +28,8 @@ import {
   TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { BlockConfig } from "@/blocks/types";
-
-type RootState = { editor: EditorState };
+import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
+import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
 export const selectActiveElementId = ({ editor }: RootState) =>
   editor.activeElementId;
@@ -257,3 +257,25 @@ export const selectActiveNodeError = createSelector(
 
 export const selectAddBlockLocation = ({ editor }: RootState) =>
   editor.addBlockLocation;
+
+export const selectAnnotationsForPath = (path: string) =>
+  createSelector(
+    selectActiveElementId,
+    (state: RootState) => state,
+    (activeElementId: UUID, state: RootState) => {
+      const extensionAnnotations =
+        selectExtensionAnnotations(activeElementId)(state);
+      let relativeBlockPath: string;
+      if (path.startsWith(PIPELINE_BLOCKS_FIELD_NAME)) {
+        relativeBlockPath = path.slice(PIPELINE_BLOCKS_FIELD_NAME.length + 1);
+      } else {
+        relativeBlockPath = path;
+      }
+
+      const annotations = extensionAnnotations.filter(
+        (x) => x.position.path === relativeBlockPath
+      );
+
+      return annotations;
+    }
+  );
