@@ -16,17 +16,18 @@
  */
 
 import React from "react";
-import { render } from "@testing-library/react";
-import SidebarApp from "@/sidebar/SidebarApp";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
 
-jest.mock("@/options/store", () => ({
-  persistor: {
-    flush: jest.fn(),
-  },
-}));
+import LoginPanel from "@/sidebar/LoginPanel";
 
-describe("SidebarApp", () => {
-  test("renders", () => {
-    expect(render(<SidebarApp />).asFragment()).toMatchSnapshot();
-  });
-});
+export default {
+  title: "Sidebar/LoginPanel",
+  component: LoginPanel,
+} as ComponentMeta<typeof LoginPanel>;
+
+const Template: ComponentStory<typeof LoginPanel> = (args) => (
+  <LoginPanel {...args} />
+);
+
+export const Default = Template.bind({});
+Default.args = {};
