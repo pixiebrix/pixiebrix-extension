@@ -83,7 +83,7 @@ function useWizard(blueprint: RecipeDefinition): [WizardStep[], WizardValues] {
         config: installedServices[id],
       })),
       optionsArgs: mapValues(
-        blueprint.options?.schema ?? {},
+        blueprint.options?.schema.properties ?? {},
         (optionSchema: Schema, name: string) => {
           // eslint-disable-next-line security/detect-object-injection -- name from the schema
           const value = installedOptions[name] ?? optionSchema.default;
