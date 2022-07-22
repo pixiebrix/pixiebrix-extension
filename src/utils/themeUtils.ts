@@ -33,7 +33,7 @@ type ThemeLogoMap = {
   [key in Theme]: ThemeLogo;
 };
 
-const THEME_LOGOS: ThemeLogoMap = {
+export const THEME_LOGOS: ThemeLogoMap = {
   default: {
     regular: logo,
     small: logoSmall,
