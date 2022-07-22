@@ -66,26 +66,39 @@ export function getRecipeIdForElement(
   return isExtension(element) ? element._recipe?.id : element.recipe?.id;
 }
 
-export function getPipelinePropNames(block: BlockConfig): string[] {
+export type PipelinePropNames = {
+  pipeline: string;
+  inputKey?: string;
+};
+
+export function getPipelinePropNames(block: BlockConfig): PipelinePropNames[] {
   switch (block.id) {
     case ForEach.BLOCK_ID: {
-      return ["body"];
+      return [{ pipeline: "body", inputKey: "elementKey" }];
     }
 
     case Retry.BLOCK_ID: {
-      return ["body"];
+      return [{ pipeline: "body" }];
     }
 
     case ForEachElement.BLOCK_ID: {
-      return ["body"];
+      return [{ pipeline: "body" }];
     }
 
     case IfElse.BLOCK_ID: {
-      return ["if", "else"];
+      return [{ pipeline: "if" }, { pipeline: "else" }];
     }
 
     case TryExcept.BLOCK_ID: {
-      return ["try", "except"];
+      return [
+        {
+          pipeline: "try",
+        },
+        {
+          pipeline: "except",
+          inputKey: "errorKey",
+        },
+      ];
     }
 
     default: {
@@ -169,13 +182,13 @@ type PreVisitSubPipeline = (subPipelineInfo: {
   subPipelineProperty: string;
 }) => void;
 
-function getDocumentSubPipelineProperties(blockConfig: BlockConfig) {
+function getDocumentSubPipelineProperties(blockConfig: BlockConfig): string[] {
   return getDocumentPipelinePaths(blockConfig);
 }
 
 function getBlockSubPipelineProperties(blockConfig: BlockConfig) {
-  return getPipelinePropNames(blockConfig).map((subPipelineField) =>
-    joinName("config", subPipelineField)
+  return getPipelinePropNames(blockConfig).map((subPipelineProps) =>
+    joinName("config", subPipelineProps.pipeline)
   );
 }
 

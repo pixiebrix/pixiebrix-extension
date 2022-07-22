@@ -60,6 +60,7 @@ import { BlockError, ErrorLevel } from "@/pageEditor/uiState/uiStateTypes";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { getRootPipelineFlavor } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import { isExpression } from "@/runtime/mapArgs";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -91,6 +92,8 @@ type SubPipeline = {
   subPipelinePath: string;
 
   subPipelineFlavor: PipelineFlavor;
+
+  subPipelineInputKey?: string;
 };
 
 function decideBlockStatus(
@@ -250,22 +253,33 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           });
         }
       } else {
-        for (const propName of getPipelinePropNames(blockConfig)) {
+        for (const propNames of getPipelinePropNames(blockConfig)) {
+          const subPipelineConfigAccessor = [String(index), "config"];
           const subPipelineAccessor = [
-            String(index),
-            "config",
-            propName,
+            ...subPipelineConfigAccessor,
+            propNames.pipeline,
             "__value__",
           ];
           const subPipelinePath = joinName(
             pipelinePath,
             ...subPipelineAccessor
           );
+          const inputKeyAccessor = [
+            ...subPipelineConfigAccessor,
+            propNames.inputKey,
+          ];
+          const inputKeyValue = get(pipeline, inputKeyAccessor);
+          const inputKey: string = inputKeyValue
+            ? isExpression(inputKeyValue)
+              ? inputKeyValue.__value__
+              : inputKeyValue
+            : undefined;
           subPipelines.push({
-            headerLabel: propName,
+            headerLabel: propNames.pipeline,
             subPipeline: get(pipeline, subPipelineAccessor) ?? [],
             subPipelinePath,
             subPipelineFlavor: PipelineFlavor.NoRenderer,
+            subPipelineInputKey: inputKey,
           });
         }
       }
@@ -399,6 +413,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           subPipeline,
           subPipelinePath,
           subPipelineFlavor,
+          subPipelineInputKey,
         } of subPipelines) {
           const headerName = `${nodeId}-header`;
 
@@ -434,6 +449,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             headerLabel,
             nestingLevel,
             nodeActions: headerActions,
+            pipelineInputKey: subPipelineInputKey,
             active: nodeIsActive,
             nestedActive: parentIsActive,
           };
