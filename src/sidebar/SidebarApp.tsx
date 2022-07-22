@@ -38,6 +38,8 @@ import { AnyAction } from "redux";
 import { hideSidebar } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 import useTheme from "@/hooks/useTheme";
+import RequireAuth from "@/auth/RequireAuth";
+import LoginPanel from "@/sidebar/LoginPanel";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -116,16 +118,18 @@ const ConnectedSidebar: React.VFC = () => {
       </div>
 
       <div className="full-height">
-        {sidebarState.panels?.length || sidebarState.forms?.length ? (
-          <Tabs
-            {...sidebarState}
-            onSelectTab={(eventKey: string) => {
-              dispatch(sidebarSlice.actions.selectTab(eventKey));
-            }}
-          />
-        ) : (
-          <DefaultPanel />
-        )}
+        <RequireAuth LoginPage={LoginPanel}>
+          {sidebarState.panels?.length || sidebarState.forms?.length ? (
+            <Tabs
+              {...sidebarState}
+              onSelectTab={(eventKey: string) => {
+                dispatch(sidebarSlice.actions.selectTab(eventKey));
+              }}
+            />
+          ) : (
+            <DefaultPanel />
+          )}
+        </RequireAuth>
       </div>
     </div>
   );
