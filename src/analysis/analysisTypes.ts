@@ -48,7 +48,7 @@ export type Annotation = {
   /**
    * Custom data produced by the analysis
    */
-  detail: UnknownObject;
+  detail?: UnknownObject;
 };
 
 export interface Analysis {

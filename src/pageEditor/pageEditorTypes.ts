@@ -37,6 +37,7 @@ import {
   ContextMenuFormState,
   QuickBarFormState,
 } from "./extensionPoints/formStateTypes";
+import { AnalysisRootState } from "@/analysis/analysisTypes";
 
 export type FormState =
   | ActionFormState
@@ -190,7 +191,8 @@ export interface EditorState {
 
 export type RootState = AuthRootState &
   LogRootState &
-  ExtensionsRootState & {
+  ExtensionsRootState &
+  AnalysisRootState & {
     editor: EditorState;
     savingExtension: SavingExtensionState;
     settings: SettingsState;

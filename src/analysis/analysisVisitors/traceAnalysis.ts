@@ -34,13 +34,17 @@ const requiredFieldRegex =
 
 const rootPropertyRegex = /^#\/(?<property>.+)$/;
 
-export class TraceAnalysis extends AnalysisVisitor implements Analysis {
+class TraceAnalysis extends AnalysisVisitor implements Analysis {
   get id() {
     return "trace";
   }
 
   private readonly traceMap = new Map<UUID, TraceRecord[]>();
   private readonly annotations: Annotation[] = [];
+
+  getAnnotations(): Annotation[] {
+    return this.annotations;
+  }
 
   /**
    * @param trace the trace for the latest run of the extension
@@ -55,10 +59,6 @@ export class TraceAnalysis extends AnalysisVisitor implements Analysis {
     }
   }
 
-  getAnnotations(): Annotation[] {
-    return this.annotations;
-  }
-
   override async visitBlock(
     position: AbsolutePosition,
     blockConfig: BlockConfig,
@@ -67,10 +67,8 @@ export class TraceAnalysis extends AnalysisVisitor implements Analysis {
     await super.visitBlock(position, blockConfig, options);
 
     const records = this.traceMap.get(blockConfig.instanceId);
-    // TODO: fix if we need to get the last record for the block
     // eslint-disable-next-line unicorn/no-array-callback-reference -- a proxy function breaks the type inference
     const errorRecord = records?.find(isTraceError);
-    console.log("errorRecord", { errorRecord, records });
     if (errorRecord == null) {
       return;
     }
@@ -117,3 +115,5 @@ export class TraceAnalysis extends AnalysisVisitor implements Analysis {
     });
   }
 }
+
+export default TraceAnalysis;

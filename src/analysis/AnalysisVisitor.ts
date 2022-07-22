@@ -19,7 +19,7 @@ import { AbsolutePosition } from "@/analysis/analysisTypes";
 import { BlockConfig } from "@/blocks/types";
 import { joinName, joinPathParts } from "@/utils";
 import { Expression, IBlock, Schema } from "@/core";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry, { TypedBlock } from "@/blocks/registry";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { JsonValue } from "type-fest";
 import { DocumentRenderer } from "@/blocks/renderers/document";
@@ -37,6 +37,10 @@ export function nestedPosition(
 
 export type VisitBlockExtra = {
   index: number;
+};
+export type VisitResolvedBlockExtra = {
+  index: number;
+  typedBlock: TypedBlock;
 };
 
 /**
@@ -57,10 +61,12 @@ abstract class AnalysisVisitor {
     blockConfig: BlockConfig,
     { index }: VisitBlockExtra
   ): Promise<void> {
-    console.log("Visiting block", blockConfig);
     try {
-      const block = await blockRegistry.lookup(blockConfig.id);
-      await this.visitResolvedBlock(position, blockConfig, { index, block });
+      const typedBlock = await blockRegistry.lookupTyped(blockConfig.id);
+      await this.visitResolvedBlock(position, blockConfig, {
+        index,
+        typedBlock,
+      });
     } catch (error) {
       console.debug("Error visiting block", error);
     }
@@ -73,14 +79,14 @@ abstract class AnalysisVisitor {
   protected async visitResolvedBlock(
     position: AbsolutePosition,
     blockConfig: BlockConfig,
-    { index, block }: { index: number; block: IBlock }
+    { index, typedBlock }: VisitResolvedBlockExtra
   ): Promise<void> {
-    console.log("Visiting resolved block", blockConfig);
     if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
       await this.visitRenderDocument(position, blockConfig);
       return;
     }
 
+    const { inputSchema } = typedBlock.block;
     for await (const [prop, value] of Object.entries(blockConfig.config)) {
       if (isPipelineExpression(value)) {
         // TODO: pass pipeline type restrictions
@@ -90,7 +96,7 @@ abstract class AnalysisVisitor {
         );
       } else if (isExpression(value)) {
         // eslint-disable-next-line security/detect-object-injection -- from parsed YAML or page editor
-        const fieldSchema = block.inputSchema.properties?.[prop];
+        const fieldSchema = inputSchema.properties?.[prop];
         await this.visitExpression(
           nestedPosition(position, "config", prop, "__value__"),
           value,
@@ -101,7 +107,7 @@ abstract class AnalysisVisitor {
         );
       } else {
         // eslint-disable-next-line security/detect-object-injection -- from parsed YAML or page editor
-        const fieldSchema = block.inputSchema.properties?.[prop];
+        const fieldSchema = inputSchema.properties?.[prop];
         await this.visitLiteral(
           nestedPosition(position, "config", prop),
           value as JsonValue,

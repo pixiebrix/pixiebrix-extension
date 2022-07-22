@@ -51,11 +51,8 @@ const AnalysisResult: React.FunctionComponent = () => {
   return (
     <>
       {/* TODO: remove the header, added for dev purposes only */}
-      <Row>
-        <Col>Trace analysis:</Col>
-      </Row>
       {nodeAnalysis.map(({ message, type }, index) => (
-        <Row key={index}>
+        <Row key={index} style={{ border: "1px solid black" }}>
           <Col className={messageCssClasses[type]}>{message}</Col>
         </Row>
       ))}

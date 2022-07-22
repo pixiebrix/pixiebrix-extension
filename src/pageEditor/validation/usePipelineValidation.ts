@@ -45,7 +45,7 @@ function usePipelineValidation() {
     (pipeline: BlockPipeline): void | FormikErrorTree => {
       const formikErrors: FormikErrorTree = {};
 
-      validateOutputKey(formikErrors, pipeline, allBlocks);
+      // validateOutputKey(formikErrors, pipeline, allBlocks);
       applyTraceErrors(formikErrors, traceErrors, pipelineMap);
 
       return isEmpty(formikErrors) ? undefined : formikErrors;

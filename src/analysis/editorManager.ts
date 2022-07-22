@@ -19,8 +19,11 @@ import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { createListenerMiddleware } from "@reduxjs/toolkit";
 import { ValidatorEffect } from "@/pageEditor/validation/validationTypes";
-import { TraceAnalysis } from "./analysisVisitors";
+import TraceAnalysis from "./analysisVisitors/traceAnalysis";
 import analysisSlice from "./analysisSlice";
+import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import { FormState } from "@/pageEditor/pageEditorTypes";
+import OutputKeyAnalysis from "./analysisVisitors/outputKeyAnalisys";
 
 class EditorManager {
   private readonly listenerMiddleware = createListenerMiddleware();
@@ -30,6 +33,7 @@ class EditorManager {
 
   constructor() {
     this.registerTraceAnalysis();
+    this.registerOutputKeyAnalysis();
   }
 
   // XXX: Registration of concrete analysis can be moved outside
@@ -70,6 +74,41 @@ class EditorManager {
 
     this.listenerMiddleware.startListening({
       actionCreator: runtimeSlice.actions.setExtensionTrace,
+      effect,
+    });
+  }
+
+  private registerOutputKeyAnalysis() {
+    const effect: ValidatorEffect = async (action, listenerApi) => {
+      const element: FormState = action.payload;
+
+      const outputKeyAnalysis = new OutputKeyAnalysis();
+
+      listenerApi.dispatch(
+        analysisSlice.actions.startAnalysis({
+          extensionId: element.uuid,
+          analysisId: outputKeyAnalysis.id,
+        })
+      );
+
+      await outputKeyAnalysis.visitRootPipeline(
+        element.extension.blockPipeline,
+        {
+          extensionType: element.type,
+        }
+      );
+
+      listenerApi.dispatch(
+        analysisSlice.actions.finishAnalysis({
+          extensionId: element.uuid,
+          analysisId: outputKeyAnalysis.id,
+          annotations: outputKeyAnalysis.getAnnotations(),
+        })
+      );
+    };
+
+    this.listenerMiddleware.startListening({
+      actionCreator: editorSlice.actions.editElement,
       effect,
     });
   }

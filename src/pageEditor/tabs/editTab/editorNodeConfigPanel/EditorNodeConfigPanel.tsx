@@ -21,6 +21,7 @@ import React from "react";
 import { Col, Row } from "react-bootstrap";
 import { RegistryId, UUID } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import ConnectedFieldTemplate2 from "@/components/form/ConnectedFieldTemplate2";
 import BlockConfiguration from "@/pageEditor/tabs/effect/BlockConfiguration";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
@@ -101,7 +102,7 @@ const EditorNodeConfigPanel: React.FC<{
           />
         </Col>
         <Col xl>
-          <ConnectedFieldTemplate
+          <ConnectedFieldTemplate2
             name={`${blockFieldName}.outputKey`}
             label={PopoverOutputLabel}
             fitLabelWidth

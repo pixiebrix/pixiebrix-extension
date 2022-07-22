@@ -75,6 +75,11 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
     return this.typeCachePromise;
   }
 
+  async lookupTyped(id: RegistryId): Promise<TypedBlock> {
+    const typeCache = await this.allTyped();
+    return typeCache.get(id);
+  }
+
   override register(...items: IBlock[]): void {
     super.register(...items);
     this.typeCachePromise = null;
