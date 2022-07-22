@@ -97,6 +97,7 @@ function decideBlockStatus(
   blockError: BlockError,
   traceRecord: TraceRecord
 ): RunStatus {
+  // TODO: check analysis annotations for error status
   if (
     blockError != null &&
     (blockError.errors?.some((error) => error.level === ErrorLevel.Critical) ||

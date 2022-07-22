@@ -189,11 +189,15 @@ export interface EditorState {
   newRecipeIds: RegistryId[];
 }
 
+export type EditorRootState = {
+  editor: EditorState;
+};
+
 export type RootState = AuthRootState &
   LogRootState &
   ExtensionsRootState &
-  AnalysisRootState & {
-    editor: EditorState;
+  AnalysisRootState &
+  EditorRootState & {
     savingExtension: SavingExtensionState;
     settings: SettingsState;
     runtime: RuntimeState;

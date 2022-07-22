@@ -21,13 +21,11 @@ import { useCallback } from "react";
 import { BlockPipeline } from "@/blocks/types";
 import { useField, useFormikContext, setNestedObjectValues } from "formik";
 import { useAsyncEffect } from "use-async-effect";
-import validateOutputKey from "@/pageEditor/validation/validateOutputKey";
 import applyTraceErrors from "@/pageEditor/validation/applyTraceError";
 import { isEmpty } from "lodash";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { FormState } from "@/pageEditor/pageEditorTypes";
-import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 import { selectPipelineMap } from "@/pageEditor/slices/editorSelectors";
 
 /**
@@ -35,23 +33,18 @@ import { selectPipelineMap } from "@/pageEditor/slices/editorSelectors";
  * meaning it's part of the Formik validation
  */
 function usePipelineValidation() {
-  const [allBlocks] = useAllBlocks();
   const traceErrors = useSelector(selectTraceErrors);
   const formikContext = useFormikContext<FormState>();
   const pipelineMap = useSelector(selectPipelineMap);
 
   // "validatePipelineBlocks" is invoked when Formik runs validation (currently onBlur)
-  const validatePipelineBlocks = useCallback(
-    (pipeline: BlockPipeline): void | FormikErrorTree => {
-      const formikErrors: FormikErrorTree = {};
+  const validatePipelineBlocks = useCallback((): void | FormikErrorTree => {
+    const formikErrors: FormikErrorTree = {};
 
-      // validateOutputKey(formikErrors, pipeline, allBlocks);
-      applyTraceErrors(formikErrors, traceErrors, pipelineMap);
+    applyTraceErrors(formikErrors, traceErrors, pipelineMap);
 
-      return isEmpty(formikErrors) ? undefined : formikErrors;
-    },
-    [allBlocks, pipelineMap, traceErrors]
-  );
+    return isEmpty(formikErrors) ? undefined : formikErrors;
+  }, [pipelineMap, traceErrors]);
 
   useField<BlockPipeline>({
     name: PIPELINE_BLOCKS_FIELD_NAME,

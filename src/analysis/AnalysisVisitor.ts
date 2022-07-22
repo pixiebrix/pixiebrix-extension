@@ -18,7 +18,7 @@
 import { AbsolutePosition } from "@/analysis/analysisTypes";
 import { BlockConfig } from "@/blocks/types";
 import { joinName, joinPathParts } from "@/utils";
-import { Expression, IBlock, Schema } from "@/core";
+import { Expression, Schema } from "@/core";
 import blockRegistry, { TypedBlock } from "@/blocks/registry";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { JsonValue } from "type-fest";
