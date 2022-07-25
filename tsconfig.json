@@ -1,7 +1,7 @@
 {
   // You can see the full details at https://github.com/sindresorhus/tsconfig/blob/main/tsconfig.json
   // Note: `strict: true` enables many flags that aren’t explicitly listed in that file
-  "extends": "@sindresorhus/tsconfig/tsconfig.json",
+  "extends": "@sindresorhus/tsconfig",
   "compilerOptions": {
     "sourceMap": true,
     "target": "es2020",
@@ -9,7 +9,6 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "baseUrl": ".",
-    "skipLibCheck": false,
 
     // TODO: Drop these lines to make TS stricter https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "strictNullChecks": false,
