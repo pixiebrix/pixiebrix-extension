@@ -16,14 +16,27 @@
  */
 
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
-import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
-import { createListenerMiddleware } from "@reduxjs/toolkit";
+import { AnyAction, createListenerMiddleware } from "@reduxjs/toolkit";
 import { ValidatorEffect } from "@/pageEditor/validation/validationTypes";
-import TraceAnalysis from "./analysisVisitors/traceAnalysis";
 import analysisSlice from "./analysisSlice";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import OutputKeyAnalysis from "./analysisVisitors/outputKeyAnalisys";
+import {
+  MatchFunction,
+  TypedActionCreator,
+} from "@reduxjs/toolkit/dist/listenerMiddleware/types";
+import AnalysisVisitor from "./AnalysisVisitor";
+
+type AnalysisEffectConfig = {
+  actionCreator?: TypedActionCreator<any>;
+  matcher?: MatchFunction<AnyAction>;
+};
+
+type AnalysisFactory<TAction = AnyAction, TState = unknown> = (
+  action: TAction,
+  state: TState
+) => AnalysisVisitor | null;
 
 class EditorManager {
   private readonly listenerMiddleware = createListenerMiddleware();
@@ -32,48 +45,45 @@ class EditorManager {
   }
 
   constructor() {
-    this.registerTraceAnalysis();
     this.registerOutputKeyAnalysis();
   }
 
-  // XXX: Registration of concrete analysis can be moved outside
-  private registerTraceAnalysis() {
+  public registerAnalysisEffect(
+    analysisFactory: AnalysisFactory,
+    config: AnalysisEffectConfig
+  ) {
     const effect: ValidatorEffect = async (action, listenerApi) => {
-      const { extensionId, records } = action.payload;
       const state = listenerApi.getState();
-      const activeElement = selectActiveElement(state);
-      const activeElementId = activeElement.uuid;
-      if (activeElementId !== extensionId) {
+      const analysis = analysisFactory(action, state);
+      if (!analysis) {
         return;
       }
 
-      const traceAnalysis = new TraceAnalysis(records);
+      const activeElement = selectActiveElement(state);
+      const activeElementId = activeElement.uuid;
 
       listenerApi.dispatch(
         analysisSlice.actions.startAnalysis({
-          extensionId,
-          analysisId: traceAnalysis.id,
+          extensionId: activeElementId,
+          analysisId: analysis.id,
         })
       );
 
-      await traceAnalysis.visitRootPipeline(
-        activeElement.extension.blockPipeline,
-        {
-          extensionType: activeElement.type,
-        }
-      );
+      await analysis.visitRootPipeline(activeElement.extension.blockPipeline, {
+        extensionType: activeElement.type,
+      });
 
       listenerApi.dispatch(
         analysisSlice.actions.finishAnalysis({
-          extensionId,
-          analysisId: traceAnalysis.id,
-          annotations: traceAnalysis.getAnnotations(),
+          extensionId: activeElementId,
+          analysisId: analysis.id,
+          annotations: analysis.getAnnotations(),
         })
       );
     };
 
     this.listenerMiddleware.startListening({
-      actionCreator: runtimeSlice.actions.setExtensionTrace,
+      ...config,
       effect,
     });
   }

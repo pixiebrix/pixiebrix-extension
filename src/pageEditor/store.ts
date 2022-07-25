@@ -34,7 +34,7 @@ import { logActions, logSlice } from "@/components/logViewer/logSlice";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import validationListenerMiddleware from "./validation/validationListenerMiddleware";
 import analysisSlice from "@/analysis/analysisSlice";
-import EditorManager from "@/analysis/editorManager";
+import analysisManager from "./analysisManager";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -54,8 +54,6 @@ if (typeof createLogger === "function") {
     })
   );
 }
-
-const editorAnalysisManager = new EditorManager();
 
 const store = configureStore({
   reducer: {
@@ -84,7 +82,7 @@ const store = configureStore({
     })
       .concat(appApi.middleware)
       .concat(validationListenerMiddleware)
-      .concat(editorAnalysisManager.middleware)
+      .concat(analysisManager.middleware)
       .concat(conditionalMiddleware);
     /* eslint-enable unicorn/prefer-spread */
   },

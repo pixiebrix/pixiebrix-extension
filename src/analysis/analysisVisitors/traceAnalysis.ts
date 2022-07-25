@@ -18,7 +18,6 @@
 import AnalysisVisitor, { nestedPosition } from "@/analysis/AnalysisVisitor";
 import {
   AbsolutePosition,
-  Analysis,
   Annotation,
   AnnotationType,
 } from "@/analysis/analysisTypes";
@@ -34,7 +33,7 @@ const requiredFieldRegex =
 
 const rootPropertyRegex = /^#\/(?<property>.+)$/;
 
-class TraceAnalysis extends AnalysisVisitor implements Analysis {
+class TraceAnalysis extends AnalysisVisitor {
   get id() {
     return "trace";
   }

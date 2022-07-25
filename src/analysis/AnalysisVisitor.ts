@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AbsolutePosition } from "@/analysis/analysisTypes";
+import {
+  AbsolutePosition,
+  Analysis,
+  Annotation,
+} from "@/analysis/analysisTypes";
 import { BlockConfig } from "@/blocks/types";
 import { joinName, joinPathParts } from "@/utils";
 import { Expression, Schema } from "@/core";
@@ -49,7 +53,10 @@ export type VisitResolvedBlockExtra = {
  * TODO: add pre- visit hook from traversePipeline
  * https://github.com/pixiebrix/pixiebrix-extension/blob/1aa42d7ef1f6652e3a3340e0138122d6ceb29378/src/pageEditor/utils.ts#L182-L182
  */
-abstract class AnalysisVisitor {
+abstract class AnalysisVisitor implements Analysis {
+  abstract id: string;
+  abstract getAnnotations(): Annotation[];
+
   /**
    * Visit a configured block.
    * @param position the position in the extension
