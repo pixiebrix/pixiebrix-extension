@@ -69,7 +69,7 @@ export function getRecipeIdForElement(
 export function getPipelinePropNames(block: BlockConfig): string[] {
   switch (block.id) {
     case ForEach.BLOCK_ID: {
-      return ["body", "elementKey"];
+      return ["body"];
     }
 
     case Retry.BLOCK_ID: {
@@ -188,7 +188,7 @@ function getDocumentSubPipelineProperties(blockConfig: BlockConfig): string[] {
   return getDocumentPipelinePaths(blockConfig);
 }
 
-function getBlockSubPipelineProperties(blockConfig: BlockConfig) {
+function getBlockSubPipelineProperties(blockConfig: BlockConfig): string[] {
   return getPipelinePropNames(blockConfig).map((subPipelineField) =>
     joinName("config", subPipelineField)
   );
