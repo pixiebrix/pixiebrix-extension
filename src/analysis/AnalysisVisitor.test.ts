@@ -22,7 +22,7 @@ import { createNewElement } from "@/components/documentBuilder/createNewElement"
 import { PipelineExpression } from "@/runtime/mapArgs";
 import { blockConfigFactory, pipelineFactory } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
-import { AbsolutePosition } from "./analysisTypes";
+import { AbsolutePosition, Annotation } from "./analysisTypes";
 import AnalysisVisitor, { VisitBlockExtra } from "./AnalysisVisitor";
 
 jest.mock("@/blocks/registry", () => ({
@@ -36,10 +36,20 @@ jest.mock("@/blocks/registry", () => ({
   },
 }));
 
+abstract class TestAnalysisVisitor extends AnalysisVisitor {
+  get id() {
+    return "test";
+  }
+
+  getAnnotations(): Annotation[] {
+    throw new Error("Method not implemented.");
+  }
+}
+
 test("should invoke the callback for the pipeline bricks", async () => {
   const pipeline = pipelineFactory();
   const visitBlock = jest.fn();
-  class Visitor extends AnalysisVisitor {
+  class Visitor extends TestAnalysisVisitor {
     override async visitBlock(
       position: AbsolutePosition,
       blockConfig: BlockConfig,
@@ -84,7 +94,7 @@ test("should invoke the callback for the sub pipeline bricks", async () => {
 
   const visitBlock = jest.fn();
 
-  class Visitor extends AnalysisVisitor {
+  class Visitor extends TestAnalysisVisitor {
     override async visitBlock(
       position: AbsolutePosition,
       blockConfig: BlockConfig,
@@ -141,7 +151,7 @@ test("should invoke the callback for the Document button pipeline", async () => 
 
   const visitBlock = jest.fn();
 
-  class Visitor extends AnalysisVisitor {
+  class Visitor extends TestAnalysisVisitor {
     override async visitBlock(
       position: AbsolutePosition,
       blockConfig: BlockConfig,

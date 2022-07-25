@@ -19,19 +19,19 @@ import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { AnyAction, createListenerMiddleware } from "@reduxjs/toolkit";
 import { ValidatorEffect } from "@/pageEditor/validation/validationTypes";
 import analysisSlice from "./analysisSlice";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
-import { FormState } from "@/pageEditor/pageEditorTypes";
-import OutputKeyAnalysis from "./analysisVisitors/outputKeyAnalisys";
 import {
   MatchFunction,
   TypedActionCreator,
 } from "@reduxjs/toolkit/dist/listenerMiddleware/types";
 import AnalysisVisitor from "./AnalysisVisitor";
 
-type AnalysisEffectConfig = {
-  actionCreator?: TypedActionCreator<any>;
-  matcher?: MatchFunction<AnyAction>;
-};
+type AnalysisEffectConfig =
+  | {
+      actionCreator: TypedActionCreator<any>;
+    }
+  | {
+      matcher: MatchFunction<AnyAction>;
+    };
 
 type AnalysisFactory<TAction = AnyAction, TState = unknown> = (
   action: TAction,
@@ -42,10 +42,6 @@ class EditorManager {
   private readonly listenerMiddleware = createListenerMiddleware();
   public get middleware() {
     return this.listenerMiddleware.middleware;
-  }
-
-  constructor() {
-    this.registerOutputKeyAnalysis();
   }
 
   public registerAnalysisEffect(
@@ -85,42 +81,7 @@ class EditorManager {
     this.listenerMiddleware.startListening({
       ...config,
       effect,
-    });
-  }
-
-  private registerOutputKeyAnalysis() {
-    const effect: ValidatorEffect = async (action, listenerApi) => {
-      const element: FormState = action.payload;
-
-      const outputKeyAnalysis = new OutputKeyAnalysis();
-
-      listenerApi.dispatch(
-        analysisSlice.actions.startAnalysis({
-          extensionId: element.uuid,
-          analysisId: outputKeyAnalysis.id,
-        })
-      );
-
-      await outputKeyAnalysis.visitRootPipeline(
-        element.extension.blockPipeline,
-        {
-          extensionType: element.type,
-        }
-      );
-
-      listenerApi.dispatch(
-        analysisSlice.actions.finishAnalysis({
-          extensionId: element.uuid,
-          analysisId: outputKeyAnalysis.id,
-          annotations: outputKeyAnalysis.getAnnotations(),
-        })
-      );
-    };
-
-    this.listenerMiddleware.startListening({
-      actionCreator: editorSlice.actions.editElement,
-      effect,
-    });
+    } as any);
   }
 }
 
