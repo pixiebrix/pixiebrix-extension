@@ -66,45 +66,47 @@ export function getRecipeIdForElement(
   return isExtension(element) ? element._recipe?.id : element.recipe?.id;
 }
 
-export type PipelinePropNames = {
-  pipeline: string;
-  inputKey?: string;
-};
-
-export function getPipelinePropNames(block: BlockConfig): PipelinePropNames[] {
+export function getPipelinePropNames(block: BlockConfig): string[] {
   switch (block.id) {
     case ForEach.BLOCK_ID: {
-      return [{ pipeline: "body", inputKey: "elementKey" }];
+      return ["body", "elementKey"];
     }
 
     case Retry.BLOCK_ID: {
-      return [{ pipeline: "body" }];
+      return ["body"];
     }
 
     case ForEachElement.BLOCK_ID: {
-      return [{ pipeline: "body" }];
+      return ["body"];
     }
 
     case IfElse.BLOCK_ID: {
-      return [{ pipeline: "if" }, { pipeline: "else" }];
+      return ["if", "else"];
     }
 
     case TryExcept.BLOCK_ID: {
-      return [
-        {
-          pipeline: "try",
-        },
-        {
-          pipeline: "except",
-          inputKey: "errorKey",
-        },
-      ];
+      return ["try", "except"];
     }
 
     default: {
       return [];
     }
   }
+}
+
+export function getPipelineInputKeyPropName(
+  blockId: RegistryId,
+  pipelinePropName: string
+): string | undefined {
+  if (blockId === ForEach.BLOCK_ID && pipelinePropName === "body") {
+    return "elementKey";
+  }
+
+  if (blockId === TryExcept.BLOCK_ID && pipelinePropName === "except") {
+    return "errorKey";
+  }
+
+  return undefined;
 }
 
 /**
@@ -187,8 +189,8 @@ function getDocumentSubPipelineProperties(blockConfig: BlockConfig): string[] {
 }
 
 function getBlockSubPipelineProperties(blockConfig: BlockConfig) {
-  return getPipelinePropNames(blockConfig).map((subPipelineProps) =>
-    joinName("config", subPipelineProps.pipeline)
+  return getPipelinePropNames(blockConfig).map((subPipelineField) =>
+    joinName("config", subPipelineField)
   );
 }
 

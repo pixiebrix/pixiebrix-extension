@@ -46,6 +46,7 @@ import { get, isEmpty } from "lodash";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import {
   getDocumentPipelinePaths,
+  getPipelineInputKeyPropName,
   getPipelinePropNames,
 } from "@/pageEditor/utils";
 import { isNullOrBlank, joinName, joinPathParts } from "@/utils";
@@ -253,20 +254,24 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           });
         }
       } else {
-        for (const propNames of getPipelinePropNames(blockConfig)) {
+        for (const pipelinePropName of getPipelinePropNames(blockConfig)) {
           const subPipelineConfigAccessor = [String(index), "config"];
           const subPipelineAccessor = [
             ...subPipelineConfigAccessor,
-            propNames.pipeline,
+            pipelinePropName,
             "__value__",
           ];
           const subPipelinePath = joinName(
             pipelinePath,
             ...subPipelineAccessor
           );
+          const inputKeyPropName = getPipelineInputKeyPropName(
+            blockConfig.id,
+            pipelinePropName
+          );
           const inputKeyAccessor = [
             ...subPipelineConfigAccessor,
-            propNames.inputKey,
+            inputKeyPropName,
           ];
           const inputKeyValue = get(pipeline, inputKeyAccessor);
           const inputKey: string = inputKeyValue
@@ -275,7 +280,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
               : inputKeyValue
             : undefined;
           subPipelines.push({
-            headerLabel: propNames.pipeline,
+            headerLabel: pipelinePropName,
             subPipeline: get(pipeline, subPipelineAccessor) ?? [],
             subPipelinePath,
             subPipelineFlavor: PipelineFlavor.NoRenderer,
