@@ -46,6 +46,7 @@ import { get, isEmpty } from "lodash";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import {
   getDocumentPipelinePaths,
+  getPipelineInputKeyPropName,
   getPipelinePropNames,
 } from "@/pageEditor/utils";
 import { isNullOrBlank, joinName, joinPathParts } from "@/utils";
@@ -60,6 +61,7 @@ import { BlockError, ErrorLevel } from "@/pageEditor/uiState/uiStateTypes";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { getRootPipelineFlavor } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import { isExpression } from "@/runtime/mapArgs";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -91,6 +93,8 @@ type SubPipeline = {
   subPipelinePath: string;
 
   subPipelineFlavor: PipelineFlavor;
+
+  subPipelineInputKey?: string;
 };
 
 function decideBlockStatus(
@@ -250,22 +254,37 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           });
         }
       } else {
-        for (const propName of getPipelinePropNames(blockConfig)) {
+        for (const pipelinePropName of getPipelinePropNames(blockConfig)) {
+          const subPipelineConfigAccessor = [String(index), "config"];
           const subPipelineAccessor = [
-            String(index),
-            "config",
-            propName,
+            ...subPipelineConfigAccessor,
+            pipelinePropName,
             "__value__",
           ];
           const subPipelinePath = joinName(
             pipelinePath,
             ...subPipelineAccessor
           );
+          const inputKeyPropName = getPipelineInputKeyPropName(
+            blockConfig.id,
+            pipelinePropName
+          );
+          const inputKeyAccessor = [
+            ...subPipelineConfigAccessor,
+            inputKeyPropName,
+          ];
+          const inputKeyValue = get(pipeline, inputKeyAccessor);
+          const inputKey: string = inputKeyValue
+            ? isExpression(inputKeyValue)
+              ? inputKeyValue.__value__
+              : inputKeyValue
+            : undefined;
           subPipelines.push({
-            headerLabel: propName,
+            headerLabel: pipelinePropName,
             subPipeline: get(pipeline, subPipelineAccessor) ?? [],
             subPipelinePath,
             subPipelineFlavor: PipelineFlavor.NoRenderer,
+            subPipelineInputKey: inputKey,
           });
         }
       }
@@ -399,6 +418,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           subPipeline,
           subPipelinePath,
           subPipelineFlavor,
+          subPipelineInputKey,
         } of subPipelines) {
           const headerName = `${nodeId}-header`;
 
@@ -434,6 +454,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             headerLabel,
             nestingLevel,
             nodeActions: headerActions,
+            pipelineInputKey: subPipelineInputKey,
             active: nodeIsActive,
             nestedActive: parentIsActive,
           };

@@ -51,6 +51,13 @@ $headerPipeLineHeight: 4px;
   font-size: 0.8em;
 }
 
+.subPipelineInputKey {
+  display: inline-block;
+  margin-left: 0.25rem;
+  font-size: 0.8em !important;
+  font-family: monospace;
+}
+
 .headerPipeLineTop {
   position: absolute;
   top: 0;

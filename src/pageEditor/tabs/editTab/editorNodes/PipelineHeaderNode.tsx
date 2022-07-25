@@ -27,6 +27,7 @@ export type PipelineHeaderNodeProps = {
   headerLabel: string;
   nestingLevel: number;
   nodeActions: NodeAction[];
+  pipelineInputKey?: string;
   active?: boolean;
   nestedActive?: boolean;
 };
@@ -35,6 +36,7 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   headerLabel,
   nestingLevel,
   nodeActions,
+  pipelineInputKey,
   active,
   nestedActive,
 }) => (
@@ -52,8 +54,11 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
         })}
       >
         <div className={styles.headerPipeLineTop} />
-        <div className={styles.subPipelineLabel}>{headerLabel}</div>
         <div className={styles.headerPipeLineBottom} />
+        <div className={styles.subPipelineLabel}>{headerLabel}</div>
+        {pipelineInputKey && (
+          <div className={styles.subPipelineInputKey}>@{pipelineInputKey}</div>
+        )}
       </div>
     </div>
     <NodeActionsView nodeActions={nodeActions} />

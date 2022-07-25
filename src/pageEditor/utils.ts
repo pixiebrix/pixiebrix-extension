@@ -94,6 +94,21 @@ export function getPipelinePropNames(block: BlockConfig): string[] {
   }
 }
 
+export function getPipelineInputKeyPropName(
+  blockId: RegistryId,
+  pipelinePropName: string
+): string | undefined {
+  if (blockId === ForEach.BLOCK_ID && pipelinePropName === "body") {
+    return "elementKey";
+  }
+
+  if (blockId === TryExcept.BLOCK_ID && pipelinePropName === "except") {
+    return "errorKey";
+  }
+
+  return undefined;
+}
+
 /**
  * Returns Formik path names to pipeline expressions
  * @param parentPath the parent Formik path
@@ -169,11 +184,11 @@ type PreVisitSubPipeline = (subPipelineInfo: {
   subPipelineProperty: string;
 }) => void;
 
-function getDocumentSubPipelineProperties(blockConfig: BlockConfig) {
+function getDocumentSubPipelineProperties(blockConfig: BlockConfig): string[] {
   return getDocumentPipelinePaths(blockConfig);
 }
 
-function getBlockSubPipelineProperties(blockConfig: BlockConfig) {
+function getBlockSubPipelineProperties(blockConfig: BlockConfig): string[] {
   return getPipelinePropNames(blockConfig).map((subPipelineField) =>
     joinName("config", subPipelineField)
   );
