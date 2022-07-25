@@ -30,7 +30,6 @@ import {
   BrickNodeProps,
   RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
-import { TraceRecord } from "@/telemetry/trace";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { OutputKey, UUID } from "@/core";
 import { useDispatch, useSelector } from "react-redux";
@@ -40,11 +39,13 @@ import {
   selectActiveElement,
   selectActiveNodeId,
   selectErrorMap,
+  selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { get, isEmpty } from "lodash";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import {
+  getBlockAnnotations,
   getDocumentPipelinePaths,
   getPipelinePropNames,
 } from "@/pageEditor/utils";
@@ -56,10 +57,11 @@ import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
-import { BlockError, ErrorLevel } from "@/pageEditor/uiState/uiStateTypes";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { getRootPipelineFlavor } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import decideBlockStatus from "./decideBlockStatus";
+import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -93,38 +95,6 @@ type SubPipeline = {
   subPipelineFlavor: PipelineFlavor;
 };
 
-function decideBlockStatus(
-  blockError: BlockError,
-  traceRecord: TraceRecord
-): RunStatus {
-  // TODO: check analysis annotations for error status
-  if (
-    blockError != null &&
-    (blockError.errors?.some((error) => error.level === ErrorLevel.Critical) ||
-      blockError?.fieldErrors)
-  ) {
-    return RunStatus.ERROR;
-  }
-
-  if (blockError?.errors?.some((error) => error.level === ErrorLevel.Warning)) {
-    return RunStatus.WARNING;
-  }
-
-  if (traceRecord == null) {
-    return RunStatus.NONE;
-  }
-
-  if (traceRecord?.skippedRun) {
-    return RunStatus.SKIPPED;
-  }
-
-  if (traceRecord.isFinal) {
-    return RunStatus.SUCCESS;
-  }
-
-  return RunStatus.PENDING;
-}
-
 const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   pipeline,
   extensionPointLabel,
@@ -137,11 +107,15 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
   const showPaste = pasteBlock && isApiAtLeastV2;
   const [allBlocks] = useAllBlocks();
+  const activeElement = useSelector(selectActiveElement);
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectExtensionTrace);
+  const pipelineMap = useSelector(selectPipelineMap);
   const errors = useSelector(selectErrorMap);
-  const activeElement = useSelector(selectActiveElement);
-  const extensionPointType = activeElement.extensionPoint.definition.type;
+  const annotations = useSelector(
+    selectExtensionAnnotations(activeElement.uuid)
+  );
+  const extensionPointType = activeElement.type;
 
   const [collapsedState, setCollapsedState] = useState<Record<UUID, boolean>>(
     {}
@@ -357,11 +331,21 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       };
 
       if (block) {
+        // eslint-disable-next-line security/detect-object-injection -- relying on nodeId being a UUID
         const blockError = errors[nodeId];
+        const blockAnnotations = getBlockAnnotations(
+          // eslint-disable-next-line security/detect-object-injection -- relying on nodeId being a UUID
+          pipelineMap[nodeId].path,
+          annotations
+        );
 
         contentProps = {
           icon: <BrickIcon brick={block} size="2x" inheritColor />,
-          runStatus: decideBlockStatus(blockError, traceRecord),
+          runStatus: decideBlockStatus({
+            blockError,
+            traceRecord,
+            blockAnnotations,
+          }),
           brickLabel: isNullOrBlank(blockConfig.label)
             ? block?.name
             : blockConfig.label,
