@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import AnalysisVisitor, { nestedPosition } from "@/analysis/AnalysisVisitor";
+import AnalysisVisitor from "@/analysis/AnalysisVisitor";
 import {
   AbsolutePosition,
   Annotation,
@@ -27,6 +27,7 @@ import { UUID } from "@/core";
 import { groupBy } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isInputValidationError } from "@/blocks/errors";
+import { nestedPosition } from "@/analysis/PipelineVisitor";
 
 const requiredFieldRegex =
   /^Instance does not have required property "(?<property>.+)"\.$/;

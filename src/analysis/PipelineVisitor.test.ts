@@ -20,36 +20,28 @@ import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import { BlockConfig } from "@/blocks/types";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { PipelineExpression } from "@/runtime/mapArgs";
-import { blockConfigFactory, pipelineFactory } from "@/testUtils/factories";
+import {
+  blockConfigFactory,
+  pipelineFactory,
+  typedBlockFactory,
+} from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
-import { AbsolutePosition, Annotation } from "./analysisTypes";
-import AnalysisVisitor, { VisitBlockExtra } from "./AnalysisVisitor";
+import { AbsolutePosition } from "./analysisTypes";
+import PipelineVisitor, { VisitBlockExtra } from "./PipelineVisitor";
 
 jest.mock("@/blocks/registry", () => ({
   __esModule: true,
   default: {
-    async lookup() {
-      return {
-        inputSchema: {},
-      };
+    async lookupTyped() {
+      return typedBlockFactory({ inputSchema: {} });
     },
   },
 }));
 
-abstract class TestAnalysisVisitor extends AnalysisVisitor {
-  get id() {
-    return "test";
-  }
-
-  getAnnotations(): Annotation[] {
-    throw new Error("Method not implemented.");
-  }
-}
-
 test("should invoke the callback for the pipeline bricks", async () => {
   const pipeline = pipelineFactory();
   const visitBlock = jest.fn();
-  class Visitor extends TestAnalysisVisitor {
+  class Visitor extends PipelineVisitor {
     override async visitBlock(
       position: AbsolutePosition,
       blockConfig: BlockConfig,
@@ -94,7 +86,7 @@ test("should invoke the callback for the sub pipeline bricks", async () => {
 
   const visitBlock = jest.fn();
 
-  class Visitor extends TestAnalysisVisitor {
+  class Visitor extends PipelineVisitor {
     override async visitBlock(
       position: AbsolutePosition,
       blockConfig: BlockConfig,
@@ -151,7 +143,7 @@ test("should invoke the callback for the Document button pipeline", async () => 
 
   const visitBlock = jest.fn();
 
-  class Visitor extends TestAnalysisVisitor {
+  class Visitor extends PipelineVisitor {
     override async visitBlock(
       position: AbsolutePosition,
       blockConfig: BlockConfig,

@@ -24,7 +24,7 @@ import {
 import AnalysisVisitor, {
   nestedPosition,
   VisitResolvedBlockExtra,
-} from "@/analysis/AnalysisVisitor";
+} from "@/analysis/PipelineVisitor";
 import { BlockConfig } from "@/blocks/types";
 import { BlockType } from "@/runtime/runtimeTypes";
 
@@ -32,7 +32,7 @@ const outputKeyRegex = /^[A-Za-z][\dA-Za-z]*$/;
 
 const blockTypesWithEmptyOutputKey: BlockType[] = ["effect", "renderer"];
 
-class OutputKeyAnalysis extends AnalysisVisitor implements Analysis {
+class OutputKeyAnalysis extends AnalysisVisitor {
   get id() {
     return "outputKey";
   }

@@ -27,7 +27,7 @@ const analysisSlice = createSlice({
   name: "analysis",
   initialState,
   reducers: {
-    // TODO: remove this if it's still NOOP
+    // TODO: if you see this action and it's still NOOP, remove it
     startAnalysis(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       state,
