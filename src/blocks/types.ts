@@ -208,3 +208,13 @@ export type Branch = {
   key: string;
   counter: number;
 };
+
+/**
+ * Defines the position of the block in the extension
+ */
+export type BlockPosition = {
+  /**
+   * The path to the block relative to the root pipeline
+   */
+  path: string;
+};

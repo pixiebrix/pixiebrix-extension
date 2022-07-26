@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AbsolutePosition } from "@/analysis/analysisTypes";
-import { BlockConfig } from "@/blocks/types";
-import { joinPathParts } from "@/utils";
+import { BlockConfig, BlockPosition } from "@/blocks/types";
+import { joinName, joinPathParts } from "@/utils";
 import { Expression, Schema } from "@/core";
 import blockRegistry, { TypedBlock } from "@/blocks/registry";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
@@ -34,9 +33,9 @@ import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
 export function nestedPosition(
-  position: AbsolutePosition,
+  position: BlockPosition,
   ...rest: string[]
-): AbsolutePosition {
+): BlockPosition {
   return {
     path: joinPathParts(position.path, ...rest),
   };
@@ -70,7 +69,7 @@ class PipelineVisitor {
    * @param index the index in the pipeline
    */
   public async visitBlock(
-    position: AbsolutePosition,
+    position: BlockPosition,
     blockConfig: BlockConfig,
     extra: VisitBlockExtra
   ): Promise<void> {
@@ -89,7 +88,7 @@ class PipelineVisitor {
    * Visit a block that's configuration corresponds to a block defined in the registry
    */
   protected async visitResolvedBlock(
-    position: AbsolutePosition,
+    position: BlockPosition,
     blockConfig: BlockConfig,
     { typedBlock }: VisitResolvedBlockExtra
   ): Promise<void> {
@@ -149,7 +148,7 @@ class PipelineVisitor {
   }
 
   public async visitRenderDocument(
-    position: AbsolutePosition,
+    position: BlockPosition,
     blockConfig: BlockConfig
   ): Promise<void> {
     const subPipelineProperties = getDocumentPipelinePaths(blockConfig);
@@ -174,7 +173,7 @@ class PipelineVisitor {
   }
 
   public async visitExpression(
-    position: AbsolutePosition,
+    position: BlockPosition,
     expression: Expression<unknown>,
     { fieldSchema }: { fieldSchema: Schema }
   ): Promise<void> {
@@ -182,7 +181,7 @@ class PipelineVisitor {
   }
 
   public async visitLiteral(
-    position: AbsolutePosition,
+    position: BlockPosition,
     value: JsonValue,
     { fieldSchema }: { fieldSchema: Schema }
   ): Promise<void> {
@@ -190,7 +189,7 @@ class PipelineVisitor {
   }
 
   public async visitPipeline(
-    position: AbsolutePosition,
+    position: BlockPosition,
     pipeline: BlockConfig[],
     { flavor }: VisitPipelineExtra
   ): Promise<void> {

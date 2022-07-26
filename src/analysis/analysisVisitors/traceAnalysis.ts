@@ -16,14 +16,14 @@
  */
 
 import AnalysisVisitor from "@/analysis/AnalysisVisitor";
-import { AbsolutePosition, AnnotationType } from "@/analysis/analysisTypes";
+import { AnnotationType } from "@/analysis/analysisTypes";
 import { isTraceError, TraceRecord } from "@/telemetry/trace";
-import { BlockConfig } from "@/blocks/types";
+import { BlockConfig, BlockPosition } from "@/blocks/types";
 import { UUID } from "@/core";
 import { groupBy } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isInputValidationError } from "@/blocks/errors";
-import { nestedPosition, VisitBlockExtra } from "@/analysis/PipelineVisitor";
+import { nestedPosition, VisitBlockExtra } from "@/blocks/PipelineVisitor";
 
 const requiredFieldRegex =
   /^Instance does not have required property "(?<property>.+)"\.$/;
@@ -51,7 +51,7 @@ class TraceAnalysis extends AnalysisVisitor {
   }
 
   override async visitBlock(
-    position: AbsolutePosition,
+    position: BlockPosition,
     blockConfig: BlockConfig,
     options: VisitBlockExtra
   ): Promise<void> {

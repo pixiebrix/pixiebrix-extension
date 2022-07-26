@@ -16,8 +16,8 @@
  */
 
 import { Analysis, Annotation } from "@/analysis/analysisTypes";
+import PipelineVisitor from "@/blocks/PipelineVisitor";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import PipelineVisitor from "./PipelineVisitor";
 
 /**
  * A base class for creating analysis visitors.

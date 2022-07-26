@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AbsolutePosition, AnnotationType } from "@/analysis/analysisTypes";
+import { AnnotationType } from "@/analysis/analysisTypes";
 import {
   nestedPosition,
   VisitResolvedBlockExtra,
-} from "@/analysis/PipelineVisitor";
-import { BlockConfig } from "@/blocks/types";
+} from "@/blocks/PipelineVisitor";
+import { BlockConfig, BlockPosition } from "@/blocks/types";
 import { BlockType } from "@/runtime/runtimeTypes";
 import AnalysisVisitor from "@/analysis/AnalysisVisitor";
 
@@ -34,7 +34,7 @@ class OutputKeyAnalysis extends AnalysisVisitor {
   }
 
   override async visitResolvedBlock(
-    position: AbsolutePosition,
+    position: BlockPosition,
     blockConfig: BlockConfig,
     extra: VisitResolvedBlockExtra
   ): Promise<void> {
