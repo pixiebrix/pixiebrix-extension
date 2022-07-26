@@ -16,11 +16,7 @@
  */
 
 import AnalysisVisitor from "@/analysis/AnalysisVisitor";
-import {
-  AbsolutePosition,
-  Annotation,
-  AnnotationType,
-} from "@/analysis/analysisTypes";
+import { AbsolutePosition, AnnotationType } from "@/analysis/analysisTypes";
 import { isTraceError, TraceRecord } from "@/telemetry/trace";
 import { BlockConfig } from "@/blocks/types";
 import { UUID } from "@/core";
@@ -40,11 +36,6 @@ class TraceAnalysis extends AnalysisVisitor {
   }
 
   private readonly traceMap = new Map<UUID, TraceRecord[]>();
-  private readonly annotations: Annotation[] = [];
-
-  getAnnotations(): Annotation[] {
-    return this.annotations;
-  }
 
   /**
    * @param trace the trace for the latest run of the extension

@@ -15,17 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { AbsolutePosition, AnnotationType } from "@/analysis/analysisTypes";
 import {
-  AbsolutePosition,
-  Annotation,
-  AnnotationType,
-} from "@/analysis/analysisTypes";
-import AnalysisVisitor, {
   nestedPosition,
   VisitResolvedBlockExtra,
 } from "@/analysis/PipelineVisitor";
 import { BlockConfig } from "@/blocks/types";
 import { BlockType } from "@/runtime/runtimeTypes";
+import AnalysisVisitor from "@/analysis/AnalysisVisitor";
 
 const outputKeyRegex = /^[A-Za-z][\dA-Za-z]*$/;
 
@@ -34,11 +31,6 @@ const blockTypesWithEmptyOutputKey: BlockType[] = ["effect", "renderer"];
 class OutputKeyAnalysis extends AnalysisVisitor {
   get id() {
     return "outputKey";
-  }
-
-  private readonly annotations: Annotation[] = [];
-  getAnnotations(): Annotation[] {
-    return this.annotations;
   }
 
   override async visitResolvedBlock(

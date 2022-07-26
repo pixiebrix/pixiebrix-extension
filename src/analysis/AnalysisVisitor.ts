@@ -23,7 +23,11 @@ import PipelineVisitor from "./PipelineVisitor";
  */
 abstract class AnalysisVisitor extends PipelineVisitor implements Analysis {
   abstract id: string;
-  abstract getAnnotations(): Annotation[];
+
+  protected readonly annotations: Annotation[] = [];
+  getAnnotations(): Annotation[] {
+    return this.annotations;
+  }
 }
 
 export default AnalysisVisitor;

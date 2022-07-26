@@ -46,8 +46,7 @@ const analysisSlice = createSlice({
     ) {
       const { extensionId, analysisId, annotations } = action.payload;
 
-      // Clear out any existing annotations for this analysis. Should have already been cleared in startAnalysis, but
-      // do just in case of race condition
+      // Clear out any existing annotations for this analysis.
       if (state.extensionAnnotations[extensionId]) {
         state.extensionAnnotations[extensionId] = state.extensionAnnotations[
           extensionId

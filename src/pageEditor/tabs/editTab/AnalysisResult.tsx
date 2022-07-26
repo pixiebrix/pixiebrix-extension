@@ -24,11 +24,11 @@ import React from "react";
 import { Col, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
 
-const messageCssClasses = {
-  [AnnotationType.Error]: "text-danger",
-  [AnnotationType.Warning]: "text-warning",
-  [AnnotationType.Info]: "text-info",
-};
+const messageCssClasses = new Map<AnnotationType, string>([
+  [AnnotationType.Error, "text-danger"],
+  [AnnotationType.Warning, "text-warning"],
+  [AnnotationType.Info, "text-info"],
+]);
 
 const AnalysisResult: React.FunctionComponent = () => {
   const { path } = useSelector(selectActiveNodeInfo);
@@ -39,10 +39,9 @@ const AnalysisResult: React.FunctionComponent = () => {
 
   return (
     <>
-      {/* TODO: remove the header, added for dev purposes only */}
       {annotations.map(({ message, type }, index) => (
-        <Row key={index} style={{ border: "1px solid black" }}>
-          <Col className={messageCssClasses[type]}>{message}</Col>
+        <Row key={index}>
+          <Col className={messageCssClasses.get(type)}>{message}</Col>
         </Row>
       ))}
     </>
