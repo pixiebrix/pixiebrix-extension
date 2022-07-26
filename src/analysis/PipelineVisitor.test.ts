@@ -19,6 +19,7 @@ import { DocumentRenderer } from "@/blocks/renderers/document";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import { BlockConfig } from "@/blocks/types";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
+import { Schema } from "@/core";
 import { PipelineExpression } from "@/runtime/mapArgs";
 import {
   blockConfigFactory,
@@ -33,7 +34,7 @@ jest.mock("@/blocks/registry", () => ({
   __esModule: true,
   default: {
     async lookupTyped() {
-      return typedBlockFactory({ inputSchema: {} });
+      return typedBlockFactory({ inputSchema: {} as Schema });
     },
   },
 }));

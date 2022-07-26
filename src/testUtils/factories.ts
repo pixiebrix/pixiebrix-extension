@@ -296,7 +296,9 @@ export const blockFactory = define<IBlock>({
   run: jest.fn(),
 });
 
-export const typedBlockFactory = async (partialBlock: Config<IBlock>) => {
+export const typedBlockFactory = async (
+  partialBlock: FactoryConfig<IBlock>
+) => {
   const block = blockFactory(partialBlock);
   return {
     block,
@@ -305,11 +307,11 @@ export const typedBlockFactory = async (partialBlock: Config<IBlock>) => {
 };
 
 export const blocksMapFactory: (
-  blockProps?: Config<IBlock> | Array<Config<IBlock>>
+  blockProps?: FactoryConfig<IBlock> | Array<FactoryConfig<IBlock>>
 ) => Promise<TypedBlockMap> = async (blockProps) => {
   const typedBlocks: TypedBlock[] = [];
   if (Array.isArray(blockProps)) {
-    for (const partialBlock of blockProps) {
+    for await (const partialBlock of blockProps) {
       typedBlocks.push(await typedBlockFactory(partialBlock));
     }
   } else {
@@ -320,9 +322,7 @@ export const blocksMapFactory: (
   }
 
   return new Map(
-    typedBlocks.map((typedBlock) => {
-      return [typedBlock.block.id, typedBlock];
-    })
+    typedBlocks.map((typedBlock) => [typedBlock.block.id, typedBlock])
   );
 };
 
