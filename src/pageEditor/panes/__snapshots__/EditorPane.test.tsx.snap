@@ -543,13 +543,18 @@ exports[`renders an extension with sub pipeline 1`] = `
                       class="headerPipeLineTop"
                     />
                     <div
+                      class="headerPipeLineBottom"
+                    />
+                    <div
                       class="subPipelineLabel"
                     >
                       body
                     </div>
                     <div
-                      class="headerPipeLineBottom"
-                    />
+                      class="subPipelineInputKey"
+                    >
+                      @element
+                    </div>
                   </div>
                 </div>
                 <div

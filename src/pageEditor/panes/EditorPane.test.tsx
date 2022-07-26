@@ -179,6 +179,7 @@ const getFormStateWithSubPipelines = (): FormState =>
       outputKey: "forEachOutput" as OutputKey,
       config: {
         elements: makeTemplateExpression("var", "@input.elements"),
+        elementKey: "element",
         body: makePipelineExpression([
           blockConfigFactory({
             id: echoBlock.id,

@@ -24,6 +24,7 @@ describe("useUndo", () => {
   });
 
   afterAll(() => {
+    jest.runAllTimers();
     jest.useRealTimers();
   });
 
