@@ -17,7 +17,6 @@
 
 import {
   AbsolutePosition,
-  Analysis,
   Annotation,
   AnnotationType,
 } from "@/analysis/analysisTypes";

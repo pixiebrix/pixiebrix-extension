@@ -67,14 +67,20 @@ class TraceAnalysis extends AnalysisVisitor {
     await super.visitBlock(position, blockConfig, options);
 
     const records = this.traceMap.get(blockConfig.instanceId);
-    // eslint-disable-next-line unicorn/no-array-callback-reference -- a proxy function breaks the type inference
     const errorRecord = records?.find(isTraceError);
     if (errorRecord == null) {
       return;
     }
 
-    if (isInputValidationError(errorRecord)) {
-      for (const maybeInputError of errorRecord.errors) {
+    const { error: traceError } = errorRecord;
+
+    console.log("trace analysis", {
+      errorRecord,
+      traceError,
+      isInputValidationError: isInputValidationError(traceError),
+    });
+    if (isInputValidationError(traceError)) {
+      for (const maybeInputError of traceError.errors) {
         const rootProperty = rootPropertyRegex.exec(
           maybeInputError.instanceLocation
         )?.groups.property;
@@ -84,7 +90,7 @@ class TraceAnalysis extends AnalysisVisitor {
             message: getErrorMessage(maybeInputError.error),
             analysisId: this.id,
             type: AnnotationType.Error,
-            detail: errorRecord.error,
+            detail: traceError,
           });
           continue;
         }
@@ -96,23 +102,23 @@ class TraceAnalysis extends AnalysisVisitor {
             "Error from the last run: This field is required.";
 
           this.annotations.push({
-            position: nestedPosition(position, "config", rootProperty),
+            position: nestedPosition(position, "config", requiredProperty),
             message: errorMessage,
             analysisId: this.id,
             type: AnnotationType.Error,
-            detail: errorRecord.error,
+            detail: traceError,
           });
         }
       }
+    } else {
+      this.annotations.push({
+        position,
+        message: getErrorMessage(traceError),
+        analysisId: this.id,
+        type: AnnotationType.Error,
+        detail: traceError,
+      });
     }
-
-    this.annotations.push({
-      position,
-      message: getErrorMessage(errorRecord.error),
-      analysisId: this.id,
-      type: AnnotationType.Error,
-      detail: errorRecord.error,
-    });
   }
 }
 

@@ -16,32 +16,34 @@
  */
 
 import React from "react";
-import { connect, getIn } from "formik";
-import FieldTemplate, { FieldProps } from "@/components/form/FieldTemplate";
-import { FormikContextType } from "formik/dist/types";
+import { useField } from "formik";
+import FieldTemplate, { FieldProps } from "./FieldTemplate";
+import { useSelector } from "react-redux";
+import { selectAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
 
-export type ConnectedFieldProps<Values> = FieldProps & {
-  formik: FormikContextType<Values>;
-};
+const ConnectedFieldTemplate: React.FunctionComponent<FieldProps> = ({
+  name,
+  ...restFieldProps
+}) => {
+  const [{ value, onBlur, onChange }, { touched }] = useField(name);
+  const annotations = useSelector(selectAnnotationsForPath(name));
 
-const FormikFieldTemplate = <Values,>({
-  formik,
-  ...fieldProps
-}: ConnectedFieldProps<Values>) => {
-  const error = getIn(formik.errors, fieldProps.name);
-  const touched = getIn(formik.touched, fieldProps.name);
-  const value = getIn(formik.values, fieldProps.name);
+  const error =
+    annotations.length > 0
+      ? annotations.map(({ message }) => message).join(" ")
+      : undefined;
 
   return (
     <FieldTemplate
+      name={name}
       value={value}
       error={error}
       touched={touched}
-      onChange={formik.handleChange}
-      onBlur={formik.handleBlur}
-      {...fieldProps}
+      onChange={onChange}
+      onBlur={onBlur}
+      {...restFieldProps}
     />
   );
 };
 
-export default connect<FieldProps>(FormikFieldTemplate);
+export default ConnectedFieldTemplate;
