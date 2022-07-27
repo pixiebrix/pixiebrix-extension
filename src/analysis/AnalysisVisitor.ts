@@ -22,7 +22,7 @@ import PipelineVisitor from "./PipelineVisitor";
  * A base class for creating analysis visitors.
  */
 abstract class AnalysisVisitor extends PipelineVisitor implements Analysis {
-  abstract id: string;
+  abstract readonly id: string;
 
   protected readonly annotations: Annotation[] = [];
   getAnnotations(): Annotation[] {

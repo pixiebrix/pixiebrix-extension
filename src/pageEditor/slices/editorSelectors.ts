@@ -255,30 +255,37 @@ export const selectErrorMap = createSelector(
 export const selectActiveNodeError = createSelector(
   selectErrorMap,
   selectActiveNodeId,
+  // eslint-disable-next-line security/detect-object-injection -- activeNodeId is supposed to be UUID, not from user input
   (errorMap: ErrorMap, activeNodeId: UUID) => errorMap[activeNodeId]
 );
 
 export const selectAddBlockLocation = ({ editor }: RootState) =>
   editor.addBlockLocation;
 
-export const selectAnnotationsForPath = (path: string) =>
-  createSelector(
-    selectActiveElementId,
-    (state: RootState) => state,
-    (activeElementId: UUID, state: RootState) => {
-      const extensionAnnotations =
-        selectExtensionAnnotations(activeElementId)(state);
-      let relativeBlockPath: string;
-      if (path.startsWith(PIPELINE_BLOCKS_FIELD_NAME)) {
-        relativeBlockPath = path.slice(PIPELINE_BLOCKS_FIELD_NAME.length + 1);
-      } else {
-        relativeBlockPath = path;
-      }
+const selectAnnotationsForPathSelector = createSelector(
+  [
+    (state: RootState) => {
+      const activeElementId = selectActiveElementId(state);
+      return selectExtensionAnnotations(activeElementId)(state);
+    },
+    (state, path: string) => path,
+  ],
+  (extensionAnnotations, path) => {
+    const relativeBlockPath = path.startsWith(PIPELINE_BLOCKS_FIELD_NAME)
+      ? path.slice(PIPELINE_BLOCKS_FIELD_NAME.length + 1)
+      : path;
 
-      const annotations = extensionAnnotations.filter(
-        (x) => x.position.path === relativeBlockPath
-      );
+    const pathAnnotations = extensionAnnotations.filter(
+      (x) => x.position.path === relativeBlockPath
+    );
 
-      return annotations;
-    }
-  );
+    return pathAnnotations;
+  }
+);
+
+/**
+ * Selects the annotations for the given path
+ * @param path A path relative to the root of the extension or root pipeline
+ */
+export const selectAnnotationsForPath = (path: string) => (state: RootState) =>
+  selectAnnotationsForPathSelector(state, path);

@@ -16,9 +16,12 @@
  */
 
 import { UUID } from "@/core";
-import { AnalysisRootState } from "./analysisTypes";
+import { AnalysisRootState, Annotation } from "./analysisTypes";
 
-export function selectExtensionAnnotations(extensionId: UUID) {
+export function selectExtensionAnnotations(
+  extensionId: UUID
+): (state: AnalysisRootState) => Annotation[] {
   return ({ analysis }: AnalysisRootState) =>
+    // eslint-disable-next-line security/detect-object-injection -- extensionId is supposed to be UUID, not from user input
     analysis.extensionAnnotations[extensionId] ?? [];
 }

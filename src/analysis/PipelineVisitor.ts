@@ -17,7 +17,7 @@
 
 import { AbsolutePosition } from "@/analysis/analysisTypes";
 import { BlockConfig } from "@/blocks/types";
-import { joinName, joinPathParts } from "@/utils";
+import { joinPathParts } from "@/utils";
 import { Expression, Schema } from "@/core";
 import blockRegistry, { TypedBlock } from "@/blocks/registry";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
@@ -25,22 +25,34 @@ import { JsonValue } from "type-fest";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { getDocumentPipelinePaths } from "@/pageEditor/utils";
 import { get } from "lodash";
+import {
+  getRootPipelineFlavor,
+  getSubPipelineFlavor,
+} from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import { ExtensionPointType } from "@/extensionPoints/types";
+import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 
 export function nestedPosition(
   position: AbsolutePosition,
   ...rest: string[]
 ): AbsolutePosition {
   return {
-    path: joinName(position.path, ...rest),
+    path: joinPathParts(position.path, ...rest),
   };
 }
 
 export type VisitBlockExtra = {
   index: number;
+  pipelineFlavor: PipelineFlavor;
 };
-export type VisitResolvedBlockExtra = {
-  index: number;
+export type VisitResolvedBlockExtra = VisitBlockExtra & {
   typedBlock: TypedBlock;
+};
+export type VisitPipelineExtra = {
+  flavor: PipelineFlavor;
+};
+export type VisitRootPipelineExtra = {
+  extensionPointType: ExtensionPointType;
 };
 
 /**
@@ -49,7 +61,6 @@ export type VisitResolvedBlockExtra = {
  * TODO: add pre- visit hook from traversePipeline
  * https://github.com/pixiebrix/pixiebrix-extension/blob/1aa42d7ef1f6652e3a3340e0138122d6ceb29378/src/pageEditor/utils.ts#L182-L182
  */
-/* eslint-disable @typescript-eslint/no-unused-vars -- for the args in methods, subclass will override */
 class PipelineVisitor {
   /**
    * Visit a configured block.
@@ -60,12 +71,12 @@ class PipelineVisitor {
   public async visitBlock(
     position: AbsolutePosition,
     blockConfig: BlockConfig,
-    { index }: VisitBlockExtra
+    extra: VisitBlockExtra
   ): Promise<void> {
     try {
       const typedBlock = await blockRegistry.lookupTyped(blockConfig.id);
       await this.visitResolvedBlock(position, blockConfig, {
-        index,
+        ...extra,
         typedBlock,
       });
     } catch (error) {
@@ -79,7 +90,7 @@ class PipelineVisitor {
   protected async visitResolvedBlock(
     position: AbsolutePosition,
     blockConfig: BlockConfig,
-    { index, typedBlock }: VisitResolvedBlockExtra
+    { typedBlock }: VisitResolvedBlockExtra
   ): Promise<void> {
     if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
       await this.visitRenderDocument(position, blockConfig);
@@ -89,14 +100,26 @@ class PipelineVisitor {
     const { inputSchema } = typedBlock.block;
     for await (const [prop, value] of Object.entries(blockConfig.config)) {
       if (isPipelineExpression(value)) {
-        // TODO: pass pipeline type restrictions
-        await this.visitPipeline(
-          nestedPosition(position, "config", prop, "__value__"),
-          value.__value__
+        const pipelinePosition = nestedPosition(
+          position,
+          "config",
+          prop,
+          "__value__"
         );
+        const pipelineFlavor = getSubPipelineFlavor(
+          blockConfig.id,
+          pipelinePosition.path
+        );
+        await this.visitPipeline(pipelinePosition, value.__value__, {
+          flavor: pipelineFlavor,
+        });
       } else if (isExpression(value)) {
         // eslint-disable-next-line security/detect-object-injection -- from parsed YAML or page editor
         const fieldSchema = inputSchema.properties?.[prop];
+
+        // TODO:
+        // 1. Handle missing fieldSchema
+        // 2. Handle anyOf/oneOf/allOf
         await this.visitExpression(
           nestedPosition(position, "config", prop, "__value__"),
           value,
@@ -108,6 +131,10 @@ class PipelineVisitor {
       } else {
         // eslint-disable-next-line security/detect-object-injection -- from parsed YAML or page editor
         const fieldSchema = inputSchema.properties?.[prop];
+
+        // TODO:
+        // 1. Handle missing fieldSchema
+        // 2. Handle anyOf/oneOf/allOf
         await this.visitLiteral(
           nestedPosition(position, "config", prop),
           value as JsonValue,
@@ -133,16 +160,19 @@ class PipelineVisitor {
 
       const subPipeline = get(blockConfig, subPipelineAccessor);
       if (subPipeline?.length > 0) {
-        await this.visitPipeline(
-          {
-            path: joinPathParts(position.path, subPipelineAccessor),
-          },
-          subPipeline
+        const pipelinePosition = nestedPosition(position, subPipelineAccessor);
+        const pipelineFlavor = getSubPipelineFlavor(
+          blockConfig.id,
+          pipelinePosition.path
         );
+        await this.visitPipeline(pipelinePosition, subPipeline, {
+          flavor: pipelineFlavor,
+        });
       }
     }
   }
 
+  /* eslint-disable @typescript-eslint/no-unused-vars -- for the args in methods, subclass will override */
   public async visitExpression(
     position: AbsolutePosition,
     expression: Expression<unknown>,
@@ -158,10 +188,12 @@ class PipelineVisitor {
   ): Promise<void> {
     // NOP
   }
+  /* eslint-enable @typescript-eslint/no-unused-vars -- for the args in methods, subclass will override */
 
   public async visitPipeline(
     position: AbsolutePosition,
-    pipeline: BlockConfig[]
+    pipeline: BlockConfig[],
+    { flavor }: VisitPipelineExtra
   ): Promise<void> {
     for await (const [index, blockConfig] of pipeline.entries()) {
       await this.visitBlock(
@@ -169,6 +201,7 @@ class PipelineVisitor {
         blockConfig,
         {
           index,
+          pipelineFlavor: flavor,
         }
       );
     }
@@ -176,11 +209,11 @@ class PipelineVisitor {
 
   public async visitRootPipeline(
     pipeline: BlockConfig[],
-    { extensionType }: { extensionType: string }
+    { extensionPointType }: VisitRootPipelineExtra
   ): Promise<void> {
-    await this.visitPipeline({ path: "" }, pipeline);
+    const flavor = getRootPipelineFlavor(extensionPointType);
+    await this.visitPipeline({ path: "" }, pipeline, { flavor });
   }
 }
-/* eslint-enable @typescript-eslint/no-unused-vars -- for the args in methods, subclass will override */
 
 export default PipelineVisitor;

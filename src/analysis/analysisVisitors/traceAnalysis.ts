@@ -23,7 +23,7 @@ import { UUID } from "@/core";
 import { groupBy } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isInputValidationError } from "@/blocks/errors";
-import { nestedPosition } from "@/analysis/PipelineVisitor";
+import { nestedPosition, VisitBlockExtra } from "@/analysis/PipelineVisitor";
 
 const requiredFieldRegex =
   /^Instance does not have required property "(?<property>.+)"\.$/;
@@ -53,11 +53,13 @@ class TraceAnalysis extends AnalysisVisitor {
   override async visitBlock(
     position: AbsolutePosition,
     blockConfig: BlockConfig,
-    options: { index: number }
+    options: VisitBlockExtra
   ): Promise<void> {
     await super.visitBlock(position, blockConfig, options);
 
     const records = this.traceMap.get(blockConfig.instanceId);
+    // The callback isTraceError is used directly without a proxy here to
+    // let TS to properly infer the type of records
     const errorRecord = records?.find(isTraceError);
     if (errorRecord == null) {
       return;
@@ -65,11 +67,6 @@ class TraceAnalysis extends AnalysisVisitor {
 
     const { error: traceError } = errorRecord;
 
-    console.log("trace analysis", {
-      errorRecord,
-      traceError,
-      isInputValidationError: isInputValidationError(traceError),
-    });
     if (isInputValidationError(traceError)) {
       for (const maybeInputError of traceError.errors) {
         const rootProperty = rootPropertyRegex.exec(

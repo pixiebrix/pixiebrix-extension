@@ -18,7 +18,13 @@
 import { UUID } from "@/core";
 import { UnknownObject } from "@/types";
 
+/**
+ * Defines the position of the block in the extension
+ */
 export type AbsolutePosition = {
+  /**
+   * The path to the block relative to the root pipeline
+   */
   path: string;
 };
 

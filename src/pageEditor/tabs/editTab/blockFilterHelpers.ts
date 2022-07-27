@@ -23,6 +23,7 @@ import { stubTrue } from "lodash";
 import { BlockConfig } from "@/blocks/types";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { BlockType } from "@/runtime/runtimeTypes";
+import { RegistryId } from "@/core";
 
 const PANEL_TYPES = ["actionPanel", "panel"];
 
@@ -42,22 +43,12 @@ export function getRootPipelineFlavor(extensionPointType: ExtensionPointType) {
   return PipelineFlavor.NoRenderer;
 }
 
-type GetPipelineFlavorArgs = {
-  extensionPointType: ExtensionPointType;
-  pipelinePath: string;
-  parentNode: BlockConfig;
-};
-export function getPipelineFlavor({
-  extensionPointType,
-  pipelinePath,
-  parentNode,
-}: GetPipelineFlavorArgs): PipelineFlavor {
-  if (parentNode == null) {
-    return getRootPipelineFlavor(extensionPointType);
-  }
-
+export function getSubPipelineFlavor(
+  parentNodeId: RegistryId,
+  pipelinePath: string
+): PipelineFlavor {
   if (
-    parentNode.id === DocumentRenderer.BLOCK_ID &&
+    parentNodeId === DocumentRenderer.BLOCK_ID &&
     pipelinePath.split(".").at(-2) === "pipeline"
   ) {
     // Current pipeline is the Brick sub pipeline of a Document renderer.
@@ -66,6 +57,23 @@ export function getPipelineFlavor({
   }
 
   return PipelineFlavor.NoRenderer;
+}
+
+type GetPipelineFlavorArgs = {
+  extensionPointType: ExtensionPointType;
+  pipelinePath: string;
+  parentNode: BlockConfig;
+};
+export function getPipelineFlavor({
+  extensionPointType,
+  parentNode,
+  pipelinePath,
+}: GetPipelineFlavorArgs): PipelineFlavor {
+  if (parentNode == null) {
+    return getRootPipelineFlavor(extensionPointType);
+  }
+
+  return getSubPipelineFlavor(parentNode.id, pipelinePath);
 }
 
 export function makeIsBlockAllowedForPipeline(pipelineFlavor: PipelineFlavor) {

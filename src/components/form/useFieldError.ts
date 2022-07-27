@@ -15,29 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { useField } from "formik";
-import FieldTemplate, { FieldProps } from "./FieldTemplate";
-import useFieldError from "./useFieldError";
+import { useSelector } from "react-redux";
+import { selectAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
 
-const ConnectedFieldTemplate: React.FunctionComponent<FieldProps> = ({
-  name,
-  ...restFieldProps
-}) => {
-  const [{ value, onBlur, onChange }, { touched }] = useField(name);
-  const error = useFieldError(name);
+function useFieldError(fieldPath: string): string | undefined {
+  const annotations = useSelector(selectAnnotationsForPath(fieldPath));
 
-  return (
-    <FieldTemplate
-      name={name}
-      value={value}
-      error={error}
-      touched={touched}
-      onChange={onChange}
-      onBlur={onBlur}
-      {...restFieldProps}
-    />
-  );
-};
+  return annotations.length > 0
+    ? annotations.map(({ message }) => message).join(" ")
+    : undefined;
+}
 
-export default ConnectedFieldTemplate;
+export default useFieldError;

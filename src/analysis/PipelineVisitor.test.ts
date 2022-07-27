@@ -55,7 +55,7 @@ test("should invoke the callback for the pipeline bricks", async () => {
   }
 
   const visitor = new Visitor();
-  await visitor.visitRootPipeline(pipeline, { extensionType: "test" });
+  await visitor.visitRootPipeline(pipeline, { extensionPointType: "panel" });
 
   expect(visitBlock).toHaveBeenCalledTimes(pipeline.length);
   expect(visitBlock).toHaveBeenCalledWith(
@@ -99,7 +99,7 @@ test("should invoke the callback for the sub pipeline bricks", async () => {
     }
   }
   const visitor = new Visitor();
-  await visitor.visitRootPipeline(pipeline, { extensionType: "test" });
+  await visitor.visitRootPipeline(pipeline, { extensionPointType: "panel" });
 
   expect(visitBlock).toHaveBeenCalledTimes(
     pipeline.length + subPipeline.length
@@ -156,7 +156,7 @@ test("should invoke the callback for the Document button pipeline", async () => 
     }
   }
   const visitor = new Visitor();
-  await visitor.visitRootPipeline(pipeline, { extensionType: "test" });
+  await visitor.visitRootPipeline(pipeline, { extensionPointType: "panel" });
 
   expect(visitBlock).toHaveBeenCalledTimes(2); // One Document brick and one brick in the pipeline
   expect(visitBlock).toHaveBeenCalledWith(

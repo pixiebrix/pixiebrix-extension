@@ -35,8 +35,7 @@ import widgetsRegistry from "./widgets/widgetsRegistry";
 import useToggleFormField from "@/pageEditor/hooks/useToggleFormField";
 import { isExpression } from "@/runtime/mapArgs";
 import { getFieldValidator } from "@/components/fields/fieldUtils";
-import { useSelector } from "react-redux";
-import { selectAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
+import useFieldError from "@/components/form/useFieldError";
 
 const BasicSchemaField: SchemaFieldComponent = ({
   omitIfEmpty = false,
@@ -121,13 +120,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
       validate,
     }
   );
-
-  const annotations = useSelector(selectAnnotationsForPath(name));
-
-  const error =
-    annotations.length > 0
-      ? annotations.map(({ message }) => message).join(" ")
-      : undefined;
+  const error = useFieldError(name);
 
   useEffect(() => {
     // Initialize any undefined required fields to prevent inferring an "omit" input

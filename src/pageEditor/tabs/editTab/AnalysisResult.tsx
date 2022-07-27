@@ -38,13 +38,17 @@ const AnalysisResult: React.FunctionComponent = () => {
   }
 
   return (
-    <>
-      {annotations.map(({ message, type }, index) => (
-        <Row key={index}>
-          <Col className={messageCssClasses.get(type)}>{message}</Col>
-        </Row>
-      ))}
-    </>
+    <Row>
+      <Col>
+        <ul>
+          {annotations.map(({ message, type }, index) => (
+            <li key={index} className={messageCssClasses.get(type)}>
+              {message}
+            </li>
+          ))}
+        </ul>
+      </Col>
+    </Row>
   );
 };
 

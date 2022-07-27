@@ -273,8 +273,10 @@ export function getBlockAnnotations(
   );
   const ownAnnotations = relatedAnnotations.filter((annotation) => {
     const restPath = annotation.position.path.slice(pathLength);
-    // XXX: this is not a correct way to determine if the annotation
-    // is owned by the block or its sub pipeline
+    // XXX: this may be not a reliable way to determine if the annotation
+    // is owned by the block or its sub pipeline.
+    // It assumes that it's only the pipeline field that can have a ".__value__" followed by "." in the path,
+    // and a pipeline field always has this pattern in its path.
     return !restPath.includes(".__value__.");
   });
 

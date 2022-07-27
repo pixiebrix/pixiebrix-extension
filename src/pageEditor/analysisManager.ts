@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import OutputKeyAnalysis from "@/analysis/analysisVisitors/outputKeyAnalisys";
+import OutputKeyAnalysis from "@/analysis/analysisVisitors/outputKeyAnalysis";
 import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
 import EditorManager from "@/analysis/editorManager";
 import { UUID } from "@/core";

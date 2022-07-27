@@ -50,12 +50,16 @@ class EditorManager {
   ) {
     const effect: ValidatorEffect = async (action, listenerApi) => {
       const state = listenerApi.getState();
+      const activeElement = selectActiveElement(state);
+      if (activeElement == null) {
+        return;
+      }
+
       const analysis = analysisFactory(action, state);
       if (!analysis) {
         return;
       }
 
-      const activeElement = selectActiveElement(state);
       const activeElementId = activeElement.uuid;
 
       listenerApi.dispatch(
@@ -66,7 +70,7 @@ class EditorManager {
       );
 
       await analysis.visitRootPipeline(activeElement.extension.blockPipeline, {
-        extensionType: activeElement.type,
+        extensionPointType: activeElement.type,
       });
 
       listenerApi.dispatch(

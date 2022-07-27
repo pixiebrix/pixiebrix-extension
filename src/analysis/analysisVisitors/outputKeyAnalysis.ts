@@ -36,16 +36,13 @@ class OutputKeyAnalysis extends AnalysisVisitor {
   override async visitResolvedBlock(
     position: AbsolutePosition,
     blockConfig: BlockConfig,
-    { index, typedBlock }: VisitResolvedBlockExtra
+    extra: VisitResolvedBlockExtra
   ): Promise<void> {
-    await super.visitResolvedBlock(position, blockConfig, {
-      index,
-      typedBlock,
-    });
+    await super.visitResolvedBlock(position, blockConfig, extra);
 
     let errorMessage: string;
     const { outputKey } = blockConfig;
-    const blockType = typedBlock.type;
+    const blockType = extra.typedBlock.type;
     if (blockTypesWithEmptyOutputKey.includes(blockType)) {
       if (!outputKey) {
         return;
