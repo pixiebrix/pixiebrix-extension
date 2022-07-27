@@ -16,28 +16,32 @@
  */
 
 import React from "react";
-import { useField } from "formik";
-import FieldTemplate, { FieldProps } from "./FieldTemplate";
-import useFieldError from "./useFieldError";
+import { connect, getIn } from "formik";
+import FieldTemplate, { FieldProps } from "@/components/form/FieldTemplate";
+import { FormikContextType } from "formik/dist/types";
 
-const ConnectedFieldTemplate: React.FunctionComponent<FieldProps> = ({
-  name,
-  ...restFieldProps
-}) => {
-  const [{ value, onBlur, onChange }, { touched }] = useField(name);
-  const error = useFieldError(name);
+export type ConnectedFieldProps<Values> = FieldProps & {
+  formik: FormikContextType<Values>;
+};
+
+const FormikFieldTemplate = <Values,>({
+  formik,
+  ...fieldProps
+}: ConnectedFieldProps<Values>) => {
+  const error = getIn(formik.errors, fieldProps.name);
+  const touched = getIn(formik.touched, fieldProps.name);
+  const value = getIn(formik.values, fieldProps.name);
 
   return (
     <FieldTemplate
-      name={name}
       value={value}
       error={error}
       touched={touched}
-      onChange={onChange}
-      onBlur={onBlur}
-      {...restFieldProps}
+      onChange={formik.handleChange}
+      onBlur={formik.handleBlur}
+      {...fieldProps}
     />
   );
 };
 
-export default ConnectedFieldTemplate;
+export default connect<FieldProps>(FormikFieldTemplate);
