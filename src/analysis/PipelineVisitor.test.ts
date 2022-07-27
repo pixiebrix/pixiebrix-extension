@@ -55,7 +55,7 @@ test("should invoke the callback for the pipeline bricks", async () => {
   }
 
   const visitor = new Visitor();
-  await visitor.visitRootPipeline(pipeline, { extensionPointType: "panel" });
+  await visitor.visitRootPipeline(pipeline, { extensionPointType: "menuItem" });
 
   expect(visitBlock).toHaveBeenCalledTimes(pipeline.length);
   expect(visitBlock).toHaveBeenCalledWith(
@@ -63,14 +63,14 @@ test("should invoke the callback for the pipeline bricks", async () => {
       path: "0",
     },
     pipeline[0],
-    { index: 0 }
+    { index: 0, pipelineFlavor: "noRenderer" }
   );
   expect(visitBlock).toHaveBeenCalledWith(
     {
       path: "1",
     },
     pipeline[1],
-    { index: 1 }
+    { index: 1, pipelineFlavor: "noRenderer" }
   );
 });
 
@@ -99,7 +99,7 @@ test("should invoke the callback for the sub pipeline bricks", async () => {
     }
   }
   const visitor = new Visitor();
-  await visitor.visitRootPipeline(pipeline, { extensionPointType: "panel" });
+  await visitor.visitRootPipeline(pipeline, { extensionPointType: "menuItem" });
 
   expect(visitBlock).toHaveBeenCalledTimes(
     pipeline.length + subPipeline.length
@@ -110,21 +110,21 @@ test("should invoke the callback for the sub pipeline bricks", async () => {
       path: "0.config.body.__value__.0",
     },
     subPipeline[0],
-    { index: 0 }
+    { index: 0, pipelineFlavor: "noRenderer" }
   );
   expect(visitBlock).toHaveBeenCalledWith(
     {
       path: "0.config.body.__value__.1",
     },
     subPipeline[1],
-    { index: 1 }
+    { index: 1, pipelineFlavor: "noRenderer" }
   );
   expect(visitBlock).toHaveBeenCalledWith(
     {
       path: "0",
     },
     pipeline[0],
-    { index: 0 }
+    { index: 0, pipelineFlavor: "noRenderer" }
   );
 });
 
@@ -164,13 +164,13 @@ test("should invoke the callback for the Document button pipeline", async () => 
       path: "0.config.body.0.children.0.children.0.children.0.config.onClick.__value__.0",
     },
     subPipeline.__value__[0],
-    { index: 0 }
+    { index: 0, pipelineFlavor: "noRenderer" }
   );
   expect(visitBlock).toHaveBeenCalledWith(
     {
       path: "0",
     },
     documentBrick,
-    { index: 0 }
+    { index: 0, pipelineFlavor: "noEffect" }
   );
 });
