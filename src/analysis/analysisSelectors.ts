@@ -19,11 +19,11 @@ import { UUID } from "@/core";
 import { AnalysisRootState, Annotation } from "./analysisTypes";
 
 // Serves to avoid creating new arrays and ensure reference equality for empty annotations
-const emptyAnnotations = Object.freeze<Annotation>([]);
+const emptyAnnotations = Object.freeze([]) as Annotation[];
 
 export function selectExtensionAnnotations(
   extensionId: UUID
-): (state: AnalysisRootState) => Annotation[] | readonly Annotation[] {
+): (state: AnalysisRootState) => Annotation[] {
   return ({ analysis }: AnalysisRootState) =>
     // eslint-disable-next-line security/detect-object-injection -- extensionId is supposed to be UUID, not from user input
     analysis.extensionAnnotations[extensionId] ?? emptyAnnotations;

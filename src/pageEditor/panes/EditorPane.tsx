@@ -51,7 +51,6 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   const formik = useFormikContext();
   const annotations = useSelector(selectExtensionAnnotations(element.uuid));
   useEffect(() => {
-    console.log("Annotations changed", annotations);
     void formik.validateForm();
   }, [annotations]);
 
@@ -105,7 +104,6 @@ const EditorPane: React.VFC = () => {
       );
     }
 
-    console.log("errors", { errors, annotations });
     return errors;
   };
 
