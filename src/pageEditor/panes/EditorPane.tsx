@@ -49,6 +49,9 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   const editable = useEditable();
   const { isWizardOpen } = useSavingWizard();
   const formik = useFormikContext();
+
+  // Trigger Formik validation when annotations change
+  // see also the validate function in the EditorPane below
   const annotations = useSelector(selectExtensionAnnotations(element.uuid));
   useEffect(() => {
     void formik.validateForm();
@@ -93,6 +96,7 @@ const EditorPane: React.VFC = () => {
     selectExtensionAnnotations(activeElement.uuid)
   );
 
+  // Converts annotations to Formik errors
   const validate = () => {
     const errors = {};
 
