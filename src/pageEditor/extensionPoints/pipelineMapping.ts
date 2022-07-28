@@ -26,7 +26,7 @@ import PipelineVisitor, {
   VisitResolvedBlockExtra,
 } from "@/blocks/PipelineVisitor";
 import pipelineSchema from "@schemas/pipeline.json";
-import { PipelineFlavor } from "../pageEditorTypes";
+import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 
 class PipelineNormalizer extends PipelineVisitor {
   override async visitResolvedBlock(

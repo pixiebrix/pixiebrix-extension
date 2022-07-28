@@ -61,9 +61,6 @@ export type VisitRootPipelineExtra = {
 
 /**
  * A base class for traversing a block pipeline.
- *
- * TODO: add pre- visit hook from traversePipeline
- * https://github.com/pixiebrix/pixiebrix-extension/blob/1aa42d7ef1f6652e3a3340e0138122d6ceb29378/src/pageEditor/utils.ts#L182-L182
  */
 class PipelineVisitor {
   /**
