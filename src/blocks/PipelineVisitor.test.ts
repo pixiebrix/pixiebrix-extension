@@ -30,32 +30,23 @@ import {
 import { toExpression } from "@/testUtils/testHelpers";
 import PipelineVisitor, { VisitBlockExtra } from "./PipelineVisitor";
 
-jest.mock("@/blocks/registry", () => ({
-  __esModule: true,
-  default: {
-    async lookupTyped() {
-      return typedBlockFactory({ inputSchema: {} as Schema });
-    },
-  },
-}));
-
-test("should invoke the callback for the pipeline bricks", async () => {
+test("should invoke the callback for the pipeline bricks", () => {
   const pipeline = pipelineFactory();
   const visitBlock = jest.fn();
   class Visitor extends PipelineVisitor {
-    override async visitBlock(
+    override visitBlock(
       position: BlockPosition,
       blockConfig: BlockConfig,
       extra: VisitBlockExtra
     ) {
-      await super.visitBlock(position, blockConfig, extra);
+      super.visitBlock(position, blockConfig, extra);
 
       visitBlock(position, blockConfig, extra);
     }
   }
 
   const visitor = new Visitor();
-  await visitor.visitRootPipeline(pipeline, { extensionPointType: "menuItem" });
+  visitor.visitRootPipeline(pipeline, { extensionPointType: "menuItem" });
 
   expect(visitBlock).toHaveBeenCalledTimes(pipeline.length);
   expect(visitBlock).toHaveBeenCalledWith(
@@ -74,7 +65,7 @@ test("should invoke the callback for the pipeline bricks", async () => {
   );
 });
 
-test("should invoke the callback for the sub pipeline bricks", async () => {
+test("should invoke the callback for the sub pipeline bricks", () => {
   const subPipeline = pipelineFactory();
   const forEachBrick = blockConfigFactory({
     id: ForEach.BLOCK_ID,
@@ -88,18 +79,18 @@ test("should invoke the callback for the sub pipeline bricks", async () => {
   const visitBlock = jest.fn();
 
   class Visitor extends PipelineVisitor {
-    override async visitBlock(
+    override visitBlock(
       position: BlockPosition,
       blockConfig: BlockConfig,
       extra: VisitBlockExtra
     ) {
-      await super.visitBlock(position, blockConfig, extra);
+      super.visitBlock(position, blockConfig, extra);
 
       visitBlock(position, blockConfig, extra);
     }
   }
   const visitor = new Visitor();
-  await visitor.visitRootPipeline(pipeline, { extensionPointType: "menuItem" });
+  visitor.visitRootPipeline(pipeline, { extensionPointType: "menuItem" });
 
   expect(visitBlock).toHaveBeenCalledTimes(
     pipeline.length + subPipeline.length
@@ -128,7 +119,7 @@ test("should invoke the callback for the sub pipeline bricks", async () => {
   );
 });
 
-test("should invoke the callback for the Document button pipeline", async () => {
+test("should invoke the callback for the Document button pipeline", () => {
   const buttonElement = createNewElement("button");
   const subPipeline = buttonElement.config.onClick as PipelineExpression;
   subPipeline.__value__.push(blockConfigFactory());
@@ -145,18 +136,18 @@ test("should invoke the callback for the Document button pipeline", async () => 
   const visitBlock = jest.fn();
 
   class Visitor extends PipelineVisitor {
-    override async visitBlock(
+    override visitBlock(
       position: BlockPosition,
       blockConfig: BlockConfig,
       extra: VisitBlockExtra
     ) {
-      await super.visitBlock(position, blockConfig, extra);
+      super.visitBlock(position, blockConfig, extra);
 
       visitBlock(position, blockConfig, extra);
     }
   }
   const visitor = new Visitor();
-  await visitor.visitRootPipeline(pipeline, { extensionPointType: "panel" });
+  visitor.visitRootPipeline(pipeline, { extensionPointType: "panel" });
 
   expect(visitBlock).toHaveBeenCalledTimes(2); // One Document brick and one brick in the pipeline
   expect(visitBlock).toHaveBeenCalledWith(

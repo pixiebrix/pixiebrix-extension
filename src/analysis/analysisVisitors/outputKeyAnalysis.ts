@@ -33,12 +33,12 @@ class OutputKeyAnalysis extends AnalysisVisitor {
     return "outputKey";
   }
 
-  override async visitResolvedBlock(
+  override visitResolvedBlock(
     position: BlockPosition,
     blockConfig: BlockConfig,
     extra: VisitResolvedBlockExtra
   ): Promise<void> {
-    await super.visitResolvedBlock(position, blockConfig, extra);
+    super.visitResolvedBlock(position, blockConfig, extra);
 
     let errorMessage: string;
     const { outputKey } = blockConfig;

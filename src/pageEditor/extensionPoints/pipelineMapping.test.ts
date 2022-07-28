@@ -95,7 +95,7 @@ describe("normalizePipeline", () => {
         config: {
           condition: true,
           if: toExpression("pipeline", [echoBlockConfig]),
-          else: toExpression("pipeline", [teapotBlock]),
+          else: toExpression("pipeline", [teapotBlockConfig]),
         },
       },
     ];
@@ -123,7 +123,7 @@ describe("normalizePipeline", () => {
         id: IfElse.BLOCK_ID,
         config: {
           condition: true,
-          if: toExpression("pipeline", [echoBlockConfig, teapotBlock]),
+          if: toExpression("pipeline", [echoBlockConfig, teapotBlockConfig]),
         },
       },
     ];
@@ -149,7 +149,7 @@ describe("normalizePipeline", () => {
         id: TryExcept.BLOCK_ID,
         config: {
           try: toExpression("pipeline", [echoBlockConfig]),
-          except: toExpression("pipeline", [teapotBlock]),
+          except: toExpression("pipeline", [teapotBlockConfig]),
         },
       },
     ];
@@ -176,7 +176,7 @@ describe("normalizePipeline", () => {
       {
         id: TryExcept.BLOCK_ID,
         config: {
-          try: toExpression("pipeline", [echoBlockConfig, teapotBlock]),
+          try: toExpression("pipeline", [echoBlockConfig, teapotBlockConfig]),
         },
       },
     ];
@@ -292,7 +292,7 @@ describe("omitEditorMetadata", () => {
         config: {
           condition: true,
           if: toExpression("pipeline", [echoBlockConfig]),
-          else: toExpression("pipeline", [teapotBlock]),
+          else: toExpression("pipeline", [teapotBlockConfig]),
         },
       },
     ];
@@ -319,7 +319,7 @@ describe("omitEditorMetadata", () => {
         instanceId: uuidSequence(3),
         config: {
           try: toExpression("pipeline", [echoBlockConfig]),
-          except: toExpression("pipeline", [teapotBlock]),
+          except: toExpression("pipeline", [teapotBlockConfig]),
         },
       },
     ];

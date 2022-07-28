@@ -67,39 +67,19 @@ class PipelineVisitor {
    * Visit a configured block.
    * @param position the position in the extension
    * @param blockConfig the block configuration
-   * @param index the index in the pipeline
    */
-  public async visitBlock(
+  protected visitBlock(
     position: BlockPosition,
     blockConfig: BlockConfig,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     extra: VisitBlockExtra
-  ): Promise<void> {
-    try {
-      const typedBlock = await blockRegistry.lookupTyped(blockConfig.id);
-      await this.visitResolvedBlock(position, blockConfig, {
-        ...extra,
-        typedBlock,
-      });
-    } catch (error) {
-      console.debug("Error visiting block", error);
-    }
-  }
-
-  /**
-   * Visit a block that's configuration corresponds to a block defined in the registry
-   */
-  protected async visitResolvedBlock(
-    position: BlockPosition,
-    blockConfig: BlockConfig,
-    { typedBlock }: VisitResolvedBlockExtra
-  ): Promise<void> {
+  ): void {
     if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
-      await this.visitRenderDocument(position, blockConfig);
+      this.visitRenderDocument(position, blockConfig);
       return;
     }
 
-    const { inputSchema } = typedBlock.block;
-    for await (const [prop, value] of Object.entries(blockConfig.config)) {
+    for (const [prop, value] of Object.entries(blockConfig.config)) {
       if (isPipelineExpression(value)) {
         const pipelinePosition = nestedPosition(
           position,
@@ -111,49 +91,33 @@ class PipelineVisitor {
           blockConfig.id,
           pipelinePosition.path
         );
-        await this.visitPipeline(pipelinePosition, value.__value__, {
+        this.visitPipeline(pipelinePosition, value.__value__, {
           flavor: pipelineFlavor,
         });
       } else if (isExpression(value)) {
-        // eslint-disable-next-line security/detect-object-injection -- from parsed YAML or page editor
-        const fieldSchema = inputSchema.properties?.[prop];
-
         // TODO:
-        // 1. Handle missing fieldSchema
-        // 2. Handle anyOf/oneOf/allOf
-        await this.visitExpression(
+        // 1. Handle anyOf/oneOf/allOf
+        this.visitExpression(
           nestedPosition(position, "config", prop),
-          value,
-          {
-            fieldSchema:
-              typeof fieldSchema === "boolean" ? undefined : fieldSchema,
-          }
+          value
         );
       } else {
-        // eslint-disable-next-line security/detect-object-injection -- from parsed YAML or page editor
-        const fieldSchema = inputSchema.properties?.[prop];
-
         // TODO:
-        // 1. Handle missing fieldSchema
-        // 2. Handle anyOf/oneOf/allOf
-        await this.visitLiteral(
+        // 1. Handle anyOf/oneOf/allOf
+        this.visitLiteral(
           nestedPosition(position, "config", prop),
-          value as JsonValue,
-          {
-            fieldSchema:
-              typeof fieldSchema === "boolean" ? undefined : fieldSchema,
-          }
+          value as JsonValue
         );
       }
     }
   }
 
-  public async visitRenderDocument(
+  public visitRenderDocument(
     position: BlockPosition,
     blockConfig: BlockConfig
-  ): Promise<void> {
+  ): void {
     const subPipelineProperties = getDocumentPipelinePaths(blockConfig);
-    for await (const subPipelineProperty of subPipelineProperties) {
+    for (const subPipelineProperty of subPipelineProperties) {
       const subPipelineAccessor = joinPathParts(
         subPipelineProperty,
         "__value__"
@@ -166,52 +130,44 @@ class PipelineVisitor {
           blockConfig.id,
           pipelinePosition.path
         );
-        await this.visitPipeline(pipelinePosition, subPipeline, {
+        this.visitPipeline(pipelinePosition, subPipeline, {
           flavor: pipelineFlavor,
         });
       }
     }
   }
 
-  public async visitExpression(
+  /* eslint-disable @typescript-eslint/no-unused-vars -- for the args in methods, subclass will override */
+  public visitExpression(
     position: BlockPosition,
-    expression: Expression<unknown>,
-    { fieldSchema }: { fieldSchema: Schema }
-  ): Promise<void> {
+    expression: Expression<unknown>
+  ): void {
     // NOP
   }
 
-  public async visitLiteral(
-    position: BlockPosition,
-    value: JsonValue,
-    { fieldSchema }: { fieldSchema: Schema }
-  ): Promise<void> {
+  public visitLiteral(position: BlockPosition, value: JsonValue): void {
     // NOP
   }
 
-  public async visitPipeline(
+  public visitPipeline(
     position: BlockPosition,
     pipeline: BlockConfig[],
     { flavor }: VisitPipelineExtra
-  ): Promise<void> {
-    for await (const [index, blockConfig] of pipeline.entries()) {
-      await this.visitBlock(
-        nestedPosition(position, String(index)),
-        blockConfig,
-        {
-          index,
-          pipelineFlavor: flavor,
-        }
-      );
+  ): void {
+    for (const [index, blockConfig] of pipeline.entries()) {
+      this.visitBlock(nestedPosition(position, String(index)), blockConfig, {
+        index,
+        pipelineFlavor: flavor,
+      });
     }
   }
 
-  public async visitRootPipeline(
+  public visitRootPipeline(
     pipeline: BlockConfig[],
     { extensionPointType }: VisitRootPipelineExtra
-  ): Promise<void> {
+  ): void {
     const flavor = getRootPipelineFlavor(extensionPointType);
-    await this.visitPipeline(ROOT_POSITION, pipeline, { flavor });
+    this.visitPipeline(ROOT_POSITION, pipeline, { flavor });
   }
 }
 

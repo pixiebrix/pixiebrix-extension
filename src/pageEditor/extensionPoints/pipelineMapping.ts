@@ -27,19 +27,24 @@ import PipelineVisitor, {
 } from "@/blocks/PipelineVisitor";
 import pipelineSchema from "@schemas/pipeline.json";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
+import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
 
 class PipelineNormalizer extends PipelineVisitor {
-  override async visitResolvedBlock(
+  constructor(private readonly blockMap: TypedBlockMap) {
+    super();
+  }
+
+  override visitBlock(
     position: BlockPosition,
     blockConfig: BlockConfig,
     extra: VisitResolvedBlockExtra
-  ): Promise<void> {
+  ): void {
     // Generate an instanceId for the block
     blockConfig.instanceId = uuidv4();
 
     // Initialize empty sub pipelines
-    const propertiesSchema =
-      extra.typedBlock.block?.inputSchema?.properties ?? {};
+    const typedBlock = this.blockMap.get(blockConfig.id);
+    const propertiesSchema = typedBlock.block?.inputSchema?.properties ?? {};
     const emptySubPipelineProperties = Object.entries(propertiesSchema)
       .filter(
         ([prop, fieldSchema]) =>
@@ -48,14 +53,14 @@ class PipelineNormalizer extends PipelineVisitor {
           !isPipelineExpression(blockConfig.config[prop])
       )
       .map(([prop]) => prop);
-    for await (const prop of emptySubPipelineProperties) {
+    for (const prop of emptySubPipelineProperties) {
       blockConfig.config[prop] = {
         __type__: "pipeline",
         __value__: [],
       };
     }
 
-    await super.visitResolvedBlock(position, blockConfig, extra);
+    super.visitBlock(position, blockConfig, extra);
   }
 }
 
@@ -66,11 +71,12 @@ class PipelineNormalizer extends PipelineVisitor {
 export async function normalizePipelineForEditor(
   pipeline: BlockPipeline
 ): Promise<BlockPipeline> {
-  return produce(pipeline, async (pipeline: WritableDraft<BlockPipeline>) =>
-    new PipelineNormalizer().visitPipeline(ROOT_POSITION, pipeline, {
+  const blockMap = await blockRegistry.allTyped();
+  return produce(pipeline, (pipeline: WritableDraft<BlockPipeline>) => {
+    new PipelineNormalizer(blockMap).visitPipeline(ROOT_POSITION, pipeline, {
       flavor: PipelineFlavor.AllBlocks,
-    })
-  );
+    });
+  });
 }
 
 /**

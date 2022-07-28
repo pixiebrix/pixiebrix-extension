@@ -30,6 +30,7 @@ import {
   recipeFactory,
   versionedRecipeWithResolvedExtensions,
   extensionFactory,
+  typedBlockFactory,
 } from "@/testUtils/factories";
 import menuItemExtensionAdapter from "@/pageEditor/extensionPoints/menuItem";
 import { UnknownObject } from "@/types";
@@ -64,6 +65,16 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 jest.mock("@/background/contextMenus");
 jest.mock("@/background/messenger/api");
 jest.mock("@/telemetry/events");
+jest.mock("@/blocks/registry", () => ({
+  __esModule: true,
+  default: {
+    async allTyped() {
+      return {
+        get: jest.fn().mockReturnValue(typedBlockFactory()),
+      };
+    },
+  },
+}));
 
 jest.mock("@/pageEditor/extensionPoints/base", () => ({
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Wrong
