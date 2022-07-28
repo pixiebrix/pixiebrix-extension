@@ -35,6 +35,7 @@ import widgetsRegistry from "./widgets/widgetsRegistry";
 import useToggleFormField from "@/pageEditor/hooks/useToggleFormField";
 import { isExpression } from "@/runtime/mapArgs";
 import { getFieldValidator } from "@/components/fields/fieldUtils";
+import useFieldError from "@/components/form/useFieldError";
 
 const BasicSchemaField: SchemaFieldComponent = ({
   omitIfEmpty = false,
@@ -113,11 +114,13 @@ const BasicSchemaField: SchemaFieldComponent = ({
 
   const validate = getFieldValidator(validationSchema);
 
-  const [{ value, onBlur: formikOnBlur }, { touched, error }, { setValue }] =
-    useField({
+  const [{ value, onBlur: formikOnBlur }, { touched }, { setValue }] = useField(
+    {
       name,
       validate,
-    });
+    }
+  );
+  const error = useFieldError(name);
 
   useEffect(() => {
     // Initialize any undefined required fields to prevent inferring an "omit" input

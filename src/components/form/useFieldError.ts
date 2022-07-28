@@ -16,10 +16,32 @@
  */
 
 import { useSelector } from "react-redux";
-import { selectAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
+import { annotationsForPathSelector } from "@/pageEditor/slices/editorSelectors";
+import { Annotation } from "@/analysis/analysisTypes";
+import { RootState } from "@/pageEditor/pageEditorTypes";
+import { useField } from "formik";
+
+function maybeAnnotationsForPathSelector(
+  state: RootState,
+  path: string
+): Annotation[] | undefined {
+  if (state.editor == null) {
+    return undefined;
+  }
+
+  return annotationsForPathSelector(state, path);
+}
+
+function maybeSelectAnnotationsForPath(path: string) {
+  return (state: RootState) => maybeAnnotationsForPathSelector(state, path);
+}
 
 function useFieldError(fieldPath: string): string | undefined {
-  const annotations = useSelector(selectAnnotationsForPath(fieldPath));
+  const [, { error: formikError }] = useField(fieldPath);
+  const annotations = useSelector(maybeSelectAnnotationsForPath(fieldPath));
+  if (typeof annotations === "undefined") {
+    return formikError;
+  }
 
   return annotations.length > 0
     ? annotations.map(({ message }) => message).join(" ")
