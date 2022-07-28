@@ -113,7 +113,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
 
   const validate = getFieldValidator(validationSchema);
 
-  const [{ value, onBlur: formikOnBlur }, { error, touched }, { setValue }] =
+  const [{ value, onBlur: formikOnBlur }, { touched, error }, { setValue }] =
     useField({
       name,
       validate,

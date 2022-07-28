@@ -15,13 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createListenerMiddleware } from "@reduxjs/toolkit";
-import BlockTypeValidator from "./blockTypeValidator";
-import RenderersValidator from "./renderersValidator";
+import { Analysis, Annotation } from "@/analysis/analysisTypes";
+import PipelineVisitor from "./PipelineVisitor";
 
-const validationListenerMiddleware = createListenerMiddleware();
+/**
+ * A base class for creating analysis visitors.
+ */
+abstract class AnalysisVisitor extends PipelineVisitor implements Analysis {
+  abstract readonly id: string;
 
-validationListenerMiddleware.startListening(new RenderersValidator());
-validationListenerMiddleware.startListening(new BlockTypeValidator());
+  protected readonly annotations: Annotation[] = [];
+  getAnnotations(): Annotation[] {
+    return this.annotations;
+  }
+}
 
-export default validationListenerMiddleware.middleware;
+export default AnalysisVisitor;

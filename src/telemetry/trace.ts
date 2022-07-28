@@ -143,6 +143,12 @@ export type TraceRecord = TraceEntryData & Partial<TraceExitData> & DerivedData;
 
 export type TraceError = TraceEntryData & ErrorOutput & DerivedData;
 
+export function isTraceError(
+  traceRecord: TraceRecord
+): traceRecord is TraceError {
+  return "error" in traceRecord && traceRecord.error != null;
+}
+
 const indexKeys: Array<
   keyof Pick<TraceRecordMeta, "runId" | "blockInstanceId" | "extensionId">
 > = ["runId", "blockInstanceId", "extensionId"];

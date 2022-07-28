@@ -15,13 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createListenerMiddleware } from "@reduxjs/toolkit";
-import BlockTypeValidator from "./blockTypeValidator";
-import RenderersValidator from "./renderersValidator";
+import { useSelector } from "react-redux";
+import { selectAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
 
-const validationListenerMiddleware = createListenerMiddleware();
+function useFieldError(fieldPath: string): string | undefined {
+  const annotations = useSelector(selectAnnotationsForPath(fieldPath));
 
-validationListenerMiddleware.startListening(new RenderersValidator());
-validationListenerMiddleware.startListening(new BlockTypeValidator());
+  return annotations.length > 0
+    ? annotations.map(({ message }) => message).join(" ")
+    : undefined;
+}
 
-export default validationListenerMiddleware.middleware;
+export default useFieldError;
