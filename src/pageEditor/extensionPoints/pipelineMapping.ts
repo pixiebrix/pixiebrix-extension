@@ -20,7 +20,6 @@ import { BlockConfig, BlockPipeline, BlockPosition } from "@/blocks/types";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 import { produce } from "immer";
 import { WritableDraft } from "immer/dist/types/types-external";
-import { traversePipeline } from "@/pageEditor/utils";
 import PipelineVisitor, {
   ROOT_POSITION,
   VisitResolvedBlockExtra,
@@ -29,7 +28,7 @@ import pipelineSchema from "@schemas/pipeline.json";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
 
-class PipelineNormalizer extends PipelineVisitor {
+class NormalizePipelineVisitor extends PipelineVisitor {
   constructor(private readonly blockMap: TypedBlockMap) {
     super();
   }
@@ -73,10 +72,27 @@ export async function normalizePipelineForEditor(
 ): Promise<BlockPipeline> {
   const blockMap = await blockRegistry.allTyped();
   return produce(pipeline, (pipeline: WritableDraft<BlockPipeline>) => {
-    new PipelineNormalizer(blockMap).visitPipeline(ROOT_POSITION, pipeline, {
-      flavor: PipelineFlavor.AllBlocks,
-    });
+    new NormalizePipelineVisitor(blockMap).visitPipeline(
+      ROOT_POSITION,
+      pipeline,
+      {
+        flavor: PipelineFlavor.AllBlocks,
+      }
+    );
   });
+}
+
+class OmitEditorMetadataVisitor extends PipelineVisitor {
+  override visitBlock(
+    position: BlockPosition,
+    blockConfig: BlockConfig,
+    extra: VisitResolvedBlockExtra
+  ): void {
+    // Remove up instanceIds
+    delete blockConfig.instanceId;
+
+    super.visitBlock(position, blockConfig, extra);
+  }
 }
 
 /**
@@ -84,11 +100,8 @@ export async function normalizePipelineForEditor(
  */
 export function omitEditorMetadata(pipeline: BlockPipeline): BlockPipeline {
   return produce(pipeline, (pipeline: WritableDraft<BlockPipeline>) => {
-    traversePipeline({
-      pipeline,
-      visitBlock({ blockConfig }) {
-        delete blockConfig.instanceId;
-      },
+    new OmitEditorMetadataVisitor().visitPipeline(ROOT_POSITION, pipeline, {
+      flavor: PipelineFlavor.AllBlocks,
     });
   });
 }

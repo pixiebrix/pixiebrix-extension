@@ -16,10 +16,7 @@
  */
 
 import { AnnotationType } from "@/analysis/analysisTypes";
-import {
-  nestedPosition,
-  VisitResolvedBlockExtra,
-} from "@/blocks/PipelineVisitor";
+import { nestedPosition, VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { BlockConfig, BlockPosition } from "@/blocks/types";
 import { BlockType } from "@/runtime/runtimeTypes";
 import AnalysisVisitor from "@/analysis/AnalysisVisitor";
@@ -33,12 +30,12 @@ class OutputKeyAnalysis extends AnalysisVisitor {
     return "outputKey";
   }
 
-  override visitResolvedBlock(
+  override visitBlock(
     position: BlockPosition,
     blockConfig: BlockConfig,
-    extra: VisitResolvedBlockExtra
-  ): Promise<void> {
-    super.visitResolvedBlock(position, blockConfig, extra);
+    extra: VisitBlockExtra
+  ): void {
+    super.visitBlock(position, blockConfig, extra);
 
     let errorMessage: string;
     const { outputKey } = blockConfig;

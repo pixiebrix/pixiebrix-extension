@@ -22,11 +22,7 @@ import { createNewElement } from "@/components/documentBuilder/createNewElement"
 import { Schema } from "@/core";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { PipelineExpression } from "@/runtime/mapArgs";
-import {
-  blockConfigFactory,
-  pipelineFactory,
-  typedBlockFactory,
-} from "@/testUtils/factories";
+import { blockConfigFactory, pipelineFactory } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
 import PipelineVisitor, { VisitBlockExtra } from "./PipelineVisitor";
 

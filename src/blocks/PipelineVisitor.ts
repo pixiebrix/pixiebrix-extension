@@ -17,8 +17,8 @@
 
 import { BlockConfig, BlockPosition } from "@/blocks/types";
 import { joinPathParts } from "@/utils";
-import { Expression, Schema } from "@/core";
-import blockRegistry, { TypedBlock } from "@/blocks/registry";
+import { Expression } from "@/core";
+import { TypedBlock } from "@/blocks/registry";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { JsonValue } from "type-fest";
 import { DocumentRenderer } from "@/blocks/renderers/document";
