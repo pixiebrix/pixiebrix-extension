@@ -30,10 +30,19 @@ import {
   normalizePipelineForEditor,
   omitEditorMetadata,
 } from "./pipelineMapping";
+import blockRegistry from "@/blocks/registry";
 
 describe("normalizePipeline", () => {
   let echoBlockConfig: BlockConfig;
   let teapotBlockConfig: BlockConfig;
+
+  beforeAll(() => {
+    blockRegistry.register(echoBlock);
+    blockRegistry.register(teapotBlock);
+    blockRegistry.register(new ForEach());
+    blockRegistry.register(new IfElse());
+    blockRegistry.register(new TryExcept());
+  });
 
   beforeEach(() => {
     echoBlockConfig = {
@@ -49,16 +58,16 @@ describe("normalizePipeline", () => {
     };
   });
 
-  test("should add instance id to every block in pipeline", () => {
+  test("should add instance id to every block in pipeline", async () => {
     const pipeline = [echoBlockConfig, teapotBlockConfig];
 
-    const actual = normalizePipelineForEditor(pipeline);
+    const actual = await normalizePipelineForEditor(pipeline);
     for (const config of actual) {
       expect(config.instanceId).toBeDefined();
     }
   });
 
-  test("For-Each block", () => {
+  test("For-Each block", async () => {
     const pipeline: BlockConfig[] = [
       {
         id: ForEach.BLOCK_ID,
@@ -69,17 +78,17 @@ describe("normalizePipeline", () => {
       },
     ];
 
-    const actual = normalizePipelineForEditor(pipeline) as any;
+    const actual = await normalizePipelineForEditor(pipeline);
 
     // Checking the loop config
     const loopConfig = actual[0].config.body;
     expect(isPipelineExpression(loopConfig)).toBeTrue();
-    for (const config of loopConfig.__value__) {
+    for (const config of (loopConfig as PipelineExpression).__value__) {
       expect(config.instanceId).toBeDefined();
     }
   });
 
-  test("If-Else block", () => {
+  test("If-Else block", async () => {
     const pipeline: BlockConfig[] = [
       {
         id: IfElse.BLOCK_ID,
@@ -91,7 +100,7 @@ describe("normalizePipeline", () => {
       },
     ];
 
-    const actual = normalizePipelineForEditor(pipeline) as any;
+    const actual = (await normalizePipelineForEditor(pipeline)) as any;
 
     // Checking IF branch
     const ifConfig = actual[0].config.if;
@@ -108,7 +117,7 @@ describe("normalizePipeline", () => {
     }
   });
 
-  test("If-Else block with only If branch", () => {
+  test("If-Else block with only If branch", async () => {
     const pipeline: BlockConfig[] = [
       {
         id: IfElse.BLOCK_ID,
@@ -119,7 +128,7 @@ describe("normalizePipeline", () => {
       },
     ];
 
-    const actual = normalizePipelineForEditor(pipeline) as any;
+    const actual = (await normalizePipelineForEditor(pipeline)) as any;
 
     // Checking IF branch
     const ifConfig = actual[0].config.if;
@@ -134,7 +143,7 @@ describe("normalizePipeline", () => {
     expect(elseConfig).toEqual(EMPTY_PIPELINE);
   });
 
-  test("Try-Except block", () => {
+  test("Try-Except block", async () => {
     const pipeline: BlockConfig[] = [
       {
         id: TryExcept.BLOCK_ID,
@@ -145,7 +154,7 @@ describe("normalizePipeline", () => {
       },
     ];
 
-    const actual = normalizePipelineForEditor(pipeline) as any;
+    const actual = (await normalizePipelineForEditor(pipeline)) as any;
 
     // Checking TRY branch
     const tryConfig = actual[0].config.try;
@@ -162,7 +171,7 @@ describe("normalizePipeline", () => {
     }
   });
 
-  test("Try-Except block with only Try branch", () => {
+  test("Try-Except block with only Try branch", async () => {
     const pipeline: BlockConfig[] = [
       {
         id: TryExcept.BLOCK_ID,
@@ -172,7 +181,7 @@ describe("normalizePipeline", () => {
       },
     ];
 
-    const actual = normalizePipelineForEditor(pipeline) as any;
+    const actual = (await normalizePipelineForEditor(pipeline)) as any;
 
     // Checking TRY branch
     const tryConfig = actual[0].config.try;
@@ -187,7 +196,7 @@ describe("normalizePipeline", () => {
     expect(exceptConfig).toEqual(EMPTY_PIPELINE);
   });
 
-  test("nested pipelines", () => {
+  test("nested pipelines", async () => {
     const createForEachBlock: (body: BlockConfig[]) => BlockConfig = (
       body
     ) => ({
@@ -204,7 +213,7 @@ describe("normalizePipeline", () => {
       ]),
     ];
 
-    const actual = normalizePipelineForEditor(pipeline) as any;
+    const actual = (await normalizePipelineForEditor(pipeline)) as any;
 
     // 1st level - root
     expect(actual[0].instanceId).toBeDefined();

@@ -16,37 +16,61 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { BlockPipeline } from "@/blocks/types";
+import { BlockConfig, BlockPipeline, BlockPosition } from "@/blocks/types";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 import { produce } from "immer";
 import { WritableDraft } from "immer/dist/types/types-external";
 import { traversePipeline } from "@/pageEditor/utils";
-import { get, set } from "lodash";
+import PipelineVisitor, {
+  ROOT_POSITION,
+  VisitResolvedBlockExtra,
+} from "@/blocks/PipelineVisitor";
+import pipelineSchema from "@schemas/pipeline.json";
+import { PipelineFlavor } from "../pageEditorTypes";
+
+class PipelineNormalizer extends PipelineVisitor {
+  override async visitResolvedBlock(
+    position: BlockPosition,
+    blockConfig: BlockConfig,
+    extra: VisitResolvedBlockExtra
+  ): Promise<void> {
+    // Generate an instanceId for the block
+    blockConfig.instanceId = uuidv4();
+
+    // Initialize empty sub pipelines
+    const propertiesSchema =
+      extra.typedBlock.block?.inputSchema?.properties ?? {};
+    const emptySubPipelineProperties = Object.entries(propertiesSchema)
+      .filter(
+        ([prop, fieldSchema]) =>
+          typeof fieldSchema === "object" &&
+          fieldSchema.$ref === pipelineSchema.$id &&
+          !isPipelineExpression(blockConfig.config[prop])
+      )
+      .map(([prop]) => prop);
+    for await (const prop of emptySubPipelineProperties) {
+      blockConfig.config[prop] = {
+        __type__: "pipeline",
+        __value__: [],
+      };
+    }
+
+    await super.visitResolvedBlock(position, blockConfig, extra);
+  }
+}
 
 /**
  * Enrich a BlockPipeline with instanceIds for use in tracing
  * and normalize sub pipelines
  */
-export function normalizePipelineForEditor(
+export async function normalizePipelineForEditor(
   pipeline: BlockPipeline
-): BlockPipeline {
-  return produce(pipeline, (pipeline: WritableDraft<BlockPipeline>) => {
-    traversePipeline({
-      pipeline,
-      visitBlock({ blockConfig }) {
-        blockConfig.instanceId = uuidv4();
-      },
-      preVisitSubPipeline({ parentBlock, subPipelineProperty }) {
-        const subPipeline = get(parentBlock, subPipelineProperty);
-        if (!isPipelineExpression(subPipeline)) {
-          set(parentBlock, subPipelineProperty, {
-            __type__: "pipeline",
-            __value__: [],
-          });
-        }
-      },
-    });
-  });
+): Promise<BlockPipeline> {
+  return produce(pipeline, async (pipeline: WritableDraft<BlockPipeline>) =>
+    new PipelineNormalizer().visitPipeline(ROOT_POSITION, pipeline, {
+      flavor: PipelineFlavor.AllBlocks,
+    })
+  );
 }
 
 /**

@@ -16,7 +16,7 @@
  */
 
 import { BlockConfig, BlockPosition } from "@/blocks/types";
-import { joinName, joinPathParts } from "@/utils";
+import { joinPathParts } from "@/utils";
 import { Expression, Schema } from "@/core";
 import blockRegistry, { TypedBlock } from "@/blocks/registry";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
@@ -31,6 +31,10 @@ import {
 import { ExtensionPointType } from "@/extensionPoints/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+
+export const ROOT_POSITION = Object.freeze({
+  path: PIPELINE_BLOCKS_FIELD_NAME,
+}) as BlockPosition;
 
 export function nestedPosition(
   position: BlockPosition,
@@ -210,9 +214,7 @@ class PipelineVisitor {
     { extensionPointType }: VisitRootPipelineExtra
   ): Promise<void> {
     const flavor = getRootPipelineFlavor(extensionPointType);
-    await this.visitPipeline({ path: PIPELINE_BLOCKS_FIELD_NAME }, pipeline, {
-      flavor,
-    });
+    await this.visitPipeline(ROOT_POSITION, pipeline, { flavor });
   }
 }
 
