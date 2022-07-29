@@ -30,7 +30,7 @@ import { Primitive } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 
 const COMMUNITY_HOSTNAME_REGEX =
-  /^community\d+\..*\.automationanywhere\.digital$/;
+  /^community\d*\..*\.automationanywhere\.digital$/;
 
 /**
  * Return true if the control room URL corresponds to the AA community cloud.
