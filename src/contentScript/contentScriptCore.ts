@@ -68,12 +68,7 @@ export async function init(uuid: UUID): Promise<void> {
     `Loading contentScript for tabId=${sender.tab.id}, frameId=${sender.frameId}: ${uuid}`
   );
 
-  try {
-    await handleNavigate();
-  } catch (error) {
-    console.error("Error initializing contentScript", error);
-    throw error;
-  }
+  await handleNavigate();
 
   // Mark the document as ready
   document.documentElement.setAttribute(PIXIEBRIX_READY_ATTRIBUTE, "");

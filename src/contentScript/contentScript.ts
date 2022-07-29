@@ -44,4 +44,6 @@ async function initContentScript() {
   console.timeEnd("contentScript ready");
 }
 
-void initContentScript();
+void initContentScript().catch((error) => {
+  throw new Error("Error initializing contentScript", { cause: error });
+});
