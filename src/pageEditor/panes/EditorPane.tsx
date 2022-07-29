@@ -54,6 +54,7 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   // see also the validate function in the EditorPane below
   const annotations = useSelector(selectExtensionAnnotations(element.uuid));
   useEffect(() => {
+    // eslint-disable-next-line promise/prefer-await-to-then
     void formik.validateForm();
   }, [annotations]);
 

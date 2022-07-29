@@ -136,7 +136,6 @@ const EditTab: React.FC<{
                     key={activeNodeId}
                     blockFieldName={fieldName}
                     blockId={blockId}
-                    nodeId={activeNodeId}
                   />
                 )
               ) : (
