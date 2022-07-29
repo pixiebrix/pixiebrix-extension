@@ -27,12 +27,17 @@ export const NOTIFICATIONS_Z_INDEX = 2_147_483_647;
 export const MAX_Z_INDEX = NOTIFICATIONS_Z_INDEX - 1; // Let notifications always be higher
 export const PANEL_FRAME_ID = "pixiebrix-extension";
 export const PIXIEBRIX_DATA_ATTR = "data-pb-uuid";
-export const PIXIEBRIX_READY_ATTRIBUTE = "data-pb-ready";
 export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
+
+// These two must be synched in `background/utils.ts#getTargetState`
+export const PIXIEBRIX_CONTENT_SCRIPT_NONCE = "data-pb-nonce";
+export const PIXIEBRIX_READY_ATTRIBUTE = "data-pb-ready";
+
 // Keep this simple because it must be compatible with `:not(${thisSelector})`
 export const PRIVATE_ATTRIBUTES_SELECTOR = `
   #${PANEL_FRAME_ID},
   [${PIXIEBRIX_DATA_ATTR}],
+  [${PIXIEBRIX_CONTENT_SCRIPT_NONCE}],
   [${PIXIEBRIX_READY_ATTRIBUTE}],
   [${EXTENSION_POINT_DATA_ATTR}]
 `;

@@ -17,108 +17,31 @@
 
 import "./contentScript.scss";
 import { uuidv4 } from "@/types/helpers";
+import { PIXIEBRIX_CONTENT_SCRIPT_NONCE } from "@/common";
 
-const PIXIEBRIX_CONTENT_SCRIPT_NONCE = "data-pb-nonce";
-const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
-const uuid = uuidv4();
-// Should set attribute as early as possible
-document.documentElement.setAttribute(PIXIEBRIX_CONTENT_SCRIPT_NONCE, uuid);
+async function initContentScript() {
+  const uuid = uuidv4();
 
-const start = Date.now();
-// Importing for the side effects. Should import as early as possible
-import "@/extensionContext";
-import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
-
-// Normal imports
-// eslint-disable-next-line import/no-restricted-paths -- Legacy code, needs https://github.com/pixiebrix/webext-messenger/issues/6
-import registerExternalMessenger from "@/background/messenger/external/registration";
-import registerMessenger from "@/contentScript/messenger/registration";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
-import { handleNavigate } from "@/contentScript/lifecycle";
-import { markReady, updateTabInfo } from "@/contentScript/context";
-import { whoAmI, initTelemetry } from "@/background/messenger/api";
-import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
-// eslint-disable-next-line import/no-restricted-paths -- Custom devTools mechanism to transfer data
-import { addListenerForUpdateSelectedElement } from "@/pageEditor/getSelectedElement";
-import { initToaster } from "@/utils/notify";
-import { isConnectionError } from "@/errors/errorHelpers";
-import { showConnectionLost } from "@/contentScript/connection";
-import { initPartnerIntegrations } from "@/contentScript/partnerIntegrations";
-
-registerMessenger();
-registerExternalMessenger();
-registerBuiltinBlocks();
-registerContribBlocks();
-
-function ignoreConnectionErrors(
-  errorEvent: ErrorEvent | PromiseRejectionEvent
-): void {
-  if (isConnectionError(errorEvent)) {
-    showConnectionLost();
-    errorEvent.preventDefault();
-  }
-}
-
-// Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
-uncaughtErrorHandlers.unshift(ignoreConnectionErrors);
-
-declare global {
-  interface Window {
-    [PIXIEBRIX_SYMBOL]?: string;
-  }
-}
-
-async function init(): Promise<void> {
-  addListenerForUpdateSelectedElement();
-  initTelemetry();
-  initToaster();
-
-  const sender = await whoAmI();
-
-  updateTabInfo({ tabId: sender.tab.id, frameId: sender.frameId });
-  console.debug(
-    `Loading contentScript for tabId=${sender.tab.id}, frameId=${sender.frameId}: ${uuid}`
+  console.time("contentScript ready");
+  const existingAttribute = document.documentElement.getAttribute(
+    PIXIEBRIX_CONTENT_SCRIPT_NONCE
   );
+  if (existingAttribute) {
+    console.debug(
+      `PixieBrix contentScript already installed: ${existingAttribute}`
+    );
 
-  try {
-    await handleNavigate();
-  } catch (error) {
-    console.error("Error initializing contentScript", error);
-    throw error;
+    return;
   }
 
-  // Inform the external website
-  markReady();
+  document.documentElement.setAttribute(PIXIEBRIX_CONTENT_SCRIPT_NONCE, uuid);
 
-  // Inform `ensureContentScript`
-  void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
-
-  // Let the partner page know
-  initPartnerIntegrations();
-
-  console.info(`contentScript ready in ${Date.now() - start}ms`);
+  // Keeping the import separate ensures that no side effects are run until this point
+  const { init } = await import(
+    /* webpackChunkName: "contentScriptCore" */ "./contentScriptCore"
+  );
+  await init(uuid);
+  console.timeEnd("contentScript ready");
 }
 
-// Make sure we don't install the content script multiple times. Using just the window may not be reliable because
-// the content script might be running in a different VM.
-// See discussion at https://github.com/pixiebrix/pixiebrix-extension/issues/3510
-// eslint-disable-next-line security/detect-object-injection -- using PIXIEBRIX_SYMBOL
-const existingSymbol: string = window[PIXIEBRIX_SYMBOL];
-const existingAttribute = document.documentElement.getAttribute(
-  PIXIEBRIX_CONTENT_SCRIPT_NONCE
-);
-if (existingSymbol) {
-  console.debug(
-    `PixieBrix contentScript already installed (JS): ${existingSymbol}`
-  );
-  // eslint-disable-next-line no-negated-condition -- for consistency
-} else if (existingAttribute !== uuid) {
-  console.debug(
-    `PixieBrix contentScript already installed (DOM): ${existingAttribute}`
-  );
-} else {
-  // eslint-disable-next-line security/detect-object-injection -- using PIXIEBRIX_SYMBOL
-  window[PIXIEBRIX_SYMBOL] = uuid;
-  void init();
-}
+void initContentScript();

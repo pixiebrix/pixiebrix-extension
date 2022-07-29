@@ -56,11 +56,18 @@ interface TargetState {
 export async function getTargetState(target: Target): Promise<TargetState> {
   expectContext("background");
 
-  return executeFunction(target, () => ({
-    url: location.href,
-    installed: Symbol.for("pixiebrix-content-script") in window,
-    ready: Symbol.for("pixiebrix-content-script-ready") in window,
-  }));
+  return executeFunction(target, () => {
+    // These two must be inlined here because `executeFunction` does not include non-local variables
+    const PIXIEBRIX_CONTENT_SCRIPT_NONCE = "data-pb-nonce";
+    const PIXIEBRIX_READY_ATTRIBUTE = "data-pb-ready";
+    return {
+      url: location.href,
+      installed: document.documentElement.hasAttribute(
+        PIXIEBRIX_CONTENT_SCRIPT_NONCE
+      ),
+      ready: document.documentElement.hasAttribute(PIXIEBRIX_READY_ATTRIBUTE),
+    };
+  });
 }
 
 export async function onReadyNotification(signal: AbortSignal): Promise<void> {
