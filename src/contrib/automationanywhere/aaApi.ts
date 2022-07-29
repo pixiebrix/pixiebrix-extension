@@ -178,8 +178,7 @@ export async function runCommunityBot({
     method: "post",
     data: {
       fileId,
-      // https://apeople.automationanywhere.com/s/question/0D56F00008YEOjSSAX/how-to-pass-input-values-while-triggering-the-bot-through-control-room-api-?language=en_US
-      botVariables: mapBotInput(data),
+      botInput: mapBotInput(data),
       currentUserDeviceId: deviceId,
       scheduleType: "INSTANT",
     },
