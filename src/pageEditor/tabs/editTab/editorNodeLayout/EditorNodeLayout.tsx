@@ -541,7 +541,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   };
 
   return (
-    <ListGroup variant="flush">
+    <ListGroup variant="flush" data-testid="editor-node-layout">
       <BrickNode key={FOUNDATION_NODE_ID} {...foundationNodeProps} />
       {nodes.map(({ type, key, ...nodeProps }) => {
         switch (type) {

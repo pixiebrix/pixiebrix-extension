@@ -121,7 +121,7 @@ class PipelineVisitor {
         // 1. Handle missing fieldSchema
         // 2. Handle anyOf/oneOf/allOf
         await this.visitExpression(
-          nestedPosition(position, "config", prop, "__value__"),
+          nestedPosition(position, "config", prop),
           value,
           {
             fieldSchema:

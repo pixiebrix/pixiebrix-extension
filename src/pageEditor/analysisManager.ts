@@ -16,6 +16,7 @@
  */
 
 import OutputKeyAnalysis from "@/analysis/analysisVisitors/outputKeyAnalysis";
+import TemplateAnalysis from "@/analysis/analysisVisitors/templateAnalysis";
 import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
 import EditorManager from "@/analysis/editorManager";
 import { UUID } from "@/core";
@@ -48,6 +49,11 @@ analysisManager.registerAnalysisEffect(
 
 // Registering the output key analysis
 analysisManager.registerAnalysisEffect(() => new OutputKeyAnalysis(), {
+  actionCreator: editorSlice.actions.editElement,
+});
+
+// Registering the template validation
+analysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
   actionCreator: editorSlice.actions.editElement,
 });
 
