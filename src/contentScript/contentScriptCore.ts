@@ -37,7 +37,7 @@ import { UUID } from "@/core";
 import { isConnectionError } from "@/errors/errorHelpers";
 import { showConnectionLost } from "./connection";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
-import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/chrome/contentScriptReady";
+import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
 
 function ignoreConnectionErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent

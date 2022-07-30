@@ -28,7 +28,7 @@ import oneMutation from "one-mutation";
 import { isContentScript } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 import { expectContext, forbidContext } from "@/utils/expectContext";
-import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/chrome/contentScriptReady";
+import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
 
 // Context for this protocol:
 // - Implemented and explained in https://github.com/pixiebrix/pixiebrix-extension/pull/1019

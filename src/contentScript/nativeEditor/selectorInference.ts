@@ -23,7 +23,7 @@ import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";
 import { guessUsefulness, isRandomString } from "@/utils/detectRandomString";
 import { matchesAnyPattern } from "@/utils";
 import { escapeSingleQuotes } from "@/utils/escape";
-import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/chrome/contentScriptReady";
+import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
 
 export const BUTTON_TAGS: string[] = [
   "li",

@@ -19,14 +19,15 @@ import "./contentScript.scss";
 import { uuidv4 } from "@/types/helpers";
 import { onContextInvalidated } from "@/chrome";
 import {
-  isInstalledInThisContext,
+  isInstalledInThisSession,
   isReadyInThisDocument,
-  setInstalledInThisContext,
+  setInstalledInThisSession,
   setReadyInThisDocument,
-} from "@/chrome/contentScriptReady";
+} from "@/contentScript/ready";
 
+// See note in `@/contentScript/ready.ts` for further details about the lifecycle of content scripts
 async function initContentScript() {
-  if (isInstalledInThisContext()) {
+  if (isInstalledInThisSession()) {
     console.error(
       "contentScript: was requested twice in the same context, aborting injecting"
     );
@@ -41,7 +42,7 @@ async function initContentScript() {
     console.debug("contentScript: injecting");
   }
 
-  setInstalledInThisContext();
+  setInstalledInThisSession();
   const uuid = uuidv4();
 
   // eslint-disable-next-line promise/prefer-await-to-then -- It's an unrelated event listener

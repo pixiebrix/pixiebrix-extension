@@ -27,7 +27,7 @@ import {
 } from "@/contentScript/nativeEditor/selectorInference";
 import { intersection, unary, uniq } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
-import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/chrome/contentScriptReady";
+import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
 
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
 const ICON_TAGS = ["svg", "img"];

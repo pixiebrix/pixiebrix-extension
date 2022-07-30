@@ -15,6 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file Handles the definition and state of "readiness" of the content script (CS) context.
+ *
+ * `Symbol.for(x)` maintains the same symbol until the context is invalidated, even if
+ * the CS is injected multiple times. This should not happen but it's something we
+ * need to account for: https://github.com/pixiebrix/pixiebrix-extension/issues/3510
+ *
+ * When a context is invalidated, the CS and the changes it made may remain on the page,
+ * but the new background is not able to message the old CS, so the CS must be injected
+ * again. This might cause issues if the previous CS keeps "touching" the page after
+ * being deactivated: https://github.com/pixiebrix/pixiebrix-extension/issues/3132
+ */
+
 import { UUID } from "@/core";
 import { Target } from "@/types";
 import { expectContext } from "@/utils/expectContext";
@@ -38,11 +51,11 @@ interface TargetState {
   ready: boolean;
 }
 
-export function isInstalledInThisContext(): boolean {
+export function isInstalledInThisSession(): boolean {
   return CONTENT_SCRIPT_INJECTED_SYMBOL in globalThis;
 }
 
-export function setInstalledInThisContext(): void {
+export function setInstalledInThisSession(): void {
   window[CONTENT_SCRIPT_INJECTED_SYMBOL] = true;
 }
 
@@ -59,7 +72,7 @@ export function setReadyInThisDocument(uuid: UUID | false): void {
 }
 
 /**
- * Fetches the URL and content script state from a frame on a tab
+ * Fetches the URL and content script state from tab/frame
  * @throws Error if background page doesn't have permission to access the tab
  * */
 export async function getTargetState(target: Target): Promise<TargetState> {
