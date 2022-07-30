@@ -44,4 +44,6 @@ export function getNavigationId(): string {
 export function updateTabInfo(info: { tabId: number; frameId: number }): void {
   tabId = info.tabId;
   frameId = info.frameId;
+
+  console.debug("updateTabInfo", { tabId, tabId });
 }

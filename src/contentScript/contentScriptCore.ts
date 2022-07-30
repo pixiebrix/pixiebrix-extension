@@ -33,7 +33,6 @@ import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { addListenerForUpdateSelectedElement } from "@/pageEditor/getSelectedElement";
 import { initToaster } from "@/utils/notify";
 import { initPartnerIntegrations } from "@/contentScript/partnerIntegrations";
-import { UUID } from "@/core";
 import { isConnectionError } from "@/errors/errorHelpers";
 import { showConnectionLost } from "./connection";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
@@ -51,7 +50,7 @@ function ignoreConnectionErrors(
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 uncaughtErrorHandlers.unshift(ignoreConnectionErrors);
 
-export async function init(uuid: UUID): Promise<void> {
+export async function init(): Promise<void> {
   registerMessenger();
   registerExternalMessenger();
   registerBuiltinBlocks();
@@ -64,9 +63,6 @@ export async function init(uuid: UUID): Promise<void> {
   const sender = await whoAmI();
 
   updateTabInfo({ tabId: sender.tab.id, frameId: sender.frameId });
-  console.debug(
-    `Loading contentScript for tabId=${sender.tab.id}, frameId=${sender.frameId}: ${uuid}`
-  );
 
   await handleNavigate();
 
