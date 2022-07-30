@@ -303,9 +303,7 @@ module.exports = (env, options) =>
           excludeAssets: /svg-icons/,
         }),
 
-      new NodePolyfillPlugin({
-        excludeAliases: ["console"],
-      }),
+      new NodePolyfillPlugin(),
       new WebExtensionTarget(),
       new webpack.ProvidePlugin({
         $: "jquery",
