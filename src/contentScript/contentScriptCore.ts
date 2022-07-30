@@ -36,7 +36,6 @@ import { initPartnerIntegrations } from "@/contentScript/partnerIntegrations";
 import { isConnectionError } from "@/errors/errorHelpers";
 import { showConnectionLost } from "./connection";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
-import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
 
 function ignoreConnectionErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
@@ -65,9 +64,6 @@ export async function init(): Promise<void> {
   updateTabInfo({ tabId: sender.tab.id, frameId: sender.frameId });
 
   await handleNavigate();
-
-  // Mark the document as ready
-  document.documentElement.setAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE, "");
 
   // Inform `ensureContentScript`
   void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
