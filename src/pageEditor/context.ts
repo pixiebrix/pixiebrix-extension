@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import pTimeout from "p-timeout";
 import { navigationEvent } from "@/pageEditor/events";
 import { useAsyncEffect } from "use-async-effect";
@@ -29,6 +29,7 @@ import { detectFrameworks } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/messenger/api";
 import { canAccessTab } from "webext-tools";
 import { sleep } from "@/utils";
+import { onContextInvalidated } from "@/chrome";
 
 interface FrameMeta {
   frameworks: FrameworkMeta[];
@@ -153,20 +154,19 @@ export function useDevConnection(): Context {
     setLastUpdate(Date.now());
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!chrome.runtime?.id) {
-        setTabState({
-          ...initialFrameState,
-          navSequence: uuidv4(),
-          error:
-            "The connection to the PixieBrix browser extension was lost. Reload the Page Editor.",
-        });
-      }
-    }, 500);
-    return () => {
-      clearInterval(interval);
-    };
+  useAsyncEffect(async (isActive) => {
+    await onContextInvalidated();
+
+    if (!isActive()) {
+      return;
+    }
+
+    setTabState({
+      ...initialFrameState,
+      navSequence: uuidv4(),
+      error:
+        "The connection to the PixieBrix browser extension was lost. Reload the Page Editor.",
+    });
   }, []);
 
   // Automatically connect on load

@@ -17,30 +17,46 @@
 
 import "./contentScript.scss";
 import { uuidv4 } from "@/types/helpers";
-import { PIXIEBRIX_CONTENT_SCRIPT_NONCE } from "@/common";
+import { onContextInvalidated } from "@/chrome";
+import {
+  isInstalledInThisContext,
+  isReadyInThisDocument,
+  setInstalledInThisContext,
+  setReadyInThisDocument,
+} from "@/chrome/contentScriptReady";
 
 async function initContentScript() {
-  const uuid = uuidv4();
-
-  console.time("contentScript ready");
-  const existingAttribute = document.documentElement.getAttribute(
-    PIXIEBRIX_CONTENT_SCRIPT_NONCE
-  );
-  if (existingAttribute) {
-    console.debug(
-      `PixieBrix contentScript already installed: ${existingAttribute}`
+  if (isInstalledInThisContext()) {
+    console.error(
+      "contentScript: was requested twice in the same context, aborting injecting"
     );
-
     return;
   }
 
-  document.documentElement.setAttribute(PIXIEBRIX_CONTENT_SCRIPT_NONCE, uuid);
+  if (isReadyInThisDocument()) {
+    console.warn(
+      "contentScript: injecting again because the previous context was invalidated"
+    );
+  } else {
+    console.debug("contentScript: injecting");
+  }
+
+  setInstalledInThisContext();
+  const uuid = uuidv4();
+
+  // eslint-disable-next-line promise/prefer-await-to-then -- It's an unrelated event listener
+  void onContextInvalidated().then(() => {
+    console.debug("contentScript: invalidated", uuid);
+  });
+
+  console.time(`contentScript: ready ${uuid}`);
 
   // Keeping the import separate ensures that no side effects are run until this point
   const { init } = await import(
     /* webpackChunkName: "contentScriptCore" */ "./contentScriptCore"
   );
   await init(uuid);
+  setReadyInThisDocument(uuid);
   console.timeEnd("contentScript ready");
 }
 

@@ -28,7 +28,7 @@ import oneMutation from "one-mutation";
 import { isContentScript } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 import { expectContext, forbidContext } from "@/utils/expectContext";
-import { PIXIEBRIX_READY_ATTRIBUTE } from "@/common";
+import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/chrome/contentScriptReady";
 
 // Context for this protocol:
 // - Implemented and explained in https://github.com/pixiebrix/pixiebrix-extension/pull/1019
@@ -67,14 +67,14 @@ interface Response<R = unknown> {
 const contentScriptHandlers = new Map<string, HandlerEntry>();
 
 async function waitExtensionLoaded(): Promise<void> {
-  if (document.documentElement.hasAttribute(PIXIEBRIX_READY_ATTRIBUTE)) {
+  if (document.documentElement.hasAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE)) {
     return;
   }
 
   await pTimeout(
     oneMutation(document.documentElement, {
       attributes: true,
-      attributeFilter: [PIXIEBRIX_READY_ATTRIBUTE],
+      attributeFilter: [CONTENT_SCRIPT_READY_ATTRIBUTE],
     }),
     POLL_READY_TIMEOUT,
     `The extension did not load within ${POLL_READY_TIMEOUT / 1000}s`

@@ -37,7 +37,7 @@ import { UUID } from "@/core";
 import { isConnectionError } from "@/errors/errorHelpers";
 import { showConnectionLost } from "./connection";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
-import { PIXIEBRIX_READY_ATTRIBUTE } from "@/common";
+import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/chrome/contentScriptReady";
 
 function ignoreConnectionErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
@@ -71,7 +71,7 @@ export async function init(uuid: UUID): Promise<void> {
   await handleNavigate();
 
   // Mark the document as ready
-  document.documentElement.setAttribute(PIXIEBRIX_READY_ATTRIBUTE, "");
+  document.documentElement.setAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE, "");
 
   // Inform `ensureContentScript`
   void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
