@@ -182,11 +182,11 @@ export function hideSidebar(): void {
 }
 
 export async function toggleSidebar(): Promise<void> {
-  if (!isSidebarVisible()) {
+  if (isSidebarVisible()) {
+    hideSidebar();
+  } else {
     await showSidebar();
   }
-
-  hideSidebar();
 }
 
 export function isSidebarVisible(): boolean {
