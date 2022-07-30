@@ -39,6 +39,7 @@ import {
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
 import { isEmpty } from "lodash";
 import { SimpleEventTarget } from "@/hooks/events";
+import { logPromiseDuration } from "@/utils";
 
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_SELECTOR = "#" + PANEL_FRAME_ID;
@@ -170,7 +171,7 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
 export async function ensureSidebar(): Promise<void> {
   if (!isSidebarVisible()) {
     expectContext("contentScript");
-    await showSidebar();
+    await logPromiseDuration("ensureSidebar", showSidebar());
   }
 }
 

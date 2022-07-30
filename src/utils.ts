@@ -525,6 +525,18 @@ export async function waitFor<T>(
   } while (Date.now() < endBy);
 }
 
+export async function logPromiseDuration<P>(
+  title: string,
+  promise: Promise<P>
+): Promise<P> {
+  const start = Date.now();
+  try {
+    return await promise;
+  } finally {
+    console.debug(title, `${Math.round(Date.now() - start)}ms`);
+  }
+}
+
 export function isMac(): boolean {
   // https://stackoverflow.com/a/27862868/402560
   return navigator.platform.includes("Mac");
