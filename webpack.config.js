@@ -256,14 +256,6 @@ module.exports = (env, options) =>
         ...(isProd(options) || process.env.DEV_REDUX_LOGGER === "false"
           ? { "redux-logger": false }
           : {}),
-
-        // Enables static analysis and removal of dead code
-        "webext-detect-page": path.resolve(
-          "src/vendors/webextDetectPage.static.js"
-        ),
-
-        // Lighter jQuery version
-        jquery: "jquery/dist/jquery.slim.min.js",
       },
     },
 
@@ -319,21 +311,26 @@ module.exports = (env, options) =>
           excludeAssets: /svg-icons/,
         }),
 
-      new NodePolyfillPlugin(),
+      new NodePolyfillPlugin({
+        // Specify the least amount of polyfills because by default it event polyfills `console`
+        includeAliases: ["buffer", "Buffer"],
+      }),
       new WebExtensionTarget(),
       new webpack.ProvidePlugin({
         $: "jquery",
         jQuery: "jquery",
         browser: "webextension-polyfill",
+        process: path.resolve("src/vendors/process.js"),
       }),
 
       // This will inject the current ENVs into the bundle, if found
       new webpack.EnvironmentPlugin({
         // If not found, these values will be used as defaults
         DEBUG: !isProd(options),
+        NODE_DEBUG: false,
         REDUX_DEV_TOOLS: !isProd(options),
         NPM_PACKAGE_VERSION: process.env.npm_package_version,
-        ENVIRONMENT: process.env.ENVIRONMENT ?? options.mode,
+        ENVIRONMENT: options.mode,
         WEBEXT_MESSENGER_LOGGING: "false",
         ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl ?? "extension://dynamichost/",
 
