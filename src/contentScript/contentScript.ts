@@ -56,7 +56,7 @@ async function initContentScript() {
   const { init } = await import(
     /* webpackChunkName: "contentScriptCore" */ "./contentScriptCore"
   );
-  await init(uuid);
+  await init();
   setReadyInThisDocument(uuid);
   console.timeEnd("contentScript ready");
 }
