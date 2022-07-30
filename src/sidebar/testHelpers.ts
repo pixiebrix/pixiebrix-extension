@@ -20,33 +20,17 @@ import { authSlice } from "@/auth/authSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import servicesSlice from "@/store/servicesSlice";
 import settingsSlice from "@/store/settingsSlice";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
-import sessionSlice from "@/pageEditor/slices/sessionSlice";
-import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSlice";
-import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
-import { logSlice } from "@/components/logViewer/logSlice";
+import sidebarSlice from "@/sidebar/sidebarSlice";
 import { createRenderWithWrappers } from "@/testUtils/testHelpers";
-import validationListenerMiddleware from "@/pageEditor/validation/validationListenerMiddleware";
 
 const renderWithWrappers = createRenderWithWrappers(() =>
   configureStore({
     reducer: {
       auth: authSlice.reducer,
       options: extensionsSlice.reducer,
-      services: servicesSlice.reducer,
+      sidebar: sidebarSlice.reducer,
       settings: settingsSlice.reducer,
-      editor: editorSlice.reducer,
-      session: sessionSlice.reducer,
-      savingExtension: savingExtensionSlice.reducer,
-      runtime: runtimeSlice.reducer,
-      logs: logSlice.reducer,
-      // This api reducer may be needed at some point, but it's not mocked properly yet, so
-      //  we're not including it for now, until it becomes an issue.
-      // [appApi.reducerPath]: appApi.reducer,
-    },
-    middleware(getDefaultMiddleware) {
-      // eslint-disable-next-line unicorn/prefer-spread -- use .concat for proper type inference
-      return getDefaultMiddleware().concat(validationListenerMiddleware);
+      services: servicesSlice.reducer,
     },
   })
 );

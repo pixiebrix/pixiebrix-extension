@@ -17,7 +17,7 @@
 
 import { UUID } from "@/core";
 import { RuntimeState } from "@/pageEditor/slices/runtimeSlice";
-import { TraceError, TraceRecord } from "@/telemetry/trace";
+import { isTraceError, TraceRecord } from "@/telemetry/trace";
 import { EditorState } from "@/pageEditor/pageEditorTypes";
 import { createSelector } from "reselect";
 import { getLatestCall } from "@/telemetry/traceHelpers";
@@ -38,7 +38,8 @@ export const selectExtensionTrace: EditorSelector<TraceRecord[]> = ({
  */
 export const selectTraceErrors = createSelector(
   selectExtensionTrace,
-  (records) => records.filter((x) => "error" in x && x.error) as TraceError[]
+  // eslint-disable-next-line unicorn/no-array-callback-reference -- a proxy function breaks the type inference
+  (records) => records.filter(isTraceError)
 );
 
 export function makeSelectBlockTrace(

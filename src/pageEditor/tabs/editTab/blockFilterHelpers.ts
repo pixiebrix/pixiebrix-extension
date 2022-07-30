@@ -17,10 +17,13 @@
 
 import { TypedBlock } from "@/blocks/registry";
 import { validateRegistryId } from "@/types/helpers";
-import { BlockType } from "@/runtime/runtimeTypes";
 import { ExtensionPointType } from "@/extensionPoints/types";
-import { PipelineType } from "@/pageEditor/pageEditorTypes";
-import { split, stubTrue } from "lodash";
+import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
+import { stubTrue } from "lodash";
+import { BlockConfig } from "@/blocks/types";
+import { DocumentRenderer } from "@/blocks/renderers/document";
+import { BlockType } from "@/runtime/runtimeTypes";
+import { RegistryId } from "@/core";
 
 const PANEL_TYPES = ["actionPanel", "panel"];
 
@@ -32,45 +35,69 @@ const alwaysShow = new Set([
 
 export type IsBlockAllowedPredicate = (block: TypedBlock) => boolean;
 
-export function makeIsAllowedForRootPipeline(
-  extensionPointType: ExtensionPointType
-) {
-  const excludeType: BlockType = PANEL_TYPES.includes(extensionPointType)
-    ? "effect"
-    : "renderer";
+export function getRootPipelineFlavor(extensionPointType: ExtensionPointType) {
+  if (PANEL_TYPES.includes(extensionPointType)) {
+    return PipelineFlavor.NoEffect;
+  }
 
-  return ({ type, block }: TypedBlock) =>
-    (type != null && type !== excludeType) || alwaysShow.has(block.id);
+  return PipelineFlavor.NoRenderer;
 }
 
-export function makeBlockFilterPredicate(
-  pipelineType: PipelineType,
-  pipelinePath: string,
-  extensionPointType: ExtensionPointType
-): IsBlockAllowedPredicate {
-  if (pipelineType === PipelineType.Root) {
-    return makeIsAllowedForRootPipeline(extensionPointType);
+export function getSubPipelineFlavor(
+  parentNodeId: RegistryId,
+  pipelinePath: string
+): PipelineFlavor {
+  if (
+    parentNodeId === DocumentRenderer.BLOCK_ID &&
+    pipelinePath.split(".").at(-2) === "pipeline"
+  ) {
+    // Current pipeline is the Brick sub pipeline of a Document renderer.
+    // Since this sub pipeline is a renderer by itself, it should have no side effects
+    return PipelineFlavor.NoEffect;
   }
 
-  let isButton = false;
+  return PipelineFlavor.NoRenderer;
+}
 
-  if (pipelineType === PipelineType.DocumentBuilder) {
-    // We need to find the pipeline prop name, assume path ends with .<propName>.__value__
-    const parts = split(pipelinePath, ".");
-    if (parts.length >= 3) {
-      const propName = parts[-2];
-      if (propName === "onClick") {
-        isButton = true;
-      }
-    }
+type GetPipelineFlavorArgs = {
+  extensionPointType: ExtensionPointType;
+  pipelinePath: string;
+  parentNode: BlockConfig;
+};
+export function getPipelineFlavor({
+  extensionPointType,
+  parentNode,
+  pipelinePath,
+}: GetPipelineFlavorArgs): PipelineFlavor {
+  if (parentNode == null) {
+    return getRootPipelineFlavor(extensionPointType);
   }
 
-  // PixieBrix doesn't currently support renderers in control flow
-  // bricks or document builder buttons. Use a brick element to render
-  // something in the document builder.
-  if (pipelineType === PipelineType.ControlFlow || isButton) {
-    return (block: TypedBlock) => block.type !== "renderer";
+  return getSubPipelineFlavor(parentNode.id, pipelinePath);
+}
+
+export function makeIsBlockAllowedForPipeline(pipelineFlavor: PipelineFlavor) {
+  if (pipelineFlavor === PipelineFlavor.AllBlocks) {
+    return stubTrue;
   }
 
-  return stubTrue;
+  let excludedType: BlockType;
+
+  switch (pipelineFlavor) {
+    case PipelineFlavor.NoEffect:
+      excludedType = "effect";
+      break;
+    case PipelineFlavor.NoRenderer:
+      excludedType = "renderer";
+      break;
+    default:
+      console.warn(
+        "Unknown pipeline flavor, allowing all bricks",
+        pipelineFlavor
+      );
+      return stubTrue;
+  }
+
+  return ({ type, block }: TypedBlock) =>
+    type !== excludedType || alwaysShow.has(block.id);
 }

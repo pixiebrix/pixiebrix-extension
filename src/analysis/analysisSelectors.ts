@@ -15,18 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { render } from "@testing-library/react";
-import SidebarApp from "@/sidebar/SidebarApp";
+import { UUID } from "@/core";
+import { AnalysisRootState, Annotation } from "./analysisTypes";
 
-jest.mock("@/options/store", () => ({
-  persistor: {
-    flush: jest.fn(),
-  },
-}));
+// Serves to avoid creating new arrays and ensure reference equality for empty annotations
+const emptyAnnotations = Object.freeze([]) as Annotation[];
 
-describe("SidebarApp", () => {
-  test("renders", () => {
-    expect(render(<SidebarApp />).asFragment()).toMatchSnapshot();
-  });
-});
+export function selectExtensionAnnotations(
+  extensionId: UUID
+): (state: AnalysisRootState) => Annotation[] {
+  return ({ analysis }: AnalysisRootState) =>
+    // eslint-disable-next-line security/detect-object-injection -- extensionId is supposed to be UUID, not from user input
+    analysis.extensionAnnotations[extensionId] ?? emptyAnnotations;
+}

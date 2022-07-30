@@ -26,10 +26,14 @@ import { useSelector } from "react-redux";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
+import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 
 const StateTab: React.FC = () => {
-  const errors = useSelector(selectErrorMap);
   const activeElement = useSelector(selectActiveElement);
+  const errors = useSelector(selectErrorMap);
+  const annotations = useSelector(
+    selectExtensionAnnotations(activeElement.uuid)
+  );
 
   return (
     <DataTab eventKey={DataPanelTabKey.State}>
@@ -38,7 +42,7 @@ const StateTab: React.FC = () => {
         developers
       </div>
       <DataTabJsonTree
-        data={{ activeElement, errors }}
+        data={{ activeElement, annotations, errors }}
         searchable
         tabKey={DataPanelTabKey.State}
         label="Element State"

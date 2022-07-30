@@ -25,7 +25,7 @@ import { render, screen } from "@/pageEditor/testHelpers";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import userEvent from "@testing-library/user-event";
-import { PipelineType } from "@/pageEditor/pageEditorTypes";
+import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import * as api from "@/services/api";
 import { RegistryId } from "@/core";
@@ -69,7 +69,7 @@ describe("AddBlockModal", () => {
         dispatch(
           actions.showAddBlockModal({
             path: "",
-            type: PipelineType.Root,
+            flavor: PipelineFlavor.AllBlocks,
             index: 0,
           })
         );
@@ -92,7 +92,7 @@ describe("AddBlockModal", () => {
         dispatch(
           actions.showAddBlockModal({
             path: PIPELINE_BLOCKS_FIELD_NAME,
-            type: PipelineType.Root,
+            flavor: PipelineFlavor.AllBlocks,
             index: 0,
           })
         );

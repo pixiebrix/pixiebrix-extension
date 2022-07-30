@@ -38,7 +38,7 @@ export interface SchemaFieldProps {
   /**
    * Field validation schema
    */
-  validationSchema?: Yup.ObjectSchema<any>;
+  validationSchema?: Yup.AnySchema;
 
   /**
    * Is this field required?

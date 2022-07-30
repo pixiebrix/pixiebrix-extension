@@ -28,6 +28,7 @@ import { persistSettingsConfig } from "@/store/settingsStorage";
 import settingsSlice from "@/store/settingsSlice";
 import { appApi } from "@/services/api";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
+import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -51,6 +52,8 @@ const store = configureStore({
     ),
     sidebar: sidebarSlice.reducer,
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
+    // `services` slice is used to determine login state for partner installs
+    services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {

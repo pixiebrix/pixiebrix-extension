@@ -37,6 +37,7 @@ import {
   ContextMenuFormState,
   QuickBarFormState,
 } from "./extensionPoints/formStateTypes";
+import { AnalysisRootState } from "@/analysis/analysisTypes";
 
 export type FormState =
   | ActionFormState
@@ -46,10 +47,10 @@ export type FormState =
   | ContextMenuFormState
   | QuickBarFormState;
 
-export enum PipelineType {
-  Root,
-  DocumentBuilder,
-  ControlFlow,
+export enum PipelineFlavor {
+  AllBlocks = "allBlocks",
+  NoEffect = "noEffect",
+  NoRenderer = "noRenderer",
 }
 
 export type AddBlockLocation = {
@@ -59,10 +60,10 @@ export type AddBlockLocation = {
   path: string;
 
   /**
-   * The type of pipeline where a block will be added by the add block modal
-   * @see: PipelineType
+   * The flavor of pipeline where a block will be added by the add block modal
+   * @see: PipelineFlavor
    */
-  type: PipelineType;
+  flavor: PipelineFlavor;
 
   /**
    * The pipeline index where a block will be added by the add block modal
@@ -188,10 +189,15 @@ export interface EditorState {
   newRecipeIds: RegistryId[];
 }
 
+export type EditorRootState = {
+  editor: EditorState;
+};
+
 export type RootState = AuthRootState &
   LogRootState &
-  ExtensionsRootState & {
-    editor: EditorState;
+  ExtensionsRootState &
+  AnalysisRootState &
+  EditorRootState & {
     savingExtension: SavingExtensionState;
     settings: SettingsState;
     runtime: RuntimeState;

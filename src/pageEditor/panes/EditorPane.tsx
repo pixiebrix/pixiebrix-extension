@@ -20,7 +20,7 @@ import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useDebouncedCallback } from "use-debounce";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { Formik } from "formik";
+import { Formik, useFormikContext } from "formik";
 import Effect from "@/pageEditor/components/Effect";
 import ElementWizard from "@/pageEditor/ElementWizard";
 import useEditable from "@/pageEditor/hooks/useEditable";
@@ -32,6 +32,10 @@ import {
   selectActiveElement,
   selectSelectionSeq,
 } from "@/pageEditor/slices/editorSelectors";
+import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
+import { set } from "lodash";
+import { joinPathParts } from "@/utils";
+import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -44,6 +48,14 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   const dispatch = useDispatch();
   const editable = useEditable();
   const { isWizardOpen } = useSavingWizard();
+  const formik = useFormikContext();
+
+  // Trigger Formik validation when annotations change
+  // see also the validate function in the EditorPane below
+  const annotations = useSelector(selectExtensionAnnotations(element.uuid));
+  useEffect(() => {
+    void formik.validateForm();
+  }, [annotations]);
 
   // XXX: anti-pattern: callback to update the redux store based on the formik state
   const syncReduxState = useDebouncedCallback(
@@ -80,12 +92,32 @@ const EditorPane: React.VFC = () => {
   const selectionSeq = useSelector(selectSelectionSeq);
   // Key to force reload of component when user selects a different element from the sidebar
   const key = `${activeElement.uuid}-${activeElement.installed}-${selectionSeq}`;
+  const annotations = useSelector(
+    selectExtensionAnnotations(activeElement.uuid)
+  );
+
+  // Converts annotations to Formik errors
+  const validate = () => {
+    const errors = {};
+
+    for (const annotation of annotations) {
+      set(
+        errors,
+        joinPathParts(PIPELINE_BLOCKS_FIELD_NAME, annotation.position.path),
+        annotation.message
+      );
+    }
+
+    return errors;
+  };
+
   return (
     <>
       <ErrorBoundary key={key}>
         <Formik
           key={key}
           initialValues={activeElement}
+          validate={validate}
           onSubmit={() => {
             console.error(
               "Formik's submit should not be called to save an extension. Use 'saveElement' from 'useSavingWizard' instead."

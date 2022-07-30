@@ -36,6 +36,10 @@ export type BlockOptionProps = {
   configKey?: string;
 };
 
+const NoOptions: React.FunctionComponent = () => (
+  <div>No options available</div>
+);
+
 /**
  * Return the Options fields for configuring a block with the given schema.
  */
@@ -43,40 +47,44 @@ function genericOptionsFactory(
   schema: Schema,
   uiSchema?: UiSchema
 ): React.FunctionComponent<BlockOptionProps> {
-  const OptionsFields = ({ name, configKey }: BlockOptionProps) => {
-    const optionSchema = inputProperties(schema);
-    if (isEmpty(optionSchema)) {
-      return <div>No options available</div>;
-    }
+  const optionSchema = inputProperties(schema);
+  if (isEmpty(optionSchema)) {
+    return NoOptions;
+  }
 
-    return (
-      <>
-        {Object.entries(optionSchema)
-          .filter(
-            ([, fieldSchema]) =>
-              typeof fieldSchema === "object" &&
-              fieldSchema.$ref !== pipelineSchema.$id
-          )
-          .map(([prop, fieldSchema]) => {
-            // Fine because coming from Object.entries for the schema
-            // eslint-disable-next-line security/detect-object-injection
-            const propUiSchema = uiSchema?.[prop];
-            return (
-              <SchemaField
-                key={prop}
-                name={joinName(name, configKey, prop)}
-                // The fieldSchema type has been filtered and is safe to assume it is Schema
-                schema={fieldSchema as Schema}
-                isRequired={schema.required?.includes(prop)}
-                uiSchema={propUiSchema}
-              />
-            );
-          })}
-      </>
-    );
-  };
+  const fieldsConfig = Object.entries(optionSchema)
+    .filter(
+      ([, fieldSchema]) =>
+        typeof fieldSchema === "object" &&
+        fieldSchema.$ref !== pipelineSchema.$id
+    )
+    .map(([prop, fieldSchema]) => {
+      // Fine because coming from Object.entries for the schema
+      // eslint-disable-next-line security/detect-object-injection
+      const propUiSchema = uiSchema?.[prop];
 
-  OptionsFields.displayName = "OptionsFields";
+      return {
+        prop,
+        fieldSchema,
+        propUiSchema,
+      };
+    });
+
+  const OptionsFields = ({ name, configKey }: BlockOptionProps) => (
+    <>
+      {fieldsConfig.map(({ prop, fieldSchema, propUiSchema }) => (
+        <SchemaField
+          key={prop}
+          name={joinName(name, configKey, prop)}
+          // The fieldSchema type has been filtered and is safe to assume it is Schema
+          schema={fieldSchema as Schema}
+          isRequired={schema.required?.includes(prop)}
+          uiSchema={propUiSchema}
+        />
+      ))}
+    </>
+  );
+
   return OptionsFields;
 }
 

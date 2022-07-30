@@ -31,6 +31,8 @@ import { useSelector } from "react-redux";
 import { selectActiveNodeError } from "@/pageEditor/slices/editorSelectors";
 import useNodeValidation from "@/pageEditor/validation/useNodeValidation";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
+import { ErrorLevel } from "@/pageEditor/uiState/uiStateTypes";
+import AnalysisResult from "@/pageEditor/tabs/editTab/AnalysisResult";
 
 const EditorNodeConfigPanel: React.FC<{
   /**
@@ -67,7 +69,14 @@ const EditorNodeConfigPanel: React.FC<{
   );
 
   const errorInfo = useSelector(selectActiveNodeError);
-  const blockErrorMessage = errorInfo?.errors?.map((x) => x.message).join(" ");
+  const blockErrorMessage = errorInfo?.errors
+    ?.filter((error) => error.level === ErrorLevel.Critical)
+    ?.map((x) => x.message)
+    .join(" ");
+  const blockWarningMessage = errorInfo?.errors
+    ?.filter((error) => error.level === ErrorLevel.Warning)
+    ?.map((x) => x.message)
+    .join(" ");
 
   return (
     <>
@@ -76,6 +85,12 @@ const EditorNodeConfigPanel: React.FC<{
           <Col className="text-danger">{blockErrorMessage}</Col>
         </Row>
       )}
+      {blockWarningMessage && (
+        <Row>
+          <Col className="text-warning">{blockWarningMessage}</Col>
+        </Row>
+      )}
+      <AnalysisResult />
       <Row className={styles.topRow}>
         <Col xl>
           <ConnectedFieldTemplate

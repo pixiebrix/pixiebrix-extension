@@ -24,7 +24,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { selectExtensions } from "@/store/extensionsSelectors";
 
-const OnboardingContent: React.FunctionComponent = () => (
+export const OnboardingContent: React.FunctionComponent = () => (
   <Container>
     <Row className="mt-4">
       <Col>
@@ -74,7 +74,7 @@ const OnboardingContent: React.FunctionComponent = () => (
   </Container>
 );
 
-const NoAvailablePanelsContent: React.FunctionComponent = () => (
+export const NoAvailablePanelsContent: React.FunctionComponent = () => (
   <Container>
     <Row className="mt-4">
       <Col className="text-center">

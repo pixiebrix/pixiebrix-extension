@@ -16,6 +16,7 @@
  */
 
 import React, {
+  KeyboardEventHandler,
   useCallback,
   useContext,
   useEffect,
@@ -35,6 +36,7 @@ import {
   getToggleOptions,
   isKeyStringField,
 } from "@/components/fields/schemaFields/getToggleOptions";
+import useUndo from "@/hooks/useUndo";
 
 const TEMPLATE_ERROR_MESSAGE =
   "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";
@@ -125,6 +127,14 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     [schema]
   );
 
+  const undo = useUndo(value, setValue);
+
+  const keyDownHandler: KeyboardEventHandler<HTMLTextAreaElement> = (event) => {
+    if ((event.ctrlKey || event.metaKey) && event.key === "z") {
+      undo();
+    }
+  };
+
   const onChangeForTemplate = useCallback(
     (templateEngine: TemplateEngine) => {
       const onChange: React.ChangeEventHandler<HTMLInputElement> = ({
@@ -206,6 +216,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
       value={fieldInputValue}
       onChange={fieldOnChange}
       ref={textAreaRef}
+      onKeyDown={keyDownHandler}
     />
   );
 };

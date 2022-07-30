@@ -30,21 +30,24 @@ import {
   BrickNodeProps,
   RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
-import { TraceRecord } from "@/telemetry/trace";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { OutputKey, UUID } from "@/core";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import {
+  selectActiveElement,
   selectActiveNodeId,
   selectErrorMap,
+  selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { get, isEmpty } from "lodash";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import {
+  getBlockAnnotations,
   getDocumentPipelinePaths,
+  getPipelineInputKeyPropName,
   getPipelinePropNames,
 } from "@/pageEditor/utils";
 import { isNullOrBlank, joinName, joinPathParts } from "@/utils";
@@ -55,9 +58,12 @@ import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
-import { BlockError } from "@/pageEditor/uiState/uiStateTypes";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
-import { PipelineType } from "@/pageEditor/pageEditorTypes";
+import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
+import { getRootPipelineFlavor } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import { isExpression } from "@/runtime/mapArgs";
+import decideBlockStatus from "./decideBlockStatus";
+import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -88,34 +94,10 @@ type SubPipeline = {
    */
   subPipelinePath: string;
 
-  subPipelineType: PipelineType;
+  subPipelineFlavor: PipelineFlavor;
+
+  subPipelineInputKey?: string;
 };
-
-function decideBlockStatus(
-  blockError: BlockError,
-  traceRecord: TraceRecord
-): RunStatus {
-  if (
-    blockError != null &&
-    (blockError.errors?.length > 0 || blockError?.fieldErrors)
-  ) {
-    return RunStatus.ERROR;
-  }
-
-  if (traceRecord == null) {
-    return RunStatus.NONE;
-  }
-
-  if (traceRecord?.skippedRun) {
-    return RunStatus.SKIPPED;
-  }
-
-  if (traceRecord.isFinal) {
-    return RunStatus.SUCCESS;
-  }
-
-  return RunStatus.PENDING;
-}
 
 const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   pipeline,
@@ -129,9 +111,15 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
   const showPaste = pasteBlock && isApiAtLeastV2;
   const [allBlocks] = useAllBlocks();
+  const activeElement = useSelector(selectActiveElement);
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectExtensionTrace);
+  const pipelineMap = useSelector(selectPipelineMap);
   const errors = useSelector(selectErrorMap);
+  const annotations = useSelector(
+    selectExtensionAnnotations(activeElement.uuid)
+  );
+  const extensionPointType = activeElement.type;
 
   const [collapsedState, setCollapsedState] = useState<Record<UUID, boolean>>(
     {}
@@ -151,7 +139,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   function mapPipelineToNodes({
     pipeline,
     pipelinePath = PIPELINE_BLOCKS_FIELD_NAME,
-    pipelineType = PipelineType.Root,
+    pipelineFlavor,
     nestingLevel = 0,
     parentIsActive = false,
   }: {
@@ -159,7 +147,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
     pipelinePath?: string;
     nestingLevel?: number;
     parentIsActive?: boolean;
-    pipelineType?: PipelineType;
+    pipelineFlavor?: PipelineFlavor;
   }): EditorNodeProps[] {
     const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
 
@@ -235,26 +223,43 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             headerLabel: isButton ? "button" : "brick",
             subPipeline,
             subPipelinePath,
-            subPipelineType: PipelineType.DocumentBuilder,
+            subPipelineFlavor: isButton
+              ? PipelineFlavor.NoRenderer
+              : PipelineFlavor.NoEffect,
           });
         }
       } else {
-        for (const propName of getPipelinePropNames(blockConfig)) {
+        for (const pipelinePropName of getPipelinePropNames(blockConfig)) {
+          const subPipelineConfigAccessor = [String(index), "config"];
           const subPipelineAccessor = [
-            String(index),
-            "config",
-            propName,
+            ...subPipelineConfigAccessor,
+            pipelinePropName,
             "__value__",
           ];
           const subPipelinePath = joinName(
             pipelinePath,
             ...subPipelineAccessor
           );
+          const inputKeyPropName = getPipelineInputKeyPropName(
+            blockConfig.id,
+            pipelinePropName
+          );
+          const inputKeyAccessor = [
+            ...subPipelineConfigAccessor,
+            inputKeyPropName,
+          ];
+          const inputKeyValue = get(pipeline, inputKeyAccessor);
+          const inputKey: string = inputKeyValue
+            ? isExpression(inputKeyValue)
+              ? inputKeyValue.__value__
+              : inputKeyValue
+            : undefined;
           subPipelines.push({
-            headerLabel: propName,
+            headerLabel: pipelinePropName,
             subPipeline: get(pipeline, subPipelineAccessor) ?? [],
             subPipelinePath,
-            subPipelineType: PipelineType.ControlFlow,
+            subPipelineFlavor: PipelineFlavor.NoRenderer,
+            subPipelineInputKey: inputKey,
           });
         }
       }
@@ -319,7 +324,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             dispatch(
               actions.showAddBlockModal({
                 path: pipelinePath,
-                type: pipelineType,
+                flavor: pipelineFlavor,
                 index: index + 1,
               })
             );
@@ -345,11 +350,21 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       };
 
       if (block) {
+        // eslint-disable-next-line security/detect-object-injection -- relying on nodeId being a UUID
         const blockError = errors[nodeId];
+        const blockAnnotations = getBlockAnnotations(
+          // eslint-disable-next-line security/detect-object-injection -- relying on nodeId being a UUID
+          pipelineMap[nodeId].path,
+          annotations
+        );
 
         contentProps = {
           icon: <BrickIcon brick={block} size="2x" inheritColor />,
-          runStatus: decideBlockStatus(blockError, traceRecord),
+          runStatus: decideBlockStatus({
+            blockError,
+            traceRecord,
+            blockAnnotations,
+          }),
           brickLabel: isNullOrBlank(blockConfig.label)
             ? block?.name
             : blockConfig.label,
@@ -387,7 +402,8 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           headerLabel,
           subPipeline,
           subPipelinePath,
-          subPipelineType,
+          subPipelineFlavor,
+          subPipelineInputKey,
         } of subPipelines) {
           const headerName = `${nodeId}-header`;
 
@@ -400,7 +416,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
                 dispatch(
                   actions.showAddBlockModal({
                     path: subPipelinePath,
-                    type: subPipelineType,
+                    flavor: subPipelineFlavor,
                     index: 0,
                   })
                 );
@@ -423,6 +439,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             headerLabel,
             nestingLevel,
             nodeActions: headerActions,
+            pipelineInputKey: subPipelineInputKey,
             active: nodeIsActive,
             nestedActive: parentIsActive,
           };
@@ -436,7 +453,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             ...mapPipelineToNodes({
               pipeline: subPipeline,
               pipelinePath: subPipelinePath,
-              pipelineType: subPipelineType,
+              pipelineFlavor: subPipelineFlavor,
               nestingLevel: nestingLevel + 1,
               parentIsActive: nodeIsActive || parentIsActive,
             })
@@ -466,6 +483,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
     return nodes;
   }
 
+  const rootPipelineFlavor = getRootPipelineFlavor(extensionPointType);
   const foundationNodeActions: NodeAction[] = [
     {
       name: `${FOUNDATION_NODE_ID}-add-brick`,
@@ -475,7 +493,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
         dispatch(
           actions.showAddBlockModal({
             path: PIPELINE_BLOCKS_FIELD_NAME,
-            type: PipelineType.Root,
+            flavor: rootPipelineFlavor,
             index: 0,
           })
         );
@@ -498,7 +516,10 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
 
   // It's important to run mapPipelineToNodes before adding the foundation node
   // because it will calculate foundationRunStatus for the foundation node
-  const nodes = mapPipelineToNodes({ pipeline });
+  const nodes = mapPipelineToNodes({
+    pipeline,
+    pipelineFlavor: rootPipelineFlavor,
+  });
   const foundationNodeProps: BrickNodeProps = {
     icon: extensionPointIcon,
     runStatus: foundationRunStatus,
