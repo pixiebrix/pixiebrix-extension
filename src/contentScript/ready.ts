@@ -26,6 +26,9 @@
  * but the new background is not able to message the old CS, so the CS must be injected
  * again. This might cause issues if the previous CS keeps "touching" the page after
  * being deactivated: https://github.com/pixiebrix/pixiebrix-extension/issues/3132
+ *
+ * Using both a symbol and an attribute accounts for these 2 situations, to detect
+ * and handle duplicate injections in the same session and across sessions.
  */
 
 import { UUID } from "@/core";
