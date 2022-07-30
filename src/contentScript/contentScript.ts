@@ -29,7 +29,7 @@ import {
 async function initContentScript() {
   if (isInstalledInThisSession()) {
     console.error(
-      "contentScript: was requested twice in the same context, aborting injecting"
+      "contentScript: was requested twice in the same context, aborting injection"
     );
     return;
   }
