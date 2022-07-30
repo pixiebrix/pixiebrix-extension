@@ -87,7 +87,6 @@ export function useTabEventListener<TValue>(
 /** Thinnest possible wrapper around native events */
 type SimpleEventListener<Detail> = (detail: Detail) => void;
 export class SimpleEventTarget<Detail> extends EventTarget {
-  // eslint-disable-next-line @typescript-eslint/class-literal-property-style
   private readonly coreEvent = "DEFAULT";
   private readonly weakEvents = new WeakMap();
 
