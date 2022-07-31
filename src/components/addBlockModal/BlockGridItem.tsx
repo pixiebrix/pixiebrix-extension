@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Button, Card, ListGroup } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
 import styles from "./BlockGridItem.module.scss";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -37,45 +37,44 @@ const BlockGridItem: React.VFC<BlockItemProps> = ({
   onSelect,
   onShowDetail,
 }) => (
-  <ListGroup.Item onClick={onShowDetail} className={styles.root}>
-    <Card className={styles.card}>
-      {/* Main Content */}
-      <div className={styles.cardContent}>
-        <div className={styles.nameRow}>
-          <BrickIcon brick={block} faIconClass={styles.icon} />
-          <span className={styles.name}>{block.name}</span>
-          {block.isPopular && (
-            <Icon
-              icon="icon-sparkles"
-              library="custom"
-              className={styles.popularIcon}
-            />
-          )}
-        </div>
-        {block.description ? (
-          <div className={styles.description}>{block.description}</div>
-        ) : (
-          <small className="text-muted font-italic">
-            No description provided.
-          </small>
+  <div
+    onClick={onShowDetail}
+    onKeyPress={onShowDetail}
+    tabIndex={0}
+    role="button"
+    className={styles.root}
+  >
+    <div className={styles.content}>
+      <div className={styles.nameRow}>
+        <BrickIcon brick={block} faIconClass={styles.icon} />
+        <span className={styles.name}>{block.name}</span>
+        {block.isPopular && (
+          <Icon
+            icon="icon-sparkles"
+            library="custom"
+            className={styles.popularIcon}
+          />
         )}
       </div>
+      {block.description ? (
+        <div className={styles.description}>{block.description}</div>
+      ) : (
+        <small className="text-muted font-italic">
+          No description provided.
+        </small>
+      )}
+    </div>
 
-      {/* Hover Actions */}
-      <div className={styles.actions}>
-        <span className={styles.viewDetails}>View Details</span>
-        <Button
-          variant="primary"
-          onClick={() => {
-            onSelect();
-          }}
-          className={styles.addButton}
-        >
-          <FontAwesomeIcon icon={faPlus} /> Add
-        </Button>
-      </div>
-    </Card>
-  </ListGroup.Item>
+    <Button
+      variant="primary"
+      onClick={() => {
+        onSelect();
+      }}
+      className={styles.addButton}
+    >
+      <FontAwesomeIcon icon={faPlus} /> Add
+    </Button>
+  </div>
 );
 
 export default BlockGridItem;
