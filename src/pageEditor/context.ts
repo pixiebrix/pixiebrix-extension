@@ -29,6 +29,7 @@ import { ensureContentScript } from "@/background/messenger/api";
 import { canAccessTab } from "webext-tools";
 import { sleep } from "@/utils";
 import { useAsyncState } from "@/hooks/common";
+import { onContextInvalidated } from "@/chrome";
 
 interface FrameMeta {
   frameworks: FrameworkMeta[];
@@ -131,20 +132,12 @@ async function connectToFrame(): Promise<FrameConnectionState> {
 export function useDevConnection(): Context {
   const { tabId } = browser.devtools.inspectedWindow;
 
-  const [contextInvalidatedError] = useAsyncState<Error>(
-    new Promise((resolve) => {
-      const interval = setInterval(() => {
-        if (!chrome.runtime?.id) {
-          clearInterval(interval);
-          resolve(
-            new Error(
-              "The connection to the PixieBrix browser extension was lost. Reload the Page Editor."
-            )
-          );
-        }
-      }, 500);
-    })
-  );
+  const [contextInvalidatedError] = useAsyncState<Error>(async () => {
+    await onContextInvalidated();
+    return new Error(
+      "The connection to the PixieBrix browser extension was lost. Reload the Page Editor."
+    );
+  });
 
   const [lastUpdate, setLastUpdate] = useState(Date.now());
 

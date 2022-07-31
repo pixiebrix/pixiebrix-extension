@@ -16,8 +16,9 @@
  */
 
 import { isExtensionContext } from "webext-detect-page";
-import { forbidContext } from "@/utils/expectContext";
+import { expectContext, forbidContext } from "@/utils/expectContext";
 import { JsonValue } from "type-fest";
+import { once } from "lodash";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
@@ -138,3 +139,16 @@ export async function onTabClose(watchedTabId: number): Promise<void> {
     browser.tabs.onRemoved.addListener(listener);
   });
 }
+
+export const onContextInvalidated = once(async (): Promise<void> => {
+  expectContext("extension");
+
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (!chrome.runtime?.id) {
+        resolve();
+        clearInterval(interval);
+      }
+    }, 200);
+  });
+});
