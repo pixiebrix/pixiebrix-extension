@@ -39,7 +39,11 @@ const BlockGridItem: React.VFC<BlockItemProps> = ({
 }) => (
   <div
     onClick={onShowDetail}
-    onKeyPress={onShowDetail}
+    onKeyPress={(event) => {
+      if (event.key === "Enter") {
+        onShowDetail();
+      }
+    }}
     tabIndex={0}
     role="button"
     className={styles.root}

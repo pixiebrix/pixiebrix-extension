@@ -38,6 +38,7 @@
   }
 
   &:focus {
+    outline: none;
     border: 1px solid #3e66fb !important;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
   }
