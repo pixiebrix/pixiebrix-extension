@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,22 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.recipeButton {
-  background-color: #f6f6f7;
-  color: #28283c;
+import React from "react";
+import SaveButtonDark from "@/pageEditor/sidebar/actionButtons/SaveButtonDark";
+import { ComponentMeta, ComponentStory } from "@storybook/react";
 
-  &:disabled {
-    background-color: #f6f6f7;
-    color: #bcbcc3;
-  }
+export default {
+  title: "Sidebar/SaveButtonDark",
+  component: SaveButtonDark,
+  argTypes: {
+    onClick: { action: "clicked" },
+  },
+} as ComponentMeta<typeof SaveButtonDark>;
 
-  &:hover:not(:disabled) {
-    background-color: #e3e3e6;
-    color: #28283c;
-  }
+const Template: ComponentStory<typeof SaveButtonDark> = (args) => (
+  <SaveButtonDark {...args} />
+);
 
-  &:active:not(:disabled) {
-    background-color: #bcbcc3 !important;
-    color: #28283c !important;
-  }
-}
+export const Default = Template.bind({});

@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.recipeButton {
-  background-color: #f6f6f7;
-  color: #28283c;
+.save {
+  background-color: #198ae3;
+  color: white;
 
   &:disabled {
-    background-color: #f6f6f7;
-    color: #bcbcc3;
+    background-color: #e8f3fc;
+    color: #b8dbf6;
   }
 
   &:hover:not(:disabled) {
-    background-color: #e3e3e6;
-    color: #28283c;
+    background-color: #0f5388;
+    color: white;
   }
 
   &:active:not(:disabled) {
-    background-color: #bcbcc3 !important;
-    color: #28283c !important;
+    background-color: #0b3e66 !important;
+    color: white !important;
   }
 }

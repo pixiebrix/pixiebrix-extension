@@ -29,7 +29,7 @@
     color: #0f5388;
   }
 
-  &:active {
+  &:active:not(:disabled) {
     background-color: #b8dbf6 !important;
     color: #0b3e66 !important;
   }

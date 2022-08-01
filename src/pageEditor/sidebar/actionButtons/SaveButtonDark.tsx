@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,22 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.recipeButton {
-  background-color: #f6f6f7;
-  color: #28283c;
+import React from "react";
+import AsyncButton from "@/components/AsyncButton";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSave } from "@fortawesome/free-solid-svg-icons";
+import rootStyles from "./ActionButtons.module.scss";
+import styles from "./SaveButtonDark.module.scss";
+import cx from "classnames";
 
-  &:disabled {
-    background-color: #f6f6f7;
-    color: #bcbcc3;
-  }
+const SaveButtonDark: React.FC<{
+  onClick: () => void;
+  disabled?: boolean;
+}> = ({ onClick, disabled }) => (
+  <AsyncButton
+    onClick={onClick}
+    disabled={disabled}
+    className={cx(rootStyles.button, styles.save)}
+  >
+    <FontAwesomeIcon icon={faSave} />
+  </AsyncButton>
+);
 
-  &:hover:not(:disabled) {
-    background-color: #e3e3e6;
-    color: #28283c;
-  }
-
-  &:active:not(:disabled) {
-    background-color: #bcbcc3 !important;
-    color: #28283c !important;
-  }
-}
+export default SaveButtonDark;
