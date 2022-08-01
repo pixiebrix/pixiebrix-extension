@@ -33,7 +33,7 @@ export type AsyncState<T> = [
   /**
    * Error or undefined if there was no error computing the state
    */
-  unknown | undefined,
+  unknown,
   /**
    * Method to re-calculate the value. Does not set `isLoading` flag
    */

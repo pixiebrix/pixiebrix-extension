@@ -16,7 +16,7 @@
  */
 
 import { ReaderOutput } from "@/core";
-import { asyncMapValues, waitFor } from "@/utils";
+import { asyncMapValues, pollUntilTruthy } from "@/utils";
 import { $safeFind } from "@/helpers";
 import {
   BusinessError,
@@ -164,13 +164,12 @@ async function select(
     }
   };
 
-  const elements =
-    (await waitFor(findElements, {
-      maxWaitMillis,
-      intervalMillis: 50,
-    })) ?? [];
+  const elements = await pollUntilTruthy(findElements, {
+    maxWaitMillis,
+    intervalMillis: 50,
+  });
 
-  if (elements.length === 0) {
+  if (!elements?.length) {
     console.debug(
       `Did not find any elements for selector in ${maxWaitMillis}ms: ${selectorString}`,
       { root, selector }

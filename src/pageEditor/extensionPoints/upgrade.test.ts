@@ -84,7 +84,7 @@ describe("stringToExpression tests", () => {
 
 describe("upgradePipelineToV3 tests", () => {
   test.each([["string"], ["boolean"], ["number"]])(
-    "test upgrade %s var",
+    "upgrade %s var",
     async (type) => {
       const id = defineBlock(
         propertiesToSchema({
@@ -639,7 +639,6 @@ describe("upgradePipelineToV3 tests", () => {
 describe("upgrade overrides", () => {
   test("append to google sheets as object", async () => {
     // Import dynamically to avoid circular dependence
-    // eslint-disable-next-line import/dynamic-import-chunkname -- test code
     const { GoogleSheetsAppend } = await import(
       "@/contrib/google/sheets/append"
     );
@@ -690,7 +689,6 @@ describe("upgrade overrides", () => {
 
   test("append to google sheets as array", async () => {
     // Import dynamically to avoid circular dependence
-    // eslint-disable-next-line import/dynamic-import-chunkname -- test code
     const { GoogleSheetsAppend } = await import(
       "@/contrib/google/sheets/append"
     );
@@ -745,7 +743,6 @@ describe("upgrade overrides", () => {
 
   test("don't convert framework to expression", async () => {
     // Import dynamically to avoid circular dependence
-    // eslint-disable-next-line import/dynamic-import-chunkname -- test code
     const { ComponentReader } = await import(
       "@/blocks/transformers/component/ComponentReader"
     );

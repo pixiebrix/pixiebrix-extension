@@ -145,7 +145,7 @@ export type DeploymentState = {
   /**
    * The error if fetching available deployments failed, or undefined if loading/deployments were successfully fetched
    */
-  error: unknown | undefined;
+  error: unknown;
 };
 
 function useDeployments(): DeploymentState {

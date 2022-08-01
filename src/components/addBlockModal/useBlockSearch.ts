@@ -60,7 +60,7 @@ function useBlockSearch(
         .map((x) => makeBlockOption(x)),
       (x) => x.label
     );
-    const fuse: Fuse<BlockOption> = new Fuse(blockOptions, {
+    const fuse = new Fuse<BlockOption>(blockOptions, {
       keys: ["label", "data.id", "data.description"],
     });
 

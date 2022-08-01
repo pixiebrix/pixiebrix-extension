@@ -152,8 +152,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
     const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
 
     const lastIndex = pipeline.length - 1;
-    // eslint-disable-next-line security/detect-object-injection -- just created the index
-    const lastBlockId = pipeline[lastIndex]?.id;
+    const lastBlockId = pipeline.at(lastIndex)?.id;
     const lastBlock = lastBlockId ? allBlocks.get(lastBlockId) : undefined;
     const showAppend = !lastBlock?.block || lastBlock.type !== "renderer";
 

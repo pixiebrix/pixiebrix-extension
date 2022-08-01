@@ -20,6 +20,7 @@ import { connect, getIn } from "formik";
 import FieldTemplate, { FieldProps } from "@/components/form/FieldTemplate";
 import { FormikContextType } from "formik/dist/types";
 
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- https://github.com/typescript-eslint/typescript-eslint/issues/5407
 export type ConnectedFieldProps<Values> = FieldProps & {
   formik: FormikContextType<Values>;
 };

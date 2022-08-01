@@ -103,7 +103,7 @@ const traceWarning = (
 
 type PreviewState = {
   isRunning: boolean;
-  output: unknown | undefined;
+  output: unknown;
   outputKey: string;
 };
 

@@ -48,14 +48,6 @@ export abstract class Service<
   TOAuth extends AuthData = AuthData
 > implements IService<TConfig>
 {
-  id: RegistryId;
-
-  name: string;
-
-  description?: string;
-
-  icon?: BlockIcon;
-
   abstract schema: Schema;
 
   abstract hasAuth: boolean;
@@ -67,15 +59,12 @@ export abstract class Service<
   abstract get isToken(): boolean;
 
   protected constructor(
-    id: RegistryId,
-    name: string,
-    description?: string,
-    icon?: BlockIcon
+    public id: RegistryId,
+    public name: string,
+    public description?: string,
+    public icon?: BlockIcon
   ) {
-    this.id = id;
-    this.name = name;
-    this.description = description;
-    this.icon = icon;
+    // No body necessary https://www.typescriptlang.org/docs/handbook/2/classes.html#parameter-properties
   }
 
   abstract getOrigins(serviceConfig: TConfig & SanitizedBrand): string[];
@@ -136,15 +125,6 @@ export abstract class Block implements IBlock {
 }
 
 export abstract class Effect extends Block {
-  protected constructor(
-    id: string,
-    name: string,
-    description?: string,
-    icon?: BlockIcon
-  ) {
-    super(id, name, description, icon);
-  }
-
   override async isRootAware(): Promise<boolean> {
     // Most effects don't use the root, so have them opt-in
     return false;
@@ -158,15 +138,6 @@ export abstract class Effect extends Block {
 }
 
 export abstract class Transformer extends Block {
-  protected constructor(
-    id: string,
-    name: string,
-    description?: string,
-    icon?: BlockIcon
-  ) {
-    super(id, name, description, icon);
-  }
-
   override async isRootAware(): Promise<boolean> {
     // Most transformers don't use the root, so have them opt-in
     return false;
@@ -180,15 +151,6 @@ export abstract class Transformer extends Block {
 }
 
 export abstract class Renderer extends Block {
-  protected constructor(
-    id: string,
-    name: string,
-    description?: string,
-    icon?: BlockIcon
-  ) {
-    super(id, name, description, icon);
-  }
-
   abstract render(
     inputs: BlockArg,
     options: BlockOptions
@@ -208,15 +170,6 @@ export abstract class Reader extends Block implements IReader {
   readonly inputSchema: Schema = {};
 
   override outputSchema: Schema = undefined;
-
-  protected constructor(
-    id: string,
-    name: string,
-    description?: string,
-    icon?: BlockIcon
-  ) {
-    super(id, name, description, icon);
-  }
 
   override async isRootAware(): Promise<boolean> {
     // Most readers use the root, so have them opt-out if they don't

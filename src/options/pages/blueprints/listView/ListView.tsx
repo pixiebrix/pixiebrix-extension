@@ -40,8 +40,7 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
 
   const getItemSize = useCallback(
     (index: number) => {
-      // eslint-disable-next-line security/detect-object-injection
-      const row = expandedRows[index];
+      const row = expandedRows.at(index);
       return row.isGrouped ? HEADER_ROW_HEIGHT_PX : ROW_HEIGHT_PX;
     },
     [expandedRows]
@@ -65,8 +64,7 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
         key={listKey}
       >
         {({ index, style }) => {
-          // eslint-disable-next-line security/detect-object-injection
-          const row = expandedRows[index];
+          const row = expandedRows.at(index);
           tableInstance.prepareRow(row);
 
           return row.isGrouped ? (

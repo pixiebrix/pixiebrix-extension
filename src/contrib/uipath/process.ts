@@ -24,7 +24,7 @@ import {
   Schema,
   SchemaProperties,
 } from "@/core";
-import { sleep } from "@/utils";
+import { pollUntilTruthy } from "@/utils";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
 
@@ -144,16 +144,13 @@ export class RunProcess extends Transformer {
 
     const { data: startData } = await responsePromise;
 
-    const start = Date.now();
-
     if (startData.value.length > 1) {
       throw new BusinessError(
         "Awaiting response of multiple jobs not supported"
       );
     }
 
-    do {
-      // eslint-disable-next-line no-await-in-loop -- polling for response
+    const poll = async () => {
       const { data: resultData } = await proxyService<JobsResponse>(uipath, {
         url: `/odata/Jobs?$filter=Id eq ${startData.value[0].Id}`,
         method: "get",
@@ -172,10 +169,16 @@ export class RunProcess extends Transformer {
         logger.error(`UiPath job failed: ${resultData.value[0].Info}`);
         throw new BusinessError("UiPath job failed");
       }
+    };
 
-      // eslint-disable-next-line no-await-in-loop -- polling for response
-      await sleep(POLL_MILLIS);
-    } while (Date.now() - start < MAX_WAIT_MILLIS);
+    const result = await pollUntilTruthy(poll, {
+      intervalMillis: POLL_MILLIS,
+      maxWaitMillis: MAX_WAIT_MILLIS,
+    });
+
+    if (result) {
+      return result;
+    }
 
     throw new BusinessError(
       `UiPath job did not finish in ${MAX_WAIT_MILLIS / 1000} seconds`

@@ -81,7 +81,7 @@ function useSearch<T extends IBrick>(
         .map((x) => makeBlockOption(x)),
       (x) => x.label
     );
-    const fuse: Fuse<BrickOption<T>> = new Fuse(brickOptions, {
+    const fuse = new Fuse<BrickOption<T>>(brickOptions, {
       keys: ["label", "data.id", "data.description"],
     });
 
@@ -138,8 +138,7 @@ const ItemRenderer = ({
   style: CSSProperties;
   data: ItemType;
 }) => {
-  // eslint-disable-next-line security/detect-object-injection -- numeric value from library
-  const { data: brick } = searchResults[index];
+  const { data: brick } = searchResults.at(index);
   return (
     <div style={style}>
       <BrickResult
@@ -163,8 +162,7 @@ const ItemRenderer = ({
 function itemKey(index: number, { searchResults }: ItemType): RegistryId {
   // Find the item at the specified index.
   // In this case "data" is an Array that was passed to List as "itemData".
-  // eslint-disable-next-line security/detect-object-injection -- numeric value
-  const item = searchResults[index];
+  const item = searchResults.at(index);
 
   // Return a value that uniquely identifies this item.
   // Typically this will be a UID of some sort.
