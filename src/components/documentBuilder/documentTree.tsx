@@ -95,10 +95,16 @@ export function getComponentDefinition(
     }
 
     case "card": {
+      const props = { ...config };
+
       // The bodyPros is for internal use,
       // it allows to set CSS class need in preview to the body
-      const { heading, children, bodyProps, ...cardProps } = config;
-      const Component: React.FC = ({ children }) => (
+      const Component: React.FC<UnknownObject> = ({
+        heading,
+        children,
+        bodyProps,
+        ...cardProps
+      }) => (
         <Card {...cardProps}>
           <Card.Header>{heading}</Card.Header>
           <Card.Body {...(bodyProps as React.FC)}>{children}</Card.Body>
@@ -106,7 +112,7 @@ export function getComponentDefinition(
       );
       return {
         Component,
-        props: { children },
+        props,
       };
     }
 
