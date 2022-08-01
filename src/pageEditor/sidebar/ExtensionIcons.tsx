@@ -22,9 +22,9 @@ import {
   faExclamationTriangle,
   faEyeSlash,
   faPuzzlePiece,
-  faSave,
 } from "@fortawesome/free-solid-svg-icons";
 import { ExtensionPointType } from "@/extensionPoints/types";
+import Icon from "@/icons/Icon";
 
 export const ExtensionIcon: React.FunctionComponent<{
   type: ExtensionPointType;
@@ -37,7 +37,7 @@ export const NotAvailableIcon: React.FunctionComponent = () => (
 );
 
 export const UnsavedChangesIcon: React.FunctionComponent = () => (
-  <FontAwesomeIcon icon={faSave} title="Unsaved changes" />
+  <Icon library="custom" icon="ic_unsaved" />
 );
 
 export const RecipeHasUpdateIcon: React.FunctionComponent<{
