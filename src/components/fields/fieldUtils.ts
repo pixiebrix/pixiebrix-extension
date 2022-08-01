@@ -24,8 +24,7 @@ import { Draft, produce } from "immer";
 import * as Yup from "yup";
 
 export function fieldLabel(name: string): string {
-  const parts = name.split(".");
-  return parts[parts.length - 1];
+  return name.split(".").at(-1);
 }
 
 type TypePredicate = (fieldDefinition: Schema) => boolean;

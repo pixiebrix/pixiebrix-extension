@@ -231,7 +231,7 @@
     "data-urls": "^3.0.0",
     "dotenv": "^15.0.0",
     "eslint": "^8.0.0",
-    "eslint-config-pixiebrix": "^0.17.1",
+    "eslint-config-pixiebrix": "^0.17.2",
     "fake-indexeddb": "^4.0.0",
     "geckodriver": "^3.0.1",
     "identity-obj-proxy": "^3.0.0",

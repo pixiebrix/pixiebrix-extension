@@ -37,6 +37,6 @@ export function defaultEventKey({
   panels = [],
 }: SidebarEntries): string | null {
   return forms.length > 0
-    ? mapTabEventKey("form", forms[forms.length - 1])
+    ? mapTabEventKey("form", forms.at(-1))
     : mapTabEventKey("panel", panels[0]);
 }
