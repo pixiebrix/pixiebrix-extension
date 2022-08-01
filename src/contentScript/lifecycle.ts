@@ -26,7 +26,7 @@ import {
 } from "@/core";
 import * as context from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebarController";
-import { sleep } from "@/utils";
+import { pollUntilTruthy } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";
 import reportError from "@/telemetry/reportError";
@@ -316,17 +316,19 @@ async function waitLoaded(cancel: () => boolean): Promise<void> {
       .flatMap((rule) => rule.loadingSelectors)
       .filter(Boolean) // Exclude empty selectors, if any
       .join(",");
-    while ($safeFind(jointSelector).length > 0) {
-      if (cancel()) {
-        return;
+    const poll = () => {
+      if (cancel() || $safeFind(jointSelector).length === 0) {
+        return true;
       }
 
       console.debug(
         `Custom navigation rule detected that page is still loading: ${url}`
       );
-      // eslint-disable-next-line no-await-in-loop -- looping to allow for sleep
-      await sleep(WAIT_LOADED_INTERVAL_MS);
-    }
+    };
+
+    await pollUntilTruthy(poll, {
+      intervalMillis: WAIT_LOADED_INTERVAL_MS,
+    });
   }
 }
 
