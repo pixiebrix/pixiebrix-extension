@@ -44,7 +44,8 @@ function useInstallState(
   elements: FormState[]
 ): InstallState {
   const {
-    tabState: { navSequence, meta, error },
+    error,
+    tabState: { navSequence, meta },
   } = useContext(PageEditorTabContext);
 
   const [availableInstalledIds, availableInstalledIdsLoading] = useAsyncState(
