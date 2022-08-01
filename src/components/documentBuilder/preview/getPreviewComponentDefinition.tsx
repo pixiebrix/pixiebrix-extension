@@ -20,23 +20,19 @@ import {
   DocumentComponent,
   DocumentElement,
   DynamicPath,
-  PreviewComponentProps,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { get } from "lodash";
 import { UnknownObject } from "@/types";
-import { isExpression } from "@/runtime/mapArgs";
-import cx from "classnames";
-import React from "react";
 import { getComponentDefinition } from "@/components/documentBuilder/documentTree";
 import Unknown from "./elementsPreview/Unknown";
 import Basic from "./elementsPreview/Basic";
 import Image from "./elementsPreview/Image";
 import Container from "./elementsPreview/Container";
-import Flaps from "./flaps/Flaps";
 import Card from "./elementsPreview/Card";
 import { produce } from "immer";
 import Pipeline from "./elementsPreview/Pipeline";
 import Button from "./elementsPreview/Button";
+import List from "./elementsPreview/List";
 
 // Bookkeeping trace paths for preview is not necessary. But, we need to provide a value for the previews that use
 // getComponentDefinition under the hood
@@ -159,43 +155,7 @@ function getPreviewComponentDefinition(
     }
 
     case "list": {
-      const arrayValue = isExpression(config.array)
-        ? config.array.__value__
-        : String(config.array);
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        children,
-        className,
-        isHovered,
-        isActive,
-        documentBodyName,
-        elementName,
-        ...restPreviewProps
-      }) => (
-        <div
-          className={cx(
-            className,
-            documentTreeStyles.container,
-            documentTreeStyles.listContainer
-          )}
-          {...restPreviewProps}
-        >
-          <Flaps
-            className={documentTreeStyles.flapShiftUp}
-            elementType={element.type}
-            documentBodyName={documentBodyName}
-            elementName={elementName}
-            isHovered={isHovered}
-            isActive={isActive}
-          />
-          <div className="text-muted">List: {arrayValue}</div>
-          <div className="text-muted">
-            Element key: @{config.elementKey || "element"}
-          </div>
-          {children}
-        </div>
-      );
-
-      return { Component: PreviewComponent };
+      return { Component: List, props: { element } };
     }
 
     default: {
