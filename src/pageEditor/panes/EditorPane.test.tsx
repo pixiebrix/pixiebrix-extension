@@ -211,9 +211,9 @@ async function addABlock(addButton: Element, blockName: string) {
   });
 
   await immediateUserEvent.click(
-    screen.getAllByRole("button", {
+    screen.getByRole("button", {
       name: /^Add/,
-    })[0]
+    })
   );
 
   // Run validation
