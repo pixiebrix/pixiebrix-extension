@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents -- TODO: The rule is right, but is this used for documentation? */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *

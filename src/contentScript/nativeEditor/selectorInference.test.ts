@@ -33,7 +33,6 @@ import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace -- It's a global namespace
   namespace jest {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Must exist
     interface Matchers<R> {
       toFindSelector(selector: string): CustomMatcherResult;
     }

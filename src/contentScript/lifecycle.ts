@@ -40,8 +40,8 @@ import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 
 let _initialLoadNavigation = true;
 let _scriptPromise: Promise<void> | undefined;
-const _dynamic: Map<UUID, IExtensionPoint> = new Map();
-const _frameHref: Map<number, string> = new Map();
+const _dynamic = new Map<UUID, IExtensionPoint>();
+const _frameHref = new Map<number, string>();
 let _extensionPoints: IExtensionPoint[];
 let _navSequence = 1;
 const _installedExtensionPoints: IExtensionPoint[] = [];

@@ -34,8 +34,8 @@ import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree
 
 type PreviewState = {
   isRunning: boolean;
-  output: unknown | null;
-  error: unknown | null;
+  output: unknown;
+  error: unknown;
 };
 
 const initialState: PreviewState = {

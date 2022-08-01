@@ -36,8 +36,8 @@ export function hasBranchPrefix(
 ): boolean {
   return prefix.every(
     (branch, index) =>
-      // eslint-disable-next-line security/detect-object-injection -- index is a number
-      index < record.branches.length && isEqual(branch, record.branches[index])
+      index < record.branches.length &&
+      isEqual(branch, record.branches.at(index))
   );
 }
 
