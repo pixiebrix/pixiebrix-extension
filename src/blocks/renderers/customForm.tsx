@@ -34,7 +34,6 @@ import notify from "@/utils/notify";
 import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import ImageCropStylesheet from "@/blocks/renderers/ImageCropStylesheet";
-// eslint-disable-next-line import/no-named-as-default -- need default export here
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import ErrorBoundary from "@/components/ErrorBoundary";

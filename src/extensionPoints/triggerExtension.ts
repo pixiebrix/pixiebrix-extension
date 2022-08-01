@@ -229,7 +229,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
    */
   // XXX: does this need to be a set? Shouldn't there only ever be 1 trigger since the trigger is defined on the
   // extension point?
-  private readonly installedEvents: Set<string> = new Set();
+  private readonly installedEvents = new Set<string>();
 
   /**
    * A bound version of eventHandler

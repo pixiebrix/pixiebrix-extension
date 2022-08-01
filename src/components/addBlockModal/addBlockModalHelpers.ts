@@ -45,6 +45,5 @@ export function getItemKey({
     return resultIndex;
   }
 
-  // eslint-disable-next-line security/detect-object-injection -- index is a number
-  return blockOptions[resultIndex]?.value;
+  return blockOptions.at(resultIndex)?.value;
 }

@@ -19,7 +19,6 @@ import React from "react";
 import { Schema } from "@/core";
 import { render } from "@testing-library/react";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
-// eslint-disable-next-line import/no-named-as-default -- need default export here
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
