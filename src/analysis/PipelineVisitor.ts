@@ -172,7 +172,6 @@ class PipelineVisitor {
     }
   }
 
-  /* eslint-disable @typescript-eslint/no-unused-vars -- for the args in methods, subclass will override */
   public async visitExpression(
     position: AbsolutePosition,
     expression: Expression<unknown>,

@@ -43,7 +43,6 @@ jest.mock("@/hooks/useRefresh", () => ({
 }));
 
 jest.mock("@/background/util", () => ({
-  // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
   forEachTab: jest.fn().mockResolvedValue(undefined),
 }));
 
@@ -66,10 +65,8 @@ jest.mock("@/contentScript/messenger/api", () => ({
 
 jest.mock("@/background/messenger/api", () => ({
   traces: {
-    // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
     clear: jest.fn().mockResolvedValue(undefined),
   },
-  // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
   uninstallContextMenu: jest.fn().mockResolvedValue(undefined),
   contextMenus: {
     preload: jest.fn(),
@@ -290,7 +287,6 @@ describe("updateDeployments", () => {
       uninstallAllDeployments: jest.fn(),
     }));
 
-    // eslint-disable-next-line import/dynamic-import-chunkname -- test code
     const { uninstallAllDeployments } = await import("@/background/deployment");
 
     await updateDeployments();

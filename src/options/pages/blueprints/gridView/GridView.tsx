@@ -96,8 +96,7 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
 
   const getItemSize = useCallback(
     (index: number): number => {
-      // eslint-disable-next-line security/detect-object-injection
-      const row = expandedGridRows[index];
+      const row = expandedGridRows.at(index);
       return "isGrouped" in row ? HEADER_ROW_HEIGHT_PX : CARD_HEIGHT_PX;
     },
     [expandedGridRows]
@@ -113,8 +112,7 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
 
   const GridRow = useCallback(
     ({ index, style }) => {
-      // eslint-disable-next-line security/detect-object-injection
-      const gridRow = expandedGridRows[index];
+      const gridRow = expandedGridRows.at(index);
 
       if ("isGrouped" in gridRow) {
         tableInstance.prepareRow(gridRow);

@@ -291,8 +291,7 @@ const extensionsSlice = createSlice({
 
       // eslint-disable-next-line security/detect-object-injection -- index is number
       state.extensions[index] = {
-        // eslint-disable-next-line security/detect-object-injection -- index is number
-        ...state.extensions[index],
+        ...state.extensions.at(index),
         ...extensionUpdate,
       };
     },

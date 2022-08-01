@@ -263,7 +263,7 @@ describe("SchemaField", () => {
     ${expressionValue("nunjucks", "def")}  | ${"Text"}     | ${"Array"}    | ${[]}
     ${expressionValue("var", "abc")}       | ${"Variable"} | ${"Object"}   | ${{}}
   `(
-    "Test field toggle transition from $inputMode to $toggleOption",
+    "field toggle transition from $inputMode to $toggleOption",
     async ({ startValue, toggleOption, expectedEndValue }) => {
       const initialState = {
         apiVersion: "v3",

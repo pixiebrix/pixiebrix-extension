@@ -27,7 +27,6 @@ beforeEach(() => {
 
 describe("@pixiebrix/state/get", () => {
   test("default to blueprint state", async () => {
-    // eslint-disable-next-line import/dynamic-import-chunkname -- test file
     const { GetPageState } = await import("@/blocks/effects/pageState");
 
     const brick = new GetPageState();
@@ -41,7 +40,6 @@ describe("@pixiebrix/state/get", () => {
 
 describe("@pixiebrix/state/set", () => {
   test("shallow merge", async () => {
-    // eslint-disable-next-line import/dynamic-import-chunkname -- test file
     const { SetPageState } = await import("@/blocks/effects/pageState");
 
     const brick = new SetPageState();
@@ -64,7 +62,6 @@ describe("@pixiebrix/state/set", () => {
   });
 
   test("deep merge does not append array elements", async () => {
-    // eslint-disable-next-line import/dynamic-import-chunkname -- test file
     const { SetPageState } = await import("@/blocks/effects/pageState");
 
     const brick = new SetPageState();
@@ -112,7 +109,6 @@ describe("@pixiebrix/state/set", () => {
 
 describe("set and get", () => {
   test("default to blueprint state", async () => {
-    // eslint-disable-next-line import/dynamic-import-chunkname -- test file
     const { GetPageState, SetPageState } = await import(
       "@/blocks/effects/pageState"
     );
@@ -148,7 +144,6 @@ describe("set and get", () => {
   });
 
   test("default to shared if not part of blueprint", async () => {
-    // eslint-disable-next-line import/dynamic-import-chunkname -- test file
     const { GetPageState, SetPageState } = await import(
       "@/blocks/effects/pageState"
     );
