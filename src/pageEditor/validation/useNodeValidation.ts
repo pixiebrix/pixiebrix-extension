@@ -27,6 +27,7 @@ import { UUID } from "@/core";
 /**
  * Synchronizes the active node Redux and Formik states
  * @param blockFieldName the name (path) of the block in the Formik state
+ * @deprecated Use analysis instead
  */
 function useNodeValidation(blockFieldName: string, nodeId: UUID) {
   const dispatch = useDispatch();

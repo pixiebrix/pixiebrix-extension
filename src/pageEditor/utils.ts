@@ -34,6 +34,8 @@ import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 import Retry from "@/blocks/transformers/controlFlow/Retry";
 import { castArray, get } from "lodash";
 import { DocumentRenderer } from "@/blocks/renderers/document";
+import { Annotation } from "@/analysis/analysisTypes";
+import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
 
 export async function getCurrentURL(): Promise<string> {
   if (!browser.devtools) {
@@ -255,4 +257,28 @@ export function traversePipeline({
       }
     }
   }
+}
+
+export function getBlockAnnotations(
+  blockPath: string,
+  annotations: Annotation[]
+): Annotation[] {
+  const relativeBlockPath = blockPath.slice(
+    PIPELINE_BLOCKS_FIELD_NAME.length + 1
+  );
+  const pathLength = relativeBlockPath.length;
+
+  const relatedAnnotations = annotations.filter((annotation) =>
+    annotation.position.path.startsWith(relativeBlockPath)
+  );
+  const ownAnnotations = relatedAnnotations.filter((annotation) => {
+    const restPath = annotation.position.path.slice(pathLength);
+    // XXX: this may be not a reliable way to determine if the annotation
+    // is owned by the block or its sub pipeline.
+    // It assumes that it's only the pipeline field that can have a ".__value__" followed by "." in the path,
+    // and a pipeline field always has this pattern in its path.
+    return !restPath.includes(".__value__.");
+  });
+
+  return ownAnnotations;
 }

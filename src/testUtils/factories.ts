@@ -296,29 +296,34 @@ export const blockFactory = define<IBlock>({
   run: jest.fn(),
 });
 
+export const typedBlockFactory = async (
+  partialBlock: FactoryConfig<IBlock>
+) => {
+  const block = blockFactory(partialBlock);
+  return {
+    block,
+    type: await getType(block),
+  };
+};
+
 export const blocksMapFactory: (
-  blockProps?: Partial<IBlock> | Array<Partial<IBlock>>
+  blockProps?: FactoryConfig<IBlock> | Array<FactoryConfig<IBlock>>
 ) => Promise<TypedBlockMap> = async (blockProps) => {
-  const blocks: IBlock[] = [];
+  const typedBlocks: TypedBlock[] = [];
   if (Array.isArray(blockProps)) {
-    for (const partialBlock of blockProps) {
-      blocks.push(blockFactory(partialBlock));
+    for await (const partialBlock of blockProps) {
+      typedBlocks.push(await typedBlockFactory(partialBlock));
     }
   } else {
-    blocks.push(blockFactory(blockProps), blockFactory(blockProps));
+    typedBlocks.push(
+      await typedBlockFactory(blockProps),
+      await typedBlockFactory(blockProps)
+    );
   }
 
-  const map = new Map<RegistryId, TypedBlock>();
-
-  for (const block of blocks) {
-    map.set(block.id, {
-      block,
-      // eslint-disable-next-line no-await-in-loop -- test code, no performance considerations
-      type: await getType(block),
-    });
-  }
-
-  return map;
+  return new Map(
+    typedBlocks.map((typedBlock) => [typedBlock.block.id, typedBlock])
+  );
 };
 
 export const blockConfigFactory = define<BlockConfig>({

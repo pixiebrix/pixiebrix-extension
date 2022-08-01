@@ -15,13 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createListenerMiddleware } from "@reduxjs/toolkit";
-import BlockTypeValidator from "./blockTypeValidator";
-import RenderersValidator from "./renderersValidator";
+import { UUID } from "@/core";
+import { AnalysisRootState, Annotation } from "./analysisTypes";
 
-const validationListenerMiddleware = createListenerMiddleware();
+// Serves to avoid creating new arrays and ensure reference equality for empty annotations
+const emptyAnnotations = Object.freeze([]) as Annotation[];
 
-validationListenerMiddleware.startListening(new RenderersValidator());
-validationListenerMiddleware.startListening(new BlockTypeValidator());
-
-export default validationListenerMiddleware.middleware;
+export function selectExtensionAnnotations(
+  extensionId: UUID
+): (state: AnalysisRootState) => Annotation[] {
+  return ({ analysis }: AnalysisRootState) =>
+    // eslint-disable-next-line security/detect-object-injection -- extensionId is supposed to be UUID, not from user input
+    analysis.extensionAnnotations[extensionId] ?? emptyAnnotations;
+}
