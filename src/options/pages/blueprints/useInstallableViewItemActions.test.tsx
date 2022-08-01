@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// eslint-disable-next-line @typescript-eslint/triple-slash-reference -- test file
 /// <reference types="jest-extended" />
 
 import { renderHook } from "@testing-library/react-hooks";

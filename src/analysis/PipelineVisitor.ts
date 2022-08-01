@@ -187,7 +187,6 @@ class PipelineVisitor {
   ): Promise<void> {
     // NOP
   }
-  /* eslint-enable @typescript-eslint/no-unused-vars -- for the args in methods, subclass will override */
 
   public async visitPipeline(
     position: AbsolutePosition,

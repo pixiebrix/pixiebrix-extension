@@ -127,7 +127,7 @@ const getFormattedType = (definition: Schema) => {
     return `${format}`;
   }
 
-  return type ? type : "unknown";
+  return type ?? "unknown";
 };
 
 const getFormattedData = (schema: Schema): SchemaTreeRow[] => {
