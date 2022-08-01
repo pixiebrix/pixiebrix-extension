@@ -47,13 +47,8 @@ export function useAuthOptions(): [AuthOption[], () => void] {
   // Using readRawConfigurations instead of the store for now so that we can refresh the list independent of the
   // redux store. (The option may have been added in a different tab). At some point, we'll need parts of the redux
   // store to reload if it's changed on another tab
-  const [
-    configuredServices,
-    isLocalLoading,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- clarify which state values ignoring for now
-    _localError,
-    refreshLocal,
-  ] = useAsyncState<RawServiceConfiguration[]>(readRawConfigurations);
+  const [configuredServices, isLocalLoading, _localError, refreshLocal] =
+    useAsyncState<RawServiceConfiguration[]>(readRawConfigurations);
 
   const {
     data: remoteAuths,

@@ -85,8 +85,7 @@ export class GoogleSheetsLookup extends Transformer {
     }
 
     const rows = response.valueRanges?.[0].values.slice(1);
-    // eslint-disable-next-line security/detect-object-injection -- is number
-    const matchData = rows.filter((x) => x[columnIndex] === query);
+    const matchData = rows.filter((x) => x.at(columnIndex) === query);
     const matchRecords = matchData.map((row) =>
       Object.fromEntries(
         zip(headers, row).filter(([rowHeader]) => !isNullOrBlank(rowHeader))

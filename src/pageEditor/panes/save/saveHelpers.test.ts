@@ -747,7 +747,7 @@ describe("buildRecipe", () => {
     ${1}                | ${2}
     ${2}                | ${2}
   `(
-    "Test recipe with $cleanExtensionCount clean, and $dirtyExtensionCount changed/dirty extensions",
+    "recipe with $cleanExtensionCount clean, and $dirtyExtensionCount changed/dirty extensions",
     async ({
       cleanExtensionCount,
       dirtyExtensionCount,

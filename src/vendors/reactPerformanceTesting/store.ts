@@ -29,13 +29,11 @@ export const getDefaultStore = () => ({
       hasRenderTime: !Proxy,
     },
     {
-      // eslint-disable-next-line accessor-pairs -- imported code
       renderCount: {
         set(value: boolean) {
           this.hasRenderCount = value;
         },
       },
-      // eslint-disable-next-line accessor-pairs -- imported code
       renderTime: {
         set(value: boolean) {
           this.hasRenderTime = value;

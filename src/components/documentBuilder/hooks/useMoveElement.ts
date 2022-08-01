@@ -31,8 +31,7 @@ export function arrayMove(
   fromIndex: number,
   toIndex: number
 ): void {
-  // eslint-disable-next-line security/detect-object-injection -- number type
-  const element = array[fromIndex];
+  const element = array.at(fromIndex);
   array.splice(fromIndex, 1);
   array.splice(toIndex, 0, element);
 }
