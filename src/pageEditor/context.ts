@@ -124,7 +124,9 @@ async function connectToFrame(): Promise<FrameConnectionState> {
   let frameworks: FrameworkMeta[] = [];
   try {
     console.debug("connectToFrame: detecting frameworks");
-    frameworks = await pTimeout(detectFrameworks(thisTab, null), 500);
+    frameworks = await pTimeout(detectFrameworks(thisTab, null), {
+      milliseconds: 500,
+    });
   } catch (error) {
     console.debug("connectToFrame: error detecting frameworks", {
       error,

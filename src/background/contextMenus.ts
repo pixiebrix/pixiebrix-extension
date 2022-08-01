@@ -80,11 +80,10 @@ async function dispatchMenu(
   console.time("ensureContentScript");
 
   // Using the context menu gives temporary access to the page
-  await pTimeout(
-    ensureContentScript(target),
-    CONTEXT_SCRIPT_INSTALL_MS,
-    `contentScript for context menu handler not ready in ${CONTEXT_SCRIPT_INSTALL_MS}ms`
-  );
+  await pTimeout(ensureContentScript(target), {
+    milliseconds: CONTEXT_SCRIPT_INSTALL_MS,
+    message: `contentScript for context menu handler not ready in ${CONTEXT_SCRIPT_INSTALL_MS}ms`,
+  });
 
   console.timeEnd("ensureContentScript");
 
