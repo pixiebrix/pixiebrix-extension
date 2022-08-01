@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import ExtensionUrlPatternAnalysis from "@/analysis/analysisVisitors/extensionUrlPatternAnalysis";
 import OutputKeyAnalysis from "@/analysis/analysisVisitors/outputKeyAnalysis";
 import TemplateAnalysis from "@/analysis/analysisVisitors/templateAnalysis";
 import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
 import EditorManager from "@/analysis/editorManager";
 import { UUID } from "@/core";
 import { TraceRecord } from "@/telemetry/trace";
-import { PayloadAction } from "@reduxjs/toolkit";
+import { AnyAction, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./pageEditorTypes";
 import { selectActiveElement } from "./slices/editorSelectors";
 import { editorSlice } from "./slices/editorSlice";
@@ -56,5 +57,16 @@ analysisManager.registerAnalysisEffect(() => new OutputKeyAnalysis(), {
 analysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
   actionCreator: editorSlice.actions.editElement,
 });
+
+// Registering the template validation
+analysisManager.registerAnalysisEffect(
+  (action: AnyAction, state: RootState) => {
+    const activeElement = selectActiveElement(state);
+    return new ExtensionUrlPatternAnalysis(activeElement);
+  },
+  {
+    actionCreator: editorSlice.actions.editElement,
+  }
+);
 
 export default analysisManager;
