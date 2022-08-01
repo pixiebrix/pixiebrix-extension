@@ -212,7 +212,7 @@ async function addABlock(addButton: Element, blockName: string) {
 
   await immediateUserEvent.click(
     screen.getAllByRole("button", {
-      name: /add/i,
+      name: /^Add/,
     })[0]
   );
 
