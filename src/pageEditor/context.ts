@@ -154,10 +154,10 @@ export function useDevConnection(): Context {
     setLastUpdate(Date.now());
   }, []);
 
-  useAsyncEffect(async (isActive) => {
+  useAsyncEffect(async (isMounted) => {
     await onContextInvalidated();
 
-    if (!isActive()) {
+    if (!isMounted()) {
       return;
     }
 
@@ -171,11 +171,11 @@ export function useDevConnection(): Context {
 
   // Automatically connect on load
   useAsyncEffect(
-    async (isActive) => {
+    async (isMounted) => {
       setConnecting(true);
       const tabState = await connectToFrame();
       setConnecting(false);
-      if (isActive()) {
+      if (isMounted()) {
         setTabState(tabState);
       }
     },
