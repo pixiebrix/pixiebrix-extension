@@ -87,7 +87,7 @@ export function useTabEventListener<TValue>(
 /** Thinnest possible wrapper around native events */
 type SimpleEventListener<Detail> = (detail: Detail) => void;
 export class SimpleEventTarget<Detail> extends EventTarget {
-  private readonly coreEvent = "DEFAULT";
+  coreEvent = "DEFAULT";
   private readonly weakEvents = new WeakMap();
 
   // Permanently map simplified callbacks to native listeners.
