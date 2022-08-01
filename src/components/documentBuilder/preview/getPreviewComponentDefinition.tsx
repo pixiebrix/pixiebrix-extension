@@ -114,7 +114,7 @@ function getPreviewComponentDefinition(
 
     case "card": {
       const previewElement = produce(element, (draft) => {
-        draft.config.bodyProps = { className: documentTreeStyles.container };
+        draft.config.bodyClassName = documentTreeStyles.container;
       });
 
       const documentComponent = getComponentDefinition(
