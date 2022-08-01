@@ -20,7 +20,6 @@ import {
   DocumentComponent,
   DocumentElement,
   DynamicPath,
-  PipelineDocumentConfig,
   PreviewComponentProps,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { get } from "lodash";
@@ -28,9 +27,7 @@ import { UnknownObject } from "@/types";
 import { isExpression } from "@/runtime/mapArgs";
 import cx from "classnames";
 import React from "react";
-import { Button } from "react-bootstrap";
 import { getComponentDefinition } from "@/components/documentBuilder/documentTree";
-import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import Unknown from "./elementsPreview/Unknown";
 import Basic from "./elementsPreview/Basic";
 import Image from "./elementsPreview/Image";
@@ -38,6 +35,8 @@ import Container from "./elementsPreview/Container";
 import Flaps from "./flaps/Flaps";
 import Card from "./elementsPreview/Card";
 import { produce } from "immer";
+import Pipeline from "./elementsPreview/Pipeline";
+import Button from "./elementsPreview/Button";
 
 // Bookkeeping trace paths for preview is not necessary. But, we need to provide a value for the previews that use
 // getComponentDefinition under the hood
@@ -138,74 +137,25 @@ function getPreviewComponentDefinition(
     }
 
     case "pipeline": {
-      const { pipeline } = config as PipelineDocumentConfig;
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        className,
-        isHovered,
-        isActive,
-        documentBodyName,
-        elementName,
-        ...restPreviewProps
-      }) => (
-        <div
-          className={cx(documentTreeStyles.shiftRightWrapper, className)}
-          {...restPreviewProps}
-        >
-          <Flaps
-            className={documentTreeStyles.flapShiftRight}
-            elementType={element.type}
-            documentBodyName={documentBodyName}
-            elementName={elementName}
-            isHovered={isHovered}
-            isActive={isActive}
-          />
-          <h3>{elementTypeLabels.pipeline}</h3>
-          {pipeline.__value__.map(({ id }) => (
-            <p key={id}>{id}</p>
-          ))}
-        </div>
-      );
-
-      return { Component: PreviewComponent };
+      return {
+        Component: Pipeline,
+        props: {
+          element,
+        },
+      };
     }
 
     case "button": {
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        className,
-        isHovered,
-        isActive,
-        documentBodyName,
-        elementName,
-        ...restPreviewProps
-      }) => {
-        // Destructure disabled from button props. If the button is disabled in the preview the user can't select it
-        // to configure the button
-        const { title, onClick, disabled, ...buttonProps } = config;
-        filterCssClassesForPreview(buttonProps);
+      const buttonProps = { ...config };
+      filterCssClassesForPreview(buttonProps);
 
-        return (
-          <div>
-            <div
-              className={cx(className, documentTreeStyles.inlineWrapper)}
-              {...restPreviewProps}
-            >
-              <Flaps
-                className={documentTreeStyles.flapShiftRight}
-                elementType={element.type}
-                documentBodyName={documentBodyName}
-                elementName={elementName}
-                isHovered={isHovered}
-                isActive={isActive}
-              />
-              <Button onClick={() => {}} {...buttonProps}>
-                {title}
-              </Button>
-            </div>
-          </div>
-        );
+      return {
+        Component: Button,
+        props: {
+          element,
+          buttonProps,
+        },
       };
-
-      return { Component: PreviewComponent };
     }
 
     case "list": {
