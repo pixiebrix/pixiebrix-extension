@@ -34,8 +34,6 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 import { set } from "lodash";
-import { joinPathParts } from "@/utils";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -102,11 +100,7 @@ const EditorPane: React.VFC = () => {
     const errors = {};
 
     for (const annotation of annotations) {
-      set(
-        errors,
-        joinPathParts(PIPELINE_BLOCKS_FIELD_NAME, annotation.position.path),
-        annotation.message
-      );
+      set(errors, annotation.position.path, annotation.message);
     }
 
     return errors;

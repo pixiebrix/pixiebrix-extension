@@ -259,17 +259,23 @@ export function traversePipeline({
   }
 }
 
+export function getFoundationNodeAnnotations(
+  annotations: Annotation[]
+): Annotation[] {
+  return annotations.filter(
+    (annotation) =>
+      !annotation.position.path.startsWith(PIPELINE_BLOCKS_FIELD_NAME)
+  );
+}
+
 export function getBlockAnnotations(
   blockPath: string,
   annotations: Annotation[]
 ): Annotation[] {
-  const relativeBlockPath = blockPath.slice(
-    PIPELINE_BLOCKS_FIELD_NAME.length + 1
-  );
-  const pathLength = relativeBlockPath.length;
+  const pathLength = blockPath.length;
 
   const relatedAnnotations = annotations.filter((annotation) =>
-    annotation.position.path.startsWith(relativeBlockPath)
+    annotation.position.path.startsWith(blockPath)
   );
   const ownAnnotations = relatedAnnotations.filter((annotation) => {
     const restPath = annotation.position.path.slice(pathLength);

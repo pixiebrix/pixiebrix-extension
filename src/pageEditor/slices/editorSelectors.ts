@@ -31,7 +31,6 @@ import {
   TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
 export const selectActiveElementId = ({ editor }: EditorRootState) =>
   editor.activeElementId;
@@ -271,12 +270,8 @@ const selectAnnotationsForPathSelector = createSelector(
     (state, path: string) => path,
   ],
   (extensionAnnotations, path) => {
-    const relativeBlockPath = path.startsWith(PIPELINE_BLOCKS_FIELD_NAME)
-      ? path.slice(PIPELINE_BLOCKS_FIELD_NAME.length + 1)
-      : path;
-
     const pathAnnotations = extensionAnnotations.filter(
-      (x) => x.position.path === relativeBlockPath
+      (x) => x.position.path === path
     );
 
     return pathAnnotations;

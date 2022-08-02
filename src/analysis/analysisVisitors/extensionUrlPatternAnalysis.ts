@@ -32,7 +32,6 @@ class ExtensionUrlPatternAnalysis implements Analysis {
   constructor(private readonly extension: FormState) {}
 
   public visitExtension(): void {
-    console.log("ExtensionUrlPatternAnalysis visitExtension");
     const { urlPatterns } =
       this.extension.extensionPoint.definition.isAvailable;
     if (urlPatterns == null || urlPatterns.length === 0) {
