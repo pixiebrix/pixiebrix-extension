@@ -23,7 +23,7 @@ import { DEFAULT_THEME } from "@/options/types";
 import { isValidTheme } from "@/utils/themeUtils";
 import { RegistryId } from "@/core";
 
-const initialSettingsState: SettingsState = {
+export const initialSettingsState: SettingsState = {
   mode: "remote",
   nextUpdate: null as number,
   suggestElements: false,
@@ -31,6 +31,7 @@ const initialSettingsState: SettingsState = {
   partnerId: null,
   authServiceId: null,
   theme: DEFAULT_THEME,
+  updatePromptTimestamp: null,
 };
 
 const settingsSlice = createSlice({
@@ -69,6 +70,15 @@ const settingsSlice = createSlice({
       { payload: { serviceId } }: { payload: { serviceId: RegistryId } }
     ) {
       state.authServiceId = serviceId;
+    },
+    recordUpdatePromptTimestamp(state) {
+      // Don't overwrite the old timestamp
+      if (state.updatePromptTimestamp == null) {
+        state.updatePromptTimestamp = Date.now();
+      }
+    },
+    resetUpdatePromptTimestamp(state) {
+      state.updatePromptTimestamp = null;
     },
     setTheme(state, { payload: { theme } }: { payload: { theme: string } }) {
       if (isValidTheme(theme)) {

@@ -36,7 +36,7 @@ import {
   mapBotInput,
   selectBotOutput,
 } from "@/contrib/automationanywhere/aaUtils";
-import { sleep } from "@/utils";
+import { pollUntilTruthy, sleep } from "@/utils";
 import {
   CommunityBotArgs,
   EnterpriseBotArgs,
@@ -178,8 +178,7 @@ export async function runCommunityBot({
     method: "post",
     data: {
       fileId,
-      // https://apeople.automationanywhere.com/s/question/0D56F00008YEOjSSAX/how-to-pass-input-values-while-triggering-the-bot-through-control-room-api-?language=en_US
-      botVariables: mapBotInput(data),
+      botInput: mapBotInput(data),
       currentUserDeviceId: deviceId,
       scheduleType: "INSTANT",
     },
@@ -220,14 +219,11 @@ export async function pollEnterpriseResult({
   deploymentId: string;
   logger: Logger;
 }) {
-  const start = Date.now();
+  const poll = async () => {
+    // Sleep first because it's unlikely it will be completed immediately after the running the bot
+    await sleep(POLL_MILLIS);
 
-  // Sleep first because it's unlikely it will be completed immediately after the running the bot
-  await sleep(POLL_MILLIS);
-
-  do {
-    // // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-progress.html
-    // eslint-disable-next-line no-await-in-loop -- polling for response
+    // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-progress.html
     const { data: activityList } = await proxyService<ListResponse<Activity>>(
       service,
       {
@@ -275,10 +271,16 @@ export async function pollEnterpriseResult({
       });
       throw new BusinessError("Automation Anywhere run failed");
     }
+  };
 
-    // eslint-disable-next-line no-await-in-loop -- polling for response
-    await sleep(POLL_MILLIS);
-  } while (Date.now() - start < MAX_WAIT_MILLIS);
+  const result = await pollUntilTruthy(poll, {
+    intervalMillis: 0, // Already covered by the inline `sleep`
+    maxWaitMillis: MAX_WAIT_MILLIS,
+  });
+
+  if (result) {
+    return result;
+  }
 
   throw new BusinessError(
     `Bot did not finish in ${MAX_WAIT_MILLIS / 1000} seconds`

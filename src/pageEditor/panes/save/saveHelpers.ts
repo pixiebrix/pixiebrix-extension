@@ -202,8 +202,7 @@ export function replaceRecipeExtension(
     if (hasInnerExtensionPoint) {
       const extensionPointConfig = adapter.selectExtensionPoint(element);
 
-      // eslint-disable-next-line security/detect-object-injection -- false positive for number
-      const originalInnerId = sourceRecipe.extensionPoints[index].id;
+      const originalInnerId = sourceRecipe.extensionPoints.at(index).id;
       let newInnerId = originalInnerId;
 
       if (

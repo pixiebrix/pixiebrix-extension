@@ -21,7 +21,7 @@ import { Button, Form, Table } from "react-bootstrap";
 import { SafeString, Schema } from "@/core";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { isEmpty } from "lodash";
-import { useField, useFormikContext } from "formik";
+import { FieldValidator, useField, useFormikContext } from "formik";
 import { produce } from "immer";
 import { freshIdentifier, joinName } from "@/utils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
@@ -35,6 +35,7 @@ type PropertyRowProps = {
   onDelete?: () => void;
   onRename?: (newName: string) => void;
   isRequired?: boolean;
+  validate?: FieldValidator;
 };
 
 type RowProps = {
@@ -66,13 +67,12 @@ const CompositePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
 
 const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   readOnly,
-  onDelete,
   onRename,
   schema,
   isRequired,
-  ...props
+  name,
 }) => {
-  const [field] = useField(props);
+  const [field] = useField(name);
 
   const updateName = useCallback(
     ({ target }: React.FocusEvent<HTMLInputElement>) => {
@@ -91,7 +91,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
           readOnly={readOnly}
           defaultValue={currentProperty}
           onBlur={updateName}
-          data-testid={`${props.name}-name`}
+          data-testid={`${name}-name`}
         />
       </td>
       <td>

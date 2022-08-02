@@ -113,6 +113,7 @@ export const authStateFactory = define<AuthState>({
   isLoggedIn: true,
   isOnboarded: true,
   extension: true,
+  enforceUpdateMillis: null,
   organizations() {
     return [
       organizationFactory({
@@ -295,23 +296,34 @@ export const blockFactory = define<IBlock>({
   run: jest.fn(),
 });
 
+export const typedBlockFactory = async (
+  partialBlock: FactoryConfig<IBlock>
+) => {
+  const block = blockFactory(partialBlock);
+  return {
+    block,
+    type: await getType(block),
+  };
+};
+
 export const blocksMapFactory: (
-  blockProps?: Partial<IBlock>
+  blockProps?: FactoryConfig<IBlock> | Array<FactoryConfig<IBlock>>
 ) => Promise<TypedBlockMap> = async (blockProps) => {
-  const block1 = blockFactory(blockProps);
-  const block2 = blockFactory(blockProps);
-
-  const map = new Map<RegistryId, TypedBlock>();
-
-  for (const block of [block1, block2]) {
-    map.set(block.id, {
-      block,
-      // eslint-disable-next-line no-await-in-loop -- test code, no performance considerations
-      type: await getType(block),
-    });
+  const typedBlocks: TypedBlock[] = [];
+  if (Array.isArray(blockProps)) {
+    for await (const partialBlock of blockProps) {
+      typedBlocks.push(await typedBlockFactory(partialBlock));
+    }
+  } else {
+    typedBlocks.push(
+      await typedBlockFactory(blockProps),
+      await typedBlockFactory(blockProps)
+    );
   }
 
-  return map;
+  return new Map(
+    typedBlocks.map((typedBlock) => [typedBlock.block.id, typedBlock])
+  );
 };
 
 export const blockConfigFactory = define<BlockConfig>({
@@ -368,7 +380,7 @@ export const extensionPointDefinitionFactory = define<ExtensionPointDefinition>(
       }),
     definition(n: number) {
       const definition: ExtensionPointConfigDefinition = {
-        type: "menuItem",
+        type: "menuItem" as ExtensionPointType,
         isAvailable: {
           matchPatterns: [`https://www.mySite${n}.com/*`],
         },
@@ -548,7 +560,11 @@ const internalFormStateFactory = define<FormState>({
   type: "panel" as ExtensionPointType,
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
-  extensionPoint: extensionPointDefinitionFactory,
+  extensionPoint: derive<FormState, ExtensionPointDefinition>(({ type }) => {
+    const extensionPoint = extensionPointDefinitionFactory();
+    extensionPoint.definition.type = type;
+    return extensionPoint;
+  }, "type"),
 } as any);
 
 export const formStateFactory = (

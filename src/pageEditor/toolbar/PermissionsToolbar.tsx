@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { Button, ButtonGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
@@ -23,15 +23,20 @@ import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { ensureAllPermissions, extensionPermissions } from "@/permissions";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { Permissions } from "webextension-polyfill";
-import { useAsyncEffect } from "use-async-effect";
 import { useDebounce } from "use-debounce";
 import notify from "@/utils/notify";
 import { containsPermissions } from "@/background/messenger/api";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { useAsyncState } from "@/hooks/common";
 
 type PermissionsState = {
   hasPermissions: boolean;
   permissions: Permissions.Permissions;
+};
+
+const defaultState = {
+  hasPermissions: true,
+  permissions: {},
 };
 
 const PERMISSION_UPDATE_MILLIS = 200;
@@ -40,65 +45,53 @@ const PermissionsToolbar: React.FunctionComponent<{
   element: FormState;
   disabled: boolean;
 }> = ({ element, disabled }) => {
-  const [state, setState] = useState<PermissionsState>({
-    hasPermissions: true,
-    permissions: {},
-  });
-
   const [debouncedElement] = useDebounce(element, PERMISSION_UPDATE_MILLIS, {
     leading: false,
     trailing: true,
   });
 
-  const detectPermissions = useCallback(
-    async (element: FormState, disabled: boolean) => {
-      if (disabled) {
-        return;
-      }
+  const [
+    // We use defaultState as
+    // 1. initial state before the permissions are fetched
+    // 2. state in case of error; if the async callback fails, we fallback to this default permissions
+    { hasPermissions, permissions } = defaultState,
+    isLoadingPermissions,
+    ,
+    reloadPermissions,
+  ] = useAsyncState<PermissionsState>(async () => {
+    const adapter = ADAPTERS.get(debouncedElement.type);
+    const { extension, extensionPoint: extensionPointConfig } =
+      adapter.asDynamicElement(debouncedElement);
+    const extensionPoint = extensionPointFactory(extensionPointConfig);
 
-      const { asDynamicElement: factory } = ADAPTERS.get(element.type);
-      const { extension, extensionPoint: extensionPointConfig } =
-        factory(element);
-      const extensionPoint = extensionPointFactory(extensionPointConfig);
+    const permissions = await extensionPermissions(extension, {
+      extensionPoint,
+    });
 
-      // We don't want the extension point availability because we already have access to it on the page
-      // because the user is using the devtools. We can request additional permissions on save
-      const permissions = await extensionPermissions(extension, {
-        extensionPoint,
-        includeExtensionPoint: false,
-      });
+    console.debug("Checking for extension permissions", {
+      extension,
+      permissions,
+    });
 
-      console.debug("Checking for extension permissions", {
-        extension,
-        permissions,
-      });
+    const hasPermissions = await containsPermissions(permissions);
 
-      const hasPermissions = await containsPermissions(permissions);
-      setState({ permissions, hasPermissions });
-    },
-    [setState]
-  );
-
-  useAsyncEffect(async () => {
-    if (!disabled) {
-      await detectPermissions(debouncedElement, disabled);
-    }
-  }, [debouncedElement, disabled]);
+    return { hasPermissions, permissions };
+  }, [debouncedElement]);
 
   const request = useCallback(async () => {
-    if (await ensureAllPermissions(state.permissions)) {
+    if (await ensureAllPermissions(permissions)) {
       notify.success("Granted additional permissions");
-      await detectPermissions(debouncedElement, disabled);
+      await reloadPermissions();
     } else {
       notify.info("You declined the additional required permissions");
     }
-  }, [state.permissions, detectPermissions, debouncedElement, disabled]);
+  }, [permissions, reloadPermissions]);
 
   return (
     <ButtonGroup>
-      {!state.hasPermissions && (
+      {!hasPermissions && (
         <Button
-          disabled={disabled}
+          disabled={disabled || isLoadingPermissions}
           onClick={request}
           size="sm"
           variant="primary"

@@ -17,23 +17,26 @@
 
 import { RecipeMetadata, RegistryId, UUID } from "@/core";
 import { createSelector } from "reselect";
-import { EditorState } from "@/pageEditor/pageEditorTypes";
+import {
+  EditorRootState,
+  ModalKey,
+  RootState,
+} from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { flatMap, isEmpty, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
   ElementUIState,
-  NodeUIState,
+  ErrorMap,
   TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
-import { BlockConfig } from "@/blocks/types";
+import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
+import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
-type RootState = { editor: EditorState };
-
-export const selectActiveElementId = ({ editor }: RootState) =>
+export const selectActiveElementId = ({ editor }: EditorRootState) =>
   editor.activeElementId;
 
-export const selectElements = ({ editor }: RootState) => editor.elements;
+export const selectElements = ({ editor }: EditorRootState) => editor.elements;
 
 export const selectActiveElement = createSelector(
   selectActiveElementId,
@@ -42,25 +45,25 @@ export const selectActiveElement = createSelector(
     elements.find((x) => x.uuid === activeElementId)
 );
 
-export const selectActiveRecipeId = ({ editor }: RootState) =>
+export const selectActiveRecipeId = ({ editor }: EditorRootState) =>
   editor.activeRecipeId;
 
 export const selectShowV3UpgradeMessageForActiveElement = createSelector(
   selectActiveElementId,
-  (state: RootState) => state.editor.showV3UpgradeMessageByElement,
+  ({ editor }: EditorRootState) => editor.showV3UpgradeMessageByElement,
   (activeElementId, showV3UpgradeMessageByElement) =>
     // eslint-disable-next-line security/detect-object-injection -- using an internally-looked-up uuid
     showV3UpgradeMessageByElement[activeElementId] ?? false
 );
 
-export const selectDirty = (state: RootState) => state.editor.dirty;
+export const selectDirty = ({ editor }: EditorRootState) => editor.dirty;
 
-export const selectDirtyRecipeOptions = (state: RootState) =>
-  state.editor.dirtyRecipeOptionsById;
+export const selectDirtyRecipeOptions = ({ editor }: EditorRootState) =>
+  editor.dirtyRecipeOptionsById;
 
 const dirtyOptionsForRecipeIdSelector = createSelector(
   selectDirtyRecipeOptions,
-  (state: RootState, recipeId: RegistryId) => recipeId,
+  (state: EditorRootState, recipeId: RegistryId) => recipeId,
   (dirtyRecipeOptionsById, recipeId) =>
     // eslint-disable-next-line security/detect-object-injection
     dirtyRecipeOptionsById[recipeId]
@@ -70,12 +73,12 @@ export const selectDirtyOptionsForRecipeId =
   (recipeId: RegistryId) => (state: RootState) =>
     dirtyOptionsForRecipeIdSelector(state, recipeId);
 
-export const selectDirtyRecipeMetadata = (state: RootState) =>
-  state.editor.dirtyRecipeMetadataById;
+export const selectDirtyRecipeMetadata = ({ editor }: EditorRootState) =>
+  editor.dirtyRecipeMetadataById;
 
 const dirtyMetadataForRecipeIdSelector = createSelector(
   selectDirtyRecipeMetadata,
-  (state: RootState, recipeId: RegistryId) => recipeId,
+  (state: EditorRootState, recipeId: RegistryId) => recipeId,
   (dirtyRecipeMetadataById, recipeId) =>
     // eslint-disable-next-line security/detect-object-injection
     dirtyRecipeMetadataById[recipeId]
@@ -85,14 +88,12 @@ export const selectDirtyMetadataForRecipeId =
   (recipeId: RegistryId) => (state: RootState) =>
     dirtyMetadataForRecipeIdSelector(state, recipeId);
 
-export const selectDeletedElements = (state: RootState) =>
-  state.editor.deletedElementsByRecipeId;
+export const selectDeletedElements = ({ editor }: EditorRootState) =>
+  editor.deletedElementsByRecipeId;
 
-export const selectAllDeletedElementIds = (state: RootState) =>
+export const selectAllDeletedElementIds = ({ editor }: EditorRootState) =>
   new Set(
-    flatMap(state.editor.deletedElementsByRecipeId).map(
-      (formState) => formState.uuid
-    )
+    flatMap(editor.deletedElementsByRecipeId).map((formState) => formState.uuid)
   );
 
 const elementIsDirtySelector = createSelector(
@@ -109,11 +110,11 @@ const recipeIsDirtySelector = createSelector(
   selectDirty,
   dirtyOptionsForRecipeIdSelector,
   dirtyMetadataForRecipeIdSelector,
-  (state: RootState, recipeId: RegistryId) =>
+  (state: EditorRootState, recipeId: RegistryId) =>
     // eslint-disable-next-line security/detect-object-injection
     selectDeletedElements(state)[recipeId],
-  (state: RootState, recipeId: RegistryId) =>
-    state.editor.elements
+  ({ editor }: EditorRootState, recipeId: RegistryId) =>
+    editor.elements
       .filter((element) => element.recipe?.id === recipeId)
       .map((element) => element.uuid),
   (
@@ -138,20 +139,24 @@ const recipeIsDirtySelector = createSelector(
 );
 
 export const selectRecipeIsDirty =
-  (recipeId?: RegistryId) => (state: RootState) =>
+  (recipeId?: RegistryId) => (state: EditorRootState) =>
     Boolean(recipeId) && recipeIsDirtySelector(state, recipeId);
 
-export const selectIsAddToRecipeModalVisible = (state: RootState) =>
-  state.editor.isAddToRecipeModalVisible;
+export const selectIsAddToRecipeModalVisible = ({ editor }: EditorRootState) =>
+  editor.visibleModalKey === ModalKey.ADD_TO_RECIPE;
 
-export const selectIsRemoveFromRecipeModalVisible = (state: RootState) =>
-  state.editor.isRemoveFromRecipeModalVisible;
+export const selectIsAddBlockModalVisible = ({ editor }: EditorRootState) =>
+  editor.visibleModalKey === ModalKey.ADD_BLOCK;
 
-export const selectIsSaveAsNewRecipeModalVisible = (state: RootState) =>
-  state.editor.isSaveAsNewRecipeModalVisible;
-
-export const selectIsCreateRecipeModalVisible = (state: RootState) =>
-  state.editor.isCreateRecipeModalVisible;
+export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
+  isAddToRecipeModalVisible: editor.visibleModalKey === ModalKey.ADD_TO_RECIPE,
+  isRemoveFromRecipeModalVisible:
+    editor.visibleModalKey === ModalKey.REMOVE_FROM_RECIPE,
+  isSaveAsNewRecipeModalVisible:
+    editor.visibleModalKey === ModalKey.SAVE_AS_NEW_RECIPE,
+  isCreateRecipeModalVisible: editor.visibleModalKey === ModalKey.CREATE_RECIPE,
+  isAddBlockModalVisible: editor.visibleModalKey === ModalKey.ADD_BLOCK,
+});
 
 export const selectInstalledRecipeMetadatas = createSelector(
   selectElements,
@@ -171,40 +176,39 @@ export const selectInstalledRecipeMetadatas = createSelector(
   }
 );
 
-export const selectSelectionSeq = (state: RootState) =>
-  state.editor.selectionSeq;
+export const selectSelectionSeq = ({ editor }: EditorRootState) =>
+  editor.selectionSeq;
 
-export const selectNewRecipeIds = (state: RootState) =>
-  state.editor.newRecipeIds;
+export const selectNewRecipeIds = ({ editor }: EditorRootState) =>
+  editor.newRecipeIds;
 
-export const selectKeepLocalCopyOnCreateRecipe = (state: RootState) =>
-  state.editor.keepLocalCopyOnCreateRecipe;
+export const selectKeepLocalCopyOnCreateRecipe = ({
+  editor,
+}: EditorRootState) => editor.keepLocalCopyOnCreateRecipe;
 
-export const selectExpandedRecipeId = (state: RootState) =>
-  state.editor.expandedRecipeId;
+export const selectExpandedRecipeId = ({ editor }: EditorRootState) =>
+  editor.expandedRecipeId;
 
 // UI state
-export function selectActiveElementUIState(
-  rootState: RootState
-): ElementUIState {
-  return rootState.editor.elementUIStates[rootState.editor.activeElementId];
+export function selectActiveElementUIState({
+  editor,
+}: EditorRootState): ElementUIState {
+  return editor.elementUIStates[editor.activeElementId];
 }
 
-export const selectActiveNodeUIState: (rootState: RootState) => NodeUIState =
-  createSelector(
-    selectActiveElementUIState,
-    (elementUIState) => elementUIState.nodeUIStates[elementUIState.activeNodeId]
-  );
+export const selectActiveNodeUIState = createSelector(
+  selectActiveElementUIState,
+  (elementUIState) => elementUIState.nodeUIStates[elementUIState.activeNodeId]
+);
 
-export const selectActiveNodeId: (rootState: RootState) => UUID =
-  createSelector(
-    selectActiveElementUIState,
-    (elementUIState) => elementUIState.activeNodeId
-  );
+export const selectActiveNodeId = createSelector(
+  selectActiveElementUIState,
+  (elementUIState) => elementUIState.activeNodeId
+);
 
 export const selectPipelineMap = createSelector(
   selectActiveElementUIState,
-  (uiState: ElementUIState) => uiState.pipelineMap
+  (uiState: ElementUIState) => uiState?.pipelineMap
 );
 
 export const selectActiveNodeInfo = createSelector(
@@ -214,18 +218,20 @@ export const selectActiveNodeInfo = createSelector(
     uiState.pipelineMap[activeNodeId]
 );
 
-export const selectActiveNode: (rootState: RootState) => BlockConfig =
-  createSelector(selectActiveNodeInfo, (nodeInfo) => nodeInfo.blockConfig);
+export const selectActiveNode = createSelector(
+  selectActiveNodeInfo,
+  (nodeInfo) => nodeInfo.blockConfig
+);
 
 export const selectNodeDataPanelTabSelected: (
-  rootState: RootState
+  rootState: EditorRootState
 ) => DataPanelTabKey = createSelector(
   selectActiveNodeUIState,
   (nodeUIState) => nodeUIState.dataPanel.activeTabKey
 );
 
 export function selectNodeDataPanelTabState(
-  rootState: RootState,
+  rootState: EditorRootState,
   tabKey: DataPanelTabKey
 ): TabUIState {
   const nodeUIState = selectActiveNodeUIState(rootState);
@@ -236,7 +242,50 @@ export function selectNodeDataPanelTabState(
 /**
  * Selects the activeElement of the Document or Form builder on the Preview tab
  */
-export function selectNodePreviewActiveElement(rootState: RootState): string {
-  return selectNodeDataPanelTabState(rootState, DataPanelTabKey.Preview)
+export function selectNodePreviewActiveElement(state: EditorRootState): string {
+  return selectNodeDataPanelTabState(state, DataPanelTabKey.Preview)
     .activeElement;
 }
+
+export const selectErrorMap = createSelector(
+  selectActiveElementUIState,
+  (uiState: ElementUIState) => uiState.errorMap
+);
+
+export const selectActiveNodeError = createSelector(
+  selectErrorMap,
+  selectActiveNodeId,
+  // eslint-disable-next-line security/detect-object-injection -- activeNodeId is supposed to be UUID, not from user input
+  (errorMap: ErrorMap, activeNodeId: UUID) => errorMap[activeNodeId]
+);
+
+export const selectAddBlockLocation = ({ editor }: RootState) =>
+  editor.addBlockLocation;
+
+const selectAnnotationsForPathSelector = createSelector(
+  [
+    (state: RootState) => {
+      const activeElementId = selectActiveElementId(state);
+      return selectExtensionAnnotations(activeElementId)(state);
+    },
+    (state, path: string) => path,
+  ],
+  (extensionAnnotations, path) => {
+    const relativeBlockPath = path.startsWith(PIPELINE_BLOCKS_FIELD_NAME)
+      ? path.slice(PIPELINE_BLOCKS_FIELD_NAME.length + 1)
+      : path;
+
+    const pathAnnotations = extensionAnnotations.filter(
+      (x) => x.position.path === relativeBlockPath
+    );
+
+    return pathAnnotations;
+  }
+);
+
+/**
+ * Selects the annotations for the given path
+ * @param path A path relative to the root of the extension or root pipeline
+ */
+export const selectAnnotationsForPath = (path: string) => (state: RootState) =>
+  selectAnnotationsForPathSelector(state, path);

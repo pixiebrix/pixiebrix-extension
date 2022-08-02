@@ -29,12 +29,13 @@ import {
   isListElement,
   isPipelineElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
-import { joinElementName } from "@/components/documentBuilder/utils";
+import { joinName, joinPathParts } from "@/utils";
 import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 import Retry from "@/blocks/transformers/controlFlow/Retry";
 import { castArray, get } from "lodash";
-import { joinName } from "@/utils";
 import { DocumentRenderer } from "@/blocks/renderers/document";
+import { Annotation } from "@/analysis/analysisTypes";
+import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
 
 export async function getCurrentURL(): Promise<string> {
   if (!browser.devtools) {
@@ -95,6 +96,21 @@ export function getPipelinePropNames(block: BlockConfig): string[] {
   }
 }
 
+export function getPipelineInputKeyPropName(
+  blockId: RegistryId,
+  pipelinePropName: string
+): string | undefined {
+  if (blockId === ForEach.BLOCK_ID && pipelinePropName === "body") {
+    return "elementKey";
+  }
+
+  if (blockId === TryExcept.BLOCK_ID && pipelinePropName === "except") {
+    return "errorKey";
+  }
+
+  return undefined;
+}
+
 /**
  * Returns Formik path names to pipeline expressions
  * @param parentPath the parent Formik path
@@ -111,20 +127,20 @@ function getElementsPipelinePropNames(
     const index = isArray ? elementIndex : null;
 
     if (isButtonElement(element)) {
-      propNames.push(joinElementName(parentPath, index, "config", "onClick"));
+      propNames.push(joinPathParts(parentPath, index, "config", "onClick"));
     } else if (isPipelineElement(element)) {
-      propNames.push(joinElementName(parentPath, index, "config", "pipeline"));
+      propNames.push(joinPathParts(parentPath, index, "config", "pipeline"));
     } else if (isListElement(element)) {
       propNames.push(
         ...getElementsPipelinePropNames(
-          joinElementName(parentPath, index, "config", "element", "__value__"),
+          joinPathParts(parentPath, index, "config", "element", "__value__"),
           element.config.element.__value__
         )
       );
     } else if (element.children?.length > 0) {
       propNames.push(
         ...getElementsPipelinePropNames(
-          joinElementName(parentPath, index, "children"),
+          joinPathParts(parentPath, index, "children"),
           element.children
         )
       );
@@ -142,10 +158,11 @@ export function getDocumentPipelinePaths(block: BlockConfig): string[] {
 }
 
 type TraversePipelineArgs = {
-  blockPipeline: BlockPipeline;
-  blockPipelinePath?: string;
-  parentNodeId?: UUID | null;
-  visitBlock: BlockAction;
+  pipeline: BlockPipeline;
+  pipelinePath?: string;
+  parentNode?: BlockConfig | null;
+  visitBlock?: BlockAction;
+  visitPipeline?: VisitPipeline;
   preVisitSubPipeline?: PreVisitSubPipeline;
 };
 
@@ -158,38 +175,55 @@ type BlockAction = (blockInfo: {
   parentNodeId: UUID | null;
 }) => void;
 
+type VisitPipeline = (pipelineInfo: {
+  pipeline: BlockPipeline;
+  pipelinePath: string;
+  parentNode?: BlockConfig | null;
+}) => void;
+
 type PreVisitSubPipeline = (subPipelineInfo: {
   parentBlock: BlockConfig;
   subPipelineProperty: string;
 }) => void;
 
-function getDocumentSubPipelineProperties(blockConfig: BlockConfig) {
+function getDocumentSubPipelineProperties(blockConfig: BlockConfig): string[] {
   return getDocumentPipelinePaths(blockConfig);
 }
 
-function getBlockSubPipelineProperties(blockConfig: BlockConfig) {
+function getBlockSubPipelineProperties(blockConfig: BlockConfig): string[] {
   return getPipelinePropNames(blockConfig).map((subPipelineField) =>
     joinName("config", subPipelineField)
   );
 }
 
 export function traversePipeline({
-  blockPipeline,
-  blockPipelinePath = "",
-  parentNodeId = null,
+  pipeline,
+  pipelinePath = "",
+  parentNode = null,
   visitBlock,
+  visitPipeline,
   preVisitSubPipeline,
 }: TraversePipelineArgs) {
-  for (const [index, blockConfig] of Object.entries(blockPipeline)) {
-    const fieldName = joinName(blockPipelinePath, index);
-    visitBlock({
-      blockConfig,
-      index: Number(index),
-      path: fieldName,
-      pipelinePath: blockPipelinePath,
-      pipeline: blockPipeline,
-      parentNodeId,
+  if (visitPipeline) {
+    visitPipeline({
+      pipeline,
+      pipelinePath,
+      parentNode,
     });
+  }
+
+  for (const [index, blockConfig] of Object.entries(pipeline)) {
+    const fieldName = joinName(pipelinePath, index);
+    if (visitBlock) {
+      visitBlock({
+        blockConfig,
+        index: Number(index),
+        path: fieldName,
+        pipelinePath,
+        pipeline,
+        parentNodeId: parentNode?.instanceId ?? null,
+      });
+    }
 
     const subPipelineProperties =
       blockConfig.id === DocumentRenderer.BLOCK_ID
@@ -204,7 +238,7 @@ export function traversePipeline({
         });
       }
 
-      const subPipelineAccessor = joinElementName(
+      const subPipelineAccessor = joinPathParts(
         subPipelineProperty,
         "__value__"
       );
@@ -213,13 +247,38 @@ export function traversePipeline({
 
       if (subPipeline?.length > 0) {
         traversePipeline({
-          blockPipeline: subPipeline,
-          blockPipelinePath: joinElementName(fieldName, subPipelineAccessor),
-          parentNodeId: blockConfig.instanceId,
+          pipeline: subPipeline,
+          pipelinePath: joinPathParts(fieldName, subPipelineAccessor),
+          parentNode: blockConfig,
           visitBlock,
+          visitPipeline,
           preVisitSubPipeline,
         });
       }
     }
   }
+}
+
+export function getBlockAnnotations(
+  blockPath: string,
+  annotations: Annotation[]
+): Annotation[] {
+  const relativeBlockPath = blockPath.slice(
+    PIPELINE_BLOCKS_FIELD_NAME.length + 1
+  );
+  const pathLength = relativeBlockPath.length;
+
+  const relatedAnnotations = annotations.filter((annotation) =>
+    annotation.position.path.startsWith(relativeBlockPath)
+  );
+  const ownAnnotations = relatedAnnotations.filter((annotation) => {
+    const restPath = annotation.position.path.slice(pathLength);
+    // XXX: this may be not a reliable way to determine if the annotation
+    // is owned by the block or its sub pipeline.
+    // It assumes that it's only the pipeline field that can have a ".__value__" followed by "." in the path,
+    // and a pipeline field always has this pattern in its path.
+    return !restPath.includes(".__value__.");
+  });
+
+  return ownAnnotations;
 }

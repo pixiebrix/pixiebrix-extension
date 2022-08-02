@@ -16,6 +16,7 @@
  */
 
 import React, {
+  KeyboardEventHandler,
   useCallback,
   useContext,
   useEffect,
@@ -35,6 +36,10 @@ import {
   getToggleOptions,
   isKeyStringField,
 } from "@/components/fields/schemaFields/getToggleOptions";
+import useUndo from "@/hooks/useUndo";
+
+const TEMPLATE_ERROR_MESSAGE =
+  "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";
 
 function schemaSupportsTemplates(schema: Schema): boolean {
   const options = getToggleOptions({
@@ -57,6 +62,7 @@ function isVarValue(value: string): boolean {
 const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   name,
   schema,
+  validationSchema,
   isRequired,
   label,
   description,
@@ -68,7 +74,19 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   focusInput,
   ...formControlProps
 }) => {
-  const [{ value, ...restInputProps }, , { setValue }] = useField(name);
+  const [{ value, ...restInputProps }, , { setValue }] = useField({
+    name,
+    validate(value) {
+      if (
+        isTemplateExpression(value) &&
+        value.__type__ !== "mustache" &&
+        isMustacheOnly(value.__value__)
+      ) {
+        return TEMPLATE_ERROR_MESSAGE;
+      }
+    },
+  });
+
   const { allowExpressions: allowExpressionsContext } =
     useContext(FieldRuntimeContext);
   const allowExpressions = allowExpressionsContext && !isKeyStringField(schema);
@@ -108,6 +126,14 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     () => schemaSupportsTemplates(schema),
     [schema]
   );
+
+  const undo = useUndo(value, setValue);
+
+  const keyDownHandler: KeyboardEventHandler<HTMLTextAreaElement> = (event) => {
+    if ((event.ctrlKey || event.metaKey) && event.key === "z") {
+      undo();
+    }
+  };
 
   const onChangeForTemplate = useCallback(
     (templateEngine: TemplateEngine) => {
@@ -190,6 +216,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
       value={fieldInputValue}
       onChange={fieldOnChange}
       ref={textAreaRef}
+      onKeyDown={keyDownHandler}
     />
   );
 };

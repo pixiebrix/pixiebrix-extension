@@ -28,7 +28,7 @@ describe("traversePipeline", () => {
     const pipeline = pipelineFactory();
     const visitBlock = jest.fn();
 
-    traversePipeline({ blockPipeline: pipeline, visitBlock });
+    traversePipeline({ pipeline, visitBlock });
 
     expect(visitBlock).toHaveBeenCalledTimes(pipeline.length);
     expect(visitBlock).toHaveBeenCalledWith({
@@ -62,7 +62,7 @@ describe("traversePipeline", () => {
 
     const visitBlock = jest.fn();
 
-    traversePipeline({ blockPipeline: pipeline, visitBlock });
+    traversePipeline({ pipeline, visitBlock });
 
     expect(visitBlock).toHaveBeenCalledTimes(
       pipeline.length + subPipeline.length
@@ -107,7 +107,7 @@ describe("traversePipeline", () => {
     const preVisitSubPipeline = jest.fn();
 
     traversePipeline({
-      blockPipeline: pipeline,
+      pipeline,
       visitBlock,
       preVisitSubPipeline,
     });
@@ -133,7 +133,7 @@ describe("traversePipeline", () => {
       const visitBlock = jest.fn();
 
       traversePipeline({
-        blockPipeline: pipeline,
+        pipeline,
         visitBlock,
         preVisitSubPipeline: jest.fn(),
       });
@@ -158,7 +158,7 @@ describe("traversePipeline", () => {
 
     const visitBlock = jest.fn();
 
-    traversePipeline({ blockPipeline: pipeline, visitBlock });
+    traversePipeline({ pipeline, visitBlock });
     expect(visitBlock).toHaveBeenCalledTimes(2); // One Document brick and one brick in the pipeline
     expect(visitBlock).toHaveBeenCalledWith({
       blockConfig: documentBrick,
@@ -195,7 +195,7 @@ describe("traversePipeline", () => {
 
     const visitBlock = jest.fn();
 
-    traversePipeline({ blockPipeline: pipeline, visitBlock });
+    traversePipeline({ pipeline, visitBlock });
     expect(visitBlock).toHaveBeenCalledTimes(2); // One Document brick and one brick in the pipeline
     expect(visitBlock).toHaveBeenCalledWith({
       blockConfig: documentBrick,

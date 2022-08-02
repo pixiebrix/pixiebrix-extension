@@ -38,6 +38,7 @@ import {
   checkExtensionUpdateRequired,
   makeUpdatedFilter,
 } from "@/utils/deployment";
+import settingsSlice from "@/store/settingsSlice";
 
 const { actions } = extensionsSlice;
 
@@ -144,7 +145,7 @@ export type DeploymentState = {
   /**
    * The error if fetching available deployments failed, or undefined if loading/deployments were successfully fetched
    */
-  error: unknown | undefined;
+  error: unknown;
 };
 
 function useDeployments(): DeploymentState {
@@ -169,6 +170,10 @@ function useDeployments(): DeploymentState {
   }, [restrict, installedExtensions, deployments]);
 
   const handleUpdate = useCallback(async () => {
+    // Always reset. So even if there's an error, the user at least has a grace period before PixieBrix starts
+    // notifying them to update again
+    dispatch(settingsSlice.actions.resetUpdatePromptTimestamp());
+
     if (deployments == null) {
       notify.error("Deployments have not been fetched");
       return;

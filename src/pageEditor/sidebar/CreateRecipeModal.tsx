@@ -305,7 +305,7 @@ const CreateRecipeModal: React.VFC = () => {
   const formSchema = useFormSchema();
 
   const hideModal = useCallback(() => {
-    dispatch(editorActions.hideCreateRecipeModal());
+    dispatch(editorActions.hideModal());
   }, [dispatch]);
 
   const initialFormState = useInitialFormState({ activeElement, activeRecipe });

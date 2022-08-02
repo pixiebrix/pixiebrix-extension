@@ -50,7 +50,7 @@ const RemoveFromRecipeModal: React.VFC = () => {
 
   const dispatch = useDispatch();
   const hideModal = useCallback(() => {
-    dispatch(actions.hideRemoveFromRecipeModal());
+    dispatch(actions.hideModal());
   }, [dispatch]);
 
   const onSubmit = useCallback<OnSubmit<FormState>>(

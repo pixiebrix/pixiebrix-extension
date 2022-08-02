@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable promise/prefer-await-to-then -- TODO: This can probably be refactored to be more linear */
-
 import { castArray, pick } from "lodash";
 import { useCallback } from "react";
 import { useHistory } from "react-router";
@@ -102,37 +100,38 @@ function useSubmitBrick({
         });
 
         // We attach the handler below, and don't want it to block the save
-        let refreshPromise: Promise<void>;
-        if (kind === "recipe" && reinstallBlueprint) {
-          // TypeScript doesn't have enough information to kind === "recipe" distinguishes RecipeDefinition from
-          // Definition
-          const unsavedRecipeDefinition =
-            unsavedBrickJson as UnsavedRecipeDefinition;
-          refreshPromise = reinstall({
-            ...unsavedRecipeDefinition,
-            sharing: pick(data, ["organizations", "public"]),
-            ...pick(data, ["updated_at"]),
-          });
-        } else if (kind === "service") {
-          // Fetch the remote definitions, then clear the background page's service cache so it's forced to read the
-          // updated service definition.
-          refreshPromise = refresh().then(async () => clearServiceCache());
-        } else {
-          refreshPromise = refresh();
-        }
+        void (async () => {
+          try {
+            if (kind === "recipe" && reinstallBlueprint) {
+              // TypeScript doesn't have enough information to kind === "recipe" distinguishes RecipeDefinition from
+              // Definition
+              const unsavedRecipeDefinition =
+                unsavedBrickJson as UnsavedRecipeDefinition;
+              await reinstall({
+                ...unsavedRecipeDefinition,
+                sharing: pick(data, ["organizations", "public"]),
+                ...pick(data, ["updated_at"]),
+              });
+            } else {
+              await refresh();
+            }
 
-        notify.success(`${create ? "Created" : "Updated"} ${metadata.name}`);
+            if (kind === "service") {
+              // Flear the background page's service cache after refreshing so
+              // it's forced to read the updated service definition.
+              await clearServiceCache();
+            }
 
-        refreshPromise
-          .then(() => {
             reactivateEveryTab();
-          })
-          .catch((error) => {
+          } catch (error) {
             notify.warning({
               message: "Error re-activating bricks",
               error,
             });
-          });
+          }
+        })();
+
+        notify.success(`${create ? "Created" : "Updated"} ${metadata.name}`);
 
         // Reset initial values of the form so dirty=false
         resetForm({ values });

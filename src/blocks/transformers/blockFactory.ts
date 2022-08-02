@@ -121,7 +121,7 @@ class ExternalBlock extends Block {
 
   async inferType(): Promise<BlockType | null> {
     const pipeline = castArray(this.component.pipeline);
-    const last = pipeline[pipeline.length - 1];
+    const last = pipeline.at(-1);
 
     try {
       const block = await blockRegistry.lookup(last.id);

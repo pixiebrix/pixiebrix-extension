@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TextWidget renders empty widget 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <textarea
+      class="form-control"
+      defaulttype="string"
+      name="testField"
+      rows="1"
+    />
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;

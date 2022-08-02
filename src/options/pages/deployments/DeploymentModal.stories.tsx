@@ -41,6 +41,7 @@ const extensionsStore = configureStore({
     },
   },
 });
+import { authSlice } from "@/auth/authSlice";
 
 export default {
   title: "Options/DeploymentModal",
@@ -49,23 +50,42 @@ export default {
 
 type StoryType = ComponentProps<typeof DeploymentModal> & {
   updateAvailable?: boolean;
+  enforceUpdateMillis?: number | null;
+  updatePromptTimestamp?: number | null;
 };
 
-const Template: Story<StoryType> = ({ extensionUpdateRequired }) => (
-  <Provider store={extensionsStore}>
-    <DeploymentModal
-      update={async () => {
-        action("update");
-      }}
-      extensionUpdateRequired={extensionUpdateRequired}
-      updateExtension={async () => {
-        action("updateExtension");
-      }}
-    />
-  </Provider>
-);
+const Template: Story<StoryType> = ({
+  extensionUpdateRequired,
+  enforceUpdateMillis,
+  updatePromptTimestamp,
+}) => {
+  const extensionsStore = configureStore({
+    reducer: {
+      options: extensionsSlice.reducer,
+      settings: settingsSlice.reducer,
+      auth: authSlice.reducer,
+    },
+    preloadedState: {
+      options: extensionsSlice.getInitialState(),
+      settings: { ...settingsSlice.getInitialState(), updatePromptTimestamp },
+      auth: { ...authSlice.getInitialState(), enforceUpdateMillis },
+    },
+  });
 
-// TODO: add story for upgrade modal
+  return (
+    <Provider store={extensionsStore}>
+      <DeploymentModal
+        extensionUpdateRequired={extensionUpdateRequired}
+        update={async () => {
+          action("update");
+        }}
+        updateExtension={async () => {
+          action("updateExtension");
+        }}
+      />
+    </Provider>
+  );
+};
 
 export const ExtensionUpdateRequired = Template.bind({});
 ExtensionUpdateRequired.args = {

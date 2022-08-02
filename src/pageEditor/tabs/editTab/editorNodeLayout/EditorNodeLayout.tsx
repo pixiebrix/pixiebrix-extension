@@ -28,39 +28,42 @@ import { BlockPipeline, Branch } from "@/blocks/types";
 import {
   BrickNodeContentProps,
   BrickNodeProps,
-  FormikError,
   RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
-import { TraceError, TraceRecord } from "@/telemetry/trace";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
-import { IBlock, OutputKey, UUID } from "@/core";
+import { OutputKey, UUID } from "@/core";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveElement,
+  selectActiveNodeId,
+  selectErrorMap,
+  selectPipelineMap,
+} from "@/pageEditor/slices/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
-import { get, isEmpty, stubTrue } from "lodash";
+import { get, isEmpty } from "lodash";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import {
+  getBlockAnnotations,
   getDocumentPipelinePaths,
+  getPipelineInputKeyPropName,
   getPipelinePropNames,
 } from "@/pageEditor/utils";
-import { joinElementName } from "@/components/documentBuilder/utils";
-import { isNullOrBlank, joinName } from "@/utils";
+import { isNullOrBlank, joinName, joinPathParts } from "@/utils";
 import { NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
-import AddBrickAction from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/AddBrickAction";
-import PasteBrickAction from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/PasteBrickAction";
 import BrickIcon from "@/components/BrickIcon";
 import { Except } from "type-fest";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
-import { ExtensionPointType } from "@/extensionPoints/types";
-import {
-  IsBlockAllowedPredicate,
-  makeIsAllowedForRootPipeline,
-} from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
+import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
+import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
+import { getRootPipelineFlavor } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import { isExpression } from "@/runtime/mapArgs";
+import decideBlockStatus from "./decideBlockStatus";
+import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -70,18 +73,9 @@ type EditorNodeProps =
   | (PipelineFooterNodeProps & { type: "footer"; key: string });
 
 type EditorNodeLayoutProps = {
-  allBlocks: TypedBlockMap;
-  extensionPointType: ExtensionPointType;
   pipeline: BlockPipeline;
-  pipelineErrors: FormikError;
-  traceErrors: TraceError[];
   extensionPointLabel: string;
   extensionPointIcon: IconProp;
-  addBlock: (
-    block: IBlock,
-    pipelinePath: string,
-    pipelineIndex: number
-  ) => void;
   moveBlockUp: (instanceId: UUID) => void;
   moveBlockDown: (instanceId: UUID) => void;
   pasteBlock?: (pipelinePath: string, pipelineIndex: number) => void;
@@ -92,64 +86,23 @@ type SubPipeline = {
    * Label to show in the node layout
    */
   headerLabel: string;
-  /**
-   * The pipeline of blocks
-   */
+
   subPipeline: BlockPipeline;
+
   /**
    * Formik path to the pipeline
    */
   subPipelinePath: string;
-  /**
-   * Predicate determining if a given block is allowed in the pipeline.
-   */
-  // In the future, we may want to return a message explaining why the brick isn't allowed
-  isBlockAllowed: IsBlockAllowedPredicate;
+
+  subPipelineFlavor: PipelineFlavor;
+
+  subPipelineInputKey?: string;
 };
 
-function decideBrickStatus({
-  index,
-  pipelineErrors,
-  traceRecord,
-}: {
-  index: number;
-  pipelineErrors: FormikError;
-  traceRecord: TraceRecord;
-}): RunStatus {
-  // If blockPipelineErrors is a string, it means the error is on the pipeline level
-  // eslint-disable-next-line security/detect-object-injection -- index is a number
-  if (typeof pipelineErrors !== "string" && Boolean(pipelineErrors?.[index])) {
-    return RunStatus.ERROR;
-  }
-
-  if (traceRecord == null) {
-    return RunStatus.NONE;
-  }
-
-  if ("error" in traceRecord && traceRecord.error) {
-    return RunStatus.WARNING;
-  }
-
-  if (traceRecord?.skippedRun) {
-    return RunStatus.SKIPPED;
-  }
-
-  // We already checked for errors from pipelineErrors
-  if (traceRecord.isFinal) {
-    return RunStatus.SUCCESS;
-  }
-
-  return RunStatus.PENDING;
-}
-
 const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
-  allBlocks,
-  extensionPointType,
   pipeline,
-  pipelineErrors,
   extensionPointLabel,
   extensionPointIcon,
-  addBlock,
   moveBlockUp,
   moveBlockDown,
   pasteBlock,
@@ -157,8 +110,16 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   const dispatch = useDispatch();
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
   const showPaste = pasteBlock && isApiAtLeastV2;
+  const [allBlocks] = useAllBlocks();
+  const activeElement = useSelector(selectActiveElement);
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectExtensionTrace);
+  const pipelineMap = useSelector(selectPipelineMap);
+  const errors = useSelector(selectErrorMap);
+  const annotations = useSelector(
+    selectExtensionAnnotations(activeElement.uuid)
+  );
+  const extensionPointType = activeElement.type;
 
   const [collapsedState, setCollapsedState] = useState<Record<UUID, boolean>>(
     {}
@@ -174,24 +135,24 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
 
   let foundationRunStatus: RunStatus = RunStatus.NONE;
 
+  // eslint-disable-next-line complexity
   function mapPipelineToNodes({
     pipeline,
     pipelinePath = PIPELINE_BLOCKS_FIELD_NAME,
+    pipelineFlavor,
     nestingLevel = 0,
     parentIsActive = false,
-    isBlockAllowed = makeIsAllowedForRootPipeline(extensionPointType),
   }: {
     pipeline: BlockPipeline;
     pipelinePath?: string;
     nestingLevel?: number;
     parentIsActive?: boolean;
-    isBlockAllowed?: IsBlockAllowedPredicate;
+    pipelineFlavor?: PipelineFlavor;
   }): EditorNodeProps[] {
     const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
 
     const lastIndex = pipeline.length - 1;
-    // eslint-disable-next-line security/detect-object-injection -- just created the index
-    const lastBlockId = pipeline[lastIndex]?.id;
+    const lastBlockId = pipeline.at(lastIndex)?.id;
     const lastBlock = lastBlockId ? allBlocks.get(lastBlockId) : undefined;
     const showAppend = !lastBlock?.block || lastBlock.type !== "renderer";
 
@@ -244,12 +205,12 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
 
       if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
         for (const docPipelinePath of getDocumentPipelinePaths(blockConfig)) {
-          const subPipelineAccessor = joinElementName(
+          const subPipelineAccessor = joinPathParts(
             String(index),
             docPipelinePath,
             "__value__"
           );
-          const subPipelinePath = joinElementName(
+          const subPipelinePath = joinPathParts(
             pipelinePath,
             subPipelineAccessor
           );
@@ -258,32 +219,46 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           const propName = docPipelinePath.split(".").pop();
           const isButton = propName === "onClick";
           subPipelines.push({
+            headerLabel: isButton ? "button" : "brick",
             subPipeline,
             subPipelinePath,
-            headerLabel: isButton ? "button" : "brick",
-            isBlockAllowed: isButton
-              ? (block: TypedBlock) => block.type !== "renderer"
-              : stubTrue,
+            subPipelineFlavor: isButton
+              ? PipelineFlavor.NoRenderer
+              : PipelineFlavor.NoEffect,
           });
         }
       } else {
-        for (const propName of getPipelinePropNames(blockConfig)) {
+        for (const pipelinePropName of getPipelinePropNames(blockConfig)) {
+          const subPipelineConfigAccessor = [String(index), "config"];
           const subPipelineAccessor = [
-            String(index),
-            "config",
-            propName,
+            ...subPipelineConfigAccessor,
+            pipelinePropName,
             "__value__",
           ];
           const subPipelinePath = joinName(
             pipelinePath,
             ...subPipelineAccessor
           );
+          const inputKeyPropName = getPipelineInputKeyPropName(
+            blockConfig.id,
+            pipelinePropName
+          );
+          const inputKeyAccessor = [
+            ...subPipelineConfigAccessor,
+            inputKeyPropName,
+          ];
+          const inputKeyValue = get(pipeline, inputKeyAccessor);
+          const inputKey: string = inputKeyValue
+            ? isExpression(inputKeyValue)
+              ? inputKeyValue.__value__
+              : inputKeyValue
+            : undefined;
           subPipelines.push({
-            headerLabel: propName,
+            headerLabel: pipelinePropName,
             subPipeline: get(pipeline, subPipelineAccessor) ?? [],
             subPipelinePath,
-            // PixieBrix doesn't currently support renderers in control flow bricks
-            isBlockAllowed: (block) => block.type !== "renderer",
+            subPipelineFlavor: PipelineFlavor.NoRenderer,
+            subPipelineInputKey: inputKey,
           });
         }
       }
@@ -336,32 +311,35 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       const showAddMessage = showAddBlock && showBiggerActions;
 
       const brickNodeActions: NodeAction[] = [];
-      const nodeName: string = blockConfig.instanceId;
+      const nodeId = blockConfig.instanceId;
 
+      // TODO: Refactoring - remove code duplication in the node actions here
       if (showAddBlock) {
-        brickNodeActions.push(
-          <AddBrickAction
-            key={`${nodeName}-add`}
-            blocks={allBlocks}
-            isBlockAllowed={isBlockAllowed}
-            nodeName={nodeName}
-            onSelectBlock={(block) => {
-              addBlock(block, pipelinePath, index + 1);
-            }}
-          />
-        );
+        brickNodeActions.push({
+          name: `${nodeId}-add-brick`,
+          icon: faPlusCircle,
+          tooltipText: "Add a brick",
+          onClick() {
+            dispatch(
+              actions.showAddBlockModal({
+                path: pipelinePath,
+                flavor: pipelineFlavor,
+                index: index + 1,
+              })
+            );
+          },
+        });
       }
 
       if (showPaste) {
-        brickNodeActions.push(
-          <PasteBrickAction
-            key={`${nodeName}-add`}
-            nodeName={nodeName}
-            onClickPaste={() => {
-              pasteBlock(pipelinePath, index + 1);
-            }}
-          />
-        );
+        brickNodeActions.push({
+          name: `${nodeId}-paste-brick`,
+          icon: faPaste,
+          tooltipText: "Paste copied brick",
+          onClick() {
+            pasteBlock(pipelinePath, index + 1);
+          },
+        });
       }
 
       const trailingMessage = showAddMessage ? ADD_MESSAGE : undefined;
@@ -371,12 +349,20 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       };
 
       if (block) {
+        // eslint-disable-next-line security/detect-object-injection -- relying on nodeId being a UUID
+        const blockError = errors[nodeId];
+        const blockAnnotations = getBlockAnnotations(
+          // eslint-disable-next-line security/detect-object-injection -- relying on nodeId being a UUID
+          pipelineMap[nodeId].path,
+          annotations
+        );
+
         contentProps = {
           icon: <BrickIcon brick={block} size="2x" inheritColor />,
-          runStatus: decideBrickStatus({
-            index,
-            pipelineErrors,
+          runStatus: decideBlockStatus({
+            blockError,
             traceRecord,
+            blockAnnotations,
           }),
           brickLabel: isNullOrBlank(blockConfig.label)
             ? block?.name
@@ -415,38 +401,44 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           headerLabel,
           subPipeline,
           subPipelinePath,
-          isBlockAllowed: isBlockAllowedInPipeline,
+          subPipelineFlavor,
+          subPipelineInputKey,
         } of subPipelines) {
-          const nodeName = `${subPipelinePath}-header`;
+          const headerName = `${nodeId}-header`;
 
           const headerActions: NodeAction[] = [
-            <AddBrickAction
-              key={nodeName}
-              blocks={allBlocks}
-              isBlockAllowed={isBlockAllowedInPipeline}
-              nodeName={nodeName}
-              onSelectBlock={(block) => {
-                addBlock(block, subPipelinePath, 0);
-              }}
-            />,
+            {
+              name: `${headerName}-add-brick`,
+              icon: faPlusCircle,
+              tooltipText: "Add a brick",
+              onClick() {
+                dispatch(
+                  actions.showAddBlockModal({
+                    path: subPipelinePath,
+                    flavor: subPipelineFlavor,
+                    index: 0,
+                  })
+                );
+              },
+            },
           ];
 
           if (showPaste) {
-            headerActions.push(
-              <PasteBrickAction
-                key={nodeName}
-                nodeName={nodeName}
-                onClickPaste={() => {
-                  pasteBlock(subPipelinePath, 0);
-                }}
-              />
-            );
+            headerActions.push({
+              name: `${headerName}-paste-brick`,
+              icon: faPaste,
+              tooltipText: "Paste copied brick",
+              onClick() {
+                pasteBlock(subPipelinePath, 0);
+              },
+            });
           }
 
           const headerNodeProps: PipelineHeaderNodeProps = {
             headerLabel,
             nestingLevel,
             nodeActions: headerActions,
+            pipelineInputKey: subPipelineInputKey,
             active: nodeIsActive,
             nestedActive: parentIsActive,
           };
@@ -460,9 +452,9 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
             ...mapPipelineToNodes({
               pipeline: subPipeline,
               pipelinePath: subPipelinePath,
+              pipelineFlavor: subPipelineFlavor,
               nestingLevel: nestingLevel + 1,
               parentIsActive: nodeIsActive || parentIsActive,
-              isBlockAllowed: isBlockAllowedInPipeline,
             })
           );
         }
@@ -490,35 +482,43 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
     return nodes;
   }
 
+  const rootPipelineFlavor = getRootPipelineFlavor(extensionPointType);
   const foundationNodeActions: NodeAction[] = [
-    <AddBrickAction
-      key={`${FOUNDATION_NODE_ID}-add`}
-      blocks={allBlocks}
-      isBlockAllowed={makeIsAllowedForRootPipeline(extensionPointType)}
-      nodeName={FOUNDATION_NODE_ID}
-      onSelectBlock={(block) => {
-        addBlock(block, PIPELINE_BLOCKS_FIELD_NAME, 0);
-      }}
-    />,
+    {
+      name: `${FOUNDATION_NODE_ID}-add-brick`,
+      icon: faPlusCircle,
+      tooltipText: "Add a brick",
+      onClick() {
+        dispatch(
+          actions.showAddBlockModal({
+            path: PIPELINE_BLOCKS_FIELD_NAME,
+            flavor: rootPipelineFlavor,
+            index: 0,
+          })
+        );
+      },
+    },
   ];
 
   if (showPaste) {
-    foundationNodeActions.push(
-      <PasteBrickAction
-        key={`${FOUNDATION_NODE_ID}-paste`}
-        nodeName={FOUNDATION_NODE_ID}
-        onClickPaste={() => {
-          pasteBlock(PIPELINE_BLOCKS_FIELD_NAME, 0);
-        }}
-      />
-    );
+    foundationNodeActions.push({
+      name: `${FOUNDATION_NODE_ID}-paste-brick`,
+      icon: faPaste,
+      tooltipText: "Paste copied brick",
+      onClick() {
+        pasteBlock(PIPELINE_BLOCKS_FIELD_NAME, 0);
+      },
+    });
   }
 
   const showBiggerFoundationActions = isEmpty(pipeline);
 
   // It's important to run mapPipelineToNodes before adding the foundation node
   // because it will calculate foundationRunStatus for the foundation node
-  const nodes = mapPipelineToNodes({ pipeline });
+  const nodes = mapPipelineToNodes({
+    pipeline,
+    pipelineFlavor: rootPipelineFlavor,
+  });
   const foundationNodeProps: BrickNodeProps = {
     icon: extensionPointIcon,
     runStatus: foundationRunStatus,

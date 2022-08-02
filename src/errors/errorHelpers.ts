@@ -16,7 +16,7 @@
  */
 
 import { deserializeError, ErrorObject } from "serialize-error";
-import { isObject, matchesAnyPattern, smartAppendPeriod } from "@/utils";
+import { isObject, smartAppendPeriod } from "@/utils";
 import safeJsonStringify from "json-stringify-safe";
 import { truncate } from "lodash";
 import type { ContextError } from "@/errors/genericErrors";
@@ -37,13 +37,11 @@ const DEFAULT_ERROR_MESSAGE = "Unknown error";
 export const JQUERY_INVALID_SELECTOR_ERROR =
   "Syntax error, unrecognized expression: ";
 
-export const NO_TARGET_FOUND_CONNECTION_ERROR =
-  "Could not establish connection. Receiving end does not exist.";
-/** Browser Messenger API error message patterns */
-export const CONNECTION_ERROR_MESSAGES = [
-  NO_TARGET_FOUND_CONNECTION_ERROR,
-  "Extension context invalidated.",
-];
+/**
+ * Some APIs like runtime.sendMessage() and storage.get() will throw this error
+ * when the background page has been reloaded
+ */
+export const CONTEXT_INVALIDATED_ERROR = "Extension context invalidated.";
 
 /**
  * Errors to ignore unless they've caused extension point install or brick execution to fail.
@@ -59,13 +57,14 @@ export const IGNORED_ERROR_PATTERNS = [
   "ResizeObserver loop limit exceeded",
   "Promise was cancelled",
   "Uncaught Error: PixieBrix contentScript already installed",
+  "Could not establish connection. Receiving end does not exist.",
   "The frame was removed.",
   /No frame with id \d+ in tab \d+/,
   /^No tab with id/,
   "The tab was closed.",
   errorTabDoesntExist,
   errorTargetClosedEarly,
-  ...CONNECTION_ERROR_MESSAGES,
+  CONTEXT_INVALIDATED_ERROR,
 ];
 
 export function isErrorObject(error: unknown): error is ErrorObject {
@@ -105,6 +104,19 @@ export function selectSpecificError<
   }
 
   return selectSpecificError(error.cause, errorType);
+}
+
+/**
+ * Follows the `Error#cause` trail until the end or returns the supplied object as is.
+ *
+ * @deprecated Prefer `hasSpecificErrorCause` or `getErrorMessageWithCauses` if you're displaying it to the user
+ */
+export function getRootCause(error: unknown): unknown {
+  while (isErrorObject(error) && error.cause) {
+    error = error.cause;
+  }
+
+  return error;
 }
 
 export function hasSpecificErrorCause<
@@ -161,18 +173,6 @@ export function isClientRequestError(error: unknown): boolean {
 }
 
 /**
- * Return true if the proximate cause of event is a messaging error.
- *
- * NOTE: does not recursively identify the root cause of the error.
- */
-export function isConnectionError(possibleError: unknown): boolean {
-  return matchesAnyPattern(
-    getErrorMessage(possibleError),
-    CONNECTION_ERROR_MESSAGES
-  );
-}
-
-/**
  * Return an error message corresponding to an error.
  */
 export function getErrorMessage(
@@ -199,6 +199,14 @@ export function getErrorMessage(
     if (serverMessage) {
       return String(serverMessage);
     }
+  }
+
+  // @ts-expect-error -- We're checking if errors is there and if it's an array
+  if (Array.isArray(error.errors)) {
+    // @ts-expect-error -- error does have "errors" property
+    return error.errors
+      .filter((x: unknown) => typeof x === "string")
+      .join(". ");
   }
 
   return String(selectError(error).message ?? defaultMessage);
@@ -305,27 +313,25 @@ export function selectError(originalError: unknown): Error {
     return selectErrorFromRejectionEvent(originalError);
   }
 
-  const error = originalError;
-
-  if (error instanceof Error) {
-    return error;
+  if (originalError instanceof Error) {
+    return originalError;
   }
 
-  if (isErrorObject(error)) {
+  if (isErrorObject(originalError)) {
     // RTK has to store serialized error, so we can end up here (e.g. the error is thrown because of a call to unwrap)
-    return deserializeError(error);
+    return deserializeError(originalError);
   }
 
   console.warn("A non-Error was thrown", {
-    error,
+    error: originalError,
   });
 
   // Wrap error if an unknown primitive or object
   // e.g. `throw 'Error string message'`, which should never be written
-  const errorMessage = isObject(error)
+  const errorMessage = isObject(originalError)
     ? // Use safeJsonStringify vs. JSON.stringify because it handles circular references
-      safeJsonStringify(error)
-    : String(error);
+      safeJsonStringify(originalError)
+    : String(originalError);
 
   // Truncate error message in case it's an excessively-long JSON string
   return new Error(truncate(errorMessage, { length: 2000 }));

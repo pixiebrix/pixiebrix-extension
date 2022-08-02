@@ -17,8 +17,13 @@
 
 import { TypedBlock } from "@/blocks/registry";
 import { validateRegistryId } from "@/types/helpers";
-import { BlockType } from "@/runtime/runtimeTypes";
 import { ExtensionPointType } from "@/extensionPoints/types";
+import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
+import { stubTrue } from "lodash";
+import { BlockConfig } from "@/blocks/types";
+import { DocumentRenderer } from "@/blocks/renderers/document";
+import { BlockType } from "@/runtime/runtimeTypes";
+import { RegistryId } from "@/core";
 
 const PANEL_TYPES = ["actionPanel", "panel"];
 
@@ -30,13 +35,69 @@ const alwaysShow = new Set([
 
 export type IsBlockAllowedPredicate = (block: TypedBlock) => boolean;
 
-export function makeIsAllowedForRootPipeline(
-  extensionPointType: ExtensionPointType
-) {
-  const excludeType: BlockType = PANEL_TYPES.includes(extensionPointType)
-    ? "effect"
-    : "renderer";
+export function getRootPipelineFlavor(extensionPointType: ExtensionPointType) {
+  if (PANEL_TYPES.includes(extensionPointType)) {
+    return PipelineFlavor.NoEffect;
+  }
+
+  return PipelineFlavor.NoRenderer;
+}
+
+export function getSubPipelineFlavor(
+  parentNodeId: RegistryId,
+  pipelinePath: string
+): PipelineFlavor {
+  if (
+    parentNodeId === DocumentRenderer.BLOCK_ID &&
+    pipelinePath.split(".").at(-2) === "pipeline"
+  ) {
+    // Current pipeline is the Brick sub pipeline of a Document renderer.
+    // Since this sub pipeline is a renderer by itself, it should have no side effects
+    return PipelineFlavor.NoEffect;
+  }
+
+  return PipelineFlavor.NoRenderer;
+}
+
+type GetPipelineFlavorArgs = {
+  extensionPointType: ExtensionPointType;
+  pipelinePath: string;
+  parentNode: BlockConfig;
+};
+export function getPipelineFlavor({
+  extensionPointType,
+  parentNode,
+  pipelinePath,
+}: GetPipelineFlavorArgs): PipelineFlavor {
+  if (parentNode == null) {
+    return getRootPipelineFlavor(extensionPointType);
+  }
+
+  return getSubPipelineFlavor(parentNode.id, pipelinePath);
+}
+
+export function makeIsBlockAllowedForPipeline(pipelineFlavor: PipelineFlavor) {
+  if (pipelineFlavor === PipelineFlavor.AllBlocks) {
+    return stubTrue;
+  }
+
+  let excludedType: BlockType;
+
+  switch (pipelineFlavor) {
+    case PipelineFlavor.NoEffect:
+      excludedType = "effect";
+      break;
+    case PipelineFlavor.NoRenderer:
+      excludedType = "renderer";
+      break;
+    default:
+      console.warn(
+        "Unknown pipeline flavor, allowing all bricks",
+        pipelineFlavor
+      );
+      return stubTrue;
+  }
 
   return ({ type, block }: TypedBlock) =>
-    (type != null && type !== excludeType) || alwaysShow.has(block.id);
+    type !== excludedType || alwaysShow.has(block.id);
 }

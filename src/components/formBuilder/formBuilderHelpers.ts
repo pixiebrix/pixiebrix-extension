@@ -349,10 +349,7 @@ export const getNormalizedUiOrder = (
   uiOrder: string[] = []
 ) => {
   // A naive check to see if all property keys are presenter in uiOrder
-  if (
-    propertyKeys.length === uiOrder.length - 1 &&
-    uiOrder[uiOrder.length - 1] === "*"
-  ) {
+  if (propertyKeys.length === uiOrder.length - 1 && uiOrder.at(-1) === "*") {
     return uiOrder;
   }
 

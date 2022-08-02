@@ -19,11 +19,14 @@ import { Renderer } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg, SafeHTML } from "@/core";
 import safeMarkdown from "@/utils/safeMarkdown";
+import { validateRegistryId } from "@/types/helpers";
 
 export class MarkdownRenderer extends Renderer {
+  static BLOCK_ID = validateRegistryId("@pixiebrix/markdown");
+
   constructor() {
     super(
-      "@pixiebrix/markdown",
+      MarkdownRenderer.BLOCK_ID,
       "Render Markdown",
       "Render Markdown to sanitized HTML"
     );

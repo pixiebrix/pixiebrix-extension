@@ -22,7 +22,7 @@ import {
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { ItemId, TreeData } from "@atlaskit/tree";
 import { TreeItem } from "@atlaskit/tree/types";
-import { joinElementName } from "@/components/documentBuilder/utils";
+import { joinPathParts } from "@/utils";
 import { PARENT_ELEMENT_TYPES } from "@/components/documentBuilder/allowedElementTypes";
 
 type ElementArgs = {
@@ -39,7 +39,7 @@ function getChildren(
     return [
       {
         element: element.config.element.__value__,
-        elementName: joinElementName(
+        elementName: joinPathParts(
           elementName,
           "config",
           "element",
@@ -53,7 +53,7 @@ function getChildren(
 
   return children.map((child, index) => ({
     element: child,
-    elementName: joinElementName(elementName, "children", String(index)),
+    elementName: joinPathParts(elementName, "children", String(index)),
   }));
 }
 

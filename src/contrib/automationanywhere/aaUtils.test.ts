@@ -6,12 +6,11 @@ import {
 import { Activity } from "@/contrib/automationanywhere/contract";
 
 describe("isCommunityControlRoom", () => {
-  test("detect community URL", () => {
-    expect(
-      isCommunityControlRoom(
-        "https://community2.cloud-2.automationanywhere.digital/"
-      )
-    ).toBeTruthy();
+  test.each([
+    ["https://community2.cloud-2.automationanywhere.digital/"],
+    ["https://community.cloud.automationanywhere.digital"],
+  ])("detect community URL: %s", (url: string) => {
+    expect(isCommunityControlRoom(url)).toBeTruthy();
   });
 
   test("detect enterprise cloud URL", () => {

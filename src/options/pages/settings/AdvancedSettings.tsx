@@ -106,7 +106,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
           // Ensure it's connectable
           const response = await pTimeout(
             fetch(new URL("api/me", newPixiebrixUrl).href),
-            SAVING_URL_TIMEOUT_MS
+            { milliseconds: SAVING_URL_TIMEOUT_MS }
           );
 
           // Ensure it returns a JSON response. It's just `{}` when the user is logged out.

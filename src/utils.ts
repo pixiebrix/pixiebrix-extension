@@ -49,6 +49,7 @@ const specialCharsRegex = /[.[\]]/;
 
 /**
  * Create a Formik field name, validating the individual path parts.
+ * Wraps parts with special characters in brackets, so Formik treat it as a single property name.
  * @param baseFieldName The base field name
  * @param rest the other Formik field name path parts
  * @throws Error if a path part is invalid
@@ -77,6 +78,18 @@ export function joinName(
   }
 
   return path;
+}
+
+/**
+ * Join parts of a path, ignoring null/blank parts.
+ * Works faster than joinName.
+ * Use this one when there're no special characters in the name parts or
+ * the parts contain already joined paths rather than individual property names
+ * @param nameParts the parts of the name
+ */
+export function joinPathParts(...nameParts: Array<string | number>): string {
+  // Don't use lodash.compact and lodash.isEmpty since they treat 0 as falsy
+  return nameParts.filter((x) => x != null && x !== "").join(".");
 }
 
 export function mostCommonElement<T>(items: T[]): T {
@@ -495,7 +508,9 @@ export async function asyncForEach<Item>(
   await Promise.all([...iterable].map(unary(iteratee)));
 }
 
-export async function waitFor<T>(
+/** @deprecate Use pollUntilTruthy directly, better-named for clarity */
+export const waitFor = pollUntilTruthy;
+export async function pollUntilTruthy<T>(
   looper: (...args: unknown[]) => Promise<T> | T,
   { maxWaitMillis = Number.MAX_SAFE_INTEGER, intervalMillis = 100 }
 ): Promise<T | undefined> {
@@ -510,6 +525,18 @@ export async function waitFor<T>(
     // eslint-disable-next-line no-await-in-loop -- It's a retry loop
     await sleep(intervalMillis);
   } while (Date.now() < endBy);
+}
+
+export async function logPromiseDuration<P>(
+  title: string,
+  promise: Promise<P>
+): Promise<P> {
+  const start = Date.now();
+  try {
+    return await promise;
+  } finally {
+    console.debug(title, `${Math.round(Date.now() - start)}ms`);
+  }
 }
 
 export function isMac(): boolean {

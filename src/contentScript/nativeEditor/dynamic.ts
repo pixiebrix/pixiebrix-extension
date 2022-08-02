@@ -40,7 +40,7 @@ import {
 } from "@/contentScript/sidebarController";
 
 let _overlay: Overlay | null = null;
-const _temporaryExtensions: Map<string, IExtensionPoint> = new Map();
+const _temporaryExtensions = new Map<string, IExtensionPoint>();
 
 export async function clearDynamicElements({
   uuid,

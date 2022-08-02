@@ -35,6 +35,7 @@ const axiosMock = new MockAdapter(axios);
 
 jest.mock("@/store/settingsStorage", () => ({
   getSettingsState: jest.fn(),
+  saveSettingsState: jest.fn(),
 }));
 
 jest.mock("@/hooks/useRefresh", () => ({
@@ -42,7 +43,6 @@ jest.mock("@/hooks/useRefresh", () => ({
 }));
 
 jest.mock("@/background/util", () => ({
-  // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
   forEachTab: jest.fn().mockResolvedValue(undefined),
 }));
 
@@ -65,10 +65,8 @@ jest.mock("@/contentScript/messenger/api", () => ({
 
 jest.mock("@/background/messenger/api", () => ({
   traces: {
-    // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
     clear: jest.fn().mockResolvedValue(undefined),
   },
-  // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
   uninstallContextMenu: jest.fn().mockResolvedValue(undefined),
   contextMenus: {
     preload: jest.fn(),
@@ -99,7 +97,7 @@ jest.mock("@/background/installer", () => ({
 import { isLinked, readAuthData } from "@/auth/token";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { isUpdateAvailable } from "@/background/installer";
-import { getSettingsState } from "@/store/settingsStorage";
+import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
 
 const isLinkedMock = isLinked as jest.Mock;
 const readAuthDataMock = readAuthData as jest.Mock;
@@ -110,6 +108,7 @@ const containsPermissionsMock = browser.permissions.contains as jest.Mock;
 const refreshRegistriesMock = refreshRegistries as jest.Mock;
 const isUpdateAvailableMock = isUpdateAvailable as jest.Mock;
 const getSettingsStateMock = getSettingsState as jest.Mock;
+const saveSettingsStateMock = saveSettingsState as jest.Mock;
 
 beforeEach(async () => {
   jest.resetModules();
@@ -123,6 +122,7 @@ beforeEach(async () => {
   readAuthDataMock.mockClear();
 
   getSettingsStateMock.mockClear();
+  saveSettingsStateMock.mockClear();
 
   getSettingsStateMock.mockResolvedValue({
     nextUpdate: undefined,
@@ -192,6 +192,7 @@ describe("updateDeployments", () => {
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(1);
+    expect(saveSettingsStateMock).toHaveBeenCalledTimes(1);
   });
 
   test("ignore other user extensions", async () => {
@@ -286,13 +287,13 @@ describe("updateDeployments", () => {
       uninstallAllDeployments: jest.fn(),
     }));
 
-    // eslint-disable-next-line import/dynamic-import-chunkname -- test code
     const { uninstallAllDeployments } = await import("@/background/deployment");
 
     await updateDeployments();
 
     expect((uninstallAllDeployments as jest.Mock).mock.calls.length).toBe(0);
     expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+    expect(saveSettingsStateMock).toHaveBeenCalledTimes(0);
   });
 
   test("do not open options page on update if restricted-version flag not set", async () => {
@@ -326,6 +327,52 @@ describe("updateDeployments", () => {
 
     expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
     expect(openOptionsPageMock.mock.calls.length).toBe(1);
+    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+  });
+
+  test("open options page on update if enforce_update_millis is set even if snoozed", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    isUpdateAvailableMock.mockReturnValue(true);
+
+    getSettingsStateMock.mockResolvedValue({
+      nextUpdate: Date.now() + 1_000_000,
+      updatePromptTimestamp: null,
+    });
+
+    axiosMock.onGet().reply(200, {
+      flags: [],
+      enforce_update_millis: 5000,
+    });
+
+    axiosMock.onPost().reply(201, []);
+
+    await updateDeployments();
+
+    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
+    expect(openOptionsPageMock.mock.calls.length).toBe(1);
+    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+  });
+
+  test("do not open options page if enforce_update_millis is set but no updates available", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    isUpdateAvailableMock.mockReturnValue(false);
+
+    getSettingsStateMock.mockResolvedValue({
+      nextUpdate: Date.now() + 1_000_000,
+      updatePromptTimestamp: null,
+    });
+
+    axiosMock.onGet().reply(200, {
+      flags: [],
+      enforce_update_millis: 5000,
+    });
+
+    axiosMock.onPost().reply(201, []);
+
+    await updateDeployments();
+
+    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
+    expect(openOptionsPageMock.mock.calls.length).toBe(0);
     expect(refreshRegistriesMock.mock.calls.length).toBe(0);
   });
 

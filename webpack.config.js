@@ -217,40 +217,24 @@ module.exports = (env, options) =>
       },
     },
 
-    entry: {
-      // All of these entries require the `vendors.js` file to be included first
-      ...Object.fromEntries(
-        [
-          "background/background",
-          "contentScript/contentScript",
-          "pageEditor/pageEditor",
-          "options/options",
-          "sidebar/sidebar",
-          "tinyPages/ephemeralForm",
-          "tinyPages/permissionsPopup",
-        ].map((name) => [
-          path.basename(name),
-          { import: `./src/${name}`, dependOn: "vendors" },
-        ])
-      ),
+    entry: Object.fromEntries(
+      [
+        "background/background",
+        "contentScript/contentScript",
+        "pageEditor/pageEditor",
+        "options/options",
+        "sidebar/sidebar",
+        "tinyPages/ephemeralForm",
+        "tinyPages/permissionsPopup",
 
-      // This creates a `vendors.js` file that must be included together with the bundles generated above
-      vendors: [
-        "react",
-        "react-dom",
-        "jquery",
-        "lodash-es",
-        "@rjsf/bootstrap-4",
-        "@fortawesome/free-solid-svg-icons",
-      ],
+        // Tiny files without imports
+        "tinyPages/frame",
+        "tinyPages/devtools",
 
-      // Tiny files without imports, no vendors needed
-      frame: "./src/tinyPages/frame",
-      devtools: "./src/tinyPages/devtools",
-
-      // The script that gets injected into the host page should not have a vendor chunk
-      pageScript: "./src/pageScript/pageScript",
-    },
+        // The script that gets injected into the host page
+        "pageScript/pageScript",
+      ].map((name) => [path.basename(name), `./src/${name}`])
+    ),
 
     resolve: {
       alias: {
@@ -259,14 +243,6 @@ module.exports = (env, options) =>
         ...(isProd(options) || process.env.DEV_REDUX_LOGGER === "false"
           ? { "redux-logger": false }
           : {}),
-
-        // Enables static analysis and removal of dead code
-        "webext-detect-page": path.resolve(
-          "src/vendors/webextDetectPage.static.js"
-        ),
-
-        // Lighter jQuery version
-        jquery: "jquery/dist/jquery.slim.min.js",
       },
     },
 
@@ -322,21 +298,26 @@ module.exports = (env, options) =>
           excludeAssets: /svg-icons/,
         }),
 
-      new NodePolyfillPlugin(),
+      new NodePolyfillPlugin({
+        // Specify the least amount of polyfills because by default it event polyfills `console`
+        includeAliases: ["buffer", "Buffer", "http", "https"],
+      }),
       new WebExtensionTarget(),
       new webpack.ProvidePlugin({
         $: "jquery",
         jQuery: "jquery",
         browser: "webextension-polyfill",
+        process: path.resolve("src/vendors/process.js"),
       }),
 
       // This will inject the current ENVs into the bundle, if found
       new webpack.EnvironmentPlugin({
         // If not found, these values will be used as defaults
         DEBUG: !isProd(options),
+        NODE_DEBUG: false,
         REDUX_DEV_TOOLS: !isProd(options),
         NPM_PACKAGE_VERSION: process.env.npm_package_version,
-        ENVIRONMENT: process.env.ENVIRONMENT ?? options.mode,
+        ENVIRONMENT: options.mode,
         WEBEXT_MESSENGER_LOGGING: "false",
         ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl ?? "extension://dynamichost/",
 

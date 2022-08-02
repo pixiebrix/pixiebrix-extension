@@ -5,7 +5,7 @@
   "short_name": "PixieBrix",
   "description": "Customize, extend, and integrate your favorite SaaS apps without writing a line of code!",
   "homepage_url": "https://www.pixiebrix.com",
-  "minimum_chrome_version": "80.0",
+  "minimum_chrome_version": "95.0",
   "browser_specific_settings": {
     "gecko": {
       "id": "extension@pixiebrix.com",
@@ -22,7 +22,7 @@
   "content_scripts": [
     {
       "matches": ["https://*.pixiebrix.com/*"],
-      "js": ["vendors.js", "contentScript.js"],
+      "js": ["contentScript.js"],
       "css": ["contentScript.css"],
       "run_at": "document_idle"
     }
@@ -79,7 +79,7 @@
     }
   },
   "background": {
-    "scripts": ["grayIconWhileLoading.js", "vendors.js", "background.js"]
+    "scripts": ["grayIconWhileLoading.js", "background.js"]
   },
   "options_ui": {
     "page": "options.html",

@@ -76,11 +76,11 @@ export async function generateFreshOutputKey(
   return freshIdentifier(type as SafeString, outputKeys) as OutputKey;
 }
 
-export function getPipelineMap(blockPipeline: BlockPipeline) {
+export function getPipelineMap(pipeline: BlockPipeline) {
   const pipelineMap: PipelineMap = {};
   traversePipeline({
-    blockPipeline,
-    blockPipelinePath: PIPELINE_BLOCKS_FIELD_NAME,
+    pipeline,
+    pipelinePath: PIPELINE_BLOCKS_FIELD_NAME,
     visitBlock({
       blockConfig,
       index,

@@ -34,7 +34,6 @@ import notify from "@/utils/notify";
 import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import ImageCropStylesheet from "@/blocks/renderers/ImageCropStylesheet";
-// eslint-disable-next-line import/no-named-as-default -- need default export here
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -44,7 +43,7 @@ import { isObject } from "@/utils";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import safeJsonStringify from "json-stringify-safe";
-import { isEmpty } from "lodash";
+import { get, isEmpty, set } from "lodash";
 
 const fields = {
   DescriptionField,
@@ -173,6 +172,9 @@ async function setData(
         data: {
           id: recordId,
           data: cleanValues,
+          // Using shallow strategy to support partial data forms
+          // In case when a form contains (and submits) only a subset of all the fields of a record,
+          // the fields missing in the form will not be removed from the DB record
           merge_strategy: "shallow",
         },
       });
@@ -286,6 +288,41 @@ export const customFormRendererSchema = {
   required: ["schema"],
 };
 
+// Ensure that all string fields contain string values (can be empty string "", but not null or undefined)
+// so the form updates the displayed values of the input correctly
+export function normalizeIncomingFormData(schema: Schema, data: UnknownObject) {
+  const normalizedData: UnknownObject = {};
+  for (const [key, property] of Object.entries(schema.properties)) {
+    const fieldValue = get(data, key);
+    if (fieldValue == null) {
+      if (
+        typeof property === "object" &&
+        property.type === "string" &&
+        isEmpty(property.default)
+      ) {
+        set(normalizedData, key, "");
+      }
+    } else {
+      set(normalizedData, key, fieldValue);
+    }
+  }
+
+  return normalizedData;
+}
+
+// The server uses a shallow merge strategy that ignores undefined values,
+// so we need to make all the undefined field values null instead, so that the server will clear those fields instead of ignoring them
+export function normalizeOutgoingFormData(schema: Schema, data: UnknownObject) {
+  const normalizedData = { ...data };
+  for (const key of Object.keys(schema.properties)) {
+    if (typeof normalizedData[key] === "undefined") {
+      normalizedData[key] = null;
+    }
+  }
+
+  return normalizedData;
+}
+
 export class CustomFormRenderer extends Renderer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/form");
   constructor() {
@@ -339,21 +376,26 @@ export class CustomFormRenderer extends Renderer {
       extensionId,
     });
 
+    const normalizedData = normalizeIncomingFormData(schema, initialData);
+
     console.debug("Initial data for form", {
+      recordId,
       initialData,
+      normalizedData,
     });
 
     return {
       Component: CustomFormComponent,
       props: {
         recordId,
-        formData: initialData,
+        formData: normalizedData,
         schema,
         uiSchema,
         submitCaption,
         async onSubmit(values: JsonObject) {
           try {
-            await setData(storage, recordId, values, {
+            const normalizedValues = normalizeOutgoingFormData(schema, values);
+            await setData(storage, recordId, normalizedValues, {
               blueprintId,
               extensionId,
             });

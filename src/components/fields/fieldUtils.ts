@@ -16,13 +16,15 @@
  */
 
 import { Schema, SchemaDefinition } from "@/core";
-import { isTemplateExpression } from "@/runtime/mapArgs";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
+import { FieldValidator } from "formik";
 import { Draft, produce } from "immer";
+import * as Yup from "yup";
 
 export function fieldLabel(name: string): string {
-  const parts = name.split(".");
-  return parts[parts.length - 1];
+  return name.split(".").at(-1);
 }
 
 type TypePredicate = (fieldDefinition: Schema) => boolean;
@@ -76,4 +78,21 @@ export function isMustacheOnly(value: string): boolean {
   // Mustache-specific syntax: {{{, {{!, {{#, {{&, {{>, {{^
   // All but the first one also support whitespace between the brackets and symbols
   return /{{{/g.test(value) || /{{\s*[!#&=>^]/g.test(value);
+}
+
+export function getFieldValidator(
+  validationSchema: Yup.AnySchema | undefined
+): FieldValidator | undefined {
+  if (validationSchema == null) {
+    return undefined;
+  }
+
+  return async (fieldValue) => {
+    const value = isExpression(fieldValue) ? fieldValue.__value__ : fieldValue;
+    try {
+      await validationSchema.validate(value);
+    } catch (error) {
+      return getErrorMessage(error);
+    }
+  };
 }
