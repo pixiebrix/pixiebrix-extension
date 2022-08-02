@@ -96,7 +96,7 @@
     "one-mutation": "^2.0.0",
     "p-defer": "^4.0.0",
     "p-memoize": "^7.0.0",
-    "p-timeout": "^5.0.0",
+    "p-timeout": "^6.0.0",
     "p-wait-for": "^5.0.0",
     "page-metadata-parser": "^1.1.4",
     "papaparse": "^5.3.1",

@@ -97,7 +97,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
     <PreviewComponent
       {...props}
       onClick={onClick}
-      className={cx(props?.className, styles.root, {
+      className={cx(styles.root, {
         [styles.active]: isActive,
         [styles.hovered]: isHovered,
       })}
