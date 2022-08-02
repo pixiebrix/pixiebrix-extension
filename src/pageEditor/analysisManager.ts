@@ -30,7 +30,6 @@ import runtimeSlice from "./slices/runtimeSlice";
 
 const analysisManager = new EditorManager();
 
-// Registering the trace analysis
 analysisManager.registerAnalysisEffect(
   (
     action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
@@ -48,17 +47,14 @@ analysisManager.registerAnalysisEffect(
   { actionCreator: runtimeSlice.actions.setExtensionTrace }
 );
 
-// Registering the output key analysis
 analysisManager.registerAnalysisEffect(() => new OutputKeyAnalysis(), {
   actionCreator: editorSlice.actions.editElement,
 });
 
-// Registering the template validation
 analysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
   actionCreator: editorSlice.actions.editElement,
 });
 
-// Registering the template validation
 analysisManager.registerAnalysisEffect(
   () => new ExtensionUrlPatternAnalysis(),
   {
