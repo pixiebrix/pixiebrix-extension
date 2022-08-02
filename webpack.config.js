@@ -214,40 +214,24 @@ module.exports = (env, options) =>
       },
     },
 
-    entry: {
-      // All of these entries require the `vendors.js` file to be included first
-      ...Object.fromEntries(
-        [
-          "background/background",
-          "contentScript/contentScript",
-          "pageEditor/pageEditor",
-          "options/options",
-          "sidebar/sidebar",
-          "tinyPages/ephemeralForm",
-          "tinyPages/permissionsPopup",
-        ].map((name) => [
-          path.basename(name),
-          { import: `./src/${name}`, dependOn: "vendors" },
-        ])
-      ),
+    entry: Object.fromEntries(
+      [
+        "background/background",
+        "contentScript/contentScript",
+        "pageEditor/pageEditor",
+        "options/options",
+        "sidebar/sidebar",
+        "tinyPages/ephemeralForm",
+        "tinyPages/permissionsPopup",
 
-      // This creates a `vendors.js` file that must be included together with the bundles generated above
-      vendors: [
-        "react",
-        "react-dom",
-        "jquery",
-        "lodash-es",
-        "@rjsf/bootstrap-4",
-        "@fortawesome/free-solid-svg-icons",
-      ],
+        // Tiny files without imports
+        "tinyPages/frame",
+        "tinyPages/devtools",
 
-      // Tiny files without imports, no vendors needed
-      frame: "./src/tinyPages/frame",
-      devtools: "./src/tinyPages/devtools",
-
-      // The script that gets injected into the host page should not have a vendor chunk
-      pageScript: "./src/pageScript/pageScript",
-    },
+        // The script that gets injected into the host page
+        "pageScript/pageScript",
+      ].map((name) => [path.basename(name), `./src/${name}`])
+    ),
 
     resolve: {
       alias: {
