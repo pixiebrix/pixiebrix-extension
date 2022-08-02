@@ -50,7 +50,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
           this.annotations.push({
             position: {
               path: joinPathParts(
-                "extensionPoint.definition.urlPatterns",
+                "extensionPoint.definition.isAvailable.urlPatterns",
                 index,
                 key
               ),
