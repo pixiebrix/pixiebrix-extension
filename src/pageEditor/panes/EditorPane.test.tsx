@@ -84,6 +84,9 @@ jest.mock("@/services/api", () => ({
 jest.mock("@/components/asyncIcon", () => ({
   useAsyncIcon: jest.fn(),
 }));
+jest.mock("@/telemetry/events", () => ({
+  reportEvent: jest.fn(),
+}));
 jest.mock("@/permissions", () => {
   const permissions = {};
   return {
@@ -210,7 +213,7 @@ async function addABlock(addButton: Element, blockName: string) {
 
   // Filter for the specified block
   await immediateUserEvent.type(
-    screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
+    screen.getByTestId("tag-search-input"),
     blockName
   );
 
@@ -337,7 +340,7 @@ describe("can add a node", () => {
     expect(newNode).toHaveTextContent(/jq - json processor/i);
   });
 
-  test.skip("to sub pipeline", async () => {
+  test("to sub pipeline", async () => {
     const element = getFormStateWithSubPipelines();
     const { getReduxStore } = render(
       <div>
