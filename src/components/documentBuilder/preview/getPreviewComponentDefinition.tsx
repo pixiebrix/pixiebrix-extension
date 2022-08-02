@@ -39,11 +39,9 @@ import List from "./elementsPreview/List";
 const DUMMY_TRACE_PATH: DynamicPath = { staticId: "preview", branches: [] };
 
 const allowedBootstrapPrefixes = ["text", "bg"];
-function filterCssClassesForPreview(props: unknown) {
-  // @ts-expect-error -- check if className exists in props
-  if (typeof props === "object" && typeof props.className === "string") {
-    // @ts-expect-error -- className is a string in the props object
-    props.className = (props.className as string)
+function filterCssClassesForPreview(props: UnknownObject | undefined) {
+  if (typeof props?.className === "string") {
+    props.className = props.className
       .split(" ")
       .filter((x) =>
         allowedBootstrapPrefixes.some((prefix) => x.startsWith(prefix))
