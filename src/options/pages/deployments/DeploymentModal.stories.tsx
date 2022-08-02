@@ -23,24 +23,6 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settingsSlice";
-
-const extensionsStore = configureStore({
-  reducer: {
-    options: extensionsSlice.reducer,
-    settings: settingsSlice.reducer,
-  },
-  preloadedState: {
-    options: { extensions: [] },
-    settings: {
-      mode: "remote",
-      nextUpdate: null,
-      browserWarningDismissed: false,
-      theme: undefined,
-      partnerId: null,
-      authServiceId: null,
-    },
-  },
-});
 import { authSlice } from "@/auth/authSlice";
 
 export default {
