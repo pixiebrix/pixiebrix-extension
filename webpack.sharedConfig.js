@@ -45,8 +45,6 @@ const shared = {
     },
     extensions: [".ts", ".tsx", ".jsx", ".js"],
     fallback: {
-      http: false,
-      https: false,
       fs: false,
       crypto: false,
       console: false,

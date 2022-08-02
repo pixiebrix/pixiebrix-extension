@@ -313,7 +313,7 @@ module.exports = (env, options) =>
 
       new NodePolyfillPlugin({
         // Specify the least amount of polyfills because by default it event polyfills `console`
-        includeAliases: ["buffer", "Buffer"],
+        includeAliases: ["buffer", "Buffer", "http", "https"],
       }),
       new WebExtensionTarget(),
       new webpack.ProvidePlugin({
