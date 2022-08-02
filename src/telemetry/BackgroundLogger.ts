@@ -19,8 +19,8 @@ import { Logger, MessageContext } from "@/core";
 import { JsonObject } from "type-fest";
 import { isBackground } from "webext-detect-page";
 import {
-  isContextInvalidatedError,
   notifyContextInvalidated,
+  wasContextInvalidated,
 } from "@/errors/contextInvalidated";
 import { recordLog } from "@/background/messenger/api";
 import { expectContext } from "@/utils/expectContext";
@@ -73,7 +73,7 @@ class BackgroundLogger implements Logger {
   }
 
   async error(error: unknown, data: JsonObject): Promise<void> {
-    if (isContextInvalidatedError(error) && !isBackground()) {
+    if (wasContextInvalidated() && !isBackground()) {
       notifyContextInvalidated();
     }
 

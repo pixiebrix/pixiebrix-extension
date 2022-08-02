@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  CONTEXT_INVALIDATED_ERROR,
-  getErrorMessage,
-} from "@/errors/errorHelpers";
+import { expectContext } from "@/utils/expectContext";
 import notify from "@/utils/notify";
+import { once } from "lodash";
+import { CONTEXT_INVALIDATED_ERROR, getRootCause } from "./errorHelpers";
 
 const id = "connection-lost";
 
@@ -32,7 +31,22 @@ export function notifyContextInvalidated(): void {
   });
 }
 
-/** Detects whether the error is a fatal context invalidation */
+/** Detects whether an error is a fatal context invalidation */
 export function isContextInvalidatedError(possibleError: unknown): boolean {
-  return getErrorMessage(possibleError) === CONTEXT_INVALIDATED_ERROR;
+  return getRootCause(possibleError) === CONTEXT_INVALIDATED_ERROR;
 }
+
+export const wasContextInvalidated = () => !chrome.runtime?.id;
+
+export const onContextInvalidated = once(async (): Promise<void> => {
+  expectContext("extension");
+
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (wasContextInvalidated()) {
+        resolve();
+        clearInterval(interval);
+      }
+    }, 200);
+  });
+});

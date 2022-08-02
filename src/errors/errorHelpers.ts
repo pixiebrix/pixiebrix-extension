@@ -106,6 +106,19 @@ export function selectSpecificError<
   return selectSpecificError(error.cause, errorType);
 }
 
+/**
+ * Follows the `Error#cause` trail until the end or returns the supplied object as is.
+ *
+ * @deprecated Prefer `hasSpecificErrorCause` or `getErrorMessageWithCauses` if you're displaying it to the user
+ */
+export function getRootCause(error: unknown): unknown {
+  while (isErrorObject(error) && error.cause) {
+    error = error.cause;
+  }
+
+  return error;
+}
+
 export function hasSpecificErrorCause<
   ErrorType extends new (...args: unknown[]) => Error
 >(error: unknown, errorType: ErrorType): boolean {
