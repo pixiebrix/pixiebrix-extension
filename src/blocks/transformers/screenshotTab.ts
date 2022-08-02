@@ -54,7 +54,7 @@ export class ScreenshotTab extends Transformer {
       };
     } catch (error) {
       if (getErrorMessage(error).includes("activeTab")) {
-        // Event if PixieBrix has access to a host, PixieBrix needs activeTab. So the user must have done one of the
+        // Even if PixieBrix has access to a host, PixieBrix needs activeTab. So the user must have done one of the
         // following. https://developer.chrome.com/docs/extensions/mv3/manifest/activeTab/#invoking-activeTab. We'll
         // give an error message that ensures one of these must have been true:
         // - Executing an action

@@ -137,7 +137,8 @@ const KBarComponent: React.FC = () => {
 const QuickBarApp: React.FC = () => (
   <ReactShadowRoot mode="closed">
     <Stylesheet href={faStyleSheet}>
-      <KBarProvider>
+      {/* Disable exit animation due to #3724 */}
+      <KBarProvider options={{ animations: { exitMs: 0 } }}>
         <AutoShow />
         <KBarToggle>
           <KBarComponent />
