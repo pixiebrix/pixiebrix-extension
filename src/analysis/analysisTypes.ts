@@ -16,7 +16,7 @@
  */
 
 import { UUID } from "@/core";
-import { UnknownObject } from "@/types";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 /**
  * Defines the position of the block in the extension
@@ -54,7 +54,7 @@ export type Annotation = {
   /**
    * Custom data produced by the analysis
    */
-  detail?: UnknownObject;
+  detail?: unknown;
 };
 
 export interface Analysis {
@@ -64,9 +64,15 @@ export interface Analysis {
   readonly id: string;
 
   /**
-   * Return the produced annotations.
+   * Return the produced annotations
    */
   getAnnotations(): Annotation[];
+
+  /**
+   * Run the analysis on the given extension
+   * @param extension The extension to analyze
+   */
+  run(extension: FormState): void | Promise<void>;
 }
 
 export type AnalysisState = {

@@ -22,7 +22,7 @@ import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
 import EditorManager from "@/analysis/editorManager";
 import { UUID } from "@/core";
 import { TraceRecord } from "@/telemetry/trace";
-import { AnyAction, PayloadAction } from "@reduxjs/toolkit";
+import { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./pageEditorTypes";
 import { selectActiveElement } from "./slices/editorSelectors";
 import { editorSlice } from "./slices/editorSlice";
@@ -60,10 +60,7 @@ analysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
 
 // Registering the template validation
 analysisManager.registerAnalysisEffect(
-  (action: AnyAction, state: RootState) => {
-    const activeElement = selectActiveElement(state);
-    return new ExtensionUrlPatternAnalysis(activeElement);
-  },
+  () => new ExtensionUrlPatternAnalysis(),
   {
     actionCreator: editorSlice.actions.editElement,
   }

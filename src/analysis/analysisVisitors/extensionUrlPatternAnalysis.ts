@@ -29,11 +29,8 @@ class ExtensionUrlPatternAnalysis implements Analysis {
     return this.annotations;
   }
 
-  constructor(private readonly extension: FormState) {}
-
-  public visitExtension(): void {
-    const { urlPatterns } =
-      this.extension.extensionPoint.definition.isAvailable;
+  public run(extension: FormState): void {
+    const { urlPatterns } = extension.extensionPoint.definition.isAvailable;
     if (urlPatterns == null || urlPatterns.length === 0) {
       return;
     }
@@ -63,10 +60,6 @@ class ExtensionUrlPatternAnalysis implements Analysis {
         }
       }
     }
-  }
-
-  public async visitRootPipeline(): Promise<void> {
-    this.visitExtension();
   }
 }
 
