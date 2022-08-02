@@ -204,7 +204,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
   const canMoveDown =
     Boolean(activeField) &&
     (order.length === propertyKeys.length + 1
-      ? order[order.length - 2] !== activeField
+      ? order.at(-2) !== activeField
       : Array.isArray(order) &&
         findLast(propertyKeys, (key) => !order.includes(key)) !== activeField);
 

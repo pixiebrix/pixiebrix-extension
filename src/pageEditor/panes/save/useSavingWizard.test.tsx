@@ -200,7 +200,6 @@ describe("saving a Recipe Extension", () => {
     (useCreateMock as jest.Mock).mockReturnValue(createMock);
 
     const resetMock = jest.fn();
-    // eslint-disable-next-line unicorn/no-useless-undefined -- the parameter is required, the async function return value is void
     resetMock.mockResolvedValue(undefined);
     (useResetMock as jest.Mock).mockReturnValue(resetMock);
 

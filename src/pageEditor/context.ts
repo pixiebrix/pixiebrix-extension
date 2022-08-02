@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import pTimeout from "p-timeout";
 import { navigationEvent } from "@/pageEditor/events";
-import { useAsyncEffect } from "use-async-effect";
 import { FrameworkMeta } from "@/messaging/constants";
 import { getErrorMessage, isErrorObject } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
@@ -29,6 +28,8 @@ import { detectFrameworks } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/messenger/api";
 import { canAccessTab } from "webext-tools";
 import { sleep } from "@/utils";
+import { useAsyncState } from "@/hooks/common";
+import { onContextInvalidated } from "@/chrome";
 
 interface FrameMeta {
   frameworks: FrameworkMeta[];
@@ -47,18 +48,12 @@ export interface FrameConnectionState {
    */
   hasPermissions: boolean;
 
-  /**
-   * Error message when connecting to the page
-   */
-  error?: string;
-
   meta: FrameMeta | undefined;
 }
 
 const initialFrameState: FrameConnectionState = {
   navSequence: undefined,
   hasPermissions: false,
-  error: undefined,
   meta: undefined,
   frameId: 0,
 };
@@ -70,6 +65,8 @@ export interface Context {
   connecting: boolean;
 
   tabState: FrameConnectionState;
+
+  error?: unknown;
 }
 
 const initialValue: Context = {
@@ -98,12 +95,9 @@ async function connectToFrame(): Promise<FrameConnectionState> {
   ]);
 
   if (result === firstTimeout) {
-    return {
-      ...common,
-      hasPermissions: true,
-      error:
-        "The Page Editor could not establish a connection to the page, retrying…",
-    };
+    throw new Error(
+      "The Page Editor could not establish a connection to the page, retrying…"
+    );
   }
 
   try {
@@ -114,17 +108,15 @@ async function connectToFrame(): Promise<FrameConnectionState> {
         ? "The Page Editor could not establish a connection to the page"
         : getErrorMessage(error);
     reportError(error);
-    return {
-      ...common,
-      hasPermissions: true,
-      error: errorMessage,
-    };
+    throw new Error(errorMessage, { cause: error });
   }
 
   let frameworks: FrameworkMeta[] = [];
   try {
     console.debug("connectToFrame: detecting frameworks");
-    frameworks = await pTimeout(detectFrameworks(thisTab, null), 500);
+    frameworks = await pTimeout(detectFrameworks(thisTab, null), {
+      milliseconds: 500,
+    });
   } catch (error) {
     console.debug("connectToFrame: error detecting frameworks", {
       error,
@@ -142,50 +134,30 @@ async function connectToFrame(): Promise<FrameConnectionState> {
 export function useDevConnection(): Context {
   const { tabId } = browser.devtools.inspectedWindow;
 
-  const [connecting, setConnecting] = useState(false);
+  const [contextInvalidatedError] = useAsyncState<Error>(async () => {
+    await onContextInvalidated();
+    return new Error(
+      "The connection to the PixieBrix browser extension was lost. Reload the Page Editor."
+    );
+  });
 
   const [lastUpdate, setLastUpdate] = useState(Date.now());
-
-  const [tabState, setTabState] =
-    useState<FrameConnectionState>(initialFrameState);
 
   const connect = useCallback(async () => {
     setLastUpdate(Date.now());
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!chrome.runtime?.id) {
-        setTabState({
-          ...initialFrameState,
-          navSequence: uuidv4(),
-          error:
-            "The connection to the PixieBrix browser extension was lost. Reload the Page Editor.",
-        });
-      }
-    }, 500);
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
-
   // Automatically connect on load
-  useAsyncEffect(
-    async (isActive) => {
-      setConnecting(true);
-      const tabState = await connectToFrame();
-      setConnecting(false);
-      if (isActive()) {
-        setTabState(tabState);
-      }
-    },
-    [lastUpdate]
+  const [tabState, isConnecting, connectionError] = useAsyncState(
+    connectToFrame,
+    [lastUpdate],
+    initialFrameState
   );
-
   useTabEventListener(tabId, navigationEvent, connect);
 
   return {
-    connecting,
+    connecting: isConnecting,
+    error: contextInvalidatedError ?? connectionError,
     tabState,
   };
 }

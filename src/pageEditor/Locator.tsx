@@ -26,10 +26,10 @@ import { thisTab } from "@/pageEditor/utils";
 import { detectFrameworks, searchWindow } from "@/contentScript/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
-function useSearchWindow(query: string): [unknown[] | null, unknown | null] {
+function useSearchWindow(query: string): [unknown[] | null, unknown] {
   const { tabId } = browser.devtools.inspectedWindow;
   const [results, setResults] = useState<unknown[] | null>([]);
-  const [error, setError] = useState<unknown | null>();
+  const [error, setError] = useState<unknown>();
 
   useAsyncEffect(
     async (isMounted) => {

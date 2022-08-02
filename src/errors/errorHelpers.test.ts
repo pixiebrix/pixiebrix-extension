@@ -178,7 +178,6 @@ describe("getErrorMessage", () => {
 
   test("handles null/undefined", () => {
     expect(getErrorMessage(null)).toBe("Unknown error");
-    // eslint-disable-next-line unicorn/no-useless-undefined -- testing value since it comes from variable/expression in the wild
     expect(getErrorMessage(undefined)).toBe("Unknown error");
   });
 });
@@ -197,7 +196,6 @@ describe("getErrorMessageWithCauses", () => {
 
   test("handles null/undefined", () => {
     expect(getErrorMessageWithCauses(null)).toBe("Unknown error");
-    // eslint-disable-next-line unicorn/no-useless-undefined -- testing value since it comes from variable/expression in the wild
     expect(getErrorMessageWithCauses(undefined)).toBe("Unknown error");
   });
 
@@ -269,7 +267,6 @@ describe("selectError", () => {
   });
 
   it("wraps primitive", () => {
-    // eslint-disable-next-line unicorn/no-useless-undefined -- Required by the types
     expect(selectError(undefined)).toMatchInlineSnapshot("[Error: undefined]");
     expect(selectError(null)).toMatchInlineSnapshot("[Error: null]");
     expect(selectError(123)).toMatchInlineSnapshot("[Error: 123]");

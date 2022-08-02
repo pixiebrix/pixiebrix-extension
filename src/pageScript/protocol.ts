@@ -65,7 +65,7 @@ export const getElementInfo = createSendScriptMessage<
   { selector: string; framework?: Framework; traverseUp?: number }
 >(GET_COMPONENT_INFO);
 
-type Handler = (payload: unknown) => unknown | Promise<unknown>;
+type Handler = (payload: unknown) => unknown;
 type AttachHandler = (type: string, handler: Handler) => void;
 
 // Message Type -> Handler

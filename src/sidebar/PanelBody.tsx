@@ -75,7 +75,7 @@ type State = {
   /**
    * Error to display from running the renderer
    */
-  error: unknown | null;
+  error: unknown;
 };
 
 const initialPanelState: State = {

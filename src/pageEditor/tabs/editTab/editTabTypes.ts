@@ -47,6 +47,7 @@ export enum RunStatus {
 }
 
 export type BrickNodeContentProps = {
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- https://github.com/typescript-eslint/typescript-eslint/issues/5407
   icon?: IconProp | React.ReactNode;
   runStatus?: RunStatus;
   brickLabel: string;
