@@ -42,8 +42,10 @@ import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 // eslint-disable-next-line import/no-restricted-paths -- Custom devTools mechanism to transfer data
 import { addListenerForUpdateSelectedElement } from "@/pageEditor/getSelectedElement";
 import { initToaster } from "@/utils/notify";
-import { isConnectionError } from "@/errors/errorHelpers";
-import { showConnectionLost } from "@/contentScript/connection";
+import {
+  isContextInvalidatedError,
+  notifyContextInvalidated,
+} from "@/errors/contextInvalidated";
 import { initPartnerIntegrations } from "@/contentScript/partnerIntegrations";
 
 registerMessenger();
@@ -51,17 +53,17 @@ registerExternalMessenger();
 registerBuiltinBlocks();
 registerContribBlocks();
 
-function ignoreConnectionErrors(
+function ignoreContextInvalidatedErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
 ): void {
-  if (isConnectionError(errorEvent)) {
-    showConnectionLost();
+  if (isContextInvalidatedError(errorEvent)) {
+    notifyContextInvalidated();
     errorEvent.preventDefault();
   }
 }
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
-uncaughtErrorHandlers.unshift(ignoreConnectionErrors);
+uncaughtErrorHandlers.unshift(ignoreContextInvalidatedErrors);
 
 declare global {
   interface Window {

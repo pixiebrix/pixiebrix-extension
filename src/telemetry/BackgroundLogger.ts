@@ -17,9 +17,11 @@
 
 import { Logger, MessageContext } from "@/core";
 import { JsonObject } from "type-fest";
-import { isConnectionError } from "@/errors/errorHelpers";
-import { isContentScript } from "webext-detect-page";
-import { showConnectionLost } from "@/contentScript/connection";
+import { isBackground } from "webext-detect-page";
+import {
+  isContextInvalidatedError,
+  notifyContextInvalidated,
+} from "@/errors/contextInvalidated";
 import { recordLog } from "@/background/messenger/api";
 import { expectContext } from "@/utils/expectContext";
 import reportError from "@/telemetry/reportError";
@@ -71,8 +73,8 @@ class BackgroundLogger implements Logger {
   }
 
   async error(error: unknown, data: JsonObject): Promise<void> {
-    if (isConnectionError(error) && isContentScript()) {
-      showConnectionLost();
+    if (isContextInvalidatedError(error) && !isBackground()) {
+      notifyContextInvalidated();
     }
 
     console.error("BackgroundLogger:error", {

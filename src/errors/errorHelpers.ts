@@ -16,7 +16,7 @@
  */
 
 import { deserializeError, ErrorObject } from "serialize-error";
-import { isObject, matchesAnyPattern, smartAppendPeriod } from "@/utils";
+import { isObject, smartAppendPeriod } from "@/utils";
 import safeJsonStringify from "json-stringify-safe";
 import { truncate } from "lodash";
 import type { ContextError } from "@/errors/genericErrors";
@@ -37,13 +37,11 @@ const DEFAULT_ERROR_MESSAGE = "Unknown error";
 export const JQUERY_INVALID_SELECTOR_ERROR =
   "Syntax error, unrecognized expression: ";
 
-export const NO_TARGET_FOUND_CONNECTION_ERROR =
-  "Could not establish connection. Receiving end does not exist.";
-/** Browser Messenger API error message patterns */
-export const CONNECTION_ERROR_MESSAGES = [
-  NO_TARGET_FOUND_CONNECTION_ERROR,
-  "Extension context invalidated.",
-];
+/**
+ * Some APIs like runtime.sendMessage() and storage.get() will throw this error
+ * when the background page has been reloaded
+ */
+export const CONTEXT_INVALIDATED_ERROR = "Extension context invalidated.";
 
 /**
  * Errors to ignore unless they've caused extension point install or brick execution to fail.
@@ -59,13 +57,14 @@ export const IGNORED_ERROR_PATTERNS = [
   "ResizeObserver loop limit exceeded",
   "Promise was cancelled",
   "Uncaught Error: PixieBrix contentScript already installed",
+  "Could not establish connection. Receiving end does not exist.",
   "The frame was removed.",
   /No frame with id \d+ in tab \d+/,
   /^No tab with id/,
   "The tab was closed.",
   errorTabDoesntExist,
   errorTargetClosedEarly,
-  ...CONNECTION_ERROR_MESSAGES,
+  CONTEXT_INVALIDATED_ERROR,
 ];
 
 export function isErrorObject(error: unknown): error is ErrorObject {
@@ -158,18 +157,6 @@ const CLIENT_REQUEST_ERROR_NAMES = new Set([
  */
 export function isClientRequestError(error: unknown): boolean {
   return isErrorObject(error) && CLIENT_REQUEST_ERROR_NAMES.has(error.name);
-}
-
-/**
- * Return true if the proximate cause of event is a messaging error.
- *
- * NOTE: does not recursively identify the root cause of the error.
- */
-export function isConnectionError(possibleError: unknown): boolean {
-  return matchesAnyPattern(
-    getErrorMessage(possibleError),
-    CONNECTION_ERROR_MESSAGES
-  );
 }
 
 /**

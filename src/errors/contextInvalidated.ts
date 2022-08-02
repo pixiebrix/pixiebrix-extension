@@ -15,18 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import notify, { hideNotification } from "@/utils/notify";
+import {
+  CONTEXT_INVALIDATED_ERROR,
+  getErrorMessage,
+} from "@/errors/errorHelpers";
+import notify from "@/utils/notify";
 
 const id = "connection-lost";
 
-export function showConnectionLost(): void {
+export function notifyContextInvalidated(): void {
   notify.error({
     id,
-    message: "Connection to PixieBrix lost. Please reload the page",
+    message: "PixieBrix was updated. Update the page to continue",
+    reportError: false,
     duration: Number.POSITIVE_INFINITY,
   });
 }
 
-export function hideConnectionLost(): void {
-  hideNotification(id);
+/** Detects whether the error is a fatal context invalidation */
+export function isContextInvalidatedError(possibleError: unknown): boolean {
+  return getErrorMessage(possibleError) === CONTEXT_INVALIDATED_ERROR;
 }
