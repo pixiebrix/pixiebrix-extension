@@ -135,15 +135,19 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
         <Form
           id="activate-wizard"
           noValidate
-          onSubmit={handleSubmit}
-          onKeyDown={(event) => {
-            if (
-              event.key === "Enter" &&
-              (event.nativeEvent.target as HTMLElement).tagName !== "TEXTAREA"
-            ) {
-              // Don't submit form on "enter" key. Only submit on using "Activate" button
-              event.preventDefault();
-              return false;
+          onSubmit={(event) => {
+            // Block native submission
+            event.preventDefault();
+
+            if (stepKey === blueprintSteps.at(-1).key) {
+              // Actually "submit" if on the last step
+              handleSubmit(event);
+            } else {
+              // Move to the next step if on an earlier step
+              const step = blueprintSteps.findIndex(
+                ({ key }) => key === stepKey
+              );
+              setStep(blueprintSteps[step + 1].key);
             }
           }}
         >
