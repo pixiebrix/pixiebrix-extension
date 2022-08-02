@@ -24,8 +24,7 @@ import {
   showForm,
 } from "@/sidebar/protocol";
 import { isBrowserSidebar } from "@/chrome";
-
-async function noop() {}
+import { noop } from "lodash";
 
 // TODO: Use `expectContext("sidebar")` when it’s supported
 if (!isBrowserSidebar()) {
