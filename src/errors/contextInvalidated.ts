@@ -29,7 +29,7 @@ const id = "connection-lost";
 export function notifyContextInvalidated(): void {
   notify.error({
     id,
-    message: "PixieBrix was updated. Update the page to continue",
+    message: "PixieBrix was updated or restarted. Reload the page to continue",
     reportError: false,
     duration: Number.POSITIVE_INFINITY,
   });
