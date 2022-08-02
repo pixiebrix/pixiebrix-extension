@@ -38,8 +38,8 @@ import {
 } from "@/sidebar/messenger/api";
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
 import { isEmpty } from "lodash";
-import { SimpleEventTarget } from "@/hooks/events";
 import { logPromiseDuration } from "@/utils";
+import { SimpleEventTarget } from "@/utils/SimpleEventLTarget";
 
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_SELECTOR = "#" + PANEL_FRAME_ID;
