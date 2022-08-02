@@ -17,7 +17,7 @@
 
 import { Logger, MessageContext } from "@/core";
 import { JsonObject } from "type-fest";
-import { isBackground } from "webext-detect-page";
+import { isBackground, isDevToolsPage } from "webext-detect-page";
 import {
   notifyContextInvalidated,
   wasContextInvalidated,
