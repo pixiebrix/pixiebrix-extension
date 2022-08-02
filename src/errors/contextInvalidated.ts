@@ -18,7 +18,11 @@
 import { expectContext } from "@/utils/expectContext";
 import notify from "@/utils/notify";
 import { once } from "lodash";
-import { CONTEXT_INVALIDATED_ERROR, getRootCause } from "./errorHelpers";
+import {
+  CONTEXT_INVALIDATED_ERROR,
+  getErrorMessage,
+  getRootCause,
+} from "./errorHelpers";
 
 const id = "connection-lost";
 
@@ -33,7 +37,9 @@ export function notifyContextInvalidated(): void {
 
 /** Detects whether an error is a fatal context invalidation */
 export function isContextInvalidatedError(possibleError: unknown): boolean {
-  return getRootCause(possibleError) === CONTEXT_INVALIDATED_ERROR;
+  return (
+    getErrorMessage(getRootCause(possibleError)) === CONTEXT_INVALIDATED_ERROR
+  );
 }
 
 export const wasContextInvalidated = () => !chrome.runtime?.id;
