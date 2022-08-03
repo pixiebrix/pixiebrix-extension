@@ -24,12 +24,15 @@ import { useGetMeQuery } from "@/services/api";
 import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
+import { MemoryRouter } from "react-router";
+import settingsSlice from "@/store/settingsSlice";
 
 function optionsStore(initialState?: any) {
   return configureStore({
     reducer: {
       auth: persistReducer(persistAuthConfig, authSlice.reducer),
       services: persistReducer(persistServicesConfig, servicesSlice.reducer),
+      settings: settingsSlice.reducer,
     },
     preloadedState: initialState,
   });
@@ -49,9 +52,11 @@ describe("RequireAuth", () => {
 
     render(
       <Provider store={optionsStore({ auth: { isLoggedIn: true } })}>
-        <RequireAuth LoginPage={MockLoginPage}>
-          Only authenticated users should see me!
-        </RequireAuth>
+        <MemoryRouter>
+          <RequireAuth LoginPage={MockLoginPage}>
+            Only authenticated users should see me!
+          </RequireAuth>
+        </MemoryRouter>
       </Provider>
     );
 
@@ -68,9 +73,11 @@ describe("RequireAuth", () => {
 
     render(
       <Provider store={optionsStore({ auth: { isLoggedIn: true } })}>
-        <RequireAuth LoginPage={MockLoginPage}>
-          Only authenticated users should see me!
-        </RequireAuth>
+        <MemoryRouter>
+          <RequireAuth LoginPage={MockLoginPage}>
+            Only authenticated users should see me!
+          </RequireAuth>
+        </MemoryRouter>
       </Provider>
     );
 
@@ -88,9 +95,11 @@ describe("RequireAuth", () => {
 
     render(
       <Provider store={optionsStore()}>
-        <RequireAuth LoginPage={MockLoginPage}>
-          Only authenticated users should see me!
-        </RequireAuth>
+        <MemoryRouter>
+          <RequireAuth LoginPage={MockLoginPage}>
+            Only authenticated users should see me!
+          </RequireAuth>
+        </MemoryRouter>
       </Provider>
     );
 
