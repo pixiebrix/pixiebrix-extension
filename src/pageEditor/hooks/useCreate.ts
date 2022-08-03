@@ -134,7 +134,7 @@ function useCreate(): CreateCallback {
 
       try {
         try {
-          // Make sure the pages have the latest blocks for when we reactivate below
+          // Make sure the pages have the latest bricks for when we reactivate below
           // NOTE: This must run before the permissions check (below), because we
           // need to look up service definitions as part of checking permissions.
           await refreshRegistries();
