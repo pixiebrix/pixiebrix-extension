@@ -20,8 +20,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import notify from "@/utils/notify";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import blockRegistry from "@/blocks/registry";
-import extensionPointRegistry from "@/extensionPoints/registry";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { reportEvent } from "@/telemetry/events";
@@ -38,6 +36,7 @@ import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
+import useRefresh from "@/hooks/useRefresh";
 
 const { saveExtension } = extensionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -120,6 +119,7 @@ function useCreate(): CreateCallback {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const { data: editablePackages } = useGetEditablePackagesQuery();
+  const [_, refreshRegistries] = useRefresh({ refreshOnMount: false });
 
   return useCallback(
     async ({ element, pushToCloud }): Promise<string | null> => {
@@ -133,6 +133,22 @@ function useCreate(): CreateCallback {
       };
 
       try {
+        try {
+          // Make sure the pages have the latest blocks for when we reactivate below
+          // NOTE: This must run before the permissions check (below), because we
+          // need to look up service definitions as part of checking permissions.
+          await refreshRegistries();
+        } catch (error) {
+          notify.warning({
+            message: `Error fetching remote bricks: ${selectErrorMessage(
+              error
+            )}`,
+            includeErrorDetails: false, // Using `selectErrorMessage` locally
+            error,
+            reportError: true,
+          });
+        }
+
         // eslint-disable-next-line promise/prefer-await-to-then -- It specifically does not need to be awaited #2775
         void ensurePermissions(element).catch((error) => {
           console.error("Error checking/enabling permissions", { error });
@@ -186,23 +202,6 @@ function useCreate(): CreateCallback {
           sessionId,
           type: element.type,
         });
-
-        try {
-          // Make sure the pages have the latest blocks for when we reactivate below
-          await Promise.all([
-            blockRegistry.fetch(),
-            extensionPointRegistry.fetch(),
-          ]);
-        } catch (error) {
-          notify.warning({
-            message: `Error fetching remote bricks: ${selectErrorMessage(
-              error
-            )}`,
-            includeErrorDetails: false, // Using `selectErrorMessage` locally
-            error,
-            reportError: true,
-          });
-        }
 
         try {
           const rawExtension = adapter.selectExtension(element);
