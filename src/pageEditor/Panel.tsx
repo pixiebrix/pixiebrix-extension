@@ -23,8 +23,6 @@ import Editor from "@/pageEditor/Editor";
 import store, { persistor } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
 import { Provider } from "react-redux";
-import { useAsyncEffect } from "use-async-effect";
-import blockRegistry from "@/blocks/registry";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
@@ -33,6 +31,7 @@ import ErrorBanner from "@/pageEditor/ErrorBanner";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginCard from "./components/LoginCard";
+import useRefresh from "@/hooks/useRefresh";
 
 // Register the built-in bricks
 registerEditors();
@@ -45,9 +44,8 @@ registerDefaultWidgets();
 const Panel: React.VoidFunctionComponent = () => {
   const context = useDevConnection();
 
-  useAsyncEffect(async () => {
-    await blockRegistry.fetch();
-  }, []);
+  // Refresh the brick registry on mount
+  useRefresh({ refreshOnMount: true });
 
   return (
     <Provider store={store}>
