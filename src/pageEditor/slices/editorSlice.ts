@@ -33,7 +33,6 @@ import {
 } from "@/types/definitions";
 import {
   EditorState,
-  FormState,
   AddBlockLocation,
   ModalKey,
 } from "@/pageEditor/pageEditorTypes";
@@ -50,6 +49,7 @@ import {
   selectActiveElementUIState,
   selectActiveNodeId,
 } from "./editorSelectors";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 export const initialState: EditorState = {
   selectionSeq: 0,

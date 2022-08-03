@@ -16,7 +16,7 @@
  */
 
 import { UUID } from "@/core";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 /**
  * Defines the position of the block in the extension

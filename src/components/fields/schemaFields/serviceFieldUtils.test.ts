@@ -16,7 +16,7 @@
  */
 
 import { OutputKey, UUID } from "@/core";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
   blockConfigFactory,
   formStateFactory,

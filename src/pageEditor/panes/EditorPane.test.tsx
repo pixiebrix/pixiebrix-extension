@@ -36,7 +36,7 @@ import {
   uuidSequence,
 } from "@/testUtils/factories";
 import blockRegistry from "@/blocks/registry";
-import { FormState, PipelineFlavor } from "@/pageEditor/pageEditorTypes";
+import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import {
   echoBlock,
   teapotBlock,
@@ -65,6 +65,7 @@ import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import getType from "@/runtime/getType";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 jest.mock("@/services/api", () => ({
   appApi: {

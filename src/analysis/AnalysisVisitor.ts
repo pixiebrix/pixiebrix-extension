@@ -16,7 +16,7 @@
  */
 
 import { Analysis, Annotation } from "@/analysis/analysisTypes";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import PipelineVisitor from "./PipelineVisitor";
 
 /**

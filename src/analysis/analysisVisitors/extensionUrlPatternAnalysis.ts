@@ -16,7 +16,7 @@
  */
 
 import { Analysis, Annotation, AnnotationType } from "@/analysis/analysisTypes";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { joinPathParts } from "@/utils";
 
 class ExtensionUrlPatternAnalysis implements Analysis {

@@ -17,7 +17,7 @@
 
 import { Target } from "@/types";
 import { IExtension, RegistryId, UUID } from "@/core";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";

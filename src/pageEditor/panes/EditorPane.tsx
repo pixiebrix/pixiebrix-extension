@@ -27,7 +27,7 @@ import useEditable from "@/pageEditor/hooks/useEditable";
 import SaveExtensionWizard from "./save/SaveExtensionWizard";
 import useSavingWizard from "./save/useSavingWizard";
 import { logActions } from "@/components/logViewer/logSlice";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
   selectActiveElement,
   selectSelectionSeq,

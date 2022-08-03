@@ -26,7 +26,7 @@ import { Permissions } from "webextension-polyfill";
 import { useDebounce } from "use-debounce";
 import notify from "@/utils/notify";
 import { containsPermissions } from "@/background/messenger/api";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { useAsyncState } from "@/hooks/common";
 
 type PermissionsState = {
