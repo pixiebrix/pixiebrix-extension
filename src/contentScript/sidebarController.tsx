@@ -34,11 +34,12 @@ import {
   renderPanels,
   showForm,
   activatePanel,
+  pingSidebar,
 } from "@/sidebar/messenger/api";
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
-import pDefer from "p-defer";
-import { getHTMLElement } from "@/utils/domUtils";
 import { isEmpty } from "lodash";
+import { logPromiseDuration } from "@/utils";
+import { SimpleEventTarget } from "@/utils/SimpleEventLTarget";
 
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_SELECTOR = "#" + PANEL_FRAME_ID;
@@ -51,45 +52,33 @@ export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-margin-right";
 let renderSequenceNumber = 0;
 
 export type ShowCallback = (args: RunArgs) => void;
+export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
 
 const panels: PanelEntry[] = [];
-const extensionCallbacks: ShowCallback[] = [];
 let originalMarginRight: number;
 
-export function registerShowCallback(onShow: ShowCallback): void {
-  extensionCallbacks.push(onShow);
-}
-
-export function removeShowCallback(onShow: ShowCallback): void {
-  const index = extensionCallbacks.indexOf(onShow);
-  if (index > -1) {
-    extensionCallbacks.splice(index, 1);
-  }
-}
-
 function storeOriginalCSS() {
-  const $html = getHTMLElement();
-  originalMarginRight = Number.parseFloat($html.css("margin-right"));
+  originalMarginRight = Number.parseFloat($("html").css("margin-right"));
 }
 
-function adjustDocumentStyle(): void {
-  const $html = getHTMLElement();
-  $html.css(
-    SIDEBAR_WIDTH_CSS_PROPERTY,
-    `${originalMarginRight + SIDEBAR_WIDTH_PX}px`
-  );
-  $html.css("margin-right", `var(${SIDEBAR_WIDTH_CSS_PROPERTY})`);
+function removeSidebar(): void {
+  $(PANEL_CONTAINER_SELECTOR).remove();
+
+  $("html")
+    .css(SIDEBAR_WIDTH_CSS_PROPERTY, "")
+    .css("margin-right", originalMarginRight);
 }
 
-function restoreDocumentStyle(): void {
-  const $html = getHTMLElement();
-  $html.css(SIDEBAR_WIDTH_CSS_PROPERTY, "");
-  $html.css("margin-right", originalMarginRight);
-}
-
-function insertSidebar(): string {
+function insertSidebar(): void {
   const nonce = uuidv4();
   const actionURL = browser.runtime.getURL("sidebar.html");
+
+  $("html")
+    .css(
+      SIDEBAR_WIDTH_CSS_PROPERTY,
+      `${originalMarginRight + SIDEBAR_WIDTH_PX}px`
+    )
+    .css("margin-right", `var(${SIDEBAR_WIDTH_CSS_PROPERTY})`);
 
   $("<iframe>")
     .attr({
@@ -109,47 +98,29 @@ function insertSidebar(): string {
       background: "#f2edf3",
     })
     .appendTo("body");
-
-  return nonce;
 }
 
 /**
  * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
  * @param activateOptions options controlling the visible panel in the sidebar
- * @param callbacks callbacks to refresh the panels, leave blank to refresh all extension panels
  */
-export function showSidebar(
-  activateOptions: ActivatePanelOptions = {},
-  callbacks = extensionCallbacks
-): string {
+export async function showSidebar(
+  activateOptions: ActivatePanelOptions = {}
+): Promise<void> {
   reportEvent("SidePanelShow");
 
-  const container: HTMLElement = document.querySelector(
-    PANEL_CONTAINER_SELECTOR
-  );
-
-  let nonce = container?.dataset?.nonce;
-
-  const isShowing = Boolean(nonce);
+  const isShowing = isSidebarVisible();
 
   if (!isShowing) {
     console.debug("SidePanel is not on the page, attaching side panel");
-    adjustDocumentStyle();
-    nonce = insertSidebar();
+    insertSidebar();
+    await pingSidebar({ tabId: "this", page: "/sidebar.html" });
   }
 
   if (!isShowing || (activateOptions.refresh ?? true)) {
     // Run the extension points available on the page. If the sidebar is already in the page, running
     // all the callbacks ensures the content is up-to-date
-    for (const callback of callbacks) {
-      try {
-        callback({ reason: RunReason.MANUAL });
-      } catch (error) {
-        // The callbacks should each have their own error handling. But wrap in a try-catch to ensure running
-        // the callbacks does not interfere prevent showing the sidebar
-        reportError(error);
-      }
-    }
+    sidebarShowEvents.emit({ reason: RunReason.MANUAL });
   }
 
   if (!isEmpty(activateOptions)) {
@@ -171,9 +142,6 @@ export function showSidebar(
         );
       });
   }
-
-  // TODO: Drop `nonce` if not used by the caller
-  return nonce;
 }
 
 /**
@@ -201,35 +169,24 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
  * @see showSidebar
  */
 export async function ensureSidebar(): Promise<void> {
-  expectContext("contentScript");
-
-  const show = pDefer();
-
   if (!isSidebarVisible()) {
-    registerShowCallback(show.resolve);
-    try {
-      showSidebar();
-      await show.promise;
-    } finally {
-      removeShowCallback(show.resolve);
-    }
+    expectContext("contentScript");
+    await logPromiseDuration("ensureSidebar", showSidebar());
   }
 }
 
 export function hideSidebar(): void {
   reportEvent("SidePanelHide");
-  restoreDocumentStyle();
-  $(PANEL_CONTAINER_SELECTOR).remove();
-
+  removeSidebar();
   window.dispatchEvent(new CustomEvent(PANEL_HIDING_EVENT));
 }
 
-export function toggleSidebar(): string | void {
-  if (!isSidebarVisible()) {
-    return showSidebar();
+export async function toggleSidebar(): Promise<void> {
+  if (isSidebarVisible()) {
+    hideSidebar();
+  } else {
+    await showSidebar();
   }
-
-  hideSidebar();
 }
 
 export function isSidebarVisible(): boolean {

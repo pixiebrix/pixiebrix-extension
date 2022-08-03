@@ -221,9 +221,9 @@ async function addABlock(addButton: Element, blockName: string) {
   await runPendingTimers();
 
   await immediateUserEvent.click(
-    screen.getAllByRole("button", {
-      name: /add/i,
-    })[0]
+    screen.getByRole("button", {
+      name: /^Add/,
+    })
   );
 
   // Run validation

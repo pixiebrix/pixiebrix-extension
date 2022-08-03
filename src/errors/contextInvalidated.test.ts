@@ -15,18 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import notify, { hideNotification } from "@/utils/notify";
+import { isContextInvalidatedError } from "@/errors/contextInvalidated";
 
-const id = "connection-lost";
+describe("isContextInvalidatedError", () => {
+  const invalidated = new Error("Extension context invalidated.");
+  const unrelated = new Error("The ticket was not invalidated");
+  test("base test", () => {
+    expect(isContextInvalidatedError(invalidated)).toBeTrue();
+    expect(
+      isContextInvalidatedError(new Error("Parent", { cause: invalidated }))
+    ).toBeTrue();
 
-export function showConnectionLost(): void {
-  notify.error({
-    id,
-    message: "Connection to PixieBrix lost. Please reload the page",
-    duration: Number.POSITIVE_INFINITY,
+    expect(isContextInvalidatedError(unrelated)).toBeFalse();
+    expect(
+      isContextInvalidatedError(new Error("Parent", { cause: unrelated }))
+    ).toBeFalse();
   });
-}
-
-export function hideConnectionLost(): void {
-  hideNotification(id);
-}
+});

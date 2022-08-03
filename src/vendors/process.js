@@ -15,20 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function getHTMLElement(): JQuery {
-  // Resolve html tag, which is more dominant than <body>
-  if (document.documentElement) {
-    return $(document.documentElement);
-  }
-
-  if (document.querySelector("html")) {
-    return $(document.querySelector("html"));
-  }
-
-  const $html = $("html");
-  if ($html.length > 0) {
-    return $html;
-  }
-
-  throw new Error("HTML node not found");
-}
+// Minimal `global.process` implementation to avoid having to load the whole polyfill via NodePolyfillPlugin
+// https://www.unpkg.com/browse/process@0.11.10/browser.js
+module.exports = { platform: "", browser: true, cwd: () => "" };

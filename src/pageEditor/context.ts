@@ -29,7 +29,7 @@ import { ensureContentScript } from "@/background/messenger/api";
 import { canAccessTab } from "webext-tools";
 import { sleep } from "@/utils";
 import { useAsyncState } from "@/hooks/common";
-import { onContextInvalidated } from "@/chrome";
+import { onContextInvalidated } from "@/errors/contextInvalidated";
 
 interface FrameMeta {
   frameworks: FrameworkMeta[];
