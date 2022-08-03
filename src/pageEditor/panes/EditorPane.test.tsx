@@ -66,6 +66,7 @@ import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { useAnalysisForFieldError } from "@/components/form/useFieldError";
 
 jest.mock("@/services/api", () => ({
   appApi: {
@@ -110,6 +111,7 @@ const immediateUserEvent = userEvent.setup({ delay: null });
 
 beforeAll(async () => {
   registerDefaultWidgets();
+  useAnalysisForFieldError(true);
   blockRegistry.clear();
   blockRegistry.register(
     echoBlock,

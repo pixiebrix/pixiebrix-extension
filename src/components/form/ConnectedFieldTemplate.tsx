@@ -19,6 +19,7 @@ import React from "react";
 import { connect, getIn } from "formik";
 import FieldTemplate, { FieldProps } from "@/components/form/FieldTemplate";
 import { FormikContextType } from "formik/dist/types";
+import useFieldError from "./useFieldError";
 
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- https://github.com/typescript-eslint/typescript-eslint/issues/5407
 export type ConnectedFieldProps<Values> = FieldProps & {
@@ -29,7 +30,7 @@ const FormikFieldTemplate = <Values,>({
   formik,
   ...fieldProps
 }: ConnectedFieldProps<Values>) => {
-  const error = getIn(formik.errors, fieldProps.name);
+  const error = useFieldError(fieldProps.name);
   const touched = getIn(formik.touched, fieldProps.name);
   const value = getIn(formik.values, fieldProps.name);
 

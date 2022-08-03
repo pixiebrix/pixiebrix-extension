@@ -16,36 +16,38 @@
  */
 
 import { useSelector } from "react-redux";
-import { annotationsForPathSelector } from "@/pageEditor/slices/editorSelectors";
-import { Annotation } from "@/analysis/analysisTypes";
-import { RootState } from "@/pageEditor/pageEditorTypes";
+import { selectAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
 import { useField } from "formik";
 
-function maybeAnnotationsForPathSelector(
-  state: RootState,
-  path: string
-): Annotation[] | undefined {
-  if (state.editor == null) {
-    return undefined;
-  }
-
-  return annotationsForPathSelector(state, path);
+function useFormikFieldError(fieldPath: string): string | undefined {
+  const [, { error }] = useField(fieldPath);
+  return error;
 }
 
-function maybeSelectAnnotationsForPath(path: string) {
-  return (state: RootState) => maybeAnnotationsForPathSelector(state, path);
-}
+function useAnalysisFieldError(fieldPath: string): string | undefined {
+  const annotations = useSelector(selectAnnotationsForPath(fieldPath));
 
-function useFieldError(fieldPath: string): string | undefined {
-  const [, { error: formikError }] = useField(fieldPath);
-  const annotations = useSelector(maybeSelectAnnotationsForPath(fieldPath));
-  if (typeof annotations === "undefined") {
-    return formikError;
-  }
-
-  return annotations.length > 0
+  return annotations?.length > 0
     ? annotations.map(({ message }) => message).join(" ")
     : undefined;
+}
+
+let shouldUseAnalysis = false;
+function useFieldError(fieldPath: string): string | undefined {
+  return shouldUseAnalysis
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks -- shouldUseAnalysis is set once before render
+      useAnalysisFieldError(fieldPath)
+    : // eslint-disable-next-line react-hooks/rules-of-hooks -- shouldUseAnalysis is set once before render
+      useFormikFieldError(fieldPath);
+}
+
+/**
+ * Configure the source of the form field errors.
+ * Should be called once only at the start of the application.
+ * @param useAnalysis If true, use the analysis annotations instead of the formik errors
+ */
+export function useAnalysisForFieldError(useAnalysis: boolean) {
+  shouldUseAnalysis = useAnalysis;
 }
 
 export default useFieldError;
