@@ -46,7 +46,7 @@ function useFieldError(fieldPath: string): string | undefined {
  * Should be called once only at the start of the application.
  * @param useAnalysis If true, use the analysis annotations instead of the formik errors
  */
-export function useAnalysisForFieldError(useAnalysis: boolean) {
+export function configureFieldError(useAnalysis: boolean) {
   shouldUseAnalysis = useAnalysis;
 }
 
