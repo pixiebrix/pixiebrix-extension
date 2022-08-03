@@ -27,7 +27,7 @@
       "run_at": "document_idle"
     }
   ],
-  "optional_permissions": ["clipboardWrite"],
+  "optional_permissions": ["clipboardWrite", "*://*/*"],
   "permissions": [
     "activeTab",
     "storage",
@@ -35,7 +35,7 @@
     "tabs",
     "webNavigation",
     "contextMenus",
-    "*://*/*"
+    "https://*.pixiebrix.com/*"
   ],
   "devtools_page": "devtools.html",
   "externally_connectable": {

@@ -58,6 +58,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
     async () => {
       // Since Chrome 87
       // https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see documentation link
       await (chromeP.identity as any).clearAllCachedAuthTokens();
     },
     {

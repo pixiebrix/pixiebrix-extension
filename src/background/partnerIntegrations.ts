@@ -24,6 +24,7 @@ import { RegistryId } from "@/core";
 import { launchOAuth2Flow } from "@/background/auth";
 import serviceRegistry from "@/services/registry";
 import { setPartnerAuth } from "@/auth/token";
+import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
 
 export type PartnerPrincipal = {
   hostname: string;
@@ -71,5 +72,18 @@ export async function launchAuthIntegration({
 
   const data = await launchOAuth2Flow(service, config);
 
-  await setPartnerAuth({ authId: config.id, token: data.access_token });
+  if (serviceId === CONTROL_ROOM_OAUTH_SERVICE_ID) {
+    // Hard-coding headers for now. In the future, will want to add support for defining in the service definition.
+    await setPartnerAuth({
+      authId: config.id,
+      token: data.access_token,
+      extraHeaders: {
+        "X-Control-Room": config.config.controlRoomUrl,
+      },
+    });
+  } else {
+    throw new Error(
+      `Support for login with service not implemented: ${serviceId}`
+    );
+  }
 }

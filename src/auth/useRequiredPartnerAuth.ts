@@ -26,7 +26,7 @@ import { isEmpty } from "lodash";
 import { useAsyncState } from "@/hooks/common";
 import {
   addListener as addAuthListener,
-  getPartnerToken,
+  readPartnerAuthData,
   removeListener as removeAuthListener,
 } from "@/auth/token";
 import { useEffect } from "react";
@@ -55,15 +55,14 @@ const useRequiredPartnerAuth = () => {
     partnerServiceIds.has(service.serviceId)
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- readability of positional destructuring
   const [missingPartnerToken, _tokenLoading, _tokenError, refreshTokenState] =
     useAsyncState(async () => {
       if (isEmpty(authServiceId)) {
         return false;
       }
 
-      const partnerToken = await getPartnerToken();
-      return !partnerToken;
+      const { token: partnerToken } = await readPartnerAuthData();
+      return partnerToken == null;
     }, [authServiceId, localAuth]);
 
   useEffect(() => {

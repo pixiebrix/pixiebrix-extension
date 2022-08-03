@@ -15,21 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useCallback } from "react";
 import OnboardingChecklistCard, {
   OnboardingStep,
 } from "@/components/onboarding/OnboardingChecklistCard";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
-import AsyncButton from "@/components/AsyncButton";
 import { launchAuthIntegration } from "@/background/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import { persistor } from "@/options/store";
 import servicesSlice from "@/store/servicesSlice";
 import { selectConfiguredServices } from "@/store/servicesSelectors";
-import useUserAction from "@/hooks/useUserAction";
+import * as Yup from "yup";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import Form, { RenderBody, RenderSubmit } from "@/components/form/Form";
+import { Button } from "react-bootstrap";
 
 const { updateServiceConfig } = servicesSlice.actions;
+
+export type ControlRoomConfiguration = {
+  controlRoomUrl: string;
+};
+
+const validationSchema = Yup.object().shape({
+  controlRoomUrl: Yup.string().url().required(),
+});
 
 /**
  * A Setup card for partners where the client authenticates using a OAuth2 JWT from the partner.
@@ -44,30 +54,46 @@ const PartnerOAuthSetupCard: React.FunctionComponent = () => {
     throw new Error("Expected authServiceId");
   }
 
-  const launch = useUserAction(
-    async () => {
+  const connect = useCallback(
+    async (values: ControlRoomConfiguration) => {
       if (!configuredServices.some((x) => x.serviceId === authServiceId)) {
         dispatch(
           updateServiceConfig({
             id: uuidv4(),
             serviceId: authServiceId,
-            label: "My AA Control Room",
+            label: "Primary AARI Account",
             config: {
-              controlRoom: "http://146.20.224.72",
+              controlRoom: values.controlRoomUrl,
             },
           })
         );
 
+        // Ensure the service is available to background page (which is where launchAuthIntegration runs)
         await persistor.flush();
       }
 
       await launchAuthIntegration({ serviceId: authServiceId });
     },
-    {
-      successMessage: "Linked your AARI account",
-      errorMessage: "Error linking your AARI account",
-    },
-    [authServiceId]
+    [dispatch, configuredServices, authServiceId]
+  );
+
+  const renderBody: RenderBody = () => (
+    <>
+      <ConnectedFieldTemplate
+        name="controlRoomUrl"
+        label="Control Room URL"
+        type="text"
+        description="Your Automation Anywhere Control Room URL, including https://"
+      />
+    </>
+  );
+
+  const renderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
+    <div className="text-left">
+      <Button type="submit" disabled={isSubmitting || !isValid}>
+        Connect AARI
+      </Button>
+    </div>
   );
 
   return (
@@ -78,7 +104,16 @@ const PartnerOAuthSetupCard: React.FunctionComponent = () => {
         completed
       />
       <OnboardingStep number={2} title="Connect your AARI account" active>
-        <AsyncButton onClick={launch}>Connect</AsyncButton>
+        <Form
+          validationSchema={validationSchema}
+          initialValues={{
+            // TODO: default Control Room URL based on onboarding flow/managed storage
+            controlRoomUrl: "",
+          }}
+          onSubmit={connect}
+          renderBody={renderBody}
+          renderSubmit={renderSubmit}
+        />
       </OnboardingStep>
     </OnboardingChecklistCard>
   );

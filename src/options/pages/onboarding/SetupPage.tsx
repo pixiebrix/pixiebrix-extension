@@ -22,8 +22,6 @@ import { useAsyncState } from "@/hooks/common";
 
 import { useTitle } from "@/hooks/title";
 import DefaultSetupCard from "@/options/pages/onboarding/DefaultSetupCard";
-import PartnerSetupCard from "@/options/pages/onboarding/PartnerSetupCard";
-import { useRequiredAuth } from "@/auth/RequireAuth";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
@@ -34,14 +32,8 @@ import Loader from "@/components/Loader";
 
 const SetupPage: React.FunctionComponent = () => {
   useTitle("Setup");
-  const {
-    hasPartner,
-    requiresIntegration,
-    hasConfiguredIntegration,
-    isLoading: isPartnerLoading,
-  } = useRequiredPartnerAuth();
+  const { isLoading: isPartnerLoading } = useRequiredPartnerAuth();
 
-  const { isAccountUnlinked } = useRequiredAuth();
   const { authServiceId } = useSelector(selectSettings);
 
   const [installURL, installURLPending] = useAsyncState(getInstallURL, []);
@@ -60,18 +52,6 @@ const SetupPage: React.FunctionComponent = () => {
 
   if (!isEmpty(authServiceId) && authServiceId !== PIXIEBRIX_SERVICE_ID) {
     setupCard = <PartnerOAuthSetupCard />;
-  } else if (hasPartner) {
-    // Token-based partner setup
-    setupCard = (
-      <PartnerSetupCard
-        installURL={installURL}
-        isAccountUnlinked={isAccountUnlinked}
-        needsConfiguration={
-          !requiresIntegration ||
-          (requiresIntegration && !hasConfiguredIntegration)
-        }
-      />
-    );
   }
 
   return (

@@ -20,3 +20,11 @@ import { validateRegistryId } from "@/types/helpers";
 
 export const PIXIEBRIX_SERVICE_ID: RegistryId =
   validateRegistryId("@pixiebrix/api");
+
+// Automation Anywhere partner constants
+export const CONTROL_ROOM_SERVICE_ID: RegistryId = validateRegistryId(
+  "automation-anywhere/control-room"
+);
+export const CONTROL_ROOM_OAUTH_SERVICE_ID: RegistryId = validateRegistryId(
+  "automation-anywhere/oauth2"
+);

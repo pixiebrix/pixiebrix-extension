@@ -93,19 +93,35 @@ export interface TokenAuthData extends UserData {
 
 export type PartnerAuthData = {
   /**
-   * The service auth token to use for authenticating with the PixieBrix API.
+   * The service auth configuration for authenticating with the PixieBrix API.
    */
   authId: UUID | null;
   /**
-   * The bearer token for the authId.
+   * The JWT bearer token corresponding to the authId.
    */
   token: string | null;
+  /**
+   * Extra HTTP headers to send with every request.
+   */
+  extraHeaders: Record<string, string> | null;
 };
 
 export type OrganizationAuthState = {
-  readonly id: string;
+  /**
+   * The id of the organization.
+   */
+  readonly id: UUID;
+  /**
+   * The human-readable name of the organization.
+   */
   readonly name: string;
+  /**
+   * The package scope of the organization, or null if not set.
+   */
   readonly scope?: string;
+  /**
+   * The Automation Anywhere Control Room information
+   */
   readonly control_room?: Me["organization"]["control_room"];
 };
 
@@ -152,7 +168,7 @@ export type AuthState = {
   readonly extension: boolean;
 
   /**
-   *  The SSO organization associated with the user's email domain
+   *  The primary organization for the user
    */
   readonly organization?: OrganizationAuthState | null;
 

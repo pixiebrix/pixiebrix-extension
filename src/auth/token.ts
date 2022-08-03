@@ -71,14 +71,6 @@ export async function getExtensionToken(): Promise<string | undefined> {
 }
 
 /**
- * Get the partner JWT token for authentication, or null/undefined if not set.
- */
-export async function getPartnerToken(): Promise<string | undefined> {
-  const { token } = await readPartnerAuthData();
-  return token;
-}
-
-/**
  * Set authentication data when using the partner JWT to authenticate.
  */
 export async function setPartnerAuth(data: PartnerAuthData): Promise<void> {
@@ -93,20 +85,23 @@ export async function setPartnerAuth(data: PartnerAuthData): Promise<void> {
  * Return PixieBrix API authentication headers, or null if not authenticated.
  */
 export async function getAuthHeaders(): Promise<UnknownObject | null> {
-  const [token, partnerToken] = await Promise.all([
+  const [nativeToken, partnerAuth] = await Promise.all([
     getExtensionToken(),
-    getPartnerToken(),
+    readPartnerAuthData(),
   ]);
 
-  if (token) {
+  if (nativeToken) {
     return {
-      Authorization: `Token ${token}`,
+      Authorization: `Token ${nativeToken}`,
     };
   }
 
-  if (partnerToken) {
+  if (partnerAuth?.token) {
     return {
-      Authorization: `Bearer ${partnerToken}`,
+      ...partnerAuth?.extraHeaders,
+      // Put Authorization second to avoid overriding Authorization header. (Is defensive for now, currently
+      // the extra headers are hard-coded)
+      Authorization: `Bearer ${partnerAuth?.token}`,
     };
   }
 
