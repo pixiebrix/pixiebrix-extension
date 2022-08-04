@@ -33,7 +33,7 @@ import ErrorBanner from "@/pageEditor/ErrorBanner";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginCard from "./components/LoginCard";
-import { configureFieldError } from "@/components/form/useFieldError";
+import { enableAnalysisFieldErrors } from "@/components/form/useFieldError";
 
 // Register the built-in bricks
 registerEditors();
@@ -42,8 +42,7 @@ registerBuiltinBlocks();
 
 // Register Widgets
 registerDefaultWidgets();
-
-configureFieldError(true);
+enableAnalysisFieldErrors();
 
 const Panel: React.VoidFunctionComponent = () => {
   const context = useDevConnection();

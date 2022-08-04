@@ -42,12 +42,12 @@ function useFieldError(fieldPath: string): string | undefined {
 }
 
 /**
- * Configure the source of the form field errors.
+ * Configure the form field to use the analysis annotations
+ * instead of the formik to get the errors.
  * Should be called once only at the start of the application.
- * @param useAnalysis If true, use the analysis annotations instead of the formik errors
  */
-export function configureFieldError(useAnalysis: boolean) {
-  shouldUseAnalysis = useAnalysis;
+export function enableAnalysisFieldErrors() {
+  shouldUseAnalysis = true;
 }
 
 export default useFieldError;

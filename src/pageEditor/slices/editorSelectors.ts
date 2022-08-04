@@ -261,7 +261,7 @@ export const selectActiveNodeError = createSelector(
 export const selectAddBlockLocation = ({ editor }: RootState) =>
   editor.addBlockLocation;
 
-export const annotationsForPathSelector = createSelector(
+const annotationsForPathSelector = createSelector(
   [
     (state: RootState) => {
       const activeElementId = selectActiveElementId(state);
