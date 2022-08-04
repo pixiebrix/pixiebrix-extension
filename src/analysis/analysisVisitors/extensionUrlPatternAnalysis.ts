@@ -18,7 +18,15 @@
 import { Analysis, Annotation, AnnotationType } from "@/analysis/analysisTypes";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { joinPathParts } from "@/utils";
+import { get, isEmpty } from "lodash";
 
+const urlPatternFields = ["extensionPoint.definition.isAvailable.urlPatterns"];
+
+const stringUrlFields = [
+  "extensionPoint.definition.documentUrlPatterns",
+  "extensionPoint.definition.isAvailable.matchPatterns",
+  "permissions.origins",
+];
 class ExtensionUrlPatternAnalysis implements Analysis {
   get id() {
     return "urlPattern";
@@ -30,7 +38,17 @@ class ExtensionUrlPatternAnalysis implements Analysis {
   }
 
   public run(extension: FormState): void {
-    const { urlPatterns } = extension.extensionPoint.definition.isAvailable;
+    for (const fieldName of urlPatternFields) {
+      this.analyzeUrlPatterns(extension, fieldName);
+    }
+
+    for (const fieldName of stringUrlFields) {
+      this.analyzeStringUrls(extension, fieldName);
+    }
+  }
+
+  analyzeUrlPatterns(extension: FormState, fieldName: string): void {
+    const urlPatterns = get(extension, fieldName);
     if (urlPatterns == null || urlPatterns.length === 0) {
       return;
     }
@@ -46,11 +64,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
         } catch {
           this.annotations.push({
             position: {
-              path: joinPathParts(
-                "extensionPoint.definition.isAvailable.urlPatterns",
-                index,
-                key
-              ),
+              path: joinPathParts(fieldName, index, key),
             },
             message: `Invalid pattern for ${key}`,
             analysisId: this.id,
@@ -58,6 +72,27 @@ class ExtensionUrlPatternAnalysis implements Analysis {
             detail: urlPattern,
           });
         }
+      }
+    }
+  }
+
+  analyzeStringUrls(extension: FormState, fieldName: string): void {
+    const urls = get(extension, fieldName);
+    if (urls == null || urls.length === 0) {
+      return;
+    }
+
+    for (const [index, url] of Object.entries(urls)) {
+      if (isEmpty(url)) {
+        this.annotations.push({
+          position: {
+            path: joinPathParts(fieldName, index),
+          },
+          message: "This field is required",
+          analysisId: this.id,
+          type: AnnotationType.Error,
+          detail: url,
+        });
       }
     }
   }
