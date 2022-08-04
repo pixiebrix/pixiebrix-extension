@@ -16,8 +16,7 @@
  */
 
 import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
-import { useState } from "react";
-import { useAsyncEffect } from "use-async-effect";
+import { useAsyncState } from "@/hooks/common";
 
 /**
  * Load the TypedBlockMap from the block registry. Refreshes on mount.
@@ -26,16 +25,11 @@ function useAllBlocks(): {
   allBlocks: TypedBlockMap;
   isLoading: boolean;
 } {
-  const [allBlocks, setAllBlocks] = useState<TypedBlockMap>(new Map());
-  const [isLoading, setIsLoading] = useState(true);
-
-  useAsyncEffect(async (isMounted) => {
-    const blocks = await blockRegistry.allTyped();
-    if (isMounted()) {
-      setAllBlocks(blocks);
-      setIsLoading(false);
-    }
-  }, []);
+  const [allBlocks, isLoading] = useAsyncState<TypedBlockMap>(
+    async () => blockRegistry.allTyped(),
+    [],
+    new Map()
+  );
 
   return {
     allBlocks,
