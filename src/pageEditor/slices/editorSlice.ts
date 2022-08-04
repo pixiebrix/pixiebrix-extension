@@ -673,6 +673,9 @@ export const editorSlice = createSlice({
         ];
       }
 
+      // Make sure the pipeline map is updated
+      syncElementNodeUIStates(state, element);
+
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
     },

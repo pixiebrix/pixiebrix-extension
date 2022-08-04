@@ -283,14 +283,14 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       // Also, you cannot move the foundation node, which is always at
       // index 0.
       const canMoveUp = index > 0;
-      const canModeDown = index < lastIndex;
+      const canMoveDown = index < lastIndex;
 
       const onClickMoveUp = canMoveUp
         ? () => {
             moveBlockUp(blockConfig.instanceId);
           }
         : undefined;
-      const onClickMoveDown = canModeDown
+      const onClickMoveDown = canMoveDown
         ? () => {
             moveBlockDown(blockConfig.instanceId);
           }
