@@ -66,6 +66,7 @@ import {
 } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
 import { Permissions } from "webextension-polyfill";
+import { makeEmptyPermissions } from "@/utils/permissions";
 
 export interface WizardStep {
   step: string;
@@ -192,7 +193,7 @@ export function makeInitialBaseState(
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     services: [],
-    permissions: {},
+    permissions: makeEmptyPermissions(),
     optionsArgs: {},
     extension: {
       blockPipeline: [],
