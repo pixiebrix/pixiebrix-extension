@@ -43,7 +43,6 @@ import {
   validateTimestamp,
   validateUUID,
 } from "@/types/helpers";
-import { Permissions } from "webextension-polyfill";
 import { BaseExtensionState } from "@/pageEditor/extensionPoints/elementConfig";
 import trigger from "@/pageEditor/extensionPoints/trigger";
 import menuItem from "@/pageEditor/extensionPoints/menuItem";
