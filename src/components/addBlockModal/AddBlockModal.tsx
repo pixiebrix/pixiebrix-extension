@@ -143,10 +143,11 @@ const AddBlockModal: React.VFC = () => {
     async (block: IBlock) => {
       try {
         await addBlock(block);
-        closeModal();
       } catch (error) {
         console.error(error);
       }
+
+      closeModal();
     },
     [addBlock, closeModal]
   );

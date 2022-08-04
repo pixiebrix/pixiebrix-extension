@@ -49,6 +49,7 @@ import trigger from "@/pageEditor/extensionPoints/trigger";
 import menuItem from "@/pageEditor/extensionPoints/menuItem";
 import {
   ActionFormState,
+  FormState,
   TriggerFormState,
 } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
@@ -75,7 +76,6 @@ import {
 } from "@/types/contract";
 import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
 import getType from "@/runtime/getType";
-import { FormState } from "@/pageEditor/pageEditorTypes";
 import { freshIdentifier } from "@/utils";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
 import { padStart } from "lodash";

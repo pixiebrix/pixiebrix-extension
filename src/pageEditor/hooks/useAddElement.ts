@@ -27,7 +27,7 @@ import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { SettingsState } from "@/store/settingsTypes";
 import useFlags from "@/hooks/useFlags";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 type AddElement = (config: ElementConfig) => void;
 

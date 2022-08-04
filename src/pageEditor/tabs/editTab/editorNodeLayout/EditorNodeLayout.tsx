@@ -28,7 +28,6 @@ import { BlockPipeline, Branch } from "@/blocks/types";
 import {
   BrickNodeContentProps,
   BrickNodeProps,
-  RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { OutputKey, UUID } from "@/core";
@@ -46,6 +45,7 @@ import { get, isEmpty } from "lodash";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import {
   getBlockAnnotations,
+  getFoundationNodeAnnotations,
   getDocumentPipelinePaths,
   getPipelineInputKeyPropName,
   getPipelinePropNames,
@@ -62,7 +62,7 @@ import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { getRootPipelineFlavor } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 import { isExpression } from "@/runtime/mapArgs";
-import decideBlockStatus from "./decideBlockStatus";
+import { decideFoundationStatus, decideBlockStatus } from "./decideStatus";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
@@ -133,7 +133,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
     [dispatch]
   );
 
-  let foundationRunStatus: RunStatus = RunStatus.NONE;
+  let extensionHasTraces = false;
 
   // eslint-disable-next-line complexity
   function mapPipelineToNodes({
@@ -198,9 +198,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       const traceRecord = traceRecords[0];
 
       if (traceRecord != null) {
-        // The runtime doesn't directly trace the extension point. However, if there's a trace from a brick, we
-        // know the extension point ran successfully
-        foundationRunStatus = RunStatus.SUCCESS;
+        extensionHasTraces = true;
       }
 
       if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
@@ -521,7 +519,10 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   });
   const foundationNodeProps: BrickNodeProps = {
     icon: extensionPointIcon,
-    runStatus: foundationRunStatus,
+    runStatus: decideFoundationStatus({
+      hasTraces: extensionHasTraces,
+      blockAnnotations: getFoundationNodeAnnotations(annotations),
+    }),
     brickLabel: extensionPointLabel,
     outputKey: "input" as OutputKey,
     onClick() {
@@ -541,7 +542,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   };
 
   return (
-    <ListGroup variant="flush">
+    <ListGroup variant="flush" data-testid="editor-node-layout">
       <BrickNode key={FOUNDATION_NODE_ID} {...foundationNodeProps} />
       {nodes.map(({ type, key, ...nodeProps }) => {
         switch (type) {
