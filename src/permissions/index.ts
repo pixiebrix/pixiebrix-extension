@@ -23,12 +23,12 @@ import {
 } from "@/types/definitions";
 import { Permissions } from "webextension-polyfill";
 import { castArray, compact, uniq } from "lodash";
-import { locator } from "@/background/locator";
 import registry from "@/services/registry";
 import { mergePermissions, requestPermissions } from "@/utils/permissions";
 import { Deployment } from "@/types/contract";
 import { resolveDefinitions, resolveRecipe } from "@/registry/internal";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { locateWithRetry } from "@/services/serviceUtils";
 
 // Copied from the permissions section of manifest.json
 const MANDATORY_PERMISSIONS = new Set([
@@ -150,7 +150,9 @@ export async function serviceOriginPermissions(
     return { origins: [] };
   }
 
-  const localConfig = await locator.locate(dependency.id, dependency.config);
+  const localConfig = await locateWithRetry(dependency.id, dependency.config, {
+    retry: true,
+  });
 
   if (localConfig.proxy) {
     // Don't need permissions to access the pixiebrix API proxy server because they're already granted on
