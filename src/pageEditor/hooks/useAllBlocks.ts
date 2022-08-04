@@ -16,24 +16,31 @@
  */
 
 import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
-import { useAsyncState } from "@/hooks/common";
+import { useState } from "react";
+import { useAsyncEffect } from "use-async-effect";
 
-let allBlocksCache: TypedBlockMap | undefined;
+/**
+ * Load the TypedBlockMap from the block registry. Refreshes on mount.
+ */
+function useAllBlocks(): {
+  allBlocks: TypedBlockMap;
+  isLoading: boolean;
+} {
+  const [allBlocks, setAllBlocks] = useState<TypedBlockMap>(new Map());
+  const [isLoading, setIsLoading] = useState(true);
 
-function useAllBlocks() {
-  const [allBlocks, isLoadingAllBlocks] = useAsyncState<TypedBlockMap>(
-    async () => {
-      if (allBlocksCache != null) {
-        return allBlocksCache;
-      }
+  useAsyncEffect(async (isMounted) => {
+    const blocks = await blockRegistry.allTyped();
+    if (isMounted()) {
+      setAllBlocks(blocks);
+      setIsLoading(false);
+    }
+  }, []);
 
-      allBlocksCache = await blockRegistry.allTyped();
-      return allBlocksCache;
-    },
-    [],
-    allBlocksCache ?? new Map()
-  );
-  return [allBlocks, isLoadingAllBlocks] as const;
+  return {
+    allBlocks,
+    isLoading,
+  };
 }
 
 export default useAllBlocks;
