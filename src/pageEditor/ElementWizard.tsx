@@ -40,7 +40,7 @@ import cx from "classnames";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
 import useRecipeSaver from "@/pageEditor/panes/save/useRecipeSaver";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "./slices/sessionSelectors";
 

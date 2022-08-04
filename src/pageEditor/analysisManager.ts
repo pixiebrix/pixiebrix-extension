@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import ExtensionUrlPatternAnalysis from "@/analysis/analysisVisitors/extensionUrlPatternAnalysis";
 import OutputKeyAnalysis from "@/analysis/analysisVisitors/outputKeyAnalysis";
+import TemplateAnalysis from "@/analysis/analysisVisitors/templateAnalysis";
 import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
 import EditorManager from "@/analysis/editorManager";
 import { UUID } from "@/core";
@@ -28,7 +30,6 @@ import runtimeSlice from "./slices/runtimeSlice";
 
 const analysisManager = new EditorManager();
 
-// Registering the trace analysis
 analysisManager.registerAnalysisEffect(
   (
     action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
@@ -46,9 +47,19 @@ analysisManager.registerAnalysisEffect(
   { actionCreator: runtimeSlice.actions.setExtensionTrace }
 );
 
-// Registering the output key analysis
 analysisManager.registerAnalysisEffect(() => new OutputKeyAnalysis(), {
   actionCreator: editorSlice.actions.editElement,
 });
+
+analysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
+  actionCreator: editorSlice.actions.editElement,
+});
+
+analysisManager.registerAnalysisEffect(
+  () => new ExtensionUrlPatternAnalysis(),
+  {
+    actionCreator: editorSlice.actions.editElement,
+  }
+);
 
 export default analysisManager;

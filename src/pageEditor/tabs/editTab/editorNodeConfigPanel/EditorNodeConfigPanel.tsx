@@ -19,7 +19,7 @@ import styles from "./EditorNodeConfigPanel.module.scss";
 
 import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { RegistryId, UUID } from "@/core";
+import { RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BlockConfiguration from "@/pageEditor/tabs/effect/BlockConfiguration";
 import { useAsyncState } from "@/hooks/common";
@@ -29,7 +29,6 @@ import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import getType from "@/runtime/getType";
 import { useSelector } from "react-redux";
 import { selectActiveNodeError } from "@/pageEditor/slices/editorSelectors";
-import useNodeValidation from "@/pageEditor/validation/useNodeValidation";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import { ErrorLevel } from "@/pageEditor/uiState/uiStateTypes";
 import AnalysisResult from "@/pageEditor/tabs/editTab/AnalysisResult";
@@ -41,10 +40,7 @@ const EditorNodeConfigPanel: React.FC<{
    */
   blockFieldName: string;
   blockId: RegistryId;
-  nodeId: UUID;
-}> = ({ blockFieldName, blockId, nodeId }) => {
-  useNodeValidation(blockFieldName, nodeId);
-
+}> = ({ blockFieldName, blockId }) => {
   const [blockInfo] = useAsyncState(async () => {
     const block = await blockRegistry.lookup(blockId);
     return {
