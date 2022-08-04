@@ -28,6 +28,7 @@ import notify from "@/utils/notify";
 import { containsPermissions } from "@/background/messenger/api";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { useAsyncState } from "@/hooks/common";
+import { makeEmptyPermissions } from "@/utils/permissions";
 
 type PermissionsState = {
   hasPermissions: boolean;
@@ -36,7 +37,7 @@ type PermissionsState = {
 
 const defaultState = {
   hasPermissions: true,
-  permissions: {},
+  permissions: makeEmptyPermissions(),
 };
 
 const PERMISSION_UPDATE_MILLIS = 200;

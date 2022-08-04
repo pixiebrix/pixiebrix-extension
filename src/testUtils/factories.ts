@@ -43,7 +43,6 @@ import {
   validateTimestamp,
   validateUUID,
 } from "@/types/helpers";
-import { Permissions } from "webextension-polyfill";
 import { BaseExtensionState } from "@/pageEditor/extensionPoints/elementConfig";
 import trigger from "@/pageEditor/extensionPoints/trigger";
 import menuItem from "@/pageEditor/extensionPoints/menuItem";
@@ -86,6 +85,7 @@ import {
 } from "@/auth/authTypes";
 import { JsonObject } from "type-fest";
 import objectHash from "object-hash";
+import { makeEmptyPermissions } from "@/utils/permissions";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -292,7 +292,7 @@ export const blockFactory = define<IBlock>({
   name: (i: number) => `${TEST_BLOCK_ID} ${i}`,
   inputSchema: null as Schema,
   defaultOptions: null,
-  permissions: {} as Permissions.Permissions,
+  permissions: makeEmptyPermissions(),
   run: jest.fn(),
 });
 
@@ -349,7 +349,7 @@ export const extensionPointConfigFactory = define<ExtensionPointConfig>({
   id: "extensionPoint" as InnerDefinitionRef,
   label: (n: number) => `Test Extension ${n}`,
   services: {},
-  permissions: {},
+  permissions: makeEmptyPermissions(),
   config: () => ({
     caption: "Button",
     action: [] as BlockPipeline,
@@ -420,7 +420,7 @@ export const versionedExtensionPointRecipeFactory = ({
         id: extensionPointId ?? validateRegistryId("test/extension-point"),
         label: `Test Extension for Recipe ${n}`,
         services: {},
-        permissions: {},
+        permissions: makeEmptyPermissions(),
         config: {
           caption: "Button",
           action: [] as BlockPipeline,

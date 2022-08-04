@@ -120,7 +120,7 @@ const FieldTemplate: React.FC<FieldProps> = ({
   className,
   ...restFieldProps
 }) => {
-  const isInvalid = touched && hasOwnOrNestedError(error);
+  const isInvalid = hasOwnOrNestedError(error);
 
   // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
   const nonUndefinedValue = typeof value === "undefined" ? blankValue : value;
