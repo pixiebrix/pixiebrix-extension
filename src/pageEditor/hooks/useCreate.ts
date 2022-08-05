@@ -135,19 +135,10 @@ function useCreate(): CreateCallback {
       element: FormState,
       pushToCloud: boolean
     ): Promise<string | null> => {
-      try {
-        // Make sure the pages have the latest bricks for when we reactivate below
-        // NOTE: This must run before the permissions check (below), because we
-        // need to look up service definitions as part of checking permissions.
-        await refreshRegistries();
-      } catch (error) {
-        notify.warning({
-          message: `Error fetching remote bricks: ${selectErrorMessage(error)}`,
-          includeErrorDetails: false, // Using `selectErrorMessage` locally
-          error,
-          reportError: true,
-        });
-      }
+      // Make sure the pages have the latest bricks for when we reactivate below
+      // NOTE: This must run before the permissions check (below), because we
+      // need to look up service definitions as part of checking permissions.
+      await refreshRegistries();
 
       // eslint-disable-next-line promise/prefer-await-to-then -- It specifically does not need to be awaited #2775
       void ensurePermissions(element).catch((error) => {
