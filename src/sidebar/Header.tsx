@@ -24,9 +24,7 @@ import { hideSidebar } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 import useTheme from "@/hooks/useTheme";
 
-type HeaderProps = {};
-
-const Header: React.FunctionComponent<HeaderProps> = (props) => {
+const Header: React.FunctionComponent = () => {
   const { logo } = useTheme();
 
   return (
