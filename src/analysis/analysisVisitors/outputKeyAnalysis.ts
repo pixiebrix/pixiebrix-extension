@@ -20,12 +20,16 @@ import { nestedPosition, VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { BlockConfig, BlockPosition } from "@/blocks/types";
 import { BlockType } from "@/runtime/runtimeTypes";
 import AnalysisVisitor from "@/analysis/AnalysisVisitor";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
 
 const outputKeyRegex = /^[A-Za-z][\dA-Za-z]*$/;
 
 const blockTypesWithEmptyOutputKey: BlockType[] = ["effect", "renderer"];
 
 class OutputKeyAnalysis extends AnalysisVisitor {
+  blockMap: TypedBlockMap;
+
   get id() {
     return "outputKey";
   }
@@ -38,8 +42,8 @@ class OutputKeyAnalysis extends AnalysisVisitor {
     super.visitBlock(position, blockConfig, extra);
 
     let errorMessage: string;
-    const { outputKey } = blockConfig;
-    const blockType = extra.typedBlock.type;
+    const { id, outputKey } = blockConfig;
+    const { type: blockType } = this.blockMap.get(id);
     if (blockTypesWithEmptyOutputKey.includes(blockType)) {
       if (!outputKey) {
         return;
@@ -61,6 +65,12 @@ class OutputKeyAnalysis extends AnalysisVisitor {
       analysisId: this.id,
       type: AnnotationType.Error,
     });
+  }
+
+  override async run(extension: FormState): Promise<void> {
+    this.blockMap = await blockRegistry.allTyped();
+
+    await super.run(extension);
   }
 }
 

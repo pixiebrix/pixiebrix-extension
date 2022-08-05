@@ -95,15 +95,10 @@ class PipelineVisitor {
           flavor: pipelineFlavor,
         });
       } else if (isExpression(value)) {
-        // TODO:
-        // 1. Handle anyOf/oneOf/allOf
-        this.visitExpression(
-          nestedPosition(position, "config", prop),
-          value
-        );
+        // TODO: Handle anyOf/oneOf/allOf
+        this.visitExpression(nestedPosition(position, "config", prop), value);
       } else {
-        // TODO:
-        // 1. Handle anyOf/oneOf/allOf
+        // TODO Handle anyOf/oneOf/allOf
         this.visitLiteral(
           nestedPosition(position, "config", prop),
           value as JsonValue
@@ -148,6 +143,7 @@ class PipelineVisitor {
   public visitLiteral(position: BlockPosition, value: JsonValue): void {
     // NOP
   }
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   public visitPipeline(
     position: BlockPosition,

@@ -16,7 +16,8 @@
  */
 
 import { Expression } from "@/core";
-import { AbsolutePosition, AnnotationType } from "@/analysis/analysisTypes";
+import { AnnotationType } from "@/analysis/analysisTypes";
+import { BlockPosition } from "@/blocks/types";
 import AnalysisVisitor from "@/analysis/AnalysisVisitor";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
@@ -30,7 +31,7 @@ class TemplateAnalysis extends AnalysisVisitor {
   }
 
   override async visitExpression(
-    position: AbsolutePosition,
+    position: BlockPosition,
     expression: Expression<unknown>
   ): Promise<void> {
     if (

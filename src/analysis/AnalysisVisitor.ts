@@ -30,8 +30,8 @@ abstract class AnalysisVisitor extends PipelineVisitor implements Analysis {
     return this.annotations;
   }
 
-  async run(extension: FormState): Promise<void> {
-    return this.visitRootPipeline(extension.extension.blockPipeline, {
+  run(extension: FormState): void | Promise<void> {
+    this.visitRootPipeline(extension.extension.blockPipeline, {
       extensionPointType: extension.type,
     });
   }

@@ -48,7 +48,7 @@ class EditorManager {
     analysisFactory: AnalysisFactory,
     config: AnalysisEffectConfig
   ) {
-    const effect: ValidatorEffect = (action, listenerApi) => {
+    const effect: ValidatorEffect = async (action, listenerApi) => {
       const state = listenerApi.getState();
       const activeElement = selectActiveElement(state);
       if (activeElement == null) {

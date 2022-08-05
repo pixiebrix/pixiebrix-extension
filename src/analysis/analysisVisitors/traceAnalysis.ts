@@ -53,9 +53,9 @@ class TraceAnalysis extends AnalysisVisitor {
   override visitBlock(
     position: BlockPosition,
     blockConfig: BlockConfig,
-    options: VisitBlockExtra
-  ): Promise<void> {
-    super.visitBlock(position, blockConfig, options);
+    extra: VisitBlockExtra
+  ) {
+    super.visitBlock(position, blockConfig, extra);
 
     const records = this.traceMap.get(blockConfig.instanceId);
     // The callback isTraceError is used directly without a proxy here to

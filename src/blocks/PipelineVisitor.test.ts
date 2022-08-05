@@ -19,7 +19,6 @@ import { DocumentRenderer } from "@/blocks/renderers/document";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import { BlockPosition, BlockConfig } from "@/blocks/types";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
-import { Schema } from "@/core";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { PipelineExpression } from "@/runtime/mapArgs";
 import { blockConfigFactory, pipelineFactory } from "@/testUtils/factories";
