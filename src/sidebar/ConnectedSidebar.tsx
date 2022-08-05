@@ -29,7 +29,7 @@ import sidebarSlice, { SidebarState } from "./sidebarSlice";
 import { AnyAction } from "redux";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "@/sidebar/LoginPanel";
-import ErrorBoundary from "@/components/ErrorBoundary";
+import ErrorBoundary from "./ErrorBoundary";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
