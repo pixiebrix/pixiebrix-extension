@@ -15,12 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./ConnectedSidebar.module.scss";
-
 import React, { Dispatch, useEffect, useMemo } from "react";
-import { Button } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
 import {
   addListener,
   removeListener,
@@ -32,11 +27,9 @@ import { ActivatePanelOptions, FormEntry, PanelEntry } from "@/sidebar/types";
 import Tabs from "@/sidebar/Tabs";
 import sidebarSlice, { SidebarState } from "./sidebarSlice";
 import { AnyAction } from "redux";
-import { hideSidebar } from "@/contentScript/messenger/api";
-import { whoAmI } from "@/background/messenger/api";
-import useTheme from "@/hooks/useTheme";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "@/sidebar/LoginPanel";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -61,7 +54,6 @@ function getConnectedListener(dispatch: Dispatch<AnyAction>): SidebarListener {
 const selectState = ({ sidebar }: { sidebar: SidebarState }) => sidebar;
 
 const ConnectedSidebar: React.VFC = () => {
-  const { logo } = useTheme();
   const dispatch = useDispatch();
   const sidebarState = useSelector(selectState);
 
@@ -82,39 +74,7 @@ const ConnectedSidebar: React.VFC = () => {
 
   return (
     <div className="full-height">
-      <div className="d-flex p-2 justify-content-between align-content-center">
-        <Button
-          className={styles.button}
-          onClick={async () => {
-            const sidebar = await whoAmI();
-            await hideSidebar({ tabId: sidebar.tab.id });
-          }}
-          size="sm"
-          variant="link"
-        >
-          <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
-        </Button>
-        <div className="align-self-center">
-          <img
-            src={logo.regular}
-            alt="PixieBrix logo"
-            className={styles.logo}
-          />
-        </div>
-        <Button
-          href="/options.html"
-          target="_blank"
-          size="sm"
-          variant="link"
-          className={styles.button}
-        >
-          <span>
-            Options <FontAwesomeIcon icon={faCog} />
-          </span>
-        </Button>
-      </div>
-
-      <div className="full-height">
+      <ErrorBoundary>
         <RequireAuth LoginPage={LoginPanel}>
           {sidebarState.panels?.length || sidebarState.forms?.length ? (
             <Tabs
@@ -127,7 +87,7 @@ const ConnectedSidebar: React.VFC = () => {
             <DefaultPanel />
           )}
         </RequireAuth>
-      </div>
+      </ErrorBoundary>
     </div>
   );
 };
