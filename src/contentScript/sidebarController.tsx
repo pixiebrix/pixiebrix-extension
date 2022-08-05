@@ -181,6 +181,14 @@ export function hideSidebar(): void {
   window.dispatchEvent(new CustomEvent(PANEL_HIDING_EVENT));
 }
 
+export async function reloadSidebar(): Promise<void> {
+  if (isSidebarVisible()) {
+    hideSidebar();
+  }
+
+  await showSidebar();
+}
+
 export async function toggleSidebar(): Promise<void> {
   if (isSidebarVisible()) {
     hideSidebar();

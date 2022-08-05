@@ -21,6 +21,11 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 import { UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
+import { faRedo } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Alert, Button } from "react-bootstrap";
+import { whoAmI } from "@/background/messenger/api";
+import { reloadSidebar } from "@/contentScript/messenger/api";
 
 interface State {
   hasError: boolean;
@@ -49,16 +54,31 @@ class ErrorBoundary extends Component<UnknownObject, State> {
     }
   }
 
+  async reloadSidebar() {
+    const sidebar = await whoAmI();
+    await reloadSidebar({ tabId: sidebar.tab.id });
+  }
+
   override render(): React.ReactNode {
     if (this.state.hasError) {
       return (
         <div className="p-3">
-          <h1>Something went wrong.</h1>
-          {!isEmpty(this.state.errorMessage) && (
-            <p>{this.state.errorMessage}</p>
-          )}
+          <Alert variant="danger">
+            <Alert.Heading>Something went wrong</Alert.Heading>
+            {!isEmpty(this.state.errorMessage) && (
+              <>
+                <p>{this.state.errorMessage}</p>
+              </>
+            )}
 
-          <p>Please close and re-open the sidebar panel.</p>
+            <p>Please close and re-open the sidebar panel.</p>
+
+            <div>
+              <Button variant="light" onClick={this.reloadSidebar}>
+                <FontAwesomeIcon icon={faRedo} /> Reload the sidebar
+              </Button>
+            </div>
+          </Alert>
 
           {this.state.stack && (
             <pre className="mt-2 small text-secondary">
