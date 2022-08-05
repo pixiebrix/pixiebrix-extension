@@ -17,6 +17,9 @@
 
 import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
 import { useAsyncState } from "@/hooks/common";
+import { isEmpty } from "lodash";
+
+let allBlocksCached: TypedBlockMap = new Map();
 
 /**
  * Load the TypedBlockMap from the block registry. Refreshes on mount.
@@ -25,15 +28,18 @@ function useAllBlocks(): {
   allBlocks: TypedBlockMap;
   isLoading: boolean;
 } {
-  const [allBlocks, isLoading] = useAsyncState<TypedBlockMap>(
-    async () => blockRegistry.allTyped(),
+  const [allBlocks] = useAsyncState<TypedBlockMap>(
+    async () => {
+      allBlocksCached = await blockRegistry.allTyped();
+      return allBlocksCached;
+    },
     [],
-    new Map()
+    allBlocksCached
   );
 
   return {
     allBlocks,
-    isLoading,
+    isLoading: isEmpty(allBlocksCached),
   };
 }
 
