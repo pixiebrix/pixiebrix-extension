@@ -88,7 +88,7 @@ const DataPanel: React.FC = () => {
     pipeline,
   } = useSelector(selectActiveNodeInfo);
 
-  const [allBlocks] = useAllBlocks();
+  const { allBlocks } = useAllBlocks();
   const blockType = allBlocks.get(blockId)?.type;
 
   const traces = useSelector(selectExtensionTrace);

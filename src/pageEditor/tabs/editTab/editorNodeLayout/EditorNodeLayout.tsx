@@ -57,13 +57,13 @@ import { Except } from "type-fest";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
-import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { getRootPipelineFlavor } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 import { isExpression } from "@/runtime/mapArgs";
 import { decideFoundationStatus, decideBlockStatus } from "./decideStatus";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
+import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -110,7 +110,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   const dispatch = useDispatch();
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
   const showPaste = pasteBlock && isApiAtLeastV2;
-  const [allBlocks] = useAllBlocks();
+  const { allBlocks } = useAllBlocks();
   const activeElement = useSelector(selectActiveElement);
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectExtensionTrace);
