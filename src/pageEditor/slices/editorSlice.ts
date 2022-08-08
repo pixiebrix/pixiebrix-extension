@@ -762,6 +762,10 @@ export const editorSlice = createSlice({
     hideModal(state) {
       state.visibleModalKey = null;
     },
+    toggleElementActionMenu(state) {
+      const uiState = selectActiveElementUIState({ editor: state });
+      uiState.isActionMenuOpen = !uiState.isActionMenuOpen;
+    },
   },
 });
 /* eslint-enable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- re-enable rule */

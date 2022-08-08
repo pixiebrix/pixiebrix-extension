@@ -270,8 +270,8 @@ const SidebarExpanded: React.VoidFunctionComponent<{
         key={`installed-${element.id}`}
         extension={element}
         recipes={recipes}
-        active={activeElementId === element.id}
-        available={
+        isActive={activeElementId === element.id}
+        isAvailable={
           !availableInstalledIds || availableInstalledIds.has(element.id)
         }
         isNested={isNested}
@@ -280,8 +280,8 @@ const SidebarExpanded: React.VoidFunctionComponent<{
       <DynamicEntry
         key={`dynamic-${element.uuid}`}
         item={element}
-        active={activeElementId === element.uuid}
-        available={
+        isActive={activeElementId === element.uuid}
+        isAvailable={
           !availableDynamicIds || availableDynamicIds.has(element.uuid)
         }
         isNested={isNested}

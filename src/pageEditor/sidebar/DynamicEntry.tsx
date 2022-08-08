@@ -24,7 +24,6 @@ import { getLabel } from "@/pageEditor/sidebar/common";
 import {
   ExtensionIcon,
   NotAvailableIcon,
-  UnsavedChangesIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
 import { UUID } from "@/core";
 import {
@@ -40,8 +39,9 @@ import { FormState } from "@/pageEditor/pageEditorTypes";
 import {
   selectActiveElement,
   selectActiveRecipeId,
-  selectElementIsDirty,
+  selectIsActiveElementActionMenuOpen,
 } from "@/pageEditor/slices/editorSelectors";
+import EntryMenu from "@/pageEditor/sidebar/EntryMenu";
 
 /**
  * A sidebar menu entry corresponding to an extension that is new or is currently being edited.
@@ -49,10 +49,10 @@ import {
  */
 const DynamicEntry: React.FunctionComponent<{
   item: FormState;
-  available: boolean;
-  active: boolean;
+  isAvailable: boolean;
+  isActive: boolean;
   isNested?: boolean;
-}> = ({ item, available, active, isNested = false }) => {
+}> = ({ item, isAvailable, isActive, isNested = false }) => {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const activeRecipeId = useSelector(selectActiveRecipeId);
@@ -61,8 +61,11 @@ const DynamicEntry: React.FunctionComponent<{
   const recipeId = activeRecipeId ?? activeElement?.recipe?.id;
   // Set the alternate background if this item isn't active, but either its recipe or another item in its recipe is active
   const hasRecipeBackground =
-    !active && recipeId && item.recipe?.id === recipeId;
-  const isDirty = useSelector(selectElementIsDirty(item.uuid));
+    !isActive && recipeId && item.recipe?.id === recipeId;
+  const isActionMenuOpen = useSelector(selectIsActiveElementActionMenuOpen);
+  const toggleActionMenu = () => {
+    dispatch(actions.toggleElementActionMenu());
+  };
 
   const isButton = item.type === "menuItem";
 
@@ -80,7 +83,7 @@ const DynamicEntry: React.FunctionComponent<{
         [styles.recipeBackground]: hasRecipeBackground,
       })}
       action
-      active={active}
+      active={isActive}
       key={`dynamic-${item.uuid}`}
       onMouseEnter={isButton ? async () => showOverlay(item.uuid) : undefined}
       onMouseLeave={isButton ? async () => hideOverlay() : undefined}
@@ -111,15 +114,17 @@ const DynamicEntry: React.FunctionComponent<{
         <ExtensionIcon type={item.type} />
       </span>
       <span className={styles.name}>{getLabel(item)}</span>
-      {!available && (
+      {!isAvailable && (
         <span className={styles.icon}>
           <NotAvailableIcon />
         </span>
       )}
-      {isDirty && (
-        <span className={cx(styles.icon, "text-danger")}>
-          <UnsavedChangesIcon />
-        </span>
+      {isActive && (
+        <EntryMenu
+          item={item}
+          isOpen={isActionMenuOpen}
+          toggleMenu={toggleActionMenu}
+        />
       )}
     </ListGroup.Item>
   );

@@ -16,7 +16,9 @@
  */
 
 .root {
+  min-height: 56px;
   display: flex;
+  align-items: center;
   gap: 0.5em;
   padding: 0.8em 0.6em !important;
   border-top-width: 0;

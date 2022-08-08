@@ -289,3 +289,8 @@ const selectAnnotationsForPathSelector = createSelector(
  */
 export const selectAnnotationsForPath = (path: string) => (state: RootState) =>
   selectAnnotationsForPathSelector(state, path);
+
+export const selectIsActiveElementActionMenuOpen = createSelector(
+  selectActiveElementUIState,
+  (uiState) => uiState.isActionMenuOpen ?? false
+);
