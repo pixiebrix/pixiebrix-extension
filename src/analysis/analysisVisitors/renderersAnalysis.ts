@@ -18,11 +18,11 @@
 import { AnalysisVisitorWithResolvedBlocks } from "./baseAnalysisVisitors";
 import { AnnotationType } from "@/analysis/analysisTypes";
 import { BlockConfig, BlockPosition } from "@/blocks/types";
-import { VisitPipelineExtra } from "@/blocks/PipelineVisitor";
+import { nestedPosition, VisitPipelineExtra } from "@/blocks/PipelineVisitor";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 
 export const MULTIPLE_RENDERERS_ERROR_MESSAGE =
-  "A panel can only have one renderer. There are one or more renderers configured after this brick.";
+  "A panel can only have one renderer. There are one or more other renderers configured for this extension.";
 export const RENDERER_MUST_BE_LAST_BLOCK_ERROR_MESSAGE =
   "A renderer must be the last brick.";
 
@@ -42,7 +42,7 @@ class RenderersAnalysis extends AnalysisVisitorWithResolvedBlocks {
       return;
     }
 
-    let hasRenderer = false;
+    let lastRendererIndex = -1;
     for (let blockIndex = pipeline.length - 1; blockIndex >= 0; --blockIndex) {
       const pipelineBlock = pipeline.at(blockIndex);
       const blockType = this.allBlocks.get(pipelineBlock.id)?.type;
@@ -52,10 +52,19 @@ class RenderersAnalysis extends AnalysisVisitorWithResolvedBlocks {
         continue;
       }
 
-      if (hasRenderer) {
+      if (lastRendererIndex !== -1) {
         blockErrors.push(MULTIPLE_RENDERERS_ERROR_MESSAGE);
+
+        // Push error annotation for the other renderer,
+        // which was found before this one
+        this.annotations.push({
+          position: nestedPosition(position, String(lastRendererIndex)),
+          message: MULTIPLE_RENDERERS_ERROR_MESSAGE,
+          analysisId: this.id,
+          type: AnnotationType.Error,
+        });
       } else {
-        hasRenderer = true;
+        lastRendererIndex = blockIndex;
       }
 
       if (blockIndex !== pipeline.length - 1) {
@@ -64,7 +73,7 @@ class RenderersAnalysis extends AnalysisVisitorWithResolvedBlocks {
 
       for (const message of blockErrors) {
         this.annotations.push({
-          position,
+          position: nestedPosition(position, String(blockIndex)),
           message,
           analysisId: this.id,
           type: AnnotationType.Error,
