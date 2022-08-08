@@ -38,7 +38,7 @@ type AnalysisFactory<TAction = AnyAction, TState = unknown> = (
   state: TState
 ) => Analysis | null;
 
-class EditorManager {
+class ReduxAnalysisManager {
   private readonly listenerMiddleware = createListenerMiddleware();
   public get middleware() {
     return this.listenerMiddleware.middleware;
@@ -87,4 +87,4 @@ class EditorManager {
   }
 }
 
-export default EditorManager;
+export default ReduxAnalysisManager;

@@ -19,7 +19,7 @@ import ExtensionUrlPatternAnalysis from "@/analysis/analysisVisitors/extensionUr
 import OutputKeyAnalysis from "@/analysis/analysisVisitors/outputKeyAnalysis";
 import TemplateAnalysis from "@/analysis/analysisVisitors/templateAnalysis";
 import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
-import EditorManager from "@/analysis/editorManager";
+import ReduxAnalysisManager from "@/analysis/editorManager";
 import { UUID } from "@/core";
 import { TraceRecord } from "@/telemetry/trace";
 import { PayloadAction } from "@reduxjs/toolkit";
@@ -28,9 +28,9 @@ import { selectActiveElement } from "./slices/editorSelectors";
 import { editorSlice } from "./slices/editorSlice";
 import runtimeSlice from "./slices/runtimeSlice";
 
-const analysisManager = new EditorManager();
+const pageEditorAnalysisManager = new ReduxAnalysisManager();
 
-analysisManager.registerAnalysisEffect(
+pageEditorAnalysisManager.registerAnalysisEffect(
   (
     action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
     state: RootState
@@ -47,19 +47,22 @@ analysisManager.registerAnalysisEffect(
   { actionCreator: runtimeSlice.actions.setExtensionTrace }
 );
 
-analysisManager.registerAnalysisEffect(() => new OutputKeyAnalysis(), {
+pageEditorAnalysisManager.registerAnalysisEffect(
+  () => new OutputKeyAnalysis(),
+  {
+    actionCreator: editorSlice.actions.editElement,
+  }
+);
+
+pageEditorAnalysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
   actionCreator: editorSlice.actions.editElement,
 });
 
-analysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
-  actionCreator: editorSlice.actions.editElement,
-});
-
-analysisManager.registerAnalysisEffect(
+pageEditorAnalysisManager.registerAnalysisEffect(
   () => new ExtensionUrlPatternAnalysis(),
   {
     actionCreator: editorSlice.actions.editElement,
   }
 );
 
-export default analysisManager;
+export default pageEditorAnalysisManager;

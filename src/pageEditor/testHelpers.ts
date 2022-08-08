@@ -28,7 +28,7 @@ import { logSlice } from "@/components/logViewer/logSlice";
 import { createRenderWithWrappers } from "@/testUtils/testHelpers";
 import validationListenerMiddleware from "@/pageEditor/validation/validationListenerMiddleware";
 import analysisSlice from "@/analysis/analysisSlice";
-import analysisManager from "./analysisManager";
+import pageEditorAnalysisManager from "./analysisManager";
 
 const renderWithWrappers = createRenderWithWrappers(() =>
   configureStore({
@@ -51,7 +51,7 @@ const renderWithWrappers = createRenderWithWrappers(() =>
       /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
       return getDefaultMiddleware()
         .concat(validationListenerMiddleware)
-        .concat(analysisManager.middleware);
+        .concat(pageEditorAnalysisManager.middleware);
       /* eslint-enable unicorn/prefer-spread */
     },
   })
