@@ -27,15 +27,15 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AsyncButton from "@/components/AsyncButton";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 
 type PreviewState = {
   isRunning: boolean;
-  output: unknown | null;
-  error: unknown | null;
+  output: unknown;
+  error: unknown;
 };
 
 const initialState: PreviewState = {

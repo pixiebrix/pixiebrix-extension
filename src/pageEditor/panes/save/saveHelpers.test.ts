@@ -58,7 +58,7 @@ import {
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 jest.mock("@/background/contextMenus");
@@ -747,7 +747,7 @@ describe("buildRecipe", () => {
     ${1}                | ${2}
     ${2}                | ${2}
   `(
-    "Test recipe with $cleanExtensionCount clean, and $dirtyExtensionCount changed/dirty extensions",
+    "recipe with $cleanExtensionCount clean, and $dirtyExtensionCount changed/dirty extensions",
     async ({
       cleanExtensionCount,
       dirtyExtensionCount,

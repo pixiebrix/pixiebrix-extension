@@ -18,6 +18,7 @@
 import React, { useContext } from "react";
 import { PageEditorTabContext } from "@/pageEditor/context";
 import { Button } from "react-bootstrap";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 /**
  * Error banner for Page Editor browser connection errors.
@@ -29,7 +30,7 @@ import { Button } from "react-bootstrap";
 const ErrorBanner: React.VFC = () => {
   const context = useContext(PageEditorTabContext);
 
-  const { error } = context.tabState;
+  const { error } = context;
 
   if (!error) {
     return null;
@@ -37,7 +38,7 @@ const ErrorBanner: React.VFC = () => {
 
   return (
     <div className="d-flex p-2 align-items-center alert-danger flex-align-center">
-      <div className="flex-grow-1">{error}</div>
+      <div className="flex-grow-1">{getErrorMessage(error)}</div>
       <div>
         <Button
           className="ml-2"

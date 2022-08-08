@@ -37,7 +37,7 @@ type ChromeMessageSender = chrome.runtime.MessageSender;
 
 export const MESSAGE_PREFIX = "@@pixiebrix/background/";
 
-const handlers: Map<string, HandlerEntry> = new Map();
+const handlers = new Map<string, HandlerEntry>();
 
 /**
  * Return true if a message sender is either the extension itself, or an externally connectable page

@@ -93,7 +93,6 @@ const startMeasureRenderTime = (
   };
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface -- imported code
 export interface PatchedClassComponent {}
 
 const createClassComponent = (

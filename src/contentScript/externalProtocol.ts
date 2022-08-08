@@ -76,8 +76,12 @@ async function waitExtensionLoaded(): Promise<void> {
       attributes: true,
       attributeFilter: [PIXIEBRIX_READY_ATTRIBUTE],
     }),
-    POLL_READY_TIMEOUT,
-    `The extension did not load within ${POLL_READY_TIMEOUT / 1000}s`
+    {
+      milliseconds: POLL_READY_TIMEOUT,
+      message: `The extension did not load within ${
+        POLL_READY_TIMEOUT / 1000
+      }s`,
+    }
   );
 }
 
@@ -193,7 +197,9 @@ export function liftExternalToContentScript<
     sendMessageToOtherSide(message);
 
     // Communication is completely asynchronous; This sets up response for the specific nonce
-    const payload = await pTimeout(oneResponse<R>(nonce), RESPONSE_TIMEOUT_MS);
+    const payload = await pTimeout(oneResponse<R>(nonce), {
+      milliseconds: RESPONSE_TIMEOUT_MS,
+    });
 
     if (isErrorResponse(payload)) {
       throw deserializeError(payload.$$error);

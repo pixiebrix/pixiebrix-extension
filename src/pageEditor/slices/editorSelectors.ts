@@ -31,7 +31,6 @@ import {
   TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
 export const selectActiveElementId = ({ editor }: EditorRootState) =>
   editor.activeElementId;
@@ -262,7 +261,7 @@ export const selectActiveNodeError = createSelector(
 export const selectAddBlockLocation = ({ editor }: RootState) =>
   editor.addBlockLocation;
 
-const selectAnnotationsForPathSelector = createSelector(
+const annotationsForPathSelector = createSelector(
   [
     (state: RootState) => {
       const activeElementId = selectActiveElementId(state);
@@ -271,12 +270,8 @@ const selectAnnotationsForPathSelector = createSelector(
     (state, path: string) => path,
   ],
   (extensionAnnotations, path) => {
-    const relativeBlockPath = path.startsWith(PIPELINE_BLOCKS_FIELD_NAME)
-      ? path.slice(PIPELINE_BLOCKS_FIELD_NAME.length + 1)
-      : path;
-
     const pathAnnotations = extensionAnnotations.filter(
-      (x) => x.position.path === relativeBlockPath
+      (x) => x.position.path === path
     );
 
     return pathAnnotations;
@@ -288,7 +283,7 @@ const selectAnnotationsForPathSelector = createSelector(
  * @param path A path relative to the root of the extension or root pipeline
  */
 export const selectAnnotationsForPath = (path: string) => (state: RootState) =>
-  selectAnnotationsForPathSelector(state, path);
+  annotationsForPathSelector(state, path);
 
 export const selectIsActiveElementActionMenuOpen = createSelector(
   selectActiveElementUIState,

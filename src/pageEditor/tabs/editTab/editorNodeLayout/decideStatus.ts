@@ -26,7 +26,7 @@ type DecideBlockStatusArgs = {
   traceRecord: TraceRecord;
 };
 
-function decideBlockStatus({
+export function decideBlockStatus({
   blockAnnotations,
   blockError,
   traceRecord,
@@ -65,4 +65,35 @@ function decideBlockStatus({
   return RunStatus.PENDING;
 }
 
-export default decideBlockStatus;
+type DecideFoundationStatusArgs = {
+  hasTraces: boolean;
+  blockAnnotations: Annotation[];
+};
+export function decideFoundationStatus({
+  hasTraces,
+  blockAnnotations,
+}: DecideFoundationStatusArgs): RunStatus {
+  if (
+    blockAnnotations.some(
+      (annotation) => annotation.type === AnnotationType.Error
+    )
+  ) {
+    return RunStatus.ERROR;
+  }
+
+  if (
+    blockAnnotations.some(
+      (annotation) => annotation.type === AnnotationType.Warning
+    )
+  ) {
+    return RunStatus.WARNING;
+  }
+
+  // The runtime doesn't directly trace the extension point. However, if there's a trace from a brick, we
+  // know the extension point ran successfully
+  if (hasTraces) {
+    return RunStatus.SUCCESS;
+  }
+
+  return RunStatus.NONE;
+}

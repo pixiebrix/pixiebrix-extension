@@ -22,12 +22,13 @@ import { compact } from "lodash";
 import { BlockConfig } from "@/blocks/types";
 import { uuidv4 } from "@/types/helpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
+import { RootState } from "@/pageEditor/pageEditorTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { createNewBlock } from "@/pageEditor/createNewBlock";
 import { PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 // TODO: Refactoring - break these out into separate hooks so they can
 //  be pushed down into the specific UI components where they are used.

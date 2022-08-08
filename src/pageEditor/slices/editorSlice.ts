@@ -33,7 +33,6 @@ import {
 } from "@/types/definitions";
 import {
   EditorState,
-  FormState,
   AddBlockLocation,
   ModalKey,
 } from "@/pageEditor/pageEditorTypes";
@@ -50,6 +49,7 @@ import {
   selectActiveElementUIState,
   selectActiveNodeId,
 } from "./editorSelectors";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -329,7 +329,7 @@ export const editorSlice = createSlice({
 
       // @ts-expect-error -- Concrete variants of FromState are not mutually assignable.
       state.elements[index] = {
-        ...state.elements[index],
+        ...state.elements.at(index),
         ...elementUpdate,
       };
 
@@ -672,6 +672,9 @@ export const editorSlice = createSlice({
           pipeline[index],
         ];
       }
+
+      // Make sure the pipeline map is updated
+      syncElementNodeUIStates(state, element);
 
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;

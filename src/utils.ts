@@ -508,7 +508,9 @@ export async function asyncForEach<Item>(
   await Promise.all([...iterable].map(unary(iteratee)));
 }
 
-export async function waitFor<T>(
+/** @deprecate Use pollUntilTruthy directly, better-named for clarity */
+export const waitFor = pollUntilTruthy;
+export async function pollUntilTruthy<T>(
   looper: (...args: unknown[]) => Promise<T> | T,
   { maxWaitMillis = Number.MAX_SAFE_INTEGER, intervalMillis = 100 }
 ): Promise<T | undefined> {
@@ -523,6 +525,18 @@ export async function waitFor<T>(
     // eslint-disable-next-line no-await-in-loop -- It's a retry loop
     await sleep(intervalMillis);
   } while (Date.now() < endBy);
+}
+
+export async function logPromiseDuration<P>(
+  title: string,
+  promise: Promise<P>
+): Promise<P> {
+  const start = Date.now();
+  try {
+    return await promise;
+  } finally {
+    console.debug(title, `${Math.round(Date.now() - start)}ms`);
+  }
 }
 
 export function isMac(): boolean {

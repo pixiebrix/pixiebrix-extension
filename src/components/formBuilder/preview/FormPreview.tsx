@@ -29,7 +29,6 @@ import { produce } from "immer";
 import FormPreviewBooleanField from "./FormPreviewBooleanField";
 import { getPreviewValues } from "@/components/fields/fieldUtils";
 import ImageCropWidgetPreview from "@/components/formBuilder/preview/ImageCropWidgetPreview";
-// eslint-disable-next-line import/no-named-as-default -- need default export here
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import SelectWidgetPreview from "./SelectWidgetPreview";

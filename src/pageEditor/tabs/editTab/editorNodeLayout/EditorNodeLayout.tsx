@@ -28,7 +28,6 @@ import { BlockPipeline, Branch } from "@/blocks/types";
 import {
   BrickNodeContentProps,
   BrickNodeProps,
-  RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { OutputKey, UUID } from "@/core";
@@ -46,6 +45,7 @@ import { get, isEmpty } from "lodash";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import {
   getBlockAnnotations,
+  getFoundationNodeAnnotations,
   getDocumentPipelinePaths,
   getPipelineInputKeyPropName,
   getPipelinePropNames,
@@ -57,13 +57,13 @@ import { Except } from "type-fest";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
-import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { getRootPipelineFlavor } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 import { isExpression } from "@/runtime/mapArgs";
-import decideBlockStatus from "./decideBlockStatus";
+import { decideFoundationStatus, decideBlockStatus } from "./decideStatus";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
+import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -110,7 +110,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   const dispatch = useDispatch();
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
   const showPaste = pasteBlock && isApiAtLeastV2;
-  const [allBlocks] = useAllBlocks();
+  const { allBlocks } = useAllBlocks();
   const activeElement = useSelector(selectActiveElement);
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectExtensionTrace);
@@ -133,7 +133,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
     [dispatch]
   );
 
-  let foundationRunStatus: RunStatus = RunStatus.NONE;
+  let extensionHasTraces = false;
 
   // eslint-disable-next-line complexity
   function mapPipelineToNodes({
@@ -152,8 +152,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
     const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
 
     const lastIndex = pipeline.length - 1;
-    // eslint-disable-next-line security/detect-object-injection -- just created the index
-    const lastBlockId = pipeline[lastIndex]?.id;
+    const lastBlockId = pipeline.at(lastIndex)?.id;
     const lastBlock = lastBlockId ? allBlocks.get(lastBlockId) : undefined;
     const showAppend = !lastBlock?.block || lastBlock.type !== "renderer";
 
@@ -199,9 +198,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       const traceRecord = traceRecords[0];
 
       if (traceRecord != null) {
-        // The runtime doesn't directly trace the extension point. However, if there's a trace from a brick, we
-        // know the extension point ran successfully
-        foundationRunStatus = RunStatus.SUCCESS;
+        extensionHasTraces = true;
       }
 
       if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
@@ -286,14 +283,14 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       // Also, you cannot move the foundation node, which is always at
       // index 0.
       const canMoveUp = index > 0;
-      const canModeDown = index < lastIndex;
+      const canMoveDown = index < lastIndex;
 
       const onClickMoveUp = canMoveUp
         ? () => {
             moveBlockUp(blockConfig.instanceId);
           }
         : undefined;
-      const onClickMoveDown = canModeDown
+      const onClickMoveDown = canMoveDown
         ? () => {
             moveBlockDown(blockConfig.instanceId);
           }
@@ -522,7 +519,10 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   });
   const foundationNodeProps: BrickNodeProps = {
     icon: extensionPointIcon,
-    runStatus: foundationRunStatus,
+    runStatus: decideFoundationStatus({
+      hasTraces: extensionHasTraces,
+      blockAnnotations: getFoundationNodeAnnotations(annotations),
+    }),
     brickLabel: extensionPointLabel,
     outputKey: "input" as OutputKey,
     onClick() {
@@ -542,7 +542,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   };
 
   return (
-    <ListGroup variant="flush">
+    <ListGroup variant="flush" data-testid="editor-node-layout">
       <BrickNode key={FOUNDATION_NODE_ID} {...foundationNodeProps} />
       {nodes.map(({ type, key, ...nodeProps }) => {
         switch (type) {

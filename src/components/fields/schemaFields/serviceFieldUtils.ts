@@ -16,7 +16,7 @@
  */
 
 import { Expression, OutputKey, ServiceKeyVar } from "@/core";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
   isExpression,
   isPipelineExpression,

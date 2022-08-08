@@ -37,7 +37,7 @@ import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
 import { produce } from "immer";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { freshIdentifier } from "@/utils";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import {
   DEFAULT_EXTENSION_POINT_VAR,
@@ -202,8 +202,7 @@ export function replaceRecipeExtension(
     if (hasInnerExtensionPoint) {
       const extensionPointConfig = adapter.selectExtensionPoint(element);
 
-      // eslint-disable-next-line security/detect-object-injection -- false positive for number
-      const originalInnerId = sourceRecipe.extensionPoints[index].id;
+      const originalInnerId = sourceRecipe.extensionPoints.at(index).id;
       let newInnerId = originalInnerId;
 
       if (

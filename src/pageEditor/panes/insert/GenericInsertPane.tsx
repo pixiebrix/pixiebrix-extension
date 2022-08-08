@@ -35,7 +35,7 @@ import {
   showSidebar,
   updateDynamicElement,
 } from "@/contentScript/messenger/api";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getExampleBlockPipeline } from "@/pageEditor/exampleExtensionConfig";
 import useFlags from "@/hooks/useFlags";
 import GridLoader from "react-spinners/GridLoader";

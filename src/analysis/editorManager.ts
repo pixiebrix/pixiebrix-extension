@@ -23,7 +23,7 @@ import {
   MatchFunction,
   TypedActionCreator,
 } from "@reduxjs/toolkit/dist/listenerMiddleware/types";
-import AnalysisVisitor from "./AnalysisVisitor";
+import { Analysis } from "./analysisTypes";
 
 type AnalysisEffectConfig =
   | {
@@ -36,7 +36,7 @@ type AnalysisEffectConfig =
 type AnalysisFactory<TAction = AnyAction, TState = unknown> = (
   action: TAction,
   state: TState
-) => AnalysisVisitor | null;
+) => Analysis | null;
 
 class EditorManager {
   private readonly listenerMiddleware = createListenerMiddleware();
@@ -69,9 +69,7 @@ class EditorManager {
         })
       );
 
-      await analysis.visitRootPipeline(activeElement.extension.blockPipeline, {
-        extensionPointType: activeElement.type,
-      });
+      await analysis.run(activeElement);
 
       listenerApi.dispatch(
         analysisSlice.actions.finishAnalysis({

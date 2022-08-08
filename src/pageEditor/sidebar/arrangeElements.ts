@@ -18,7 +18,7 @@
 import { sortBy } from "lodash";
 import { IExtension, RegistryId, UUID } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 type ArrangeElementsArgs = {
   elements: FormState[];
@@ -47,10 +47,10 @@ function arrangeElements({
   expandedRecipeId,
 }: ArrangeElementsArgs): ArrangeElementsResult {
   const elementIds = new Set(elements.map((formState) => formState.uuid));
-  const elementsByRecipeId: Map<
+  const elementsByRecipeId = new Map<
     RegistryId,
     Array<IExtension | FormState>
-  > = new Map();
+  >();
   const orphanedElements: Array<IExtension | FormState> = [];
   const filteredExtensions: IExtension[] = installed.filter(
     (extension) =>

@@ -263,7 +263,7 @@ describe("SchemaField", () => {
     ${expressionValue("nunjucks", "def")}  | ${"Text"}     | ${"Array"}    | ${[]}
     ${expressionValue("var", "abc")}       | ${"Variable"} | ${"Object"}   | ${{}}
   `(
-    "Test field toggle transition from $inputMode to $toggleOption",
+    "field toggle transition from $inputMode to $toggleOption",
     async ({ startValue, toggleOption, expectedEndValue }) => {
       const initialState = {
         apiVersion: "v3",
@@ -385,7 +385,7 @@ describe("SchemaField", () => {
           ...container.querySelectorAll<HTMLElement>("a.dropdown-item"),
         ].map((x) => x.dataset.testid);
         if (testIds.includes("omit")) {
-          expect(testIds[testIds.length - 1]).toEqual("omit");
+          expect(testIds.at(-1)).toEqual("omit");
         }
       });
     }

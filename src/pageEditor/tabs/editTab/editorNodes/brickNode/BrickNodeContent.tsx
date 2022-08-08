@@ -26,6 +26,7 @@ import {
 } from "@/pageEditor/tabs/editTab/editTabTypes";
 
 function isFontAwesomeIcon(
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- https://github.com/typescript-eslint/typescript-eslint/issues/5407
   maybeIcon: IconProp | React.ReactNode
 ): maybeIcon is IconProp {
   return (

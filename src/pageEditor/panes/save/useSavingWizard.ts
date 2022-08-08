@@ -48,7 +48,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import pDefer, { DeferredPromise } from "p-defer";
 import { PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 const { actions: optionsActions } = extensionsSlice;
 
