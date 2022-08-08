@@ -124,7 +124,7 @@ const AddBlockModal: React.VFC = () => {
 
   const gridRef = useRef<LazyGrid>();
 
-  const [allBlocks, isLoadingAllBlocks] = useAllBlocks();
+  const { allBlocks, isLoading: isLoadingAllBlocks } = useAllBlocks();
 
   const reduxDispatch = useDispatch();
   const closeModal = useCallback(() => {
