@@ -18,9 +18,9 @@
 import { Expression } from "@/core";
 import { AnnotationType } from "@/analysis/analysisTypes";
 import { BlockPosition } from "@/blocks/types";
-import AnalysisVisitor from "@/analysis/AnalysisVisitor";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
+import { AnalysisVisitor } from "./baseAnalysisVisitors";
 
 const TEMPLATE_ERROR_MESSAGE =
   "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";

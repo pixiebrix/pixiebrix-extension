@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import AnalysisVisitor from "@/analysis/AnalysisVisitor";
+import { AnalysisVisitor } from "./baseAnalysisVisitors";
 import { AnnotationType } from "@/analysis/analysisTypes";
 import { isTraceError, TraceRecord } from "@/telemetry/trace";
 import { BlockConfig, BlockPosition } from "@/blocks/types";

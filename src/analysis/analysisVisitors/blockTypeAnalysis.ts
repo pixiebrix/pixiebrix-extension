@@ -15,18 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import AnalysisVisitor from "@/analysis/AnalysisVisitor";
+import { AnalysisVisitorWithResolvedBlocks } from "./baseAnalysisVisitors";
 import { AnnotationType } from "@/analysis/analysisTypes";
 import { BlockConfig, BlockPosition } from "@/blocks/types";
 import { VisitBlockExtra } from "@/blocks/PipelineVisitor";
-import { TypedBlockMap } from "@/blocks/registry";
 import { makeIsBlockAllowedForPipeline } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import blockRegistry from "@/blocks/registry";
 
-class BlockTypeAnalysis extends AnalysisVisitor {
-  private allBlocks: TypedBlockMap;
-
+class BlockTypeAnalysis extends AnalysisVisitorWithResolvedBlocks {
   get id() {
     return "blockType";
   }
@@ -51,12 +46,6 @@ class BlockTypeAnalysis extends AnalysisVisitor {
         type: AnnotationType.Error,
       });
     }
-  }
-
-  override async run(extension: FormState): Promise<void> {
-    this.allBlocks = await blockRegistry.allTyped();
-
-    super.run(extension);
   }
 }
 

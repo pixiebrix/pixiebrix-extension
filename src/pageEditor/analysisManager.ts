@@ -18,6 +18,7 @@
 import BlockTypeAnalysis from "@/analysis/analysisVisitors/blockTypeAnalysis";
 import ExtensionUrlPatternAnalysis from "@/analysis/analysisVisitors/extensionUrlPatternAnalysis";
 import OutputKeyAnalysis from "@/analysis/analysisVisitors/outputKeyAnalysis";
+import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
 import TemplateAnalysis from "@/analysis/analysisVisitors/templateAnalysis";
 import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
 import ReduxAnalysisManager from "@/analysis/editorManager";
@@ -26,8 +27,11 @@ import { TraceRecord } from "@/telemetry/trace";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./pageEditorTypes";
 import { selectActiveElement } from "./slices/editorSelectors";
-import { editorSlice } from "./slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import runtimeSlice from "./slices/runtimeSlice";
+import { isAnyOf } from "@reduxjs/toolkit";
+
+const runtimeActions = runtimeSlice.actions;
 
 const pageEditorAnalysisManager = new ReduxAnalysisManager();
 
@@ -45,31 +49,47 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 
     return null;
   },
-  { actionCreator: runtimeSlice.actions.setExtensionTrace }
+  { actionCreator: runtimeActions.setExtensionTrace }
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new BlockTypeAnalysis(),
   {
-    actionCreator: editorSlice.actions.addNode,
+    // Only needed on editorActions.addNode, but the block path can change on move or remove
+    matcher: isAnyOf(
+      editorActions.addNode,
+      editorActions.moveNode,
+      editorActions.removeNode
+    ),
+  }
+);
+
+pageEditorAnalysisManager.registerAnalysisEffect(
+  () => new RenderersAnalysis(),
+  {
+    matcher: isAnyOf(
+      editorActions.addNode,
+      editorActions.moveNode,
+      editorActions.removeNode
+    ),
   }
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new OutputKeyAnalysis(),
   {
-    actionCreator: editorSlice.actions.editElement,
+    actionCreator: editorActions.editElement,
   }
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
-  actionCreator: editorSlice.actions.editElement,
+  actionCreator: editorActions.editElement,
 });
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new ExtensionUrlPatternAnalysis(),
   {
-    actionCreator: editorSlice.actions.editElement,
+    actionCreator: editorActions.editElement,
   }
 );
 
