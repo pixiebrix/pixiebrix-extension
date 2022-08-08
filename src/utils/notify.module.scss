@@ -1,5 +1,6 @@
 .message {
   align-self: center;
+  overflow-wrap: anywhere;
 
   // Space out multiple lines and make them less prominent
   & > :nth-child(n + 2) {
