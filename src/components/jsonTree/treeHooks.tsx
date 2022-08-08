@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback } from "react";
-import copy from "copy-text-to-clipboard";
+import { copyTextToClipboard } from "@/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import notify from "@/utils/notify";
@@ -42,11 +42,9 @@ export function useLabelRenderer() {
           variant="text"
           className={cx(styles.copyPath, "p-0")}
           aria-label="copy path"
-          href="#"
-          onClick={(event) => {
-            copy([key, ...rest].reverse().join("."));
-            event.preventDefault();
-            event.stopPropagation();
+          type="button"
+          onClick={async () => {
+            await copyTextToClipboard([key, ...rest].reverse().join("."));
             notify.info("Copied property path to the clipboard");
           }}
         >

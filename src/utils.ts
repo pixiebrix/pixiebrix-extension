@@ -639,3 +639,7 @@ export function isValidUrl(
     return false;
   }
 }
+
+export async function copyTextToClipboard(text: string) {
+  return navigator.clipboard.writeText(text);
+}
