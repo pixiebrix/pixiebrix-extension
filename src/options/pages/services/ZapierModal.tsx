@@ -19,7 +19,7 @@ import { Button, Modal, Form, InputGroup } from "react-bootstrap";
 import React, { useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
-import copy from "copy-to-clipboard";
+import copy from "copy-text-to-clipboard";
 import useFetch from "@/hooks/useFetch";
 import notify from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
