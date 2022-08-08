@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import BlockTypeAnalysis from "@/analysis/analysisVisitors/blockTypeAnalysis";
 import ExtensionUrlPatternAnalysis from "@/analysis/analysisVisitors/extensionUrlPatternAnalysis";
 import OutputKeyAnalysis from "@/analysis/analysisVisitors/outputKeyAnalysis";
 import TemplateAnalysis from "@/analysis/analysisVisitors/templateAnalysis";
@@ -45,6 +46,13 @@ pageEditorAnalysisManager.registerAnalysisEffect(
     return null;
   },
   { actionCreator: runtimeSlice.actions.setExtensionTrace }
+);
+
+pageEditorAnalysisManager.registerAnalysisEffect(
+  () => new BlockTypeAnalysis(),
+  {
+    actionCreator: editorSlice.actions.addNode,
+  }
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(

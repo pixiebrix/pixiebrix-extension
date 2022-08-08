@@ -22,6 +22,6 @@ import RenderersValidator from "./renderersValidator";
 const validationListenerMiddleware = createListenerMiddleware();
 
 validationListenerMiddleware.startListening(new RenderersValidator());
-validationListenerMiddleware.startListening(new BlockTypeValidator());
+// validationListenerMiddleware.startListening(new BlockTypeValidator());
 
 export default validationListenerMiddleware.middleware;
