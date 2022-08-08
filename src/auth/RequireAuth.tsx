@@ -43,6 +43,11 @@ import { selectConfiguredServices } from "@/store/servicesSelectors";
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
   LoginPage: React.VFC;
+  /**
+   * Ignore network/token errors. Set to 'false' to avoid prompting on login if there are intermittent network errors
+   * or PixieBrix service degradation.
+   */
+  ignoreError?: boolean;
 };
 
 const AA_CONTROL_ROOM_SERVICE_ID = "automation-anywhere/control-room";
@@ -169,7 +174,11 @@ export const useRequiredAuth = () => {
  *   token-based authentication.
  * - Therefore, also check the extension has the Authentication header token from the server.
  */
-const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
+const RequireAuth: React.FC<RequireAuthProps> = ({
+  children,
+  LoginPage,
+  ignoreError = false,
+}) => {
   const {
     isAccountUnlinked,
     tokenError,
@@ -203,7 +212,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
 
   // RequireAuth only knows how to handle auth errors. Rethrow any other errors
   const error = meError ?? tokenError;
-  if (error != null) {
+  if (error != null && !ignoreError) {
     throw error;
   }
 
