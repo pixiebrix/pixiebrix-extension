@@ -58,7 +58,7 @@ import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import { FieldDescriptions } from "@/utils/strings";
 import { object, string } from "yup";
 import LoadingDataModal from "@/pageEditor/panes/save/LoadingDataModal";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 import { RegistryId } from "@/core";

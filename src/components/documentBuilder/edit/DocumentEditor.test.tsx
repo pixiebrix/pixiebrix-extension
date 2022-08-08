@@ -30,7 +30,7 @@ import {
 } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
 import { OutputKey, ServiceDependency } from "@/core";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";

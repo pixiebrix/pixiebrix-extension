@@ -119,11 +119,10 @@ export async function ensureContentScript(
       await injectContentScript(target, scripts);
     }
 
-    await pTimeout(
-      readyNotificationPromise,
-      timeoutMillis,
-      `contentScript not ready in ${timeoutMillis}ms`
-    );
+    await pTimeout(readyNotificationPromise, {
+      milliseconds: timeoutMillis,
+      message: `contentScript not ready in ${timeoutMillis}ms`,
+    });
     console.debug("ensureContentScript: ready", target);
   } finally {
     controller.abort();

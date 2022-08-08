@@ -22,3 +22,4 @@ export const renderPanels = getMethod("SIDEBAR_RENDER_PANELS");
 export const activatePanel = getMethod("SIDEBAR_ACTIVATE_PANEL");
 export const showForm = getMethod("SIDEBAR_SHOW_FORM");
 export const hideForm = getMethod("SIDEBAR_HIDE_FORM");
+export const pingSidebar = getMethod("SIDEBAR_PING");

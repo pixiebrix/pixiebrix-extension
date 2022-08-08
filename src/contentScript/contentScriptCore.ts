@@ -33,21 +33,23 @@ import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { addListenerForUpdateSelectedElement } from "@/pageEditor/getSelectedElement";
 import { initToaster } from "@/utils/notify";
 import { initPartnerIntegrations } from "@/contentScript/partnerIntegrations";
-import { isConnectionError } from "@/errors/errorHelpers";
-import { showConnectionLost } from "./connection";
+import {
+  isContextInvalidatedError,
+  notifyContextInvalidated,
+} from "@/errors/contextInvalidated";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
 
-function ignoreConnectionErrors(
+function ignoreContextInvalidatedErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
 ): void {
-  if (isConnectionError(errorEvent)) {
-    showConnectionLost();
+  if (isContextInvalidatedError(errorEvent)) {
+    notifyContextInvalidated();
     errorEvent.preventDefault();
   }
 }
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
-uncaughtErrorHandlers.unshift(ignoreConnectionErrors);
+uncaughtErrorHandlers.unshift(ignoreContextInvalidatedErrors);
 
 export async function init(): Promise<void> {
   registerMessenger();

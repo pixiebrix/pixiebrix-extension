@@ -17,7 +17,7 @@
 
 import "./contentScript.scss";
 import { uuidv4 } from "@/types/helpers";
-import { onContextInvalidated } from "@/chrome";
+import { onContextInvalidated } from "@/errors/contextInvalidated";
 import {
   isInstalledInThisSession,
   isReadyInThisDocument,

@@ -16,6 +16,7 @@
  */
 
 import { Analysis, Annotation } from "@/analysis/analysisTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import PipelineVisitor from "./PipelineVisitor";
 
 /**
@@ -27,6 +28,12 @@ abstract class AnalysisVisitor extends PipelineVisitor implements Analysis {
   protected readonly annotations: Annotation[] = [];
   getAnnotations(): Annotation[] {
     return this.annotations;
+  }
+
+  async run(extension: FormState): Promise<void> {
+    return this.visitRootPipeline(extension.extension.blockPipeline, {
+      extensionPointType: extension.type,
+    });
   }
 }
 

@@ -46,11 +46,10 @@ import { checkAvailable } from "@/blocks/available";
 import notify from "@/utils/notify";
 import {
   isSidebarVisible,
-  registerShowCallback,
   removeExtensionPoint,
-  removeShowCallback,
   reservePanels,
   ShowCallback,
+  sidebarShowEvents,
   updateHeading,
   upsertPanel,
 } from "@/contentScript/sidebarController";
@@ -169,7 +168,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   public override uninstall(): void {
     this.removeExtensions();
     removeExtensionPoint(this.id);
-    removeShowCallback(this.showCallback);
+    sidebarShowEvents.remove(this.showCallback);
     this.cancelListeners();
   }
 
@@ -181,7 +180,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   public HACK_uninstallExceptExtension(extensionId: UUID): void {
     this.removeExtensions();
     removeExtensionPoint(this.id, { preserveExtensionIds: [extensionId] });
-    removeShowCallback(this.showCallback);
+    sidebarShowEvents.remove(this.showCallback);
   }
 
   private async runExtension(
@@ -399,7 +398,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   async install(): Promise<boolean> {
     const available = await this.isAvailable();
     if (available) {
-      registerShowCallback(this.showCallback);
+      sidebarShowEvents.add(this.showCallback);
     } else {
       removeExtensionPoint(this.id);
     }

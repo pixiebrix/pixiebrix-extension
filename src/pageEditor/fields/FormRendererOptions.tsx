@@ -33,7 +33,7 @@ import {
 } from "@/blocks/renderers/customForm";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
 import DatabaseField from "@/pageEditor/fields/DatabaseField";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import Select, { Options } from "react-select";

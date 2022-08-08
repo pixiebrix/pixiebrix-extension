@@ -64,7 +64,7 @@ const BreadcrumbTitle: React.FC<{
 );
 
 const ConfigurationTitle: React.FunctionComponent = () => {
-  const [allBlocks, isLoadingAllBlocks] = useAllBlocks();
+  const { allBlocks, isLoading: isLoadingAllBlocks } = useAllBlocks();
 
   const nodesPipelineMap = useSelector(selectPipelineMap);
   const [activeNodeId, setActiveNodeId] = useReduxState(

@@ -18,7 +18,7 @@
 import { RecipeDefinition } from "@/types/definitions";
 import React from "react";
 import { Button, Modal } from "react-bootstrap";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 type OwnProps = {
   recipe: RecipeDefinition;

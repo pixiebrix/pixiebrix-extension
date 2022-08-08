@@ -54,6 +54,14 @@ export const waitForEffect = async () =>
     // Awaiting the async state update
   });
 
+/**
+ * Runs pending jest timers within the "act" wrapper
+ */
+export const runPendingTimers = async () =>
+  act(async () => {
+    jest.runOnlyPendingTimers();
+  });
+
 // NoInfer is internal type of @reduxjs/toolkit tsHelpers
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from @reduxjs/toolkit typings
 declare type NoInfer<T> = [T][T extends any ? 0 : never];

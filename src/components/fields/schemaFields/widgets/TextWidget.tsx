@@ -38,9 +38,6 @@ import {
 } from "@/components/fields/schemaFields/getToggleOptions";
 import useUndo from "@/hooks/useUndo";
 
-const TEMPLATE_ERROR_MESSAGE =
-  "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";
-
 function schemaSupportsTemplates(schema: Schema): boolean {
   const options = getToggleOptions({
     fieldSchema: schema,
@@ -74,18 +71,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   focusInput,
   ...formControlProps
 }) => {
-  const [{ value, ...restInputProps }, , { setValue }] = useField({
-    name,
-    validate(value) {
-      if (
-        isTemplateExpression(value) &&
-        value.__type__ !== "mustache" &&
-        isMustacheOnly(value.__value__)
-      ) {
-        return TEMPLATE_ERROR_MESSAGE;
-      }
-    },
-  });
+  const [{ value, ...restInputProps }, , { setValue }] = useField(name);
 
   const { allowExpressions: allowExpressionsContext } =
     useContext(FieldRuntimeContext);

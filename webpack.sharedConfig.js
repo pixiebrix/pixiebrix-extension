@@ -39,6 +39,9 @@ const shared = {
 
       // https://github.com/webpack/webpack/pull/12693#issuecomment-914079083
       filenamify: "filenamify/browser",
+
+      // Lighter jQuery version
+      jquery: "jquery/dist/jquery.slim.min.js",
     },
     extensions: [".ts", ".tsx", ".jsx", ".js"],
     fallback: {

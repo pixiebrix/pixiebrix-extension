@@ -36,14 +36,13 @@ async function runInFrame({
   inputs,
   url,
 }: RunDetails): Promise<unknown> {
-  const target = await pTimeout(
-    waitForTargetByUrl(url.href),
-    2000,
+  const target = await pTimeout(waitForTargetByUrl(url.href), {
+    milliseconds: 2000,
     // `waitForTargetByUrl` is expected to respond quickly because
     // it listens to the target creation event before its content even starts loading.
     // With the nested iframe creation overhead this should be between 100 and 500ms
-    "The expected frame was not created within 2 seconds"
-  );
+    message: "The expected frame was not created within 2 seconds",
+  });
 
   return runBrick(target, {
     blockId: "@pixiebrix/forms/set" as RegistryId,

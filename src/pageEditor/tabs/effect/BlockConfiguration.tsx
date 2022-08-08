@@ -36,7 +36,7 @@ import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import getType from "@/runtime/getType";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import ConfigurationTitle from "./ConfigurationTitle";
 
 const rootModeOptions = [

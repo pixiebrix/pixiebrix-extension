@@ -31,6 +31,7 @@ import {
 } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 import { ExtensionPointType } from "@/extensionPoints/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
+import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
 export function nestedPosition(
   position: AbsolutePosition,
@@ -121,7 +122,7 @@ class PipelineVisitor {
         // 1. Handle missing fieldSchema
         // 2. Handle anyOf/oneOf/allOf
         await this.visitExpression(
-          nestedPosition(position, "config", prop, "__value__"),
+          nestedPosition(position, "config", prop),
           value,
           {
             fieldSchema:
@@ -210,7 +211,9 @@ class PipelineVisitor {
     { extensionPointType }: VisitRootPipelineExtra
   ): Promise<void> {
     const flavor = getRootPipelineFlavor(extensionPointType);
-    await this.visitPipeline({ path: "" }, pipeline, { flavor });
+    await this.visitPipeline({ path: PIPELINE_BLOCKS_FIELD_NAME }, pipeline, {
+      flavor,
+    });
   }
 }
 
