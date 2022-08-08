@@ -44,7 +44,7 @@ import { Styling, Theme } from "react-base16-styling";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import copy from "copy-to-clipboard";
+import copy from "copy-text-to-clipboard";
 import notify from "@/utils/notify";
 import safeJsonStringify from "json-stringify-safe";
 import { Button } from "react-bootstrap";
