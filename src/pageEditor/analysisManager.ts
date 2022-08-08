@@ -21,7 +21,7 @@ import OutputKeyAnalysis from "@/analysis/analysisVisitors/outputKeyAnalysis";
 import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
 import TemplateAnalysis from "@/analysis/analysisVisitors/templateAnalysis";
 import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
-import ReduxAnalysisManager from "@/analysis/editorManager";
+import ReduxAnalysisManager from "@/analysis/ReduxAnalysisManager";
 import { UUID } from "@/core";
 import { TraceRecord } from "@/telemetry/trace";
 import { PayloadAction } from "@reduxjs/toolkit";
@@ -49,13 +49,23 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 
     return null;
   },
-  { actionCreator: runtimeActions.setExtensionTrace }
+  {
+    // Only needed on runtimeActions.setExtensionTrace,
+    // but the block path can change when node tree is mutated
+    matcher: isAnyOf(
+      runtimeActions.setExtensionTrace,
+      editorActions.addNode,
+      editorActions.moveNode,
+      editorActions.removeNode
+    ),
+  }
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new BlockTypeAnalysis(),
   {
-    // Only needed on editorActions.addNode, but the block path can change on move or remove
+    // Only needed on editorActions.addNode,
+    // but the block path can change on move or remove
     matcher: isAnyOf(
       editorActions.addNode,
       editorActions.moveNode,
@@ -78,18 +88,39 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new OutputKeyAnalysis(),
   {
-    actionCreator: editorActions.editElement,
+    // Only needed on editorActions.editElement,
+    // but the block path can change when node tree is mutated
+    matcher: isAnyOf(
+      editorActions.editElement,
+      editorActions.addNode,
+      editorActions.moveNode,
+      editorActions.removeNode
+    ),
   }
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
-  actionCreator: editorActions.editElement,
+  // Only needed on editorActions.editElement,
+  // but the block path can change when node tree is mutated
+  matcher: isAnyOf(
+    editorActions.editElement,
+    editorActions.addNode,
+    editorActions.moveNode,
+    editorActions.removeNode
+  ),
 });
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new ExtensionUrlPatternAnalysis(),
   {
-    actionCreator: editorActions.editElement,
+    // Only needed on editorActions.editElement,
+    // but the block path can change when node tree is mutated
+    matcher: isAnyOf(
+      editorActions.editElement,
+      editorActions.addNode,
+      editorActions.moveNode,
+      editorActions.removeNode
+    ),
   }
 );
 

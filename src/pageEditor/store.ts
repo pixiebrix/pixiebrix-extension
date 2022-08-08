@@ -32,7 +32,6 @@ import extensionsSlice from "@/store/extensionsSlice";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import { logActions, logSlice } from "@/components/logViewer/logSlice";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import validationListenerMiddleware from "./validation/validationListenerMiddleware";
 import analysisSlice from "@/analysis/analysisSlice";
 import pageEditorAnalysisManager from "./analysisManager";
 
@@ -81,7 +80,6 @@ const store = configureStore({
       },
     })
       .concat(appApi.middleware)
-      .concat(validationListenerMiddleware)
       .concat(pageEditorAnalysisManager.middleware)
       .concat(conditionalMiddleware);
     /* eslint-enable unicorn/prefer-spread */

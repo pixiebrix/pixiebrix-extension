@@ -16,14 +16,25 @@
  */
 
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
-import { AnyAction, createListenerMiddleware } from "@reduxjs/toolkit";
-import { ValidatorEffect } from "@/pageEditor/validation/validationTypes";
+import {
+  AnyAction,
+  ListenerEffect,
+  ThunkDispatch,
+  createListenerMiddleware,
+} from "@reduxjs/toolkit";
 import analysisSlice from "./analysisSlice";
 import {
   MatchFunction,
   TypedActionCreator,
 } from "@reduxjs/toolkit/dist/listenerMiddleware/types";
 import { Analysis } from "./analysisTypes";
+import { RootState } from "@/pageEditor/pageEditorTypes";
+
+type AnalysisEffect = ListenerEffect<
+  AnyAction,
+  RootState,
+  ThunkDispatch<unknown, unknown, AnyAction>
+>;
 
 type AnalysisEffectConfig =
   | {
@@ -48,7 +59,7 @@ class ReduxAnalysisManager {
     analysisFactory: AnalysisFactory,
     config: AnalysisEffectConfig
   ) {
-    const effect: ValidatorEffect = async (action, listenerApi) => {
+    const effect: AnalysisEffect = async (action, listenerApi) => {
       const state = listenerApi.getState();
       const activeElement = selectActiveElement(state);
       if (activeElement == null) {
