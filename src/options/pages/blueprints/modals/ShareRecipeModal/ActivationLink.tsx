@@ -17,7 +17,7 @@
 
 import { RegistryId } from "@/core";
 import React from "react";
-import { copyTextToClipboard } from "@/utils";
+import copy from "copy-text-to-clipboard";
 import notify from "@/utils/notify";
 import { Button, Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -44,8 +44,8 @@ const ActivationLink: React.FunctionComponent<ActivationLinkProps> = ({
           <InputGroup.Append>
             <Button
               variant="info"
-              onClick={async () => {
-                await copyTextToClipboard(installationLink);
+              onClick={() => {
+                copy(installationLink);
                 // Don't close the modal - that allows the user to re-copy the link and verify the link works
                 notify.success("Copied activation link to clipboard");
               }}

@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types";
-import { copyTextToClipboard } from "@/utils";
+import copy from "copy-text-to-clipboard";
 import { BlockArg, Schema } from "@/core";
 import { Permissions } from "webextension-polyfill";
 
@@ -44,6 +44,6 @@ export class CopyToClipboard extends Effect {
   };
 
   async effect({ text }: BlockArg): Promise<void> {
-    await copyTextToClipboard(String(text));
+    copy(String(text));
   }
 }

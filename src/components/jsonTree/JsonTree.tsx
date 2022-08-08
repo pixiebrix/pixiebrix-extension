@@ -44,7 +44,7 @@ import { Styling, Theme } from "react-base16-styling";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import { copyTextToClipboard } from "@/utils";
+import copy from "copy-text-to-clipboard";
 import notify from "@/utils/notify";
 import safeJsonStringify from "json-stringify-safe";
 import { Button } from "react-bootstrap";
@@ -150,10 +150,12 @@ const CopyDataButton: React.FunctionComponent<{ data: unknown }> = ({
   <Button
     variant="text"
     className={cx(styles.copyPath, "p-0")}
-    type="button"
     aria-label="copy data"
-    onClick={async () => {
-      await copyTextToClipboard(safeJsonStringify(data, null, 2));
+    href="#"
+    onClick={(event) => {
+      copy(safeJsonStringify(data, null, 2));
+      event.preventDefault();
+      event.stopPropagation();
       notify.info("Copied data to the clipboard");
     }}
   >
