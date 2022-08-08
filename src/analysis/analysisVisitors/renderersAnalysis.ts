@@ -52,7 +52,9 @@ class RenderersAnalysis extends AnalysisVisitorWithResolvedBlocks {
         continue;
       }
 
-      if (lastRendererIndex !== -1) {
+      if (lastRendererIndex === -1) {
+        lastRendererIndex = blockIndex;
+      } else {
         blockErrors.push(MULTIPLE_RENDERERS_ERROR_MESSAGE);
 
         // Push error annotation for the other renderer,
@@ -63,8 +65,6 @@ class RenderersAnalysis extends AnalysisVisitorWithResolvedBlocks {
           analysisId: this.id,
           type: AnnotationType.Error,
         });
-      } else {
-        lastRendererIndex = blockIndex;
       }
 
       if (blockIndex !== pipeline.length - 1) {
