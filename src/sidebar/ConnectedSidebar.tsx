@@ -77,8 +77,8 @@ const ConnectedSidebar: React.VFC = () => {
       <ErrorBoundary>
         <RequireAuth
           LoginPage={LoginPanel}
-          // Use ignoreError to avoid showing error on intermittent network issues or PixieBrix API degradation
-          ignoreError
+          // Use ignoreApiError to avoid showing error on intermittent network issues or PixieBrix API degradation
+          ignoreApiError
         >
           {sidebarState.panels?.length || sidebarState.forms?.length ? (
             <Tabs
