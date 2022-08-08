@@ -75,7 +75,11 @@ const ConnectedSidebar: React.VFC = () => {
   return (
     <div className="full-height">
       <ErrorBoundary>
-        <RequireAuth LoginPage={LoginPanel}>
+        <RequireAuth
+          LoginPage={LoginPanel}
+          // Use ignoreApiError to avoid showing error on intermittent network issues or PixieBrix API degradation
+          ignoreApiError
+        >
           {sidebarState.panels?.length || sidebarState.forms?.length ? (
             <Tabs
               {...sidebarState}
