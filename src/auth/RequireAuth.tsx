@@ -44,10 +44,10 @@ type RequireAuthProps = {
   /** Rendered in case of 401 response */
   LoginPage: React.VFC;
   /**
-   * Ignore network/token errors. Set to 'false' to avoid prompting on login if there are intermittent network errors
+   * Ignore network errors. Set to 'false' to avoid prompting on login if there are intermittent network errors
    * or PixieBrix service degradation.
    */
-  ignoreError?: boolean;
+  ignoreApiError?: boolean;
 };
 
 const AA_CONTROL_ROOM_SERVICE_ID = "automation-anywhere/control-room";
@@ -177,7 +177,7 @@ export const useRequiredAuth = () => {
 const RequireAuth: React.FC<RequireAuthProps> = ({
   children,
   LoginPage,
-  ignoreError = false,
+  ignoreApiError = false,
 }) => {
   const {
     isAccountUnlinked,
@@ -210,10 +210,13 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     return <Loader />;
   }
 
-  // RequireAuth only knows how to handle auth errors. Rethrow any other errors
-  const error = meError ?? tokenError;
-  if (error != null && !ignoreError) {
-    throw error;
+  // `useRequiredAuth` handles 401 and other auth-related errors. Rethrow any other errors, e.g., internal server error
+  if (meError && !ignoreApiError) {
+    throw meError;
+  }
+
+  if (tokenError) {
+    throw tokenError;
   }
 
   return <>{children}</>;
