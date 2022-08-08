@@ -17,7 +17,7 @@
 
 import { BlockConfig, BlockPosition } from "@/blocks/types";
 import { joinPathParts } from "@/utils";
-import { Expression } from "@/core";
+import { Expression, UUID } from "@/core";
 import { TypedBlock } from "@/blocks/registry";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { JsonValue } from "type-fest";
@@ -47,6 +47,9 @@ export function nestedPosition(
 
 export type VisitBlockExtra = {
   index: number;
+  parentNodeId?: UUID | undefined;
+  pipeline: BlockConfig[];
+  pipelinePosition: BlockPosition;
   pipelineFlavor: PipelineFlavor;
 };
 export type VisitResolvedBlockExtra = VisitBlockExtra & {
@@ -54,6 +57,7 @@ export type VisitResolvedBlockExtra = VisitBlockExtra & {
 };
 export type VisitPipelineExtra = {
   flavor: PipelineFlavor;
+  parentNodeId?: UUID | undefined;
 };
 export type VisitRootPipelineExtra = {
   extensionPointType: ExtensionPointType;
@@ -68,10 +72,9 @@ class PipelineVisitor {
    * @param position the position in the extension
    * @param blockConfig the block configuration
    */
-  protected visitBlock(
+  public visitBlock(
     position: BlockPosition,
     blockConfig: BlockConfig,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     extra: VisitBlockExtra
   ): void {
     if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
@@ -93,6 +96,7 @@ class PipelineVisitor {
         );
         this.visitPipeline(pipelinePosition, value.__value__, {
           flavor: pipelineFlavor,
+          parentNodeId: blockConfig.instanceId,
         });
       } else if (isExpression(value)) {
         // TODO: Handle anyOf/oneOf/allOf
@@ -127,6 +131,7 @@ class PipelineVisitor {
         );
         this.visitPipeline(pipelinePosition, subPipeline, {
           flavor: pipelineFlavor,
+          parentNodeId: blockConfig.instanceId,
         });
       }
     }
@@ -148,11 +153,14 @@ class PipelineVisitor {
   public visitPipeline(
     position: BlockPosition,
     pipeline: BlockConfig[],
-    { flavor }: VisitPipelineExtra
+    { flavor, parentNodeId }: VisitPipelineExtra
   ): void {
     for (const [index, blockConfig] of pipeline.entries()) {
       this.visitBlock(nestedPosition(position, String(index)), blockConfig, {
         index,
+        parentNodeId,
+        pipeline,
+        pipelinePosition: position,
         pipelineFlavor: flavor,
       });
     }
@@ -160,9 +168,11 @@ class PipelineVisitor {
 
   public visitRootPipeline(
     pipeline: BlockConfig[],
-    { extensionPointType }: VisitRootPipelineExtra
+    extra?: VisitRootPipelineExtra
   ): void {
-    const flavor = getRootPipelineFlavor(extensionPointType);
+    const flavor = extra?.extensionPointType
+      ? getRootPipelineFlavor(extra.extensionPointType)
+      : PipelineFlavor.AllBlocks;
     this.visitPipeline(ROOT_POSITION, pipeline, { flavor });
   }
 }

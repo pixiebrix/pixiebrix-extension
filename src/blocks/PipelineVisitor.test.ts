@@ -49,14 +49,26 @@ test("should invoke the callback for the pipeline bricks", () => {
       path: `${PIPELINE_BLOCKS_FIELD_NAME}.0`,
     },
     pipeline[0],
-    { index: 0, pipelineFlavor: "noRenderer" }
+    {
+      index: 0,
+      pipelineFlavor: "noRenderer",
+      parentNodeId: undefined,
+      pipeline,
+      pipelinePosition: { path: PIPELINE_BLOCKS_FIELD_NAME },
+    }
   );
   expect(visitBlock).toHaveBeenCalledWith(
     {
       path: `${PIPELINE_BLOCKS_FIELD_NAME}.1`,
     },
     pipeline[1],
-    { index: 1, pipelineFlavor: "noRenderer" }
+    {
+      index: 1,
+      pipelineFlavor: "noRenderer",
+      parentNodeId: undefined,
+      pipeline,
+      pipelinePosition: { path: PIPELINE_BLOCKS_FIELD_NAME },
+    }
   );
 });
 
@@ -96,28 +108,51 @@ test("should invoke the callback for the sub pipeline bricks", () => {
       path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.__value__.0`,
     },
     subPipeline[0],
-    { index: 0, pipelineFlavor: "noRenderer" }
+    {
+      index: 0,
+      pipelineFlavor: "noRenderer",
+      parentNodeId: forEachBrick.instanceId,
+      pipeline: subPipeline,
+      pipelinePosition: {
+        path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.__value__`,
+      },
+    }
   );
   expect(visitBlock).toHaveBeenCalledWith(
     {
       path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.__value__.1`,
     },
     subPipeline[1],
-    { index: 1, pipelineFlavor: "noRenderer" }
+    {
+      index: 1,
+      pipelineFlavor: "noRenderer",
+      parentNodeId: forEachBrick.instanceId,
+      pipeline: subPipeline,
+      pipelinePosition: {
+        path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.__value__`,
+      },
+    }
   );
   expect(visitBlock).toHaveBeenCalledWith(
     {
       path: `${PIPELINE_BLOCKS_FIELD_NAME}.0`,
     },
     pipeline[0],
-    { index: 0, pipelineFlavor: "noRenderer" }
+    {
+      index: 0,
+      pipelineFlavor: "noRenderer",
+      parentNodeId: undefined,
+      pipeline,
+      pipelinePosition: { path: PIPELINE_BLOCKS_FIELD_NAME },
+    }
   );
 });
 
 test("should invoke the callback for the Document button pipeline", () => {
   const buttonElement = createNewElement("button");
-  const subPipeline = buttonElement.config.onClick as PipelineExpression;
-  subPipeline.__value__.push(blockConfigFactory());
+  const subPipeline = (buttonElement.config.onClick as PipelineExpression)
+    .__value__;
+  subPipeline.push(blockConfigFactory());
   const containerElement = createNewElement("container");
   containerElement.children[0].children[0].children.push(buttonElement);
   const documentBrick = blockConfigFactory({
@@ -149,14 +184,30 @@ test("should invoke the callback for the Document button pipeline", () => {
     {
       path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.onClick.__value__.0`,
     },
-    subPipeline.__value__[0],
-    { index: 0, pipelineFlavor: "noRenderer" }
+    subPipeline[0],
+    {
+      index: 0,
+      pipelineFlavor: "noRenderer",
+      parentNodeId: documentBrick.instanceId,
+      pipeline: subPipeline,
+      pipelinePosition: {
+        path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.onClick.__value__`,
+      },
+    }
   );
   expect(visitBlock).toHaveBeenCalledWith(
     {
       path: `${PIPELINE_BLOCKS_FIELD_NAME}.0`,
     },
     documentBrick,
-    { index: 0, pipelineFlavor: "noEffect" }
+    {
+      index: 0,
+      pipelineFlavor: "noEffect",
+      parentNodeId: undefined,
+      pipeline,
+      pipelinePosition: {
+        path: PIPELINE_BLOCKS_FIELD_NAME,
+      },
+    }
   );
 });
