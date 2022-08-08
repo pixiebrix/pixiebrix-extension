@@ -75,7 +75,7 @@ class ErrorBoundary extends Component<UnknownObject, State> {
 
             <div>
               <Button variant="light" onClick={this.reloadSidebar}>
-                <FontAwesomeIcon icon={faRedo} /> Reload the sidebar
+                <FontAwesomeIcon icon={faRedo} /> Reload Sidebar
               </Button>
             </div>
           </Alert>

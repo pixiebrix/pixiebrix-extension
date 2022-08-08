@@ -181,7 +181,16 @@ export function hideSidebar(): void {
   window.dispatchEvent(new CustomEvent(PANEL_HIDING_EVENT));
 }
 
+/**
+ * Reload the sidebar and its content.
+ *
+ * Known limitations:
+ * - Does not reload ephemeral forms
+ */
 export async function reloadSidebar(): Promise<void> {
+  // Need to hide and re-show because the controller sends the content on load. The sidebar doesn't automatically
+  // request its own content on mount.
+
   if (isSidebarVisible()) {
     hideSidebar();
   }
