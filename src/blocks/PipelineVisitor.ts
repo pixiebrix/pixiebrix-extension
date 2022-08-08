@@ -137,7 +137,6 @@ class PipelineVisitor {
     }
   }
 
-  /* eslint-disable @typescript-eslint/no-unused-vars -- for the args in methods, subclass will override */
   public visitExpression(
     position: BlockPosition,
     expression: Expression<unknown>
@@ -148,7 +147,6 @@ class PipelineVisitor {
   public visitLiteral(position: BlockPosition, value: JsonValue): void {
     // NOP
   }
-  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   public visitPipeline(
     position: BlockPosition,
