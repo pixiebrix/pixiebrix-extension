@@ -20,26 +20,35 @@ import {
   DocumentComponent,
   DocumentElement,
   DynamicPath,
-  PipelineDocumentConfig,
-  PreviewComponentProps,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { get } from "lodash";
 import { UnknownObject } from "@/types";
-import { isExpression } from "@/runtime/mapArgs";
-import cx from "classnames";
-import React from "react";
-import { Button } from "react-bootstrap";
 import { getComponentDefinition } from "@/components/documentBuilder/documentTree";
-import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import Unknown from "./elementsPreview/Unknown";
 import Basic from "./elementsPreview/Basic";
 import Image from "./elementsPreview/Image";
 import Container from "./elementsPreview/Container";
-import Flaps from "./flaps/Flaps";
+import Card from "./elementsPreview/Card";
+import { produce } from "immer";
+import Pipeline from "./elementsPreview/Pipeline";
+import Button from "./elementsPreview/Button";
+import List from "./elementsPreview/List";
 
 // Bookkeeping trace paths for preview is not necessary. But, we need to provide a value for the previews that use
 // getComponentDefinition under the hood
 const DUMMY_TRACE_PATH: DynamicPath = { staticId: "preview", branches: [] };
+
+const allowedBootstrapPrefixes = ["text", "bg"];
+function filterCssClassesForPreview(props: UnknownObject | undefined) {
+  if (typeof props?.className === "string") {
+    props.className = props.className
+      .split(" ")
+      .filter((x) =>
+        allowedBootstrapPrefixes.some((prefix) => x.startsWith(prefix))
+      )
+      .join(" ");
+  }
+}
 
 function getPreviewComponentDefinition(
   element: DocumentElement
@@ -56,6 +65,8 @@ function getPreviewComponentDefinition(
         element,
         DUMMY_TRACE_PATH
       );
+      filterCssClassesForPreview(documentComponent.props);
+
       return {
         Component: Basic,
         props: {
@@ -70,6 +81,8 @@ function getPreviewComponentDefinition(
         element,
         DUMMY_TRACE_PATH
       );
+      filterCssClassesForPreview(documentComponent.props);
+
       return {
         Component: Image,
         props: {
@@ -86,6 +99,8 @@ function getPreviewComponentDefinition(
         element,
         DUMMY_TRACE_PATH
       );
+      filterCssClassesForPreview(documentComponent.props);
+
       return {
         Component: Container,
         props: {
@@ -96,157 +111,49 @@ function getPreviewComponentDefinition(
     }
 
     case "card": {
-      const { heading } = config;
+      const previewElement = produce(element, (draft) => {
+        draft.config.bodyClassName = documentTreeStyles.container;
+      });
 
-      const previewElement = {
-        ...element,
-        config: {
-          ...config,
-          heading,
-          bodyProps: { className: documentTreeStyles.container },
-        },
-      };
-
-      const { Component, props } = getComponentDefinition(
+      const documentComponent = getComponentDefinition(
         previewElement,
         DUMMY_TRACE_PATH
       );
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        children,
-        className,
-        isHovered,
-        isActive,
-        documentBodyName,
-        elementName,
-        ...restPreviewProps
-      }) => (
-        <div
-          className={cx(documentTreeStyles.shiftRightWrapper, className)}
-          {...restPreviewProps}
-        >
-          <Flaps
-            className={documentTreeStyles.flapShiftRight}
-            elementType={element.type}
-            documentBodyName={documentBodyName}
-            elementName={elementName}
-            isHovered={isHovered}
-            isActive={isActive}
-          />
-          <Component {...props}>{children}</Component>
-        </div>
-      );
+      filterCssClassesForPreview(documentComponent.props);
 
-      return { Component: PreviewComponent };
+      return {
+        Component: Card,
+        props: {
+          element,
+          documentComponent,
+        },
+      };
     }
 
     case "pipeline": {
-      const { pipeline } = config as PipelineDocumentConfig;
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        className,
-        isHovered,
-        isActive,
-        documentBodyName,
-        elementName,
-        ...restPreviewProps
-      }) => (
-        <div
-          className={cx(documentTreeStyles.shiftRightWrapper, className)}
-          {...restPreviewProps}
-        >
-          <Flaps
-            className={documentTreeStyles.flapShiftRight}
-            elementType={element.type}
-            documentBodyName={documentBodyName}
-            elementName={elementName}
-            isHovered={isHovered}
-            isActive={isActive}
-          />
-          <h3>{elementTypeLabels.pipeline}</h3>
-          {pipeline.__value__.map(({ id }) => (
-            <p key={id}>{id}</p>
-          ))}
-        </div>
-      );
-
-      return { Component: PreviewComponent };
+      return {
+        Component: Pipeline,
+        props: {
+          element,
+        },
+      };
     }
 
     case "button": {
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        className,
-        isHovered,
-        isActive,
-        documentBodyName,
-        elementName,
-        ...restPreviewProps
-      }) => {
-        // Destructure disabled from button props. If the button is disabled in the preview the user can't select it
-        // to configure the button
-        const { title, onClick, disabled, ...buttonProps } = config;
+      const buttonProps = { ...config };
+      filterCssClassesForPreview(buttonProps);
 
-        return (
-          <div>
-            <div
-              className={cx(className, documentTreeStyles.inlineWrapper)}
-              {...restPreviewProps}
-            >
-              <Flaps
-                className={documentTreeStyles.flapShiftRight}
-                elementType={element.type}
-                documentBodyName={documentBodyName}
-                elementName={elementName}
-                isHovered={isHovered}
-                isActive={isActive}
-              />
-              <Button onClick={() => {}} {...buttonProps}>
-                {title}
-              </Button>
-            </div>
-          </div>
-        );
+      return {
+        Component: Button,
+        props: {
+          element,
+          buttonProps,
+        },
       };
-
-      return { Component: PreviewComponent };
     }
 
     case "list": {
-      const arrayValue = isExpression(config.array)
-        ? config.array.__value__
-        : String(config.array);
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        children,
-        className,
-        isHovered,
-        isActive,
-        documentBodyName,
-        elementName,
-        ...restPreviewProps
-      }) => (
-        <div
-          className={cx(
-            className,
-            documentTreeStyles.container,
-            documentTreeStyles.listContainer
-          )}
-          {...restPreviewProps}
-        >
-          <Flaps
-            className={documentTreeStyles.flapShiftUp}
-            elementType={element.type}
-            documentBodyName={documentBodyName}
-            elementName={elementName}
-            isHovered={isHovered}
-            isActive={isActive}
-          />
-          <div className="text-muted">List: {arrayValue}</div>
-          <div className="text-muted">
-            Element key: @{config.elementKey || "element"}
-          </div>
-          {children}
-        </div>
-      );
-
-      return { Component: PreviewComponent };
+      return { Component: List, props: { element } };
     }
 
     default: {
@@ -254,6 +161,8 @@ function getPreviewComponentDefinition(
         element,
         DUMMY_TRACE_PATH
       );
+      filterCssClassesForPreview(documentComponent.props);
+
       return {
         Component: Unknown,
         props: {

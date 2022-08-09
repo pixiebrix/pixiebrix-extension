@@ -58,7 +58,7 @@ import {
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 jest.mock("@/background/contextMenus");

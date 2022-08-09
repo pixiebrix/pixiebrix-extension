@@ -25,7 +25,7 @@ import {
   recipeFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { validateSemVerString } from "@/types/helpers";
 
 const simpleElementFactory = define<FormState>({

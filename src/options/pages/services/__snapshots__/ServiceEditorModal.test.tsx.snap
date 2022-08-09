@@ -59,7 +59,7 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
               class="col-xl-10 col-lg-9"
             >
               <input
-                class="form-control"
+                class="form-control is-invalid"
                 id="label"
                 name="label"
                 value=""
@@ -69,6 +69,11 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
               >
                 A label to help identify this integration
               </small>
+              <div
+                class="invalidMessage"
+              >
+                label is a required field
+              </div>
             </div>
           </div>
           <div
@@ -112,7 +117,7 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
                   class="field"
                 >
                   <textarea
-                    class="form-control"
+                    class="form-control is-invalid"
                     id="config.apiToken"
                     name="config.apiToken"
                     rows="1"
@@ -145,6 +150,11 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
               >
                 Your Pipedrive API Key
               </small>
+              <div
+                class="invalidMessage"
+              >
+                config.apiToken is a required field
+              </div>
             </div>
           </div>
           <div

@@ -49,6 +49,7 @@ import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuC
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 import { ContextMenuFormState } from "./formStateTypes";
 import { omitEditorMetadata } from "./pipelineMapping";
+import { makeEmptyPermissions } from "@/utils/permissions";
 
 function fromNativeElement(
   url: string,
@@ -186,7 +187,7 @@ async function fromExtensionPoint(
     label: `My ${getDomain(url)} context menu`,
 
     services: [],
-    permissions: {},
+    permissions: makeEmptyPermissions(),
     optionsArgs: {},
 
     extension: {

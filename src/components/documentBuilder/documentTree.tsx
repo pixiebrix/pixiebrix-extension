@@ -31,6 +31,7 @@ import ButtonElement from "@/components/documentBuilder/render/ButtonElement";
 import ListElement from "@/components/documentBuilder/render/ListElement";
 import { BusinessError } from "@/errors/businessErrors";
 import { joinPathParts } from "@/utils";
+import cx from "classnames";
 
 const headerComponents = {
   header_1: "h1",
@@ -95,18 +96,26 @@ export function getComponentDefinition(
     }
 
     case "card": {
-      // The bodyPros is for internal use,
-      // it allows to set CSS class need in preview to the body
-      const { heading, children, bodyProps, ...cardProps } = config;
-      const Component: React.FC = ({ children }) => (
+      const props = { ...config };
+
+      // The bodyClassName is for internal use,
+      // it allows to set CSS class needed in preview to the body
+      const Component: React.FC<UnknownObject> = ({
+        heading,
+        children,
+        bodyClassName,
+        ...cardProps
+      }) => (
         <Card {...cardProps}>
           <Card.Header>{heading}</Card.Header>
-          <Card.Body {...(bodyProps as React.FC)}>{children}</Card.Body>
+          <Card.Body className={cx(bodyClassName, "overflow-auto")}>
+            {children}
+          </Card.Body>
         </Card>
       );
       return {
         Component,
-        props: { children },
+        props,
       };
     }
 

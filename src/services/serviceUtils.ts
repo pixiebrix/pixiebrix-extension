@@ -58,7 +58,7 @@ export function extractServiceIds(schema: Schema): RegistryId[] {
   throw new Error("Expected $ref or anyOf in schema for service");
 }
 
-async function locateWithRetry(
+export async function locateWithRetry(
   serviceId: RegistryId,
   authId: UUID,
   { retry = true }: { retry: boolean }

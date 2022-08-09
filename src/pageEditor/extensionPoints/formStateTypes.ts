@@ -222,3 +222,11 @@ export interface QuickBarFormState
   extends BaseFormState<QuickBarExtensionState, QuickBarExtensionPointState> {
   type: "quickBar";
 }
+
+export type FormState =
+  | ActionFormState
+  | SidebarFormState
+  | TriggerFormState
+  | PanelFormState
+  | ContextMenuFormState
+  | QuickBarFormState;

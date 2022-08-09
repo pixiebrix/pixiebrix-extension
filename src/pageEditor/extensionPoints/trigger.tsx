@@ -48,6 +48,7 @@ import React from "react";
 import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 import { TriggerFormState } from "./formStateTypes";
+import { makeEmptyPermissions } from "@/utils/permissions";
 
 function fromNativeElement(
   url: string,
@@ -173,7 +174,7 @@ async function fromExtensionPoint(
     label: `My ${getDomain(url)} ${trigger} trigger`,
 
     services: [],
-    permissions: {},
+    permissions: makeEmptyPermissions(),
 
     optionsArgs: {},
 

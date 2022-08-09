@@ -29,7 +29,7 @@ import contextMenuExtension from "@/pageEditor/extensionPoints/contextMenu";
 import sidebarExtension from "@/pageEditor/extensionPoints/sidebar";
 import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import { hasInnerExtensionPoint } from "@/registry/internal";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 export const ADAPTERS = new Map<ExtensionPointType, ElementConfig>([
   ["trigger", triggerExtension],

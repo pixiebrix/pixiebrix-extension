@@ -27,7 +27,7 @@ import {
   checkAvailable,
   getInstalledExtensionPoints,
 } from "@/contentScript/messenger/api";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
 import { testMatchPatterns } from "@/blocks/available";
 import { isQuickBarExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
