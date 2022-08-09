@@ -53,7 +53,6 @@ import {
   makeTemplateExpression,
 } from "@/testUtils/expressionTestHelpers";
 import { PipelineExpression } from "@/runtime/mapArgs";
-import { act } from "react-dom/test-utils";
 import { OutputKey, RegistryId } from "@/core";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import * as api from "@/services/api";
