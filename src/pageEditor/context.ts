@@ -58,16 +58,23 @@ const initialFrameState: FrameConnectionState = {
   frameId: 0,
 };
 
-export interface Context {
+export type Context = {
   /**
-   * True if the a connection attempt is in process
+   * True if a connection attempt is in process
    */
   connecting: boolean;
 
+  /**
+   * The frame connection state, or initialFrameState if there was an error
+   */
   tabState: FrameConnectionState;
 
+  /**
+   * The error connecting to the frame, or undefined.
+   * @see connectToFrame
+   */
   error?: unknown;
-}
+};
 
 const initialValue: Context = {
   connecting: false,
@@ -158,6 +165,8 @@ export function useDevConnection(): Context {
   return {
     connecting: isConnecting,
     error: contextInvalidatedError ?? connectionError,
-    tabState,
+    // `tabState` will be if null there's an error in useAsyncState. The caller is responsible for checking the
+    // connecting/error properties.
+    tabState: tabState ?? initialFrameState,
   };
 }
