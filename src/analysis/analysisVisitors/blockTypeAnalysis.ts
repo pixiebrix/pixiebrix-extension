@@ -34,6 +34,10 @@ class BlockTypeAnalysis extends AnalysisVisitorWithResolvedBlocks {
     super.visitBlock(position, blockConfig, extra);
 
     const typedBlock = this.allBlocks.get(blockConfig.id);
+    if (typedBlock == null) {
+      return;
+    }
+
     const isBlockAllowed = makeIsBlockAllowedForPipeline(extra.pipelineFlavor)(
       typedBlock
     );

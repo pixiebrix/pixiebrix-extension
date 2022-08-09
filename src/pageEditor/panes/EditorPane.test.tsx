@@ -67,6 +67,7 @@ import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { enableAnalysisFieldErrors } from "@/components/form/useFieldError";
+import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/renderersAnalysis";
 
 jest.mock("@/services/api", () => ({
   appApi: {
@@ -180,6 +181,7 @@ const getPlainFormState = (): FormState =>
     }),
     blockConfigFactory({
       id: teapotBlock.id,
+      outputKey: "teapotOutput" as OutputKey,
       config: defaultBlockConfig(teapotBlock.inputSchema),
     }),
   ]);
@@ -230,9 +232,6 @@ async function addABlock(addButton: Element, blockName: string) {
       name: /^Add/,
     })
   );
-
-  // Run validation
-  await runPendingTimers();
 }
 
 describe("renders", () => {
@@ -499,8 +498,8 @@ describe("validation", () => {
 
     // By some reason, the validation doesn't fire with userEvent.type
     fireTextInput(rendered.getByLabelText("message"), "{{!");
-    await waitForEffect();
-    // Run the timers of the Formik-Redux validation synchronization
+
+    // Run the timers of the Formik-Redux state synchronization
     await runPendingTimers();
 
     expectEditorError(
@@ -509,7 +508,7 @@ describe("validation", () => {
     );
   });
 
-  test.skip("preserves validation results when switching between extensions", async () => {
+  test("preserves validation results when switching between extensions", async () => {
     // The test adds 2 extensions.
     // It creates an input field error to one node of the extension 1,
     // then it creates a node level error on another node (adding a renderer at the beginning of the pipeline).
@@ -542,12 +541,14 @@ describe("validation", () => {
     await waitForEffect();
 
     // Make invalid string template
-    // This is field level error, reported via Formik
+    // This is field level error
     fireTextInput(rendered.getByLabelText("message"), "{{!");
-    await waitForEffect();
+
+    // Run the timers of the Formik-Redux state synchronization
+    await runPendingTimers();
 
     // Adding a renderer in the first position in the pipeline
-    // This is a node level error, reported via Redux
+    // This is a node level error
     const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
       exact: false,
     });
@@ -557,6 +558,13 @@ describe("validation", () => {
     // Select foundation node.
     // For testing purposes we don't want a node with error to be active when we select extension1 again
     await immediateUserEvent.click(rendered.queryAllByTestId("editor-node")[0]);
+
+    // Ensure 2 nodes have error badges
+    expect(
+      rendered.container.querySelectorAll(
+        '[data-testid="editor-node"] span.badge'
+      )
+    ).toHaveLength(2);
 
     // Selecting another extension. Only possible with Redux
     const store = rendered.getReduxStore();
@@ -572,27 +580,22 @@ describe("validation", () => {
     store.dispatch(editorActions.selectElement(extension1.uuid));
 
     // Should show 2 error in the Node Layout
-    const errorBadges = rendered.container.querySelectorAll(
-      '[data-testid="editor-node"] span.badge'
-    );
-    expect(errorBadges).toHaveLength(2);
+    expect(
+      rendered.container.querySelectorAll(
+        '[data-testid="editor-node"] span.badge'
+      )
+    ).toHaveLength(2);
 
     const editorNodes = rendered.queryAllByTestId("editor-node");
 
     // Selecting the markdown block in the first extension
     await immediateUserEvent.click(editorNodes[1]);
 
-    // Run the timers of the Formik-Redux validation synchronization
-    await runPendingTimers();
     expectEditorError(rendered.container, "A renderer must be the last brick.");
 
     // Selecting the echo block
     await immediateUserEvent.click(editorNodes[2]);
 
-    // Run the timers of the Formik-Redux validation synchronization
-    await runPendingTimers();
-
-    // XXX: this fails because the error message appears only if the input is touched
     expectEditorError(
       rendered.container,
       "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
@@ -631,10 +634,7 @@ describe("validation", () => {
     const addButton = addButtons.at(0);
     await addABlock(addButton, "markdown");
 
-    expectEditorError(
-      rendered.container,
-      "A panel can only have one renderer. There are one or more renderers configured after this brick. A renderer must be the last brick."
-    );
+    expectEditorError(rendered.container, MULTIPLE_RENDERERS_ERROR_MESSAGE);
   });
 
   test("validates that renderer is the last node on move", async () => {
@@ -666,11 +666,6 @@ describe("validation", () => {
     );
 
     await immediateUserEvent.click(moveUpButton);
-
-    // This enables the Formik to re-render the form after the Element's change
-    act(() => {
-      jest.runOnlyPendingTimers();
-    });
 
     expectEditorError(rendered.container, "A renderer must be the last brick.");
   });
@@ -723,11 +718,6 @@ describe("validation", () => {
       );
 
       await waitForEffect();
-
-      // This enables the Formik to re-render the form after the Element's change
-      act(() => {
-        jest.runOnlyPendingTimers();
-      });
 
       const blockType = await getType(disallowedBlock);
       expectEditorError(
@@ -798,9 +788,7 @@ describe("block validation in Add Block Modal UI", () => {
       );
 
       // Run the debounced search
-      act(() => {
-        jest.runOnlyPendingTimers();
-      });
+      await runPendingTimers();
 
       expect(
         screen.queryAllByRole("button", {

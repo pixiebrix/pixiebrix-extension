@@ -39,7 +39,12 @@ class OutputKeyAnalysis extends AnalysisVisitorWithResolvedBlocks {
 
     let errorMessage: string;
     const { id, outputKey } = blockConfig;
-    const { type: blockType } = this.allBlocks.get(id);
+    const typedBlock = this.allBlocks.get(id);
+    if (typedBlock == null) {
+      return;
+    }
+
+    const { type: blockType } = typedBlock;
     if (blockTypesWithEmptyOutputKey.includes(blockType)) {
       if (!outputKey) {
         return;
