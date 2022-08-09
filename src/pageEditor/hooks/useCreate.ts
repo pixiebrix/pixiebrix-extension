@@ -128,18 +128,15 @@ function useCreate(): CreateCallback {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const { data: editablePackages } = useGetEditablePackagesQuery();
-  const [_, refreshRegistries] = useRefresh({ refreshOnMount: false });
+
+  // Make sure the pages have the latest bricks for when we reactivate below
+  useRefresh({ refreshOnMount: true });
 
   const saveElement = useCallback(
     async (
       element: FormState,
       pushToCloud: boolean
     ): Promise<string | null> => {
-      // Make sure the pages have the latest bricks for when we reactivate below
-      // NOTE: This must run before the permissions check (below), because we
-      // need to look up service definitions as part of checking permissions.
-      await refreshRegistries();
-
       // eslint-disable-next-line promise/prefer-await-to-then -- It specifically does not need to be awaited #2775
       void ensurePermissions(element).catch((error) => {
         console.error("Error checking/enabling permissions", { error });
@@ -218,7 +215,7 @@ function useCreate(): CreateCallback {
       notify.success("Saved extension");
       return null;
     },
-    [dispatch, editablePackages, refreshRegistries, sessionId]
+    [dispatch, editablePackages, sessionId]
   );
 
   return useCallback(

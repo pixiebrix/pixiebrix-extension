@@ -18,7 +18,7 @@ import { useAsyncEffect } from "use-async-effect";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import blockRegistry from "@/blocks/registry";
 import serviceRegistry from "@/services/registry";
-import { stubTrue } from "lodash";
+import { stubTrue, throttle } from "lodash";
 import { useCallback, useState } from "react";
 import notify from "@/utils/notify";
 import { clearServiceCache, services } from "@/background/messenger/api";
@@ -26,21 +26,28 @@ import { clearServiceCache, services } from "@/background/messenger/api";
 /**
  * Refresh registries for the current context.
  *
- * Additionally refreshes background states necessary for making network calls.
+ * Additionally, refreshes background states necessary for making network calls.
  */
-export async function refreshRegistries(): Promise<void> {
-  console.debug("Refreshing bricks from the server");
-  await Promise.all([
-    extensionPointRegistry.fetch(),
-    blockRegistry.fetch(),
-    serviceRegistry.fetch(),
-    services.refresh(),
-  ]);
+export const refreshRegistries = throttle(
+  async () => {
+    console.debug("Refreshing bricks from the server");
+    await Promise.all([
+      extensionPointRegistry.fetch(),
+      blockRegistry.fetch(),
+      serviceRegistry.fetch(),
+      services.refresh(),
+    ]);
 
-  // Ensure the background page is using the latest service definitions for fulfilling requests. This must come after
-  // the call to serviceRegistry, because that populates the local IDB definitions.
-  await clearServiceCache();
-}
+    // Ensure the background page is using the latest service definitions for fulfilling requests. This must come after
+    // the call to serviceRegistry, because that populates the local IDB definitions.
+    await clearServiceCache();
+  },
+  60_000,
+  {
+    leading: true,
+    trailing: false,
+  }
+);
 
 function useRefresh(options?: {
   refreshOnMount: boolean;
