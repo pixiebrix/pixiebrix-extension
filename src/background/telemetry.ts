@@ -134,21 +134,21 @@ export async function recordEvent({
   event: string;
   data: JsonObject | undefined;
 }): Promise<void> {
-  if (await allowsTrack()) {
-    const { version, version_name: versionName } =
-      browser.runtime.getManifest();
-    buffer.push({
-      uid: await uid(),
-      event,
-      timestamp: Date.now(),
-      data: {
-        ...data,
-        version,
-        versionName,
-      },
-    });
-    void debouncedFlush();
-  }
+  //if (await allowsTrack()) {
+  console.log("Sending an event...");
+  const { version, version_name: versionName } = browser.runtime.getManifest();
+  buffer.push({
+    uid: await uid(),
+    event,
+    timestamp: Date.now(),
+    data: {
+      ...data,
+      version,
+      versionName,
+    },
+  });
+  void debouncedFlush();
+  //}
 }
 
 export async function sendDeploymentAlert({

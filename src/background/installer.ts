@@ -53,7 +53,9 @@ async function openInstallPage() {
 }
 
 function install({ reason }: Runtime.OnInstalledDetailsType) {
+  console.log("Install function");
   if (reason === "install") {
+    console.log("open install page");
     void openInstallPage();
     reportEvent("PixieBrixInstall", {
       version: browser.runtime.getManifest().version,
