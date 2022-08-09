@@ -24,7 +24,10 @@ import {
   SetActiveField,
 } from "@/components/formBuilder/formBuilderTypes";
 import FormPreviewStringField from "./FormPreviewStringField";
-import { UI_SCHEMA_ACTIVE } from "@/components/formBuilder/schemaFieldNames";
+import {
+  UI_SCHEMA_ACTIVE,
+  UI_WIDGET,
+} from "@/components/formBuilder/schemaFieldNames";
 import { produce } from "immer";
 import FormPreviewBooleanField from "./FormPreviewBooleanField";
 import { getPreviewValues } from "@/components/fields/fieldUtils";
@@ -52,8 +55,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
   // Maintain a local version of the RJSF schema to reflect the active field
   // Important to have schema and uiSchema always in sync, hence caching both
-  const [{ schema, uiSchema }, setLocalRjsfSchema] =
-    useState<RJSFSchema>(rjsfSchema);
+  const [{ schema, uiSchema }, setLocalRjsfSchema] = useState<RJSFSchema>({});
 
   const previewSchema = useMemo(() => getPreviewValues(schema), [schema]);
 
@@ -63,19 +65,33 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
   // Setting local schema
   useEffect(() => {
-    if (activeField) {
-      const nextLocalRjsfSchema = produce<RJSFSchema>(rjsfSchema, (draft) => {
+    const nextLocalRjsfSchema = produce<RJSFSchema>(rjsfSchema, (draft) => {
+      if (activeField) {
         if (!draft.uiSchema[activeField]) {
           draft.uiSchema[activeField] = {};
         }
 
         draft.uiSchema[activeField][UI_SCHEMA_ACTIVE] = true;
-      });
+      }
 
-      setLocalRjsfSchema(nextLocalRjsfSchema);
-    } else {
-      setLocalRjsfSchema(rjsfSchema);
-    }
+      // RJSF Form throws when Dropdown with labels selected, no options set and default is empty
+      // Setting empty string as the default value of a Dropdown in the Preview
+      for (const [key, value] of Object.entries(draft.uiSchema)) {
+        if (!(UI_WIDGET in value) || value[UI_WIDGET] !== "select") {
+          continue;
+        }
+
+        const propertySchema = draft.schema.properties[key];
+        if (
+          typeof propertySchema === "object" &&
+          propertySchema.default == null
+        ) {
+          propertySchema.default = "";
+        }
+      }
+    });
+
+    setLocalRjsfSchema(nextLocalRjsfSchema);
   }, [activeField, rjsfSchema]);
 
   const StringField = useCallback(
