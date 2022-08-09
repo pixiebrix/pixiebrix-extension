@@ -98,6 +98,10 @@ jest.mock("@/permissions", () => {
 jest.mock("@/background/messenger/api", () => ({
   containsPermissions: jest.fn().mockResolvedValue(true),
 }));
+// Mock to support the useRefresh hook usage in the subtree
+jest.mock("@/hooks/fetch", () => ({
+  fetch: jest.fn().mockResolvedValue([]),
+}));
 
 jest.setTimeout(30_000); // This test is flaky with the default timeout of 5000 ms
 
