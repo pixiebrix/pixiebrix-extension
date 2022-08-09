@@ -45,7 +45,7 @@ export async function refreshRegistries(): Promise<void> {
 const throttledRefreshRegistries = throttle(
   async () => {
     try {
-      await throttledRefreshRegistries();
+      await refreshRegistries();
     } catch (error) {
       // Notify here instead of in useRefresh to prevent multiple notifications from being shown if useRefresh is used
       // in multiple components on the page.
@@ -54,6 +54,8 @@ const throttledRefreshRegistries = throttle(
       throw error;
     }
   },
+  // In practice, useRefresh will be mounted frequently enough in the Page Editor to cause this throttle to take
+  // effect/be binding. Pick a time that's high enough to avoid the server throttling the number of requests.
   60_000,
   {
     leading: true,
