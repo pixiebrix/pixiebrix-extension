@@ -18,7 +18,7 @@ import { useAsyncEffect } from "use-async-effect";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import blockRegistry from "@/blocks/registry";
 import serviceRegistry from "@/services/registry";
-import { stubTrue } from "lodash";
+import { stubTrue, throttle } from "lodash";
 import { useCallback, useState } from "react";
 import notify from "@/utils/notify";
 import { clearServiceCache, services } from "@/background/messenger/api";
@@ -26,7 +26,7 @@ import { clearServiceCache, services } from "@/background/messenger/api";
 /**
  * Refresh registries for the current context.
  *
- * Additionally refreshes background states necessary for making network calls.
+ * Additionally, refreshes background states necessary for making network calls.
  */
 export async function refreshRegistries(): Promise<void> {
   console.debug("Refreshing bricks from the server");
@@ -42,6 +42,27 @@ export async function refreshRegistries(): Promise<void> {
   await clearServiceCache();
 }
 
+const throttledRefreshRegistries = throttle(
+  async () => {
+    try {
+      await refreshRegistries();
+    } catch (error) {
+      // Notify here instead of in useRefresh to prevent multiple notifications from being shown if useRefresh is used
+      // in multiple components on the page.
+      notify.error({ message: "Error refreshing bricks from server", error });
+      console.error(error);
+      throw error;
+    }
+  },
+  // In practice, useRefresh will be mounted frequently enough in the Page Editor to cause this throttle to take
+  // effect/be binding. Pick a time that's high enough to avoid the server throttling the number of requests.
+  60_000,
+  {
+    leading: true,
+    trailing: false,
+  }
+);
+
 function useRefresh(options?: {
   refreshOnMount: boolean;
 }): [boolean, () => Promise<void>] {
@@ -55,14 +76,8 @@ function useRefresh(options?: {
   const refresh = useCallback(
     async (isMounted = stubTrue) => {
       try {
-        await refreshRegistries();
-      } catch (error) {
-        console.error(error);
-        if (!isMounted()) {
-          return;
-        }
-
-        notify.error({ message: "Error refreshing bricks from server", error });
+        // Use throttledRefreshRegistries to support useRefresh being included in multiple components on the page
+        await throttledRefreshRegistries();
       } finally {
         if (isMounted()) {
           setLoaded(true);
