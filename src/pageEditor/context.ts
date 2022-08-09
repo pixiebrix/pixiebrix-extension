@@ -158,6 +158,6 @@ export function useDevConnection(): Context {
   return {
     connecting: isConnecting,
     error: contextInvalidatedError ?? connectionError,
-    tabState,
+    tabState: tabState ?? initialFrameState,
   };
 }
