@@ -18,13 +18,21 @@
 import { validateSchema } from "@/options/pages/brickEditor/validate";
 import trelloBlueprint from "@contrib/recipes/trello-slack.yaml";
 import amazonBrick from "@contrib/blocks/amazon-search.yaml";
+import v3Blueprint from "@contrib/recipes/v3-example.txt";
 import { objToYaml } from "@/utils/objToYaml";
 
 describe("validateSchema", () => {
-  test("validates a blueprint", async () => {
+  test("validates a v1 blueprint", async () => {
     await expect(
       validateSchema(objToYaml(trelloBlueprint as any))
     ).resolves.toEqual({});
+  });
+
+  test("validates a v3 blueprint", async () => {
+    await expect(validateSchema(v3Blueprint as any)).resolves.toEqual({});
+
+    const value = await validateSchema(v3Blueprint as any);
+    console.debug(value);
   });
 
   test("validates a brick", async () => {
