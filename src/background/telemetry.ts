@@ -66,8 +66,10 @@ export async function uid(): Promise<UUID> {
 async function flush(): Promise<void> {
   if (buffer.length > 0) {
     const client = await maybeGetLinkedApiClient();
+    console.log("getting client...", client);
     if (client) {
       const events = buffer.splice(0, buffer.length);
+      console.log("reporting events...", events);
       await client.post("/api/events/", { events });
     }
   }
@@ -134,21 +136,22 @@ export async function recordEvent({
   event: string;
   data: JsonObject | undefined;
 }): Promise<void> {
-  //if (await allowsTrack()) {
-  console.log("Sending an event...");
-  const { version, version_name: versionName } = browser.runtime.getManifest();
-  buffer.push({
-    uid: await uid(),
-    event,
-    timestamp: Date.now(),
-    data: {
-      ...data,
-      version,
-      versionName,
-    },
-  });
-  void debouncedFlush();
-  //}
+  if (await allowsTrack()) {
+    console.log("Sending an event...");
+    const { version, version_name: versionName } =
+      browser.runtime.getManifest();
+    buffer.push({
+      uid: await uid(),
+      event,
+      timestamp: Date.now(),
+      data: {
+        ...data,
+        version,
+        versionName,
+      },
+    });
+    void debouncedFlush();
+  }
 }
 
 export async function sendDeploymentAlert({
