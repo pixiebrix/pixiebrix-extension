@@ -36,6 +36,8 @@ import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import SelectWidgetPreview from "./SelectWidgetPreview";
 import FormPreviewSchemaField from "./FormPreviewSchemaField";
+import { isExpression } from "@/runtime/mapArgs";
+import { isEmpty } from "lodash";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -53,8 +55,11 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     setData(formData);
   };
 
-  // Maintain a local version of the RJSF schema to reflect the active field
-  // Important to have schema and uiSchema always in sync, hence caching both
+  // Maintain a local version of the RJSF schema to reflect the active field.
+  // Important to have schema and uiSchema always in sync, hence caching both.
+  // RJSF can throw an error for a certain schema configuration
+  // (see a comment re select with label below),
+  // this is why we never send the original schema to the From Preview.
   const [{ schema, uiSchema }, setLocalRjsfSchema] = useState<RJSFSchema>({});
 
   const previewSchema = useMemo(() => getPreviewValues(schema), [schema]);
@@ -77,16 +82,42 @@ const FormPreview: React.FC<FormPreviewProps> = ({
       // RJSF Form throws when Dropdown with labels selected, no options set and default is empty
       // Setting empty string as the default value of a Dropdown in the Preview
       for (const [key, value] of Object.entries(draft.uiSchema)) {
-        if (!(UI_WIDGET in value) || value[UI_WIDGET] !== "select") {
+        const propertySchema = draft.schema.properties[key];
+
+        // We only interested in select with labels, otherwise we don't need to do anything
+        if (
+          !(UI_WIDGET in value) ||
+          value[UI_WIDGET] !== "select" ||
+          typeof propertySchema !== "object" ||
+          typeof propertySchema.oneOf === "undefined"
+        ) {
           continue;
         }
 
-        const propertySchema = draft.schema.properties[key];
         if (
-          typeof propertySchema === "object" &&
+          // No default value set
           propertySchema.default == null
         ) {
-          propertySchema.default = "";
+          console.log("propertySchema", {
+            schema: rjsfSchema.schema.properties[key],
+            uiSchema: rjsfSchema.uiSchema[key],
+            exp: isExpression(propertySchema.oneOf),
+            isEmpty: isEmpty(propertySchema.oneOf?.__value__),
+          });
+
+          if (isExpression(propertySchema.oneOf)) {
+            if (!isEmpty(propertySchema.oneOf.__value__)) {
+              continue;
+            }
+          } else if (propertySchema.oneOf?.length > 0) {
+            continue;
+          }
+
+          propertySchema.oneOf = [
+            {
+              const: "[not set]",
+            },
+          ];
         }
       }
     });
@@ -122,6 +153,10 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     imageCrop: ImageCropWidgetPreview,
     SelectWidget: SelectWidgetPreview,
   };
+
+  console.log("preview Schema", {
+    previewSchema,
+  });
 
   return (
     <JsonSchemaForm
