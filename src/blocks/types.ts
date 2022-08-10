@@ -211,6 +211,8 @@ export type Branch = {
 
 /**
  * Defines the position of the block in the extension
+ * ex. "extension.blockPipeline.0.config.body.__value__.0",
+ * "extension.blockPipeline.0.config.body.0.children.0.config.onClick.__value__.0"
  */
 export type BlockPosition = {
   /**
