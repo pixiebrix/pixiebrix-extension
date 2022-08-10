@@ -35,6 +35,14 @@ const runtimeActions = runtimeSlice.actions;
 
 const pageEditorAnalysisManager = new ReduxAnalysisManager();
 
+// These actions will be used with every analysis so the annotation path is up to date
+// with the node position in the pipeline
+const nodeListMutationActions = [
+  editorActions.addNode,
+  editorActions.moveNode,
+  editorActions.removeNode,
+];
+
 pageEditorAnalysisManager.registerAnalysisEffect(
   (
     action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
@@ -54,9 +62,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
     // but the block path can change when node tree is mutated
     matcher: isAnyOf(
       runtimeActions.setExtensionTrace,
-      editorActions.addNode,
-      editorActions.moveNode,
-      editorActions.removeNode
+      ...nodeListMutationActions
     ),
   }
 );
@@ -66,22 +72,16 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   {
     // Only needed on editorActions.addNode,
     // but the block path can change on move or remove
-    matcher: isAnyOf(
-      editorActions.addNode,
-      editorActions.moveNode,
-      editorActions.removeNode
-    ),
+    // @ts-expect-error: spreading the array as args
+    matcher: isAnyOf(...nodeListMutationActions),
   }
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new RenderersAnalysis(),
   {
-    matcher: isAnyOf(
-      editorActions.addNode,
-      editorActions.moveNode,
-      editorActions.removeNode
-    ),
+    // @ts-expect-error: spreading the array as args
+    matcher: isAnyOf(...nodeListMutationActions),
   }
 );
 
@@ -90,24 +90,14 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   {
     // Only needed on editorActions.editElement,
     // but the block path can change when node tree is mutated
-    matcher: isAnyOf(
-      editorActions.editElement,
-      editorActions.addNode,
-      editorActions.moveNode,
-      editorActions.removeNode
-    ),
+    matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
   }
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
   // Only needed on editorActions.editElement,
   // but the block path can change when node tree is mutated
-  matcher: isAnyOf(
-    editorActions.editElement,
-    editorActions.addNode,
-    editorActions.moveNode,
-    editorActions.removeNode
-  ),
+  matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
 });
 
 pageEditorAnalysisManager.registerAnalysisEffect(
@@ -115,12 +105,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   {
     // Only needed on editorActions.editElement,
     // but the block path can change when node tree is mutated
-    matcher: isAnyOf(
-      editorActions.editElement,
-      editorActions.addNode,
-      editorActions.moveNode,
-      editorActions.removeNode
-    ),
+    matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
   }
 );
 
