@@ -16,13 +16,17 @@
  */
 
 import { Analysis, Annotation } from "@/analysis/analysisTypes";
+import PipelineVisitor from "@/blocks/PipelineVisitor";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import PipelineVisitor from "./PipelineVisitor";
+import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
 
 /**
  * A base class for creating analysis visitors.
  */
-abstract class AnalysisVisitor extends PipelineVisitor implements Analysis {
+export abstract class AnalysisVisitor
+  extends PipelineVisitor
+  implements Analysis
+{
   abstract readonly id: string;
 
   protected readonly annotations: Annotation[] = [];
@@ -30,11 +34,19 @@ abstract class AnalysisVisitor extends PipelineVisitor implements Analysis {
     return this.annotations;
   }
 
-  async run(extension: FormState): Promise<void> {
-    return this.visitRootPipeline(extension.extension.blockPipeline, {
+  run(extension: FormState): void | Promise<void> {
+    this.visitRootPipeline(extension.extension.blockPipeline, {
       extensionPointType: extension.type,
     });
   }
 }
 
-export default AnalysisVisitor;
+export abstract class AnalysisVisitorWithResolvedBlocks extends AnalysisVisitor {
+  protected allBlocks: TypedBlockMap;
+
+  override async run(extension: FormState): Promise<void> {
+    this.allBlocks = await blockRegistry.allTyped();
+
+    await super.run(extension);
+  }
+}

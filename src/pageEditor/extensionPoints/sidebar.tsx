@@ -187,7 +187,10 @@ async function fromExtension(
   >(config, "actionPanel");
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
-  const extension = extensionWithNormalizedPipeline(config.config, "body");
+  const extension = await extensionWithNormalizedPipeline(
+    config.config,
+    "body"
+  );
 
   const {
     trigger = "load",

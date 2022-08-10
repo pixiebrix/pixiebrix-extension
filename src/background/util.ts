@@ -16,7 +16,7 @@
  */
 
 import pDefer from "p-defer";
-import { executeFunction, injectContentScript } from "webext-content-scripts";
+import { injectContentScript } from "webext-content-scripts";
 import { getAdditionalPermissions } from "webext-additional-permissions";
 import { patternToRegex } from "webext-patterns";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
@@ -25,6 +25,9 @@ import { expectContext } from "@/utils/expectContext";
 import pTimeout from "p-timeout";
 import type { Target } from "@/types";
 import { getTabsWithAccess } from "./activeTab";
+
+// eslint-disable-next-line import/no-restricted-paths -- TODO: Migrate to webext-messenger?
+import { getTargetState } from "@/contentScript/ready";
 
 /** Checks whether a URL will have the content scripts automatically injected */
 export async function isContentScriptRegistered(url: string): Promise<boolean> {
@@ -41,26 +44,6 @@ export async function isContentScriptRegistered(url: string): Promise<boolean> {
   // Do not replace the 2 calls above with `permissions.getAll` because it might also
   // include hosts that are permitted by the manifest but have no content script registered.
   return patternToRegex(...origins, ...manifestScriptsOrigins).test(url);
-}
-
-interface TargetState {
-  url: string;
-  installed: boolean;
-  ready: boolean;
-}
-
-/**
- * Fetches the URL and content script state from a frame on a tab
- * @throws Error if background page doesn't have permission to access the tab
- * */
-export async function getTargetState(target: Target): Promise<TargetState> {
-  expectContext("background");
-
-  return executeFunction(target, () => ({
-    url: location.href,
-    installed: Symbol.for("pixiebrix-content-script") in window,
-    ready: Symbol.for("pixiebrix-content-script-ready") in window,
-  }));
 }
 
 export async function onReadyNotification(signal: AbortSignal): Promise<void> {
