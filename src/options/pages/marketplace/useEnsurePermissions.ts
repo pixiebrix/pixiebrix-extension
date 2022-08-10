@@ -25,16 +25,28 @@ import { resolveRecipe } from "@/registry/internal";
 import { containsPermissions, services } from "@/background/messenger/api";
 import { useCallback } from "react";
 import { reportEvent } from "@/telemetry/events";
+import { Permissions } from "webextension-polyfill";
+
+type PermissionsState = {
+  enabled: boolean;
+  request: () => Promise<boolean>;
+  permissions: Permissions.Permissions;
+  activate: () => void;
+  isPending: boolean;
+  extensions: ExtensionPointConfig[];
+  error: unknown;
+};
 
 function useEnsurePermissions(
   blueprint: RecipeDefinition,
   selected: ExtensionPointConfig[],
   serviceAuths: ServiceAuthPair[]
-) {
+): PermissionsState {
   const { submitForm } = useFormikContext();
 
   const [permissionState, isPending, error] = useAsyncState(async () => {
-    await services.refreshLocal();
+    // Refresh services because the user may have created a team integration since the last refresh.
+    await services.refresh();
     const permissions = await collectPermissions(
       await resolveRecipe(blueprint, selected),
       serviceAuths
