@@ -42,6 +42,7 @@ import iconSchema from "@schemas/icon.json";
 import recipeSchema from "@schemas/recipe.json";
 import keySchema from "@schemas/key.json";
 import metadataSchema from "@schemas/metadata.json";
+import innerDefinitionSchema from "@schemas/innerDefinition.json";
 import refSchema from "@schemas/ref.json";
 import componentSchema from "@schemas/component.json";
 import pipelineSchema from "@schemas/pipeline.json";
@@ -70,6 +71,7 @@ const SCHEMA_URLS: Record<string, UnknownObject> = {
   "https://app.pixiebrix.com/schemas/pipeline": pipelineSchema,
   "https://app.pixiebrix.com/schemas/component": componentSchema,
   "https://app.pixiebrix.com/schemas/ref": refSchema,
+  "https://app.pixiebrix.com/schemas/innerDefinition": innerDefinitionSchema,
 };
 
 const BASE_SCHEMA_URI = "https://app.pixiebrix.com/schemas/";
