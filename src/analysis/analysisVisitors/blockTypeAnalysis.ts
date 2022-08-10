@@ -15,39 +15,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Expression } from "@/core";
+import { AnalysisVisitorWithResolvedBlocks } from "./baseAnalysisVisitors";
 import { AnnotationType } from "@/analysis/analysisTypes";
-import { BlockPosition } from "@/blocks/types";
-import { isTemplateExpression } from "@/runtime/mapArgs";
-import { isMustacheOnly } from "@/components/fields/fieldUtils";
-import { AnalysisVisitor } from "./baseAnalysisVisitors";
+import { BlockConfig, BlockPosition } from "@/blocks/types";
+import { VisitBlockExtra } from "@/blocks/PipelineVisitor";
+import { makeIsBlockAllowedForPipeline } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 
-const TEMPLATE_ERROR_MESSAGE =
-  "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";
-
-class TemplateAnalysis extends AnalysisVisitor {
+class BlockTypeAnalysis extends AnalysisVisitorWithResolvedBlocks {
   get id() {
-    return "template";
+    return "blockType";
   }
 
-  override async visitExpression(
+  override visitBlock(
     position: BlockPosition,
-    expression: Expression<unknown>
-  ): Promise<void> {
-    if (
-      isTemplateExpression(expression) &&
-      expression.__type__ !== "mustache" &&
-      isMustacheOnly(expression.__value__)
-    ) {
+    blockConfig: BlockConfig,
+    extra: VisitBlockExtra
+  ) {
+    super.visitBlock(position, blockConfig, extra);
+
+    const typedBlock = this.allBlocks.get(blockConfig.id);
+    if (typedBlock == null) {
+      return;
+    }
+
+    const isBlockAllowed = makeIsBlockAllowedForPipeline(extra.pipelineFlavor)(
+      typedBlock
+    );
+
+    if (!isBlockAllowed) {
       this.annotations.push({
         position,
-        message: TEMPLATE_ERROR_MESSAGE,
+        message: `Block of type "${typedBlock.type}" is not allowed in this pipeline`,
         analysisId: this.id,
         type: AnnotationType.Error,
-        detail: expression,
       });
     }
   }
 }
 
-export default TemplateAnalysis;
+export default BlockTypeAnalysis;

@@ -1934,6 +1934,11 @@ exports[`renders the first selected node 1`] = `
                       <div>
                         Teapot Block
                       </div>
+                      <div
+                        class="key outputKey"
+                      >
+                        @teapotOutput
+                      </div>
                     </div>
                   </div>
                   <div

@@ -26,9 +26,8 @@ import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSli
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import { createRenderWithWrappers } from "@/testUtils/testHelpers";
-import validationListenerMiddleware from "@/pageEditor/validation/validationListenerMiddleware";
 import analysisSlice from "@/analysis/analysisSlice";
-import analysisManager from "./analysisManager";
+import pageEditorAnalysisManager from "./analysisManager";
 
 const renderWithWrappers = createRenderWithWrappers(() =>
   configureStore({
@@ -49,9 +48,9 @@ const renderWithWrappers = createRenderWithWrappers(() =>
     },
     middleware(getDefaultMiddleware) {
       /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
-      return getDefaultMiddleware()
-        .concat(validationListenerMiddleware)
-        .concat(analysisManager.middleware);
+      return getDefaultMiddleware().concat(
+        pageEditorAnalysisManager.middleware
+      );
       /* eslint-enable unicorn/prefer-spread */
     },
   })
