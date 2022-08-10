@@ -19,14 +19,11 @@ import { compact, identity, sortBy, uniq } from "lodash";
 import { getCssSelector } from "css-selector-generator";
 import { CssSelectorType } from "css-selector-generator/types/types";
 import { $safeFind } from "@/helpers";
-import {
-  EXTENSION_POINT_DATA_ATTR,
-  PIXIEBRIX_DATA_ATTR,
-  PIXIEBRIX_READY_ATTRIBUTE,
-} from "@/common";
+import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";
 import { guessUsefulness, isRandomString } from "@/utils/detectRandomString";
 import { matchesAnyPattern } from "@/utils";
 import { escapeSingleQuotes } from "@/utils/escape";
+import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
 
 export const BUTTON_TAGS: string[] = [
   "li",
@@ -72,7 +69,7 @@ const UNSTABLE_SELECTORS = [
     // Our attributes
     EXTENSION_POINT_DATA_ATTR,
     PIXIEBRIX_DATA_ATTR,
-    PIXIEBRIX_READY_ATTRIBUTE
+    CONTENT_SCRIPT_READY_ATTRIBUTE
   ),
 ];
 
