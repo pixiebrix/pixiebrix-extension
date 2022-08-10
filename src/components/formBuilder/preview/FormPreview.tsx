@@ -30,7 +30,10 @@ import {
 } from "@/components/formBuilder/schemaFieldNames";
 import { produce } from "immer";
 import FormPreviewBooleanField from "./FormPreviewBooleanField";
-import { getPreviewValues } from "@/components/fields/fieldUtils";
+import {
+  getPreviewValues,
+  unwrapTemplateExpressions,
+} from "@/components/fields/fieldUtils";
 import ImageCropWidgetPreview from "@/components/formBuilder/preview/ImageCropWidgetPreview";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
@@ -62,7 +65,41 @@ const FormPreview: React.FC<FormPreviewProps> = ({
   // this is why we never send the original schema to the From Preview.
   const [{ schema, uiSchema }, setLocalRjsfSchema] = useState<RJSFSchema>({});
 
-  const previewSchema = useMemo(() => getPreviewValues(schema), [schema]);
+  const previewSchema = useMemo(() => {
+    const unwrappedSchema = produce(schema, (draft) => {
+      unwrapTemplateExpressions(draft);
+
+      if (!schema || !uiSchema) {
+        return;
+      }
+
+      // RJSF Form throws when Dropdown with labels selected, no options set and default is empty
+      // UI Widget must be set for the Select, loop through the uiSchema props
+      for (const [key, value] of Object.entries(uiSchema)) {
+        const propertySchema = draft.properties[key];
+
+        // We only interested in select with labels, otherwise we don't need to do anything
+        if (
+          !(UI_WIDGET in value) ||
+          value[UI_WIDGET] !== "select" ||
+          typeof propertySchema !== "object" ||
+          typeof propertySchema.oneOf === "undefined"
+        ) {
+          continue;
+        }
+
+        if (propertySchema.default == null) {
+          // Setting the default value for preview to hide an empty option
+          propertySchema.default = "";
+        }
+
+        if (!propertySchema.oneOf?.length) {
+          propertySchema.oneOf = [{ const: "" }];
+        }
+      }
+    });
+    return unwrappedSchema;
+  }, [schema, uiSchema]);
 
   useEffect(() => {
     setData(null);
@@ -81,6 +118,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
       // RJSF Form throws when Dropdown with labels selected, no options set and default is empty
       // Setting empty string as the default value of a Dropdown in the Preview
+      /*
       for (const [key, value] of Object.entries(draft.uiSchema)) {
         const propertySchema = draft.schema.properties[key];
 
@@ -120,6 +158,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
           ];
         }
       }
+      */
     });
 
     setLocalRjsfSchema(nextLocalRjsfSchema);

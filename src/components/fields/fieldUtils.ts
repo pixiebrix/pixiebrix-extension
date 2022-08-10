@@ -54,7 +54,7 @@ export function createTypePredicate(predicate: TypePredicate): TypePredicate {
   };
 }
 
-function unwrapTemplateExpressions(mutableObj: Draft<any>) {
+export function unwrapTemplateExpressions(mutableObj: Draft<any>) {
   if (mutableObj === null || typeof mutableObj !== "object") {
     return;
   }
