@@ -297,7 +297,7 @@ export const blockFactory = define<IBlock>({
 });
 
 export const typedBlockFactory = async (
-  partialBlock: FactoryConfig<IBlock>
+  partialBlock?: FactoryConfig<IBlock>
 ) => {
   const block = blockFactory(partialBlock);
   return {
