@@ -127,6 +127,10 @@ const PartnerSetupCard: React.FunctionComponent<{
     password: "",
   };
 
+  const startUrl = new URL(`${installURL}start`);
+  startUrl.searchParams.set("hostname", me?.organization?.control_room?.url);
+  startUrl.searchParams.set("partner", "automation-anywhere");
+
   return (
     <OnboardingChecklistCard title="Set up your account">
       <OnboardingStep
@@ -142,7 +146,9 @@ const PartnerSetupCard: React.FunctionComponent<{
         <Button
           role="button"
           className="btn btn-primary mt-2"
-          href={installURL}
+          href={
+            me?.organization?.control_room?.url ? startUrl.href : installURL
+          }
         >
           <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
         </Button>
