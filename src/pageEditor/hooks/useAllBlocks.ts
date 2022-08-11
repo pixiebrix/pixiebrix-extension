@@ -56,7 +56,7 @@ function useAllBlocks(): {
     return () => {
       blockRegistry.removeListener(registryListener);
     };
-  }, [registryListener, reload]);
+  }, [registryListener]);
 
   return {
     allBlocks,
