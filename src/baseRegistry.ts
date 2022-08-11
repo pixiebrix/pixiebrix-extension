@@ -37,6 +37,10 @@ export class DoesNotExistError extends Error {
   }
 }
 
+export type RegistryChangeListener = {
+  onCacheChanged: () => void;
+};
+
 /**
  * Local brick registry backed by IDB.
  */
@@ -56,6 +60,8 @@ export class Registry<
 
   private readonly deserialize: (raw: unknown) => Item;
 
+  private listeners: RegistryChangeListener[] = [];
+
   constructor(
     kinds: Kind[],
     remoteResourcePath: string,
@@ -65,6 +71,14 @@ export class Registry<
     this.kinds = new Set(kinds);
     this.remoteResourcePath = remoteResourcePath;
     this.deserialize = deserialize;
+  }
+
+  addListener(listener: RegistryChangeListener): void {
+    this.listeners.push(listener);
+  }
+
+  removeListener(listener: RegistryChangeListener): void {
+    this.listeners = this.listeners.filter((x) => x !== listener);
   }
 
   async exists(id: Id): Promise<boolean> {
@@ -101,6 +115,10 @@ export class Registry<
     }
 
     this.register(item);
+
+    for (const listener of this.listeners) {
+      listener.onCacheChanged();
+    }
 
     return item;
   }
@@ -209,6 +227,10 @@ export class Registry<
         }
       )
     );
+
+    for (const listener of this.listeners) {
+      listener.onCacheChanged();
+    }
   }
 
   /**
@@ -216,6 +238,10 @@ export class Registry<
    */
   clear(): void {
     this.cache.clear();
+
+    for (const listener of this.listeners) {
+      listener.onCacheChanged();
+    }
   }
 }
 
