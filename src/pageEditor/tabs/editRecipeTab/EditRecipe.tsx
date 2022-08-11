@@ -39,6 +39,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { getRecipeById } from "@/utils";
 import Alert from "@/components/Alert";
 import { createSelector } from "reselect";
+import { lt } from "semver";
 
 // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
@@ -73,6 +74,10 @@ const EditRecipe: React.VoidFunctionComponent = () => {
 
   const installedRecipeVersion = recipeExtension?._recipe.version;
   const latestRecipeVersion = recipe?.metadata?.version;
+  const showOldRecipeWarning =
+    installedRecipeVersion &&
+    latestRecipeVersion &&
+    lt(installedRecipeVersion, latestRecipeVersion);
 
   const dirtyMetadata = useSelector(selectDirtyMetadataForRecipeId(recipeId));
   const savedMetadata = recipe?.metadata;
@@ -116,7 +121,7 @@ const EditRecipe: React.VoidFunctionComponent = () => {
       <Card>
         <Card.Header>Blueprint Metadata</Card.Header>
         <Card.Body>
-          {installedRecipeVersion !== latestRecipeVersion && (
+          {showOldRecipeWarning && (
             <Alert variant="warning">
               You are editing version {installedRecipeVersion} of this
               blueprint, the latest version is {latestRecipeVersion}. To get the
