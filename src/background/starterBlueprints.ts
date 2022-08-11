@@ -18,7 +18,7 @@
 import extensionsSlice from "@/store/extensionsSlice";
 import { BlueprintResponse, Me } from "@/types/contract";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
-import { loadOptions } from "@/store/extensionsStorage";
+import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { RecipeDefinition } from "@/types/definitions";
 import { pick } from "lodash";
 
@@ -74,9 +74,13 @@ async function installPlaygroundBlueprint(): Promise<void> {
   );
 
   console.log("result", result);
+  await saveOptions(state);
 
   // 4. If successful, make a call to the preinstallBlueprints flag endpoint to mark the
   // preinstalledBlueprints flag
+  await client.post("/api/onboarding/starter-blueprints/", {
+    installed: true,
+  });
 }
 
 function initStarterBlueprints(): void {
