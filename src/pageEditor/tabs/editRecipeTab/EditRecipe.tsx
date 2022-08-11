@@ -74,6 +74,10 @@ const EditRecipe: React.VoidFunctionComponent = () => {
 
   const installedRecipeVersion = recipeExtension?._recipe.version;
   const latestRecipeVersion = recipe?.metadata?.version;
+  const showOldRecipeWarning =
+    installedRecipeVersion &&
+    latestRecipeVersion &&
+    lt(installedRecipeVersion, latestRecipeVersion);
 
   const dirtyMetadata = useSelector(selectDirtyMetadataForRecipeId(recipeId));
   const savedMetadata = recipe?.metadata;
@@ -117,7 +121,7 @@ const EditRecipe: React.VoidFunctionComponent = () => {
       <Card>
         <Card.Header>Blueprint Metadata</Card.Header>
         <Card.Body>
-          {lt(installedRecipeVersion, latestRecipeVersion) && (
+          {showOldRecipeWarning && (
             <Alert variant="warning">
               You are editing version {installedRecipeVersion} of this
               blueprint, the latest version is {latestRecipeVersion}. To get the
