@@ -21,12 +21,8 @@ import { initTelemetry } from "@/background/telemetry";
 import { getUID } from "@/background/messenger/api";
 import { DNT_STORAGE_KEY, allowsTrack } from "@/telemetry/dnt";
 import { gt } from "semver";
-import { getInstallURL } from "@/services/baseService";
 
 const UNINSTALL_URL = "https://www.pixiebrix.com/uninstall/";
-
-// eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
-const SERVICE_URL = process.env.SERVICE_URL;
 
 /**
  * The latest version of PixieBrix available in the Chrome Web Store, or null if the version hasn't been fetched.
@@ -34,23 +30,7 @@ const SERVICE_URL = process.env.SERVICE_URL;
 let _availableVersion: string | null = null;
 
 async function openInstallPage() {
-  const [accountTab] = await browser.tabs.query({
-    url: [
-      new URL("setup", SERVICE_URL).href,
-      new URL("start", SERVICE_URL).href,
-    ],
-  });
-
-  // if (accountTab) {
-  //   // Automatically reuse the tab that is part of the onboarding flow
-  //   // https://github.com/pixiebrix/pixiebrix-extension/pull/3506
-  //   await browser.tabs.update(accountTab.id, {
-  //     url: await getInstallURL(),
-  //   });
-  //
-  // } else {
   await browser.runtime.openOptionsPage();
-  // }
 }
 
 function install({ reason }: Runtime.OnInstalledDetailsType) {
