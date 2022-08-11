@@ -21,6 +21,8 @@ import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { RecipeDefinition } from "@/types/definitions";
 import { pick } from "lodash";
+import { forEachTab } from "@/background/util";
+import { queueReactivateTab } from "@/contentScript/messenger/api";
 
 const { reducer, actions } = extensionsSlice;
 // TODO: replace me with the actual playground blueprint id
@@ -36,15 +38,14 @@ async function installPlaygroundBlueprint(): Promise<void> {
     return;
   }
 
-  const { data: profile, status: profileResponseStatus } = await client.get<Me>(
-    "/api/me/"
-  );
+  const { data: profile } = await client.get<Me>("/api/me/");
 
   console.log(profile);
 
   // 2. If not, fetch the Playground blueprint
   if (!profile.install_starter_blueprints) {
-    return;
+    // TODO: uncomment me
+    //return;
   }
 
   const { data: playground_blueprint } = await client.get<BlueprintResponse>(
@@ -74,7 +75,8 @@ async function installPlaygroundBlueprint(): Promise<void> {
   );
 
   console.log("result", result);
-  await saveOptions(state);
+  await saveOptions(result);
+  await forEachTab(queueReactivateTab);
 
   // 4. If successful, make a call to the preinstallBlueprints flag endpoint to mark the
   // preinstalledBlueprints flag

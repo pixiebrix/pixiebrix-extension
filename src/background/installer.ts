@@ -41,15 +41,16 @@ async function openInstallPage() {
     ],
   });
 
-  if (accountTab) {
-    // Automatically reuse the tab that is part of the onboarding flow
-    // https://github.com/pixiebrix/pixiebrix-extension/pull/3506
-    await browser.tabs.update(accountTab.id, {
-      url: await getInstallURL(),
-    });
-  } else {
-    await browser.runtime.openOptionsPage();
-  }
+  // if (accountTab) {
+  //   // Automatically reuse the tab that is part of the onboarding flow
+  //   // https://github.com/pixiebrix/pixiebrix-extension/pull/3506
+  //   await browser.tabs.update(accountTab.id, {
+  //     url: await getInstallURL(),
+  //   });
+  //
+  // } else {
+  await browser.runtime.openOptionsPage();
+  // }
 }
 
 function install({ reason }: Runtime.OnInstalledDetailsType) {
