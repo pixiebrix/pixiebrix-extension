@@ -41,8 +41,12 @@ const FieldTemplate = ({
     )}
     {rawErrors.length > 0 && (
       <ListGroup as="ul">
-        {rawErrors.map((error: string) => (
-          <ListGroup.Item as="li" key={error} className="border-0 m-0 p-0">
+        {rawErrors.map((error, index) => (
+          <ListGroup.Item
+            as="li"
+            key={`${error}_${index}`}
+            className="border-0 m-0 p-0"
+          >
             <small className="m-0 text-danger">{error}</small>
           </ListGroup.Item>
         ))}
