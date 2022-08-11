@@ -26,3 +26,9 @@ async function preinstallPlaygroundBlueprint(): Promise<void> {
   // 4. If successful, make a call to the preinstallBlueprints flag endpoint to mark the
   // preinstalledBlueprints flag
 }
+
+function initPreinstalledBlueprints(): void {
+  void preinstallPlaygroundBlueprint();
+}
+
+export default initPreinstalledBlueprints;
