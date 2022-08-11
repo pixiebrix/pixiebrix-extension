@@ -44,6 +44,7 @@ import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import safeJsonStringify from "json-stringify-safe";
 import { get, isEmpty, set } from "lodash";
+import { UI_WIDGET } from "@/components/formBuilder/schemaFieldNames";
 
 const fields = {
   DescriptionField,
@@ -67,32 +68,36 @@ const CustomFormComponent: React.FunctionComponent<{
   submitCaption: string;
   formData: JsonObject;
   onSubmit: (values: JsonObject) => Promise<void>;
-}> = ({ schema, uiSchema, submitCaption, formData, onSubmit }) => (
-  <div className="CustomForm p-3">
-    <ErrorBoundary>
-      <BootstrapStylesheet />
-      <ImageCropStylesheet />
-      <link rel="stylesheet" href={custom} />
-      <JsonSchemaForm
-        schema={schema}
-        uiSchema={uiSchema}
-        formData={formData}
-        fields={fields}
-        widgets={uiWidgets}
-        FieldTemplate={FieldTemplate}
-        onSubmit={async ({ formData }) => {
-          await onSubmit(formData);
-        }}
-      >
-        <div>
-          <button className="btn btn-primary" type="submit">
-            {submitCaption}
-          </button>
-        </div>
-      </JsonSchemaForm>
-    </ErrorBoundary>
-  </div>
-);
+}> = ({ schema, uiSchema, submitCaption, formData, onSubmit }) => {
+  console.log("CustomFormComponent", { schema, uiSchema, formData });
+  return (
+    <div className="CustomForm p-3">
+      <ErrorBoundary>
+        <BootstrapStylesheet />
+        <ImageCropStylesheet />
+        <link rel="stylesheet" href={custom} />
+        <JsonSchemaForm
+          schema={schema}
+          uiSchema={uiSchema}
+          formData={formData}
+          fields={fields}
+          widgets={uiWidgets}
+          FieldTemplate={FieldTemplate}
+          onSubmit={async ({ formData }) => {
+            console.log("onSubmit", { formData });
+            await onSubmit(formData);
+          }}
+        >
+          <div>
+            <button className="btn btn-primary" type="submit">
+              {submitCaption}
+            </button>
+          </div>
+        </JsonSchemaForm>
+      </ErrorBoundary>
+    </div>
+  );
+};
 
 function assertObject(value: unknown): asserts value is UnknownObject {
   if (!isObject(value)) {
@@ -290,11 +295,15 @@ export const customFormRendererSchema = {
 
 // Ensure that all string fields contain string values (can be empty string "", but not null or undefined)
 // so the form updates the displayed values of the input correctly
-export function normalizeIncomingFormData(schema: Schema, data: UnknownObject) {
+export function normalizeIncomingFormData(
+  schema: Schema,
+  uiSchema: UiSchema,
+  data: UnknownObject
+) {
   const normalizedData: UnknownObject = {};
   for (const [key, property] of Object.entries(schema.properties)) {
-    const fieldValue = get(data, key);
-    if (fieldValue == null) {
+    const fieldValue = data[key];
+    if (fieldValue == null && uiSchema[key]?.[UI_WIDGET] !== "select") {
       if (
         typeof property === "object" &&
         property.type === "string" &&
@@ -306,6 +315,13 @@ export function normalizeIncomingFormData(schema: Schema, data: UnknownObject) {
       set(normalizedData, key, fieldValue);
     }
   }
+
+  console.log("normalizing data", {
+    schema,
+    uiSchema,
+    original: data,
+    normalized: normalizedData,
+  });
 
   return normalizedData;
 }
@@ -376,7 +392,11 @@ export class CustomFormRenderer extends Renderer {
       extensionId,
     });
 
-    const normalizedData = normalizeIncomingFormData(schema, initialData);
+    const normalizedData = normalizeIncomingFormData(
+      schema,
+      uiSchema,
+      initialData
+    );
 
     console.debug("Initial data for form", {
       recordId,
