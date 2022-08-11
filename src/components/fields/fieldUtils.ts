@@ -54,7 +54,12 @@ export function createTypePredicate(predicate: TypePredicate): TypePredicate {
   };
 }
 
-function unwrapTemplateExpressions(mutableObj: Draft<any>) {
+/**
+ * Replaces expressions in a schema with their __value__.
+ * Does not resolve the variables against a context.
+ * Mutates the given object.
+ */
+export function unwrapTemplateExpressions(mutableObj: Draft<any>) {
   if (mutableObj === null || typeof mutableObj !== "object") {
     return;
   }
