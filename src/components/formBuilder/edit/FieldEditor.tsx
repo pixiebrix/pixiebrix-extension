@@ -221,7 +221,7 @@ const FieldEditor: React.FC<{
           label: "Default value",
           description:
             uiType.extra === "selectWithLabels"
-              ? 'Should match one the "const" values from the "Options" field'
+              ? 'Should match one of the "const" values from the "Options" field'
               : undefined,
         };
 

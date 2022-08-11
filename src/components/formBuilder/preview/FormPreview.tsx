@@ -71,12 +71,12 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
         unwrapTemplateExpressions(draft);
 
-        // RJSF Form throws when Dropdown with labels selected, no options set and default is empty
-        // UI Widget must be set for the Select, loop through the uiSchema props
+        // RJSF Form throws when Dropdown with labels selected, no options set and default is empty. Let's fix that!
+        // We only interested in select with labels, otherwise we don't need to do anything.
+        // Loop through the uiSchema props, because UI Widget must be set for the Select, then take a look at the oneOf property.
         for (const [key, value] of Object.entries(draftUiSchema)) {
           const propertySchema = draftSchema.properties[key];
 
-          // We only interested in select with labels, otherwise we don't need to do anything
           if (
             !(UI_WIDGET in value) ||
             value[UI_WIDGET] !== "select" ||

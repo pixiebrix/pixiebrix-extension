@@ -81,7 +81,6 @@ const CustomFormComponent: React.FunctionComponent<{
         widgets={uiWidgets}
         FieldTemplate={FieldTemplate}
         onSubmit={async ({ formData }) => {
-          console.log("onSubmit", { formData });
           await onSubmit(formData);
         }}
       >
