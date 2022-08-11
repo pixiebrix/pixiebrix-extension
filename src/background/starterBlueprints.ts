@@ -16,10 +16,15 @@
  */
 
 import extensionsSlice from "@/store/extensionsSlice";
-import { Me } from "@/types/contract";
+import { BlueprintResponse, Me } from "@/types/contract";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
+import { loadOptions } from "@/store/extensionsStorage";
+import { RecipeDefinition } from "@/types/definitions";
+import { pick } from "lodash";
 
-const { actions } = extensionsSlice;
+const { reducer, actions } = extensionsSlice;
+// TODO: replace me with the actual playground blueprint id
+const PLAYGROUND_BLUEPRINT_NAME = "google/template-search";
 
 async function installPlaygroundBlueprint(): Promise<void> {
   // 1. Make a call to the `me` endpoint to see if the user has a falsey preinstalledBlueprints flag
@@ -35,10 +40,41 @@ async function installPlaygroundBlueprint(): Promise<void> {
     "/api/me/"
   );
 
-  console.log(profile.install_starter_blueprints);
+  console.log(profile);
 
   // 2. If not, fetch the Playground blueprint
+  if (!profile.install_starter_blueprints) {
+    return;
+  }
+
+  const { data: playground_blueprint } = await client.get<BlueprintResponse>(
+    `/api/recipes/${PLAYGROUND_BLUEPRINT_NAME}`
+  );
+
+  console.log("playground blueprint", playground_blueprint);
   // 3. Install this blueprint via extensionsSlice.actions.installRecipe
+
+  if (!playground_blueprint) {
+    return;
+  }
+
+  // Reshape to recipe definition
+  const recipeDefinition: RecipeDefinition | null = {
+    ...playground_blueprint.config,
+    ...pick(playground_blueprint, ["sharing", "updated_at"]),
+  };
+
+  const state = await loadOptions();
+  const result = reducer(
+    state,
+    actions.installRecipe({
+      recipe: recipeDefinition,
+      extensionPoints: playground_blueprint.config.extensionPoints,
+    })
+  );
+
+  console.log("result", result);
+
   // 4. If successful, make a call to the preinstallBlueprints flag endpoint to mark the
   // preinstalledBlueprints flag
 }
