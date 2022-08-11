@@ -220,6 +220,7 @@ export interface paths {
   };
   "/api/organizations/{organization_pk}/": {
     get: operations["retrieveOrganization"];
+    delete: operations["destroyOrganization"];
     patch: operations["partialUpdateOrganization"];
   };
   "/api/organizations/{organization_pk}/members/{id}/": {
@@ -293,6 +294,7 @@ export interface paths {
   };
   "/api/control-rooms/configurations/{id}/": {
     get: operations["retrieveControlRoomConfiguration"];
+    delete: operations["destroyControlRoomConfiguration"];
     patch: operations["partialUpdateControlRoomConfiguration"];
   };
   "/api/permissions/{id}/": {
@@ -394,6 +396,9 @@ export interface paths {
   };
   "/api/onboarding/": {
     post: operations["createOnboarding"];
+  };
+  "/api/onboarding/starter-blueprints/": {
+    post: operations["createStarterBlueprints"];
   };
   "/api/organizations/{organization_pk}/subscriptions/jobs/": {
     post: operations["createOrganizationSubscriptionsJob"];
@@ -1095,6 +1100,7 @@ export interface components {
         name: string;
       }[];
       is_onboarded?: string;
+      install_starter_blueprints?: string;
       /** @description True if the account is an organization API service account */
       service_account?: boolean;
       flags?: string;
@@ -1180,6 +1186,9 @@ export interface components {
       /** @enum {integer} */
       default_role?: 1 | 2 | 3 | 4 | 5;
       partner?: string;
+      sso_domain?: string | null;
+      /** @description The number of milliseconds restricted team members have to apply manual deployments or browser extension update. */
+      enforce_update_millis?: number | null;
     };
     UserDetail: {
       /** Format: uuid */
@@ -1300,9 +1309,8 @@ export interface components {
        * @description The Control Room URL
        */
       url: string;
-      /** Format: uuid */
-      tenant_id: string;
-      service_account_token: string;
+      service_account_username: string;
+      service_account_key: string;
       organization: string;
     };
     PackageConfig: {
@@ -1451,6 +1459,9 @@ export interface components {
     };
     Onboarding: {
       external?: boolean;
+    };
+    StarterBlueprints: {
+      installed?: boolean;
     };
     ProxiedRequest: {
       /** @description An absolute/relative URL for the request */
@@ -3332,6 +3343,16 @@ export interface operations {
       };
     };
   };
+  destroyOrganization: {
+    parameters: {
+      path: {
+        organization_pk: string;
+      };
+    };
+    responses: {
+      204: never;
+    };
+  };
   partialUpdateOrganization: {
     parameters: {
       path: {
@@ -3923,6 +3944,17 @@ export interface operations {
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
         };
       };
+    };
+  };
+  destroyControlRoomConfiguration: {
+    parameters: {
+      path: {
+        /** A UUID string identifying this control room. */
+        id: string;
+      };
+    };
+    responses: {
+      204: never;
     };
   };
   partialUpdateControlRoomConfiguration: {
@@ -4608,6 +4640,24 @@ export interface operations {
         "application/json": components["schemas"]["Onboarding"];
         "application/x-www-form-urlencoded": components["schemas"]["Onboarding"];
         "multipart/form-data": components["schemas"]["Onboarding"];
+      };
+    };
+  };
+  createStarterBlueprints: {
+    parameters: {};
+    responses: {
+      201: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["StarterBlueprints"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["StarterBlueprints"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["StarterBlueprints"];
+        "application/x-www-form-urlencoded": components["schemas"]["StarterBlueprints"];
+        "multipart/form-data": components["schemas"]["StarterBlueprints"];
       };
     };
   };

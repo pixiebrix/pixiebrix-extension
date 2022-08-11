@@ -16,19 +16,35 @@
  */
 
 import extensionsSlice from "@/store/extensionsSlice";
+import { Me } from "@/types/contract";
+import { maybeGetLinkedApiClient } from "@/services/apiClient";
 
 const { actions } = extensionsSlice;
 
-async function preinstallPlaygroundBlueprint(): Promise<void> {
+async function installPlaygroundBlueprint(): Promise<void> {
   // 1. Make a call to the `me` endpoint to see if the user has a falsey preinstalledBlueprints flag
+  const client = await maybeGetLinkedApiClient();
+  if (client == null) {
+    console.debug(
+      "Skipping starter blueprint installation because the extension is not linked to the PixieBrix service"
+    );
+    return;
+  }
+
+  const { data: profile, status: profileResponseStatus } = await client.get<Me>(
+    "/api/me/"
+  );
+
+  console.log(profile.install_starter_blueprints);
+
   // 2. If not, fetch the Playground blueprint
   // 3. Install this blueprint via extensionsSlice.actions.installRecipe
   // 4. If successful, make a call to the preinstallBlueprints flag endpoint to mark the
   // preinstalledBlueprints flag
 }
 
-function initPreinstalledBlueprints(): void {
-  void preinstallPlaygroundBlueprint();
+function initStarterBlueprints(): void {
+  void installPlaygroundBlueprint();
 }
 
-export default initPreinstalledBlueprints;
+export default initStarterBlueprints;
