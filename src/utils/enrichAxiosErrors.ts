@@ -54,6 +54,21 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
   // This should have already been called before attempting the request because Axios does not actually catch invalid URLs
   const url = assertHttpsUrl(error.config.url, error.config.baseURL);
 
+  const hasPermissions = await browser.permissions.contains({
+    origins: [url.href],
+  });
+
+  if (!hasPermissions) {
+    throw new ClientNetworkPermissionError(
+      "Insufficient browser permissions to make request.",
+      { cause: error }
+    );
+  }
+
+  if (!navigator.onLine) {
+    throw new ClientNetworkError(NO_INTERNET_MESSAGE, { cause: error });
+  }
+
   if (error.response) {
     // Exclude app errors, unless they're proxied requests
     if (
@@ -65,21 +80,6 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
     }
 
     throw new RemoteServiceError(getErrorMessage(error), { cause: error });
-  }
-
-  if (!navigator.onLine) {
-    throw new ClientNetworkError(NO_INTERNET_MESSAGE, { cause: error });
-  }
-
-  const hasPermissions = await browser.permissions.contains({
-    origins: [url.href],
-  });
-
-  if (!hasPermissions) {
-    throw new ClientNetworkPermissionError(
-      "Insufficient browser permissions to make request.",
-      { cause: error }
-    );
   }
 
   throw new ClientNetworkError(NO_RESPONSE_MESSAGE, { cause: error });

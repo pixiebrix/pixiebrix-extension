@@ -57,10 +57,9 @@ export default function getErrorDetails(error: ErrorObject): ErrorDetails {
   }
 
   const networkError = selectSpecificError(error, ClientRequestError);
-  // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3613
   if (networkError?.cause) {
     return {
-      title: "Network error",
+      title: networkError.message,
       detailsElement: <NetworkErrorDetail error={networkError.cause} />,
     };
   }
