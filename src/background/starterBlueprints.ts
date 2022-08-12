@@ -38,9 +38,7 @@ function installStarterBlueprint(
   );
 }
 
-async function installPlaygroundBlueprint(): Promise<void> {
-  // 1. Make a call to the `onboarding/starter-blueprints/` endpoint to see if there are any starter blueprints
-  // to install
+async function installStarterBlueprints(): Promise<void> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
@@ -53,8 +51,6 @@ async function installPlaygroundBlueprint(): Promise<void> {
     "/api/onboarding/starter-blueprints/"
   );
 
-  console.log("starter blueprints", starterBlueprints);
-  // 2. Install these starter blueprints if any are returned
   if (!starterBlueprints) {
     return;
   }
@@ -67,21 +63,16 @@ async function installPlaygroundBlueprint(): Promise<void> {
     );
   }
 
-  console.log("result", extensionsState);
   await saveOptions(extensionsState);
 
-  // 3. Make a call to the starter blueprints flag endpoint to mark the
-  // starter blueprints installed flag
-  void client.post("/api/onboarding/starter-blueprints/", {
-    installed: true,
-  });
+  void client.post("/api/onboarding/starter-blueprints/install/");
 
   await forEachTab(queueReactivateTab);
   window.open("https://www.pixiebrix.com/playground");
 }
 
 function initStarterBlueprints(): void {
-  void installPlaygroundBlueprint();
+  void installStarterBlueprints();
 }
 
 export default initStarterBlueprints;
