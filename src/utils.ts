@@ -639,3 +639,22 @@ export function isValidUrl(
     return false;
   }
 }
+
+/**
+ * Converts array of arrays into a flat array.
+ */
+ export function flattenArray<T> (input: T[][]): T[] {
+  // eslint-disable-next-line unicorn/prefer-spread
+  return ([] as T[]).concat(...input)
+}
+
+export declare function getTypeCombinations(selectors_list: CssSelectorData, options: CssSelectorGeneratorOptions): CssSelector[][];
+/**
+ * Generates all variations of possible selectors from provided data.
+ */
+
+ export declare function getSelectorsList(elements: Element[], options: CssSelectorGeneratorOptions): CssSelectorData;
+ /**
+  * Creates list of selector types that we will need to generate the selector.
+  */
+

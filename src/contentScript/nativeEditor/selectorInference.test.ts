@@ -22,8 +22,10 @@ import {
   getSelectorPreference,
   inferSelectors,
   inferSelectorsIncludingStableAncestors,
+  inferMultiSelectors,
   safeCssSelector,
   sortBySelector,
+  safeMultiCssSelector,
 } from "@/contentScript/nativeEditor/selectorInference";
 import { JSDOM } from "jsdom";
 import { html } from "@/utils";
@@ -255,6 +257,142 @@ describe("safeCssSelector", () => {
   /* eslint-enable jest/expect-expect */
 });
 
+
+describe("safeMultiCssSelector", () => {
+  /* eslint-disable jest/expect-expect -- Custom expectSelector */
+  const expectSelector = (selectors: string, body: string) => {
+    document.body.innerHTML = body;
+
+    const inferredSelector = safeMultiCssSelector(
+      document.body.querySelector(selectors),
+      {
+        excludeRandomClasses: true,
+      }
+    );
+
+    expect(inferredSelector).toBe(selectors);
+  };
+
+  test("infer aria-label", () => {
+    expectSelector(
+      "[aria-label='foo']",
+      html`
+        <div>
+          <input aria-label="foo" />
+          <input aria-label="bar" />
+        </div>
+      `
+    );
+  });
+  test("infer class", () => {
+    expectSelector(
+      ".contacts",
+      html`
+        <ul>
+          <li><a class="navItem about" href="/about">About</a></li>
+          <li><a class="navItem contacts" href="/contacts">Contacts</a></li>
+        </ul>
+      `
+    );
+  });
+
+  test("infer preferring class over aria-label", () => {
+    expectSelector(
+      ".foo",
+      html`
+        <div>
+          <input class="foo" aria-label="foo" />
+          <input class="bar" aria-label="bar" />
+        </div>
+      `
+    );
+  });
+
+  test("infer preferring aria-label over random classes", () => {
+    expectSelector(
+      "[aria-label='foo']",
+      html`
+        <div>
+          <input class="asij340snlslnakdi9" aria-label="foo" />
+          <input class="aksjhd93rqansld00s" aria-label="bar" />
+        </div>
+      `
+    );
+  });
+
+  test("infer class discarding random ones", () => {
+    expectSelector(
+      ".contacts",
+      html`
+        <ul>
+          <li><a class="i3349fj9 about" href="/about">About</a></li>
+          <li><a class="iauoff23 contacts" href="/contacts">Contacts</a></li>
+        </ul>
+      `
+    );
+  });
+
+  test("infer title attribute", () => {
+    expectSelector(
+      "[title='The\\ \\\"Great\\\"\\ Gatsby']",
+      html`
+        <ul>
+          <li><a title='The "Great" Gatsby' href="/about">About</a></li>
+          <li><a title="The Other Gatsby" href="/contacts">Contacts</a></li>
+        </ul>
+      `
+    );
+  });
+
+  test("infer id", () => {
+    expectSelector(
+      "#about",
+      html`
+        <ul>
+          <li><a id="about" class="about" href="/about">About</a></li>
+          <li>
+            <a id="contacts" class="contacts" href="/contacts">Contacts</a>
+          </li>
+        </ul>
+      `
+    );
+  });
+
+  test("skip unstable IDs", () => {
+    expectSelector(
+      ".about",
+      html`
+        <ul>
+          <li><a id="ember-23" class="about" href="/about">About</a></li>
+          <li>
+            <a id="ember-24" class="contacts" href="/contacts">Contacts</a>
+          </li>
+        </ul>
+      `
+    );
+  });
+
+  test("skip unstable attributes IDs", () => {
+    expectSelector(
+      "[aria-label='The\\ link']",
+      html`
+        <ul>
+          <li>
+            <a data-pb-extension-point aria-label="The link" href="/about">
+              About
+            </a>
+          </li>
+          <li><a href="/contacts" aria-label="The other link">Contacts</a></li>
+        </ul>
+      `
+    );
+  });
+
+  /* eslint-enable jest/expect-expect */
+});
+
+
+
 describe("sortBySelector", () => {
   test("selector length", () => {
     expect(sortBySelector(["#abc", "#a"])).toStrictEqual(["#a", "#abc"]);
@@ -350,6 +488,76 @@ describe("inferSelectors", () => {
 
   /* eslint-enable jest/expect-expect */
 });
+
+
+describe("inferMultiSelectors", () => {
+  /* eslint-disable jest/expect-expect -- Custom expectSelectors */
+  const expectSelectors = (selectors: string[], body: string) => {
+    document.body.innerHTML = body;
+
+    // The provided selector list should only match one element
+    const userSelectedElements = selectors.map((selectors) =>
+      document.body.querySelector<Element[]>(selectors) // Match multiple
+    );
+    expect(uniq(userSelectedElements)).toHaveLength(1);
+
+    // The provided selector list should match the inferred list
+    const inferredSelectors = inferMultiSelectors(userSelectedElements[]);
+    expect(inferredSelectors).toEqual(selectors);
+  };
+
+  test("infer aria-label", () => {
+    expectSelectors(
+      ["[aria-label='foo']"],
+      html`
+        <div>
+          <input aria-label="foo" />
+          <input aria-label="bar" />
+        </div>
+      `
+    );
+  });
+
+  test("prefer unique selectors", () => {
+    expectSelectors(
+      ["[data-cy='baz']", ".zoolander"],
+      html`
+        <div>
+          <input aria-label="foo" data-cy="baz" class="zoolander" />
+          <input aria-label="bar" data-cy="zan" />
+        </div>
+      `
+    );
+  });
+
+  test.each([["data-testid"], ["data-cy"], ["data-test"]])(
+    "infer test attribute: %s",
+    (attribute: string) => {
+      expectSelectors(
+        [`[${attribute}='a']`],
+        html`<div><input ${attribute}="a" /><input ${attribute}="b" /></div>`
+      );
+    }
+  );
+
+  test.each([[PIXIEBRIX_DATA_ATTR], [EXTENSION_POINT_DATA_ATTR]])(
+    "don't infer pixiebrix attribute: %s",
+    (attribute: string) => {
+      expectSelectors(
+        ["[aria-label='foo']"],
+        html`
+          <div>
+            <input ${attribute}="foo" aria-label="foo" />
+            <input ${attribute}="bar" aria-label="bar" />
+          </div>
+        `
+      );
+    }
+  );
+
+  /* eslint-enable jest/expect-expect */
+});
+
 
 describe("inferSelectorsIncludingStableAncestors", () => {
   /* eslint-disable jest/expect-expect -- Custom expectSelectors */

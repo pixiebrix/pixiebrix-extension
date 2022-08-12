@@ -17,11 +17,11 @@
 
 import { compact, identity, sortBy, uniq } from "lodash";
 import { getCssSelector } from "css-selector-generator";
-import { CssSelectorType } from "css-selector-generator/types/types";
+import { CssSelectorType, CssSelector, CssSelectorGeneratorOptions } from "css-selector-generator/types/types";
 import { $safeFind } from "@/helpers";
 import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";
 import { guessUsefulness, isRandomString } from "@/utils/detectRandomString";
-import { matchesAnyPattern } from "@/utils";
+import { matchesAnyPattern, flattenArray, getTypeCombinations, getSelectorsList } from "@/utils";
 import { escapeSingleQuotes } from "@/utils/escape";
 import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
 
@@ -154,6 +154,15 @@ const DEFAULT_SELECTOR_PRIORITIES: Array<keyof typeof CssSelectorType> = [
   "nthchild",
 ];
 
+// Create a list of selector priorities for the mult-select. No 'id' because it's multiple items. 
+const DEFAULT_MULTI_SELECTOR_PRIORITIES: Array<keyof typeof CssSelectorType> = [ 
+  "tag",
+  "class",
+  "attribute",
+  "nthoftype",
+  "nthchild",
+];
+
 interface SafeCssSelectorOptions {
   selectors?: Array<keyof typeof CssSelectorType>;
   root?: Element;
@@ -190,6 +199,49 @@ export function safeCssSelector(
   // https://github.com/fczbkk/css-selector-generator
 
   const selector = getCssSelector(element, {
+    blacklist: [
+      ...UNSTABLE_SELECTORS,
+
+      excludeRandomClasses
+        ? (selector) => {
+            if (!selector.startsWith(".")) {
+              return false;
+            }
+
+            const usefulness = guessUsefulness(selector);
+            console.debug("css-selector-generator:  ", usefulness);
+            return usefulness.isRandom;
+          }
+        : undefined,
+    ],
+    whitelist: [getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES)],
+    selectors,
+    combineWithinSelector: true,
+    combineBetweenSelectors: true,
+    root,
+  });
+
+  if (root == null && selector.startsWith(":nth-child")) {
+    // JQuery will happily return other matches that match the nth-child chain, so make attach it to the body
+    // to get the expected CSS selector behavior
+    return `body${selector}`;
+  }
+
+  return selector;
+}
+
+export function safeMultiCssSelector(
+  elements: HTMLElement[],
+  {
+    selectors = DEFAULT_MULTI_SELECTOR_PRIORITIES, // Changed the priorities and removed 'id' bc there will be multiple elements
+    excludeRandomClasses = false,
+    // eslint-disable-next-line unicorn/no-useless-undefined -- Convert null to undefined or else getCssSelector bails
+    root = undefined,
+  }: SafeCssSelectorOptions = {}
+): string {
+  // https://github.com/fczbkk/css-selector-generator
+
+  const selector = getCssSelector(elements, {
     blacklist: [
       ...UNSTABLE_SELECTORS,
 
@@ -295,6 +347,22 @@ export function inferSelectors(
     )
   );
 }
+
+/**
+ * Generate some CSS selector variants for MULTIPLE elements.
+ */
+ export function inferMultiSelectors (
+  elements: Element[], // Selecting multiple elements
+  root: ParentNode,
+  options: CssSelectorGeneratorOptions,
+): CssSelector[] {
+  const selectors_list = getSelectorsList(elements, options) // Selector list
+  const type_combinations = getTypeCombinations(selectors_list, options) // Different type combinations
+  const all_selectors = flattenArray(type_combinations) // Flattens arrays
+  return [...new Set(all_selectors)] // Returns a set with the unique selectors
+}
+
+
 
 /**
  * Returns true if selector uniquely identifies an element on the page
