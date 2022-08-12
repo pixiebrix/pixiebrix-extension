@@ -29,7 +29,7 @@ const { reducer, actions } = extensionsSlice;
 const PLAYGROUND_BLUEPRINT_NAME = "google/template-search";
 
 async function installPlaygroundBlueprint(): Promise<void> {
-  // 1. Make a call to the `me` endpoint to see if the user has a falsey preinstalledBlueprints flag
+  // 1. Make a call to the `me` endpoint to see if the user has a falsey install_starter_blueprints flag
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
@@ -48,21 +48,21 @@ async function installPlaygroundBlueprint(): Promise<void> {
     //return;
   }
 
-  const { data: playground_blueprint } = await client.get<BlueprintResponse>(
+  const { data: playgroundBlueprint } = await client.get<BlueprintResponse>(
     `/api/recipes/${PLAYGROUND_BLUEPRINT_NAME}`
   );
 
-  console.log("playground blueprint", playground_blueprint);
+  console.log("playground blueprint", playgroundBlueprint);
   // 3. Install this blueprint via extensionsSlice.actions.installRecipe
 
-  if (!playground_blueprint) {
+  if (!playgroundBlueprint) {
     return;
   }
 
   // Reshape to recipe definition
   const recipeDefinition: RecipeDefinition | null = {
-    ...playground_blueprint.config,
-    ...pick(playground_blueprint, ["sharing", "updated_at"]),
+    ...playgroundBlueprint.config,
+    ...pick(playgroundBlueprint, ["sharing", "updated_at"]),
   };
 
   const state = await loadOptions();
@@ -70,19 +70,20 @@ async function installPlaygroundBlueprint(): Promise<void> {
     state,
     actions.installRecipe({
       recipe: recipeDefinition,
-      extensionPoints: playground_blueprint.config.extensionPoints,
+      extensionPoints: playgroundBlueprint.config.extensionPoints,
     })
   );
 
   console.log("result", result);
   await saveOptions(result);
-  await forEachTab(queueReactivateTab);
 
   // 4. If successful, make a call to the preinstallBlueprints flag endpoint to mark the
   // preinstalledBlueprints flag
-  await client.post("/api/onboarding/starter-blueprints/", {
+  void client.post("/api/onboarding/starter-blueprints/", {
     installed: true,
   });
+
+  await forEachTab(queueReactivateTab);
 }
 
 function initStarterBlueprints(): void {
