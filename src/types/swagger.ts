@@ -214,6 +214,10 @@ export interface paths {
     /** Detail view for an organization's memberships. */
     patch: operations["partialUpdateOrganizationMembership"];
   };
+  "/api/onboarding/starter-blueprints/": {
+    get: operations["listStarterBlueprints"];
+    post: operations["updateInstallStarterBlueprints"];
+  };
   "/api/organizations/": {
     get: operations["listOrganizations"];
     post: operations["createOrganization"];
@@ -396,9 +400,6 @@ export interface paths {
   };
   "/api/onboarding/": {
     post: operations["createOnboarding"];
-  };
-  "/api/onboarding/starter-blueprints/": {
-    post: operations["updateStarterBlueprints"];
   };
   "/api/organizations/{organization_pk}/subscriptions/jobs/": {
     post: operations["createOrganizationSubscriptionsJob"];
@@ -1100,7 +1101,6 @@ export interface components {
         name: string;
       }[];
       is_onboarded?: string;
-      install_starter_blueprints?: string;
       /** @description True if the account is an organization API service account */
       service_account?: boolean;
       flags?: string;
@@ -3288,6 +3288,35 @@ export interface operations {
       };
     };
   };
+  listStarterBlueprints: {
+    parameters: {};
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["PackageConfigList"][];
+          "application/vnd.pixiebrix.api+json": components["schemas"]["PackageConfigList"][];
+        };
+      };
+    };
+  };
+  updateInstallStarterBlueprints: {
+    parameters: {};
+    responses: {
+      201: {
+        content: {
+          "application/json": components["schemas"]["PackageConfigList"];
+          "application/vnd.pixiebrix.api+json": components["schemas"]["PackageConfigList"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PackageConfigList"];
+        "application/x-www-form-urlencoded": components["schemas"]["PackageConfigList"];
+        "multipart/form-data": components["schemas"]["PackageConfigList"];
+      };
+    };
+  };
   listOrganizations: {
     parameters: {
       query: {
@@ -4637,24 +4666,6 @@ export interface operations {
         "application/json": components["schemas"]["Onboarding"];
         "application/x-www-form-urlencoded": components["schemas"]["Onboarding"];
         "multipart/form-data": components["schemas"]["Onboarding"];
-      };
-    };
-  };
-  updateStarterBlueprints: {
-    parameters: {};
-    responses: {
-      201: {
-        content: {
-          "application/json; version=1.0": unknown;
-          "application/vnd.pixiebrix.api+json; version=1.0": unknown;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": unknown;
-        "application/x-www-form-urlencoded": unknown;
-        "multipart/form-data": unknown;
       };
     };
   };

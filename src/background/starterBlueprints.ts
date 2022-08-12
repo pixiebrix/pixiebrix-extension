@@ -16,20 +16,31 @@
  */
 
 import extensionsSlice from "@/store/extensionsSlice";
-import { BlueprintResponse, Me } from "@/types/contract";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { RecipeDefinition } from "@/types/definitions";
-import { pick } from "lodash";
 import { forEachTab } from "@/background/util";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
+import { ExtensionOptionsState } from "@/store/extensionsTypes";
 
 const { reducer, actions } = extensionsSlice;
-// TODO: replace me with the actual playground blueprint id
-const PLAYGROUND_BLUEPRINT_NAME = "google/template-search";
+
+function installStarterBlueprint(
+  state: ExtensionOptionsState,
+  starterBlueprint: RecipeDefinition
+): ExtensionOptionsState {
+  return reducer(
+    state,
+    actions.installRecipe({
+      recipe: starterBlueprint,
+      extensionPoints: starterBlueprint.extensionPoints,
+    })
+  );
+}
 
 async function installPlaygroundBlueprint(): Promise<void> {
-  // 1. Make a call to the `me` endpoint to see if the user has a falsey install_starter_blueprints flag
+  // 1. Make a call to the `onboarding/starter-blueprints/` endpoint to see if there are any starter blueprints
+  // to install
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
@@ -38,47 +49,29 @@ async function installPlaygroundBlueprint(): Promise<void> {
     return;
   }
 
-  const { data: profile } = await client.get<Me>("/api/me/");
-
-  console.log(profile);
-
-  // 2. If not, fetch the Playground blueprint
-  if (!profile.install_starter_blueprints) {
-    // TODO: uncomment me
-    //return;
-  }
-
-  const { data: playgroundBlueprint } = await client.get<BlueprintResponse>(
-    `/api/recipes/${PLAYGROUND_BLUEPRINT_NAME}`
+  const { data: starterBlueprints } = await client.get<RecipeDefinition[]>(
+    "/api/onboarding/starter-blueprints/"
   );
 
-  console.log("playground blueprint", playgroundBlueprint);
-  // 3. Install this blueprint via extensionsSlice.actions.installRecipe
-
-  if (!playgroundBlueprint) {
+  console.log("starter blueprints", starterBlueprints);
+  // 2. Install these starter blueprints if any are returned
+  if (!starterBlueprints) {
     return;
   }
 
-  // Reshape to recipe definition
-  const recipeDefinition: RecipeDefinition | null = {
-    ...playgroundBlueprint.config,
-    ...pick(playgroundBlueprint, ["sharing", "updated_at"]),
-  };
+  let extensionsState = await loadOptions();
+  for (const starterBlueprint of starterBlueprints) {
+    extensionsState = installStarterBlueprint(
+      extensionsState,
+      starterBlueprint
+    );
+  }
 
-  const state = await loadOptions();
-  const result = reducer(
-    state,
-    actions.installRecipe({
-      recipe: recipeDefinition,
-      extensionPoints: playgroundBlueprint.config.extensionPoints,
-    })
-  );
+  console.log("result", extensionsState);
+  await saveOptions(extensionsState);
 
-  console.log("result", result);
-  await saveOptions(result);
-
-  // 4. If successful, make a call to the preinstallBlueprints flag endpoint to mark the
-  // preinstalledBlueprints flag
+  // 4. If successful, make a call to the starter blueprints flag endpoint to mark the
+  // starter blueprints installeds flag
   void client.post("/api/onboarding/starter-blueprints/", {
     installed: true,
   });
