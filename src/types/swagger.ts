@@ -216,7 +216,6 @@ export interface paths {
   };
   "/api/onboarding/starter-blueprints/": {
     get: operations["listStarterBlueprints"];
-    post: operations["updateInstallStarterBlueprints"];
   };
   "/api/organizations/": {
     get: operations["listOrganizations"];
@@ -400,6 +399,9 @@ export interface paths {
   };
   "/api/onboarding/": {
     post: operations["createOnboarding"];
+  };
+  "/api/onboarding/starter-blueprints/install/": {
+    post: operations["confirmInstallationStarterBlueprints"];
   };
   "/api/organizations/{organization_pk}/subscriptions/jobs/": {
     post: operations["createOrganizationSubscriptionsJob"];
@@ -3299,24 +3301,6 @@ export interface operations {
       };
     };
   };
-  updateInstallStarterBlueprints: {
-    parameters: {};
-    responses: {
-      201: {
-        content: {
-          "application/json": components["schemas"]["PackageConfigList"];
-          "application/vnd.pixiebrix.api+json": components["schemas"]["PackageConfigList"];
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["PackageConfigList"];
-        "application/x-www-form-urlencoded": components["schemas"]["PackageConfigList"];
-        "multipart/form-data": components["schemas"]["PackageConfigList"];
-      };
-    };
-  };
   listOrganizations: {
     parameters: {
       query: {
@@ -4666,6 +4650,24 @@ export interface operations {
         "application/json": components["schemas"]["Onboarding"];
         "application/x-www-form-urlencoded": components["schemas"]["Onboarding"];
         "multipart/form-data": components["schemas"]["Onboarding"];
+      };
+    };
+  };
+  confirmInstallationStarterBlueprints: {
+    parameters: {};
+    responses: {
+      201: {
+        content: {
+          "application/json": components["schemas"]["PackageConfigList"];
+          "application/vnd.pixiebrix.api+json": components["schemas"]["PackageConfigList"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PackageConfigList"];
+        "application/x-www-form-urlencoded": components["schemas"]["PackageConfigList"];
+        "multipart/form-data": components["schemas"]["PackageConfigList"];
       };
     };
   };
