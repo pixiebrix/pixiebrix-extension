@@ -70,13 +70,14 @@ async function installPlaygroundBlueprint(): Promise<void> {
   console.log("result", extensionsState);
   await saveOptions(extensionsState);
 
-  // 4. If successful, make a call to the starter blueprints flag endpoint to mark the
-  // starter blueprints installeds flag
+  // 3. Make a call to the starter blueprints flag endpoint to mark the
+  // starter blueprints installed flag
   void client.post("/api/onboarding/starter-blueprints/", {
     installed: true,
   });
 
   await forEachTab(queueReactivateTab);
+  window.open("https://www.pixiebrix.com/playground");
 }
 
 function initStarterBlueprints(): void {
