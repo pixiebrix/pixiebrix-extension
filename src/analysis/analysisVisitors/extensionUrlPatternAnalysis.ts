@@ -20,6 +20,7 @@ import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { joinPathParts } from "@/utils";
 import { get, isEmpty } from "lodash";
 
+const urlRegexp = /(?<scheme>.*):\/\/(?<host>.*)\/(?<path>.*)/;
 const urlPatternFields = ["extensionPoint.definition.isAvailable.urlPatterns"];
 
 const stringUrlFields = [
@@ -37,13 +38,13 @@ class ExtensionUrlPatternAnalysis implements Analysis {
     return this.annotations;
   }
 
-  public run(extension: FormState): void {
+  public async run(extension: FormState): Promise<void> {
     for (const fieldName of urlPatternFields) {
       this.analyzeUrlPatterns(extension, fieldName);
     }
 
-    for (const fieldName of stringUrlFields) {
-      this.analyzeStringUrls(extension, fieldName);
+    for await (const fieldName of stringUrlFields) {
+      await this.analyzeStringUrls(extension, fieldName);
     }
   }
 
@@ -76,7 +77,10 @@ class ExtensionUrlPatternAnalysis implements Analysis {
     }
   }
 
-  analyzeStringUrls(extension: FormState, fieldName: string): void {
+  async analyzeStringUrls(
+    extension: FormState,
+    fieldName: string
+  ): Promise<void> {
     const urls = get(extension, fieldName);
     if (urls == null || urls.length === 0) {
       return;
@@ -93,6 +97,51 @@ class ExtensionUrlPatternAnalysis implements Analysis {
           type: AnnotationType.Error,
           detail: url,
         });
+
+        continue;
+      }
+
+      const match = urlRegexp.exec(url as string);
+      if (match == null) {
+        this.annotations.push({
+          position: {
+            path: joinPathParts(fieldName, index),
+          },
+          message: "Invalid URL",
+          analysisId: this.id,
+          type: AnnotationType.Error,
+          detail: url,
+        });
+
+        continue;
+      }
+
+      for (const [key, pattern] of Object.entries({
+        hostname: match.groups.host,
+        pathname: match.groups.path,
+      })) {
+        console.log("validating pattern", {
+          url,
+          key,
+          pattern,
+        });
+        if (pattern == null || pattern === "") {
+          continue;
+        }
+
+        try {
+          void new URLPattern({ [key]: pattern });
+        } catch {
+          this.annotations.push({
+            position: {
+              path: joinPathParts(fieldName, index),
+            },
+            message: `Invalid pattern for ${key}`,
+            analysisId: this.id,
+            type: AnnotationType.Error,
+            detail: url,
+          });
+        }
       }
     }
   }
