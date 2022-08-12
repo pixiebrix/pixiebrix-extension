@@ -398,7 +398,7 @@ export interface paths {
     post: operations["createOnboarding"];
   };
   "/api/onboarding/starter-blueprints/": {
-    post: operations["createStarterBlueprints"];
+    post: operations["updateStarterBlueprints"];
   };
   "/api/organizations/{organization_pk}/subscriptions/jobs/": {
     post: operations["createOrganizationSubscriptionsJob"];
@@ -1459,9 +1459,6 @@ export interface components {
     };
     Onboarding: {
       external?: boolean;
-    };
-    StarterBlueprints: {
-      installed?: boolean;
     };
     ProxiedRequest: {
       /** @description An absolute/relative URL for the request */
@@ -4643,21 +4640,21 @@ export interface operations {
       };
     };
   };
-  createStarterBlueprints: {
+  updateStarterBlueprints: {
     parameters: {};
     responses: {
       201: {
         content: {
-          "application/json; version=1.0": components["schemas"]["StarterBlueprints"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["StarterBlueprints"];
+          "application/json; version=1.0": unknown;
+          "application/vnd.pixiebrix.api+json; version=1.0": unknown;
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["StarterBlueprints"];
-        "application/x-www-form-urlencoded": components["schemas"]["StarterBlueprints"];
-        "multipart/form-data": components["schemas"]["StarterBlueprints"];
+        "application/json": unknown;
+        "application/x-www-form-urlencoded": unknown;
+        "multipart/form-data": unknown;
       };
     };
   };
