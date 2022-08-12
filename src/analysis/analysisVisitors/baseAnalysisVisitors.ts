@@ -34,7 +34,7 @@ export abstract class AnalysisVisitor
     return this.annotations;
   }
 
-  run(extension: FormState): void | Promise<void> {
+  run(extension: FormState): void {
     this.visitRootPipeline(extension.extension.blockPipeline, {
       extensionPointType: extension.type,
     });
@@ -47,6 +47,6 @@ export abstract class AnalysisVisitorWithResolvedBlocks extends AnalysisVisitor 
   override async run(extension: FormState): Promise<void> {
     this.allBlocks = await blockRegistry.allTyped();
 
-    await super.run(extension);
+    super.run(extension);
   }
 }

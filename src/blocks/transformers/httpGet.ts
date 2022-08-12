@@ -21,10 +21,18 @@ import { Schema, BlockArg } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
 import { PropError } from "@/errors/businessErrors";
+import { validateRegistryId } from "@/types/helpers";
 
 export class GetAPITransformer extends Transformer {
+  static BLOCK_ID = validateRegistryId("@pixiebrix/get");
+
   constructor() {
-    super("@pixiebrix/get", "HTTP GET", "Fetch data from an API", "faCloud");
+    super(
+      GetAPITransformer.BLOCK_ID,
+      "HTTP GET",
+      "Fetch data from an API",
+      "faCloud"
+    );
   }
 
   defaultOutputKey = "response";

@@ -21,6 +21,7 @@ import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { AxiosRequestConfig } from "axios";
 import { PropError } from "@/errors/businessErrors";
+import { validateRegistryId } from "@/types/helpers";
 
 export const inputProperties: Record<string, Schema> = {
   url: {
@@ -56,9 +57,11 @@ export const inputProperties: Record<string, Schema> = {
 };
 
 export class RemoteMethod extends Transformer {
+  static BLOCK_ID = validateRegistryId("@pixiebrix/http");
+
   constructor() {
     super(
-      "@pixiebrix/http",
+      RemoteMethod.BLOCK_ID,
       "HTTP Request",
       "Send an RESTful HTTP request, i.e., GET, PUT, POST, PATCH, DELETE"
     );

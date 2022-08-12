@@ -30,6 +30,7 @@ import { selectActiveElement } from "./slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import runtimeSlice from "./slices/runtimeSlice";
 import { isAnyOf } from "@reduxjs/toolkit";
+import RequestPermissionAnalysis from "@/analysis/analysisVisitors/requestPermissionAnalysis";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -102,6 +103,15 @@ pageEditorAnalysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new ExtensionUrlPatternAnalysis(),
+  {
+    // Only needed on editorActions.editElement,
+    // but the block path can change when node tree is mutated
+    matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+  }
+);
+
+pageEditorAnalysisManager.registerAnalysisEffect(
+  () => new RequestPermissionAnalysis(),
   {
     // Only needed on editorActions.editElement,
     // but the block path can change when node tree is mutated
