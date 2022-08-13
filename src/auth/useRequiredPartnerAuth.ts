@@ -20,7 +20,6 @@ import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
 import { RegistryId } from "@/core";
 import { selectConfiguredServices } from "@/store/servicesSelectors";
-import { validateRegistryId } from "@/types/helpers";
 import { selectSettings } from "@/store/settingsSelectors";
 import { isEmpty } from "lodash";
 import { useAsyncState } from "@/hooks/common";
@@ -30,23 +29,63 @@ import {
   removeListener as removeAuthListener,
 } from "@/auth/token";
 import { useEffect } from "react";
+import {
+  AUTOMATION_ANYWHERE_PARTNER_KEY,
+  CONTROL_ROOM_OAUTH_SERVICE_ID,
+  CONTROL_ROOM_SERVICE_ID,
+} from "@/services/constants";
 
+/**
+ * Map from partner keys to allowed service IDs.
+ */
 const PARTNER_MAP = new Map<string, Set<RegistryId>>([
   [
-    "automation-anywhere",
-    new Set([validateRegistryId("automation-anywhere/control-room")]),
+    AUTOMATION_ANYWHERE_PARTNER_KEY,
+    new Set([CONTROL_ROOM_SERVICE_ID, CONTROL_ROOM_OAUTH_SERVICE_ID]),
   ],
 ]);
 
-const useRequiredPartnerAuth = () => {
+export type RequiredPartnerState = {
+  /**
+   * True if the user's is a partner account.
+   */
+  hasPartner: boolean;
+
+  /**
+   * True if the user's account is a partner account and must have an integration configured for the partner.
+   *
+   * @see RequiredPartnerState.hasPartner
+   */
+  requiresIntegration: boolean;
+
+  /**
+   * True if the user's account requires a partner integration configuration, that the user has a configuration
+   * for the integration, and that the user has a bearer token for the integration.
+   */
+  hasConfiguredIntegration: boolean;
+
+  /**
+   * True if latest partner information is loading from the PixieBrix server.
+   */
+  isLoading: boolean;
+
+  /**
+   * The error if there was an error loading partner information from the PixieBrix server, or nullish otherwise.
+   */
+  error: unknown;
+};
+
+function useRequiredPartnerAuth(): RequiredPartnerState {
   // Prefer the most recent /api/me/ data from the server
   const { isLoading, data: me, error } = useGetMeQuery();
   const localAuth = useSelector(selectAuth);
   const { authServiceId } = useSelector(selectSettings);
   const configuredServices = useSelector(selectConfiguredServices);
 
+  // Prefer the latest remote data, but use local data to avoid blocking page load
   const { partner, organization } = me ?? localAuth;
 
+  // If authServiceId is provided, force use of authServiceId
   const partnerServiceIds = authServiceId
     ? new Set<RegistryId>([authServiceId])
     : PARTNER_MAP.get(partner?.name) ?? new Set();
@@ -55,7 +94,7 @@ const useRequiredPartnerAuth = () => {
     partnerServiceIds.has(service.serviceId)
   );
 
-  const [missingPartnerToken, _tokenLoading, _tokenError, refreshTokenState] =
+  const [isMissingPartnerToken, _tokenLoading, _tokenError, refreshTokenState] =
     useAsyncState(async () => {
       if (isEmpty(authServiceId)) {
         return false;
@@ -90,10 +129,10 @@ const useRequiredPartnerAuth = () => {
     hasConfiguredIntegration:
       requiresIntegration &&
       Boolean(partnerConfiguration) &&
-      !missingPartnerToken,
+      !isMissingPartnerToken,
     isLoading,
     error,
   };
-};
+}
 
 export default useRequiredPartnerAuth;

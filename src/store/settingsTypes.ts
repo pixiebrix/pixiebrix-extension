@@ -59,7 +59,7 @@ export type SettingsState = SkunkworksSettings & {
    * For partner integrations, PixieBrix is supporting using partner JWT for authenticating. The PixieBrix server
    * verifies the JWT.
    *
-   * @since 1.7.3
+   * @since 1.7.5
    */
   authServiceId: RegistryId | null;
 

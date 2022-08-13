@@ -46,12 +46,13 @@ const AdvancedSettings: React.FunctionComponent = () => {
 
   const clear = useCallback(async () => {
     await clearExtensionAuth();
+    // The success message will just flash up, because the page reloads on the next line
+    notify.success(
+      "Cleared the browser extension token. Visit the web app to set it again"
+    );
     // Reload to force contentScripts and background page to reload. The RequireAuth component listens for auth changes,
     // but we should for non-extension context to reload too.
     location.reload();
-    notify.success(
-      "Cleared the extension token. Visit the web app to set it again"
-    );
   }, []);
 
   const clearTokens = useUserAction(
@@ -62,8 +63,8 @@ const AdvancedSettings: React.FunctionComponent = () => {
       await (chromeP.identity as any).clearAllCachedAuthTokens();
     },
     {
-      successMessage: "Cleared all OAuth2 tokens",
-      errorMessage: "Error clearing all OAuth2 tokens",
+      successMessage: "Cleared all cached OAuth2 tokens",
+      errorMessage: "Error clearing cached OAuth2 tokens",
     },
     []
   );
@@ -159,13 +160,20 @@ const AdvancedSettings: React.FunctionComponent = () => {
               placeholder={PIXIEBRIX_SERVICE_ID}
               defaultValue={authServiceId ?? ""}
               onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
-                dispatch(
-                  settingsSlice.actions.setAuthServiceId({
-                    serviceId: isEmpty(event.target.value)
-                      ? null
-                      : validateRegistryId(event.target.value),
-                  })
-                );
+                try {
+                  dispatch(
+                    settingsSlice.actions.setAuthServiceId({
+                      serviceId: isEmpty(event.target.value)
+                        ? null
+                        : validateRegistryId(event.target.value),
+                    })
+                  );
+                } catch (error) {
+                  notify.error({
+                    message: "Error setting authentication integration",
+                    error,
+                  });
+                }
               }}
               disabled={restrict("service-url")}
             />

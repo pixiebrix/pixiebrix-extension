@@ -51,9 +51,7 @@ export async function readAuthData(): Promise<
   return readStorage(STORAGE_EXTENSION_KEY, {});
 }
 
-export async function readPartnerAuthData(): Promise<
-  PartnerAuthData | Partial<PartnerAuthData>
-> {
+export async function readPartnerAuthData(): Promise<Partial<PartnerAuthData>> {
   return readStorage(STORAGE_PARTNER_TOKEN, {});
 }
 
