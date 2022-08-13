@@ -26,23 +26,24 @@ import { isChrome } from "webext-detect-page";
 declare global {
   interface Window {
     onGAPILoad?: () => Promise<void>;
-    onGAPIError?: (error: unknown) => Promise<void>;
   }
 }
 
 // https://bumbu.me/gapi-in-chrome-extension
 async function onGAPILoad(): Promise<void> {
-  await gapi.client.init({
-    // Don't pass client nor scope as these will init auth2, which we don't want
-    // until the user actually uses a brick
-    apiKey: API_KEY,
-    discoveryDocs: [...BIGQUERY_DOCS, ...SHEETS_DOCS],
-  });
-  console.info("gapi initialized");
-}
-
-async function onGAPIError(error: unknown): Promise<void> {
-  reportError(error);
+  try {
+    await gapi.client.init({
+      // Don't pass client nor scope as these will init auth2, which we don't want
+      // until the user actually uses a brick
+      apiKey: API_KEY,
+      discoveryDocs: [...BIGQUERY_DOCS, ...SHEETS_DOCS],
+    });
+    console.info("gapi initialized");
+  } catch (error) {
+    // Catch explicitly instead of letting it reach to top-level rejected promise handler
+    // https://github.com/google/google-api-javascript-client/issues/64#issuecomment-336488275
+    reportError(error);
+  }
 }
 
 function initGoogle(): void {
@@ -60,11 +61,11 @@ function initGoogle(): void {
   }
 
   window.onGAPILoad = onGAPILoad;
-  window.onGAPIError = onGAPIError;
 
   const script = document.createElement("script");
-  script.src =
-    "https://apis.google.com/js/client.js?onload=onGAPILoad&onerror=onGAPIError";
+  // NOTE: there's no onGAPIError handler. You can verify by reading the https://apis.google.com/js/client.js code,
+  //   you can search for onGAPILoad handler and you'll see it's there but there's no onGAPIError or similar handler
+  script.src = "https://apis.google.com/js/client.js?onload=onGAPILoad";
   script.addEventListener("error", (event) => {
     reportError(event.error);
   });
