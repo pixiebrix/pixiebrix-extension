@@ -53,6 +53,10 @@ export async function installStarterBlueprints(): Promise<void> {
       "/api/onboarding/starter-blueprints/"
     );
 
+    // If the starter blueprint request fails for some reason, or the user's primary organization
+    // gets removed, we'd still like to mark starter blueprints as installed for this user
+    // so that they don't see onboarding views/randomly have starter blueprints installed
+    // the next time they open the extension
     await client.post("/api/onboarding/starter-blueprints/install/");
 
     if (starterBlueprints.length === 0) {
