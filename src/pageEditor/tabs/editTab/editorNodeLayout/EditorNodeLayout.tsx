@@ -114,7 +114,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   const activeElement = useSelector(selectActiveElement);
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectExtensionTrace);
-  const pipelineMap = useSelector(selectPipelineMap);
+  const maybePipelineMap = useSelector(selectPipelineMap);
   const errors = useSelector(selectErrorMap);
   const annotations = useSelector(
     selectExtensionAnnotations(activeElement.uuid)
@@ -349,11 +349,13 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       if (block) {
         // eslint-disable-next-line security/detect-object-injection -- relying on nodeId being a UUID
         const blockError = errors[nodeId];
-        const blockAnnotations = getBlockAnnotations(
-          // eslint-disable-next-line security/detect-object-injection -- relying on nodeId being a UUID
-          pipelineMap[nodeId].path,
-          annotations
-        );
+
+        // Handle race condition on pipelineMap updates
+        // eslint-disable-next-line security/detect-object-injection -- relying on nodeId being a UUID
+        const blockPath = maybePipelineMap?.[nodeId]?.path;
+        const blockAnnotations = blockPath
+          ? getBlockAnnotations(blockPath, annotations)
+          : [];
 
         contentProps = {
           icon: <BrickIcon brick={block} size="2x" inheritColor />,
