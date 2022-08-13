@@ -50,7 +50,7 @@ beforeEach(async () => {
 });
 
 describe("installStarterBlueprints", () => {
-  test("user has starter blueprints", async () => {
+  test("user has starter blueprints available to install", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     axiosMock.onGet().reply(200, [recipeFactory()]);
@@ -63,7 +63,7 @@ describe("installStarterBlueprints", () => {
     expect(openPlaygroundPage.mock.calls).toHaveLength(1);
   });
 
-  test("user does not have starter blueprints", async () => {
+  test("user does not have starter blueprints available to install", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     axiosMock.onGet().reply(200, []);
@@ -102,7 +102,7 @@ describe("installStarterBlueprints", () => {
     expect(openPlaygroundPage.mock.calls).toHaveLength(0);
   });
 
-  test("blueprint already installed", async () => {
+  test("starter blueprint already installed", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const extension = extensionFactory() as PersistedExtension;
