@@ -72,7 +72,11 @@ const Message: React.VoidFunctionComponent<{
   dismissable: boolean;
 }> = ({ message, id, dismissable }) => (
   <>
-    <span className={styles.message}>{message}</span>
+    <div className={styles.message}>
+      {message.split("\n").map((line, number) => (
+        <div key={number}>{line}</div>
+      ))}
+    </div>
     {dismissable ? (
       <button
         className={styles.closeButton}
@@ -119,7 +123,7 @@ export function showNotification({
     if (!message) {
       message = getErrorMessage(error);
     } else if (includeErrorDetails) {
-      message = message.replace(/[\s.:]$/, "") + ": " + getErrorMessage(error);
+      message += "\n" + getErrorMessage(error);
     }
   }
 

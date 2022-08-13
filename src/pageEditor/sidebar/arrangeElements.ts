@@ -18,7 +18,7 @@
 import { sortBy } from "lodash";
 import { IExtension, RegistryId, UUID } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 type ArrangeElementsArgs = {
   elements: FormState[];

@@ -18,32 +18,27 @@
 @import "@/components/addBlockModal/addBlockModalVariables.scss";
 
 .root {
-  border: none;
-  padding: $verticalSpacing $horizontalSpacing;
-}
-
-.card {
   cursor: pointer;
+  display: flex;
+  border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 4px;
   padding: 12px; // Need to use exact px for fixed height grid items
-  flex-direction: row; // override card default
   align-items: center;
+  margin: $verticalSpacing;
 
   &:hover {
     background: #ebebf1;
-
-    .actions {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-    }
 
     .popularIcon {
       display: none;
     }
   }
+  &:not(:hover) .addButton {
+    display: none;
+  }
 
   &:focus {
+    outline: none;
     border: 1px solid #3e66fb !important;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
   }
@@ -57,7 +52,7 @@
   margin-bottom: 6px; // Need to use exact px for fixed height grid items
 }
 
-.cardContent {
+.content {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -89,16 +84,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   color: #4c4c4c;
-}
-
-.actions {
-  display: none;
-  gap: 12px;
-}
-
-.viewDetails {
-  white-space: nowrap;
-  color: #3e66fb;
 }
 
 .addButton {

@@ -43,7 +43,7 @@ import { isObject } from "@/utils";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import safeJsonStringify from "json-stringify-safe";
-import { get, isEmpty, set } from "lodash";
+import { isEmpty, set } from "lodash";
 
 const fields = {
   DescriptionField,
@@ -288,21 +288,17 @@ export const customFormRendererSchema = {
   required: ["schema"],
 };
 
-// Ensure that all string fields contain string values (can be empty string "", but not null or undefined)
-// so the form updates the displayed values of the input correctly
+// Server can send null or undefined for an empty field.
+// In order for RJSF to handle an absence of value properly,
+// the field must not be present on the data object at all
+// (not event undefined - this prevents setting the default value properly)
 export function normalizeIncomingFormData(schema: Schema, data: UnknownObject) {
   const normalizedData: UnknownObject = {};
-  for (const [key, property] of Object.entries(schema.properties)) {
-    const fieldValue = get(data, key);
-    if (fieldValue == null) {
-      if (
-        typeof property === "object" &&
-        property.type === "string" &&
-        isEmpty(property.default)
-      ) {
-        set(normalizedData, key, "");
-      }
-    } else {
+  for (const key of Object.keys(schema.properties)) {
+    // eslint-disable-next-line security/detect-object-injection -- iterating over object keys
+    const fieldValue = data[key];
+
+    if (fieldValue != null) {
       set(normalizedData, key, fieldValue);
     }
   }

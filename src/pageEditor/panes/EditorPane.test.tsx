@@ -36,13 +36,13 @@ import {
   uuidSequence,
 } from "@/testUtils/factories";
 import blockRegistry from "@/blocks/registry";
-import { FormState, PipelineFlavor } from "@/pageEditor/pageEditorTypes";
+import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import {
   echoBlock,
   teapotBlock,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { defaultBlockConfig } from "@/blocks/util";
-import { waitForEffect } from "@/testUtils/testHelpers";
+import { runPendingTimers, waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
 import { JQTransformer } from "@/blocks/transformers/jq";
@@ -53,7 +53,6 @@ import {
   makeTemplateExpression,
 } from "@/testUtils/expressionTestHelpers";
 import { PipelineExpression } from "@/runtime/mapArgs";
-import { act } from "react-dom/test-utils";
 import { OutputKey, RegistryId } from "@/core";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import * as api from "@/services/api";
@@ -65,6 +64,9 @@ import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import getType from "@/runtime/getType";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { enableAnalysisFieldErrors } from "@/components/form/useFieldError";
+import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/renderersAnalysis";
 
 jest.mock("@/services/api", () => ({
   appApi: {
@@ -84,6 +86,20 @@ jest.mock("@/services/api", () => ({
 jest.mock("@/components/asyncIcon", () => ({
   useAsyncIcon: jest.fn(),
 }));
+jest.mock("@/telemetry/events", () => ({
+  reportEvent: jest.fn(),
+}));
+jest.mock("@/permissions", () => {
+  const permissions = {};
+  return {
+    extensionPermissions: jest.fn().mockResolvedValue(permissions),
+  };
+});
+jest.mock("@/background/messenger/api", () => ({
+  containsPermissions: jest.fn().mockResolvedValue(true),
+}));
+// Mock to support hook usage in the subtree, not relevant to UI tests here
+jest.mock("@/hooks/useRefresh");
 
 jest.setTimeout(30_000); // This test is flaky with the default timeout of 5000 ms
 
@@ -97,6 +113,7 @@ const immediateUserEvent = userEvent.setup({ delay: null });
 
 beforeAll(async () => {
   registerDefaultWidgets();
+  enableAnalysisFieldErrors();
   blockRegistry.clear();
   blockRegistry.register(
     echoBlock,
@@ -163,6 +180,7 @@ const getPlainFormState = (): FormState =>
     }),
     blockConfigFactory({
       id: teapotBlock.id,
+      outputKey: "teapotOutput" as OutputKey,
       config: defaultBlockConfig(teapotBlock.inputSchema),
     }),
   ]);
@@ -201,25 +219,18 @@ async function addABlock(addButton: Element, blockName: string) {
 
   // Filter for the specified block
   await immediateUserEvent.type(
-    screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
+    screen.getByTestId("tag-search-input"),
     blockName
   );
 
   // Run the debounced search
-  act(() => {
-    jest.runOnlyPendingTimers();
-  });
+  await runPendingTimers();
 
   await immediateUserEvent.click(
-    screen.getAllByRole("button", {
-      name: /add/i,
-    })[0]
+    screen.getByRole("button", {
+      name: /^Add/,
+    })
   );
-
-  // Run validation
-  act(() => {
-    jest.runOnlyPendingTimers();
-  });
 }
 
 describe("renders", () => {
@@ -486,11 +497,9 @@ describe("validation", () => {
 
     // By some reason, the validation doesn't fire with userEvent.type
     fireTextInput(rendered.getByLabelText("message"), "{{!");
-    await waitForEffect();
-    act(() => {
-      // Run the timers of the Formik-Redux validation synchronization
-      jest.runOnlyPendingTimers();
-    });
+
+    // Run the timers of the Formik-Redux state synchronization
+    await runPendingTimers();
 
     expectEditorError(
       rendered.container,
@@ -531,12 +540,14 @@ describe("validation", () => {
     await waitForEffect();
 
     // Make invalid string template
-    // This is field level error, reported via Formik
+    // This is field level error
     fireTextInput(rendered.getByLabelText("message"), "{{!");
-    await waitForEffect();
+
+    // Run the timers of the Formik-Redux state synchronization
+    await runPendingTimers();
 
     // Adding a renderer in the first position in the pipeline
-    // This is a node level error, reported via Redux
+    // This is a node level error
     const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
       exact: false,
     });
@@ -546,6 +557,13 @@ describe("validation", () => {
     // Select foundation node.
     // For testing purposes we don't want a node with error to be active when we select extension1 again
     await immediateUserEvent.click(rendered.queryAllByTestId("editor-node")[0]);
+
+    // Ensure 2 nodes have error badges
+    expect(
+      rendered.container.querySelectorAll(
+        '[data-testid="editor-node"] span.badge'
+      )
+    ).toHaveLength(2);
 
     // Selecting another extension. Only possible with Redux
     const store = rendered.getReduxStore();
@@ -561,25 +579,22 @@ describe("validation", () => {
     store.dispatch(editorActions.selectElement(extension1.uuid));
 
     // Should show 2 error in the Node Layout
-    const errorBadges = rendered.container.querySelectorAll(
-      '[data-testid="editor-node"] span.badge'
-    );
-    expect(errorBadges).toHaveLength(2);
+    expect(
+      rendered.container.querySelectorAll(
+        '[data-testid="editor-node"] span.badge'
+      )
+    ).toHaveLength(2);
 
     const editorNodes = rendered.queryAllByTestId("editor-node");
 
     // Selecting the markdown block in the first extension
     await immediateUserEvent.click(editorNodes[1]);
-    act(() => {
-      jest.runOnlyPendingTimers();
-    });
+
     expectEditorError(rendered.container, "A renderer must be the last brick.");
 
     // Selecting the echo block
     await immediateUserEvent.click(editorNodes[2]);
-    act(() => {
-      jest.runOnlyPendingTimers();
-    });
+
     expectEditorError(
       rendered.container,
       "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
@@ -618,10 +633,7 @@ describe("validation", () => {
     const addButton = addButtons.at(0);
     await addABlock(addButton, "markdown");
 
-    expectEditorError(
-      rendered.container,
-      "A panel can only have one renderer. There are one or more renderers configured after this brick. A renderer must be the last brick."
-    );
+    expectEditorError(rendered.container, MULTIPLE_RENDERERS_ERROR_MESSAGE);
   });
 
   test("validates that renderer is the last node on move", async () => {
@@ -653,11 +665,6 @@ describe("validation", () => {
     );
 
     await immediateUserEvent.click(moveUpButton);
-
-    // This enables the Formik to re-render the form after the Element's change
-    act(() => {
-      jest.runOnlyPendingTimers();
-    });
 
     expectEditorError(rendered.container, "A renderer must be the last brick.");
   });
@@ -710,11 +717,6 @@ describe("validation", () => {
       );
 
       await waitForEffect();
-
-      // This enables the Formik to re-render the form after the Element's change
-      act(() => {
-        jest.runOnlyPendingTimers();
-      });
 
       const blockType = await getType(disallowedBlock);
       expectEditorError(
@@ -785,9 +787,7 @@ describe("block validation in Add Block Modal UI", () => {
       );
 
       // Run the debounced search
-      act(() => {
-        jest.runOnlyPendingTimers();
-      });
+      await runPendingTimers();
 
       expect(
         screen.queryAllByRole("button", {

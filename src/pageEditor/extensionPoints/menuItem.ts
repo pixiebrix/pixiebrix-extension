@@ -49,6 +49,7 @@ import {
   ButtonSelectionResult,
 } from "@/contentScript/nativeEditor/types";
 import { ActionFormState } from "./formStateTypes";
+import { makeEmptyPermissions } from "@/utils/permissions";
 
 function fromNativeElement(
   url: string,
@@ -137,7 +138,7 @@ async function fromExtensionPoint(
     label: `My ${getDomain(url)} button`,
 
     services: [],
-    permissions: {},
+    permissions: makeEmptyPermissions(),
 
     optionsArgs: {},
 
@@ -176,7 +177,10 @@ async function fromExtension(
   >(config, "menuItem");
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
-  const extension = extensionWithNormalizedPipeline(config.config, "action");
+  const extension = await extensionWithNormalizedPipeline(
+    config.config,
+    "action"
+  );
 
   return {
     ...base,

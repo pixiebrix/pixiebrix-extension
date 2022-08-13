@@ -21,10 +21,12 @@ import { Provider } from "react-redux";
 import Loader from "@/components/Loader";
 import { PersistGate } from "redux-persist/integration/react";
 import ConnectedSidebar from "./ConnectedSidebar";
+import Header from "./Header";
 
 const SidebarApp: React.FunctionComponent = () => (
   <Provider store={store}>
     <PersistGate loading={<Loader />} persistor={persistor}>
+      <Header />
       <ConnectedSidebar />
     </PersistGate>
   </Provider>

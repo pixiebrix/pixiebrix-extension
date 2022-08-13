@@ -48,6 +48,7 @@ import React from "react";
 import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 import { TriggerFormState } from "./formStateTypes";
+import { makeEmptyPermissions } from "@/utils/permissions";
 
 function fromNativeElement(
   url: string,
@@ -173,7 +174,7 @@ async function fromExtensionPoint(
     label: `My ${getDomain(url)} ${trigger} trigger`,
 
     services: [],
-    permissions: {},
+    permissions: makeEmptyPermissions(),
 
     optionsArgs: {},
 
@@ -224,7 +225,10 @@ async function fromExtension(
   } = extensionPoint.definition;
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
-  const extension = extensionWithNormalizedPipeline(config.config, "action");
+  const extension = await extensionWithNormalizedPipeline(
+    config.config,
+    "action"
+  );
 
   return {
     ...base,

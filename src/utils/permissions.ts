@@ -90,3 +90,7 @@ export async function requestPermissions(
 export function canReceiveContentScript(url: string): boolean {
   return url.startsWith("http") && isScriptableUrl(url);
 }
+
+export function makeEmptyPermissions(): Permissions.Permissions {
+  return { origins: [], permissions: [] };
+}

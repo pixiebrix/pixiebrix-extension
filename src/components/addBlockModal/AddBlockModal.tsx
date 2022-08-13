@@ -124,7 +124,7 @@ const AddBlockModal: React.VFC = () => {
 
   const gridRef = useRef<LazyGrid>();
 
-  const [allBlocks, isLoadingAllBlocks] = useAllBlocks();
+  const { allBlocks, isLoading: isLoadingAllBlocks } = useAllBlocks();
 
   const reduxDispatch = useDispatch();
   const closeModal = useCallback(() => {
@@ -143,10 +143,11 @@ const AddBlockModal: React.VFC = () => {
     async (block: IBlock) => {
       try {
         await addBlock(block);
-        closeModal();
       } catch (error) {
         console.error(error);
       }
+
+      closeModal();
     },
     [addBlock, closeModal]
   );

@@ -16,7 +16,7 @@
  */
 
 import { IExtension } from "@/core";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 export type SidebarItem = IExtension | FormState;
 

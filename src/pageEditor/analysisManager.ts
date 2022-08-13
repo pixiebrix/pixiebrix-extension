@@ -15,21 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import BlockTypeAnalysis from "@/analysis/analysisVisitors/blockTypeAnalysis";
+import ExtensionUrlPatternAnalysis from "@/analysis/analysisVisitors/extensionUrlPatternAnalysis";
 import OutputKeyAnalysis from "@/analysis/analysisVisitors/outputKeyAnalysis";
+import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
+import TemplateAnalysis from "@/analysis/analysisVisitors/templateAnalysis";
 import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
-import EditorManager from "@/analysis/editorManager";
+import ReduxAnalysisManager from "@/analysis/ReduxAnalysisManager";
 import { UUID } from "@/core";
 import { TraceRecord } from "@/telemetry/trace";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./pageEditorTypes";
 import { selectActiveElement } from "./slices/editorSelectors";
-import { editorSlice } from "./slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import runtimeSlice from "./slices/runtimeSlice";
+import { isAnyOf } from "@reduxjs/toolkit";
 
-const analysisManager = new EditorManager();
+const runtimeActions = runtimeSlice.actions;
 
-// Registering the trace analysis
-analysisManager.registerAnalysisEffect(
+const pageEditorAnalysisManager = new ReduxAnalysisManager();
+
+// These actions will be used with every analysis so the annotation path is up to date
+// with the node position in the pipeline
+const nodeListMutationActions = [
+  editorActions.addNode,
+  editorActions.moveNode,
+  editorActions.removeNode,
+];
+
+pageEditorAnalysisManager.registerAnalysisEffect(
   (
     action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
     state: RootState
@@ -43,12 +57,56 @@ analysisManager.registerAnalysisEffect(
 
     return null;
   },
-  { actionCreator: runtimeSlice.actions.setExtensionTrace }
+  {
+    // Only needed on runtimeActions.setExtensionTrace,
+    // but the block path can change when node tree is mutated
+    matcher: isAnyOf(
+      runtimeActions.setExtensionTrace,
+      ...nodeListMutationActions
+    ),
+  }
 );
 
-// Registering the output key analysis
-analysisManager.registerAnalysisEffect(() => new OutputKeyAnalysis(), {
-  actionCreator: editorSlice.actions.editElement,
+pageEditorAnalysisManager.registerAnalysisEffect(
+  () => new BlockTypeAnalysis(),
+  {
+    // Only needed on editorActions.addNode,
+    // but the block path can change on move or remove
+    // @ts-expect-error: spreading the array as args
+    matcher: isAnyOf(...nodeListMutationActions),
+  }
+);
+
+pageEditorAnalysisManager.registerAnalysisEffect(
+  () => new RenderersAnalysis(),
+  {
+    // @ts-expect-error: spreading the array as args
+    matcher: isAnyOf(...nodeListMutationActions),
+  }
+);
+
+pageEditorAnalysisManager.registerAnalysisEffect(
+  () => new OutputKeyAnalysis(),
+  {
+    // Only needed on editorActions.editElement,
+    // but the block path can change when node tree is mutated
+    matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+  }
+);
+
+pageEditorAnalysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
+  // Only needed on editorActions.editElement,
+  // but the block path can change when node tree is mutated
+  matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
 });
 
-export default analysisManager;
+pageEditorAnalysisManager.registerAnalysisEffect(
+  () => new ExtensionUrlPatternAnalysis(),
+  {
+    // Only needed on editorActions.editElement,
+    // but the block path can change when node tree is mutated
+    matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+  }
+);
+
+export default pageEditorAnalysisManager;

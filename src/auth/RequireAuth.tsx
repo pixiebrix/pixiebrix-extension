@@ -42,6 +42,11 @@ import { useRouteMatch } from "react-router";
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
   LoginPage: React.VFC;
+  /**
+   * Ignore network errors. Set to 'false' to avoid prompting on login if there are intermittent network errors
+   * or PixieBrix service degradation.
+   */
+  ignoreApiError?: boolean;
 };
 
 export const useRequiredAuth = () => {
@@ -112,6 +117,7 @@ export const useRequiredAuth = () => {
 
   const isUnauthenticated = (meError as AxiosError)?.response?.status === 401;
 
+  // FIXME: this should be in a useEffect
   if (isUnauthenticated) {
     console.warn("Clearing extension auth state because token was rejected");
     void clearExtensionAuth();
@@ -149,7 +155,11 @@ export const useRequiredAuth = () => {
  *   token-based authentication.
  * - Therefore, also check the extension has the Authentication header token from the server.
  */
-const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
+const RequireAuth: React.FC<RequireAuthProps> = ({
+  children,
+  LoginPage,
+  ignoreApiError = false,
+}) => {
   const matchSettings = useRouteMatch({ path: "/settings", exact: true });
 
   const {
@@ -195,10 +205,13 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     return <Loader />;
   }
 
-  // RequireAuth only knows how to handle auth errors. Rethrow any other errors
-  const error = meError ?? tokenError;
-  if (error != null) {
-    throw error;
+  // `useRequiredAuth` handles 401 and other auth-related errors. Rethrow any other errors, e.g., internal server error
+  if (meError && !ignoreApiError) {
+    throw meError;
+  }
+
+  if (tokenError) {
+    throw tokenError;
   }
 
   return <>{children}</>;

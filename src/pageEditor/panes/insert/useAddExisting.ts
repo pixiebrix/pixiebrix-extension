@@ -24,7 +24,7 @@ import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { getCurrentURL } from "@/pageEditor/utils";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 const { addElement } = editorSlice.actions;
 

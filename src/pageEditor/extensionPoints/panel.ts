@@ -49,6 +49,7 @@ import {
   PanelSelectionResult,
 } from "@/contentScript/nativeEditor/types";
 import { PanelFormState, PanelTraits } from "./formStateTypes";
+import { makeEmptyPermissions } from "@/utils/permissions";
 
 const DEFAULT_TRAITS: PanelTraits = {
   style: {
@@ -151,7 +152,7 @@ async function fromExtensionPoint(
     label: `My ${getDomain(url)} panel`,
 
     services: [],
-    permissions: {},
+    permissions: makeEmptyPermissions(),
 
     optionsArgs: {},
 
@@ -190,9 +191,13 @@ async function fromExtension(
   >(config, "panel");
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
-  const extension = extensionWithNormalizedPipeline(config.config, "body", {
-    heading: "",
-  });
+  const extension = await extensionWithNormalizedPipeline(
+    config.config,
+    "body",
+    {
+      heading: "",
+    }
+  );
 
   return {
     ...base,

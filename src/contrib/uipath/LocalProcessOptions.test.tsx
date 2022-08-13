@@ -32,7 +32,7 @@ import { OutputKey, SanitizedServiceConfiguration } from "@/core";
 import * as auth from "@/hooks/auth";
 import * as dependencyHooks from "@/services/useDependency";
 import { Service } from "@/types";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 jest.mock("webext-detect-page", () => ({
   isDevToolsPage: () => true,

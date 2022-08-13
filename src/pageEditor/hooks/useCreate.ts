@@ -20,8 +20,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import notify from "@/utils/notify";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import blockRegistry from "@/blocks/registry";
-import extensionPointRegistry from "@/extensionPoints/registry";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { reportEvent } from "@/telemetry/events";
@@ -35,9 +33,10 @@ import { useGetEditablePackagesQuery } from "@/services/api";
 import { UnknownObject } from "@/types";
 import extensionsSlice from "@/store/extensionsSlice";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
+import useRefresh from "@/hooks/useRefresh";
 
 const { saveExtension } = extensionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -111,6 +110,15 @@ type CreateCallback = (config: {
   pushToCloud: boolean;
 }) => Promise<string | null>;
 
+function onStepError(error: unknown, step: string): string {
+  const message = selectErrorMessage(error);
+  console.warn("Error %s: %s", step, message, { error });
+  const errorMessage = `Error ${step}: ${message}`;
+  notify.error({ message: errorMessage, error });
+
+  return errorMessage;
+}
+
 function useCreate(): CreateCallback {
   // XXX: Some users have problems when saving from the Page Editor that seem to indicate the sequence of events doesn't
   //  occur in the correct order on slower (CPU or network?) machines. Therefore, await all promises. We also have to
@@ -121,115 +129,99 @@ function useCreate(): CreateCallback {
   const sessionId = useSelector(selectSessionId);
   const { data: editablePackages } = useGetEditablePackagesQuery();
 
-  return useCallback(
-    async ({ element, pushToCloud }): Promise<string | null> => {
-      const onStepError = (error: unknown, step: string): string => {
-        const message = selectErrorMessage(error);
-        console.warn("Error %s: %s", step, message, { error });
-        const errorMessage = `Error ${step}: ${message}`;
-        notify.error({ message: errorMessage, error });
+  // Make sure the pages have the latest bricks for when we reactivate below
+  useRefresh({ refreshOnMount: true });
 
-        return errorMessage;
-      };
+  const saveElement = useCallback(
+    async (
+      element: FormState,
+      pushToCloud: boolean
+    ): Promise<string | null> => {
+      // eslint-disable-next-line promise/prefer-await-to-then -- It specifically does not need to be awaited #2775
+      void ensurePermissions(element).catch((error) => {
+        console.error("Error checking/enabling permissions", { error });
+        notify.warning({
+          message:
+            "An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page",
+          error,
+          reportError: true,
+        });
+      });
+
+      const adapter = ADAPTERS.get(element.type);
+
+      const extensionPointId = element.extensionPoint.metadata.id;
+      const hasInnerExtensionPoint = isInnerExtensionPoint(extensionPointId);
+
+      let isEditable = false;
+
+      if (!hasInnerExtensionPoint) {
+        // PERFORMANCE: inefficient, grabbing all visible bricks prior to save. Not a big deal for now given
+        // number of bricks implemented and frequency of saves
+        isEditable = editablePackages.some((x) => x.name === extensionPointId);
+
+        const isLocked = element.installed && !isEditable;
+
+        if (!isLocked) {
+          try {
+            const extensionPointConfig = adapter.selectExtensionPoint(element);
+            const packageId = element.installed
+              ? editablePackages.find(
+                  // Bricks endpoint uses "name" instead of id
+                  (x) => x.name === extensionPointConfig.metadata.id
+                )?.id
+              : null;
+
+            await upsertConfig(
+              packageId,
+              "extensionPoint",
+              extensionPointConfig
+            );
+          } catch (error) {
+            return onStepError(error, "saving foundation");
+          }
+        }
+      }
+
+      reportEvent("PageEditorCreate", {
+        sessionId,
+        type: element.type,
+      });
 
       try {
-        // eslint-disable-next-line promise/prefer-await-to-then -- It specifically does not need to be awaited #2775
-        void ensurePermissions(element).catch((error) => {
-          console.error("Error checking/enabling permissions", { error });
-          notify.warning({
-            message:
-              "An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page",
-            error,
-            reportError: true,
-          });
-        });
-
-        const adapter = ADAPTERS.get(element.type);
-
-        const extensionPointId = element.extensionPoint.metadata.id;
-        const hasInnerExtensionPoint = isInnerExtensionPoint(extensionPointId);
-
-        let isEditable = false;
-
-        if (!hasInnerExtensionPoint) {
-          // PERFORMANCE: inefficient, grabbing all visible bricks prior to save. Not a big deal for now given
-          // number of bricks implemented and frequency of saves
-          isEditable = editablePackages.some(
-            (x) => x.name === extensionPointId
+        const rawExtension = adapter.selectExtension(element);
+        if (hasInnerExtensionPoint) {
+          const extensionPointConfig = adapter.selectExtensionPoint(element);
+          dispatch(
+            saveExtension({
+              extension: extensionWithInnerDefinitions(
+                rawExtension,
+                extensionPointConfig.definition
+              ),
+              pushToCloud,
+            })
           );
-
-          const isLocked = element.installed && !isEditable;
-
-          if (!isLocked) {
-            try {
-              const extensionPointConfig =
-                adapter.selectExtensionPoint(element);
-              const packageId = element.installed
-                ? editablePackages.find(
-                    // Bricks endpoint uses "name" instead of id
-                    (x) => x.name === extensionPointConfig.metadata.id
-                  )?.id
-                : null;
-
-              await upsertConfig(
-                packageId,
-                "extensionPoint",
-                extensionPointConfig
-              );
-            } catch (error) {
-              return onStepError(error, "saving foundation");
-            }
-          }
+        } else {
+          dispatch(saveExtension({ extension: rawExtension, pushToCloud }));
         }
 
-        reportEvent("PageEditorCreate", {
-          sessionId,
-          type: element.type,
-        });
+        dispatch(markSaved(element.uuid));
+      } catch (error) {
+        return onStepError(error, "saving extension");
+      }
 
-        try {
-          // Make sure the pages have the latest blocks for when we reactivate below
-          await Promise.all([
-            blockRegistry.fetch(),
-            extensionPointRegistry.fetch(),
-          ]);
-        } catch (error) {
-          notify.warning({
-            message: `Error fetching remote bricks: ${selectErrorMessage(
-              error
-            )}`,
-            includeErrorDetails: false, // Using `selectErrorMessage` locally
-            error,
-            reportError: true,
-          });
-        }
+      reactivateEveryTab();
 
-        try {
-          const rawExtension = adapter.selectExtension(element);
-          if (hasInnerExtensionPoint) {
-            const extensionPointConfig = adapter.selectExtensionPoint(element);
-            dispatch(
-              saveExtension({
-                extension: extensionWithInnerDefinitions(
-                  rawExtension,
-                  extensionPointConfig.definition
-                ),
-                pushToCloud,
-              })
-            );
-          } else {
-            dispatch(saveExtension({ extension: rawExtension, pushToCloud }));
-          }
+      notify.success("Saved extension");
+      return null;
+    },
+    [dispatch, editablePackages, sessionId]
+  );
 
-          dispatch(markSaved(element.uuid));
-        } catch (error) {
-          return onStepError(error, "saving extension");
-        }
-
-        reactivateEveryTab();
-
-        notify.success("Saved extension");
-        return null;
+  return useCallback(
+    async ({ element, pushToCloud }): Promise<string | null> => {
+      try {
+        return await saveElement(element, pushToCloud);
       } catch (error) {
         console.error("Error saving extension", { error });
         notify.error({
@@ -239,7 +231,7 @@ function useCreate(): CreateCallback {
         return "Error saving extension";
       }
     },
-    [dispatch, sessionId, editablePackages]
+    [saveElement]
   );
 }
 

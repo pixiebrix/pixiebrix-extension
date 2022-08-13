@@ -208,3 +208,15 @@ export type Branch = {
   key: string;
   counter: number;
 };
+
+/**
+ * Defines the position of the block in the extension
+ * ex. "extension.blockPipeline.0.config.body.__value__.0",
+ * "extension.blockPipeline.0.config.body.0.children.0.config.onClick.__value__.0"
+ */
+export type BlockPosition = {
+  /**
+   * The path to the block relative to the root pipeline
+   */
+  path: string;
+};

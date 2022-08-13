@@ -15,18 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { BlockPosition } from "@/blocks/types";
 import { UUID } from "@/core";
-import { UnknownObject } from "@/types";
-
-/**
- * Defines the position of the block in the extension
- */
-export type AbsolutePosition = {
-  /**
-   * The path to the block relative to the root pipeline
-   */
-  path: string;
-};
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 export enum AnnotationType {
   Error = "error",
@@ -38,7 +29,7 @@ export type Annotation = {
   /**
    * Position of the annotation within the extension configuration
    */
-  position: AbsolutePosition;
+  position: BlockPosition;
   /**
    * A user-readable message for the annotation
    */
@@ -54,7 +45,7 @@ export type Annotation = {
   /**
    * Custom data produced by the analysis
    */
-  detail?: UnknownObject;
+  detail?: unknown;
 };
 
 export interface Analysis {
@@ -64,9 +55,15 @@ export interface Analysis {
   readonly id: string;
 
   /**
-   * Return the produced annotations.
+   * Return the produced annotations
    */
   getAnnotations(): Annotation[];
+
+  /**
+   * Run the analysis on the given extension
+   * @param extension The extension to analyze
+   */
+  run(extension: FormState): void | Promise<void>;
 }
 
 export type AnalysisState = {

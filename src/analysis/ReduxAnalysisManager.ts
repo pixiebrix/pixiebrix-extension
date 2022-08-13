@@ -16,14 +16,25 @@
  */
 
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
-import { AnyAction, createListenerMiddleware } from "@reduxjs/toolkit";
-import { ValidatorEffect } from "@/pageEditor/validation/validationTypes";
+import {
+  AnyAction,
+  ListenerEffect,
+  ThunkDispatch,
+  createListenerMiddleware,
+} from "@reduxjs/toolkit";
 import analysisSlice from "./analysisSlice";
 import {
   MatchFunction,
   TypedActionCreator,
 } from "@reduxjs/toolkit/dist/listenerMiddleware/types";
-import AnalysisVisitor from "./AnalysisVisitor";
+import { Analysis } from "./analysisTypes";
+import { RootState } from "@/pageEditor/pageEditorTypes";
+
+type AnalysisEffect = ListenerEffect<
+  AnyAction,
+  RootState,
+  ThunkDispatch<unknown, unknown, AnyAction>
+>;
 
 type AnalysisEffectConfig =
   | {
@@ -36,9 +47,9 @@ type AnalysisEffectConfig =
 type AnalysisFactory<TAction = AnyAction, TState = unknown> = (
   action: TAction,
   state: TState
-) => AnalysisVisitor | null;
+) => Analysis | null;
 
-class EditorManager {
+class ReduxAnalysisManager {
   private readonly listenerMiddleware = createListenerMiddleware();
   public get middleware() {
     return this.listenerMiddleware.middleware;
@@ -48,7 +59,7 @@ class EditorManager {
     analysisFactory: AnalysisFactory,
     config: AnalysisEffectConfig
   ) {
-    const effect: ValidatorEffect = async (action, listenerApi) => {
+    const effect: AnalysisEffect = async (action, listenerApi) => {
       const state = listenerApi.getState();
       const activeElement = selectActiveElement(state);
       if (activeElement == null) {
@@ -69,9 +80,7 @@ class EditorManager {
         })
       );
 
-      await analysis.visitRootPipeline(activeElement.extension.blockPipeline, {
-        extensionPointType: activeElement.type,
-      });
+      await analysis.run(activeElement);
 
       listenerApi.dispatch(
         analysisSlice.actions.finishAnalysis({
@@ -89,4 +98,4 @@ class EditorManager {
   }
 }
 
-export default EditorManager;
+export default ReduxAnalysisManager;
