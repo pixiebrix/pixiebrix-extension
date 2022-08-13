@@ -22,6 +22,7 @@ import { RecipeDefinition } from "@/types/definitions";
 import { forEachTab } from "@/background/util";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { ExtensionOptionsState } from "@/store/extensionsTypes";
+import reportError from "@/telemetry/reportError";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -47,39 +48,41 @@ export async function installStarterBlueprints(): Promise<void> {
     return;
   }
 
-  const { data: starterBlueprints } = await client.get<RecipeDefinition[]>(
-    "/api/onboarding/starter-blueprints/"
-  );
-
-  void client.post("/api/onboarding/starter-blueprints/install/");
-
-  if (starterBlueprints.length === 0) {
-    return;
-  }
-
-  let extensionsState = await loadOptions();
-
-  for (const starterBlueprint of starterBlueprints) {
-    const blueprintAlreadyInstalled = extensionsState.extensions.some(
-      (extension) => {
-        return extension._recipe.id === starterBlueprint.metadata.id;
-      }
+  try {
+    const { data: starterBlueprints } = await client.get<RecipeDefinition[]>(
+      "/api/onboarding/starter-blueprints/"
     );
 
-    if (!blueprintAlreadyInstalled) {
-      extensionsState = installStarterBlueprint(
-        extensionsState,
-        starterBlueprint
-      );
+    void client.post("/api/onboarding/starter-blueprints/install/");
+
+    if (starterBlueprints.length === 0) {
+      return;
     }
+
+    let extensionsState = await loadOptions();
+
+    for (const starterBlueprint of starterBlueprints) {
+      const blueprintAlreadyInstalled = extensionsState.extensions.some(
+        (extension) => extension._recipe.id === starterBlueprint.metadata.id
+      );
+
+      if (!blueprintAlreadyInstalled) {
+        extensionsState = installStarterBlueprint(
+          extensionsState,
+          starterBlueprint
+        );
+      }
+    }
+
+    await saveOptions(extensionsState);
+
+    await forEachTab(queueReactivateTab);
+    void browser.tabs.create({
+      url: "https://www.pixiebrix.com/playground",
+    });
+  } catch (error) {
+    reportError(error);
   }
-
-  await saveOptions(extensionsState);
-
-  await forEachTab(queueReactivateTab);
-  void browser.tabs.create({
-    url: "https://www.pixiebrix.com/playground",
-  });
 }
 
 function initStarterBlueprints(): void {
