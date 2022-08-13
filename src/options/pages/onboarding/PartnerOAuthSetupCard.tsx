@@ -107,7 +107,7 @@ const PartnerOAuthSetupCard: React.FunctionComponent = () => {
         <Form
           validationSchema={validationSchema}
           initialValues={{
-            // TODO: default Control Room URL based on onboarding flow/managed storage
+            // TODO: set Control Room URL initialValue based on onboarding flow or managed storage
             controlRoomUrl: "",
           }}
           onSubmit={connect}

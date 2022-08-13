@@ -17,18 +17,17 @@
 
 import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { getInstallURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
-
 import { useTitle } from "@/hooks/title";
 import DefaultSetupCard from "@/options/pages/onboarding/DefaultSetupCard";
-import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
+import { getInstallURL } from "@/services/baseService";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
 import PartnerOAuthSetupCard from "@/options/pages/onboarding/PartnerOAuthSetupCard";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { isEmpty } from "lodash";
 import Loader from "@/components/Loader";
+import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 
 const SetupPage: React.FunctionComponent = () => {
   useTitle("Setup");
