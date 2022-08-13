@@ -38,7 +38,7 @@ function installStarterBlueprint(
   );
 }
 
-async function installStarterBlueprints(): Promise<void> {
+export async function installStarterBlueprints(): Promise<void> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
@@ -51,24 +51,35 @@ async function installStarterBlueprints(): Promise<void> {
     "/api/onboarding/starter-blueprints/"
   );
 
-  if (!starterBlueprints) {
+  void client.post("/api/onboarding/starter-blueprints/install/");
+
+  if (starterBlueprints.length === 0) {
     return;
   }
 
   let extensionsState = await loadOptions();
+
   for (const starterBlueprint of starterBlueprints) {
-    extensionsState = installStarterBlueprint(
-      extensionsState,
-      starterBlueprint
+    const blueprintAlreadyInstalled = extensionsState.extensions.some(
+      (extension) => {
+        return extension._recipe.id === starterBlueprint.metadata.id;
+      }
     );
+
+    if (!blueprintAlreadyInstalled) {
+      extensionsState = installStarterBlueprint(
+        extensionsState,
+        starterBlueprint
+      );
+    }
   }
 
   await saveOptions(extensionsState);
 
-  void client.post("/api/onboarding/starter-blueprints/install/");
-
   await forEachTab(queueReactivateTab);
-  window.open("https://www.pixiebrix.com/playground");
+  void browser.tabs.create({
+    url: "https://www.pixiebrix.com/playground",
+  });
 }
 
 function initStarterBlueprints(): void {
