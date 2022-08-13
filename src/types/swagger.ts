@@ -214,12 +214,16 @@ export interface paths {
     /** Detail view for an organization's memberships. */
     patch: operations["partialUpdateOrganizationMembership"];
   };
+  "/api/onboarding/starter-blueprints/": {
+    get: operations["listStarterBlueprints"];
+  };
   "/api/organizations/": {
     get: operations["listOrganizations"];
     post: operations["createOrganization"];
   };
   "/api/organizations/{organization_pk}/": {
     get: operations["retrieveOrganization"];
+    delete: operations["destroyOrganization"];
     patch: operations["partialUpdateOrganization"];
   };
   "/api/organizations/{organization_pk}/members/{id}/": {
@@ -293,6 +297,7 @@ export interface paths {
   };
   "/api/control-rooms/configurations/{id}/": {
     get: operations["retrieveControlRoomConfiguration"];
+    delete: operations["destroyControlRoomConfiguration"];
     patch: operations["partialUpdateControlRoomConfiguration"];
   };
   "/api/permissions/{id}/": {
@@ -394,6 +399,9 @@ export interface paths {
   };
   "/api/onboarding/": {
     post: operations["createOnboarding"];
+  };
+  "/api/onboarding/starter-blueprints/install/": {
+    post: operations["confirmInstallationStarterBlueprints"];
   };
   "/api/organizations/{organization_pk}/subscriptions/jobs/": {
     post: operations["createOrganizationSubscriptionsJob"];
@@ -1180,6 +1188,9 @@ export interface components {
       /** @enum {integer} */
       default_role?: 1 | 2 | 3 | 4 | 5;
       partner?: string;
+      sso_domain?: string | null;
+      /** @description The number of milliseconds restricted team members have to apply manual deployments or browser extension update. */
+      enforce_update_millis?: number | null;
     };
     UserDetail: {
       /** Format: uuid */
@@ -1300,9 +1311,8 @@ export interface components {
        * @description The Control Room URL
        */
       url: string;
-      /** Format: uuid */
-      tenant_id: string;
-      service_account_token: string;
+      service_account_username: string;
+      service_account_key: string;
       organization: string;
     };
     PackageConfig: {
@@ -3280,6 +3290,17 @@ export interface operations {
       };
     };
   };
+  listStarterBlueprints: {
+    parameters: {};
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["PackageConfigList"][];
+          "application/vnd.pixiebrix.api+json": components["schemas"]["PackageConfigList"][];
+        };
+      };
+    };
+  };
   listOrganizations: {
     parameters: {
       query: {
@@ -3330,6 +3351,16 @@ export interface operations {
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Organization"];
         };
       };
+    };
+  };
+  destroyOrganization: {
+    parameters: {
+      path: {
+        organization_pk: string;
+      };
+    };
+    responses: {
+      204: never;
     };
   };
   partialUpdateOrganization: {
@@ -3923,6 +3954,17 @@ export interface operations {
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
         };
       };
+    };
+  };
+  destroyControlRoomConfiguration: {
+    parameters: {
+      path: {
+        /** A UUID string identifying this control room. */
+        id: string;
+      };
+    };
+    responses: {
+      204: never;
     };
   };
   partialUpdateControlRoomConfiguration: {
@@ -4608,6 +4650,24 @@ export interface operations {
         "application/json": components["schemas"]["Onboarding"];
         "application/x-www-form-urlencoded": components["schemas"]["Onboarding"];
         "multipart/form-data": components["schemas"]["Onboarding"];
+      };
+    };
+  };
+  confirmInstallationStarterBlueprints: {
+    parameters: {};
+    responses: {
+      201: {
+        content: {
+          "application/json": components["schemas"]["PackageConfigList"];
+          "application/vnd.pixiebrix.api+json": components["schemas"]["PackageConfigList"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PackageConfigList"];
+        "application/x-www-form-urlencoded": components["schemas"]["PackageConfigList"];
+        "multipart/form-data": components["schemas"]["PackageConfigList"];
       };
     };
   };
