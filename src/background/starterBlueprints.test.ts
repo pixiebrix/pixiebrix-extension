@@ -23,23 +23,11 @@ import { isLinked } from "@/auth/token";
 import { extensionFactory, recipeFactory } from "@/testUtils/factories";
 import { PersistedExtension } from "@/core";
 
-browser.permissions.contains = jest.fn().mockResolvedValue(true);
-
 const axiosMock = new MockAdapter(axios);
-
-jest.mock("@/permissions", () => ({
-  deploymentPermissions: jest
-    .fn()
-    .mockResolvedValue({ permissions: [], origins: [] }),
-}));
 
 jest.mock("@/auth/token", () => ({
   getExtensionToken: async () => "TESTTOKEN",
-  readAuthData: jest.fn().mockResolvedValue({
-    organizationId: "00000000-00000000-00000000-00000000",
-  }),
   isLinked: jest.fn().mockResolvedValue(true),
-  async updateUserData() {},
 }));
 
 jest.mock("@/background/util", () => ({
@@ -47,7 +35,6 @@ jest.mock("@/background/util", () => ({
 }));
 
 const isLinkedMock = isLinked as jest.Mock;
-const containsPermissionsMock = browser.permissions.contains as jest.Mock;
 const openPlaygroundPage = browser.tabs.create as jest.Mock;
 
 beforeEach(async () => {
@@ -59,17 +46,14 @@ beforeEach(async () => {
   });
 
   isLinkedMock.mockClear();
-  containsPermissionsMock.mockClear();
   openPlaygroundPage.mockClear();
 });
 
 describe("installStarterBlueprints", () => {
   test("user has starter blueprints", async () => {
     isLinkedMock.mockResolvedValue(true);
-    containsPermissionsMock.mockResolvedValue(true);
 
     axiosMock.onGet().reply(200, [recipeFactory()]);
-
     axiosMock.onPost().reply(204);
 
     await installStarterBlueprints();
@@ -81,10 +65,8 @@ describe("installStarterBlueprints", () => {
 
   test("user does not have starter blueprints", async () => {
     isLinkedMock.mockResolvedValue(true);
-    containsPermissionsMock.mockResolvedValue(true);
 
     axiosMock.onGet().reply(200, []);
-
     axiosMock.onPost().reply(204);
 
     await installStarterBlueprints();
@@ -96,10 +78,8 @@ describe("installStarterBlueprints", () => {
 
   test("starter blueprints request fails", async () => {
     isLinkedMock.mockResolvedValue(true);
-    containsPermissionsMock.mockResolvedValue(true);
 
     axiosMock.onGet().reply(500);
-
     axiosMock.onPost().reply(204);
 
     await installStarterBlueprints();
@@ -111,10 +91,8 @@ describe("installStarterBlueprints", () => {
 
   test("starter blueprints installation request fails", async () => {
     isLinkedMock.mockResolvedValue(true);
-    containsPermissionsMock.mockResolvedValue(true);
 
     axiosMock.onGet().reply(200, []);
-
     axiosMock.onPost().reply(500);
 
     await installStarterBlueprints();
@@ -126,7 +104,6 @@ describe("installStarterBlueprints", () => {
 
   test("blueprint already installed", async () => {
     isLinkedMock.mockResolvedValue(true);
-    containsPermissionsMock.mockResolvedValue(true);
 
     const extension = extensionFactory() as PersistedExtension;
     await saveOptions({
