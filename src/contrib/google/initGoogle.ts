@@ -25,7 +25,8 @@ import { isChrome } from "webext-detect-page";
 
 declare global {
   interface Window {
-    onGAPILoad?: () => void;
+    onGAPILoad?: () => Promise<void>;
+    onGAPIError?: (error: unknown) => Promise<void>;
   }
 }
 
@@ -38,6 +39,10 @@ async function onGAPILoad(): Promise<void> {
     discoveryDocs: [...BIGQUERY_DOCS, ...SHEETS_DOCS],
   });
   console.info("gapi initialized");
+}
+
+async function onGAPIError(error: unknown): Promise<void> {
+  reportError(error);
 }
 
 function initGoogle(): void {
@@ -55,9 +60,11 @@ function initGoogle(): void {
   }
 
   window.onGAPILoad = onGAPILoad;
+  window.onGAPIError = onGAPIError;
 
   const script = document.createElement("script");
-  script.src = "https://apis.google.com/js/client.js?onload=onGAPILoad";
+  script.src =
+    "https://apis.google.com/js/client.js?onload=onGAPILoad&onerror=onGAPIError";
   script.addEventListener("error", (error) => {
     reportError(error);
   });
