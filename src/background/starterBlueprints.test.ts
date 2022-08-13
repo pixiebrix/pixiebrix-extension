@@ -20,7 +20,7 @@ import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { isLinked } from "@/auth/token";
-import { extensionFactory } from "@/testUtils/factories";
+import { extensionFactory, recipeFactory } from "@/testUtils/factories";
 import { PersistedExtension } from "@/core";
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
@@ -68,13 +68,7 @@ describe("installStarterBlueprints", () => {
     isLinkedMock.mockResolvedValue(true);
     containsPermissionsMock.mockResolvedValue(true);
 
-    axiosMock.onGet().reply(200, [
-      {
-        updated_at: "",
-        extensionPoints: [{ id: "1234" }],
-        sharing: {},
-      },
-    ]);
+    axiosMock.onGet().reply(200, [recipeFactory()]);
 
     axiosMock.onPost().reply(204);
 
@@ -119,7 +113,7 @@ describe("installStarterBlueprints", () => {
     isLinkedMock.mockResolvedValue(true);
     containsPermissionsMock.mockResolvedValue(true);
 
-    axiosMock.onGet().reply(200);
+    axiosMock.onGet().reply(200, []);
 
     axiosMock.onPost().reply(500);
 
@@ -142,7 +136,7 @@ describe("installStarterBlueprints", () => {
     axiosMock.onGet().reply(200, [
       {
         updated_at: "",
-        extensionPoints: [{ id: "1234", _recipe: extension._recipe }],
+        extensionPoints: [extension],
         sharing: {},
       },
     ]);

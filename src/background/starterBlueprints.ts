@@ -53,7 +53,7 @@ export async function installStarterBlueprints(): Promise<void> {
       "/api/onboarding/starter-blueprints/"
     );
 
-    void client.post("/api/onboarding/starter-blueprints/install/");
+    await client.post("/api/onboarding/starter-blueprints/install/");
 
     if (starterBlueprints.length === 0) {
       return;
