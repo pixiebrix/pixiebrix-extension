@@ -76,6 +76,7 @@ jest.mock("@/background/messenger/api", () => ({
 
 jest.mock("@/auth/token", () => ({
   getExtensionToken: async () => "TESTTOKEN",
+  getAuthHeaders: jest.fn().mockResolvedValue({}),
   readAuthData: jest.fn().mockResolvedValue({
     organizationId: "00000000-00000000-00000000-00000000",
   }),

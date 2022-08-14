@@ -15,21 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId } from "@/core";
-import { validateRegistryId } from "@/types/helpers";
+import axios from "axios";
 
-/**
- * The PixieBrix API integration definition.
- */
-export const PIXIEBRIX_SERVICE_ID: RegistryId =
-  validateRegistryId("@pixiebrix/api");
+// A mock of @/services/apiClient that doesn't use the local browser state. For use with msw in Storybook.
+// See .storybook/preview.js for more information
 
-export const AUTOMATION_ANYWHERE_PARTNER_KEY = "automation-anywhere";
+export async function getLinkedApiClient() {
+  return axios;
+}
 
-// Automation Anywhere partner constants
-export const CONTROL_ROOM_SERVICE_ID: RegistryId = validateRegistryId(
-  "automation-anywhere/control-room"
-);
-export const CONTROL_ROOM_OAUTH_SERVICE_ID: RegistryId = validateRegistryId(
-  "automation-anywhere/oauth2"
-);
+export async function getApiClient() {
+  return axios;
+}
+
+export async function maybeGetApiClient() {
+  return axios;
+}

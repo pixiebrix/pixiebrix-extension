@@ -25,12 +25,16 @@ import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
 import { Provider } from "react-redux";
 import { useGetMeQuery } from "@/services/api";
+import settingsSlice from "@/store/settingsSlice";
+import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
+import { uuidv4 } from "@/types/helpers";
 
 function optionsStore(initialState?: any) {
   return configureStore({
     reducer: {
       auth: persistReducer(persistAuthConfig, authSlice.reducer),
       services: persistReducer(persistServicesConfig, servicesSlice.reducer),
+      settings: settingsSlice.reducer,
     },
     preloadedState: initialState,
   });
@@ -38,6 +42,10 @@ function optionsStore(initialState?: any) {
 
 jest.mock("@/services/api", () => ({
   useGetMeQuery: jest.fn(),
+}));
+
+jest.mock("@/services/baseService", () => ({
+  getInstallURL: jest.fn().mockResolvedValue("https://app.pixiebrix.com"),
 }));
 
 jest.mock("@/options/store", () => ({
@@ -68,12 +76,12 @@ describe("SetupPage", () => {
     expect(screen.queryByText("Connect your AARI account")).toBeNull();
   });
 
-  test("partner user", async () => {
+  test("OAuth2 partner user", async () => {
     (useGetMeQuery as jest.Mock).mockImplementation(() => ({
       isLoading: false,
       data: {
         partner: {
-          id: "",
+          id: uuidv4(),
           name: "Test Partner",
           theme: "automation-anywhere",
         },
@@ -81,7 +89,11 @@ describe("SetupPage", () => {
     }));
 
     render(
-      <Provider store={optionsStore()}>
+      <Provider
+        store={optionsStore({
+          settings: { authServiceId: CONTROL_ROOM_OAUTH_SERVICE_ID },
+        })}
+      >
         <MemoryRouter>
           <SetupPage />
         </MemoryRouter>

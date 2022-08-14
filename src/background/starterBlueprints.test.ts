@@ -26,7 +26,9 @@ import { PersistedExtension } from "@/core";
 const axiosMock = new MockAdapter(axios);
 
 jest.mock("@/auth/token", () => ({
-  getExtensionToken: async () => "TESTTOKEN",
+  async getAuthHeaders() {
+    return {};
+  },
   isLinked: jest.fn().mockResolvedValue(true),
 }));
 
