@@ -36,7 +36,7 @@ import {
 } from "@/services/constants";
 
 /**
- * Map from partner keys to allowed service IDs.
+ * Map from partner keys to partner service IDs
  */
 const PARTNER_MAP = new Map<string, Set<RegistryId>>([
   [
@@ -53,6 +53,8 @@ export type RequiredPartnerState = {
 
   /**
    * The partner key of the partner, or null if hasPartner is false.
+   *
+   * @see RequiredPartnerState.hasPartner
    */
   partnerKey: string | null;
 
@@ -75,7 +77,7 @@ export type RequiredPartnerState = {
   isLoading: boolean;
 
   /**
-   * The error if there was an error loading partner information from the PixieBrix server, or nullish otherwise.
+   * The error if there was an error loading partner information from the PixieBrix server, or null otherwise.
    */
   error: unknown;
 };
