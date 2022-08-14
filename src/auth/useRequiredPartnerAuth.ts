@@ -52,6 +52,11 @@ export type RequiredPartnerState = {
   hasPartner: boolean;
 
   /**
+   * The partner key of the partner, or null if hasPartner is false.
+   */
+  partnerKey: string | null;
+
+  /**
    * True if the user's account is a partner account and must have an integration configured for the partner.
    *
    * @see RequiredPartnerState.hasPartner
@@ -125,6 +130,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
 
   return {
     hasPartner,
+    partnerKey: partner?.theme,
     requiresIntegration,
     hasConfiguredIntegration:
       requiresIntegration &&

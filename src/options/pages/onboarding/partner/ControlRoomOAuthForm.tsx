@@ -16,20 +16,18 @@
  */
 
 import React, { useCallback } from "react";
-import OnboardingChecklistCard, {
-  OnboardingStep,
-} from "@/components/onboarding/OnboardingChecklistCard";
-import { useDispatch, useSelector } from "react-redux";
-import { selectSettings } from "@/store/settingsSelectors";
-import { launchAuthIntegration } from "@/background/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import { persistor } from "@/options/store";
-import servicesSlice from "@/store/servicesSlice";
-import { selectConfiguredServices } from "@/store/servicesSelectors";
-import * as Yup from "yup";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import { launchAuthIntegration } from "@/background/messenger/api";
 import Form, { RenderBody, RenderSubmit } from "@/components/form/Form";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Button } from "react-bootstrap";
+import * as Yup from "yup";
+import { useDispatch, useSelector } from "react-redux";
+import { selectConfiguredServices } from "@/store/servicesSelectors";
+import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
+import servicesSlice from "@/store/servicesSlice";
+import { selectSettings } from "@/store/settingsSelectors";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -41,18 +39,14 @@ const validationSchema = Yup.object().shape({
   controlRoomUrl: Yup.string().url().required(),
 });
 
-/**
- * A Setup card for partners where the client authenticates using a OAuth2 JWT from the partner.
- * @see PartnerSetupCard
- */
-const PartnerOAuthSetupCard: React.FunctionComponent = () => {
+const ControlRoomOAuthForm: React.FunctionComponent<{
+  initialValues: ControlRoomConfiguration;
+}> = ({ initialValues }) => {
   const dispatch = useDispatch();
-  const { authServiceId } = useSelector(selectSettings);
   const configuredServices = useSelector(selectConfiguredServices);
 
-  if (authServiceId == null) {
-    throw new Error("Expected authServiceId");
-  }
+  const { authServiceId = CONTROL_ROOM_OAUTH_SERVICE_ID } =
+    useSelector(selectSettings);
 
   const connect = useCallback(
     async (values: ControlRoomConfiguration) => {
@@ -60,7 +54,7 @@ const PartnerOAuthSetupCard: React.FunctionComponent = () => {
         dispatch(
           updateServiceConfig({
             id: uuidv4(),
-            serviceId: authServiceId,
+            serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
             label: "Primary AARI Account",
             config: {
               controlRoom: values.controlRoomUrl,
@@ -97,26 +91,14 @@ const PartnerOAuthSetupCard: React.FunctionComponent = () => {
   );
 
   return (
-    <OnboardingChecklistCard title="Set up your account">
-      <OnboardingStep
-        number={1}
-        title="Browser Extension installed"
-        completed
-      />
-      <OnboardingStep number={2} title="Connect your AARI account" active>
-        <Form
-          validationSchema={validationSchema}
-          initialValues={{
-            // TODO: set Control Room URL initialValue based on onboarding flow or managed storage
-            controlRoomUrl: "",
-          }}
-          onSubmit={connect}
-          renderBody={renderBody}
-          renderSubmit={renderSubmit}
-        />
-      </OnboardingStep>
-    </OnboardingChecklistCard>
+    <Form
+      validationSchema={validationSchema}
+      initialValues={initialValues}
+      onSubmit={connect}
+      renderBody={renderBody}
+      renderSubmit={renderSubmit}
+    />
   );
 };
 
-export default PartnerOAuthSetupCard;
+export default ControlRoomOAuthForm;

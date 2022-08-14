@@ -23,15 +23,25 @@ import DefaultSetupCard from "@/options/pages/onboarding/DefaultSetupCard";
 import { getInstallURL } from "@/services/baseService";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
-import PartnerOAuthSetupCard from "@/options/pages/onboarding/PartnerOAuthSetupCard";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { isEmpty } from "lodash";
 import Loader from "@/components/Loader";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
+import PartnerSetupCard from "@/options/pages/onboarding/partner/PartnerSetupCard";
+
+const Layout: React.FunctionComponent = ({ children }) => (
+  <Row className="w-100 mx-0">
+    <Col className="mt-5 col-md-10 col-lg-7 col-sm-12 mx-auto">{children}</Col>
+  </Row>
+);
 
 const SetupPage: React.FunctionComponent = () => {
   useTitle("Setup");
-  const { isLoading: isPartnerLoading } = useRequiredPartnerAuth();
+  const {
+    isLoading: isPartnerLoading,
+    hasPartner,
+    hasConfiguredIntegration,
+  } = useRequiredPartnerAuth();
 
   const { authServiceId } = useSelector(selectSettings);
 
@@ -39,27 +49,22 @@ const SetupPage: React.FunctionComponent = () => {
 
   if (installURLPending || isPartnerLoading) {
     return (
-      <Row className="w-100 mx-0">
-        <Col className="mt-5 col-md-10 col-lg-7 col-sm-12 mx-auto">
-          <Loader />
-        </Col>
-      </Row>
+      <Layout>
+        <Loader />
+      </Layout>
     );
   }
 
   let setupCard = <DefaultSetupCard installURL={installURL} />;
 
-  if (!isEmpty(authServiceId) && authServiceId !== PIXIEBRIX_SERVICE_ID) {
-    setupCard = <PartnerOAuthSetupCard />;
+  if (
+    (!isEmpty(authServiceId) && authServiceId !== PIXIEBRIX_SERVICE_ID) ||
+    (hasPartner && !hasConfiguredIntegration)
+  ) {
+    setupCard = <PartnerSetupCard />;
   }
 
-  return (
-    <Row className="w-100 mx-0">
-      <Col className="mt-5 col-md-10 col-lg-7 col-sm-12 mx-auto">
-        {setupCard}
-      </Col>
-    </Row>
-  );
+  return <Layout>{setupCard}</Layout>;
 };
 
 export default SetupPage;
