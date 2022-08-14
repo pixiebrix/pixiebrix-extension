@@ -95,7 +95,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   // If authServiceId is provided, force use of authServiceId
   const partnerServiceIds = authServiceId
     ? new Set<RegistryId>([authServiceId])
-    : PARTNER_MAP.get(partner?.name) ?? new Set();
+    : PARTNER_MAP.get(partner?.theme) ?? new Set();
 
   const partnerConfiguration = configuredServices.find((service) =>
     partnerServiceIds.has(service.serviceId)
