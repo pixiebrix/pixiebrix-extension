@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import OnboardingChecklistCard, {
   OnboardingStep,
 } from "@/components/onboarding/OnboardingChecklistCard";
@@ -32,11 +32,13 @@ import { getInstallURL } from "@/services/baseService";
 
 function useInstallUrl() {
   const { data: me } = useGetMeQuery();
+
+  const controlRoomUrl = me?.organization?.control_room?.url;
+
   const [installURL, isPending] = useAsyncState(async () => {
     const baseUrl = await getInstallURL();
     const startUrl = new URL(`${baseUrl}start`);
 
-    const controlRoomUrl = me?.organization?.control_room?.url;
     if (controlRoomUrl) {
       const parsedControlRoomUrl = new URL(controlRoomUrl);
       startUrl.searchParams.set("hostname", parsedControlRoomUrl.hostname);
@@ -44,7 +46,7 @@ function useInstallUrl() {
 
     startUrl.searchParams.set("partner", "automation-anywhere");
     return startUrl.href;
-  }, [me]);
+  }, [controlRoomUrl]);
 
   return {
     installURL,
@@ -67,11 +69,15 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   const { installURL } = useInstallUrl();
 
   // TODO: prefer managed storage for the Control Room URL
-  const initialValues = {
-    controlRoomUrl: me?.organization?.control_room?.url ?? "",
-    username: "",
-    password: "",
-  };
+  const controlRoomUrl = me?.organization?.control_room?.url ?? "";
+  const initialValues = useMemo(
+    () => ({
+      controlRoomUrl,
+      username: "",
+      password: "",
+    }),
+    [controlRoomUrl]
+  );
 
   if (mode === "oauth2") {
     // For OAuth2, there's only 2 steps because the AA JWT is also used to communicate with the PixieBrix server

@@ -18,6 +18,7 @@
 import axios from "axios";
 
 // A mock of @/services/apiClient that doesn't use the local browser state. For use with msw in Storybook.
+// See .storybook/preview.js for more information
 
 export async function getLinkedApiClient() {
   return axios;

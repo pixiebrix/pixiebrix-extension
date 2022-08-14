@@ -45,7 +45,10 @@ const SetupPage: React.FunctionComponent = () => {
 
   const { authServiceId } = useSelector(selectSettings);
 
-  const [installURL, installURLPending] = useAsyncState(getInstallURL, []);
+  const [defaultInstallURL, installURLPending] = useAsyncState(
+    getInstallURL,
+    []
+  );
 
   if (installURLPending || isPartnerLoading) {
     return (
@@ -55,7 +58,7 @@ const SetupPage: React.FunctionComponent = () => {
     );
   }
 
-  let setupCard = <DefaultSetupCard installURL={installURL} />;
+  let setupCard = <DefaultSetupCard installURL={defaultInstallURL} />;
 
   if (
     (!isEmpty(authServiceId) && authServiceId !== PIXIEBRIX_SERVICE_ID) ||

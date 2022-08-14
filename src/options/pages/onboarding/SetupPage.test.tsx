@@ -27,6 +27,7 @@ import { Provider } from "react-redux";
 import { useGetMeQuery } from "@/services/api";
 import settingsSlice from "@/store/settingsSlice";
 import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
+import { uuidv4 } from "@/types/helpers";
 
 function optionsStore(initialState?: any) {
   return configureStore({
@@ -41,6 +42,10 @@ function optionsStore(initialState?: any) {
 
 jest.mock("@/services/api", () => ({
   useGetMeQuery: jest.fn(),
+}));
+
+jest.mock("@/services/baseService", () => ({
+  getInstallURL: jest.fn().mockResolvedValue("https://app.pixiebrix.com"),
 }));
 
 jest.mock("@/options/store", () => ({
@@ -76,7 +81,7 @@ describe("SetupPage", () => {
       isLoading: false,
       data: {
         partner: {
-          id: "",
+          id: uuidv4(),
           name: "Test Partner",
           theme: "automation-anywhere",
         },
