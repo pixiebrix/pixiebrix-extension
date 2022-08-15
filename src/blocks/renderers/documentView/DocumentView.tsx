@@ -18,10 +18,11 @@
 import { buildDocumentBranch } from "@/components/documentBuilder/documentTree";
 import React from "react";
 import ReactShadowRoot from "react-shadow-root";
-import BootstrapStylesheet from "@/blocks/renderers/BootstrapStylesheet";
+import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import { DocumentViewProps } from "./DocumentViewProps";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { joinPathParts } from "@/utils";
+import { Stylesheets } from "@/components/Stylesheets";
 
 const DocumentView: React.FC<DocumentViewProps> = ({ body, options, meta }) => {
   if (!meta?.runId) {
@@ -40,7 +41,7 @@ const DocumentView: React.FC<DocumentViewProps> = ({ body, options, meta }) => {
     <DocumentContext.Provider value={{ options, meta }}>
       <div className="h-100">
         <ReactShadowRoot>
-          <BootstrapStylesheet>
+          <Stylesheets href={bootstrap}>
             {body.map((documentElement, index) => {
               const { Component, props } = buildDocumentBranch(
                 documentElement,
@@ -48,7 +49,7 @@ const DocumentView: React.FC<DocumentViewProps> = ({ body, options, meta }) => {
               );
               return <Component key={index} {...props} />;
             })}
-          </BootstrapStylesheet>
+          </Stylesheets>
         </ReactShadowRoot>
       </div>
     </DocumentContext.Provider>
