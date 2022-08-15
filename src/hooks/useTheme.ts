@@ -56,6 +56,8 @@ export const useGetTheme = (): Theme => {
     return isValidTheme(cachedPartner?.theme) ? cachedPartner?.theme : null;
   }, [me, cachedPartner?.theme]);
 
+  // Read from the browser's managed storage. The IT department can set as part of distributing the browser extension
+  // so the correct theme is applied before authentication.
   const [managedPartnerId, isLoading] = useAsyncState(
     readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed"),
     [],

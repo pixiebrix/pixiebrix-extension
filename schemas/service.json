@@ -118,6 +118,23 @@
             "oauth2": {
               "type": "object",
               "properties": {
+                "grantType": {
+                  "type": "string",
+                  "const": "authorization_code"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": ["oauth2"]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "oauth2": {
+              "type": "object",
+              "properties": {
                 "tokenUrl": {
                   "type": "string",
                   "description": "The token endpoint of the OAuth2 provider, as a URL literal or Mustache template"

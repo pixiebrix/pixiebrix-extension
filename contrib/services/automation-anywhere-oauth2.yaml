@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: service
+metadata:
+  id: "automation-anywhere/oauth2"
+  version: 1.0.0
+  name: Automation Anywhere OAuth2 (Preview)
+  description: Automation Anywhere OAuth2
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    baseURL:
+      type: string
+      description: "The Control Room URL, including https://"
+      format: uri
+  required:
+    - baseURL
+authentication:
+  baseURL: "{{{ baseURL }}}"
+  oauth2:
+    authorizeUrl: "https://dev-5ufv3jh0.us.auth0.com/authorize?organization=org_55te9GGDwlzAS1PB&audience=https://dev-5ufv3jh0.us.auth0.com/userinfo"
+    tokenUrl: "https://dev-5ufv3jh0.us.auth0.com/oauth/token"
+    code_challenge_method: S256
+    scope: "openid email userprofile"
+    client_id: "tfnmiN5uWd4gw2slYVbjSHAF5o8a2pms"
+  headers:
+    Authorization: "Bearer {{{ access_token }}}"
