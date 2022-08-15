@@ -144,7 +144,7 @@ export function useDevConnection(): Context {
   const [contextInvalidatedError] = useAsyncState<Error>(async () => {
     await onContextInvalidated();
     return new Error(
-      "PixieBrix was updated or restarted. Reload the editor to continue."
+      "PixieBrix was updated or restarted. Reload the Page Editor to continue."
     );
   });
 
