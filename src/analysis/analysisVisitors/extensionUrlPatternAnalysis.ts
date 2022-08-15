@@ -21,9 +21,9 @@ import { joinPathParts } from "@/utils";
 import { get, isEmpty } from "lodash";
 
 // See URL patterns at https://developer.chrome.com/docs/extensions/mv3/match_patterns/
-const urlRegexp = /(?<scheme>.*):\/\/(?<host>[^\/]*)?(?<path>\/.*)?/;
+const urlRegexp = /(?<scheme>.*):\/\/(?<host>[^/]*)?(?<path>\/.*)?/;
 const schemeRegexp = /^\*|https?|file|ftp|urn$/;
-const hostRegexp = /^\*|(\*\.)?[^*/]+$/;
+const hostRegexp = /^(\*|(^(\*\.)?[^*/]+))$/;
 
 const urlPatternFields = ["extensionPoint.definition.isAvailable.urlPatterns"];
 
@@ -48,16 +48,6 @@ class ExtensionUrlPatternAnalysis implements Analysis {
     return this.annotations;
   }
 
-  public async run(extension: FormState): Promise<void> {
-    for (const fieldName of urlPatternFields) {
-      this.analyzeUrlPatterns(extension, fieldName);
-    }
-
-    for await (const fieldName of stringUrlFields) {
-      await this.analyzeStringUrls(extension, fieldName);
-    }
-  }
-
   private pushErrorAnnotation({ path, message, detail }: PushAnnotationArgs) {
     this.annotations.push({
       position: {
@@ -70,12 +60,27 @@ class ExtensionUrlPatternAnalysis implements Analysis {
     });
   }
 
-  analyzeUrlPatterns(extension: FormState, fieldName: string): void {
-    const urlPatterns = get(extension, fieldName);
-    if (urlPatterns == null || urlPatterns.length === 0) {
-      return;
+  async run(extension: FormState): Promise<void> {
+    for (const fieldName of urlPatternFields) {
+      const urlPatterns = get(extension, fieldName);
+      if (urlPatterns == null || urlPatterns.length === 0) {
+        continue;
+      }
+
+      this.analyzeUrlPatternsField(urlPatterns, fieldName);
     }
 
+    for await (const fieldName of stringUrlFields) {
+      const urls = get(extension, fieldName);
+      if (urls == null || urls.length === 0) {
+        continue;
+      }
+
+      await this.analyzeStringUrlsField(urls, fieldName);
+    }
+  }
+
+  analyzeUrlPatternsField(urlPatterns: unknown[], fieldName: string): void {
     for (const [index, urlPattern] of Object.entries(urlPatterns)) {
       for (const [key, pattern] of Object.entries(urlPattern)) {
         if (pattern == null || pattern === "") {
@@ -95,15 +100,10 @@ class ExtensionUrlPatternAnalysis implements Analysis {
     }
   }
 
-  async analyzeStringUrls(
-    extension: FormState,
+  async analyzeStringUrlsField(
+    urls: string[],
     fieldName: string
   ): Promise<void> {
-    const urls = get(extension, fieldName);
-    if (urls == null || urls.length === 0) {
-      return;
-    }
-
     for (const [index, url] of Object.entries(urls)) {
       if (isEmpty(url)) {
         this.pushErrorAnnotation({
@@ -114,7 +114,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
         continue;
       }
 
-      const match = urlRegexp.exec(url as string);
+      const match = urlRegexp.exec(url);
       if (match == null) {
         this.pushErrorAnnotation({
           path: joinPathParts(fieldName, index),
@@ -125,7 +125,6 @@ class ExtensionUrlPatternAnalysis implements Analysis {
       }
 
       const { scheme, host, path } = match.groups;
-
       if (!schemeRegexp.test(scheme)) {
         this.pushErrorAnnotation({
           path: joinPathParts(fieldName, index),
