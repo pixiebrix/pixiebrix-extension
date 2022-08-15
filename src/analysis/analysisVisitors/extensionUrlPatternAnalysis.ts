@@ -20,7 +20,11 @@ import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { joinPathParts } from "@/utils";
 import { get, isEmpty } from "lodash";
 
-const urlRegexp = /(?<scheme>.*):\/\/(?<host>.*)\/(?<path>.*)/;
+// See URL patterns at https://developer.chrome.com/docs/extensions/mv3/match_patterns/
+const urlRegexp = /(?<scheme>.*):\/\/(?<host>[^\/]*)?(?<path>\/.*)?/;
+const schemeRegexp = /^\*|https?|file|ftp|urn$/;
+const hostRegexp = /^\*|(\*\.)?[^*/]+$/;
+
 const urlPatternFields = ["extensionPoint.definition.isAvailable.urlPatterns"];
 
 const stringUrlFields = [
@@ -28,6 +32,12 @@ const stringUrlFields = [
   "extensionPoint.definition.isAvailable.matchPatterns",
   "permissions.origins",
 ];
+
+type PushAnnotationArgs = {
+  path: string;
+  message: string;
+  detail: unknown;
+};
 class ExtensionUrlPatternAnalysis implements Analysis {
   get id() {
     return "urlPattern";
@@ -48,6 +58,18 @@ class ExtensionUrlPatternAnalysis implements Analysis {
     }
   }
 
+  private pushErrorAnnotation({ path, message, detail }: PushAnnotationArgs) {
+    this.annotations.push({
+      position: {
+        path,
+      },
+      message,
+      analysisId: this.id,
+      type: AnnotationType.Error,
+      detail,
+    });
+  }
+
   analyzeUrlPatterns(extension: FormState, fieldName: string): void {
     const urlPatterns = get(extension, fieldName);
     if (urlPatterns == null || urlPatterns.length === 0) {
@@ -63,13 +85,9 @@ class ExtensionUrlPatternAnalysis implements Analysis {
         try {
           void new URLPattern({ [key]: pattern });
         } catch {
-          this.annotations.push({
-            position: {
-              path: joinPathParts(fieldName, index, key),
-            },
+          this.pushErrorAnnotation({
+            path: joinPathParts(fieldName, index, key),
             message: `Invalid pattern for ${key}`,
-            analysisId: this.id,
-            type: AnnotationType.Error,
             detail: urlPattern,
           });
         }
@@ -88,60 +106,51 @@ class ExtensionUrlPatternAnalysis implements Analysis {
 
     for (const [index, url] of Object.entries(urls)) {
       if (isEmpty(url)) {
-        this.annotations.push({
-          position: {
-            path: joinPathParts(fieldName, index),
-          },
+        this.pushErrorAnnotation({
+          path: joinPathParts(fieldName, index),
           message: "This field is required",
-          analysisId: this.id,
-          type: AnnotationType.Error,
           detail: url,
         });
-
         continue;
       }
 
       const match = urlRegexp.exec(url as string);
       if (match == null) {
-        this.annotations.push({
-          position: {
-            path: joinPathParts(fieldName, index),
-          },
+        this.pushErrorAnnotation({
+          path: joinPathParts(fieldName, index),
           message: "Invalid URL",
-          analysisId: this.id,
-          type: AnnotationType.Error,
           detail: url,
         });
-
         continue;
       }
 
-      for (const [key, pattern] of Object.entries({
-        hostname: match.groups.host,
-        pathname: match.groups.path,
-      })) {
-        console.log("validating pattern", {
-          url,
-          key,
-          pattern,
-        });
-        if (pattern == null || pattern === "") {
-          continue;
-        }
+      const { scheme, host, path } = match.groups;
 
-        try {
-          void new URLPattern({ [key]: pattern });
-        } catch {
-          this.annotations.push({
-            position: {
-              path: joinPathParts(fieldName, index),
-            },
-            message: `Invalid pattern for ${key}`,
-            analysisId: this.id,
-            type: AnnotationType.Error,
+      if (!schemeRegexp.test(scheme)) {
+        this.pushErrorAnnotation({
+          path: joinPathParts(fieldName, index),
+          message:
+            "Invalid pattern for scheme. Scheme should match '*' | 'http' | 'https' | 'file' | 'ftp' | 'urn'",
+          detail: url,
+        });
+      }
+
+      if (scheme === "file") {
+        if (!host && !path) {
+          this.pushErrorAnnotation({
+            path: joinPathParts(fieldName, index),
+            message:
+              "Invalid pattern for file path. Path should not be empty for file:// URLs",
             detail: url,
           });
         }
+      } else if (!host || !hostRegexp.test(host)) {
+        this.pushErrorAnnotation({
+          path: joinPathParts(fieldName, index),
+          message:
+            "Invalid pattern for host. Host name should match '*' | '*.' <any char except '/' and '*'>+",
+          detail: url,
+        });
       }
     }
   }
