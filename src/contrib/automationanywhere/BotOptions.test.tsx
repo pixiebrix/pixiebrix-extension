@@ -28,7 +28,6 @@ import { Formik } from "formik";
 import { CONTROL_ROOM_SERVICE_ID } from "@/services/constants";
 import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/RunBot";
 import BotOptions from "@/contrib/automationanywhere/BotOptions";
-import { useAuthOptions } from "@/hooks/auth";
 
 jest.mock("webext-detect-page", () => ({
   isDevToolsPage: () => true,
@@ -52,8 +51,6 @@ jest.mock("@/hooks/auth", () => ({
 jest.mock("@/hooks/auth");
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/background/messenger/api");
-
-const useAuthOptionsMock = useAuthOptions as jest.Mock;
 
 function makeBaseState() {
   const baseFormState = menuItemFormStateFactory();
