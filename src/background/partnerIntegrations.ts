@@ -53,7 +53,15 @@ export async function getPartnerPrincipals(): Promise<PartnerPrincipal[]> {
 
   const auths = flatten(
     await Promise.all(
-      partnerIds.map(async (id) => serviceLocator.locateAllForService(id))
+      partnerIds.map(async (id) => {
+        try {
+          return await serviceLocator.locateAllForService(id);
+        } catch {
+          // `serviceLocator` throws if the user doesn't have the service definition. Handle case where
+          // CONTROL_ROOM_OAUTH_SERVICE_ID hasn't been made available on the server yet
+          return [];
+        }
+      })
     )
   );
 
