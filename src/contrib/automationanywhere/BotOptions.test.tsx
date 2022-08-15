@@ -49,7 +49,6 @@ jest.mock("@/services/useDependency", () =>
 jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn().mockReturnValue([[], jest.fn()]),
 }));
-jest.mock("@/contrib/uipath/uipathHooks");
 jest.mock("@/hooks/auth");
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/background/messenger/api");
@@ -89,7 +88,6 @@ function renderOptions(formState: FormState = makeBaseState()) {
 
 describe("BotOptions", () => {
   it("should require selected integration", async () => {
-    useAuthOptionsMock.mockReturnValue([[], jest.fn()]);
     const result = renderOptions();
     expect(result.container).toMatchSnapshot();
   });

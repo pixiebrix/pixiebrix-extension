@@ -140,25 +140,29 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
             />
           ) : (
             <>
-              <ConnectedFieldTemplate
-                label="Run as Users"
-                name={configName("runAsUserIds")}
-                description="The user(s) to run the bots"
-                as={RemoteMultiSelectWidget}
-                optionsFactory={cachedFetchRunAsUsers}
-                factoryArgs={factoryArgs}
-                config={config}
-              />
-              <ConnectedFieldTemplate
-                label="Device Pools"
-                name={configName("poolIds")}
-                description="A device pool that has at least one active device (optional)"
-                as={RemoteMultiSelectWidget}
-                optionsFactory={cachedFetchDevicePools}
-                factoryArgs={factoryArgs}
-                blankValue={[]}
-                config={config}
-              />
+              {workspaceType === "public" && (
+                <>
+                  <ConnectedFieldTemplate
+                    label="Run as Users"
+                    name={configName("runAsUserIds")}
+                    description="The user(s) to run the bots"
+                    as={RemoteMultiSelectWidget}
+                    optionsFactory={cachedFetchRunAsUsers}
+                    factoryArgs={factoryArgs}
+                    config={config}
+                  />
+                  <ConnectedFieldTemplate
+                    label="Device Pools"
+                    name={configName("poolIds")}
+                    description="A device pool that has at least one active device (optional)"
+                    as={RemoteMultiSelectWidget}
+                    optionsFactory={cachedFetchDevicePools}
+                    factoryArgs={factoryArgs}
+                    blankValue={[]}
+                    config={config}
+                  />
+                </>
+              )}
               <ConnectedFieldTemplate
                 label="Await Result"
                 name={configName("awaitResult")}
