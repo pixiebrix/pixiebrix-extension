@@ -25,7 +25,9 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
   onChange,
   uiSchema,
 }) => {
-  const [crop, setCrop] = useState<Partial<Crop>>({
+  const [crop, setCrop] = useState<Crop>({
+    x: 0,
+    y: 0,
     unit: "%",
     width: 30,
     height: 50,
