@@ -116,10 +116,12 @@ const shared = {
         type: "asset/source",
       },
       {
+        // CSS-only, must include .css or else it may output .scss files
+        test: /\.s?css$/,
         resourceQuery: /loadAsUrl/,
         type: "asset/resource",
         generator: {
-          filename: "css/[name][ext]",
+          filename: "css/[name].css",
         },
       },
     ],

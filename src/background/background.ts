@@ -42,6 +42,7 @@ import initFirefoxCompat from "@/background/firefoxCompat";
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
 import initActiveTabTracking from "@/background/activeTab";
 import initPartnerTheme from "@/background/partnerTheme";
+import initStarterBlueprints from "@/background/starterBlueprints";
 
 void initLocator();
 registerMessenger();
@@ -58,3 +59,4 @@ initFirefoxCompat();
 activateBrowserActionIcon();
 initActiveTabTracking();
 initPartnerTheme();
+initStarterBlueprints();

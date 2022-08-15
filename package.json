@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.7.4-alpha.1",
+  "version": "1.7.5-alpha.1",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "jest",
@@ -17,7 +17,7 @@
     "build:typescript": "tsc --noEmit",
     "build:scripts": "webpack --config scripts/webpack.scripts.js",
     "generate:headers": "NODE_OPTIONS=--stack-trace-limit=100 node scripts/bin/headers.js",
-    "storybook": "start-storybook -p 6006",
+    "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook",
     "madge:circular": "madge --extensions js,ts,tsx --circular src/** --ts-config tsconfig.json"
   },
@@ -39,8 +39,8 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@reduxjs/toolkit": "^1.6.0",
-    "@rjsf/bootstrap-4": "^4.0.0",
-    "@rjsf/core": "^3.0.0",
+    "@rjsf/bootstrap-4": "^4.2.3",
+    "@rjsf/core": "^4.2.3",
     "@uipath/robot": "1.2.5",
     "@vespaiach/axios-fetch-adapter": "^0.3.0",
     "@xobotyi/scrollbar-width": "^1.9.5",
@@ -243,6 +243,8 @@
     "min-document": "^2.19.0",
     "mini-css-extract-plugin": "^2.4.1",
     "mockdate": "^3.0.5",
+    "msw": "^0.44.2",
+    "msw-storybook-addon": "^1.6.3",
     "node-polyfill-webpack-plugin": "^2.0.0",
     "node-sass": "^7.0.0",
     "raw-loader": "^4.0.1",
@@ -274,5 +276,8 @@
         "https://pbx.vercel.app/"
       ]
     }
+  },
+  "msw": {
+    "workerDirectory": "public"
   }
 }

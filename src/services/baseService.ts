@@ -54,7 +54,6 @@ export async function getBaseURL(): Promise<string> {
 
 export async function getInstallURL(): Promise<string> {
   const url = new URL(await getBaseURL());
-  url.searchParams.set("install", "1");
   return url.href;
 }
 

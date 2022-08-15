@@ -30,56 +30,57 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 
 describe("form data normalization", () => {
-  test("normalizes non-empty incoming data", () => {
-    const schema: Schema = {
-      type: "object",
-      properties: {
-        name: { type: "string" },
-        age: { type: "integer" },
-        isAdmin: { type: "boolean" },
-        rating: { type: "number" },
+  const normalizationTestCases = [
+    {
+      name: "non-empty incoming data",
+      data: {
+        name: "John",
+        age: 30,
+        isAdmin: true,
+        rating: 4.8,
       },
-    };
-
-    const data = {
-      name: "John",
-      age: 30,
-      isAdmin: true,
-      rating: 4.8,
-    };
-
-    const normalizedData = normalizeIncomingFormData(schema, data);
-    const expectedData = {
-      name: "John",
-      age: 30,
-      isAdmin: true,
-      rating: 4.8,
-    };
-
-    expect(normalizedData).toStrictEqual(expectedData);
-  });
-
-  test("normalizes empty incoming data", () => {
-    const schema: Schema = {
-      type: "object",
-      properties: {
-        name: { type: "string" },
-        age: { type: "integer" },
-        isAdmin: { type: "boolean" },
-        rating: { type: "number" },
+      expected: {
+        name: "John",
+        age: 30,
+        isAdmin: true,
+        rating: 4.8,
       },
-    };
+    },
+    {
+      name: "empty incoming data",
+      data: {},
+      expected: {},
+    },
+    {
+      name: "incoming data with null values",
+      data: {
+        name: null as string,
+        age: 30,
+      },
+      expected: {
+        age: 30,
+      },
+    },
+  ];
+  test.each(normalizationTestCases)(
+    "normalizes $name",
+    ({ data, expected }) => {
+      const schema: Schema = {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+          age: { type: "integer" },
+          isAdmin: { type: "boolean" },
+          rating: { type: "number" },
+        },
+      };
 
-    const data = {};
+      const normalizedData = normalizeIncomingFormData(schema, data);
 
-    const normalizedData = normalizeIncomingFormData(schema, data);
-    const expectedData = {
-      name: "",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- relaxed type checking in test
-    } as any;
+      expect(normalizedData).toStrictEqual(expected);
+    }
+  );
 
-    expect(normalizedData).toStrictEqual(expectedData);
-  });
   test("normalizes non-empty outgoing data", () => {
     const schema: Schema = {
       type: "object",

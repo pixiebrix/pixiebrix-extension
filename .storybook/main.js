@@ -18,7 +18,6 @@
 const path = require("path");
 const webpack = require("webpack");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const mergeWithShared = require("../webpack.sharedConfig.js");
 
 const rootDir = path.resolve(__dirname, "../");
@@ -35,6 +34,7 @@ module.exports = {
       resolve: {
         // Mock any modules that appear in __mocks__
         // e.g. src/__mocks__/webextension-polyfill.js
+        // https://webpack.js.org/configuration/resolve/#resolvemodules
         modules: [path.resolve(rootDir, "src/__mocks__"), "node_modules"],
 
         alias: {
@@ -80,6 +80,13 @@ module.exports = {
         }),
       ],
     });
+
+    mergedConfig.resolve.alias = {
+      // For some reason, during the merge this alias gets placed toward the bottom of the object keys
+      // so wasn't taking effect vs. the "@" alias
+      "@/services/apiClient": path.resolve(rootDir, "__mocks__/apiClient.mjs"),
+      ...mergedConfig.resolve.alias,
+    };
 
     // Storybook has a default rule that matches all static resources, so we need to block that
     // to avoid conflicts that appear at runtime.

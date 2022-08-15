@@ -66,7 +66,7 @@
           "properties": {
             "baseURL": {
               "type": "string",
-              "format": "uri"
+              "description": "The base URL of the API, as a URL literal or Mustache template"
             },
             "params": {
               "type": "object",
@@ -100,7 +100,7 @@
             },
             "baseURL": {
               "type": "string",
-              "format": "uri"
+              "description": "The base URL of the API, as a URL literal or Mustache template"
             },
             "headers": {
               "type": "object",
@@ -120,11 +120,11 @@
               "properties": {
                 "tokenUrl": {
                   "type": "string",
-                  "format": "uri"
+                  "description": "The token endpoint of the OAuth2 provider, as a URL literal or Mustache template"
                 },
                 "authorizeUrl": {
                   "type": "string",
-                  "format": "uri"
+                  "description": "The authorize endpoint of the OAuth2 provider, as a URL literal or Mustache template"
                 },
                 "client_id": {
                   "type": "string"
@@ -136,7 +136,7 @@
             },
             "baseURL": {
               "type": "string",
-              "format": "uri"
+              "description": "The base URL of the API, as a URL literal or Mustache template"
             },
             "headers": {
               "type": "object",
