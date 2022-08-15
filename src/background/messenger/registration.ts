@@ -71,7 +71,10 @@ import {
 } from "@/background/telemetry";
 import { captureTab } from "@/background/capture";
 import { getUserData } from "@/auth/token";
-import { getPartnerPrincipals } from "@/background/partnerIntegrations";
+import {
+  getPartnerPrincipals,
+  launchAuthIntegration,
+} from "@/background/partnerIntegrations";
 
 expectContext("background");
 
@@ -95,6 +98,7 @@ declare global {
 
     ACTIVATE_PARTNER_THEME: typeof initPartnerTheme;
     GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
+    LAUNCH_AUTH_INTEGRATION: typeof launchAuthIntegration;
 
     GET_UID: typeof uid;
     ECHO_SENDER: typeof whoAmI;
@@ -159,6 +163,7 @@ export default function registerMessenger(): void {
 
     ACTIVATE_PARTNER_THEME: initPartnerTheme,
     GET_PARTNER_PRINCIPALS: getPartnerPrincipals,
+    LAUNCH_AUTH_INTEGRATION: launchAuthIntegration,
 
     GET_AVAILABLE_VERSION: getAvailableVersion,
     INJECT_SCRIPT: ensureContentScript,

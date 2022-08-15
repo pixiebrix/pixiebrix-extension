@@ -21,6 +21,7 @@ import reportError from "@/telemetry/reportError";
 import { once } from "lodash";
 import { DEFAULT_THEME } from "@/options/types";
 import { isValidTheme } from "@/utils/themeUtils";
+import { RegistryId } from "@/core";
 
 export const initialSettingsState: SettingsState = {
   mode: "remote",
@@ -28,6 +29,7 @@ export const initialSettingsState: SettingsState = {
   suggestElements: false,
   browserWarningDismissed: false,
   partnerId: null,
+  authServiceId: null,
   theme: DEFAULT_THEME,
   updatePromptTimestamp: null,
 };
@@ -62,6 +64,12 @@ const settingsSlice = createSlice({
       { payload: { partnerId } }: { payload: { partnerId: string } }
     ) {
       state.partnerId = partnerId;
+    },
+    setAuthServiceId(
+      state,
+      { payload: { serviceId } }: { payload: { serviceId: RegistryId } }
+    ) {
+      state.authServiceId = serviceId;
     },
     recordUpdatePromptTimestamp(state) {
       // Don't overwrite the old timestamp

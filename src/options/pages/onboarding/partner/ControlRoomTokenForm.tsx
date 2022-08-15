@@ -15,26 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import * as Yup from "yup";
 import React from "react";
-import { Button } from "react-bootstrap";
-import OnboardingChecklistCard, {
-  OnboardingStep,
-} from "@/components/onboarding/OnboardingChecklistCard";
-import { useGetMeQuery } from "@/services/api";
 import servicesSlice from "@/store/servicesSlice";
+import { useDispatch } from "react-redux";
 import { uuidv4 } from "@/types/helpers";
-import { GridLoader } from "react-spinners";
 import notify from "@/utils/notify";
 import { persistor } from "@/options/store";
 import { services } from "@/background/messenger/api";
-import { useDispatch } from "react-redux";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLink } from "@fortawesome/free-solid-svg-icons";
-import * as Yup from "yup";
 import Form, { RenderBody, RenderSubmit } from "@/components/form/Form";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-
-const CONTROL_ROOM_SERVICE_ID = "automation-anywhere/control-room";
+import { Button } from "react-bootstrap";
+import { CONTROL_ROOM_SERVICE_ID } from "@/services/constants";
 
 type ControlRoomConfiguration = {
   controlRoomUrl: string;
@@ -48,7 +40,10 @@ const validationSchema = Yup.object().shape({
   password: Yup.string().required(),
 });
 
-const AutomationAnywhereControlRoomForm: React.FunctionComponent<{
+/**
+ * Simplified Username/password form for configuring an Automation Anywhere Control Room integration.
+ */
+const ControlRoomTokenForm: React.FunctionComponent<{
   initialValues: ControlRoomConfiguration;
 }> = ({ initialValues }) => {
   const { updateServiceConfig } = servicesSlice.actions;
@@ -59,12 +54,12 @@ const AutomationAnywhereControlRoomForm: React.FunctionComponent<{
       updateServiceConfig({
         id: uuidv4(),
         serviceId: CONTROL_ROOM_SERVICE_ID,
-        label: "My AA Control Room",
+        label: "Primary AA Control Room",
         config: formValues,
       })
     );
 
-    notify.success("Successfully set up PixieBrix!");
+    notify.success("Successfully connected Automation Anywhere!");
 
     await persistor.flush();
 
@@ -73,7 +68,7 @@ const AutomationAnywhereControlRoomForm: React.FunctionComponent<{
     } catch (error) {
       notify.error({
         message:
-          "Error refreshing your account configuration, please restart the PixieBrix extension",
+          "Error refreshing your account configuration, please reload the browser extension",
         error,
       });
     }
@@ -85,6 +80,7 @@ const AutomationAnywhereControlRoomForm: React.FunctionComponent<{
         name="controlRoomUrl"
         label="Control Room URL"
         type="text"
+        description="Your Automation Anywhere Control Room URL, including https://"
       />
       <ConnectedFieldTemplate name="username" label="Username" type="text" />
       <ConnectedFieldTemplate
@@ -96,9 +92,9 @@ const AutomationAnywhereControlRoomForm: React.FunctionComponent<{
   );
 
   const renderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
-    <div className="text-right">
+    <div className="left">
       <Button type="submit" disabled={isSubmitting || !isValid}>
-        Connect
+        Connect AARI
       </Button>
     </div>
   );
@@ -114,64 +110,4 @@ const AutomationAnywhereControlRoomForm: React.FunctionComponent<{
   );
 };
 
-const PartnerSetupCard: React.FunctionComponent<{
-  installURL: string;
-  isAccountUnlinked: boolean;
-  needsConfiguration: boolean;
-}> = ({ installURL, isAccountUnlinked, needsConfiguration }) => {
-  const { data: me, isLoading } = useGetMeQuery();
-
-  const initialValues: ControlRoomConfiguration = {
-    controlRoomUrl: me?.organization?.control_room?.url ?? "",
-    username: "",
-    password: "",
-  };
-
-  const startUrl = new URL(`${installURL}start`);
-  startUrl.searchParams.set("hostname", me?.organization?.control_room?.url);
-  startUrl.searchParams.set("partner", "automation-anywhere");
-
-  return (
-    <OnboardingChecklistCard title="Set up your account">
-      <OnboardingStep
-        number={1}
-        title={
-          isAccountUnlinked
-            ? "Create or link a PixieBrix account"
-            : "PixieBrix account created/linked"
-        }
-        active={isAccountUnlinked}
-        completed={!isAccountUnlinked}
-      >
-        <Button
-          role="button"
-          className="btn btn-primary mt-2"
-          href={
-            me?.organization?.control_room?.url ? startUrl.href : installURL
-          }
-        >
-          <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
-        </Button>
-      </OnboardingStep>
-      <OnboardingStep
-        number={2}
-        title="PixieBrix browser extension installed"
-        completed
-      />
-      <OnboardingStep
-        number={3}
-        title="Connect your AARI account"
-        active={!isAccountUnlinked && needsConfiguration}
-        completed={!needsConfiguration}
-      >
-        {isLoading ? (
-          <GridLoader />
-        ) : (
-          <AutomationAnywhereControlRoomForm initialValues={initialValues} />
-        )}
-      </OnboardingStep>
-    </OnboardingChecklistCard>
-  );
-};
-
-export default PartnerSetupCard;
+export default ControlRoomTokenForm;

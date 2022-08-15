@@ -17,50 +17,57 @@
 
 import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { getInstallURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
-
 import { useTitle } from "@/hooks/title";
 import DefaultSetupCard from "@/options/pages/onboarding/DefaultSetupCard";
-import PartnerSetupCard from "@/options/pages/onboarding/PartnerSetupCard";
-import { useRequiredAuth, useRequiredPartnerAuth } from "@/auth/RequireAuth";
+import { getInstallURL } from "@/services/baseService";
+import { useSelector } from "react-redux";
+import { selectSettings } from "@/store/settingsSelectors";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { isEmpty } from "lodash";
+import Loader from "@/components/Loader";
+import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
+import PartnerSetupCard from "@/options/pages/onboarding/partner/PartnerSetupCard";
+
+const Layout: React.FunctionComponent = ({ children }) => (
+  <Row className="w-100 mx-0">
+    <Col className="mt-5 col-md-10 col-lg-7 col-sm-12 mx-auto">{children}</Col>
+  </Row>
+);
 
 const SetupPage: React.FunctionComponent = () => {
   useTitle("Setup");
   const {
-    hasPartner,
-    requiresIntegration,
-    hasConfiguredIntegration,
     isLoading: isPartnerLoading,
+    hasPartner,
+    hasConfiguredIntegration,
   } = useRequiredPartnerAuth();
-  const { isAccountUnlinked } = useRequiredAuth();
 
-  const [installURL, installURLPending] = useAsyncState(getInstallURL, []);
+  const { authServiceId } = useSelector(selectSettings);
+
+  const [defaultInstallURL, installURLPending] = useAsyncState(
+    getInstallURL,
+    []
+  );
 
   if (installURLPending || isPartnerLoading) {
-    return null;
+    return (
+      <Layout>
+        <Loader />
+      </Layout>
+    );
   }
 
-  const setupCard = hasPartner ? (
-    <PartnerSetupCard
-      installURL={installURL}
-      isAccountUnlinked={isAccountUnlinked}
-      needsConfiguration={
-        !requiresIntegration ||
-        (requiresIntegration && !hasConfiguredIntegration)
-      }
-    />
-  ) : (
-    <DefaultSetupCard installURL={installURL} />
-  );
+  let setupCard = <DefaultSetupCard installURL={defaultInstallURL} />;
 
-  return (
-    <Row className="w-100 mx-0">
-      <Col className="mt-5 col-md-10 col-lg-7 col-sm-12 mx-auto">
-        {setupCard}
-      </Col>
-    </Row>
-  );
+  if (
+    (!isEmpty(authServiceId) && authServiceId !== PIXIEBRIX_SERVICE_ID) ||
+    (hasPartner && !hasConfiguredIntegration)
+  ) {
+    setupCard = <PartnerSetupCard />;
+  }
+
+  return <Layout>{setupCard}</Layout>;
 };
 
 export default SetupPage;
