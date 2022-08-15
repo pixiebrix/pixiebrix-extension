@@ -155,7 +155,7 @@
     "webext-patterns": "^1.1.1",
     "webext-polyfill-kinda": "^0.10.0",
     "webext-tools": "^1.0.0",
-    "webextension-polyfill": "^0.9.0",
+    "webextension-polyfill": "^0.10.0",
     "whatwg-mimetype": "^3.0.0",
     "yup": "^0.32.11"
   },
@@ -185,7 +185,7 @@
     "@types/gapi.client.sheets": "^4.0.20201029",
     "@types/google.picker": "0.0.39",
     "@types/holderjs": "^2.9.2",
-    "@types/intro.js": "^3.0.2",
+    "@types/intro.js": "^5.1.0",
     "@types/jest": "^28.1.1",
     "@types/jquery": "^3.5.6",
     "@types/js-beautify": "^1.13.2",

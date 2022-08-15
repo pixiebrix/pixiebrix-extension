@@ -49,7 +49,7 @@ export type SettingsState = SkunkworksSettings & {
   browserWarningDismissed: boolean;
 
   /**
-   * Partner id for the user, if any
+   * Partner id for the user, if any.
    */
   partnerId: string | null;
 
@@ -58,6 +58,9 @@ export type SettingsState = SkunkworksSettings & {
    *
    * For partner integrations, PixieBrix is supporting using partner JWT for authenticating. The PixieBrix server
    * verifies the JWT.
+   *
+   * Only set if the user has provided the settings on the Settings Screen. Otherwise, is determined by configuration
+   * of the user's primary organization.
    *
    * @since 1.7.5
    */
