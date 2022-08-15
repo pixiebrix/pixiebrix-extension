@@ -108,7 +108,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
       if (isEmpty(url)) {
         this.pushErrorAnnotation({
           path: joinPathParts(fieldName, index),
-          message: "This field is required",
+          message: "This field is required.",
           detail: url,
         });
         continue;
@@ -118,7 +118,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
       if (match == null) {
         this.pushErrorAnnotation({
           path: joinPathParts(fieldName, index),
-          message: "Invalid URL",
+          message: "Invalid URL.",
           detail: url,
         });
         continue;
@@ -129,7 +129,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
         this.pushErrorAnnotation({
           path: joinPathParts(fieldName, index),
           message:
-            "Invalid pattern for scheme. Scheme should match '*' | 'http' | 'https' | 'file' | 'ftp' | 'urn'",
+            "Invalid pattern for scheme. Scheme should match '*' | 'http' | 'https' | 'file' | 'ftp' | 'urn'.",
           detail: url,
         });
       }
@@ -139,7 +139,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
           this.pushErrorAnnotation({
             path: joinPathParts(fieldName, index),
             message:
-              "Invalid pattern for file path. Path should not be empty for file:// URLs",
+              "Invalid pattern for file path. Path should not be empty for file:// URLs.",
             detail: url,
           });
         }
@@ -147,7 +147,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
         this.pushErrorAnnotation({
           path: joinPathParts(fieldName, index),
           message:
-            "Invalid pattern for host. Host name should match '*' | '*.' <any char except '/' and '*'>+",
+            "Invalid pattern for host. Host name should match '*' | '*.' <any char except '/' and '*'>+.",
           detail: url,
         });
       }

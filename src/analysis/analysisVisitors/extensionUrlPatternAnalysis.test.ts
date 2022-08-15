@@ -36,56 +36,56 @@ describe("analyzeStringUrlsField", () => {
     // Empty URL
     {
       url: undefined,
-      message: "This field is required",
+      message: "This field is required.",
     },
     {
       url: null,
-      message: "This field is required",
+      message: "This field is required.",
     },
     {
       url: "",
-      message: "This field is required",
+      message: "This field is required.",
     },
 
     // Malformed URL
     {
       url: "invalid url",
-      message: "Invalid URL",
+      message: "Invalid URL.",
     },
     {
       url: "google.com",
-      message: "Invalid URL",
+      message: "Invalid URL.",
     },
 
     // Invalid scheme
     {
       url: "://google.com",
       message:
-        "Invalid pattern for scheme. Scheme should match '*' | 'http' | 'https' | 'file' | 'ftp' | 'urn'",
+        "Invalid pattern for scheme. Scheme should match '*' | 'http' | 'https' | 'file' | 'ftp' | 'urn'.",
     },
     {
       url: "htps://google.com",
       message:
-        "Invalid pattern for scheme. Scheme should match '*' | 'http' | 'https' | 'file' | 'ftp' | 'urn'",
+        "Invalid pattern for scheme. Scheme should match '*' | 'http' | 'https' | 'file' | 'ftp' | 'urn'.",
     },
 
     // Invalid host
     {
       url: "https://*.*",
       message:
-        "Invalid pattern for host. Host name should match '*' | '*.' <any char except '/' and '*'>+",
+        "Invalid pattern for host. Host name should match '*' | '*.' <any char except '/' and '*'>+.",
     },
     {
       url: "https://",
       message:
-        "Invalid pattern for host. Host name should match '*' | '*.' <any char except '/' and '*'>+",
+        "Invalid pattern for host. Host name should match '*' | '*.' <any char except '/' and '*'>+.",
     },
 
     // File URL
     {
       url: "file://",
       message:
-        "Invalid pattern for file path. Path should not be empty for file:// URLs",
+        "Invalid pattern for file path. Path should not be empty for file:// URLs.",
     },
   ];
 
