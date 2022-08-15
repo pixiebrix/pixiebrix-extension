@@ -29,6 +29,7 @@ import {
   Interface,
   ListResponse,
   RunAsUser,
+  WorkspaceType,
 } from "@/contrib/automationanywhere/contract";
 import { cachePromiseMethod } from "@/utils/cachePromise";
 import {
@@ -42,26 +43,65 @@ import {
   EnterpriseBotArgs,
 } from "@/contrib/automationanywhere/aaTypes";
 import { BusinessError } from "@/errors/businessErrors";
+import { RemoteResponse } from "@/types/contract";
 
 const MAX_WAIT_MILLIS = 60_000;
 const POLL_MILLIS = 2000;
 
-async function fetchBots(
-  config: SanitizedServiceConfiguration
-): Promise<Option[]> {
-  // This endpoint works on both community and Enterprise. The /v2/repository/file/list doesn't include
-  // `type` field for filters or in the body
-  const response = await proxyService<ListResponse<Bot>>(config, {
-    url: `/v2/repository/folders/${config.config.folderId}/list`,
-    method: "POST",
-    data: {
-      filter: {
-        operator: "eq",
-        field: "type",
-        value: BOT_TYPE,
-      },
-    },
+/**
+ * Return information about a bot in a Control Room.
+ */
+async function fetchBotFile(
+  config: SanitizedServiceConfiguration,
+  fileId: string
+): Promise<Bot> {
+  // The same API endpoint can be used for any file, but for now assume it's a bot
+  const response = await proxyService<Bot>(config, {
+    url: `/v2/repository/files/${fileId}`,
+    method: "GET",
   });
+  return response.data;
+}
+
+export const cachedFetchBotFile = cachePromiseMethod(
+  ["aa:fetchBotFile"],
+  fetchBotFile
+);
+
+async function fetchBots(
+  config: SanitizedServiceConfiguration,
+  options: { workspaceType: WorkspaceType }
+): Promise<Option[]> {
+  let response: RemoteResponse<ListResponse<Bot>>;
+
+  if (config.config.folderId) {
+    // The /folders/:id/list endpoint works on both community and Enterprise. The /v2/repository/file/list doesn't
+    // include `type` field for filters or in the body or the response
+    response = await proxyService<ListResponse<Bot>>(config, {
+      url: `/v2/repository/folders/${config.config.folderId}/list`,
+      method: "POST",
+      data: {
+        filter: {
+          operator: "eq",
+          field: "type",
+          value: BOT_TYPE,
+        },
+      },
+    });
+  } else {
+    response = await proxyService<ListResponse<Bot>>(config, {
+      url: `/v2/repository/workspaces/${options.workspaceType}/files/list`,
+      method: "POST",
+      data: {
+        filter: {
+          operator: "eq",
+          field: "type",
+          value: BOT_TYPE,
+        },
+      },
+    });
+  }
+
   const bots = response.data.list ?? [];
   return bots.map((bot) => ({
     value: bot.id,
@@ -72,11 +112,12 @@ async function fetchBots(
 export const cachedFetchBots = cachePromiseMethod(["aa:fetchBots"], fetchBots);
 
 async function fetchDevices(
-  config: SanitizedServiceConfiguration
+  config: SanitizedServiceConfiguration,
+  options: { workspaceType: WorkspaceType }
 ): Promise<Option[]> {
   // HACK: depend on cachedFetchBots to avoid concurrent requests to the proxy. Simultaneous calls to get the
   // token causes a server error on Community Edition
-  await cachedFetchBots(config);
+  await cachedFetchBots(config, options);
 
   const response = await proxyService<ListResponse<Device>>(config, {
     url: "/v2/devices/list",
@@ -98,11 +139,12 @@ export const cachedFetchDevices = cachePromiseMethod(
 );
 
 async function fetchDevicePools(
-  config: SanitizedServiceConfiguration
+  config: SanitizedServiceConfiguration,
+  options: { workspaceType: WorkspaceType }
 ): Promise<Option[]> {
   // HACK: depend on cachedFetchBots to avoid concurrent requests to the proxy. Simultaneous calls to get the
   // token causes a server error on Community Edition
-  await cachedFetchBots(config);
+  await cachedFetchBots(config, options);
 
   const response = await proxyService<ListResponse<DevicePool>>(config, {
     url: "/v2/devices/pools/list",
@@ -122,11 +164,12 @@ export const cachedFetchDevicePools = cachePromiseMethod(
 );
 
 async function fetchRunAsUsers(
-  config: SanitizedServiceConfiguration
+  config: SanitizedServiceConfiguration,
+  options: { workspaceType: WorkspaceType }
 ): Promise<Option[]> {
   // HACK: depend on cachedFetchBots to avoid concurrent requests to the proxy. Simultaneous calls to get the
   // token causes a server error
-  await cachedFetchBots(config);
+  await cachedFetchBots(config, options);
 
   const { data } = await proxyService<ListResponse<RunAsUser>>(config, {
     url: "/v1/devices/runasusers/list",

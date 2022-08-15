@@ -29,9 +29,11 @@ import { BusinessError } from "@/errors/businessErrors";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
+import { UnknownObject } from "@/types";
 
 export type OptionsFactory<T = unknown> = (
-  config: SanitizedServiceConfiguration
+  config: SanitizedServiceConfiguration,
+  factoryArgs?: UnknownObject
 ) => Promise<Array<Option<T>>>;
 
 type RemoteSelectWidgetProps<T = unknown> = CustomFieldWidgetProps<
@@ -41,12 +43,14 @@ type RemoteSelectWidgetProps<T = unknown> = CustomFieldWidgetProps<
   isClearable?: boolean;
   optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>;
   config: SanitizedServiceConfiguration | null;
+  factoryArgs?: UnknownObject;
   loadingMessage?: string;
 };
 
 export function useOptionsResolver<T>(
   config: SanitizedServiceConfiguration,
-  optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>
+  optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>,
+  factoryArgs: UnknownObject
 ): AsyncState<Array<Option<T>>> {
   return useAsyncState<Array<Option<T>>>(async () => {
     if (isPromise(optionsFactory)) {
@@ -58,11 +62,11 @@ export function useOptionsResolver<T>(
       console.debug("Options is a factory, fetching options with config", {
         config,
       });
-      return optionsFactory(config);
+      return optionsFactory(config, factoryArgs);
     }
 
     throw new BusinessError("No integration configured");
-  }, [config, optionsFactory]);
+  }, [config, optionsFactory, factoryArgs]);
 }
 
 /**
@@ -71,11 +75,13 @@ export function useOptionsResolver<T>(
 const RemoteSelectWidget: React.FC<RemoteSelectWidgetProps> = ({
   config,
   optionsFactory,
+  factoryArgs,
   ...selectProps
 }) => {
   const [options, isLoading, error, refreshOptions] = useOptionsResolver(
     config,
-    optionsFactory
+    optionsFactory,
+    factoryArgs
   );
 
   useReportError(error);
