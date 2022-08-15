@@ -9,14 +9,15 @@ inputSchema:
   $schema: "https://json-schema.org/draft/2019-09/schema#"
   type: object
   properties:
-    baseURL:
+    # Needs match the property name in automation-anywhere/control-room
+    controlRoomUrl:
       type: string
       description: "The Control Room URL, including https://"
       format: uri
   required:
-    - baseURL
+    - controlRoomUrl
 authentication:
-  baseURL: "{{{ baseURL }}}"
+  baseURL: "{{{ controlRoomUrl }}}"
   oauth2:
     authorizeUrl: "https://dev-5ufv3jh0.us.auth0.com/authorize?organization=org_55te9GGDwlzAS1PB&audience=https://dev-5ufv3jh0.us.auth0.com/userinfo"
     tokenUrl: "https://dev-5ufv3jh0.us.auth0.com/oauth/token"
