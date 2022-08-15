@@ -36,8 +36,8 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
   const [croppedImageUrl, setCroppedImageUrl] = useState<string>();
 
   const imageRef = useRef<HTMLImageElement>();
-  const onImageLoaded = (image: HTMLImageElement) => {
-    imageRef.current = image;
+  const onImageLoaded: React.ReactEventHandler<HTMLImageElement> = (event) => {
+    imageRef.current = event.currentTarget;
   };
 
   const onCropChange = (crop: Crop) => {
@@ -92,12 +92,12 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
       <FormLabel>{schema.title}</FormLabel>
       {source && (
         <ReactCrop
-          src={source}
           crop={crop}
-          onImageLoaded={onImageLoaded}
           onComplete={onCropComplete}
           onChange={onCropChange}
-        />
+        >
+          <img src={source} alt="Item being cropped" onLoad={onImageLoaded} />
+        </ReactCrop>
       )}
       {croppedImageUrl && (
         <>
