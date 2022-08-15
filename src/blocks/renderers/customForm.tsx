@@ -44,6 +44,7 @@ import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import safeJsonStringify from "json-stringify-safe";
 import { get, isEmpty, set } from "lodash";
+import { Stylesheet } from "@/components/Stylesheet";
 
 const fields = {
   DescriptionField,
@@ -70,26 +71,29 @@ const CustomFormComponent: React.FunctionComponent<{
 }> = ({ schema, uiSchema, submitCaption, formData, onSubmit }) => (
   <div className="CustomForm p-3">
     <ErrorBoundary>
-      <BootstrapStylesheet />
-      <ImageCropStylesheet />
-      <link rel="stylesheet" href={custom} />
-      <JsonSchemaForm
-        schema={schema}
-        uiSchema={uiSchema}
-        formData={formData}
-        fields={fields}
-        widgets={uiWidgets}
-        FieldTemplate={FieldTemplate}
-        onSubmit={async ({ formData }) => {
-          await onSubmit(formData);
-        }}
-      >
-        <div>
-          <button className="btn btn-primary" type="submit">
-            {submitCaption}
-          </button>
-        </div>
-      </JsonSchemaForm>
+      <BootstrapStylesheet>
+        <ImageCropStylesheet>
+          <Stylesheet href={custom}>
+            <JsonSchemaForm
+              schema={schema}
+              uiSchema={uiSchema}
+              formData={formData}
+              fields={fields}
+              widgets={uiWidgets}
+              FieldTemplate={FieldTemplate}
+              onSubmit={async ({ formData }) => {
+                await onSubmit(formData);
+              }}
+            >
+              <div>
+                <button className="btn btn-primary" type="submit">
+                  {submitCaption}
+                </button>
+              </div>
+            </JsonSchemaForm>
+          </Stylesheet>
+        </ImageCropStylesheet>
+      </BootstrapStylesheet>
     </ErrorBoundary>
   </div>
 );

@@ -17,9 +17,9 @@
 
 import React from "react";
 import styles from "react-image-crop/dist/ReactCrop.css?loadAsUrl";
+import { Stylesheet } from "@/components/Stylesheet";
 
-const ImageCropStylesheet: React.FC = () => (
-  <link rel="stylesheet" href={styles} />
+const ImageCropStylesheet: React.FC = ({ children }) => (
+  <Stylesheet href={styles}>{children}</Stylesheet>
 );
-
 export default ImageCropStylesheet;
