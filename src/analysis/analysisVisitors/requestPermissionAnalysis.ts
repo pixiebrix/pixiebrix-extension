@@ -29,6 +29,8 @@ import { AnalysisVisitor } from "./baseAnalysisVisitors";
  * Checks permission for RemoteMethod and GetAPITransformer bricks to make a remote call
  */
 class RequestPermissionAnalysis extends AnalysisVisitor {
+  // XXX: for now we handle asynchronous pipeline traversal by gathering all the promises and awaiting them all
+  // see discussion https://github.com/pixiebrix/pixiebrix-extension/pull/4013#discussion_r944690969
   private readonly permissionCheckPromises: Array<Promise<void>> = [];
 
   get id() {
