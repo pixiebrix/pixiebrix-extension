@@ -42,8 +42,8 @@ import { isObject } from "@/utils";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import safeJsonStringify from "json-stringify-safe";
-import { Stylesheet } from "@/components/Stylesheet";
 import { isEmpty, set } from "lodash";
+import { Stylesheets } from "@/components/Stylesheets";
 
 const fields = {
   DescriptionField,
