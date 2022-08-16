@@ -33,8 +33,10 @@ export async function getDNT(): Promise<boolean> {
 }
 
 export async function allowsTrack(): Promise<boolean> {
-  return process.env.ENVIRONMENT === "development" ? true : !(await getDNT());
-  //return  process.env.ENVIRONMENT === "development" ? Boolean(process.env.TRACK_MIXPANEL_DEVELOPMENT) : !(await getDNT());
+  // return process.env.ENVIRONMENT === "development" ? true : !(await getDNT());
+  return process.env.ENVIRONMENT === "development"
+    ? Boolean(process.env.DEV_MIXPANEL)
+    : !(await getDNT());
 }
 
 export function useDNT(): [boolean, (enabled: boolean) => Promise<void>] {
