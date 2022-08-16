@@ -39,9 +39,9 @@ interface UserEvent {
 }
 
 const UUID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
+const MIXPANEL_EVENT_BUFFER_KEY = "MIXPANEL_EVENT_BUFFER" as ManualStorageKey;
 
 let _uid: UUID = null;
-const buffer: UserEvent[] = [];
 
 /**
  * Return a random ID for this browser profile.
@@ -64,12 +64,11 @@ export async function uid(): Promise<UUID> {
 }
 
 async function flush(): Promise<void> {
-  if (buffer.length > 0) {
+  const events = await readStorage(MIXPANEL_EVENT_BUFFER_KEY);
+  if ((events as UserEvent[]).length > 0) {
     const client = await maybeGetLinkedApiClient();
-    console.log("getting client...", client);
     if (client) {
-      const events = buffer.splice(0, buffer.length);
-      console.log("reporting events...", events);
+      await setStorage(MIXPANEL_EVENT_BUFFER_KEY, []);
       await client.post("/api/events/", { events });
     }
   }
@@ -137,10 +136,9 @@ export async function recordEvent({
   data: JsonObject | undefined;
 }): Promise<void> {
   if (await allowsTrack()) {
-    console.log("Sending an event...");
     const { version, version_name: versionName } =
       browser.runtime.getManifest();
-    buffer.push({
+    const mixpanel_event = {
       uid: await uid(),
       event,
       timestamp: Date.now(),
@@ -149,7 +147,14 @@ export async function recordEvent({
         version,
         versionName,
       },
-    });
+    };
+
+    const persisted_events =
+      (await readStorage(MIXPANEL_EVENT_BUFFER_KEY)) ?? [];
+    await setStorage(MIXPANEL_EVENT_BUFFER_KEY, [
+      ...(persisted_events as UserEvent[]),
+      mixpanel_event,
+    ]);
     void debouncedFlush();
   }
 }

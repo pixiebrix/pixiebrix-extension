@@ -25,7 +25,8 @@ import {
 } from "./authTypes";
 import { isExtensionContext } from "webext-detect-page";
 import { expectContext } from "@/utils/expectContext";
-import { omit, remove } from "lodash";
+import { omit, remove, isEmpty } from "lodash";
+import { reportEvent } from "@/telemetry/events";
 
 const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
 
@@ -136,6 +137,7 @@ export async function linkExtension(auth: TokenAuthData): Promise<boolean> {
   }
 
   const previous = await readAuthData();
+  console.log("Previous", previous);
 
   // Previously we used to check all the data, but that was problematic because it made evolving the data fields tricky.
   // The server would need to change which data it sent based on the version of the extension. There's an interplay
@@ -145,6 +147,14 @@ export async function linkExtension(auth: TokenAuthData): Promise<boolean> {
 
   console.debug(`Setting extension auth for ${auth.email}`, auth);
   await setStorage(STORAGE_EXTENSION_KEY, auth);
+
+  if (isEmpty(previous)) {
+    console.log("REPORTING EXTENSION LINKED");
+    reportEvent("PixieBrixInstall", {
+      version: browser.runtime.getManifest().version,
+    });
+  }
+
   return updated;
 }
 

@@ -22,11 +22,17 @@
 import { linkExtension } from "@/auth/token";
 import { TokenAuthData } from "@/auth/authTypes";
 import { reportEvent } from "@/telemetry/events";
+import { recordEvent } from "@/background/telemetry";
 
 export async function setExtensionAuth(auth: TokenAuthData) {
   const updated = await linkExtension(auth);
   if (updated) {
-    reportEvent("LinkExtension");
+    await recordEvent({
+      event: "LinkExtension",
+      data: {
+        version: browser.runtime.getManifest().version,
+      },
+    });
 
     // A hack to ensure the SET_EXTENSION_AUTH response flows to the front-end before the backend
     // page is reloaded.
