@@ -27,7 +27,9 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
   onChange,
   uiSchema,
 }) => {
-  const [crop, setCrop] = useState<Partial<Crop>>({
+  const [crop, setCrop] = useState<Crop>({
+    x: 0,
+    y: 0,
     unit: "%",
     width: 30,
     height: 50,
@@ -36,8 +38,8 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
   const [croppedImageUrl, setCroppedImageUrl] = useState<string>();
 
   const imageRef = useRef<HTMLImageElement>();
-  const onImageLoaded = (image: HTMLImageElement) => {
-    imageRef.current = image;
+  const onImageLoaded: React.ReactEventHandler<HTMLImageElement> = (event) => {
+    imageRef.current = event.currentTarget;
   };
 
   const onCropChange = (crop: Crop) => {
@@ -93,12 +95,12 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
       {source && (
         <Stylesheets href={styles}>
           <ReactCrop
-            src={source}
             crop={crop}
-            onImageLoaded={onImageLoaded}
             onComplete={onCropComplete}
             onChange={onCropChange}
-          />
+          >
+            <img src={source} alt="Item being cropped" onLoad={onImageLoaded} />
+          </ReactCrop>
         </Stylesheets>
       )}
       {croppedImageUrl && (
