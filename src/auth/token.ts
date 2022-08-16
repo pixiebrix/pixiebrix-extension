@@ -145,7 +145,6 @@ export async function linkExtension(auth: TokenAuthData): Promise<boolean> {
 
   console.debug(`Setting extension auth for ${auth.email}`, auth);
   await setStorage(STORAGE_EXTENSION_KEY, auth);
-
   return updated;
 }
 
