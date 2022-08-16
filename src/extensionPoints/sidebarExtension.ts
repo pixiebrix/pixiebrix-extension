@@ -94,7 +94,8 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
 
   readonly permissions: Permissions.Permissions = {};
 
-  readonly showCallback: ShowCallback = SidebarExtensionPoint.prototype.run;
+  readonly showCallback: ShowCallback =
+    SidebarExtensionPoint.prototype.run.bind(this);
 
   /**
    * Controller to drop all listeners and timers
