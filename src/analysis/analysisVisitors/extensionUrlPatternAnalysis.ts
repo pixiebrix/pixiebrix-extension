@@ -43,8 +43,6 @@ export const REQUIRED_MESSAGE = "This field is required.";
 export const INVALID_URL_MESSAGE = "Invalid URL.";
 export const INVALID_SCHEME_MESSAGE =
   "Invalid pattern for scheme. Scheme should be one of '*', 'http', or 'https'.";
-export const INVALID_FILEPATH_MESSAGE =
-  "Invalid pattern for file path. Path should not be empty for file:// URLs.";
 export const INVALID_HOST_MESSAGE =
   "Invalid pattern for host. Host name should match '*' | '*.' <any char except '/' and '*'>+.";
 
@@ -139,7 +137,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
         continue;
       }
 
-      const { scheme, host, path } = match.groups;
+      const { scheme, host } = match.groups;
       if (!schemeRegexp.test(scheme)) {
         this.pushErrorAnnotation({
           path: joinPathParts(fieldName, index),
