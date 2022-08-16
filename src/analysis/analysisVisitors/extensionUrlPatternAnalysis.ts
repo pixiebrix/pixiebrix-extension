@@ -80,14 +80,19 @@ class ExtensionUrlPatternAnalysis implements Analysis {
       this.analyzeUrlPatternsField(urlPatterns, fieldName);
     }
 
-    for await (const fieldName of stringUrlFields) {
+    const stringUrlsFieldAnalysisPromises: Array<Promise<void>> = [];
+    for (const fieldName of stringUrlFields) {
       const urls = get(extension, fieldName);
       if (urls == null || urls.length === 0) {
         continue;
       }
 
-      await this.analyzeStringUrlsField(urls, fieldName);
+      stringUrlsFieldAnalysisPromises.push(
+        this.analyzeStringUrlsField(urls, fieldName)
+      );
     }
+
+    await Promise.all(stringUrlsFieldAnalysisPromises);
   }
 
   analyzeUrlPatternsField(urlPatterns: unknown[], fieldName: string): void {
