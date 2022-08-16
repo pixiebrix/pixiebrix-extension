@@ -22,7 +22,7 @@ import { get, isEmpty } from "lodash";
 
 // See URL patterns at https://developer.chrome.com/docs/extensions/mv3/match_patterns/
 const urlRegexp = /^(?<scheme>.*):\/\/(?<host>[^/]*)?(?<path>.*)?$/;
-const schemeRegexp = /^\*|https?|file|ftp|urn$/;
+const schemeRegexp = /^\*|https?$/;
 const hostRegexp = /^(\*|(^(\*\.)?[^*/]+))$/;
 
 const urlPatternFields = ["extensionPoint.definition.isAvailable.urlPatterns"];
@@ -42,7 +42,7 @@ type PushAnnotationArgs = {
 export const REQUIRED_MESSAGE = "This field is required.";
 export const INVALID_URL_MESSAGE = "Invalid URL.";
 export const INVALID_SCHEME_MESSAGE =
-  "Invalid pattern for scheme. Scheme should match '*' | 'http' | 'https' | 'file' | 'ftp' | 'urn'.";
+  "Invalid pattern for scheme. Scheme should be one of '*', 'http', or 'https'.";
 export const INVALID_FILEPATH_MESSAGE =
   "Invalid pattern for file path. Path should not be empty for file:// URLs.";
 export const INVALID_HOST_MESSAGE =
@@ -143,15 +143,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
         });
       }
 
-      if (scheme === "file") {
-        if (!host && !path) {
-          this.pushErrorAnnotation({
-            path: joinPathParts(fieldName, index),
-            message: INVALID_FILEPATH_MESSAGE,
-            detail: url,
-          });
-        }
-      } else if (!host || !hostRegexp.test(host)) {
+      if (!host || !hostRegexp.test(host)) {
         this.pushErrorAnnotation({
           path: joinPathParts(fieldName, index),
           message: INVALID_HOST_MESSAGE,

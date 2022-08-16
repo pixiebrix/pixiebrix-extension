@@ -29,8 +29,6 @@ describe("analyzeStringUrlsField", () => {
     "https://*.pbx.vercel.app/*",
     "https://*/*",
     "*://*/*",
-    "file:///c:/WINDOWS/clock.avi",
-    "file:///etc/fstab",
   ])("accepts valid URL [%s]", async (url) => {
     const analysis = new ExtensionUrlPatternAnalysis();
     await analysis.analyzeStringUrlsField([url], "testField");
@@ -80,6 +78,15 @@ describe("analyzeStringUrlsField", () => {
       url: "foo://*",
       message: INVALID_SCHEME_MESSAGE,
     },
+    {
+      url: "file://*",
+      message: INVALID_SCHEME_MESSAGE,
+    },
+
+    {
+      url: "ftp://*",
+      message: INVALID_SCHEME_MESSAGE,
+    },
 
     // Invalid host
     {
@@ -97,12 +104,6 @@ describe("analyzeStringUrlsField", () => {
     {
       url: "https://*foo/bar",
       message: INVALID_HOST_MESSAGE,
-    },
-
-    // File URL
-    {
-      url: "file://",
-      message: INVALID_FILEPATH_MESSAGE,
     },
   ];
 
