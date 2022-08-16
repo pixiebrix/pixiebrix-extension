@@ -26,6 +26,7 @@ import {
 } from "@/components/form/widgets/RemoteSelectWidget";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import useReportError from "@/hooks/useReportError";
+import { UnknownObject } from "@/types";
 
 type RemoteMultiSelectWidgetProps = {
   id?: string;
@@ -34,6 +35,10 @@ type RemoteMultiSelectWidgetProps = {
   isClearable?: boolean;
   optionsFactory: OptionsFactory | Promise<Array<Option<unknown>>>;
   config: SanitizedServiceConfiguration | null;
+  /**
+   * Additional arguments to pass to optionsFactory, if optionsFactory is a function.
+   */
+  factoryArgs?: UnknownObject;
   loadingMessage?: string;
 };
 
@@ -45,13 +50,15 @@ const RemoteMultiSelectWidget: React.FC<RemoteMultiSelectWidgetProps> = ({
   isClearable = false,
   disabled,
   optionsFactory,
+  factoryArgs,
   config,
   ...props
 }) => {
   const [field, , helpers] = useField<unknown[]>(props);
   const [options, isLoading, loadError] = useOptionsResolver(
     config,
-    optionsFactory
+    optionsFactory,
+    factoryArgs
   );
   useReportError(loadError);
 

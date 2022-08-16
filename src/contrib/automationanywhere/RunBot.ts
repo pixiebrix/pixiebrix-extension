@@ -37,14 +37,17 @@ export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
 
 export const COMMON_PROPERTIES: SchemaProperties = {
   service: {
-    anyOf: [
-      {
-        $ref: `https://app.pixiebrix.com/schemas/services/${CONTROL_ROOM_SERVICE_ID}`,
-      },
-      {
-        $ref: `https://app.pixiebrix.com/schemas/services/${CONTROL_ROOM_OAUTH_SERVICE_ID}`,
-      },
-    ],
+    anyOf: [CONTROL_ROOM_SERVICE_ID, CONTROL_ROOM_OAUTH_SERVICE_ID].map(
+      (id) => ({
+        $ref: `https://app.pixiebrix.com/schemas/services/${id}`,
+      })
+    ),
+  },
+  workspaceType: {
+    type: "string",
+    enum: ["private", "public"],
+    description: "The workspace containing the bot",
+    default: "private",
   },
   fileId: {
     type: "string",
