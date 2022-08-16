@@ -54,7 +54,7 @@ const defaults = {
   DEV_NOTIFY: "true",
   DEV_SLIM: "false",
   DEV_REDUX_LOGGER: "true",
-  DEV_MIXPANEL: "false",
+  DEV_EVENT_TELEMETRY: "false",
   CHROME_EXTENSION_ID: "mpjjildhmpddojocokjkgmlkkkfjnepo",
 
   // PixieBrix URL to enable connection to for credential exchange

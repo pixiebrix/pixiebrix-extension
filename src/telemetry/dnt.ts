@@ -34,7 +34,7 @@ export async function getDNT(): Promise<boolean> {
 
 export async function allowsTrack(): Promise<boolean> {
   return process.env.ENVIRONMENT === "development"
-    ? Boolean(process.env.DEV_MIXPANEL)
+    ? Boolean(process.env.DEV_EVENT_TELEMETRY)
     : !(await getDNT());
 }
 

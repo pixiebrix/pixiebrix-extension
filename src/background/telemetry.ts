@@ -39,7 +39,7 @@ interface UserEvent {
 }
 
 const UUID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
-const MIXPANEL_EVENT_BUFFER_KEY = "MIXPANEL_EVENT_BUFFER" as ManualStorageKey;
+const TELEMETRY_EVENT_BUFFER_KEY = "TELEMETRY_EVENT_BUFFER" as ManualStorageKey;
 
 let _uid: UUID = null;
 
@@ -64,12 +64,14 @@ export async function uid(): Promise<UUID> {
 }
 
 async function flush(): Promise<void> {
-  const events = await readStorage(MIXPANEL_EVENT_BUFFER_KEY);
+  const events = await readStorage(TELEMETRY_EVENT_BUFFER_KEY);
   if ((events as UserEvent[]).length > 0) {
     const client = await maybeGetLinkedApiClient();
     if (client) {
-      await setStorage(MIXPANEL_EVENT_BUFFER_KEY, []);
-      await client.post("/api/events/", { events });
+      await Promise.all([
+        setStorage(TELEMETRY_EVENT_BUFFER_KEY, []),
+        client.post("/api/events/", { events }),
+      ]);
     }
   }
 }
@@ -138,7 +140,7 @@ export async function recordEvent({
   if (await allowsTrack()) {
     const { version, version_name: versionName } =
       browser.runtime.getManifest();
-    const mixpanel_event = {
+    const telemetryEvent = {
       uid: await uid(),
       event,
       timestamp: Date.now(),
@@ -149,11 +151,11 @@ export async function recordEvent({
       },
     };
 
-    const persisted_events =
-      (await readStorage(MIXPANEL_EVENT_BUFFER_KEY)) ?? [];
-    await setStorage(MIXPANEL_EVENT_BUFFER_KEY, [
-      ...(persisted_events as UserEvent[]),
-      mixpanel_event,
+    const persistedEvents =
+      (await readStorage(TELEMETRY_EVENT_BUFFER_KEY)) ?? [];
+    await setStorage(TELEMETRY_EVENT_BUFFER_KEY, [
+      ...(persistedEvents as UserEvent[]),
+      telemetryEvent,
     ]);
     void debouncedFlush();
   }
