@@ -21,7 +21,7 @@ import { joinPathParts } from "@/utils";
 import { get, isEmpty } from "lodash";
 
 // See URL patterns at https://developer.chrome.com/docs/extensions/mv3/match_patterns/
-const urlRegexp = /(?<scheme>.*):\/\/(?<host>[^/]*)?(?<path>\/.*)?/;
+const urlRegexp = /^(?<scheme>.*):\/\/(?<host>[^/]*)?(?<path>.*)?$/;
 const schemeRegexp = /^\*|https?|file|ftp|urn$/;
 const hostRegexp = /^(\*|(^(\*\.)?[^*/]+))$/;
 
@@ -38,6 +38,16 @@ type PushAnnotationArgs = {
   message: string;
   detail: unknown;
 };
+
+export const REQUIRED_MESSAGE = "This field is required.";
+export const INVALID_URL_MESSAGE = "Invalid URL.";
+export const INVALID_SCHEME_MESSAGE =
+  "Invalid pattern for scheme. Scheme should match '*' | 'http' | 'https' | 'file' | 'ftp' | 'urn'.";
+export const INVALID_FILEPATH_MESSAGE =
+  "Invalid pattern for file path. Path should not be empty for file:// URLs.";
+export const INVALID_HOST_MESSAGE =
+  "Invalid pattern for host. Host name should match '*' | '*.' <any char except '/' and '*'>+.";
+
 class ExtensionUrlPatternAnalysis implements Analysis {
   get id() {
     return "urlPattern";
@@ -108,7 +118,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
       if (isEmpty(url)) {
         this.pushErrorAnnotation({
           path: joinPathParts(fieldName, index),
-          message: "This field is required.",
+          message: REQUIRED_MESSAGE,
           detail: url,
         });
         continue;
@@ -118,7 +128,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
       if (match == null) {
         this.pushErrorAnnotation({
           path: joinPathParts(fieldName, index),
-          message: "Invalid URL.",
+          message: INVALID_URL_MESSAGE,
           detail: url,
         });
         continue;
@@ -128,8 +138,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
       if (!schemeRegexp.test(scheme)) {
         this.pushErrorAnnotation({
           path: joinPathParts(fieldName, index),
-          message:
-            "Invalid pattern for scheme. Scheme should match '*' | 'http' | 'https' | 'file' | 'ftp' | 'urn'.",
+          message: INVALID_SCHEME_MESSAGE,
           detail: url,
         });
       }
@@ -138,16 +147,14 @@ class ExtensionUrlPatternAnalysis implements Analysis {
         if (!host && !path) {
           this.pushErrorAnnotation({
             path: joinPathParts(fieldName, index),
-            message:
-              "Invalid pattern for file path. Path should not be empty for file:// URLs.",
+            message: INVALID_FILEPATH_MESSAGE,
             detail: url,
           });
         }
       } else if (!host || !hostRegexp.test(host)) {
         this.pushErrorAnnotation({
           path: joinPathParts(fieldName, index),
-          message:
-            "Invalid pattern for host. Host name should match '*' | '*.' <any char except '/' and '*'>+.",
+          message: INVALID_HOST_MESSAGE,
           detail: url,
         });
       }

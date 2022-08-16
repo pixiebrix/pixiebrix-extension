@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ExtensionUrlPatternAnalysis from "./extensionUrlPatternAnalysis";
+import ExtensionUrlPatternAnalysis, {
+  INVALID_FILEPATH_MESSAGE,
+  INVALID_HOST_MESSAGE,
+  INVALID_SCHEME_MESSAGE,
+  INVALID_URL_MESSAGE,
+  REQUIRED_MESSAGE,
+} from "./extensionUrlPatternAnalysis";
 
 describe("analyzeStringUrlsField", () => {
   test.each([
@@ -36,56 +42,67 @@ describe("analyzeStringUrlsField", () => {
     // Empty URL
     {
       url: undefined,
-      message: "This field is required.",
+      message: REQUIRED_MESSAGE,
     },
     {
       url: null,
-      message: "This field is required.",
+      message: REQUIRED_MESSAGE,
     },
     {
       url: "",
-      message: "This field is required.",
+      message: REQUIRED_MESSAGE,
     },
 
     // Malformed URL
     {
       url: "invalid url",
-      message: "Invalid URL.",
+      message: INVALID_URL_MESSAGE,
     },
     {
       url: "google.com",
-      message: "Invalid URL.",
+      message: INVALID_URL_MESSAGE,
+    },
+    {
+      url: "http:/bar",
+      message: INVALID_URL_MESSAGE,
     },
 
     // Invalid scheme
     {
       url: "://google.com",
-      message:
-        "Invalid pattern for scheme. Scheme should match '*' | 'http' | 'https' | 'file' | 'ftp' | 'urn'.",
+      message: INVALID_SCHEME_MESSAGE,
     },
     {
       url: "htps://google.com",
-      message:
-        "Invalid pattern for scheme. Scheme should match '*' | 'http' | 'https' | 'file' | 'ftp' | 'urn'.",
+      message: INVALID_SCHEME_MESSAGE,
+    },
+    {
+      url: "foo://*",
+      message: INVALID_SCHEME_MESSAGE,
     },
 
     // Invalid host
     {
       url: "https://*.*",
-      message:
-        "Invalid pattern for host. Host name should match '*' | '*.' <any char except '/' and '*'>+.",
+      message: INVALID_HOST_MESSAGE,
     },
     {
       url: "https://",
-      message:
-        "Invalid pattern for host. Host name should match '*' | '*.' <any char except '/' and '*'>+.",
+      message: INVALID_HOST_MESSAGE,
+    },
+    {
+      url: "https://foo.*.bar/baz",
+      message: INVALID_HOST_MESSAGE,
+    },
+    {
+      url: "https://*foo/bar",
+      message: INVALID_HOST_MESSAGE,
     },
 
     // File URL
     {
       url: "file://",
-      message:
-        "Invalid pattern for file path. Path should not be empty for file:// URLs.",
+      message: INVALID_FILEPATH_MESSAGE,
     },
   ];
 
