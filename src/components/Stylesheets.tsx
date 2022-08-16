@@ -23,7 +23,7 @@ import { castArray, uniq } from "lodash";
  *
  * Does not support changing the initial href(s)
  */
-export const Stylesheet: React.FC<{ href: string | string[] }> = ({
+export const Stylesheets: React.FC<{ href: string | string[] }> = ({
   href,
   children,
 }) => {

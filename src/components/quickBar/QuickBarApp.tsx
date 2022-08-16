@@ -34,7 +34,7 @@ import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
 import { MAX_Z_INDEX } from "@/common";
 import { useEventListener } from "@/hooks/useEventListener";
-import { Stylesheet } from "@/components/Stylesheet";
+import { Stylesheets } from "@/components/Stylesheets";
 import selection from "@/utils/selectionController";
 import { animatorStyle, searchStyle } from "./quickBarTheme";
 import QuickBarResults from "./QuickBarResults";
@@ -136,7 +136,7 @@ const KBarComponent: React.FC = () => {
 
 const QuickBarApp: React.FC = () => (
   <ReactShadowRoot mode="closed">
-    <Stylesheet href={faStyleSheet}>
+    <Stylesheets href={faStyleSheet}>
       {/* Disable exit animation due to #3724. `enterMs` is required too */}
       <KBarProvider options={{ animations: { enterMs: 300, exitMs: 0 } }}>
         <AutoShow />
@@ -144,7 +144,7 @@ const QuickBarApp: React.FC = () => (
           <KBarComponent />
         </KBarToggle>
       </KBarProvider>
-    </Stylesheet>
+    </Stylesheets>
   </ReactShadowRoot>
 );
 

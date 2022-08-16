@@ -144,7 +144,7 @@ export function useDevConnection(): Context {
   const [contextInvalidatedError] = useAsyncState<Error>(async () => {
     await onContextInvalidated();
     return new Error(
-      "The connection to the PixieBrix browser extension was lost. Reload the Page Editor."
+      "PixieBrix was updated or restarted. Reload the Page Editor to continue."
     );
   });
 

@@ -33,17 +33,17 @@ import { dataStore, proxyService, whoAmI } from "@/background/messenger/api";
 import notify from "@/utils/notify";
 import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
-import ImageCropStylesheet from "@/blocks/renderers/ImageCropStylesheet";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { validateRegistryId } from "@/types/helpers";
-import BootstrapStylesheet from "@/blocks/renderers/BootstrapStylesheet";
+import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import { isObject } from "@/utils";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import safeJsonStringify from "json-stringify-safe";
 import { isEmpty, set } from "lodash";
+import { Stylesheets } from "@/components/Stylesheets";
 
 const fields = {
   DescriptionField,
@@ -70,26 +70,25 @@ const CustomFormComponent: React.FunctionComponent<{
 }> = ({ schema, uiSchema, submitCaption, formData, onSubmit }) => (
   <div className="CustomForm p-3">
     <ErrorBoundary>
-      <BootstrapStylesheet />
-      <ImageCropStylesheet />
-      <link rel="stylesheet" href={custom} />
-      <JsonSchemaForm
-        schema={schema}
-        uiSchema={uiSchema}
-        formData={formData}
-        fields={fields}
-        widgets={uiWidgets}
-        FieldTemplate={FieldTemplate}
-        onSubmit={async ({ formData }) => {
-          await onSubmit(formData);
-        }}
-      >
-        <div>
-          <button className="btn btn-primary" type="submit">
-            {submitCaption}
-          </button>
-        </div>
-      </JsonSchemaForm>
+      <Stylesheets href={[bootstrap, custom]}>
+        <JsonSchemaForm
+          schema={schema}
+          uiSchema={uiSchema}
+          formData={formData}
+          fields={fields}
+          widgets={uiWidgets}
+          FieldTemplate={FieldTemplate}
+          onSubmit={async ({ formData }) => {
+            await onSubmit(formData);
+          }}
+        >
+          <div>
+            <button className="btn btn-primary" type="submit">
+              {submitCaption}
+            </button>
+          </div>
+        </JsonSchemaForm>
+      </Stylesheets>
     </ErrorBoundary>
   </div>
 );

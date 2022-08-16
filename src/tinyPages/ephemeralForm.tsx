@@ -16,7 +16,6 @@
  */
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "react-image-crop/dist/ReactCrop.css";
 import "./ephemeralForm.scss";
 
 import "@/extensionContext";

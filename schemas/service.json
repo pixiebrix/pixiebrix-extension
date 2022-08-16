@@ -59,7 +59,7 @@
       }
     },
     "authentication": {
-      "oneOf": [
+      "anyOf": [
         {
           "type": "object",
           "additionalProperties": false,
@@ -110,6 +110,23 @@
             }
           },
           "required": ["token"]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "oauth2": {
+              "type": "object",
+              "properties": {
+                "grantType": {
+                  "type": "string",
+                  "const": "authorization_code"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": ["oauth2"]
         },
         {
           "type": "object",
