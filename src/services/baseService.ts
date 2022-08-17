@@ -52,11 +52,6 @@ export async function getBaseURL(): Promise<string> {
   return withoutTrailingSlash(DEFAULT_SERVICE_URL);
 }
 
-export async function getInstallURL(): Promise<string> {
-  const url = new URL(await getBaseURL());
-  return url.href;
-}
-
 export async function setBaseURL(serviceURL: string): Promise<void> {
   await setStorage(SERVICE_STORAGE_KEY, serviceURL);
 }

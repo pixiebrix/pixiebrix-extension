@@ -17,13 +17,12 @@
 
 import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { getInstallURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
-
 import { useTitle } from "@/hooks/title";
 import DefaultSetupCard from "@/options/pages/onboarding/DefaultSetupCard";
 import PartnerSetupCard from "@/options/pages/onboarding/PartnerSetupCard";
 import { useRequiredAuth, useRequiredPartnerAuth } from "@/auth/RequireAuth";
+import { getBaseURL } from "@/services/baseService";
 
 const SetupPage: React.FunctionComponent = () => {
   useTitle("Setup");
@@ -35,7 +34,7 @@ const SetupPage: React.FunctionComponent = () => {
   } = useRequiredPartnerAuth();
   const { isAccountUnlinked } = useRequiredAuth();
 
-  const [installURL, installURLPending] = useAsyncState(getInstallURL, []);
+  const [installURL, installURLPending] = useAsyncState(getBaseURL, []);
 
   if (installURLPending || isPartnerLoading) {
     return null;
