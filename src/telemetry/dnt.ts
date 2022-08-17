@@ -33,7 +33,7 @@ export async function getDNT(): Promise<boolean> {
 }
 
 export async function allowsTrack(): Promise<boolean> {
-  return !(await getDNT());
+  return boolean(process.env.DEV_EVENT_TELEMETRY) || !(await getDNT());
 }
 
 export function useDNT(): [boolean, (enabled: boolean) => Promise<void>] {
