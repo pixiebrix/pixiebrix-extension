@@ -26,17 +26,23 @@ import {
 
 const id = "connection-lost";
 
+/**
+ * Display a notification when the background page unloads/reloads because at this point
+ * all communcation becomes impossible.
+ */
 export function notifyContextInvalidated(): void {
   notify.error({
     id,
     message: "PixieBrix was updated or restarted. Reload the page to continue",
-    reportError: false,
+    reportError: false, // It cannot report it because its background page no longer exists
     duration: Number.POSITIVE_INFINITY,
   });
 }
 
 /** Detects whether an error is a fatal context invalidation */
 export function isContextInvalidatedError(possibleError: unknown): boolean {
+  // Do not use `wasContextInvalidated` in here because this function must return `true`
+  // only if the specific error was an invalidation error.
   return (
     getErrorMessage(getRootCause(possibleError)) === CONTEXT_INVALIDATED_ERROR
   );
@@ -44,6 +50,10 @@ export function isContextInvalidatedError(possibleError: unknown): boolean {
 
 export const wasContextInvalidated = () => !chrome.runtime?.id;
 
+/**
+ * Returns a promise that resolves when the background script is unloaded,
+ * which can only happens once per script lifetime.
+ */
 export const onContextInvalidated = once(async (): Promise<void> => {
   expectContext("extension");
 
