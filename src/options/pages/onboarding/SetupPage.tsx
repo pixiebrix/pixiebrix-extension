@@ -20,7 +20,7 @@ import { Col, Row } from "react-bootstrap";
 import { useAsyncState } from "@/hooks/common";
 import { useTitle } from "@/hooks/title";
 import DefaultSetupCard from "@/options/pages/onboarding/DefaultSetupCard";
-import { getInstallURL } from "@/services/baseService";
+import { getBaseURL } from "@/services/baseService";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
@@ -45,12 +45,9 @@ const SetupPage: React.FunctionComponent = () => {
 
   const { authServiceId } = useSelector(selectSettings);
 
-  const [defaultInstallURL, installURLPending] = useAsyncState(
-    getInstallURL,
-    []
-  );
+  const [baseURL, baseURLPending] = useAsyncState(getBaseURL, []);
 
-  if (installURLPending || isPartnerLoading) {
+  if (baseURLPending || isPartnerLoading) {
     return (
       <Layout>
         <Loader />
@@ -58,7 +55,7 @@ const SetupPage: React.FunctionComponent = () => {
     );
   }
 
-  let setupCard = <DefaultSetupCard installURL={defaultInstallURL} />;
+  let setupCard = <DefaultSetupCard installURL={baseURL} />;
 
   if (
     (!isEmpty(authServiceId) && authServiceId !== PIXIEBRIX_SERVICE_ID) ||
