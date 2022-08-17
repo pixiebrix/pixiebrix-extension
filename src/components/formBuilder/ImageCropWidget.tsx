@@ -99,7 +99,12 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
             onComplete={onCropComplete}
             onChange={onCropChange}
           >
-            <img src={source} alt="Item being cropped" onLoad={onImageLoaded} />
+            <img
+              crossOrigin="anonymous"
+              src={source}
+              alt="Item being cropped"
+              onLoad={onImageLoaded}
+            />
           </ReactCrop>
         </Stylesheets>
       )}
