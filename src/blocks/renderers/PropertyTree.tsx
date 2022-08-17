@@ -17,25 +17,21 @@
 
 import { TreeTable } from "primereact/treetable";
 import { Column } from "primereact/column";
+import { Stylesheets } from "@/components/Stylesheets";
 import React from "react";
 
 import theme from "primereact/resources/themes/saga-blue/theme.css?loadAsUrl";
 import primereact from "primereact/resources/primereact.min.css?loadAsUrl";
-
-// FIXME: figure out how to load the fonts, since the font URL in the file doesn't
-//  work with Chrome extensions. Likely webpack needs to use css-loader to properly
-//  parse all the url() inside it.
 import primeicons from "primeicons/primeicons.css?loadAsUrl";
 
 const PropertyTree: React.FunctionComponent<{ value: any }> = ({ value }) => (
   <React.Fragment>
-    <link rel="stylesheet" href={theme} />
-    <link rel="stylesheet" href={primereact} />
-    <link rel="stylesheet" href={primeicons} />
-    <TreeTable value={value}>
-      <Column field="name" header="Property" expander />
-      <Column field="value" header="Value" />
-    </TreeTable>
+    <Stylesheets href={[theme, primereact, primeicons]}>
+      <TreeTable value={value}>
+        <Column field="name" header="Property" expander />
+        <Column field="value" header="Value" />
+      </TreeTable>
+    </Stylesheets>
   </React.Fragment>
 );
 

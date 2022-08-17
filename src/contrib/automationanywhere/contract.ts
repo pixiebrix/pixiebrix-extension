@@ -32,6 +32,8 @@ export type ListResponse<TData> = {
 
 export const BOT_TYPE = "application/vnd.aa.taskbot";
 
+// Bots in the "Private" workspace are also referred to as Local bots
+export type WorkspaceType = "public" | "private";
 type VariableType = "STRING" | "NUMBER" | "BOOLEAN";
 
 export type Variable = {
@@ -52,13 +54,28 @@ export type Interface = {
   variables: Variable[];
 };
 
+// https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-workspaces-list.html
+export type Folder = {
+  id: string;
+  parentId: string;
+  name: string;
+  folder: true;
+};
+
 // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-details.html
 export type Bot = {
+  /**
+   * The numeric file id, as a numeric string.
+   */
   id: string;
+  /**
+   * The numeric parent folder id, as a numeric string.
+   */
   parentId: string;
   name: string;
   path: string;
   type: typeof BOT_TYPE;
+  workspaceType: "PUBLIC" | "PRIVATE";
 };
 
 export type Device = {

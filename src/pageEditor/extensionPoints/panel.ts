@@ -191,9 +191,13 @@ async function fromExtension(
   >(config, "panel");
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
-  const extension = extensionWithNormalizedPipeline(config.config, "body", {
-    heading: "",
-  });
+  const extension = await extensionWithNormalizedPipeline(
+    config.config,
+    "body",
+    {
+      heading: "",
+    }
+  );
 
   return {
     ...base,

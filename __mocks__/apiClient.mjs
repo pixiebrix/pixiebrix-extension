@@ -15,13 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createListenerMiddleware } from "@reduxjs/toolkit";
-import BlockTypeValidator from "./blockTypeValidator";
-import RenderersValidator from "./renderersValidator";
+import axios from "axios";
 
-const validationListenerMiddleware = createListenerMiddleware();
+// A mock of @/services/apiClient that doesn't use the local browser state. For use with msw in Storybook.
+// See .storybook/preview.js for more information
 
-validationListenerMiddleware.startListening(new RenderersValidator());
-validationListenerMiddleware.startListening(new BlockTypeValidator());
+export async function getLinkedApiClient() {
+  return axios;
+}
 
-export default validationListenerMiddleware.middleware;
+export async function getApiClient() {
+  return axios;
+}
+
+export async function maybeGetApiClient() {
+  return axios;
+}

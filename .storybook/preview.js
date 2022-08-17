@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { initialize, mswDecorator } from "msw-storybook-addon";
 import "@/vendors/theme/app/app.scss";
 import "@/vendors/overrides.scss";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -22,6 +23,25 @@ import { faMusic } from "@fortawesome/free-solid-svg-icons";
 
 // https://github.com/storybookjs/storybook/issues/3798
 library.add(faMusic);
+
+// https://storybook.js.org/tutorials/intro-to-storybook/react/en/screen/
+// https://github.com/mswjs/msw-storybook-addon
+// Registers the msw addon
+initialize({
+  onUnhandledRequest: ({ method, url }) => {
+    // Only error on /api/ URLs, otherwise MSW will error for chrome-extension and other remote URLs.
+    if (url.pathname.startsWith("/api/")) {
+      console.error(`Unhandled ${method} request to ${url}.
+
+        This exception has been only logged in the console, however, it's strongly recommended to resolve this error as you don't want unmocked data in Storybook stories.
+
+        If you wish to mock an error response, please refer to this guide: https://mswjs.io/docs/recipes/mocking-error-responses
+      `);
+    }
+  },
+});
+// Provide the MSW addon decorator globally
+export const decorators = [mswDecorator];
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },

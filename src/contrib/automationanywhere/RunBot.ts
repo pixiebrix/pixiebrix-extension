@@ -26,6 +26,10 @@ import {
 } from "@/contrib/automationanywhere/aaApi";
 import { BotArgs } from "@/contrib/automationanywhere/aaTypes";
 import { PropError } from "@/errors/businessErrors";
+import {
+  CONTROL_ROOM_OAUTH_SERVICE_ID,
+  CONTROL_ROOM_SERVICE_ID,
+} from "@/services/constants";
 
 export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
   "@pixiebrix/automation-anywhere/run-bot"
@@ -33,7 +37,17 @@ export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
 
 export const COMMON_PROPERTIES: SchemaProperties = {
   service: {
-    $ref: "https://app.pixiebrix.com/schemas/services/automation-anywhere/control-room",
+    anyOf: [CONTROL_ROOM_SERVICE_ID, CONTROL_ROOM_OAUTH_SERVICE_ID].map(
+      (id) => ({
+        $ref: `https://app.pixiebrix.com/schemas/services/${id}`,
+      })
+    ),
+  },
+  workspaceType: {
+    type: "string",
+    enum: ["private", "public"],
+    description: "The workspace containing the bot",
+    default: "private",
   },
   fileId: {
     type: "string",

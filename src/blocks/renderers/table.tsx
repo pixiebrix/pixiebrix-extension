@@ -18,7 +18,7 @@
 import { Renderer } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg, BlockOptions, SafeHTML } from "@/core";
-import { isNullOrBlank } from "@/utils";
+import { isNullOrBlank, isObject } from "@/utils";
 import makeDataTable, { Row } from "@/blocks/renderers/dataTable";
 import { BusinessError } from "@/errors/businessErrors";
 
@@ -87,14 +87,15 @@ export class TableRenderer extends Renderer {
 
   async render(
     { columns, data: userData }: BlockArg,
-    { ctxt = [], logger }: BlockOptions
+    { ctxt = [] }: BlockOptions
   ): Promise<SafeHTML> {
-    const data = userData ?? ctxt;
+    let data = userData ?? ctxt;
 
-    if (!userData) {
-      logger.warn(
-        "Using implicit data from the previous step is deprecated, use the data parameter"
-      );
+    if (userData == null && isObject(ctxt) && !Array.isArray(ctxt)) {
+      // In runtime v2 and v3 data is passed explicitly. The ctxt is always {@input, ...rest}. Show and empty table
+      // instead of erroring out. (Otherwise users have to add a jq brick to coalesce to an array)
+      // See here for more: https://github.com/pixiebrix/pixiebrix-extension/issues/4014
+      data = [];
     }
 
     if (!Array.isArray(data)) {

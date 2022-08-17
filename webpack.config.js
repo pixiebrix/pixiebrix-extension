@@ -356,9 +356,11 @@ module.exports = (env, options) =>
         {
           test: /\.s?css$/,
           resourceQuery: { not: [/loadAsUrl/] },
+          use: [MiniCssExtractPlugin.loader, "css-loader"],
+        },
+        {
+          test: /\.scss$/,
           use: [
-            MiniCssExtractPlugin.loader,
-            "css-loader",
             {
               loader: "sass-loader",
               options: {

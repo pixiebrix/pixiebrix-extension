@@ -306,7 +306,6 @@ export const produceSchemaOnUiTypeChange = (
               (item) => ({ const: item } as SchemaDefinition)
             )
           : [];
-        draftPropertySchema.default = "";
         delete draftPropertySchema.enum;
       } else {
         // If switching from Dropdown with labels, convert the values to enum

@@ -177,7 +177,10 @@ async function fromExtension(
   >(config, "menuItem");
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
-  const extension = extensionWithNormalizedPipeline(config.config, "action");
+  const extension = await extensionWithNormalizedPipeline(
+    config.config,
+    "action"
+  );
 
   return {
     ...base,

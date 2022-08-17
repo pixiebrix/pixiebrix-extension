@@ -22,18 +22,19 @@ import {
   READ_WINDOW,
   SEARCH_WINDOW,
 } from "@/messaging/constants";
+import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
 
 export const NOTIFICATIONS_Z_INDEX = 2_147_483_647;
 export const MAX_Z_INDEX = NOTIFICATIONS_Z_INDEX - 1; // Let notifications always be higher
 export const PANEL_FRAME_ID = "pixiebrix-extension";
 export const PIXIEBRIX_DATA_ATTR = "data-pb-uuid";
-export const PIXIEBRIX_READY_ATTRIBUTE = "data-pb-ready";
 export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
+
 // Keep this simple because it must be compatible with `:not(${thisSelector})`
 export const PRIVATE_ATTRIBUTES_SELECTOR = `
   #${PANEL_FRAME_ID},
   [${PIXIEBRIX_DATA_ATTR}],
-  [${PIXIEBRIX_READY_ATTRIBUTE}],
+  [${CONTENT_SCRIPT_READY_ATTRIBUTE}],
   [${EXTENSION_POINT_DATA_ATTR}]
 `;
 
