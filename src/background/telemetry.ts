@@ -151,10 +151,12 @@ export async function recordEvent({
       },
     };
 
-    const persistedEvents =
-      (await readStorage(TELEMETRY_EVENT_BUFFER_KEY)) ?? [];
+    const persistedEvents = await readStorage<UserEvent[]>(
+      TELEMETRY_EVENT_BUFFER_KEY,
+      []
+    );
     await setStorage(TELEMETRY_EVENT_BUFFER_KEY, [
-      ...(persistedEvents as UserEvent[]),
+      ...persistedEvents,
       telemetryEvent,
     ]);
     void debouncedFlush();
