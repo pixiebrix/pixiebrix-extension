@@ -49,7 +49,13 @@ function getElementEditSchemas(
         schema: { type: "string" },
         label: "Text",
       };
-      return [textEdit, getClassNameEdit(elementName)];
+      const enableMarkdown: SchemaFieldProps = {
+        name: joinName(elementName, "config", "enableMarkdown"),
+        schema: { type: "boolean" },
+        label: "Enable markdown",
+        isRequired: true,
+      };
+      return [textEdit, enableMarkdown, getClassNameEdit(elementName)];
     }
 
     case "image": {

@@ -33,6 +33,7 @@ export function createNewElement(elementType: DocumentElementType) {
 
     case "text":
       element.config.text = "Paragraph text.";
+      element.config.enableMarkdown = true;
       break;
 
     case "image":
