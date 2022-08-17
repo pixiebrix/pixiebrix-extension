@@ -54,7 +54,6 @@ const defaults = {
   DEV_NOTIFY: "true",
   DEV_SLIM: "false",
   DEV_REDUX_LOGGER: "true",
-  DEV_EVENT_TELEMETRY: "false",
   CHROME_EXTENSION_ID: "mpjjildhmpddojocokjkgmlkkkfjnepo",
 
   // PixieBrix URL to enable connection to for credential exchange
@@ -318,6 +317,7 @@ module.exports = (env, options) =>
         ENVIRONMENT: options.mode,
         WEBEXT_MESSENGER_LOGGING: "false",
         ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl ?? "extension://dynamichost/",
+        DEV_EVENT_TELEMETRY: false,
 
         // If not found, "undefined" will cause the build to fail
         SERVICE_URL: undefined,
