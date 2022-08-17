@@ -28,6 +28,7 @@ describe("analyzeStringUrlsField", () => {
     "https://*.pbx.vercel.app/*",
     "https://*/*",
     "*://*/*",
+    "https://foo.com/before/*/after",
   ])("accepts valid URL [%s]", async (url) => {
     const analysis = new ExtensionUrlPatternAnalysis();
     await analysis.analyzeStringUrlsField([url], "testField");
