@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Fragment } from "react";
+import React from "react";
 import BlockElement from "@/components/documentBuilder/render/BlockElement";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
