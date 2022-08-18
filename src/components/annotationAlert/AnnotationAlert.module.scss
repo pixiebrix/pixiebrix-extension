@@ -31,6 +31,10 @@ $colorInfoText: #170637;
   align-items: center;
   font-weight: 500;
 
+  & + & {
+    margin-top: 5px;
+  }
+
   &.error {
     background-color: $colorErrorBackground;
     border-color: $colorErrorBorder;
@@ -46,4 +50,6 @@ $colorInfoText: #170637;
 
 .icon {
   margin-right: 10px;
+  height: 16px;
+  flex: 0 0 16px;
 }
