@@ -55,7 +55,7 @@ const HeadingStyleWidget: React.FunctionComponent<SchemaFieldProps> = (
               variant="light"
               size="sm"
               onClick={() => {
-                return setValue(headingType.heading);
+                setValue(headingType.heading);
               }}
             >
               {headingType.title}
