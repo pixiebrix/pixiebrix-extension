@@ -101,7 +101,8 @@ export function getExampleBlockConfig(
                   config: {},
                   children: [
                     {
-                      type: "header_1",
+                      type: "header",
+                      heading: "h1",
                       config: {
                         title: "Example document",
                       },

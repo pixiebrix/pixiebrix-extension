@@ -25,10 +25,9 @@ export function createNewElement(elementType: DocumentElementType) {
   };
 
   switch (elementType) {
-    case "header_1":
-    case "header_2":
-    case "header_3":
+    case "header":
       element.config.title = "Header";
+      element.config.heading = "h1";
       break;
 
     case "text":

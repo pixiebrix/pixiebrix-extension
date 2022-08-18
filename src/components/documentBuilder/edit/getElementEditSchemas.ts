@@ -32,6 +32,7 @@ function getElementEditSchemas(
   elementName: string
 ): SchemaFieldProps[] {
   switch (elementType) {
+    // Provide backwards compatibility for old elements
     case "header_1":
     case "header_2":
     case "header_3": {
@@ -41,6 +42,21 @@ function getElementEditSchemas(
         label: "Title",
       };
       return [titleEdit, getClassNameEdit(elementName)];
+    }
+
+    case "header": {
+      const titleEdit: SchemaFieldProps = {
+        name: joinName(elementName, "config", "title"),
+        schema: { type: "string" },
+        label: "Title",
+      };
+      const heading: SchemaFieldProps = {
+        name: joinName(elementName, "config", "heading"),
+        schema: { type: "string", enum: ["h1", "h2", "h3"] },
+        label: "Heading",
+        isRequired: true,
+      };
+      return [titleEdit, heading, getClassNameEdit(elementName)];
     }
 
     case "text": {
