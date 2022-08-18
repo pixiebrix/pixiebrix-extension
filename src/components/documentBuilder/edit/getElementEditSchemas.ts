@@ -52,7 +52,11 @@ function getElementEditSchemas(
       };
       const heading: SchemaFieldProps = {
         name: joinName(elementName, "config", "heading"),
-        schema: { type: "string", enum: ["h1", "h2", "h3"] },
+        schema: {
+          type: "string",
+          enum: ["h1", "h2", "h3"],
+          format: "heading-style",
+        },
         label: "Heading",
         isRequired: true,
       };
