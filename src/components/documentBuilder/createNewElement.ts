@@ -25,10 +25,9 @@ export function createNewElement(elementType: DocumentElementType) {
   };
 
   switch (elementType) {
-    case "header_1":
-    case "header_2":
-    case "header_3":
+    case "header":
       element.config.title = "Header";
+      element.config.heading = "h1";
       break;
 
     case "text":
@@ -84,7 +83,6 @@ export function createNewElement(elementType: DocumentElementType) {
 
     default:
       throw new Error(
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
         `Can't create new element. Type "${elementType} is not supported.`
       );
   }

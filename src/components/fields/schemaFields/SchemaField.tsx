@@ -25,6 +25,7 @@ import AppServiceField, {
   isAppServiceField,
 } from "@/components/fields/schemaFields/AppServiceField";
 import CssClassField, { isCssClassField } from "./CssClassField";
+import HeadingStyleField, { isHeadingStyleField } from "./HeadingStyleField";
 
 const SchemaField: SchemaFieldComponent = (props) => {
   const { schema } = props;
@@ -39,6 +40,10 @@ const SchemaField: SchemaFieldComponent = (props) => {
 
   if (isCssClassField(schema)) {
     return <CssClassField {...props} />;
+  }
+
+  if (isHeadingStyleField(schema)) {
+    return <HeadingStyleField {...props} />;
   }
 
   return <BasicSchemaField {...props} />;
