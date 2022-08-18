@@ -184,9 +184,9 @@ const FieldTemplate: React.FC<FieldProps> = ({
     <BootstrapForm.Group as={Row} className={cx(styles.formGroup, className)}>
       {isInvalid && (
         <Col xs="12" className="mb-2">
-          {castArray(error).map((errorMessage) => (
+          {castArray(error).map((errorMessage, index) => (
             <AnnotationAlert
-              key={errorMessage}
+              key={`${errorMessage}-${index}`}
               message={errorMessage}
               type={AnnotationType.Error}
             />

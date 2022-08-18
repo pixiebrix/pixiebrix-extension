@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AnnotationType } from "@/analysis/analysisTypes";
+import AnnotationAlert from "@/components/annotationAlert/AnnotationAlert";
 import {
   selectActiveNodeInfo,
   selectAnnotationsForPath,
@@ -23,12 +23,6 @@ import {
 import React from "react";
 import { Col, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
-
-const messageCssClasses = new Map<AnnotationType, string>([
-  [AnnotationType.Error, "text-danger"],
-  [AnnotationType.Warning, "text-warning"],
-  [AnnotationType.Info, "text-info"],
-]);
 
 const AnalysisResult: React.FunctionComponent = () => {
   const { path } = useSelector(selectActiveNodeInfo);
@@ -38,15 +32,15 @@ const AnalysisResult: React.FunctionComponent = () => {
   }
 
   return (
-    <Row>
+    <Row className="mb-3">
       <Col>
-        <ul>
-          {annotations.map(({ message, type }, index) => (
-            <li key={index} className={messageCssClasses.get(type)}>
-              {message}
-            </li>
-          ))}
-        </ul>
+        {annotations.map(({ message, type }, index) => (
+          <AnnotationAlert
+            key={`${message}-${index}`}
+            message={message}
+            type={type}
+          />
+        ))}
       </Col>
     </Row>
   );
