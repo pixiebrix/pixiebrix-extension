@@ -19,6 +19,7 @@ import { AnalysisVisitor } from "./baseAnalysisVisitors";
 import { AnnotationType } from "@/analysis/analysisTypes";
 import { BlockConfig, BlockPosition } from "@/blocks/types";
 import { VisitBlockExtra } from "@/blocks/PipelineVisitor";
+import { FORM_MODAL_ID } from "@/pageEditor/fields/FormModalOptions";
 
 class FormBrickAnalysis extends AnalysisVisitor {
   get id() {
@@ -40,7 +41,7 @@ class FormBrickAnalysis extends AnalysisVisitor {
 
     if (
       extra.pipelineFlavor === "noEffect" &&
-      blockConfig.id === "@pixiebrix/form-modal"
+      blockConfig.id === FORM_MODAL_ID
     ) {
       this.annotations.push({
         position,
