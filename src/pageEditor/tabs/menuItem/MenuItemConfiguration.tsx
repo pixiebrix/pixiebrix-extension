@@ -93,7 +93,7 @@ const MenuItemConfiguration: React.FC<{
           {...makeLockableFieldProps("Template", isLocked)}
         />
 
-        {typeof onSuccess === "boolean" && (
+        {(typeof onSuccess === "boolean" || onSuccess == null) && (
           // Punt on object-based configuration for now. Enterprise customers are just asking to turn off the message.
           // If they want a custom message they can add an alert brick.
           <ConnectedFieldTemplate
@@ -101,7 +101,7 @@ const MenuItemConfiguration: React.FC<{
             label="Show Success Message"
             as={SwitchButtonWidget}
             description="Show the default success message when run"
-            defaultValue={true}
+            blankValue={true}
           />
         )}
       </FieldSection>

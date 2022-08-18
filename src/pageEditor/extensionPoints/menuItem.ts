@@ -116,7 +116,7 @@ function selectExtension(
       ? extension.blockPipeline
       : omitEditorMetadata(extension.blockPipeline),
     dynamicCaption: extension.dynamicCaption,
-    onSuccess: extension.onSuccess ?? true,
+    onSuccess: extension.onSuccess,
   };
   return removeEmptyValues({
     ...baseSelectExtension(state),
@@ -188,12 +188,7 @@ async function fromExtension(
   return {
     ...base,
 
-    extension: {
-      ...extension,
-      // Explicitly set the default value. (Alternatively could set the defaultValue in MenuItemConfiguration for the
-      // ConnectedFieldTemplate, but that wasn't working for some reason
-      onSuccess: extension.onSuccess ?? true,
-    },
+    extension,
 
     // `containerInfo` only populated on initial creation session
     containerInfo: null,
