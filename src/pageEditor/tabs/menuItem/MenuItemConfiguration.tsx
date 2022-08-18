@@ -27,6 +27,8 @@ import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
+import { useField } from "formik";
+import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 
 const menuSnippets: Snippet[] = [
   { label: "caption", value: "{{{caption}}}" },
@@ -41,58 +43,74 @@ const positionOptions: Option[] = [
 
 const MenuItemConfiguration: React.FC<{
   isLocked: boolean;
-}> = ({ isLocked = false }) => (
-  <Card>
-    <FieldSection title="Configuration">
-      <ConnectedFieldTemplate
-        name="extension.caption"
-        label="Caption"
-        description="Button caption"
-      />
+}> = ({ isLocked = false }) => {
+  const [{ value: onSuccess }] = useField("extension.onSuccess");
 
-      <ConnectedFieldTemplate
-        name="extensionPoint.definition.containerSelector"
-        as={LocationWidget}
-        description="Location on the page"
-        {...makeLockableFieldProps("Location", isLocked)}
-      />
+  return (
+    <Card>
+      <FieldSection title="Configuration">
+        <ConnectedFieldTemplate
+          name="extension.caption"
+          label="Caption"
+          description="Button caption"
+        />
 
-      <UrlMatchPatternField
-        name="extensionPoint.definition.isAvailable.matchPatterns"
-        {...makeLockableFieldProps("Sites", isLocked)}
-      />
-    </FieldSection>
+        <ConnectedFieldTemplate
+          name="extensionPoint.definition.containerSelector"
+          as={LocationWidget}
+          description="Location on the page"
+          {...makeLockableFieldProps("Location", isLocked)}
+        />
 
-    <FieldSection title="Advanced: Item Options">
-      <ConnectedFieldTemplate
-        name="extension.icon"
-        label="Icon"
-        as={IconWidget}
-        description="Icon to place in the icon placeholder of the template"
-      />
+        <UrlMatchPatternField
+          name="extensionPoint.definition.isAvailable.matchPatterns"
+          {...makeLockableFieldProps("Sites", isLocked)}
+        />
+      </FieldSection>
 
-      <ConnectedFieldTemplate
-        name="extensionPoint.definition.position"
-        description="Position relative to other menu items/buttons"
-        as={SelectWidget}
-        blankValue={null}
-        options={positionOptions}
-        {...makeLockableFieldProps("Order/Position", isLocked)}
-      />
+      <FieldSection title="Advanced: Item Options">
+        <ConnectedFieldTemplate
+          name="extension.icon"
+          label="Icon"
+          as={IconWidget}
+          description="Icon to place in the icon placeholder of the template"
+        />
 
-      <ConnectedFieldTemplate
-        name="extensionPoint.definition.template"
-        as={TemplateWidget}
-        description="A template for the item, with a placeholder for the caption and/or icon"
-        snippets={menuSnippets}
-        {...makeLockableFieldProps("Template", isLocked)}
-      />
-    </FieldSection>
+        <ConnectedFieldTemplate
+          name="extensionPoint.definition.position"
+          description="Position relative to other menu items/buttons"
+          as={SelectWidget}
+          blankValue={null}
+          options={positionOptions}
+          {...makeLockableFieldProps("Order/Position", isLocked)}
+        />
 
-    <MatchRulesSection isLocked={isLocked} />
+        <ConnectedFieldTemplate
+          name="extensionPoint.definition.template"
+          as={TemplateWidget}
+          description="A template for the item, with a placeholder for the caption and/or icon"
+          snippets={menuSnippets}
+          {...makeLockableFieldProps("Template", isLocked)}
+        />
 
-    <ExtraPermissionsSection />
-  </Card>
-);
+        {typeof onSuccess === "boolean" && (
+          // Punt on object-based configuration for now. Enterprise customers are just asking to turn off the message.
+          // If they want a custom message they can add an alert brick.
+          <ConnectedFieldTemplate
+            name="extension.onSuccess"
+            label="Show Success Message"
+            as={SwitchButtonWidget}
+            description="Show the default success message when run"
+            defaultValue={true}
+          />
+        )}
+      </FieldSection>
+
+      <MatchRulesSection isLocked={isLocked} />
+
+      <ExtraPermissionsSection />
+    </Card>
+  );
+};
 
 export default MenuItemConfiguration;

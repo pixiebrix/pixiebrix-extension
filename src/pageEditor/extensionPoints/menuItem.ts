@@ -79,6 +79,7 @@ function fromNativeElement(
       caption: button.item.caption,
       blockPipeline: [],
       dynamicCaption: false,
+      onSuccess: true,
     },
   };
 }
@@ -115,6 +116,7 @@ function selectExtension(
       ? extension.blockPipeline
       : omitEditorMetadata(extension.blockPipeline),
     dynamicCaption: extension.dynamicCaption,
+    onSuccess: extension.onSuccess ?? true,
   };
   return removeEmptyValues({
     ...baseSelectExtension(state),
@@ -146,6 +148,7 @@ async function fromExtensionPoint(
       caption:
         extensionPoint.definition.defaultOptions?.caption ?? "Custom Action",
       blockPipeline: [],
+      onSuccess: true,
     },
 
     // There's no containerInfo for the page because the user did not select it during the session
@@ -185,7 +188,12 @@ async function fromExtension(
   return {
     ...base,
 
-    extension,
+    extension: {
+      ...extension,
+      // Explicitly set the default value. (Alternatively could set the defaultValue in MenuItemConfiguration for the
+      // ConnectedFieldTemplate, but that wasn't working for some reason
+      onSuccess: extension.onSuccess ?? true,
+    },
 
     // `containerInfo` only populated on initial creation session
     containerInfo: null,
