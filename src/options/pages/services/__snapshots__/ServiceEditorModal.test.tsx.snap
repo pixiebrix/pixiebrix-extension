@@ -61,7 +61,9 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
                 <div
                   class="message"
                 >
-                  label is a required field
+                  <span>
+                    label is a required field
+                  </span>
                 </div>
               </div>
             </div>
@@ -124,7 +126,9 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
                 <div
                   class="message"
                 >
-                  config.apiToken is a required field
+                  <span>
+                    config.apiToken is a required field
+                  </span>
                 </div>
               </div>
             </div>
