@@ -36,8 +36,10 @@ import { initPartnerIntegrations } from "@/contentScript/partnerIntegrations";
 import {
   isContextInvalidatedError,
   notifyContextInvalidated,
+  onContextInvalidated,
 } from "@/errors/contextInvalidated";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
+import { UUID } from "@/core";
 
 function ignoreContextInvalidatedErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
@@ -51,7 +53,7 @@ function ignoreContextInvalidatedErrors(
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 uncaughtErrorHandlers.unshift(ignoreContextInvalidatedErrors);
 
-export async function init(): Promise<void> {
+export async function init(uuid: UUID): Promise<void> {
   registerMessenger();
   registerExternalMessenger();
   registerBuiltinBlocks();
@@ -72,4 +74,11 @@ export async function init(): Promise<void> {
 
   // Let the partner page know
   initPartnerIntegrations();
+
+  // Put here instead of in the sync contentScript because contextInvalidated has a transitive dependency on the
+  // messenger (which causes a race on messenger initialization)
+  // eslint-disable-next-line promise/prefer-await-to-then -- It's an unrelated event listener
+  void onContextInvalidated().then(() => {
+    console.debug("contentScript: invalidated", uuid);
+  });
 }
