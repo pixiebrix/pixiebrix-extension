@@ -17,23 +17,18 @@
 
 import { RunStatus } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { TraceRecord } from "@/telemetry/trace";
-import { BlockError, ErrorLevel } from "@/pageEditor/uiState/uiStateTypes";
 import { Annotation, AnnotationType } from "@/analysis/analysisTypes";
 
 type DecideBlockStatusArgs = {
   blockAnnotations: Annotation[];
-  blockError: BlockError;
   traceRecord: TraceRecord;
 };
 
 export function decideBlockStatus({
   blockAnnotations,
-  blockError,
   traceRecord,
 }: DecideBlockStatusArgs): RunStatus {
   if (
-    blockError?.errors?.some((error) => error.level === ErrorLevel.Critical) ||
-    blockError?.fieldErrors ||
     blockAnnotations.some(
       (annotation) => annotation.type === AnnotationType.Error
     )
@@ -42,7 +37,6 @@ export function decideBlockStatus({
   }
 
   if (
-    blockError?.errors?.some((error) => error.level === ErrorLevel.Warning) ||
     blockAnnotations.some(
       (annotation) => annotation.type === AnnotationType.Warning
     )
