@@ -348,9 +348,13 @@ exports[`can preview default list 1`] = `
       <div
         class="shiftRightWrapper root"
       >
-        <p>
-          Paragraph text.
-        </p>
+        <div>
+          <p>
+            Paragraph text.
+          </p>
+          
+
+        </div>
       </div>
     </div>
     <button
@@ -470,9 +474,13 @@ exports[`can preview default text 1`] = `
     <div
       class="shiftRightWrapper root"
     >
-      <p>
-        Paragraph text.
-      </p>
+      <div>
+        <p>
+          Paragraph text.
+        </p>
+        
+
+      </div>
     </div>
     <button
       type="submit"

@@ -40,7 +40,10 @@ test.each(["header_1", "header_2", "header_3"])(
 
 test("sets default config for text", () => {
   const actual = createNewElement("text");
-  expect(actual.config).toEqual({ text: "Paragraph text." });
+  expect(actual.config).toEqual({
+    text: "Paragraph text.",
+    enableMarkdown: true,
+  });
 });
 
 test("sets default config and children for container", () => {
