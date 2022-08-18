@@ -17,6 +17,8 @@
 
 import React from "react";
 import ErrorIcon from "@/icons/error.svg?loadAsComponent";
+import WarningIcon from "@/icons/warning.svg?loadAsComponent";
+import InfoIcon from "@/icons/info.svg?loadAsComponent";
 import { AnnotationType } from "@/analysis/analysisTypes";
 import cx from "classnames";
 import styles from "./AnnotationAlert.module.scss";
@@ -36,8 +38,12 @@ const AnnotationAlert: React.FunctionComponent<AnnotationAlertProps> = ({
       Icon = ErrorIcon;
       break;
 
+    case AnnotationType.Warning:
+      Icon = WarningIcon;
+      break;
+
     case AnnotationType.Info:
-      Icon = null;
+      Icon = InfoIcon;
       break;
 
     default:
@@ -47,7 +53,9 @@ const AnnotationAlert: React.FunctionComponent<AnnotationAlertProps> = ({
   return (
     <div className={cx(styles.root, styles[type])}>
       {Icon && <Icon className={styles.icon} />}
-      <div className={styles.message}>{message}</div>
+      <div className={styles.message}>
+        <span>{message}</span>
+      </div>
     </div>
   );
 };

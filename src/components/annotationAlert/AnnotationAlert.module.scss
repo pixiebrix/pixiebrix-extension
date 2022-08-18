@@ -16,20 +16,21 @@
  */
 
 $colorErrorBackground: #ffeeea;
-$colorErrorBorder: #ffeeea;
-$colorErrorText: #6b2414;
+$colorErrorIcon: #6b2414;
 
-$colorInfoBackground: #ecebef;
-$colorInfoBorder: #9e96ab;
-$colorInfoText: #170637;
+$colorWarningBackground: #fff7e6;
+$colorWarningIcon: #6b4800;
+
+$colorInfoBackground: #e8f3fc;
+$colorInfoIcon: #0b3a5f;
 
 .root {
   border-radius: 4px;
-  border: 1px solid;
   padding: 10px 12px;
   display: flex;
-  align-items: center;
   font-weight: 500;
+  line-height: 120%;
+  color: #31214d;
 
   & + & {
     margin-top: 5px;
@@ -37,19 +38,34 @@ $colorInfoText: #170637;
 
   &.error {
     background-color: $colorErrorBackground;
-    border-color: $colorErrorBorder;
-    color: $colorErrorText;
-  }
 
+    .icon {
+      color: $colorErrorIcon;
+    }
+  }
+  &.warning {
+    background-color: $colorWarningBackground;
+
+    .icon {
+      color: $colorWarningIcon;
+    }
+  }
   &.info {
     background-color: $colorInfoBackground;
-    border-color: $colorInfoBorder;
-    color: $colorInfoText;
+
+    .icon {
+      color: $colorInfoIcon;
+    }
   }
 }
 
 .icon {
   margin-right: 10px;
-  height: 16px;
-  flex: 0 0 16px;
+  height: 24px;
+  flex: 0 0 24px;
+}
+
+.message {
+  display: flex;
+  align-items: center;
 }
