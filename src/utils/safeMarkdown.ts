@@ -17,9 +17,9 @@
 
 import { SafeHTML } from "@/core";
 import sanitize from "@/utils/sanitize";
+import { marked } from "marked";
 
-async function safeMarkdown(markdown: string): Promise<SafeHTML> {
-  const { marked } = await import(/* webpackChunkName: "marked" */ "marked");
+function safeMarkdown(markdown: string): SafeHTML {
   return sanitize(marked(markdown));
 }
 

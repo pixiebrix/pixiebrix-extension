@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useAsyncState } from "@/hooks/common";
 import safeMarkdown from "@/utils/safeMarkdown";
-import React from "react";
+import React, { useMemo } from "react";
 
 type MarkdownProps = {
   markdown: string;
@@ -28,7 +27,7 @@ const Markdown: React.FunctionComponent<MarkdownProps> = ({
   markdown,
   as: As = "div",
 }) => {
-  const [content] = useAsyncState(async () => {
+  const content = useMemo(() => {
     if (typeof markdown === "string") {
       return safeMarkdown(markdown);
     }
