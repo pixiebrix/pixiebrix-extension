@@ -49,6 +49,22 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
           <div
             class="formGroup form-group row"
           >
+            <div
+              class="mb-2 col-12"
+            >
+              <div
+                class="root error"
+              >
+                <test-file-stub
+                  classname="icon"
+                />
+                <div
+                  class="message"
+                >
+                  label is a required field
+                </div>
+              </div>
+            </div>
             <label
               class="label form-label col-form-label col-xl-2 col-lg-3"
               for="label"
@@ -69,11 +85,6 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
               >
                 A label to help identify this integration
               </small>
-              <div
-                class="invalidMessage"
-              >
-                label is a required field
-              </div>
             </div>
           </div>
           <div
@@ -101,6 +112,22 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
           <div
             class="formGroup form-group row"
           >
+            <div
+              class="mb-2 col-12"
+            >
+              <div
+                class="root error"
+              >
+                <test-file-stub
+                  classname="icon"
+                />
+                <div
+                  class="message"
+                >
+                  config.apiToken is a required field
+                </div>
+              </div>
+            </div>
             <label
               class="label form-label col-form-label col-xl-2 col-lg-3"
               for="config.apiToken"
@@ -150,11 +177,6 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
               >
                 Your Pipedrive API Key
               </small>
-              <div
-                class="invalidMessage"
-              >
-                config.apiToken is a required field
-              </div>
             </div>
           </div>
           <div
