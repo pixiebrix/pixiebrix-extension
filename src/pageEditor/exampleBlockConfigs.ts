@@ -20,6 +20,7 @@ import { RegistryId } from "@/core";
 import { COMPONENT_READER_ID } from "@/blocks/transformers/component/ComponentReader";
 import { FormTransformer } from "@/blocks/transformers/ephemeralForm/formTransformer";
 import { CustomFormRenderer } from "@/blocks/renderers/customForm";
+import { createNewElement } from "@/components/documentBuilder/createNewElement";
 
 export function getExampleBlockConfig(
   blockId: RegistryId
@@ -86,53 +87,23 @@ export function getExampleBlockConfig(
   }
 
   if (blockId === "@pixiebrix/document") {
+    // Creating container with 2 rows and 1 column in each row
+    const container = createNewElement("container");
+    container.children.push(createNewElement("row"));
+
+    // Adding Header to the first row
+    const header = createNewElement("header");
+    header.config.title = "Example document";
+    container.children[0].children[0].children.push(header);
+
+    // Adding text to the second row
+    const text = createNewElement("text");
+    text.config.text = "Example text element. **Markdown** is supported.";
+    text.config.className = "text-success";
+    container.children[1].children[0].children.push(text);
+
     return {
-      body: [
-        {
-          type: "container",
-          config: {},
-          children: [
-            {
-              type: "row",
-              config: {},
-              children: [
-                {
-                  type: "column",
-                  config: {},
-                  children: [
-                    {
-                      type: "header",
-                      config: {
-                        title: "Example document",
-                        heading: "h1",
-                      },
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              type: "row",
-              config: {},
-              children: [
-                {
-                  type: "column",
-                  config: {},
-                  children: [
-                    {
-                      type: "text",
-                      config: {
-                        text: "Example text element. **Markdown** is supported.",
-                        className: "text-success",
-                      },
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      ],
+      body: [container],
     };
   }
 }
