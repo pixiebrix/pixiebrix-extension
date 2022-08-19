@@ -122,7 +122,7 @@ export function getExampleBlockConfig(
                     {
                       type: "text",
                       config: {
-                        text: "Example text element.",
+                        text: "Example text element. **Markdown** is supported.",
                         className: "text-success",
                       },
                     },

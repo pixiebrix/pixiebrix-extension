@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import safeMarkdown from "@/utils/safeMarkdown";
 import React, { useMemo } from "react";
+import sanitize from "@/utils/sanitize";
+import { marked } from "marked";
 
 type MarkdownProps = {
   markdown: string;
@@ -27,19 +28,13 @@ const Markdown: React.FunctionComponent<MarkdownProps> = ({
   markdown,
   as: As = "div",
 }) => {
-  const content = useMemo(() => {
-    if (typeof markdown === "string") {
-      return safeMarkdown(markdown);
-    }
+  const content = useMemo(
+    () =>
+      typeof markdown === "string" ? sanitize(marked(markdown)) : markdown,
+    [markdown]
+  );
 
-    return markdown;
-  }, [markdown]);
-
-  if (!markdown) {
-    return null;
-  }
-
-  return <As dangerouslySetInnerHTML={{ __html: content }} />;
+  return markdown ? <As dangerouslySetInnerHTML={{ __html: content }} /> : null;
 };
 
 export default Markdown;
