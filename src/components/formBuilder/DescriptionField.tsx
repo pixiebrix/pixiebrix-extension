@@ -18,7 +18,7 @@
 import React from "react";
 import { Field } from "@rjsf/core";
 import cx from "classnames";
-import Markdown from "@/components/Markdown";
+import MarkdownLazy from "@/components/MarkdownLazy";
 
 type FormPreviewDescriptionFieldProps = {
   id: string;
@@ -37,7 +37,7 @@ export const DescriptionField: React.VoidFunctionComponent<
   return (
     <div id={id} className={cx("field-description", classNameProp)}>
       {typeof description === "string" ? (
-        <Markdown markdown={description} />
+        <MarkdownLazy markdown={description} />
       ) : (
         { description }
       )}
