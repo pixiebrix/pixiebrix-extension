@@ -20,21 +20,24 @@ import sanitize from "@/utils/sanitize";
 import { marked } from "marked";
 
 type MarkdownProps = {
-  markdown: string;
+  markdown: string | null;
   as?: React.ElementType;
+  className?: string;
 };
 
 const Markdown: React.FunctionComponent<MarkdownProps> = ({
   markdown,
   as: As = "div",
+  className,
 }) => {
   const content = useMemo(
-    () =>
-      typeof markdown === "string" ? sanitize(marked(markdown)) : markdown,
+    () => (typeof markdown === "string" ? sanitize(marked(markdown)) : null),
     [markdown]
   );
 
-  return markdown ? <As dangerouslySetInnerHTML={{ __html: content }} /> : null;
+  return (
+    <As dangerouslySetInnerHTML={{ __html: content }} className={className} />
+  );
 };
 
 export default Markdown;
