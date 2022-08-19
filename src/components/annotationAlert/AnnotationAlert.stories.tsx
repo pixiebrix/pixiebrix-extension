@@ -15,24 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
+import React from "react";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
+import AnnotationAlert from "./AnnotationAlert";
+import { AnnotationType } from "@/analysis/analysisTypes";
 
-const elementTypeLabels: Record<DocumentElementType, string> = {
-  header: "Header",
-  container: "Container",
-  row: "Row",
-  column: "Column",
-  card: "Card",
-  text: "Text",
-  image: "Image",
-  button: "Button",
-  pipeline: "Brick",
-  list: "List",
+export default {
+  title: "Common/AnnotationAlert",
+  component: AnnotationAlert,
+} as ComponentMeta<typeof AnnotationAlert>;
 
-  // For backwards compatibility
-  header_1: "Header 1",
-  header_2: "Header 2",
-  header_3: "Header 3",
+export const Default: ComponentStory<typeof AnnotationAlert> = (args) => (
+  <AnnotationAlert {...args} />
+);
+Default.args = {
+  message: "This is an error message",
+  type: AnnotationType.Error,
 };
-
-export default elementTypeLabels;

@@ -15,24 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
+import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFieldContext";
+import { Schema } from "@/core";
+import HeadingStyleWidget from "./widgets/HeadingStyleWidget";
 
-const elementTypeLabels: Record<DocumentElementType, string> = {
-  header: "Header",
-  container: "Container",
-  row: "Row",
-  column: "Column",
-  card: "Card",
-  text: "Text",
-  image: "Image",
-  button: "Button",
-  pipeline: "Brick",
-  list: "List",
+export const isHeadingStyleField = (fieldDefinition: Schema) =>
+  fieldDefinition.type === "string" &&
+  fieldDefinition.format === "heading-style";
 
-  // For backwards compatibility
-  header_1: "Header 1",
-  header_2: "Header 2",
-  header_3: "Header 3",
-};
-
-export default elementTypeLabels;
+const HeadingStyleField = defaultFieldFactory(HeadingStyleWidget);
+export default HeadingStyleField;

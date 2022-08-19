@@ -31,12 +31,13 @@ import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import runtimeSlice from "./slices/runtimeSlice";
 import { isAnyOf } from "@reduxjs/toolkit";
 import RequestPermissionAnalysis from "@/analysis/analysisVisitors/requestPermissionAnalysis";
+import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 
 const runtimeActions = runtimeSlice.actions;
 
 const pageEditorAnalysisManager = new ReduxAnalysisManager();
 
-// These actions will be used with every analysis so the annotation path is up to date
+// These actions will be used with every analysis so the annotation path is up-to-date
 // with the node position in the pipeline
 const nodeListMutationActions = [
   editorActions.addNode,
@@ -70,6 +71,16 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new BlockTypeAnalysis(),
+  {
+    // Only needed on editorActions.addNode,
+    // but the block path can change on move or remove
+    // @ts-expect-error: spreading the array as args
+    matcher: isAnyOf(...nodeListMutationActions),
+  }
+);
+
+pageEditorAnalysisManager.registerAnalysisEffect(
+  () => new FormBrickAnalysis(),
   {
     // Only needed on editorActions.addNode,
     // but the block path can change on move or remove

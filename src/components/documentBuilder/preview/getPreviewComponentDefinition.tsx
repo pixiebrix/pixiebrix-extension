@@ -60,6 +60,7 @@ function getPreviewComponentDefinition(
     case "header_1":
     case "header_2":
     case "header_3":
+    case "header":
     case "text": {
       const documentComponent = getComponentDefinition(
         element,

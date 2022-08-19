@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { ElementType } from "react";
 import BlockElement from "@/components/documentBuilder/render/BlockElement";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
@@ -40,6 +40,8 @@ const headerComponents = {
   header_3: "h3",
 } as const;
 
+const headingComponents = ["h1", "h2", "h3"];
+
 const gridComponents = {
   container: Container,
   row: Row,
@@ -52,6 +54,7 @@ const UnknownType: React.FC<{ componentType: string }> = ({
   <div className="text-danger">Unknown component type: {componentType}</div>
 );
 
+// eslint-disable-next-line complexity
 export function getComponentDefinition(
   element: DocumentElement,
   tracePath: DynamicPath
@@ -60,6 +63,7 @@ export function getComponentDefinition(
   const config = get(element, "config", {} as UnknownObject);
 
   switch (componentType) {
+    // Provide backwards compatibility for old elements
     case "header_1":
     case "header_2":
     case "header_3": {
@@ -69,6 +73,18 @@ export function getComponentDefinition(
       return {
         // eslint-disable-next-line security/detect-object-injection -- componentType is header_1, header_2, or header_3
         Component: headerComponents[componentType],
+        props,
+      };
+    }
+
+    case "header": {
+      const { title, heading, ...props } = config;
+      props.children = title;
+
+      return {
+        Component: headingComponents.includes(heading as string)
+          ? (heading as ElementType)
+          : "h1",
         props,
       };
     }

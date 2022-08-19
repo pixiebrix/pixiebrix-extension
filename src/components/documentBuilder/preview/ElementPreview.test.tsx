@@ -139,14 +139,15 @@ test("adds a CSS class to a hovered element", async () => {
   expect(container.querySelector("div")).toHaveClass("hovered");
 });
 
-test.each(DOCUMENT_ELEMENT_TYPES)(
-  "can preview default %s",
-  (elementType: DocumentElementType) => {
-    const element = createNewElement(elementType);
-    const rendered = renderElementPreview(element);
-    expect(rendered.asFragment()).toMatchSnapshot();
-  }
-);
+test.each(
+  DOCUMENT_ELEMENT_TYPES.filter(
+    (x) => !["header_1", "header_2", "header_3"].includes(x)
+  )
+)("can preview default %s", (elementType: DocumentElementType) => {
+  const element = createNewElement(elementType);
+  const rendered = renderElementPreview(element);
+  expect(rendered.asFragment()).toMatchSnapshot();
+});
 
 test("can preview pipeline element with bricks", () => {
   const testBlock = blockConfigFactory();

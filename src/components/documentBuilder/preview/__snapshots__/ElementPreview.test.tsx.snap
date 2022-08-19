@@ -241,7 +241,7 @@ exports[`can preview default container 1`] = `
 </DocumentFragment>
 `;
 
-exports[`can preview default header_1 1`] = `
+exports[`can preview default header 1`] = `
 <DocumentFragment>
   <form
     action="#"
@@ -252,48 +252,6 @@ exports[`can preview default header_1 1`] = `
       <h1>
         Header
       </h1>
-    </div>
-    <button
-      type="submit"
-    >
-      Submit
-    </button>
-  </form>
-</DocumentFragment>
-`;
-
-exports[`can preview default header_2 1`] = `
-<DocumentFragment>
-  <form
-    action="#"
-  >
-    <div
-      class="shiftRightWrapper root"
-    >
-      <h2>
-        Header
-      </h2>
-    </div>
-    <button
-      type="submit"
-    >
-      Submit
-    </button>
-  </form>
-</DocumentFragment>
-`;
-
-exports[`can preview default header_3 1`] = `
-<DocumentFragment>
-  <form
-    action="#"
-  >
-    <div
-      class="shiftRightWrapper root"
-    >
-      <h3>
-        Header
-      </h3>
     </div>
     <button
       type="submit"
@@ -503,7 +461,7 @@ exports[`can preview pipeline element with bricks 1`] = `
         Brick
       </h3>
       <p>
-        testing/block-id_18
+        testing/block-id_16
       </p>
       <p>
         @pixiebrix/markdown
