@@ -32,7 +32,7 @@ export class ComponentReader extends Transformer {
   constructor() {
     super(
       COMPONENT_READER_ID,
-      "Component Reader",
+      "[Experimental] Component Reader",
       "Extract data from a front-end component (e.g., React, Vue, Ember, etc.)"
     );
   }
