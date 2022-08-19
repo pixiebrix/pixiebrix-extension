@@ -308,7 +308,11 @@ exports[`can preview default list 1`] = `
       >
         <div>
           <p>
-            Paragraph text.
+            Paragraph text. 
+            <strong>
+              Markdown
+            </strong>
+             is supported.
           </p>
           
 
@@ -434,7 +438,11 @@ exports[`can preview default text 1`] = `
     >
       <div>
         <p>
-          Paragraph text.
+          Paragraph text. 
+          <strong>
+            Markdown
+          </strong>
+           is supported.
         </p>
         
 

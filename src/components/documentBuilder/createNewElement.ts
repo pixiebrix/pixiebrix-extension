@@ -31,7 +31,7 @@ export function createNewElement(elementType: DocumentElementType) {
       break;
 
     case "text":
-      element.config.text = "Paragraph text.";
+      element.config.text = "Paragraph text. **Markdown** is supported.";
       element.config.enableMarkdown = true;
       break;
 
