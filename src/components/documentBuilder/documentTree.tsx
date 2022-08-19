@@ -32,6 +32,7 @@ import ListElement from "@/components/documentBuilder/render/ListElement";
 import { BusinessError } from "@/errors/businessErrors";
 import { joinPathParts } from "@/utils";
 import cx from "classnames";
+import Markdown from "@/components/Markdown";
 
 const headerComponents = {
   header_1: "h1",
@@ -89,9 +90,15 @@ export function getComponentDefinition(
     }
 
     case "text": {
-      const { text, ...props } = config;
-      props.children = text;
+      const { text, enableMarkdown, ...props } = config;
+      if (enableMarkdown) {
+        return {
+          Component: Markdown,
+          props: { ...props, markdown: text },
+        };
+      }
 
+      props.children = text;
       return { Component: "p", props };
     }
 

@@ -15,12 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SafeHTML } from "@/core";
+import React, { useMemo } from "react";
 import sanitize from "@/utils/sanitize";
+import { marked } from "marked";
 
-async function safeMarkdown(markdown: string): Promise<SafeHTML> {
-  const { marked } = await import(/* webpackChunkName: "marked" */ "marked");
-  return sanitize(marked(markdown));
-}
+type MarkdownProps = {
+  markdown: string;
+  as?: React.ElementType;
+};
 
-export default safeMarkdown;
+const Markdown: React.FunctionComponent<MarkdownProps> = ({
+  markdown,
+  as: As = "div",
+}) => {
+  const content = useMemo(
+    () =>
+      typeof markdown === "string" ? sanitize(marked(markdown)) : markdown,
+    [markdown]
+  );
+
+  return markdown ? <As dangerouslySetInnerHTML={{ __html: content }} /> : null;
+};
+
+export default Markdown;

@@ -35,7 +35,10 @@ test("sets default config for header", () => {
 
 test("sets default config for text", () => {
   const actual = createNewElement("text");
-  expect(actual.config).toEqual({ text: "Paragraph text." });
+  expect(actual.config).toEqual({
+    text: "Paragraph text. **Markdown** is supported.",
+    enableMarkdown: true,
+  });
 });
 
 test("sets default config and children for container", () => {
