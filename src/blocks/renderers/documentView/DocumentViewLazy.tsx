@@ -29,7 +29,7 @@ const DocumentView = React.lazy(
 );
 
 const DocumentViewLazy: React.FC<DocumentViewProps> = (props) => (
-  <Suspense fallback={<div className="text-muted">Loading...</div>}>
+  <Suspense fallback={null}>
     <DocumentView {...props} />
   </Suspense>
 );

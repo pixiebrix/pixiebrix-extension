@@ -26,7 +26,7 @@ const MarkdownLoader = React.lazy(
 );
 
 const MarkdownLazy: React.FC<any> = (props) => (
-  <Suspense fallback={<div className="text-muted">Loading...</div>}>
+  <Suspense fallback={null}>
     <MarkdownLoader {...props} />
   </Suspense>
 );
