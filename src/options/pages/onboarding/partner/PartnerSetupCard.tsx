@@ -28,7 +28,7 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { useAsyncState } from "@/hooks/common";
-import { getInstallURL } from "@/services/baseService";
+import { getBaseURL } from "@/services/baseService";
 
 function useInstallUrl() {
   const { data: me } = useGetMeQuery();
@@ -36,7 +36,7 @@ function useInstallUrl() {
   const controlRoomUrl = me?.organization?.control_room?.url;
 
   const [installURL, isPending] = useAsyncState(async () => {
-    const baseUrl = await getInstallURL();
+    const baseUrl = await getBaseURL();
     const startUrl = new URL(`${baseUrl}start`);
 
     if (controlRoomUrl) {

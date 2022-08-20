@@ -15,23 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Suspense } from "react";
-import { DocumentViewProps } from "./DocumentViewProps";
+import React from "react";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
+import AnnotationAlert from "./AnnotationAlert";
+import { AnnotationType } from "@/analysis/analysisTypes";
 
-// Dynamic import because documentView has a transitive dependency of react-shadow-root which assumed a proper
-// `window` variable is present on module load. This isn't available on header generation
-const DocumentView = React.lazy(
-  async () =>
-    import(
-      /* webpackChunkName: "components-lazy" */
-      "./DocumentView"
-    )
+export default {
+  title: "Common/AnnotationAlert",
+  component: AnnotationAlert,
+} as ComponentMeta<typeof AnnotationAlert>;
+
+export const Default: ComponentStory<typeof AnnotationAlert> = (args) => (
+  <AnnotationAlert {...args} />
 );
-
-const DocumentViewLazy: React.FC<DocumentViewProps> = (props) => (
-  <Suspense fallback={null}>
-    <DocumentView {...props} />
-  </Suspense>
-);
-
-export default DocumentViewLazy;
+Default.args = {
+  message: "This is an error message",
+  type: AnnotationType.Error,
+};

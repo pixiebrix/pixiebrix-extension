@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SafeHTML } from "@/core";
-import sanitize from "@/utils/sanitize";
+import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFieldContext";
+import { Schema } from "@/core";
+import HeadingStyleWidget from "./widgets/HeadingStyleWidget";
 
-async function safeMarkdown(markdown: string): Promise<SafeHTML> {
-  const { marked } = await import(/* webpackChunkName: "marked" */ "marked");
-  return sanitize(marked(markdown));
-}
+export const isHeadingStyleField = (fieldDefinition: Schema) =>
+  fieldDefinition.type === "string" &&
+  fieldDefinition.format === "heading-style";
 
-export default safeMarkdown;
+const HeadingStyleField = defaultFieldFactory(HeadingStyleWidget);
+export default HeadingStyleField;

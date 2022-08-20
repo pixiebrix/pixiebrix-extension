@@ -16,31 +16,29 @@
  */
 
 import { createNewElement } from "./createNewElement";
-import {
-  DocumentElementType,
-  DOCUMENT_ELEMENT_TYPES,
-} from "./documentBuilderTypes";
+import { DOCUMENT_ELEMENT_TYPES } from "./documentBuilderTypes";
 import { BlockPipeline } from "@/blocks/types";
 
-test.each(DOCUMENT_ELEMENT_TYPES)(
-  "sets correct element type for %s",
-  (elementType) => {
-    const actual = createNewElement(elementType);
-    expect(actual.type).toBe(elementType);
-  }
-);
+test.each(
+  DOCUMENT_ELEMENT_TYPES.filter(
+    (x) => !["header_1", "header_2", "header_3"].includes(x)
+  )
+)("sets correct element type for %s", (elementType) => {
+  const actual = createNewElement(elementType);
+  expect(actual.type).toBe(elementType);
+});
 
-test.each(["header_1", "header_2", "header_3"])(
-  "sets default config for %s",
-  (headerType: DocumentElementType) => {
-    const actual = createNewElement(headerType);
-    expect(actual.config).toEqual({ title: "Header" });
-  }
-);
+test("sets default config for header", () => {
+  const actual = createNewElement("header");
+  expect(actual.config).toEqual({ title: "Header", heading: "h1" });
+});
 
 test("sets default config for text", () => {
   const actual = createNewElement("text");
-  expect(actual.config).toEqual({ text: "Paragraph text." });
+  expect(actual.config).toEqual({
+    text: "Paragraph text. **Markdown** is supported.",
+    enableMarkdown: true,
+  });
 });
 
 test("sets default config and children for container", () => {

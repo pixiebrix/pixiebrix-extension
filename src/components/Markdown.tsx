@@ -15,23 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Suspense } from "react";
-import { DocumentViewProps } from "./DocumentViewProps";
+import React, { useMemo } from "react";
+import sanitize from "@/utils/sanitize";
+import { marked } from "marked";
 
-// Dynamic import because documentView has a transitive dependency of react-shadow-root which assumed a proper
-// `window` variable is present on module load. This isn't available on header generation
-const DocumentView = React.lazy(
-  async () =>
-    import(
-      /* webpackChunkName: "components-lazy" */
-      "./DocumentView"
-    )
-);
+type MarkdownProps = {
+  markdown: string | null;
+  as?: React.ElementType;
+  className?: string;
+};
 
-const DocumentViewLazy: React.FC<DocumentViewProps> = (props) => (
-  <Suspense fallback={null}>
-    <DocumentView {...props} />
-  </Suspense>
-);
+const Markdown: React.FunctionComponent<MarkdownProps> = ({
+  markdown,
+  as: As = "div",
+  className,
+}) => {
+  const content = useMemo(
+    () => (typeof markdown === "string" ? sanitize(marked(markdown)) : null),
+    [markdown]
+  );
 
-export default DocumentViewLazy;
+  return (
+    <As dangerouslySetInnerHTML={{ __html: content }} className={className} />
+  );
+};
+
+export default Markdown;
