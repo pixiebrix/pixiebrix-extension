@@ -16,10 +16,11 @@
  */
 
 import reportError from "@/telemetry/reportError";
-import { ensureContentScript, showErrorInOptions } from "@/background/util";
+import { ensureContentScript } from "@/background/util";
 import { Tabs } from "webextension-polyfill";
 import { toggleSidebar } from "@/contentScript/messenger/api";
 import { isScriptableUrl } from "webext-content-scripts";
+import webextAlert from "./webextAlert";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
 export const FORWARD_FRAME_NOTIFICATION = `${MESSAGE_PREFIX}/FORWARD_ACTION_FRAME_NOTIFICATION`;
@@ -30,7 +31,7 @@ const TOP_LEVEL_FRAME_ID = 0;
 async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
   const url = String(tab.url);
   if (!isScriptableUrl(url)) {
-    void showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE_WEBSTORE", tab.index);
+    webextAlert("The extensions gallery cannot be scripted");
     return;
   }
 
