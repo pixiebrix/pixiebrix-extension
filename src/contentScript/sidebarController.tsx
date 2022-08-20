@@ -51,7 +51,6 @@ export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-margin-right";
  */
 let renderSequenceNumber = 0;
 
-export type ShowCallback = (args: RunArgs) => void;
 export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
 
 const panels: PanelEntry[] = [];

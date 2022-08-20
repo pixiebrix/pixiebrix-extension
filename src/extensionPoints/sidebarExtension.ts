@@ -46,7 +46,6 @@ import {
   isSidebarVisible,
   removeExtensionPoint,
   reservePanels,
-  ShowCallback,
   sidebarShowEvents,
   updateHeading,
   upsertPanel,
@@ -94,9 +93,6 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
 
   readonly permissions: Permissions.Permissions = {};
 
-  readonly showCallback: ShowCallback =
-    SidebarExtensionPoint.prototype.run.bind(this);
-
   /**
    * Controller to drop all listeners and timers
    * @private
@@ -143,7 +139,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   public override uninstall(): void {
     this.removeExtensions();
     removeExtensionPoint(this.id);
-    sidebarShowEvents.remove(this.showCallback);
+    sidebarShowEvents.remove(this.run);
     this.cancelListeners();
   }
 
@@ -155,7 +151,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   public HACK_uninstallExceptExtension(extensionId: UUID): void {
     this.removeExtensions();
     removeExtensionPoint(this.id, { preserveExtensionIds: [extensionId] });
-    sidebarShowEvents.remove(this.showCallback);
+    sidebarShowEvents.remove(this.run);
   }
 
   private async runExtension(
@@ -318,7 +314,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
     });
   }
 
-  async run({ reason }: RunArgs): Promise<void> {
+  run = async ({ reason }: RunArgs): Promise<void> => {
     if (!(await this.isAvailable())) {
       // Keep sidebar up-to-date regardless of trigger policy
       removeExtensionPoint(this.id);
@@ -374,12 +370,12 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
 
       this.installedListeners = true;
     }
-  }
+  };
 
   async install(): Promise<boolean> {
     const available = await this.isAvailable();
     if (available) {
-      sidebarShowEvents.add(this.showCallback);
+      sidebarShowEvents.add(this.run);
     } else {
       removeExtensionPoint(this.id);
     }
