@@ -42,12 +42,21 @@ async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
 
   try {
     await ensureContentScript({ tabId: tab.id, frameId: TOP_LEVEL_FRAME_ID });
-    await toggleSidebar({
-      tabId: tab.id,
-    });
   } catch (error) {
-    await showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE", tab.index);
-    reportError(error);
+    // We no longer `showErrorInOptions` because it may appear several seconds later
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/4021
+    reportError(
+      new Error("Content script failed loading when toggling the sidebar", {
+        cause: error,
+      })
+    );
+    return;
+  }
+
+  try {
+    await toggleSidebar({ tabId: tab.id });
+  } catch (error) {
+    reportError(new Error("Sidebar failed opening", { cause: error }));
   }
 }
 

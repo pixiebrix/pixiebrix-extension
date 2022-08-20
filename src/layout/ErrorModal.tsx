@@ -23,9 +23,6 @@ import { useHistory, useLocation } from "react-router";
 
 // Hardcoded list of error messages to avoid using user-provided strings in the options page
 const errorMessages = new Map([
-  // Unknown reason
-  ["ERR_BROWSER_ACTION_TOGGLE", "PixieBrix could not run on the page"],
-
   // Standard message for extensions being blocked by the browser
   [
     "ERR_BROWSER_ACTION_TOGGLE_WEBSTORE",
