@@ -16,5 +16,5 @@ try {
   document.title = message.get("title") ?? document.title;
   window.resizeBy(0, document.body.scrollHeight - window.innerHeight);
 } catch {
-  container.textContent = "There was an error showing this message";
+  window.close();
 }
