@@ -31,18 +31,19 @@ import { allowsTrack } from "@/telemetry/dnt";
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
 
-interface UserEvent {
+export interface UserTelemetryEvent {
   uid: string;
   event: string;
   timestamp: number;
   data: JsonObject;
 }
 
-const eventQueue: UserEvent[] = [];
-let eventStorageLocked: boolean = false;
+const eventQueue: UserTelemetryEvent[] = [];
+let eventStorageLocked = false;
 
 const UUID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
-const TELEMETRY_EVENT_BUFFER_KEY = "TELEMETRY_EVENT_BUFFER" as ManualStorageKey;
+export const TELEMETRY_EVENT_BUFFER_KEY =
+  "TELEMETRY_EVENT_BUFFER" as ManualStorageKey;
 
 let _uid: UUID = null;
 
@@ -67,7 +68,9 @@ export async function uid(): Promise<UUID> {
 }
 
 async function flush(): Promise<void> {
-  const events = await readStorage<UserEvent[]>(TELEMETRY_EVENT_BUFFER_KEY);
+  const events = await readStorage<UserTelemetryEvent[]>(
+    TELEMETRY_EVENT_BUFFER_KEY
+  );
 
   if (events.length === 0 || eventStorageLocked) {
     return;
@@ -76,7 +79,6 @@ async function flush(): Promise<void> {
   eventStorageLocked = true;
   const client = await maybeGetLinkedApiClient();
   if (client) {
-    console.log("reporting events:", events);
     await Promise.all([
       setStorage(TELEMETRY_EVENT_BUFFER_KEY, []),
       client.post("/api/events/", { events }),
@@ -145,14 +147,12 @@ export const initTelemetry = throttle(init, 30 * 60 * 1000, {
 
 async function persistEvents() {
   if (eventQueue.length === 0 || eventStorageLocked) {
-    console.log("No lock, waiting...");
     return;
   }
 
   eventStorageLocked = true;
   const persistedEvents =
-    (await readStorage<UserEvent[]>(TELEMETRY_EVENT_BUFFER_KEY)) ?? [];
-  console.log("persisitng events:", eventQueue);
+    (await readStorage<UserTelemetryEvent[]>(TELEMETRY_EVENT_BUFFER_KEY)) ?? [];
   await setStorage(TELEMETRY_EVENT_BUFFER_KEY, [
     ...persistedEvents,
     ...eventQueue.splice(0, eventQueue.length),
@@ -184,7 +184,6 @@ export async function recordEvent({
       },
     };
 
-    console.log("recording event:", telemetryEvent);
     eventQueue.push(telemetryEvent);
     await persistEvents();
     void debouncedFlush();
