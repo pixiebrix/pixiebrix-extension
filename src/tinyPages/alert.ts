@@ -17,18 +17,13 @@
 
 import "./alert.scss";
 
-// eslint-disable-next-line import/no-unassigned-import -- CSS import
-import "webext-base-css";
-
 const container = document.querySelector("main");
+const button = document.querySelector("button");
 
 try {
-  const button = document.createElement("button");
-  button.textContent = "Ok";
   button.addEventListener("click", () => {
     window.close();
   });
-  container.after(button);
 
   const message = new URLSearchParams(location.search);
   container.textContent = message.get("message");

@@ -1,3 +1,5 @@
+@import "webext-base-css";
+
 body {
   box-sizing: border-box;
   min-height: 100vh;
@@ -9,10 +11,6 @@ body {
   font-size: 14px;
   line-height: 1.5;
   font-family: system, system-ui, sans-serif;
-}
-
-div {
-  flex-grow: 1;
 }
 
 button {
