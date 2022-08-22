@@ -15,18 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { BlockPosition } from "@/blocks/types";
 import { UUID } from "@/core";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-
-/**
- * Defines the position of the block in the extension
- */
-export type AbsolutePosition = {
-  /**
-   * The path to the block relative to the root pipeline
-   */
-  path: string;
-};
 
 export enum AnnotationType {
   Error = "error",
@@ -38,7 +29,7 @@ export type Annotation = {
   /**
    * Position of the annotation within the extension configuration
    */
-  position: AbsolutePosition;
+  position: BlockPosition;
   /**
    * A user-readable message for the annotation
    */

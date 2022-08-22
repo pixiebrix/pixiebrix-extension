@@ -53,8 +53,6 @@ export function defaultFieldFactory(
  * Context defining custom fields and widgets for schema-based fields.
  */
 const SchemaFieldContext = createContext<CustomFieldDefinitions>({
-  customFields: [],
-  customWidgets: [],
   customToggleModes: [],
 });
 

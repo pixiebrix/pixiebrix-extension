@@ -317,6 +317,8 @@ module.exports = (env, options) =>
         ENVIRONMENT: options.mode,
         WEBEXT_MESSENGER_LOGGING: "false",
         ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl ?? "extension://dynamichost/",
+        // Record telemetry events in development?
+        DEV_EVENT_TELEMETRY: false,
 
         // If not found, "undefined" will cause the build to fail
         SERVICE_URL: undefined,
@@ -355,9 +357,11 @@ module.exports = (env, options) =>
         {
           test: /\.s?css$/,
           resourceQuery: { not: [/loadAsUrl/] },
+          use: [MiniCssExtractPlugin.loader, "css-loader"],
+        },
+        {
+          test: /\.scss$/,
           use: [
-            MiniCssExtractPlugin.loader,
-            "css-loader",
             {
               loader: "sass-loader",
               options: {

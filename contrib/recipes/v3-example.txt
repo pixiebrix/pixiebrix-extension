@@ -1,0 +1,41 @@
+apiVersion: v3
+kind: recipe
+metadata:
+  id: '@pixiebrix-dev/173-beta1-old-quickstart'
+  name: 1.7.3-beta.1 Old Quickstart
+  description: Created with the PixieBrix Page Editor
+  version: 1.0.0
+definitions:
+  extensionPoint:
+    kind: extensionPoint
+    definition:
+      type: menuItem
+      reader:
+        - '@pixiebrix/document-metadata'
+      isAvailable:
+        matchPatterns:
+          - https://www.linkedin.com/*
+        urlPatterns: []
+        selectors: []
+      containerSelector: div:has(> button:contains('More'))
+      position: append
+      template: |-
+        <button
+            class="artdeco-dropdown__trigger artdeco-dropdown__trigger--placement-bottom org-overflow-menu__dropdown-trigger artdeco-button artdeco-button--2 artdeco-button--secondary artdeco-button--muted"
+            type="button">{{{ caption }}}</button>
+extensionPoints:
+  - id: extensionPoint
+    label: 1.7.3-beta.1 Old Quickstart
+    services: {}
+    config:
+      caption: 1.7.3-beta.1 Old Quickstart
+      action:
+        - id: '@pixiebrix/jquery-reader'
+          config:
+            selectors:
+              property: '#main h1'
+          outputKey: data
+        - id: youtube/search
+          config:
+            query: !nunjucks '{{@data.property}} RPA'
+      dynamicCaption: false

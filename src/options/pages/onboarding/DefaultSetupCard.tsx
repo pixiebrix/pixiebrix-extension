@@ -23,6 +23,9 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 
+/**
+ * Setup card for non-partner users, includes both individual and enterprise users.
+ */
 const DefaultSetupCard: React.FunctionComponent<{
   installURL: string;
 }> = ({ installURL }) => (

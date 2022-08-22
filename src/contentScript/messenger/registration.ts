@@ -37,6 +37,7 @@ import {
   toggleSidebar,
   removeExtension as removeSidebar,
   getSidebarEntries,
+  reloadSidebar,
 } from "@/contentScript/sidebarController";
 import { insertPanel } from "@/contentScript/nativeEditor/insertPanel";
 import { insertButton } from "@/contentScript/nativeEditor/insertButton";
@@ -89,6 +90,7 @@ declare global {
     TOGGLE_SIDEBAR: typeof toggleSidebar;
     SHOW_SIDEBAR: typeof showSidebar;
     HIDE_SIDEBAR: typeof hideSidebar;
+    RELOAD_SIDEBAR: typeof reloadSidebar;
     REMOVE_SIDEBAR: typeof removeSidebar;
     GET_SIDEBAR_ENTRIES: typeof getSidebarEntries;
 
@@ -146,6 +148,7 @@ export default function registerMessenger(): void {
     TOGGLE_SIDEBAR: toggleSidebar,
     SHOW_SIDEBAR: showSidebar,
     HIDE_SIDEBAR: hideSidebar,
+    RELOAD_SIDEBAR: reloadSidebar,
     REMOVE_SIDEBAR: removeSidebar,
     GET_SIDEBAR_ENTRIES: getSidebarEntries,
 

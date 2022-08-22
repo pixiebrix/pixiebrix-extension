@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import AnalysisVisitor from "@/analysis/AnalysisVisitor";
-import { AbsolutePosition, AnnotationType } from "@/analysis/analysisTypes";
+import { AnalysisVisitor } from "./baseAnalysisVisitors";
+import { AnnotationType } from "@/analysis/analysisTypes";
 import { isTraceError, TraceRecord } from "@/telemetry/trace";
-import { BlockConfig } from "@/blocks/types";
+import { BlockConfig, BlockPosition } from "@/blocks/types";
 import { UUID } from "@/core";
 import { groupBy } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isInputValidationError } from "@/blocks/errors";
-import { nestedPosition, VisitBlockExtra } from "@/analysis/PipelineVisitor";
+import { nestedPosition, VisitBlockExtra } from "@/blocks/PipelineVisitor";
 
 const requiredFieldRegex =
   /^Instance does not have required property "(?<property>.+)"\.$/;
@@ -50,12 +50,12 @@ class TraceAnalysis extends AnalysisVisitor {
     }
   }
 
-  override async visitBlock(
-    position: AbsolutePosition,
+  override visitBlock(
+    position: BlockPosition,
     blockConfig: BlockConfig,
-    options: VisitBlockExtra
-  ): Promise<void> {
-    await super.visitBlock(position, blockConfig, options);
+    extra: VisitBlockExtra
+  ) {
+    super.visitBlock(position, blockConfig, extra);
 
     const records = this.traceMap.get(blockConfig.instanceId);
     // The callback isTraceError is used directly without a proxy here to

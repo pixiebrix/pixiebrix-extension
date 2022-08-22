@@ -5,238 +5,7 @@ exports[`SidebarApp renders 1`] = `
   <div
     class="full-height"
   >
-    <div
-      class="d-flex p-2 justify-content-between align-content-center"
-    >
-      <button
-        class="button btn btn-link btn-sm"
-        type="button"
-      >
-        <svg
-          aria-hidden="true"
-          class="svg-inline--fa fa-angle-double-right fa-w-14 fa-lg"
-          data-icon="angle-double-right"
-          data-prefix="fas"
-          focusable="false"
-          role="img"
-          viewBox="0 0 448 512"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34zm192-34l-136-136c-9.4-9.4-24.6-9.4-33.9 0l-22.6 22.6c-9.4 9.4-9.4 24.6 0 33.9l96.4 96.4-96.4 96.4c-9.4 9.4-9.4 24.6 0 33.9l22.6 22.6c9.4 9.4 24.6 9.4 33.9 0l136-136c9.4-9.2 9.4-24.4 0-33.8z"
-            fill="currentColor"
-          />
-        </svg>
-      </button>
-      <div
-        class="align-self-center"
-      >
-        <img
-          alt="PixieBrix logo"
-          class="logo"
-          src="test-file-stub"
-        />
-      </div>
-      <a
-        class="button btn btn-link btn-sm"
-        href="/options.html"
-        target="_blank"
-      >
-        <span>
-          Options 
-          <svg
-            aria-hidden="true"
-            class="svg-inline--fa fa-cog fa-w-16 "
-            data-icon="cog"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            viewBox="0 0 512 512"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M487.4 315.7l-42.6-24.6c4.3-23.2 4.3-47 0-70.2l42.6-24.6c4.9-2.8 7.1-8.6 5.5-14-11.1-35.6-30-67.8-54.7-94.6-3.8-4.1-10-5.1-14.8-2.3L380.8 110c-17.9-15.4-38.5-27.3-60.8-35.1V25.8c0-5.6-3.9-10.5-9.4-11.7-36.7-8.2-74.3-7.8-109.2 0-5.5 1.2-9.4 6.1-9.4 11.7V75c-22.2 7.9-42.8 19.8-60.8 35.1L88.7 85.5c-4.9-2.8-11-1.9-14.8 2.3-24.7 26.7-43.6 58.9-54.7 94.6-1.7 5.4.6 11.2 5.5 14L67.3 221c-4.3 23.2-4.3 47 0 70.2l-42.6 24.6c-4.9 2.8-7.1 8.6-5.5 14 11.1 35.6 30 67.8 54.7 94.6 3.8 4.1 10 5.1 14.8 2.3l42.6-24.6c17.9 15.4 38.5 27.3 60.8 35.1v49.2c0 5.6 3.9 10.5 9.4 11.7 36.7 8.2 74.3 7.8 109.2 0 5.5-1.2 9.4-6.1 9.4-11.7v-49.2c22.2-7.9 42.8-19.8 60.8-35.1l42.6 24.6c4.9 2.8 11 1.9 14.8-2.3 24.7-26.7 43.6-58.9 54.7-94.6 1.5-5.5-.7-11.3-5.6-14.1zM256 336c-44.1 0-80-35.9-80-80s35.9-80 80-80 80 35.9 80 80-35.9 80-80 80z"
-              fill="currentColor"
-            />
-          </svg>
-        </span>
-      </a>
-    </div>
-    <div
-      class="full-height"
-    >
-      <div>
-        <div
-          class="container"
-        >
-          <div
-            class="mt-4 row"
-          >
-            <div
-              class="col"
-            >
-              <h4
-                class="display-6"
-              >
-                Activate an Official Blueprint
-              </h4>
-              <p>
-                <span
-                  class="text-primary"
-                >
-                  The easiest way to start using PixieBrix!
-                </span>
-                 Activate a pre-made blueprint from the Public Marketplace.
-              </p>
-              <a
-                class="btn btn-info"
-                href="https://www.pixiebrix.com/marketplace/"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                Open Marketplace 
-                <svg
-                  aria-hidden="true"
-                  class="svg-inline--fa fa-external-link-alt fa-w-16 "
-                  data-icon="external-link-alt"
-                  data-prefix="fas"
-                  focusable="false"
-                  role="img"
-                  viewBox="0 0 512 512"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
-                    fill="currentColor"
-                  />
-                </svg>
-              </a>
-            </div>
-          </div>
-          <div
-            class="mt-4 row"
-          >
-            <div
-              class="col"
-            >
-              <h4
-                class="display-6"
-              >
-                Create your Own
-              </h4>
-              <p>
-                Follow the Quick Start Guide to start creating your own bricks in minutes.
-              </p>
-              <a
-                class="btn btn-info"
-                href="https://docs.pixiebrix.com/quick-start-guide"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                Open Quick Start Guide 
-                <svg
-                  aria-hidden="true"
-                  class="svg-inline--fa fa-external-link-alt fa-w-16 "
-                  data-icon="external-link-alt"
-                  data-prefix="fas"
-                  focusable="false"
-                  role="img"
-                  viewBox="0 0 512 512"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
-                    fill="currentColor"
-                  />
-                </svg>
-              </a>
-            </div>
-          </div>
-          <div
-            class="row"
-          >
-            <div
-              class="text-center col"
-            >
-              <img
-                alt="Marketplace"
-                src="test-file-stub"
-                width="300"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</DocumentFragment>
-`;
-
-exports[`SidebarApp renders not connected 1`] = `
-<DocumentFragment>
-  <div
-    class="full-height"
-  >
-    <div
-      class="d-flex p-2 justify-content-between align-content-center"
-    >
-      <button
-        class="button btn btn-link btn-sm"
-        type="button"
-      >
-        <svg
-          aria-hidden="true"
-          class="svg-inline--fa fa-angle-double-right fa-w-14 fa-lg"
-          data-icon="angle-double-right"
-          data-prefix="fas"
-          focusable="false"
-          role="img"
-          viewBox="0 0 448 512"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34zm192-34l-136-136c-9.4-9.4-24.6-9.4-33.9 0l-22.6 22.6c-9.4 9.4-9.4 24.6 0 33.9l96.4 96.4-96.4 96.4c-9.4 9.4-9.4 24.6 0 33.9l22.6 22.6c9.4 9.4 24.6 9.4 33.9 0l136-136c9.4-9.2 9.4-24.4 0-33.8z"
-            fill="currentColor"
-          />
-        </svg>
-      </button>
-      <div
-        class="align-self-center"
-      >
-        <img
-          alt="PixieBrix logo"
-          class="logo"
-          src="test-file-stub"
-        />
-      </div>
-      <a
-        class="button btn btn-link btn-sm"
-        href="/options.html"
-        target="_blank"
-      >
-        <span>
-          Options 
-          <svg
-            aria-hidden="true"
-            class="svg-inline--fa fa-cog fa-w-16 "
-            data-icon="cog"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            viewBox="0 0 512 512"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M487.4 315.7l-42.6-24.6c4.3-23.2 4.3-47 0-70.2l42.6-24.6c4.9-2.8 7.1-8.6 5.5-14-11.1-35.6-30-67.8-54.7-94.6-3.8-4.1-10-5.1-14.8-2.3L380.8 110c-17.9-15.4-38.5-27.3-60.8-35.1V25.8c0-5.6-3.9-10.5-9.4-11.7-36.7-8.2-74.3-7.8-109.2 0-5.5 1.2-9.4 6.1-9.4 11.7V75c-22.2 7.9-42.8 19.8-60.8 35.1L88.7 85.5c-4.9-2.8-11-1.9-14.8 2.3-24.7 26.7-43.6 58.9-54.7 94.6-1.7 5.4.6 11.2 5.5 14L67.3 221c-4.3 23.2-4.3 47 0 70.2l-42.6 24.6c-4.9 2.8-7.1 8.6-5.5 14 11.1 35.6 30 67.8 54.7 94.6 3.8 4.1 10 5.1 14.8 2.3l42.6-24.6c17.9 15.4 38.5 27.3 60.8 35.1v49.2c0 5.6 3.9 10.5 9.4 11.7 36.7 8.2 74.3 7.8 109.2 0 5.5-1.2 9.4-6.1 9.4-11.7v-49.2c22.2-7.9 42.8-19.8 60.8-35.1l42.6 24.6c4.9 2.8 11 1.9 14.8-2.3 24.7-26.7 43.6-58.9 54.7-94.6 1.5-5.5-.7-11.3-5.6-14.1zM256 336c-44.1 0-80-35.9-80-80s35.9-80 80-80 80 35.9 80 80-35.9 80-80 80z"
-              fill="currentColor"
-            />
-          </svg>
-        </span>
-      </a>
-    </div>
-    <div
-      class="full-height"
-    >
+    <div>
       <div
         class="container"
       >
@@ -244,25 +13,32 @@ exports[`SidebarApp renders not connected 1`] = `
           class="mt-4 row"
         >
           <div
-            class="text-center col"
+            class="col"
           >
             <h4
               class="display-6"
             >
-              Connect PixieBrix Account
+              Activate an Official Blueprint
             </h4>
             <p>
-              Register/log-in to PixieBrix to access your personal and team bricks
+              <span
+                class="text-primary"
+              >
+                The easiest way to start using PixieBrix!
+              </span>
+               Activate a pre-made blueprint from the Public Marketplace.
             </p>
             <a
-              class="mt-4 btn btn-primary"
-              href="https://app.pixiebrix.com"
+              class="btn btn-info"
+              href="https://www.pixiebrix.com/marketplace/"
+              rel="noopener noreferrer"
               target="_blank"
             >
+              Open Marketplace 
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-sign-in-alt fa-w-16 "
-                data-icon="sign-in-alt"
+                class="svg-inline--fa fa-external-link-alt fa-w-16 "
+                data-icon="external-link-alt"
                 data-prefix="fas"
                 focusable="false"
                 role="img"
@@ -270,11 +46,49 @@ exports[`SidebarApp renders not connected 1`] = `
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  d="M416 448h-84c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h84c17.7 0 32-14.3 32-32V160c0-17.7-14.3-32-32-32h-84c-6.6 0-12-5.4-12-12V76c0-6.6 5.4-12 12-12h84c53 0 96 43 96 96v192c0 53-43 96-96 96zm-47-201L201 79c-15-15-41-4.5-41 17v96H24c-13.3 0-24 10.7-24 24v96c0 13.3 10.7 24 24 24h136v96c0 21.5 26 32 41 17l168-168c9.3-9.4 9.3-24.6 0-34z"
+                  d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
                   fill="currentColor"
                 />
               </svg>
-               Connect Account
+            </a>
+          </div>
+        </div>
+        <div
+          class="mt-4 row"
+        >
+          <div
+            class="col"
+          >
+            <h4
+              class="display-6"
+            >
+              Create your Own
+            </h4>
+            <p>
+              Follow the Quick Start Guide to start creating your own bricks in minutes.
+            </p>
+            <a
+              class="btn btn-info"
+              href="https://docs.pixiebrix.com/quick-start-guide"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Open Quick Start Guide 
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-external-link-alt fa-w-16 "
+                data-icon="external-link-alt"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 512 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
+                  fill="currentColor"
+                />
+              </svg>
             </a>
           </div>
         </div>
@@ -290,6 +104,70 @@ exports[`SidebarApp renders not connected 1`] = `
               width="300"
             />
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`SidebarApp renders not connected 1`] = `
+<DocumentFragment>
+  <div
+    class="full-height"
+  >
+    <div
+      class="container"
+    >
+      <div
+        class="mt-4 row"
+      >
+        <div
+          class="text-center col"
+        >
+          <h4
+            class="display-6"
+          >
+            Connect PixieBrix Account
+          </h4>
+          <p>
+            Register/log-in to PixieBrix to access your personal and team bricks
+          </p>
+          <a
+            class="mt-4 btn btn-primary"
+            href="https://app.pixiebrix.com"
+            target="_blank"
+          >
+            <svg
+              aria-hidden="true"
+              class="svg-inline--fa fa-sign-in-alt fa-w-16 "
+              data-icon="sign-in-alt"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 512 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M416 448h-84c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h84c17.7 0 32-14.3 32-32V160c0-17.7-14.3-32-32-32h-84c-6.6 0-12-5.4-12-12V76c0-6.6 5.4-12 12-12h84c53 0 96 43 96 96v192c0 53-43 96-96 96zm-47-201L201 79c-15-15-41-4.5-41 17v96H24c-13.3 0-24 10.7-24 24v96c0 13.3 10.7 24 24 24h136v96c0 21.5 26 32 41 17l168-168c9.3-9.4 9.3-24.6 0-34z"
+                fill="currentColor"
+              />
+            </svg>
+             Connect Account
+          </a>
+        </div>
+      </div>
+      <div
+        class="row"
+      >
+        <div
+          class="text-center col"
+        >
+          <img
+            alt="Marketplace"
+            src="test-file-stub"
+            width="300"
+          />
         </div>
       </div>
     </div>

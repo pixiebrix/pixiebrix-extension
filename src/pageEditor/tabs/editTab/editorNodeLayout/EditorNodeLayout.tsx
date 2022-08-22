@@ -37,7 +37,6 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import {
   selectActiveElement,
   selectActiveNodeId,
-  selectErrorMap,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
@@ -114,8 +113,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
   const activeElement = useSelector(selectActiveElement);
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectExtensionTrace);
-  const pipelineMap = useSelector(selectPipelineMap);
-  const errors = useSelector(selectErrorMap);
+  const maybePipelineMap = useSelector(selectPipelineMap);
   const annotations = useSelector(
     selectExtensionAnnotations(activeElement.uuid)
   );
@@ -347,18 +345,16 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
       };
 
       if (block) {
+        // Handle race condition on pipelineMap updates
         // eslint-disable-next-line security/detect-object-injection -- relying on nodeId being a UUID
-        const blockError = errors[nodeId];
-        const blockAnnotations = getBlockAnnotations(
-          // eslint-disable-next-line security/detect-object-injection -- relying on nodeId being a UUID
-          pipelineMap[nodeId].path,
-          annotations
-        );
+        const blockPath = maybePipelineMap?.[nodeId]?.path;
+        const blockAnnotations = blockPath
+          ? getBlockAnnotations(blockPath, annotations)
+          : [];
 
         contentProps = {
           icon: <BrickIcon brick={block} size="2x" inheritColor />,
           runStatus: decideBlockStatus({
-            blockError,
             traceRecord,
             blockAnnotations,
           }),

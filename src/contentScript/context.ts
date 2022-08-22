@@ -16,7 +16,6 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { PIXIEBRIX_READY_ATTRIBUTE } from "@/common";
 
 export const sessionId = uuidv4();
 export const sessionTimestamp = new Date();
@@ -26,14 +25,6 @@ export let navigationTimestamp = new Date();
 
 export let tabId: number;
 export let frameId: number;
-
-const PIXIEBRIX_READY_SYMBOL = Symbol.for("pixiebrix-content-script-ready");
-
-declare global {
-  interface Window {
-    [PIXIEBRIX_READY_SYMBOL]?: true;
-  }
-}
 
 /**
  * Set a unique id and timestamp for current navigation event.
@@ -50,14 +41,9 @@ export function getNavigationId(): string {
   return navigationId;
 }
 
-export function markReady(): void {
-  // eslint-disable-next-line security/detect-object-injection -- Static symbol
-  window[PIXIEBRIX_READY_SYMBOL] = true;
-
-  document.documentElement.setAttribute(PIXIEBRIX_READY_ATTRIBUTE, "");
-}
-
 export function updateTabInfo(info: { tabId: number; frameId: number }): void {
   tabId = info.tabId;
   frameId = info.frameId;
+
+  console.debug("updateTabInfo", { tabId, frameId });
 }

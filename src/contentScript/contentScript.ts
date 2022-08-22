@@ -15,112 +15,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// IMPORTANT: do not import anything that has a transitive dependency of the messenger.
+// See for more information: https://github.com/pixiebrix/pixiebrix-extension/issues/4058
 import "./contentScript.scss";
 import { uuidv4 } from "@/types/helpers";
-
-const PIXIEBRIX_CONTENT_SCRIPT_NONCE = "data-pb-nonce";
-const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
-const uuid = uuidv4();
-// Should set attribute as early as possible
-document.documentElement.setAttribute(PIXIEBRIX_CONTENT_SCRIPT_NONCE, uuid);
-
-const start = Date.now();
-// Importing for the side effects. Should import as early as possible
-import "@/extensionContext";
-import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
-
-// Normal imports
-// eslint-disable-next-line import/no-restricted-paths -- Legacy code, needs https://github.com/pixiebrix/webext-messenger/issues/6
-import registerExternalMessenger from "@/background/messenger/external/registration";
-import registerMessenger from "@/contentScript/messenger/registration";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
-import { handleNavigate } from "@/contentScript/lifecycle";
-import { markReady, updateTabInfo } from "@/contentScript/context";
-import { whoAmI, initTelemetry } from "@/background/messenger/api";
-import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
-// eslint-disable-next-line import/no-restricted-paths -- Custom devTools mechanism to transfer data
-import { addListenerForUpdateSelectedElement } from "@/pageEditor/getSelectedElement";
-import { initToaster } from "@/utils/notify";
 import {
-  isContextInvalidatedError,
-  notifyContextInvalidated,
-} from "@/errors/contextInvalidated";
-import { initPartnerIntegrations } from "@/contentScript/partnerIntegrations";
+  isInstalledInThisSession,
+  isReadyInThisDocument,
+  setInstalledInThisSession,
+  setReadyInThisDocument,
+} from "@/contentScript/ready";
+import { logPromiseDuration } from "@/utils";
 
-registerMessenger();
-registerExternalMessenger();
-registerBuiltinBlocks();
-registerContribBlocks();
+// See note in `@/contentScript/ready.ts` for further details about the lifecycle of content scripts
+async function initContentScript() {
+  const uuid = uuidv4();
 
-function ignoreContextInvalidatedErrors(
-  errorEvent: ErrorEvent | PromiseRejectionEvent
-): void {
-  if (isContextInvalidatedError(errorEvent)) {
-    notifyContextInvalidated();
-    errorEvent.preventDefault();
+  if (isInstalledInThisSession()) {
+    console.error(
+      "contentScript: was requested twice in the same context, aborting injection"
+    );
+    return;
   }
-}
 
-// Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
-uncaughtErrorHandlers.unshift(ignoreContextInvalidatedErrors);
-
-declare global {
-  interface Window {
-    [PIXIEBRIX_SYMBOL]?: string;
+  if (isReadyInThisDocument()) {
+    console.warn(
+      "contentScript: injecting again because the previous context was invalidated"
+    );
+  } else {
+    console.debug(`contentScript: injecting ${uuid}`);
   }
-}
 
-async function init(): Promise<void> {
-  addListenerForUpdateSelectedElement();
-  initTelemetry();
-  initToaster();
+  setInstalledInThisSession();
 
-  const sender = await whoAmI();
-
-  updateTabInfo({ tabId: sender.tab.id, frameId: sender.frameId });
-  console.debug(
-    `Loading contentScript for tabId=${sender.tab.id}, frameId=${sender.frameId}: ${uuid}`
+  // Keeping the import separate ensures that no side effects are run until this point
+  const { init } = await logPromiseDuration(
+    "contentScript: imported", // "imported" timing includes the parsing of the file, which can take 500-1000ms
+    import(/* webpackChunkName: "contentScriptCore" */ "./contentScriptCore")
   );
-
-  try {
-    await handleNavigate();
-  } catch (error) {
-    console.error("Error initializing contentScript", error);
-    throw error;
-  }
-
-  // Inform the external website
-  markReady();
-
-  // Inform `ensureContentScript`
-  void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
-
-  // Let the partner page know
-  initPartnerIntegrations();
-
-  console.info(`contentScript ready in ${Date.now() - start}ms`);
+  await init(uuid);
+  setReadyInThisDocument(uuid);
 }
 
-// Make sure we don't install the content script multiple times. Using just the window may not be reliable because
-// the content script might be running in a different VM.
-// See discussion at https://github.com/pixiebrix/pixiebrix-extension/issues/3510
-// eslint-disable-next-line security/detect-object-injection -- using PIXIEBRIX_SYMBOL
-const existingSymbol: string = window[PIXIEBRIX_SYMBOL];
-const existingAttribute = document.documentElement.getAttribute(
-  PIXIEBRIX_CONTENT_SCRIPT_NONCE
+void logPromiseDuration("contentScript: ready", initContentScript()).catch(
+  (error) => {
+    throw new Error("Error initializing contentScript", { cause: error });
+  }
 );
-if (existingSymbol) {
-  console.debug(
-    `PixieBrix contentScript already installed (JS): ${existingSymbol}`
-  );
-  // eslint-disable-next-line no-negated-condition -- for consistency
-} else if (existingAttribute !== uuid) {
-  console.debug(
-    `PixieBrix contentScript already installed (DOM): ${existingAttribute}`
-  );
-} else {
-  // eslint-disable-next-line security/detect-object-injection -- using PIXIEBRIX_SYMBOL
-  window[PIXIEBRIX_SYMBOL] = uuid;
-  void init();
-}

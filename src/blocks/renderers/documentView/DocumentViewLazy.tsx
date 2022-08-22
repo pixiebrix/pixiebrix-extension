@@ -23,13 +23,13 @@ import { DocumentViewProps } from "./DocumentViewProps";
 const DocumentView = React.lazy(
   async () =>
     import(
-      /* webpackChunkName: "document-view" */
+      /* webpackChunkName: "components-lazy" */
       "./DocumentView"
     )
 );
 
 const DocumentViewLazy: React.FC<DocumentViewProps> = (props) => (
-  <Suspense fallback={<div className="text-muted">Loading...</div>}>
+  <Suspense fallback={null}>
     <DocumentView {...props} />
   </Suspense>
 );

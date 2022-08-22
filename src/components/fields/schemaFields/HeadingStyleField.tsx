@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createListenerMiddleware } from "@reduxjs/toolkit";
-import BlockTypeValidator from "./blockTypeValidator";
-import RenderersValidator from "./renderersValidator";
+import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFieldContext";
+import { Schema } from "@/core";
+import HeadingStyleWidget from "./widgets/HeadingStyleWidget";
 
-const validationListenerMiddleware = createListenerMiddleware();
+export const isHeadingStyleField = (fieldDefinition: Schema) =>
+  fieldDefinition.type === "string" &&
+  fieldDefinition.format === "heading-style";
 
-validationListenerMiddleware.startListening(new RenderersValidator());
-validationListenerMiddleware.startListening(new BlockTypeValidator());
-
-export default validationListenerMiddleware.middleware;
+const HeadingStyleField = defaultFieldFactory(HeadingStyleWidget);
+export default HeadingStyleField;

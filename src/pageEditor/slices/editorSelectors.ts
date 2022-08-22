@@ -25,11 +25,7 @@ import {
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { flatMap, isEmpty, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import {
-  ElementUIState,
-  ErrorMap,
-  TabUIState,
-} from "@/pageEditor/uiState/uiStateTypes";
+import { ElementUIState, TabUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 
 export const selectActiveElementId = ({ editor }: EditorRootState) =>
@@ -245,18 +241,6 @@ export function selectNodePreviewActiveElement(state: EditorRootState): string {
   return selectNodeDataPanelTabState(state, DataPanelTabKey.Preview)
     .activeElement;
 }
-
-export const selectErrorMap = createSelector(
-  selectActiveElementUIState,
-  (uiState: ElementUIState) => uiState.errorMap
-);
-
-export const selectActiveNodeError = createSelector(
-  selectErrorMap,
-  selectActiveNodeId,
-  // eslint-disable-next-line security/detect-object-injection -- activeNodeId is supposed to be UUID, not from user input
-  (errorMap: ErrorMap, activeNodeId: UUID) => errorMap[activeNodeId]
-);
 
 export const selectAddBlockLocation = ({ editor }: RootState) =>
   editor.addBlockLocation;

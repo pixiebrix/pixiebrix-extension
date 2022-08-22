@@ -15,12 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SafeHTML } from "@/core";
-import sanitize from "@/utils/sanitize";
+import axios from "axios";
 
-async function safeMarkdown(markdown: string): Promise<SafeHTML> {
-  const { marked } = await import(/* webpackChunkName: "marked" */ "marked");
-  return sanitize(marked(markdown));
+// A mock of @/services/apiClient that doesn't use the local browser state. For use with msw in Storybook.
+// See .storybook/preview.js for more information
+
+export async function getLinkedApiClient() {
+  return axios;
 }
 
-export default safeMarkdown;
+export async function getApiClient() {
+  return axios;
+}
+
+export async function maybeGetApiClient() {
+  return axios;
+}

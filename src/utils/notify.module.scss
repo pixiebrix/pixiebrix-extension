@@ -1,5 +1,13 @@
 .message {
   align-self: center;
+  overflow-wrap: anywhere;
+
+  // Space out multiple lines and make them less prominent
+  & > :nth-child(n + 2) {
+    margin-top: 0.3em;
+    font-size: 0.9em;
+    opacity: 0.8;
+  }
 }
 
 .closeButton {

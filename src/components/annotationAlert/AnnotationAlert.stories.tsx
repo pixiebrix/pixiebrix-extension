@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AnyAction, ListenerEffect, ThunkDispatch } from "@reduxjs/toolkit";
-import {
-  MatchFunction,
-  TypedActionCreator,
-} from "@reduxjs/toolkit/dist/listenerMiddleware/types";
-import { RootState } from "@/pageEditor/pageEditorTypes";
+import React from "react";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
+import AnnotationAlert from "./AnnotationAlert";
+import { AnnotationType } from "@/analysis/analysisTypes";
 
-export type ValidatorEffect = ListenerEffect<
-  AnyAction,
-  RootState,
-  ThunkDispatch<unknown, unknown, AnyAction>
->;
-export type Validator = {
-  actionCreator?: TypedActionCreator<any>;
-  matcher?: MatchFunction<AnyAction>;
-  effect: ValidatorEffect;
+export default {
+  title: "Common/AnnotationAlert",
+  component: AnnotationAlert,
+} as ComponentMeta<typeof AnnotationAlert>;
+
+export const Default: ComponentStory<typeof AnnotationAlert> = (args) => (
+  <AnnotationAlert {...args} />
+);
+Default.args = {
+  message: "This is an error message",
+  type: AnnotationType.Error,
 };

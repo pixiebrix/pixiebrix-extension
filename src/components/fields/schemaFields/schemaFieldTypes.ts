@@ -16,29 +16,12 @@
  */
 
 import { Schema } from "@/core";
-import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 import { InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
 
-/**
- * A form field, including label, error message, etc.
- */
-type CustomField = {
-  match: (fieldSchema: Schema) => boolean;
-  Component: SchemaFieldComponent;
-};
-/**
- * An individual form control (excluding label, error message, etc.)
- */
-type CustomWidget = {
-  match: (fieldSchema: Schema) => boolean;
-  Component: SchemaFieldComponent;
-};
 export type CustomFieldToggleMode = {
   match: (fieldSchema: Schema) => boolean;
   option: InputModeOption;
 };
 export type CustomFieldDefinitions = {
-  customFields: CustomField[];
-  customWidgets: CustomWidget[];
   customToggleModes: CustomFieldToggleMode[];
 };

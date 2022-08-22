@@ -16,15 +16,15 @@
  */
 
 import { useAsyncState } from "@/hooks/common";
-import { getInstallURL } from "@/services/baseService";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Button } from "react-bootstrap";
 import Centered from "./Centered";
+import { getBaseURL } from "@/services/baseService";
 
 const LoginCard: React.VoidFunctionComponent = () => {
-  const [installURL] = useAsyncState(getInstallURL, []);
+  const [baseURL] = useAsyncState(getBaseURL, []);
 
   return (
     <Centered vertically>
@@ -33,7 +33,7 @@ const LoginCard: React.VoidFunctionComponent = () => {
         variant="primary"
         className="mt-2"
         target="_blank"
-        href={installURL ?? "/options.html"}
+        href={baseURL ?? "/options.html"}
       >
         <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
       </Button>

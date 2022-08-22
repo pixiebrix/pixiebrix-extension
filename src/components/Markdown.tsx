@@ -15,21 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { set } from "lodash";
-import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
-import { joinPathParts } from "@/utils";
+import React, { useMemo } from "react";
+import sanitize from "@/utils/sanitize";
+import { marked } from "marked";
 
-type SetPipelineBlockErrorArgs = {
-  pipelineErrors: FormikErrorTree;
-  errorMessage: string;
-  path: string[];
+type MarkdownProps = {
+  markdown: string | null;
+  as?: React.ElementType;
+  className?: string;
 };
 
-export function setPipelineBlockError({
-  pipelineErrors,
-  errorMessage,
-  path,
-}: SetPipelineBlockErrorArgs) {
-  const propertyNameInPipeline = joinPathParts(...path);
-  set(pipelineErrors, propertyNameInPipeline, errorMessage);
-}
+const Markdown: React.FunctionComponent<MarkdownProps> = ({
+  markdown,
+  as: As = "div",
+  className,
+}) => {
+  const content = useMemo(
+    () => (typeof markdown === "string" ? sanitize(marked(markdown)) : null),
+    [markdown]
+  );
+
+  return (
+    <As dangerouslySetInnerHTML={{ __html: content }} className={className} />
+  );
+};
+
+export default Markdown;

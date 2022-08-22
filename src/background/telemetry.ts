@@ -39,9 +39,9 @@ interface UserEvent {
 }
 
 const UUID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
+const TELEMETRY_EVENT_BUFFER_KEY = "TELEMETRY_EVENT_BUFFER" as ManualStorageKey;
 
 let _uid: UUID = null;
-const buffer: UserEvent[] = [];
 
 /**
  * Return a random ID for this browser profile.
@@ -64,11 +64,14 @@ export async function uid(): Promise<UUID> {
 }
 
 async function flush(): Promise<void> {
-  if (buffer.length > 0) {
+  const events = await readStorage(TELEMETRY_EVENT_BUFFER_KEY);
+  if ((events as UserEvent[]).length > 0) {
     const client = await maybeGetLinkedApiClient();
     if (client) {
-      const events = buffer.splice(0, buffer.length);
-      await client.post("/api/events/", { events });
+      await Promise.all([
+        setStorage(TELEMETRY_EVENT_BUFFER_KEY, []),
+        client.post("/api/events/", { events }),
+      ]);
     }
   }
 }
@@ -137,7 +140,7 @@ export async function recordEvent({
   if (await allowsTrack()) {
     const { version, version_name: versionName } =
       browser.runtime.getManifest();
-    buffer.push({
+    const telemetryEvent = {
       uid: await uid(),
       event,
       timestamp: Date.now(),
@@ -146,7 +149,16 @@ export async function recordEvent({
         version,
         versionName,
       },
-    });
+    };
+
+    const persistedEvents = await readStorage<UserEvent[]>(
+      TELEMETRY_EVENT_BUFFER_KEY,
+      []
+    );
+    await setStorage(TELEMETRY_EVENT_BUFFER_KEY, [
+      ...persistedEvents,
+      telemetryEvent,
+    ]);
     void debouncedFlush();
   }
 }

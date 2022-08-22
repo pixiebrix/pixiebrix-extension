@@ -36,18 +36,16 @@ import {
   AddBlockLocation,
   ModalKey,
 } from "@/pageEditor/pageEditorTypes";
-import { ElementUIState, ErrorLevel } from "@/pageEditor/uiState/uiStateTypes";
+import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
-import { cloneDeep, get, isEmpty, set } from "lodash";
+import { cloneDeep, get, isEmpty } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import { getInvalidPath } from "@/utils/debugUtils";
-import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 import {
   selectActiveElement,
   selectActiveElementUIState,
-  selectActiveNodeId,
 } from "./editorSelectors";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
@@ -695,7 +693,6 @@ export const editorSlice = createSlice({
       pipeline.splice(index, 1);
 
       syncElementNodeUIStates(state, element);
-      delete elementUiState.errorMap[nodeIdToRemove];
 
       elementUiState.activeNodeId =
         nextActiveNode?.instanceId ?? FOUNDATION_NODE_ID;
@@ -704,59 +701,6 @@ export const editorSlice = createSlice({
 
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
-    },
-    setFieldsError(state, action: PayloadAction<FormikErrorTree>) {
-      const fieldErrors = action.payload;
-      const nodeId = selectActiveNodeId({ editor: state });
-      const elementUiState = selectActiveElementUIState({ editor: state });
-      const elementErrors = elementUiState.errorMap;
-      set(elementErrors, [nodeId, "fieldErrors"], fieldErrors);
-    },
-    setNodeError(
-      state,
-      action: PayloadAction<{
-        nodeId: UUID;
-        namespace: string;
-        message: string;
-        level?: ErrorLevel;
-      }>
-    ) {
-      const {
-        nodeId,
-        namespace,
-        message,
-        level = ErrorLevel.Critical,
-      } = action.payload;
-      const { errorMap } = selectActiveElementUIState({ editor: state });
-      const nodeErrors = errorMap[nodeId]?.errors;
-      if (typeof nodeErrors === "undefined") {
-        set(errorMap, [nodeId, "errors"], [{ namespace, message, level }]);
-      } else {
-        set(
-          errorMap,
-          [nodeId, "errors"],
-          [
-            ...nodeErrors.filter((x) => x.namespace !== namespace),
-            { namespace, message, level },
-          ]
-        );
-      }
-    },
-    clearNodeError(
-      state,
-      action: PayloadAction<{
-        nodeId: UUID;
-        namespace: string;
-      }>
-    ) {
-      const { nodeId, namespace } = action.payload;
-      const { errorMap } = selectActiveElementUIState({ editor: state });
-      const nodeErrors = errorMap[nodeId]?.errors;
-      if (nodeErrors != null) {
-        errorMap[nodeId].errors = nodeErrors.filter(
-          (x) => x.namespace !== namespace
-        );
-      }
     },
     showAddBlockModal(state, action: PayloadAction<AddBlockLocation>) {
       state.addBlockLocation = action.payload;

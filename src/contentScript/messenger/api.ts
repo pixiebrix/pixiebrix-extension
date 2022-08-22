@@ -31,6 +31,7 @@ export const handleMenuAction = getMethod("HANDLE_MENU_ACTION");
 export const toggleSidebar = getMethod("TOGGLE_SIDEBAR");
 export const showSidebar = getMethod("SHOW_SIDEBAR");
 export const hideSidebar = getMethod("HIDE_SIDEBAR");
+export const reloadSidebar = getMethod("RELOAD_SIDEBAR");
 export const removeSidebar = getMethod("REMOVE_SIDEBAR");
 export const getSidebarEntries = getMethod("GET_SIDEBAR_ENTRIES");
 export const insertPanel = getMethod("INSERT_PANEL");

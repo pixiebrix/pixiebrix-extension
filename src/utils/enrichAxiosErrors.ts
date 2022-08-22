@@ -54,7 +54,8 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
   // This should have already been called before attempting the request because Axios does not actually catch invalid URLs
   const url = assertHttpsUrl(error.config.url, error.config.baseURL);
 
-  if (error.response) {
+  // In case of a CORS permission error, response.status can be 0. This case is handled below
+  if (error.response != null && error.response.status !== 0) {
     // Exclude app errors, unless they're proxied requests
     if (
       url.href.startsWith(SERVICE_URL) &&

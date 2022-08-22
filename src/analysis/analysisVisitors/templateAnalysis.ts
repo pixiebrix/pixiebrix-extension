@@ -16,10 +16,11 @@
  */
 
 import { Expression } from "@/core";
-import { AbsolutePosition, AnnotationType } from "@/analysis/analysisTypes";
-import AnalysisVisitor from "@/analysis/AnalysisVisitor";
+import { AnnotationType } from "@/analysis/analysisTypes";
+import { BlockPosition } from "@/blocks/types";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
+import { AnalysisVisitor } from "./baseAnalysisVisitors";
 
 const TEMPLATE_ERROR_MESSAGE =
   "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";
@@ -30,7 +31,7 @@ class TemplateAnalysis extends AnalysisVisitor {
   }
 
   override async visitExpression(
-    position: AbsolutePosition,
+    position: BlockPosition,
     expression: Expression<unknown>
   ): Promise<void> {
     if (
