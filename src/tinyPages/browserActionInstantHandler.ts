@@ -15,18 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
+/** @file This file MUST be lightweight and free of any logic and dependencies, it's meant to be instant */
+import { toggleSidebarFrame } from "@/contentScript/sidebarDomControllerLite";
 
-export const NOTIFICATIONS_Z_INDEX = 2_147_483_647;
-export const MAX_Z_INDEX = NOTIFICATIONS_Z_INDEX - 1; // Let notifications always be higher
-export const PANEL_FRAME_ID = "pixiebrix-extension";
-export const PIXIEBRIX_DATA_ATTR = "data-pb-uuid";
-export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
-
-// Keep this simple because it must be compatible with `:not(${thisSelector})`
-export const PRIVATE_ATTRIBUTES_SELECTOR = `
-  #${PANEL_FRAME_ID},
-  [${PIXIEBRIX_DATA_ATTR}],
-  [${CONTENT_SCRIPT_READY_ATTRIBUTE}],
-  [${EXTENSION_POINT_DATA_ATTR}]
-`;
+toggleSidebarFrame();

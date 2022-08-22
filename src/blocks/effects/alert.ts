@@ -39,7 +39,7 @@ export class AlertEffect extends Effect {
         type: "string",
         description:
           "The alert type/style. 'window' uses the browser's native window alert dialog, which the user must dismiss",
-        enum: ["window", "info", "success", "error"],
+        enum: ["window", "info", "success", "warning", "error"],
         default: "info",
       },
       duration: {
