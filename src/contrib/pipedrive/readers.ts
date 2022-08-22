@@ -17,7 +17,7 @@
 
 import { Reader } from "@/types";
 import { startCase, mapValues } from "lodash";
-import { withReadWindow } from "@/common";
+import { withReadWindow } from "@/messaging/protocol";
 import { PathSpec } from "@/blocks/readers/window";
 
 export async function checkRoute(expectedRoute: string): Promise<boolean> {

@@ -15,13 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSendScriptMessage } from "@/messaging/chrome";
-import {
-  DETECT_FRAMEWORK_VERSIONS,
-  FrameworkMeta,
-  READ_WINDOW,
-  SEARCH_WINDOW,
-} from "@/messaging/constants";
 import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
 
 export const NOTIFICATIONS_Z_INDEX = 2_147_483_647;
@@ -37,19 +30,3 @@ export const PRIVATE_ATTRIBUTES_SELECTOR = `
   [${CONTENT_SCRIPT_READY_ATTRIBUTE}],
   [${EXTENSION_POINT_DATA_ATTR}]
 `;
-
-type ReadSpec = <T extends Record<string, string>>(arg: {
-  pathSpec: T;
-  waitMillis?: number;
-}) => Promise<Record<keyof T, unknown>>;
-
-export const withReadWindow = createSendScriptMessage(
-  READ_WINDOW
-) as unknown as ReadSpec;
-
-export const withSearchWindow =
-  createSendScriptMessage<{ results: unknown[] }>(SEARCH_WINDOW);
-
-export const withDetectFrameworkVersions = createSendScriptMessage<
-  FrameworkMeta[]
->(DETECT_FRAMEWORK_VERSIONS);

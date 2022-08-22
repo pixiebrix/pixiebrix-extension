@@ -49,7 +49,10 @@ import {
   updateDynamicElement,
 } from "@/contentScript/nativeEditor/dynamic";
 import { getProcesses, initRobot } from "@/contentScript/uipath";
-import { withDetectFrameworkVersions, withSearchWindow } from "@/common";
+import {
+  withDetectFrameworkVersions,
+  withSearchWindow,
+} from "@/messaging/protocol";
 import {
   runBlock,
   runReaderBlock,
