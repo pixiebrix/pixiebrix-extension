@@ -29,21 +29,22 @@ beforeEach(async () => {
 describe("recordEvent", () => {
   test("runs", async () => {
     await recordEvent({ event: "TestEvent", data: {} });
-    const persistedEvents =
-      (await readStorage<UserTelemetryEvent[]>(TELEMETRY_EVENT_BUFFER_KEY)) ??
-      [];
+    const persistedEvents = await readStorage<UserTelemetryEvent[]>(
+      TELEMETRY_EVENT_BUFFER_KEY
+    );
     expect(persistedEvents.length).toEqual(1);
   });
 
   test("successfully persists concurrent telemetry events to local storage", async () => {
-    await Promise.all([
-      recordEvent({ event: "TestEventA", data: {} }),
-      recordEvent({ event: "TestEventB", data: {} }),
-    ]);
+    // Easiest way to test race condition without having to mock
+    const testEvents = Array.from({ length: 100 }, async () =>
+      recordEvent({ event: "TestEvent", data: {} })
+    );
+    await Promise.all(testEvents);
 
-    const persistedEvents =
-      (await readStorage<UserTelemetryEvent[]>(TELEMETRY_EVENT_BUFFER_KEY)) ??
-      [];
-    expect(persistedEvents.length).toEqual(2);
+    const persistedEvents = await readStorage<UserTelemetryEvent[]>(
+      TELEMETRY_EVENT_BUFFER_KEY
+    );
+    expect(persistedEvents.length).toEqual(100);
   });
 });
