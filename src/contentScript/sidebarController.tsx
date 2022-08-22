@@ -49,7 +49,6 @@ export const PANEL_HIDING_EVENT = "pixiebrix:hideSidebar";
  */
 let renderSequenceNumber = 0;
 
-export type ShowCallback = (args: RunArgs) => void;
 export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
 
 const panels: PanelEntry[] = [];
