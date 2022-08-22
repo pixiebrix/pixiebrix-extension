@@ -38,6 +38,9 @@ interface UserEvent {
   data: JsonObject;
 }
 
+const eventQueue: UserEvent[] = [];
+let eventStorageLocked: boolean = false;
+
 const UUID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
 const TELEMETRY_EVENT_BUFFER_KEY = "TELEMETRY_EVENT_BUFFER" as ManualStorageKey;
 
@@ -64,15 +67,25 @@ export async function uid(): Promise<UUID> {
 }
 
 async function flush(): Promise<void> {
-  const events = await readStorage(TELEMETRY_EVENT_BUFFER_KEY);
-  if ((events as UserEvent[]).length > 0) {
-    const client = await maybeGetLinkedApiClient();
-    if (client) {
-      await Promise.all([
-        setStorage(TELEMETRY_EVENT_BUFFER_KEY, []),
-        client.post("/api/events/", { events }),
-      ]);
-    }
+  const events = await readStorage<UserEvent[]>(TELEMETRY_EVENT_BUFFER_KEY);
+
+  if (events.length === 0 || eventStorageLocked) {
+    return;
+  }
+
+  eventStorageLocked = true;
+  const client = await maybeGetLinkedApiClient();
+  if (client) {
+    console.log("reporting events:", events);
+    await Promise.all([
+      setStorage(TELEMETRY_EVENT_BUFFER_KEY, []),
+      client.post("/api/events/", { events }),
+    ]);
+  }
+
+  eventStorageLocked = false;
+  if (eventQueue.length > 0) {
+    void persistEvents();
   }
 }
 
@@ -130,6 +143,26 @@ export const initTelemetry = throttle(init, 30 * 60 * 1000, {
   trailing: true,
 });
 
+async function persistEvents() {
+  if (eventQueue.length === 0 || eventStorageLocked) {
+    console.log("No lock, waiting...");
+    return;
+  }
+
+  eventStorageLocked = true;
+  const persistedEvents =
+    (await readStorage<UserEvent[]>(TELEMETRY_EVENT_BUFFER_KEY)) ?? [];
+  console.log("persisitng events:", eventQueue);
+  await setStorage(TELEMETRY_EVENT_BUFFER_KEY, [
+    ...persistedEvents,
+    ...eventQueue.splice(0, eventQueue.length),
+  ]);
+  eventStorageLocked = false;
+  if (eventQueue.length > 0) {
+    await persistEvents();
+  }
+}
+
 export async function recordEvent({
   event,
   data = {},
@@ -151,14 +184,9 @@ export async function recordEvent({
       },
     };
 
-    const persistedEvents = await readStorage<UserEvent[]>(
-      TELEMETRY_EVENT_BUFFER_KEY,
-      []
-    );
-    await setStorage(TELEMETRY_EVENT_BUFFER_KEY, [
-      ...persistedEvents,
-      telemetryEvent,
-    ]);
+    console.log("recording event:", telemetryEvent);
+    eventQueue.push(telemetryEvent);
+    await persistEvents();
     void debouncedFlush();
   }
 }
