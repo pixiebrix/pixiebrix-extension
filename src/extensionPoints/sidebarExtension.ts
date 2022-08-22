@@ -45,7 +45,6 @@ import { Permissions } from "webextension-polyfill";
 import { checkAvailable } from "@/blocks/available";
 import notify from "@/utils/notify";
 import {
-  isSidebarVisible,
   removeExtensionPoint,
   reservePanels,
   ShowCallback,
@@ -69,6 +68,7 @@ import { mergeReaders } from "@/blocks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { NoRendererError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
+import { isSidebarFrameVisible } from "@/contentScript/sidebarDomControllerLite";
 
 export type SidebarConfig = {
   heading: string;
@@ -352,7 +352,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
       return;
     }
 
-    if (!isSidebarVisible()) {
+    if (!isSidebarFrameVisible()) {
       console.debug(
         "Skipping run for %s because sidebar is not visible",
         this.id

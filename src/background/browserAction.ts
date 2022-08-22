@@ -18,8 +18,8 @@
 import reportError from "@/telemetry/reportError";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
 import { Tabs } from "webextension-polyfill";
-import { toggleSidebar } from "@/contentScript/messenger/api";
-import { isScriptableUrl } from "webext-content-scripts";
+import { rehydrateSidebar } from "@/contentScript/messenger/api";
+import { executeScript, isScriptableUrl } from "webext-content-scripts";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
 export const FORWARD_FRAME_NOTIFICATION = `${MESSAGE_PREFIX}/FORWARD_ACTION_FRAME_NOTIFICATION`;
@@ -41,8 +41,17 @@ async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
   }
 
   try {
-    await ensureContentScript({ tabId: tab.id, frameId: TOP_LEVEL_FRAME_ID });
-    await toggleSidebar({
+    await Promise.all([
+      // Toggle the sidebar every time it's run
+      executeScript({
+        tabId: tab.id,
+        files: ["browserActionInstantHandler.js"],
+      }),
+
+      // Run the usual content script unless it's already loaded
+      ensureContentScript({ tabId: tab.id, frameId: TOP_LEVEL_FRAME_ID }),
+    ]);
+    await rehydrateSidebar({
       tabId: tab.id,
     });
   } catch (error) {
