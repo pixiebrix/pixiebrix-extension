@@ -16,13 +16,10 @@
  */
 
 import reportError from "@/telemetry/reportError";
-import { uuidv4 } from "@/types/helpers";
-import { IS_BROWSER } from "@/helpers";
 import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import { ExtensionRef, RegistryId, RunArgs, RunReason, UUID } from "@/core";
 import type {
-  SidebarEntries,
   FormEntry,
   PanelEntry,
   RendererError,
@@ -36,15 +33,16 @@ import {
   activatePanel,
   pingSidebar,
 } from "@/sidebar/messenger/api";
-import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
 import { isEmpty } from "lodash";
 import { logPromiseDuration } from "@/utils";
 import { SimpleEventTarget } from "@/utils/SimpleEventLTarget";
+import {
+  insertSidebarFrame,
+  isSidebarFrameVisible,
+  removeSidebarFrame,
+} from "./sidebarDomControllerLite";
 
-const SIDEBAR_WIDTH_PX = 400;
-const PANEL_CONTAINER_SELECTOR = "#" + PANEL_FRAME_ID;
 export const PANEL_HIDING_EVENT = "pixiebrix:hideSidebar";
-export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-margin-right";
 
 /**
  * Sequence number for ensuring render requests are handled in order
@@ -55,50 +53,6 @@ export type ShowCallback = (args: RunArgs) => void;
 export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
 
 const panels: PanelEntry[] = [];
-let originalMarginRight: number;
-
-function storeOriginalCSS() {
-  originalMarginRight = Number.parseFloat($("html").css("margin-right"));
-}
-
-function removeSidebar(): void {
-  $(PANEL_CONTAINER_SELECTOR).remove();
-
-  $("html")
-    .css(SIDEBAR_WIDTH_CSS_PROPERTY, "")
-    .css("margin-right", originalMarginRight);
-}
-
-function insertSidebar(): void {
-  const nonce = uuidv4();
-  const actionURL = browser.runtime.getURL("sidebar.html");
-
-  $("html")
-    .css(
-      SIDEBAR_WIDTH_CSS_PROPERTY,
-      `${originalMarginRight + SIDEBAR_WIDTH_PX}px`
-    )
-    .css("margin-right", `var(${SIDEBAR_WIDTH_CSS_PROPERTY})`);
-
-  $("<iframe>")
-    .attr({
-      id: PANEL_FRAME_ID,
-      src: `${actionURL}?nonce=${nonce}`,
-      "data-nonce": nonce, // Don't use jQuery.data because we need this as an HTML attribute to target with selector
-    })
-    .css({
-      position: "fixed",
-      top: 0,
-      right: 0,
-      zIndex: MAX_Z_INDEX,
-      width: SIDEBAR_WIDTH_PX,
-      height: "100%",
-      border: 0,
-      borderLeft: "1px solid lightgray",
-      background: "#f2edf3",
-    })
-    .appendTo("body");
-}
 
 /**
  * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
@@ -108,13 +62,16 @@ export async function showSidebar(
   activateOptions: ActivatePanelOptions = {}
 ): Promise<void> {
   reportEvent("SidePanelShow");
-
-  const isShowing = isSidebarVisible();
+  const isShowing = isSidebarFrameVisible();
 
   if (!isShowing) {
-    console.debug("SidePanel is not on the page, attaching side panel");
-    insertSidebar();
+    insertSidebarFrame();
+  }
+
+  try {
     await pingSidebar({ tabId: "this", page: "/sidebar.html" });
+  } catch (error) {
+    throw new Error("The sidebar did not respond in time", { cause: error });
   }
 
   if (!isShowing || (activateOptions.refresh ?? true)) {
@@ -151,7 +108,7 @@ export async function showSidebar(
 export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
   expectContext("contentScript");
 
-  if (!isSidebarVisible()) {
+  if (!isSidebarFrameVisible()) {
     console.warn("sidebar is not attached to the page");
   }
 
@@ -169,7 +126,7 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
  * @see showSidebar
  */
 export async function ensureSidebar(): Promise<void> {
-  if (!isSidebarVisible()) {
+  if (!isSidebarFrameVisible()) {
     expectContext("contentScript");
     await logPromiseDuration("ensureSidebar", showSidebar());
   }
@@ -177,7 +134,7 @@ export async function ensureSidebar(): Promise<void> {
 
 export function hideSidebar(): void {
   reportEvent("SidePanelHide");
-  removeSidebar();
+  removeSidebarFrame();
   window.dispatchEvent(new CustomEvent(PANEL_HIDING_EVENT));
 }
 
@@ -191,43 +148,31 @@ export async function reloadSidebar(): Promise<void> {
   // Need to hide and re-show because the controller sends the content on load. The sidebar doesn't automatically
   // request its own content on mount.
 
-  if (isSidebarVisible()) {
+  if (isSidebarFrameVisible()) {
     hideSidebar();
   }
 
   await showSidebar();
 }
 
-export async function toggleSidebar(): Promise<void> {
-  if (isSidebarVisible()) {
-    hideSidebar();
-  } else {
-    await showSidebar();
-  }
-}
-
-export function isSidebarVisible(): boolean {
-  expectContext("contentScript");
-
-  return Boolean(document.querySelector(PANEL_CONTAINER_SELECTOR));
-}
-
 /**
- * Return the Sidebar state for the React App to get the state from sidebar controller.
- *
- * Called from the Sidebar React App via the messenger API
+ * After a browserAction "toggleSidebarFrame" call, which handles the DOM insertion,
+ * activate the frame if it was inserted, otherwise run other events on "hide"
  */
-export function getSidebarEntries(): SidebarEntries {
-  expectContext("contentScript");
-
-  // `forms` state is managed by the sidebar react component
-  return { panels, forms: [] };
+export function rehydrateSidebar(): void {
+  if (isSidebarFrameVisible()) {
+    // `showSidebar` includes the logic to hydrate it
+    void showSidebar();
+  } else {
+    // `hideSidebar` includes events
+    hideSidebar();
+  }
 }
 
 function renderPanelsIfVisible(): void {
   expectContext("contentScript");
 
-  if (isSidebarVisible()) {
+  if (isSidebarFrameVisible()) {
     const seqNum = renderSequenceNumber;
     renderSequenceNumber++;
     void renderPanels({ tabId: "this", page: "/sidebar.html" }, seqNum, panels);
@@ -239,7 +184,7 @@ function renderPanelsIfVisible(): void {
 export function showSidebarForm(entry: FormEntry): void {
   expectContext("contentScript");
 
-  if (!isSidebarVisible()) {
+  if (!isSidebarFrameVisible()) {
     throw new Error("Cannot add sidebar form if the sidebar is not visible");
   }
 
@@ -251,7 +196,7 @@ export function showSidebarForm(entry: FormEntry): void {
 export function hideSidebarForm(nonce: UUID): void {
   expectContext("contentScript");
 
-  if (!isSidebarVisible()) {
+  if (!isSidebarFrameVisible()) {
     // Already hidden
     return;
   }
@@ -390,8 +335,4 @@ export function upsertPanel(
   }
 
   renderPanelsIfVisible();
-}
-
-if (IS_BROWSER) {
-  storeOriginalCSS();
 }
