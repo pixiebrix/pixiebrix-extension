@@ -35,8 +35,6 @@ function storeOriginalCSSOnce() {
 }
 
 export function isSidebarFrameVisible(): boolean {
-  // expectContext("contentScript");
-
   return Boolean(document.querySelector(PANEL_CONTAINER_SELECTOR));
 }
 
