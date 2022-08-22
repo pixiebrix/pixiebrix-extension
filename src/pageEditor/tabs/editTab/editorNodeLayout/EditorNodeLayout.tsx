@@ -212,10 +212,21 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           );
           const subPipeline: BlockPipeline =
             get(pipeline, subPipelineAccessor) ?? [];
-          const propName = docPipelinePath.split(".").pop();
+
+          const docPipelinePathParts = docPipelinePath.split(".");
+          const propName = docPipelinePathParts.at(-1);
           const isButton = propName === "onClick";
+
+          // Getting pipeline label
+          const labelPathParts = docPipelinePathParts.slice(0, -1);
+          labelPathParts.push("label");
+          let subPipelineLabel = get(blockConfig, labelPathParts, "");
+          if (subPipelineLabel === "") {
+            subPipelineLabel = isButton ? "button" : "brick";
+          }
+
           subPipelines.push({
-            headerLabel: isButton ? "button" : "brick",
+            headerLabel: subPipelineLabel,
             subPipeline,
             subPipelinePath,
             subPipelineFlavor: isButton
