@@ -218,7 +218,7 @@
     "@types/webextension-polyfill": "^0.9.0",
     "@types/webpack": "^5.28.0",
     "@types/webpack-env": "^1.16.2",
-    "@types/yup": "^0.29.13",
+    "@types/yup": "^0.32.0",
     "axios-mock-adapter": "^1.19.0",
     "chromedriver": "^104.0.0",
     "compass-mixins": "^0.12.10",
