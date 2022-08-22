@@ -1,0 +1,21 @@
+body {
+  box-sizing: border-box;
+  min-height: 100vh;
+  margin: 0;
+  padding: 1em;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  line-height: 1.5;
+  font-family: system, system-ui, sans-serif;
+}
+
+div {
+  flex-grow: 1;
+}
+
+button {
+  margin-top: 1em;
+  margin-left: auto;
+}
