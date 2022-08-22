@@ -18,12 +18,9 @@
 import reportError from "@/telemetry/reportError";
 import { ensureContentScript } from "@/background/util";
 import { Tabs } from "webextension-polyfill";
-import { toggleSidebar } from "@/contentScript/messenger/api";
-import { isScriptableUrl } from "webext-content-scripts";
 import webextAlert from "./webextAlert";
-
-const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
-export const FORWARD_FRAME_NOTIFICATION = `${MESSAGE_PREFIX}/FORWARD_ACTION_FRAME_NOTIFICATION`;
+import { rehydrateSidebar } from "@/contentScript/messenger/api";
+import { executeScript, isScriptableUrl } from "webext-content-scripts";
 
 // The sidebar is always injected to into the top level frame
 const TOP_LEVEL_FRAME_ID = 0;
@@ -31,7 +28,9 @@ const TOP_LEVEL_FRAME_ID = 0;
 async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
   const url = String(tab.url);
   if (!isScriptableUrl(url)) {
-    webextAlert("The extensions gallery cannot be scripted");
+    webextAlert(
+      "Extensions cannot run on web store and other special browser vendor pages"
+    );
     return;
   }
 
@@ -42,26 +41,30 @@ async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
   }
 
   try {
-    await ensureContentScript({ tabId: tab.id, frameId: TOP_LEVEL_FRAME_ID });
+    await Promise.all([
+      // Toggle the sidebar every time it's run
+      executeScript({
+        tabId: tab.id,
+        files: ["browserActionInstantHandler.js"],
+      }),
+
+      // Run the usual content script unless it's already loaded
+      ensureContentScript({ tabId: tab.id, frameId: TOP_LEVEL_FRAME_ID }),
+    ]);
+    await rehydrateSidebar({
+      tabId: tab.id,
+    });
   } catch (error) {
     // We no longer `showErrorInOptions` because it may appear several seconds later
     // https://github.com/pixiebrix/pixiebrix-extension/issues/4021
     reportError(
-      new Error("Content script failed loading when toggling the sidebar", {
-        cause: error,
-      })
+      new Error("Error opening sidebar via browser action", { cause: error })
     );
-    return;
-  }
-
-  try {
-    await toggleSidebar({ tabId: tab.id });
-  } catch (error) {
-    reportError(new Error("Sidebar failed opening", { cause: error }));
   }
 }
 
 export default function initBrowserAction() {
+  // Handle namespace change between MV2/MV3
   const action = browser.browserAction ?? browser.action;
   action.onClicked.addListener(handleBrowserAction);
 }

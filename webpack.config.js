@@ -223,6 +223,7 @@ module.exports = (env, options) =>
         "sidebar/sidebar",
         "tinyPages/ephemeralForm",
         "tinyPages/permissionsPopup",
+        "tinyPages/browserActionInstantHandler",
 
         // Tiny files without imports
         "tinyPages/frame",
