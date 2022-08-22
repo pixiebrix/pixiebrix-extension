@@ -176,7 +176,7 @@
     "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/user-event": "^14.0.4",
     "@types/chrome": "0.0.162",
-    "@types/data-urls": "^2.0.1",
+    "@types/data-urls": "^3.0.0",
     "@types/dompurify": "^2.2.3",
     "@types/file-saver": "^2.0.3",
     "@types/gapi": "0.0.42",
