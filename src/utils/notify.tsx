@@ -181,7 +181,6 @@ export function showNotification({
       break;
 
     case "warning":
-    case "info":
       // eslint-disable-next-line security/detect-object-injection -- Filtered
       toast(component, merge(options, toastStyle[type]));
       break;
@@ -246,8 +245,6 @@ const notify = {
   info: (notification: SimpleNotification) => _show("info", notification),
   success: (notification: SimpleNotification) => _show("success", notification),
   warning: (notification: SimpleNotification) => _show("warning", notification),
-  show: (type: NotificationType, notification: SimpleNotification) =>
-    _show(type, notification),
 } as const;
 
 export default notify;

@@ -18,7 +18,7 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import { Button } from "react-bootstrap";
-import notify, { initToaster, NotificationType } from "./notify";
+import { initToaster, NotificationType, showNotification } from "./notify";
 
 const notificationTypes = ["info", "success", "error", "warning", "loading"];
 initToaster();
@@ -27,7 +27,10 @@ const NotifyButton = ({ type }: { type: NotificationType }) => (
   <Button
     variant="primary"
     onClick={() => {
-      notify.show(type, String(type));
+      showNotification({
+        message: type,
+        type,
+      });
     }}
   >
     Show notification
