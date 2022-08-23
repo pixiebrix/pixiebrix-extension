@@ -81,9 +81,6 @@ export async function flushEvents(): Promise<UserTelemetryEvent[]> {
 }
 
 const UUID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
-export const TELEMETRY_EVENT_BUFFER_KEY =
-  "TELEMETRY_EVENT_BUFFER" as ManualStorageKey;
-
 let _uid: UUID = null;
 
 /**

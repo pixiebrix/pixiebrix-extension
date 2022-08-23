@@ -15,16 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  flushEvents,
-  recordEvent,
-  TELEMETRY_EVENT_BUFFER_KEY,
-} from "@/background/telemetry";
-import { setStorage } from "@/chrome";
-
-beforeEach(async () => {
-  await setStorage(TELEMETRY_EVENT_BUFFER_KEY, []);
-});
+import { flushEvents, recordEvent } from "@/background/telemetry";
 
 describe("recordEvent", () => {
   test("runs", async () => {
@@ -35,9 +26,11 @@ describe("recordEvent", () => {
 
   test("successfully persists concurrent telemetry events to local storage", async () => {
     // Easiest way to test race condition without having to mock
-    const testEvents = Array.from({ length: 100 }, async () =>
+    const recordTestEvents = Array.from({ length: 100 }, async () =>
       recordEvent({ event: "TestEvent", data: {} })
     );
+    await Promise.all(recordTestEvents);
+
     const events = await flushEvents();
     expect(events.length).toEqual(100);
   });
