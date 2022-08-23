@@ -30,6 +30,7 @@ import {
   SharingType,
 } from "@/options/pages/blueprints/blueprintsTypes";
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
+import { useDeleteCloudExtensionMutation } from "@/services/api";
 import { uniq } from "lodash";
 
 jest.mock("react-redux", () => ({
@@ -41,6 +42,9 @@ jest.mock("@/hooks/useFlags", () => jest.fn());
 jest.mock("@/options/pages/blueprints/useInstallablePermissions", () =>
   jest.fn()
 );
+jest.mock("@/services/api", () => ({
+  useDeleteCloudExtensionMutation: jest.fn(),
+}));
 
 const expectActions = (
   expectedActions: string[],
@@ -72,6 +76,10 @@ const mockHooks = ({
     hasPermissions,
     requestPermissions() {},
   }));
+
+  (useDeleteCloudExtensionMutation as jest.Mock).mockImplementation(() => [
+    jest.fn(),
+  ]);
 };
 
 const installableItemFactory = ({
