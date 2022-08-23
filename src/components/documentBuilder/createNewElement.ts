@@ -57,6 +57,7 @@ export function createNewElement(elementType: DocumentElementType) {
       break;
 
     case "pipeline": {
+      element.config.label = "Brick";
       element.config.pipeline = {
         __type__: "pipeline",
         __value__: [],
@@ -65,6 +66,7 @@ export function createNewElement(elementType: DocumentElementType) {
     }
 
     case "button": {
+      element.config.label = "Button";
       element.config.title = "Action";
 
       element.config.onClick = {

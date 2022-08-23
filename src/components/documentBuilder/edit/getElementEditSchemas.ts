@@ -115,6 +115,7 @@ function getElementEditSchemas(
         name: joinName(elementName, "config", "title"),
         schema: { type: "string" },
         label: "Title",
+        description: "The text to display on the button.",
       };
       const variantEdit: SchemaFieldProps = {
         name: joinName(elementName, "config", "variant"),
