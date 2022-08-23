@@ -16,11 +16,11 @@
  */
 
 import {
+  flushEvents,
   recordEvent,
   TELEMETRY_EVENT_BUFFER_KEY,
-  UserTelemetryEvent,
 } from "@/background/telemetry";
-import { readStorage, setStorage } from "@/chrome";
+import { setStorage } from "@/chrome";
 
 beforeEach(async () => {
   await setStorage(TELEMETRY_EVENT_BUFFER_KEY, []);
@@ -29,10 +29,8 @@ beforeEach(async () => {
 describe("recordEvent", () => {
   test("runs", async () => {
     await recordEvent({ event: "TestEvent", data: {} });
-    const persistedEvents = await readStorage<UserTelemetryEvent[]>(
-      TELEMETRY_EVENT_BUFFER_KEY
-    );
-    expect(persistedEvents.length).toEqual(1);
+    const events = await flushEvents();
+    expect(events.length).toEqual(1);
   });
 
   test("successfully persists concurrent telemetry events to local storage", async () => {
@@ -40,11 +38,7 @@ describe("recordEvent", () => {
     const testEvents = Array.from({ length: 100 }, async () =>
       recordEvent({ event: "TestEvent", data: {} })
     );
-    await Promise.all(testEvents);
-
-    const persistedEvents = await readStorage<UserTelemetryEvent[]>(
-      TELEMETRY_EVENT_BUFFER_KEY
-    );
-    expect(persistedEvents.length).toEqual(100);
+    const events = await flushEvents();
+    expect(events.length).toEqual(100);
   });
 });
