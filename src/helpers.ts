@@ -52,12 +52,6 @@ export function inputProperties(inputSchema: Schema): SchemaProperties {
 }
 
 /**
- * True if the script is executing in a web browser context.
- */
-export const IS_BROWSER =
-  typeof window !== "undefined" && typeof window.document !== "undefined";
-
-/**
  * Find an element(s) by its jQuery selector. A safe alternative to $(selector), which constructs an element it it's
  * passed HTML.
  * @param selector a jQuery selector

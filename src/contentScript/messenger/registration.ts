@@ -34,9 +34,8 @@ import {
 import {
   hideSidebar,
   showSidebar,
-  toggleSidebar,
+  rehydrateSidebar,
   removeExtension as removeSidebar,
-  getSidebarEntries,
   reloadSidebar,
 } from "@/contentScript/sidebarController";
 import { insertPanel } from "@/contentScript/nativeEditor/insertPanel";
@@ -49,7 +48,10 @@ import {
   updateDynamicElement,
 } from "@/contentScript/nativeEditor/dynamic";
 import { getProcesses, initRobot } from "@/contentScript/uipath";
-import { withDetectFrameworkVersions, withSearchWindow } from "@/common";
+import {
+  withDetectFrameworkVersions,
+  withSearchWindow,
+} from "@/messaging/protocol";
 import {
   runBlock,
   runReaderBlock,
@@ -87,12 +89,11 @@ declare global {
 
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
     HANDLE_MENU_ACTION: typeof handleMenuAction;
-    TOGGLE_SIDEBAR: typeof toggleSidebar;
+    REHYDRATE_SIDEBAR: typeof rehydrateSidebar;
     SHOW_SIDEBAR: typeof showSidebar;
     HIDE_SIDEBAR: typeof hideSidebar;
     RELOAD_SIDEBAR: typeof reloadSidebar;
     REMOVE_SIDEBAR: typeof removeSidebar;
-    GET_SIDEBAR_ENTRIES: typeof getSidebarEntries;
 
     INSERT_PANEL: typeof insertPanel;
     INSERT_BUTTON: typeof insertButton;
@@ -145,12 +146,11 @@ export default function registerMessenger(): void {
 
     TOGGLE_QUICK_BAR: toggleQuickBar,
     HANDLE_MENU_ACTION: handleMenuAction,
-    TOGGLE_SIDEBAR: toggleSidebar,
+    REHYDRATE_SIDEBAR: rehydrateSidebar,
     SHOW_SIDEBAR: showSidebar,
     HIDE_SIDEBAR: hideSidebar,
     RELOAD_SIDEBAR: reloadSidebar,
     REMOVE_SIDEBAR: removeSidebar,
-    GET_SIDEBAR_ENTRIES: getSidebarEntries,
 
     INSERT_PANEL: insertPanel,
     INSERT_BUTTON: insertButton,
