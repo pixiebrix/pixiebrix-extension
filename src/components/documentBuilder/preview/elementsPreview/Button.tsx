@@ -45,7 +45,7 @@ const Button: React.FunctionComponent<ButtonProps> = ({
   // Destructure disabled and onClick from button props.
   // If the button is disabled in the preview the user can't select it
   // to configure the button
-  const { title, onClick, disabled, ...restButtonProps } = buttonProps;
+  const { title, onClick, disabled, label, ...restButtonProps } = buttonProps;
   return (
     <div>
       <div

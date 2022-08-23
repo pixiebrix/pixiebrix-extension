@@ -24,19 +24,17 @@ type PipelineOptionsProps = {
   elementName: string;
 };
 
-const PipelineOptions: React.FC<PipelineOptionsProps> = ({ elementName }) => {
-  return (
-    <>
-      <Row>
-        <Col>Use the Nodes Tree on the left to edit the nested pipeline.</Col>
-      </Row>
-      <ConnectedFieldTemplate
-        name={joinPathParts(elementName, "config", "label")}
-        label="Pipeline name"
-        description="The pipeline label displayed in the Nodes Tree"
-      />
-    </>
-  );
-};
+const PipelineOptions: React.FC<PipelineOptionsProps> = ({ elementName }) => (
+  <>
+    <Row>
+      <Col>Use the Nodes Tree on the left to edit the nested pipeline.</Col>
+    </Row>
+    <ConnectedFieldTemplate
+      name={joinPathParts(elementName, "config", "label")}
+      label="Pipeline name"
+      description="The pipeline label displayed in the Nodes Tree"
+    />
+  </>
+);
 
 export default PipelineOptions;

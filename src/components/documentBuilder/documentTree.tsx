@@ -163,7 +163,8 @@ export function getComponentDefinition(
     }
 
     case "button": {
-      const { title, onClick, ...props } = config;
+      // Strip label from rest props. It's Editor only feature
+      const { title, onClick, label, ...props } = config;
       if (typeof onClick !== "undefined" && !isPipelineExpression(onClick)) {
         console.debug("Expected pipeline expression for onClick", {
           componentType: "button",
