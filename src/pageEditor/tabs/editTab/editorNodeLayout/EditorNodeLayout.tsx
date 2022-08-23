@@ -63,6 +63,10 @@ import { isExpression } from "@/runtime/mapArgs";
 import { decideFoundationStatus, decideBlockStatus } from "./decideStatus";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
+import {
+  DocumentElement,
+  isButtonElement,
+} from "@/components/documentBuilder/documentBuilderTypes";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -213,15 +217,14 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
           const subPipeline: BlockPipeline =
             get(pipeline, subPipelineAccessor) ?? [];
 
-          const docPipelinePathParts = docPipelinePath.split(".");
-          const propName = docPipelinePathParts.at(-1);
-          const isButton = propName === "onClick";
+          // Removing the 'config.<pipelinePropName>' from the end of the docPipelinePath
+          const elementPathParts = docPipelinePath.split(".").slice(0, -2);
+          const element = get(blockConfig, elementPathParts) as DocumentElement;
 
-          // Getting pipeline label
-          const labelPathParts = docPipelinePathParts.slice(0, -1);
-          labelPathParts.push("label");
-          let subPipelineLabel = get(blockConfig, labelPathParts, "");
-          if (subPipelineLabel === "") {
+          const isButton = isButtonElement(element);
+
+          let subPipelineLabel = element.config.label;
+          if (isEmpty(subPipelineLabel)) {
             subPipelineLabel = isButton ? "button" : "brick";
           }
 

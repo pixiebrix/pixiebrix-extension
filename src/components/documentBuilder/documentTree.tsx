@@ -165,7 +165,6 @@ export function getComponentDefinition(
     }
 
     case "button": {
-      // Strip label from rest props. It's Editor only feature
       const { title, onClick, variant, size, className } =
         config as ButtonDocumentConfig;
       if (typeof onClick !== "undefined" && !isPipelineExpression(onClick)) {
