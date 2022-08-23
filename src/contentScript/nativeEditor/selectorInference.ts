@@ -82,11 +82,11 @@ function getUniqueAttributeSelectors(element: HTMLElement): string[] {
 /** ID selectors and certain other attributes can uniquely identify items */
 function isSelectorUsuallyUnique(
   selector: string,
-  tokenCount?: number
+  tokenCount: number
 ): boolean {
   return (
-    tokenCount === 1 &&
-    (selector.startsWith("#") || UNIQUE_ATTRIBUTES_REGEX.test(selector))
+    (selector.startsWith("#") || UNIQUE_ATTRIBUTES_REGEX.test(selector)) &&
+    tokenCount === 1
   );
 }
 
