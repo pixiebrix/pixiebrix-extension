@@ -80,14 +80,8 @@ function getUniqueAttributeSelectors(element: HTMLElement): string[] {
 }
 
 /** ID selectors and certain other attributes can uniquely identify items */
-function isSelectorUsuallyUnique(
-  selector: string,
-  tokenCount: number
-): boolean {
-  return (
-    (selector.startsWith("#") || UNIQUE_ATTRIBUTES_REGEX.test(selector)) &&
-    tokenCount === 1
-  );
+function isSelectorUsuallyUnique(selector: string): boolean {
+  return selector.startsWith("#") || UNIQUE_ATTRIBUTES_REGEX.test(selector);
 }
 
 /**
@@ -135,31 +129,34 @@ export function sortBySelector<Item = string>(
  */
 export function getSelectorPreference(selector: string): number {
   // @ts-expect-error: TS compiler can't find the propery find in $
-  const selectorTokenCount = $.find.tokenize(selector).length;
-  const selectorCount = selector.split(" ").length;
+  const tokenized = $.find.tokenize(selector);
+  if (tokenized.length > 1) {
+    throw new TypeError(
+      "Expected single selector, received selector list: " + selector
+    );
+  }
+
+  const tokenCount = tokenized[0].length;
+
   if (selector.includes(":nth-child")) {
     // Structural selectors are fragile to page changes, so give low score
     return 2;
   }
 
   // Unique ID selectors can only be simple. When composed, ID selectors are always followed by non-unique parts
-  if (
-    selector.startsWith("#") &&
-    selectorTokenCount === 1 &&
-    selectorCount === 1
-  ) {
+  if (selector.startsWith("#") && tokenCount === 1) {
     return -4;
   }
 
-  if (isSelectorUsuallyUnique(selector, selectorTokenCount)) {
-    if (selectorCount === 1) {
+  if (isSelectorUsuallyUnique(selector)) {
+    if (tokenCount === 1) {
       return -3;
     }
 
     return -1;
   }
 
-  if (selector.startsWith(".") && selectorTokenCount === 1) {
+  if (selector.startsWith(".") && tokenCount === 1) {
     return -2;
   }
 
