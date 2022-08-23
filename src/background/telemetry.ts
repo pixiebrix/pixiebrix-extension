@@ -67,8 +67,9 @@ async function addEvent(event: UserTelemetryEvent): Promise<void> {
 
 export async function flushEvents(): Promise<UserTelemetryEvent[]> {
   const db = await openTelemetryDB();
-  const allEvents = await db.getAll(TELEMETRY_EVENT_OBJECT_STORE);
-  await db.clear(TELEMETRY_EVENT_OBJECT_STORE);
+  const tx = db.transaction(TELEMETRY_EVENT_OBJECT_STORE, "readwrite");
+  const allEvents = await tx.store.getAll(TELEMETRY_EVENT_OBJECT_STORE);
+  await tx.store.clear();
   return allEvents;
 }
 
