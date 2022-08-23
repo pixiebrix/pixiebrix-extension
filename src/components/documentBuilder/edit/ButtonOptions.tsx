@@ -16,11 +16,9 @@
  */
 
 import React, { useMemo } from "react";
-import { Col, Row } from "react-bootstrap";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import getElementEditSchemas from "@/components/documentBuilder/edit/getElementEditSchemas";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { joinPathParts } from "@/utils";
+import PipelineOptions from "./PipelineOptions";
 
 type ButtonOptionsProps = {
   elementName: string;
@@ -37,14 +35,7 @@ const ButtonOptions: React.FC<ButtonOptionsProps> = ({ elementName }) => {
 
   return (
     <>
-      <Row className="mb-4">
-        <Col>Use the Nodes Tree on the left to edit the nested pipeline.</Col>
-      </Row>
-      <ConnectedFieldTemplate
-        name={joinPathParts(elementName, "config", "label")}
-        label="Pipeline name"
-        description="The pipeline label displayed in the Nodes Tree"
-      />
+      <PipelineOptions elementName={elementName} />
       {schemaFields}
     </>
   );

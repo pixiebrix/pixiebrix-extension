@@ -17,18 +17,19 @@
 
 import React from "react";
 import {
-  DocumentElement,
+  ButtonDocumentConfig,
+  ButtonDocumentElement,
   PreviewComponentProps,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
 import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
 import Flaps from "@/components/documentBuilder/preview/flaps/Flaps";
-import { UnknownObject } from "@/types";
 import { Button as BsButton } from "react-bootstrap";
+import { isExpression } from "@/runtime/mapArgs";
 
 type ButtonProps = PreviewComponentProps & {
-  element: DocumentElement;
-  buttonProps: UnknownObject;
+  element: ButtonDocumentElement;
+  buttonProps: ButtonDocumentConfig;
 };
 
 const Button: React.FunctionComponent<ButtonProps> = ({
@@ -42,10 +43,7 @@ const Button: React.FunctionComponent<ButtonProps> = ({
   buttonProps,
   ...restPreviewProps
 }) => {
-  // Destructure disabled and onClick from button props.
-  // If the button is disabled in the preview the user can't select it
-  // to configure the button
-  const { title, onClick, disabled, label, ...restButtonProps } = buttonProps;
+  const { title, variant, size, className: buttonClassName } = buttonProps;
   return (
     <div>
       <div
@@ -60,7 +58,15 @@ const Button: React.FunctionComponent<ButtonProps> = ({
           isHovered={isHovered}
           isActive={isActive}
         />
-        <BsButton onClick={() => {}} {...restButtonProps}>
+        <BsButton
+          onClick={() => {}}
+          // Not resolving expressions in Preview
+          className={
+            isExpression(buttonClassName) ? undefined : buttonClassName
+          }
+          variant={isExpression(variant) ? undefined : variant}
+          size={isExpression(size) ? undefined : size}
+        >
           {title}
         </BsButton>
       </div>
