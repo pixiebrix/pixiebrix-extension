@@ -80,15 +80,8 @@ function getUniqueAttributeSelectors(element: HTMLElement): string[] {
 }
 
 /** ID selectors and certain other attributes can uniquely identify items */
-function isSelectorUsuallyUnique(
-  selector: string,
-  tokenLength: number | undefined
-): boolean {
-  return (
-    selector.startsWith("#") ||
-    UNIQUE_ATTRIBUTES_REGEX.test(selector) ||
-    (selector.startsWith(".") && tokenLength === 1)
-  );
+function isSelectorUsuallyUnique(selector: string): boolean {
+  return selector.startsWith("#") || UNIQUE_ATTRIBUTES_REGEX.test(selector);
 }
 
 /**
@@ -124,6 +117,7 @@ export function sortBySelector<Item = string>(
  *
  * @example
  * -2  '#best-link-on-the-page'
+ * * -1.5  '.uniqueClassname' // it's rare case but happens when classname is unique
  * -1  "[data-cy='b4da55']"
  *  0  '.navItem'
  *  0  '.birdsArentReal'
@@ -139,14 +133,15 @@ export function getSelectorPreference(selector: string): number {
     return 2;
   }
 
-  if (
-    selectorTokens.length === 1 &&
-    (selector.startsWith("#") || selector.startsWith("."))
-  ) {
+  if (selectorTokens.length === 1 && selector.startsWith("#")) {
     return -2;
   }
 
-  if (isSelectorUsuallyUnique(selector, selectorTokens.length)) {
+  if (selector.startsWith(".") && selectorTokens.length === 1) {
+    return -1.5;
+  }
+
+  if (isSelectorUsuallyUnique(selector)) {
     return -1;
   }
 
@@ -302,6 +297,7 @@ export function inferSelectors(
         makeSelector(["tag", "class", "attribute", "nthchild"]),
         makeSelector(["id", "tag", "attribute", "nthchild"]),
         makeSelector(["id", "tag", "attribute"]),
+        makeSelector(["class", "tag", "attribute"]),
         makeSelector(),
       ])
     )
