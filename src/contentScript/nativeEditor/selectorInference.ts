@@ -80,8 +80,15 @@ function getUniqueAttributeSelectors(element: HTMLElement): string[] {
 }
 
 /** ID selectors and certain other attributes can uniquely identify items */
-function isSelectorUsuallyUnique(selector: string): boolean {
-  return selector.startsWith("#") || UNIQUE_ATTRIBUTES_REGEX.test(selector);
+function isSelectorUsuallyUnique(
+  selector: string,
+  tokenLength: number | undefined
+): boolean {
+  return (
+    selector.startsWith("#") ||
+    UNIQUE_ATTRIBUTES_REGEX.test(selector) ||
+    (selector.startsWith(".") && tokenLength === 1)
+  );
 }
 
 /**
@@ -125,16 +132,21 @@ export function sortBySelector<Item = string>(
  * @see sortBySelector
  */
 export function getSelectorPreference(selector: string): number {
+  // @ts-expect-error: Let's ignore a compile error for this JQueryStatic find
+  const selectorTokens = $.find.tokenize(selector);
   if (selector.includes(":nth-child")) {
     // Structural selectors are fragile to page changes, so give low score
     return 2;
   }
 
-  if (selector.startsWith("#")) {
+  if (
+    selectorTokens.length === 1 &&
+    (selector.startsWith("#") || selector.startsWith("."))
+  ) {
     return -2;
   }
 
-  if (isSelectorUsuallyUnique(selector)) {
+  if (isSelectorUsuallyUnique(selector, selectorTokens.length)) {
     return -1;
   }
 
