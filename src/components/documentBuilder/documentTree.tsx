@@ -23,9 +23,11 @@ import { get } from "lodash";
 import { Card, Col, Container, Row, Image } from "react-bootstrap";
 import {
   BuildDocumentBranch,
+  ButtonDocumentConfig,
   DocumentComponent,
   DocumentElement,
   DynamicPath,
+  PipelineDocumentConfig,
 } from "./documentBuilderTypes";
 import ButtonElement from "@/components/documentBuilder/render/ButtonElement";
 import ListElement from "@/components/documentBuilder/render/ListElement";
@@ -143,7 +145,7 @@ export function getComponentDefinition(
     }
 
     case "pipeline": {
-      const { pipeline } = config;
+      const { pipeline } = config as PipelineDocumentConfig;
 
       if (typeof pipeline !== "undefined" && !isPipelineExpression(pipeline)) {
         console.debug("Expected pipeline expression for pipeline", {
@@ -163,7 +165,8 @@ export function getComponentDefinition(
     }
 
     case "button": {
-      const { title, onClick, ...props } = config;
+      const { title, onClick, variant, size, className } =
+        config as ButtonDocumentConfig;
       if (typeof onClick !== "undefined" && !isPipelineExpression(onClick)) {
         console.debug("Expected pipeline expression for onClick", {
           componentType: "button",
@@ -178,7 +181,9 @@ export function getComponentDefinition(
           children: title,
           onClick: onClick.__value__,
           tracePath,
-          ...props,
+          variant,
+          size,
+          className,
         },
       };
     }
