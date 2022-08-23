@@ -223,7 +223,7 @@ const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = ({
 
           const isButton = isButtonElement(element);
 
-          let subPipelineLabel = element.config.label;
+          let subPipelineLabel = element.config.label as string;
           if (isEmpty(subPipelineLabel)) {
             subPipelineLabel = isButton ? "button" : "brick";
           }
