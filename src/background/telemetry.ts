@@ -29,20 +29,13 @@ import {
 import { allowsTrack } from "@/telemetry/dnt";
 import { DBSchema, openDB } from "idb/with-async-ittr";
 
-// 1. open a database, has a key and a storage number
-// 2. create an object store in the database
-// 3. start a transaction and make a request to do some database operation, like
-// adding or retrieving data
-// 4. wait for the operation to complete by listening to the right kind of dom event
-// 5. retrieve the results, which are found on the request object
-
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
 const TELEMETRY_DB_NAME = "telemetrydb";
 const TELEMETRY_DB_VERSION_NUMBER = 1;
 const TELEMETRY_EVENT_OBJECT_STORE = "events";
 
-export interface UserTelemetryEvent {
+interface UserTelemetryEvent {
   uid: string;
   event: string;
   timestamp: number;
