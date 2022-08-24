@@ -22,6 +22,7 @@ import {
   KBarAnimator,
   KBarPositioner,
   KBarProvider,
+  KBarPortal,
   KBarSearch,
   useKBar,
   useRegisterActions,
@@ -125,12 +126,14 @@ const KBarComponent: React.FC = () => {
   useActions();
 
   return (
-    <KBarPositioner style={{ zIndex: MAX_Z_INDEX }}>
-      <KBarAnimator style={animatorStyle}>
-        <KBarSearch style={searchStyle} />
-        <QuickBarResults />
-      </KBarAnimator>
-    </KBarPositioner>
+    <KBarPortal>
+      <KBarPositioner style={{ zIndex: MAX_Z_INDEX }}>
+        <KBarAnimator style={animatorStyle}>
+          <KBarSearch style={searchStyle} />
+          <QuickBarResults />
+        </KBarAnimator>
+      </KBarPositioner>
+    </KBarPortal>
   );
 };
 
