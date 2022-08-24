@@ -108,9 +108,4 @@ export type ElementUIState = {
    * UI state of foundation and blocks in the extension pipeline
    */
   nodeUIStates: Record<UUID, NodeUIState>;
-
-  /**
-   * Is the action menu expanded in the sidebar entry?
-   */
-  isActionMenuOpen?: boolean;
 };

@@ -18,7 +18,6 @@
 import styles from "./Sidebar.module.scss";
 
 import React, { FormEvent, useContext, useMemo, useState } from "react";
-import { actions } from "@/pageEditor/slices/editorSlice";
 import { PageEditorTabContext } from "@/pageEditor/context";
 import { lowerCase, sortBy } from "lodash";
 import { sleep, getRecipeById } from "@/utils";
@@ -45,8 +44,6 @@ import useAddElement from "@/pageEditor/hooks/useAddElement";
 import {
   faAngleDoubleLeft,
   faAngleDoubleRight,
-  faFileExport,
-  faFileImport,
   faSync,
 } from "@fortawesome/free-solid-svg-icons";
 import { CSSTransition } from "react-transition-group";
@@ -62,9 +59,8 @@ import {
   selectAllDeletedElementIds,
   selectElements,
   selectExpandedRecipeId,
-  selectIsAddToRecipeModalVisible,
 } from "@/pageEditor/slices/editorSelectors";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useGetRecipesQuery } from "@/services/api";
@@ -94,46 +90,6 @@ const ReloadButton: React.VoidFunctionComponent = () => (
     <FontAwesomeIcon icon={faSync} />
   </Button>
 );
-
-const AddToRecipeButton: React.VFC<{ disabled: boolean }> = ({ disabled }) => {
-  const dispatch = useDispatch();
-
-  return (
-    <Button
-      type="button"
-      size="sm"
-      variant="light"
-      title="Add extension to a blueprint"
-      onClick={() => {
-        dispatch(actions.showAddToRecipeModal());
-      }}
-      disabled={disabled}
-    >
-      <FontAwesomeIcon icon={faFileImport} size="lg" />
-    </Button>
-  );
-};
-
-const RemoveFromRecipeButton: React.VFC<{ disabled: boolean }> = ({
-  disabled,
-}) => {
-  const dispatch = useDispatch();
-
-  return (
-    <Button
-      type="button"
-      size="sm"
-      variant="light"
-      title="Remove extension from blueprint"
-      onClick={() => {
-        dispatch(actions.showRemoveFromRecipeModal());
-      }}
-      disabled={disabled}
-    >
-      <FontAwesomeIcon icon={faFileExport} size="lg" />
-    </Button>
-  );
-};
 
 const DropdownEntry: React.VoidFunctionComponent<{
   caption: string;
@@ -206,20 +162,6 @@ const SidebarExpanded: React.VoidFunctionComponent<{
 
   const { availableInstalledIds, availableDynamicIds, unavailableCount } =
     useInstallState(installed, elements);
-
-  const activeElement = elements.find(
-    (element) => element.uuid === activeElementId
-  );
-
-  const isAddToRecipeModalVisible = useSelector(
-    selectIsAddToRecipeModalVisible
-  );
-  const addToRecipeButtonDisabled =
-    isAddToRecipeModalVisible ||
-    activeElement === undefined ||
-    activeElement.recipe != null;
-
-  const removeFromRecipeButtonDisabled = activeElement?.recipe == null;
 
   const elementHash = hash(
     sortBy(
@@ -369,10 +311,6 @@ const SidebarExpanded: React.VoidFunctionComponent<{
             </DropdownButton>
 
             {showDeveloperUI && <ReloadButton />}
-
-            <AddToRecipeButton disabled={addToRecipeButtonDisabled} />
-
-            <RemoveFromRecipeButton disabled={removeFromRecipeButtonDisabled} />
           </div>
           <Button
             variant="light"
