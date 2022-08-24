@@ -37,9 +37,6 @@ const CodeEditor: React.FunctionComponent<OwnProps> = ({
   openEditor = noop,
 }) => {
   const [{ value }, meta, { setValue }] = useField<string>(name);
-  console.log("CodeEditor", {
-    value,
-  });
   const { submitForm } = useFormikContext();
 
   // Have to use useRef because AceEditor only binds on mount

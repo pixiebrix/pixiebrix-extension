@@ -362,7 +362,25 @@ export const appApi = createApi({
         "EditablePackages",
       ],
     }),
-    updateBrick: builder.mutation<
+    getInvitations: builder.query<PendingInvitation[], void>({
+      query: () => ({ url: "/api/invitations/me", method: "get" }),
+      providesTags: ["Invitations"],
+    }),
+    getPackage: builder.query<Package, { id: UUID }>({
+      query: ({ id }) => ({ url: `/api/bricks/${id}/`, method: "get" }),
+      providesTags: (result, error, { id }) => [{ type: "Package", id }],
+    }),
+    createPackage: builder.mutation<PackageUpsertResponse, UnknownObject>({
+      query(data) {
+        return {
+          url: "api/bricks/",
+          method: "post",
+          data,
+        };
+      },
+      invalidatesTags: ["Recipes", "EditablePackages"],
+    }),
+    updatePackage: builder.mutation<
       PackageUpsertResponse,
       { id: UUID } & UnknownObject
     >({
@@ -379,13 +397,15 @@ export const appApi = createApi({
         "EditablePackages",
       ],
     }),
-    getInvitations: builder.query<PendingInvitation[], void>({
-      query: () => ({ url: "/api/invitations/me", method: "get" }),
-      providesTags: ["Invitations"],
-    }),
-    getPackage: builder.query<Package, { id: UUID }>({
-      query: ({ id }) => ({ url: `/api/bricks/${id}/`, method: "get" }),
-      providesTags: (result, error, { id }) => [{ type: "Package", id }],
+    deletePackage: builder.mutation<void, { id: UUID }>({
+      query({ id }) {
+        return { url: `/api/bricks/${id}/`, method: "delete" };
+      },
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Package", id },
+        "Recipes",
+        "EditablePackages",
+      ],
     }),
     listPackageVersions: builder.query<PackageVersion[], { id: UUID }>({
       query: ({ id }) => ({
@@ -427,9 +447,11 @@ export const {
   useGetEditablePackagesQuery,
   useCreateRecipeMutation,
   useUpdateRecipeMutation,
-  useUpdateBrickMutation,
   useGetInvitationsQuery,
   useGetPackageQuery,
+  useCreatePackageMutation,
+  useUpdatePackageMutation,
+  useDeletePackageMutation,
   useListPackageVersionsQuery,
   useUpdateScopeMutation,
 } = appApi;

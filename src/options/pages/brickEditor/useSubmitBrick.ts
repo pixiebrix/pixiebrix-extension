@@ -27,35 +27,33 @@ import { Definition, UnsavedRecipeDefinition } from "@/types/definitions";
 import useReinstall from "@/options/pages/blueprints/utils/useReinstall";
 import notify from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
-import { getLinkedApiClient } from "@/services/apiClient";
 import {
   clearServiceCache,
   reactivateEveryTab,
 } from "@/background/messenger/api";
 import { loadBrickYaml } from "@/runtime/brickYaml";
-import { PackageUpsertResponse } from "@/types/contract";
-import { appApi, useUpdateBrickMutation } from "@/services/api";
+import {
+  useCreatePackageMutation,
+  useUpdatePackageMutation,
+  useDeletePackageMutation,
+} from "@/services/api";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { AxiosResponse } from "axios";
+import { UUID } from "@/core";
 
 type SubmitOptions = {
   create: boolean;
-  url: string;
 };
 
 type SubmitCallbacks = {
   validate: (values: EditorValues) => Promise<BrickValidationResult>;
-  remove: () => Promise<void>;
+  remove: (id: UUID) => Promise<void>;
   submit: (
     values: EditorValues,
     helpers: { setErrors: (errors: unknown) => void }
   ) => Promise<void>;
 };
 
-function useSubmitBrick({
-  create = false,
-  url,
-}: SubmitOptions): SubmitCallbacks {
+function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
   const [, refresh] = useRefresh({ refreshOnMount: false });
   const reinstall = useReinstall();
   const history = useHistory();
@@ -66,23 +64,27 @@ function useSubmitBrick({
     []
   );
 
-  const remove = useCallback(async () => {
-    try {
-      const client = await getLinkedApiClient();
-      await client.delete(url);
-    } catch (error) {
-      notify.error({ message: "Error deleting brick", error });
-      return;
-    }
+  const [createPackage] = useCreatePackageMutation();
+  const [updatePackage] = useUpdatePackageMutation();
+  const [deletePackage] = useDeletePackageMutation();
 
-    notify.success("Deleted brick");
-    reportEvent("BrickDelete");
+  const remove = useCallback(
+    async (id: UUID) => {
+      try {
+        await deletePackage({ id }).unwrap();
+      } catch (error) {
+        notify.error({ message: "Error deleting brick", error });
+        return;
+      }
 
-    dispatch(appApi.util.invalidateTags(["Recipes", "EditablePackages"]));
-    dispatch(push("/workshop"));
-  }, [url, dispatch]);
+      notify.success("Deleted brick");
+      reportEvent("BrickDelete");
 
-  const [updateBrick] = useUpdateBrickMutation();
+      dispatch(push("/workshop"));
+    },
+    [dispatch]
+  );
+
   const submit = useCallback(
     async (values, { setErrors, resetForm }) => {
       const { config, reactivate: reinstallBlueprint } = values;
@@ -93,17 +95,10 @@ function useSubmitBrick({
       const { kind, metadata } = unsavedBrickJson;
 
       try {
-        let data: PackageUpsertResponse;
-        if (create) {
-          const client = await getLinkedApiClient();
-          const response = await client.post<PackageUpsertResponse>(url, {
-            ...values,
-            kind,
-          });
-          data = response.data;
-        } else {
-          data = await updateBrick({ ...values, kind }).unwrap();
-        }
+        const data = await (create
+          ? createPackage({ ...values, kind })
+          : updatePackage({ ...values, kind })
+        ).unwrap();
 
         // We attach the handler below, and don't want it to block the save
         void (async () => {
@@ -142,8 +137,6 @@ function useSubmitBrick({
         // Reset initial values of the form so dirty=false
         resetForm({ values });
 
-        dispatch(appApi.util.invalidateTags(["Recipes", "EditablePackages"]));
-
         if (create) {
           history.push(`/workshop/bricks/${data.id}/`);
         }
@@ -161,7 +154,7 @@ function useSubmitBrick({
         }
       }
     },
-    [dispatch, history, refresh, reinstall, url, create]
+    [dispatch, history, refresh, reinstall, create]
   );
 
   return { submit, validate, remove: create ? null : remove };

@@ -29,7 +29,10 @@ export type SerializableAxiosError = Except<AxiosError, "toJSON">;
 
 // Copy of axios.isAxiosError, without risking to import the whole untreeshakeable axios library
 export function isAxiosError(error: unknown): error is SerializableAxiosError {
-  if (isObject(error) && Boolean(error.isAxiosError)) {
+  if (
+    isObject(error) &&
+    (Boolean(error.isAxiosError) || error.name === "AxiosError")
+  ) {
     // Axios offers its own serialization method, but it doesn't include the response.
     // By deleting toJSON, the serialize-error library will use its default serialization
     delete error.toJSON;
