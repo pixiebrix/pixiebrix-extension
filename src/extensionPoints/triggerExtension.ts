@@ -301,6 +301,8 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     // NOP: the removeExtensions method doesn't need to unregister anything from the page because the
     // observers/handlers are installed for the extensionPoint itself, not the extensions. I.e., there's a single
     // load/click/etc. trigger that's shared by all extensions using this extension point.
+    // We need to cancelObservers in order to stop the trigger when extension is selected.
+    this.cancelObservers();
     console.debug("triggerExtension:removeExtensions");
   }
 
