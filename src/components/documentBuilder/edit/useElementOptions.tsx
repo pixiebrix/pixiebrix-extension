@@ -44,7 +44,9 @@ const useElementOptions = (
       }
 
       if (isPipelineElement(element)) {
-        const PipelineOptionsFields = () => <PipelineOptions />;
+        const PipelineOptionsFields = () => (
+          <PipelineOptions elementName={elementName} />
+        );
         return PipelineOptionsFields;
       }
 

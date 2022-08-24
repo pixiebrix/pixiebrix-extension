@@ -75,6 +75,7 @@ test("sets default config and children for card", () => {
 
 test("sets default config for block", () => {
   const expectedConfig = {
+    label: "Brick",
     pipeline: {
       __type__: "pipeline",
       __value__: [] as BlockPipeline,
@@ -87,6 +88,7 @@ test("sets default config for block", () => {
 
 test("sets default config for button", () => {
   const expectedConfig = {
+    label: "Button",
     title: "Action",
     onClick: {
       __type__: "pipeline",
