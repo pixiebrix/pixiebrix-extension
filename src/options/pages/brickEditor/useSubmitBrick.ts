@@ -34,8 +34,9 @@ import {
 } from "@/background/messenger/api";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { PackageUpsertResponse } from "@/types/contract";
-import { appApi } from "@/services/api";
+import { appApi, useUpdateBrickMutation } from "@/services/api";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
+import { AxiosResponse } from "axios";
 
 type SubmitOptions = {
   create: boolean;
@@ -81,6 +82,7 @@ function useSubmitBrick({
     dispatch(push("/workshop"));
   }, [url, dispatch]);
 
+  const [updateBrick] = useUpdateBrickMutation();
   const submit = useCallback(
     async (values, { setErrors, resetForm }) => {
       const { config, reactivate: reinstallBlueprint } = values;
@@ -91,13 +93,17 @@ function useSubmitBrick({
       const { kind, metadata } = unsavedBrickJson;
 
       try {
-        const client = await getLinkedApiClient();
-        const { data } = await client[
-          create ? "post" : "put"
-        ]<PackageUpsertResponse>(url, {
-          ...values,
-          kind,
-        });
+        let data: PackageUpsertResponse;
+        if (create) {
+          const client = await getLinkedApiClient();
+          const response = await client.post<PackageUpsertResponse>(url, {
+            ...values,
+            kind,
+          });
+          data = response.data;
+        } else {
+          data = await updateBrick({ ...values, kind }).unwrap();
+        }
 
         // We attach the handler below, and don't want it to block the save
         void (async () => {

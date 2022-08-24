@@ -47,6 +47,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { produce } from "immer";
 import { sortBy } from "lodash";
 import { serializeError } from "serialize-error";
+import { UnknownObject } from "@/types";
 
 type QueryArgs = {
   /**
@@ -355,7 +356,28 @@ export const appApi = createApi({
           },
         };
       },
-      invalidatesTags: ["Recipes", "EditablePackages"],
+      invalidatesTags: (result, error, { packageId }) => [
+        { type: "Package", id: packageId },
+        "Recipes",
+        "EditablePackages",
+      ],
+    }),
+    updateBrick: builder.mutation<
+      PackageUpsertResponse,
+      { id: UUID } & UnknownObject
+    >({
+      query(data) {
+        return {
+          url: `api/bricks/${data.id}/`,
+          method: "put",
+          data,
+        };
+      },
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Package", id },
+        "Recipes",
+        "EditablePackages",
+      ],
     }),
     getInvitations: builder.query<PendingInvitation[], void>({
       query: () => ({ url: "/api/invitations/me", method: "get" }),
@@ -405,6 +427,7 @@ export const {
   useGetEditablePackagesQuery,
   useCreateRecipeMutation,
   useUpdateRecipeMutation,
+  useUpdateBrickMutation,
   useGetInvitationsQuery,
   useGetPackageQuery,
   useListPackageVersionsQuery,
