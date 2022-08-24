@@ -275,6 +275,7 @@ test("getSelectorPreference: matches expected sorting", () => {
   expect(getSelectorPreference('[data-cy="b4da55"]')).toBe(-3);
   expect(getSelectorPreference(".navItem")).toBe(-2);
   expect(getSelectorPreference(".birdsArentReal")).toBe(-2);
+  expect(getSelectorPreference("#parentId .birdsArentReal")).toBe(-1);
   expect(getSelectorPreference("[data-test-id='b4da55'] input")).toBe(-1);
 
   expect(getSelectorPreference("#parentId a")).toBe(-1);
