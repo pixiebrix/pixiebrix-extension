@@ -82,7 +82,7 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
 
       dispatch(push("/workshop"));
     },
-    [dispatch]
+    [dispatch, deletePackage]
   );
 
   const submit = useCallback(
@@ -154,7 +154,7 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
         }
       }
     },
-    [dispatch, history, refresh, reinstall, create]
+    [history, refresh, reinstall, create, createPackage, updatePackage]
   );
 
   return { submit, validate, remove: create ? null : remove };

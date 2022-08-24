@@ -154,7 +154,9 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
                       <Button
                         disabled={isSubmitting}
                         variant="danger"
-                        onClick={() => remove(id)}
+                        onClick={() => {
+                          void remove(id);
+                        }}
                       >
                         Delete Brick
                       </Button>
