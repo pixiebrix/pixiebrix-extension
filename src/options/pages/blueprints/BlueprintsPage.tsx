@@ -30,14 +30,13 @@ import {
   selectShowShareContext,
 } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
 import { useTitle } from "@/hooks/title";
-import Loader from "@/components/Loader";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import ConvertToRecipeModal from "./modals/ConvertToRecipeModal";
 import ShareRecipeModal from "./modals/ShareRecipeModal/ShareRecipeModal";
 
 const BlueprintsPage: React.FunctionComponent = () => {
   useTitle("Blueprints");
-  const { installables, isLoading, error } = useInstallables();
+  const { installables, error } = useInstallables();
   const showLogsContext = useSelector<RootState, LogsContext>(
     selectShowLogsContext
   );
@@ -46,16 +45,12 @@ const BlueprintsPage: React.FunctionComponent = () => {
   );
 
   const body = useMemo(() => {
-    if (isLoading) {
-      return <Loader />;
-    }
-
     if (error) {
       return <ErrorDisplay error={error} />;
     }
 
     return <BlueprintsCard installables={installables} />;
-  }, [installables, isLoading, error]);
+  }, [installables, error]);
 
   return (
     <div className="h-100">
