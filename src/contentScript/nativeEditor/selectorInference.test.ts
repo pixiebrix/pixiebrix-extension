@@ -271,10 +271,14 @@ describe("sortBySelector", () => {
 });
 
 test("getSelectorPreference: matches expected sorting", () => {
-  expect(getSelectorPreference("#best-link-on-the-page")).toBe(-2);
-  expect(getSelectorPreference('[data-cy="b4da55"]')).toBe(-1);
-  expect(getSelectorPreference(".navItem")).toBe(0);
-  expect(getSelectorPreference(".birdsArentReal")).toBe(0);
+  expect(getSelectorPreference("#best-link-on-the-page")).toBe(-4);
+  expect(getSelectorPreference('[data-cy="b4da55"]')).toBe(-3);
+  expect(getSelectorPreference(".navItem")).toBe(-2);
+  expect(getSelectorPreference(".birdsArentReal")).toBe(-2);
+  expect(getSelectorPreference("#parentId .birdsArentReal")).toBe(-1);
+  expect(getSelectorPreference("[data-test-id='b4da55'] input")).toBe(-1);
+
+  expect(getSelectorPreference("#parentId a")).toBe(-1);
   const selector = '[aria-label="Click elsewhere"]';
   expect(getSelectorPreference(selector)).toBe(1);
 
@@ -318,6 +322,31 @@ describe("inferSelectors", () => {
         <div>
           <input aria-label="foo" data-cy="baz" class="zoolander" />
           <input aria-label="bar" data-cy="zan" />
+        </div>
+      `
+    );
+  });
+
+  test("multi class selectors", () => {
+    expectSelectors(
+      ["[data-cy='baz']"],
+      html`
+        <div>
+          <input aria-label="foo" data-cy="baz" class="zoolander" />
+          <input aria-label="bar" data-cy="zan" class="zoolander" />
+        </div>
+      `
+    );
+  });
+
+  test("prefer unique class selectors", () => {
+    expectSelectors(
+      [".iAmAUniqueGreatClassSelector", "[aria-label='bar']"],
+      html`
+        <div id="foo">
+          <input aria-label="foo" class="zoolander" />
+          <input aria-label="test" class="zoolander" />
+          <input aria-label="bar" class="iAmAUniqueGreatClassSelector" />
         </div>
       `
     );
