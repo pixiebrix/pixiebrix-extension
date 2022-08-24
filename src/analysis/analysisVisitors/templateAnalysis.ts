@@ -21,31 +21,53 @@ import { BlockPosition } from "@/blocks/types";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
+import { Template } from "nunjucks";
 
 const TEMPLATE_ERROR_MESSAGE =
   "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";
+
+type PushAnnotationArgs = {
+  position: BlockPosition;
+  expression: Expression<unknown>;
+};
 
 class TemplateAnalysis extends AnalysisVisitor {
   get id() {
     return "template";
   }
 
+  private pushErrorAnnotation({ position, expression }: PushAnnotationArgs) {
+    this.annotations.push({
+      position,
+      message: TEMPLATE_ERROR_MESSAGE,
+      analysisId: this.id,
+      type: AnnotationType.Error,
+      detail: expression,
+    });
+  }
+
   override async visitExpression(
     position: BlockPosition,
     expression: Expression<unknown>
   ): Promise<void> {
+    if (!isTemplateExpression(expression)) {
+      return;
+    }
+
+    // We don't want to show duplicated message,
+    // even if both conditions are true
     if (
-      isTemplateExpression(expression) &&
       expression.__type__ !== "mustache" &&
       isMustacheOnly(expression.__value__)
     ) {
-      this.annotations.push({
-        position,
-        message: TEMPLATE_ERROR_MESSAGE,
-        analysisId: this.id,
-        type: AnnotationType.Error,
-        detail: expression,
-      });
+      this.pushErrorAnnotation({ position, expression });
+    } else if (expression.__type__ === "nunjucks") {
+      try {
+        // eslint-disable-next-line no-new
+        new Template(expression.__value__, undefined, undefined, true);
+      } catch {
+        this.pushErrorAnnotation({ position, expression });
+      }
     }
   }
 }
