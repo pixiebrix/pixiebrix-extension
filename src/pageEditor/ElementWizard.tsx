@@ -39,7 +39,7 @@ import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
 import cx from "classnames";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
-import useRecipeSaver from "@/pageEditor/panes/save/useRecipeSaver";
+import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "./slices/sessionSelectors";
@@ -84,7 +84,7 @@ const ElementWizard: React.FunctionComponent<{
     useFormikContext<FormState>();
 
   const { isSaving: isSavingWizard, save } = useSavingWizard();
-  const { save: saveRecipe, isSaving: isSavingRecipe } = useRecipeSaver();
+  const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
   const isSaving = isSavingRecipe || isSavingWizard;
 
   const sessionId = useSelector(selectSessionId);

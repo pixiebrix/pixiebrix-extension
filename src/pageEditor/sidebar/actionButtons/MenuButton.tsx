@@ -23,10 +23,17 @@ import AsyncButton from "@/components/AsyncButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
 
-const MenuButton: React.FC<{
-  onClick: () => void;
-}> = ({ onClick }) => (
-  <AsyncButton onClick={onClick} className={cx(rootStyles.button, styles.menu)}>
+export type MenuButtonProps = {
+  onClick: () => void | Promise<void>;
+  ref?: React.ForwardedRef<HTMLButtonElement>;
+};
+
+const MenuButton: React.FC<MenuButtonProps> = ({ onClick, ref }) => (
+  <AsyncButton
+    onClick={onClick}
+    ref={ref}
+    className={cx(rootStyles.button, styles.menu)}
+  >
     <FontAwesomeIcon icon={faEllipsisH} />
   </AsyncButton>
 );

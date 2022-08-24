@@ -32,7 +32,7 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import AskQuestionModal from "@/pageEditor/askQuestion/AskQuestionModal";
-import useRecipeSaver from "@/pageEditor/panes/save/useRecipeSaver";
+import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import Logs from "@/pageEditor/tabs/Logs";
 import EditRecipe from "@/pageEditor/tabs/editRecipeTab/EditRecipe";
@@ -56,7 +56,7 @@ const RecipePane: React.VFC = () => {
     setLayoutCounter(layoutCounter + 1);
   };
 
-  const { save: saveRecipe, isSaving: isSavingRecipe } = useRecipeSaver();
+  const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
   const dispatch = useDispatch();
   const resetRecipe = useResetRecipe();
   const removeRecipe = useRemoveRecipe();

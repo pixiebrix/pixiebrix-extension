@@ -24,6 +24,7 @@ import { getLabel } from "@/pageEditor/sidebar/common";
 import {
   ExtensionIcon,
   NotAvailableIcon,
+  UnsavedChangesIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
 import { UUID } from "@/core";
 import {
@@ -39,9 +40,9 @@ import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
   selectActiveElement,
   selectActiveRecipeId,
-  selectIsActiveElementActionMenuOpen,
+  selectElementIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
-import EntryMenu from "@/pageEditor/sidebar/EntryMenu";
+import ExtensionActionMenu from "@/pageEditor/sidebar/ExtensionActionMenu";
 
 /**
  * A sidebar menu entry corresponding to an extension that is new or is currently being edited.
@@ -62,10 +63,7 @@ const DynamicEntry: React.FunctionComponent<{
   // Set the alternate background if this item isn't active, but either its recipe or another item in its recipe is active
   const hasRecipeBackground =
     !isActive && recipeId && item.recipe?.id === recipeId;
-  const isActionMenuOpen = useSelector(selectIsActiveElementActionMenuOpen);
-  const toggleActionMenu = () => {
-    dispatch(actions.toggleElementActionMenu());
-  };
+  const isDirty = useSelector(selectElementIsDirty(item.uuid));
 
   const isButton = item.type === "menuItem";
 
@@ -119,13 +117,12 @@ const DynamicEntry: React.FunctionComponent<{
           <NotAvailableIcon />
         </span>
       )}
-      {isActive && (
-        <EntryMenu
-          item={item}
-          isOpen={isActionMenuOpen}
-          toggleMenu={toggleActionMenu}
-        />
+      {isDirty && (
+        <span className={cx(styles.icon, "text-danger")}>
+          <UnsavedChangesIcon />
+        </span>
       )}
+      {isActive && <ExtensionActionMenu elementId={item.uuid} />}
     </ListGroup.Item>
   );
 };

@@ -40,6 +40,7 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { RecipeDefinition } from "@/types/definitions";
 import * as semver from "semver";
+import RecipeActionMenu from "@/pageEditor/sidebar/RecipeActionMenu";
 
 export type RecipeEntryProps = PropsWithChildren<{
   recipe: RecipeDefinition | undefined;
@@ -108,6 +109,7 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
             />
           </span>
         )}
+        {isActive && <RecipeActionMenu recipeId={recipeId} />}
       </Accordion.Toggle>
       <Accordion.Collapse eventKey={recipeId}>
         <>{children}</>
