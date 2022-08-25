@@ -22,7 +22,7 @@ import OnboardingChecklistCard, {
 } from "@/components/onboarding/OnboardingChecklistCard";
 
 export default {
-  title: "Onboarding/OnboardingChecklistCard",
+  title: "Components/OnboardingChecklistCard",
   component: OnboardingChecklistCard,
 } as ComponentMeta<typeof OnboardingChecklistCard>;
 

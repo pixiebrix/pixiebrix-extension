@@ -15,11 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import styles from "react-image-crop/dist/ReactCrop.css?loadAsUrl";
+import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFieldContext";
+import { Schema } from "@/core";
+import HeadingStyleWidget from "./widgets/HeadingStyleWidget";
 
-const ImageCropStylesheet: React.FC = () => (
-  <link rel="stylesheet" href={styles} />
-);
+export const isHeadingStyleField = (fieldDefinition: Schema) =>
+  fieldDefinition.type === "string" &&
+  fieldDefinition.format === "heading-style";
 
-export default ImageCropStylesheet;
+const HeadingStyleField = defaultFieldFactory(HeadingStyleWidget);
+export default HeadingStyleField;

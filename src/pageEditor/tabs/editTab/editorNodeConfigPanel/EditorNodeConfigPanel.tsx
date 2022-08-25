@@ -27,10 +27,7 @@ import blockRegistry from "@/blocks/registry";
 import { showOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import getType from "@/runtime/getType";
-import { useSelector } from "react-redux";
-import { selectActiveNodeError } from "@/pageEditor/slices/editorSelectors";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
-import { ErrorLevel } from "@/pageEditor/uiState/uiStateTypes";
 import AnalysisResult from "@/pageEditor/tabs/editTab/AnalysisResult";
 
 const EditorNodeConfigPanel: React.FC<{
@@ -64,28 +61,8 @@ const EditorNodeConfigPanel: React.FC<{
     />
   );
 
-  const errorInfo = useSelector(selectActiveNodeError);
-  const blockErrorMessage = errorInfo?.errors
-    ?.filter((error) => error.level === ErrorLevel.Critical)
-    ?.map((x) => x.message)
-    .join(" ");
-  const blockWarningMessage = errorInfo?.errors
-    ?.filter((error) => error.level === ErrorLevel.Warning)
-    ?.map((x) => x.message)
-    .join(" ");
-
   return (
     <>
-      {blockErrorMessage && (
-        <Row>
-          <Col className="text-danger">{blockErrorMessage}</Col>
-        </Row>
-      )}
-      {blockWarningMessage && (
-        <Row>
-          <Col className="text-warning">{blockWarningMessage}</Col>
-        </Row>
-      )}
       <AnalysisResult />
       <Row className={styles.topRow}>
         <Col xl>

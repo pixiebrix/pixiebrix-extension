@@ -15,18 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// IMPORTANT: do not import anything that has a transitive dependency of the messenger.
+// See for more information: https://github.com/pixiebrix/pixiebrix-extension/issues/4058
 import "./contentScript.scss";
 import { uuidv4 } from "@/types/helpers";
-import { onContextInvalidated } from "@/errors/contextInvalidated";
 import {
   isInstalledInThisSession,
   isReadyInThisDocument,
   setInstalledInThisSession,
   setReadyInThisDocument,
 } from "@/contentScript/ready";
+import { logPromiseDuration } from "@/utils";
 
 // See note in `@/contentScript/ready.ts` for further details about the lifecycle of content scripts
 async function initContentScript() {
+  const uuid = uuidv4();
+
   if (isInstalledInThisSession()) {
     console.error(
       "contentScript: was requested twice in the same context, aborting injection"
@@ -39,28 +43,22 @@ async function initContentScript() {
       "contentScript: injecting again because the previous context was invalidated"
     );
   } else {
-    console.debug("contentScript: injecting");
+    console.debug(`contentScript: injecting ${uuid}`);
   }
 
   setInstalledInThisSession();
-  const uuid = uuidv4();
-
-  // eslint-disable-next-line promise/prefer-await-to-then -- It's an unrelated event listener
-  void onContextInvalidated().then(() => {
-    console.debug("contentScript: invalidated", uuid);
-  });
-
-  console.time(`contentScript: ready ${uuid}`);
 
   // Keeping the import separate ensures that no side effects are run until this point
-  const { init } = await import(
-    /* webpackChunkName: "contentScriptCore" */ "./contentScriptCore"
+  const { init } = await logPromiseDuration(
+    "contentScript: imported", // "imported" timing includes the parsing of the file, which can take 500-1000ms
+    import(/* webpackChunkName: "contentScriptCore" */ "./contentScriptCore")
   );
-  await init();
+  await init(uuid);
   setReadyInThisDocument(uuid);
-  console.timeEnd("contentScript ready");
 }
 
-void initContentScript().catch((error) => {
-  throw new Error("Error initializing contentScript", { cause: error });
-});
+void logPromiseDuration("contentScript: ready", initContentScript()).catch(
+  (error) => {
+    throw new Error("Error initializing contentScript", { cause: error });
+  }
+);

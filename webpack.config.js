@@ -223,9 +223,11 @@ module.exports = (env, options) =>
         "sidebar/sidebar",
         "tinyPages/ephemeralForm",
         "tinyPages/permissionsPopup",
+        "tinyPages/browserActionInstantHandler",
 
         // Tiny files without imports
         "tinyPages/frame",
+        "tinyPages/alert",
         "tinyPages/devtools",
 
         // The script that gets injected into the host page
@@ -317,6 +319,8 @@ module.exports = (env, options) =>
         ENVIRONMENT: options.mode,
         WEBEXT_MESSENGER_LOGGING: "false",
         ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl ?? "extension://dynamichost/",
+        // Record telemetry events in development?
+        DEV_EVENT_TELEMETRY: false,
 
         // If not found, "undefined" will cause the build to fail
         SERVICE_URL: undefined,

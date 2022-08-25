@@ -16,9 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { isExtensionContext } from "webext-detect-page";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import reportError from "@/telemetry/reportError";
 import { UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
@@ -46,12 +44,6 @@ class ErrorBoundary extends Component<UnknownObject, State> {
       errorMessage: getErrorMessage(error),
       stack: error.stack,
     };
-  }
-
-  override componentDidCatch(error: Error): void {
-    if (isExtensionContext()) {
-      reportError(error);
-    }
   }
 
   async reloadSidebar() {

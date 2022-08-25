@@ -21,7 +21,7 @@ import { initTelemetry } from "@/background/telemetry";
 import { getUID } from "@/background/messenger/api";
 import { DNT_STORAGE_KEY, allowsTrack } from "@/telemetry/dnt";
 import { gt } from "semver";
-import { getInstallURL } from "@/services/baseService";
+import { getBaseURL } from "@/services/baseService";
 
 const UNINSTALL_URL = "https://www.pixiebrix.com/uninstall/";
 
@@ -45,7 +45,7 @@ async function openInstallPage() {
     // Automatically reuse the tab that is part of the onboarding flow
     // https://github.com/pixiebrix/pixiebrix-extension/pull/3506
     await browser.tabs.update(accountTab.id, {
-      url: await getInstallURL(),
+      url: await getBaseURL(),
     });
   } else {
     await browser.runtime.openOptionsPage();

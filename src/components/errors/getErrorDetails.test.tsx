@@ -135,14 +135,13 @@ test("Network error", async () => {
         "Error: Network Error\n    at createError (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:11801:15)\n    at _callee$ (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:10915:126)\n    at tryCatch (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:34316:40)\n    at Generator.invoke [as _invoke] (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:34547:22)\n    at Generator.throw (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:34372:21)\n    at asyncGeneratorStep (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:10798:24)\n    at _throw (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:10824:9)",
     },
     name: "ClientNetworkError",
-    message:
-      "No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/network-errors for troubleshooting information",
+    message: "Network error. No response received.",
     stack:
       "ClientNetworkError: No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/network-errors for troubleshooting information\n    at enrichBusinessRequestError (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:54834:12)\n    at async serializableAxiosRequest (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:43429:15)\n    at async handleMessage (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:67712:22)",
   };
 
   const { title, detailsElement } = getErrorDetails(error);
-  expect(title).toBe("Network error");
+  expect(title).toBe("Network error. No response received.");
   const rendered = render(detailsElement);
   await waitForEffect();
   expect(rendered.asFragment()).toMatchSnapshot();

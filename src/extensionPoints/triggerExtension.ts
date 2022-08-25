@@ -23,8 +23,6 @@ import {
   IBlock,
   IExtension,
   IExtensionPoint,
-  Logger,
-  Metadata,
   ReaderOutput,
   ReaderRoot,
   ResolvedExtension,
@@ -54,7 +52,6 @@ import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
 import {
   awaitElementOnce,
-  makeShouldRunExtensionForStateChange,
   pickEventProperties,
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
@@ -232,12 +229,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   private readonly installedEvents = new Set<string>();
 
   /**
-   * A bound version of eventHandler
-   * @private
-   */
-  private readonly boundEventHandler: JQuery.EventHandler<unknown>;
-
-  /**
    * Controller to drop all listeners and timers
    * @private
    */
@@ -247,29 +238,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   // reset on Single Page Application navigation events
   private readonly reportedEvents = new Set<UUID>();
   private readonly reportedErrors = new Set<UUID>();
-
-  /**
-   * Run all trigger extensions for all the provided roots.
-   * @private
-   */
-  // Can't set in constructor because the constructor doesn't have access to debounceOptions
-  private debouncedRunTriggersAndNotify?: (
-    roots: ReaderRoot[],
-    {
-      nativeEvent,
-      shouldRunExtension,
-    }: {
-      nativeEvent: Event | null;
-      shouldRunExtension?: (extension: IExtension) => boolean;
-    }
-  ) => Promise<void>;
-
-  protected constructor(metadata: Metadata, logger: Logger) {
-    super(metadata, logger);
-
-    // Bind so we can pass as callback
-    this.boundEventHandler = this.eventHandler.bind(this);
-  }
 
   public get kind(): "trigger" {
     return "trigger";
@@ -305,13 +273,14 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   }
 
   async install(): Promise<boolean> {
-    const boundRun = this._runTriggersAndNotify.bind(this);
-
-    this.debouncedRunTriggersAndNotify = this.debounceOptions
-      ? debounce(boundRun, this.debounceOptions.waitMillis ?? 0, {
-          ...this.debounceOptions,
-        })
-      : boundRun;
+    if (this.debounceOptions?.waitMillis) {
+      const { waitMillis, ...options } = this.debounceOptions;
+      this.debouncedRunTriggersAndNotify = debounce(
+        this._runTriggersAndNotify,
+        waitMillis,
+        options
+      );
+    }
 
     return this.isAvailable();
   }
@@ -360,7 +329,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         try {
           // This won't impact with other trigger extension points because the handler reference is unique to `this`
           for (const event of this.installedEvents) {
-            $currentElements.off(event, this.boundEventHandler);
+            $currentElements.off(event, this.eventHandler);
           }
         } finally {
           this.installedEvents.clear();
@@ -439,10 +408,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     await this.debouncedRunTriggersAndNotify([element], {
       nativeEvent: event.originalEvent,
-      shouldRunExtension:
-        this.trigger === "statechange"
-          ? makeShouldRunExtensionForStateChange(event.originalEvent)
-          : stubTrue,
     });
   };
 
@@ -508,11 +473,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   /**
    * DO NOT CALL DIRECTLY: should call debouncedRunTriggersAndNotify.
    */
-  private async _runTriggersAndNotify(
+  private readonly _runTriggersAndNotify = async (
     roots: ReaderRoot[],
     // Force parameter to be included to make it explicit which types of triggers pass nativeEvent
     { nativeEvent }: { nativeEvent: Event | null }
-  ): Promise<void> {
+  ): Promise<void> => {
     const promises = roots.map(async (root) =>
       this._runTrigger(root, { nativeEvent })
     );
@@ -524,7 +489,13 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     );
 
     TriggerExtensionPoint.notifyErrors(errors);
-  }
+  };
+
+  /**
+   * Run all trigger extensions for all the provided roots.
+   * @private
+   */
+  private debouncedRunTriggersAndNotify = this._runTriggersAndNotify; // Default to un-debounced
 
   /**
    * Show notification for errors to the user. Caller is responsible for sending error telemetry.
@@ -681,15 +652,15 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   private attachDocumentTrigger(): void {
     const $document = $(document);
 
-    $document.off(this.trigger, this.boundEventHandler);
+    $document.off(this.trigger, this.eventHandler);
 
     // Install the DOM trigger
-    $document.on(this.trigger, this.boundEventHandler);
+    $document.on(this.trigger, this.eventHandler);
 
     this.installedEvents.add(this.trigger);
 
     this.addCancelHandler(() => {
-      $document.off(this.trigger, this.boundEventHandler);
+      $document.off(this.trigger, this.eventHandler);
     });
   }
 
@@ -716,10 +687,10 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       "Removing existing %s handler for extension point",
       this.trigger
     );
-    $element.off(domTrigger, this.boundEventHandler);
+    $element.off(domTrigger, this.eventHandler);
 
     // Install the DOM trigger
-    $element.on(domTrigger, this.boundEventHandler);
+    $element.on(domTrigger, this.eventHandler);
     this.installedEvents.add(domTrigger);
     console.debug(
       "Installed %s event handler on %d elements",

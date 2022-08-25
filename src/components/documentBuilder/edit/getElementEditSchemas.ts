@@ -32,6 +32,7 @@ function getElementEditSchemas(
   elementName: string
 ): SchemaFieldProps[] {
   switch (elementType) {
+    // Provide backwards compatibility for old elements
     case "header_1":
     case "header_2":
     case "header_3": {
@@ -43,13 +44,38 @@ function getElementEditSchemas(
       return [titleEdit, getClassNameEdit(elementName)];
     }
 
+    case "header": {
+      const titleEdit: SchemaFieldProps = {
+        name: joinName(elementName, "config", "title"),
+        schema: { type: "string" },
+        label: "Title",
+      };
+      const heading: SchemaFieldProps = {
+        name: joinName(elementName, "config", "heading"),
+        schema: {
+          type: "string",
+          enum: ["h1", "h2", "h3"],
+          format: "heading-style",
+        },
+        label: "Heading",
+        isRequired: true,
+      };
+      return [titleEdit, heading, getClassNameEdit(elementName)];
+    }
+
     case "text": {
       const textEdit: SchemaFieldProps = {
         name: joinName(elementName, "config", "text"),
         schema: { type: "string" },
         label: "Text",
       };
-      return [textEdit, getClassNameEdit(elementName)];
+      const enableMarkdown: SchemaFieldProps = {
+        name: joinName(elementName, "config", "enableMarkdown"),
+        schema: { type: "boolean" },
+        label: "Enable markdown",
+        isRequired: true,
+      };
+      return [textEdit, enableMarkdown, getClassNameEdit(elementName)];
     }
 
     case "image": {
@@ -89,6 +115,7 @@ function getElementEditSchemas(
         name: joinName(elementName, "config", "title"),
         schema: { type: "string" },
         label: "Title",
+        description: "The text to display on the button.",
       };
       const variantEdit: SchemaFieldProps = {
         name: joinName(elementName, "config", "variant"),

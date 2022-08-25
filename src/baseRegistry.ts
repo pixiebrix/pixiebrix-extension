@@ -96,6 +96,7 @@ export class Registry<
       return cached;
     }
 
+    // Look up in IDB
     const raw = await registry.find(id);
 
     if (!raw) {

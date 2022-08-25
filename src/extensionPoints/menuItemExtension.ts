@@ -135,7 +135,7 @@ export type MenuItemExtensionConfig = {
   /**
    * (Experimental) message to show on success when running the extension
    */
-  onSuccess?: MessageConfig;
+  onSuccess?: MessageConfig | boolean;
 };
 
 export const actionSchema: Schema = {
@@ -569,10 +569,16 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
         extensionLogger.info("Successfully ran menu action");
 
-        showNotification({
-          ...DEFAULT_ACTION_RESULTS.success,
-          ...pick(onSuccess, "message", "type"),
-        });
+        if (onSuccess) {
+          if (typeof onSuccess === "boolean") {
+            showNotification(DEFAULT_ACTION_RESULTS.success);
+          } else {
+            showNotification({
+              ...DEFAULT_ACTION_RESULTS.success,
+              ...pick(onSuccess, "message", "type"),
+            });
+          }
+        }
       } catch (error) {
         if (hasSpecificErrorCause(error, CancelError)) {
           showNotification({

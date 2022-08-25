@@ -1,0 +1,200 @@
+/*
+ * Copyright (C) 2022 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+import React from "react";
+import { renderHook } from "@testing-library/react-hooks";
+import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
+import { Provider } from "react-redux";
+import { useGetMeQuery } from "@/services/api";
+import { uuidv4 } from "@/types/helpers";
+import { configureStore } from "@reduxjs/toolkit";
+import { authSlice } from "@/auth/authSlice";
+import servicesSlice, { ServicesState } from "@/store/servicesSlice";
+import { AuthState } from "@/auth/authTypes";
+import settingsSlice from "@/store/settingsSlice";
+import { SettingsState } from "@/store/settingsTypes";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
+import { RawServiceConfiguration } from "@/core";
+
+jest.mock("@/services/api", () => ({
+  useGetMeQuery: jest.fn(),
+}));
+
+function testStore(initialState?: {
+  auth: AuthState;
+  services: ServicesState;
+  settings: SettingsState;
+}) {
+  return configureStore({
+    reducer: {
+      auth: authSlice.reducer,
+      services: servicesSlice.reducer,
+      settings: settingsSlice.reducer,
+    },
+    preloadedState: initialState,
+  });
+}
+
+describe("useRequiredPartnerAuth", () => {
+  test("no partner", async () => {
+    const store = testStore();
+
+    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+      isSuccess: true,
+      isLoading: false,
+      data: {
+        id: uuidv4(),
+        partner: null,
+      },
+    }));
+
+    const { result } = renderHook(() => useRequiredPartnerAuth(), {
+      wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
+    });
+
+    await waitForEffect();
+
+    expect(result.current).toStrictEqual({
+      hasPartner: false,
+      partnerKey: undefined,
+      requiresIntegration: false,
+      hasConfiguredIntegration: false,
+      isLoading: false,
+      error: undefined,
+    });
+  });
+
+  test("require partner via settings screen", async () => {
+    const store = testStore({
+      auth: authSlice.getInitialState(),
+      services: servicesSlice.getInitialState(),
+      settings: {
+        ...settingsSlice.getInitialState(),
+        authServiceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+      },
+    });
+
+    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+      isSuccess: true,
+      isLoading: false,
+      data: {
+        id: uuidv4(),
+        partner: null,
+      },
+    }));
+
+    const { result } = renderHook(() => useRequiredPartnerAuth(), {
+      wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
+    });
+
+    await waitForEffect();
+
+    expect(result.current).toStrictEqual({
+      hasPartner: false,
+      partnerKey: undefined,
+      requiresIntegration: true,
+      hasConfiguredIntegration: false,
+      isLoading: false,
+      error: undefined,
+    });
+  });
+
+  test("requires integration", async () => {
+    const store = testStore();
+
+    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+      isSuccess: true,
+      isLoading: false,
+      data: {
+        id: uuidv4(),
+        partner: {
+          id: uuidv4(),
+          theme: "automation-anywhere",
+        },
+        organization: {
+          control_room: {
+            id: uuidv4(),
+            url: "https://control-room.example.com",
+          },
+        },
+      },
+    }));
+
+    const { result } = renderHook(() => useRequiredPartnerAuth(), {
+      wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
+    });
+
+    await waitForEffect();
+
+    expect(result.current).toStrictEqual({
+      hasPartner: true,
+      partnerKey: "automation-anywhere",
+      requiresIntegration: true,
+      hasConfiguredIntegration: false,
+      isLoading: false,
+      error: undefined,
+    });
+  });
+
+  test("has required integration", async () => {
+    const store = testStore({
+      auth: authSlice.getInitialState(),
+      services: {
+        ...servicesSlice.getInitialState(),
+        configured: {
+          [uuidv4()]: {
+            serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+          } as RawServiceConfiguration,
+        },
+      },
+      settings: settingsSlice.getInitialState(),
+    });
+
+    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+      isSuccess: true,
+      isLoading: false,
+      data: {
+        id: uuidv4(),
+        partner: {
+          id: uuidv4(),
+          theme: "automation-anywhere",
+        },
+        organization: {
+          control_room: {
+            id: uuidv4(),
+            url: "https://control-room.example.com",
+          },
+        },
+      },
+    }));
+
+    const { result } = renderHook(() => useRequiredPartnerAuth(), {
+      wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
+    });
+
+    await waitForEffect();
+
+    expect(result.current).toStrictEqual({
+      hasPartner: true,
+      partnerKey: "automation-anywhere",
+      requiresIntegration: true,
+      hasConfiguredIntegration: true,
+      isLoading: false,
+      error: undefined,
+    });
+  });
+});

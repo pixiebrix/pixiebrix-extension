@@ -15,12 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SafeHTML } from "@/core";
-import sanitize from "@/utils/sanitize";
-
-async function safeMarkdown(markdown: string): Promise<SafeHTML> {
-  const { marked } = await import(/* webpackChunkName: "marked" */ "marked");
-  return sanitize(marked(markdown));
+.button:global(.btn.active):not(:focus) {
+  z-index: unset;
 }
-
-export default safeMarkdown;

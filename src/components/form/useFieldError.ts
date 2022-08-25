@@ -24,16 +24,16 @@ function useFormikFieldError(fieldPath: string): string | undefined {
   return error;
 }
 
-function useAnalysisFieldError(fieldPath: string): string | undefined {
+function useAnalysisFieldError(fieldPath: string): string[] | undefined {
   const annotations = useSelector(selectAnnotationsForPath(fieldPath));
 
   return annotations?.length > 0
-    ? annotations.map(({ message }) => message).join(" ")
+    ? annotations.map(({ message }) => message)
     : undefined;
 }
 
 let shouldUseAnalysis = false;
-function useFieldError(fieldPath: string): string | undefined {
+function useFieldError(fieldPath: string): string | string[] | undefined {
   return shouldUseAnalysis
     ? // eslint-disable-next-line react-hooks/rules-of-hooks -- shouldUseAnalysis is set once before render
       useAnalysisFieldError(fieldPath)

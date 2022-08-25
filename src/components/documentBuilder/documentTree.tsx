@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { ElementType } from "react";
 import BlockElement from "@/components/documentBuilder/render/BlockElement";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
@@ -23,21 +23,26 @@ import { get } from "lodash";
 import { Card, Col, Container, Row, Image } from "react-bootstrap";
 import {
   BuildDocumentBranch,
+  ButtonDocumentConfig,
   DocumentComponent,
   DocumentElement,
   DynamicPath,
+  PipelineDocumentConfig,
 } from "./documentBuilderTypes";
 import ButtonElement from "@/components/documentBuilder/render/ButtonElement";
 import ListElement from "@/components/documentBuilder/render/ListElement";
 import { BusinessError } from "@/errors/businessErrors";
 import { joinPathParts } from "@/utils";
 import cx from "classnames";
+import Markdown from "@/components/Markdown";
 
 const headerComponents = {
   header_1: "h1",
   header_2: "h2",
   header_3: "h3",
 } as const;
+
+const headingComponents = ["h1", "h2", "h3"];
 
 const gridComponents = {
   container: Container,
@@ -51,6 +56,7 @@ const UnknownType: React.FC<{ componentType: string }> = ({
   <div className="text-danger">Unknown component type: {componentType}</div>
 );
 
+// eslint-disable-next-line complexity
 export function getComponentDefinition(
   element: DocumentElement,
   tracePath: DynamicPath
@@ -59,6 +65,7 @@ export function getComponentDefinition(
   const config = get(element, "config", {} as UnknownObject);
 
   switch (componentType) {
+    // Provide backwards compatibility for old elements
     case "header_1":
     case "header_2":
     case "header_3": {
@@ -72,10 +79,28 @@ export function getComponentDefinition(
       };
     }
 
-    case "text": {
-      const { text, ...props } = config;
-      props.children = text;
+    case "header": {
+      const { title, heading, ...props } = config;
+      props.children = title;
 
+      return {
+        Component: headingComponents.includes(heading as string)
+          ? (heading as ElementType)
+          : "h1",
+        props,
+      };
+    }
+
+    case "text": {
+      const { text, enableMarkdown, ...props } = config;
+      if (enableMarkdown) {
+        return {
+          Component: Markdown,
+          props: { ...props, markdown: text },
+        };
+      }
+
+      props.children = text;
       return { Component: "p", props };
     }
 
@@ -120,7 +145,7 @@ export function getComponentDefinition(
     }
 
     case "pipeline": {
-      const { pipeline } = config;
+      const { pipeline } = config as PipelineDocumentConfig;
 
       if (typeof pipeline !== "undefined" && !isPipelineExpression(pipeline)) {
         console.debug("Expected pipeline expression for pipeline", {
@@ -140,7 +165,8 @@ export function getComponentDefinition(
     }
 
     case "button": {
-      const { title, onClick, ...props } = config;
+      const { title, onClick, variant, size, className } =
+        config as ButtonDocumentConfig;
       if (typeof onClick !== "undefined" && !isPipelineExpression(onClick)) {
         console.debug("Expected pipeline expression for onClick", {
           componentType: "button",
@@ -155,7 +181,9 @@ export function getComponentDefinition(
           children: title,
           onClick: onClick.__value__,
           tracePath,
-          ...props,
+          variant,
+          size,
+          className,
         },
       };
     }

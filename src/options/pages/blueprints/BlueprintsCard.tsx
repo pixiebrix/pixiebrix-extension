@@ -150,10 +150,6 @@ const BlueprintsCard: React.FunctionComponent<{
     useSortBy
   );
 
-  if (isLoading) {
-    return <Loader />;
-  }
-
   return (
     <BootstrapRow className={styles.root}>
       <ListFilters teamFilters={teamFilters} tableInstance={tableInstance} />
@@ -161,15 +157,19 @@ const BlueprintsCard: React.FunctionComponent<{
         <BlueprintsToolbar tableInstance={tableInstance} />
         {/* This wrapper prevents AutoSizer overflow in a flex box container */}
         <div style={{ flex: "1 1 auto" }}>
-          <AutoSizer defaultHeight={500}>
-            {({ height, width }) => (
-              <BlueprintsView
-                tableInstance={tableInstance}
-                width={width}
-                height={height}
-              />
-            )}
-          </AutoSizer>
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <AutoSizer defaultHeight={500}>
+              {({ height, width }) => (
+                <BlueprintsView
+                  tableInstance={tableInstance}
+                  width={width}
+                  height={height}
+                />
+              )}
+            </AutoSizer>
+          )}
         </div>
       </Col>
     </BootstrapRow>

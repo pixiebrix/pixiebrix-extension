@@ -17,11 +17,9 @@
 
 import React, { Component } from "react";
 import { Button } from "react-bootstrap";
-import { isExtensionContext } from "webext-detect-page";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import reportError from "@/telemetry/reportError";
 import { UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
 
@@ -51,12 +49,6 @@ class ErrorBoundary extends Component<Props, State> {
       errorMessage: getErrorMessage(error),
       stack: error.stack,
     };
-  }
-
-  override componentDidCatch(error: Error): void {
-    if (isExtensionContext()) {
-      reportError(error);
-    }
   }
 
   override render(): React.ReactNode {

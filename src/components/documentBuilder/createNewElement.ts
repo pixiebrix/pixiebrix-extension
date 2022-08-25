@@ -25,14 +25,14 @@ export function createNewElement(elementType: DocumentElementType) {
   };
 
   switch (elementType) {
-    case "header_1":
-    case "header_2":
-    case "header_3":
+    case "header":
       element.config.title = "Header";
+      element.config.heading = "h1";
       break;
 
     case "text":
-      element.config.text = "Paragraph text.";
+      element.config.text = "Paragraph text. **Markdown** is supported.";
+      element.config.enableMarkdown = true;
       break;
 
     case "image":
@@ -57,6 +57,7 @@ export function createNewElement(elementType: DocumentElementType) {
       break;
 
     case "pipeline": {
+      element.config.label = "Brick";
       element.config.pipeline = {
         __type__: "pipeline",
         __value__: [],
@@ -65,6 +66,7 @@ export function createNewElement(elementType: DocumentElementType) {
     }
 
     case "button": {
+      element.config.label = "Button";
       element.config.title = "Action";
 
       element.config.onClick = {
@@ -84,7 +86,6 @@ export function createNewElement(elementType: DocumentElementType) {
 
     default:
       throw new Error(
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
         `Can't create new element. Type "${elementType} is not supported.`
       );
   }
