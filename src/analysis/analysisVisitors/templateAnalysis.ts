@@ -16,12 +16,13 @@
  */
 
 import { Expression } from "@/core";
-import { AnnotationType } from "@/analysis/analysisTypes";
+import { Analysis, Annotation, AnnotationType } from "@/analysis/analysisTypes";
 import { BlockPosition } from "@/blocks/types";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
-import { AnalysisVisitor } from "./baseAnalysisVisitors";
 import { Template } from "nunjucks";
+import PipelineExpressionVisitor from "@/blocks/PipelineExpressionVisitor";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 const TEMPLATE_ERROR_MESSAGE =
   "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";
@@ -31,9 +32,20 @@ type PushAnnotationArgs = {
   expression: Expression<unknown>;
 };
 
-class TemplateAnalysis extends AnalysisVisitor {
+class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
   get id() {
     return "template";
+  }
+
+  protected readonly annotations: Annotation[] = [];
+  getAnnotations(): Annotation[] {
+    return this.annotations;
+  }
+
+  run(extension: FormState): void {
+    this.visitRootPipeline(extension.extension.blockPipeline, {
+      extensionPointType: extension.type,
+    });
   }
 
   private pushErrorAnnotation({ position, expression }: PushAnnotationArgs) {
