@@ -149,7 +149,7 @@ export type AuthUserOrganization = {
   /**
    * True if the organization's compliance auth token is set
    */
-  has_compliance_auth_token: boolean;
+  hasComplianceAuthToken: boolean;
 };
 
 export type AuthState = {

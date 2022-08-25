@@ -31,18 +31,18 @@ export function selectOrganizations(
       organization,
       organization_name,
       control_room,
-      has_compliance_auth_token,
       role,
       scope,
       is_deployment_manager,
+      has_compliance_auth_token,
     }) => ({
       id: organization,
       name: organization_name,
       control_room,
-      has_compliance_auth_token,
       role,
       scope,
       isDeploymentManager: is_deployment_manager,
+      hasComplianceAuthToken: has_compliance_auth_token,
     })
   );
 }
