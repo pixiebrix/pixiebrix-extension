@@ -268,8 +268,3 @@ const annotationsForPathSelector = createSelector(
  */
 export const selectAnnotationsForPath = (path: string) => (state: RootState) =>
   annotationsForPathSelector(state, path);
-
-export const selectIsActiveElementActionMenuOpen = createSelector(
-  selectActiveElementUIState,
-  (uiState) => uiState.isActionMenuOpen ?? false
-);

@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,27 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import rootStyles from "./ActionButtons.module.scss";
-import styles from "./MenuButton.module.scss";
-import cx from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "react-bootstrap";
+.toggle {
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  border-radius: 4px;
+  border: none;
+  background-color: #e8f3fc !important;
+  color: #198ae3 !important;
+  box-shadow: none !important;
 
-export type MenuButtonProps = {
-  onClick: () => void;
-  ref?: React.ForwardedRef<HTMLButtonElement>;
-};
+  &:hover {
+    background-color: #ddedfb !important;
+    color: #198ae3 !important;
+  }
 
-const MenuButton: React.FC<MenuButtonProps> = ({ onClick, ref }) => (
-  <Button
-    onClick={onClick}
-    ref={ref}
-    className={cx(rootStyles.button, styles.menu)}
-  >
-    <FontAwesomeIcon icon={faEllipsisH} fixedWidth />
-  </Button>
-);
-
-export default MenuButton;
+  &:active {
+    background-color: #1368aa !important;
+    color: white !important;
+  }
+}

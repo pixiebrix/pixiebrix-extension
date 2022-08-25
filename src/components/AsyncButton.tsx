@@ -21,13 +21,11 @@ import { Button, ButtonProps } from "react-bootstrap";
 export type AsyncButtonProps = ButtonProps & {
   onClick: (() => Promise<void>) | (() => void);
   autoFocus?: boolean;
-  ref?: React.ForwardedRef<HTMLButtonElement>;
 };
 
 const AsyncButton: React.FunctionComponent<AsyncButtonProps> = ({
   onClick,
   children,
-  ref,
   disabled: manualDisabled = false,
   ...buttonProps
 }) => {
@@ -57,12 +55,7 @@ const AsyncButton: React.FunctionComponent<AsyncButtonProps> = ({
     <Button
       disabled={manualDisabled || pending}
       {...buttonProps}
-      onClick={async (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        await handleClick();
-      }}
-      ref={ref}
+      onClick={handleClick}
     >
       {children}
     </Button>

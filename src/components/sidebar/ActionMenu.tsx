@@ -16,28 +16,27 @@
  */
 
 import React from "react";
-import cx from "classnames";
-import styles from "@/pageEditor/sidebar/Entry.module.scss";
-import { UnsavedChangesIcon } from "@/pageEditor/sidebar/ExtensionIcons";
 import SaveButton from "@/pageEditor/sidebar/actionButtons/SaveButton";
 import MenuButton, {
   MenuButtonProps,
 } from "@/pageEditor/sidebar/actionButtons/MenuButton";
 import { Dropdown } from "react-bootstrap";
 import {
+  faEllipsisH,
   faFileExport,
   faFileImport,
   faHistory,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import styles from "./ActionMenu.module.scss";
 
 const DropdownToggle = React.forwardRef<HTMLButtonElement, MenuButtonProps>(
   ({ children, onClick }, ref) => <MenuButton onClick={onClick} ref={ref} />
 );
 DropdownToggle.displayName = "DropdownToggle";
 
-export type EntryMenuProps = {
+export type ActionMenuProps = {
   onRemove: () => Promise<void>;
   onSave?: () => Promise<void>;
   onReset?: () => Promise<void>;
@@ -47,7 +46,7 @@ export type EntryMenuProps = {
   disabled?: boolean;
 };
 
-const ActionMenu: React.FC<EntryMenuProps> = ({
+const ActionMenu: React.FC<ActionMenuProps> = ({
   onRemove,
   onSave,
   onReset,
@@ -61,18 +60,17 @@ const ActionMenu: React.FC<EntryMenuProps> = ({
 
   return (
     <>
-      {isDirty && (
-        <span className={cx(styles.icon, "text-danger")}>
-          <UnsavedChangesIcon />
-        </span>
-      )}
       {onSave && <SaveButton onClick={onSave} disabled={isSaveDisabled} />}
       <Dropdown>
-        <Dropdown.Toggle as={DropdownToggle} />
+        <Dropdown.Toggle className={styles.toggle}>
+          <FontAwesomeIcon icon={faEllipsisH} />
+        </Dropdown.Toggle>
         <Dropdown.Menu>
-          <Dropdown.Item onClick={onReset} disabled={isResetDisabled}>
-            <FontAwesomeIcon icon={faHistory} fixedWidth /> Reset
-          </Dropdown.Item>
+          {onReset && (
+            <Dropdown.Item onClick={onReset} disabled={isResetDisabled}>
+              <FontAwesomeIcon icon={faHistory} fixedWidth /> Reset
+            </Dropdown.Item>
+          )}
           <Dropdown.Item onClick={onRemove} disabled={disabled}>
             <FontAwesomeIcon icon={faTrash} fixedWidth /> Remove
           </Dropdown.Item>
