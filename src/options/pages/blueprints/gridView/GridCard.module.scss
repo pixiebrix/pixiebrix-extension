@@ -23,6 +23,27 @@
   height: 100%;
 }
 
+.packageId {
+  display: none;
+  opacity: 0;
+  font-size: 14px;
+  color: #5a4e71;
+  padding-top: 6px;
+}
+
+.card {
+  &:hover {
+    background-color: #f6f5f7;
+    transition: background-color 0.15s ease-in-out;
+
+    .packageId {
+      display: block;
+      opacity: 100;
+      transition: opacity 0.15s ease-in-out;
+    }
+  }
+}
+
 .cardBody {
   padding: 15px !important;
   display: flex;

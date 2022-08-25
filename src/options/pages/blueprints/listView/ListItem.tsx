@@ -39,6 +39,7 @@ const ListItem: React.VoidFunctionComponent<{
       <div className={styles.primaryInfo}>
         <h5 className={styles.name}>{name}</h5>
         <p className={cx("small", styles.name)}>{description}</p>
+        <div className={styles.packageId}>{sharing.packageId}</div>
       </div>
       <div className="flex-shrink-0">
         <div className={styles.sharing}>

@@ -20,6 +20,11 @@
   justify-content: space-between;
   border: none;
   border-bottom: #f2edf3 1px solid;
+
+  &:hover {
+    background-color: #f6f5f7;
+    transition: background-color 0.15s ease-in-out;
+  }
 }
 
 .listHeader {
@@ -47,6 +52,11 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.packageId {
+  font-size: 14px;
+  color: #5a4e71;
 }
 
 .sharing {
