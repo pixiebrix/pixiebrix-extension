@@ -146,6 +146,10 @@ export type AuthUserOrganization = {
    * True if the user is a manager of at least one team deployment.
    */
   isDeploymentManager: boolean;
+  /**
+   * True if the organization's compliance auth token is set
+   */
+  has_compliance_auth_token: boolean;
 };
 
 export type AuthState = {
