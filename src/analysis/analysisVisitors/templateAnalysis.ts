@@ -46,10 +46,10 @@ class TemplateAnalysis extends AnalysisVisitor {
     });
   }
 
-  override async visitExpression(
+  override visitExpression(
     position: BlockPosition,
     expression: Expression<unknown>
-  ): Promise<void> {
+  ): void {
     if (!isTemplateExpression(expression)) {
       return;
     }
