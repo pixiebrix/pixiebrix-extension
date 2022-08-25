@@ -51,27 +51,6 @@ let autoShow = false;
  */
 const QUICKBAR_EVENT_NAME = "pixiebrix-quickbar";
 
-// Modeled around KBarPortal https://github.com/timc1/kbar/blob/a232f3d8976a61eeeb844152dea25a23a76ad368/src/KBarPortal.tsx
-const KBarToggle: React.FC = (props) => {
-  const { showing } = useKBar((state) => ({
-    showing: state.visualState !== VisualState.hidden,
-  }));
-
-  if (showing) {
-    selection.save();
-    console.debug("Saving last selection:", selection.get());
-  } else {
-    console.debug("Restoring last selection:", selection.get());
-    selection.restore();
-  }
-
-  if (!showing) {
-    return null;
-  }
-
-  return <>{props.children}</>;
-};
-
 function useActions(): void {
   // The useActions hook is included in KBarComponent, which mounts/unmounts when the kbar is toggled
 
@@ -121,9 +100,19 @@ const AutoShow: React.FC = () => {
 };
 
 const KBarComponent: React.FC = () => {
-  // The KBarComponent is mounted/unmounted on kbar toggle (controlled by KBarToggle)
-
   useActions();
+  const { showing } = useKBar((state) => ({
+    showing: state.visualState !== VisualState.hidden,
+  }));
+
+  // Implement saving and restoring last selection in KBarComponent and remove KBarToggle Component.
+  if (showing) {
+    selection.save();
+    console.debug("Saving last selection:", selection.get());
+  } else {
+    console.debug("Restoring last selection:", selection.get());
+    selection.restore();
+  }
 
   return (
     <KBarPortal>
@@ -143,9 +132,7 @@ const QuickBarApp: React.FC = () => (
       {/* Disable exit animation due to #3724. `enterMs` is required too */}
       <KBarProvider options={{ animations: { enterMs: 300, exitMs: 0 } }}>
         <AutoShow />
-        <KBarToggle>
-          <KBarComponent />
-        </KBarToggle>
+        <KBarComponent />
       </KBarProvider>
     </Stylesheets>
   </ReactShadowRoot>
