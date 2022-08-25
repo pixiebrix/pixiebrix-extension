@@ -15,26 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { joinPathParts } from "@/utils";
-import React from "react";
-import { Col, Row } from "react-bootstrap";
+import { flushEvents, recordEvent } from "@/background/telemetry";
 
-type PipelineOptionsProps = {
-  elementName: string;
-};
+describe("recordEvent", () => {
+  test("runs", async () => {
+    await recordEvent({ event: "TestEvent", data: {} });
+    const events = await flushEvents();
+    expect(events.length).toEqual(1);
+  });
 
-const PipelineOptions: React.FC<PipelineOptionsProps> = ({ elementName }) => (
-  <>
-    <Row>
-      <Col>Use the Nodes Tree on the left to edit the nested pipeline.</Col>
-    </Row>
-    <ConnectedFieldTemplate
-      name={joinPathParts(elementName, "config", "label")}
-      label="Pipeline name"
-      description="The pipeline label displayed in the Nodes Tree"
-    />
-  </>
-);
+  test("successfully persists concurrent telemetry events to local storage", async () => {
+    // Easiest way to test race condition without having to mock
+    const recordTestEvents = Array.from({ length: 100 }, async () =>
+      recordEvent({ event: "TestEvent", data: {} })
+    );
+    await Promise.all(recordTestEvents);
 
-export default PipelineOptions;
+    const events = await flushEvents();
+    expect(events.length).toEqual(100);
+  });
+});

@@ -27,20 +27,53 @@ import {
   maybeGetLinkedApiClient,
 } from "@/services/apiClient";
 import { allowsTrack } from "@/telemetry/dnt";
+import { DBSchema, openDB } from "idb/with-async-ittr";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
+const TELEMETRY_DB_NAME = "telemetrydb";
+const TELEMETRY_DB_VERSION_NUMBER = 1;
+const TELEMETRY_EVENT_OBJECT_STORE = "events";
 
-interface UserEvent {
+interface UserTelemetryEvent {
   uid: string;
   event: string;
   timestamp: number;
   data: JsonObject;
 }
 
-const UUID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
-const TELEMETRY_EVENT_BUFFER_KEY = "TELEMETRY_EVENT_BUFFER" as ManualStorageKey;
+interface TelemetryDB extends DBSchema {
+  [TELEMETRY_EVENT_OBJECT_STORE]: {
+    value: UserTelemetryEvent;
+    key: string;
+  };
+}
 
+async function openTelemetryDB() {
+  return openDB<TelemetryDB>(TELEMETRY_DB_NAME, TELEMETRY_DB_VERSION_NUMBER, {
+    upgrade(db) {
+      // This is a new DB, so no need to delete existing object store yet
+      db.createObjectStore(TELEMETRY_EVENT_OBJECT_STORE, {
+        autoIncrement: true,
+      });
+    },
+  });
+}
+
+async function addEvent(event: UserTelemetryEvent): Promise<void> {
+  const db = await openTelemetryDB();
+  await db.add(TELEMETRY_EVENT_OBJECT_STORE, event);
+}
+
+export async function flushEvents(): Promise<UserTelemetryEvent[]> {
+  const db = await openTelemetryDB();
+  const tx = db.transaction(TELEMETRY_EVENT_OBJECT_STORE, "readwrite");
+  const allEvents = await tx.store.getAll();
+  await tx.store.clear();
+  return allEvents;
+}
+
+const UUID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
 let _uid: UUID = null;
 
 /**
@@ -64,15 +97,10 @@ export async function uid(): Promise<UUID> {
 }
 
 async function flush(): Promise<void> {
-  const events = await readStorage(TELEMETRY_EVENT_BUFFER_KEY);
-  if ((events as UserEvent[]).length > 0) {
-    const client = await maybeGetLinkedApiClient();
-    if (client) {
-      await Promise.all([
-        setStorage(TELEMETRY_EVENT_BUFFER_KEY, []),
-        client.post("/api/events/", { events }),
-      ]);
-    }
+  const client = await maybeGetLinkedApiClient();
+  if (client) {
+    const events = await flushEvents();
+    await client.post("/api/events/", { events });
   }
 }
 
@@ -151,14 +179,7 @@ export async function recordEvent({
       },
     };
 
-    const persistedEvents = await readStorage<UserEvent[]>(
-      TELEMETRY_EVENT_BUFFER_KEY,
-      []
-    );
-    await setStorage(TELEMETRY_EVENT_BUFFER_KEY, [
-      ...persistedEvents,
-      telemetryEvent,
-    ]);
+    await addEvent(telemetryEvent);
     void debouncedFlush();
   }
 }

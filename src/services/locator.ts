@@ -21,7 +21,6 @@ import {
   IService,
   RawServiceConfiguration,
   ServiceConfig,
-  ServiceLocator,
   SanitizedConfig,
   KeyedConfig,
   RegistryId,
@@ -190,10 +189,6 @@ class LazyLocatorFactory {
       ],
       (x) => x.level
     );
-  }
-
-  getLocator(): ServiceLocator {
-    return LazyLocatorFactory.prototype.locate.bind(this);
   }
 
   /**

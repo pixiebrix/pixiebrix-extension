@@ -129,23 +129,6 @@ export async function ensureContentScript(
   }
 }
 
-/**
- * Open a new tab for the options page, showing an error message with the given errorId
- * @param errorId unique identifier for the error message
- * @param tabIndex index of the source tab, to determine location of new tab
- */
-export async function showErrorInOptions(
-  errorId: string,
-  tabIndex?: number
-): Promise<void> {
-  await browser.tabs.create({
-    // The Options application uses a hash-based history, so put error param after the hash so it's found by useLocation
-    // and useHistory.
-    url: `options.html#/?error=${errorId}`,
-    index: tabIndex == null ? undefined : tabIndex + 1,
-  });
-}
-
 export async function forEachTab<
   TCallback extends (target: { tabId: number }) => void
 >(callback: TCallback): Promise<void> {

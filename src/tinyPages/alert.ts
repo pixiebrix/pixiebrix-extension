@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,26 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { joinPathParts } from "@/utils";
-import React from "react";
-import { Col, Row } from "react-bootstrap";
+import "./alert.scss";
 
-type PipelineOptionsProps = {
-  elementName: string;
-};
+const container = document.querySelector("main");
+const button = document.querySelector("button");
 
-const PipelineOptions: React.FC<PipelineOptionsProps> = ({ elementName }) => (
-  <>
-    <Row>
-      <Col>Use the Nodes Tree on the left to edit the nested pipeline.</Col>
-    </Row>
-    <ConnectedFieldTemplate
-      name={joinPathParts(elementName, "config", "label")}
-      label="Pipeline name"
-      description="The pipeline label displayed in the Nodes Tree"
-    />
-  </>
-);
+try {
+  button.addEventListener("click", () => {
+    window.close();
+  });
 
-export default PipelineOptions;
+  const message = new URLSearchParams(location.search);
+  container.textContent = message.get("message");
+  document.title = message.get("title") ?? document.title;
+  window.resizeBy(0, document.body.scrollHeight - window.innerHeight);
+} catch {
+  window.close();
+}

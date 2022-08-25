@@ -116,8 +116,11 @@ export function sortBySelector<Item = string>(
  * Do not call directly. Instead, call sortBySelector
  *
  * @example
- * -2  '#best-link-on-the-page'
- * -1  "[data-cy='b4da55']"
+ * -4  '#best-link-on-the-page'
+ * -3  "[data-cy='b4da55']"
+ * -2  '.iAmAUniqueGreatClassSelector' // it's rare case but happens when classname is unique
+ * -1  '#parentId a' // tag name followed by parent unique Selector
+ * -1  '[data-test-id='b4da55'] input' // tag name followed by parent unique Selector
  *  0  '.navItem'
  *  0  '.birdsArentReal'
  *  1  'a'
@@ -125,17 +128,36 @@ export function sortBySelector<Item = string>(
  * @see sortBySelector
  */
 export function getSelectorPreference(selector: string): number {
+  // @ts-expect-error: TS compiler can't find the propery find in $
+  const tokenized = $.find.tokenize(selector);
+  if (tokenized.length > 1) {
+    throw new TypeError(
+      "Expected single selector, received selector list: " + selector
+    );
+  }
+
+  const tokenCount = tokenized[0].length;
+
   if (selector.includes(":nth-child")) {
     // Structural selectors are fragile to page changes, so give low score
     return 2;
   }
 
-  if (selector.startsWith("#")) {
-    return -2;
+  // Unique ID selectors can only be simple. When composed, ID selectors are always followed by non-unique parts
+  if (selector.startsWith("#") && tokenCount === 1) {
+    return -4;
   }
 
   if (isSelectorUsuallyUnique(selector)) {
+    if (tokenCount === 1) {
+      return -3;
+    }
+
     return -1;
+  }
+
+  if (selector.startsWith(".") && tokenCount === 1) {
+    return -2;
   }
 
   if (selector.startsWith(".")) {
@@ -290,6 +312,7 @@ export function inferSelectors(
         makeSelector(["tag", "class", "attribute", "nthchild"]),
         makeSelector(["id", "tag", "attribute", "nthchild"]),
         makeSelector(["id", "tag", "attribute"]),
+        makeSelector(["class", "tag", "attribute"]),
         makeSelector(),
       ])
     )
