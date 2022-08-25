@@ -44,6 +44,9 @@ import { UUID } from "@/core";
 function ignoreContextInvalidatedErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
 ): void {
+  // Rather than a global `onContextInvalidated` listener, we want to notify the user only when
+  // they're actually interacting with PixieBrix, otherwise they might receive the notification
+  // at random times.
   if (isContextInvalidatedError(errorEvent)) {
     notifyContextInvalidated();
     errorEvent.preventDefault();
