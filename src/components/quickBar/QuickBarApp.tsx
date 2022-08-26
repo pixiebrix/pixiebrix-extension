@@ -118,8 +118,12 @@ const KBarComponent: React.FC = () => {
     <KBarPortal>
       <KBarPositioner style={{ zIndex: MAX_Z_INDEX }}>
         <KBarAnimator style={animatorStyle}>
-          <KBarSearch style={searchStyle} />
-          <QuickBarResults />
+          <ReactShadowRoot mode="open">
+            <Stylesheets href={faStyleSheet}>
+              <KBarSearch style={searchStyle} />
+              <QuickBarResults />
+            </Stylesheets>
+          </ReactShadowRoot>
         </KBarAnimator>
       </KBarPositioner>
     </KBarPortal>
@@ -127,15 +131,11 @@ const KBarComponent: React.FC = () => {
 };
 
 const QuickBarApp: React.FC = () => (
-  <ReactShadowRoot mode="closed">
-    <Stylesheets href={faStyleSheet}>
-      {/* Disable exit animation due to #3724. `enterMs` is required too */}
-      <KBarProvider options={{ animations: { enterMs: 300, exitMs: 0 } }}>
-        <AutoShow />
-        <KBarComponent />
-      </KBarProvider>
-    </Stylesheets>
-  </ReactShadowRoot>
+  /* Disable exit animation due to #3724. `enterMs` is required too */
+  <KBarProvider options={{ animations: { enterMs: 300, exitMs: 0 } }}>
+    <AutoShow />
+    <KBarComponent />
+  </KBarProvider>
 );
 
 export const toggleQuickBar = () => {
