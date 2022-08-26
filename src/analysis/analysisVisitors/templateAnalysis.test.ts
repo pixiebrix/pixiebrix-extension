@@ -71,7 +71,7 @@ describe("TemplateAnalysis", () => {
     (template) => {
       const analysis = new TemplateAnalysis();
       analysis.visitExpression(position, toExpression("nunjucks", template));
-
+      console.log(analysis.getAnnotations()[0]);
       expect(analysis.getAnnotations()).toHaveLength(1);
     }
   );

@@ -29,6 +29,7 @@ const TEMPLATE_ERROR_MESSAGE =
 
 type PushAnnotationArgs = {
   position: BlockPosition;
+  message: string;
   expression: Expression<unknown>;
 };
 
@@ -48,10 +49,14 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
     });
   }
 
-  private pushErrorAnnotation({ position, expression }: PushAnnotationArgs) {
+  private pushErrorAnnotation({
+    position,
+    message,
+    expression,
+  }: PushAnnotationArgs) {
     this.annotations.push({
       position,
-      message: TEMPLATE_ERROR_MESSAGE,
+      message,
       analysisId: this.id,
       type: AnnotationType.Error,
       detail: expression,
@@ -72,13 +77,24 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
       expression.__type__ !== "mustache" &&
       isMustacheOnly(expression.__value__)
     ) {
-      this.pushErrorAnnotation({ position, expression });
+      this.pushErrorAnnotation({
+        position,
+        message: TEMPLATE_ERROR_MESSAGE,
+        expression,
+      });
     } else if (expression.__type__ === "nunjucks") {
       try {
         // eslint-disable-next-line no-new
         new Template(expression.__value__, undefined, undefined, true);
-      } catch {
-        this.pushErrorAnnotation({ position, expression });
+      } catch (error) {
+        // @ts-expect-error nunjucks error does have message property
+        const failureCause = (error.message as string)
+          ?.replace("(unknown path)", "")
+          .trim();
+
+        const message = `Invalid template: ${failureCause}.`;
+
+        this.pushErrorAnnotation({ position, message, expression });
       }
     }
   }
