@@ -93,6 +93,13 @@ const MenuItemConfiguration: React.FC<{
           {...makeLockableFieldProps("Template", isLocked)}
         />
 
+        <ConnectedFieldTemplate
+          name="extensionPoint.definition.synchronous"
+          label="Synchronous"
+          as={SwitchButtonWidget}
+          description="Prevent button to be clicked again while action is in progress"
+          blankValue={false}
+        />
         {(typeof onSuccess === "boolean" || onSuccess == null) && (
           // Punt on object-based configuration for now. Enterprise customers are just asking to turn off the message.
           // If they want a custom message they can add an alert brick.

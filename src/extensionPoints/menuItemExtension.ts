@@ -344,6 +344,10 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     );
   }
 
+  getSynchronous(): boolean {
+    throw new Error("MenuItemExtensionPoint.getSynchronous not implemented");
+  }
+
   addMenuItem($menu: JQuery, $menuItem: JQuery): void {
     $menu.append($menuItem);
   }
@@ -789,6 +793,7 @@ export interface MenuDefinition extends ExtensionPointDefinition {
   readerSelector?: string;
   defaultOptions?: MenuDefaultOptions;
   shadowDOM?: ShadowDOM;
+  synchronous: boolean;
 }
 
 class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
@@ -899,6 +904,10 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
   override getTemplate(): string {
     return this._definition.template;
+  }
+
+  override getSynchronous() {
+    return this._definition.synchronous;
   }
 
   protected makeItem(

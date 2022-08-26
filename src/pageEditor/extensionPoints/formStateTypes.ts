@@ -67,6 +67,7 @@ type ActionExtensionPointState = BaseExtensionPointState & {
     template: string;
     reader: SingleLayerReaderConfig;
     isAvailable: NormalizedAvailability;
+    synchronous: boolean;
   };
   traits?: {
     style: {

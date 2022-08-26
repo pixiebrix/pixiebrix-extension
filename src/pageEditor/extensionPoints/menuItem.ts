@@ -89,7 +89,14 @@ function selectExtensionPoint(
 ): ExtensionPointConfig<MenuDefinition> {
   const { extensionPoint } = formState;
   const {
-    definition: { isAvailable, position, template, reader, containerSelector },
+    definition: {
+      isAvailable,
+      position,
+      template,
+      reader,
+      containerSelector,
+      synchronous,
+    },
   } = extensionPoint;
   return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
@@ -100,6 +107,7 @@ function selectExtensionPoint(
       containerSelector,
       position,
       template,
+      synchronous,
     },
   });
 }
