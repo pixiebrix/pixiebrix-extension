@@ -36,7 +36,7 @@ const CodeEditor: React.FunctionComponent<OwnProps> = ({
   openDefinition = noop,
   openEditor = noop,
 }) => {
-  const [field, meta, { setValue }] = useField<string>(name);
+  const [{ value }, meta, { setValue }] = useField<string>(name);
   const { submitForm } = useFormikContext();
 
   // Have to use useRef because AceEditor only binds on mount
@@ -57,7 +57,7 @@ const CodeEditor: React.FunctionComponent<OwnProps> = ({
     <>
       <Suspense fallback={<div>Loading editor...</div>}>
         <AceEditor
-          value={field.value}
+          value={value}
           onChange={setValue}
           width={(width ?? 400).toString()}
           mode="yaml"
