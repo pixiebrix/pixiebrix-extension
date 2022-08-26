@@ -122,7 +122,10 @@ export function removeExtension(
   extensionPointId: RegistryId,
   extensionId: UUID
 ) {
-  const extensionPoint = _installedExtensionPoints.find((x) => x.id);
+  // We need to select correct extensionPoint with extensionId param
+  const extensionPoint = _installedExtensionPoints.find(
+    (x) => x.id === extensionPointId
+  );
   if (extensionPoint) {
     extensionPoint.removeExtension(extensionId);
   } else {
