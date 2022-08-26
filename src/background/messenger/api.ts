@@ -109,6 +109,7 @@ export const recordEvent = getNotifier("RECORD_EVENT", bg);
 export const getLoggingConfig = getMethod("GET_LOGGING_CONFIG", bg);
 export const setLoggingConfig = getMethod("SET_LOGGING_CONFIG", bg);
 export const clearLogs = getMethod("CLEAR_LOGS", bg);
+export const clearLog = getMethod("CLEAR_LOG", bg);
 export const clearExtensionDebugLogs = getMethod(
   "CLEAR_EXTENSION_DEBUG_LOGS",
   bg
