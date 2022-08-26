@@ -180,6 +180,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
   private uninstalled = false;
 
+  private readonly inProgressEvents: WeakSet<HTMLElement> =
+    new WeakSet<HTMLElement>();
+
   private readonly notifyError = debounce(
     notify.error,
     MENU_INSTALL_ERROR_DEBOUNCE_MS,
@@ -548,54 +551,63 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     const $menuItem = this.makeItem(html, extension);
 
     $menuItem.on("click", async (event) => {
-      event.preventDefault();
-      event.stopPropagation();
+      if (this.getSynchronous() && this.inProgressEvents.has(event.target)) {
+        return;
+      }
 
-      console.debug("Run menu item", this.logger.context);
-
-      reportEvent("MenuItemClick", selectEventData(extension));
-
+      this.inProgressEvents.add(event.target);
       try {
-        // Read the latest state at the time of the action
-        const reader = await this.defaultReader();
+        event.preventDefault();
+        event.stopPropagation();
 
-        const initialValues: InitialValues = {
-          input: await reader.read(this.getReaderRoot($menu)),
-          serviceContext: await makeServiceContext(extension.services),
-          optionsArgs: extension.optionsArgs,
-          root: document,
-        };
+        console.debug("Run menu item", this.logger.context);
 
-        await reduceExtensionPipeline(actionConfig, initialValues, {
-          logger: extensionLogger,
-          ...apiVersionOptions(extension.apiVersion),
-        });
+        reportEvent("MenuItemClick", selectEventData(extension));
 
-        extensionLogger.info("Successfully ran menu action");
+        try {
+          // Read the latest state at the time of the action
+          const reader = await this.defaultReader();
 
-        if (onSuccess) {
-          if (typeof onSuccess === "boolean") {
-            showNotification(DEFAULT_ACTION_RESULTS.success);
-          } else {
+          const initialValues: InitialValues = {
+            input: await reader.read(this.getReaderRoot($menu)),
+            serviceContext: await makeServiceContext(extension.services),
+            optionsArgs: extension.optionsArgs,
+            root: document,
+          };
+
+          await reduceExtensionPipeline(actionConfig, initialValues, {
+            logger: extensionLogger,
+            ...apiVersionOptions(extension.apiVersion),
+          });
+
+          extensionLogger.info("Successfully ran menu action");
+
+          if (onSuccess) {
+            if (typeof onSuccess === "boolean") {
+              showNotification(DEFAULT_ACTION_RESULTS.success);
+            } else {
+              showNotification({
+                ...DEFAULT_ACTION_RESULTS.success,
+                ...pick(onSuccess, "message", "type"),
+              });
+            }
+          }
+        } catch (error) {
+          if (hasSpecificErrorCause(error, CancelError)) {
             showNotification({
-              ...DEFAULT_ACTION_RESULTS.success,
-              ...pick(onSuccess, "message", "type"),
+              ...DEFAULT_ACTION_RESULTS.cancel,
+              ...pick(onCancel, "message", "type"),
+            });
+          } else {
+            extensionLogger.error(error);
+            showNotification({
+              ...DEFAULT_ACTION_RESULTS.error,
+              ...pick(onError, "message", "type"),
             });
           }
         }
-      } catch (error) {
-        if (hasSpecificErrorCause(error, CancelError)) {
-          showNotification({
-            ...DEFAULT_ACTION_RESULTS.cancel,
-            ...pick(onCancel, "message", "type"),
-          });
-        } else {
-          extensionLogger.error(error);
-          showNotification({
-            ...DEFAULT_ACTION_RESULTS.error,
-            ...pick(onError, "message", "type"),
-          });
-        }
+      } finally {
+        this.inProgressEvents.delete(event.target);
       }
     });
 
