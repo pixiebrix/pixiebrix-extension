@@ -34,7 +34,6 @@ const CreatePage: React.FunctionComponent = () => {
   useTitle("Create Brick");
 
   const { submit, validate } = useSubmitBrick({
-    url: "api/bricks/",
     create: true,
   });
 
