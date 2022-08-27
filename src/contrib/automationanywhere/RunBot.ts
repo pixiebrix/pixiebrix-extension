@@ -98,6 +98,7 @@ export const ENTERPRISE_EDITION_PUBLIC_PROPERTIES: SchemaProperties = {
     },
   },
   poolIds: {
+    type: "array",
     description: "A device pool that has at least one active device (optional)",
     items: {
       type: "string",

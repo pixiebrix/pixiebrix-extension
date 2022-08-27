@@ -26,6 +26,7 @@ import {
   Device,
   DevicePool,
   FAILURE_STATUSES,
+  Folder,
   Interface,
   ListResponse,
   RunAsUser,
@@ -44,7 +45,7 @@ import {
 } from "@/contrib/automationanywhere/aaTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { RemoteResponse } from "@/types/contract";
-import { castArray } from "lodash";
+import { castArray, isEmpty } from "lodash";
 
 export const DEFAULT_MAX_WAIT_MILLIS = 60_000;
 const POLL_MILLIS = 2000;
@@ -69,17 +70,35 @@ export const cachedFetchBotFile = cachePromiseMethod(
   fetchBotFile
 );
 
+/**
+ * Return information about a bot in a Control Room.
+ */
+async function fetchFolder(
+  config: SanitizedServiceConfiguration,
+  folderId: string
+): Promise<Folder> {
+  // The same API endpoint can be used for any file, but for now assume it's a bot
+  const response = await proxyService<Folder>(config, {
+    url: `/v2/repository/files/${folderId}`,
+    method: "GET",
+  });
+  return response.data;
+}
+
+export const cachedFetchFolder = cachePromiseMethod(
+  ["aa:fetchFolder"],
+  fetchFolder
+);
+
 async function fetchBots(
   config: SanitizedServiceConfiguration,
   options: { workspaceType: WorkspaceType }
 ): Promise<Option[]> {
   let response: RemoteResponse<ListResponse<Bot>>;
 
-  if (config.config.folderId) {
-    // The /folders/:id/list endpoint works on both community and Enterprise. The /v2/repository/file/list doesn't
-    // include `type` field for filters or in the body or the response
+  if (isEmpty(config.config.folderId)) {
     response = await proxyService<ListResponse<Bot>>(config, {
-      url: `/v2/repository/folders/${config.config.folderId}/list`,
+      url: `/v2/repository/workspaces/${options.workspaceType}/files/list`,
       method: "POST",
       data: {
         filter: {
@@ -90,8 +109,10 @@ async function fetchBots(
       },
     });
   } else {
+    // The /folders/:id/list endpoint works on both community and Enterprise. The /v2/repository/file/list doesn't
+    // include `type` field for filters or in the body or the response
     response = await proxyService<ListResponse<Bot>>(config, {
-      url: `/v2/repository/workspaces/${options.workspaceType}/files/list`,
+      url: `/v2/repository/folders/${config.config.folderId}/list`,
       method: "POST",
       data: {
         filter: {

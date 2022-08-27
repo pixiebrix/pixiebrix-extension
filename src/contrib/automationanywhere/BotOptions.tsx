@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { partial } from "lodash";
+import { isEmpty, partial } from "lodash";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import {
   COMMON_PROPERTIES,
@@ -36,6 +36,7 @@ import {
   cachedFetchBots,
   cachedFetchDevicePools,
   cachedFetchDevices,
+  cachedFetchFolder,
   cachedFetchRunAsUsers,
   cachedFetchSchema,
 } from "@/contrib/automationanywhere/aaApi";
@@ -46,6 +47,9 @@ import RemoteMultiSelectWidget from "@/components/form/widgets/RemoteMultiSelect
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { useAsyncEffect } from "use-async-effect";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { Alert } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 const WORKSPACE_OPTIONS = [
   { value: "public", label: "Public" },
@@ -90,26 +94,30 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
     // Leave setWorkspaceType off the dependency list because Formik changes reference on each render
   }, [config, fileId, hasPermissions, workspaceType]);
 
-  const factoryArgs = useMemo(
-    () => ({
-      workspaceType: (workspaceType ?? "private") as WorkspaceType,
-    }),
-    [workspaceType]
-  );
-
   const [remoteSchema, remoteSchemaPending, remoteSchemaError] =
     useAsyncState(async () => {
-      if (hasPermissions && config) {
-        // HACK: hack to avoid concurrent requests to the proxy. Simultaneous calls to get the token causes a
-        // server error on community edition
-        await cachedFetchDevices(config, factoryArgs);
-        await cachedFetchBots(config, factoryArgs);
-        await cachedFetchRunAsUsers(config, factoryArgs);
+      if (hasPermissions && config && fileId) {
         return cachedFetchSchema(config, fileId);
       }
 
       return null;
-    }, [config, fileId, factoryArgs, hasPermissions]);
+    }, [config, fileId, hasPermissions]);
+
+  const [folder] = useAsyncState(async () => {
+    if (hasPermissions && config && config.config.folderId) {
+      return cachedFetchFolder(config, config.config.folderId);
+    }
+
+    return null;
+  }, [config, hasPermissions]);
+
+  // Additional args passed to the remote options factories
+  const factoryArgs = useMemo(
+    () => ({
+      workspaceType: workspaceType as WorkspaceType,
+    }),
+    [workspaceType]
+  );
 
   return (
     <RequireServiceConfig
@@ -127,6 +135,18 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
               defaultValue="private"
               options={WORKSPACE_OPTIONS}
             />
+          )}
+
+          {!isEmpty(config.config.folderId) && (
+            <Alert variant="info">
+              <FontAwesomeIcon icon={faInfoCircle} /> Displaying available bots
+              from folder{" "}
+              {folder?.name
+                ? `'${folder.name}' (${config.config.folderId})`
+                : config.config.folderId}{" "}
+              configured on the integration. To choose from all bots in the
+              workspace, remove the folder from the integration configuration.
+            </Alert>
           )}
 
           <ConnectedFieldTemplate
