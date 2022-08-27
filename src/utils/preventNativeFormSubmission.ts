@@ -25,6 +25,7 @@ import { isWebPage } from "webext-detect-page";
 
 function preventDefault(event: Event): void {
   event.preventDefault();
+  console.debug("The native submission of the form has been prevented");
 }
 
 if (!isWebPage()) {
