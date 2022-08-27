@@ -51,6 +51,7 @@ import initPartnerTheme from "@/background/partnerTheme";
 
 import {
   clearExtensionDebugLogs,
+  clearLog,
   clearLogs,
   getLoggingConfig,
   recordError,
@@ -135,6 +136,7 @@ declare global {
     GET_LOGGING_CONFIG: typeof getLoggingConfig;
     SET_LOGGING_CONFIG: typeof setLoggingConfig;
     CLEAR_LOGS: typeof clearLogs;
+    CLEAR_LOG: typeof clearLog;
     CLEAR_EXTENSION_DEBUG_LOGS: typeof clearExtensionDebugLogs;
 
     ADD_TRACE_ENTRY: typeof addTraceEntry;
@@ -209,6 +211,7 @@ export default function registerMessenger(): void {
     GET_LOGGING_CONFIG: getLoggingConfig,
     SET_LOGGING_CONFIG: setLoggingConfig,
     CLEAR_LOGS: clearLogs,
+    CLEAR_LOG: clearLog,
     CLEAR_EXTENSION_DEBUG_LOGS: clearExtensionDebugLogs,
 
     ADD_TRACE_ENTRY: addTraceEntry,
