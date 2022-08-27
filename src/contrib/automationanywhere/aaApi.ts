@@ -44,11 +44,66 @@ import {
   EnterpriseBotArgs,
 } from "@/contrib/automationanywhere/aaTypes";
 import { BusinessError } from "@/errors/businessErrors";
-import { RemoteResponse } from "@/types/contract";
-import { castArray, isEmpty } from "lodash";
+import { castArray, cloneDeep, isEmpty, sortBy } from "lodash";
+import { AxiosRequestConfig } from "axios";
+
+// https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html
+// Same as default for Control Room
+const PAGINATION_LIMIT = 100;
 
 export const DEFAULT_MAX_WAIT_MILLIS = 60_000;
 const POLL_MILLIS = 2000;
+
+const SORT_BY_NAME = {
+  sort: [
+    {
+      field: "name",
+      direction: "asc",
+    },
+  ],
+};
+
+async function fetchAllPages<TData>(
+  config: SanitizedServiceConfiguration,
+  requestConfig: AxiosRequestConfig
+): Promise<TData[]> {
+  // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html
+
+  if (requestConfig.data.page) {
+    throw new Error("pagination parameter already set on request config");
+  }
+
+  const paginatedRequestConfig = cloneDeep(requestConfig);
+  paginatedRequestConfig.data.page = {
+    offset: 0,
+    length: PAGINATION_LIMIT,
+  };
+
+  const initialResponse = await proxyService<ListResponse<TData>>(
+    config,
+    paginatedRequestConfig
+  );
+  const results: TData[] = [...initialResponse.data.list];
+  const total = initialResponse.data.page.totalFilter;
+
+  // Note that CR API uses offset/length instead of page/size
+  let offset = results.length;
+  while (offset < total) {
+    paginatedRequestConfig.data.page = {
+      offset,
+      length: PAGINATION_LIMIT,
+    };
+    // eslint-disable-next-line no-await-in-loop -- be conservative on number of concurrent requests to CR
+    const response = await proxyService<ListResponse<TData>>(
+      config,
+      paginatedRequestConfig
+    );
+    results.push(...response.data.list);
+    offset += response.data.list.length;
+  }
+
+  return results;
+}
 
 /**
  * Return information about a bot in a Control Room.
@@ -94,37 +149,35 @@ async function fetchBots(
   config: SanitizedServiceConfiguration,
   options: { workspaceType: WorkspaceType }
 ): Promise<Option[]> {
-  let response: RemoteResponse<ListResponse<Bot>>;
+  const botFilterPayload = {
+    ...SORT_BY_NAME,
+    filter: {
+      operator: "eq",
+      field: "type",
+      value: BOT_TYPE,
+    },
+  };
 
+  let bots: Bot[];
+
+  // The folderId field on the integration is now deprecated. See BotOptions for the alert shown to user if
+  // the Page Editor configuration is only showing bots for the folder id.
   if (isEmpty(config.config.folderId)) {
-    response = await proxyService<ListResponse<Bot>>(config, {
+    bots = await fetchAllPages<Bot>(config, {
       url: `/v2/repository/workspaces/${options.workspaceType}/files/list`,
       method: "POST",
-      data: {
-        filter: {
-          operator: "eq",
-          field: "type",
-          value: BOT_TYPE,
-        },
-      },
+      data: botFilterPayload,
     });
   } else {
     // The /folders/:id/list endpoint works on both community and Enterprise. The /v2/repository/file/list doesn't
     // include `type` field for filters or in the body or the response
-    response = await proxyService<ListResponse<Bot>>(config, {
+    bots = await fetchAllPages<Bot>(config, {
       url: `/v2/repository/folders/${config.config.folderId}/list`,
       method: "POST",
-      data: {
-        filter: {
-          operator: "eq",
-          field: "type",
-          value: BOT_TYPE,
-        },
-      },
+      data: botFilterPayload,
     });
   }
 
-  const bots = response.data.list ?? [];
   return bots.map((bot) => ({
     value: bot.id,
     label: bot.name,
@@ -134,25 +187,26 @@ async function fetchBots(
 export const cachedFetchBots = cachePromiseMethod(["aa:fetchBots"], fetchBots);
 
 async function fetchDevices(
-  config: SanitizedServiceConfiguration,
-  options: { workspaceType: WorkspaceType }
+  config: SanitizedServiceConfiguration
 ): Promise<Option[]> {
-  // HACK: depend on cachedFetchBots to avoid concurrent requests to the proxy. Simultaneous calls to get the
-  // token causes a server error on Community Edition
-  await cachedFetchBots(config, options);
-
-  const response = await proxyService<ListResponse<Device>>(config, {
+  const devices = await fetchAllPages<Device>(config, {
     url: "/v2/devices/list",
     method: "POST",
     data: {},
   });
-  const devices = response.data.list ?? [];
-  return devices.map((device) => ({
-    value: device.id,
-    label: device.nickname
+
+  const selectLabel = (device: Device) =>
+    device.nickname
       ? `${device.nickname} (${device.hostName})`
-      : device.hostName,
-  }));
+      : device.hostName;
+
+  return sortBy(
+    devices.map((device) => ({
+      value: device.id,
+      label: selectLabel(device),
+    })),
+    (option) => option.label
+  );
 }
 
 export const cachedFetchDevices = cachePromiseMethod(
@@ -161,19 +215,13 @@ export const cachedFetchDevices = cachePromiseMethod(
 );
 
 async function fetchDevicePools(
-  config: SanitizedServiceConfiguration,
-  options: { workspaceType: WorkspaceType }
+  config: SanitizedServiceConfiguration
 ): Promise<Option[]> {
-  // HACK: depend on cachedFetchBots to avoid concurrent requests to the proxy. Simultaneous calls to get the
-  // token causes a server error on Community Edition
-  await cachedFetchBots(config, options);
-
-  const response = await proxyService<ListResponse<DevicePool>>(config, {
+  const devicePools = await fetchAllPages<DevicePool>(config, {
     url: "/v2/devices/pools/list",
     method: "POST",
-    data: {},
+    data: { ...SORT_BY_NAME },
   });
-  const devicePools = response.data.list ?? [];
   return devicePools.map((pool) => ({
     value: pool.id,
     label: pool.name,
@@ -186,21 +234,14 @@ export const cachedFetchDevicePools = cachePromiseMethod(
 );
 
 async function fetchRunAsUsers(
-  config: SanitizedServiceConfiguration,
-  options: { workspaceType: WorkspaceType }
+  config: SanitizedServiceConfiguration
 ): Promise<Option[]> {
-  // HACK: depend on cachedFetchBots to avoid concurrent requests to the proxy. Simultaneous calls to get the
-  // token causes a server error
-  await cachedFetchBots(config, options);
-
-  const { data } = await proxyService<ListResponse<RunAsUser>>(config, {
+  const users = await fetchAllPages<RunAsUser>(config, {
     url: "/v1/devices/runasusers/list",
     method: "POST",
-    // TODO: handle pagination - potentially via search query?
     data: {},
   });
-  const users = data.list ?? [];
-  return users.map((user) => ({
+  return sortBy(users, (user) => user.username).map((user) => ({
     value: user.id,
     label: user.username,
   }));

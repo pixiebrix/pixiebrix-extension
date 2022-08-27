@@ -103,6 +103,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
       return null;
     }, [config, fileId, hasPermissions]);
 
+  // Don't care about pending/error state b/c we just fall back to displaying the folderId
   const [folder] = useAsyncState(async () => {
     if (hasPermissions && config && config.config.folderId) {
       return cachedFetchFolder(config, config.config.folderId);
@@ -180,6 +181,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
                     as={RemoteMultiSelectWidget}
                     optionsFactory={cachedFetchRunAsUsers}
                     factoryArgs={factoryArgs}
+                    blankValue={[]}
                     config={config}
                   />
                   <ConnectedFieldTemplate
