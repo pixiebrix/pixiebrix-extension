@@ -18,7 +18,10 @@
 import React, { useMemo } from "react";
 import { partial } from "lodash";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { COMMON_PROPERTIES } from "@/contrib/automationanywhere/RunBot";
+import {
+  COMMON_PROPERTIES,
+  ENTERPRISE_EDITION_PROPERTIES,
+} from "@/contrib/automationanywhere/RunBot";
 import { Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
@@ -42,6 +45,7 @@ import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidge
 import RemoteMultiSelectWidget from "@/components/form/widgets/RemoteMultiSelectWidget";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { useAsyncEffect } from "use-async-effect";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 const WORKSPACE_OPTIONS = [
   { value: "public", label: "Public" },
@@ -62,6 +66,10 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
     useField<string>(configName("workspaceType"));
 
   const [{ value: fileId }] = useField<string>(configName("fileId"));
+
+  const [{ value: awaitResult }] = useField<boolean | null>(
+    configName("awaitResult")
+  );
 
   // Default the workspaceType based on the file id
   useAsyncEffect(async () => {
@@ -169,6 +177,13 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
                 description="Wait for the bot to run and return the output"
                 as={BooleanWidget}
               />
+              {awaitResult && (
+                <SchemaField
+                  label="Result Timeout (Milliseconds)"
+                  name={configName("maxWaitMillis")}
+                  schema={ENTERPRISE_EDITION_PROPERTIES.maxWaitMillis as Schema}
+                />
+              )}
             </>
           )}
 

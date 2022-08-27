@@ -35,4 +35,5 @@ export type EnterpriseBotArgs = {
 
 export type BotArgs = (CommunityBotArgs | EnterpriseBotArgs) & {
   awaitResult: boolean;
+  maxWaitMillis: number;
 };
