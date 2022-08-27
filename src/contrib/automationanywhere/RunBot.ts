@@ -143,6 +143,8 @@ export class RunBot extends Transformer {
     ],
   };
 
+  defaultOutputKey = "bot";
+
   override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
