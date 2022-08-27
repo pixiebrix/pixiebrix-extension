@@ -27,7 +27,7 @@ inputSchema:
         password for users that are assigned to the API key generation role.
     folderId:
       type: string
-      description: The folder ID containing the bots to run
+      description: (Deprecated) The folder ID containing the bots to run
       format: '\d+'
   required:
     - username
