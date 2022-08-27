@@ -182,6 +182,8 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
                   label="Result Timeout (Milliseconds)"
                   name={configName("maxWaitMillis")}
                   schema={ENTERPRISE_EDITION_PROPERTIES.maxWaitMillis as Schema}
+                  // Mark as required so the widget defaults to showing the number entry
+                  isRequired
                 />
               )}
             </>

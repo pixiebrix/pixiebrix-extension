@@ -93,7 +93,7 @@ export const ENTERPRISE_EDITION_PROPERTIES: SchemaProperties = {
     type: "number",
     default: DEFAULT_MAX_WAIT_MILLIS,
     description:
-      "Maximum time (in milliseconds) to wait for the process to complete when awaiting result.",
+      "Maximum time (in milliseconds) to wait for the bot to complete when awaiting result.",
   },
 };
 
