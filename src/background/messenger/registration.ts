@@ -40,7 +40,7 @@ import {
 import * as registry from "@/registry/localRegistry";
 import { ensureContentScript } from "@/background/util";
 import serviceRegistry from "@/services/registry";
-import { deleteCachedAuthData } from "@/background/auth";
+import { deleteCachedAuthData, getCachedAuthData } from "@/background/auth";
 import { proxyService } from "@/background/requests";
 import { readQuery } from "@/contrib/google/bigquery/handlers";
 import { getRecord, setRecord } from "@/background/dataStore";
@@ -123,6 +123,7 @@ declare global {
     REQUEST_RUN_IN_ALL: typeof requestRunInBroadcast;
 
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
+    GET_CACHED_AUTH: typeof getCachedAuthData;
     PROXY: typeof proxyService;
     CLEAR_SERVICE_CACHE: VoidFunction;
     GOOGLE_BIGQUERY_READ: typeof readQuery;
@@ -198,6 +199,7 @@ export default function registerMessenger(): void {
     REQUEST_RUN_IN_ALL: requestRunInBroadcast,
 
     DELETE_CACHED_AUTH: deleteCachedAuthData,
+    GET_CACHED_AUTH: getCachedAuthData,
     CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
     PROXY: proxyService,
     GOOGLE_BIGQUERY_READ: readQuery,

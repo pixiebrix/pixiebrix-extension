@@ -20,7 +20,7 @@ import { partial } from "lodash";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import {
   COMMON_PROPERTIES,
-  ENTERPRISE_EDITION_PROPERTIES,
+  ENTERPRISE_EDITION_COMMON_PROPERTIES,
 } from "@/contrib/automationanywhere/RunBot";
 import { Schema } from "@/core";
 import { useField } from "formik";
@@ -78,12 +78,15 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
       setWorkspaceType("private");
     }
 
+    // `workspaceType` is optional because it's not required to run the bot. However, we need it to populate dropdowns
+    // for the fields in the fieldset
     if (hasPermissions && config && workspaceType == null && fileId) {
       const result = await cachedFetchBotFile(config, fileId);
       const workspaceType =
         result.workspaceType === "PUBLIC" ? "public" : "private";
       setWorkspaceType(workspaceType);
     }
+
     // Leave setWorkspaceType off the dependency list because Formik changes reference on each render
   }, [config, fileId, hasPermissions, workspaceType]);
 
@@ -181,7 +184,9 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
                 <SchemaField
                   label="Result Timeout (Milliseconds)"
                   name={configName("maxWaitMillis")}
-                  schema={ENTERPRISE_EDITION_PROPERTIES.maxWaitMillis as Schema}
+                  schema={
+                    ENTERPRISE_EDITION_COMMON_PROPERTIES.maxWaitMillis as Schema
+                  }
                   // Mark as required so the widget defaults to showing the number entry
                   isRequired
                 />

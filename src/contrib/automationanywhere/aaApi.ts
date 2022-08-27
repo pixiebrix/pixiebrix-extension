@@ -44,6 +44,7 @@ import {
 } from "@/contrib/automationanywhere/aaTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { RemoteResponse } from "@/types/contract";
+import { castArray } from "lodash";
 
 export const DEFAULT_MAX_WAIT_MILLIS = 60_000;
 const POLL_MILLIS = 2000;
@@ -246,7 +247,7 @@ export async function runEnterpriseBot({
       overrideDefaultDevice: poolIds?.length > 0,
       numOfRunAsUsersToUse: 1,
       poolIds,
-      runAsUserIds,
+      runAsUserIds: castArray(runAsUserIds),
     },
   });
 
