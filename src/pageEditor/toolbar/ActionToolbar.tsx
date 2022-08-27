@@ -24,7 +24,6 @@ import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
-import { clearLog } from "@/background/messenger/api";
 
 const ActionToolbar: React.FunctionComponent<{
   element: FormState;
@@ -39,16 +38,8 @@ const ActionToolbar: React.FunctionComponent<{
   const removeElement = async () => {
     if (element.recipe) {
       await removeRecipe({ recipeId: element.recipe.id });
-      // We should pass the blueprintId in order to clear logs only for this recipe.
-      await clearLog({
-        blueprintId: element.recipe.id,
-      });
     } else {
       await removeExtension({ extensionId: element.uuid });
-      // We should pass the extensionId in order to clear logs only for this extension.
-      await clearLog({
-        extensionId: element.uuid,
-      });
     }
   };
 
