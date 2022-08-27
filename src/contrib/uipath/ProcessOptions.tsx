@@ -66,6 +66,10 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
     configName("releaseKey")
   );
 
+  const [{ value: awaitResult }] = useField<boolean | null>(
+    configName("awaitResult")
+  );
+
   const { selectedRelease, releasesPromise } = useSelectedRelease(
     configName("releaseKey")
   );
@@ -131,12 +135,21 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
               isRequired
             />
           )}
+
           <SchemaField
             label="Await Result"
             name={configName("awaitResult")}
             schema={UIPATH_PROPERTIES.awaitResult as Schema}
             isRequired
           />
+
+          {awaitResult && (
+            <SchemaField
+              label="Result Timeout (Milliseconds)"
+              name={configName("maxWaitMillis")}
+              schema={UIPATH_PROPERTIES.maxWaitMillis as Schema}
+            />
+          )}
 
           <ChildObjectField
             heading={selectedRelease?.release?.Name ?? "Input Arguments"}
