@@ -35,7 +35,7 @@ export const UIPATH_SERVICE_IDS: RegistryId[] = [
 ].map((x) => validateRegistryId(x));
 export const UIPATH_ID = validateRegistryId("@pixiebrix/uipath/process");
 
-const MAX_WAIT_MILLIS = 30_000;
+const DEFAULT_MAX_WAIT_MILLIS = 30_000;
 const POLL_MILLIS = 1000;
 
 export const UIPATH_PROPERTIES: SchemaProperties = {
@@ -76,6 +76,12 @@ export const UIPATH_PROPERTIES: SchemaProperties = {
     type: "boolean",
     default: false,
     description: "Wait for the process to complete and output the results.",
+  },
+  maxWaitMillis: {
+    type: "number",
+    default: DEFAULT_MAX_WAIT_MILLIS,
+    description:
+      "Maximum time (in milliseconds) to wait for the process to complete when awaiting result.",
   },
   inputArguments: {
     type: "object",
@@ -119,6 +125,7 @@ export class RunProcess extends Transformer {
       jobsCount = 0,
       robotIds = [],
       awaitResult = false,
+      maxWaitMillis = DEFAULT_MAX_WAIT_MILLIS,
       inputArguments = {},
     }: BlockArg,
     { logger }: BlockOptions
@@ -173,7 +180,7 @@ export class RunProcess extends Transformer {
 
     const result = await pollUntilTruthy(poll, {
       intervalMillis: POLL_MILLIS,
-      maxWaitMillis: MAX_WAIT_MILLIS,
+      maxWaitMillis,
     });
 
     if (result) {
@@ -181,7 +188,7 @@ export class RunProcess extends Transformer {
     }
 
     throw new BusinessError(
-      `UiPath job did not finish in ${MAX_WAIT_MILLIS / 1000} seconds`
+      `UiPath job did not finish in ${Math.round(maxWaitMillis / 1000)} seconds`
     );
   }
 }
