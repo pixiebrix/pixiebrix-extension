@@ -20,6 +20,7 @@ import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import {
+  DEFAULT_MAX_WAIT_MILLIS,
   pollEnterpriseResult,
   runCommunityBot,
   runEnterpriseBot,
@@ -69,7 +70,7 @@ const COMMUNITY_EDITION_PROPERTIES: SchemaProperties = {
   },
 };
 
-const ENTERPRISE_EDITION_PROPERTIES: SchemaProperties = {
+export const ENTERPRISE_EDITION_PROPERTIES: SchemaProperties = {
   runAsUsers: {
     type: "array",
     description: "The user(s) to run the bot",
@@ -87,6 +88,12 @@ const ENTERPRISE_EDITION_PROPERTIES: SchemaProperties = {
     type: "boolean",
     default: false,
     description: "Wait for the bot to complete and return the output",
+  },
+  maxWaitMillis: {
+    type: "number",
+    default: DEFAULT_MAX_WAIT_MILLIS,
+    description:
+      "Maximum time (in milliseconds) to wait for the bot to complete when awaiting result.",
   },
 };
 
@@ -129,7 +136,11 @@ export class RunBot extends Transformer {
     args: BlockArg<BotArgs>,
     { logger }: BlockOptions
   ): Promise<UnknownObject> {
-    const { awaitResult, service } = args;
+    const {
+      awaitResult,
+      maxWaitMillis = DEFAULT_MAX_WAIT_MILLIS,
+      service,
+    } = args;
 
     if (isCommunityControlRoom(service.config.controlRoomUrl)) {
       if (!("deviceId" in args)) {
@@ -173,6 +184,7 @@ export class RunBot extends Transformer {
       service,
       deploymentId: deployment.deploymentId,
       logger,
+      maxWaitMillis,
     });
   }
 }

@@ -45,7 +45,7 @@ import {
 import { BusinessError } from "@/errors/businessErrors";
 import { RemoteResponse } from "@/types/contract";
 
-const MAX_WAIT_MILLIS = 60_000;
+export const DEFAULT_MAX_WAIT_MILLIS = 60_000;
 const POLL_MILLIS = 2000;
 
 /**
@@ -257,10 +257,12 @@ export async function pollEnterpriseResult({
   service,
   deploymentId,
   logger,
+  maxWaitMillis = DEFAULT_MAX_WAIT_MILLIS,
 }: {
   service: SanitizedServiceConfiguration;
   deploymentId: string;
   logger: Logger;
+  maxWaitMillis?: number;
 }) {
   const poll = async () => {
     // Sleep first because it's unlikely it will be completed immediately after the running the bot
@@ -318,7 +320,7 @@ export async function pollEnterpriseResult({
 
   const result = await pollUntilTruthy(poll, {
     intervalMillis: 0, // Already covered by the inline `sleep`
-    maxWaitMillis: MAX_WAIT_MILLIS,
+    maxWaitMillis,
   });
 
   if (result) {
@@ -326,6 +328,6 @@ export async function pollEnterpriseResult({
   }
 
   throw new BusinessError(
-    `Bot did not finish in ${MAX_WAIT_MILLIS / 1000} seconds`
+    `Bot did not finish in ${Math.round(maxWaitMillis / 1000)} seconds`
   );
 }
