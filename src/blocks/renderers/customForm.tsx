@@ -51,6 +51,10 @@ const fields = {
 const uiWidgets = {
   imageCrop: ImageCropWidget,
 };
+interface DatabaseResult {
+  success: boolean;
+  data: unknown;
+}
 
 export type Storage =
   | { type: "localStorage" }
@@ -127,7 +131,7 @@ async function getInitialData(
     case "database": {
       const {
         data: { data },
-      } = await proxyService(storage.service, {
+      } = await proxyService<DatabaseResult>(storage.service, {
         url: `/api/databases/${storage.databaseId}/records/${encodeURIComponent(
           recordId
         )}/`,
