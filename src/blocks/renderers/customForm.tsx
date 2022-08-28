@@ -51,6 +51,7 @@ const fields = {
 const uiWidgets = {
   imageCrop: ImageCropWidget,
 };
+
 interface DatabaseResult {
   success: boolean;
   data: unknown;
