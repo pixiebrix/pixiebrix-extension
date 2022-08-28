@@ -108,7 +108,7 @@ export async function uninstallUnmatchedDeployments(
   const installed = selectExtensions({ options: state });
 
   const recipeIds = new Set(
-    deployments.map((x) => x.package.package_id as RegistryId)
+    deployments.map((deployment) => deployment.package.package_id)
   );
   const toUninstall = installed.filter(
     (extension) =>
