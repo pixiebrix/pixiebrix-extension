@@ -37,7 +37,10 @@ import {
   validateSemVerString,
   validateTimestamp,
 } from "@/types/helpers";
-import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
+import {
+  CONTROL_ROOM_OAUTH_SERVICE_ID,
+  PIXIEBRIX_SERVICE_ID,
+} from "@/services/constants";
 import { SanitizedServiceConfiguration } from "@/core";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 
@@ -292,6 +295,31 @@ describe("findPersonalServiceConfigurations", () => {
       await findPersonalServiceConfigurations(deployment, locator)
     ).toStrictEqual({});
   });
+
+  test("exclude pixiebrix service", async () => {
+    const deployment = deploymentFactory({
+      package: deploymentPackageFactory({
+        config: recipeDefinitionFactory({
+          extensionPoints: [
+            extensionPointConfigFactory({
+              services: {
+                [validateOutputKey("foo")]: PIXIEBRIX_SERVICE_ID,
+              },
+            }),
+          ],
+        }),
+      }),
+    });
+
+    const auth = sanitizedServiceConfigurationFactory({
+      serviceId: PIXIEBRIX_SERVICE_ID,
+    });
+
+    const locator = async () => [auth];
+    expect(
+      await findPersonalServiceConfigurations(deployment, locator)
+    ).toStrictEqual({});
+  });
 });
 
 describe("mergeDeploymentServiceConfigurations", () => {
@@ -376,6 +404,38 @@ describe("mergeDeploymentServiceConfigurations", () => {
     const locator = async () => [auth];
     await expect(
       mergeDeploymentServiceConfigurations(deployment, locator)
-    ).rejects.toThrowError();
+    ).rejects.toThrowError("No configuration found for integration");
+  });
+
+  test("reject multiple personal configurations", async () => {
+    const deployment = deploymentFactory({
+      package: deploymentPackageFactory({
+        config: recipeDefinitionFactory({
+          extensionPoints: [
+            extensionPointConfigFactory({
+              services: {
+                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
+              },
+            }),
+          ],
+        }),
+      }),
+    });
+
+    const locator = async () => [
+      sanitizedServiceConfigurationFactory({
+        serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+        proxy: false,
+      }),
+      sanitizedServiceConfigurationFactory({
+        serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+        proxy: false,
+      }),
+    ];
+    await expect(
+      mergeDeploymentServiceConfigurations(deployment, locator)
+    ).rejects.toThrowError(
+      "Multiple local configurations found for integration:"
+    );
   });
 });

@@ -172,7 +172,7 @@ type Locate = (
 ) => Promise<SanitizedServiceConfiguration[]>;
 
 /**
- * Return local services to use for the deployment.
+ * Return local service configurations that are valid to use for the deployment.
  */
 export async function findPersonalServiceConfigurations(
   deployment: Deployment,
@@ -212,16 +212,21 @@ export async function mergeDeploymentServiceConfigurations(
     locate
   );
   const serviceEntries = [
-    ...Object.entries(personalConfigurations).map(([serviceId, configs]) => [
-      serviceId,
-      configs[0]?.id,
-    ]),
+    ...Object.entries(personalConfigurations).map(([serviceId, configs]) => {
+      if (configs.length > 1) {
+        throw new Error(
+          `Multiple local configurations found for integration: ${serviceId}`
+        );
+      }
+
+      return [serviceId, configs[0]?.id];
+    }),
     ...deployment.bindings.map(({ auth }) => [auth.service_id, auth.id]),
   ];
 
   for (const [serviceId, authId] of serviceEntries) {
     if (authId == null) {
-      throw new Error(`Missing configuration for ${serviceId}`);
+      throw new Error(`No configuration found for integration: ${serviceId}`);
     }
   }
 

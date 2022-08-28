@@ -39,7 +39,6 @@ import {
   mergeDeploymentServiceConfigurations,
   selectInstalledDeployments,
 } from "@/utils/deploymentUtils";
-import reportError from "@/telemetry/reportError";
 import settingsSlice from "@/store/settingsSlice";
 
 const { actions } = extensionsSlice;
@@ -120,13 +119,22 @@ async function activateDeployments(
   deployments: Deployment[],
   installed: IExtension[]
 ): Promise<void> {
+  // Activate as many as we can
+  const errors = [];
+
   for (const deployment of deployments) {
     try {
       // eslint-disable-next-line no-await-in-loop -- modifies redux state
       await activateDeployment(dispatch, deployment, installed);
     } catch (error) {
-      reportError(error);
+      errors.push(error);
     }
+  }
+
+  if (errors.length > 0) {
+    // XXX: only throwing the first is OK, because the user will see the next error if they fix this error and then
+    // activate deployments again
+    throw errors[0];
   }
 }
 
