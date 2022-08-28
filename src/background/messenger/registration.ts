@@ -112,6 +112,7 @@ declare global {
     REGISTRY_GET_KIND: typeof registry.getKind;
     REGISTRY_SYNC: typeof registry.syncRemote;
     REGISTRY_FIND: typeof registry.find;
+    LOCATE_SERVICES_FOR_ID: typeof locator.locateAllForService;
     LOCATE_SERVICE: typeof locator.locate;
     REFRESH_SERVICES: typeof refreshServices;
     LOCATOR_REFRESH_LOCAL: typeof locator.refreshLocal;
@@ -188,6 +189,7 @@ export default function registerMessenger(): void {
     REGISTRY_GET_KIND: registry.getKind,
     REGISTRY_SYNC: registry.syncRemote,
     REGISTRY_FIND: registry.find,
+    LOCATE_SERVICES_FOR_ID: locator.locateAllForService.bind(locator),
     LOCATE_SERVICE: locator.locate.bind(locator),
     LOCATOR_REFRESH_LOCAL: locator.refreshLocal.bind(locator),
     REFRESH_SERVICES: refreshServices,

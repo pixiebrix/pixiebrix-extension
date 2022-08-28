@@ -15,10 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DeploymentContext, IExtension } from "@/core";
+import {
+  DeploymentContext,
+  IExtension,
+  RegistryId,
+  SanitizedServiceConfiguration,
+  UUID,
+} from "@/core";
 import { Deployment } from "@/types/contract";
 import { gte, satisfies } from "semver";
-import { compact } from "lodash";
+import { compact, sortBy, uniq, uniqBy } from "lodash";
+import { RecipeDefinition } from "@/types/definitions";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 /**
  * Returns `true` if a managed deployment is active (i.e., has not been remotely paused by an admin)
@@ -118,4 +126,111 @@ export function checkExtensionUpdateRequired(
   return versionRanges.some(
     (versionRange) => !satisfies(extensionVersion, versionRange)
   );
+}
+
+/**
+ * Return service registry ids used by the blueprint.
+ */
+export function extractRecipeServiceIds(
+  recipe: RecipeDefinition
+): RegistryId[] {
+  return sortBy(
+    uniq(recipe.extensionPoints.flatMap((x) => Object.values(x.services ?? {})))
+  );
+}
+
+/**
+ * Deployment installed on the client. A deployment may be installed but not active (see DeploymentContext.active)
+ */
+export type InstalledDeployment = {
+  deployment: UUID;
+  blueprint: RegistryId;
+  blueprintVersion: string;
+};
+
+export function selectInstalledDeployments(
+  extensions: Array<Pick<IExtension, "_deployment" | "_recipe">>
+): InstalledDeployment[] {
+  return uniqBy(
+    extensions
+      .filter((x) => x._deployment?.id != null)
+      .map((x) => ({
+        deployment: x._deployment.id,
+        blueprint: x._recipe?.id,
+        blueprintVersion: x._recipe?.version,
+      })),
+    (x) => x.deployment
+  );
+}
+
+/**
+ * Service configuration lookup method. Extracted as parameter to support background messenger calls and calls directly
+ * from the background page.
+ */
+export type Locate = (
+  serviceId: RegistryId
+) => Promise<SanitizedServiceConfiguration[]>;
+
+/**
+ * Return local service configurations that are valid to use for the deployment.
+ *
+ * Excludes the PixieBrix API service and services that are bound in the deployment configuration.
+ */
+export async function findLocalDeploymentServiceConfigurations(
+  deployment: Deployment,
+  locate: Locate
+): Promise<Record<RegistryId, SanitizedServiceConfiguration[]>> {
+  const deploymentServices = extractRecipeServiceIds(deployment.package.config);
+  // Services in the deployment that are bound to a team credential
+  const boundServices = new Set(
+    deployment.bindings.map((x) => x.auth.service_id)
+  );
+  const unboundServices = deploymentServices.filter(
+    (serviceId) =>
+      !boundServices.has(serviceId) && serviceId !== PIXIEBRIX_SERVICE_ID
+  );
+
+  // XXX: this is incorrect for server-based OAuth2 integrations, because they're owned by user but still show as proxy
+  // because the requests need to be proxied through our server.
+  const isPersonal = (x: SanitizedServiceConfiguration) => !x.proxy;
+
+  const servicePromises = await Promise.all(
+    unboundServices.map(async (serviceId: RegistryId) => {
+      const all = await locate(serviceId);
+      return [serviceId, all.filter((x) => isPersonal(x))];
+    })
+  );
+
+  return Object.fromEntries(servicePromises);
+}
+
+export async function mergeDeploymentServiceConfigurations(
+  deployment: Deployment,
+  locate: Locate
+): Promise<Record<RegistryId, UUID>> {
+  // Merge deployment service bindings and personal configurations
+  const personalConfigurations = await findLocalDeploymentServiceConfigurations(
+    deployment,
+    locate
+  );
+  const serviceEntries = [
+    ...Object.entries(personalConfigurations).map(([serviceId, configs]) => {
+      if (configs.length > 1) {
+        throw new Error(
+          `Multiple local configurations found for integration: ${serviceId}`
+        );
+      }
+
+      return [serviceId, configs[0]?.id];
+    }),
+    ...deployment.bindings.map(({ auth }) => [auth.service_id, auth.id]),
+  ];
+
+  for (const [serviceId, authId] of serviceEntries) {
+    if (authId == null) {
+      throw new Error(`No configuration found for integration: ${serviceId}`);
+    }
+  }
+
+  return Object.fromEntries(serviceEntries);
 }

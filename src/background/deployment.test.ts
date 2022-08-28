@@ -48,7 +48,7 @@ jest.mock("@/background/util", () => ({
 
 jest.mock("webext-messenger");
 
-jest.mock("@/permissions", () => ({
+jest.mock("@/utils/deploymentPermissionUtils", () => ({
   deploymentPermissions: jest
     .fn()
     .mockResolvedValue({ permissions: [], origins: [] }),

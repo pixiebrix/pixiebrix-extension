@@ -33,7 +33,7 @@ import reportError from "@/telemetry/reportError";
 import { groupBy } from "lodash";
 import { resolveDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
-import { isDeploymentActive } from "@/utils/deployment";
+import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { $safeFind } from "@/helpers";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";

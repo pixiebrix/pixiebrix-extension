@@ -91,6 +91,7 @@ export const contextMenus = {
 };
 
 export const services = {
+  locateAllForId: getMethod("LOCATE_SERVICES_FOR_ID", bg),
   locate: getMethod("LOCATE_SERVICE", bg),
   refresh: getMethod("REFRESH_SERVICES", bg),
   refreshLocal: getMethod("LOCATOR_REFRESH_LOCAL", bg),
