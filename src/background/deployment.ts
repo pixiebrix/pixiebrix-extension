@@ -16,7 +16,7 @@
  */
 
 import { Deployment, Me } from "@/types/contract";
-import { isEmpty, partition, uniqBy } from "lodash";
+import { isEmpty, partition } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { getUID } from "@/background/messenger/api";
 import { getExtensionVersion, ManualStorageKey, readStorage } from "@/chrome";
@@ -25,7 +25,7 @@ import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { deploymentPermissions } from "@/permissions";
-import { IExtension, UUID, RegistryId } from "@/core";
+import { RegistryId, UUID } from "@/core";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "./util";
@@ -38,41 +38,24 @@ import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
 import { isUpdateAvailable } from "@/background/installer";
 import { selectUserDataUpdate } from "@/auth/authUtils";
 import { uninstallContextMenu } from "@/background/contextMenus";
-import { makeUpdatedFilter } from "@/utils/deployment";
+import {
+  findPersonalServiceConfigurations,
+  makeUpdatedFilter,
+  mergeDeploymentServiceConfigurations,
+  selectInstalledDeployments,
+} from "@/utils/deploymentUtils";
 import { selectUpdatePromptState } from "@/store/settingsSelectors";
 import settingsSlice from "@/store/settingsSlice";
+import { locator } from "@/background/locator";
 
 const { reducer, actions } = extensionsSlice;
+const locateAllForService = locator.locateAllForService.bind(locator);
 
 const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
 
 // See managedStorageSchema.json
 const MANAGED_CAMPAIGN_IDS_KEY = "campaignIds" as ManualStorageKey;
 const MANAGED_ORGANIZATION_ID_KEY = "managedOrganizationId" as ManualStorageKey;
-
-/**
- * Deployment installed on the client. A deployment may be installed but not active (see DeploymentContext.active)
- */
-type InstalledDeployment = {
-  deployment: UUID;
-  blueprint: RegistryId;
-  blueprintVersion: string;
-};
-
-export function selectInstalledDeployments(
-  extensions: Array<Pick<IExtension, "_deployment" | "_recipe">>
-): InstalledDeployment[] {
-  return uniqBy(
-    extensions
-      .filter((x) => x._deployment?.id != null)
-      .map((x) => ({
-        deployment: x._deployment.id,
-        blueprint: x._recipe?.id,
-        blueprintVersion: x._recipe?.version,
-      })),
-    (x) => x.deployment
-  );
-}
 
 async function setExtensionsState(state: ExtensionOptionsState): Promise<void> {
   await saveOptions(state);
@@ -165,10 +148,10 @@ function uninstallRecipe(
   return returnState;
 }
 
-function installDeployment(
+async function installDeployment(
   state: ExtensionOptionsState,
   deployment: Deployment
-): ExtensionOptionsState {
+): Promise<ExtensionOptionsState> {
   let returnState = state;
 
   // Uninstall existing versions of the extensions
@@ -181,10 +164,9 @@ function installDeployment(
       recipe: deployment.package.config,
       extensionPoints: deployment.package.config.extensionPoints,
       deployment,
-      services: Object.fromEntries(
-        deployment.bindings.map(
-          (x) => [x.auth.service_id, x.auth.id] as [RegistryId, UUID]
-        )
+      services: await mergeDeploymentServiceConfigurations(
+        deployment,
+        locateAllForService
       ),
     })
   );
@@ -204,7 +186,8 @@ function installDeployment(
 async function installDeployments(deployments: Deployment[]): Promise<void> {
   let state = await loadOptions();
   for (const deployment of deployments) {
-    state = installDeployment(state, deployment);
+    // eslint-disable-next-line no-await-in-loop -- running reducer
+    state = await installDeployment(state, deployment);
   }
 
   await setExtensionsState(state);
@@ -217,19 +200,32 @@ type DeploymentConstraint = {
 };
 
 /**
- * Return true if the deployment can be automatically installed
+ * Return true if the deployment can be automatically installed.
+ *
+ * For automatic install, the following must be true:
+ * 1. PixieBrix already has permissions for the required pages/APIs
+ * 2. The user has a version of the PixieBrix browser extension compatible with the deployment
+ * 3. The user has exactly one (1) personal configuration for each unbound service for the deployment
  */
-function canAutomaticallyInstall({
+async function canAutomaticallyInstall({
   deployment,
   hasPermissions,
   extensionVersion,
-}: DeploymentConstraint): boolean {
+}: DeploymentConstraint): Promise<boolean> {
   if (!hasPermissions) {
     return false;
   }
 
   const requiredRange = deployment.package.config.metadata.extensionVersion;
-  return !requiredRange || satisfies(extensionVersion, requiredRange);
+  if (requiredRange && !satisfies(extensionVersion, requiredRange)) {
+    return false;
+  }
+
+  const personalServices = await findPersonalServiceConfigurations(
+    deployment,
+    locateAllForService
+  );
+  return Object.values(personalServices).every((x) => x.length === 1);
 }
 
 /**
@@ -453,9 +449,17 @@ export async function updateDeployments(): Promise<void> {
     }))
   );
 
-  const [automatic, manual] = partition(deploymentRequirements, (x) =>
-    canAutomaticallyInstall({ ...x, extensionVersion })
+  const installability = await Promise.all(
+    deploymentRequirements.map(async (requirement) => ({
+      deployment: requirement.deployment,
+      isAutomatic: await canAutomaticallyInstall({
+        ...requirement,
+        extensionVersion,
+      }),
+    }))
   );
+
+  const [automatic, manual] = partition(installability, (x) => x.isAutomatic);
 
   let automaticError: boolean;
 
