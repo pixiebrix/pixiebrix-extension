@@ -38,7 +38,7 @@ import { isUpdateAvailable } from "@/background/installer";
 import { selectUserDataUpdate } from "@/auth/authUtils";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import {
-  findPersonalServiceConfigurations,
+  findLocalDeploymentServiceConfigurations,
   makeUpdatedFilter,
   mergeDeploymentServiceConfigurations,
   selectInstalledDeployments,
@@ -221,7 +221,7 @@ async function canAutomaticallyInstall({
     return false;
   }
 
-  const personalServices = await findPersonalServiceConfigurations(
+  const personalServices = await findLocalDeploymentServiceConfigurations(
     deployment,
     locateAllForService
   );

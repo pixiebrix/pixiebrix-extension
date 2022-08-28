@@ -18,7 +18,7 @@
 import {
   checkExtensionUpdateRequired,
   extractRecipeServiceIds,
-  findPersonalServiceConfigurations,
+  findLocalDeploymentServiceConfigurations,
   isDeploymentActive,
   makeUpdatedFilter,
   mergeDeploymentServiceConfigurations,
@@ -235,7 +235,7 @@ describe("findPersonalServiceConfigurations", () => {
 
     const locator = async () => [] as SanitizedServiceConfiguration[];
     expect(
-      await findPersonalServiceConfigurations(deployment, locator)
+      await findLocalDeploymentServiceConfigurations(deployment, locator)
     ).toStrictEqual({
       [CONTROL_ROOM_OAUTH_SERVICE_ID]: [],
     });
@@ -262,7 +262,7 @@ describe("findPersonalServiceConfigurations", () => {
 
     const locator = async () => [auth];
     expect(
-      await findPersonalServiceConfigurations(deployment, locator)
+      await findLocalDeploymentServiceConfigurations(deployment, locator)
     ).toStrictEqual({
       [CONTROL_ROOM_OAUTH_SERVICE_ID]: [auth],
     });
@@ -292,7 +292,7 @@ describe("findPersonalServiceConfigurations", () => {
 
     const locator = async () => [auth];
     expect(
-      await findPersonalServiceConfigurations(deployment, locator)
+      await findLocalDeploymentServiceConfigurations(deployment, locator)
     ).toStrictEqual({});
   });
 
@@ -317,7 +317,7 @@ describe("findPersonalServiceConfigurations", () => {
 
     const locator = async () => [auth];
     expect(
-      await findPersonalServiceConfigurations(deployment, locator)
+      await findLocalDeploymentServiceConfigurations(deployment, locator)
     ).toStrictEqual({});
   });
 });

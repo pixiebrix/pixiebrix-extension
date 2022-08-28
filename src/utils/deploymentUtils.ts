@@ -173,8 +173,10 @@ export type Locate = (
 
 /**
  * Return local service configurations that are valid to use for the deployment.
+ *
+ * Excludes the PixieBrix API service and services that are bound in the deployment configuration.
  */
-export async function findPersonalServiceConfigurations(
+export async function findLocalDeploymentServiceConfigurations(
   deployment: Deployment,
   locate: Locate
 ): Promise<Record<RegistryId, SanitizedServiceConfiguration[]>> {
@@ -207,7 +209,7 @@ export async function mergeDeploymentServiceConfigurations(
   locate: Locate
 ): Promise<Record<RegistryId, UUID>> {
   // Merge deployment service bindings and personal configurations
-  const personalConfigurations = await findPersonalServiceConfigurations(
+  const personalConfigurations = await findLocalDeploymentServiceConfigurations(
     deployment,
     locate
   );

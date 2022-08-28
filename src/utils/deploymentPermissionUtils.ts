@@ -24,7 +24,7 @@ import { resolveRecipe } from "@/registry/internal";
 import { collectPermissions } from "@/permissions";
 import { flatten } from "lodash";
 import {
-  findPersonalServiceConfigurations,
+  findLocalDeploymentServiceConfigurations,
   Locate,
 } from "@/utils/deploymentUtils";
 
@@ -59,7 +59,7 @@ export async function deploymentPermissions(
 ): Promise<Permissions.Permissions> {
   const blueprint = deployment.package.config;
   const resolved = await resolveRecipe(blueprint, blueprint.extensionPoints);
-  const localAuths = await findPersonalServiceConfigurations(
+  const localAuths = await findLocalDeploymentServiceConfigurations(
     deployment,
     locate
   );
