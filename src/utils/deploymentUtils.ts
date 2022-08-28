@@ -167,7 +167,7 @@ export function selectInstalledDeployments(
  * Service configuration lookup method. Extracted as parameter to support background messenger calls and calls directly
  * from the background page.
  */
-type Locate = (
+export type Locate = (
   serviceId: RegistryId
 ) => Promise<SanitizedServiceConfiguration[]>;
 

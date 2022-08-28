@@ -18,7 +18,7 @@
 import { Deployment } from "@/types/contract";
 import { useCallback, useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
-import { blueprintPermissions, ensureAllPermissions } from "@/permissions";
+import { ensureAllPermissions } from "@/permissions";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -27,8 +27,6 @@ import { getUID, services } from "@/background/messenger/api";
 import { getExtensionVersion } from "@/chrome";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { Dispatch } from "redux";
-import { mergePermissions } from "@/utils/permissions";
-import { Permissions } from "webextension-polyfill";
 import { IExtension } from "@/core";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -40,19 +38,9 @@ import {
   selectInstalledDeployments,
 } from "@/utils/deploymentUtils";
 import settingsSlice from "@/store/settingsSlice";
+import { selectDeploymentPermissions } from "@/utils/deploymentPermissionUtils";
 
 const { actions } = extensionsSlice;
-
-async function selectDeploymentPermissions(
-  deployments: Deployment[]
-): Promise<Permissions.Permissions> {
-  const blueprints = deployments.map((x) => x.package.config);
-  // FIXME: update to handle OAuth2 and personal configurations
-  const permissions = await Promise.all(
-    blueprints.map(async (x) => blueprintPermissions(x))
-  );
-  return mergePermissions(permissions);
-}
 
 /**
  * Fetch deployments, or return empty array if the extension is not linked to the PixieBrix API.
@@ -224,7 +212,10 @@ function useDeployments(): DeploymentState {
       return;
     }
 
-    const permissions = await selectDeploymentPermissions(deployments);
+    const permissions = await selectDeploymentPermissions(
+      deployments,
+      services.locateAllForId
+    );
 
     let accepted = false;
     try {
