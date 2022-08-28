@@ -153,10 +153,16 @@ export type AuthUserOrganization = {
 };
 
 export type AuthState = {
+  /**
+   * The PixieBrix userId, or null if the user is not authenticated
+   */
   readonly userId?: UUID | null;
 
   readonly email?: string | null;
 
+  /**
+   * The user's package scope.
+   */
   readonly scope?: string | null;
 
   /**
@@ -191,6 +197,9 @@ export type AuthState = {
    */
   readonly flags: string[];
 
+  /**
+   * The partner, controlling theme, documentation links, etc.
+   */
   readonly partner?: Me["partner"];
 
   /**
