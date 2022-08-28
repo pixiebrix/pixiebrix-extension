@@ -52,7 +52,7 @@ import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
-export const hashHistory = createHashHistory({ hashType: "slash" });
+export const hashHistory = createHashHistory();
 
 export type RootState = AuthRootState &
   LogRootState &
