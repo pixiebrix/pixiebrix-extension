@@ -104,7 +104,7 @@
     "primereact": "^7.1.0",
     "prop-types": "^15.7.2",
     "psl": "^1.8.0",
-    "react": "^17.0.2",
+    "react": "^18.2.0",
     "react-ace": "^10.0.0",
     "react-autosuggest": "^10.1.0",
     "react-beautiful-dnd-next": "^11.0.5",
