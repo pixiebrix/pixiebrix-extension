@@ -1,7 +1,7 @@
 import { getErrorMessage } from "@/errors/errorHelpers";
 import React from "react";
 import { Card } from "react-bootstrap";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 
 type OwnProps = {
   header: React.ReactNode;
@@ -24,11 +24,7 @@ const AsyncCard: React.FC<OwnProps> = ({
   let body: React.ReactNode;
 
   if (isPending) {
-    body = (
-      <div className="p-4">
-        <GridLoader />
-      </div>
-    );
+    body = <Loader />;
   } else if (error) {
     body = (
       <div className="text-danger p-4">
