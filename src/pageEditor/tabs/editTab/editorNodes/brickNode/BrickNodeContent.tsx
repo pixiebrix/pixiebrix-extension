@@ -42,7 +42,7 @@ const BrickNodeContent: React.FC<BrickNodeContentProps> = ({
   outputKey,
 }) => {
   const icon = isFontAwesomeIcon(iconProp) ? (
-    <FontAwesomeIcon icon={iconProp as IconProp} fixedWidth />
+    <FontAwesomeIcon icon={iconProp} fixedWidth />
   ) : (
     iconProp
   );
