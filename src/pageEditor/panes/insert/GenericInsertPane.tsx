@@ -38,7 +38,7 @@ import {
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getExampleBlockPipeline } from "@/pageEditor/exampleExtensionConfig";
 import useFlags from "@/hooks/useFlags";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 
 const { addElement } = editorSlice.actions;
 
@@ -130,13 +130,7 @@ const GenericInsertPane: React.FunctionComponent<{
 
   if (!showMarketplace) {
     // The insert pane will flash up quickly while the addNew is running.
-    return (
-      <Centered isScrollable>
-        <Row className={styles.loadingRow}>
-          <GridLoader />
-        </Row>
-      </Centered>
-    );
+    return <Loader />;
   }
 
   return (

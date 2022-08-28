@@ -16,20 +16,16 @@
  */
 
 import React from "react";
-import { ComponentStory, ComponentMeta } from "@storybook/react";
-import GridLoader from "react-spinners/GridLoader";
+import type { ComponentStory, ComponentMeta } from "@storybook/react";
+import Loader from "@/components/Loader";
 
 export default {
   title: "Common/Loader",
-  component: GridLoader,
+  component: Loader,
   argTypes: {},
-} as ComponentMeta<typeof GridLoader>;
+} as ComponentMeta<typeof Loader>;
 
-const Template: ComponentStory<typeof GridLoader> = (args) => (
-  <div>
-    <GridLoader {...args} />
-  </div>
-);
+const Template: ComponentStory<typeof Loader> = (args) => <Loader />;
 
 export const ReactSpinnerImport = Template.bind({});
 ReactSpinnerImport.args = {};
