@@ -119,7 +119,7 @@ const KBarComponent: React.FC = () => {
       <KBarPositioner style={{ zIndex: MAX_Z_INDEX }}>
         <KBarAnimator style={animatorStyle}>
           <ReactShadowRoot mode="open">
-            <Stylesheets href={faStyleSheet}>
+            <Stylesheets href={faStyleSheet} mountOnLoad>
               <KBarSearch style={searchStyle} />
               <QuickBarResults />
             </Stylesheets>
