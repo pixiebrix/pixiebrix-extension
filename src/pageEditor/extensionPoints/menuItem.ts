@@ -80,6 +80,7 @@ function fromNativeElement(
       blockPipeline: [],
       dynamicCaption: false,
       onSuccess: true,
+      synchronous: false,
     },
   };
 }
@@ -150,6 +151,7 @@ async function fromExtensionPoint(
         extensionPoint.definition.defaultOptions?.caption ?? "Custom Action",
       blockPipeline: [],
       onSuccess: true,
+      synchronous: false,
     },
 
     // There's no containerInfo for the page because the user did not select it during the session

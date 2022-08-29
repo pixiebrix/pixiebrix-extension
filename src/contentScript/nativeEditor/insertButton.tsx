@@ -70,7 +70,6 @@ export async function insertButton(
       }),
       shadowDOM: null,
       position: "append",
-      synchronous: false,
     },
     containerInfo: await pageScript.getElementInfo({
       selector: containerSelectors[0],
