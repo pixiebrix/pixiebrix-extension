@@ -77,7 +77,7 @@ export const logSlice: Slice<
     refreshEntries(state: WritableDraft<LogState>): void;
     setContext(
       state: WritableDraft<LogState>,
-      { payload: context }: PayloadAction<MessageContext>
+      action: PayloadAction<MessageContext>
     ): void;
   },
   "logs"

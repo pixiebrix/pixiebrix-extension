@@ -30,10 +30,20 @@ import React from "react";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { initToaster } from "@/utils/notify";
+import {
+  notifyContextInvalidated,
+  onContextInvalidated,
+} from "@/errors/contextInvalidated";
+
+function init(): void {
+  ReactDOM.render(<App />, document.querySelector("#container"));
+  // TODO: Replace the notification with an error bar like in the editor
+  // eslint-disable-next-line promise/prefer-await-to-then -- It's an event
+  void onContextInvalidated().then(notifyContextInvalidated);
+}
 
 registerMessenger();
 registerContribBlocks();
 registerBuiltinBlocks();
 initToaster();
-
-ReactDOM.render(<App />, document.querySelector("#container"));
+init();

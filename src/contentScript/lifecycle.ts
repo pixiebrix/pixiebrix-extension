@@ -33,7 +33,7 @@ import reportError from "@/telemetry/reportError";
 import { groupBy } from "lodash";
 import { resolveDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
-import { isDeploymentActive } from "@/utils/deployment";
+import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { $safeFind } from "@/helpers";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
@@ -122,7 +122,10 @@ export function removeExtension(
   extensionPointId: RegistryId,
   extensionId: UUID
 ) {
-  const extensionPoint = _installedExtensionPoints.find((x) => x.id);
+  // We need to select correct extensionPoint with extensionId param
+  const extensionPoint = _installedExtensionPoints.find(
+    (x) => x.id === extensionPointId
+  );
   if (extensionPoint) {
     extensionPoint.removeExtension(extensionId);
   } else {

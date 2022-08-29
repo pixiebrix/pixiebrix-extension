@@ -37,3 +37,16 @@ export function makePipelineExpression(
     __value__: value,
   };
 }
+
+export function makeVariableExpression(
+  value: string
+): Expression<string, "var"> {
+  if (!value.startsWith("@")) {
+    throw new Error("Expected @-prefixed variable");
+  }
+
+  return {
+    __type__: "var",
+    __value__: value,
+  };
+}

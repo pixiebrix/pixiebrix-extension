@@ -66,7 +66,10 @@ export function insertSidebarFrame(): boolean {
   const actionURL = browser.runtime.getURL("sidebar.html");
 
   $("html")
-    .css(SIDEBAR_WIDTH_CSS_PROPERTY, originalMarginRight + SIDEBAR_WIDTH_PX)
+    .css(
+      SIDEBAR_WIDTH_CSS_PROPERTY,
+      `${originalMarginRight + SIDEBAR_WIDTH_PX}px`
+    )
     .css("margin-right", `var(${SIDEBAR_WIDTH_CSS_PROPERTY})`);
 
   $("<iframe>")

@@ -147,7 +147,7 @@ async function select(
     maxWaitMillis = 0,
   } = normalizedSelector;
 
-  if (!selectorString || !selectorString.trim()) {
+  if (!selectorString?.trim()) {
     return multi ? [] : undefined;
   }
 

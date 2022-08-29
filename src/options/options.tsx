@@ -28,7 +28,10 @@ import App from "@/options/App";
 import initGoogle from "@/contrib/google/initGoogle";
 import { initToaster } from "@/utils/notify";
 
+function init(): void {
+  render(<App />, document.querySelector("#container"));
+}
+
 initGoogle();
 initToaster();
-
-render(<App />, document.querySelector("#container"));
+init();

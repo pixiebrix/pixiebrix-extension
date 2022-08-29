@@ -16,6 +16,7 @@
  */
 
 import React from "react";
+// eslint-disable-next-line no-restricted-imports -- The only allowed import :)
 import GridLoader from "react-spinners/GridLoader";
 
 const DEFAULT_STYLE = {
@@ -24,9 +25,9 @@ const DEFAULT_STYLE = {
   display: "flex",
   justifyContent: "center",
 };
-const Loader: React.FunctionComponent = () => (
+const Loader: typeof GridLoader = (props) => (
   <div style={DEFAULT_STYLE} data-testid="loader">
-    <GridLoader />
+    <GridLoader {...props} />
   </div>
 );
 

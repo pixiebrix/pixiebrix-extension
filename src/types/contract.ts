@@ -132,10 +132,14 @@ export type SanitizedAuth = components["schemas"]["SanitizedAuth"] & {
   user?: UUID;
 };
 
-export type Deployment = components["schemas"]["DeploymentDetail"] & {
+export type Deployment = Except<
+  components["schemas"]["DeploymentDetail"],
+  "package"
+> & {
   id: UUID;
   package: Except<
     components["schemas"]["DeploymentDetail"]["package"],
+    // Patch types for the following properties which our automatic schema generation generated the wrong types for
     "config" | "id" | "package_id"
   > & {
     id: UUID;
