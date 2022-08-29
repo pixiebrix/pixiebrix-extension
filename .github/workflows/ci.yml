@@ -12,11 +12,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          # 16.15.1 was having problems with peer dependency conflicts
-          # https://github.com/pixiebrix/pixiebrix-extension/pull/3598#issuecomment-1148930727
-          node-version: "16.15.0"
+          node-version: 16
           cache: npm
       - run: npm ci
       - run: npm run test -- --coverage
@@ -34,11 +32,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          # 16.15.1 was having problems with peer dependency conflicts
-          # https://github.com/pixiebrix/pixiebrix-extension/pull/3598#issuecomment-1148930727
-          node-version: "16.15.0"
+          node-version: 16
           cache: npm
       - run: npm ci
       - run: npm run build:webpack
@@ -85,11 +81,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          # 16.15.1 was having problems with peer dependency conflicts
-          # https://github.com/pixiebrix/pixiebrix-extension/pull/3598#issuecomment-1148930727
-          node-version: "16.15.0"
+          node-version: 16
           cache: npm
       - run: npm ci
       - run: npm run build:scripts
@@ -108,11 +102,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          # 16.15.1 was having problems with peer dependency conflicts
-          # https://github.com/pixiebrix/pixiebrix-extension/pull/3598#issuecomment-1148930727
-          node-version: "16.15.0"
+          node-version: 16
           cache: npm
       - run: npm ci
       - run: npm run build:typescript
@@ -122,11 +114,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          # 16.15.1 was having problems with peer dependency conflicts
-          # https://github.com/pixiebrix/pixiebrix-extension/pull/3598#issuecomment-1148930727
-          node-version: "16.15.0"
+          node-version: 16
           cache: npm
       - run: npm ci
       - run: npm run lint -- --quiet
@@ -136,11 +126,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          # 16.15.1 was having problems with peer dependency conflicts
-          # https://github.com/pixiebrix/pixiebrix-extension/pull/3598#issuecomment-1148930727
-          node-version: "16.15.0"
+          node-version: 16
           cache: npm
       # Fixed version to avoid random breaks. Not in package.json due to #1084
       - run: npm install --global madge@5.0.1
