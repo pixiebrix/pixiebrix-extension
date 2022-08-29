@@ -63,7 +63,7 @@ jobs:
           retention-days: 5
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         name: Save report.html
         with:
           name: staging-build-size
@@ -94,7 +94,7 @@ jobs:
       - run: npm ci
       - run: npm run build:scripts
       - run: npm run generate:headers
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         name: Save headers.json
         with:
           name: brick-headers
