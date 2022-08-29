@@ -23,23 +23,17 @@
   height: 100%;
 }
 
-.packageId {
-  display: none;
-  opacity: 0;
-  font-size: 14px;
-  color: #5a4e71;
-  padding-top: 6px;
-}
-
 .card {
   &:hover {
     background-color: #f6f5f7;
     transition: background-color 0.15s ease-in-out;
 
+    .description {
+      -webkit-line-clamp: 1;
+    }
+
     .packageId {
-      display: block;
-      opacity: 100;
-      transition: opacity 0.15s ease-in-out;
+      display: -webkit-box;
     }
   }
 }
@@ -58,6 +52,32 @@
 
 .name {
   margin-right: 1rem;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.description {
+  font-size: 14px;
+  align-self: center;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.packageId {
+  display: none;
+  font-size: 14px;
+  color: #5a4e71;
+  padding-top: 6px;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.sharing {
+  min-width: 0;
 }
 
 .cardFooter {
@@ -71,10 +91,6 @@
   padding: 0 15px 15px 15px;
 }
 
-.sharing {
-  min-width: 0;
-}
-
 .sharingLabel {
   overflow: hidden;
   white-space: nowrap;
@@ -85,11 +101,6 @@
   text-align: right;
   padding-left: 0.5rem;
   white-space: nowrap;
-}
-
-.description {
-  font-size: 0.8rem;
-  align-self: center;
 }
 
 .actions {
