@@ -89,14 +89,7 @@ function selectExtensionPoint(
 ): ExtensionPointConfig<MenuDefinition> {
   const { extensionPoint } = formState;
   const {
-    definition: {
-      isAvailable,
-      position,
-      template,
-      reader,
-      containerSelector,
-      synchronous,
-    },
+    definition: { isAvailable, position, template, reader, containerSelector },
   } = extensionPoint;
   return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
@@ -107,7 +100,6 @@ function selectExtensionPoint(
       containerSelector,
       position,
       template,
-      synchronous,
     },
   });
 }
@@ -125,6 +117,7 @@ function selectExtension(
       : omitEditorMetadata(extension.blockPipeline),
     dynamicCaption: extension.dynamicCaption,
     onSuccess: extension.onSuccess,
+    synchronous: extension.synchronous,
   };
   return removeEmptyValues({
     ...baseSelectExtension(state),

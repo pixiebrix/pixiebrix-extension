@@ -94,7 +94,7 @@ const MenuItemConfiguration: React.FC<{
         />
 
         <ConnectedFieldTemplate
-          name="extensionPoint.definition.synchronous"
+          name="extension.synchronous"
           label="Synchronous"
           as={SwitchButtonWidget}
           description="Prevent button to be clicked again while action is in progress"

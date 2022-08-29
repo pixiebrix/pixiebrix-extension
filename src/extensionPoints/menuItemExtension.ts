@@ -125,6 +125,11 @@ export type MenuItemExtensionConfig = {
   dynamicCaption?: boolean;
 
   /**
+   * True if want to prevent button to be clicked again while action is in progress
+   */
+  synchronous: boolean;
+
+  /**
    * (Experimental) message to show on error running the extension
    */
   onError?: MessageConfig;
@@ -180,8 +185,10 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
   private uninstalled = false;
 
-  private readonly inProgressEvents: WeakSet<HTMLElement> =
-    new WeakSet<HTMLElement>();
+  private readonly runningExtensionElements = new Map<
+    string,
+    WeakSet<HTMLElement>
+  >();
 
   private readonly notifyError = debounce(
     notify.error,
@@ -347,10 +354,6 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     );
   }
 
-  getSynchronous(): boolean {
-    throw new Error("MenuItemExtensionPoint.getSynchronous not implemented");
-  }
-
   addMenuItem($menu: JQuery, $menuItem: JQuery): void {
     $menu.append($menuItem);
   }
@@ -483,6 +486,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       onError = {},
       onSuccess = {},
       icon = { id: "box", size: 18 },
+      synchronous,
     } = extension.config;
 
     const versionOptions = apiVersionOptions(extension.apiVersion);
@@ -551,11 +555,19 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     const $menuItem = this.makeItem(html, extension);
 
     $menuItem.on("click", async (event) => {
-      if (this.getSynchronous() && this.inProgressEvents.has(event.target)) {
-        return;
+      let runningElements: WeakSet<HTMLElement>;
+      if (this.runningExtensionElements.has(extension.id)) {
+        runningElements = this.runningExtensionElements.get(extension.id);
+        if (synchronous && runningElements.has(event.target)) {
+          return;
+        }
+
+        runningElements.add(event.target);
+      } else {
+        runningElements = new WeakSet([event.target]);
+        this.runningExtensionElements.set(extension.id, runningElements);
       }
 
-      this.inProgressEvents.add(event.target);
       try {
         event.preventDefault();
         event.stopPropagation();
@@ -607,7 +619,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           }
         }
       } finally {
-        this.inProgressEvents.delete(event.target);
+        runningElements.delete(event.target);
       }
     });
 
@@ -805,7 +817,6 @@ export interface MenuDefinition extends ExtensionPointDefinition {
   readerSelector?: string;
   defaultOptions?: MenuDefaultOptions;
   shadowDOM?: ShadowDOM;
-  synchronous: boolean;
 }
 
 class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
@@ -916,10 +927,6 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
   override getTemplate(): string {
     return this._definition.template;
-  }
-
-  override getSynchronous() {
-    return this._definition.synchronous;
   }
 
   protected makeItem(
