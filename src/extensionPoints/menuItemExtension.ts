@@ -555,17 +555,17 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     const $menuItem = this.makeItem(html, extension);
 
     $menuItem.on("click", async (event) => {
-      let runningElements: WeakSet<HTMLElement>;
-      if (this.runningExtensionElements.has(extension.id)) {
-        runningElements = this.runningExtensionElements.get(extension.id);
+      let runningElements: WeakSet<HTMLElement> =
+        this.runningExtensionElements.get(extension.id);
+      if (runningElements === null) {
+        runningElements = new WeakSet([event.target]);
+        this.runningExtensionElements.set(extension.id, runningElements);
+      } else {
         if (synchronous && runningElements.has(event.target)) {
           return;
         }
 
         runningElements.add(event.target);
-      } else {
-        runningElements = new WeakSet([event.target]);
-        this.runningExtensionElements.set(extension.id, runningElements);
       }
 
       try {
