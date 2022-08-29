@@ -17,9 +17,6 @@
 
 import React from "react";
 import SaveButton from "@/pageEditor/sidebar/actionButtons/SaveButton";
-import MenuButton, {
-  MenuButtonProps,
-} from "@/pageEditor/sidebar/actionButtons/MenuButton";
 import { Dropdown } from "react-bootstrap";
 import {
   faEllipsisH,
@@ -30,11 +27,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./ActionMenu.module.scss";
-
-const DropdownToggle = React.forwardRef<HTMLButtonElement, MenuButtonProps>(
-  ({ children, onClick }, ref) => <MenuButton onClick={onClick} ref={ref} />
-);
-DropdownToggle.displayName = "DropdownToggle";
 
 export type ActionMenuProps = {
   onRemove: () => Promise<void>;

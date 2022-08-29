@@ -80,7 +80,7 @@ const DynamicEntry: React.FunctionComponent<{
       className={cx(styles.root, {
         [styles.recipeBackground]: hasRecipeBackground,
       })}
-      action
+      as="div"
       active={isActive}
       key={`dynamic-${item.uuid}`}
       onMouseEnter={isButton ? async () => showOverlay(item.uuid) : undefined}
