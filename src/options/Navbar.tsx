@@ -36,16 +36,15 @@ import { toggleSidebar } from "./toggleSidebar";
 import { SettingsState } from "@/store/settingsTypes";
 import cx from "classnames";
 import { selectAuth } from "@/auth/authSelectors";
-import useTheme from "@/hooks/useTheme";
+import { ThemeLogo } from "@/utils/themeUtils";
 
-const Navbar: React.FunctionComponent = () => {
+const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
   const { email, extension } = useSelector(selectAuth);
   const [serviceURL] = useAsyncState<string>(getBaseURL);
   const [connected, connectedPending] = useAsyncState(isLinked);
   const mode = useSelector<{ settings: SettingsState }, string>(
     ({ settings }) => settings.mode
   );
-  const { logo } = useTheme();
 
   // Use `connectedPending` to optimistically show the toggle
   const showNavbarToggle = mode === "local" || connected || connectedPending;

@@ -17,10 +17,9 @@
 
 import { BlockConfig, BlockPosition } from "@/blocks/types";
 import { joinPathParts } from "@/utils";
-import { Expression, UUID } from "@/core";
+import { UUID } from "@/core";
 import { TypedBlock } from "@/blocks/registry";
-import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
-import { JsonValue } from "type-fest";
+import { isPipelineExpression } from "@/runtime/mapArgs";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { getDocumentPipelinePaths } from "@/pageEditor/utils";
 import { get } from "lodash";
@@ -78,7 +77,7 @@ class PipelineVisitor {
     extra: VisitBlockExtra
   ): void {
     if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
-      this.visitRenderDocument(position, blockConfig);
+      this.visitDocument(position, blockConfig);
       return;
     }
 
@@ -98,20 +97,11 @@ class PipelineVisitor {
           flavor: pipelineFlavor,
           parentNodeId: blockConfig.instanceId,
         });
-      } else if (isExpression(value)) {
-        // TODO: Handle anyOf/oneOf/allOf
-        this.visitExpression(nestedPosition(position, "config", prop), value);
-      } else {
-        // TODO Handle anyOf/oneOf/allOf
-        this.visitLiteral(
-          nestedPosition(position, "config", prop),
-          value as JsonValue
-        );
       }
     }
   }
 
-  public visitRenderDocument(
+  public visitDocument(
     position: BlockPosition,
     blockConfig: BlockConfig
   ): void {
@@ -135,17 +125,6 @@ class PipelineVisitor {
         });
       }
     }
-  }
-
-  public visitExpression(
-    position: BlockPosition,
-    expression: Expression<unknown>
-  ): void {
-    // NOP
-  }
-
-  public visitLiteral(position: BlockPosition, value: JsonValue): void {
-    // NOP
   }
 
   public visitPipeline(

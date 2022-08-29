@@ -173,7 +173,9 @@ async function authenticate(
     }
 
     if (isEmpty(data)) {
-      throw new Error("No auth data found for token authentication");
+      throw new Error(
+        `No auth data found for token authentication response for ${service.id}`
+      );
     }
 
     return service.authenticateRequest(localConfig.config, request, data);

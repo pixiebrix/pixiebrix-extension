@@ -27,7 +27,6 @@ import {
   faSeedling,
   faStoreAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import cx from "classnames";
 import { SidebarLink } from "./SidebarLink";
 import { closeSidebarOnSmallScreen, SIDEBAR_ID } from "./toggleSidebar";
 import useFlags from "@/hooks/useFlags";
@@ -38,6 +37,7 @@ const DEFAULT_DOCUMENTATION_URL = "https://docs.pixiebrix.com/";
 const Sidebar: React.FunctionComponent = () => {
   const { permit } = useFlags();
   const { data: me } = useGetMeQuery();
+  const hasPartner = Boolean(me?.partner);
 
   return (
     <OutsideClickHandler onOutsideClick={closeSidebarOnSmallScreen}>
@@ -74,7 +74,7 @@ const Sidebar: React.FunctionComponent = () => {
           </li>
 
           {permit("marketplace") && (
-            <li className={cx("nav-item")}>
+            <li className="nav-item">
               <a
                 href="https://www.pixiebrix.com/marketplace"
                 target="_blank"
@@ -86,20 +86,22 @@ const Sidebar: React.FunctionComponent = () => {
               </a>
             </li>
           )}
+          {!hasPartner && (
+            // Hide for partner users because we don't support custom community links yet
+            <li className="nav-item">
+              <a
+                href="https://community.pixiebrix.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nav-link"
+              >
+                <span className="menu-title">Community</span>
+                <FontAwesomeIcon icon={faSeedling} className="menu-icon" />
+              </a>
+            </li>
+          )}
 
-          <li className={cx("nav-item")}>
-            <a
-              href="https://community.pixiebrix.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="nav-link"
-            >
-              <span className="menu-title">Community</span>
-              <FontAwesomeIcon icon={faSeedling} className="menu-icon" />
-            </a>
-          </li>
-
-          <li className={cx("nav-item")}>
+          <li className="nav-item">
             <a
               href={me?.partner?.documentation_url ?? DEFAULT_DOCUMENTATION_URL}
               target="_blank"

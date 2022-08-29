@@ -7,12 +7,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          # 16.15.1 was having problems with peer dependency conflicts
-          # https://github.com/pixiebrix/pixiebrix-extension/pull/3598#issuecomment-1148930727
-          node-version: "16.15.0"
+          node-version: 16
           cache: npm
       - run: npm ci
       - run: npm run build-storybook

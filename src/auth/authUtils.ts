@@ -34,6 +34,7 @@ export function selectOrganizations(
       role,
       scope,
       is_deployment_manager,
+      has_compliance_auth_token,
     }) => ({
       id: organization,
       name: organization_name,
@@ -41,6 +42,7 @@ export function selectOrganizations(
       role,
       scope,
       isDeploymentManager: is_deployment_manager,
+      hasComplianceAuthToken: has_compliance_auth_token,
     })
   );
 }
@@ -77,6 +79,7 @@ export function selectExtensionAuthState({
   flags = [],
   organization_memberships: organizationMemberships = [],
   group_memberships = [],
+  partner,
   enforce_update_millis: enforceUpdateMillis,
 }: Me): AuthState {
   const organizations = selectOrganizations(organizationMemberships);
@@ -93,6 +96,7 @@ export function selectExtensionAuthState({
     organizations,
     groups,
     flags,
+    partner,
     enforceUpdateMillis,
   };
 }

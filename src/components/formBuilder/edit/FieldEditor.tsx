@@ -149,12 +149,12 @@ const FieldEditor: React.FC<{
 
     const selected = fieldTypes.find((option) => option.value === uiType);
 
-    return selected == null
-      ? {
-          label: "unknown",
-          value: null,
-        }
-      : selected;
+    return (
+      selected ?? {
+        label: "unknown",
+        value: null,
+      }
+    );
   };
 
   const onRequiredChange = ({

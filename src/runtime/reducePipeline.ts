@@ -494,10 +494,7 @@ async function applyReduceDefaults({
     // Default to the `apiVersion: v1` data flow behavior
     explicitDataFlow: false,
     // If logValues not provided explicitly, default to the global setting
-    logValues:
-      logValues === undefined
-        ? globalLoggingConfig.logValues ?? false
-        : logValues,
+    logValues: logValues ?? globalLoggingConfig.logValues ?? false,
     // For stylistic consistency, default here instead of destructured parameters
     runId: runId ?? uuidv4(),
     branches: [],

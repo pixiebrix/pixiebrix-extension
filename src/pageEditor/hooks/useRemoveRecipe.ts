@@ -25,6 +25,7 @@ import { uniq } from "lodash";
 import { useModals } from "@/components/ConfirmationModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
+import { clearLog } from "@/background/messenger/api";
 
 type Config = {
   recipeId: RegistryId;
@@ -63,6 +64,10 @@ function useRemoveRecipe(): (useRemoveConfig: Config) => Promise<void> {
           removeExtension({ extensionId, shouldShowConfirmation: false })
         )
       );
+
+      void clearLog({
+        blueprintId: recipeId,
+      });
 
       dispatch(actions.clearActiveRecipe());
       dispatch(actions.resetMetadataAndOptionsForRecipe(recipeId));

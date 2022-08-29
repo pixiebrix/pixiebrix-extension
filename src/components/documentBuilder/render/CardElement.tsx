@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,8 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.loader {
-  position: absolute;
-  top: 60px;
-  right: 5px;
-}
+import React from "react";
+import { Card, CardProps } from "react-bootstrap";
+import cx from "classnames";
+
+type CardElementProps = CardProps & {
+  heading: string;
+
+  // The bodyClassName is for internal use,
+  // it allows to set CSS class needed in preview to the body
+  bodyClassName?: string;
+};
+
+const CardElement: React.FunctionComponent<CardElementProps> = ({
+  heading,
+  children,
+  bodyClassName,
+  ...cardProps
+}) => (
+  <Card {...cardProps}>
+    <Card.Header>{heading}</Card.Header>
+    <Card.Body className={cx(bodyClassName, "overflow-auto")}>
+      {children}
+    </Card.Body>
+  </Card>
+);
+
+export default CardElement;
