@@ -21,9 +21,8 @@
 
 .card {
   height: 100%;
-}
+  word-wrap: anywhere;
 
-.card {
   &:hover {
     background-color: #f6f5f7;
     transition: background-color 0.15s ease-in-out;
