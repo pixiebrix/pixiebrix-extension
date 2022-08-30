@@ -274,7 +274,7 @@ describe("saving a Recipe Extension", () => {
     // Check the source element is reset
     expect(resetMock).toHaveBeenCalledTimes(1);
     expect(resetMock).toHaveBeenCalledWith({
-      element: elements[0],
+      extensionId: elements[0].uuid,
       shouldShowConfirmation: false,
     });
 

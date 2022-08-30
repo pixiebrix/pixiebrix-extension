@@ -55,7 +55,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
 
       reportEvent("PageEditorReset", {
         sessionId,
-        extensionId: extensionId,
+        extensionId,
       });
 
       try {
