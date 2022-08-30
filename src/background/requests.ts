@@ -237,25 +237,26 @@ const UNAUTHORIZED_STATUS_CODES = new Set([401, 403]);
 export function isAuthenticationError(
   error: Pick<AxiosError, "response">
 ): boolean {
-  if (error.response != null) {
-    // Technically 403 is an authorization error and re-authenticating as the same user won't help. However, there is
-    // a case where the user just needs an updated JWT that contains the most up-to-date entitlements
-    if (UNAUTHORIZED_STATUS_CODES.has(error.response.status)) {
-      return true;
-    }
-
-    // Handle Automation Anywhere's Control Room expired JWT response. They'll return this from any endpoint instead
-    // of a proper error code.
-    if (
-      error.response.status === 400 &&
-      isObject(error.response.data) &&
-      error.response.data.message === "Access Token has expired"
-    ) {
-      return true;
-    }
+  // Response should be an object, but be defensive
+  if (error.response == null || !isObject(error.response)) {
+    return false;
   }
 
-  return false;
+  // Technically 403 is an authorization error and re-authenticating as the same user won't help. However, there is
+  // a case where the user just needs an updated JWT that contains the most up-to-date entitlements
+  if (UNAUTHORIZED_STATUS_CODES.has(error.response.status)) {
+    return true;
+  }
+
+  // Handle Automation Anywhere's Control Room expired JWT response. They'll return this from any endpoint instead
+  // of a proper error code.
+  if (
+    error.response.status === 400 &&
+    isObject(error.response.data) &&
+    error.response.data.message === "Access Token has expired"
+  ) {
+    return true;
+  }
 }
 
 async function performConfiguredRequest(
