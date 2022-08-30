@@ -37,7 +37,7 @@ export const NotAvailableIcon: React.FunctionComponent = () => (
 );
 
 export const UnsavedChangesIcon: React.FunctionComponent = () => (
-  <Icon library="custom" icon="ic_unsaved" />
+  <Icon library="custom" icon="ic-unsaved" />
 );
 
 export const RecipeHasUpdateIcon: React.FunctionComponent<{
