@@ -22,10 +22,10 @@
 .card {
   height: 100%;
   word-wrap: anywhere;
+  transition: background-color 0.15s ease-in-out;
 
   &:hover {
     background-color: #f6f5f7;
-    transition: background-color 0.15s ease-in-out;
 
     .description {
       -webkit-line-clamp: 1;

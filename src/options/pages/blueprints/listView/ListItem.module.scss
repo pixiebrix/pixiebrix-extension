@@ -20,10 +20,10 @@
   justify-content: space-between;
   border: none;
   border-bottom: #f2edf3 1px solid;
+  transition: background-color 0.15s ease-in-out;
 
   &:hover {
     background-color: #f6f5f7;
-    transition: background-color 0.15s ease-in-out;
   }
 }
 
@@ -55,6 +55,7 @@
 }
 
 .description {
+  @extend .name;
   font-size: 14px;
 }
 

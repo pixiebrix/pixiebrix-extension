@@ -24,7 +24,6 @@ import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import Status from "@/options/pages/blueprints/Status";
 import { ListGroup } from "react-bootstrap";
-import cx from "classnames";
 import LastUpdatedLabel from "@/options/pages/blueprints/labels/LastUpdatedLabel";
 
 const ListItem: React.VoidFunctionComponent<{
@@ -38,7 +37,7 @@ const ListItem: React.VoidFunctionComponent<{
       <div className={styles.icon}>{icon}</div>
       <div className={styles.primaryInfo}>
         <h5 className={styles.name}>{name}</h5>
-        <p className={cx(styles.name, styles.description)}>{description}</p>
+        <p className={styles.description}>{description}</p>
         <div className={styles.packageId}>{sharing.packageId}</div>
       </div>
       <div className="flex-shrink-0">
