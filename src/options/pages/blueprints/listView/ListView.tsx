@@ -23,7 +23,7 @@ import { VariableSizeList as List } from "react-window";
 import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
 import { uuidv4 } from "@/types/helpers";
 
-const ROW_HEIGHT_PX = 67;
+const ROW_HEIGHT_PX = 90;
 const HEADER_ROW_HEIGHT_PX = 43;
 
 const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
