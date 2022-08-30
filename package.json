@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.7.6-alpha.1",
+  "version": "1.7.7-alpha.1",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "jest",
@@ -87,7 +87,7 @@
     "json-stringify-safe": "^5.0.1",
     "jsonpath-plus": "^7.0.0",
     "jsonschema": "^1.4.0",
-    "kbar": "^0.1.0-beta.23",
+    "kbar": "^0.1.0-beta.36",
     "lodash-es": "^4.17.21",
     "marked": "^4.0.3",
     "mustache": "^4.2.0",

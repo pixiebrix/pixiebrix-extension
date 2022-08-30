@@ -20,7 +20,7 @@ import BlockElement from "@/components/documentBuilder/render/BlockElement";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { get } from "lodash";
-import { Card, Col, Container, Row, Image } from "react-bootstrap";
+import { Col, Container, Row, Image } from "react-bootstrap";
 import {
   BuildDocumentBranch,
   ButtonDocumentConfig,
@@ -33,8 +33,8 @@ import ButtonElement from "@/components/documentBuilder/render/ButtonElement";
 import ListElement from "@/components/documentBuilder/render/ListElement";
 import { BusinessError } from "@/errors/businessErrors";
 import { joinPathParts } from "@/utils";
-import cx from "classnames";
 import Markdown from "@/components/Markdown";
+import CardElement from "./render/CardElement";
 
 const headerComponents = {
   header_1: "h1",
@@ -123,23 +123,8 @@ export function getComponentDefinition(
     case "card": {
       const props = { ...config };
 
-      // The bodyClassName is for internal use,
-      // it allows to set CSS class needed in preview to the body
-      const Component: React.FC<UnknownObject> = ({
-        heading,
-        children,
-        bodyClassName,
-        ...cardProps
-      }) => (
-        <Card {...cardProps}>
-          <Card.Header>{heading}</Card.Header>
-          <Card.Body className={cx(bodyClassName, "overflow-auto")}>
-            {children}
-          </Card.Body>
-        </Card>
-      );
       return {
-        Component,
+        Component: CardElement,
         props,
       };
     }
