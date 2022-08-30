@@ -51,13 +51,19 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
   const isSaveDisabled = !isDirty || disabled;
 
   return (
-    <>
+    // We aren't actually making this do anything on click, so we can suppress these a11y warnings.
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
+    <div
+      onClick={(event) => {
+        event.stopPropagation();
+      }}
+    >
       {onSave && <SaveButton onClick={onSave} disabled={isSaveDisabled} />}
       <Dropdown>
         <Dropdown.Toggle className={styles.toggle}>
           <FontAwesomeIcon icon={faEllipsisH} />
         </Dropdown.Toggle>
-        <Dropdown.Menu>
+        <Dropdown.Menu alignRight>
           {onReset && (
             <Dropdown.Item onClick={onReset} disabled={isResetDisabled}>
               <FontAwesomeIcon icon={faHistory} fixedWidth /> Reset
@@ -80,7 +86,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
           )}
         </Dropdown.Menu>
       </Dropdown>
-    </>
+    </div>
   );
 };
 

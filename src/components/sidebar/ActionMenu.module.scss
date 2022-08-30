@@ -24,6 +24,7 @@
   background-color: #e8f3fc !important;
   color: #198ae3 !important;
   box-shadow: none !important;
+  display: flex;
 
   &:hover {
     background-color: #ddedfb !important;
@@ -33,5 +34,9 @@
   &:active {
     background-color: #1368aa !important;
     color: white !important;
+  }
+
+  &::after {
+    display: none;
   }
 }
