@@ -105,7 +105,7 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
           <FontAwesomeIcon icon={faFile} /> <FontAwesomeIcon icon={caretIcon} />
         </span>
         <span className={styles.name}>{name}</span>
-        {isDirty && (
+        {isDirty && !isActive && (
           <span className={cx(styles.icon, "text-danger")}>
             <UnsavedChangesIcon />
           </span>
