@@ -26,12 +26,12 @@ import { UUID } from "@/core";
 import { TraceRecord } from "@/telemetry/trace";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./pageEditorTypes";
-import { selectActiveElement } from "./slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import runtimeSlice from "./slices/runtimeSlice";
 import { isAnyOf } from "@reduxjs/toolkit";
 import RequestPermissionAnalysis from "@/analysis/analysisVisitors/requestPermissionAnalysis";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
+import { selectExtensionTrace } from "./slices/runtimeSelectors";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -50,14 +50,11 @@ pageEditorAnalysisManager.registerAnalysisEffect(
     action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
     state: RootState
   ) => {
-    const { extensionId, records } = action.payload;
-    const activeElement = selectActiveElement(state);
-    const activeElementId = activeElement.uuid;
-    if (activeElementId === extensionId) {
-      return new TraceAnalysis(records);
-    }
+    // TraceAnalysis filter the trace errors, thus
+    // selecting all records here to avoid double filtering
+    const records = selectExtensionTrace(state);
 
-    return null;
+    return new TraceAnalysis(records);
   },
   {
     // Only needed on runtimeActions.setExtensionTrace,
