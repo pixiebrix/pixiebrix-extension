@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
+import axios, {
+  AxiosError,
+  AxiosRequestConfig,
+  AxiosResponse,
+  Method,
+} from "axios";
 import {
   IService,
   MessageContext,
@@ -33,7 +38,7 @@ import {
   getToken,
   launchOAuth2Flow,
 } from "@/background/auth";
-import { isAbsoluteUrl } from "@/utils";
+import { isAbsoluteUrl, isObject } from "@/utils";
 import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
@@ -229,6 +234,30 @@ async function proxyRequest<T>(
 
 const UNAUTHORIZED_STATUS_CODES = new Set([401, 403]);
 
+export function isAuthenticationError(
+  error: Pick<AxiosError, "response">
+): boolean {
+  if (error.response != null) {
+    // Technically 403 is an authorization error and re-authenticating as the same user won't help. However, there is
+    // a case where the user just needs an updated JWT that contains the most up-to-date entitlements
+    if (UNAUTHORIZED_STATUS_CODES.has(error.response.status)) {
+      return true;
+    }
+
+    // Handle Automation Anywhere's Control Room expired JWT response. They'll return this from any endpoint instead
+    // of a proper error code.
+    if (
+      error.response.status === 400 &&
+      isObject(error.response.data) &&
+      error.response.data.message === "Access Token has expired"
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 async function performConfiguredRequest(
   serviceConfig: SanitizedServiceConfiguration,
   requestConfig: AxiosRequestConfig
@@ -247,10 +276,7 @@ async function performConfiguredRequest(
 
     const axiosError = selectAxiosError(error);
 
-    if (
-      axiosError &&
-      UNAUTHORIZED_STATUS_CODES.has(axiosError.response?.status)
-    ) {
+    if (axiosError && isAuthenticationError(axiosError)) {
       const service = await serviceRegistry.lookup(serviceConfig.serviceId);
       if (service.isOAuth2 || service.isToken) {
         await deleteCachedAuthData(serviceConfig.id);
