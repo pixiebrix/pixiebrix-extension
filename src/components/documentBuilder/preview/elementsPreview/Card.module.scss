@@ -15,26 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SanitizedServiceConfiguration } from "@/core";
-import { UnknownObject } from "@/types";
-
-export type CommunityBotArgs = {
-  service: SanitizedServiceConfiguration;
-  fileId: string;
-  deviceId: string;
-  data: UnknownObject;
-};
-
-export type EnterpriseBotArgs = {
-  service: SanitizedServiceConfiguration;
-  fileId: string;
-  runAsUserIds: number[];
-  poolIds: string[];
-  data: UnknownObject;
-};
-
-export type BotArgs = (CommunityBotArgs | EnterpriseBotArgs) & {
-  workspaceType?: "public" | "private" | null;
-  awaitResult: boolean;
-  maxWaitMillis: number;
-};
+:global(.card) .cardBody {
+  // With 'overflow: auto;' set for the CardElement render component
+  // the ellipses menu gets cut. Overriding the rule.
+  // We expect no issues since in Preview most of the custom content classes are filtered
+  overflow: visible !important;
+}

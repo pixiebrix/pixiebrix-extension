@@ -16,36 +16,86 @@
  */
 
 import { Expression } from "@/core";
-import { AnnotationType } from "@/analysis/analysisTypes";
+import { Analysis, Annotation, AnnotationType } from "@/analysis/analysisTypes";
 import { BlockPosition } from "@/blocks/types";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
-import { AnalysisVisitor } from "./baseAnalysisVisitors";
+import { Template } from "nunjucks";
+import PipelineExpressionVisitor from "@/blocks/PipelineExpressionVisitor";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 const TEMPLATE_ERROR_MESSAGE =
   "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";
 
-class TemplateAnalysis extends AnalysisVisitor {
+type PushAnnotationArgs = {
+  position: BlockPosition;
+  message: string;
+  expression: Expression<unknown>;
+};
+
+class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
   get id() {
     return "template";
   }
 
-  override async visitExpression(
+  protected readonly annotations: Annotation[] = [];
+  getAnnotations(): Annotation[] {
+    return this.annotations;
+  }
+
+  run(extension: FormState): void {
+    this.visitRootPipeline(extension.extension.blockPipeline, {
+      extensionPointType: extension.type,
+    });
+  }
+
+  private pushErrorAnnotation({
+    position,
+    message,
+    expression,
+  }: PushAnnotationArgs) {
+    this.annotations.push({
+      position,
+      message,
+      analysisId: this.id,
+      type: AnnotationType.Error,
+      detail: expression,
+    });
+  }
+
+  override visitExpression(
     position: BlockPosition,
     expression: Expression<unknown>
-  ): Promise<void> {
+  ): void {
+    if (!isTemplateExpression(expression)) {
+      return;
+    }
+
+    // We don't want to show duplicated message,
+    // even if both conditions are true
     if (
-      isTemplateExpression(expression) &&
       expression.__type__ !== "mustache" &&
       isMustacheOnly(expression.__value__)
     ) {
-      this.annotations.push({
+      this.pushErrorAnnotation({
         position,
         message: TEMPLATE_ERROR_MESSAGE,
-        analysisId: this.id,
-        type: AnnotationType.Error,
-        detail: expression,
+        expression,
       });
+    } else if (expression.__type__ === "nunjucks") {
+      try {
+        // eslint-disable-next-line no-new
+        new Template(expression.__value__, undefined, undefined, true);
+      } catch (error) {
+        // @ts-expect-error nunjucks error does have message property
+        const failureCause = (error.message as string)
+          ?.replace("(unknown path)", "")
+          .trim();
+
+        const message = `Invalid template: ${failureCause}.`;
+
+        this.pushErrorAnnotation({ position, message, expression });
+      }
     }
   }
 }

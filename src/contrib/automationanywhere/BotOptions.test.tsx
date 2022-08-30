@@ -20,7 +20,7 @@ import {
   activeDevToolContextFactory,
   menuItemFormStateFactory,
 } from "@/testUtils/factories";
-import { OutputKey } from "@/core";
+import { IService, OutputKey } from "@/core";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { render } from "@testing-library/react";
 import { PageEditorTabContext } from "@/pageEditor/context";
@@ -28,6 +28,10 @@ import { Formik } from "formik";
 import { CONTROL_ROOM_SERVICE_ID } from "@/services/constants";
 import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/RunBot";
 import BotOptions from "@/contrib/automationanywhere/BotOptions";
+import useDependency from "@/services/useDependency";
+import { makeVariableExpression } from "@/testUtils/expressionTestHelpers";
+import { uuidv4 } from "@/types/helpers";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 jest.mock("webext-detect-page", () => ({
   isDevToolsPage: () => true,
@@ -65,8 +69,8 @@ function makeBaseState() {
       id: AUTOMATION_ANYWHERE_RUN_BOT_ID,
       config: {
         service: null,
-        releaseKey: null,
-        inputArguments: {},
+        fileId: null,
+        data: {},
       },
     },
   ];
@@ -83,9 +87,136 @@ function renderOptions(formState: FormState = makeBaseState()) {
   );
 }
 
+beforeAll(() => {
+  registerDefaultWidgets();
+});
+
 describe("BotOptions", () => {
   it("should require selected integration", async () => {
     const result = renderOptions();
+
+    expect(result.queryByText("Workspace")).toBeNull();
     expect(result.container).toMatchSnapshot();
+  });
+
+  it("should render default enterprise fields for private workspace", async () => {
+    (useDependency as jest.Mock).mockReturnValue({
+      config: {
+        id: uuidv4(),
+        config: {
+          controlRoomUrl: "https://control.room.com",
+        },
+      },
+      service: {} as IService,
+      hasPermissions: true,
+      requestPermissions: jest.fn(),
+    });
+
+    const base = makeBaseState();
+    base.extension.blockPipeline[0].config.service = makeVariableExpression(
+      "@automationAnywhere"
+    );
+
+    const result = renderOptions(base);
+
+    expect(result.queryByText("Workspace")).not.toBeNull();
+    expect(result.queryByText("Bot")).not.toBeNull();
+    expect(result.queryByText("Run as Users")).toBeNull();
+    expect(result.queryByText("Device Pools")).toBeNull();
+    expect(result.queryByText("Await Result")).not.toBeNull();
+    expect(result.queryByText("Result Timeout (Milliseconds)")).toBeNull();
+
+    // There's non-determinism in React Selects ids: react-select-X-live-region
+    // expect(result.container).toMatchSnapshot();
+  });
+
+  it("should render community fields", async () => {
+    (useDependency as jest.Mock).mockReturnValue({
+      config: {
+        id: uuidv4(),
+        config: {
+          controlRoomUrl:
+            "https://community2.cloud-2.automationanywhere.digital",
+        },
+      },
+      service: {} as IService,
+      hasPermissions: true,
+      requestPermissions: jest.fn(),
+    });
+
+    const base = makeBaseState();
+    base.extension.blockPipeline[0].config.service = makeVariableExpression(
+      "@automationAnywhere"
+    );
+
+    const result = renderOptions(base);
+
+    // Community only supports private workspace, so we don't show the field
+    expect(result.queryByText("Workspace")).toBeNull();
+    expect(result.queryByText("Bot")).not.toBeNull();
+    expect(result.queryByText("Run as Users")).toBeNull();
+    expect(result.queryByText("Device Pools")).toBeNull();
+    expect(result.queryByText("Await Result")).toBeNull();
+    expect(result.queryByText("Result Timeout (Milliseconds)")).toBeNull();
+
+    // There's non-determinism in React Selects ids: react-select-X-live-region
+    // expect(result.container).toMatchSnapshot();
+  });
+
+  it("should render default enterprise fields for public workspace", async () => {
+    (useDependency as jest.Mock).mockReturnValue({
+      config: {
+        id: uuidv4(),
+        config: {
+          controlRoomUrl: "https://control.room.com",
+        },
+      },
+      service: {} as IService,
+      hasPermissions: true,
+      requestPermissions: jest.fn(),
+    });
+
+    const base = makeBaseState();
+    base.extension.blockPipeline[0].config.workspaceType = "public";
+    base.extension.blockPipeline[0].config.service = makeVariableExpression(
+      "@automationAnywhere"
+    );
+
+    const result = renderOptions(base);
+
+    expect(result.queryByText("Workspace")).not.toBeNull();
+    expect(result.queryByText("Bot")).not.toBeNull();
+    expect(result.queryByText("Run as Users")).not.toBeNull();
+    expect(result.queryByText("Device Pools")).not.toBeNull();
+    expect(result.queryByText("Await Result")).not.toBeNull();
+    expect(result.queryByText("Result Timeout (Milliseconds)")).toBeNull();
+
+    // There's non-determinism in React Selects ids: react-select-X-live-region
+    // expect(result.container).toMatchSnapshot();
+  });
+
+  it("should render result timeout", async () => {
+    (useDependency as jest.Mock).mockReturnValue({
+      config: {
+        id: uuidv4(),
+        config: {
+          controlRoomUrl: "https://control.room.com",
+        },
+      },
+      service: {} as IService,
+      hasPermissions: true,
+      requestPermissions: jest.fn(),
+    });
+
+    const base = makeBaseState();
+    base.extension.blockPipeline[0].config.awaitResult = true;
+    base.extension.blockPipeline[0].config.service = makeVariableExpression(
+      "@automationAnywhere"
+    );
+
+    const result = renderOptions(base);
+
+    expect(result.queryByText("Await Result")).not.toBeNull();
+    expect(result.queryByText("Result Timeout (Milliseconds)")).not.toBeNull();
   });
 });

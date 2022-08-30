@@ -99,19 +99,17 @@ export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
   }
 }
 
+// In-progress token requests to coalesce multiple requests for the same token. NOTE: this is not a cache, it only
+// contains in-progress requests.
+const tokenRequests = new Map<UUID, Promise<AuthData>>();
+
 /**
- * Exchange credentials for a token, and cache the token response
- * @param service
- * @param auth
+ * @see getToken
  */
-export async function getToken(
+export async function _getToken(
   service: IService,
   auth: RawServiceConfiguration
 ): Promise<AuthData> {
-  if (!service.isToken) {
-    throw new Error(`Service ${service.id} does not use token authentication`);
-  }
-
   const { url, data: tokenData } = service.getTokenContext(auth.config);
 
   const {
@@ -127,6 +125,36 @@ export async function getToken(
   await setCachedAuthData(auth.id, responseData);
 
   return responseData;
+}
+
+/**
+ * Exchange credentials for a token, and cache the token response.
+ *
+ * If a request for the token is already in progress, return the existing promise.
+ *
+ * @param service
+ * @param auth
+ */
+export async function getToken(
+  service: IService,
+  auth: RawServiceConfiguration
+): Promise<AuthData> {
+  expectContext("background");
+
+  if (!service.isToken) {
+    throw new Error(`Service ${service.id} does not use token authentication`);
+  }
+
+  const existing = tokenRequests.get(auth.id);
+  if (existing != null) {
+    return existing;
+  }
+
+  const tokenPromise = _getToken(service, auth);
+  tokenRequests.set(auth.id, tokenPromise);
+  // eslint-disable-next-line promise/prefer-await-to-then -- returning the promise outside this method
+  tokenPromise.finally(() => tokenRequests.delete(auth.id));
+  return tokenPromise;
 }
 
 function parseResponseParams(url: URL): UnknownObject {

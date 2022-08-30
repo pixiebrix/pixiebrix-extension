@@ -24,6 +24,7 @@ import {
 import cx from "classnames";
 import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
 import Flaps from "@/components/documentBuilder/preview/flaps/Flaps";
+import styles from "./Card.module.scss";
 
 type CardProps = PreviewComponentProps & {
   element: DocumentElement;
@@ -40,21 +41,29 @@ const Card: React.FunctionComponent<CardProps> = ({
   documentBodyName,
   elementName,
   ...restPreviewProps
-}) => (
-  <div
-    className={cx(documentTreeStyles.shiftRightWrapper, className)}
-    {...restPreviewProps}
-  >
-    <Flaps
-      className={documentTreeStyles.flapShiftRight}
-      elementType={element.type}
-      documentBodyName={documentBodyName}
-      elementName={elementName}
-      isHovered={isHovered}
-      isActive={isActive}
-    />
-    <Component {...props}>{children}</Component>
-  </div>
-);
+}) => {
+  const { bodyClassName, ...restCardProps } = props;
+  return (
+    <div
+      className={cx(documentTreeStyles.shiftRightWrapper, className)}
+      {...restPreviewProps}
+    >
+      <Flaps
+        className={documentTreeStyles.flapShiftRight}
+        elementType={element.type}
+        documentBodyName={documentBodyName}
+        elementName={elementName}
+        isHovered={isHovered}
+        isActive={isActive}
+      />
+      <Component
+        {...restCardProps}
+        bodyClassName={cx(bodyClassName, styles.cardBody)}
+      >
+        {children}
+      </Component>
+    </div>
+  );
+};
 
 export default Card;

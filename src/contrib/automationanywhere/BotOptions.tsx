@@ -16,9 +16,12 @@
  */
 
 import React, { useMemo } from "react";
-import { partial } from "lodash";
+import { isEmpty, partial } from "lodash";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { COMMON_PROPERTIES } from "@/contrib/automationanywhere/RunBot";
+import {
+  COMMON_PROPERTIES,
+  ENTERPRISE_EDITION_COMMON_PROPERTIES,
+} from "@/contrib/automationanywhere/RunBot";
 import { Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
@@ -33,6 +36,7 @@ import {
   cachedFetchBots,
   cachedFetchDevicePools,
   cachedFetchDevices,
+  cachedFetchFolder,
   cachedFetchRunAsUsers,
   cachedFetchSchema,
 } from "@/contrib/automationanywhere/aaApi";
@@ -42,6 +46,10 @@ import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidge
 import RemoteMultiSelectWidget from "@/components/form/widgets/RemoteMultiSelectWidget";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { useAsyncEffect } from "use-async-effect";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { Alert } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 const WORKSPACE_OPTIONS = [
   { value: "public", label: "Public" },
@@ -63,6 +71,10 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const [{ value: fileId }] = useField<string>(configName("fileId"));
 
+  const [{ value: awaitResult }] = useField<boolean | null>(
+    configName("awaitResult")
+  );
+
   // Default the workspaceType based on the file id
   useAsyncEffect(async () => {
     if (config && isCommunityControlRoom(config.config.controlRoomUrl)) {
@@ -70,35 +82,43 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
       setWorkspaceType("private");
     }
 
+    // `workspaceType` is optional because it's not required to run the bot. However, we need it to populate dropdowns
+    // for the fields in the fieldset
     if (hasPermissions && config && workspaceType == null && fileId) {
       const result = await cachedFetchBotFile(config, fileId);
       const workspaceType =
         result.workspaceType === "PUBLIC" ? "public" : "private";
       setWorkspaceType(workspaceType);
     }
+
     // Leave setWorkspaceType off the dependency list because Formik changes reference on each render
   }, [config, fileId, hasPermissions, workspaceType]);
 
-  const factoryArgs = useMemo(
-    () => ({
-      workspaceType: (workspaceType ?? "private") as WorkspaceType,
-    }),
-    [workspaceType]
-  );
-
   const [remoteSchema, remoteSchemaPending, remoteSchemaError] =
     useAsyncState(async () => {
-      if (hasPermissions && config) {
-        // HACK: hack to avoid concurrent requests to the proxy. Simultaneous calls to get the token causes a
-        // server error on community edition
-        await cachedFetchDevices(config, factoryArgs);
-        await cachedFetchBots(config, factoryArgs);
-        await cachedFetchRunAsUsers(config, factoryArgs);
+      if (hasPermissions && config && fileId) {
         return cachedFetchSchema(config, fileId);
       }
 
       return null;
-    }, [config, fileId, factoryArgs, hasPermissions]);
+    }, [config, fileId, hasPermissions]);
+
+  // Don't care about pending/error state b/c we just fall back to displaying the folderId
+  const [folder] = useAsyncState(async () => {
+    if (hasPermissions && config && config.config.folderId) {
+      return cachedFetchFolder(config, config.config.folderId);
+    }
+
+    return null;
+  }, [config, hasPermissions]);
+
+  // Additional args passed to the remote options factories
+  const factoryArgs = useMemo(
+    () => ({
+      workspaceType: workspaceType as WorkspaceType,
+    }),
+    [workspaceType]
+  );
 
   return (
     <RequireServiceConfig
@@ -116,6 +136,18 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
               defaultValue="private"
               options={WORKSPACE_OPTIONS}
             />
+          )}
+
+          {!isEmpty(config.config.folderId) && (
+            <Alert variant="info">
+              <FontAwesomeIcon icon={faInfoCircle} /> Displaying available bots
+              from folder{" "}
+              {folder?.name
+                ? `'${folder.name}' (${config.config.folderId})`
+                : config.config.folderId}{" "}
+              configured on the integration. To choose from all bots in the
+              workspace, remove the folder from the integration configuration.
+            </Alert>
           )}
 
           <ConnectedFieldTemplate
@@ -149,6 +181,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
                     as={RemoteMultiSelectWidget}
                     optionsFactory={cachedFetchRunAsUsers}
                     factoryArgs={factoryArgs}
+                    blankValue={[]}
                     config={config}
                   />
                   <ConnectedFieldTemplate
@@ -169,6 +202,17 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
                 description="Wait for the bot to run and return the output"
                 as={BooleanWidget}
               />
+              {awaitResult && (
+                <SchemaField
+                  label="Result Timeout (Milliseconds)"
+                  name={configName("maxWaitMillis")}
+                  schema={
+                    ENTERPRISE_EDITION_COMMON_PROPERTIES.maxWaitMillis as Schema
+                  }
+                  // Mark as required so the widget defaults to showing the number entry
+                  isRequired
+                />
+              )}
             </>
           )}
 

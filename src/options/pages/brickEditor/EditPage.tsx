@@ -108,7 +108,6 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
   } = useParseBrick(data.config);
 
   const { submit, validate, remove } = useSubmitBrick({
-    url: `api/bricks/${id}/`,
     create: false,
   });
 
@@ -155,7 +154,9 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
                       <Button
                         disabled={isSubmitting}
                         variant="danger"
-                        onClick={remove}
+                        onClick={() => {
+                          void remove(id);
+                        }}
                       >
                         Delete Brick
                       </Button>

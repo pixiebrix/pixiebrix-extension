@@ -25,15 +25,19 @@ export const authSlice = createSlice({
   name: "auth",
   initialState: anonAuth,
   reducers: {
-    setAuth: (state, { payload }: PayloadAction<AuthState>) => ({
-      ...payload,
-      scope: isEmpty(payload.scope) ? null : payload.scope,
-      flags: Array.isArray(payload.flags) ? payload.flags : [],
-      organizations: Array.isArray(payload.organizations)
-        ? payload.organizations
-        : [],
-      groups: Array.isArray(payload.groups) ? payload.groups : [],
-    }),
+    setAuth(state, { payload }: PayloadAction<AuthState>) {
+      console.debug("authSlice:setAuth", payload);
+
+      return {
+        ...payload,
+        scope: isEmpty(payload.scope) ? null : payload.scope,
+        flags: Array.isArray(payload.flags) ? payload.flags : [],
+        organizations: Array.isArray(payload.organizations)
+          ? payload.organizations
+          : [],
+        groups: Array.isArray(payload.groups) ? payload.groups : [],
+      };
+    },
   },
 });
 

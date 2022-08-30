@@ -422,6 +422,9 @@ export interface paths {
   "/api/telemetry/errors/": {
     post: operations["createErrorItem"];
   };
+  "/api/organizations/{organization_pk}/compliance-auth-token/": {
+    put: operations["complianceAuthTokenOrganization"];
+  };
   "/api/deployments/{deployment_pk}/groups/{id}/": {
     delete: operations["destroyDeploymentPermission"];
   };
@@ -1096,6 +1099,8 @@ export interface components {
            */
           url: string;
         };
+        /** @description True if the organization's compliance auth token is set */
+        has_compliance_auth_token?: boolean;
       }[];
       group_memberships?: {
         /** Format: uuid */
@@ -4785,6 +4790,28 @@ export interface operations {
         "application/json": components["schemas"]["ErrorItem"];
         "application/x-www-form-urlencoded": components["schemas"]["ErrorItem"];
         "multipart/form-data": components["schemas"]["ErrorItem"];
+      };
+    };
+  };
+  complianceAuthTokenOrganization: {
+    parameters: {
+      path: {
+        organization_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=2.0": components["schemas"]["Organization"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Organization"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Organization"];
+        "application/x-www-form-urlencoded": components["schemas"]["Organization"];
+        "multipart/form-data": components["schemas"]["Organization"];
       };
     };
   };

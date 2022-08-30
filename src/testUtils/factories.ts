@@ -104,6 +104,7 @@ export const organizationFactory = define<AuthUserOrganization>({
     return `@organization-${n}`;
   },
   isDeploymentManager: false,
+  hasComplianceAuthToken: false,
 });
 
 export const authStateFactory = define<AuthState>({
@@ -516,7 +517,7 @@ export const innerExtensionPointRecipeFactory = ({
  */
 export const recipeFactory = innerExtensionPointRecipeFactory();
 
-const deploymentPackageFactory = define<Deployment["package"]>({
+export const deploymentPackageFactory = define<Deployment["package"]>({
   id: uuidSequence,
   name: derive<Deployment["package"], string>(
     ({ config }) => config.metadata.name,
@@ -530,7 +531,7 @@ const deploymentPackageFactory = define<Deployment["package"]>({
     ({ config }) => config.metadata.id,
     "config"
   ),
-  config: recipeDefinitionFactory as any,
+  config: recipeDefinitionFactory,
 });
 
 export const deploymentFactory = define<Deployment>({
