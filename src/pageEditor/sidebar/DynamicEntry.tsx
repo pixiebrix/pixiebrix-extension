@@ -44,16 +44,31 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import ExtensionActionMenu from "@/pageEditor/sidebar/ExtensionActionMenu";
 
-/**
- * A sidebar menu entry corresponding to an extension that is new or is currently being edited.
- * @see InstalledEntry
- */
-const DynamicEntry: React.FunctionComponent<{
+type DynamicEntryProps = {
   item: FormState;
   isAvailable: boolean;
   isActive: boolean;
   isNested?: boolean;
-}> = ({ item, isAvailable, isActive, isNested = false }) => {
+  saveExtension: (extensionId: UUID) => Promise<void>;
+  isSavingExtension: boolean;
+  resetExtension: (extensionId: UUID) => Promise<void>;
+  removeExtension: (extensionId: UUID) => Promise<void>;
+};
+
+/**
+ * A sidebar menu entry corresponding to an extension that is new or is currently being edited.
+ * @see InstalledEntry
+ */
+const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
+  item,
+  isAvailable,
+  isActive,
+  isNested = false,
+  saveExtension,
+  isSavingExtension,
+  resetExtension,
+  removeExtension,
+}) => {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const activeRecipeId = useSelector(selectActiveRecipeId);
@@ -122,7 +137,15 @@ const DynamicEntry: React.FunctionComponent<{
           <UnsavedChangesIcon />
         </span>
       )}
-      {isActive && <ExtensionActionMenu elementId={item.uuid} />}
+      {isActive && (
+        <ExtensionActionMenu
+          extensionId={item.uuid}
+          saveExtension={saveExtension}
+          isSavingExtension={isSavingExtension}
+          resetExtension={resetExtension}
+          removeExtension={removeExtension}
+        />
+      )}
     </ListGroup.Item>
   );
 };

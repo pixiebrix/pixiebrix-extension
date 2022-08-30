@@ -22,35 +22,43 @@ import {
   selectElementIsDirty,
   selectElements,
 } from "@/pageEditor/slices/editorSelectors";
-import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
-import useResetExtension from "@/pageEditor/hooks/useResetExtension";
-import useSaveExtension from "@/pageEditor/hooks/useSaveExtension";
 import ActionMenu from "@/components/sidebar/ActionMenu";
 import { actions } from "@/pageEditor/slices/editorSlice";
 
-const ExtensionActionMenu: React.FC<{ elementId: UUID }> = ({ elementId }) => {
+type ExtensionActionMenuProps = {
+  extensionId: UUID;
+  saveExtension: (extensionId: UUID) => Promise<void>;
+  isSavingExtension: boolean;
+  resetExtension: (extensionId: UUID) => Promise<void>;
+  removeExtension: (extensionId: UUID) => Promise<void>;
+};
+
+const ExtensionActionMenu: React.FC<ExtensionActionMenuProps> = ({
+  extensionId,
+  saveExtension,
+  isSavingExtension,
+  resetExtension,
+  removeExtension,
+}) => {
   const dispatch = useDispatch();
 
   const elements = useSelector(selectElements);
-  const element = elements.find((element) => element.uuid === elementId);
-  const isDirty = useSelector(selectElementIsDirty(elementId));
-  const { save: saveExtension, isSaving } = useSaveExtension();
-  const removeExtension = useRemoveExtension();
-  const resetExtension = useResetExtension();
+  const element = elements.find((element) => element.uuid === extensionId);
+  const isDirty = useSelector(selectElementIsDirty(extensionId));
 
   const remove = async () => {
-    await removeExtension({ extensionId: elementId });
+    await removeExtension(extensionId);
   };
 
   const save = element.recipe
     ? undefined
     : async () => {
-        await saveExtension(elementId);
+        await saveExtension(extensionId);
       };
 
   const reset = element.installed
     ? async () => {
-        await resetExtension({ elementId });
+        await resetExtension(extensionId);
       }
     : undefined;
 
@@ -74,9 +82,9 @@ const ExtensionActionMenu: React.FC<{ elementId: UUID }> = ({ elementId }) => {
       isDirty={isDirty}
       onAddToRecipe={addToRecipe}
       onRemoveFromRecipe={removeFromRecipe}
-      disabled={isSaving}
+      disabled={isSavingExtension}
     />
   );
 };
 
-export default ExtensionActionMenu;
+export default React.memo(ExtensionActionMenu);

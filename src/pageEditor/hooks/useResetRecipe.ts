@@ -46,7 +46,7 @@ function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
           .filter((element) => element.recipe?.id === recipeId)
           .map(async (element) =>
             resetElement({
-              elementId: element.uuid,
+              extensionId: element.uuid,
               shouldShowConfirmation: false,
             })
           )

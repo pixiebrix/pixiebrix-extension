@@ -19,30 +19,38 @@ import React from "react";
 import { RegistryId } from "@/core";
 import { useSelector } from "react-redux";
 import { selectRecipeIsDirty } from "@/pageEditor/slices/editorSelectors";
-import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
-import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
-import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import ActionMenu from "@/components/sidebar/ActionMenu";
 
-const RecipeActionMenu: React.FC<{ recipeId: RegistryId }> = ({ recipeId }) => {
+type RecipeActionMenuProps = {
+  recipeId: RegistryId;
+  saveRecipe: (recipeId: RegistryId) => Promise<void>;
+  isSavingRecipe: boolean;
+  resetRecipe: (recipeId: RegistryId) => Promise<void>;
+  removeRecipe: (recipeId: RegistryId) => Promise<void>;
+};
+
+const RecipeActionMenu: React.FC<RecipeActionMenuProps> = ({
+  recipeId,
+  saveRecipe,
+  isSavingRecipe,
+  resetRecipe,
+  removeRecipe,
+}) => {
   const isDirty = useSelector(selectRecipeIsDirty(recipeId));
-  const { save, isSaving } = useSaveRecipe();
-  const removeRecipe = useRemoveRecipe();
-  const resetRecipe = useResetRecipe();
 
   return (
     <ActionMenu
       onRemove={async () => {
-        await removeRecipe({ recipeId });
+        await removeRecipe(recipeId);
       }}
       onSave={async () => {
-        await save(recipeId);
+        await saveRecipe(recipeId);
       }}
       onReset={async () => {
         await resetRecipe(recipeId);
       }}
       isDirty={isDirty}
-      disabled={isSaving}
+      disabled={isSavingRecipe}
     />
   );
 };

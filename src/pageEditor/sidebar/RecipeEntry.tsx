@@ -16,7 +16,7 @@
  */
 
 import React, { PropsWithChildren } from "react";
-import { SemVerString } from "@/core";
+import { RegistryId, SemVerString } from "@/core";
 import styles from "./Entry.module.scss";
 import {
   RecipeHasUpdateIcon,
@@ -46,6 +46,10 @@ export type RecipeEntryProps = PropsWithChildren<{
   recipe: RecipeDefinition | undefined;
   isActive?: boolean;
   installedVersion: SemVerString;
+  saveRecipe: (recipeId: RegistryId) => Promise<void>;
+  isSavingRecipe: boolean;
+  resetRecipe: (recipeId: RegistryId) => Promise<void>;
+  removeRecipe: (recipeId: RegistryId) => Promise<void>;
 }>;
 
 const RecipeEntry: React.FC<RecipeEntryProps> = ({
@@ -53,6 +57,10 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
   isActive,
   children,
   installedVersion,
+  saveRecipe,
+  isSavingRecipe,
+  resetRecipe,
+  removeRecipe,
 }) => {
   const dispatch = useDispatch();
 
@@ -109,7 +117,15 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
             />
           </span>
         )}
-        {isActive && <RecipeActionMenu recipeId={recipeId} />}
+        {isActive && (
+          <RecipeActionMenu
+            recipeId={recipeId}
+            saveRecipe={saveRecipe}
+            isSavingRecipe={isSavingRecipe}
+            resetRecipe={resetRecipe}
+            removeRecipe={removeRecipe}
+          />
+        )}
       </Accordion.Toggle>
       <Accordion.Collapse eventKey={recipeId}>
         <>{children}</>

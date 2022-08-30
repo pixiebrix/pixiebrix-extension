@@ -31,7 +31,7 @@ import {
   ListGroup,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IExtension } from "@/core";
+import { IExtension, RegistryId, UUID } from "@/core";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import hash from "object-hash";
 import logoUrl from "@/icons/custom-icons/favicon.svg";
@@ -65,6 +65,12 @@ import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useGetRecipesQuery } from "@/services/api";
 import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
+import useSaveExtension from "@/pageEditor/hooks/useSaveExtension";
+import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
+import useResetExtension from "@/pageEditor/hooks/useResetExtension";
+import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
+import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
+import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
   <Button
@@ -203,6 +209,15 @@ const SidebarExpanded: React.VoidFunctionComponent<{
 
   const addElement = useAddElement();
 
+  // We need to run these hooks above the list item component level to avoid some nasty re-rendering issues
+  const { save: saveExtension, isSaving: isSavingExtension } =
+    useSaveExtension();
+  const resetExtension = useResetExtension();
+  const removeExtension = useRemoveExtension();
+  const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
+  const resetRecipe = useResetRecipe();
+  const removeRecipe = useRemoveRecipe();
+
   const ElementListItem: React.FC<{
     element: IExtension | FormState;
     isNested?: boolean;
@@ -227,6 +242,14 @@ const SidebarExpanded: React.VoidFunctionComponent<{
           !availableDynamicIds || availableDynamicIds.has(element.uuid)
         }
         isNested={isNested}
+        saveExtension={saveExtension}
+        isSavingExtension={isSavingExtension}
+        resetExtension={async (extensionId: UUID) => {
+          await resetExtension({ extensionId });
+        }}
+        removeExtension={async (extensionId: UUID) => {
+          await removeExtension({ extensionId });
+        }}
       />
     );
 
@@ -260,6 +283,12 @@ const SidebarExpanded: React.VoidFunctionComponent<{
           recipe={recipe}
           isActive={recipeId === activeRecipeId}
           installedVersion={installedVersion}
+          saveRecipe={saveRecipe}
+          isSavingRecipe={isSavingRecipe}
+          resetRecipe={resetRecipe}
+          removeRecipe={async (recipeId: RegistryId) => {
+            await removeRecipe({ recipeId });
+          }}
         >
           {elements.map((element) => (
             <ElementListItem

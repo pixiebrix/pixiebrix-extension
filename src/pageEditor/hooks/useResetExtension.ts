@@ -29,7 +29,7 @@ import { reportEvent } from "@/telemetry/events";
 import { UUID } from "@/core";
 
 type Config = {
-  elementId: UUID;
+  extensionId: UUID;
   shouldShowConfirmation?: boolean;
 };
 function useResetExtension(): (useResetConfig: Config) => Promise<void> {
@@ -40,7 +40,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
   const { showConfirmation } = useModals();
 
   return useCallback(
-    async ({ elementId, shouldShowConfirmation = true }) => {
+    async ({ extensionId, shouldShowConfirmation = true }) => {
       if (shouldShowConfirmation) {
         const confirm = await showConfirmation({
           title: "Reset Brick?",
@@ -55,13 +55,13 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
 
       reportEvent("PageEditorReset", {
         sessionId,
-        extensionId: elementId,
+        extensionId: extensionId,
       });
 
       try {
-        const extension = installed.find((x) => x.id === elementId);
+        const extension = installed.find((x) => x.id === extensionId);
         if (extension == null) {
-          dispatch(actions.removeElement(elementId));
+          dispatch(actions.removeElement(extensionId));
         } else {
           const formState = await extensionToFormState(extension);
           initRecipeOptionsIfNeeded(formState, recipes);
@@ -69,7 +69,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
         }
       } catch (error) {
         reportError(error);
-        dispatch(actions.adapterError({ uuid: elementId, error }));
+        dispatch(actions.adapterError({ uuid: extensionId, error }));
       }
     },
     [dispatch, recipes, sessionId, installed, showConfirmation]
