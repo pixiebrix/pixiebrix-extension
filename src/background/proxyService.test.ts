@@ -38,6 +38,7 @@ const mockIsBackground = isBackground as jest.MockedFunction<
 const mockIsExtensionContext = isExtensionContext as jest.MockedFunction<
   typeof isExtensionContext
 >;
+const mockGetToken = getToken as jest.Mock;
 mockIsBackground.mockImplementation(() => true);
 mockIsExtensionContext.mockImplementation(() => true);
 
@@ -262,6 +263,7 @@ describe("proxy service requests", () => {
 
 describe("Retry token request", () => {
   beforeEach(() => {
+    mockGetToken.mockClear();
     jest
       .spyOn(Locator.prototype, "locate")
       .mockResolvedValue(directTokenServiceConfig);
@@ -272,23 +274,24 @@ describe("Retry token request", () => {
       );
   });
 
-  it("Handles expired token", async () => {
-    const mockGetToken = getToken as jest.Mock;
-    axiosMock.onGet(requestConfig.url).reply(401, {});
-    const response = proxyService(directTokenServiceConfig, requestConfig);
-    await expect(response).rejects.toThrow(ContextError);
-    // Once on the intial call b/c no cached auth data, and once for the retry
-    expect(mockGetToken).toHaveBeenCalledTimes(2);
-  });
+  it.each([[401], [403]])(
+    "Handles expired token for %d response",
+    async (statusCode) => {
+      axiosMock.onGet(requestConfig.url).reply(statusCode, {});
+      const response = proxyService(directTokenServiceConfig, requestConfig);
+      await expect(response).rejects.toThrow(ContextError);
+      // Once on the initial call b/c no cached auth data, and once for the retry
+      expect(mockGetToken).toHaveBeenCalledTimes(2);
+    }
+  );
 
   it("Handles expired AA token", async () => {
-    const mockGetToken = getToken as jest.Mock;
     axiosMock
       .onGet(requestConfig.url)
       .reply(400, { message: "Access Token has expired" });
     const response = proxyService(directTokenServiceConfig, requestConfig);
     await expect(response).rejects.toThrow(ContextError);
-    // Once on the intial call b/c no cached auth data, and once for the retry
+    // Once on the initial call b/c no cached auth data, and once for the retry
     expect(mockGetToken).toHaveBeenCalledTimes(2);
   });
 });
