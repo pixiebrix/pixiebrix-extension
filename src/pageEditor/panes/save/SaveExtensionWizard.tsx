@@ -33,6 +33,8 @@ import { selectScope } from "@/auth/authSelectors";
 import { useSelector } from "react-redux";
 
 const SaveExtensionWizard: React.FC = () => {
+  console.log("I'm the SaveExtensionWizard");
+
   const {
     isSaving,
     element,

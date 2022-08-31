@@ -43,7 +43,6 @@ const EditorPaneContent: React.VoidFunctionComponent<{
 }> = ({ element }) => {
   const dispatch = useDispatch();
   const editable = useEditable();
-  const { isWizardOpen } = useSavingWizard();
 
   // XXX: anti-pattern: callback to update the redux store based on the formik state
   const syncReduxState = useDebouncedCallback(
@@ -70,7 +69,6 @@ const EditorPaneContent: React.VoidFunctionComponent<{
         delayMillis={CHANGE_DETECT_DELAY_MILLIS}
       />
       <ElementWizard element={element} editable={editable} />
-      {isWizardOpen && <SaveExtensionWizard />}
     </>
   );
 };
