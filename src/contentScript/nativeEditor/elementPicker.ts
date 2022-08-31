@@ -282,7 +282,6 @@ export async function selectElement({
 
     case "element": {
       const selector = safeCssSelector(elements[0], {
-        selectors: [],
         root: rootElement,
         excludeRandomClasses,
       });

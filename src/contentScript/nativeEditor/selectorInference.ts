@@ -35,6 +35,12 @@ export const BUTTON_TAGS: string[] = [
 ];
 const MENU_TAGS = ["ul", "tbody"];
 
+export const SALESFORCE_UNIQUE_ATTRIBUTES: string[] = [
+  "data-aura-rendered-by",
+  "data-component-id",
+  "data-aura-class",
+];
+
 export const UNIQUE_ATTRIBUTES: string[] = [
   "id",
   "name",
@@ -45,7 +51,10 @@ export const UNIQUE_ATTRIBUTES: string[] = [
   "data-id",
   "data-test",
   "data-test-id",
+  // Salesforce good selector attributes
+  ...SALESFORCE_UNIQUE_ATTRIBUTES,
 ];
+
 // eslint-disable-next-line security/detect-non-literal-regexp -- Not user-provided
 const UNIQUE_ATTRIBUTES_REGEX = new RegExp(
   UNIQUE_ATTRIBUTES.map((attribute) => `^\\[${attribute}=`).join("|")
