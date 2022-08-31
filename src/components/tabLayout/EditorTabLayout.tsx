@@ -17,10 +17,8 @@
 
 import styles from "./EditorTabLayout.module.scss";
 import React, { useState } from "react";
-import { Badge, Button, ButtonGroup, Nav, Tab } from "react-bootstrap";
-import { ButtonVariant, Variant } from "react-bootstrap/types";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Badge, Nav, Tab } from "react-bootstrap";
+import { Variant } from "react-bootstrap/types";
 
 export interface TabItem {
   name: string;
@@ -30,19 +28,10 @@ export interface TabItem {
   mountWhenActive?: boolean;
 }
 
-export interface ActionButton {
-  variant: ButtonVariant;
-  onClick: () => void;
-  caption: string;
-  disabled?: boolean;
-  icon?: IconProp;
-}
-
 const EditorTabLayout: React.FC<{
   tabs: TabItem[];
-  actionButtons: ActionButton[];
   defaultTabName?: string;
-}> = ({ tabs, actionButtons, defaultTabName }) => {
+}> = ({ tabs, defaultTabName }) => {
   const [activeTabName, setActiveTabName] = useState(
     defaultTabName ?? tabs[0].name
   );
@@ -68,34 +57,6 @@ const EditorTabLayout: React.FC<{
               </Nav.Link>
             </Nav.Item>
           ))}
-
-          {/* spacer */}
-          <div className="flex-grow-1" />
-
-          <ButtonGroup>
-            {actionButtons.map(
-              (
-                { variant, onClick, caption, disabled = false, icon },
-                index
-              ) => (
-                <Button
-                  key={index} // Action buttons shouldn't normally be changing order
-                  size="sm"
-                  variant={variant}
-                  disabled={disabled}
-                  onClick={onClick}
-                >
-                  {icon && (
-                    <FontAwesomeIcon
-                      icon={icon}
-                      className={styles.actionButtonIcon}
-                    />
-                  )}
-                  {caption}
-                </Button>
-              )
-            )}
-          </ButtonGroup>
         </Nav>
 
         <Tab.Content className={styles.content}>
