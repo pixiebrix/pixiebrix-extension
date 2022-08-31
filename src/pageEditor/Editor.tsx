@@ -58,7 +58,7 @@ const Editor: React.FunctionComponent = () => {
   const { tabState, connecting } = useContext(PageEditorTabContext);
   const installed = useSelector(selectExtensions);
   const dispatch = useDispatch();
-  const { restrict } = useFlags();
+  const { restrict, flagOn } = useFlags();
 
   const sessionId = useSelector(selectSessionId);
   useEffect(() => {
@@ -104,7 +104,11 @@ const Editor: React.FunctionComponent = () => {
     isCreateRecipeModalVisible,
   } = useSelector(selectEditorModalVisibilities);
 
-  const isModalInsert = inserting === "menuItem" || inserting === "panel";
+  const showMarketplace = true;
+  const isModalInsert =
+    inserting === "menuItem" ||
+    inserting === "panel" ||
+    (inserting && showMarketplace);
   const body = useMemo(() => {
     if (restrict("page-editor")) {
       return <RestrictedPane />;
