@@ -1,3 +1,4 @@
+/* eslint-disable no-else-return -- TODO: Fix later */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -103,6 +104,7 @@ const Editor: React.FunctionComponent = () => {
     isCreateRecipeModalVisible,
   } = useSelector(selectEditorModalVisibilities);
 
+  const isModalInsert = inserting === "menuItem" || inserting === "panel";
   const body = useMemo(() => {
     if (restrict("page-editor")) {
       return <RestrictedPane />;
@@ -119,21 +121,15 @@ const Editor: React.FunctionComponent = () => {
       return <BetaPane />;
     }
 
-    if (inserting) {
-      switch (inserting) {
-        case "menuItem":
-          return <InsertMenuItemPane cancel={cancelInsert} />;
-        case "panel":
-          return <InsertPanelPane cancel={cancelInsert} />;
-        default:
-          return (
-            <GenericInsertPane
-              cancel={cancelInsert}
-              config={ADAPTERS.get(inserting)}
-            />
-          );
-      }
-    } else if (editorError) {
+    if (inserting === "menuItem") {
+      return <InsertMenuItemPane cancel={cancelInsert} />;
+    }
+
+    if (inserting === "panel") {
+      return <InsertPanelPane cancel={cancelInsert} />;
+    }
+
+    if (editorError) {
       return (
         <div className="p-2">
           <span className="text-danger">{editorError}</span>
@@ -174,8 +170,14 @@ const Editor: React.FunctionComponent = () => {
 
   return (
     <>
+      {inserting && !isModalInsert && (
+        <GenericInsertPane
+          cancel={cancelInsert}
+          config={ADAPTERS.get(inserting)}
+        />
+      )}
       <div className={styles.root}>
-        {!(inserting || restrict("page-editor")) && <Sidebar />}
+        {!(isModalInsert || restrict("page-editor")) && <Sidebar />}
         {body}
       </div>
 
