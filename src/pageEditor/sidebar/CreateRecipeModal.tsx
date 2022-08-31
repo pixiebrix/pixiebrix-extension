@@ -36,7 +36,11 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { Button, Modal } from "react-bootstrap";
-import { RecipeDefinition, RecipeMetadataFormState } from "@/types/definitions";
+import {
+  RecipeDefinition,
+  RecipeMetadataFormState,
+  UnsavedRecipeDefinition,
+} from "@/types/definitions";
 import { selectScope } from "@/auth/authSelectors";
 import {
   buildRecipe,
@@ -54,21 +58,33 @@ import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
-import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import { FieldDescriptions } from "@/utils/strings";
 import { object, string } from "yup";
 import LoadingDataModal from "@/pageEditor/panes/save/LoadingDataModal";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
-import { RegistryId } from "@/core";
+import { RecipeMetadata, RegistryId } from "@/core";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { generateRecipeId } from "@/utils/recipeUtils";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
+import { PackageUpsertResponse } from "@/types/contract";
+import { pick } from "lodash";
 
 const { actions: optionsActions } = extensionsSlice;
+
+function selectRecipeMetadata(
+  unsavedRecipe: UnsavedRecipeDefinition,
+  response: PackageUpsertResponse
+): RecipeMetadata {
+  return {
+    ...unsavedRecipe.metadata,
+    sharing: pick(response, ["public", "organizations"]),
+    ...pick(response, ["updated_at"]),
+  };
+}
 
 function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
   const dispatch = useDispatch();
