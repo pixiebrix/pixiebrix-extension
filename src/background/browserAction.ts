@@ -72,6 +72,7 @@ async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
 
   // NOTE: at this point, the sidebar should already be visible on the page, even if not ready.
   // Avoid showing any alerts or notifications: further messaging can appear in the sidebar itself.
+  // Any errors are automatically reported by the global error handler.
   await contentScriptPromise;
   await rehydrateSidebar({
     tabId,
