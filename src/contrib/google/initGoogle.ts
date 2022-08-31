@@ -64,6 +64,9 @@ function initGoogle(): void {
 
   const script = document.createElement("script");
   script.src = "https://apis.google.com/js/client.js?onload=onGAPILoad";
+  script.addEventListener("error", (event) => {
+    reportError(event.error);
+  });
   document.head.append(script);
 }
 
