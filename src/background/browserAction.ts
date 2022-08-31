@@ -20,14 +20,25 @@ import { ensureContentScript } from "@/background/util";
 import { Tabs } from "webextension-polyfill";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
 import { executeScript, isScriptableUrl } from "webext-content-scripts";
+import webextAlert from "@/background/webextAlert";
+import { isMac } from "@/utils";
 
 // The sidebar is always injected to into the top level frame
 const TOP_LEVEL_FRAME_ID = 0;
 
 async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
   const url = String(tab.url);
+
+  const extensionConsoleUrl = browser.runtime.getURL("");
+
+  if (url.startsWith(extensionConsoleUrl)) {
+    const keyboardShortcut = `${isMac() ? "Cmd+Opt" : "Ctrl+Shift"}+C`;
+    webextAlert(
+      `Tip: If you want to create a new blueprint, first navigate to the page you want to modify, then open PixieBrix in DevTools (${keyboardShortcut}).`
+    );
+  }
+
   if (!url.startsWith("http") || !isScriptableUrl(url)) {
-    // Page not supported. Open the options page instead
     void browser.runtime.openOptionsPage();
     return;
   }
