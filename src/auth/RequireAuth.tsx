@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "@/components/Loader";
 import { useGetMeQuery } from "@/services/api";
@@ -37,7 +37,7 @@ import { Me } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
 import { AxiosError } from "axios";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
-import { useRouteMatch } from "react-router";
+import { matchPath } from "react-router";
 
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
@@ -160,7 +160,20 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   LoginPage,
   ignoreApiError = false,
 }) => {
-  const matchSettings = useRouteMatch({ path: "/settings", exact: true });
+  const isSettingsPage = useMemo(() => {
+    const pathname = location.hash.slice(1);
+    const matchSettings = matchPath(pathname, {
+      path: "/settings",
+      exact: true,
+    });
+    return matchSettings != null;
+
+    // It is expected that this component is re-rendered when native location changes,
+    // not managed by react-router.
+    // Not using react-router helpers here because RequireAuth is used by Page Editor
+    // which doesn't use react-router
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.hash]);
 
   const {
     isAccountUnlinked,
@@ -176,7 +189,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     isLoading: isPartnerAuthLoading,
   } = useRequiredPartnerAuth();
 
-  if (matchSettings) {
+  if (isSettingsPage) {
     // Always let people see the settings page in order to fix broken settings
     return <>{children}</>;
   }
