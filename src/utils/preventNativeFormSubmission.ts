@@ -15,25 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Init rollbar early so we get error reporting on the other initialization
-import "@/telemetry/reportUncaughtErrors";
+/**
+ * @file Automatically catch and prevent all native `submit` events in extension:// pages
+ * https://github.com/pixiebrix/pixiebrix-extension/issues/3275
+ * https://github.com/pixiebrix/pixiebrix-extension/issues/3879
+ * https://github.com/pixiebrix/pixiebrix-extension/issues/4122
+ */
+import { isWebPage } from "webext-detect-page";
 
-// We don't use native, full-page-reload form submissions
-// eslint-disable-next-line import/no-unassigned-import -- Auto-initialization
-import "@/utils/preventNativeFormSubmission";
+function preventDefault(event: Event): void {
+  event.preventDefault();
+  console.debug("The native submission of the form has been prevented");
+}
 
-// Handles common HTTP errors
-import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
-
-enrichAxiosErrors();
-
-// https://webpack.js.org/guides/public-path/#on-the-fly
-__webpack_public_path__ = chrome.runtime.getURL("/");
-
-// @ts-expect-error For debugging only
-globalThis.$ = $;
-
-if (!("browser" in globalThis)) {
-  // @ts-expect-error For debugging only
-  globalThis.browser = browser;
+if (!isWebPage()) {
+  document.addEventListener("submit", preventDefault);
 }
