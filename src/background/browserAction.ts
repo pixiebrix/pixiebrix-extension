@@ -17,7 +17,6 @@
 
 import { ensureContentScript } from "@/background/util";
 import { Tabs } from "webextension-polyfill";
-import webextAlert from "./webextAlert";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
 import { executeScript, isScriptableUrl } from "webext-content-scripts";
 import pMemoize from "p-memoize";
@@ -37,15 +36,7 @@ const toggleSidebar = pMemoize(_toggleSidebar, {
 
 // Don't accept objects here as they're not easily memoizable
 async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
-  const url = String(tabUrl);
-  if (!isScriptableUrl(url)) {
-    webextAlert(
-      "Extensions cannot run on web store and other special browser vendor pages"
-    );
-    return;
-  }
-
-  if (!url.startsWith("http")) {
+  if (!tabUrl.startsWith("http") || !isScriptableUrl(tabUrl)) {
     // Page not supported. Open the options page instead
     void browser.runtime.openOptionsPage();
     return;
