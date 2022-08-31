@@ -20,6 +20,7 @@ import { Tabs } from "webextension-polyfill";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
 import { executeScript, isScriptableUrl } from "webext-content-scripts";
 import pMemoize from "p-memoize";
+import webextAlert from "./webextAlert";
 
 const ERR_UNABLE_TO_OPEN =
   "PixieBrix was unable to open the Sidebar. Try refreshing the page.";
