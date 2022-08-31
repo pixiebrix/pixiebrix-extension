@@ -17,9 +17,7 @@
 
 import React from "react";
 import SaveButton from "@/pageEditor/sidebar/actionButtons/SaveButton";
-import { Dropdown } from "react-bootstrap";
 import {
-  faEllipsisH,
   faFileExport,
   faFileImport,
   faHistory,
@@ -27,6 +25,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./ActionMenu.module.scss";
+import EllipsisMenu, {
+  EllipsisMenuItem,
+} from "@/components/ellipsisMenu/EllipsisMenu";
 
 export type ActionMenuProps = {
   onRemove: () => Promise<void>;
@@ -47,8 +48,48 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
   onRemoveFromRecipe,
   disabled,
 }) => {
-  const isResetDisabled = !isDirty || disabled;
-  const isSaveDisabled = !isDirty || disabled;
+  const menuItems: EllipsisMenuItem[] = [
+    {
+      title: (
+        <>
+          <FontAwesomeIcon icon={faHistory} fixedWidth /> Reset
+        </>
+      ),
+      hide: !onReset,
+      action: onReset,
+      disabled: !isDirty || disabled,
+    },
+    {
+      title: (
+        <>
+          <FontAwesomeIcon icon={faTrash} fixedWidth /> Remove
+        </>
+      ),
+      action: onRemove,
+      disabled,
+    },
+    {
+      title: (
+        <>
+          <FontAwesomeIcon icon={faFileImport} fixedWidth /> Add to blueprint
+        </>
+      ),
+      hide: !onAddToRecipe,
+      action: onAddToRecipe,
+      disabled,
+    },
+    {
+      title: (
+        <>
+          <FontAwesomeIcon icon={faFileExport} fixedWidth /> Remove from
+          blueprint
+        </>
+      ),
+      hide: !onRemoveFromRecipe,
+      action: onRemoveFromRecipe,
+      disabled,
+    },
+  ];
 
   return (
     // We aren't actually making this do anything on click, so we can suppress these a11y warnings.
@@ -57,35 +98,12 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
       onClick={(event) => {
         event.stopPropagation();
       }}
+      className={styles.root}
     >
-      {onSave && <SaveButton onClick={onSave} disabled={isSaveDisabled} />}
-      <Dropdown>
-        <Dropdown.Toggle className={styles.toggle}>
-          <FontAwesomeIcon icon={faEllipsisH} />
-        </Dropdown.Toggle>
-        <Dropdown.Menu alignRight>
-          {onReset && (
-            <Dropdown.Item onClick={onReset} disabled={isResetDisabled}>
-              <FontAwesomeIcon icon={faHistory} fixedWidth /> Reset
-            </Dropdown.Item>
-          )}
-          <Dropdown.Item onClick={onRemove} disabled={disabled}>
-            <FontAwesomeIcon icon={faTrash} fixedWidth /> Remove
-          </Dropdown.Item>
-          {onAddToRecipe && (
-            <Dropdown.Item onClick={onAddToRecipe} disabled={disabled}>
-              <FontAwesomeIcon icon={faFileImport} fixedWidth /> Add to
-              blueprint
-            </Dropdown.Item>
-          )}
-          {onRemoveFromRecipe && (
-            <Dropdown.Item onClick={onRemoveFromRecipe} disabled={disabled}>
-              <FontAwesomeIcon icon={faFileExport} fixedWidth /> Remove from
-              blueprint
-            </Dropdown.Item>
-          )}
-        </Dropdown.Menu>
-      </Dropdown>
+      {onSave && (
+        <SaveButton onClick={onSave} disabled={!isDirty || disabled} />
+      )}
+      <EllipsisMenu items={menuItems} toggleClassName={styles.toggle} />
     </div>
   );
 };

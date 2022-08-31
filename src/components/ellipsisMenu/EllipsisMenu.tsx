@@ -22,7 +22,7 @@ import cx from "classnames";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import styles from "./EllipsisMenu.module.scss";
 
-type Item = {
+export type EllipsisMenuItem = {
   title: ReactNode;
   hide?: boolean;
   action: () => void;
@@ -34,14 +34,16 @@ const EllipsisMenu: React.FunctionComponent<{
   className?: string;
   toggleClassName?: string;
   variant?: string;
-  items: Item[];
+  items: EllipsisMenuItem[];
   menuBoundary?: Element;
+  alignRight?: boolean;
 }> = ({
   className,
   toggleClassName,
   variant = "light",
   items,
   menuBoundary,
+  alignRight,
 }) => {
   const onToggle = (
     isOpen: boolean,
@@ -90,7 +92,7 @@ const EllipsisMenu: React.FunctionComponent<{
       >
         <FontAwesomeIcon icon={faEllipsisV} />
       </Dropdown.Toggle>
-      <Dropdown.Menu popperConfig={dropdownMenuOptions}>
+      <Dropdown.Menu popperConfig={dropdownMenuOptions} alignRight={alignRight}>
         {items
           .filter((x) => !x.hide)
           .map((item, index) => (
