@@ -18,7 +18,10 @@
 import styles from "./RecipePane.module.scss";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveRecipeId,
+  selectSelectionSeq,
+} from "@/pageEditor/slices/editorSelectors";
 import { Alert } from "react-bootstrap";
 import Centered from "@/pageEditor/components/Centered";
 import EditorTabLayout, {
@@ -35,10 +38,13 @@ import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
 import RecipeOptions from "@/pageEditor/tabs/RecipeOptions";
 
 const RecipePane: React.VFC = () => {
+  const dispatch = useDispatch();
+
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
 
-  const dispatch = useDispatch();
+  const selectionSeq = useSelector(selectSelectionSeq);
+  const layoutKey = `${activeRecipeId}-${selectionSeq}`;
 
   useEffect(() => {
     const messageContext: MessageContext = {
@@ -90,7 +96,7 @@ const RecipePane: React.VFC = () => {
   return (
     <div className={styles.root}>
       <EditorTabLayout
-        key={activeRecipeId}
+        key={layoutKey}
         tabs={tabItems}
         actionButtons={buttons}
       />
