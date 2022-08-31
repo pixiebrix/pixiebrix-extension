@@ -18,7 +18,10 @@
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveElement,
+  selectEditorModalVisibilities,
+} from "@/pageEditor/slices/editorSelectors";
 import notify from "@/utils/notify";
 import { Alert, Button, Modal } from "react-bootstrap";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -45,7 +48,10 @@ const formStateSchema = object({
   moveOrRemove: string().oneOf(["move", "remove"]).required(),
 });
 
-const RemoveFromRecipeModal: React.VFC = () => {
+const RemoveFromRecipeModal: React.FC = () => {
+  const { isRemoveFromRecipeModalVisible: show } = useSelector(
+    selectEditorModalVisibilities
+  );
   const activeElement = useSelector(selectActiveElement);
 
   const dispatch = useDispatch();
@@ -118,7 +124,7 @@ const RemoveFromRecipeModal: React.VFC = () => {
   );
 
   return (
-    <Modal show onHide={hideModal}>
+    <Modal show={show} onHide={hideModal}>
       <Modal.Header closeButton>
         <Modal.Title>
           Remove <em>{activeElement?.label}</em> from blueprint{" "}

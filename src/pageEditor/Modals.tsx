@@ -17,38 +17,19 @@
 
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import React from "react";
-import { useSelector } from "react-redux";
 import AddToRecipeModal from "./sidebar/AddToRecipeModal";
 import CreateRecipeModal from "./sidebar/CreateRecipeModal";
 import RemoveFromRecipeModal from "./sidebar/RemoveFromRecipeModal";
 import SaveAsNewRecipeModal from "./sidebar/SaveAsNewRecipeModal";
-import { selectEditorModalVisibilities } from "./slices/editorSelectors";
 
-const Modals: React.FunctionComponent = () => {
-  const {
-    isAddToRecipeModalVisible,
-    isRemoveFromRecipeModalVisible,
-    isSaveAsNewRecipeModalVisible,
-    isCreateRecipeModalVisible,
-  } = useSelector(selectEditorModalVisibilities);
-
-  // TODO:
-  // Refactoring - Controlling visibility this way breaks the hide
-  // animation of the modals. We should move visibility control to the
-  // show prop on the Bootstrap Modal inside these components instead.
-  return (
-    <>
-      {isAddToRecipeModalVisible && <AddToRecipeModal />}
-
-      {isRemoveFromRecipeModalVisible && <RemoveFromRecipeModal />}
-
-      {isSaveAsNewRecipeModalVisible && <SaveAsNewRecipeModal />}
-
-      {isCreateRecipeModalVisible && <CreateRecipeModal />}
-
-      <AddBlockModal />
-    </>
-  );
-};
+const Modals: React.FunctionComponent = () => (
+  <>
+    <AddToRecipeModal />
+    <RemoveFromRecipeModal />
+    <SaveAsNewRecipeModal />
+    <CreateRecipeModal />
+    <AddBlockModal />
+  </>
+);
 
 export default Modals;

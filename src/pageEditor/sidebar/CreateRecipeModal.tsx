@@ -30,6 +30,7 @@ import {
   selectDirty,
   selectDirtyMetadataForRecipeId,
   selectDirtyRecipeOptions,
+  selectEditorModalVisibilities,
   selectElements,
   selectKeepLocalCopyOnCreateRecipe,
   selectNewRecipeIds,
@@ -303,9 +304,12 @@ function useFormSchema() {
   });
 }
 
-const CreateRecipeModal: React.VFC = () => {
+const CreateRecipeModal: React.FC = () => {
   const dispatch = useDispatch();
 
+  const { isCreateRecipeModalVisible: show } = useSelector(
+    selectEditorModalVisibilities
+  );
   const activeElement = useSelector(selectActiveElement);
 
   // `selectActiveRecipeId` returns the recipe id _if the recipe element is selected_. Assumption: if the CreateModal
@@ -413,7 +417,7 @@ const CreateRecipeModal: React.VFC = () => {
   );
 
   return (
-    <Modal show onHide={hideModal}>
+    <Modal show={show} onHide={hideModal}>
       <Modal.Header closeButton>
         <Modal.Title>Create new blueprint</Modal.Title>
       </Modal.Header>
