@@ -63,8 +63,6 @@ function initGoogle(): void {
   window.onGAPILoad = onGAPILoad;
 
   const script = document.createElement("script");
-  // NOTE: there's no onGAPIError handler. You can verify by reading the https://apis.google.com/js/client.js code,
-  //   you can search for onGAPILoad handler and you'll see it's there but there's no onGAPIError or similar handler
   script.src = "https://apis.google.com/js/client.js?onload=onGAPILoad";
   script.addEventListener("error", (event) => {
     reportError(event.error);
