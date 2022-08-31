@@ -113,8 +113,8 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
       // The de-referenced schema is frozen, buildYup can mutate it, so we need to "unfreeze" the schema
       return buildYup(cloneDeep(schema), {});
     } catch (error) {
-      console.error("Error building Yup validator from JSON Schema");
-      reportError(error);
+      console.error("Error building Yup validator from JSON Schema", { error });
+      reportError(error, null, { logToConsole: false });
       return Yup.object();
     }
   }, [schema]);
