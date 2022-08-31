@@ -23,7 +23,7 @@ import { executeScript, isScriptableUrl } from "webext-content-scripts";
 import pMemoize from "p-memoize";
 
 const ERR_UNABLE_TO_OPEN =
-  "PixieBrix was unable to open the sidebar. Try refreshing the page.";
+  "PixieBrix was unable to open the Sidebar. Try refreshing the page.";
 
 // The sidebar is always injected to into the top level frame
 const TOP_LEVEL_FRAME_ID = 0;
