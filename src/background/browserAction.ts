@@ -18,7 +18,6 @@
 import reportError from "@/telemetry/reportError";
 import { ensureContentScript } from "@/background/util";
 import { Tabs } from "webextension-polyfill";
-import webextAlert from "./webextAlert";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
 import { executeScript, isScriptableUrl } from "webext-content-scripts";
 
@@ -27,14 +26,7 @@ const TOP_LEVEL_FRAME_ID = 0;
 
 async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
   const url = String(tab.url);
-  if (!isScriptableUrl(url)) {
-    webextAlert(
-      "Extensions cannot run on web store and other special browser vendor pages"
-    );
-    return;
-  }
-
-  if (!url.startsWith("http")) {
+  if (!url.startsWith("http") || !isScriptableUrl(url)) {
     // Page not supported. Open the options page instead
     void browser.runtime.openOptionsPage();
     return;
