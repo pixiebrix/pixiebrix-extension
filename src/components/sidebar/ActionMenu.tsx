@@ -71,7 +71,15 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
     {
       title: (
         <>
-          <FontAwesomeIcon icon={faFileImport} fixedWidth /> Add to blueprint
+          <FontAwesomeIcon
+            icon={faFileImport}
+            fixedWidth
+            style={{
+              marginLeft: -2,
+              marginRight: 2,
+            }}
+          />{" "}
+          Add to blueprint
         </>
       ),
       hide: !onAddToRecipe,
@@ -81,8 +89,15 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
     {
       title: (
         <>
-          <FontAwesomeIcon icon={faFileExport} fixedWidth /> Remove from
-          blueprint
+          <FontAwesomeIcon
+            icon={faFileExport}
+            fixedWidth
+            style={{
+              marginLeft: 3,
+              marginRight: -3,
+            }}
+          />{" "}
+          Remove from blueprint
         </>
       ),
       hide: !onRemoveFromRecipe,
