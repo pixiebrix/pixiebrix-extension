@@ -66,7 +66,7 @@ export const OnboardingContent: React.FunctionComponent = () => (
           </a>{" "}
           or ask questions in the{" "}
           <a
-            href="https://docs.pixiebrix.com/quick-start-guide"
+            href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
             target="_blank"
             rel="noopener noreferrer"
           >
