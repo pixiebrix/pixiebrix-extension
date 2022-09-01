@@ -88,11 +88,13 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
           config: configurationId,
         });
 
+        console.debug("Required permissions", requiredPermissions);
+
         await requestPermissions(requiredPermissions);
 
         await launchAuthIntegration({ serviceId: authServiceId });
       } catch (error) {
-        helpers.setStatus({ status: getErrorMessage(error) });
+        helpers.setStatus(getErrorMessage(error));
       }
     },
     [dispatch, configuredServices, authServiceId]
