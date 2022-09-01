@@ -107,6 +107,7 @@ export const NoAvailablePanelsContent: React.FunctionComponent = () => (
 
 const DefaultPanel: React.FunctionComponent = () => {
   const { restrict } = useFlags();
+
   return (
     <div>
       {restrict("marketplace") ? (
