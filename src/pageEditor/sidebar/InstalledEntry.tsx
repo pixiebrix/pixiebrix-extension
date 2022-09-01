@@ -17,7 +17,7 @@
 
 import styles from "./Entry.module.scss";
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import { IExtension, UUID } from "@/core";
 import { useDispatch, useSelector } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
@@ -122,15 +122,6 @@ const InstalledEntry: React.FunctionComponent<{
   const hideOverlay = useCallback(async () => {
     await disableOverlay(thisTab);
   }, []);
-
-  useEffect(() => {
-    console.log("InstalledEntry: created", extension.label);
-
-    return () => {
-      console.log("InstalledEntry: destroyed", extension.label);
-    };
-  }, []);
-  console.log("InstalledEntry: render", extension.label);
 
   return (
     <ListGroup.Item

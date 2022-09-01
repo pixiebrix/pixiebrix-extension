@@ -185,8 +185,6 @@ const SidebarExpanded: React.FunctionComponent<{
     );
   });
 
-  console.log("Sidebar render");
-
   return (
     <div className={cx(styles.root, styles.expanded)}>
       <div className={styles.header}>
