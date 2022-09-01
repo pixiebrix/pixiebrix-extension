@@ -48,8 +48,6 @@ type Restrict = {
 function useFlags(): Restrict {
   const flags = useSelector(selectFlags);
 
-  console.log("flags", flags);
-
   return useMemo(() => {
     const flagSet = new Set(flags);
 
