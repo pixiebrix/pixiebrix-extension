@@ -24,21 +24,16 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import ActionMenu from "@/components/sidebar/ActionMenu";
 import { actions } from "@/pageEditor/slices/editorSlice";
+import useSaveExtension from "@/pageEditor/hooks/useSaveExtension";
+import useResetExtension from "@/pageEditor/hooks/useResetExtension";
+import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 
 type ExtensionActionMenuProps = {
   extensionId: UUID;
-  saveExtension: (extensionId: UUID) => Promise<void>;
-  isSavingExtension: boolean;
-  resetExtension: (extensionId: UUID) => Promise<void>;
-  removeExtension: (extensionId: UUID) => Promise<void>;
 };
 
 const ExtensionActionMenu: React.FC<ExtensionActionMenuProps> = ({
   extensionId,
-  saveExtension,
-  isSavingExtension,
-  resetExtension,
-  removeExtension,
 }) => {
   const dispatch = useDispatch();
 
@@ -46,8 +41,13 @@ const ExtensionActionMenu: React.FC<ExtensionActionMenuProps> = ({
   const element = elements.find((element) => element.uuid === extensionId);
   const isDirty = useSelector(selectElementIsDirty(extensionId));
 
+  const { save: saveExtension, isSaving: isSavingExtension } =
+    useSaveExtension();
+  const resetExtension = useResetExtension();
+  const removeExtension = useRemoveExtension();
+
   const remove = async () => {
-    await removeExtension(extensionId);
+    await removeExtension({ extensionId });
   };
 
   const save = element.recipe
@@ -58,7 +58,7 @@ const ExtensionActionMenu: React.FC<ExtensionActionMenuProps> = ({
 
   const reset = element.installed
     ? async () => {
-        await resetExtension(extensionId);
+        await resetExtension({ extensionId });
       }
     : undefined;
 
@@ -87,4 +87,4 @@ const ExtensionActionMenu: React.FC<ExtensionActionMenuProps> = ({
   );
 };
 
-export default React.memo(ExtensionActionMenu);
+export default ExtensionActionMenu;

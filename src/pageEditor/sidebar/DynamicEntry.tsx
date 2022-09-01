@@ -43,9 +43,6 @@ import {
   selectElementIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
 import ExtensionActionMenu from "@/pageEditor/sidebar/ExtensionActionMenu";
-import useSaveExtension from "@/pageEditor/hooks/useSaveExtension";
-import useResetExtension from "@/pageEditor/hooks/useResetExtension";
-import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 
 type DynamicEntryProps = {
   extension: FormState;
@@ -83,11 +80,6 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
   const hideOverlay = useCallback(async () => {
     await disableOverlay(thisTab);
   }, []);
-
-  const { save: saveExtension, isSaving: isSavingExtension } =
-    useSaveExtension();
-  const resetExtension = useResetExtension();
-  const removeExtension = useRemoveExtension();
 
   useEffect(() => {
     console.log("DynamicEntry: created", getLabel(extension));
@@ -147,15 +139,7 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
           <UnsavedChangesIcon />
         </span>
       )}
-      {isActive && (
-        <ExtensionActionMenu
-          extensionId={extension.uuid}
-          saveExtension={saveExtension}
-          isSavingExtension={isSavingExtension}
-          resetExtension={resetExtension}
-          removeExtension={removeExtension}
-        />
-      )}
+      {isActive && <ExtensionActionMenu extensionId={extension.uuid} />}
     </ListGroup.Item>
   );
 };

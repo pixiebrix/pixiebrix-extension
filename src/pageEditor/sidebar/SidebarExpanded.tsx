@@ -1,6 +1,23 @@
+/*
+ * Copyright (C) 2022 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import styles from "./Sidebar.module.scss";
 import React, { FormEvent, useMemo, useState } from "react";
-import { lowerCase, sortBy } from "lodash";
+import { sortBy } from "lodash";
 import { getRecipeById } from "@/utils";
 import { Accordion, Button, Form, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -88,7 +105,7 @@ const SidebarExpanded: React.FunctionComponent<{
       ? recipes.map((recipe) => `${recipe.metadata.id}-${recipe.metadata.name}`)
       : ""
   );
-  const { elementsByRecipeId, orphanedElements } = useMemo(
+  const sortedElements = useMemo(
     () =>
       arrangeElements({
         elements,
@@ -113,24 +130,11 @@ const SidebarExpanded: React.FunctionComponent<{
     ]
   );
 
-  // We need to run these hooks above the list item component level to avoid some nasty re-rendering issues
-
   const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
   const resetRecipe = useResetRecipe();
   const removeRecipe = useRemoveRecipe();
 
-  const listItems = sortBy(
-    [...elementsByRecipeId, ...orphanedElements],
-    (item) => {
-      if (Array.isArray(item)) {
-        const recipeId = item[0];
-        const recipe = getRecipeById(recipes, recipeId);
-        return lowerCase(recipe?.metadata?.name ?? "");
-      }
-
-      return lowerCase(item.label);
-    }
-  ).map((item) => {
+  const listItems = sortedElements.map((item) => {
     if (Array.isArray(item)) {
       const [recipeId, elements] = item;
       const recipe = getRecipeById(recipes, recipeId);
