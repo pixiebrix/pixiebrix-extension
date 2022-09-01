@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import SaveButton from "@/pageEditor/sidebar/actionButtons/SaveButton";
+import SaveButton from "@/pageEditor/sidebar/SaveButton";
 import {
   faFileExport,
   faFileImport,
@@ -74,10 +74,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
           <FontAwesomeIcon
             icon={faFileImport}
             fixedWidth
-            style={{
-              marginLeft: -2,
-              marginRight: 2,
-            }}
+            className={styles.addIcon}
           />{" "}
           Add to blueprint
         </>
@@ -92,10 +89,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
           <FontAwesomeIcon
             icon={faFileExport}
             fixedWidth
-            style={{
-              marginLeft: 3,
-              marginRight: -3,
-            }}
+            className={styles.removeIcon}
           />{" "}
           Remove from blueprint
         </>
@@ -107,14 +101,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
   ];
 
   return (
-    // We aren't actually making this do anything on click, so we can suppress these a11y warnings.
-    // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
-    <div
-      onClick={(event) => {
-        event.stopPropagation();
-      }}
-      className={styles.root}
-    >
+    <div className={styles.root}>
       <SaveButton onClick={onSave} disabled={!isDirty || disabled} />
       <EllipsisMenu items={menuItems} toggleClassName={styles.toggle} />
     </div>

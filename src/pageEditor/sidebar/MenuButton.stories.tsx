@@ -16,19 +16,19 @@
  */
 
 import React from "react";
-import AddToRecipeButton from "@/pageEditor/sidebar/actionButtons/AddToRecipeButton";
+import MenuButton from "@/pageEditor/sidebar/MenuButton";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 
 export default {
-  title: "Sidebar/AddToRecipeButton",
-  component: AddToRecipeButton,
+  title: "Sidebar/MenuButton",
+  component: MenuButton,
   argTypes: {
     onClick: { action: "clicked" },
   },
-} as ComponentMeta<typeof AddToRecipeButton>;
+} as ComponentMeta<typeof MenuButton>;
 
-const Template: ComponentStory<typeof AddToRecipeButton> = (args) => (
-  <AddToRecipeButton {...args} />
+const Template: ComponentStory<typeof MenuButton> = (args) => (
+  <MenuButton {...args} />
 );
 
 export const Default = Template.bind({});

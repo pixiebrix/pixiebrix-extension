@@ -16,24 +16,19 @@
  */
 
 import React from "react";
-import AsyncButton from "@/components/AsyncButton";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileExport } from "@fortawesome/free-solid-svg-icons";
-import cx from "classnames";
-import rootStyles from "./ActionButtons.module.scss";
-import styles from "./RecipeButton.module.scss";
+import SaveButton from "@/pageEditor/sidebar/SaveButton";
+import { ComponentMeta, ComponentStory } from "@storybook/react";
 
-const RemoveFromRecipeButton: React.FC<{
-  onClick: () => void;
-  disabled?: boolean;
-}> = ({ onClick, disabled }) => (
-  <AsyncButton
-    onClick={onClick}
-    disabled={disabled}
-    className={cx(rootStyles.button, styles.recipeButton)}
-  >
-    <FontAwesomeIcon icon={faFileExport} />
-  </AsyncButton>
+export default {
+  title: "Sidebar/SaveButton",
+  component: SaveButton,
+  argTypes: {
+    onClick: { action: "clicked" },
+  },
+} as ComponentMeta<typeof SaveButton>;
+
+const Template: ComponentStory<typeof SaveButton> = (args) => (
+  <SaveButton {...args} />
 );
 
-export default RemoveFromRecipeButton;
+export const Default = Template.bind({});
