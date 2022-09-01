@@ -28,6 +28,10 @@ import { selectConfiguredServices } from "@/store/servicesSelectors";
 import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
 import servicesSlice from "@/store/servicesSlice";
 import { selectSettings } from "@/store/settingsSelectors";
+import { FormikHelpers } from "formik";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import { serviceOriginPermissions } from "@/permissions";
+import { requestPermissions } from "@/utils/permissions";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -49,24 +53,47 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
     useSelector(selectSettings);
 
   const connect = useCallback(
-    async (values: ControlRoomConfiguration) => {
-      if (!configuredServices.some((x) => x.serviceId === authServiceId)) {
-        dispatch(
-          updateServiceConfig({
-            id: uuidv4(),
-            serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
-            label: "Primary AARI Account",
-            config: {
-              controlRoom: values.controlRoomUrl,
-            },
-          })
+    async (
+      values: ControlRoomConfiguration,
+      helpers: FormikHelpers<ControlRoomConfiguration>
+    ) => {
+      try {
+        const configuredService = configuredServices.find(
+          (x) => x.serviceId === authServiceId
         );
+        let configurationId = configuredService?.id;
 
-        // Ensure the service is available to background page (which is where launchAuthIntegration runs)
-        await persistor.flush();
+        // Create the service configuration if it doesn't already exist
+        if (!configurationId) {
+          configurationId = uuidv4();
+
+          dispatch(
+            updateServiceConfig({
+              id: configurationId,
+              serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+              label: "Primary AARI Account",
+              config: {
+                controlRoom: values.controlRoomUrl,
+              },
+            })
+          );
+
+          // Ensure the service is available to background page (where launchAuthIntegration runs)
+          await persistor.flush();
+        }
+
+        // Ensure PixieBrix can call the Control Room and OAuth2 endpoints
+        const requiredPermissions = await serviceOriginPermissions({
+          id: CONTROL_ROOM_OAUTH_SERVICE_ID,
+          config: configurationId,
+        });
+
+        await requestPermissions(requiredPermissions);
+
+        await launchAuthIntegration({ serviceId: authServiceId });
+      } catch (error) {
+        helpers.setStatus({ status: getErrorMessage(error) });
       }
-
-      await launchAuthIntegration({ serviceId: authServiceId });
     },
     [dispatch, configuredServices, authServiceId]
   );
