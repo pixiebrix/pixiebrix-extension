@@ -73,7 +73,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
               serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
               label: "Primary AARI Account",
               config: {
-                controlRoom: values.controlRoomUrl,
+                controlRoomUrl: values.controlRoomUrl,
               },
             })
           );
