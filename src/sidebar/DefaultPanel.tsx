@@ -18,11 +18,10 @@
 import styles from "./DefaultPanel.module.scss";
 
 import React from "react";
-import { useSelector } from "react-redux";
 import workshopImage from "@img/workshop.svg";
 import { Col, Container, Row } from "react-bootstrap";
-import { selectExtensions } from "@/store/extensionsSelectors";
 import { isMac } from "@/utils";
+import useFlags from "@/hooks/useFlags";
 
 export const OnboardingContent: React.FunctionComponent = () => (
   <Container className={styles.root}>
@@ -107,11 +106,10 @@ export const NoAvailablePanelsContent: React.FunctionComponent = () => (
 );
 
 const DefaultPanel: React.FunctionComponent = () => {
-  const extensions = useSelector(selectExtensions);
-
+  const { restrict } = useFlags();
   return (
     <div>
-      {extensions?.length > 0 ? (
+      {restrict("marketplace") ? (
         <NoAvailablePanelsContent />
       ) : (
         <OnboardingContent />
