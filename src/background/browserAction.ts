@@ -32,7 +32,7 @@ async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
   const optionsPage = browser.runtime.getURL("options.html");
 
   if (url.startsWith(extensionConsoleUrl)) {
-    const keyboardShortcut = `${isMac() ? "Cmd+Opt" : "Ctrl+Shift"}+C`;
+    const keyboardShortcut = isMac() ? "Cmd+Opt+C" : "Ctrl+Shift+C";
     webextAlert(
       `Tip: If you want to create a new blueprint, first navigate to the page you want to modify, then open PixieBrix in DevTools (${keyboardShortcut}).`
     );
