@@ -16,7 +16,7 @@
  */
 
 import styles from "./Entry.module.scss";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { ListGroup } from "react-bootstrap";
@@ -88,6 +88,10 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
 
   const hideOverlay = useCallback(async () => {
     await disableOverlay(thisTab);
+  }, []);
+
+  useEffect(() => {
+    console.log("DynamicEntry: created", getLabel(item));
   }, []);
 
   return (

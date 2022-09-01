@@ -1,27 +1,15 @@
 import styles from "./Sidebar.module.scss";
-import React, { FormEvent, useContext, useMemo, useState } from "react";
-import { PageEditorTabContext } from "@/pageEditor/context";
+import React, { FormEvent, useMemo, useState } from "react";
 import { lowerCase, sortBy } from "lodash";
 import { getRecipeById } from "@/utils";
-import {
-  Accordion,
-  Badge,
-  Button,
-  Dropdown,
-  DropdownButton,
-  Form,
-  ListGroup,
-} from "react-bootstrap";
+import { Accordion, Button, Form, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IExtension, RegistryId, UUID } from "@/core";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import hash from "object-hash";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import useInstallState from "@/pageEditor/hooks/useInstallState";
 import InstalledEntry from "@/pageEditor/sidebar/InstalledEntry";
 import DynamicEntry from "@/pageEditor/sidebar/DynamicEntry";
 import { isExtension } from "@/pageEditor/sidebar/common";
-import useAddElement from "@/pageEditor/hooks/useAddElement";
 import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import Loader from "@/components/Loader";
@@ -48,32 +36,11 @@ import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import Logo from "./Logo";
 import ReloadButton from "./ReloadButton";
-
-const DropdownEntry: React.FunctionComponent<{
-  caption: string;
-  icon: IconProp;
-  onClick: () => void;
-  beta?: boolean;
-}> = ({ beta, icon, caption, onClick }) => (
-  <Dropdown.Item onClick={onClick}>
-    <FontAwesomeIcon icon={icon} />
-    &nbsp;{caption}
-    {beta && (
-      <>
-        {" "}
-        <Badge variant="success" pill>
-          Beta
-        </Badge>
-      </>
-    )}
-  </Dropdown.Item>
-);
+import AddExtensionPointButton from "./AddExtensionPointButton";
 
 const SidebarExpanded: React.FunctionComponent<{
   collapseSidebar: () => void;
 }> = ({ collapseSidebar }) => {
-  const context = useContext(PageEditorTabContext);
-
   const { data: allRecipes, isLoading: isLoadingRecipes } =
     useGetRecipesQuery();
 
@@ -107,10 +74,6 @@ const SidebarExpanded: React.FunctionComponent<{
   const showDeveloperUI =
     process.env.ENVIRONMENT === "development" ||
     flagOn("page-editor-developer");
-
-  const {
-    tabState: { hasPermissions },
-  } = context;
 
   const [showAll, setShowAll] = useState(false);
 
@@ -154,8 +117,6 @@ const SidebarExpanded: React.FunctionComponent<{
       expandedRecipeId,
     ]
   );
-
-  const addElement = useAddElement();
 
   // We need to run these hooks above the list item component level to avoid some nasty re-rendering issues
   const { save: saveExtension, isSaving: isSavingExtension } =
@@ -253,6 +214,8 @@ const SidebarExpanded: React.FunctionComponent<{
     return <ElementListItem key={getIdForElement(element)} element={element} />;
   });
 
+  console.log("Sidebar render");
+
   return (
     <div className={cx(styles.root, styles.expanded)}>
       <div className={styles.header}>
@@ -265,27 +228,8 @@ const SidebarExpanded: React.FunctionComponent<{
             >
               <Logo />
             </a>
-            <DropdownButton
-              disabled={!hasPermissions}
-              variant="info"
-              size="sm"
-              title="Add"
-              id="add-extension-point"
-            >
-              {sortBy([...ADAPTERS.values()], (x) => x.displayOrder)
-                .filter((element) => !element.flag || flagOn(element.flag))
-                .map((element) => (
-                  <DropdownEntry
-                    key={element.elementType}
-                    caption={element.label}
-                    icon={element.icon}
-                    beta={Boolean(element.flag)}
-                    onClick={() => {
-                      addElement(element);
-                    }}
-                  />
-                ))}
-            </DropdownButton>
+
+            <AddExtensionPointButton />
 
             {showDeveloperUI && <ReloadButton />}
           </div>
