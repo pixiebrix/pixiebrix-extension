@@ -29,7 +29,7 @@ const TOP_LEVEL_FRAME_ID = 0;
 async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
   const url = String(tab.url);
 
-  const extensionConsoleUrl = browser.runtime.getURL("");
+  const optionsPage = browser.runtime.getURL("options.html");
 
   if (url.startsWith(extensionConsoleUrl)) {
     const keyboardShortcut = `${isMac() ? "Cmd+Opt" : "Ctrl+Shift"}+C`;
