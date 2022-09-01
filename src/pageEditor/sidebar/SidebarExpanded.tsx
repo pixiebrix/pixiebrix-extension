@@ -4,11 +4,9 @@ import { lowerCase, sortBy } from "lodash";
 import { getRecipeById } from "@/utils";
 import { Accordion, Button, Form, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IExtension, RegistryId, UUID } from "@/core";
+import { RegistryId } from "@/core";
 import hash from "object-hash";
 import useInstallState from "@/pageEditor/hooks/useInstallState";
-import InstalledEntry from "@/pageEditor/sidebar/InstalledEntry";
-import DynamicEntry from "@/pageEditor/sidebar/DynamicEntry";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
@@ -24,19 +22,16 @@ import {
   selectExpandedRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
 import { useSelector } from "react-redux";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useGetRecipesQuery } from "@/services/api";
 import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
-import useSaveExtension from "@/pageEditor/hooks/useSaveExtension";
-import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
-import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import Logo from "./Logo";
 import ReloadButton from "./ReloadButton";
 import AddExtensionPointButton from "./AddExtensionPointButton";
+import ExtensionEntry from "./ExtensionEntry";
 
 const SidebarExpanded: React.FunctionComponent<{
   collapseSidebar: () => void;
@@ -119,48 +114,10 @@ const SidebarExpanded: React.FunctionComponent<{
   );
 
   // We need to run these hooks above the list item component level to avoid some nasty re-rendering issues
-  const { save: saveExtension, isSaving: isSavingExtension } =
-    useSaveExtension();
-  const resetExtension = useResetExtension();
-  const removeExtension = useRemoveExtension();
+
   const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
   const resetRecipe = useResetRecipe();
   const removeRecipe = useRemoveRecipe();
-
-  const ElementListItem: React.FC<{
-    element: IExtension | FormState;
-    isNested?: boolean;
-  }> = ({ element, isNested = false }) =>
-    isExtension(element) ? (
-      <InstalledEntry
-        key={`installed-${element.id}`}
-        extension={element}
-        recipes={recipes}
-        isActive={activeElementId === element.id}
-        isAvailable={
-          !availableInstalledIds || availableInstalledIds.has(element.id)
-        }
-        isNested={isNested}
-      />
-    ) : (
-      <DynamicEntry
-        key={`dynamic-${element.uuid}`}
-        item={element}
-        isActive={activeElementId === element.uuid}
-        isAvailable={
-          !availableDynamicIds || availableDynamicIds.has(element.uuid)
-        }
-        isNested={isNested}
-        saveExtension={saveExtension}
-        isSavingExtension={isSavingExtension}
-        resetExtension={async (extensionId: UUID) => {
-          await resetExtension({ extensionId });
-        }}
-        removeExtension={async (extensionId: UUID) => {
-          await removeExtension({ extensionId });
-        }}
-      />
-    );
 
   const listItems = sortBy(
     [...elementsByRecipeId, ...orphanedElements],
@@ -200,9 +157,12 @@ const SidebarExpanded: React.FunctionComponent<{
           }}
         >
           {elements.map((element) => (
-            <ElementListItem
+            <ExtensionEntry
               key={getIdForElement(element)}
-              element={element}
+              extension={element}
+              recipes={recipes}
+              availableInstalledIds={availableInstalledIds}
+              availableDynamicIds={availableDynamicIds}
               isNested
             />
           ))}
@@ -210,8 +170,15 @@ const SidebarExpanded: React.FunctionComponent<{
       );
     }
 
-    const element = item;
-    return <ElementListItem key={getIdForElement(element)} element={element} />;
+    return (
+      <ExtensionEntry
+        key={getIdForElement(item)}
+        recipes={recipes}
+        availableInstalledIds={availableInstalledIds}
+        availableDynamicIds={availableDynamicIds}
+        extension={item}
+      />
+    );
   });
 
   console.log("Sidebar render");

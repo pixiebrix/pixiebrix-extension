@@ -37,7 +37,7 @@ describe("DynamicEntry", () => {
     expect(
       render(
         <DynamicEntry
-          item={formState}
+          extension={formState}
           isAvailable={true}
           isActive={false}
           saveExtension={jest.fn()}
