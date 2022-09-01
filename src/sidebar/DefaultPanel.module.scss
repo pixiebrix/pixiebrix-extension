@@ -60,7 +60,6 @@
 }
 
 .tinyCallout {
-  color: #170637;
+  @extend .callout;
   font-size: 16px;
-  font-weight: 700;
 }
