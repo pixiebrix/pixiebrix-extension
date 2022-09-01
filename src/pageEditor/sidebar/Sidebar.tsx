@@ -251,18 +251,10 @@ const SidebarExpanded: React.VoidFunctionComponent<{
         }}
         isSaving={element.recipe ? isSavingRecipe : isSavingExtension}
         onReset={async () => {
-          if (element.recipe) {
-            await resetRecipe(element.recipe?.id);
-          } else {
-            await resetExtension({ extensionId: element.uuid });
-          }
+          await resetExtension({ extensionId: element.uuid });
         }}
         onRemove={async () => {
-          if (element.recipe) {
-            await removeRecipe({ recipeId: element.recipe?.id });
-          } else {
-            await removeExtension({ extensionId: element.uuid });
-          }
+          await removeExtension({ extensionId: element.uuid });
         }}
       />
     );
