@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "@/components/Loader";
 import { useGetMeQuery } from "@/services/api";
@@ -37,11 +37,10 @@ import { Me } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
 import { AxiosError } from "axios";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
-import { matchPath } from "react-router";
 
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
-  LoginPage: React.VFC;
+  LoginPage: React.FC;
   /**
    * Ignore network errors. Set to 'false' to avoid prompting on login if there are intermittent network errors
    * or PixieBrix service degradation.
@@ -160,20 +159,9 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   LoginPage,
   ignoreApiError = false,
 }) => {
-  const isSettingsPage = useMemo(() => {
-    const pathname = location.hash.slice(1);
-    const matchSettings = matchPath(pathname, {
-      path: "/settings",
-      exact: true,
-    });
-    return matchSettings != null;
-
-    // It is expected that this component is re-rendered when native location changes,
-    // not managed by react-router.
-    // Not using react-router helpers here because RequireAuth is used by Page Editor
-    // which doesn't use react-router
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.hash]);
+  // This is a very simplified version of what otherwise useRouteMatch from react-router would do.
+  // We don't want to pull the Router in the Page Editor app.
+  const isSettingsPage = location.hash.startsWith("#/settings");
 
   const {
     isAccountUnlinked,
