@@ -42,17 +42,17 @@ import {
   selectActiveRecipeId,
   selectElementIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
-import ExtensionActionMenu from "@/pageEditor/sidebar/ExtensionActionMenu";
+import ActionMenu from "@/components/sidebar/ActionMenu";
 
 type DynamicEntryProps = {
   item: FormState;
   isAvailable: boolean;
   isActive: boolean;
   isNested?: boolean;
-  saveExtension: (extensionId: UUID) => Promise<void>;
-  isSavingExtension: boolean;
-  resetExtension: (extensionId: UUID) => Promise<void>;
-  removeExtension: (extensionId: UUID) => Promise<void>;
+  onSave: () => Promise<void>;
+  isSaving: boolean;
+  onReset: () => Promise<void>;
+  onRemove: () => Promise<void>;
 };
 
 /**
@@ -64,10 +64,10 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
   isAvailable,
   isActive,
   isNested = false,
-  saveExtension,
-  isSavingExtension,
-  resetExtension,
-  removeExtension,
+  onSave,
+  isSaving,
+  onReset,
+  onRemove,
 }) => {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
@@ -138,12 +138,26 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
         </span>
       )}
       {isActive && (
-        <ExtensionActionMenu
-          extensionId={item.uuid}
-          saveExtension={saveExtension}
-          isSavingExtension={isSavingExtension}
-          resetExtension={resetExtension}
-          removeExtension={removeExtension}
+        <ActionMenu
+          onSave={onSave}
+          onRemove={onRemove}
+          onReset={item.installed ? onReset : undefined}
+          isDirty={isDirty}
+          onAddToRecipe={
+            item.recipe
+              ? undefined
+              : async () => {
+                  dispatch(actions.showAddToRecipeModal());
+                }
+          }
+          onRemoveFromRecipe={
+            item.recipe
+              ? async () => {
+                  dispatch(actions.showRemoveFromRecipeModal());
+                }
+              : undefined
+          }
+          disabled={isSaving}
         />
       )}
     </ListGroup.Item>

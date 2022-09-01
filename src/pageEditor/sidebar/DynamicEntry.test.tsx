@@ -40,10 +40,10 @@ describe("DynamicEntry", () => {
           item={formState}
           isAvailable={true}
           isActive={false}
-          saveExtension={jest.fn()}
-          isSavingExtension={false}
-          resetExtension={jest.fn()}
-          removeExtension={jest.fn()}
+          onSave={jest.fn()}
+          isSaving={false}
+          onReset={jest.fn()}
+          onRemove={jest.fn()}
         />,
         {
           initialValues: formState,

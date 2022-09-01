@@ -16,7 +16,7 @@
  */
 
 import React, { PropsWithChildren } from "react";
-import { RegistryId, SemVerString } from "@/core";
+import { SemVerString } from "@/core";
 import styles from "./Entry.module.scss";
 import {
   RecipeHasUpdateIcon,
@@ -40,16 +40,16 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { RecipeDefinition } from "@/types/definitions";
 import * as semver from "semver";
-import RecipeActionMenu from "@/pageEditor/sidebar/RecipeActionMenu";
+import ActionMenu from "@/components/sidebar/ActionMenu";
 
 export type RecipeEntryProps = PropsWithChildren<{
   recipe: RecipeDefinition | undefined;
   isActive?: boolean;
   installedVersion: SemVerString;
-  saveRecipe: (recipeId: RegistryId) => Promise<void>;
-  isSavingRecipe: boolean;
-  resetRecipe: (recipeId: RegistryId) => Promise<void>;
-  removeRecipe: (recipeId: RegistryId) => Promise<void>;
+  onSave: () => Promise<void>;
+  isSaving: boolean;
+  onReset: () => Promise<void>;
+  onRemove: () => Promise<void>;
 }>;
 
 const RecipeEntry: React.FC<RecipeEntryProps> = ({
@@ -57,10 +57,10 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
   isActive,
   children,
   installedVersion,
-  saveRecipe,
-  isSavingRecipe,
-  resetRecipe,
-  removeRecipe,
+  onSave,
+  isSaving,
+  onReset,
+  onRemove,
 }) => {
   const dispatch = useDispatch();
 
@@ -118,12 +118,12 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
           </span>
         )}
         {isActive && (
-          <RecipeActionMenu
-            recipeId={recipeId}
-            saveRecipe={saveRecipe}
-            isSavingRecipe={isSavingRecipe}
-            resetRecipe={resetRecipe}
-            removeRecipe={removeRecipe}
+          <ActionMenu
+            onSave={onSave}
+            onReset={onReset}
+            onRemove={onRemove}
+            isDirty={isDirty}
+            disabled={isSaving}
           />
         )}
       </Accordion.Toggle>

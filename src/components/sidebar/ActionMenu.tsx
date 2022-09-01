@@ -30,8 +30,8 @@ import EllipsisMenu, {
 } from "@/components/ellipsisMenu/EllipsisMenu";
 
 export type ActionMenuProps = {
+  onSave: () => Promise<void>;
   onRemove: () => Promise<void>;
-  onSave?: () => Promise<void>;
   onReset?: () => Promise<void>;
   isDirty?: boolean;
   onAddToRecipe?: () => Promise<void>;
@@ -40,8 +40,8 @@ export type ActionMenuProps = {
 };
 
 const ActionMenu: React.FC<ActionMenuProps> = ({
-  onRemove,
   onSave,
+  onRemove,
   onReset,
   isDirty,
   onAddToRecipe,
@@ -115,9 +115,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
       }}
       className={styles.root}
     >
-      {onSave && (
-        <SaveButton onClick={onSave} disabled={!isDirty || disabled} />
-      )}
+      <SaveButton onClick={onSave} disabled={!isDirty || disabled} />
       <EllipsisMenu items={menuItems} toggleClassName={styles.toggle} />
     </div>
   );

@@ -31,7 +31,7 @@ import {
   ListGroup,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IExtension, RegistryId, UUID } from "@/core";
+import { IExtension } from "@/core";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import hash from "object-hash";
 import logoUrl from "@/icons/custom-icons/favicon.svg";
@@ -242,13 +242,27 @@ const SidebarExpanded: React.VoidFunctionComponent<{
           !availableDynamicIds || availableDynamicIds.has(element.uuid)
         }
         isNested={isNested}
-        saveExtension={saveExtension}
-        isSavingExtension={isSavingExtension}
-        resetExtension={async (extensionId: UUID) => {
-          await resetExtension({ extensionId });
+        onSave={async () => {
+          if (element.recipe) {
+            await saveRecipe(element.recipe?.id);
+          } else {
+            await saveExtension(element.uuid);
+          }
         }}
-        removeExtension={async (extensionId: UUID) => {
-          await removeExtension({ extensionId });
+        isSaving={element.recipe ? isSavingRecipe : isSavingExtension}
+        onReset={async () => {
+          if (element.recipe) {
+            await resetRecipe(element.recipe?.id);
+          } else {
+            await resetExtension({ extensionId: element.uuid });
+          }
+        }}
+        onRemove={async () => {
+          if (element.recipe) {
+            await removeRecipe({ recipeId: element.recipe?.id });
+          } else {
+            await removeExtension({ extensionId: element.uuid });
+          }
         }}
       />
     );
@@ -283,11 +297,15 @@ const SidebarExpanded: React.VoidFunctionComponent<{
           recipe={recipe}
           isActive={recipeId === activeRecipeId}
           installedVersion={installedVersion}
-          saveRecipe={saveRecipe}
-          isSavingRecipe={isSavingRecipe}
-          resetRecipe={resetRecipe}
-          removeRecipe={async (recipeId: RegistryId) => {
-            await removeRecipe({ recipeId });
+          onSave={async () => {
+            await saveRecipe(activeRecipeId);
+          }}
+          isSaving={isSavingRecipe}
+          onReset={async () => {
+            await resetRecipe(activeRecipeId);
+          }}
+          onRemove={async () => {
+            await removeRecipe({ recipeId: activeRecipeId });
           }}
         >
           {elements.map((element) => (

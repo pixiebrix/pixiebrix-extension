@@ -58,10 +58,10 @@ beforeEach(() => {
       recipe,
       children: <div>test children</div>,
       installedVersion: validateSemVerString("1.0.0"),
-      saveRecipe: jest.fn(),
-      isSavingRecipe: false,
-      resetRecipe: jest.fn(),
-      removeRecipe: jest.fn(),
+      onSave: jest.fn(),
+      isSaving: false,
+      onReset: jest.fn(),
+      onRemove: jest.fn(),
     },
   });
 });
