@@ -45,22 +45,42 @@ afterAll(() => {
 });
 
 describe("InstalledEntry", () => {
-  test("it renders with active element", async () => {
+  test("it renders not active element", async () => {
     const extension = extensionFactory();
     const formState = formStateFactory();
     const rendered = render(
-      <InstalledEntry
-        extension={extension}
-        recipes={[]}
-        isActive={false}
-        isAvailable={true}
-      />,
+      <InstalledEntry extension={extension} recipes={[]} isAvailable />,
       {
         initialValues: formState,
         setupRedux(dispatch) {
           dispatch(authActions.setAuth(authStateFactory()));
+
+          // The addElement also sets the active element
+          dispatch(editorActions.addElement(formStateFactory()));
+
+          // Add new element to deactivate the previous one
           dispatch(editorActions.addElement(formState));
-          dispatch(editorActions.selectElement(formState.uuid));
+          // Remove the active element and stay with one inactive item
+          dispatch(editorActions.removeElement(formState.uuid));
+        },
+      }
+    );
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  test("it renders active element", async () => {
+    const extension = extensionFactory();
+    const formState = formStateFactory();
+    const rendered = render(
+      <InstalledEntry extension={extension} recipes={[]} isAvailable />,
+      {
+        initialValues: formState,
+        setupRedux(dispatch) {
+          dispatch(authActions.setAuth(authStateFactory()));
+          // The addElement also sets the active element
+          dispatch(editorActions.addElement(formState));
         },
       }
     );

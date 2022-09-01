@@ -69,11 +69,7 @@ function arrangeElements({
     if (extension._recipe) {
       const recipeId = extension._recipe.id;
       if (elementsByRecipeId.has(recipeId)) {
-        const recipeElements = elementsByRecipeId.get(recipeId);
-        elementsByRecipeId.set(
-          recipeId,
-          sortBy([extension, ...recipeElements], (element) => element.label)
-        );
+        elementsByRecipeId.get(recipeId).push(extension);
       } else {
         elementsByRecipeId.set(recipeId, [extension]);
       }
@@ -86,17 +82,19 @@ function arrangeElements({
     if (element.recipe) {
       const recipeId = element.recipe.id;
       if (elementsByRecipeId.has(recipeId)) {
-        const recipeElements = elementsByRecipeId.get(recipeId);
-        elementsByRecipeId.set(
-          recipeId,
-          sortBy([element, ...recipeElements], (element) => element.label)
-        );
+        elementsByRecipeId.get(recipeId).push(element);
       } else {
         elementsByRecipeId.set(recipeId, [element]);
       }
     } else {
       orphanedElements.push(element);
     }
+  }
+
+  for (const elements of elementsByRecipeId.values()) {
+    elements.sort((a, b) =>
+      lowerCase(a.label).localeCompare(lowerCase(b.label))
+    );
   }
 
   const sortedElements = sortBy(
