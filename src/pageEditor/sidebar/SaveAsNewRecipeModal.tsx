@@ -19,11 +19,17 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { Button, Modal } from "react-bootstrap";
-import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveRecipeId,
+  selectEditorModalVisibilities,
+} from "@/pageEditor/slices/editorSelectors";
 import { useGetRecipesQuery } from "@/services/api";
 import LoadingDataModal from "@/pageEditor/panes/save/LoadingDataModal";
 
-const SaveAsNewRecipeModal: React.VFC = () => {
+const SaveAsNewRecipeModal: React.FC = () => {
+  const { isSaveAsNewRecipeModalVisible: show } = useSelector(
+    selectEditorModalVisibilities
+  );
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const { data: recipes, isLoading } = useGetRecipesQuery();
   const recipeName =
@@ -45,7 +51,7 @@ const SaveAsNewRecipeModal: React.VFC = () => {
   }
 
   return (
-    <Modal show onHide={hideModal}>
+    <Modal show={show} onHide={hideModal}>
       <Modal.Header closeButton>
         <Modal.Title>Save as new blueprint?</Modal.Title>
       </Modal.Header>
