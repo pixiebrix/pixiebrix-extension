@@ -15,25 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Init rollbar early so we get error reporting on the other initialization
-import "@/telemetry/reportUncaughtErrors";
+import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
+import React from "react";
+import AddToRecipeModal from "./sidebar/AddToRecipeModal";
+import CreateRecipeModal from "./sidebar/CreateRecipeModal";
+import RemoveFromRecipeModal from "./sidebar/RemoveFromRecipeModal";
+import SaveAsNewRecipeModal from "./sidebar/SaveAsNewRecipeModal";
 
-// We don't use native, full-page-reload form submissions
-// eslint-disable-next-line import/no-unassigned-import -- Auto-initialization
-import "@/utils/preventNativeFormSubmission";
+const Modals: React.FunctionComponent = () => (
+  <>
+    <AddToRecipeModal />
+    <RemoveFromRecipeModal />
+    <SaveAsNewRecipeModal />
+    <CreateRecipeModal />
+    <AddBlockModal />
+  </>
+);
 
-// Handles common HTTP errors
-import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
-
-enrichAxiosErrors();
-
-// https://webpack.js.org/guides/public-path/#on-the-fly
-__webpack_public_path__ = chrome.runtime.getURL("/");
-
-// @ts-expect-error For debugging only
-globalThis.$ = $;
-
-if (!("browser" in globalThis)) {
-  // @ts-expect-error For debugging only
-  globalThis.browser = browser;
-}
+export default Modals;

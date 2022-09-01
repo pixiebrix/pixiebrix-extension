@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import {
   selectActiveElement,
+  selectEditorModalVisibilities,
   selectInstalledRecipeMetadatas,
 } from "@/pageEditor/slices/editorSelectors";
 import { RecipeMetadata, RegistryId } from "@/core";
@@ -55,7 +56,10 @@ const formStateSchema = object({
   moveOrCopy: string().oneOf(["move", "copy"]).required(),
 });
 
-const AddToRecipeModal: React.VFC = () => {
+const AddToRecipeModal: React.FC = () => {
+  const { isAddToRecipeModalVisible: show } = useSelector(
+    selectEditorModalVisibilities
+  );
   const recipeMetadatas = useSelector(selectInstalledRecipeMetadatas);
   const activeElement = useSelector(selectActiveElement);
   const removeExtension = useRemoveExtension();
@@ -75,60 +79,51 @@ const AddToRecipeModal: React.VFC = () => {
     dispatch(editorActions.hideModal());
   }, [dispatch]);
 
-  const onSubmit = useCallback<OnSubmit<FormState>>(
-    async ({ recipeId, moveOrCopy }, helpers) => {
-      const keepLocalCopy = moveOrCopy === "copy";
+  const onSubmit: OnSubmit<FormState> = async (
+    { recipeId, moveOrCopy },
+    helpers
+  ) => {
+    const keepLocalCopy = moveOrCopy === "copy";
 
-      if (recipeId === NEW_RECIPE_ID) {
-        dispatch(editorActions.transitionAddToCreateRecipeModal(keepLocalCopy));
+    if (recipeId === NEW_RECIPE_ID) {
+      dispatch(editorActions.transitionAddToCreateRecipeModal(keepLocalCopy));
+      return;
+    }
+
+    // eslint-disable-next-line security/detect-object-injection -- recipe id is from select options
+    const recipeMetadata = recipeMetadataById[recipeId];
+
+    try {
+      const elementId = activeElement.uuid;
+      dispatch(
+        editorActions.addElementToRecipe({
+          elementId,
+          recipeMetadata,
+          keepLocalCopy,
+        })
+      );
+      if (!keepLocalCopy) {
+        await removeExtension({
+          extensionId: elementId,
+          shouldShowConfirmation: false,
+        });
+      }
+
+      hideModal();
+    } catch (error: unknown) {
+      if (isSingleObjectBadRequestError(error) && error.response.data.config) {
+        helpers.setStatus(error.response.data.config);
         return;
       }
 
-      // eslint-disable-next-line security/detect-object-injection -- recipe id is from select options
-      const recipeMetadata = recipeMetadataById[recipeId];
-
-      try {
-        const elementId = activeElement.uuid;
-        dispatch(
-          editorActions.addElementToRecipe({
-            elementId,
-            recipeMetadata,
-            keepLocalCopy,
-          })
-        );
-        if (!keepLocalCopy) {
-          await removeExtension({
-            extensionId: elementId,
-            shouldShowConfirmation: false,
-          });
-        }
-
-        hideModal();
-      } catch (error: unknown) {
-        if (
-          isSingleObjectBadRequestError(error) &&
-          error.response.data.config
-        ) {
-          helpers.setStatus(error.response.data.config);
-          return;
-        }
-
-        notify.error({
-          message: "Problem adding extension to blueprint",
-          error,
-        });
-      } finally {
-        helpers.setSubmitting(false);
-      }
-    },
-    [
-      activeElement.uuid,
-      dispatch,
-      hideModal,
-      recipeMetadataById,
-      removeExtension,
-    ]
-  );
+      notify.error({
+        message: "Problem adding extension to blueprint",
+        error,
+      });
+    } finally {
+      helpers.setSubmitting(false);
+    }
+  };
 
   const selectOptions = [
     { label: "➕ Create new blueprint...", value: NEW_RECIPE_ID },
@@ -189,7 +184,7 @@ const AddToRecipeModal: React.VFC = () => {
   );
 
   return (
-    <Modal show onHide={hideModal}>
+    <Modal show={show} onHide={hideModal}>
       <Modal.Header closeButton>
         <Modal.Title>
           Add <em>{activeElement?.label}</em> to a blueprint

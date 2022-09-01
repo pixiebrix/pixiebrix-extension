@@ -38,18 +38,13 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { cancelSelect } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import { selectEditorModalVisibilities } from "@/pageEditor/slices/editorSelectors";
 import RecipePane from "@/pageEditor/panes/RecipePane";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
 import { RootState } from "@/pageEditor/pageEditorTypes";
-import AddToRecipeModal from "@/pageEditor/sidebar/modals/AddToRecipeModal";
-import RemoveFromRecipeModal from "@/pageEditor/sidebar/modals/RemoveFromRecipeModal";
-import CreateRecipeModal from "@/pageEditor/sidebar/modals/CreateRecipeModal";
-import SaveAsNewRecipeModal from "@/pageEditor/sidebar/modals/SaveAsNewRecipeModal";
 import useFlags from "@/hooks/useFlags";
 import RestrictedPane from "@/pageEditor/panes/RestrictedPane";
-import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
+import Modals from "./Modals";
 
 const selectEditor = ({ editor }: RootState) => editor;
 
@@ -95,13 +90,6 @@ const Editor: React.FunctionComponent = () => {
     installed,
     elements
   );
-
-  const {
-    isAddToRecipeModalVisible,
-    isRemoveFromRecipeModalVisible,
-    isSaveAsNewRecipeModalVisible,
-    isCreateRecipeModalVisible,
-  } = useSelector(selectEditorModalVisibilities);
 
   const body = useMemo(() => {
     if (restrict("page-editor")) {
@@ -179,21 +167,7 @@ const Editor: React.FunctionComponent = () => {
         {body}
       </div>
 
-      {/*
-        TODO:
-        Refactoring - Controlling visibility this way breaks the hide
-        animation of the modals. We should move visibility control to the
-        show prop on the Bootstrap Modal inside these components instead.
-      */}
-      {isAddToRecipeModalVisible && <AddToRecipeModal />}
-
-      {isRemoveFromRecipeModalVisible && <RemoveFromRecipeModal />}
-
-      {isSaveAsNewRecipeModalVisible && <SaveAsNewRecipeModal />}
-
-      {isCreateRecipeModalVisible && <CreateRecipeModal />}
-
-      <AddBlockModal />
+      <Modals />
     </>
   );
 };
