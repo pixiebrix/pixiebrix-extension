@@ -15,60 +15,76 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./DefaultPanel.module.scss";
+
 import React from "react";
 import { useSelector } from "react-redux";
-import marketplaceImage from "@img/marketplace.svg";
 import workshopImage from "@img/workshop.svg";
 import { Col, Container, Row } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { selectExtensions } from "@/store/extensionsSelectors";
+import { isMac } from "@/utils";
 
 export const OnboardingContent: React.FunctionComponent = () => (
-  <Container>
-    <Row className="mt-4">
+  <Container className={styles.root}>
+    <Row className={styles.sidebarRow}>
       <Col>
-        <h4 className="display-6">Activate an Official Blueprint</h4>
+        <img
+          src={workshopImage}
+          alt="Person with a ruler standing next to a computer monitor"
+          width={300}
+        />
+      </Col>
+    </Row>
+
+    <Row className={styles.sidebarRow}>
+      <Col>
+        <h4 className={styles.callout}>Get started with PixieBrix</h4>
         <p>
-          <span className="text-primary">
-            The easiest way to start using PixieBrix!
+          Go to the PixieBrix tab via the <strong>Chrome Dev Tools</strong>
+        </p>
+        <p>
+          <span className={styles.keyboardShortcut}>
+            {isMac() ? <>&#8984; + Option + C</> : <>Ctrl + Shift + C</>}
           </span>{" "}
-          Activate a pre-made blueprint from the Public Marketplace.
+          or
+          <span className={styles.keyboardShortcut}>F12</span>
         </p>
-        <a
-          className="btn btn-info"
-          href="https://www.pixiebrix.com/marketplace/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Open Marketplace&nbsp;
-          <FontAwesomeIcon icon={faExternalLinkAlt} />
-        </a>
       </Col>
     </Row>
 
-    <Row className="mt-4">
+    <Row className={styles.sidebarRowWithDivider}>
       <Col>
-        <h4 className="display-6">Create your Own</h4>
+        <h4 className={styles.tinyCallout}>Need more help?</h4>
         <p>
-          Follow the Quick Start Guide to start creating your own bricks in
-          minutes.
+          Visit the{" "}
+          <a
+            href="https://docs.pixiebrix.com/quick-start-guide"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Quick Start Guide
+          </a>{" "}
+          or ask questions in the{" "}
+          <a
+            href="https://docs.pixiebrix.com/quick-start-guide"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Slack Community
+          </a>
+          .{" "}
         </p>
-        <a
-          className="btn btn-info"
-          href="https://docs.pixiebrix.com/quick-start-guide"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Open Quick Start Guide&nbsp;
-          <FontAwesomeIcon icon={faExternalLinkAlt} />
-        </a>
-      </Col>
-    </Row>
-
-    <Row>
-      <Col className="text-center">
-        <img src={marketplaceImage} alt="Marketplace" width={300} />
+        <p>
+          Visit the{" "}
+          <a
+            href="https://www.pixiebrix.com/marketplace/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            PixieBrix Marketplace
+          </a>{" "}
+          for ideas.
+        </p>
       </Col>
     </Row>
   </Container>
