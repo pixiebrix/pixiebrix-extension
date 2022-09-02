@@ -15,25 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "@/vendors/theme/app/app.scss";
-import "@/vendors/overrides.scss";
-import "./options.scss";
+/* Do not use `registerMethod` in this file */
+import { getNotifier } from "webext-messenger";
 
-import "@/extensionContext";
-import "@/development/darkMode";
-
-import { render } from "react-dom";
-import React from "react";
-import App from "@/options/App";
-import initGoogle from "@/contrib/google/initGoogle";
-import { initToaster } from "@/utils/notify";
-import registerMessenger from "@/options/messenger/registration";
-
-function init(): void {
-  render(<App />, document.querySelector("#container"));
-}
-
-registerMessenger();
-initGoogle();
-initToaster();
-init();
+export const notify = {
+  info: getNotifier("NOTIFY_INFO"),
+  error: getNotifier("NOTIFY_ERROR"),
+  success: getNotifier("NOTIFY_SUCCESS"),
+};
