@@ -17,7 +17,10 @@
 
 import { compact, identity, sortBy, uniq } from "lodash";
 import { getCssSelector } from "css-selector-generator";
-import { CssSelectorType } from "css-selector-generator/types/types";
+import {
+  CssSelectorType,
+  CssSelectorMatch,
+} from "css-selector-generator/types/types";
 import { $safeFind } from "@/helpers";
 import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";
 import { guessUsefulness, isRandomString } from "@/utils/detectRandomString";
@@ -35,29 +38,42 @@ export const BUTTON_TAGS: string[] = [
 ];
 const MENU_TAGS = ["ul", "tbody"];
 
-export const SALESFORCE_SELECTOR_HINTS = {
-  BAD_PATTERNS: [
-    getAttributeSelectorRegex(
-      // Salesforce Aura component tracking
-      "data-aura-rendered-by"
-    ),
+export interface SITE_SELECTOR_HINT {
+  SITE_NAME: string;
+  siteValidator: (element?: HTMLElement) => boolean;
+  BAD_PATTERNS: CssSelectorMatch[];
+  UNIQUE_ATTRIBUTES: string[];
+  STABLE_ANCHORS: CssSelectorMatch[];
+}
 
-    /#\\+\d+ \d+\\+:0/,
-    /#\w+[_-]\d+/,
-    /.*\.hover.*/,
-    /.*\.not-selected.*/,
-    /^\[name='leftsidebar'] */,
-  ],
-  UNIQUE_ATTRIBUTES: ["data-component-id"],
-  STABLE_ANCHORS: [
-    ".consoleRelatedRecord",
-    /\.consoleRelatedRecord\d+/,
-    ".navexWorkspaceManager",
-    ".active",
-    ".oneConsoleTab",
-    ".tabContent",
-  ],
-};
+const SELECTOR_HINTS: SITE_SELECTOR_HINT[] = [
+  {
+    SITE_NAME: "Salesforce",
+    siteValidator: (element) =>
+      $(element).closest("[data-aura-rendered-by]").length > 0,
+    BAD_PATTERNS: [
+      getAttributeSelectorRegex(
+        // Salesforce Aura component tracking
+        "data-aura-rendered-by"
+      ),
+
+      /#\\+\d+ \d+\\+:0/,
+      /#\w+[_-]\d+/,
+      /.*\.hover.*/,
+      /.*\.not-selected.*/,
+      /^\[name='leftsidebar'] */,
+    ],
+    UNIQUE_ATTRIBUTES: ["data-component-id"],
+    STABLE_ANCHORS: [
+      ".consoleRelatedRecord",
+      /\.consoleRelatedRecord\d+/,
+      ".navexWorkspaceManager",
+      ".active",
+      ".oneConsoleTab",
+      ".tabContent",
+    ],
+  },
+];
 
 export const UNIQUE_ATTRIBUTES: string[] = [
   "id",
@@ -70,7 +86,8 @@ export const UNIQUE_ATTRIBUTES: string[] = [
   "data-test",
   "data-test-id",
 
-  ...SALESFORCE_SELECTOR_HINTS.UNIQUE_ATTRIBUTES,
+  // Register UNIQUE_ATTRIBUTES from all hints because we can't check site rules in this usage.
+  ...SELECTOR_HINTS.flatMap((hint) => hint.UNIQUE_ATTRIBUTES),
 ];
 
 // eslint-disable-next-line security/detect-non-literal-regexp -- Not user-provided
@@ -90,9 +107,6 @@ const UNSTABLE_SELECTORS = [
   /^\[data-v-/,
 
   getAttributeSelectorRegex(
-    // Salesforce Aura component tracking
-    "data-aura-rendered-by",
-
     // Our attributes
     EXTENSION_POINT_DATA_ATTR,
     PIXIEBRIX_DATA_ATTR,
@@ -100,7 +114,27 @@ const UNSTABLE_SELECTORS = [
   ),
 ];
 
-function getUniqueAttributeSelectors(element: HTMLElement): string[] {
+function getSiteSelectorHint(element: HTMLElement): SITE_SELECTOR_HINT {
+  let siteSelectorHint = SELECTOR_HINTS.find((hint) =>
+    hint.siteValidator(element)
+  );
+  if (!siteSelectorHint) {
+    siteSelectorHint = {
+      SITE_NAME: "",
+      siteValidator: () => false,
+      BAD_PATTERNS: [],
+      UNIQUE_ATTRIBUTES: [],
+      STABLE_ANCHORS: [],
+    };
+  }
+
+  return siteSelectorHint;
+}
+
+function getUniqueAttributeSelectors(
+  element: HTMLElement,
+  siteSelectorHint: SITE_SELECTOR_HINT
+): string[] {
   return UNIQUE_ATTRIBUTES.map((attribute) =>
     getAttributeSelector(attribute, element.getAttribute(attribute))
   ).filter(
@@ -108,7 +142,7 @@ function getUniqueAttributeSelectors(element: HTMLElement): string[] {
       !matchesAnyPattern(selector, [
         ...UNSTABLE_SELECTORS,
         // We need to include salesforce BAD_PATTERNS here as well since this function is used to get inferSelectorsIncludingStableAncestors
-        ...SALESFORCE_SELECTOR_HINTS.BAD_PATTERNS,
+        ...siteSelectorHint.BAD_PATTERNS,
       ])
   );
 }
@@ -244,10 +278,11 @@ export function safeCssSelector(
   }: SafeCssSelectorOptions = {}
 ): string {
   // https://github.com/fczbkk/css-selector-generator
+  const siteSelectorHint = getSiteSelectorHint(element);
 
   const blacklist = [
     ...UNSTABLE_SELECTORS,
-    ...SALESFORCE_SELECTOR_HINTS.BAD_PATTERNS,
+    ...siteSelectorHint.BAD_PATTERNS,
 
     excludeRandomClasses
       ? (selector: string) => {
@@ -263,7 +298,7 @@ export function safeCssSelector(
   ];
   const whitelist = [
     getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES),
-    ...SALESFORCE_SELECTOR_HINTS.STABLE_ANCHORS,
+    ...siteSelectorHint.STABLE_ANCHORS,
   ];
 
   const selector = getCssSelector(element, {
@@ -297,13 +332,14 @@ export function inferSelectorsIncludingStableAncestors(
   root?: Element,
   excludeRandomClasses?: boolean
 ): string[] {
+  const siteSelectorHint = getSiteSelectorHint(element);
   const stableAncestors = findAncestorsWithIdLikeSelectors(
     element,
     root
   ).flatMap((stableAncestor) =>
     inferSelectors(element, stableAncestor, excludeRandomClasses).flatMap(
       (selector) =>
-        getUniqueAttributeSelectors(stableAncestor)
+        getUniqueAttributeSelectors(stableAncestor, siteSelectorHint)
           .filter(Boolean)
           .map((stableAttributeSelector) =>
             [stableAttributeSelector, selector].join(" ")
