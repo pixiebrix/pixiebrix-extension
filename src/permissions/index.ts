@@ -25,6 +25,7 @@ import { mergePermissions, requestPermissions } from "@/utils/permissions";
 import { resolveDefinitions } from "@/registry/internal";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { locateWithRetry } from "@/services/serviceUtils";
+import { expectContext } from "@/utils/expectContext";
 
 // Copied from the permissions section of manifest.json
 const MANDATORY_PERMISSIONS = new Set([
@@ -118,6 +119,8 @@ export async function collectPermissions(
 export async function serviceOriginPermissions(
   dependency: ServiceAuthPair
 ): Promise<Permissions.Permissions> {
+  expectContext("extension");
+
   if (dependency.id === PIXIEBRIX_SERVICE_ID) {
     // Already included in the required permissions for the extension
     return { origins: [] };
