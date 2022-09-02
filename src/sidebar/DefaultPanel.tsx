@@ -38,11 +38,13 @@ export const OnboardingContent: React.FunctionComponent = () => (
           Go to the PixieBrix tab via the <strong>Chrome Dev Tools</strong>
         </p>
         <p>
-          <span className={styles.keyboardShortcut}>
-            {isMac() ? <>&#8984; + Option + C</> : <>Ctrl + Shift + C</>}
-          </span>{" "}
+          {isMac() ? (
+            <kbd>&#8984; + Option + C</kbd>
+          ) : (
+            <kbd>Ctrl + Shift + C</kbd>
+          )}
           or
-          <span className={styles.keyboardShortcut}>F12</span>
+          <kbd>F12</kbd>
         </p>
       </Col>
     </Row>
