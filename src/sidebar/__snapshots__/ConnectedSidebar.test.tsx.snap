@@ -16,7 +16,7 @@ exports[`SidebarApp renders 1`] = `
             class="col"
           >
             <img
-              alt="Person with a ruler standing next to a computer monitor"
+              alt=""
               src="test-file-stub"
               width="300"
             />

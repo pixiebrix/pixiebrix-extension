@@ -27,11 +27,7 @@ export const OnboardingContent: React.FunctionComponent = () => (
   <Container className={styles.root}>
     <Row className={styles.sidebarRow}>
       <Col>
-        <img
-          src={workshopImage}
-          alt="Person with a ruler standing next to a computer monitor"
-          width={300}
-        />
+        <img src={workshopImage} alt="" width={300} />
       </Col>
     </Row>
 
