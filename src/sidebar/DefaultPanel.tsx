@@ -15,60 +15,73 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./DefaultPanel.module.scss";
+
 import React from "react";
-import { useSelector } from "react-redux";
-import marketplaceImage from "@img/marketplace.svg";
 import workshopImage from "@img/workshop.svg";
 import { Col, Container, Row } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { isMac } from "@/utils";
+import useFlags from "@/hooks/useFlags";
 
 export const OnboardingContent: React.FunctionComponent = () => (
-  <Container>
-    <Row className="mt-4">
+  <Container className={styles.root}>
+    <Row className={styles.sidebarRow}>
       <Col>
-        <h4 className="display-6">Activate an Official Blueprint</h4>
-        <p>
-          <span className="text-primary">
-            The easiest way to start using PixieBrix!
-          </span>{" "}
-          Activate a pre-made blueprint from the Public Marketplace.
-        </p>
-        <a
-          className="btn btn-info"
-          href="https://www.pixiebrix.com/marketplace/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Open Marketplace&nbsp;
-          <FontAwesomeIcon icon={faExternalLinkAlt} />
-        </a>
+        <img src={workshopImage} alt="" width={300} />
       </Col>
     </Row>
 
-    <Row className="mt-4">
+    <Row className={styles.sidebarRow}>
       <Col>
-        <h4 className="display-6">Create your Own</h4>
+        <h4 className={styles.callout}>Get started with PixieBrix</h4>
         <p>
-          Follow the Quick Start Guide to start creating your own bricks in
-          minutes.
+          Go to the PixieBrix tab via the <strong>Chrome Dev Tools</strong>
         </p>
-        <a
-          className="btn btn-info"
-          href="https://docs.pixiebrix.com/quick-start-guide"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Open Quick Start Guide&nbsp;
-          <FontAwesomeIcon icon={faExternalLinkAlt} />
-        </a>
+        <p>
+          {isMac() ? (
+            <kbd>&#8984; + Option + C</kbd>
+          ) : (
+            <kbd>Ctrl + Shift + C</kbd>
+          )}
+          or
+          <kbd>F12</kbd>
+        </p>
       </Col>
     </Row>
 
-    <Row>
-      <Col className="text-center">
-        <img src={marketplaceImage} alt="Marketplace" width={300} />
+    <Row className={styles.sidebarRowWithDivider}>
+      <Col>
+        <h4 className={styles.tinyCallout}>Need more help?</h4>
+        <p>
+          Visit the{" "}
+          <a
+            href="https://docs.pixiebrix.com/quick-start-guide"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Quick Start Guide
+          </a>{" "}
+          or ask questions in the{" "}
+          <a
+            href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Slack Community
+          </a>
+          .{" "}
+        </p>
+        <p>
+          Visit the{" "}
+          <a
+            href="https://www.pixiebrix.com/marketplace/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            PixieBrix Marketplace
+          </a>{" "}
+          for ideas.
+        </p>
       </Col>
     </Row>
   </Container>
@@ -91,11 +104,11 @@ export const NoAvailablePanelsContent: React.FunctionComponent = () => (
 );
 
 const DefaultPanel: React.FunctionComponent = () => {
-  const extensions = useSelector(selectExtensions);
+  const { restrict } = useFlags();
 
   return (
     <div>
-      {extensions?.length > 0 ? (
+      {restrict("marketplace") ? (
         <NoAvailablePanelsContent />
       ) : (
         <OnboardingContent />
