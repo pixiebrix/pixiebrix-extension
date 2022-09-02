@@ -24,7 +24,6 @@ import { useGetMeQuery } from "@/services/api";
 import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
-import { MemoryRouter } from "react-router";
 import settingsSlice from "@/store/settingsSlice";
 
 function optionsStore(initialState?: any) {
@@ -52,11 +51,9 @@ describe("RequireAuth", () => {
 
     render(
       <Provider store={optionsStore({ auth: { isLoggedIn: true } })}>
-        <MemoryRouter>
-          <RequireAuth LoginPage={MockLoginPage}>
-            Only authenticated users should see me!
-          </RequireAuth>
-        </MemoryRouter>
+        <RequireAuth LoginPage={MockLoginPage}>
+          Only authenticated users should see me!
+        </RequireAuth>
       </Provider>
     );
 
@@ -73,11 +70,9 @@ describe("RequireAuth", () => {
 
     render(
       <Provider store={optionsStore({ auth: { isLoggedIn: true } })}>
-        <MemoryRouter>
-          <RequireAuth LoginPage={MockLoginPage}>
-            Only authenticated users should see me!
-          </RequireAuth>
-        </MemoryRouter>
+        <RequireAuth LoginPage={MockLoginPage}>
+          Only authenticated users should see me!
+        </RequireAuth>
       </Provider>
     );
 
@@ -95,11 +90,9 @@ describe("RequireAuth", () => {
 
     render(
       <Provider store={optionsStore()}>
-        <MemoryRouter>
-          <RequireAuth LoginPage={MockLoginPage}>
-            Only authenticated users should see me!
-          </RequireAuth>
-        </MemoryRouter>
+        <RequireAuth LoginPage={MockLoginPage}>
+          Only authenticated users should see me!
+        </RequireAuth>
       </Provider>
     );
 
