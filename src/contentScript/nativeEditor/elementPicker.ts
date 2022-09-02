@@ -293,6 +293,11 @@ export async function selectElement({
       const element = requireSingleElement(selector);
 
       // We're using pageScript getElementInfo only when specific framework is used.
+
+      // On Salesforce we were running into an issue where certain selectors weren't finding any elements when
+      // run from the pageScript. It might have something to do with the custom web components Salesforce uses?
+      // In any case, the pageScript is not necessary if framework is not specified, because selectElement
+      // only needs to return the selector alternatives.
       if (framework) {
         return pageScript.getElementInfo({
           selector,

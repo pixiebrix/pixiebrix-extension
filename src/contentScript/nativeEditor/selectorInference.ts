@@ -38,16 +38,24 @@ export const BUTTON_TAGS: string[] = [
 ];
 const MENU_TAGS = ["ul", "tbody"];
 
-export interface SiteSelectorHint {
+export type SiteSelectorHint = {
+  /**
+   * Name for the rule hint-set.
+   */
   siteName: string;
+  /**
+   * Return true if the these hints apply to the current site.
+   */
   siteValidator: (element?: HTMLElement) => boolean;
   badPatterns: CssSelectorMatch[];
   uniqueAttributes: string[];
   stableAnchors: CssSelectorMatch[];
-}
+};
 
 const SELECTOR_HINTS: SiteSelectorHint[] = [
   {
+    // Matches all sites using Salesforce's Lightning framework
+    // https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/intro_components.htm
     siteName: "Salesforce",
     siteValidator: (element) =>
       $(element).closest("[data-aura-rendered-by]").length > 0,
