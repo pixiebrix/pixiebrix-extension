@@ -18,6 +18,7 @@
 import Overlay from "@/vendors/Overlay";
 import {
   findContainer,
+  inferSelectorsIncludingStableAncestors,
   safeCssSelector,
 } from "@/contentScript/nativeEditor/selectorInference";
 import { Framework } from "@/messaging/constants";
@@ -289,13 +290,29 @@ export async function selectElement({
       console.debug(`Generated selector: ${selector}`);
 
       // Double-check we have a valid selector
-      requireSingleElement(selector);
+      const element = requireSingleElement(selector);
 
-      return pageScript.getElementInfo({
+      // We're using pageScript getElementInfo only when specific framework is used.
+      if (framework) {
+        return pageScript.getElementInfo({
+          selector,
+          framework,
+          traverseUp,
+        });
+      }
+
+      const inferredSelectors = uniq([
         selector,
-        framework,
-        traverseUp,
-      });
+        ...inferSelectorsIncludingStableAncestors(element),
+      ]);
+
+      return {
+        selectors: inferredSelectors,
+        framework: null,
+        hasData: false,
+        tagName: element.tagName,
+        parent: null,
+      };
     }
 
     default: {

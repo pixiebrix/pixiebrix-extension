@@ -35,11 +35,29 @@ export const BUTTON_TAGS: string[] = [
 ];
 const MENU_TAGS = ["ul", "tbody"];
 
-export const SALESFORCE_UNIQUE_ATTRIBUTES: string[] = [
-  "data-aura-rendered-by",
-  "data-component-id",
-  "data-aura-class",
-];
+export const SALESFORCE_SELECTOR_HINTS = {
+  BAD_PATTERNS: [
+    getAttributeSelectorRegex(
+      // Salesforce Aura component tracking
+      "data-aura-rendered-by"
+    ),
+
+    /#\\+\d+ \d+\\+:0/,
+    /#\w+[_-]\d+/,
+    /.*\.hover.*/,
+    /.*\.not-selected.*/,
+    /^\[name='leftsidebar'] */,
+  ],
+  UNIQUE_ATTRIBUTES: ["data-component-id"],
+  STABLE_ANCHORS: [
+    ".consoleRelatedRecord",
+    /\.consoleRelatedRecord\d+/,
+    ".navexWorkspaceManager",
+    ".active",
+    ".oneConsoleTab",
+    ".tabContent",
+  ],
+};
 
 export const UNIQUE_ATTRIBUTES: string[] = [
   "id",
@@ -51,8 +69,8 @@ export const UNIQUE_ATTRIBUTES: string[] = [
   "data-id",
   "data-test",
   "data-test-id",
-  // Salesforce good selector attributes
-  ...SALESFORCE_UNIQUE_ATTRIBUTES,
+
+  ...SALESFORCE_SELECTOR_HINTS.UNIQUE_ATTRIBUTES,
 ];
 
 // eslint-disable-next-line security/detect-non-literal-regexp -- Not user-provided
@@ -85,7 +103,14 @@ const UNSTABLE_SELECTORS = [
 function getUniqueAttributeSelectors(element: HTMLElement): string[] {
   return UNIQUE_ATTRIBUTES.map((attribute) =>
     getAttributeSelector(attribute, element.getAttribute(attribute))
-  ).filter((selector) => !matchesAnyPattern(selector, UNSTABLE_SELECTORS));
+  ).filter(
+    (selector) =>
+      !matchesAnyPattern(selector, [
+        ...UNSTABLE_SELECTORS,
+        // We need to include salesforce BAD_PATTERNS here as well since this function is used to get inferSelectorsIncludingStableAncestors
+        ...SALESFORCE_SELECTOR_HINTS.BAD_PATTERNS,
+      ])
+  );
 }
 
 /** ID selectors and certain other attributes can uniquely identify items */
@@ -220,23 +245,30 @@ export function safeCssSelector(
 ): string {
   // https://github.com/fczbkk/css-selector-generator
 
-  const selector = getCssSelector(element, {
-    blacklist: [
-      ...UNSTABLE_SELECTORS,
+  const blacklist = [
+    ...UNSTABLE_SELECTORS,
+    ...SALESFORCE_SELECTOR_HINTS.BAD_PATTERNS,
 
-      excludeRandomClasses
-        ? (selector) => {
-            if (!selector.startsWith(".")) {
-              return false;
-            }
-
-            const usefulness = guessUsefulness(selector);
-            console.debug("css-selector-generator:  ", usefulness);
-            return usefulness.isRandom;
+    excludeRandomClasses
+      ? (selector: string) => {
+          if (!selector.startsWith(".")) {
+            return false;
           }
-        : undefined,
-    ],
-    whitelist: [getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES)],
+
+          const usefulness = guessUsefulness(selector);
+          console.debug("css-selector-generator:  ", usefulness);
+          return usefulness.isRandom;
+        }
+      : undefined,
+  ];
+  const whitelist = [
+    getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES),
+    ...SALESFORCE_SELECTOR_HINTS.STABLE_ANCHORS,
+  ];
+
+  const selector = getCssSelector(element, {
+    blacklist,
+    whitelist,
     selectors,
     combineWithinSelector: true,
     combineBetweenSelectors: true,
@@ -497,7 +529,7 @@ function getSelectorTree(target: HTMLElement): string[] {
     .parentsUntil("body")
     .addBack()
     .get()
-    .map((ancestor) => getElementSelector(ancestor));
+    .map((ancestor: Element) => getElementSelector(ancestor));
 }
 
 /**
