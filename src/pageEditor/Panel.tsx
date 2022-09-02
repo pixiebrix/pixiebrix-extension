@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { HashRouter as Router } from "react-router-dom";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { PageEditorTabContext, useDevConnection } from "@/pageEditor/context";
 import Editor from "@/pageEditor/Editor";
@@ -55,12 +54,10 @@ const Panel: React.VoidFunctionComponent = () => {
         <PageEditorTabContext.Provider value={context}>
           <ModalProvider>
             <ErrorBoundary>
-              <Router>
-                <ErrorBanner />
-                <RequireAuth LoginPage={LoginCard}>
-                  <Editor />
-                </RequireAuth>
-              </Router>
+              <ErrorBanner />
+              <RequireAuth LoginPage={LoginCard}>
+                <Editor />
+              </RequireAuth>
             </ErrorBoundary>
           </ModalProvider>
         </PageEditorTabContext.Provider>

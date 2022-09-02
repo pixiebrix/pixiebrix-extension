@@ -96,10 +96,10 @@ export async function getAuthHeaders(): Promise<UnknownObject | null> {
 
   if (partnerAuth?.token) {
     return {
-      ...partnerAuth?.extraHeaders,
+      ...partnerAuth.extraHeaders,
       // Put Authorization second to avoid overriding Authorization header. (Is defensive for now, currently
       // the extra headers are hard-coded)
-      Authorization: `Bearer ${partnerAuth?.token}`,
+      Authorization: `Bearer ${partnerAuth.token}`,
     };
   }
 
