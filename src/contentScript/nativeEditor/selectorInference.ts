@@ -38,20 +38,20 @@ export const BUTTON_TAGS: string[] = [
 ];
 const MENU_TAGS = ["ul", "tbody"];
 
-export interface SITE_SELECTOR_HINT {
-  SITE_NAME: string;
+export interface SiteSelectorHint {
+  siteName: string;
   siteValidator: (element?: HTMLElement) => boolean;
-  BAD_PATTERNS: CssSelectorMatch[];
-  UNIQUE_ATTRIBUTES: string[];
-  STABLE_ANCHORS: CssSelectorMatch[];
+  badPatterns: CssSelectorMatch[];
+  uniqueAttributes: string[];
+  stableAnchors: CssSelectorMatch[];
 }
 
-const SELECTOR_HINTS: SITE_SELECTOR_HINT[] = [
+const SELECTOR_HINTS: SiteSelectorHint[] = [
   {
-    SITE_NAME: "Salesforce",
+    siteName: "Salesforce",
     siteValidator: (element) =>
       $(element).closest("[data-aura-rendered-by]").length > 0,
-    BAD_PATTERNS: [
+    badPatterns: [
       getAttributeSelectorRegex(
         // Salesforce Aura component tracking
         "data-aura-rendered-by"
@@ -63,8 +63,8 @@ const SELECTOR_HINTS: SITE_SELECTOR_HINT[] = [
       /.*\.not-selected.*/,
       /^\[name='leftsidebar'] */,
     ],
-    UNIQUE_ATTRIBUTES: ["data-component-id"],
-    STABLE_ANCHORS: [
+    uniqueAttributes: ["data-component-id"],
+    stableAnchors: [
       ".consoleRelatedRecord",
       /\.consoleRelatedRecord\d+/,
       ".navexWorkspaceManager",
@@ -87,7 +87,7 @@ export const UNIQUE_ATTRIBUTES: string[] = [
   "data-test-id",
 
   // Register UNIQUE_ATTRIBUTES from all hints because we can't check site rules in this usage.
-  ...SELECTOR_HINTS.flatMap((hint) => hint.UNIQUE_ATTRIBUTES),
+  ...SELECTOR_HINTS.flatMap((hint) => hint.uniqueAttributes),
 ];
 
 // eslint-disable-next-line security/detect-non-literal-regexp -- Not user-provided
@@ -114,17 +114,17 @@ const UNSTABLE_SELECTORS = [
   ),
 ];
 
-function getSiteSelectorHint(element: HTMLElement): SITE_SELECTOR_HINT {
+function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {
   let siteSelectorHint = SELECTOR_HINTS.find((hint) =>
     hint.siteValidator(element)
   );
   if (!siteSelectorHint) {
     siteSelectorHint = {
-      SITE_NAME: "",
+      siteName: "",
       siteValidator: () => false,
-      BAD_PATTERNS: [],
-      UNIQUE_ATTRIBUTES: [],
-      STABLE_ANCHORS: [],
+      badPatterns: [],
+      uniqueAttributes: [],
+      stableAnchors: [],
     };
   }
 
@@ -133,7 +133,7 @@ function getSiteSelectorHint(element: HTMLElement): SITE_SELECTOR_HINT {
 
 function getUniqueAttributeSelectors(
   element: HTMLElement,
-  siteSelectorHint: SITE_SELECTOR_HINT
+  siteSelectorHint: SiteSelectorHint
 ): string[] {
   return UNIQUE_ATTRIBUTES.map((attribute) =>
     getAttributeSelector(attribute, element.getAttribute(attribute))
@@ -142,7 +142,7 @@ function getUniqueAttributeSelectors(
       !matchesAnyPattern(selector, [
         ...UNSTABLE_SELECTORS,
         // We need to include salesforce BAD_PATTERNS here as well since this function is used to get inferSelectorsIncludingStableAncestors
-        ...siteSelectorHint.BAD_PATTERNS,
+        ...siteSelectorHint.badPatterns,
       ])
   );
 }
@@ -282,7 +282,7 @@ export function safeCssSelector(
 
   const blacklist = [
     ...UNSTABLE_SELECTORS,
-    ...siteSelectorHint.BAD_PATTERNS,
+    ...siteSelectorHint.badPatterns,
 
     excludeRandomClasses
       ? (selector: string) => {
@@ -298,7 +298,7 @@ export function safeCssSelector(
   ];
   const whitelist = [
     getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES),
-    ...siteSelectorHint.STABLE_ANCHORS,
+    ...siteSelectorHint.stableAnchors,
   ];
 
   const selector = getCssSelector(element, {
