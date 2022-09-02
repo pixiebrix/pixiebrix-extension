@@ -37,11 +37,10 @@ import { Me } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
 import { AxiosError } from "axios";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
-import { useRouteMatch } from "react-router";
 
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
-  LoginPage: React.VFC;
+  LoginPage: React.FC;
   /**
    * Ignore network errors. Set to 'false' to avoid prompting on login if there are intermittent network errors
    * or PixieBrix service degradation.
@@ -160,7 +159,9 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   LoginPage,
   ignoreApiError = false,
 }) => {
-  const matchSettings = useRouteMatch({ path: "/settings", exact: true });
+  // This is a very simplified version of what otherwise useRouteMatch from react-router would do.
+  // We don't want to pull the Router in the Page Editor app.
+  const isSettingsPage = location.hash.startsWith("#/settings");
 
   const {
     isAccountUnlinked,
@@ -176,7 +177,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     isLoading: isPartnerAuthLoading,
   } = useRequiredPartnerAuth();
 
-  if (matchSettings) {
+  if (isSettingsPage) {
     // Always let people see the settings page in order to fix broken settings
     return <>{children}</>;
   }

@@ -53,7 +53,7 @@ import groupListingsByTag from "@/components/addBlockModal/groupListingsByTag";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import {
   selectAddBlockLocation,
-  selectIsAddBlockModalVisible,
+  selectEditorModalVisibilities,
 } from "@/pageEditor/slices/editorSelectors";
 import { makeIsBlockAllowedForPipeline } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 import {
@@ -118,8 +118,10 @@ const slice = createSlice({
   },
 });
 
-const AddBlockModal: React.VFC = () => {
-  const show = useSelector(selectIsAddBlockModalVisible);
+const AddBlockModal: React.FC = () => {
+  const { isAddBlockModalVisible: show } = useSelector(
+    selectEditorModalVisibilities
+  );
   const [state, dispatch] = useReducer(slice.reducer, initialState);
 
   const gridRef = useRef<LazyGrid>();

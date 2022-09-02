@@ -15,16 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Do not use `registerMethod` in this file */
-import { getMethod } from "webext-messenger";
+import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
+import React from "react";
+import AddToRecipeModal from "./sidebar/AddToRecipeModal";
+import CreateRecipeModal from "./sidebar/CreateRecipeModal";
+import RemoveFromRecipeModal from "./sidebar/RemoveFromRecipeModal";
+import SaveAsNewRecipeModal from "./sidebar/SaveAsNewRecipeModal";
 
-const target = { tabId: "this", page: "/sidebar.html" } as const;
-const sidebarInThisTab = {
-  renderPanels: getMethod("SIDEBAR_RENDER_PANELS", target),
-  activatePanel: getMethod("SIDEBAR_ACTIVATE_PANEL", target),
-  showForm: getMethod("SIDEBAR_SHOW_FORM", target),
-  hideForm: getMethod("SIDEBAR_HIDE_FORM", target),
-  pingSidebar: getMethod("SIDEBAR_PING", target),
-};
+const Modals: React.FunctionComponent = () => (
+  <>
+    <AddToRecipeModal />
+    <RemoveFromRecipeModal />
+    <SaveAsNewRecipeModal />
+    <CreateRecipeModal />
+    <AddBlockModal />
+  </>
+);
 
-export default sidebarInThisTab;
+export default Modals;

@@ -24,8 +24,6 @@ import { Formik } from "formik";
 import Effect from "@/pageEditor/components/Effect";
 import ElementWizard from "@/pageEditor/ElementWizard";
 import useEditable from "@/pageEditor/hooks/useEditable";
-import SaveExtensionWizard from "./save/SaveExtensionWizard";
-import useSavingWizard from "./save/useSavingWizard";
 import { logActions } from "@/components/logViewer/logSlice";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
@@ -43,7 +41,6 @@ const EditorPaneContent: React.VoidFunctionComponent<{
 }> = ({ element }) => {
   const dispatch = useDispatch();
   const editable = useEditable();
-  const { isWizardOpen } = useSavingWizard();
 
   // XXX: anti-pattern: callback to update the redux store based on the formik state
   const syncReduxState = useDebouncedCallback(
@@ -70,7 +67,6 @@ const EditorPaneContent: React.VoidFunctionComponent<{
         delayMillis={CHANGE_DETECT_DELAY_MILLIS}
       />
       <ElementWizard element={element} editable={editable} />
-      {isWizardOpen && <SaveExtensionWizard />}
     </>
   );
 };
@@ -89,7 +85,7 @@ const EditorPane: React.VFC = () => {
           initialValues={activeElement}
           onSubmit={() => {
             console.error(
-              "Formik's submit should not be called to save an extension. Use 'saveElement' from 'useSavingWizard' instead."
+              "Formik's submit should not be called to save an extension."
             );
           }}
           // We're validating on blur instead of on change as a stop-gap measure to improve typing

@@ -15,15 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import reportError from "@/telemetry/reportError";
 import { ensureContentScript } from "@/background/util";
 import { Tabs } from "webextension-polyfill";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
 import { executeScript, isScriptableUrl } from "webext-content-scripts";
-import webextAlert from "@/background/webextAlert";
-import { isMac } from "@/utils";
 import pMemoize from "p-memoize";
 import webextAlert from "./webextAlert";
+import { isMac } from "@/utils";
 import { notify } from "@/options/messenger/api";
 
 const ERR_UNABLE_TO_OPEN =
@@ -32,43 +30,38 @@ const ERR_UNABLE_TO_OPEN =
 // The sidebar is always injected to into the top level frame
 const TOP_LEVEL_FRAME_ID = 0;
 
-async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
-  const url = String(tab.url);
+// Avoid triggering multiple requests at once and causing multiple error alerts.
+// This patterns "debounces" calls while the promise is pending:
+// https://github.com/sindresorhus/promise-fun/issues/15
+const toggleSidebar = pMemoize(_toggleSidebar, {
+  cache: false,
+});
 
-  const optionsPage = browser.runtime.getURL("options.html");
-
-  if (url.startsWith(optionsPage)) {
-    const keyboardShortcut = isMac() ? "Cmd+Opt+C" : "Ctrl+Shift+C";
-    webextAlert(
-      `Tip: If you want to create a new blueprint, first navigate to the page you want to modify, then open PixieBrix in DevTools (${keyboardShortcut}).`
-    );
-  }
-
-  if (!url.startsWith("http") || !isScriptableUrl(url)) {
+// Don't accept objects here as they're not easily memoizable
+async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
+  if (!tabUrl.startsWith("http") || !isScriptableUrl(tabUrl)) {
+    // Page not supported. Open the options page instead
     void browser.runtime.openOptionsPage();
     return;
   }
 
-  try {
-    await Promise.all([
-      // Toggle the sidebar every time it's run
-      executeScript({
-        tabId: tab.id,
-        files: ["browserActionInstantHandler.js"],
-      }),
+  // Load the raw toggle script first, then the content script. The browser executes them
+  // in order but we don't need to use `Promise.all` to await them at the same time as we
+  // want to catch each error separately.
+  const sidebarTogglePromise = executeScript({
+    tabId,
+    files: ["browserActionInstantHandler.js"],
+  });
+  const contentScriptPromise = ensureContentScript({
+    tabId,
+    frameId: TOP_LEVEL_FRAME_ID,
+  });
 
-      // Run the usual content script unless it's already loaded
-      ensureContentScript({ tabId: tab.id, frameId: TOP_LEVEL_FRAME_ID }),
-    ]);
-    await rehydrateSidebar({
-      tabId: tab.id,
-    });
+  try {
+    await sidebarTogglePromise;
   } catch (error) {
-    // We no longer `showErrorInOptions` because it may appear several seconds later
-    // https://github.com/pixiebrix/pixiebrix-extension/issues/4021
-    reportError(
-      new Error("Error opening sidebar via browser action", { cause: error })
-    );
+    webextAlert(ERR_UNABLE_TO_OPEN);
+    throw error;
   }
 
   // NOTE: at this point, the sidebar should already be visible on the page, even if not ready.
@@ -81,7 +74,18 @@ async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
 }
 
 async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
-  notify.info({ tabId: tab.id, page: "any" }, "hello");
+  const url = String(tab.url);
+
+  const optionsPage = browser.runtime.getURL("options.html");
+
+  if (url.startsWith(optionsPage)) {
+    const keyboardShortcut = isMac() ? "Cmd+Opt+C" : "Ctrl+Shift+C";
+    notify.info(
+      { tabId: tab.id, page: "any" },
+      `PixieBrix Tip 💜\n If you want to create a new blueprint, first navigate to the page you want to modify, then open PixieBrix in the DevTools (${keyboardShortcut}).`
+    );
+  }
+
   // The URL might not be available in certain circumstances. This silences these
   // cases and just treats them as "not allowed on this page"
   await toggleSidebar(tab.id, String(tab.url));
