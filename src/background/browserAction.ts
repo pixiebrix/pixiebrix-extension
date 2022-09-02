@@ -72,8 +72,6 @@ async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
 }
 
 async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
-  // The URL might not be available in certain circumstances. This silences these
-  // cases and just treats them as "not allowed on this page"
   await toggleSidebar(tab.id, String(tab.url));
 }
 
