@@ -40,17 +40,13 @@ exports[`SidebarApp renders 1`] = `
               </strong>
             </p>
             <p>
-              <span
-                class="keyboardShortcut"
-              >
+              <kbd>
                 Ctrl + Shift + C
-              </span>
-               or
-              <span
-                class="keyboardShortcut"
-              >
+              </kbd>
+              or
+              <kbd>
                 F12
-              </span>
+              </kbd>
             </p>
           </div>
         </div>
