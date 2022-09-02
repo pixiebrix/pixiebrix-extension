@@ -21,7 +21,6 @@ import { sortBy } from "lodash";
 import { getRecipeById } from "@/utils";
 import { Accordion, Button, Form, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { RegistryId } from "@/core";
 import hash from "object-hash";
 import useInstallState from "@/pageEditor/hooks/useInstallState";
 import { isExtension } from "@/pageEditor/sidebar/common";
@@ -153,11 +152,15 @@ const SidebarExpanded: React.FunctionComponent<{
           recipe={recipe}
           isActive={recipeId === activeRecipeId}
           installedVersion={installedVersion}
-          saveRecipe={saveRecipe}
-          isSavingRecipe={isSavingRecipe}
-          resetRecipe={resetRecipe}
-          removeRecipe={async (recipeId: RegistryId) => {
-            await removeRecipe({ recipeId });
+          onSave={async () => {
+            await saveRecipe(activeRecipeId);
+          }}
+          isSaving={isSavingRecipe}
+          onReset={async () => {
+            await resetRecipe(activeRecipeId);
+          }}
+          onRemove={async () => {
+            await removeRecipe({ recipeId: activeRecipeId });
           }}
         >
           {elements.map((element) => (

@@ -114,9 +114,6 @@ const ElementWizard: React.FunctionComponent<{
       <BootstrapForm
         autoComplete="off"
         noValidate
-        onSubmit={(event) => {
-          event.preventDefault();
-        }}
         onReset={handleReset}
         className={cx(styles.form, "full-height")}
       >

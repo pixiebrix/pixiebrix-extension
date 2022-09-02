@@ -15,25 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import React from "react";
-import AsyncButton from "@/components/AsyncButton";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileExport } from "@fortawesome/free-solid-svg-icons";
-import cx from "classnames";
-import rootStyles from "./ActionButtons.module.scss";
-import styles from "./RecipeButton.module.scss";
+import AddToRecipeModal from "./sidebar/modals/AddToRecipeModal";
+import CreateRecipeModal from "./sidebar/modals/CreateRecipeModal";
+import RemoveFromRecipeModal from "./sidebar/modals/RemoveFromRecipeModal";
+import SaveAsNewRecipeModal from "./sidebar/modals/SaveAsNewRecipeModal";
 
-const RemoveFromRecipeButton: React.FC<{
-  onClick: () => void;
-  disabled?: boolean;
-}> = ({ onClick, disabled }) => (
-  <AsyncButton
-    onClick={onClick}
-    disabled={disabled}
-    className={cx(rootStyles.button, styles.recipeButton)}
-  >
-    <FontAwesomeIcon icon={faFileExport} />
-  </AsyncButton>
+const Modals: React.FunctionComponent = () => (
+  <>
+    <AddToRecipeModal />
+    <RemoveFromRecipeModal />
+    <SaveAsNewRecipeModal />
+    <CreateRecipeModal />
+    <AddBlockModal />
+  </>
 );
 
-export default RemoveFromRecipeButton;
+export default Modals;

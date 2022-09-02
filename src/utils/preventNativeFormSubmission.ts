@@ -15,20 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import SaveButton from "@/pageEditor/sidebar/actionButtons/SaveButton";
-import { ComponentMeta, ComponentStory } from "@storybook/react";
+/**
+ * @file Automatically catch and prevent all native `submit` events in extension:// pages
+ * https://github.com/pixiebrix/pixiebrix-extension/issues/3275
+ * https://github.com/pixiebrix/pixiebrix-extension/issues/3879
+ * https://github.com/pixiebrix/pixiebrix-extension/issues/4122
+ */
+import { isWebPage } from "webext-detect-page";
 
-export default {
-  title: "Sidebar/SaveButton",
-  component: SaveButton,
-  argTypes: {
-    onClick: { action: "clicked" },
-  },
-} as ComponentMeta<typeof SaveButton>;
+function preventDefault(event: Event): void {
+  event.preventDefault();
+  console.debug("The native submission of the form has been prevented");
+}
 
-const Template: ComponentStory<typeof SaveButton> = (args) => (
-  <SaveButton {...args} />
-);
-
-export const Default = Template.bind({});
+if (!isWebPage()) {
+  document.addEventListener("submit", preventDefault);
+}

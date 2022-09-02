@@ -42,7 +42,11 @@ import {
   selectActiveRecipeId,
   selectElementIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
-import ExtensionActionMenu from "@/pageEditor/sidebar/ExtensionActionMenu";
+import ActionMenu from "@/components/sidebar/ActionMenu";
+import useSaveExtension from "@/pageEditor/hooks/useSaveExtension";
+import useResetExtension from "@/pageEditor/hooks/useResetExtension";
+import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
+import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 
 type DynamicEntryProps = {
   extension: FormState;
@@ -80,6 +84,26 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
   const hideOverlay = useCallback(async () => {
     await disableOverlay(thisTab);
   }, []);
+
+  const { save: saveExtension, isSaving: isSavingExtension } =
+    useSaveExtension();
+  const resetExtension = useResetExtension();
+  const removeExtension = useRemoveExtension();
+  const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
+
+  const onSave = async () => {
+    if (extension.recipe) {
+      await saveRecipe(extension.recipe?.id);
+    } else {
+      await saveExtension(extension.uuid);
+    }
+  };
+
+  const isSaving = extension.recipe ? isSavingRecipe : isSavingExtension;
+
+  const onReset = async () => resetExtension({ extensionId: extension.uuid });
+
+  const onRemove = async () => removeExtension({ extensionId: extension.uuid });
 
   return (
     <ListGroup.Item
@@ -125,12 +149,34 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
           <NotAvailableIcon />
         </span>
       )}
-      {isDirty && !isActive && (
+      {isDirty && (
         <span className={cx(styles.icon, "text-danger")}>
           <UnsavedChangesIcon />
         </span>
       )}
-      {isActive && <ExtensionActionMenu extensionId={extension.uuid} />}
+      {isActive && (
+        <ActionMenu
+          onSave={onSave}
+          onRemove={onRemove}
+          onReset={extension.installed ? onReset : undefined}
+          isDirty={isDirty}
+          onAddToRecipe={
+            extension.recipe
+              ? undefined
+              : async () => {
+                  dispatch(actions.showAddToRecipeModal());
+                }
+          }
+          onRemoveFromRecipe={
+            extension.recipe
+              ? async () => {
+                  dispatch(actions.showRemoveFromRecipeModal());
+                }
+              : undefined
+          }
+          disabled={isSaving}
+        />
+      )}
     </ListGroup.Item>
   );
 };

@@ -41,7 +41,18 @@
     color: white !important;
   }
 
+  // Hide the default dropdown toggle triangle icon
   &::after {
     display: none;
   }
+}
+
+.addIcon {
+  margin-left: -2px;
+  margin-right: 2px;
+}
+
+.removeIcon {
+  margin-left: 3px;
+  margin-right: -3px;
 }

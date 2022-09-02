@@ -26,7 +26,7 @@ import { selectElements } from "@/pageEditor/slices/editorSelectors";
 function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
   const { showConfirmation } = useModals();
   const dispatch = useDispatch();
-  const resetElement = useResetExtension();
+  const resetExtension = useResetExtension();
   const elements = useSelector(selectElements);
 
   return useCallback(
@@ -45,7 +45,7 @@ function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
         elements
           .filter((element) => element.recipe?.id === recipeId)
           .map(async (element) =>
-            resetElement({
+            resetExtension({
               extensionId: element.uuid,
               shouldShowConfirmation: false,
             })
@@ -56,7 +56,7 @@ function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
       dispatch(actions.restoreDeletedElementsForRecipe(recipeId));
       dispatch(actions.selectRecipeId(recipeId));
     },
-    [dispatch, elements, resetElement, showConfirmation]
+    [dispatch, elements, resetExtension, showConfirmation]
   );
 }
 

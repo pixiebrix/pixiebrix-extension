@@ -16,19 +16,19 @@
  */
 
 import React from "react";
-import AddToRecipeButton from "@/pageEditor/sidebar/actionButtons/AddToRecipeButton";
+import SaveButton from "@/pageEditor/sidebar/SaveButton";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 
 export default {
-  title: "Sidebar/AddToRecipeButton",
-  component: AddToRecipeButton,
+  title: "Sidebar/SaveButton",
+  component: SaveButton,
   argTypes: {
     onClick: { action: "clicked" },
   },
-} as ComponentMeta<typeof AddToRecipeButton>;
+} as ComponentMeta<typeof SaveButton>;
 
-const Template: ComponentStory<typeof AddToRecipeButton> = (args) => (
-  <AddToRecipeButton {...args} />
+const Template: ComponentStory<typeof SaveButton> = (args) => (
+  <SaveButton {...args} />
 );
 
 export const Default = Template.bind({});
