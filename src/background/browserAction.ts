@@ -84,15 +84,15 @@ async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
 
   if (url.startsWith(optionsPage)) {
     notify.info(
-      { tabId: tab.id, page: "any" },
+      { tabId: tab.id, page: "/options.html" },
       {
         id: "MSG_NO_SIDEBAR_ON_OPTIONS_PAGE",
         message: MSG_NO_SIDEBAR_ON_OPTIONS_PAGE,
       }
     );
+  } else {
+    await toggleSidebar(tab.id, url);
   }
-
-  await toggleSidebar(tab.id, url);
 }
 
 export default function initBrowserAction() {
