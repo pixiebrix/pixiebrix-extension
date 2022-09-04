@@ -198,7 +198,7 @@
     "@types/mustache": "^4.1.2",
     "@types/nunjucks": "^3.1.5",
     "@types/object-hash": "^2.1.1",
-    "@types/papaparse": "^5.2.6",
+    "@types/papaparse": "^5.3.5",
     "@types/psl": "^1.1.0",
     "@types/random-words": "^1.1.2",
     "@types/react-autosuggest": "^10.1.5",
