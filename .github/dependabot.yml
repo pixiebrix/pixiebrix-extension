@@ -10,6 +10,7 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+      day: "sunday"
       time: "08:42"
       timezone: "Etc/UTC"
     versioning-strategy: increase # Update package.json too https://stackoverflow.com/a/66819358/288906
@@ -20,6 +21,7 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+      day: "sunday"
       time: "08:42"
       timezone: "Etc/UTC"
     open-pull-requests-limit: 20
