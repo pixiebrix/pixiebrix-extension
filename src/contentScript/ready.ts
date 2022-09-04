@@ -28,13 +28,17 @@
  * being deactivated: https://github.com/pixiebrix/pixiebrix-extension/issues/3132
  *
  * Using both a symbol and an attribute accounts for these 2 situations, to detect
- * and handle duplicate injections in the same session and across sessions.
+ * and handle duplicate injections in the same session and across sessions:
+ * - Same session (mistake in injection): ignore
+ * - Context invalidated: CS must be injected again
  */
 
 import { UUID } from "@/core";
 import { Target } from "@/types";
 import { expectContext } from "@/utils/expectContext";
 import { executeFunction } from "webext-content-scripts";
+
+const html = globalThis.document?.documentElement;
 
 // These two must be synched in `getTargetState`
 export const CONTENT_SCRIPT_INJECTED_SYMBOL = Symbol.for(
@@ -63,14 +67,17 @@ export function setInstalledInThisSession(): void {
 }
 
 export function isReadyInThisDocument(): boolean {
-  return document.documentElement.hasAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE);
+  return html.hasAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE);
 }
 
-export function setReadyInThisDocument(uuid: UUID | false): void {
-  if (uuid) {
-    document.documentElement.setAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE, uuid);
-  } else {
-    document.documentElement.removeAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE);
+export function setReadyInThisDocument(uuid: UUID): void {
+  html.setAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE, uuid);
+}
+
+/** Only removes the attribute if the `uuid` matches. This avoids race conditions with the new content script */
+export function unsetReadyInThisDocument(uuid: UUID): void {
+  if (uuid === html.getAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE)) {
+    html.removeAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE);
   }
 }
 
@@ -90,9 +97,7 @@ export async function getTargetState(target: Target): Promise<TargetState> {
     return {
       url: location.href,
       installed: CONTENT_SCRIPT_INJECTED_SYMBOL in globalThis,
-      ready: document.documentElement.hasAttribute(
-        CONTENT_SCRIPT_READY_ATTRIBUTE
-      ),
+      ready: html.hasAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE),
     };
   });
 }
