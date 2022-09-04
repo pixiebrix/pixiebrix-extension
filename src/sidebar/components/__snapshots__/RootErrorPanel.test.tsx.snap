@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`RootErrorPanel should render application error 1`] = `
-Object {
+{
   "asFragment": [Function],
   "baseElement": <body>
     <div>
@@ -138,7 +138,7 @@ Object {
 `;
 
 exports[`RootErrorPanel should render business error 1`] = `
-Object {
+{
   "asFragment": [Function],
   "baseElement": <body>
     <div>
@@ -271,7 +271,7 @@ Object {
 `;
 
 exports[`RootErrorPanel should render no renderer error 1`] = `
-Object {
+{
   "asFragment": [Function],
   "baseElement": <body>
     <div>
