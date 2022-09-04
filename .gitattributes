@@ -1,2 +1,5 @@
 * text=auto eol=lf
+
+# Collapse changes on GitHub just like for lockfiles
 *.snap linguist-generated
+public/mockServiceWorker.js linguist-generated
