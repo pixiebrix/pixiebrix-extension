@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
 import useInstallables from "@/options/pages/blueprints/useInstallables";
 import ExtensionLogsModal from "@/options/pages/blueprints/modals/ExtensionLogsModal";
@@ -33,6 +33,7 @@ import { useTitle } from "@/hooks/title";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import ConvertToRecipeModal from "./modals/ConvertToRecipeModal";
 import ShareRecipeModal from "./modals/ShareRecipeModal/ShareRecipeModal";
+import { reportEvent } from "@/telemetry/events";
 
 const BlueprintsPage: React.FunctionComponent = () => {
   useTitle("Blueprints");
@@ -43,6 +44,10 @@ const BlueprintsPage: React.FunctionComponent = () => {
   const showShareContext = useSelector<RootState, ShareContext>(
     selectShowShareContext
   );
+
+  useEffect(() => {
+    reportEvent("BlueprintsPageView");
+  }, []);
 
   const body = useMemo(() => {
     if (error) {
