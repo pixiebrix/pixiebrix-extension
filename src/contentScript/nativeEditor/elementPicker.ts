@@ -18,6 +18,7 @@
 import Overlay from "@/vendors/Overlay";
 import {
   findContainer,
+  inferSelectorsIncludingStableAncestors,
   safeCssSelector,
 } from "@/contentScript/nativeEditor/selectorInference";
 import { Framework } from "@/messaging/constants";
@@ -282,7 +283,6 @@ export async function selectElement({
 
     case "element": {
       const selector = safeCssSelector(elements[0], {
-        selectors: [],
         root: rootElement,
         excludeRandomClasses,
       });
@@ -290,13 +290,34 @@ export async function selectElement({
       console.debug(`Generated selector: ${selector}`);
 
       // Double-check we have a valid selector
-      requireSingleElement(selector);
+      const element = requireSingleElement(selector);
 
-      return pageScript.getElementInfo({
+      // We're using pageScript getElementInfo only when specific framework is used.
+
+      // On Salesforce we were running into an issue where certain selectors weren't finding any elements when
+      // run from the pageScript. It might have something to do with the custom web components Salesforce uses?
+      // In any case, the pageScript is not necessary if framework is not specified, because selectElement
+      // only needs to return the selector alternatives.
+      if (framework) {
+        return pageScript.getElementInfo({
+          selector,
+          framework,
+          traverseUp,
+        });
+      }
+
+      const inferredSelectors = uniq([
         selector,
-        framework,
-        traverseUp,
-      });
+        ...inferSelectorsIncludingStableAncestors(element),
+      ]);
+
+      return {
+        selectors: inferredSelectors,
+        framework: null,
+        hasData: false,
+        tagName: element.tagName,
+        parent: null,
+      };
     }
 
     default: {

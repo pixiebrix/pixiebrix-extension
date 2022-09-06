@@ -27,7 +27,7 @@ describe("parseUrl", () => {
     await expect(
       new UrlParser().transform(unsafeAssumeValidArg({ url: url.href }))
     ).resolves.toMatchInlineSnapshot(`
-      Object {
+      {
         "hash": "",
         "host": "www.example.com",
         "hostname": "www.example.com",
@@ -38,7 +38,7 @@ describe("parseUrl", () => {
         "protocol": "https:",
         "publicSuffix": "example.com",
         "search": "",
-        "searchParams": Object {},
+        "searchParams": {},
         "username": "",
       }
     `);
@@ -54,7 +54,7 @@ describe("parseUrl", () => {
         })
       )
     ).resolves.toMatchInlineSnapshot(`
-      Object {
+      {
         "hash": "",
         "host": "www.example.com",
         "hostname": "www.example.com",
@@ -65,7 +65,7 @@ describe("parseUrl", () => {
         "protocol": "https:",
         "publicSuffix": "example.com",
         "search": "?bar=42",
-        "searchParams": Object {
+        "searchParams": {
           "bar": "42",
         },
         "username": "",

@@ -38,7 +38,7 @@ import {
   OAuth2AuthorizationGrantDefinition,
 } from "@/types/definitions";
 import { AxiosRequestConfig } from "axios";
-import { isAbsoluteUrl } from "@/utils";
+import { isAbsoluteUrl, safeParseUrl } from "@/utils";
 import { missingProperties } from "@/helpers";
 import { NotConfiguredError } from "@/errors/businessErrors";
 import { IncompatibleServiceError } from "@/errors/genericErrors";
@@ -123,17 +123,31 @@ class LocalDefinedService<
     ) {
       // Convert into a real match pattern: https://developer.chrome.com/docs/extensions/mv3/match_patterns/
       const baseUrlTemplate = this._definition.authentication.baseURL;
-      const baseUrl = renderMustache(baseUrlTemplate, serviceConfig);
-      patterns.push(baseUrl + (baseUrl.endsWith("/") ? "*" : "/*"));
+      const baseUrl = safeParseUrl(
+        renderMustache(baseUrlTemplate, serviceConfig)
+      );
+
+      if (baseUrl.hostname) {
+        // Ignore invalid URLs. When the user makes a request, they'll get an error that it's an invalid URL
+        patterns.push(baseUrl.href + (baseUrl.href.endsWith("/") ? "*" : "/*"));
+      } else {
+        console.warn("Invalid baseURL provided by configuration", {
+          baseUrlTemplate,
+          baseUrl,
+          serviceConfig,
+        });
+      }
     }
 
     if (this.isOAuth2) {
       const oauth = this._definition
         .authentication as OAuth2AuthenticationDefinition;
-      patterns.push(
-        renderMustache(oauth.oauth2.authorizeUrl, serviceConfig),
-        renderMustache(oauth.oauth2.tokenUrl, serviceConfig)
-      );
+
+      // Don't add wildcard because the URL can't change per request.
+      const authUrls = [oauth.oauth2.authorizeUrl, oauth.oauth2.tokenUrl]
+        .map((template) => renderMustache(template, serviceConfig))
+        .filter((url) => Boolean(safeParseUrl(url).hostname));
+      patterns.push(...authUrls);
     }
 
     if (this.isToken) {

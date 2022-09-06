@@ -541,7 +541,7 @@ export async function logPromiseDuration<P>(
 
 export function isMac(): boolean {
   // https://stackoverflow.com/a/27862868/402560
-  return navigator.platform.includes("Mac");
+  return globalThis.navigator?.platform.includes("Mac");
 }
 
 /** Tests a target string against a list of strings (full match) or regexes (can be mixed) */

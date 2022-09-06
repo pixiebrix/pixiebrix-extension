@@ -15,25 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "@/vendors/theme/app/app.scss";
-import "@/vendors/overrides.scss";
-import "./options.scss";
+/* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
+import { registerMethods } from "webext-messenger";
+import { expectContext } from "@/utils/expectContext";
+import notify from "@/utils/notify";
 
-import "@/extensionContext";
-import "@/development/darkMode";
+expectContext("extension");
 
-import { render } from "react-dom";
-import React from "react";
-import App from "@/options/App";
-import initGoogle from "@/contrib/google/initGoogle";
-import { initToaster } from "@/utils/notify";
-import registerMessenger from "@/options/messenger/registration";
-
-function init(): void {
-  render(<App />, document.querySelector("#container"));
+declare global {
+  interface MessengerMethods {
+    NOTIFY_INFO: typeof notify.info;
+    NOTIFY_ERROR: typeof notify.error;
+    NOTIFY_SUCCESS: typeof notify.success;
+  }
 }
 
-registerMessenger();
-initGoogle();
-initToaster();
-init();
+export default function registerMessenger(): void {
+  registerMethods({
+    NOTIFY_INFO: notify.info,
+    NOTIFY_ERROR: notify.error,
+    NOTIFY_SUCCESS: notify.success,
+  });
+}
