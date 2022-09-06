@@ -23,15 +23,10 @@ export default {
   title: "Sidebar/ActionMenu",
   component: ActionMenu,
   argTypes: {
-    onRemove: { action: "clicked remove" },
-    onSave: { action: "clicked save" },
-    onReset: { action: "clicked reset" },
     isDirty: {
       control: "boolean",
       defaultValue: false,
     },
-    onAddToRecipe: { action: "clicked add to blueprint" },
-    onRemoveFromRecipe: { action: "clicked remove from blueprint" },
     disabled: {
       control: "boolean",
       defaultValue: false,
@@ -65,13 +60,11 @@ Blueprint.args = {
 
 export const NewExtensionInBlueprint = Template.bind({});
 NewExtensionInBlueprint.args = {
-  onSave: undefined,
   onReset: undefined,
   onAddToRecipe: undefined,
 };
 
 export const OldExtensionInBlueprint = Template.bind({});
 OldExtensionInBlueprint.args = {
-  onSave: undefined,
   onAddToRecipe: undefined,
 };
