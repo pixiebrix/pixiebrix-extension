@@ -26,6 +26,8 @@ import reportError from "@/telemetry/reportError";
 
 const { reducer, actions } = extensionsSlice;
 
+const PLAYGROUND_URL = "https://www.pixiebrix.com/playground";
+
 function installStarterBlueprint(
   state: ExtensionOptionsState,
   starterBlueprint: RecipeDefinition
@@ -52,6 +54,12 @@ export async function installStarterBlueprints(): Promise<void> {
     const { data: starterBlueprints } = await client.get<RecipeDefinition[]>(
       "/api/onboarding/starter-blueprints/"
     );
+
+    // const starter_blueprints_already_installed = await client.get("/api/onboarding/starter-blueprints/install/");
+    //
+    // if (starter_blueprints_already_installed) {
+    //   return;
+    // }
 
     // If the starter blueprint request fails for some reason, or the user's primary organization
     // gets removed, we'd still like to mark starter blueprints as installed for this user
@@ -82,7 +90,7 @@ export async function installStarterBlueprints(): Promise<void> {
 
     await forEachTab(queueReactivateTab);
     void browser.tabs.create({
-      url: "https://www.pixiebrix.com/playground",
+      url: PLAYGROUND_URL,
     });
   } catch (error) {
     reportError(error);
@@ -90,6 +98,11 @@ export async function installStarterBlueprints(): Promise<void> {
 }
 
 function initStarterBlueprints(): void {
+  browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
+    if (changeInfo.url?.startsWith(PLAYGROUND_URL)) {
+      console.log("INSTALL STARTER BLUEPRINTS");
+    }
+  });
   void installStarterBlueprints();
 }
 
