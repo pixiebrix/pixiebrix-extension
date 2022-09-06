@@ -41,6 +41,47 @@ function installStarterBlueprint(
   );
 }
 
+async function installStarterBlueprintsWhenever(): Promise<void> {
+  const client = await maybeGetLinkedApiClient();
+  if (client == null) {
+    console.debug(
+      "Skipping starter blueprint installation because the extension is not linked to the PixieBrix service"
+    );
+    return;
+  }
+
+  try {
+    const { data: starterBlueprints } = await client.get<RecipeDefinition[]>(
+      "/api/onboarding/starter-blueprints/"
+    );
+
+    if (starterBlueprints.length === 0) {
+      return;
+    }
+
+    let extensionsState = await loadOptions();
+
+    for (const starterBlueprint of starterBlueprints) {
+      const blueprintAlreadyInstalled = extensionsState.extensions.some(
+        (extension) => extension._recipe.id === starterBlueprint.metadata.id
+      );
+
+      if (!blueprintAlreadyInstalled) {
+        extensionsState = installStarterBlueprint(
+          extensionsState,
+          starterBlueprint
+        );
+      }
+    }
+
+    await saveOptions(extensionsState);
+
+    await forEachTab(queueReactivateTab);
+  } catch (error) {
+    reportError(error);
+  }
+}
+
 export async function installStarterBlueprints(): Promise<void> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
@@ -55,11 +96,13 @@ export async function installStarterBlueprints(): Promise<void> {
       "/api/onboarding/starter-blueprints/"
     );
 
-    // const starter_blueprints_already_installed = await client.get("/api/onboarding/starter-blueprints/install/");
-    //
-    // if (starter_blueprints_already_installed) {
-    //   return;
-    // }
+    const starter_blueprints_already_installed = await client.get(
+      "/api/onboarding/starter-blueprints/install/"
+    );
+
+    if (starter_blueprints_already_installed) {
+      return;
+    }
 
     // If the starter blueprint request fails for some reason, or the user's primary organization
     // gets removed, we'd still like to mark starter blueprints as installed for this user
@@ -100,9 +143,12 @@ export async function installStarterBlueprints(): Promise<void> {
 function initStarterBlueprints(): void {
   browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
     if (changeInfo.url?.startsWith(PLAYGROUND_URL)) {
-      console.log("INSTALL STARTER BLUEPRINTS");
+      // What should we do if there's a network error and/or the starter blueprints failed
+      // to install?
+      void installStarterBlueprintsWhenever();
     }
   });
+
   void installStarterBlueprints();
 }
 
