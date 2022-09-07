@@ -61,31 +61,24 @@ const PermissionsPane: React.FunctionComponent = () => {
 
   return (
     <Centered vertically={true}>
-      {allowed ? (
-        <>
-          <p>
-            <AsyncButton onClick={onRequestPermission} className="btn-">
-              <FontAwesomeIcon icon={faShieldAlt} /> Enable PixieBrix on{" "}
-              {siteLabel}
-            </AsyncButton>
-          </p>
+      <p>
+        <AsyncButton onClick={onRequestPermission} className="btn-">
+          <FontAwesomeIcon icon={faShieldAlt} /> Enable PixieBrix on {siteLabel}
+        </AsyncButton>
+      </p>
 
-          <p className="text-muted small">
-            Your browser will prompt you to Allow permissions. <br />
-            You can revoke the permissions from PixieBrix&apos;s Settings page.
-          </p>
+      <p className="text-muted small">
+        Your browser will prompt you to Allow permissions. <br />
+        You can revoke the permissions from PixieBrix&apos;s Settings page.
+      </p>
 
-          {rejected && (
-            <p className="text-info small">
-              <FontAwesomeIcon icon={faInfoCircle} />
-              &nbsp; You can grant temporary permissions by clicking on the
-              PixieBrix extension menu item in your browser&apos;s extensions
-              dropdown.
-            </p>
-          )}
-        </>
-      ) : (
-        <CantModifyPane />
+      {rejected && (
+        <p className="text-info small">
+          <FontAwesomeIcon icon={faInfoCircle} />
+          &nbsp; You can grant temporary permissions by clicking on the
+          PixieBrix extension menu item in your browser&apos;s extensions
+          dropdown.
+        </p>
       )}
     </Centered>
   );
