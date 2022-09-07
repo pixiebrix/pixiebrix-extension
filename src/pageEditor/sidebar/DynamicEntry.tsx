@@ -43,16 +43,15 @@ import {
   selectElementIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
 import ActionMenu from "@/components/sidebar/ActionMenu";
+import useSaveExtension from "@/pageEditor/hooks/useSaveExtension";
+import useResetExtension from "@/pageEditor/hooks/useResetExtension";
+import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
+import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 
 type DynamicEntryProps = {
-  item: FormState;
+  extension: FormState;
   isAvailable: boolean;
-  isActive: boolean;
   isNested?: boolean;
-  onSave: () => Promise<void>;
-  isSaving: boolean;
-  onReset: () => Promise<void>;
-  onRemove: () => Promise<void>;
 };
 
 /**
@@ -60,27 +59,23 @@ type DynamicEntryProps = {
  * @see InstalledEntry
  */
 const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
-  item,
+  extension,
   isAvailable,
-  isActive,
   isNested = false,
-  onSave,
-  isSaving,
-  onReset,
-  onRemove,
 }) => {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const activeElement = useSelector(selectActiveElement);
+  const isActive = activeElement?.uuid === extension.uuid;
   // Get the selected recipe id, or the recipe id of the selected item
   const recipeId = activeRecipeId ?? activeElement?.recipe?.id;
   // Set the alternate background if this item isn't active, but either its recipe or another item in its recipe is active
   const hasRecipeBackground =
-    !isActive && recipeId && item.recipe?.id === recipeId;
-  const isDirty = useSelector(selectElementIsDirty(item.uuid));
+    !isActive && recipeId && extension.recipe?.id === recipeId;
+  const isDirty = useSelector(selectElementIsDirty(extension.uuid));
 
-  const isButton = item.type === "menuItem";
+  const isButton = extension.type === "menuItem";
 
   const showOverlay = useCallback(async (uuid: UUID) => {
     await enableOverlay(thisTab, `[data-pb-uuid="${uuid}"]`);
@@ -90,6 +85,26 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
     await disableOverlay(thisTab);
   }, []);
 
+  const { save: saveExtension, isSaving: isSavingExtension } =
+    useSaveExtension();
+  const resetExtension = useResetExtension();
+  const removeExtension = useRemoveExtension();
+  const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
+
+  const onSave = async () => {
+    if (extension.recipe) {
+      await saveRecipe(extension.recipe?.id);
+    } else {
+      await saveExtension(extension);
+    }
+  };
+
+  const isSaving = extension.recipe ? isSavingRecipe : isSavingExtension;
+
+  const onReset = async () => resetExtension({ extensionId: extension.uuid });
+
+  const onRemove = async () => removeExtension({ extensionId: extension.uuid });
+
   return (
     <ListGroup.Item
       className={cx(styles.root, {
@@ -97,22 +112,24 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
       })}
       as="div"
       active={isActive}
-      key={`dynamic-${item.uuid}`}
-      onMouseEnter={isButton ? async () => showOverlay(item.uuid) : undefined}
+      key={`dynamic-${extension.uuid}`}
+      onMouseEnter={
+        isButton ? async () => showOverlay(extension.uuid) : undefined
+      }
       onMouseLeave={isButton ? async () => hideOverlay() : undefined}
       onClick={() => {
         reportEvent("PageEditorOpen", {
           sessionId,
-          extensionId: item.uuid,
+          extensionId: extension.uuid,
         });
 
-        dispatch(actions.selectElement(item.uuid));
+        dispatch(actions.selectElement(extension.uuid));
 
-        if (item.type === "actionPanel") {
+        if (extension.type === "actionPanel") {
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
           // frequently between extensions within the same blueprint.
           void showSidebar(thisTab, {
-            extensionId: item.uuid,
+            extensionId: extension.uuid,
             force: true,
             refresh: false,
           });
@@ -124,9 +141,9 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
           [styles.nested]: isNested,
         })}
       >
-        <ExtensionIcon type={item.type} />
+        <ExtensionIcon type={extension.type} />
       </span>
-      <span className={styles.name}>{getLabel(item)}</span>
+      <span className={styles.name}>{getLabel(extension)}</span>
       {!isAvailable && (
         <span className={styles.icon}>
           <NotAvailableIcon />
@@ -141,17 +158,17 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
         <ActionMenu
           onSave={onSave}
           onRemove={onRemove}
-          onReset={item.installed ? onReset : undefined}
+          onReset={extension.installed ? onReset : undefined}
           isDirty={isDirty}
           onAddToRecipe={
-            item.recipe
+            extension.recipe
               ? undefined
               : async () => {
                   dispatch(actions.showAddToRecipeModal());
                 }
           }
           onRemoveFromRecipe={
-            item.recipe
+            extension.recipe
               ? async () => {
                   dispatch(actions.showRemoveFromRecipeModal());
                 }

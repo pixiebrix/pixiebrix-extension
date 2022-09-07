@@ -58,9 +58,8 @@ const InstalledEntry: React.FunctionComponent<{
   extension: IExtension;
   recipes: RecipeDefinition[];
   isAvailable: boolean;
-  isActive: boolean;
   isNested?: boolean;
-}> = ({ extension, recipes, isAvailable, isActive, isNested = false }) => {
+}> = ({ extension, recipes, isAvailable, isNested = false }) => {
   const sessionId = useSelector(selectSessionId);
   const dispatch = useDispatch();
   const [type] = useAsyncState(
@@ -70,6 +69,7 @@ const InstalledEntry: React.FunctionComponent<{
 
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const activeElement = useSelector(selectActiveElement);
+  const isActive = activeElement?.uuid === extension.id;
   // Get the selected recipe id, or the recipe id of the selected item
   const recipeId = activeRecipeId ?? activeElement?.recipe?.id;
   // Set the alternate background if this item isn't active, but either its recipe or another item in its recipe is active
