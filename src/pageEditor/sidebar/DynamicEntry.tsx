@@ -95,7 +95,7 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
     if (extension.recipe) {
       await saveRecipe(extension.recipe?.id);
     } else {
-      await saveExtension(extension.uuid);
+      await saveExtension(extension);
     }
   };
 
