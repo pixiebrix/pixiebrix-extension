@@ -41,7 +41,7 @@ function installStarterBlueprint(
   );
 }
 
-async function installStarterBlueprintsWhenever(): Promise<void> {
+async function installStarterBlueprintsAdHoc(): Promise<void> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
@@ -96,11 +96,11 @@ export async function installStarterBlueprints(): Promise<void> {
       "/api/onboarding/starter-blueprints/"
     );
 
-    const starter_blueprints_already_installed = await client.get(
-      "/api/onboarding/starter-blueprints/install/"
-    );
+    const {
+      data: { install_starter_blueprints: shouldInstall },
+    } = await client.get("/api/onboarding/starter-blueprints/install/");
 
-    if (starter_blueprints_already_installed) {
+    if (!shouldInstall) {
       return;
     }
 
@@ -145,7 +145,7 @@ function initStarterBlueprints(): void {
     if (changeInfo.url?.startsWith(PLAYGROUND_URL)) {
       // What should we do if there's a network error and/or the starter blueprints failed
       // to install?
-      void installStarterBlueprintsWhenever();
+      void installStarterBlueprintsAdHoc();
     }
   });
 
