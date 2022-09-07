@@ -107,7 +107,9 @@ describe("installStarterBlueprints", () => {
   test("starter blueprints installation request fails", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, []);
+    axiosMock
+      .onGet("/api/onboarding/starter-blueprints/install/")
+      .reply(200, { install_starter_blueprints: true });
     axiosMock
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [recipeFactory()]);
