@@ -1,0 +1,21 @@
+<!--
+  - Copyright (C) 2022 PixieBrix, Inc.
+  -
+  - This program is free software: you can redistribute it and/or modify
+  - it under the terms of the GNU Affero General Public License as published by
+  - the Free Software Foundation, either version 3 of the License, or
+  - (at your option) any later version.
+  -
+  - This program is distributed in the hope that it will be useful,
+  - but WITHOUT ANY WARRANTY; without even the implied warranty of
+  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  - GNU Affero General Public License for more details.
+  -
+  - You should have received a copy of the GNU Affero General Public License
+  - along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<svg width="22" viewBox="0 0 22 21" xmlns="http://www.w3.org/2000/svg">
+  <path d="m11.002 2.0751c0.3649 0 0.7295 0.10078 1.0524 0.3004 0.303 0.18738 0.5703 0.46148 0.7655 0.82434l6.897 12.821c0.4033 0.7495 0.3524 1.5927-1e-3 2.2488-0.3537 0.6567-1.0104 1.1253-1.8166 1.1253h-13.794c-0.80704 0-1.4628-0.4687-1.8162-1.1248-0.35373-0.6566-0.40415-1.5007-0.00138-2.2492l6.8972-12.822c0.19533-0.36295 0.46245-0.63694 0.76519-0.82425 0.32289-0.19971 0.68739-0.3004 1.0521-0.3004z" fill="#EFA31D" stroke="#fff" stroke-width="2.2476"/>
+  <path d="m11.002 13.756c-0.7303 0-1.3223 0.6347-1.3223 1.4177 0 0.7829 0.59196 1.4176 1.3223 1.4176s1.3223-0.6347 1.3223-1.4176c0-0.783-0.592-1.4177-1.3223-1.4177zm-1.2554-5.0958 0.21323 4.1914c0.00998 0.1961 0.16124 0.3496 0.34444 0.3496h1.3954c0.1832 0 0.3345-0.1535 0.3444-0.3496l0.2133-4.1914c0.0108-0.21185-0.1466-0.38998-0.3444-0.38998h-1.822c-0.19785 0-0.35515 0.17813-0.34437 0.38998z" fill="#fff"/>
+</svg>

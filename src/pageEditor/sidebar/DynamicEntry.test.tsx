@@ -36,7 +36,15 @@ describe("DynamicEntry", () => {
     const formState = formStateFactory();
     expect(
       render(
-        <DynamicEntry item={formState} available={true} active={false} />,
+        <DynamicEntry
+          item={formState}
+          isAvailable={true}
+          isActive={false}
+          onSave={jest.fn()}
+          isSaving={false}
+          onReset={jest.fn()}
+          onRemove={jest.fn()}
+        />,
         {
           initialValues: formState,
           setupRedux(dispatch) {
