@@ -185,7 +185,6 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
       setElement(selected);
 
       const selectors = selected.selectors ?? [];
-
       const [firstSelector] = sort ? sortBySelector(selectors) : selectors;
 
       console.debug("Setting selector", { selected, firstSelector });

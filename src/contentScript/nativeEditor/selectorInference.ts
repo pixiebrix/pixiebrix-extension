@@ -17,7 +17,10 @@
 
 import { compact, identity, sortBy, uniq } from "lodash";
 import { getCssSelector } from "css-selector-generator";
-import { CssSelectorType } from "css-selector-generator/types/types";
+import {
+  CssSelectorType,
+  CssSelectorMatch,
+} from "css-selector-generator/types/types";
 import { $safeFind } from "@/helpers";
 import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";
 import { guessUsefulness, isRandomString } from "@/utils/detectRandomString";
@@ -35,6 +38,51 @@ export const BUTTON_TAGS: string[] = [
 ];
 const MENU_TAGS = ["ul", "tbody"];
 
+export type SiteSelectorHint = {
+  /**
+   * Name for the rule hint-set.
+   */
+  siteName: string;
+  /**
+   * Return true if the these hints apply to the current site.
+   */
+  siteValidator: (element?: HTMLElement) => boolean;
+  badPatterns: CssSelectorMatch[];
+  uniqueAttributes: string[];
+  stableAnchors: CssSelectorMatch[];
+};
+
+const SELECTOR_HINTS: SiteSelectorHint[] = [
+  {
+    // Matches all sites using Salesforce's Lightning framework
+    // https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/intro_components.htm
+    siteName: "Salesforce",
+    siteValidator: (element) =>
+      $(element).closest("[data-aura-rendered-by]").length > 0,
+    badPatterns: [
+      getAttributeSelectorRegex(
+        // Salesforce Aura component tracking
+        "data-aura-rendered-by"
+      ),
+
+      /#\\+\d+ \d+\\+:0/,
+      /#\w+[_-]\d+/,
+      /.*\.hover.*/,
+      /.*\.not-selected.*/,
+      /^\[name='leftsidebar'] */,
+    ],
+    uniqueAttributes: ["data-component-id"],
+    stableAnchors: [
+      ".consoleRelatedRecord",
+      /\.consoleRelatedRecord\d+/,
+      ".navexWorkspaceManager",
+      ".active",
+      ".oneConsoleTab",
+      ".tabContent",
+    ],
+  },
+];
+
 export const UNIQUE_ATTRIBUTES: string[] = [
   "id",
   "name",
@@ -45,7 +93,11 @@ export const UNIQUE_ATTRIBUTES: string[] = [
   "data-id",
   "data-test",
   "data-test-id",
+
+  // Register UNIQUE_ATTRIBUTES from all hints because we can't check site rules in this usage.
+  ...SELECTOR_HINTS.flatMap((hint) => hint.uniqueAttributes),
 ];
+
 // eslint-disable-next-line security/detect-non-literal-regexp -- Not user-provided
 const UNIQUE_ATTRIBUTES_REGEX = new RegExp(
   UNIQUE_ATTRIBUTES.map((attribute) => `^\\[${attribute}=`).join("|")
@@ -63,9 +115,6 @@ const UNSTABLE_SELECTORS = [
   /^\[data-v-/,
 
   getAttributeSelectorRegex(
-    // Salesforce Aura component tracking
-    "data-aura-rendered-by",
-
     // Our attributes
     EXTENSION_POINT_DATA_ATTR,
     PIXIEBRIX_DATA_ATTR,
@@ -73,10 +122,37 @@ const UNSTABLE_SELECTORS = [
   ),
 ];
 
-function getUniqueAttributeSelectors(element: HTMLElement): string[] {
+function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {
+  let siteSelectorHint = SELECTOR_HINTS.find((hint) =>
+    hint.siteValidator(element)
+  );
+  if (!siteSelectorHint) {
+    siteSelectorHint = {
+      siteName: "",
+      siteValidator: () => false,
+      badPatterns: [],
+      uniqueAttributes: [],
+      stableAnchors: [],
+    };
+  }
+
+  return siteSelectorHint;
+}
+
+function getUniqueAttributeSelectors(
+  element: HTMLElement,
+  siteSelectorHint: SiteSelectorHint
+): string[] {
   return UNIQUE_ATTRIBUTES.map((attribute) =>
     getAttributeSelector(attribute, element.getAttribute(attribute))
-  ).filter((selector) => !matchesAnyPattern(selector, UNSTABLE_SELECTORS));
+  ).filter(
+    (selector) =>
+      !matchesAnyPattern(selector, [
+        ...UNSTABLE_SELECTORS,
+        // We need to include salesforce BAD_PATTERNS here as well since this function is used to get inferSelectorsIncludingStableAncestors
+        ...siteSelectorHint.badPatterns,
+      ])
+  );
 }
 
 /** ID selectors and certain other attributes can uniquely identify items */
@@ -210,24 +286,32 @@ export function safeCssSelector(
   }: SafeCssSelectorOptions = {}
 ): string {
   // https://github.com/fczbkk/css-selector-generator
+  const siteSelectorHint = getSiteSelectorHint(element);
+
+  const blacklist = [
+    ...UNSTABLE_SELECTORS,
+    ...siteSelectorHint.badPatterns,
+
+    excludeRandomClasses
+      ? (selector: string) => {
+          if (!selector.startsWith(".")) {
+            return false;
+          }
+
+          const usefulness = guessUsefulness(selector);
+          console.debug("css-selector-generator:  ", usefulness);
+          return usefulness.isRandom;
+        }
+      : undefined,
+  ];
+  const whitelist = [
+    getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES),
+    ...siteSelectorHint.stableAnchors,
+  ];
 
   const selector = getCssSelector(element, {
-    blacklist: [
-      ...UNSTABLE_SELECTORS,
-
-      excludeRandomClasses
-        ? (selector) => {
-            if (!selector.startsWith(".")) {
-              return false;
-            }
-
-            const usefulness = guessUsefulness(selector);
-            console.debug("css-selector-generator:  ", usefulness);
-            return usefulness.isRandom;
-          }
-        : undefined,
-    ],
-    whitelist: [getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES)],
+    blacklist,
+    whitelist,
     selectors,
     combineWithinSelector: true,
     combineBetweenSelectors: true,
@@ -256,13 +340,14 @@ export function inferSelectorsIncludingStableAncestors(
   root?: Element,
   excludeRandomClasses?: boolean
 ): string[] {
+  const siteSelectorHint = getSiteSelectorHint(element);
   const stableAncestors = findAncestorsWithIdLikeSelectors(
     element,
     root
   ).flatMap((stableAncestor) =>
     inferSelectors(element, stableAncestor, excludeRandomClasses).flatMap(
       (selector) =>
-        getUniqueAttributeSelectors(stableAncestor)
+        getUniqueAttributeSelectors(stableAncestor, siteSelectorHint)
           .filter(Boolean)
           .map((stableAttributeSelector) =>
             [stableAttributeSelector, selector].join(" ")
@@ -488,7 +573,7 @@ function getSelectorTree(target: HTMLElement): string[] {
     .parentsUntil("body")
     .addBack()
     .get()
-    .map((ancestor) => getElementSelector(ancestor));
+    .map((ancestor: Element) => getElementSelector(ancestor));
 }
 
 /**

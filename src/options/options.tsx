@@ -27,11 +27,13 @@ import React from "react";
 import App from "@/options/App";
 import initGoogle from "@/contrib/google/initGoogle";
 import { initToaster } from "@/utils/notify";
+import registerMessenger from "@/options/messenger/registration";
 
 function init(): void {
   render(<App />, document.querySelector("#container"));
 }
 
+registerMessenger();
 initGoogle();
 initToaster();
 init();

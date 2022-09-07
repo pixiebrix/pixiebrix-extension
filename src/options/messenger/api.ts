@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,25 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.save {
-  background-color: #e8f3fc;
-  color: #1368aa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Do not use `registerMethod` in this file */
+import { getNotifier } from "webext-messenger";
 
-  &:disabled {
-    background-color: #e8f3fc;
-    color: #b8dbf6;
-  }
-
-  &:hover:not(:disabled) {
-    background-color: #ddedfb;
-    color: #0f5388;
-  }
-
-  &:active:not(:disabled) {
-    background-color: #b8dbf6 !important;
-    color: #0b3e66 !important;
-  }
-}
+export const notify = {
+  info: getNotifier("NOTIFY_INFO"),
+  error: getNotifier("NOTIFY_ERROR"),
+  success: getNotifier("NOTIFY_SUCCESS"),
+};

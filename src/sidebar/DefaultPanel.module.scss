@@ -15,25 +15,51 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.save {
-  background-color: #e8f3fc;
-  color: #1368aa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:disabled {
-    background-color: #e8f3fc;
-    color: #b8dbf6;
+.root {
+  p {
+    font-size: 16px;
+    color: #41335b;
+    font-weight: 400;
   }
 
-  &:hover:not(:disabled) {
-    background-color: #ddedfb;
-    color: #0f5388;
+  a {
+    color: #170637;
+    font-weight: 500;
+    font-size: 16px;
+    padding-bottom: 1px;
+    border-bottom: 2px solid #5a19da;
+    text-decoration: none;
   }
 
-  &:active:not(:disabled) {
-    background-color: #b8dbf6 !important;
-    color: #0b3e66 !important;
+  kbd {
+    color: #170637;
+    font-weight: 500;
+    font-size: 16px;
+    background: white;
+    border-radius: 4px;
+    padding: 4.5px 6px;
+    margin: 0 12px;
   }
+}
+
+.sidebarRow {
+  text-align: center;
+  padding: 20px 0;
+  margin-top: 28px;
+}
+
+.callout {
+  color: #170637;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.sidebarRowWithDivider {
+  @extend .sidebarRow;
+  border-top: 1px solid #e1dfe5;
+}
+
+.tinyCallout {
+  @extend .callout;
+  font-size: 16px;
 }
