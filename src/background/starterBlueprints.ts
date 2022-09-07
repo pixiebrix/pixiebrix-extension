@@ -41,6 +41,24 @@ function installStarterBlueprint(
   );
 }
 
+function installStarterBlueprintsTemp(
+  extensionsState: ExtensionOptionsState,
+  starterBlueprints: RecipeDefinition[]
+): ExtensionOptionsState {
+  let result = extensionsState;
+  for (const starterBlueprint of starterBlueprints) {
+    const blueprintAlreadyInstalled = extensionsState.extensions.some(
+      (extension) => extension._recipe.id === starterBlueprint.metadata.id
+    );
+
+    if (!blueprintAlreadyInstalled) {
+      result = installStarterBlueprint(result, starterBlueprint);
+    }
+  }
+
+  return result;
+}
+
 async function installStarterBlueprintsAdHoc(): Promise<void> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
@@ -116,18 +134,10 @@ export async function installStarterBlueprints(): Promise<void> {
 
     let extensionsState = await loadOptions();
 
-    for (const starterBlueprint of starterBlueprints) {
-      const blueprintAlreadyInstalled = extensionsState.extensions.some(
-        (extension) => extension._recipe.id === starterBlueprint.metadata.id
-      );
-
-      if (!blueprintAlreadyInstalled) {
-        extensionsState = installStarterBlueprint(
-          extensionsState,
-          starterBlueprint
-        );
-      }
-    }
+    extensionsState = installStarterBlueprintsTemp(
+      extensionsState,
+      starterBlueprints
+    );
 
     await saveOptions(extensionsState);
 
@@ -143,8 +153,8 @@ export async function installStarterBlueprints(): Promise<void> {
 function initStarterBlueprints(): void {
   browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
     if (changeInfo.url?.startsWith(PLAYGROUND_URL)) {
-      // What should we do if there's a network error and/or the starter blueprints failed
-      // to install?
+      // TODO: What should we do if there's a network error and/or the starter blueprints failed
+      //  to install?
       void installStarterBlueprintsAdHoc();
     }
   });
