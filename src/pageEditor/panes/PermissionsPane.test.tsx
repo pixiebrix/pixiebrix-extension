@@ -41,11 +41,7 @@ describe("PermissionsPane", () => {
     render(<PermissionsPane />);
 
     await waitFor(() => {
-      expect(
-        screen.getByText(
-          "PixieBrix cannot modify web store or special browser pages"
-        )
-      ).not.toBeNull();
+      expect(screen.getByText("Get started with PixieBrix")).not.toBeNull();
     });
   });
 });

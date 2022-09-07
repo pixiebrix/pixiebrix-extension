@@ -28,6 +28,7 @@ import { getCurrentURL } from "@/pageEditor/utils";
 import { safeParseUrl } from "@/utils";
 import { parse as parseDomain } from "psl";
 import { useAsyncEffect } from "use-async-effect";
+import CantModifyPane from "@/pageEditor/panes/CantModifyPane";
 
 const PermissionsPane: React.FunctionComponent = () => {
   const [rejected, setRejected] = useState(false);
@@ -53,6 +54,10 @@ const PermissionsPane: React.FunctionComponent = () => {
     const wasApproved = await requestPermissions({ origins: [url] });
     setRejected(!wasApproved);
   }, []);
+
+  if (!allowed) {
+    return <CantModifyPane />;
+  }
 
   return (
     <Centered vertically={true}>
@@ -80,7 +85,7 @@ const PermissionsPane: React.FunctionComponent = () => {
           )}
         </>
       ) : (
-        <p>PixieBrix cannot modify web store or special browser pages</p>
+        <CantModifyPane />
       )}
     </Centered>
   );
