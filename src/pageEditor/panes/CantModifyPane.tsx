@@ -23,13 +23,8 @@ import workshopImage from "@img/workshop.svg";
 const CantModifyPane: React.FunctionComponent = () => {
   return (
     <Container fluid className={styles.root}>
-      <Row>
-        <Col>
-          <img src={workshopImage} alt="" width={200} />
-        </Col>
-      </Row>
       <Row className={styles.paneRow}>
-        <Col>
+        <Col lg={9}>
           <h4 className={styles.callout}>Get started with PixieBrix</h4>
           <p>
             This is the PixieBrix Page Editor where you can create and modify
@@ -50,9 +45,20 @@ const CantModifyPane: React.FunctionComponent = () => {
             .
           </p>
         </Col>
+        <Col
+          lg={3}
+          className="d-flex align-items-center justify-content-center"
+        >
+          <img
+            className={styles.illustration}
+            src={workshopImage}
+            alt=""
+            width={"100%"}
+          />
+        </Col>
       </Row>
       <Row className={styles.paneRowWithDivider}>
-        <Col>
+        <Col lg={9}>
           <h4 className={styles.tinyCallout}>Need more help?</h4>
           <p>
             Visit the{" "}
@@ -74,6 +80,7 @@ const CantModifyPane: React.FunctionComponent = () => {
             .{" "}
           </p>
         </Col>
+        <Col lg={3}></Col>
       </Row>
     </Container>
   );
