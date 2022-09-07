@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { installStarterBlueprintsFirstTime } from "@/background/starterBlueprints";
+import { firstTimeInstallStarterBlueprints } from "@/background/starterBlueprints";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
@@ -63,7 +63,7 @@ describe("installStarterBlueprints", () => {
       .reply(200, [recipeFactory()]);
     axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(204);
 
-    await installStarterBlueprintsFirstTime();
+    await firstTimeInstallStarterBlueprints();
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(1);
@@ -81,7 +81,7 @@ describe("installStarterBlueprints", () => {
       .reply(200, [recipeFactory()]);
     axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(204);
 
-    await installStarterBlueprintsFirstTime();
+    await firstTimeInstallStarterBlueprints();
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(0);
@@ -91,10 +91,13 @@ describe("installStarterBlueprints", () => {
   test("starter blueprints request fails", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    axiosMock.onGet().reply(500);
-    axiosMock.onPost().reply(204);
+    axiosMock
+      .onGet("/api/onboarding/starter-blueprints/install/")
+      .reply(200, { install_starter_blueprints: true });
+    axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(500);
+    axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(204);
 
-    await installStarterBlueprintsFirstTime();
+    await firstTimeInstallStarterBlueprints();
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(0);
@@ -107,7 +110,7 @@ describe("installStarterBlueprints", () => {
     axiosMock.onGet().reply(200, []);
     axiosMock.onPost().reply(500);
 
-    await installStarterBlueprintsFirstTime();
+    await firstTimeInstallStarterBlueprints();
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(0);
@@ -132,7 +135,7 @@ describe("installStarterBlueprints", () => {
 
     axiosMock.onPost().reply(204);
 
-    await installStarterBlueprintsFirstTime();
+    await firstTimeInstallStarterBlueprints();
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(1);

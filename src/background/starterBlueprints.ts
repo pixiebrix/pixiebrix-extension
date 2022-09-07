@@ -43,7 +43,12 @@ function installBlueprint(
 
 async function installBlueprints(
   starterBlueprints: RecipeDefinition[]
-): Promise<void> {
+): Promise<boolean> {
+  let installed = false;
+  if (starterBlueprints.length === 0) {
+    return installed;
+  }
+
   let extensionsState = await loadOptions();
   for (const starterBlueprint of starterBlueprints) {
     const blueprintAlreadyInstalled = extensionsState.extensions.some(
@@ -52,16 +57,44 @@ async function installBlueprints(
 
     if (!blueprintAlreadyInstalled) {
       extensionsState = installBlueprint(extensionsState, starterBlueprint);
+      installed = true;
     }
   }
 
   await saveOptions(extensionsState);
   await forEachTab(queueReactivateTab);
+  return installed;
 }
 
-async function getStarterBlueprints(
-  firstTimeInstall: boolean
-): Promise<RecipeDefinition[]> {
+async function getShouldFirstTimeInstall(): Promise<boolean> {
+  const client = await maybeGetLinkedApiClient();
+  if (client == null) {
+    console.debug(
+      "Skipping starter blueprint installation because the extension is not linked to the PixieBrix service"
+    );
+    return false;
+  }
+
+  try {
+    const {
+      data: { install_starter_blueprints: shouldInstall },
+    } = await client.get("/api/onboarding/starter-blueprints/install/");
+
+    if (shouldInstall) {
+      // If the starter blueprint request fails for some reason, or the user's primary organization
+      // gets removed, we'd still like to mark starter blueprints as installed for this user
+      // so that they don't see onboarding views/randomly have starter blueprints installed
+      // the next time they open the extension
+      await client.post("/api/onboarding/starter-blueprints/install/");
+    }
+
+    return shouldInstall;
+  } catch (error) {
+    reportError(error);
+  }
+}
+
+async function getStarterBlueprints(): Promise<RecipeDefinition[]> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
@@ -71,26 +104,9 @@ async function getStarterBlueprints(
   }
 
   try {
-    if (firstTimeInstall) {
-      const {
-        data: { install_starter_blueprints: shouldInstall },
-      } = await client.get("/api/onboarding/starter-blueprints/install/");
-
-      if (!shouldInstall) {
-        return [];
-      }
-    }
-
     const { data: starterBlueprints } = await client.get<RecipeDefinition[]>(
       "/api/onboarding/starter-blueprints/"
     );
-
-    // If the starter blueprint request fails for some reason, or the user's primary organization
-    // gets removed, we'd still like to mark starter blueprints as installed for this user
-    // so that they don't see onboarding views/randomly have starter blueprints installed
-    // the next time they open the extension
-    await client.post("/api/onboarding/starter-blueprints/install/");
-
     return starterBlueprints;
   } catch (error) {
     reportError(error);
@@ -98,23 +114,24 @@ async function getStarterBlueprints(
   }
 }
 
-async function installStarterBlueprintsAdHoc(): Promise<void> {
-  const starterBlueprints = await getStarterBlueprints(false);
-  await installBlueprints(starterBlueprints);
+async function installStarterBlueprints(): Promise<boolean> {
+  const starterBlueprints = await getStarterBlueprints();
+  return installBlueprints(starterBlueprints);
 }
 
-export async function installStarterBlueprintsFirstTime(): Promise<void> {
-  const starterBlueprints = await getStarterBlueprints(true);
-
-  if (starterBlueprints.length === 0) {
+export async function firstTimeInstallStarterBlueprints(): Promise<void> {
+  const shouldInstall = await getShouldFirstTimeInstall();
+  if (!shouldInstall) {
     return;
   }
 
-  await installBlueprints(starterBlueprints);
+  const installed = await installStarterBlueprints();
 
-  void browser.tabs.create({
-    url: PLAYGROUND_URL,
-  });
+  if (installed) {
+    void browser.tabs.create({
+      url: PLAYGROUND_URL,
+    });
+  }
 }
 
 function initStarterBlueprints(): void {
@@ -122,11 +139,11 @@ function initStarterBlueprints(): void {
     if (changeInfo.url?.startsWith(PLAYGROUND_URL)) {
       // TODO: What should we do if there's a network error and/or the starter blueprints failed
       //  to install?
-      void installStarterBlueprintsAdHoc();
+      void installStarterBlueprints();
     }
   });
 
-  void installStarterBlueprintsFirstTime();
+  void firstTimeInstallStarterBlueprints();
 }
 
 export default initStarterBlueprints;
