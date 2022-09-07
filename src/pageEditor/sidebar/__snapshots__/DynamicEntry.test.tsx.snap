@@ -33,7 +33,7 @@ exports[`DynamicEntry it renders with active element 1`] = `
         Element 1
       </span>
       <span
-        class="icon text-danger"
+        class="icon unsaved text-danger"
       >
         <span
           class="root"
