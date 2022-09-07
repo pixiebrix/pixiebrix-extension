@@ -21,9 +21,14 @@ import { rehydrateSidebar } from "@/contentScript/messenger/api";
 import { executeScript, isScriptableUrl } from "webext-content-scripts";
 import pMemoize from "p-memoize";
 import webextAlert from "./webextAlert";
+import { isMac } from "@/utils";
+import { notify } from "@/options/messenger/api";
 
 const ERR_UNABLE_TO_OPEN =
   "PixieBrix was unable to open the Sidebar. Try refreshing the page.";
+
+const keyboardShortcut = isMac() ? "Cmd+Opt+C" : "Ctrl+Shift+C";
+const MSG_NO_SIDEBAR_ON_OPTIONS_PAGE = `PixieBrix Tip 💜\n If you want to create a new blueprint, first navigate to the page you want to modify, then open PixieBrix in the DevTools (${keyboardShortcut}).`;
 
 // The sidebar is always injected to into the top level frame
 const TOP_LEVEL_FRAME_ID = 0;
@@ -74,7 +79,20 @@ async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
 async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
   // The URL might not be available in certain circumstances. This silences these
   // cases and just treats them as "not allowed on this page"
-  await toggleSidebar(tab.id, String(tab.url));
+  const url = String(tab.url);
+  const optionsPage = browser.runtime.getURL("options.html");
+
+  if (url.startsWith(optionsPage)) {
+    notify.info(
+      { tabId: tab.id, page: "/options.html" },
+      {
+        id: "MSG_NO_SIDEBAR_ON_OPTIONS_PAGE",
+        message: MSG_NO_SIDEBAR_ON_OPTIONS_PAGE,
+      }
+    );
+  } else {
+    await toggleSidebar(tab.id, url);
+  }
 }
 
 export default function initBrowserAction() {

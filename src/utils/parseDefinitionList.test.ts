@@ -53,13 +53,13 @@ describe("parseDefinitionList", () => {
     `);
 
     expect(parseDefinitionList(list)).toMatchInlineSnapshot(`
-      Object {
-        "fieldNames": Array [
+      {
+        "fieldNames": [
           "YOLO",
           "SMH",
         ],
-        "records": Array [
-          Object {
+        "records": [
+          {
             "SMH": "Shaking My Head",
             "YOLO": "You Only Live Once",
           },
@@ -80,14 +80,14 @@ describe("parseDefinitionList", () => {
     `);
 
     expect(parseDefinitionList(list)).toMatchInlineSnapshot(`
-      Object {
-        "fieldNames": Array [
+      {
+        "fieldNames": [
           "sup",
           "wassup",
           "lol",
         ],
-        "records": Array [
-          Object {
+        "records": [
+          {
             "lol": "Laughing Out Loud",
             "sup": "What is up
       Hello",
@@ -113,14 +113,14 @@ describe("parseDefinitionList", () => {
     `);
 
     expect(parseDefinitionList(list)).toMatchInlineSnapshot(`
-      Object {
-        "fieldNames": Array [
+      {
+        "fieldNames": [
           "sus",
           "lit",
           "bussin",
         ],
-        "records": Array [
-          Object {
+        "records": [
+          {
             "bussin": "Amazing",
             "lit": "Amazing",
             "sus": "Suspicious",
@@ -157,28 +157,28 @@ describe("getAllDefinitionLists", () => {
 
     expect(getAllDefinitionLists(document)).toMatchInlineSnapshot(`
       Map {
-        "table_2c6a1" => Object {
-          "fieldNames": Array [
+        "table_2c6a1" => {
+          "fieldNames": [
             "bloke",
             "lad",
             "bird",
           ],
-          "records": Array [
-            Object {
+          "records": [
+            {
               "bird": "girl or woman",
               "bloke": "man",
               "lad": "young man",
             },
           ],
         },
-        "table_4e8c8" => Object {
-          "fieldNames": Array [
+        "table_4e8c8" => {
+          "fieldNames": [
             "mental",
             "bonkers",
             "daft",
           ],
-          "records": Array [
-            Object {
+          "records": [
+            {
               "bonkers": "mad
       crazy",
               "daft": "silly",
@@ -207,14 +207,14 @@ describe("getAllDefinitionLists", () => {
 
     expect(getAllDefinitionLists(document)).toMatchInlineSnapshot(`
       Map {
-        "british-money-slang" => Object {
-          "fieldNames": Array [
+        "british-money-slang" => {
+          "fieldNames": [
             "quid",
             "fiver",
             "tenner",
           ],
-          "records": Array [
-            Object {
+          "records": [
+            {
               "fiver": "5 British pounds",
               "quid": "British pound",
               "tenner": "10 British pounds",
@@ -238,13 +238,13 @@ describe("getAllDefinitionLists", () => {
 
     expect(getAllDefinitionLists(document)).toMatchInlineSnapshot(`
       Map {
-        "british-slang" => Object {
-          "fieldNames": Array [
+        "british-slang" => {
+          "fieldNames": [
             "gobsmacked",
             "dodgy",
           ],
-          "records": Array [
-            Object {
+          "records": [
+            {
               "dodgy": "sketchy",
               "gobsmacked": "shocked",
             },
@@ -267,13 +267,13 @@ describe("getAllDefinitionLists", () => {
 
     expect(getAllDefinitionLists(document)).toMatchInlineSnapshot(`
       Map {
-        "funny_british_terms" => Object {
-          "fieldNames": Array [
+        "funny_british_terms" => {
+          "fieldNames": [
             "kerfuffle",
             "innit",
           ],
-          "records": Array [
-            Object {
+          "records": [
+            {
               "innit": "isn't it",
               "kerfuffle": "fuss",
             },

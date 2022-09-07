@@ -57,10 +57,10 @@ import {
 const InstalledEntry: React.FunctionComponent<{
   extension: IExtension;
   recipes: RecipeDefinition[];
-  active: boolean;
-  available: boolean;
+  isAvailable: boolean;
+  isActive: boolean;
   isNested?: boolean;
-}> = ({ extension, recipes, available, active, isNested = false }) => {
+}> = ({ extension, recipes, isAvailable, isActive, isNested = false }) => {
   const sessionId = useSelector(selectSessionId);
   const dispatch = useDispatch();
   const [type] = useAsyncState(
@@ -74,7 +74,7 @@ const InstalledEntry: React.FunctionComponent<{
   const recipeId = activeRecipeId ?? activeElement?.recipe?.id;
   // Set the alternate background if this item isn't active, but either its recipe or another item in its recipe is active
   const hasRecipeBackground =
-    !active && recipeId && extension._recipe?.id === recipeId;
+    !isActive && recipeId && extension._recipe?.id === recipeId;
 
   const selectHandler = useCallback(
     async (extension: IExtension) => {
@@ -129,7 +129,7 @@ const InstalledEntry: React.FunctionComponent<{
         [styles.recipeBackground]: hasRecipeBackground,
       })}
       action
-      active={active}
+      active={isActive}
       key={`installed-${extension.id}`}
       onMouseEnter={
         isButton ? async () => showOverlay(extension.id) : undefined
@@ -145,7 +145,7 @@ const InstalledEntry: React.FunctionComponent<{
         <ExtensionIcon type={type} />
       </span>
       <span className={styles.name}>{extension.label ?? extension.id}</span>
-      {!available && (
+      {!isAvailable && (
         <span className={styles.icon}>
           <NotAvailableIcon />
         </span>

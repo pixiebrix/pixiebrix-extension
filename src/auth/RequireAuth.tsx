@@ -127,14 +127,6 @@ export const useRequiredAuth = () => {
     (!hasCachedLoggedIn && !meLoading) ||
     (!hasToken && !tokenLoading);
 
-  console.debug("isAccountUnlinked", {
-    isUnauthenticated,
-    hasCachedLoggedIn,
-    meLoading,
-    hasToken,
-    tokenLoading,
-  });
-
   return {
     isAccountUnlinked,
     hasToken,

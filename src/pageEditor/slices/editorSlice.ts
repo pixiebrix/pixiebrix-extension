@@ -486,6 +486,7 @@ export const editorSlice = createSlice({
         ...element,
         uuid: newId,
         recipe: recipeMetadata,
+        installed: false, // Can't "reset" this, only remove or save
       });
       state.dirty[newId] = true;
 

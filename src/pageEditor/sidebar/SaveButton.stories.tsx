@@ -15,40 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-  padding: 0.8em 0.6em !important;
-  border-top-width: 0;
-  border-bottom-width: 1px;
-}
-.icon {
-  width: 1.5rem;
-  margin-left: 0.25rem;
-  flex-shrink: 0;
-  border: none;
-  background: none;
-  color: inherit;
-  white-space: nowrap;
-}
-.name {
-  flex-grow: 1;
-  cursor: pointer;
-}
-.nested {
-  margin-left: 0.75rem;
-}
-.recipeBackground {
-  // lightskyblue, 20% alpha
-  background: rgba(135, 206, 250, 0.2);
+import React from "react";
+import SaveButton from "@/pageEditor/sidebar/SaveButton";
+import { ComponentMeta, ComponentStory } from "@storybook/react";
 
-  &:hover {
-    // lightskyblue, 70% alpha
-    background: rgba(135, 206, 250, 0.7);
-  }
-}
+export default {
+  title: "Sidebar/SaveButton",
+  component: SaveButton,
+  argTypes: {
+    onClick: { action: "clicked" },
+  },
+} as ComponentMeta<typeof SaveButton>;
 
-.unsaved {
-  padding-top: 4px;
-}
+const Template: ComponentStory<typeof SaveButton> = (args) => (
+  <SaveButton {...args} />
+);
+
+export const Default = Template.bind({});

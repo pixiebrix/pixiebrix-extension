@@ -15,40 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-  padding: 0.8em 0.6em !important;
-  border-top-width: 0;
-  border-bottom-width: 1px;
-}
-.icon {
-  width: 1.5rem;
-  margin-left: 0.25rem;
-  flex-shrink: 0;
-  border: none;
-  background: none;
-  color: inherit;
-  white-space: nowrap;
-}
-.name {
-  flex-grow: 1;
-  cursor: pointer;
-}
-.nested {
-  margin-left: 0.75rem;
-}
-.recipeBackground {
-  // lightskyblue, 20% alpha
-  background: rgba(135, 206, 250, 0.2);
+/* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
+import { registerMethods } from "webext-messenger";
+import { expectContext } from "@/utils/expectContext";
+import notify from "@/utils/notify";
 
-  &:hover {
-    // lightskyblue, 70% alpha
-    background: rgba(135, 206, 250, 0.7);
+expectContext("extension");
+
+declare global {
+  interface MessengerMethods {
+    NOTIFY_INFO: typeof notify.info;
+    NOTIFY_ERROR: typeof notify.error;
+    NOTIFY_SUCCESS: typeof notify.success;
   }
 }
 
-.unsaved {
-  padding-top: 4px;
+export default function registerMessenger(): void {
+  registerMethods({
+    NOTIFY_INFO: notify.info,
+    NOTIFY_ERROR: notify.error,
+    NOTIFY_SUCCESS: notify.success,
+  });
 }

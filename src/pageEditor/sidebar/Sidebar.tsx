@@ -18,7 +18,6 @@
 import styles from "./Sidebar.module.scss";
 
 import React, { FormEvent, useContext, useMemo, useState } from "react";
-import { actions } from "@/pageEditor/slices/editorSlice";
 import { PageEditorTabContext } from "@/pageEditor/context";
 import { lowerCase, sortBy } from "lodash";
 import { sleep, getRecipeById } from "@/utils";
@@ -45,8 +44,6 @@ import useAddElement from "@/pageEditor/hooks/useAddElement";
 import {
   faAngleDoubleLeft,
   faAngleDoubleRight,
-  faFileExport,
-  faFileImport,
   faSync,
 } from "@fortawesome/free-solid-svg-icons";
 import { CSSTransition } from "react-transition-group";
@@ -62,13 +59,18 @@ import {
   selectAllDeletedElementIds,
   selectElements,
   selectExpandedRecipeId,
-  selectIsAddToRecipeModalVisible,
 } from "@/pageEditor/slices/editorSelectors";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useGetRecipesQuery } from "@/services/api";
 import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
+import useSaveExtension from "@/pageEditor/hooks/useSaveExtension";
+import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
+import useResetExtension from "@/pageEditor/hooks/useResetExtension";
+import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
+import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
+import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
   <Button
@@ -94,46 +96,6 @@ const ReloadButton: React.VoidFunctionComponent = () => (
     <FontAwesomeIcon icon={faSync} />
   </Button>
 );
-
-const AddToRecipeButton: React.VFC<{ disabled: boolean }> = ({ disabled }) => {
-  const dispatch = useDispatch();
-
-  return (
-    <Button
-      type="button"
-      size="sm"
-      variant="light"
-      title="Add extension to a blueprint"
-      onClick={() => {
-        dispatch(actions.showAddToRecipeModal());
-      }}
-      disabled={disabled}
-    >
-      <FontAwesomeIcon icon={faFileImport} size="lg" />
-    </Button>
-  );
-};
-
-const RemoveFromRecipeButton: React.VFC<{ disabled: boolean }> = ({
-  disabled,
-}) => {
-  const dispatch = useDispatch();
-
-  return (
-    <Button
-      type="button"
-      size="sm"
-      variant="light"
-      title="Remove extension from blueprint"
-      onClick={() => {
-        dispatch(actions.showRemoveFromRecipeModal());
-      }}
-      disabled={disabled}
-    >
-      <FontAwesomeIcon icon={faFileExport} size="lg" />
-    </Button>
-  );
-};
 
 const DropdownEntry: React.VoidFunctionComponent<{
   caption: string;
@@ -207,20 +169,6 @@ const SidebarExpanded: React.VoidFunctionComponent<{
   const { availableInstalledIds, availableDynamicIds, unavailableCount } =
     useInstallState(installed, elements);
 
-  const activeElement = elements.find(
-    (element) => element.uuid === activeElementId
-  );
-
-  const isAddToRecipeModalVisible = useSelector(
-    selectIsAddToRecipeModalVisible
-  );
-  const addToRecipeButtonDisabled =
-    isAddToRecipeModalVisible ||
-    activeElement === undefined ||
-    activeElement.recipe != null;
-
-  const removeFromRecipeButtonDisabled = activeElement?.recipe == null;
-
   const elementHash = hash(
     sortBy(
       elements.map(
@@ -261,6 +209,15 @@ const SidebarExpanded: React.VoidFunctionComponent<{
 
   const addElement = useAddElement();
 
+  // We need to run these hooks above the list item component level to avoid some nasty re-rendering issues
+  const { save: saveExtension, isSaving: isSavingExtension } =
+    useSaveExtension();
+  const resetExtension = useResetExtension();
+  const removeExtension = useRemoveExtension();
+  const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
+  const resetRecipe = useResetRecipe();
+  const removeRecipe = useRemoveRecipe();
+
   const ElementListItem: React.FC<{
     element: IExtension | FormState;
     isNested?: boolean;
@@ -270,8 +227,8 @@ const SidebarExpanded: React.VoidFunctionComponent<{
         key={`installed-${element.id}`}
         extension={element}
         recipes={recipes}
-        active={activeElementId === element.id}
-        available={
+        isActive={activeElementId === element.id}
+        isAvailable={
           !availableInstalledIds || availableInstalledIds.has(element.id)
         }
         isNested={isNested}
@@ -280,11 +237,25 @@ const SidebarExpanded: React.VoidFunctionComponent<{
       <DynamicEntry
         key={`dynamic-${element.uuid}`}
         item={element}
-        active={activeElementId === element.uuid}
-        available={
+        isActive={activeElementId === element.uuid}
+        isAvailable={
           !availableDynamicIds || availableDynamicIds.has(element.uuid)
         }
         isNested={isNested}
+        onSave={async () => {
+          if (element.recipe) {
+            await saveRecipe(element.recipe?.id);
+          } else {
+            await saveExtension(element);
+          }
+        }}
+        isSaving={element.recipe ? isSavingRecipe : isSavingExtension}
+        onReset={async () => {
+          await resetExtension({ extensionId: element.uuid });
+        }}
+        onRemove={async () => {
+          await removeExtension({ extensionId: element.uuid });
+        }}
       />
     );
 
@@ -318,6 +289,16 @@ const SidebarExpanded: React.VoidFunctionComponent<{
           recipe={recipe}
           isActive={recipeId === activeRecipeId}
           installedVersion={installedVersion}
+          onSave={async () => {
+            await saveRecipe(activeRecipeId);
+          }}
+          isSaving={isSavingRecipe}
+          onReset={async () => {
+            await resetRecipe(activeRecipeId);
+          }}
+          onRemove={async () => {
+            await removeRecipe({ recipeId: activeRecipeId });
+          }}
         >
           {elements.map((element) => (
             <ElementListItem
@@ -369,10 +350,6 @@ const SidebarExpanded: React.VoidFunctionComponent<{
             </DropdownButton>
 
             {showDeveloperUI && <ReloadButton />}
-
-            <AddToRecipeButton disabled={addToRecipeButtonDisabled} />
-
-            <RemoveFromRecipeButton disabled={removeFromRecipeButtonDisabled} />
           </div>
           <Button
             variant="light"

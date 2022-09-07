@@ -17,10 +17,10 @@
 
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import React from "react";
-import AddToRecipeModal from "./sidebar/AddToRecipeModal";
-import CreateRecipeModal from "./sidebar/CreateRecipeModal";
-import RemoveFromRecipeModal from "./sidebar/RemoveFromRecipeModal";
-import SaveAsNewRecipeModal from "./sidebar/SaveAsNewRecipeModal";
+import AddToRecipeModal from "./sidebar/modals/AddToRecipeModal";
+import CreateRecipeModal from "./sidebar/modals/CreateRecipeModal";
+import RemoveFromRecipeModal from "./sidebar/modals/RemoveFromRecipeModal";
+import SaveAsNewRecipeModal from "./sidebar/modals/SaveAsNewRecipeModal";
 
 const Modals: React.FunctionComponent = () => (
   <>

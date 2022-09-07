@@ -15,40 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-  padding: 0.8em 0.6em !important;
-  border-top-width: 0;
-  border-bottom-width: 1px;
-}
-.icon {
-  width: 1.5rem;
-  margin-left: 0.25rem;
-  flex-shrink: 0;
-  border: none;
-  background: none;
-  color: inherit;
-  white-space: nowrap;
-}
-.name {
-  flex-grow: 1;
-  cursor: pointer;
-}
-.nested {
-  margin-left: 0.75rem;
-}
-.recipeBackground {
-  // lightskyblue, 20% alpha
-  background: rgba(135, 206, 250, 0.2);
+/* Do not use `registerMethod` in this file */
+import { getNotifier } from "webext-messenger";
 
-  &:hover {
-    // lightskyblue, 70% alpha
-    background: rgba(135, 206, 250, 0.7);
-  }
-}
-
-.unsaved {
-  padding-top: 4px;
-}
+export const notify = {
+  info: getNotifier("NOTIFY_INFO"),
+  error: getNotifier("NOTIFY_ERROR"),
+  success: getNotifier("NOTIFY_SUCCESS"),
+};

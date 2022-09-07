@@ -52,8 +52,8 @@ describe("InstalledEntry", () => {
       <InstalledEntry
         extension={extension}
         recipes={[]}
-        active={false}
-        available={true}
+        isActive={false}
+        isAvailable={true}
       />,
       {
         initialValues: formState,
