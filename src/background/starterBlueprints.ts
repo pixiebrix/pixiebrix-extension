@@ -30,33 +30,33 @@ const PLAYGROUND_URL = "https://www.pixiebrix.com/playground";
 
 function installBlueprint(
   state: ExtensionOptionsState,
-  starterBlueprint: RecipeDefinition
+  blueprint: RecipeDefinition
 ): ExtensionOptionsState {
   return reducer(
     state,
     actions.installRecipe({
-      recipe: starterBlueprint,
-      extensionPoints: starterBlueprint.extensionPoints,
+      recipe: blueprint,
+      extensionPoints: blueprint.extensionPoints,
     })
   );
 }
 
 async function installBlueprints(
-  starterBlueprints: RecipeDefinition[]
+  blueprints: RecipeDefinition[]
 ): Promise<boolean> {
   let installed = false;
-  if (starterBlueprints.length === 0) {
+  if (blueprints.length === 0) {
     return installed;
   }
 
   let extensionsState = await loadOptions();
-  for (const starterBlueprint of starterBlueprints) {
+  for (const blueprint of blueprints) {
     const blueprintAlreadyInstalled = extensionsState.extensions.some(
-      (extension) => extension._recipe.id === starterBlueprint.metadata.id
+      (extension) => extension._recipe.id === blueprint.metadata.id
     );
 
     if (!blueprintAlreadyInstalled) {
-      extensionsState = installBlueprint(extensionsState, starterBlueprint);
+      extensionsState = installBlueprint(extensionsState, blueprint);
       installed = true;
     }
   }
@@ -135,10 +135,8 @@ export async function firstTimeInstallStarterBlueprints(): Promise<void> {
 }
 
 function initStarterBlueprints(): void {
-  browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
-    if (changeInfo.url?.startsWith(PLAYGROUND_URL)) {
-      // TODO: What should we do if there's a network error and/or the starter blueprints failed
-      //  to install?
+  browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (tab?.url?.startsWith(PLAYGROUND_URL)) {
       void installStarterBlueprints();
     }
   });

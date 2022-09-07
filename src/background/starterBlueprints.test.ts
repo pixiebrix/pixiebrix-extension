@@ -107,8 +107,11 @@ describe("installStarterBlueprints", () => {
   test("starter blueprints installation request fails", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    axiosMock.onGet().reply(200, []);
-    axiosMock.onPost().reply(500);
+    axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, []);
+    axiosMock
+      .onGet("/api/onboarding/starter-blueprints/")
+      .reply(200, [recipeFactory()]);
+    axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(500);
 
     await firstTimeInstallStarterBlueprints();
     const { extensions } = await loadOptions();
@@ -125,7 +128,7 @@ describe("installStarterBlueprints", () => {
       extensions: [extension],
     });
 
-    axiosMock.onGet().reply(200, [
+    axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, [
       {
         updated_at: "",
         extensionPoints: [extension],
@@ -133,7 +136,7 @@ describe("installStarterBlueprints", () => {
       },
     ]);
 
-    axiosMock.onPost().reply(204);
+    axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(204);
 
     await firstTimeInstallStarterBlueprints();
     const { extensions } = await loadOptions();
