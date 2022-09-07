@@ -37,7 +37,7 @@ const DropdownEntry: React.FunctionComponent<{
   beta?: boolean;
 }> = ({ beta, icon, caption, onClick }) => (
   <Dropdown.Item onClick={onClick}>
-    <FontAwesomeIcon icon={icon} />
+    <FontAwesomeIcon icon={icon} fixedWidth />
     &nbsp;{caption}
     {beta && (
       <>
