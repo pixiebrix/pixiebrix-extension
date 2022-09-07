@@ -15,40 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-  padding: 0.8em 0.6em !important;
-  border-top-width: 0;
-  border-bottom-width: 1px;
-}
-.icon {
-  width: 1.5rem;
-  margin-left: 0.25rem;
-  flex-shrink: 0;
-  border: none;
-  background: none;
-  color: inherit;
-  white-space: nowrap;
-}
-.name {
-  flex-grow: 1;
-  cursor: pointer;
-}
-.nested {
-  margin-left: 0.75rem;
-}
-.recipeBackground {
-  // lightskyblue, 20% alpha
-  background: rgba(135, 206, 250, 0.2);
+import React from "react";
+import AsyncButton from "@/components/AsyncButton";
+import cx from "classnames";
+import rootStyles from "./ActionButtons.module.scss";
+import styles from "./SaveButton.module.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSave } from "@fortawesome/free-solid-svg-icons";
 
-  &:hover {
-    // lightskyblue, 70% alpha
-    background: rgba(135, 206, 250, 0.7);
-  }
-}
+const SaveButton: React.FC<{
+  onClick: () => void;
+  disabled?: boolean;
+}> = ({ onClick, disabled }) => (
+  <AsyncButton
+    onClick={onClick}
+    disabled={disabled}
+    className={cx(rootStyles.button, styles.save)}
+  >
+    <FontAwesomeIcon icon={faSave} />
+  </AsyncButton>
+);
 
-.unsaved {
-  padding-top: 4px;
-}
+export default SaveButton;

@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,38 +17,37 @@
 
 .root {
   display: flex;
-  align-items: center;
-  gap: 0.5em;
-  padding: 0.8em 0.6em !important;
-  border-top-width: 0;
-  border-bottom-width: 1px;
-}
-.icon {
-  width: 1.5rem;
-  margin-left: 0.25rem;
   flex-shrink: 0;
+  gap: 4px;
+}
+
+.toggle {
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  border-radius: 4px;
   border: none;
-  background: none;
-  color: inherit;
-  white-space: nowrap;
-}
-.name {
-  flex-grow: 1;
-  cursor: pointer;
-}
-.nested {
-  margin-left: 0.75rem;
-}
-.recipeBackground {
-  // lightskyblue, 20% alpha
-  background: rgba(135, 206, 250, 0.2);
+  background-color: #e8f3fc !important;
+  color: #198ae3 !important;
+  box-shadow: none !important;
 
   &:hover {
-    // lightskyblue, 70% alpha
-    background: rgba(135, 206, 250, 0.7);
+    background-color: #ddedfb !important;
+    color: #198ae3 !important;
+  }
+
+  &:active {
+    background-color: #1368aa !important;
+    color: white !important;
   }
 }
 
-.unsaved {
-  padding-top: 4px;
+.addIcon {
+  margin-left: -2px;
+  margin-right: 2px;
+}
+
+.removeIcon {
+  margin-left: 3px;
+  margin-right: -3px;
 }

@@ -18,48 +18,33 @@
 import styles from "./RecipePane.module.scss";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveRecipeId,
+  selectSelectionSeq,
+} from "@/pageEditor/slices/editorSelectors";
 import { Alert } from "react-bootstrap";
 import Centered from "@/pageEditor/components/Centered";
 import EditorTabLayout, {
   ActionButton,
   TabItem,
 } from "@/components/tabLayout/EditorTabLayout";
-import {
-  faHistory,
-  faQuestionCircle,
-  faSave,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import AskQuestionModal from "@/pageEditor/askQuestion/AskQuestionModal";
-import useRecipeSaver from "@/pageEditor/panes/save/useRecipeSaver";
-import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import Logs from "@/pageEditor/tabs/Logs";
 import EditRecipe from "@/pageEditor/tabs/editRecipeTab/EditRecipe";
 import { MessageContext } from "@/core";
 import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
 import RecipeOptions from "@/pageEditor/tabs/RecipeOptions";
-import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 
 const RecipePane: React.VFC = () => {
+  const dispatch = useDispatch();
+
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
 
-  // We need to force the component to re-render when the recipe is reset
-  // from the action button, or when a different recipe is selected, so
-  // we'll use a key prop on the tab layout that is composed of a useState()
-  // variable counter that we can increment manually, and the recipeId.
-  const [layoutCounter, setLayoutCounter] = useState(0);
-  const layoutKey = `${activeRecipeId}-${layoutCounter}`;
-  const forceRefreshLayout = () => {
-    setLayoutCounter(layoutCounter + 1);
-  };
-
-  const { save: saveRecipe, isSaving: isSavingRecipe } = useRecipeSaver();
-  const dispatch = useDispatch();
-  const resetRecipe = useResetRecipe();
-  const removeRecipe = useRemoveRecipe();
+  const selectionSeq = useSelector(selectSelectionSeq);
+  const layoutKey = `${activeRecipeId}-${selectionSeq}`;
 
   useEffect(() => {
     const messageContext: MessageContext = {
@@ -97,38 +82,6 @@ const RecipePane: React.VFC = () => {
       },
       caption: "Ask a question",
       icon: faQuestionCircle,
-    },
-    {
-      // Save
-      variant: "primary",
-      onClick() {
-        // Recipe saver has internal error handling, so we can fire-and-forget here
-        void saveRecipe(activeRecipeId);
-      },
-      caption: "Save",
-      disabled: isSavingRecipe,
-      icon: faSave,
-    },
-    {
-      // Reset
-      variant: "warning",
-      async onClick() {
-        await resetRecipe(activeRecipeId);
-        forceRefreshLayout();
-      },
-      caption: "Reset",
-      disabled: isSavingRecipe,
-      icon: faHistory,
-    },
-    {
-      // Remove
-      variant: "danger",
-      onClick() {
-        void removeRecipe({ recipeId: activeRecipeId });
-        forceRefreshLayout();
-      },
-      caption: "Remove",
-      icon: faTrash,
     },
   ];
 

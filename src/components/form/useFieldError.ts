@@ -20,8 +20,8 @@ import { selectAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
 import { useField } from "formik";
 
 function useFormikFieldError(fieldPath: string): string | undefined {
-  const [, { error }] = useField(fieldPath);
-  return error;
+  const [, { error, touched }] = useField(fieldPath);
+  return touched ? error : null;
 }
 
 function useAnalysisFieldError(fieldPath: string): string[] | undefined {

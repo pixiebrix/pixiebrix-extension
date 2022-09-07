@@ -58,21 +58,14 @@ function isAutomaticTrigger(element: FormState): boolean {
  */
 const ReloadToolbar: React.FunctionComponent<{
   element: FormState;
-  disabled: boolean;
   refreshMillis?: number;
-}> = ({ element, refreshMillis = DEFAULT_RELOAD_MILLIS, disabled }) => {
+}> = ({ element, refreshMillis = DEFAULT_RELOAD_MILLIS }) => {
   const sessionId = useSelector(selectSessionId);
 
   const run = useCallback(async () => {
     const { asDynamicElement: factory } = ADAPTERS.get(element.type);
-    if (disabled) {
-      console.warn("Updating dynamic possibly invalid element", {
-        element,
-      });
-    }
-
     await updateDynamicElement(thisTab, factory(element));
-  }, [element, disabled]);
+  }, [element]);
 
   const manualRun = async () => {
     // Report before the run to report even if the run errors
@@ -97,11 +90,6 @@ const ReloadToolbar: React.FunctionComponent<{
   const automaticUpdate = !(isLoadTrigger || isPanel);
 
   useAsyncEffect(async () => {
-    if (disabled) {
-      // Don't automatically re-run if in an invalid state
-      return;
-    }
-
     if (!automaticUpdate && !element.autoReload) {
       // By default, don't automatically trigger (because it might be doing expensive
       // operations such as hitting an API)
@@ -109,7 +97,7 @@ const ReloadToolbar: React.FunctionComponent<{
     }
 
     await debouncedRun();
-  }, [debouncedRun, automaticUpdate, element, disabled]);
+  }, [debouncedRun, automaticUpdate, element]);
 
   if (automaticUpdate) {
     return null;
@@ -121,13 +109,7 @@ const ReloadToolbar: React.FunctionComponent<{
         {isPanel ? "Auto-Render" : "Auto-Run"}
       </label>
       <ToggleField name="autoReload" />
-      <Button
-        className="mx-2"
-        disabled={disabled}
-        size="sm"
-        variant="info"
-        onClick={manualRun}
-      >
+      <Button className="mx-2" size="sm" variant="info" onClick={manualRun}>
         {isPanel ? "Render Panel" : "Run Trigger"}
       </Button>
     </>

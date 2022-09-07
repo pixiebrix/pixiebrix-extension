@@ -111,7 +111,7 @@ const installedOrphanH: IExtension = extensionFactory({
 
 describe("arrangeElements()", () => {
   test("sort orphaned recipes by metadata.name", () => {
-    const { elementsByRecipeId, orphanedElements } = arrangeElements({
+    const elements = arrangeElements({
       elements: [dynamicOrphanC],
       installed: [installedOrphanH, installedOrphanG],
       recipes: [],
@@ -125,8 +125,7 @@ describe("arrangeElements()", () => {
       expandedRecipeId: null,
     });
 
-    expect(elementsByRecipeId).toStrictEqual([]);
-    expect(orphanedElements).toStrictEqual([
+    expect(elements).toStrictEqual([
       dynamicOrphanC,
       installedOrphanG,
       installedOrphanH,
@@ -134,7 +133,7 @@ describe("arrangeElements()", () => {
   });
 
   test("group recipes and sort properly", () => {
-    const { elementsByRecipeId, orphanedElements } = arrangeElements({
+    const elements = arrangeElements({
       elements: [dynamicBarE, dynamicFooB],
       installed: [installedFooA, installedBarF, installedBarD],
       recipes: [recipeFoo, recipeBar],
@@ -149,15 +148,14 @@ describe("arrangeElements()", () => {
       expandedRecipeId: null,
     });
 
-    expect(elementsByRecipeId).toStrictEqual([
+    expect(elements).toEqual([
       [recipeBar.metadata.id, [installedBarD, dynamicBarE, installedBarF]],
       [recipeFoo.metadata.id, [installedFooA, dynamicFooB]],
     ]);
-    expect(orphanedElements).toStrictEqual([]);
   });
 
   test("handle showAll flag properly", () => {
-    const { elementsByRecipeId, orphanedElements } = arrangeElements({
+    const elements = arrangeElements({
       elements: [dynamicBarE],
       installed: [installedFooA, installedOrphanH],
       recipes: [recipeFoo, recipeBar],
@@ -168,15 +166,15 @@ describe("arrangeElements()", () => {
       expandedRecipeId: null,
     });
 
-    expect(elementsByRecipeId).toStrictEqual([
+    expect(elements).toStrictEqual([
       [recipeBar.metadata.id, [dynamicBarE]],
       [recipeFoo.metadata.id, [installedFooA]],
+      installedOrphanH,
     ]);
-    expect(orphanedElements).toStrictEqual([installedOrphanH]);
   });
 
   test("keep active element when not available", () => {
-    const { elementsByRecipeId, orphanedElements } = arrangeElements({
+    const elements = arrangeElements({
       elements: [dynamicOrphanC],
       installed: [],
       recipes: [],
@@ -187,12 +185,11 @@ describe("arrangeElements()", () => {
       expandedRecipeId: null,
     });
 
-    expect(elementsByRecipeId).toStrictEqual([]);
-    expect(orphanedElements).toStrictEqual([dynamicOrphanC]);
+    expect(elements).toStrictEqual([dynamicOrphanC]);
   });
 
   test("show element if its recipe is expanded", () => {
-    const { elementsByRecipeId, orphanedElements } = arrangeElements({
+    const elements = arrangeElements({
       elements: [dynamicFooB],
       installed: [installedFooA],
       recipes: [recipeFoo],
@@ -203,9 +200,8 @@ describe("arrangeElements()", () => {
       expandedRecipeId: recipeFoo.metadata.id,
     });
 
-    expect(elementsByRecipeId).toStrictEqual([
+    expect(elements).toStrictEqual([
       [recipeFoo.metadata.id, [installedFooA, dynamicFooB]],
     ]);
-    expect(orphanedElements).toStrictEqual([]);
   });
 });
