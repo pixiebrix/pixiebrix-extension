@@ -335,7 +335,7 @@ const CreateRecipeModal: React.FC = () => {
 
   // Loading state -- could consider refactoring into two components: 1) modal with loading state, 2) form
   if (activeRecipeId && isRecipesLoading) {
-    return <LoadingDataModal onClose={hideModal} />;
+    return <LoadingDataModal onClose={hideModal} show />;
   }
 
   const onSubmit: OnSubmit<RecipeMetadataFormState> = async (

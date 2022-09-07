@@ -46,8 +46,8 @@ const SaveAsNewRecipeModal: React.FC = () => {
     dispatch(actions.transitionSaveAsNewToCreateRecipeModal());
   };
 
-  if (isLoading && show) {
-    return <LoadingDataModal onClose={hideModal} />;
+  if (isLoading) {
+    return <LoadingDataModal onClose={hideModal} show={show} />;
   }
 
   return (
