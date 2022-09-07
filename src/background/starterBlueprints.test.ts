@@ -21,7 +21,7 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { isLinked } from "@/auth/token";
 import { extensionFactory, recipeFactory } from "@/testUtils/factories";
-import { PersistedExtension } from "@/core";
+import { PersistedExtension, RecipeMetadata } from "@/core";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -123,16 +123,23 @@ describe("installStarterBlueprints", () => {
   test("starter blueprint already installed", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const extension = extensionFactory() as PersistedExtension;
+    const recipe = recipeFactory();
+
+    const extension = extensionFactory({
+      _recipe: { id: recipe.metadata.id } as RecipeMetadata,
+    }) as PersistedExtension;
     await saveOptions({
       extensions: [extension],
     });
 
+    axiosMock
+      .onGet("/api/onboarding/starter-blueprints/install/")
+      .reply(200, { install_starter_blueprints: true });
+
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, [
       {
-        updated_at: "",
         extensionPoints: [extension],
-        sharing: {},
+        ...recipe,
       },
     ]);
 
