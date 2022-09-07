@@ -246,7 +246,7 @@ const SidebarExpanded: React.VoidFunctionComponent<{
           if (element.recipe) {
             await saveRecipe(element.recipe?.id);
           } else {
-            await saveExtension(element.uuid);
+            await saveExtension(element);
           }
         }}
         isSaving={element.recipe ? isSavingRecipe : isSavingExtension}

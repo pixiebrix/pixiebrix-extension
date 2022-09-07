@@ -132,8 +132,8 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
           <NotAvailableIcon />
         </span>
       )}
-      {isDirty && (
-        <span className={cx(styles.icon, "text-danger")}>
+      {isDirty && !isActive && (
+        <span className={cx(styles.icon, styles.unsaved, "text-danger")}>
           <UnsavedChangesIcon />
         </span>
       )}

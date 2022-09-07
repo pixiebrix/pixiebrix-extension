@@ -18,6 +18,9 @@
 .save {
   background-color: #e8f3fc;
   color: #1368aa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:disabled {
     background-color: #e8f3fc;
