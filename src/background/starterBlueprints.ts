@@ -95,6 +95,7 @@ async function getShouldFirstTimeInstall(): Promise<boolean> {
     return shouldInstall;
   } catch (error) {
     reportError(error);
+    return false;
   }
 }
 
