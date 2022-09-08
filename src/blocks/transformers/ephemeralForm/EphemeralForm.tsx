@@ -100,7 +100,7 @@ const EphemeralForm: React.FC = () => {
             className="btn btn-primary"
             type="button"
             onClick={() => {
-              void cancelForm(target, nonce);
+              cancelForm(target, nonce);
             }}
           >
             Close
@@ -132,7 +132,7 @@ const EphemeralForm: React.FC = () => {
                 className="btn btn-link"
                 type="button"
                 onClick={() => {
-                  void cancelForm(target, nonce);
+                  cancelForm(target, nonce);
                 }}
               >
                 Cancel
