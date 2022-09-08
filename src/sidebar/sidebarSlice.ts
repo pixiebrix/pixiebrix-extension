@@ -26,8 +26,7 @@ import { defaultEventKey, mapTabEventKey } from "@/sidebar/utils";
 import { UUID } from "@/core";
 import { cancelForm } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
-import { asyncForEach } from "@/utils";
-import { sortBy } from "lodash";
+import { partition, sortBy } from "lodash";
 
 export type SidebarState = SidebarEntries & {
   activeKey: string;
@@ -93,6 +92,12 @@ function findNextActiveKey(
   return null;
 }
 
+async function cancelPreexistingForms(forms: UUID[]): Promise<void> {
+  // TODO: Replace with `tabId: "this"` once implemented in the messenger
+  const sender = await whoAmI();
+  cancelForm({ tabId: sender.tab.id, frameId: 0 }, ...forms);
+}
+
 const sidebarSlice = createSlice({
   initialState: emptySidebarState,
   name: "sidebar",
@@ -105,19 +110,19 @@ const sidebarSlice = createSlice({
     addForm(state, action: PayloadAction<{ form: FormEntry }>) {
       const { form } = action.payload;
 
-      // Cancel pre-existing forms for the extension
-      void asyncForEach(state.forms, async (current) => {
-        if (current.extensionId === form.extensionId) {
-          const sender = await whoAmI();
-          await cancelForm({ tabId: sender.tab.id, frameId: 0 }, current.nonce);
-        }
-      });
-
-      state.forms = state.forms.filter(
-        (x) => x.extensionId !== form.extensionId
+      const [thisExtensionForms, otherForms] = partition(
+        state.forms,
+        (x) => x.extensionId === form.extensionId
       );
-      // Unlike panels which are sorted, forms are like a "stack", will show the latest form available
-      state.forms.push(form);
+
+      // The UUID must be fetched synchronously to ensure the `form` Proxy element doesn't expire
+      void cancelPreexistingForms(thisExtensionForms.map((form) => form.nonce));
+
+      state.forms = [
+        ...otherForms,
+        // Unlike panels which are sorted, forms are like a "stack", will show the latest form available
+        form,
+      ];
       state.activeKey = mapTabEventKey("form", form);
     },
     removeForm(state, action: PayloadAction<UUID>) {
