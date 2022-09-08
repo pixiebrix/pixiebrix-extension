@@ -23,11 +23,14 @@ import { forEachTab } from "@/background/util";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";
+import { debounce } from "lodash";
 
 const { reducer, actions } = extensionsSlice;
 
 const PLAYGROUND_URL = "https://www.pixiebrix.com/playground";
 let isInstallingBlueprints = false;
+const BLUEPRINT_INSTALLATION_DEBOUNCE_MS = 10_000;
+const BLUEPRINT_INSTALLATION_MAX_MS = 60_000;
 
 function installBlueprint(
   state: ExtensionOptionsState,
@@ -115,18 +118,27 @@ async function getStarterBlueprints(): Promise<RecipeDefinition[]> {
   }
 }
 
-async function installStarterBlueprints(): Promise<boolean> {
+const installStarterBlueprints = async (): Promise<boolean> => {
   if (isInstallingBlueprints) {
     return false;
   }
 
   isInstallingBlueprints = true;
-  console.log("Starter Blueprints: Picked up the lock!");
   const starterBlueprints = await getStarterBlueprints();
   const installed = await installBlueprints(starterBlueprints);
   isInstallingBlueprints = false;
   return installed;
-}
+};
+
+const debouncedInstallStarterBlueprints = debounce(
+  installStarterBlueprints,
+  BLUEPRINT_INSTALLATION_DEBOUNCE_MS,
+  {
+    leading: true,
+    trailing: false,
+    maxWait: BLUEPRINT_INSTALLATION_MAX_MS,
+  }
+);
 
 export async function firstTimeInstallStarterBlueprints(): Promise<void> {
   const shouldInstall = await getShouldFirstTimeInstall();
@@ -146,8 +158,7 @@ export async function firstTimeInstallStarterBlueprints(): Promise<void> {
 function initStarterBlueprints(): void {
   browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (tab?.url?.startsWith(PLAYGROUND_URL)) {
-      console.log("Starter Blueprints: You triggered an update!", tab);
-      void installStarterBlueprints();
+      void debouncedInstallStarterBlueprints();
     }
   });
 
