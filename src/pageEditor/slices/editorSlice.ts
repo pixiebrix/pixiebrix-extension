@@ -151,7 +151,7 @@ function selectRecipeId(
   recipeId: RegistryId
 ) {
   state.error = null;
-  state.beta = null;
+  state.beta = false;
   state.activeElementId = null;
 
   if (
@@ -192,6 +192,20 @@ function editRecipeOptions(
   state.dirtyRecipeOptionsById[recipeId] = options;
 }
 
+function activateElement(
+  state: WritableDraft<EditorState>,
+  element: FormState
+) {
+  state.error = null;
+  state.beta = false;
+  state.activeElementId = element.uuid;
+  state.activeRecipeId = null;
+  state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
+  state.selectionSeq++;
+
+  ensureElementUIState(state, element.uuid);
+}
+
 export const editorSlice = createSlice({
   name: "editor",
   initialState,
@@ -208,15 +222,9 @@ export const editorSlice = createSlice({
       const element = action.payload;
       state.inserting = null;
       state.elements.push(element);
-      state.error = null;
       state.dirty[element.uuid] = true;
-      state.beta = false;
-      state.activeElementId = element.uuid;
-      state.activeRecipeId = null;
-      state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
-      state.selectionSeq++;
 
-      ensureElementUIState(state, element.uuid);
+      activateElement(state, element);
     },
     betaError(state, action: PayloadAction<{ error: string }>) {
       state.error = action.payload.error;
@@ -239,13 +247,7 @@ export const editorSlice = createSlice({
         state.elements.push(element);
       }
 
-      state.error = null;
-      state.beta = null;
-      state.activeElementId = element.uuid;
-      state.activeRecipeId = null;
-      state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
-      state.selectionSeq++;
-      ensureElementUIState(state, element.uuid);
+      activateElement(state, element);
     },
     resetInstalled(state, actions: PayloadAction<FormState>) {
       const element = actions.payload;
@@ -258,7 +260,7 @@ export const editorSlice = createSlice({
 
       state.dirty[element.uuid] = false;
       state.error = null;
-      state.beta = null;
+      state.beta = false;
       state.selectionSeq++;
 
       // Make sure we're not keeping any private data around from Page Editor sessions
@@ -273,13 +275,7 @@ export const editorSlice = createSlice({
         throw new Error(`Unknown dynamic element: ${action.payload}`);
       }
 
-      state.error = null;
-      state.beta = null;
-      state.activeElementId = elementId;
-      state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
-      state.activeRecipeId = null;
-      state.selectionSeq++;
-      ensureElementUIState(state, elementId);
+      activateElement(state, element);
     },
     markSaved(state, action: PayloadAction<UUID>) {
       const element = state.elements.find((x) => action.payload === x.uuid);
