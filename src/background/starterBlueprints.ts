@@ -135,7 +135,6 @@ const debouncedInstallStarterBlueprints = debounce(
   BLUEPRINT_INSTALLATION_DEBOUNCE_MS,
   {
     leading: true,
-    trailing: false,
     maxWait: BLUEPRINT_INSTALLATION_MAX_MS,
   }
 );
