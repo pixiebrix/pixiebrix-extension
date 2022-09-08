@@ -110,16 +110,16 @@ const sidebarSlice = createSlice({
     addForm(state, action: PayloadAction<{ form: FormEntry }>) {
       const { form } = action.payload;
 
-      const [currentForms, notCurrentForms] = partition(
+      const [thisExtensionForms, otherForms] = partition(
         state.forms,
         (x) => x.extensionId === form.extensionId
       );
 
       // The UUID must be fetched synchronously to ensure the `form` Proxy element doesn't expire
-      void cancelPreexistingForms(currentForms.map((form) => form.nonce));
+      void cancelPreexistingForms(thisExtensionForms.map((form) => form.nonce));
 
       state.forms = [
-        ...notCurrentForms,
+        ...otherForms,
         // Unlike panels which are sorted, forms are like a "stack", will show the latest form available
         form,
       ];
