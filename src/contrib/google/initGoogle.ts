@@ -16,12 +16,11 @@
  */
 
 import reportError from "@/telemetry/reportError";
-
-const API_KEY = process.env.GOOGLE_API_KEY;
-
 import { DISCOVERY_DOCS as SHEETS_DOCS } from "./sheets/handlers";
 import { DISCOVERY_DOCS as BIGQUERY_DOCS } from "./bigquery/handlers";
 import { isChrome } from "webext-detect-page";
+
+const API_KEY = process.env.GOOGLE_API_KEY;
 
 declare global {
   interface Window {
@@ -64,9 +63,6 @@ function initGoogle(): void {
 
   const script = document.createElement("script");
   script.src = "https://apis.google.com/js/client.js?onload=onGAPILoad";
-  script.addEventListener("error", (event) => {
-    reportError(event.error);
-  });
   document.head.append(script);
 }
 
