@@ -119,7 +119,7 @@ async function getStarterBlueprints(): Promise<RecipeDefinition[]> {
   }
 }
 
-const installStarterBlueprints = async (): Promise<boolean> => {
+const _installStarterBlueprints = async (): Promise<boolean> => {
   if (isInstallingBlueprints) {
     return false;
   }
@@ -132,7 +132,7 @@ const installStarterBlueprints = async (): Promise<boolean> => {
 };
 
 const debouncedInstallStarterBlueprints = debounce(
-  installStarterBlueprints,
+  _installStarterBlueprints,
   BLUEPRINT_INSTALLATION_DEBOUNCE_MS,
   {
     leading: true,
@@ -147,7 +147,7 @@ export async function firstTimeInstallStarterBlueprints(): Promise<void> {
     return;
   }
 
-  const installed = await installStarterBlueprints();
+  const installed = await debouncedInstallStarterBlueprints();
 
   if (installed) {
     void browser.tabs.create({
