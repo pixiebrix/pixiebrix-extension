@@ -38,9 +38,11 @@ jest.mock("@/background/util", () => ({
 
 const isLinkedMock = isLinked as jest.Mock;
 const openPlaygroundPage = browser.tabs.create as jest.Mock;
+jest.useFakeTimers();
 
 beforeEach(async () => {
   jest.resetModules();
+  jest.runAllTimers();
 
   // Reset local options state
   await saveOptions({
