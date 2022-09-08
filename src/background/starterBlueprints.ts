@@ -27,6 +27,7 @@ import reportError from "@/telemetry/reportError";
 const { reducer, actions } = extensionsSlice;
 
 const PLAYGROUND_URL = "https://www.pixiebrix.com/playground";
+let isInstallingBlueprints = false;
 
 function installBlueprint(
   state: ExtensionOptionsState,
@@ -115,8 +116,16 @@ async function getStarterBlueprints(): Promise<RecipeDefinition[]> {
 }
 
 async function installStarterBlueprints(): Promise<boolean> {
+  if (isInstallingBlueprints) {
+    return false;
+  }
+
+  isInstallingBlueprints = true;
+  console.log("Starter Blueprints: Picked up the lock!");
   const starterBlueprints = await getStarterBlueprints();
-  return installBlueprints(starterBlueprints);
+  const installed = await installBlueprints(starterBlueprints);
+  isInstallingBlueprints = false;
+  return installed;
 }
 
 export async function firstTimeInstallStarterBlueprints(): Promise<void> {
@@ -137,6 +146,7 @@ export async function firstTimeInstallStarterBlueprints(): Promise<void> {
 function initStarterBlueprints(): void {
   browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (tab?.url?.startsWith(PLAYGROUND_URL)) {
+      console.log("Starter Blueprints: You triggered an update!", tab);
       void installStarterBlueprints();
     }
   });
