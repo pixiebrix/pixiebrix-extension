@@ -18,7 +18,7 @@
 import React from "react";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { PageEditorTabContext, useDevConnection } from "@/pageEditor/context";
-import Editor from "@/pageEditor/Editor";
+import EditorLayout from "@/pageEditor/EditorLayout";
 import store, { persistor } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
 import { Provider } from "react-redux";
@@ -56,7 +56,7 @@ const Panel: React.VoidFunctionComponent = () => {
             <ErrorBoundary>
               <ErrorBanner />
               <RequireAuth LoginPage={LoginCard}>
-                <Editor />
+                <EditorLayout />
               </RequireAuth>
             </ErrorBoundary>
           </ModalProvider>
