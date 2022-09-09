@@ -30,6 +30,15 @@ export type BlueprintsState = {
   activeTab: string | null;
 };
 
+// TODO: Potential refactoring opportunity
+//
+// type ActiveTab = {
+//    key: string;
+//    tabTitle: string;
+//    filters?: Filters<InstallableViewItem>;
+// }
+//
+
 const initialState: BlueprintsState = {
   view: "list",
   groupBy: [],
