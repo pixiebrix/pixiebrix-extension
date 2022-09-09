@@ -29,6 +29,7 @@ import React, { useMemo } from "react";
 import { TableInstance } from "react-table";
 import useReduxState from "@/hooks/useReduxState";
 import {
+  selectActiveTab,
   selectFilters,
   selectGroupBy,
   selectSortBy,
@@ -63,6 +64,7 @@ const BlueprintsToolbar: React.FunctionComponent<{
   );
 
   const filters = useSelector(selectFilters);
+  const activeTab = useSelector(selectActiveTab);
 
   const isGrouped = groupBy.length > 0;
 
@@ -89,13 +91,21 @@ const BlueprintsToolbar: React.FunctionComponent<{
     return { groupByOptions, sortByOptions };
   }, [flatHeaders]);
 
+  const tabContentTitle = useMemo(() => {
+    if (activeTab) {
+      return activeTab;
+    }
+
+    if (globalFilter) {
+      return `${numberOfBlueprints} results for "${globalFilter}"`;
+    }
+
+    return `${filters.length > 0 ? filters[0].value : "All"} Blueprints`;
+  }, [activeTab, filters, globalFilter, numberOfBlueprints]);
+
   return (
     <div className="d-flex justify-content-between align-items-center mb-3">
-      <h3 className={styles.filterTitle}>
-        {globalFilter
-          ? `${numberOfBlueprints} results for "${globalFilter}"`
-          : `${filters.length > 0 ? filters[0].value : "All"} Blueprints`}
-      </h3>
+      <h3 className={styles.filterTitle}>{tabContentTitle}</h3>
       <span className="d-flex align-items-center small">
         <span className="ml-3 mr-2">Group by:</span>
         <Select
