@@ -27,6 +27,7 @@ export type BlueprintsState = {
   groupBy: string[];
   sortBy: Array<SortingRule<InstallableViewItem>>;
   filters: Filters<InstallableViewItem>;
+  activeTab: string | null;
 };
 
 const initialState: BlueprintsState = {
@@ -34,6 +35,7 @@ const initialState: BlueprintsState = {
   groupBy: [],
   sortBy: [],
   filters: [{ id: "status", value: "Active" }],
+  activeTab: null,
 };
 
 const blueprintsSlice = createSlice({
@@ -59,6 +61,9 @@ const blueprintsSlice = createSlice({
       { payload: filters }: PayloadAction<Filters<InstallableViewItem>>
     ) {
       state.filters = filters;
+    },
+    setActiveTab(state, { payload: tab }: PayloadAction<string>) {
+      state.activeTab = tab;
     },
   },
 });

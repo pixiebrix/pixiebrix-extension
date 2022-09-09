@@ -3,7 +3,7 @@ import styles from "./ListFilters.module.scss";
 import { Col, Form, Nav } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import useReduxState from "@/hooks/useReduxState";
-import { selectFilters } from "./blueprintsSelectors";
+import { selectActiveTab, selectFilters } from "./blueprintsSelectors";
 import blueprintsSlice from "./blueprintsSlice";
 import { useDebounce } from "use-debounce";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,6 +12,7 @@ import {
   faCheck,
   faExternalLinkAlt,
   faGlobe,
+  faHeart,
   faUser,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
@@ -31,6 +32,10 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
     selectFilters,
     blueprintsSlice.actions.setFilters
   );
+  const [activeTab, setActiveTab] = useReduxState(
+    selectActiveTab,
+    blueprintsSlice.actions.setActiveTab
+  );
   const [query, setQuery] = useState("");
   const [debouncedQuery] = useDebounce(query, 300, {
     trailing: true,
@@ -47,7 +52,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
     }
   }, [debouncedQuery, setFilters, setGlobalFilter]);
 
-  const activeKey = filters[0]?.value ?? "All";
+  const activeKey = activeTab ?? filters[0]?.value ?? "All";
 
   return (
     <Col sm={12} md={3} xl={2} className={styles.root}>
@@ -68,12 +73,23 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
         defaultActiveKey={activeKey}
         activeKey={activeKey}
       >
+        <Nav.Item>
+          <Nav.Link
+            eventKey="Welcome"
+            onClick={() => {
+              setActiveTab("Welcome");
+            }}
+          >
+            <FontAwesomeIcon icon={faHeart} /> Welcome
+          </Nav.Link>
+        </Nav.Item>
         <h5>Category Filters</h5>
         <Nav.Item>
           <Nav.Link
             eventKey="Active"
             onClick={() => {
               setFilters([{ id: "status", value: "Active" }]);
+              setActiveTab(null);
             }}
           >
             <FontAwesomeIcon icon={faCheck} /> Active
@@ -84,6 +100,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
             eventKey="All"
             onClick={() => {
               setFilters([]);
+              setActiveTab(null);
             }}
           >
             <FontAwesomeIcon icon={faAsterisk} /> All Blueprints
@@ -98,6 +115,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
                   setFilters([
                     { id: "sharing.source.label", value: "Personal" },
                   ]);
+                  setActiveTab(null);
                 }}
               >
                 <FontAwesomeIcon icon={faUser} /> Personal
@@ -108,6 +126,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
                 eventKey="Public"
                 onClick={() => {
                   setFilters([{ id: "sharing.source.label", value: "Public" }]);
+                  setActiveTab(null);
                 }}
               >
                 <FontAwesomeIcon icon={faGlobe} /> Public Marketplace
@@ -122,6 +141,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
               eventKey={filter}
               onClick={() => {
                 setFilters([{ id: "sharing.source.label", value: filter }]);
+                setActiveTab(null);
               }}
             >
               <FontAwesomeIcon icon={faUsers} /> {filter}
