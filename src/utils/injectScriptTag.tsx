@@ -15,25 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "@/vendors/overrides.scss";
-import "@/utils/layout.scss";
-
-import "@/extensionContext";
-import "@/development/darkMode";
-
-import registerMessenger from "@/pageEditor/messenger/registration";
-
-import ReactDOM from "react-dom";
-import React from "react";
-import Panel from "@/pageEditor/Panel";
-import { watchNavigation } from "@/pageEditor/protocol";
-import initGoogle from "@/contrib/google/initGoogle";
-import { initToaster } from "@/utils/notify";
-
-registerMessenger();
-void initGoogle();
-watchNavigation();
-initToaster();
-
-ReactDOM.render(<Panel />, document.querySelector("#container"));
+/** Loads a script URL via `script` tag. Resolves with `script` tag or throws when it fails. */
+export default async function injectScriptTag(
+  source: string
+): Promise<HTMLScriptElement> {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = source;
+    script.addEventListener("error", (event) => {
+      // The cause will most likely be `undefined`
+      reject(new Error("Script failed loading", { cause: event.error }));
+    });
+    script.addEventListener("load", () => {
+      resolve(script);
+    });
+    (document.head ?? document.documentElement).append(script);
+  });
+}

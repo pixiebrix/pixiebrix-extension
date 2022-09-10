@@ -28,13 +28,7 @@ export const DISCOVERY_DOCS: string[] = [
   "https://bigquery.googleapis.com/discovery/v1/apis/bigquery/v2/rest",
 ];
 
-const initialized = false;
-
 async function ensureBigQuery(): Promise<void> {
-  if (initialized) {
-    return;
-  }
-
   // https://github.com/google/google-api-javascript-client/blob/master/docs/reference.md
   try {
     await gapi.client.load("bigquery", "v2");
