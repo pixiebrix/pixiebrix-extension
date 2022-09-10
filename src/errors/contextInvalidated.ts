@@ -16,7 +16,6 @@
  */
 
 import { expectContext } from "@/utils/expectContext";
-import notify from "@/utils/notify";
 import { once } from "lodash";
 import {
   CONTEXT_INVALIDATED_ERROR,
@@ -30,7 +29,11 @@ const id = "connection-lost";
  * Display a notification when the background page unloads/reloads because at this point
  * all communcation becomes impossible.
  */
-export function notifyContextInvalidated(): void {
+export async function notifyContextInvalidated(): Promise<void> {
+  // `import()` is only needed to avoid execution of its dependencies, not to lazy-load it
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/4058#issuecomment-1217391772
+  // eslint-disable-next-line import/dynamic-import-chunkname
+  const { notify } = await import(/* webpackMode: "eager" */ "@/utils/notify");
   notify.error({
     id,
     message: "PixieBrix was updated or restarted. Reload the page to continue",

@@ -35,7 +35,7 @@
 
 import { UUID } from "@/core";
 import { Target } from "@/types";
-import { expectContext } from "@/utils/expectContext";
+import { forbidContext } from "@/utils/expectContext";
 import { executeFunction } from "webext-content-scripts";
 
 const html = globalThis.document?.documentElement;
@@ -86,10 +86,14 @@ export function unsetReadyInThisDocument(uuid: UUID): void {
  * @throws Error if background page doesn't have permission to access the tab
  * */
 export async function getTargetState(target: Target): Promise<TargetState> {
-  expectContext("background");
+  forbidContext(
+    "web",
+    "chrome.tabs is only available in chrome-extension:// pages"
+  );
 
   return executeFunction(target, () => {
-    // Thise two must also be inlined here because `executeFunction` does not include non-local variables
+    // This function does not have access to globals, the outside scope, nor `import()`
+    // These two symbols must be repeated inline
     const CONTENT_SCRIPT_INJECTED_SYMBOL = Symbol.for(
       "content-script-injected"
     );
@@ -97,7 +101,9 @@ export async function getTargetState(target: Target): Promise<TargetState> {
     return {
       url: location.href,
       installed: CONTENT_SCRIPT_INJECTED_SYMBOL in globalThis,
-      ready: html.hasAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE),
+      ready: document.documentElement.hasAttribute(
+        CONTENT_SCRIPT_READY_ATTRIBUTE
+      ),
     };
   });
 }
