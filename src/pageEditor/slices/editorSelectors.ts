@@ -51,6 +51,14 @@ export const selectShowV3UpgradeMessageForActiveElement = createSelector(
     showV3UpgradeMessageByElement[activeElementId] ?? false
 );
 
+export const selectInserting = ({ editor }: EditorRootState) =>
+  editor.inserting;
+
+export const selectErrorState = ({ editor }: EditorRootState) => ({
+  isBetaError: editor.error && editor.beta,
+  editorError: editor.error,
+});
+
 export const selectDirty = ({ editor }: EditorRootState) => editor.dirty;
 
 export const selectDirtyRecipeOptions = ({ editor }: EditorRootState) =>

@@ -55,7 +55,10 @@ const AsyncButton: React.FunctionComponent<AsyncButtonProps> = ({
     <Button
       disabled={manualDisabled || pending}
       {...buttonProps}
-      onClick={handleClick}
+      onClick={(event) => {
+        event.stopPropagation();
+        void handleClick();
+      }}
     >
       {children}
     </Button>

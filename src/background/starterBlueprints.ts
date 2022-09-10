@@ -23,74 +23,147 @@ import { forEachTab } from "@/background/util";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";
+import { debounce } from "lodash";
 
 const { reducer, actions } = extensionsSlice;
 
-function installStarterBlueprint(
+const PLAYGROUND_URL = "https://www.pixiebrix.com/playground";
+let isInstallingBlueprints = false;
+const BLUEPRINT_INSTALLATION_DEBOUNCE_MS = 10_000;
+const BLUEPRINT_INSTALLATION_MAX_MS = 60_000;
+
+function installBlueprint(
   state: ExtensionOptionsState,
-  starterBlueprint: RecipeDefinition
+  blueprint: RecipeDefinition
 ): ExtensionOptionsState {
   return reducer(
     state,
     actions.installRecipe({
-      recipe: starterBlueprint,
-      extensionPoints: starterBlueprint.extensionPoints,
+      recipe: blueprint,
+      extensionPoints: blueprint.extensionPoints,
     })
   );
 }
 
-export async function installStarterBlueprints(): Promise<void> {
+async function installBlueprints(
+  blueprints: RecipeDefinition[]
+): Promise<boolean> {
+  let installed = false;
+  if (blueprints.length === 0) {
+    return installed;
+  }
+
+  let extensionsState = await loadOptions();
+  for (const blueprint of blueprints) {
+    const blueprintAlreadyInstalled = extensionsState.extensions.some(
+      (extension) => extension._recipe.id === blueprint.metadata.id
+    );
+
+    if (!blueprintAlreadyInstalled) {
+      extensionsState = installBlueprint(extensionsState, blueprint);
+      installed = true;
+    }
+  }
+
+  await saveOptions(extensionsState);
+  await forEachTab(queueReactivateTab);
+  return installed;
+}
+
+async function getShouldFirstTimeInstall(): Promise<boolean> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
       "Skipping starter blueprint installation because the extension is not linked to the PixieBrix service"
     );
-    return;
+    return false;
+  }
+
+  try {
+    const {
+      data: { install_starter_blueprints: shouldInstall },
+    } = await client.get("/api/onboarding/starter-blueprints/install/");
+
+    if (shouldInstall) {
+      // If the starter blueprint request fails for some reason, or the user's primary organization
+      // gets removed, we'd still like to mark starter blueprints as installed for this user
+      // so that they don't see onboarding views/randomly have starter blueprints installed
+      // the next time they open the extension
+      await client.post("/api/onboarding/starter-blueprints/install/");
+    }
+
+    return shouldInstall;
+  } catch (error) {
+    reportError(error);
+    return false;
+  }
+}
+
+async function getStarterBlueprints(): Promise<RecipeDefinition[]> {
+  const client = await maybeGetLinkedApiClient();
+  if (client == null) {
+    console.debug(
+      "Skipping starter blueprint installation because the extension is not linked to the PixieBrix service"
+    );
+    return [];
   }
 
   try {
     const { data: starterBlueprints } = await client.get<RecipeDefinition[]>(
       "/api/onboarding/starter-blueprints/"
     );
-
-    // If the starter blueprint request fails for some reason, or the user's primary organization
-    // gets removed, we'd still like to mark starter blueprints as installed for this user
-    // so that they don't see onboarding views/randomly have starter blueprints installed
-    // the next time they open the extension
-    await client.post("/api/onboarding/starter-blueprints/install/");
-
-    if (starterBlueprints.length === 0) {
-      return;
-    }
-
-    let extensionsState = await loadOptions();
-
-    for (const starterBlueprint of starterBlueprints) {
-      const blueprintAlreadyInstalled = extensionsState.extensions.some(
-        (extension) => extension._recipe.id === starterBlueprint.metadata.id
-      );
-
-      if (!blueprintAlreadyInstalled) {
-        extensionsState = installStarterBlueprint(
-          extensionsState,
-          starterBlueprint
-        );
-      }
-    }
-
-    await saveOptions(extensionsState);
-
-    await forEachTab(queueReactivateTab);
-    void browser.tabs.create({
-      url: "https://www.pixiebrix.com/playground",
-    });
+    return starterBlueprints;
   } catch (error) {
     reportError(error);
+    return [];
+  }
+}
+
+const _installStarterBlueprints = async (): Promise<boolean> => {
+  if (isInstallingBlueprints) {
+    return false;
+  }
+
+  isInstallingBlueprints = true;
+  const starterBlueprints = await getStarterBlueprints();
+  const installed = await installBlueprints(starterBlueprints);
+  isInstallingBlueprints = false;
+  return installed;
+};
+
+const debouncedInstallStarterBlueprints = debounce(
+  _installStarterBlueprints,
+  BLUEPRINT_INSTALLATION_DEBOUNCE_MS,
+  {
+    leading: true,
+    trailing: false,
+    maxWait: BLUEPRINT_INSTALLATION_MAX_MS,
+  }
+);
+
+export async function firstTimeInstallStarterBlueprints(): Promise<void> {
+  const shouldInstall = await getShouldFirstTimeInstall();
+  if (!shouldInstall) {
+    return;
+  }
+
+  const installed = await debouncedInstallStarterBlueprints();
+
+  if (installed) {
+    void browser.tabs.create({
+      url: PLAYGROUND_URL,
+    });
   }
 }
 
 function initStarterBlueprints(): void {
-  void installStarterBlueprints();
+  browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (tab?.url?.startsWith(PLAYGROUND_URL)) {
+      void debouncedInstallStarterBlueprints();
+    }
+  });
+
+  void firstTimeInstallStarterBlueprints();
 }
 
 export default initStarterBlueprints;
