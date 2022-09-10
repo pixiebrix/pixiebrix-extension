@@ -47,7 +47,7 @@ function ignoreContextInvalidatedErrors(
   // they're actually interacting with PixieBrix, otherwise they might receive the notification
   // at random times.
   if (isContextInvalidatedError(errorEvent)) {
-    notifyContextInvalidated();
+    void notifyContextInvalidated();
     errorEvent.preventDefault();
   }
 }
