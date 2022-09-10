@@ -51,7 +51,7 @@ initBrowserAction();
 initInstaller();
 initNavigation();
 initExecutor();
-initGoogle();
+void initGoogle();
 initContextMenus();
 initBrowserCommands();
 initDeploymentUpdater();

@@ -24,7 +24,9 @@ export default async function injectScriptTag(
     script.src = source;
     script.addEventListener("error", (event) => {
       // The cause will most likely be `undefined`
-      reject(new Error("Script failed loading", { cause: event.error }));
+      reject(
+        new Error(`Script failed loading: ${source}`, { cause: event.error })
+      );
     });
     script.addEventListener("load", () => {
       resolve(script);
