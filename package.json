@@ -142,7 +142,7 @@
     "timezone-mock": "^1.2.2",
     "to-json-schema": "^0.2.5",
     "url-join": "^5.0.0",
-    "urlpattern-polyfill": "^5.0.3",
+    "urlpattern-polyfill": "^5.0.9",
     "use-async-effect": "^2.2.7",
     "use-debounce": "^8.0.0",
     "use-immer": "^0.7.0",
