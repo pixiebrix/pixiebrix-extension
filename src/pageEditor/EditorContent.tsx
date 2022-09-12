@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useEffect } from "react";
-import { PageEditorTabContext } from "@/pageEditor/context";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
@@ -36,10 +35,16 @@ import {
   selectElements,
   selectErrorState,
 } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectTabHasPermissions,
+  selectTabIsConnectingToContentScript,
+} from "@/pageEditor/tabState/tabStateSelectors";
 
 const EditorContent: React.FC = () => {
-  const { tabState, connecting: isConnectingToContentScript } =
-    useContext(PageEditorTabContext);
+  const tabHasPermissions = useSelector(selectTabHasPermissions);
+  const isConnectingToContentScript = useSelector(
+    selectTabIsConnectingToContentScript
+  );
   const installed = useSelector(selectExtensions);
   const sessionId = useSelector(selectSessionId);
   const elements = useSelector(selectElements);
@@ -68,9 +73,7 @@ const EditorContent: React.FC = () => {
     };
   }, [sessionId]);
 
-  // Need to explicitly check for `false` because hasPermissions will be undefined if pending/error
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
-  if (tabState.hasPermissions === false && !isConnectingToContentScript) {
+  if (!tabHasPermissions && !isConnectingToContentScript) {
     // Check `connecting` to optimistically show the main interface while the devtools are connecting to the page.
     return <PermissionsPane />;
   }

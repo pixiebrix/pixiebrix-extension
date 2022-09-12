@@ -61,10 +61,6 @@ import {
   ExtensionPointDefinition as ExtensionPointConfigDefinition,
   ExtensionPointType,
 } from "@/extensionPoints/types";
-import {
-  Context as PageEditorTabContextType,
-  FrameConnectionState,
-} from "@/pageEditor/context";
 import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
 import {
   CloudExtension,
@@ -86,6 +82,7 @@ import {
 import { JsonObject } from "type-fest";
 import objectHash from "object-hash";
 import { makeEmptyPermissions } from "@/utils/permissions";
+import { FrameConnectionState } from "@/pageEditor/tabState/tabStateTypes";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -181,16 +178,11 @@ export const installedRecipeMetadataFactory = define<RecipeMetadata>({
   sharing: sharingDefinitionFactory,
 });
 
-const tabStateFactory = define<FrameConnectionState>({
+const frameConnectionStateFactory = define<FrameConnectionState>({
   frameId: 0,
   hasPermissions: true,
   navSequence: uuidSequence,
   meta: null,
-});
-
-export const activeDevToolContextFactory = define<PageEditorTabContextType>({
-  connecting: false,
-  tabState: tabStateFactory,
 });
 
 export const extensionFactory = define<IExtension>({
