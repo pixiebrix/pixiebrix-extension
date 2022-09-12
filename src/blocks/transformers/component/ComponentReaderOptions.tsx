@@ -74,7 +74,7 @@ const ComponentReaderOptions: React.FunctionComponent<BlockOptionProps> = ({
   const [{ value: framework }, , frameworkHelpers] =
     useField<Framework>(frameworkFieldName);
 
-  const frameworkOptions = useFrameworkOptions(meta.frameworks);
+  const frameworkOptions = useFrameworkOptions(meta?.frameworks ?? []);
 
   useEffect(() => {
     if (isNullOrBlank(framework)) {

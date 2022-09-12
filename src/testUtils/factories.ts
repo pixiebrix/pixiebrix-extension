@@ -82,7 +82,6 @@ import {
 import { JsonObject } from "type-fest";
 import objectHash from "object-hash";
 import { makeEmptyPermissions } from "@/utils/permissions";
-import { FrameConnectionState } from "@/pageEditor/tabState/tabStateTypes";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -176,13 +175,6 @@ export const installedRecipeMetadataFactory = define<RecipeMetadata>({
   version: validateSemVerString("1.0.0"),
   updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
   sharing: sharingDefinitionFactory,
-});
-
-const frameConnectionStateFactory = define<FrameConnectionState>({
-  frameId: 0,
-  hasPermissions: true,
-  navSequence: uuidSequence,
-  meta: null,
 });
 
 export const extensionFactory = define<IExtension>({
