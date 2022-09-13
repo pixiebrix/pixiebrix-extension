@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { RecipeMetadata, RegistryId, UUID } from "@/core";
@@ -35,19 +35,37 @@ import {
   EditorState,
   AddBlockLocation,
   ModalKey,
+  EditorRootState,
 } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
-import { cloneDeep, get, isEmpty } from "lodash";
+import { cloneDeep, compact, get, isEmpty } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import { getInvalidPath } from "@/utils/debugUtils";
 import {
   selectActiveElement,
+  selectActiveElementId,
   selectActiveElementUIState,
+  selectNotDeletedElements,
+  selectNotDeletedExtensions,
 } from "./editorSelectors";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import {
+  FormState,
+  isQuickBarExtensionPoint,
+} from "@/pageEditor/extensionPoints/formStateTypes";
+import { ExtensionsRootState } from "@/store/extensionsTypes";
+import {
+  checkAvailable,
+  getInstalledExtensionPoints,
+} from "@/contentScript/messenger/api";
+import { getCurrentURL, thisTab } from "@/pageEditor/utils";
+import { resolveDefinitions } from "@/registry/internal";
+import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
+import { testMatchPatterns } from "@/blocks/available";
+import reportError from "@/telemetry/reportError";
+import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -69,6 +87,11 @@ export const initialState: EditorState = {
   keepLocalCopyOnCreateRecipe: false,
   deletedElementsByRecipeId: {},
   newRecipeIds: [],
+  availableInstalledIds: new Set<UUID>(),
+  isLoadingInstalledExtensions: false,
+  availableDynamicIds: new Set<UUID>(),
+  isLoadingDynamicExtensions: false,
+  unavailableCount: 0,
 };
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
@@ -205,6 +228,107 @@ function activateElement(
 
   ensureElementUIState(state, element.uuid);
 }
+
+type AvailableInstalled = {
+  availableInstalledIds: Set<UUID>;
+  unavailableCount: number;
+};
+
+const checkAvailableInstalledExtensions = createAsyncThunk<
+  AvailableInstalled,
+  void,
+  { state: EditorRootState & ExtensionsRootState }
+>("editor/checkAvailableInstalledExtensions", async (arg, thunkAPI) => {
+  const extensions = selectNotDeletedExtensions(thunkAPI.getState());
+  const installedExtensionPoints = new Map(
+    // eslint-disable-next-line unicorn/no-await-expression-member
+    (await getInstalledExtensionPoints(thisTab)).map((extensionPoint) => [
+      extensionPoint.id,
+      extensionPoint,
+    ])
+  );
+  const resolved = await Promise.all(
+    extensions.map(async (extension) => resolveDefinitions(extension))
+  );
+  const tabUrl = await getCurrentURL();
+  const availableExtensionPointIds = resolved
+    .filter((x) => {
+      const extensionPoint = installedExtensionPoints.get(x.extensionPointId);
+      // Not installed means not available
+      if (extensionPoint == null) {
+        return false;
+      }
+
+      // QuickBar is installed on every page, need to filter by the documentUrlPatterns
+      if (QuickBarExtensionPoint.isQuickBarExtensionPoint(extensionPoint)) {
+        return testMatchPatterns(extensionPoint.documentUrlPatterns, tabUrl);
+      }
+
+      return true;
+    })
+    .map((x) => x.id);
+
+  const availableInstalledIds = new Set<UUID>(
+    extensions
+      .filter((x) => availableExtensionPointIds.includes(x.id))
+      .map((x) => x.id)
+  );
+  const unavailableCount = extensions.length - availableInstalledIds.size;
+
+  return { availableInstalledIds, unavailableCount };
+});
+
+async function isElementAvailable(
+  tabUrl: string,
+  elementExtensionPoint: BaseExtensionPointState
+): Promise<boolean> {
+  console.log(
+    `checking availability for ${elementExtensionPoint?.metadata?.name}`
+  );
+
+  return isQuickBarExtensionPoint(elementExtensionPoint)
+    ? testMatchPatterns(
+        elementExtensionPoint.definition.documentUrlPatterns,
+        tabUrl
+      )
+    : checkAvailable(thisTab, elementExtensionPoint.definition.isAvailable);
+}
+
+const checkAvailableDynamicElements = createAsyncThunk<
+  { availableDynamicIds: Set<UUID> },
+  void,
+  { state: EditorRootState }
+>("editor/checkAvailableDynamicElements", async (arg, thunkAPI) => {
+  const elements = selectNotDeletedElements(thunkAPI.getState());
+  const tabUrl = await getCurrentURL();
+  const availableElementIds = await Promise.all(
+    elements.map(async ({ uuid, extensionPoint: elementExtensionPoint }) => {
+      console.log(
+        `checking availability for ${elementExtensionPoint?.metadata?.name}`
+      );
+
+      const isAvailable = await isElementAvailable(
+        tabUrl,
+        elementExtensionPoint
+      );
+
+      return isAvailable ? uuid : null;
+    })
+  );
+
+  return { availableDynamicIds: new Set<UUID>(compact(availableElementIds)) };
+});
+
+const checkActiveElementAvailability = createAsyncThunk<
+  { isAvailable: boolean },
+  void,
+  { state: EditorRootState }
+>("editor/checkDynamicElementAvailability", async (arg, thunkAPI) => {
+  const tabUrl = await getCurrentURL();
+  const element = selectActiveElement(thunkAPI.getState());
+  const isAvailable = await isElementAvailable(tabUrl, element.extensionPoint);
+  return { isAvailable };
+});
 
 export const editorSlice = createSlice({
   name: "editor",
@@ -707,7 +831,62 @@ export const editorSlice = createSlice({
       state.visibleModalKey = null;
     },
   },
+  extraReducers(builder) {
+    builder
+      .addCase(checkAvailableInstalledExtensions.pending, (state) => {
+        state.isLoadingInstalledExtensions = true;
+      })
+      .addCase(
+        checkAvailableInstalledExtensions.fulfilled,
+        (state, { payload }) => {
+          const { availableInstalledIds, unavailableCount } = payload;
+          state.isLoadingInstalledExtensions = false;
+          state.availableInstalledIds = availableInstalledIds;
+          state.unavailableCount = unavailableCount;
+        }
+      )
+      .addCase(
+        checkAvailableInstalledExtensions.rejected,
+        (state, { error }) => {
+          state.isLoadingInstalledExtensions = false;
+          state.unavailableCount = 0;
+          reportError(error);
+        }
+      )
+      .addCase(checkAvailableDynamicElements.pending, (state) => {
+        state.isLoadingDynamicExtensions = true;
+      })
+      .addCase(
+        checkAvailableDynamicElements.fulfilled,
+        (state, { payload }) => {
+          const { availableDynamicIds } = payload;
+          state.isLoadingDynamicExtensions = false;
+          state.availableDynamicIds = availableDynamicIds;
+        }
+      )
+      .addCase(checkAvailableDynamicElements.rejected, (state, { error }) => {
+        state.isLoadingDynamicExtensions = false;
+        reportError(error);
+      })
+      .addCase(
+        checkActiveElementAvailability.fulfilled,
+        (state, { payload }) => {
+          const { isAvailable } = payload;
+          const activeElementId = selectActiveElementId({ editor: state });
+          if (isAvailable) {
+            state.availableDynamicIds.add(activeElementId);
+          } else {
+            state.availableDynamicIds.delete(activeElementId);
+          }
+        }
+      );
+  },
 });
 /* eslint-enable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- re-enable rule */
 
-export const { actions } = editorSlice;
+export const actions = {
+  ...editorSlice.actions,
+  checkAvailableInstalledExtensions,
+  checkAvailableDynamicElements,
+  checkActiveElementAvailability,
+};

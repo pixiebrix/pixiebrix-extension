@@ -46,6 +46,7 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   const syncReduxState = useDebouncedCallback(
     (values: FormState) => {
       dispatch(editorActions.editElement(values));
+      dispatch(editorActions.checkActiveElementAvailability());
     },
     REDUX_SYNC_WAIT_MILLIS,
     { trailing: true, leading: false }

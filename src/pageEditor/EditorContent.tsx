@@ -17,11 +17,9 @@
 
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
-import useInstallState from "@/pageEditor/hooks/useInstallState";
 import PermissionsPane from "@/pageEditor/panes/PermissionsPane";
 import BetaPane from "@/pageEditor/panes/BetaPane";
 import EditorPane from "@/pageEditor/panes/EditorPane";
@@ -32,8 +30,9 @@ import WelcomePane from "@/pageEditor/panes/WelcomePane";
 import {
   selectActiveElementId,
   selectActiveRecipeId,
-  selectElements,
   selectErrorState,
+  selectExtensionAvailability,
+  selectNotDeletedExtensions,
 } from "@/pageEditor/slices/editorSelectors";
 import {
   selectTabHasPermissions,
@@ -45,18 +44,19 @@ const EditorContent: React.FC = () => {
   const isConnectingToContentScript = useSelector(
     selectTabIsConnectingToContentScript
   );
-  const installed = useSelector(selectExtensions);
+  const installed = useSelector(selectNotDeletedExtensions);
   const sessionId = useSelector(selectSessionId);
-  const elements = useSelector(selectElements);
   const { isBetaError, editorError } = useSelector(selectErrorState);
   const activeElementId = useSelector(selectActiveElementId);
   const activeRecipeId = useSelector(selectActiveRecipeId);
-
   const {
     availableDynamicIds,
     unavailableCount,
-    loading: isLoadingExtensions,
-  } = useInstallState(installed, elements);
+    isLoadingInstalledExtensions,
+    isLoadingDynamicExtensions,
+  } = useSelector(selectExtensionAvailability);
+  const isLoadingExtensions =
+    isLoadingInstalledExtensions || isLoadingDynamicExtensions;
 
   // Fetch-and-cache marketplace content for rendering in the Brick Selection modal
   useGetMarketplaceListingsQuery();
