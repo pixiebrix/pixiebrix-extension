@@ -30,16 +30,16 @@ import { pollUntilTruthy } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";
 import reportError from "@/telemetry/reportError";
-import { groupBy } from "lodash";
+import { groupBy, once } from "lodash";
 import { resolveDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { $safeFind } from "@/helpers";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
+import injectScriptTag from "@/utils/injectScriptTag";
 
 let _initialLoadNavigation = true;
-let _scriptPromise: Promise<void> | undefined;
 const _dynamic = new Map<UUID, IExtensionPoint>();
 const _frameHref = new Map<number, string>();
 let _extensionPoints: IExtensionPoint[];
@@ -51,25 +51,12 @@ let _reloadOnNextNavigate = false;
 
 const WAIT_LOADED_INTERVAL_MS = 25;
 
-async function installScriptOnce(): Promise<void> {
-  // https://stackoverflow.com/questions/9515704/insert-code-into-the-page-context-using-a-content-script/9517879#9517879
-  // https://stackoverflow.com/questions/9602022/chrome-extension-retrieving-global-variable-from-webpage
-  if (_scriptPromise == null) {
-    console.debug("Installing page script");
-    _scriptPromise = new Promise((resolve) => {
-      const script = document.createElement("script");
-      script.src = browser.runtime.getURL("pageScript.js");
-      (document.head || document.documentElement).append(script);
-      script.addEventListener("load", () => {
-        script.remove();
-        console.debug("Installed page script");
-        resolve();
-      });
-    });
-  }
-
-  return _scriptPromise;
-}
+const installScriptOnce = once(async (): Promise<void> => {
+  console.debug("Installing page script");
+  const script = await injectScriptTag(browser.runtime.getURL("pageScript.js"));
+  script.remove();
+  console.debug("Installed page script");
+});
 
 async function runExtensionPoint(
   extensionPoint: IExtensionPoint,
