@@ -26,14 +26,13 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
 import useExtensionTrace from "@/pageEditor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationDataPanel";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import {
   selectActiveNodeId,
   selectActiveNodeInfo,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
-import useBlockPipelineActions from "@/pageEditor/tabs/editTab/useBlockPipelineActions";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import UnsupportedApiV1 from "@/pageEditor/tabs/editTab/UnsupportedApiV1";
 import TooltipIconButton from "@/components/TooltipIconButton";
@@ -42,10 +41,14 @@ import cx from "classnames";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import useReportTraceError from "./useReportTraceError";
 import FoundationNodeConfigPanel from "./FoundationNodeConfigPanel";
+import { UUID } from "@/core";
+import { actions } from "@/pageEditor/slices/editorSlice";
 
 const EditTab: React.FC<{
   eventKey: string;
 }> = ({ eventKey }) => {
+  const dispatch = useDispatch();
+
   useExtensionTrace();
   useReportTraceError();
 
@@ -69,8 +72,17 @@ const EditTab: React.FC<{
   const { blockId, path: fieldName } = useSelector(selectActiveNodeInfo) ?? {};
   const pipelineMap = useSelector(selectPipelineMap);
 
-  const { removeBlock, moveBlockUp, moveBlockDown, copyBlock, pasteBlock } =
-    useBlockPipelineActions(pipelineMap, values);
+  function removeBlock(nodeIdToRemove: UUID) {
+    dispatch(actions.removeNode(nodeIdToRemove));
+  }
+
+  function copyBlock(instanceId: UUID) {
+    // eslint-disable-next-line security/detect-object-injection -- UUID
+    const blockToCopy = pipelineMap[instanceId]?.blockConfig;
+    if (blockToCopy) {
+      dispatch(actions.copyBlockConfig(blockToCopy));
+    }
+  }
 
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
@@ -110,9 +122,6 @@ const EditTab: React.FC<{
               pipeline={blockPipeline}
               extensionPointLabel={extensionPointLabel}
               extensionPointIcon={extensionPointIcon}
-              moveBlockUp={moveBlockUp}
-              moveBlockDown={moveBlockDown}
-              pasteBlock={pasteBlock}
             />
           </div>
         </div>
