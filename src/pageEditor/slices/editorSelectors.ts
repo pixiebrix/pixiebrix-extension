@@ -258,13 +258,8 @@ const annotationsForPathSelector = createSelector(
     },
     (state, path: string) => path,
   ],
-  (extensionAnnotations, path) => {
-    const pathAnnotations = extensionAnnotations.filter(
-      (x) => x.position.path === path
-    );
-
-    return pathAnnotations;
-  }
+  (extensionAnnotations, path) =>
+    extensionAnnotations.filter((x) => x.position.path === path)
 );
 
 /**
@@ -273,3 +268,6 @@ const annotationsForPathSelector = createSelector(
  */
 export const selectAnnotationsForPath = (path: string) => (state: RootState) =>
   annotationsForPathSelector(state, path);
+
+export const selectCopiedBlock = ({ editor }: EditorRootState) =>
+  editor.copiedBlock;
