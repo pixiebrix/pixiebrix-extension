@@ -24,8 +24,10 @@ import {
   isReadyInThisDocument,
   setInstalledInThisSession,
   setReadyInThisDocument,
+  unsetReadyInThisDocument,
 } from "@/contentScript/ready";
 import { logPromiseDuration } from "@/utils";
+import { onContextInvalidated } from "@/errors/contextInvalidated";
 
 // See note in `@/contentScript/ready.ts` for further details about the lifecycle of content scripts
 async function initContentScript() {
@@ -49,12 +51,22 @@ async function initContentScript() {
   setInstalledInThisSession();
 
   // Keeping the import separate ensures that no side effects are run until this point
-  const { init } = await logPromiseDuration(
-    "contentScript: imported", // "imported" timing includes the parsing of the file, which can take 500-1000ms
-    import(/* webpackChunkName: "contentScriptCore" */ "./contentScriptCore")
+  const contentScript = import(
+    /* webpackChunkName: "contentScriptCore" */ "./contentScriptCore"
   );
+
+  // "imported" timing includes the parsing of the file, which can take 500-1000ms
+  void logPromiseDuration("contentScript: imported", contentScript);
+
+  const { init } = await contentScript;
   await init(uuid);
   setReadyInThisDocument(uuid);
+
+  // eslint-disable-next-line promise/prefer-await-to-then -- It's an unrelated event listener
+  void onContextInvalidated().then(() => {
+    unsetReadyInThisDocument(uuid);
+    console.debug("contentScript: invalidated", uuid);
+  });
 }
 
 void logPromiseDuration("contentScript: ready", initContentScript()).catch(

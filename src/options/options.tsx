@@ -34,6 +34,6 @@ function init(): void {
 }
 
 registerMessenger();
-initGoogle();
+void initGoogle();
 initToaster();
 init();
