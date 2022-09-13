@@ -15,11 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React from "react";
 import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
-import { useFormikContext } from "formik";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import EditorNodeConfigPanel from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -30,7 +28,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import {
   selectActiveNodeId,
-  selectActiveNodeInfo,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
@@ -38,7 +35,6 @@ import UnsupportedApiV1 from "@/pageEditor/tabs/editTab/UnsupportedApiV1";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import useReportTraceError from "./useReportTraceError";
 import FoundationNodeConfigPanel from "./FoundationNodeConfigPanel";
 import { UUID } from "@/core";
@@ -52,29 +48,10 @@ const EditTab: React.FC<{
   useExtensionTrace();
   useReportTraceError();
 
-  const { values } = useFormikContext<FormState>();
-
-  const {
-    extensionPoint,
-    type: extensionPointType,
-    extension: { blockPipeline },
-  } = values;
-
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
-
-  const {
-    label: extensionPointLabel,
-    icon: extensionPointIcon,
-    EditorNode,
-  } = useMemo(() => ADAPTERS.get(extensionPointType), [extensionPointType]);
-
   const activeNodeId = useSelector(selectActiveNodeId);
-  const { blockId, path: fieldName } = useSelector(selectActiveNodeInfo) ?? {};
-  const pipelineMap = useSelector(selectPipelineMap);
 
-  function removeBlock(nodeIdToRemove: UUID) {
-    dispatch(actions.removeNode(nodeIdToRemove));
-  }
+  const pipelineMap = useSelector(selectPipelineMap);
 
   function copyBlock(instanceId: UUID) {
     // eslint-disable-next-line security/detect-object-injection -- UUID
@@ -82,6 +59,10 @@ const EditTab: React.FC<{
     if (blockToCopy) {
       dispatch(actions.copyBlockConfig(blockToCopy));
     }
+  }
+
+  function removeBlock(nodeIdToRemove: UUID) {
+    dispatch(actions.removeNode(nodeIdToRemove));
   }
 
   return (
@@ -118,34 +99,24 @@ const EditTab: React.FC<{
             />
           </div>
           <div className={styles.nodeLayout}>
-            <EditorNodeLayout
-              pipeline={blockPipeline}
-              extensionPointLabel={extensionPointLabel}
-              extensionPointIcon={extensionPointIcon}
-            />
+            <EditorNodeLayout />
           </div>
         </div>
         <div className={styles.configPanel}>
           <Col>
             <ErrorBoundary
               key={
-                // Pass key to error boundary so that switching the node can potentially avoid the bad state without
+                // Pass in the activeNodeId as the render key for error boundary so
+                // that switching the node can potentially avoid the bad state without
                 // having to reload the whole page editor frame
                 activeNodeId
               }
             >
               {isApiAtLeastV2 ? (
                 activeNodeId === FOUNDATION_NODE_ID ? (
-                  <FoundationNodeConfigPanel
-                    extensionPoint={extensionPoint}
-                    EditorNode={EditorNode}
-                  />
+                  <FoundationNodeConfigPanel />
                 ) : (
-                  <EditorNodeConfigPanel
-                    key={activeNodeId}
-                    blockFieldName={fieldName}
-                    blockId={blockId}
-                  />
+                  <EditorNodeConfigPanel />
                 )
               ) : (
                 <UnsupportedApiV1 />
@@ -155,9 +126,7 @@ const EditTab: React.FC<{
         </div>
         <div className={styles.dataPanel}>
           {activeNodeId === FOUNDATION_NODE_ID ? (
-            <FoundationDataPanel
-              firstBlockInstanceId={blockPipeline[0]?.instanceId}
-            />
+            <FoundationDataPanel />
           ) : (
             <DataPanel key={activeNodeId} />
           )}

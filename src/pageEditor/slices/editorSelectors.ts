@@ -215,6 +215,7 @@ export const selectActiveNodeInfo = createSelector(
   selectActiveElementUIState,
   selectActiveNodeId,
   (uiState: ElementUIState, activeNodeId: UUID) =>
+    // eslint-disable-next-line security/detect-object-injection -- UUID
     uiState.pipelineMap[activeNodeId]
 );
 

@@ -26,12 +26,10 @@ import PipelineFooterNode, {
 } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
 import { BrickNodeProps } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import useMapPipelineToNodes from "@/pageEditor/tabs/editTab/editorNodeLayout/useMapPipelineToNodes";
-import { EditorNodeLayoutProps } from "@/pageEditor/tabs/editTab/editorNodeLayout/editorNodeLayoutTypes";
+import usePipelineNodes from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes";
 
-const EditorNodeLayout: React.FC<EditorNodeLayoutProps> = (props) => {
-  const mapPipeline = useMapPipelineToNodes();
-  const { foundationNodeProps, nodes } = mapPipeline(props);
+const EditorNodeLayout: React.FC = () => {
+  const { foundationNodeProps, nodes } = usePipelineNodes();
 
   return (
     <ListGroup variant="flush" data-testid="editor-node-layout">
