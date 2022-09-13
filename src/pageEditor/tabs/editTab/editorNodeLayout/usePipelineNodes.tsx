@@ -64,8 +64,8 @@ import { OutputKey, UUID } from "@/core";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 import usePasteBlock from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBlock";
-import { EditorNodeLayoutProps } from "@/pageEditor/tabs/editTab/editorNodeLayout/editorNodeLayoutTypes";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -173,10 +173,8 @@ type MapOutput = {
   extensionHasTraces: boolean;
 };
 
-const useMapPipelineToNodes = () => {
+const usePipelineNodes = () => {
   const dispatch = useDispatch();
-  const isApiAtLeastV2 = useApiVersionAtLeast("v2");
-  const { allBlocks } = useAllBlocks();
   const activeElement = useSelector(selectActiveElement);
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectExtensionTrace);
@@ -184,15 +182,24 @@ const useMapPipelineToNodes = () => {
   const annotations = useSelector(
     selectExtensionAnnotations(activeElement.uuid)
   );
+
+  const isApiAtLeastV2 = useApiVersionAtLeast("v2");
+
+  const { allBlocks } = useAllBlocks();
+
+  const pasteBlock = usePasteBlock();
+  const showPaste = pasteBlock && isApiAtLeastV2;
+
   const extensionPointType = activeElement.type;
+  const { label: extensionPointLabel, icon: extensionPointIcon } =
+    ADAPTERS.get(extensionPointType);
+  const rootPipeline = activeElement.extension.blockPipeline;
+  const rootPipelineFlavor = getRootPipelineFlavor(extensionPointType);
 
   const [collapsedState, setCollapsedState] = useState<Record<UUID, boolean>>(
     {}
   );
   const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});
-
-  const pasteBlock = usePasteBlock();
-  const showPaste = pasteBlock && isApiAtLeastV2;
 
   function setActiveNodeId(nodeId: UUID) {
     dispatch(actions.setElementActiveNodeId(nodeId));
@@ -634,31 +641,23 @@ const useMapPipelineToNodes = () => {
     };
   }
 
-  return ({
-    pipeline,
+  const { nodes, extensionHasTraces } = mapPipelineToNodes({
+    pipeline: rootPipeline,
+    pipelineFlavor: rootPipelineFlavor,
+  });
+
+  const foundationNodeProps = makeFoundationNode({
+    pipelineFlavor: rootPipelineFlavor,
+    showBiggerActions: isEmpty(rootPipeline),
     extensionPointLabel,
     extensionPointIcon,
-  }: EditorNodeLayoutProps) => {
-    const rootPipelineFlavor = getRootPipelineFlavor(extensionPointType);
+    extensionHasTraces,
+  });
 
-    const { nodes, extensionHasTraces } = mapPipelineToNodes({
-      pipeline,
-      pipelineFlavor: rootPipelineFlavor,
-    });
-
-    const foundationNodeProps = makeFoundationNode({
-      pipelineFlavor: rootPipelineFlavor,
-      showBiggerActions: isEmpty(pipeline),
-      extensionPointLabel,
-      extensionPointIcon,
-      extensionHasTraces,
-    });
-
-    return {
-      foundationNodeProps,
-      nodes,
-    };
+  return {
+    foundationNodeProps,
+    nodes,
   };
 };
 
-export default useMapPipelineToNodes;
+export default usePipelineNodes;
