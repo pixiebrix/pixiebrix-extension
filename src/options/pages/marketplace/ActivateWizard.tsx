@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { RecipeDefinition } from "@/types/definitions";
-import { Button, Card, Form, Tab } from "react-bootstrap";
+import { Card, Form, Tab } from "react-bootstrap";
 import { truncate } from "lodash";
 import "./ActivateWizard.scss";
 import { Formik } from "formik";
