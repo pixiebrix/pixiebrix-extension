@@ -399,27 +399,39 @@ describe("can add a node", () => {
   });
 });
 
-describe("can remove a node", () => {
-  test("from root pipeline", async () => {
-    const element = getFormStateWithSubPipelines();
-    render(<EditorPane />, {
+async function renderEditorPaneWithBasicFormState() {
+  const element = getFormStateWithSubPipelines();
+  const activeNodeId = element.extension.blockPipeline[0].instanceId;
+  render(
+    <div>
+      <EditorPane />
+      <AddBlockModal />
+    </div>,
+    {
       setupRedux(dispatch) {
         dispatch(editorActions.addElement(element));
         dispatch(editorActions.selectElement(element.uuid));
-        dispatch(
-          editorActions.setElementActiveNodeId(
-            element.extension.blockPipeline[0].instanceId
-          )
-        );
+        dispatch(editorActions.setElementActiveNodeId(activeNodeId));
       },
-    });
-    await waitForEffect();
+    }
+  );
+  await waitForEffect();
+}
 
+describe("can remove a node", () => {
+  test("from root pipeline", async () => {
+    await renderEditorPaneWithBasicFormState();
+
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // Select the first Echo block
+    await immediateUserEvent.click(screen.getAllByText(/echo/i)[0]);
+
+    // Click the remove button
     await immediateUserEvent.click(
       screen.getByTestId("icon-button-removeNode")
     );
 
-    // Nodes. Root: Foundation, ForEach: Echo
+    // Expect nodes to be: Foundation, ForEach: Echo
     const nodes = screen.getAllByTestId("editor-node");
     expect(nodes).toHaveLength(3);
     expect(nodes[1]).toHaveTextContent(/for-each loop/i);
@@ -427,30 +439,180 @@ describe("can remove a node", () => {
   });
 
   test("from sub pipeline", async () => {
-    const element = getFormStateWithSubPipelines();
-    render(<EditorPane />, {
-      setupRedux(dispatch) {
-        dispatch(editorActions.addElement(element));
-        dispatch(editorActions.selectElement(element.uuid));
-        const subPipelineNodeId = (
-          element.extension.blockPipeline[1].config.body as PipelineExpression
-        ).__value__[0].instanceId;
-        dispatch(editorActions.setElementActiveNodeId(subPipelineNodeId));
-      },
-    });
-    await waitForEffect();
+    await renderEditorPaneWithBasicFormState();
 
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // Select the second Echo block
+    await immediateUserEvent.click(screen.getAllByText(/echo block/i)[1]);
+
+    // Click the remove button
     await immediateUserEvent.click(
       screen.getByTestId("icon-button-removeNode")
     );
 
-    // Nodes. Root: Foundation, ForEach: Echo
+    // Expect nodes to be: Foundation, Echo, ForEach
     const nodes = screen.getAllByTestId("editor-node");
     expect(nodes).toHaveLength(3);
-
-    // Selecting the first node after Foundation
     expect(nodes[1]).toHaveTextContent(/echo/i);
     expect(nodes[2]).toHaveTextContent(/for-each loop/i);
+  });
+});
+
+describe("can move a node up", () => {
+  test("in root pipeline", async () => {
+    await renderEditorPaneWithBasicFormState();
+
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // There should be 2 move up buttons
+    const moveUpButtons = screen.getAllByTitle("Move brick higher");
+    expect(moveUpButtons).toHaveLength(2);
+    // First one should be disabled
+    expect(moveUpButtons[0]).toBeDisabled();
+    // Click the second one
+    expect(moveUpButtons[1]).not.toBeDisabled();
+    await immediateUserEvent.click(moveUpButtons[1]);
+
+    // Expect nodes to now be: Foundation, ForEach: [Echo], Echo
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(4);
+    expect(nodes[1]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[2]).toHaveTextContent(/echo/i);
+    expect(nodes[3]).toHaveTextContent(/echo/i);
+  });
+
+  test("in sub pipeline", async () => {
+    jest.useFakeTimers();
+
+    await renderEditorPaneWithBasicFormState();
+
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // There should be 5 add buttons
+    const addButtons = screen.getAllByTestId(/-add-brick/i);
+    expect(addButtons).toHaveLength(5);
+    // Click the second-to-last one to add a brick to the sub-pipeline
+    await addABlock(addButtons[3], "jq - json processor");
+    // Nodes should be: Foundation, Echo, ForEach: [Echo, JQ]
+    // There should be 4 move up buttons
+    const moveUpButtons = screen.getAllByTitle("Move brick higher");
+    expect(moveUpButtons).toHaveLength(4);
+    // First one in sub-pipeline, second-to-last, should be disabled
+    expect(moveUpButtons[2]).toBeDisabled();
+    // Click the last one, last in sub-pipeline
+    await immediateUserEvent.click(moveUpButtons[3]);
+    // Expect nodes to be: Foundation, Echo, ForEach: [JQ, Echo]
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(5);
+    expect(nodes[1]).toHaveTextContent(/echo/i);
+    expect(nodes[2]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[3]).toHaveTextContent(/jq - json processor/i);
+    expect(nodes[4]).toHaveTextContent(/echo/i);
+
+    jest.useRealTimers();
+  });
+});
+
+describe("can move a node down", () => {
+  test("in root pipeline", async () => {
+    await renderEditorPaneWithBasicFormState();
+
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // There should be 2 move down buttons
+    const moveDownButtons = screen.getAllByTitle("Move brick lower");
+    expect(moveDownButtons).toHaveLength(2);
+    // Second one should be disabled
+    expect(moveDownButtons[1]).toBeDisabled();
+    // Click the first one
+    expect(moveDownButtons[0]).not.toBeDisabled();
+    await immediateUserEvent.click(moveDownButtons[0]);
+
+    // Expect nodes to now be: Foundation, ForEach: [Echo], Echo
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(4);
+    expect(nodes[1]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[2]).toHaveTextContent(/echo/i);
+    expect(nodes[3]).toHaveTextContent(/echo/i);
+  });
+
+  test("in sub pipeline", async () => {
+    jest.useFakeTimers();
+
+    await renderEditorPaneWithBasicFormState();
+
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // There should be 5 add buttons
+    const addButtons = screen.getAllByTestId(/-add-brick/i);
+    expect(addButtons).toHaveLength(5);
+    // Click the second-to-last one to add a brick to the sub-pipeline
+    await addABlock(addButtons[3], "jq - json processor");
+    // Nodes should be: Foundation, Echo, ForEach: [Echo, JQ]
+    // There should be 4 move down buttons
+    const moveDownButtons = screen.getAllByTitle("Move brick lower");
+    expect(moveDownButtons).toHaveLength(4);
+    // Last one should be disabled
+    expect(moveDownButtons[3]).toBeDisabled();
+    // Click the second-to-last one, first in sub pipeline
+    await immediateUserEvent.click(moveDownButtons[2]);
+    // Expect nodes to be: Foundation, Echo, ForEach: [JQ, Echo]
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(5);
+    expect(nodes[1]).toHaveTextContent(/echo/i);
+    expect(nodes[2]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[3]).toHaveTextContent(/jq - json processor/i);
+    expect(nodes[4]).toHaveTextContent(/echo/i);
+
+    jest.useRealTimers();
+  });
+});
+
+describe("can copy and paste a node", () => {
+  test("in root pipeline", async () => {
+    await renderEditorPaneWithBasicFormState();
+
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // Select the first Echo block
+    await immediateUserEvent.click(screen.getAllByText(/echo block/i)[0]);
+
+    // Click the copy button
+    await immediateUserEvent.click(screen.getByTestId("icon-button-copyNode"));
+
+    // There should be 5 paste buttons
+    const pasteButtons = screen.getAllByTestId(/-paste-brick/i);
+    expect(pasteButtons).toHaveLength(5);
+    // Click the last one
+    await immediateUserEvent.click(pasteButtons[4]);
+
+    // Expect nodes to be: Foundation, Echo, ForEach: [Echo], Echo
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(5);
+    expect(nodes[1]).toHaveTextContent(/echo/i);
+    expect(nodes[2]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[3]).toHaveTextContent(/echo/i);
+    expect(nodes[4]).toHaveTextContent(/echo/i);
+  });
+
+  test("in sub pipeline", async () => {
+    await renderEditorPaneWithBasicFormState();
+
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // Select the first Echo block
+    await immediateUserEvent.click(screen.getAllByText(/echo block/i)[0]);
+
+    // Click the copy button
+    await immediateUserEvent.click(screen.getByTestId("icon-button-copyNode"));
+
+    // There should be 5 paste buttons
+    const pasteButtons = screen.getAllByTestId(/-paste-brick/i);
+    expect(pasteButtons).toHaveLength(5);
+    // Click the second-to-last one to paste the brick inside the sub pipeline
+    await immediateUserEvent.click(pasteButtons[3]);
+
+    // Expect nodes to be: Foundation, Echo, ForEach: [Echo, Echo]
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(5);
+    expect(nodes[1]).toHaveTextContent(/echo/i);
+    expect(nodes[2]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[3]).toHaveTextContent(/echo/i);
+    expect(nodes[4]).toHaveTextContent(/echo/i);
   });
 });
 

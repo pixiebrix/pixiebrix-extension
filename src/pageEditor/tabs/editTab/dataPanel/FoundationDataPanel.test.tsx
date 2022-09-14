@@ -29,23 +29,20 @@ describe("FoundationDataPanel", () => {
     const { formState, records } = formStateWithTraceDataFactory();
     const extensionId = formState.uuid;
     const { instanceId } = formState.extension.blockPipeline[0];
-    const rendered = render(
-      <FoundationDataPanel firstBlockInstanceId={instanceId} />,
-      {
-        initialValues: formState,
-        setupRedux(dispatch) {
-          dispatch(editorActions.addElement(formState));
-          dispatch(editorActions.selectElement(formState.uuid));
-          dispatch(
-            runtimeSlice.actions.setExtensionTrace({ extensionId, records })
-          );
-          dispatch(editorActions.setElementActiveNodeId(instanceId));
-          dispatch(
-            editorActions.setNodeDataPanelTabSelected(DataPanelTabKey.Output)
-          );
-        },
-      }
-    );
+    const rendered = render(<FoundationDataPanel />, {
+      initialValues: formState,
+      setupRedux(dispatch) {
+        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.selectElement(formState.uuid));
+        dispatch(
+          runtimeSlice.actions.setExtensionTrace({ extensionId, records })
+        );
+        dispatch(editorActions.setElementActiveNodeId(instanceId));
+        dispatch(
+          editorActions.setNodeDataPanelTabSelected(DataPanelTabKey.Output)
+        );
+      },
+    });
     await waitForEffect();
 
     expect(rendered.asFragment()).toMatchSnapshot();
