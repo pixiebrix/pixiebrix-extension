@@ -24,6 +24,7 @@ import { ServiceAuthPair } from "@/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 
+// TODO: what is this for?
 function selectedAuths(values: WizardValues): ServiceAuthPair[] {
   return values.services.filter((x) => x.config);
 }
@@ -36,7 +37,7 @@ export function useSelectedAuths(): ServiceAuthPair[] {
 const ExtensionBadge: React.FunctionComponent<{
   name: string;
 }> = ({ name }) => (
-  <Badge variant="dark">
+  <Badge className="mr-2 mb-2" variant="dark">
     <FontAwesomeIcon icon={faCube} /> {name}
   </Badge>
 );
