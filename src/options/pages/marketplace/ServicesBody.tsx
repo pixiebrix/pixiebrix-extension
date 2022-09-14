@@ -52,12 +52,6 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
 
   return (
     <Table>
-      <thead>
-        <tr>
-          <th style={{ minWidth: "200px" }}>Integration</th>
-          <th className="w-100">Configuration</th>
-        </tr>
-      </thead>
       <tbody>
         {field.value.map(({ id: serviceId }, index) =>
           // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
