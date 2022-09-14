@@ -17,7 +17,7 @@
 
 import React, { useEffect } from "react";
 import { RecipeDefinition } from "@/types/definitions";
-import { Card, Form, Row } from "react-bootstrap";
+import { Card, Col, Form, Row } from "react-bootstrap";
 import { truncate } from "lodash";
 import "./ActivateWizard.scss";
 import { Formik } from "formik";
@@ -82,17 +82,21 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
           }}
         >
           <Card>
-            <Card.Header>Blueprint name and info goes here</Card.Header>
+            <Card.Header>
+              <Row>
+                <Col>
+                  <Card.Title>{blueprint.metadata.name}</Card.Title>
+                </Col>
+                <Col>
+                  <ActivateButton blueprint={blueprint} />
+                </Col>
+              </Row>
+            </Card.Header>
             <Card.Body>
-              {blueprintSteps.map(({ Component, label, key }, index) => (
+              {blueprintSteps.map(({ Component, label, key }, _) => (
                 <Row key={key}>
                   <h3>{label}</h3>
                   <Component blueprint={blueprint} reinstall={reinstall} />
-                  <div className="ml-auto">
-                    {index >= blueprintSteps.length - 1 && (
-                      <ActivateButton blueprint={blueprint} />
-                    )}
-                  </div>
                 </Row>
               ))}
             </Card.Body>
