@@ -16,12 +16,9 @@
  */
 
 import React, { useMemo } from "react";
-import { Card, Table } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Table } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
 import { useSelectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
-import { faCloud, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import AuthWidget from "@/options/pages/marketplace/AuthWidget";
 import ServiceDescriptor from "@/options/pages/marketplace/ServiceDescriptor";
@@ -57,62 +54,43 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   );
 
   return (
-    <>
-      <Card.Body className="p-3">
-        <Card.Title>Select Integrations</Card.Title>
-        <p>
-          Integrations tell PixieBrix how to connect to the other applications
-          you use
-        </p>
-        <p className="text-info">
-          <FontAwesomeIcon icon={faInfoCircle} /> You can configure integrations
-          at any time on the{" "}
-          <Link to="/services">
-            <u>
-              <FontAwesomeIcon icon={faCloud} />
-              {"  "}Integrations page
-            </u>
-          </Link>
-        </p>
-      </Card.Body>
-      <Table>
-        <thead>
-          <tr>
-            <th style={{ minWidth: "200px" }}>Integration</th>
-            <th className="w-100">Configuration</th>
-          </tr>
-        </thead>
-        <tbody>
-          {field.value.map(({ id: serviceId }, index) =>
-            // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
-            // consistent with the index in field.value
-            visibleServiceIds.has(serviceId) ? (
-              <tr key={serviceId}>
-                <td>
-                  <ServiceDescriptor
-                    serviceId={serviceId}
-                    serviceConfigs={serviceConfigs}
-                  />
-                </td>
-                <td>
-                  <AuthWidget
-                    authOptions={authOptions}
-                    serviceId={serviceId}
-                    name={joinName(field.name, String(index), "config")}
-                    onRefresh={refreshAuthOptions}
-                  />
-                </td>
-              </tr>
-            ) : null
-          )}
-          {visibleServiceIds.size === 0 && (
-            <tr>
-              <td colSpan={2}>No services to configure</td>
+    <Table>
+      <thead>
+        <tr>
+          <th style={{ minWidth: "200px" }}>Integration</th>
+          <th className="w-100">Configuration</th>
+        </tr>
+      </thead>
+      <tbody>
+        {field.value.map(({ id: serviceId }, index) =>
+          // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
+          // consistent with the index in field.value
+          visibleServiceIds.has(serviceId) ? (
+            <tr key={serviceId}>
+              <td>
+                <ServiceDescriptor
+                  serviceId={serviceId}
+                  serviceConfigs={serviceConfigs}
+                />
+              </td>
+              <td>
+                <AuthWidget
+                  authOptions={authOptions}
+                  serviceId={serviceId}
+                  name={joinName(field.name, String(index), "config")}
+                  onRefresh={refreshAuthOptions}
+                />
+              </td>
             </tr>
-          )}
-        </tbody>
-      </Table>
-    </>
+          ) : null
+        )}
+        {visibleServiceIds.size === 0 && (
+          <tr>
+            <td colSpan={2}>No services to configure</td>
+          </tr>
+        )}
+      </tbody>
+    </Table>
   );
 };
 

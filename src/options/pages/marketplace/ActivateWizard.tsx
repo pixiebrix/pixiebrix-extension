@@ -104,7 +104,7 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
             <Card.Body>
               {blueprintSteps.map(({ Component, label, key }, _) => (
                 <Row key={key}>
-                  <h3>{label}</h3>
+                  <h4>{label}</h4>
                   <Component blueprint={blueprint} reinstall={reinstall} />
                 </Row>
               ))}
