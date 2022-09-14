@@ -128,6 +128,11 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
     boolean
   >((x) => x.settings.excludeRandomClasses);
 
+  const enableSelectionTools = useSelector<
+    { settings: SettingsState },
+    boolean
+  >((x) => x.settings.selectionTools);
+
   const suggestions: ElementSuggestion[] = useMemo(
     () => getSuggestionsForElement(element, { sort }),
     [element, sort]
@@ -172,6 +177,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
         traverseUp,
         root,
         excludeRandomClasses,
+        enableSelectionTools,
       });
 
       if (isEmpty(selected)) {

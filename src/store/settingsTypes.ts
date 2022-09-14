@@ -82,4 +82,9 @@ export type SkunkworksSettings = {
    * Experimental setting to detect and exclude random classes when generating selectors
    */
   excludeRandomClasses?: boolean;
+
+  /**
+   * Experimental setting to support multi-elements selector.
+   */
+  selectionTools?: boolean;
 };

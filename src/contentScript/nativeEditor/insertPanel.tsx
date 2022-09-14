@@ -28,8 +28,7 @@ import { inferPanelHTML } from "@/contentScript/nativeEditor/markupInference";
 const DEFAULT_PANEL_HEADING = "PixieBrix Panel";
 
 export async function insertPanel(): Promise<PanelSelectionResult> {
-  const selected = await userSelectElement();
-
+  const { elements: selected } = await userSelectElement();
   const { container, selectors } = findContainer(selected);
 
   const element: PanelSelectionResult = {
