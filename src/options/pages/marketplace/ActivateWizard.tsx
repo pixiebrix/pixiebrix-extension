@@ -15,89 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RecipeDefinition } from "@/types/definitions";
 import { Button, Card, Form, Nav, Tab } from "react-bootstrap";
 import { truncate } from "lodash";
 import "./ActivateWizard.scss";
 import { Formik } from "formik";
-import { useSelectedAuths, useSelectedExtensions } from "./ConfigureBody";
 import { useTitle } from "@/hooks/title";
 import useInstall from "@/options/pages/blueprints/utils/useInstall";
-import AsyncButton from "@/components/AsyncButton";
-import { faMagic } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
 import { useLocation } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { uninstallContextMenu } from "@/background/messenger/api";
 import { push } from "connected-react-router";
-import notify from "@/utils/notify";
 import useWizard from "@/options/pages/marketplace/useWizard";
-import extensionsSlice from "@/store/extensionsSlice";
-
-const { removeExtension } = extensionsSlice.actions;
+import ActivateButton from "@/options/pages/marketplace/ActivateButton";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
 }
-
-const ActivateButton: React.FunctionComponent<{
-  blueprint: RecipeDefinition;
-}> = ({ blueprint }) => {
-  const extensions = useSelectedExtensions(blueprint.extensionPoints);
-  const location = useLocation();
-  const reinstall =
-    new URLSearchParams(location.search).get("reinstall") === "1";
-  const serviceAuths = useSelectedAuths();
-  const { activate, isPending } = useEnsurePermissions(
-    blueprint,
-    extensions,
-    serviceAuths
-  );
-  const dispatch = useDispatch();
-  const localExtensions = useSelector(selectExtensions);
-  const installedExtensions = useMemo(
-    () =>
-      localExtensions?.filter(
-        (extension) => extension._recipe?.id === blueprint?.metadata.id
-      ),
-    [blueprint, localExtensions]
-  );
-
-  const uninstallExtensions = async () => {
-    for (const extension of installedExtensions) {
-      const extensionRef = { extensionId: extension.id };
-      // eslint-disable-next-line no-await-in-loop -- see useReinstall.ts
-      await uninstallContextMenu(extensionRef);
-      dispatch(removeExtension(extensionRef));
-    }
-  };
-
-  const activateOrReinstall = async () => {
-    if (!reinstall) {
-      activate();
-      return;
-    }
-
-    try {
-      await uninstallExtensions();
-      activate();
-    } catch (error) {
-      notify.error({
-        message: "Error re-installing bricks",
-        error,
-      });
-    }
-  };
-
-  return (
-    <AsyncButton size="sm" disabled={isPending} onClick={activateOrReinstall}>
-      <FontAwesomeIcon icon={faMagic} /> {reinstall ? "Reactivate" : "Activate"}
-    </AsyncButton>
-  );
-};
 
 const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const dispatch = useDispatch();
