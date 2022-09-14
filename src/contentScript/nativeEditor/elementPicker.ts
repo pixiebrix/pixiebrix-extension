@@ -140,7 +140,6 @@ export async function userSelectElement({
       }
 
       function handleMultiSelectionChange(value: boolean) {
-        console.debug("////", value);
         isMulti = value;
       }
 
@@ -158,7 +157,7 @@ export async function userSelectElement({
         event.preventDefault();
         event.stopPropagation();
 
-        if (event.shiftKey) {
+        if (event.shiftKey || isMulti) {
           if (targets.has(target)) {
             targets.delete(target);
           } else {
