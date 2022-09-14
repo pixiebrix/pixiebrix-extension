@@ -18,7 +18,6 @@
 import React, { useMemo } from "react";
 import { Table } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
-import { useSelectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import AuthWidget from "@/options/pages/marketplace/AuthWidget";
 import ServiceDescriptor from "@/options/pages/marketplace/ServiceDescriptor";
@@ -37,8 +36,6 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
 
   const [field] = useField<ServiceAuthPair[]>("services");
 
-  const selected = useSelectedExtensions(blueprint.extensionPoints);
-
   const { data: serviceConfigs } = useGetServicesQuery();
 
   const visibleServiceIds = useMemo(
@@ -46,11 +43,11 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
     // the only service, the wizard won't render the ServicesBody component at all
     () =>
       new Set(
-        selected
+        blueprint.extensionPoints
           .flatMap((x) => Object.values(x.services ?? {}))
           .filter((serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID)
       ),
-    [selected]
+    [blueprint.extensionPoints]
   );
 
   return (

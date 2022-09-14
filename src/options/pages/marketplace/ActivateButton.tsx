@@ -17,10 +17,7 @@
 
 import React, { useMemo } from "react";
 import { RecipeDefinition } from "@/types/definitions";
-import {
-  useSelectedAuths,
-  useSelectedExtensions,
-} from "@/options/pages/marketplace/ConfigureBody";
+import { useSelectedAuths } from "@/options/pages/marketplace/ExtensionsBody";
 import { useLocation } from "react-router";
 import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,14 +34,13 @@ const { removeExtension } = extensionsSlice.actions;
 const ActivateButton: React.FunctionComponent<{
   blueprint: RecipeDefinition;
 }> = ({ blueprint }) => {
-  const extensions = useSelectedExtensions(blueprint.extensionPoints);
   const location = useLocation();
   const reinstall =
     new URLSearchParams(location.search).get("reinstall") === "1";
   const serviceAuths = useSelectedAuths();
   const { activate, isPending } = useEnsurePermissions(
     blueprint,
-    extensions,
+    blueprint.extensionPoints,
     serviceAuths
   );
   const dispatch = useDispatch();

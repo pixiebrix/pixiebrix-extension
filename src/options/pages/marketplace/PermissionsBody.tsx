@@ -17,10 +17,7 @@
 
 import { RecipeDefinition } from "@/types/definitions";
 import React from "react";
-import {
-  useSelectedAuths,
-  useSelectedExtensions,
-} from "@/options/pages/marketplace/ConfigureBody";
+import { useSelectedAuths } from "@/options/pages/marketplace/ExtensionsBody";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert, Col } from "react-bootstrap";
@@ -55,11 +52,10 @@ const QuickBarAlert = () => (
 const PermissionsBody: React.FunctionComponent<{
   blueprint: RecipeDefinition;
 }> = ({ blueprint }) => {
-  const selectedExtensions = useSelectedExtensions(blueprint.extensionPoints);
   const selectedAuths = useSelectedAuths();
   const permissionsState = useEnsurePermissions(
     blueprint,
-    selectedExtensions,
+    blueprint.extensionPoints,
     selectedAuths
   );
 
