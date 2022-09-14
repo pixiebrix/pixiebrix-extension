@@ -15,15 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext } from "react";
+import React from "react";
 import { Badge, Dropdown, DropdownButton } from "react-bootstrap";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { PageEditorTabContext } from "@/pageEditor/context";
 import { flagOn } from "@/auth/token";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { sortBy } from "lodash";
 import useAddElement from "@/pageEditor/hooks/useAddElement";
+import { useSelector } from "react-redux";
+import { selectTabHasPermissions } from "@/pageEditor/tabState/tabStateSelectors";
 
 const sortedExtensionPoints = sortBy(
   [...ADAPTERS.values()],
@@ -51,16 +52,13 @@ const DropdownEntry: React.FunctionComponent<{
 );
 
 const AddExtensionPointButton: React.FunctionComponent = () => {
-  const context = useContext(PageEditorTabContext);
-  const {
-    tabState: { hasPermissions },
-  } = context;
+  const tabHasPermissions = useSelector(selectTabHasPermissions);
 
   const addElement = useAddElement();
 
   return (
     <DropdownButton
-      disabled={!hasPermissions}
+      disabled={!tabHasPermissions}
       variant="info"
       size="sm"
       title="Add"
