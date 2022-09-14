@@ -96,7 +96,7 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
       error={fetchError}
     >
       <Row>
-        <Col xl={8} lg={10} md={12}>
+        <Col>
           <ErrorBoundary>{body}</ErrorBoundary>
         </Col>
       </Row>

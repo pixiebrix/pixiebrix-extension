@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { Table } from "react-bootstrap";
+import { Card, Col, Row } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import AuthWidget from "@/options/pages/marketplace/AuthWidget";
@@ -51,37 +51,30 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   );
 
   return (
-    <Table>
-      <tbody>
+    <Col>
+      <Row>
         {field.value.map(({ id: serviceId }, index) =>
           // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
           // consistent with the index in field.value
           visibleServiceIds.has(serviceId) ? (
-            <tr key={serviceId}>
-              <td>
+            <Col xs={4}>
+              <Card key={serviceId}>
                 <ServiceDescriptor
                   serviceId={serviceId}
                   serviceConfigs={serviceConfigs}
                 />
-              </td>
-              <td>
                 <AuthWidget
                   authOptions={authOptions}
                   serviceId={serviceId}
                   name={joinName(field.name, String(index), "config")}
                   onRefresh={refreshAuthOptions}
                 />
-              </td>
-            </tr>
+              </Card>
+            </Col>
           ) : null
         )}
-        {visibleServiceIds.size === 0 && (
-          <tr>
-            <td colSpan={2}>No services to configure</td>
-          </tr>
-        )}
-      </tbody>
-    </Table>
+      </Row>
+    </Col>
   );
 };
 
