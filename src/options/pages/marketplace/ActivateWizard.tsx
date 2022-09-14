@@ -93,9 +93,7 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                     {installableViewItem.icon}
                     {installableViewItem.name}
                   </Card.Title>
-                  <Card.Subtitle>
-                    {installableViewItem.sharing.packageId}
-                  </Card.Subtitle>
+                  <code>{installableViewItem.sharing.packageId}</code>
                   <Card.Text>{installableViewItem.description}</Card.Text>
                 </Col>
                 <Col xs={3}>
