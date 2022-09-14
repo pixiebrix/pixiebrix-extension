@@ -42,11 +42,9 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
     new URLSearchParams(location.search).get("reinstall") === "1";
   const [blueprintSteps, initialValues] = useWizard(blueprint);
   const install = useInstall(blueprint);
-  const { installableViewItems, isLoading } = useInstallableViewItems([
-    blueprint,
-  ]);
+  const { installableViewItems } = useInstallableViewItems([blueprint]);
 
-  const installableViewItem = isLoading ? null : installableViewItems[0];
+  const installableViewItem = installableViewItems[0];
 
   const installedExtensions = useSelector(selectExtensions);
 
@@ -92,13 +90,13 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
               <Row>
                 <Col>
                   <Card.Title>
-                    {installableViewItem
-                      ? installableViewItem.icon
-                      : "todo placeholder"}
-                    {blueprint.metadata.name}
+                    {installableViewItem.icon}
+                    {installableViewItem.name}
                   </Card.Title>
-                  <Card.Subtitle>{blueprint.metadata.id}</Card.Subtitle>
-                  <Card.Text>{blueprint.metadata.description}</Card.Text>
+                  <Card.Subtitle>
+                    {installableViewItem.sharing.packageId}
+                  </Card.Subtitle>
+                  <Card.Text>{installableViewItem.description}</Card.Text>
                 </Col>
                 <Col xs={3}>
                   <ActivateButton blueprint={blueprint} />
