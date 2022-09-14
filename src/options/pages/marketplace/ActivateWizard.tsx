@@ -17,7 +17,7 @@
 
 import React, { useEffect, useState } from "react";
 import { RecipeDefinition } from "@/types/definitions";
-import { Button, Card, Form, Nav, Tab } from "react-bootstrap";
+import { Button, Card, Form, Tab } from "react-bootstrap";
 import { truncate } from "lodash";
 import "./ActivateWizard.scss";
 import { Formik } from "formik";
@@ -83,21 +83,6 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
           }}
         >
           <Tab.Container activeKey={stepKey}>
-            <Nav
-              variant="pills"
-              activeKey={stepKey}
-              onSelect={(step: string) => {
-                setStep(step);
-              }}
-            >
-              {blueprintSteps.map((step, index) => (
-                <Nav.Item key={step.key} className="flex-grow-1">
-                  <Nav.Link eventKey={step.key}>
-                    {index + 1}. {step.label}
-                  </Nav.Link>
-                </Nav.Item>
-              ))}
-            </Nav>
             <Tab.Content className="p-0">
               {blueprintSteps.map(({ Component, label, key }, index) => (
                 <Tab.Pane key={key} eventKey={key}>
