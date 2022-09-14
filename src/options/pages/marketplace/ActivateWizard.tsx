@@ -29,6 +29,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { push } from "connected-react-router";
 import useWizard from "@/options/pages/marketplace/useWizard";
 import ActivateButton from "@/options/pages/marketplace/ActivateButton";
+import useInstallableViewItems from "@/options/pages/blueprints/useInstallableViewItems";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -41,6 +42,11 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
     new URLSearchParams(location.search).get("reinstall") === "1";
   const [blueprintSteps, initialValues] = useWizard(blueprint);
   const install = useInstall(blueprint);
+  const { installableViewItems, isLoading } = useInstallableViewItems([
+    blueprint,
+  ]);
+
+  const installableViewItem = isLoading ? null : installableViewItems[0];
 
   const installedExtensions = useSelector(selectExtensions);
 
@@ -85,7 +91,12 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
             <Card.Header>
               <Row>
                 <Col>
-                  <Card.Title>{blueprint.metadata.name}</Card.Title>
+                  <Card.Title>
+                    {installableViewItem
+                      ? installableViewItem.icon
+                      : "todo placeholder"}
+                    {blueprint.metadata.name}
+                  </Card.Title>
                   <Card.Subtitle>{blueprint.metadata.id}</Card.Subtitle>
                   <Card.Text>{blueprint.metadata.description}</Card.Text>
                 </Col>
