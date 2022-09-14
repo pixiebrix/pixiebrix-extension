@@ -110,7 +110,8 @@ async function getStarterBlueprints(): Promise<RecipeDefinition[]> {
 
   try {
     const { data: starterBlueprints } = await client.get<RecipeDefinition[]>(
-      "/api/onboarding/starter-blueprints/"
+      "/api/onboarding/starter-blueprints/",
+      { params: { ignore_user_state: true } }
     );
     return starterBlueprints;
   } catch (error) {
