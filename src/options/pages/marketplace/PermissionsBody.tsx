@@ -19,7 +19,7 @@ import React, { useMemo } from "react";
 import { uniq } from "lodash";
 import { selectOptionalPermissions } from "@/utils/permissions";
 import Loader from "@/components/Loader";
-import { Card, Table } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import useReportError from "@/hooks/useReportError";
 import { Permissions } from "webextension-polyfill";
 import { getErrorMessage } from "@/errors/errorHelpers";
@@ -51,51 +51,51 @@ const PermissionsBody: React.FunctionComponent<{
 
     if (error) {
       return (
-        <Card.Text className="text-danger">
+        <p className="text-danger">
           An error occurred determining additional permissions:{" "}
           {getErrorMessage(error)}
-        </Card.Text>
+        </p>
       );
     }
 
     if (permissionsList.length === 0) {
-      return <Card.Text>No special permissions required</Card.Text>;
+      return <p>No special permissions required</p>;
     }
 
     if (enabled) {
       return (
-        <Card.Text>
+        <p>
           PixieBrix already has the permissions required for the bricks
           you&apos;ve selected
-        </Card.Text>
+        </p>
       );
     }
 
     return (
-      <Card.Text>
+      <p>
         Your browser will prompt to you approve any permissions you haven&apos;t
         granted yet
-      </Card.Text>
+      </p>
     );
   }, [permissionsList, enabled, error, isPending]);
 
   return (
     <>
-      <Card.Body className="p-3">
-        <Card.Subtitle>Permissions & URLs</Card.Subtitle>
-        {helpText}
-      </Card.Body>
+      <Row>
+        <Col>{helpText}</Col>
+      </Row>
       {permissionsList.length > 0 && (
         // Use Table single column table instead of ListGroup to more closely match style on other wizard tabs
-        <Table variant="flush">
-          <tbody>
-            {permissionsList.map((permission) => (
-              <tr key={permission}>
-                <td>{permission}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <Row>
+          <Col>
+            <h6>URLs</h6>
+            <ul className="list-unstyled">
+              {permissionsList.map((permission) => (
+                <li key={permission}>{permission}</li>
+              ))}
+            </ul>
+          </Col>
+        </Row>
       )}
     </>
   );

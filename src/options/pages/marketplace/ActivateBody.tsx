@@ -23,7 +23,7 @@ import {
 } from "@/options/pages/marketplace/ConfigureBody";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Alert } from "react-bootstrap";
+import { Alert, Col } from "react-bootstrap";
 import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
 import PermissionsBody from "@/options/pages/marketplace/PermissionsBody";
 import { resolveRecipe } from "@/registry/internal";
@@ -83,10 +83,10 @@ const ActivateBody: React.FunctionComponent<{
   );
 
   return (
-    <>
+    <Col>
       {hasQuickBar && !isShortcutConfigured && <QuickBarAlert />}
       <PermissionsBody {...permissionsState} />
-    </>
+    </Col>
   );
 };
 
