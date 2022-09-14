@@ -92,7 +92,6 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
     <Page
       title={`${action} Blueprint`}
       icon={faStoreAlt}
-      description="Configure and activate a blueprint from the marketplace"
       isPending={fetchingBlueprint}
       error={fetchError}
     >
