@@ -21,11 +21,11 @@ import ReactShadowRoot from "react-shadow-root";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 
 import FieldSection from "@/pageEditor/fields/FieldSection";
-import SwitchButtonWidget from "./form/widgets/switchButton/SwitchButtonWidget";
-import switchStyle from "./form/widgets/switchButton/SwitchButtonWidget.module.scss?loadAsUrl";
+import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import switchStyle from "@/components/form/widgets/switchButton/SwitchButtonWidget.module.scss?loadAsUrl";
 import custom from "./SelectionToolPopover.module.scss?loadAsUrl";
-import { Stylesheets } from "./Stylesheets";
-import AsyncButton from "./AsyncButton";
+import { Stylesheets } from "@/components/Stylesheets";
+import AsyncButton from "@/components/AsyncButton";
 import { FormLabel } from "react-bootstrap";
 
 export const SelectionToolPopover: React.FC<{
@@ -36,7 +36,7 @@ export const SelectionToolPopover: React.FC<{
 }> = ({ matchingCount, onCancel, onDone, onChangeMultiSelection }) => {
   const [enabled, setEnabled] = useState(false);
   return (
-    <ReactShadowRoot mode="open">
+    <ReactShadowRoot mode="closed">
       <Stylesheets href={[bootstrap, switchStyle, custom]}>
         <div className="popover-wrapper">
           <FieldSection
