@@ -32,7 +32,7 @@ const STEPS: WizardStep[] = [
   },
   { key: "services", label: "Select Integrations", Component: ServicesBody },
   { key: "review", label: "Select Bricks", Component: ConfigureBody },
-  { key: "activate", label: "Review & Activate", Component: ActivateBody },
+  { key: "activate", label: "Permissions & URLs", Component: ActivateBody },
 ];
 
 function useWizard(blueprint: RecipeDefinition): [WizardStep[], WizardValues] {

@@ -17,18 +17,13 @@
 
 import { RecipeDefinition } from "@/types/definitions";
 import React from "react";
-import { Link } from "react-router-dom";
 import {
   useSelectedAuths,
   useSelectedExtensions,
 } from "@/options/pages/marketplace/ConfigureBody";
-import {
-  faCubes,
-  faExclamationTriangle,
-  faInfoCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Alert, Card } from "react-bootstrap";
+import { Alert } from "react-bootstrap";
 import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
 import PermissionsBody from "@/options/pages/marketplace/PermissionsBody";
 import { resolveRecipe } from "@/registry/internal";
@@ -89,24 +84,7 @@ const ActivateBody: React.FunctionComponent<{
 
   return (
     <>
-      <Card.Body className="mb-0 p-3">
-        <Card.Title>Review Permissions & Activate</Card.Title>
-
-        {hasQuickBar && !isShortcutConfigured ? (
-          <QuickBarAlert />
-        ) : (
-          <p className="text-info">
-            <FontAwesomeIcon icon={faInfoCircle} /> You can de-activate bricks
-            at any time on the{" "}
-            <Link to={"/blueprints"}>
-              <u className="text-nowrap">
-                <FontAwesomeIcon icon={faCubes} /> Blueprints page
-              </u>
-            </Link>
-          </p>
-        )}
-      </Card.Body>
-
+      {hasQuickBar && !isShortcutConfigured && <QuickBarAlert />}
       <PermissionsBody {...permissionsState} />
     </>
   );
