@@ -219,11 +219,6 @@ export const selectActiveNodeInfo = createSelector(
     uiState.pipelineMap[activeNodeId]
 );
 
-export const selectActiveNode = createSelector(
-  selectActiveNodeInfo,
-  (nodeInfo) => nodeInfo.blockConfig
-);
-
 export const selectNodeDataPanelTabSelected: (
   rootState: EditorRootState
 ) => DataPanelTabKey = createSelector(
