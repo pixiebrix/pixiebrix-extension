@@ -89,7 +89,7 @@ export function insertSidebarFrame(): boolean {
       borderLeft: "1px solid lightgray",
       background: "#f2edf3",
     })
-    .appendTo("body");
+    .appendTo("html");
 
   return false;
 }
