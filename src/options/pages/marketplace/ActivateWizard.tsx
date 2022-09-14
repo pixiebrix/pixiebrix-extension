@@ -86,8 +86,10 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
               <Row>
                 <Col>
                   <Card.Title>{blueprint.metadata.name}</Card.Title>
+                  <Card.Subtitle>{blueprint.metadata.id}</Card.Subtitle>
+                  <Card.Text>{blueprint.metadata.description}</Card.Text>
                 </Col>
-                <Col>
+                <Col xs={3}>
                   <ActivateButton blueprint={blueprint} />
                 </Col>
               </Row>
