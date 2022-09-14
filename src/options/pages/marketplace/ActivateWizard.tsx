@@ -136,9 +136,6 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
           id="activate-wizard"
           noValidate
           onSubmit={(event) => {
-            // Block native submission
-            event.preventDefault();
-
             if (stepKey === blueprintSteps.at(-1).key) {
               // Actually "submit" if on the last step
               handleSubmit(event);

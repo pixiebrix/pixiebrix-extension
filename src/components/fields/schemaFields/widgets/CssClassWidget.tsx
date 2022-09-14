@@ -47,7 +47,7 @@ import { compact, partition, uniq } from "lodash";
 import TemplateToggleWidget from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
 import { InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
 import styles from "./CssClassWidget.module.scss";
-import { LinkButton } from "@/components/LinkButton";
+import { UnstyledButton } from "@/components/UnstyledButton";
 
 /**
  * An independent class name
@@ -361,14 +361,14 @@ const SpacingControl: React.VFC<{
   return (
     <div className={className}>
       <div className={styles.spacingControlContainer}>
-        <LinkButton
+        <UnstyledButton
           onClick={() => {
             setExpand(!expand);
           }}
         >
           {label}&nbsp;
           <FontAwesomeIcon icon={expand ? faCaretDown : faCaretRight} />
-        </LinkButton>
+        </UnstyledButton>
         <div className="ml-1">
           <Form.Control
             type="number"

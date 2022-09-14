@@ -28,6 +28,8 @@ const OmitFieldWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   isArrayItem,
   focusInput,
   ...restProps
+  // `readyOnly` is like `disabled` except it allows mouse events
+  // and `focus`, which swaps `OmitFieldWidget` out
 }) => <Form.Control {...restProps} readOnly />;
 
 export default OmitFieldWidget;
