@@ -74,7 +74,7 @@ class BackgroundLogger implements Logger {
 
   async error(error: unknown, data: JsonObject): Promise<void> {
     if (wasContextInvalidated() && !isBackground() && !isDevToolsPage()) {
-      notifyContextInvalidated();
+      void notifyContextInvalidated();
     }
 
     console.error("BackgroundLogger:error", {

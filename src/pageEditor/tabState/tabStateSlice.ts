@@ -100,6 +100,7 @@ const connectToContentScript = createAsyncThunk<
     });
   }
 
+  void thunkAPI.dispatch(awaitContextInvalidated());
   void thunkAPI.dispatch(actions.checkAvailableDynamicElements());
   void thunkAPI.dispatch(actions.checkAvailableInstalledExtensions());
 
@@ -111,6 +112,10 @@ const connectToContentScript = createAsyncThunk<
   };
 });
 
+/**
+ * This thunk is long-running. It waits for the page's chrome runtime context
+ * to be invalidated, and then resolves with an error.
+ */
 const awaitContextInvalidated = createAsyncThunk<
   Error,
   void,
