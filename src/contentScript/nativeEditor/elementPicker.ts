@@ -27,7 +27,7 @@ import { uniq } from "lodash";
 import * as pageScript from "@/pageScript/protocol";
 import { requireSingleElement } from "@/utils/requireSingleElement";
 import { SelectMode } from "@/contentScript/nativeEditor/types";
-import { showSelectionToolPopover } from "@/components/SelectionToolPopover";
+import { showSelectionToolPopover } from "@/components/selectionToolPopover/SelectionToolPopover";
 
 let overlay: Overlay | null = null;
 let styleElement: HTMLStyleElement = null;
@@ -378,7 +378,7 @@ export async function selectElement({
 
         const inferredSelectors = uniq([
           selector,
-          // TODO: Discuss if it's worth to include stableAncestors for multi-elements selector
+          // TODO: Discuss if it's worth to include stableAncestors for multi-element selector
           // ...inferSelectorsIncludingStableAncestors(elements[0]),
         ]);
 
