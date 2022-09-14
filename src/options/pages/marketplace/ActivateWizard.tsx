@@ -40,7 +40,6 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const reinstall =
     new URLSearchParams(location.search).get("reinstall") === "1";
   const [blueprintSteps, initialValues] = useWizard(blueprint);
-  const [stepKey, setStep] = useState(blueprintSteps[0].key);
   const install = useInstall(blueprint);
 
   const installedExtensions = useSelector(selectExtensions);
@@ -82,45 +81,21 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
             }
           }}
         >
-          <Tab.Container activeKey={stepKey}>
-            <Tab.Content className="p-0">
-              {blueprintSteps.map(({ Component, label, key }, index) => (
-                <Tab.Pane key={key} eventKey={key}>
-                  <Card>
-                    <Card.Header>{label}</Card.Header>
-                    <Component blueprint={blueprint} reinstall={reinstall} />
-                    <Card.Footer className="d-inline-flex">
-                      <div className="ml-auto">
-                        <Button
-                          size="sm"
-                          variant="outline-primary"
-                          disabled={index === 0}
-                          onClick={() => {
-                            setStep(blueprintSteps[index - 1].key);
-                          }}
-                        >
-                          Previous
-                        </Button>
-
-                        {index < blueprintSteps.length - 1 ? (
-                          <Button
-                            size="sm"
-                            onClick={() => {
-                              setStep(blueprintSteps[index + 1].key);
-                            }}
-                          >
-                            Next Step
-                          </Button>
-                        ) : (
-                          <ActivateButton blueprint={blueprint} />
-                        )}
-                      </div>
-                    </Card.Footer>
-                  </Card>
-                </Tab.Pane>
-              ))}
-            </Tab.Content>
-          </Tab.Container>
+          {blueprintSteps.map(({ Component, label, key }, index) => (
+            <Tab.Pane key={key} eventKey={key}>
+              <Card>
+                <Card.Header>{label}</Card.Header>
+                <Component blueprint={blueprint} reinstall={reinstall} />
+                <Card.Footer className="d-inline-flex">
+                  <div className="ml-auto">
+                    {index >= blueprintSteps.length - 1 && (
+                      <ActivateButton blueprint={blueprint} />
+                    )}
+                  </div>
+                </Card.Footer>
+              </Card>
+            </Tab.Pane>
+          ))}
         </Form>
       )}
     </Formik>
