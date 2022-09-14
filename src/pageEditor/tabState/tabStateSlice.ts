@@ -96,6 +96,11 @@ const connectToContentScript = createAsyncThunk<
     });
   }
 
+  // We want to dispatch this for a successful connection, but we don't want
+  // to block the current thunk from resolving (awaitContextInvalidated is a
+  // long-running thunk)
+  void thunkAPI.dispatch(awaitContextInvalidated());
+
   console.debug(`connectToContentScript: replacing tabState for ${uuid}`);
   return {
     ...common,
@@ -104,6 +109,10 @@ const connectToContentScript = createAsyncThunk<
   };
 });
 
+/**
+ * This thunk is long-running. It waits for the page's chrome runtime context
+ * to be invalidated, and then resolves with an error.
+ */
 const awaitContextInvalidated = createAsyncThunk<
   Error,
   void,
