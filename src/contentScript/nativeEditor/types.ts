@@ -46,7 +46,7 @@ export interface DynamicDefinition<
   extension: IExtension<TExtension>;
 }
 
-export type SelectMode = "element" | "container" | "multi-elements";
+export type SelectMode = "element" | "container" | "multi-element";
 export type PanelSelectionResult = {
   uuid: UUID;
   foundation: Except<
