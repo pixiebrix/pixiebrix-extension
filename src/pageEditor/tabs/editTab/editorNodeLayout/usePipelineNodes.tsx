@@ -201,6 +201,24 @@ const usePipelineNodes = () => {
   );
   const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});
 
+  const { nodes, extensionHasTraces } = mapPipelineToNodes({
+    pipeline: rootPipeline,
+    pipelineFlavor: rootPipelineFlavor,
+  });
+
+  const foundationNodeProps = makeFoundationNode({
+    pipelineFlavor: rootPipelineFlavor,
+    showBiggerActions: isEmpty(rootPipeline),
+    extensionPointLabel,
+    extensionPointIcon,
+    extensionHasTraces,
+  });
+
+  return {
+    foundationNodeProps,
+    nodes,
+  };
+
   function setActiveNodeId(nodeId: UUID) {
     dispatch(actions.setElementActiveNodeId(nodeId));
   }
@@ -640,24 +658,6 @@ const usePipelineNodes = () => {
       trailingMessage: showBiggerActions ? ADD_MESSAGE : undefined,
     };
   }
-
-  const { nodes, extensionHasTraces } = mapPipelineToNodes({
-    pipeline: rootPipeline,
-    pipelineFlavor: rootPipelineFlavor,
-  });
-
-  const foundationNodeProps = makeFoundationNode({
-    pipelineFlavor: rootPipelineFlavor,
-    showBiggerActions: isEmpty(rootPipeline),
-    extensionPointLabel,
-    extensionPointIcon,
-    extensionHasTraces,
-  });
-
-  return {
-    foundationNodeProps,
-    nodes,
-  };
 };
 
 export default usePipelineNodes;
