@@ -17,7 +17,7 @@ import { isPrimitive } from "@/utils";
 import ConfigureBody from "@/options/pages/marketplace/ConfigureBody";
 import OptionsBody from "@/options/pages/marketplace/OptionsBody";
 import ServicesBody from "@/options/pages/marketplace/ServicesBody";
-import ActivateBody from "@/options/pages/marketplace/ActivateBody";
+import PermissionsBody from "@/options/pages/marketplace/PermissionsBody";
 import { inputProperties } from "@/helpers";
 
 const STEPS: WizardStep[] = [
@@ -32,7 +32,7 @@ const STEPS: WizardStep[] = [
   },
   { key: "services", label: "Select Integrations", Component: ServicesBody },
   { key: "review", label: "Select Bricks", Component: ConfigureBody },
-  { key: "activate", label: "Permissions & URLs", Component: ActivateBody },
+  { key: "activate", label: "Permissions & URLs", Component: PermissionsBody },
 ];
 
 function useWizard(blueprint: RecipeDefinition): [WizardStep[], WizardValues] {

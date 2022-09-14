@@ -21,7 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import { useFormikContext } from "formik";
-import PermissionsBody from "@/options/pages/marketplace/PermissionsBody";
+import UrlPermissionsList from "@/options/pages/marketplace/UrlPermissionsList";
 import useEnsurePermissions from "@/options/pages/activateExtension/useEnsurePermissions";
 import { CloudExtension } from "@/types/contract";
 import { FormState } from "@/options/pages/activateExtension/activateTypes";
@@ -42,7 +42,7 @@ const ActivateCard: React.FunctionComponent<{ extension: CloudExtension }> = ({
     <Card>
       <Card.Header>Review Permissions & Activate</Card.Header>
 
-      <PermissionsBody {...permissionsState} />
+      <UrlPermissionsList {...permissionsState} />
 
       <Card.Footer className="d-inline-flex">
         <div className="ml-auto">
