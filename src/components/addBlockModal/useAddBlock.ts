@@ -29,17 +29,29 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 
-function useAddBlock(
-  pipelinePath: string,
-  pipelineIndex: number
-): (block: IBlock) => Promise<void> {
+type TestAddBlockResult = {
+  error?: string;
+};
+
+type AddBlock = {
+  testAddBlock: (block: IBlock) => Promise<TestAddBlockResult>;
+  addBlock: (block: IBlock) => Promise<void>;
+};
+
+function useAddBlock(pipelinePath: string, pipelineIndex: number): AddBlock {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const activeExtensionId = useSelector(selectActiveElementId);
   const pipelineMap = useSelector(selectPipelineMap);
 
-  return useCallback(
-    async (block) => {
+  const testAddBlock = useCallback(async (block: IBlock) => {
+    return {
+      error: "invalid brick",
+    };
+  }, []);
+
+  const addBlock = useCallback(
+    async (block: IBlock) => {
       const outputKey = await generateFreshOutputKey(
         block,
         compact([
@@ -72,6 +84,11 @@ function useAddBlock(
       sessionId,
     ]
   );
+
+  return {
+    testAddBlock,
+    addBlock,
+  };
 }
 
 export default useAddBlock;

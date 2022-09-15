@@ -23,6 +23,7 @@ import React, {
   useMemo,
   useReducer,
   useRef,
+  useState,
 } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { isEmpty } from "lodash";
@@ -66,6 +67,7 @@ import {
 } from "@/components/addBlockModal/addBlockModalTypes";
 import { getItemKey } from "@/components/addBlockModal/addBlockModalHelpers";
 import useAddBlock from "@/components/addBlockModal/useAddBlock";
+import { useAsyncState } from "@/hooks/common";
 
 type State = {
   query: string;
@@ -118,11 +120,23 @@ const slice = createSlice({
   },
 });
 
+const EMPTY_BLOCKS: IBlock[] = [];
+const EMPTY_BLOCK_OPTIONS: BlockOption[] = [];
+
 const AddBlockModal: React.FC = () => {
+  const [state, dispatch] = useReducer(slice.reducer, initialState);
+
   const { isAddBlockModalVisible: show } = useSelector(
     selectEditorModalVisibilities
   );
-  const [state, dispatch] = useReducer(slice.reducer, initialState);
+  const [neverShown, setNeverShown] = useState(true);
+
+  useEffect(() => {
+    if (show && neverShown) {
+      setNeverShown(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- neverShown only changes here
+  }, [show]);
 
   const gridRef = useRef<LazyGrid>();
 
@@ -139,7 +153,7 @@ const AddBlockModal: React.FC = () => {
   const pipelineFlavor = addBlockLocation?.flavor ?? PipelineFlavor.AllBlocks;
   const pipelineIndex = addBlockLocation?.index ?? 0;
 
-  const addBlock = useAddBlock(pipelinePath, pipelineIndex);
+  const { testAddBlock, addBlock } = useAddBlock(pipelinePath, pipelineIndex);
 
   const onSelectBlock = useCallback(
     async (block: IBlock) => {
@@ -155,8 +169,8 @@ const AddBlockModal: React.FC = () => {
   );
 
   const filteredBlocks = useMemo<IBlock[]>(() => {
-    if (isLoadingAllBlocks) {
-      return [];
+    if (isLoadingAllBlocks || neverShown) {
+      return EMPTY_BLOCKS;
     }
 
     const isBlockAllowed = makeIsBlockAllowedForPipeline(pipelineFlavor);
@@ -164,7 +178,7 @@ const AddBlockModal: React.FC = () => {
     return [...allBlocks.entries()]
       .filter(([_, typedBlock]) => isBlockAllowed(typedBlock))
       .map(([_, { block }]) => block);
-  }, [allBlocks, pipelineFlavor, isLoadingAllBlocks]);
+  }, [allBlocks, neverShown, pipelineFlavor, isLoadingAllBlocks]);
 
   useEffect(() => {
     if (!gridRef.current) {
@@ -213,7 +227,7 @@ const AddBlockModal: React.FC = () => {
 
   const blockOptions = useMemo<BlockOption[]>(() => {
     if (isEmpty(searchResults)) {
-      return [];
+      return EMPTY_BLOCK_OPTIONS;
     }
 
     const popular: BlockOption[] = [];
@@ -240,9 +254,35 @@ const AddBlockModal: React.FC = () => {
     return [...popular, ...regular];
   }, [popularBrickIds, searchResults, state.query]);
 
+  const [invalidBlockIds, isLoadingInvalidBlocks] = useAsyncState(
+    async () => {
+      const invalidBlockIds = new Set<RegistryId>();
+
+      if (isEmpty(blockOptions)) {
+        return invalidBlockIds;
+      }
+
+      await Promise.all(
+        blockOptions.map(async (blockOption, index) => {
+          const result = await testAddBlock(blockOption.blockResult);
+          if (result.error) {
+            invalidBlockIds.add(blockOptions.at(index).blockResult.id);
+          }
+        })
+      );
+
+      return invalidBlockIds;
+    },
+    [blockOptions],
+    new Set<RegistryId>()
+  );
+
+  const isLoadingBricks = isLoadingListings || isLoadingInvalidBlocks;
+
   const gridData = useMemo<BlockGridData>(
     () => ({
       blockOptions,
+      invalidBlockIds,
       onSetDetailBlock(block: IBlock) {
         dispatch(slice.actions.onSetDetailBlock(block));
       },
@@ -250,7 +290,7 @@ const AddBlockModal: React.FC = () => {
         void onSelectBlock(block);
       },
     }),
-    [blockOptions, onSelectBlock]
+    [blockOptions, invalidBlockIds, onSelectBlock]
   );
 
   return (
@@ -339,7 +379,7 @@ const AddBlockModal: React.FC = () => {
               )}
             </div>
             <div className={styles.brickResults}>
-              {isLoadingListings ? (
+              {isLoadingBricks ? (
                 <Loader />
               ) : (
                 <AutoSizer>
