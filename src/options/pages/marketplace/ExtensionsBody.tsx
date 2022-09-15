@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ExtensionsBody.module.scss";
+
 import React, { useMemo } from "react";
 import { useFormikContext } from "formik";
 import { Badge, Col } from "react-bootstrap";
@@ -37,7 +39,7 @@ export function useSelectedAuths(): ServiceAuthPair[] {
 const ExtensionBadge: React.FunctionComponent<{
   name: string;
 }> = ({ name }) => (
-  <Badge className="mr-2 mb-2" variant="dark">
+  <Badge className={styles.extensionBadge}>
     <FontAwesomeIcon icon={faCube} /> {name}
   </Badge>
 );
