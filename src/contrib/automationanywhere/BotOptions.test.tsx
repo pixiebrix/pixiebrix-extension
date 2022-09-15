@@ -16,14 +16,10 @@
  */
 
 import React from "react";
-import {
-  activeDevToolContextFactory,
-  menuItemFormStateFactory,
-} from "@/testUtils/factories";
+import { menuItemFormStateFactory } from "@/testUtils/factories";
 import { IService, OutputKey } from "@/core";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { render } from "@testing-library/react";
-import { PageEditorTabContext } from "@/pageEditor/context";
 import { Formik } from "formik";
 import { CONTROL_ROOM_SERVICE_ID } from "@/services/constants";
 import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/RunBot";
@@ -79,11 +75,9 @@ function makeBaseState() {
 
 function renderOptions(formState: FormState = makeBaseState()) {
   return render(
-    <PageEditorTabContext.Provider value={activeDevToolContextFactory()}>
-      <Formik onSubmit={jest.fn()} initialValues={formState}>
-        <BotOptions name="extension.blockPipeline.0" configKey="config" />
-      </Formik>
-    </PageEditorTabContext.Provider>
+    <Formik onSubmit={jest.fn()} initialValues={formState}>
+      <BotOptions name="extension.blockPipeline.0" configKey="config" />
+    </Formik>
   );
 }
 
