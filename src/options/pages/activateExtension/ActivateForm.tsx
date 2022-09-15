@@ -27,6 +27,7 @@ import { FormState } from "@/options/pages/activateExtension/activateTypes";
 import ActivateCard from "@/options/pages/activateExtension/ActivateCard";
 import extensionsSlice from "@/store/extensionsSlice";
 import { UUID } from "@/core";
+import { Card, Col, Row } from "react-bootstrap";
 
 const { actions } = extensionsSlice;
 
@@ -70,11 +71,26 @@ const ActivateForm: React.FunctionComponent<{
     <Formik initialValues={initialValues} onSubmit={onSubmit}>
       {() => (
         <Form id="activate-wizard" noValidate>
-          <ServicesCard
-            authOptions={authOptions}
-            refreshAuthOptions={refreshAuthOptions}
-          />
-          <ActivateCard extension={extension} />
+          <Card>
+            <Card.Header>Activate extension name here</Card.Header>
+            <Card.Body>
+              <Row>
+                <Col xs={12}>
+                  <h4>Integrations</h4>
+                </Col>
+                <ServicesCard
+                  authOptions={authOptions}
+                  refreshAuthOptions={refreshAuthOptions}
+                />
+              </Row>
+              <Row>
+                <Col xs={12}>
+                  <h4>Permissions & URLs</h4>
+                </Col>
+                <ActivateCard extension={extension} />
+              </Row>
+            </Card.Body>
+          </Card>
         </Form>
       )}
     </Formik>
