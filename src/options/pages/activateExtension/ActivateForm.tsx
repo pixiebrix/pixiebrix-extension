@@ -80,7 +80,7 @@ const ActivateForm: React.FunctionComponent<{
             <Card.Header className={styles.wizardHeader}>
               <Row>
                 <Col>
-                  <div className={styles.wizardBlueprintDescription}>
+                  <div className={styles.wizardHeaderLayout}>
                     <div className={styles.wizardMainInfo}>
                       <span className={styles.blueprintIcon}>
                         <FontAwesomeIcon icon={faCube} />
