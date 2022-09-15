@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ActivateWizard.module.scss";
+
 import React, { useEffect } from "react";
 import { RecipeDefinition } from "@/types/definitions";
 import { Card, Col, Form, Row } from "react-bootstrap";
@@ -100,9 +102,9 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                 </Col>
               </Row>
             </Card.Header>
-            <Card.Body>
+            <Card.Body className={styles.wizardBody}>
               {blueprintSteps.map(({ Component, label, key }, _) => (
-                <Row key={key} className="mt-4">
+                <Row key={key} className={styles.wizardBodyRow}>
                   <Col xs={12}>
                     <h4>{label}</h4>
                   </Col>
