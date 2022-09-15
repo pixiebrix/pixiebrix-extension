@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "@/options/pages/marketplace/ServicesBody.module.scss";
+
 import React from "react";
 import { AuthOption } from "@/auth/authTypes";
 import { useField } from "formik";
@@ -54,29 +56,27 @@ const ServicesRow: React.FunctionComponent<{
       <Col xs={12}>
         <h4>Integrations</h4>
       </Col>
-      <Col>
-        {configurable.map(({ dependency, valueIndex }) => (
-          <Col
-            xs={12}
-            sm={6}
-            xl={4}
-            key={`${dependency.outputKey}-${valueIndex}`}
-          >
-            <Card>
-              <ServiceDescriptor
-                serviceId={dependency.id}
-                serviceConfigs={serviceConfigs}
-              />
-              <AuthWidget
-                authOptions={authOptions}
-                serviceId={dependency.id}
-                name={joinName(field.name, String(valueIndex), "config")}
-                onRefresh={refreshAuthOptions}
-              />
-            </Card>
-          </Col>
-        ))}
-      </Col>
+      {configurable.map(({ dependency, valueIndex }) => (
+        <Col
+          xs={12}
+          sm={6}
+          xl={4}
+          key={`${dependency.outputKey}-${valueIndex}`}
+        >
+          <Card className={styles.serviceCard}>
+            <ServiceDescriptor
+              serviceId={dependency.id}
+              serviceConfigs={serviceConfigs}
+            />
+            <AuthWidget
+              authOptions={authOptions}
+              serviceId={dependency.id}
+              name={joinName(field.name, String(valueIndex), "config")}
+              onRefresh={refreshAuthOptions}
+            />
+          </Card>
+        </Col>
+      ))}
     </Row>
   );
 };
