@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import ReactShadowRoot from "react-shadow-root";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
@@ -30,13 +30,29 @@ import { Stylesheets } from "@/components/Stylesheets";
 import { Button } from "react-bootstrap";
 import { FormLabel } from "react-bootstrap";
 
+export type SelectionHandlerType = (count: number) => void;
+type SetSelectionHandlerType = (handler: SelectionHandlerType) => void;
+
 export const SelectionToolPopover: React.FC<{
-  matchingCount: number;
   onCancel: () => void;
   onDone: () => void;
   onChangeMultiSelection: (value: boolean) => void;
-}> = ({ matchingCount, onCancel, onDone, onChangeMultiSelection }) => {
+  setSelectionHandler: SetSelectionHandlerType;
+}> = ({ onCancel, onDone, onChangeMultiSelection, setSelectionHandler }) => {
   const [enabled, setEnabled] = useState(false);
+  const [matchingCount, setMatchingCount] = useState(0);
+
+  useEffect(() => {
+    const handler = (newCount: number) => {
+      setMatchingCount(newCount);
+    };
+
+    setSelectionHandler(handler);
+    return () => {
+      setSelectionHandler(null);
+    };
+  }, [setSelectionHandler]);
+
   return (
     <ReactShadowRoot mode="closed">
       <Stylesheets href={[bootstrap, switchStyle, custom]}>
@@ -81,18 +97,20 @@ export const showSelectionToolPopover = ({
   handleCancel,
   handleDone,
   handleChange,
+  setSelectionHandler,
 }: {
   rootElement: HTMLElement;
   handleCancel: () => void;
   handleDone: () => void;
   handleChange: (value: boolean) => void;
+  setSelectionHandler: SetSelectionHandlerType;
 }) => {
   ReactDOM.render(
     <SelectionToolPopover
-      matchingCount={10}
       onDone={handleDone}
       onCancel={handleCancel}
       onChangeMultiSelection={handleChange}
+      setSelectionHandler={setSelectionHandler}
     />,
     rootElement
   );

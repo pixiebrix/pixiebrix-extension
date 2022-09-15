@@ -26,11 +26,19 @@ import { uniq, compact } from "lodash";
 import * as pageScript from "@/pageScript/protocol";
 import { requireSingleElement } from "@/utils/requireSingleElement";
 import { SelectMode } from "@/contentScript/nativeEditor/types";
-import { showSelectionToolPopover } from "@/components/selectionToolPopover/SelectionToolPopover";
+import {
+  SelectionHandlerType,
+  showSelectionToolPopover,
+} from "@/components/selectionToolPopover/SelectionToolPopover";
 
 let overlay: Overlay | null = null;
 let styleElement: HTMLStyleElement = null;
 let multiSelectionToolElement: HTMLElement = null;
+let selectionHandler: SelectionHandlerType;
+
+function setSelectionHandler(handler: SelectionHandlerType) {
+  selectionHandler = handler;
+}
 
 export function hideOverlay(): void {
   if (overlay != null) {
@@ -161,6 +169,8 @@ export async function userSelectElement({
             targets.add(target);
           }
 
+          selectionHandler(targets.size);
+
           return;
         }
 
@@ -284,6 +294,7 @@ export async function userSelectElement({
             handleDone();
           },
           handleChange: handleMultiSelectionChange,
+          setSelectionHandler,
         });
       }
 
