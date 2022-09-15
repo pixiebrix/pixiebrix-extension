@@ -278,61 +278,6 @@ export function getAttributeSelectorRegex(...attributes: string[]): RegExp {
  * front-end framework elements that aren't good for selectors
  */
 export function safeCssSelector(
-  element: HTMLElement,
-  {
-    selectors = DEFAULT_SELECTOR_PRIORITIES,
-    excludeRandomClasses = false,
-    // eslint-disable-next-line unicorn/no-useless-undefined -- Convert null to undefined or else getCssSelector bails
-    root = undefined,
-  }: SafeCssSelectorOptions = {}
-): string {
-  // https://github.com/fczbkk/css-selector-generator
-  const siteSelectorHint = getSiteSelectorHint(element);
-
-  const blacklist = [
-    ...UNSTABLE_SELECTORS,
-    ...siteSelectorHint.badPatterns,
-
-    excludeRandomClasses
-      ? (selector: string) => {
-          if (!selector.startsWith(".")) {
-            return false;
-          }
-
-          const usefulness = guessUsefulness(selector);
-          console.debug("css-selector-generator:  ", usefulness);
-          return usefulness.isRandom;
-        }
-      : undefined,
-  ];
-  const whitelist = [
-    getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES),
-    ...siteSelectorHint.stableAnchors,
-  ];
-
-  const selector = getCssSelector(element, {
-    blacklist,
-    whitelist,
-    selectors,
-    combineWithinSelector: true,
-    combineBetweenSelectors: true,
-    root,
-  });
-
-  if (root == null && selector.startsWith(":nth-child")) {
-    // JQuery will happily return other matches that match the nth-child chain, so make attach it to the body
-    // to get the expected CSS selector behavior
-    return `body${selector}`;
-  }
-
-  return selector;
-}
-
-/**
- * Calls getCssSelector with smarter handling of undefined root element and blacklisting common
- * front-end framework elements that aren't good for selectors
- */
-export function safeMultiCssSelector(
   elements: HTMLElement[],
   {
     selectors = DEFAULT_SELECTOR_PRIORITIES,
@@ -431,7 +376,7 @@ export function inferSelectors(
 ): string[] {
   const makeSelector = (allowed?: Array<keyof typeof CssSelectorType>) => {
     try {
-      return safeCssSelector(element, {
+      return safeCssSelector([element], {
         selectors: allowed,
         root,
         excludeRandomClasses,

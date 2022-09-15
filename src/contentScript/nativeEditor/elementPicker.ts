@@ -20,7 +20,6 @@ import {
   findContainer,
   inferSelectorsIncludingStableAncestors,
   safeCssSelector,
-  safeMultiCssSelector,
 } from "@/contentScript/nativeEditor/selectorInference";
 import { Framework } from "@/messaging/constants";
 import { uniq, compact } from "lodash";
@@ -352,28 +351,14 @@ export async function selectElement({
     }
 
     case "element": {
+      const selector = safeCssSelector(elements, {
+        root: rootElement,
+        excludeRandomClasses,
+      });
+
+      console.debug(`Generated selector: ${selector}`);
+
       if (isMulti) {
-        const selector = safeMultiCssSelector(elements, {
-          root: rootElement,
-          excludeRandomClasses,
-        });
-
-        console.debug(`Generated selector: ${selector}`);
-
-        // We're using pageScript getElementInfo only when specific framework is used.
-
-        // On Salesforce we were running into an issue where certain selectors weren't finding any elements when
-        // run from the pageScript. It might have something to do with the custom web components Salesforce uses?
-        // In any case, the pageScript is not necessary if framework is not specified, because selectElement
-        // only needs to return the selector alternatives.
-        if (framework) {
-          return pageScript.getElementInfo({
-            selector,
-            framework,
-            traverseUp,
-          });
-        }
-
         const inferredSelectors = uniq([
           selector,
           // TODO: Discuss if it's worth to include stableAncestors for multi-element selector
@@ -388,13 +373,6 @@ export async function selectElement({
           parent: null,
         };
       }
-
-      const selector = safeCssSelector(elements[0], {
-        root: rootElement,
-        excludeRandomClasses,
-      });
-
-      console.debug(`Generated selector: ${selector}`);
 
       // Double-check we have a valid selector
       const element = requireSingleElement(selector);
