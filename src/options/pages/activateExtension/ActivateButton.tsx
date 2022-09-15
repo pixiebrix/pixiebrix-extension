@@ -33,7 +33,6 @@ const ActivateButton: React.FunctionComponent = () => {
   return (
     <AsyncButton
       variant="primary"
-      size="sm"
       onClick={submitForm}
       disabled={anyUnconfigured || isSubmitting}
     >

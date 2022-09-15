@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "@/options/pages/marketplace/ActivateWizard.module.scss";
+
 import React, { useCallback, useMemo } from "react";
 import { AuthOption } from "@/auth/authTypes";
 import { CloudExtension } from "@/types/contract";
@@ -27,8 +29,10 @@ import { FormState } from "@/options/pages/activateExtension/activateTypes";
 import PermissionsRow from "@/options/pages/activateExtension/PermissionsRow";
 import extensionsSlice from "@/store/extensionsSlice";
 import { UUID } from "@/core";
-import { Card } from "react-bootstrap";
+import { Card, Col, Row } from "react-bootstrap";
 import ActivateButton from "@/options/pages/activateExtension/ActivateButton";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCube } from "@fortawesome/free-solid-svg-icons";
 
 const { actions } = extensionsSlice;
 
@@ -73,9 +77,25 @@ const ActivateForm: React.FunctionComponent<{
       {() => (
         <Form id="activate-wizard" noValidate>
           <Card>
-            <Card.Header>
-              Activate extension name here
-              <ActivateButton />
+            <Card.Header className={styles.wizardHeader}>
+              <Row>
+                <Col>
+                  <div className={styles.wizardBlueprintDescription}>
+                    <div className={styles.wizardMainInfo}>
+                      <span className={styles.blueprintIcon}>
+                        <FontAwesomeIcon icon={faCube} />
+                      </span>
+                      <Card.Title>{extension.label}</Card.Title>
+                    </div>
+                    <div className={styles.wizardDescription}>
+                      Created in the Page Editor
+                    </div>
+                  </div>
+                  <div className={styles.activateButtonContainer}>
+                    <ActivateButton />
+                  </div>
+                </Col>
+              </Row>
             </Card.Header>
             <Card.Body>
               <ServicesRow

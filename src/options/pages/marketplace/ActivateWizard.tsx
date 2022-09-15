@@ -59,7 +59,9 @@ const ActivateHeader: React.FunctionComponent<{
                 </code>
               </span>
             </div>
-            <div>{installableViewItem.description}</div>
+            <div className={styles.wizardDescription}>
+              {installableViewItem.description}
+            </div>
           </div>
           <div className={styles.activateButtonContainer}>
             <ActivateButton blueprint={blueprint} />
