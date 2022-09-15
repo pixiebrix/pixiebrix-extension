@@ -24,7 +24,7 @@ import { ServiceDependency } from "@/core";
 import useFetch from "@/hooks/useFetch";
 import { ServiceDefinition } from "@/types/definitions";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { Card, Col, Row, Table } from "react-bootstrap";
+import { Card, Col, Row } from "react-bootstrap";
 import ServiceDescriptor from "@/options/pages/marketplace/ServiceDescriptor";
 import AuthWidget from "@/options/pages/marketplace/AuthWidget";
 import { joinName } from "@/utils";

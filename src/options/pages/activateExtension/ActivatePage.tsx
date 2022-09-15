@@ -48,7 +48,7 @@ const ActivatePage: React.FunctionComponent = () => {
       isPending={isLoading || authOptions == null}
     >
       <Row>
-        <Col xl={8} lg={10} md={12}>
+        <Col xs={12} xl={10}>
           <ErrorBoundary>
             {extension && authOptions && (
               <ActivateForm
