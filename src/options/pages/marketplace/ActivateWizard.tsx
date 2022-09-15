@@ -36,6 +36,40 @@ interface OwnProps {
   blueprint: RecipeDefinition;
 }
 
+const ActivateHeader: React.FunctionComponent<{
+  blueprint: RecipeDefinition;
+}> = ({ blueprint }) => {
+  const { installableViewItems } = useInstallableViewItems([blueprint]);
+
+  const installableViewItem = installableViewItems[0];
+
+  return (
+    <Card.Header className={styles.wizardHeader}>
+      <Row>
+        <Col>
+          <div className={styles.wizardBlueprintDescription}>
+            <div className={styles.wizardMainInfo}>
+              <span className={styles.blueprintIcon}>
+                {installableViewItem.icon}
+              </span>
+              <span>
+                <Card.Title>{installableViewItem.name}</Card.Title>
+                <code className={styles.packageId}>
+                  {installableViewItem.sharing.packageId}
+                </code>
+              </span>
+            </div>
+            <div>{installableViewItem.description}</div>
+          </div>
+          <div className={styles.activateButtonContainer}>
+            <ActivateButton blueprint={blueprint} />
+          </div>
+        </Col>
+      </Row>
+    </Card.Header>
+  );
+};
+
 const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -43,9 +77,6 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
     new URLSearchParams(location.search).get("reinstall") === "1";
   const [blueprintSteps, initialValues] = useWizard(blueprint);
   const install = useInstall(blueprint);
-  const { installableViewItems } = useInstallableViewItems([blueprint]);
-
-  const installableViewItem = installableViewItems[0];
 
   const installedExtensions = useSelector(selectExtensions);
 
@@ -87,29 +118,7 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
           }}
         >
           <Card>
-            <Card.Header className={styles.wizardHeader}>
-              <Row>
-                <Col>
-                  <div className={styles.wizardBlueprintDescription}>
-                    <div className={styles.wizardMainInfo}>
-                      <span className={styles.blueprintIcon}>
-                        {installableViewItem.icon}
-                      </span>
-                      <span>
-                        <Card.Title>{installableViewItem.name}</Card.Title>
-                        <code className={styles.packageId}>
-                          {installableViewItem.sharing.packageId}
-                        </code>
-                      </span>
-                    </div>
-                    <div>{installableViewItem.description}</div>
-                  </div>
-                  <div className={styles.activateButtonContainer}>
-                    <ActivateButton blueprint={blueprint} />
-                  </div>
-                </Col>
-              </Row>
-            </Card.Header>
+            <ActivateHeader blueprint={blueprint} />
             <Card.Body className={styles.wizardBody}>
               {blueprintSteps.map(({ Component, label, key }, _) => (
                 <Row key={key} className={styles.wizardBodyRow}>

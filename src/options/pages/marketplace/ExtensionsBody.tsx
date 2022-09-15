@@ -17,8 +17,7 @@
 
 import styles from "./ExtensionsBody.module.scss";
 
-import React, { useMemo } from "react";
-import { useFormikContext } from "formik";
+import React from "react";
 import { Badge, Col } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
