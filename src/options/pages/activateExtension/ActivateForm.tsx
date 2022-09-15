@@ -36,6 +36,31 @@ import { faCube } from "@fortawesome/free-solid-svg-icons";
 
 const { actions } = extensionsSlice;
 
+const ActivateHeader: React.FunctionComponent<{
+  extension: CloudExtension;
+}> = ({ extension }) => (
+  <Card.Header className={styles.wizardHeader}>
+    <Row>
+      <Col>
+        <div className={styles.wizardHeaderLayout}>
+          <div className={styles.wizardMainInfo}>
+            <span className={styles.blueprintIcon}>
+              <FontAwesomeIcon icon={faCube} />
+            </span>
+            <Card.Title>{extension.label}</Card.Title>
+          </div>
+          <div className={styles.wizardDescription}>
+            Created in the Page Editor
+          </div>
+        </div>
+        <div className={styles.activateButtonContainer}>
+          <ActivateButton />
+        </div>
+      </Col>
+    </Row>
+  </Card.Header>
+);
+
 const ActivateForm: React.FunctionComponent<{
   extension: CloudExtension;
   authOptions: AuthOption[];
@@ -77,26 +102,7 @@ const ActivateForm: React.FunctionComponent<{
       {() => (
         <Form id="activate-wizard" noValidate>
           <Card>
-            <Card.Header className={styles.wizardHeader}>
-              <Row>
-                <Col>
-                  <div className={styles.wizardHeaderLayout}>
-                    <div className={styles.wizardMainInfo}>
-                      <span className={styles.blueprintIcon}>
-                        <FontAwesomeIcon icon={faCube} />
-                      </span>
-                      <Card.Title>{extension.label}</Card.Title>
-                    </div>
-                    <div className={styles.wizardDescription}>
-                      Created in the Page Editor
-                    </div>
-                  </div>
-                  <div className={styles.activateButtonContainer}>
-                    <ActivateButton />
-                  </div>
-                </Col>
-              </Row>
-            </Card.Header>
+            <ActivateHeader extension={extension} />
             <Card.Body>
               <ServicesRow
                 authOptions={authOptions}
