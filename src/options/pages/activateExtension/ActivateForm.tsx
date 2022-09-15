@@ -22,7 +22,7 @@ import { Form, Formik, FormikProps } from "formik";
 import { useDispatch } from "react-redux";
 import { push } from "connected-react-router";
 import notify from "@/utils/notify";
-import ServicesCard from "@/options/pages/activateExtension/ServicesCard";
+import ServicesRow from "@/options/pages/activateExtension/ServicesRow";
 import { FormState } from "@/options/pages/activateExtension/activateTypes";
 import ActivateCard from "@/options/pages/activateExtension/ActivateCard";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -74,15 +74,10 @@ const ActivateForm: React.FunctionComponent<{
           <Card>
             <Card.Header>Activate extension name here</Card.Header>
             <Card.Body>
-              <Row>
-                <Col xs={12}>
-                  <h4>Integrations</h4>
-                </Col>
-                <ServicesCard
-                  authOptions={authOptions}
-                  refreshAuthOptions={refreshAuthOptions}
-                />
-              </Row>
+              <ServicesRow
+                authOptions={authOptions}
+                refreshAuthOptions={refreshAuthOptions}
+              />
               <Row>
                 <Col xs={12}>
                   <h4>Permissions & URLs</h4>

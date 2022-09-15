@@ -22,12 +22,12 @@ import { ServiceDependency } from "@/core";
 import useFetch from "@/hooks/useFetch";
 import { ServiceDefinition } from "@/types/definitions";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { Card, Table } from "react-bootstrap";
+import { Col, Row, Table } from "react-bootstrap";
 import ServiceDescriptor from "@/options/pages/marketplace/ServiceDescriptor";
 import AuthWidget from "@/options/pages/marketplace/AuthWidget";
 import { joinName } from "@/utils";
 
-const ServicesCard: React.FunctionComponent<{
+const ServicesRow: React.FunctionComponent<{
   authOptions: AuthOption[];
   refreshAuthOptions: () => void;
 }> = ({ authOptions, refreshAuthOptions }) => {
@@ -50,8 +50,10 @@ const ServicesCard: React.FunctionComponent<{
   }
 
   return (
-    <Card className="mb-3">
-      <Card.Header>Configure Integrations</Card.Header>
+    <Row>
+      <Col xs={12}>
+        <h4>Integrations</h4>
+      </Col>
       <Table>
         <thead>
           <tr>
@@ -80,8 +82,8 @@ const ServicesCard: React.FunctionComponent<{
           ))}
         </tbody>
       </Table>
-    </Card>
+    </Row>
   );
 };
 
-export default ServicesCard;
+export default ServicesRow;
