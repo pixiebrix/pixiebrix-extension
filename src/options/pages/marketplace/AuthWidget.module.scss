@@ -23,4 +23,8 @@
 .selector {
   margin-right: 1em;
   flex-grow: 1;
+
+  :global(.form-group) {
+    margin-bottom: 0 !important;
+  }
 }
