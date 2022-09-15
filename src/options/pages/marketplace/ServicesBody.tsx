@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ServicesBody.module.scss";
+
 import React, { useMemo } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
@@ -58,7 +60,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
           // consistent with the index in field.value
           visibleServiceIds.has(serviceId) ? (
             <Col xs={4}>
-              <Card key={serviceId}>
+              <Card key={serviceId} className={styles.serviceCard}>
                 <ServiceDescriptor
                   serviceId={serviceId}
                   serviceConfigs={serviceConfigs}
