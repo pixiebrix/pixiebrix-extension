@@ -27,7 +27,8 @@ import { FormState } from "@/options/pages/activateExtension/activateTypes";
 import ActivateCard from "@/options/pages/activateExtension/ActivateCard";
 import extensionsSlice from "@/store/extensionsSlice";
 import { UUID } from "@/core";
-import { Card, Col, Row } from "react-bootstrap";
+import { Card } from "react-bootstrap";
+import ActivateButton from "@/options/pages/activateExtension/ActivateButton";
 
 const { actions } = extensionsSlice;
 
@@ -72,18 +73,16 @@ const ActivateForm: React.FunctionComponent<{
       {() => (
         <Form id="activate-wizard" noValidate>
           <Card>
-            <Card.Header>Activate extension name here</Card.Header>
+            <Card.Header>
+              Activate extension name here
+              <ActivateButton />
+            </Card.Header>
             <Card.Body>
               <ServicesRow
                 authOptions={authOptions}
                 refreshAuthOptions={refreshAuthOptions}
               />
-              <Row>
-                <Col xs={12}>
-                  <h4>Permissions & URLs</h4>
-                </Col>
-                <ActivateCard extension={extension} />
-              </Row>
+              <ActivateCard extension={extension} />
             </Card.Body>
           </Card>
         </Form>

@@ -15,50 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Card, Col, Row } from "react-bootstrap";
 import AsyncButton from "@/components/AsyncButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import { useFormikContext } from "formik";
-import UrlPermissionsList from "@/options/pages/marketplace/UrlPermissionsList";
-import useEnsurePermissions from "@/options/pages/activateExtension/useEnsurePermissions";
-import { CloudExtension } from "@/types/contract";
 import { FormState } from "@/options/pages/activateExtension/activateTypes";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
-const ActivateCard: React.FunctionComponent<{ extension: CloudExtension }> = ({
-  extension,
-}) => {
+const ActivateButton: React.FunctionComponent = () => {
   const { submitForm, values, isSubmitting } = useFormikContext<FormState>();
 
   const anyUnconfigured = values.services.some(
     ({ id, config }) => id !== PIXIEBRIX_SERVICE_ID && config == null
   );
 
-  const permissionsState = useEnsurePermissions(extension, values.services);
-
   return (
-    <Row>
-      <Col xs={12}>
-        <h4>Permissions & URLs</h4>
-      </Col>
-      <UrlPermissionsList {...permissionsState} />
-
-      <Card.Footer className="d-inline-flex">
-        <div className="ml-auto">
-          <AsyncButton
-            variant="primary"
-            size="sm"
-            onClick={submitForm}
-            disabled={anyUnconfigured || isSubmitting}
-          >
-            <FontAwesomeIcon icon={faMagic} /> Activate
-          </AsyncButton>
-        </div>
-      </Card.Footer>
-    </Row>
+    <AsyncButton
+      variant="primary"
+      size="sm"
+      onClick={submitForm}
+      disabled={anyUnconfigured || isSubmitting}
+    >
+      <FontAwesomeIcon icon={faMagic} /> Activate
+    </AsyncButton>
   );
 };
 
-export default ActivateCard;
+export default ActivateButton;
