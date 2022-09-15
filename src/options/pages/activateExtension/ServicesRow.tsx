@@ -22,7 +22,7 @@ import { ServiceDependency } from "@/core";
 import useFetch from "@/hooks/useFetch";
 import { ServiceDefinition } from "@/types/definitions";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { Col, Row, Table } from "react-bootstrap";
+import { Card, Col, Row, Table } from "react-bootstrap";
 import ServiceDescriptor from "@/options/pages/marketplace/ServiceDescriptor";
 import AuthWidget from "@/options/pages/marketplace/AuthWidget";
 import { joinName } from "@/utils";
@@ -54,34 +54,29 @@ const ServicesRow: React.FunctionComponent<{
       <Col xs={12}>
         <h4>Integrations</h4>
       </Col>
-      <Table>
-        <thead>
-          <tr>
-            <th style={{ minWidth: "200px" }}>Integration</th>
-            <th className="w-100">Configuration</th>
-          </tr>
-        </thead>
-        <tbody>
-          {configurable.map(({ dependency, valueIndex }) => (
-            <tr key={`${dependency.outputKey}-${valueIndex}`}>
-              <td>
-                <ServiceDescriptor
-                  serviceId={dependency.id}
-                  serviceConfigs={serviceConfigs}
-                />
-              </td>
-              <td>
-                <AuthWidget
-                  authOptions={authOptions}
-                  serviceId={dependency.id}
-                  name={joinName(field.name, String(valueIndex), "config")}
-                  onRefresh={refreshAuthOptions}
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      <Col>
+        {configurable.map(({ dependency, valueIndex }) => (
+          <Col
+            xs={12}
+            sm={6}
+            xl={4}
+            key={`${dependency.outputKey}-${valueIndex}`}
+          >
+            <Card>
+              <ServiceDescriptor
+                serviceId={dependency.id}
+                serviceConfigs={serviceConfigs}
+              />
+              <AuthWidget
+                authOptions={authOptions}
+                serviceId={dependency.id}
+                name={joinName(field.name, String(valueIndex), "config")}
+                onRefresh={refreshAuthOptions}
+              />
+            </Card>
+          </Col>
+        ))}
+      </Col>
     </Row>
   );
 };
