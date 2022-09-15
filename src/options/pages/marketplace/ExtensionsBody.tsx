@@ -21,20 +21,8 @@ import React, { useMemo } from "react";
 import { useFormikContext } from "formik";
 import { Badge, Col } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
-import { WizardValues } from "@/options/pages/marketplace/wizardTypes";
-import { ServiceAuthPair } from "@/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
-
-// TODO: what is this for?
-function selectedAuths(values: WizardValues): ServiceAuthPair[] {
-  return values.services.filter((x) => x.config);
-}
-
-export function useSelectedAuths(): ServiceAuthPair[] {
-  const { values } = useFormikContext<WizardValues>();
-  return useMemo(() => selectedAuths(values), [values]);
-}
 
 const ExtensionBadge: React.FunctionComponent<{
   name: string;
@@ -50,17 +38,9 @@ interface OwnProps {
 
 const ExtensionsBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => (
   <Col>
-    {
-      // Since 1.6.5, during reactivation all extensions are toggled on by default. This is to account for a
-      // situation where a user upgrades to a new version of a blueprint that has additional required extensions.
-      // In the future, we will likely remove the ability to toggle extensions altogether
-      // See https://github.com/pixiebrix/pixiebrix-extension/issues/3551 for more information.
-      // For now, we're just hard-coding the initialValue but keeping the parameter because we may want to
-      // reintroduce conditional logic in the future
-      blueprint.extensionPoints.map((definition, index) => (
-        <ExtensionBadge key={definition.id} name={definition.label} />
-      ))
-    }
+    {blueprint.extensionPoints.map((definition, index) => (
+      <ExtensionBadge key={definition.id} name={definition.label} />
+    ))}
   </Col>
 );
 

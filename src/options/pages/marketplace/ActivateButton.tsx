@@ -17,7 +17,6 @@
 
 import React, { useMemo } from "react";
 import { RecipeDefinition } from "@/types/definitions";
-import { useSelectedAuths } from "@/options/pages/marketplace/ExtensionsBody";
 import { useLocation } from "react-router";
 import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
 import { useDispatch, useSelector } from "react-redux";
@@ -28,6 +27,7 @@ import AsyncButton from "@/components/AsyncButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import extensionsSlice from "@/store/extensionsSlice";
+import { useSelectedAuths } from "@/options/pages/marketplace/PermissionsBody";
 
 const { removeExtension } = extensionsSlice.actions;
 

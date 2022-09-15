@@ -16,8 +16,7 @@
  */
 
 import { RecipeDefinition } from "@/types/definitions";
-import React from "react";
-import { useSelectedAuths } from "@/options/pages/marketplace/ExtensionsBody";
+import React, { useMemo } from "react";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert, Col } from "react-bootstrap";
@@ -28,6 +27,18 @@ import extensionPointRegistry from "@/extensionPoints/registry";
 import { useAsyncState } from "@/hooks/common";
 import { allSettledValues } from "@/utils";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
+import { WizardValues } from "@/options/pages/marketplace/wizardTypes";
+import { ServiceAuthPair } from "@/core";
+import { useFormikContext } from "formik";
+
+function selectedAuths(values: WizardValues): ServiceAuthPair[] {
+  return values.services.filter((x) => x.config);
+}
+
+export function useSelectedAuths(): ServiceAuthPair[] {
+  const { values } = useFormikContext<WizardValues>();
+  return useMemo(() => selectedAuths(values), [values]);
+}
 
 const QuickBarAlert = () => (
   <Alert variant="warning">
