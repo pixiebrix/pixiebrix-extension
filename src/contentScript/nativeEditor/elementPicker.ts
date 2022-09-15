@@ -23,7 +23,7 @@ import {
   safeMultiCssSelector,
 } from "@/contentScript/nativeEditor/selectorInference";
 import { Framework } from "@/messaging/constants";
-import { uniq } from "lodash";
+import { uniq, compact } from "lodash";
 import * as pageScript from "@/pageScript/protocol";
 import { requireSingleElement } from "@/utils/requireSingleElement";
 import { SelectMode } from "@/contentScript/nativeEditor/types";
@@ -124,12 +124,10 @@ export async function userSelectElement({
 
       function handleDone(target?: HTMLElement) {
         try {
-          const result = target
-            ? uniq([...targets, target])
-            : uniq([...targets]);
+          const result = uniq(compact([...targets, target]));
           if (root && result.some((x) => !root.contains(x))) {
             throw new Error(
-              "One or more selected elements are not contained with the root container"
+              "One or more selected elements are not contained within the root container"
             );
           }
 
@@ -149,7 +147,7 @@ export async function userSelectElement({
           return;
         }
 
-        // Do not allow select the multi-element selection popup.
+        // Do not allow the user to select the multi-element selection popup.
         if (target.contains(multiSelectionToolElement)) {
           return;
         }
@@ -386,7 +384,7 @@ export async function selectElement({
           selectors: inferredSelectors,
           framework: null,
           hasData: false,
-          tagName: elements[0].tagName, // Will first element tag will be enough/same for all elemtns?
+          tagName: elements[0].tagName, // Will first element tag be enough/same for all elemtns?
           parent: null,
         };
       }

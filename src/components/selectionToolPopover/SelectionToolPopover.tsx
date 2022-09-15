@@ -15,17 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import ReactDOM from "react-dom";
 import ReactShadowRoot from "react-shadow-root";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 
 import FieldSection from "@/pageEditor/fields/FieldSection";
-import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import SwitchButtonWidget, {
+  CheckBoxLike,
+} from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import switchStyle from "@/components/form/widgets/switchButton/SwitchButtonWidget.module.scss?loadAsUrl";
 import custom from "./SelectionToolPopover.module.scss?loadAsUrl";
 import { Stylesheets } from "@/components/Stylesheets";
-import AsyncButton from "@/components/AsyncButton";
+import { Button } from "react-bootstrap";
 import { FormLabel } from "react-bootstrap";
 
 export const SelectionToolPopover: React.FC<{
@@ -44,28 +46,28 @@ export const SelectionToolPopover: React.FC<{
           >
             <div className="d-flex align-items-center">
               <SwitchButtonWidget
-                name="public"
+                name="allowMulti"
                 value={enabled}
-                onChange={(event) => {
-                  setEnabled(event.target.value);
-                  onChangeMultiSelection(event.target.value);
+                onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+                  setEnabled(target.value);
+                  onChangeMultiSelection(target.value);
                 }}
               />
               <FormLabel className="align-middle mx-3">
                 Select Multiple
               </FormLabel>
 
-              <AsyncButton size="sm" variant="info" onClick={onCancel}>
+              <Button size="sm" variant="info" onClick={onCancel}>
                 Cancel
-              </AsyncButton>
-              <AsyncButton
+              </Button>
+              <Button
                 className="info ml-1"
                 size="sm"
                 variant="primary"
                 onClick={onDone}
               >
                 Done
-              </AsyncButton>
+              </Button>
             </div>
           </FieldSection>
         </div>
