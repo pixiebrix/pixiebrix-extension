@@ -134,7 +134,8 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   >((x) => x.settings.selectionTools);
 
   const suggestions: ElementSuggestion[] = useMemo(
-    () => getSuggestionsForElement(element, { sort }),
+    () =>
+      getSuggestionsForElement(element, { sort: sort && !element?.isMulti }),
     [element, sort]
   );
 
@@ -191,7 +192,8 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
       setElement(selected);
 
       const selectors = selected.selectors ?? [];
-      const [firstSelector] = sort ? sortBySelector(selectors) : selectors;
+      const [firstSelector] =
+        sort && !selected.isMulti ? sortBySelector(selectors) : selectors;
 
       console.debug("Setting selector", { selected, firstSelector });
       setValue(firstSelector);
