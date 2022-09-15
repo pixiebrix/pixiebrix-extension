@@ -80,7 +80,11 @@ const ActivateButton: React.FunctionComponent<{
   };
 
   return (
-    <AsyncButton size="sm" disabled={isPending} onClick={activateOrReinstall}>
+    <AsyncButton
+      className="text-nowrap"
+      disabled={isPending}
+      onClick={activateOrReinstall}
+    >
       <FontAwesomeIcon icon={faMagic} /> {reinstall ? "Reactivate" : "Activate"}
     </AsyncButton>
   );

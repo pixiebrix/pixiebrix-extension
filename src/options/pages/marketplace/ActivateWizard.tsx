@@ -87,18 +87,26 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
           }}
         >
           <Card>
-            <Card.Header>
+            <Card.Header className={styles.wizardHeader}>
               <Row>
                 <Col>
-                  <Card.Title>
-                    {installableViewItem.icon}
-                    {installableViewItem.name}
-                  </Card.Title>
-                  <code>{installableViewItem.sharing.packageId}</code>
-                  <Card.Text>{installableViewItem.description}</Card.Text>
-                </Col>
-                <Col xs={3}>
-                  <ActivateButton blueprint={blueprint} />
+                  <div className={styles.wizardBlueprintDescription}>
+                    <div className={styles.wizardMainInfo}>
+                      <span className={styles.blueprintIcon}>
+                        {installableViewItem.icon}
+                      </span>
+                      <span>
+                        <Card.Title>{installableViewItem.name}</Card.Title>
+                        <code className={styles.packageId}>
+                          {installableViewItem.sharing.packageId}
+                        </code>
+                      </span>
+                    </div>
+                    <div>{installableViewItem.description}</div>
+                  </div>
+                  <div className={styles.activateButtonContainer}>
+                    <ActivateButton blueprint={blueprint} />
+                  </div>
                 </Col>
               </Row>
             </Card.Header>
