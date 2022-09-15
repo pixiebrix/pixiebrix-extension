@@ -24,7 +24,7 @@ import { push } from "connected-react-router";
 import notify from "@/utils/notify";
 import ServicesRow from "@/options/pages/activateExtension/ServicesRow";
 import { FormState } from "@/options/pages/activateExtension/activateTypes";
-import ActivateCard from "@/options/pages/activateExtension/ActivateCard";
+import PermissionsRow from "@/options/pages/activateExtension/PermissionsRow";
 import extensionsSlice from "@/store/extensionsSlice";
 import { UUID } from "@/core";
 import { Card } from "react-bootstrap";
@@ -82,7 +82,7 @@ const ActivateForm: React.FunctionComponent<{
                 authOptions={authOptions}
                 refreshAuthOptions={refreshAuthOptions}
               />
-              <ActivateCard extension={extension} />
+              <PermissionsRow extension={extension} />
             </Card.Body>
           </Card>
         </Form>
