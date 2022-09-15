@@ -49,7 +49,7 @@ type RecipeSaver = {
   isSaving: boolean;
 };
 
-function useRecipeSaver(): RecipeSaver {
+function useSaveRecipe(): RecipeSaver {
   const dispatch = useDispatch();
   const create = useCreate();
   const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
@@ -191,4 +191,4 @@ function useRecipeSaver(): RecipeSaver {
   };
 }
 
-export default useRecipeSaver;
+export default useSaveRecipe;

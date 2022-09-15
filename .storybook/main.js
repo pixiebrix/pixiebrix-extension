@@ -28,6 +28,9 @@ module.exports = {
   core: {
     builder: "webpack5",
   },
+  features: {
+    storyStoreV7: true,
+  },
   // https://storybook.js.org/docs/react/builders/webpack#extending-storybooks-webpack-config
   webpackFinal: async (config) => {
     const mergedConfig = mergeWithShared(config, {

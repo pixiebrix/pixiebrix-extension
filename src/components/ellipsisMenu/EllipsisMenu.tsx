@@ -22,26 +22,60 @@ import cx from "classnames";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import styles from "./EllipsisMenu.module.scss";
 
-type Item = {
+export type EllipsisMenuItem = {
+  /**
+   * User-visible display for the item, generally text of some sort
+   */
   title: ReactNode;
-  hide?: boolean;
+
+  /**
+   * The "on select" action for the item
+   */
   action: () => void;
+
   className?: string;
+  hide?: boolean;
   disabled?: boolean;
 };
 
-const EllipsisMenu: React.FunctionComponent<{
+type EllipsisMenuProps = {
   className?: string;
+
+  /**
+   * The className prop for the dropdown menu toggle
+   */
   toggleClassName?: string;
+
+  /**
+   * The bootstrap button variant for the toggle
+   */
   variant?: string;
-  items: Item[];
+
+  /**
+   * The dropdown menu options
+   */
+  items: EllipsisMenuItem[];
+
+  /**
+   * The boundary element for the dropdown menu popup
+   * @see DropdownMenuProps.popperConfig
+   */
   menuBoundary?: Element;
-}> = ({
+
+  /**
+   * Align the dropdown menu to the right side of the toggle
+   * @see DropdownMenuProps.alignRight
+   */
+  alignRight?: boolean;
+};
+
+const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
   className,
   toggleClassName,
   variant = "light",
   items,
   menuBoundary,
+  alignRight,
 }) => {
   const onToggle = (
     isOpen: boolean,
@@ -90,7 +124,7 @@ const EllipsisMenu: React.FunctionComponent<{
       >
         <FontAwesomeIcon icon={faEllipsisV} />
       </Dropdown.Toggle>
-      <Dropdown.Menu popperConfig={dropdownMenuOptions}>
+      <Dropdown.Menu popperConfig={dropdownMenuOptions} alignRight={alignRight}>
         {items
           .filter((x) => !x.hide)
           .map((item, index) => (

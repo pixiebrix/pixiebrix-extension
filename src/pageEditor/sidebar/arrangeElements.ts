@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { sortBy } from "lodash";
+import { lowerCase, sortBy } from "lodash";
 import { IExtension, RegistryId, UUID } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { getRecipeById } from "@/utils";
 
 type ArrangeElementsArgs = {
   elements: FormState[];
@@ -31,10 +32,7 @@ type ArrangeElementsArgs = {
   expandedRecipeId: RegistryId | null;
 };
 
-type ArrangeElementsResult = {
-  elementsByRecipeId: Array<[RegistryId, Array<IExtension | FormState>]>;
-  orphanedElements: Array<IExtension | FormState>;
-};
+type Element = IExtension | FormState;
 
 function arrangeElements({
   elements,
@@ -45,7 +43,7 @@ function arrangeElements({
   showAll,
   activeElementId,
   expandedRecipeId,
-}: ArrangeElementsArgs): ArrangeElementsResult {
+}: ArrangeElementsArgs): Array<Element | [RegistryId, Element[]]> {
   const elementIds = new Set(elements.map((formState) => formState.uuid));
   const elementsByRecipeId = new Map<
     RegistryId,
@@ -71,11 +69,7 @@ function arrangeElements({
     if (extension._recipe) {
       const recipeId = extension._recipe.id;
       if (elementsByRecipeId.has(recipeId)) {
-        const recipeElements = elementsByRecipeId.get(recipeId);
-        elementsByRecipeId.set(
-          recipeId,
-          sortBy([extension, ...recipeElements], (element) => element.label)
-        );
+        elementsByRecipeId.get(recipeId).push(extension);
       } else {
         elementsByRecipeId.set(recipeId, [extension]);
       }
@@ -88,11 +82,7 @@ function arrangeElements({
     if (element.recipe) {
       const recipeId = element.recipe.id;
       if (elementsByRecipeId.has(recipeId)) {
-        const recipeElements = elementsByRecipeId.get(recipeId);
-        elementsByRecipeId.set(
-          recipeId,
-          sortBy([element, ...recipeElements], (element) => element.label)
-        );
+        elementsByRecipeId.get(recipeId).push(element);
       } else {
         elementsByRecipeId.set(recipeId, [element]);
       }
@@ -101,15 +91,26 @@ function arrangeElements({
     }
   }
 
-  return {
-    elementsByRecipeId: sortBy(
-      [...elementsByRecipeId.entries()],
-      ([recipeId]) =>
-        recipes?.find((recipe) => recipe.metadata.id === recipeId)?.metadata
-          ?.name ?? recipeId
-    ),
-    orphanedElements: sortBy(orphanedElements, (element) => element.label),
-  };
+  for (const elements of elementsByRecipeId.values()) {
+    elements.sort((a, b) =>
+      lowerCase(a.label).localeCompare(lowerCase(b.label))
+    );
+  }
+
+  const sortedElements = sortBy(
+    [...elementsByRecipeId, ...orphanedElements],
+    (item) => {
+      if (Array.isArray(item)) {
+        const recipeId = item[0];
+        const recipe = getRecipeById(recipes, recipeId);
+        return lowerCase(recipe?.metadata?.name ?? "");
+      }
+
+      return lowerCase(item.label);
+    }
+  );
+
+  return sortedElements;
 }
 
 export default arrangeElements;

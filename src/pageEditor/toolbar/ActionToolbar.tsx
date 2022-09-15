@@ -47,7 +47,7 @@ const ActionToolbar: React.FunctionComponent<{
     if (element.recipe) {
       await resetRecipe(element.recipe.id);
     } else {
-      await resetExtension({ element });
+      await resetExtension({ extensionId: element.uuid });
     }
   };
 

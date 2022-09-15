@@ -17,6 +17,7 @@
 
 .root {
   display: flex;
+  align-items: center;
   gap: 0.5em;
   padding: 0.8em 0.6em !important;
   border-top-width: 0;
@@ -46,4 +47,8 @@
     // lightskyblue, 70% alpha
     background: rgba(135, 206, 250, 0.7);
   }
+}
+
+.unsaved {
+  padding-top: 4px;
 }
