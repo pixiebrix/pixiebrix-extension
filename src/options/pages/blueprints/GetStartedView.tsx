@@ -15,16 +15,81 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCube, faCubes } from "@fortawesome/free-solid-svg-icons";
 
 const GetStartedView: React.VoidFunctionComponent<{
   width: number;
   height: number;
-}> = ({ width, height }) => {
-  return (
-    <div style={{ height: `${height}px`, width: `${width}px` }}>
-      <p>Hey hey hey implement me!</p>
-    </div>
-  );
-};
+}> = ({ width, height }) => (
+  <div style={{ height: `${height}px`, width: `${width}px` }}>
+    <p>
+      On this Blueprints tab, you get to manage the Blueprints you have access
+      to.
+    </p>
+    <p>
+      <FontAwesomeIcon icon={faCubes} /> A <strong>Blueprint</strong> is like a
+      folder or container for a group of Extensions.
+    </p>
+    <p>
+      <FontAwesomeIcon icon={faCube} /> An <strong>Extension</strong> is a
+      workflow that allows you to automate, customize, or change things on a
+      webpage in your browser.
+    </p>
+    <p>
+      You can manage the Blueprints that you&apos;ve created, Blueprints from a
+      team you&apos;re a member of, and Blueprints you activate from the
+      Marketplace.
+    </p>
+    <h4>Want to create a new Blueprint?</h4>
+    <ul>
+      <li>
+        Start by opening a new browser tab navigating to the webpage you&apos;d
+        like to modify.
+      </li>
+      <li>
+        Go to the PixieBrix tab via the <strong>Chrome DevTools</strong> using{" "}
+        <kbd>Ctrl + Shift + C</kbd> or <kbd>F12</kbd> and start editing your
+        page.
+      </li>
+      <li>
+        Save your Blueprint in the Page Editor and you&apos;ll see it show up
+        here as a personal Blueprint.
+      </li>
+    </ul>
+    <h4>Nee more help?</h4>
+    <p>
+      Visit the{" "}
+      <a
+        href="https://docs.pixiebrix.com/quick-start-guide"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Quick Start Guide
+      </a>{" "}
+      or ask questions in the{" "}
+      <a
+        href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Slack Community
+      </a>
+      .{" "}
+    </p>
+    <p>
+      {" "}
+      Visit the{" "}
+      <a
+        href="https://www.pixiebrix.com/marketplace/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        PixieBrix Marketplace
+      </a>{" "}
+      for ideas.
+    </p>
+  </div>
+);
 
 export default GetStartedView;
