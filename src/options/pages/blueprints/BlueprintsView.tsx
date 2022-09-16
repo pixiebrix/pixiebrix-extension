@@ -27,6 +27,7 @@ import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTyp
 import OnboardingView from "@/options/pages/blueprints/onboardingView/OnboardingView";
 import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
 import EmptyView from "@/options/pages/blueprints/emptyView/EmptyView";
+import GetStartedView from "@/options/pages/blueprints/GetStartedView";
 
 const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
@@ -45,11 +46,7 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   const BlueprintsList = view === "list" ? ListView : GridView;
 
   if (activeTab.key === "Get Started") {
-    return (
-      <div style={{ height: `${height}px`, width: `${width}px` }}>
-        <p>Hey hey hey implement me!</p>
-      </div>
-    );
+    return <GetStartedView width={width} height={height} />;
   }
 
   if (rows.length > 0) {
