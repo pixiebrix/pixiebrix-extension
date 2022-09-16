@@ -58,7 +58,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
         const isNotStarterBlueprint = !starterBlueprints.data.some(
           (starterBlueprint) =>
             installableViewItem.sharing.packageId ===
-            starterBlueprint.metadata.name
+            starterBlueprint.metadata.id
         );
 
         return installableViewItem.status === "Active" && isNotStarterBlueprint;
@@ -77,7 +77,11 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
   ]);
 
   useEffect(() => {
-    if (starterBlueprints.isLoading || showGetStartedTab) {
+    if (
+      starterBlueprints.isLoading ||
+      isOnboardingLoading ||
+      showGetStartedTab
+    ) {
       return;
     }
 
@@ -88,7 +92,13 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
         filters: [{ id: "status", value: "Active" }],
       });
     }
-  }, [starterBlueprints, showGetStartedTab, activeTab, setActiveTab]);
+  }, [
+    isOnboardingLoading,
+    starterBlueprints,
+    showGetStartedTab,
+    activeTab,
+    setActiveTab,
+  ]);
 
   // By default, search everything with the option to re-select
   // filtered category
