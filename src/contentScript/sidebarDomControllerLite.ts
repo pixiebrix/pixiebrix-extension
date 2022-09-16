@@ -71,11 +71,10 @@ export function insertSidebarFrame(): boolean {
   );
 
   const iframe = document.createElement("iframe");
-  Object.assign(iframe, {
-    id: PANEL_FRAME_ID,
-    src: `${actionURL}?nonce=${nonce}`,
-    "data-nonce": nonce,
-  });
+  iframe.dataset.nonce = nonce;
+  iframe.id = PANEL_FRAME_ID;
+  iframe.src = `${actionURL}?nonce=${nonce}`;
+
   Object.assign(iframe.style, {
     position: "fixed",
     top: 0,
