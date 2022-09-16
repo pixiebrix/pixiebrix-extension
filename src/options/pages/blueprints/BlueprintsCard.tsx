@@ -31,6 +31,7 @@ import {
 import ListFilters from "./ListFilters";
 import { Installable, InstallableViewItem } from "./blueprintsTypes";
 import {
+  selectActiveTab,
   selectFilters,
   selectGroupBy,
   selectSortBy,

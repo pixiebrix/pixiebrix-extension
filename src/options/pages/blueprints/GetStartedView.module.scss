@@ -15,6 +15,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.imageTopBottomFadeOut {
-  mask-image: linear-gradient(rgba(0, 0, 0, 1), transparent);
+.root {
+  li,
+  p {
+    font-size: 16px;
+  }
+
+  kbd {
+    color: #170637;
+    background: white;
+    border-radius: 4px;
+    padding: 4.5px 6px;
+    margin: 0 12px;
+  }
+
+  a {
+    color: #170637;
+    font-weight: 500;
+    font-size: 16px;
+    padding-bottom: 1px;
+    border-bottom: 2px solid #5a19da;
+    text-decoration: none;
+  }
+
+  .externalLinkIcon {
+    margin-left: 4px;
+  }
+}
+
+.infoRow {
+  margin-bottom: 28px;
+
+  p {
+    margin-bottom: 4px;
+  }
+}
+
+.inlineFigure {
+  margin-right: 8px;
+}
+
+.termDefinition {
+  display: flex;
+  align-items: center;
 }

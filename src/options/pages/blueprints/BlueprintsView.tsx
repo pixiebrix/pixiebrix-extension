@@ -28,6 +28,7 @@ import OnboardingView from "@/options/pages/blueprints/onboardingView/Onboarding
 import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
 import EmptyView from "@/options/pages/blueprints/emptyView/EmptyView";
 import GetStartedView from "@/options/pages/blueprints/GetStartedView";
+import Loader from "@/components/Loader";
 
 const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
@@ -47,6 +48,10 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
 
   if (activeTab.key === "Get Started") {
     return <GetStartedView width={width} height={height} />;
+  }
+
+  if (isLoading) {
+    return <Loader />;
   }
 
   if (rows.length > 0) {

@@ -18,41 +18,66 @@ import styles from "./GetStartedView.module.scss";
 
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCube, faCubes } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCube,
+  faCubes,
+  faExternalLinkAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import blueprintsNavItemScreenshot from "@img/blueprints-nav-item-screenshot.png";
 import { Col, Row } from "react-bootstrap";
+import { isMac } from "@/utils";
 
 const GetStartedView: React.VoidFunctionComponent<{
   width: number;
   height: number;
 }> = ({ width, height }) => (
-  <div style={{ height: `${height}px`, width: `${width}px` }}>
-    <Row>
+  <div
+    style={{ height: `${height}px`, width: `${width}px` }}
+    className={styles.root}
+  >
+    <Row className={styles.infoRow}>
       <Col>
-        <p>
+        <p className={styles.termDefinition}>
           <img
-            className={styles.imageTopBottomFadeOut}
             src={blueprintsNavItemScreenshot}
             alt="Screenshot of the Blueprints tab in the sidebar"
             height={70}
+            className={styles.inlineFigure}
           />
           On this Blueprints tab, you can manage the Blueprints you have access
           to.
         </p>
-        <p>
-          <FontAwesomeIcon icon={faCubes} /> A <strong>Blueprint</strong> is
-          like a folder or container for a group of Extensions.
+        <p className={styles.termDefinition}>
+          <FontAwesomeIcon
+            icon={faCubes}
+            size="2x"
+            className={styles.inlineFigure}
+          />
+          <span>
+            A <strong>Blueprint</strong> is like a folder or container for a
+            group of Extensions.
+          </span>
         </p>
-        <p>
-          <FontAwesomeIcon icon={faCube} /> An <strong>Extension</strong> is a
-          workflow that allows you to automate, customize, or change things on a
-          webpage in your browser.
+        <p className={styles.termDefinition}>
+          <FontAwesomeIcon
+            icon={faCube}
+            size="2x"
+            className={styles.inlineFigure}
+          />{" "}
+          <span>
+            An <strong>Extension</strong> is a workflow that allows you to
+            automate, customize, or change things on a webpage in your browser.
+          </span>
         </p>
         <p>
           You can manage the Blueprints that you&apos;ve created, Blueprints
           from a team you&apos;re a member of, and Blueprints you activate from
           the Marketplace.
         </p>
+      </Col>
+    </Row>
+    <Row className={styles.infoRow}>
+      <Col>
         <h4>Want to create a new Blueprint?</h4>
         <ul>
           <li>
@@ -61,44 +86,74 @@ const GetStartedView: React.VoidFunctionComponent<{
           </li>
           <li>
             Go to the PixieBrix tab via the <strong>Chrome DevTools</strong>{" "}
-            using <kbd>Ctrl + Shift + C</kbd> or <kbd>F12</kbd> and start
-            editing your page.
+            using{" "}
+            {isMac() ? (
+              <kbd>&#8984; + Option + C</kbd>
+            ) : (
+              <kbd>Ctrl + Shift + C</kbd>
+            )}{" "}
+            or <kbd>F12</kbd> and start editing your page.
           </li>
           <li>
             Save your Blueprint in the Page Editor and you&apos;ll see it show
             up here as a personal Blueprint.
           </li>
         </ul>
+      </Col>
+    </Row>
+    <Row className={styles.infoRow}>
+      <Col>
         <h4>Need more help?</h4>
         <p>
           Visit the{" "}
-          <a
-            href="https://docs.pixiebrix.com/quick-start-guide"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Quick Start Guide
-          </a>{" "}
+          <span>
+            <a
+              href="https://docs.pixiebrix.com/quick-start-guide"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Quick Start Guide
+            </a>
+            <FontAwesomeIcon
+              icon={faExternalLinkAlt}
+              className={styles.externalLinkIcon}
+              size="xs"
+            />
+          </span>{" "}
           or ask questions in the{" "}
-          <a
-            href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Slack Community
-          </a>
-          .{" "}
+          <span>
+            <a
+              href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Slack Community
+            </a>
+            <FontAwesomeIcon
+              icon={faExternalLinkAlt}
+              className={styles.externalLinkIcon}
+              size="xs"
+            />
+          </span>
+          .
         </p>
         <p>
           {" "}
           Visit the{" "}
-          <a
-            href="https://www.pixiebrix.com/marketplace/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            PixieBrix Marketplace
-          </a>{" "}
+          <span>
+            <a
+              href="https://www.pixiebrix.com/marketplace/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              PixieBrix Marketplace
+            </a>
+            <FontAwesomeIcon
+              icon={faExternalLinkAlt}
+              className={styles.externalLinkIcon}
+              size="xs"
+            />
+          </span>{" "}
           for ideas.
         </p>
       </Col>
