@@ -25,13 +25,12 @@ import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-margin-right";
 
 const html = globalThis.document?.documentElement;
-let originalMarginRight: number;
 const SIDEBAR_WIDTH_PX = 400;
 
 function storeOriginalCSSOnce() {
-  originalMarginRight ??= Number.parseFloat(
-    getComputedStyle(html).getPropertyValue("margin-right")
-  );
+  // Store data in the DOM because it must persist across sessions
+  html.dataset.pbSidebarWidth ??=
+    getComputedStyle(html).getPropertyValue("margin-right");
 }
 
 const getSidebar = (): Element => document.querySelector(`#${PANEL_FRAME_ID}`);
@@ -44,7 +43,7 @@ export function removeSidebarFrame(): boolean {
   if (sidebar) {
     sidebar.remove();
     Object.assign(html.style, {
-      marginRight: `${originalMarginRight}px`,
+      marginRight: html.dataset.pbSidebarWidth,
       [SIDEBAR_WIDTH_CSS_PROPERTY]: "",
     });
   }
@@ -67,7 +66,7 @@ export function insertSidebarFrame(): boolean {
   html.style.setProperty("margin-right", `var(${SIDEBAR_WIDTH_CSS_PROPERTY})`);
   html.style.setProperty(
     SIDEBAR_WIDTH_CSS_PROPERTY,
-    `${originalMarginRight + SIDEBAR_WIDTH_PX}px`
+    CSS.px(Number.parseFloat(html.dataset.pbSidebarWidth) + SIDEBAR_WIDTH_PX)
   );
 
   const iframe = document.createElement("iframe");
@@ -80,7 +79,7 @@ export function insertSidebarFrame(): boolean {
     top: 0,
     right: 0,
     zIndex: MAX_Z_INDEX,
-    width: `${SIDEBAR_WIDTH_PX}px`,
+    width: CSS.px(SIDEBAR_WIDTH_PX),
     height: "100%",
     border: 0,
     borderLeft: "1px solid lightgray",
