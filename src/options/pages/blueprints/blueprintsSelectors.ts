@@ -15,10 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RootState } from "@/options/store";
+import { BlueprintsState } from "@/options/pages/blueprints/blueprintsSlice";
 
-export const selectView = (state: RootState) => state.blueprints.view;
-export const selectGroupBy = (state: RootState) => state.blueprints.groupBy;
-export const selectSortBy = (state: RootState) => state.blueprints.sortBy;
-export const selectFilters = (state: RootState) => state.blueprints.filters;
-export const selectActiveTab = (state: RootState) => state.blueprints.activeTab;
+export type BlueprintsRootState = {
+  blueprints: BlueprintsState;
+};
+
+export const selectView = ({ blueprints }: BlueprintsRootState) =>
+  blueprints.view;
+export const selectGroupBy = ({ blueprints }: BlueprintsRootState) =>
+  blueprints.groupBy;
+export const selectSortBy = ({ blueprints }: BlueprintsRootState) =>
+  blueprints.sortBy;
+export const selectFilters = ({ blueprints }: BlueprintsRootState) =>
+  blueprints.filters;
+export const selectActiveTab = ({ blueprints }: BlueprintsRootState) =>
+  blueprints.activeTab;
