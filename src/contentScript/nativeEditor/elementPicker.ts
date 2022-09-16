@@ -48,12 +48,6 @@ export function hideOverlay(): void {
 }
 
 let _cancelSelect: () => void = null;
-
-function noopMouseHandler(event: MouseEvent) {
-  event.preventDefault();
-  event.stopPropagation();
-}
-
 interface UserSelection {
   root?: HTMLElement;
   /** CSS selector to limit the selection to */
@@ -148,6 +142,23 @@ export async function userSelectElement({
         isMulti = value;
       }
 
+      function noopMouseHandler(event: MouseEvent) {
+        const target = findExpectedTarget(event.target);
+        if (!target) {
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
+
+        // Do not prevent mouse event in order to drag feature working.
+        if (target.contains(multiSelectionToolElement)) {
+          return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
       function onClick(event: MouseEvent) {
         const target = findExpectedTarget(event.target);
         if (event.altKey || !target) {
@@ -178,6 +189,18 @@ export async function userSelectElement({
       }
 
       function onPointerDown(event: MouseEvent) {
+        // Do not allow the user to select the multi-element selection popup.
+        const target = findExpectedTarget(event.target);
+        if (!target) {
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
+
+        if (target.contains(multiSelectionToolElement)) {
+          return;
+        }
+
         event.preventDefault();
         event.stopPropagation();
 

@@ -19,6 +19,7 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import ReactShadowRoot from "react-shadow-root";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
+import Draggable from "react-draggable";
 
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import SwitchButtonWidget, {
@@ -56,37 +57,39 @@ export const SelectionToolPopover: React.FC<{
   return (
     <ReactShadowRoot mode="closed">
       <Stylesheets href={[bootstrap, switchStyle, custom]}>
-        <div className="popover-wrapper">
-          <FieldSection
-            title={`Selection Tool: ${matchingCount} matching Elements`}
-          >
-            <div className="d-flex align-items-center">
-              <SwitchButtonWidget
-                name="allowMulti"
-                value={enabled}
-                onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
-                  setEnabled(target.value);
-                  onChangeMultiSelection(target.value);
-                }}
-              />
-              <FormLabel className="align-middle mx-3">
-                Select Multiple
-              </FormLabel>
+        <Draggable>
+          <div className="popover-wrapper">
+            <FieldSection
+              title={`Selection Tool: ${matchingCount} matching Elements`}
+            >
+              <div className="d-flex align-items-center">
+                <SwitchButtonWidget
+                  name="allowMulti"
+                  value={enabled}
+                  onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+                    setEnabled(target.value);
+                    onChangeMultiSelection(target.value);
+                  }}
+                />
+                <FormLabel className="align-middle mx-3">
+                  Select Multiple
+                </FormLabel>
 
-              <Button size="sm" variant="info" onClick={onCancel}>
-                Cancel
-              </Button>
-              <Button
-                className="info ml-1"
-                size="sm"
-                variant="primary"
-                onClick={onDone}
-              >
-                Done
-              </Button>
-            </div>
-          </FieldSection>
-        </div>
+                <Button size="sm" variant="info" onClick={onCancel}>
+                  Cancel
+                </Button>
+                <Button
+                  className="info ml-1"
+                  size="sm"
+                  variant="primary"
+                  onClick={onDone}
+                >
+                  Done
+                </Button>
+              </div>
+            </FieldSection>
+          </div>
+        </Draggable>
       </Stylesheets>
     </ReactShadowRoot>
   );

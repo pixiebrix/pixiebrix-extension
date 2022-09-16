@@ -27,7 +27,7 @@ export default {
 
 const Template: ComponentStory<typeof SelectionToolPopover> = (args) => (
   <div>
-    <SelectionToolPopover {...args} />
+    <SelectionToolPopover {...args} setSelectionHandler={(handler) => {}} />
   </div>
 );
 
