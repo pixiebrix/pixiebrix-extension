@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { PageEditorTabContext } from "@/pageEditor/context";
 import { useField } from "formik";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
@@ -8,6 +7,8 @@ import { Framework, FrameworkMeta } from "@/messaging/constants";
 import { isNullOrBlank, joinName } from "@/utils";
 import { Schema } from "@/core";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { useSelector } from "react-redux";
+import { selectFrameState } from "@/pageEditor/tabState/tabStateSelectors";
 
 type FrameworkOption = {
   value: Framework;
@@ -68,14 +69,12 @@ const ComponentReaderOptions: React.FunctionComponent<BlockOptionProps> = ({
   const configFieldName = joinName(name, configKey);
   const frameworkFieldName = joinName(configFieldName, "framework");
 
-  const {
-    tabState: { meta },
-  } = useContext(PageEditorTabContext);
+  const { meta } = useSelector(selectFrameState);
 
   const [{ value: framework }, , frameworkHelpers] =
     useField<Framework>(frameworkFieldName);
 
-  const frameworkOptions = useFrameworkOptions(meta.frameworks);
+  const frameworkOptions = useFrameworkOptions(meta?.frameworks ?? []);
 
   useEffect(() => {
     if (isNullOrBlank(framework)) {

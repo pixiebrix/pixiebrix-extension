@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext } from "react";
-import { PageEditorTabContext } from "@/pageEditor/context";
+import React from "react";
 import { Button } from "react-bootstrap";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import { useSelector } from "react-redux";
+import { selectTabStateError } from "@/pageEditor/tabState/tabStateSelectors";
 
 /**
  * Error banner for Page Editor browser connection errors.
@@ -28,9 +29,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
  * @see RequireAuth
  */
 const ErrorBanner: React.VFC = () => {
-  const context = useContext(PageEditorTabContext);
-
-  const { error } = context;
+  const error = useSelector(selectTabStateError);
 
   if (!error) {
     return null;
