@@ -24,33 +24,32 @@ import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
 
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-margin-right";
 
+const html = globalThis.document?.documentElement;
 let originalMarginRight: number;
 const SIDEBAR_WIDTH_PX = 400;
-const PANEL_CONTAINER_SELECTOR = "#" + PANEL_FRAME_ID;
 
 function storeOriginalCSSOnce() {
   originalMarginRight ??= Number.parseFloat(
-    getComputedStyle(document.documentElement).getPropertyValue("margin-right")
+    getComputedStyle(html).getPropertyValue("margin-right")
   );
 }
 
-export function isSidebarFrameVisible(): boolean {
-  return Boolean(document.querySelector(PANEL_CONTAINER_SELECTOR));
-}
+const getSidebar = (): Element => document.querySelector(`#${PANEL_FRAME_ID}`);
+
+export const isSidebarFrameVisible = (): boolean => Boolean(getSidebar());
 
 /** Removes the element; Returns false if no element was found */
 export function removeSidebarFrame(): boolean {
-  if (!isSidebarFrameVisible()) {
-    return false;
+  const sidebar = getSidebar();
+  if (sidebar) {
+    sidebar.remove();
+    Object.assign(html.style, {
+      marginRight: `${originalMarginRight}px`,
+      [SIDEBAR_WIDTH_CSS_PROPERTY]: "",
+    });
   }
 
-  $(PANEL_CONTAINER_SELECTOR).remove();
-
-  $("html")
-    .css(SIDEBAR_WIDTH_CSS_PROPERTY, "")
-    .css("margin-right", originalMarginRight);
-
-  return true;
+  return Boolean(sidebar);
 }
 
 /** Inserts the element; Returns false if it already existed */
@@ -65,33 +64,32 @@ export function insertSidebarFrame(): boolean {
   const nonce = crypto.randomUUID();
   const actionURL = browser.runtime.getURL("sidebar.html");
 
-  $("html")
-    .css(
-      SIDEBAR_WIDTH_CSS_PROPERTY,
-      `${originalMarginRight + SIDEBAR_WIDTH_PX}px`
-    )
-    .css("margin-right", `var(${SIDEBAR_WIDTH_CSS_PROPERTY})`);
+  html.style.setProperty("margin-right", `var(${SIDEBAR_WIDTH_CSS_PROPERTY})`);
+  html.style.setProperty(
+    SIDEBAR_WIDTH_CSS_PROPERTY,
+    `${originalMarginRight + SIDEBAR_WIDTH_PX}px`
+  );
 
-  $("<iframe>")
-    .attr({
-      id: PANEL_FRAME_ID,
-      src: `${actionURL}?nonce=${nonce}`,
-      "data-nonce": nonce, // Don't use jQuery.data because we need this as an HTML attribute to target with selector
-    })
-    .css({
-      position: "fixed",
-      top: 0,
-      right: 0,
-      zIndex: MAX_Z_INDEX,
-      width: SIDEBAR_WIDTH_PX,
-      height: "100%",
-      border: 0,
-      borderLeft: "1px solid lightgray",
-      background: "#f2edf3",
-    })
-    .appendTo("html");
+  const iframe = document.createElement("iframe");
+  Object.assign(iframe, {
+    id: PANEL_FRAME_ID,
+    src: `${actionURL}?nonce=${nonce}`,
+    "data-nonce": nonce,
+  });
+  Object.assign(iframe.style, {
+    position: "fixed",
+    top: 0,
+    right: 0,
+    zIndex: MAX_Z_INDEX,
+    width: `${SIDEBAR_WIDTH_PX}px`,
+    height: "100%",
+    border: 0,
+    borderLeft: "1px solid lightgray",
+    background: "#f2edf3",
+  });
+  html.append(iframe);
 
-  return false;
+  return true;
 }
 
 export function toggleSidebarFrame(): boolean {
