@@ -42,9 +42,8 @@ const initialState: BlueprintsState = {
   sortBy: [],
   filters: [{ id: "status", value: "Active" }],
   activeTab: {
-    key: "Active",
-    tabTitle: "Active Blueprints",
-    filters: [{ id: "status", value: "Active" }],
+    key: "Get Started",
+    tabTitle: "Welcome to the PixieBrix Extension Console",
   },
 };
 

@@ -1,7 +1,7 @@
 import styles from "./ListFilters.module.scss";
 
 import { Col, Form, Nav } from "react-bootstrap";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import useReduxState from "@/hooks/useReduxState";
 import { selectActiveTab, selectFilters } from "./blueprintsSelectors";
 import blueprintsSlice from "./blueprintsSlice";
@@ -19,6 +19,8 @@ import {
 import { TableInstance } from "react-table";
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import useFlags from "@/hooks/useFlags";
+import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
+import { useGetStarterBlueprintsQuery } from "@/services/api";
 
 type ListFiltersProps = {
   teamFilters: string[];
@@ -27,7 +29,9 @@ type ListFiltersProps = {
 
 function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
   const { permit } = useFlags();
-  const { setGlobalFilter } = tableInstance;
+  const { onboardingType, isLoading: isOnboardingLoading } = useOnboarding();
+  const starterBlueprints = useGetStarterBlueprintsQuery();
+  const { setGlobalFilter, data: installableViewItems } = tableInstance;
   const [_, setFilters] = useReduxState(
     selectFilters,
     blueprintsSlice.actions.setFilters
@@ -42,6 +46,50 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
     leading: false,
   });
 
+  const showGetStartedTab = useMemo(() => {
+    const isFreemiumUser = onboardingType === "default";
+
+    const hasSomeBlueprintEngagement = installableViewItems.some(
+      (installableViewItem) => {
+        if (installableViewItem.sharing.source.type === "Personal") {
+          return true;
+        }
+
+        const isNotStarterBlueprint = !starterBlueprints.data.some(
+          (starterBlueprint) =>
+            installableViewItem.sharing.packageId ===
+            starterBlueprint.metadata.name
+        );
+
+        return installableViewItem.status === "Active" && isNotStarterBlueprint;
+      }
+    );
+
+    return !starterBlueprints.isLoading && !isOnboardingLoading
+      ? isFreemiumUser && !hasSomeBlueprintEngagement
+      : false;
+  }, [
+    onboardingType,
+    installableViewItems,
+    starterBlueprints.isLoading,
+    starterBlueprints.data,
+    isOnboardingLoading,
+  ]);
+
+  useEffect(() => {
+    if (starterBlueprints.isLoading || showGetStartedTab) {
+      return;
+    }
+
+    if (activeTab.key === "Get Started") {
+      setActiveTab({
+        key: "Active",
+        tabTitle: "Active Blueprints",
+        filters: [{ id: "status", value: "Active" }],
+      });
+    }
+  }, [starterBlueprints, showGetStartedTab, activeTab, setActiveTab]);
+
   // By default, search everything with the option to re-select
   // filtered category
   useEffect(() => {
@@ -54,7 +102,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
 
   return (
     <Col sm={12} md={3} xl={2} className={styles.root}>
-      <Form className="mb-4 mr-3">
+      <Form className="mr-3">
         <Form.Control
           id="query"
           placeholder="Search all blueprints"
@@ -71,20 +119,22 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
         defaultActiveKey={activeTab.key}
         activeKey={activeTab.key}
       >
-        <Nav.Item>
-          <Nav.Link
-            eventKey="Get Started"
-            onClick={() => {
-              setActiveTab({
-                key: "Get Started",
-                tabTitle: "Welcome to the PixieBrix Extension Console",
-              });
-            }}
-          >
-            <FontAwesomeIcon icon={faRocket} /> Get Started
-          </Nav.Link>
-        </Nav.Item>
-        <h5>Category Filters</h5>
+        {showGetStartedTab && (
+          <Nav.Item className="mt-3">
+            <Nav.Link
+              eventKey="Get Started"
+              onClick={() => {
+                setActiveTab({
+                  key: "Get Started",
+                  tabTitle: "Welcome to the PixieBrix Extension Console",
+                });
+              }}
+            >
+              <FontAwesomeIcon icon={faRocket} /> Get Started
+            </Nav.Link>
+          </Nav.Item>
+        )}
+        <h5 className="mt-3">Category Filters</h5>
         <Nav.Item>
           <Nav.Link
             eventKey="Active"
