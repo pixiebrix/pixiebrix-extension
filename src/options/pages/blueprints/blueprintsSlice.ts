@@ -22,29 +22,30 @@ import { InstallableViewItem } from "./blueprintsTypes";
 
 type View = "list" | "grid";
 
+type ActiveTab = {
+  key: string;
+  tabTitle: string;
+  filters?: Filters<InstallableViewItem>;
+};
+
 export type BlueprintsState = {
   view: View;
   groupBy: string[];
   sortBy: Array<SortingRule<InstallableViewItem>>;
   filters: Filters<InstallableViewItem>;
-  activeTab: string | null;
+  activeTab: ActiveTab | null;
 };
-
-// TODO: Potential refactoring opportunity
-//
-// type ActiveTab = {
-//    key: string;
-//    tabTitle: string;
-//    filters?: Filters<InstallableViewItem>;
-// }
-//
 
 const initialState: BlueprintsState = {
   view: "list",
   groupBy: [],
   sortBy: [],
   filters: [{ id: "status", value: "Active" }],
-  activeTab: null,
+  activeTab: {
+    key: "Active",
+    tabTitle: "Active Blueprints",
+    filters: [{ id: "status", value: "Active" }],
+  },
 };
 
 const blueprintsSlice = createSlice({
@@ -71,7 +72,7 @@ const blueprintsSlice = createSlice({
     ) {
       state.filters = filters;
     },
-    setActiveTab(state, { payload: tab }: PayloadAction<string>) {
+    setActiveTab(state, { payload: tab }: PayloadAction<ActiveTab>) {
       state.activeTab = tab;
     },
   },

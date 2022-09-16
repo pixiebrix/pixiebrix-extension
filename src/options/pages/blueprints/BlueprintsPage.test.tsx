@@ -24,6 +24,12 @@ import { Provider } from "react-redux";
 import { authSlice } from "@/auth/authSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
+import {
+  useGetCloudExtensionsQuery,
+  useGetMarketplaceListingsQuery,
+  useGetOrganizationsQuery,
+  useGetRecipesQuery,
+} from "@/services/api";
 
 function optionsStore(initialState?: any) {
   return configureStore({
@@ -64,17 +70,25 @@ jest.mock("@/services/api", () => ({
 }));
 
 beforeEach(() => {
-  // (useGetRecipesQuery as jest.Mock).mockImplementation(() => ({
-  //   data: []
-  // }));
-  //
-  // (useGetCloudExtensionsQuery as jest.Mock).mockImplementation(() => ({
-  //   data: []
-  // }));
-  //
-  // (useGetCloudExtensionsQuery as jest.Mock).mockImplementation(() => ({
-  //   data: []
-  // }));
+  (useGetRecipesQuery as jest.Mock).mockImplementation(() => ({
+    data: [],
+    isLoading: false,
+  }));
+
+  (useGetCloudExtensionsQuery as jest.Mock).mockImplementation(() => ({
+    data: [],
+    isLoading: false,
+  }));
+
+  (useGetMarketplaceListingsQuery as jest.Mock).mockImplementation(() => ({
+    data: [],
+    isLoading: false,
+  }));
+
+  (useGetOrganizationsQuery as jest.Mock).mockImplementation(() => ({
+    data: [],
+    isLoading: false,
+  }));
 });
 
 const renderBlueprintsPage = (initialState?: any) => {
@@ -87,6 +101,6 @@ const renderBlueprintsPage = (initialState?: any) => {
 
 describe("BlueprintsPage", () => {
   test("it renders", () => {
-    const rendered = renderBlueprintsPage();
+    renderBlueprintsPage();
   });
 });

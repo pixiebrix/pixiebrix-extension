@@ -30,7 +30,6 @@ import { TableInstance } from "react-table";
 import useReduxState from "@/hooks/useReduxState";
 import {
   selectActiveTab,
-  selectFilters,
   selectGroupBy,
   selectSortBy,
   selectView,
@@ -63,7 +62,6 @@ const BlueprintsToolbar: React.FunctionComponent<{
     blueprintsSlice.actions.setSortBy
   );
 
-  const filters = useSelector(selectFilters);
   const activeTab = useSelector(selectActiveTab);
 
   const isGrouped = groupBy.length > 0;
@@ -92,16 +90,12 @@ const BlueprintsToolbar: React.FunctionComponent<{
   }, [flatHeaders]);
 
   const tabContentTitle = useMemo(() => {
-    if (activeTab) {
-      return activeTab;
-    }
-
     if (globalFilter) {
       return `${numberOfBlueprints} results for "${globalFilter}"`;
     }
 
-    return `${filters.length > 0 ? filters[0].value : "All"} Blueprints`;
-  }, [activeTab, filters, globalFilter, numberOfBlueprints]);
+    return activeTab.tabTitle;
+  }, [activeTab, globalFilter, numberOfBlueprints]);
 
   return (
     <div className="d-flex justify-content-between align-items-center mb-3">

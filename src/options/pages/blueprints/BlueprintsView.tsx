@@ -44,7 +44,7 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
 
   const BlueprintsList = view === "list" ? ListView : GridView;
 
-  if (activeTab) {
+  if (activeTab.key === "Get Started") {
     return (
       <div style={{ height: `${height}px`, width: `${width}px` }}>
         <p>Hey hey hey implement me!</p>

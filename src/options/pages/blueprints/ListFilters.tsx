@@ -12,7 +12,7 @@ import {
   faCheck,
   faExternalLinkAlt,
   faGlobe,
-  faHeart,
+  faRocket,
   faUser,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
@@ -28,7 +28,7 @@ type ListFiltersProps = {
 function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
   const { permit } = useFlags();
   const { setGlobalFilter } = tableInstance;
-  const [filters, setFilters] = useReduxState(
+  const [_, setFilters] = useReduxState(
     selectFilters,
     blueprintsSlice.actions.setFilters
   );
@@ -52,8 +52,6 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
     }
   }, [debouncedQuery, setFilters, setGlobalFilter]);
 
-  const activeKey = activeTab ?? filters[0]?.value ?? "All";
-
   return (
     <Col sm={12} md={3} xl={2} className={styles.root}>
       <Form className="mb-4 mr-3">
@@ -70,17 +68,20 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
       <Nav
         className="flex-column"
         variant="pills"
-        defaultActiveKey={activeKey}
-        activeKey={activeKey}
+        defaultActiveKey={activeTab.key}
+        activeKey={activeTab.key}
       >
         <Nav.Item>
           <Nav.Link
-            eventKey="Welcome"
+            eventKey="Get Started"
             onClick={() => {
-              setActiveTab("Welcome");
+              setActiveTab({
+                key: "Get Started",
+                tabTitle: "Welcome to the PixieBrix Extension Console",
+              });
             }}
           >
-            <FontAwesomeIcon icon={faHeart} /> Welcome
+            <FontAwesomeIcon icon={faRocket} /> Get Started
           </Nav.Link>
         </Nav.Item>
         <h5>Category Filters</h5>
@@ -89,7 +90,11 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
             eventKey="Active"
             onClick={() => {
               setFilters([{ id: "status", value: "Active" }]);
-              setActiveTab(null);
+              setActiveTab({
+                key: "Active",
+                tabTitle: "Active Blueprints",
+                filters: [{ id: "status", value: "Active" }],
+              });
             }}
           >
             <FontAwesomeIcon icon={faCheck} /> Active
@@ -100,7 +105,11 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
             eventKey="All"
             onClick={() => {
               setFilters([]);
-              setActiveTab(null);
+              setActiveTab({
+                key: "All",
+                tabTitle: "All Blueprints",
+                filters: [],
+              });
             }}
           >
             <FontAwesomeIcon icon={faAsterisk} /> All Blueprints
@@ -115,7 +124,13 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
                   setFilters([
                     { id: "sharing.source.label", value: "Personal" },
                   ]);
-                  setActiveTab(null);
+                  setActiveTab({
+                    key: "Personal",
+                    tabTitle: "Personal Blueprints",
+                    filters: [
+                      { id: "sharing.source.label", value: "Personal" },
+                    ],
+                  });
                 }}
               >
                 <FontAwesomeIcon icon={faUser} /> Personal
@@ -126,7 +141,11 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
                 eventKey="Public"
                 onClick={() => {
                   setFilters([{ id: "sharing.source.label", value: "Public" }]);
-                  setActiveTab(null);
+                  setActiveTab({
+                    key: "Public",
+                    tabTitle: "Public Blueprints",
+                    filters: [{ id: "sharing.source.label", value: "Public" }],
+                  });
                 }}
               >
                 <FontAwesomeIcon icon={faGlobe} /> Public Marketplace
@@ -141,7 +160,11 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
               eventKey={filter}
               onClick={() => {
                 setFilters([{ id: "sharing.source.label", value: filter }]);
-                setActiveTab(null);
+                setActiveTab({
+                  key: filter,
+                  tabTitle: `${filter} Blueprints`,
+                  filters: [{ id: "sharing.source.label", value: filter }],
+                });
               }}
             >
               <FontAwesomeIcon icon={faUsers} /> {filter}
