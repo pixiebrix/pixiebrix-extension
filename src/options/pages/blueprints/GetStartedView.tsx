@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import styles from "./GetStartedView.module.scss";
+
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube, faCubes } from "@fortawesome/free-solid-svg-icons";
@@ -28,13 +30,12 @@ const GetStartedView: React.VoidFunctionComponent<{
     <Row>
       <Col>
         <p>
-          <div>
-            <img
-              src={blueprintsNavItemScreenshot}
-              alt="Screenshot of the Blueprints tab in the sidebar"
-              height={70}
-            />
-          </div>
+          <img
+            className={styles.imageTopBottomFadeOut}
+            src={blueprintsNavItemScreenshot}
+            alt="Screenshot of the Blueprints tab in the sidebar"
+            height={70}
+          />
           On this Blueprints tab, you can manage the Blueprints you have access
           to.
         </p>
