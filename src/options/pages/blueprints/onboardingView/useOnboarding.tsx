@@ -70,7 +70,7 @@ function useOnboarding(): {
 
   return {
     onboardingType,
-    onboardingFilter: activeTab.filters?.[0]?.value?.toLowerCase(),
+    onboardingFilter: activeTab?.filters?.[0]?.value?.toLowerCase(),
     isLoading:
       isOrganizationsLoading || isDeploymentsLoading || isRecipesLoading,
   };
