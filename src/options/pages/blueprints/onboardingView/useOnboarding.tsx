@@ -20,7 +20,7 @@ import useFlags from "@/hooks/useFlags";
 import { useMemo } from "react";
 import useDeployments from "@/hooks/useDeployments";
 import { useSelector } from "react-redux";
-import { selectFilters } from "@/options/pages/blueprints/blueprintsSelectors";
+import { selectActiveTab } from "@/options/pages/blueprints/blueprintsSelectors";
 
 export type OnboardingType =
   | "default"
@@ -34,7 +34,7 @@ function useOnboarding(): {
   isLoading: boolean;
 } {
   const { restrict } = useFlags();
-  const filters = useSelector(selectFilters);
+  const activeTab = useSelector(selectActiveTab);
 
   const { data: rawRecipes, isLoading: isRecipesLoading } =
     useGetRecipesQuery();
@@ -70,7 +70,7 @@ function useOnboarding(): {
 
   return {
     onboardingType,
-    onboardingFilter: filters?.[0]?.value?.toLowerCase(),
+    onboardingFilter: activeTab.filters?.[0]?.value?.toLowerCase(),
     isLoading:
       isOrganizationsLoading || isDeploymentsLoading || isRecipesLoading,
   };

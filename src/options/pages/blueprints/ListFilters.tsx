@@ -3,7 +3,7 @@ import styles from "./ListFilters.module.scss";
 import { Col, Form, Nav } from "react-bootstrap";
 import React, { useEffect, useMemo, useState } from "react";
 import useReduxState from "@/hooks/useReduxState";
-import { selectActiveTab, selectFilters } from "./blueprintsSelectors";
+import { selectActiveTab } from "./blueprintsSelectors";
 import blueprintsSlice from "./blueprintsSlice";
 import { useDebounce } from "use-debounce";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -32,10 +32,6 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
   const { onboardingType, isLoading: isOnboardingLoading } = useOnboarding();
   const starterBlueprints = useGetStarterBlueprintsQuery();
   const { setGlobalFilter, data: installableViewItems } = tableInstance;
-  const [_, setFilters] = useReduxState(
-    selectFilters,
-    blueprintsSlice.actions.setFilters
-  );
   const [activeTab, setActiveTab] = useReduxState(
     selectActiveTab,
     blueprintsSlice.actions.setActiveTab
@@ -106,9 +102,13 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
     setGlobalFilter(debouncedQuery);
 
     if (debouncedQuery) {
-      setFilters([]);
+      setActiveTab({
+        key: "All",
+        tabTitle: "All Blueprints",
+        filters: [],
+      });
     }
-  }, [debouncedQuery, setFilters, setGlobalFilter]);
+  }, [debouncedQuery, setActiveTab, setGlobalFilter]);
 
   return (
     <Col sm={12} md={3} xl={2} className={styles.root}>
@@ -137,6 +137,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
                 setActiveTab({
                   key: "Get Started",
                   tabTitle: "Welcome to the PixieBrix Extension Console",
+                  filters: [],
                 });
               }}
             >
@@ -149,7 +150,6 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
           <Nav.Link
             eventKey="Active"
             onClick={() => {
-              setFilters([{ id: "status", value: "Active" }]);
               setActiveTab({
                 key: "Active",
                 tabTitle: "Active Blueprints",
@@ -164,7 +164,6 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
           <Nav.Link
             eventKey="All"
             onClick={() => {
-              setFilters([]);
               setActiveTab({
                 key: "All",
                 tabTitle: "All Blueprints",
@@ -181,9 +180,6 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
               <Nav.Link
                 eventKey="Personal"
                 onClick={() => {
-                  setFilters([
-                    { id: "sharing.source.label", value: "Personal" },
-                  ]);
                   setActiveTab({
                     key: "Personal",
                     tabTitle: "Personal Blueprints",
@@ -200,7 +196,6 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
               <Nav.Link
                 eventKey="Public"
                 onClick={() => {
-                  setFilters([{ id: "sharing.source.label", value: "Public" }]);
                   setActiveTab({
                     key: "Public",
                     tabTitle: "Public Blueprints",
@@ -219,7 +214,6 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
             <Nav.Link
               eventKey={filter}
               onClick={() => {
-                setFilters([{ id: "sharing.source.label", value: filter }]);
                 setActiveTab({
                   key: filter,
                   tabTitle: `${filter} Blueprints`,

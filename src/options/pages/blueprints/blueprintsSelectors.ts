@@ -27,7 +27,5 @@ export const selectGroupBy = ({ blueprints }: BlueprintsRootState) =>
   blueprints.groupBy;
 export const selectSortBy = ({ blueprints }: BlueprintsRootState) =>
   blueprints.sortBy;
-export const selectFilters = ({ blueprints }: BlueprintsRootState) =>
-  blueprints.filters;
 export const selectActiveTab = ({ blueprints }: BlueprintsRootState) =>
   blueprints.activeTab;

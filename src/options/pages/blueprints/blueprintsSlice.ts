@@ -25,25 +25,24 @@ type View = "list" | "grid";
 type ActiveTab = {
   key: string;
   tabTitle: string;
-  filters?: Filters<InstallableViewItem>;
+  filters: Filters<InstallableViewItem>;
 };
 
 export type BlueprintsState = {
   view: View;
   groupBy: string[];
   sortBy: Array<SortingRule<InstallableViewItem>>;
-  filters: Filters<InstallableViewItem>;
-  activeTab: ActiveTab | null;
+  activeTab: ActiveTab;
 };
 
 const initialState: BlueprintsState = {
   view: "list",
   groupBy: [],
   sortBy: [],
-  filters: [{ id: "status", value: "Active" }],
   activeTab: {
     key: "Get Started",
     tabTitle: "Welcome to the PixieBrix Extension Console",
+    filters: [],
   },
 };
 
@@ -64,12 +63,6 @@ const blueprintsSlice = createSlice({
       }: PayloadAction<Array<SortingRule<InstallableViewItem>>>
     ) {
       state.sortBy = sortBy;
-    },
-    setFilters(
-      state,
-      { payload: filters }: PayloadAction<Filters<InstallableViewItem>>
-    ) {
-      state.filters = filters;
     },
     setActiveTab(state, { payload: tab }: PayloadAction<ActiveTab>) {
       state.activeTab = tab;
