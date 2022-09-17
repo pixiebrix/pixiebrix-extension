@@ -51,10 +51,13 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
           return true;
         }
 
-        const isNotStarterBlueprint = !starterBlueprints.data.some(
-          (starterBlueprint) =>
-            installableViewItem.sharing.packageId ===
-            starterBlueprint.metadata.id
+        const isNotStarterBlueprint = starterBlueprints.data.some(
+          (starterBlueprint) => {
+            return (
+              installableViewItem.sharing.packageId !==
+              starterBlueprint.metadata.id
+            );
+          }
         );
 
         return installableViewItem.status === "Active" && isNotStarterBlueprint;
