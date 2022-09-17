@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,25 +15,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "@/vendors/overrides.scss";
-import "@/utils/layout.scss";
+.root {
+  height: 100%;
+  overflow: auto;
+  text-align: center;
 
-import "@/extensionContext";
-import "@/development/darkMode";
+  p {
+    font-size: 16px;
+    color: #41335b;
+  }
 
-import registerMessenger from "@/pageEditor/messenger/registration";
+  a {
+    color: #170637;
+    font-weight: 500;
+    padding-bottom: 1px;
+    border-bottom: 2px solid #5a19da;
+    text-decoration: none;
+  }
+}
 
-import ReactDOM from "react-dom";
-import React from "react";
-import Panel from "@/pageEditor/Panel";
-import { watchNavigation } from "@/pageEditor/protocol";
-import initGoogle from "@/contrib/google/initGoogle";
-import { initToaster } from "@/utils/notify";
+.paneRow {
+  text-align: center;
+  padding: 20px 0;
+}
 
-registerMessenger();
-void initGoogle();
-watchNavigation();
-initToaster();
+.paneRowWithDivider {
+  @extend .paneRow;
+  border-top: 1px solid #e1dfe5;
+}
 
-ReactDOM.render(<Panel />, document.querySelector("#container"));
+.callout {
+  color: #170637;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.tinyCallout {
+  @extend .callout;
+  font-size: 16px;
+}
+
+.illustration {
+  margin: -30px 0;
+  max-width: 300px;
+}

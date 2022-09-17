@@ -61,10 +61,6 @@ import {
   ExtensionPointDefinition as ExtensionPointConfigDefinition,
   ExtensionPointType,
 } from "@/extensionPoints/types";
-import {
-  Context as PageEditorTabContextType,
-  FrameConnectionState,
-} from "@/pageEditor/context";
 import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
 import {
   CloudExtension,
@@ -179,18 +175,6 @@ export const installedRecipeMetadataFactory = define<RecipeMetadata>({
   version: validateSemVerString("1.0.0"),
   updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
   sharing: sharingDefinitionFactory,
-});
-
-const tabStateFactory = define<FrameConnectionState>({
-  frameId: 0,
-  hasPermissions: true,
-  navSequence: uuidSequence,
-  meta: null,
-});
-
-export const activeDevToolContextFactory = define<PageEditorTabContextType>({
-  connecting: false,
-  tabState: tabStateFactory,
 });
 
 export const extensionFactory = define<IExtension>({

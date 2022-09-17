@@ -15,25 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "@/vendors/overrides.scss";
-import "@/utils/layout.scss";
+import { TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
 
-import "@/extensionContext";
-import "@/development/darkMode";
+export const selectFrameState = ({ tabState }: TabStateRootState) =>
+  tabState.frameState;
 
-import registerMessenger from "@/pageEditor/messenger/registration";
+export const selectTabStateError = ({ tabState }: TabStateRootState) =>
+  tabState.error;
 
-import ReactDOM from "react-dom";
-import React from "react";
-import Panel from "@/pageEditor/Panel";
-import { watchNavigation } from "@/pageEditor/protocol";
-import initGoogle from "@/contrib/google/initGoogle";
-import { initToaster } from "@/utils/notify";
+export const selectTabHasPermissions = ({ tabState }: TabStateRootState) =>
+  tabState.frameState.hasPermissions;
 
-registerMessenger();
-void initGoogle();
-watchNavigation();
-initToaster();
-
-ReactDOM.render(<Panel />, document.querySelector("#container"));
+export const selectTabIsConnectingToContentScript = ({
+  tabState,
+}: TabStateRootState) => tabState.isConnecting;
