@@ -52,12 +52,9 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
         }
 
         const isNotStarterBlueprint = starterBlueprints.data.some(
-          (starterBlueprint) => {
-            return (
-              installableViewItem.sharing.packageId !==
-              starterBlueprint.metadata.id
-            );
-          }
+          (starterBlueprint) =>
+            installableViewItem.sharing.packageId !==
+            starterBlueprint.metadata.id
         );
 
         return installableViewItem.status === "Active" && isNotStarterBlueprint;
