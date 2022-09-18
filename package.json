@@ -213,7 +213,7 @@
     "@types/selenium-webdriver": "^4.0.15",
     "@types/semver": "^7.3.8",
     "@types/uuid": "^8.3.1",
-    "@types/webextension-polyfill": "^0.9.0",
+    "@types/webextension-polyfill": "^0.9.1",
     "@types/webpack": "^5.28.0",
     "@types/webpack-env": "^1.16.2",
     "@types/whatwg-mimetype": "^2.1.1",
