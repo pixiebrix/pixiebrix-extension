@@ -182,7 +182,7 @@
     "@types/gapi": "0.0.42",
     "@types/gapi.client.bigquery": "^2.0.2",
     "@types/gapi.client.oauth2": "^2.0.2",
-    "@types/gapi.client.sheets": "^4.0.20201029",
+    "@types/gapi.client.sheets": "^4.0.20201030",
     "@types/google.picker": "0.0.39",
     "@types/holderjs": "^2.9.2",
     "@types/intro.js": "^5.1.0",
