@@ -52,7 +52,7 @@
     "bootstrap-switch-button-react": "^1.2.0",
     "canvas-confetti": "^1.4.0",
     "chrono-node": "^2.3.4",
-    "classnames": "^2.3.1",
+    "classnames": "^2.3.2",
     "connected-react-router": "^6.9.1",
     "copy-text-to-clipboard": "^3.0.1",
     "csharp-helpers": "^0.9.3",
