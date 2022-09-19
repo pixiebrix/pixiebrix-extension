@@ -180,3 +180,7 @@ interface ChromeifiedBrowser extends Browser {
 }
 
 declare const browser: ChromeifiedBrowser;
+
+declare namespace CSS {
+  function px(length: number): string;
+}
