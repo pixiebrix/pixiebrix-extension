@@ -31,6 +31,7 @@ import {
   getBlockAnnotations,
   getDocumentPipelinePaths,
   getFoundationNodeAnnotations,
+  getInputKeyForSubPipeline,
   getPipelineInputKeyPropName,
   getPipelinePropNames,
 } from "@/pageEditor/utils";
@@ -80,40 +81,24 @@ type SubPipeline = {
    */
   headerLabel: string;
 
-  subPipeline: BlockPipeline;
+  pipeline: BlockPipeline;
 
   /**
    * Formik path to the pipeline
    */
-  subPipelinePath: string;
+  path: string;
 
-  subPipelineFlavor: PipelineFlavor;
+  flavor: PipelineFlavor;
 
-  subPipelineInputKey?: string;
+  inputKey?: string;
 };
 
-function getSubPipelinesForBlock({
-  index,
-  blockConfig,
-  pipeline,
-  pipelinePath,
-}: {
-  index: number;
-  blockConfig: BlockConfig;
-  pipeline: BlockPipeline;
-  pipelinePath: string;
-}): SubPipeline[] {
+function getSubPipelinesForBlock(blockConfig: BlockConfig): SubPipeline[] {
   const subPipelines: SubPipeline[] = [];
   if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
     for (const docPipelinePath of getDocumentPipelinePaths(blockConfig)) {
-      const subPipelineAccessor = joinPathParts(
-        String(index),
-        docPipelinePath,
-        "__value__"
-      );
-      const subPipelinePath = joinPathParts(pipelinePath, subPipelineAccessor);
-      const subPipeline: BlockPipeline =
-        get(pipeline, subPipelineAccessor) ?? [];
+      const path = joinPathParts(docPipelinePath, "__value__");
+      const pipeline: BlockPipeline = get(blockConfig, path) ?? [];
 
       // Removing the 'config.<pipelinePropName>' from the end of the docPipelinePath
       const elementPathParts = docPipelinePath.split(".").slice(0, -2);
@@ -128,40 +113,30 @@ function getSubPipelinesForBlock({
 
       subPipelines.push({
         headerLabel: subPipelineLabel,
-        subPipeline,
-        subPipelinePath,
-        subPipelineFlavor: isButton
-          ? PipelineFlavor.NoRenderer
-          : PipelineFlavor.NoEffect,
+        pipeline,
+        path,
+        flavor: isButton ? PipelineFlavor.NoRenderer : PipelineFlavor.NoEffect,
       });
     }
   } else {
     for (const pipelinePropName of getPipelinePropNames(blockConfig)) {
-      const subPipelineConfigAccessor = [String(index), "config"];
-      const subPipelineAccessor = [
-        ...subPipelineConfigAccessor,
-        pipelinePropName,
-        "__value__",
-      ];
-      const subPipelinePath = joinName(pipelinePath, ...subPipelineAccessor);
-      const inputKeyPropName = getPipelineInputKeyPropName(
-        blockConfig.id,
-        pipelinePropName
-      );
-      const inputKeyAccessor = [...subPipelineConfigAccessor, inputKeyPropName];
-      const inputKeyValue = get(pipeline, inputKeyAccessor);
-      const inputKey: string = inputKeyValue
-        ? isExpression(inputKeyValue)
-          ? inputKeyValue.__value__
-          : inputKeyValue
-        : undefined;
-      subPipelines.push({
+      const path = joinName("config", pipelinePropName, "__value__");
+      const pipeline: BlockPipeline = get(blockConfig, path) ?? [];
+
+      const subPipeline: SubPipeline = {
         headerLabel: pipelinePropName,
-        subPipeline: get(pipeline, subPipelineAccessor) ?? [],
-        subPipelinePath,
-        subPipelineFlavor: PipelineFlavor.NoRenderer,
-        subPipelineInputKey: inputKey,
-      });
+        pipeline,
+        path,
+        flavor: PipelineFlavor.NoRenderer,
+      };
+
+      const inputKey = getInputKeyForSubPipeline(blockConfig, pipelinePropName);
+
+      if (inputKey) {
+        subPipeline.inputKey = inputKey;
+      }
+
+      subPipelines.push(subPipeline);
     }
   }
 
@@ -173,7 +148,10 @@ type MapOutput = {
   extensionHasTraces: boolean;
 };
 
-const usePipelineNodes = () => {
+const usePipelineNodes = (): {
+  foundationNodeProps: BrickNodeProps;
+  nodes: EditorNodeProps[];
+} => {
   const dispatch = useDispatch();
   const activeElement = useSelector(selectActiveElement);
   const activeNodeId = useSelector(selectActiveNodeId);
@@ -203,7 +181,7 @@ const usePipelineNodes = () => {
 
   const { nodes, extensionHasTraces } = mapPipelineToNodes({
     pipeline: rootPipeline,
-    pipelineFlavor: rootPipelineFlavor,
+    flavor: rootPipelineFlavor,
   });
 
   const foundationNodeProps = makeFoundationNode({
@@ -218,6 +196,10 @@ const usePipelineNodes = () => {
     foundationNodeProps,
     nodes,
   };
+
+  // Control flow returns above
+  //
+  // Inner function definitions start here
 
   function setActiveNodeId(nodeId: UUID) {
     dispatch(actions.setElementActiveNodeId(nodeId));
@@ -246,8 +228,7 @@ const usePipelineNodes = () => {
     index,
     blockConfig,
     latestPipelineCall,
-    pipeline,
-    pipelineFlavor,
+    flavor,
     pipelinePath,
     lastIndex,
     isRootPipeline,
@@ -259,8 +240,7 @@ const usePipelineNodes = () => {
     index: number;
     blockConfig: BlockConfig;
     latestPipelineCall: Branch[];
-    pipeline: BlockPipeline;
-    pipelineFlavor: PipelineFlavor;
+    flavor: PipelineFlavor;
     pipelinePath: string;
     lastIndex: number;
     isRootPipeline: boolean;
@@ -299,13 +279,7 @@ const usePipelineNodes = () => {
       extensionHasTraces = true;
     }
 
-    const subPipelines = getSubPipelinesForBlock({
-      index,
-      blockConfig,
-      pipeline,
-      pipelinePath,
-    });
-
+    const subPipelines = getSubPipelinesForBlock(blockConfig);
     const hasSubPipelines = !isEmpty(subPipelines);
     const collapsed = collapsedState[blockConfig.instanceId];
     const expanded = hasSubPipelines && !collapsed;
@@ -366,7 +340,7 @@ const usePipelineNodes = () => {
           dispatch(
             actions.showAddBlockModal({
               path: pipelinePath,
-              flavor: pipelineFlavor,
+              flavor,
               index: index + 1,
             })
           );
@@ -440,12 +414,13 @@ const usePipelineNodes = () => {
     if (expanded) {
       for (const {
         headerLabel,
-        subPipeline,
-        subPipelinePath,
-        subPipelineFlavor,
-        subPipelineInputKey,
+        pipeline,
+        path,
+        flavor,
+        inputKey,
       } of subPipelines) {
         const headerName = `${nodeId}-header`;
+        const fullSubPath = joinPathParts(pipelinePath, index, path);
 
         const headerActions: NodeAction[] = [
           {
@@ -455,8 +430,8 @@ const usePipelineNodes = () => {
             onClick() {
               dispatch(
                 actions.showAddBlockModal({
-                  path: subPipelinePath,
-                  flavor: subPipelineFlavor,
+                  path: fullSubPath,
+                  flavor,
                   index: 0,
                 })
               );
@@ -470,7 +445,7 @@ const usePipelineNodes = () => {
             icon: faPaste,
             tooltipText: "Paste copied brick",
             onClick() {
-              pasteBlock(subPipelinePath, 0);
+              pasteBlock(fullSubPath, 0);
             },
           });
         }
@@ -479,7 +454,7 @@ const usePipelineNodes = () => {
           headerLabel,
           nestingLevel,
           nodeActions: headerActions,
-          pipelineInputKey: subPipelineInputKey,
+          pipelineInputKey: inputKey,
           active: nodeIsActive,
           nestedActive: parentIsActive,
         };
@@ -488,9 +463,9 @@ const usePipelineNodes = () => {
           nodes: subPipelineNodes,
           extensionHasTraces: subPipelineHasTraces,
         } = mapPipelineToNodes({
-          pipeline: subPipeline,
-          pipelineFlavor: subPipelineFlavor,
-          pipelinePath: subPipelinePath,
+          pipeline,
+          flavor,
+          pipelinePath: fullSubPath,
           nestingLevel: nestingLevel + 1,
           parentIsActive: nodeIsActive || parentIsActive,
         });
@@ -498,7 +473,7 @@ const usePipelineNodes = () => {
         nodes.push(
           {
             type: "header",
-            key: subPipelinePath,
+            key: fullSubPath,
             ...headerNodeProps,
           },
           ...subPipelineNodes
@@ -534,13 +509,13 @@ const usePipelineNodes = () => {
 
   function mapPipelineToNodes({
     pipeline,
-    pipelineFlavor,
+    flavor,
     pipelinePath = PIPELINE_BLOCKS_FIELD_NAME,
     nestingLevel = 0,
     parentIsActive = false,
   }: {
     pipeline: BlockPipeline;
-    pipelineFlavor: PipelineFlavor;
+    flavor: PipelineFlavor;
     pipelinePath?: string;
     nestingLevel?: number;
     parentIsActive?: boolean;
@@ -573,8 +548,7 @@ const usePipelineNodes = () => {
           index,
           blockConfig,
           latestPipelineCall,
-          pipeline,
-          pipelineFlavor,
+          flavor,
           pipelinePath,
           lastIndex,
           isRootPipeline,

@@ -35,6 +35,7 @@ import Retry from "@/blocks/transformers/controlFlow/Retry";
 import { castArray } from "lodash";
 import { Annotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
+import { isExpression } from "@/runtime/mapArgs";
 
 export async function getCurrentURL(): Promise<string> {
   if (!browser.devtools) {
@@ -95,19 +96,34 @@ export function getPipelinePropNames(block: BlockConfig): string[] {
   }
 }
 
-export function getPipelineInputKeyPropName(
-  blockId: RegistryId,
+export function getInputKeyForSubPipeline(
+  blockConfig: BlockConfig,
   pipelinePropName: string
-): string | undefined {
-  if (blockId === ForEach.BLOCK_ID && pipelinePropName === "body") {
-    return "elementKey";
+): string | null {
+  let keyPropName: string = null;
+
+  if (blockConfig.id === ForEach.BLOCK_ID && pipelinePropName === "body") {
+    keyPropName = "elementKey";
   }
 
-  if (blockId === TryExcept.BLOCK_ID && pipelinePropName === "except") {
-    return "errorKey";
+  if (blockConfig.id === TryExcept.BLOCK_ID && pipelinePropName === "except") {
+    keyPropName = "errorKey";
   }
 
-  return undefined;
+  if (!keyPropName) {
+    return null;
+  }
+
+  // eslint-disable-next-line security/detect-object-injection -- not from user input
+  const keyValue = blockConfig.config[keyPropName];
+
+  if (!keyValue) {
+    return null;
+  }
+
+  const realValue = isExpression(keyValue) ? keyValue.__value__ : keyValue;
+
+  return realValue as string;
 }
 
 /**
