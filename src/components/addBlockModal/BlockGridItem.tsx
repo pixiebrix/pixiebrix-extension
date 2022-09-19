@@ -32,14 +32,14 @@ export type BlockItemProps = {
   block: BlockResult;
   onSelect: () => void;
   onShowDetail: () => void;
-  isInvalid?: boolean;
+  invalidError?: string;
 };
 
 const BlockGridItem: React.VFC<BlockItemProps> = ({
   block,
   onSelect,
   onShowDetail,
-  isInvalid,
+  invalidError,
 }) => (
   <div
     onClick={onShowDetail}
@@ -54,7 +54,7 @@ const BlockGridItem: React.VFC<BlockItemProps> = ({
   >
     <div
       className={cx(styles.content, {
-        [styles.invalid]: isInvalid,
+        [styles.invalid]: Boolean(invalidError),
       })}
     >
       <div className={styles.nameRow}>
@@ -87,9 +87,9 @@ const BlockGridItem: React.VFC<BlockItemProps> = ({
       <FontAwesomeIcon icon={faPlus} /> Add
     </Button>
 
-    {isInvalid && (
+    {invalidError && (
       <Alert variant="warning" className={styles.invalidAlert}>
-        Not supported with active extension
+        {invalidError}
       </Alert>
     )}
   </div>

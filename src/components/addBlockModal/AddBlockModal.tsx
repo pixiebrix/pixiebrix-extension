@@ -46,17 +46,12 @@ import Loader from "@/components/Loader";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { produce } from "immer";
 import { useDispatch, useSelector } from "react-redux";
-import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 import useBlockSearch from "@/components/addBlockModal/useBlockSearch";
 import BlockGridItemRenderer from "@/components/addBlockModal/BlockGridItemRenderer";
 import groupListingsByTag from "@/components/addBlockModal/groupListingsByTag";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import {
-  selectAddBlockLocation,
-  selectEditorModalVisibilities,
-} from "@/pageEditor/slices/editorSelectors";
-import { makeIsBlockAllowedForPipeline } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import { selectEditorModalVisibilities } from "@/pageEditor/slices/editorSelectors";
 import {
   BLOCK_RESULT_COLUMN_COUNT,
   TAG_ALL,
@@ -122,6 +117,7 @@ const slice = createSlice({
 
 const EMPTY_BLOCKS: IBlock[] = [];
 const EMPTY_BLOCK_OPTIONS: BlockOption[] = [];
+const EMPTY_INVALID_BLOCK_ERRORS = new Map<RegistryId, string>();
 
 const AddBlockModal: React.FC = () => {
   const [state, dispatch] = useReducer(slice.reducer, initialState);
@@ -148,12 +144,7 @@ const AddBlockModal: React.FC = () => {
     dispatch(slice.actions.resetState);
   }, [reduxDispatch]);
 
-  const addBlockLocation = useSelector(selectAddBlockLocation);
-  const pipelinePath = addBlockLocation?.path ?? "";
-  const pipelineFlavor = addBlockLocation?.flavor ?? PipelineFlavor.AllBlocks;
-  const pipelineIndex = addBlockLocation?.index ?? 0;
-
-  const { testAddBlock, addBlock } = useAddBlock(pipelinePath, pipelineIndex);
+  const { testAddBlock, addBlock } = useAddBlock();
 
   const onSelectBlock = useCallback(
     async (block: IBlock) => {
@@ -167,18 +158,6 @@ const AddBlockModal: React.FC = () => {
     },
     [addBlock, closeModal]
   );
-
-  const filteredBlocks = useMemo<IBlock[]>(() => {
-    if (isLoadingAllBlocks || neverShown) {
-      return EMPTY_BLOCKS;
-    }
-
-    const isBlockAllowed = makeIsBlockAllowedForPipeline(pipelineFlavor);
-
-    return [...allBlocks.entries()]
-      .filter(([_, typedBlock]) => isBlockAllowed(typedBlock))
-      .map(([_, { block }]) => block);
-  }, [allBlocks, neverShown, pipelineFlavor, isLoadingAllBlocks]);
 
   useEffect(() => {
     if (!gridRef.current) {
@@ -218,8 +197,16 @@ const AddBlockModal: React.FC = () => {
       })),
   ];
 
+  const safeAllBlocks = useMemo<IBlock[]>(() => {
+    if (isLoadingAllBlocks || neverShown || isEmpty(allBlocks)) {
+      return EMPTY_BLOCKS;
+    }
+
+    return [...allBlocks.values()].map(({ block }) => block);
+  }, [allBlocks, neverShown, isLoadingAllBlocks]);
+
   const searchResults = useBlockSearch(
-    filteredBlocks,
+    safeAllBlocks,
     taggedBrickIds,
     state.query,
     state.searchTag
@@ -254,35 +241,32 @@ const AddBlockModal: React.FC = () => {
     return [...popular, ...regular];
   }, [popularBrickIds, searchResults, state.query]);
 
-  const [invalidBlockIds, isLoadingInvalidBlocks] = useAsyncState(
-    async () => {
-      const invalidBlockIds = new Set<RegistryId>();
+  const [invalidBlockErrors, isLoadingInvalidBlockErrors, _error] =
+    useAsyncState<Map<RegistryId, string>>(async () => {
+      const errorMap = new Map<RegistryId, string>();
 
       if (isEmpty(blockOptions)) {
-        return invalidBlockIds;
+        return errorMap;
       }
 
       await Promise.all(
         blockOptions.map(async (blockOption, index) => {
           const result = await testAddBlock(blockOption.blockResult);
           if (result.error) {
-            invalidBlockIds.add(blockOptions.at(index).blockResult.id);
+            errorMap.set(blockOptions.at(index).blockResult.id, result.error);
           }
         })
       );
 
-      return invalidBlockIds;
-    },
-    [blockOptions],
-    new Set<RegistryId>()
-  );
+      return errorMap;
+    }, [blockOptions]);
 
-  const isLoadingBricks = isLoadingListings || isLoadingInvalidBlocks;
+  const isLoadingBricks = isLoadingListings || isLoadingInvalidBlockErrors;
 
   const gridData = useMemo<BlockGridData>(
     () => ({
       blockOptions,
-      invalidBlockIds,
+      invalidBlockErrors: invalidBlockErrors ?? EMPTY_INVALID_BLOCK_ERRORS,
       onSetDetailBlock(block: IBlock) {
         dispatch(slice.actions.onSetDetailBlock(block));
       },
@@ -290,7 +274,7 @@ const AddBlockModal: React.FC = () => {
         void onSelectBlock(block);
       },
     }),
-    [blockOptions, invalidBlockIds, onSelectBlock]
+    [blockOptions, invalidBlockErrors, onSelectBlock]
   );
 
   return (

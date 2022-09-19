@@ -29,7 +29,7 @@ export type BlockOption = {
 
 export type BlockGridData = {
   blockOptions: BlockOption[];
-  invalidBlockIds: Set<RegistryId>;
+  invalidBlockErrors: Map<RegistryId, string>;
   onSetDetailBlock: (block: IBlock) => void;
   onSelectBlock: (block: IBlock) => void;
 };
