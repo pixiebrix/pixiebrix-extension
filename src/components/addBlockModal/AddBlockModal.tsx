@@ -262,7 +262,7 @@ const AddBlockModal: React.FC = () => {
     return errorMap;
   }, [blockOptions]);
 
-  const isLoadingBricks = isLoadingListings || isLoadingInvalidBlockErrors;
+  const isLoadingBlocks = isLoadingListings || isLoadingInvalidBlockErrors;
 
   const gridData = useMemo<BlockGridData>(
     () => ({
@@ -364,7 +364,7 @@ const AddBlockModal: React.FC = () => {
               )}
             </div>
             <div className={styles.brickResults}>
-              {isLoadingBricks ? (
+              {isLoadingBlocks ? (
                 <Loader />
               ) : (
                 <AutoSizer>

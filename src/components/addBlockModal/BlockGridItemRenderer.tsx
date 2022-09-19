@@ -37,9 +37,6 @@ const BlockGridItemRenderer: React.VFC<ItemRendererProps> = ({
 }) => {
   const index = getFlatArrayIndex({ rowIndex, columnIndex });
   const blockResult = blockOptions.at(index)?.blockResult;
-  const invalidError = blockResult
-    ? invalidBlockErrors.get(blockResult.id)
-    : undefined; // Not rendering if block result is undefined anyway
 
   return (
     <div style={style}>
@@ -52,7 +49,7 @@ const BlockGridItemRenderer: React.VFC<ItemRendererProps> = ({
           onShowDetail={() => {
             onSetDetailBlock(blockResult);
           }}
-          invalidError={invalidError}
+          invalidError={invalidBlockErrors.get(blockResult.id)}
         />
       )}
     </div>
