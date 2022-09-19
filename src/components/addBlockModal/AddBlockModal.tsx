@@ -241,25 +241,26 @@ const AddBlockModal: React.FC = () => {
     return [...popular, ...regular];
   }, [popularBrickIds, searchResults, state.query]);
 
-  const [invalidBlockErrors, isLoadingInvalidBlockErrors, _error] =
-    useAsyncState<Map<RegistryId, string>>(async () => {
-      const errorMap = new Map<RegistryId, string>();
+  const [invalidBlockErrors, isLoadingInvalidBlockErrors] = useAsyncState<
+    Map<RegistryId, string>
+  >(async () => {
+    const errorMap = new Map<RegistryId, string>();
 
-      if (isEmpty(blockOptions)) {
-        return errorMap;
-      }
-
-      await Promise.all(
-        blockOptions.map(async (blockOption, index) => {
-          const result = await testAddBlock(blockOption.blockResult);
-          if (result.error) {
-            errorMap.set(blockOptions.at(index).blockResult.id, result.error);
-          }
-        })
-      );
-
+    if (isEmpty(blockOptions)) {
       return errorMap;
-    }, [blockOptions]);
+    }
+
+    await Promise.all(
+      blockOptions.map(async (blockOption, index) => {
+        const result = await testAddBlock(blockOption.blockResult);
+        if (result.error) {
+          errorMap.set(blockOptions.at(index).blockResult.id, result.error);
+        }
+      })
+    );
+
+    return errorMap;
+  }, [blockOptions]);
 
   const isLoadingBricks = isLoadingListings || isLoadingInvalidBlockErrors;
 
