@@ -23,11 +23,11 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 
 function usePasteBlock():
   | ((pipelinePath: string, pipelineIndex: number) => void)
-  | undefined {
+  | null {
   const dispatch = useDispatch();
   const copiedBlock = useSelector(selectCopiedBlock);
-  if (copiedBlock === undefined) {
-    return undefined;
+  if (copiedBlock == null) {
+    return null;
   }
 
   return (pipelinePath: string, pipelineIndex: number) => {

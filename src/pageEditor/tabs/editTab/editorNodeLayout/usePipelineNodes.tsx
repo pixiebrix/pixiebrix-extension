@@ -32,7 +32,6 @@ import {
   getDocumentPipelinePaths,
   getFoundationNodeAnnotations,
   getInputKeyForSubPipeline,
-  getPipelineInputKeyPropName,
   getPipelinePropNames,
 } from "@/pageEditor/utils";
 import { isNullOrBlank, joinName, joinPathParts } from "@/utils";
@@ -41,7 +40,6 @@ import {
   DocumentElement,
   isButtonElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
-import { isExpression } from "@/runtime/mapArgs";
 import { NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { actions } from "@/pageEditor/slices/editorSlice";
