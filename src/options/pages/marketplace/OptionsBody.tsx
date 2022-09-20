@@ -16,13 +16,13 @@
  */
 
 import React, { useMemo } from "react";
-import { Card } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/options/constants";
+import { Col } from "react-bootstrap";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: OPTIONS_DEFAULT_RUNTIME_API_VERSION,
@@ -42,11 +42,11 @@ const OptionsBody: React.FunctionComponent<{
   );
 
   return (
-    <Card.Body className="OptionsBody p-3">
+    <Col>
       <FieldRuntimeContext.Provider value={OPTIONS_FIELD_RUNTIME_CONTEXT}>
         <OptionsGroup name="optionsArgs" />
       </FieldRuntimeContext.Provider>
-    </Card.Body>
+    </Col>
   );
 };
 
