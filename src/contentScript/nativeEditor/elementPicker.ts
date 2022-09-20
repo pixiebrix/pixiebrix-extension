@@ -180,7 +180,7 @@ export async function userSelectElement({
             targets.add(target);
           }
 
-          overlay.inspect(Array.from(targets));
+          overlay.inspect([...targets]);
           selectionHandler(targets.size);
 
           return;
@@ -214,12 +214,12 @@ export async function userSelectElement({
         const target = findExpectedTarget(event.target);
 
         if (target) {
-          overlay.inspect([...Array.from(targets), target]);
+          overlay.inspect([...targets, target]);
         }
       }
 
       function onPointerLeave() {
-        overlay.inspect(Array.from(targets));
+        overlay.inspect([...targets]);
       }
 
       function escape(event: KeyboardEvent) {
