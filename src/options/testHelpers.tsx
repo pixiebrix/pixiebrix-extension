@@ -20,7 +20,6 @@ import { authSlice } from "@/auth/authSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settingsSlice";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
-import { appApi } from "@/services/api";
 import { createRenderWithWrappers } from "@/testUtils/testHelpers";
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 
@@ -32,7 +31,6 @@ const renderWithWrappers = createRenderWithWrappers(() =>
       options: extensionsSlice.reducer,
       blueprintModals: blueprintModalsSlice.reducer,
       blueprints: blueprintsSlice.reducer,
-      // [appApi.reducerPath]: appApi.reducer,
     },
   })
 );

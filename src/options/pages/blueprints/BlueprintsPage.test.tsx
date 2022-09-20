@@ -20,13 +20,6 @@ import { render } from "@/options/testHelpers";
 import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
 import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 
-jest.mock("@/options/pages/blueprints/useInstallableViewItems", () =>
-  jest.fn(() => ({
-    installableViewItems: [],
-    isLoading: false,
-  }))
-);
-
 jest.mock("@/services/api", () => ({
   useGetRecipesQuery: jest.fn(() => ({
     data: [],
@@ -49,28 +42,6 @@ jest.mock("@/services/api", () => ({
     isLoading: false,
   })),
 }));
-
-// beforeEach(() => {
-//   (useGetRecipesQuery as jest.Mock).mockImplementation(() => ({
-//     data: [],
-//     isLoading: false,
-//   }));
-//
-//   (useGetCloudExtensionsQuery as jest.Mock).mockImplementation(() => ({
-//     data: [],
-//     isLoading: false,
-//   }));
-//
-//   (useGetMarketplaceListingsQuery as jest.Mock).mockImplementation(() => ({
-//     data: [],
-//     isLoading: false,
-//   }));
-//
-//   (useGetOrganizationsQuery as jest.Mock).mockImplementation(() => ({
-//     data: [],
-//     isLoading: false,
-//   }));
-// });
 
 const installables: Installable[] = [];
 
