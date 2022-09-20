@@ -25,6 +25,7 @@ import { sortBy } from "lodash";
 import useAddElement from "@/pageEditor/hooks/useAddElement";
 import { useSelector } from "react-redux";
 import { selectTabHasPermissions } from "@/pageEditor/tabState/tabStateSelectors";
+import { useAsyncState } from "@/hooks/common";
 
 const sortedExtensionPoints = sortBy(
   [...ADAPTERS.values()],
@@ -56,6 +57,37 @@ const AddExtensionPointButton: React.FunctionComponent = () => {
 
   const addElement = useAddElement();
 
+  const [entries] = useAsyncState<React.ReactNode>(
+    async () => {
+      const results = await Promise.all(
+        sortedExtensionPoints.map((config) => {
+          if (!config.flag) {
+            return true;
+          }
+
+          return flagOn(config.flag);
+        })
+      );
+
+      // eslint-disable-next-line security/detect-object-injection -- array index
+      return sortedExtensionPoints
+        .filter((_, index) => results[index])
+        .map((config) => (
+          <DropdownEntry
+            key={config.elementType}
+            caption={config.label}
+            icon={config.icon}
+            beta={Boolean(config.flag)}
+            onClick={() => {
+              addElement(config);
+            }}
+          />
+        ));
+    },
+    [],
+    []
+  );
+
   return (
     <DropdownButton
       disabled={!tabHasPermissions}
@@ -64,19 +96,7 @@ const AddExtensionPointButton: React.FunctionComponent = () => {
       title="Add"
       id="add-extension-point"
     >
-      {sortedExtensionPoints
-        .filter((element) => !element.flag || flagOn(element.flag))
-        .map((element) => (
-          <DropdownEntry
-            key={element.elementType}
-            caption={element.label}
-            icon={element.icon}
-            beta={Boolean(element.flag)}
-            onClick={() => {
-              addElement(element);
-            }}
-          />
-        ))}
+      {entries}
     </DropdownButton>
   );
 };
