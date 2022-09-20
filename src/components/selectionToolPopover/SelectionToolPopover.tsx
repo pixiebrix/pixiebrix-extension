@@ -26,6 +26,7 @@ import SwitchButtonWidget, {
   CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import switchStyle from "@/components/form/widgets/switchButton/SwitchButtonWidget.module.scss?loadAsUrl";
+import switchButtonStyle from "bootstrap-switch-button-react/src/style.css?loadAsUrl";
 import custom from "./SelectionToolPopover.module.scss?loadAsUrl";
 import { Stylesheets } from "@/components/Stylesheets";
 import { Button } from "react-bootstrap";
@@ -56,7 +57,7 @@ export const SelectionToolPopover: React.FC<{
 
   return (
     <ReactShadowRoot mode="closed">
-      <Stylesheets href={[bootstrap, switchStyle, custom]}>
+      <Stylesheets href={[bootstrap, switchStyle, switchButtonStyle, custom]}>
         <Draggable>
           <div className="popover-wrapper">
             <FieldSection
