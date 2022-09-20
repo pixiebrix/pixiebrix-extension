@@ -30,7 +30,8 @@ type ListFiltersProps = {
 function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
   const { permit } = useFlags();
   const { onboardingType, isLoading: isOnboardingLoading } = useOnboarding();
-  const starterBlueprints = useGetStarterBlueprintsQuery();
+  const { data: starterBlueprints, isLoading: isStarterBlueprintsLoading } =
+    useGetStarterBlueprintsQuery();
   const { setGlobalFilter, data: installableViewItems } = tableInstance;
   const [activeTab, setActiveTab] = useReduxState(
     selectActiveTab,
@@ -42,45 +43,42 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
     leading: false,
   });
 
-  const showGetStartedTab = useMemo(() => {
-    const isFreemiumUser = onboardingType === "default";
+  const isFreemiumUser = onboardingType === "default";
 
-    const hasSomeBlueprintEngagement = installableViewItems.some(
-      (installableViewItem) => {
-        if (installableViewItem.sharing.source.type === "Personal") {
-          return true;
-        }
-
-        const isNotStarterBlueprint = starterBlueprints.data.some(
-          (starterBlueprint) =>
-            installableViewItem.sharing.packageId !==
-            starterBlueprint.metadata.id
-        );
-
-        return installableViewItem.status === "Active" && isNotStarterBlueprint;
+  const hasSomeBlueprintEngagement = installableViewItems.some(
+    (installableViewItem) => {
+      if (installableViewItem.sharing.source.type === "Personal") {
+        return true;
       }
-    );
 
-    return !starterBlueprints.isLoading && !isOnboardingLoading
+      const isNotStarterBlueprint = starterBlueprints.some(
+        (starterBlueprint) =>
+          installableViewItem.sharing.packageId !== starterBlueprint.metadata.id
+      );
+
+      return installableViewItem.status === "Active" && isNotStarterBlueprint;
+    }
+  );
+
+  const showGetStartedTab =
+    !isStarterBlueprintsLoading && !isOnboardingLoading
       ? isFreemiumUser && !hasSomeBlueprintEngagement
       : false;
-  }, [
-    onboardingType,
-    installableViewItems,
-    starterBlueprints.isLoading,
-    starterBlueprints.data,
-    isOnboardingLoading,
-  ]);
 
   useEffect(() => {
     if (
-      starterBlueprints.isLoading ||
+      isStarterBlueprintsLoading ||
       isOnboardingLoading ||
       showGetStartedTab
     ) {
       return;
     }
 
+    // The "Get Started" tab is an onboarding view that should only be
+    // shown to new Freemium users that haven't engaged with the product yet.
+    // If the "Get Started" tab is hidden due to e.g. onboarding completion,
+    // but still selected as an ActiveTab, we want to reset the default to
+    // the "Active Blueprints" tab.
     if (activeTab.key === "Get Started") {
       setActiveTab({
         key: "Active",

@@ -89,13 +89,9 @@ const BlueprintsToolbar: React.FunctionComponent<{
     return { groupByOptions, sortByOptions };
   }, [flatHeaders]);
 
-  const tabContentTitle = useMemo(() => {
-    if (globalFilter) {
-      return `${numberOfBlueprints} results for "${globalFilter}"`;
-    }
-
-    return activeTab.tabTitle;
-  }, [activeTab, globalFilter, numberOfBlueprints]);
+  const tabContentTitle = globalFilter
+    ? `${numberOfBlueprints} results for "${globalFilter}"`
+    : activeTab.tabTitle;
 
   return (
     <div className="d-flex justify-content-between align-items-center mb-3">

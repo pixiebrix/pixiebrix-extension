@@ -27,6 +27,22 @@ import blueprintsNavItemScreenshot from "@img/blueprints-nav-item-screenshot.png
 import { Col, Row } from "react-bootstrap";
 import { isMac } from "@/utils";
 
+const ExternalLink: React.VoidFunctionComponent<{
+  linkText: string;
+  url: string;
+}> = ({ linkText, url }) => (
+  <span>
+    <a href={url} target="_blank" rel="noopener noreferrer">
+      {linkText}
+    </a>
+    <FontAwesomeIcon
+      icon={faExternalLinkAlt}
+      className={styles.externalLinkIcon}
+      size="xs"
+    />
+  </span>
+);
+
 const GetStartedView: React.VoidFunctionComponent<{
   width: number;
   height: number;
@@ -63,7 +79,7 @@ const GetStartedView: React.VoidFunctionComponent<{
             icon={faCube}
             size="2x"
             className={styles.inlineFigure}
-          />{" "}
+          />
           <span>
             An <strong>Extension</strong> is a workflow that allows you to
             automate, customize, or change things on a webpage in your browser.
@@ -88,7 +104,7 @@ const GetStartedView: React.VoidFunctionComponent<{
             Go to the PixieBrix tab via the <strong>Chrome DevTools</strong>{" "}
             using{" "}
             {isMac() ? (
-              <kbd>&#8984; + Option + C</kbd>
+              <kbd>Cmd + Option + C</kbd>
             ) : (
               <kbd>Ctrl + Shift + C</kbd>
             )}{" "}
@@ -106,54 +122,24 @@ const GetStartedView: React.VoidFunctionComponent<{
         <h4>Need more help?</h4>
         <p>
           Visit the{" "}
-          <span>
-            <a
-              href="https://docs.pixiebrix.com/quick-start-guide"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Quick Start Guide
-            </a>
-            <FontAwesomeIcon
-              icon={faExternalLinkAlt}
-              className={styles.externalLinkIcon}
-              size="xs"
-            />
-          </span>{" "}
+          <ExternalLink
+            linkText="Quick Start Guide"
+            url="https://docs.pixiebrix.com/quick-start-guide"
+          />{" "}
           or ask questions in the{" "}
-          <span>
-            <a
-              href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Slack Community
-            </a>
-            <FontAwesomeIcon
-              icon={faExternalLinkAlt}
-              className={styles.externalLinkIcon}
-              size="xs"
-            />
-          </span>
+          <ExternalLink
+            linkText="Slack Community"
+            url="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
+          />
           .
         </p>
         <p>
           {" "}
           Visit the{" "}
-          <span>
-            <a
-              href="https://www.pixiebrix.com/marketplace/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              PixieBrix Marketplace
-            </a>
-            <FontAwesomeIcon
-              icon={faExternalLinkAlt}
-              className={styles.externalLinkIcon}
-              size="xs"
-            />
-          </span>{" "}
+          <ExternalLink
+            linkText="PixieBrix Marketplace"
+            url="https://www.pixiebrix.com/marketplace/"
+          />{" "}
           for ideas.
         </p>
       </Col>
