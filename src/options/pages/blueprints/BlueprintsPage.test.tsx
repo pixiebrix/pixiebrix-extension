@@ -32,7 +32,6 @@ import {
 } from "@/services/api";
 import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
 import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 function optionsStore(initialState?: any) {
   return configureStore({
@@ -67,6 +66,10 @@ jest.mock("@/services/api", () => ({
     isLoading: false,
   })),
   useGetOrganizationsQuery: jest.fn(() => ({
+    data: [],
+    isLoading: false,
+  })),
+  useGetStarterBlueprintsQuery: jest.fn(() => ({
     data: [],
     isLoading: false,
   })),
