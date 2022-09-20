@@ -31,7 +31,7 @@ import {
 import ListFilters from "./ListFilters";
 import { Installable, InstallableViewItem } from "./blueprintsTypes";
 import {
-  selectFilters,
+  selectActiveTab,
   selectGroupBy,
   selectSortBy,
 } from "./blueprintsSelectors";
@@ -121,7 +121,7 @@ const BlueprintsCard: React.FunctionComponent<{
 
   const groupBy = useSelector(selectGroupBy);
   const sortBy = useSelector(selectSortBy);
-  const filters = useSelector(selectFilters);
+  const activeTab = useSelector(selectActiveTab);
 
   const tableInstance = useTable<InstallableViewItem>(
     {
@@ -130,7 +130,7 @@ const BlueprintsCard: React.FunctionComponent<{
       initialState: {
         groupBy,
         sortBy,
-        filters,
+        filters: activeTab.filters,
       },
       useControlledState: (state) =>
         useMemo(
@@ -138,10 +138,10 @@ const BlueprintsCard: React.FunctionComponent<{
             ...state,
             groupBy,
             sortBy,
-            filters,
+            filters: activeTab.filters,
           }),
           // eslint-disable-next-line react-hooks/exhaustive-deps -- table props are required dependencies
-          [state, groupBy, sortBy, filters]
+          [state, groupBy, sortBy, activeTab.filters]
         ),
     },
     useFilters,

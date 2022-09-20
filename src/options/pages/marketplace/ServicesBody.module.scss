@@ -15,34 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#activate-wizard {
-  .nav-item {
-    text-align: center;
+.serviceCard {
+  background-color: #f6f5f7;
+  padding: 18px;
+  margin-bottom: 24px;
+}
 
-    &:last-child {
-      margin-right: 0;
-    }
-  }
+.serviceCardHeader {
+  margin-bottom: 24px;
+}
 
-  .nav-link {
-    font-weight: 400;
-    background-color: rgba(0, 0, 0, 0.03);
-    color: black;
-    padding: 1em;
+.serviceHeading {
+  margin-bottom: 4px;
+}
 
-    &.active {
-      background: #b66dff;
-      color: #fff;
-    }
-  }
-
-  .form-group {
-    margin-bottom: 0;
-  }
-
-  .OptionsBody {
-    .form-group {
-      margin-bottom: 1.5em;
-    }
-  }
+.serviceId {
+  font-size: 12px;
+  padding: 0;
 }
