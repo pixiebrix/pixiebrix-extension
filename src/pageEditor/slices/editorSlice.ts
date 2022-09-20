@@ -797,6 +797,7 @@ export const editorSlice = createSlice({
 
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
+      state.dirty[state.activeElementId] = true;
     },
     removeNode(state, action: PayloadAction<UUID>) {
       const nodeIdToRemove = action.payload;
