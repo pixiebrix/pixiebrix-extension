@@ -25,10 +25,8 @@ import {
 } from "@/options/pages/blueprints/blueprintsSelectors";
 import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
 import OnboardingView from "@/options/pages/blueprints/onboardingView/OnboardingView";
-import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
 import EmptyView from "@/options/pages/blueprints/emptyView/EmptyView";
 import GetStartedView from "@/options/pages/blueprints/GetStartedView";
-import Loader from "@/components/Loader";
 
 const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
@@ -37,7 +35,6 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
 }) => {
   const view = useSelector(selectView);
   const activeTab = useSelector(selectActiveTab);
-  const { onboardingType, onboardingFilter, isLoading } = useOnboarding();
 
   const {
     state: { globalFilter },
@@ -48,10 +45,6 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
 
   if (activeTab.key === "Get Started") {
     return <GetStartedView width={width} height={height} />;
-  }
-
-  if (isLoading) {
-    return <Loader />;
   }
 
   if (rows.length > 0) {
@@ -70,15 +63,7 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
     );
   }
 
-  return (
-    <OnboardingView
-      onboardingType={onboardingType}
-      isLoading={isLoading}
-      filter={onboardingFilter}
-      width={width}
-      height={height}
-    />
-  );
+  return <OnboardingView width={width} height={height} />;
 };
 
 export default BlueprintsView;

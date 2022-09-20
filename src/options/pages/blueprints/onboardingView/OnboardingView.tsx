@@ -22,7 +22,7 @@ import { Button, Card, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import marketplaceImage from "@img/marketplace.svg";
-import { OnboardingType } from "@/options/pages/blueprints/onboardingView/useOnboarding";
+import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 import { useDispatch } from "react-redux";
 import workshopImage from "@img/workshop.svg";
@@ -135,12 +135,15 @@ const CreateBrickColumn: React.VoidFunctionComponent = () => (
 );
 
 const OnboardingView: React.VoidFunctionComponent<{
-  onboardingType: OnboardingType;
-  isLoading: boolean;
-  filter?: string;
   width: number;
   height: number;
-}> = ({ onboardingType, filter, isLoading, width, height }) => {
+}> = ({ width, height }) => {
+  const {
+    onboardingType,
+    onboardingFilter: filter,
+    isLoading,
+  } = useOnboarding();
+
   const onBoardingInformation = useMemo(() => {
     if (!(onboardingType === "restricted") && filter === "public") {
       return <ActivateFromMarketplaceColumn />;
