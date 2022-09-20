@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,17 +15,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlueprintsState } from "@/options/pages/blueprints/blueprintsSlice";
+.root {
+  li,
+  p {
+    font-size: 16px;
+  }
 
-export type BlueprintsRootState = {
-  blueprints: BlueprintsState;
-};
+  kbd {
+    color: #170637;
+    background: white;
+    border-radius: 4px;
+    padding: 4.5px 6px;
+    margin: 0 12px;
+  }
 
-export const selectView = ({ blueprints }: BlueprintsRootState) =>
-  blueprints.view;
-export const selectGroupBy = ({ blueprints }: BlueprintsRootState) =>
-  blueprints.groupBy;
-export const selectSortBy = ({ blueprints }: BlueprintsRootState) =>
-  blueprints.sortBy;
-export const selectActiveTab = ({ blueprints }: BlueprintsRootState) =>
-  blueprints.activeTab;
+  a {
+    color: #170637;
+    font-weight: 500;
+    font-size: 16px;
+    padding-bottom: 1px;
+    border-bottom: 2px solid #5a19da;
+    text-decoration: none;
+  }
+
+  .externalLinkIcon {
+    margin-left: 4px;
+    color: #b395ee;
+  }
+}
+
+.infoRow {
+  margin-bottom: 28px;
+
+  p {
+    margin-bottom: 4px;
+  }
+}
+
+.inlineFigure {
+  margin-right: 8px;
+}
+
+.termDefinition {
+  display: flex;
+  align-items: center;
+}
