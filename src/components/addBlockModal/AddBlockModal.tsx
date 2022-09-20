@@ -25,7 +25,7 @@ import React, {
   useRef,
 } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { isEmpty } from "lodash";
+import { compact, isEmpty } from "lodash";
 import { IBlock, RegistryId } from "@/core";
 import { FixedSizeGrid as LazyGrid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -45,17 +45,12 @@ import Loader from "@/components/Loader";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { produce } from "immer";
 import { useDispatch, useSelector } from "react-redux";
-import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 import useBlockSearch from "@/components/addBlockModal/useBlockSearch";
 import BlockGridItemRenderer from "@/components/addBlockModal/BlockGridItemRenderer";
 import groupListingsByTag from "@/components/addBlockModal/groupListingsByTag";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import {
-  selectAddBlockLocation,
-  selectEditorModalVisibilities,
-} from "@/pageEditor/slices/editorSelectors";
-import { makeIsBlockAllowedForPipeline } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import { selectEditorModalVisibilities } from "@/pageEditor/slices/editorSelectors";
 import {
   BLOCK_RESULT_COLUMN_COUNT,
   TAG_ALL,
@@ -66,6 +61,7 @@ import {
 } from "@/components/addBlockModal/addBlockModalTypes";
 import { getItemKey } from "@/components/addBlockModal/addBlockModalHelpers";
 import useAddBlock from "@/components/addBlockModal/useAddBlock";
+import { useAsyncState } from "@/hooks/common";
 
 type State = {
   query: string;
@@ -119,10 +115,11 @@ const slice = createSlice({
 });
 
 const AddBlockModal: React.FC = () => {
+  const [state, dispatch] = useReducer(slice.reducer, initialState);
+
   const { isAddBlockModalVisible: show } = useSelector(
     selectEditorModalVisibilities
   );
-  const [state, dispatch] = useReducer(slice.reducer, initialState);
 
   const gridRef = useRef<LazyGrid>();
 
@@ -134,12 +131,7 @@ const AddBlockModal: React.FC = () => {
     dispatch(slice.actions.resetState);
   }, [reduxDispatch]);
 
-  const addBlockLocation = useSelector(selectAddBlockLocation);
-  const pipelinePath = addBlockLocation?.path ?? "";
-  const pipelineFlavor = addBlockLocation?.flavor ?? PipelineFlavor.AllBlocks;
-  const pipelineIndex = addBlockLocation?.index ?? 0;
-
-  const addBlock = useAddBlock(pipelinePath, pipelineIndex);
+  const { testAddBlock, addBlock } = useAddBlock();
 
   const onSelectBlock = useCallback(
     async (block: IBlock) => {
@@ -153,18 +145,6 @@ const AddBlockModal: React.FC = () => {
     },
     [addBlock, closeModal]
   );
-
-  const filteredBlocks = useMemo<IBlock[]>(() => {
-    if (isLoadingAllBlocks) {
-      return [];
-    }
-
-    const isBlockAllowed = makeIsBlockAllowedForPipeline(pipelineFlavor);
-
-    return [...allBlocks.entries()]
-      .filter(([_, typedBlock]) => isBlockAllowed(typedBlock))
-      .map(([_, { block }]) => block);
-  }, [allBlocks, pipelineFlavor, isLoadingAllBlocks]);
 
   useEffect(() => {
     if (!gridRef.current) {
@@ -204,8 +184,16 @@ const AddBlockModal: React.FC = () => {
       })),
   ];
 
+  const safeAllBlocks = useMemo<IBlock[]>(() => {
+    if (isLoadingAllBlocks || isEmpty(allBlocks)) {
+      return [];
+    }
+
+    return [...allBlocks.values()].map(({ block }) => block);
+  }, [allBlocks, isLoadingAllBlocks]);
+
   const searchResults = useBlockSearch(
-    filteredBlocks,
+    safeAllBlocks,
     taggedBrickIds,
     state.query,
     state.searchTag
@@ -240,9 +228,32 @@ const AddBlockModal: React.FC = () => {
     return [...popular, ...regular];
   }, [popularBrickIds, searchResults, state.query]);
 
+  const [invalidBlockMessages] = useAsyncState<Map<RegistryId, string>>(
+    async () =>
+      new Map(
+        compact(
+          await Promise.all(
+            blockOptions.map(
+              async (blockOption): Promise<[RegistryId, string]> => {
+                const result = await testAddBlock(blockOption.blockResult);
+                if (result.error) {
+                  return [blockOption.blockResult.id, result.error];
+                }
+
+                return null;
+              }
+            )
+          )
+        )
+      ),
+    [blockOptions]
+  );
+
   const gridData = useMemo<BlockGridData>(
     () => ({
       blockOptions,
+      invalidBlockMessages:
+        invalidBlockMessages ?? new Map<RegistryId, string>(),
       onSetDetailBlock(block: IBlock) {
         dispatch(slice.actions.onSetDetailBlock(block));
       },
@@ -250,7 +261,7 @@ const AddBlockModal: React.FC = () => {
         void onSelectBlock(block);
       },
     }),
-    [blockOptions, onSelectBlock]
+    [blockOptions, invalidBlockMessages, onSelectBlock]
   );
 
   return (

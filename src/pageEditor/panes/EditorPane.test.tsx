@@ -918,7 +918,7 @@ describe("block validation in Add Block Modal UI", () => {
   ];
 
   test.each(testCases)(
-    "filters blocks for $pipelineFlavor pipeline",
+    "shows alert on blocks for $pipelineFlavor pipeline",
     async ({ formFactory, disallowedBlockName }) => {
       const formState = formFactory();
       render(
@@ -951,11 +951,11 @@ describe("block validation in Add Block Modal UI", () => {
       // Run the debounced search
       await runPendingTimers();
 
-      expect(
-        screen.queryAllByRole("button", {
-          name: /add/i,
-        })
-      ).toHaveLength(0);
+      // Check for the alert on hover
+      const firstResult = screen.queryAllByRole("button", { name: /add/i })[0]
+        .parentElement;
+      await immediateUserEvent.hover(firstResult);
+      expect(firstResult).toHaveTextContent("is not allowed in this pipeline");
     }
   );
 });
