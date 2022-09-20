@@ -19,6 +19,10 @@ import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import SelectionToolPopover from "@/components/selectionToolPopover/SelectionToolPopover";
 
+/*
+ * This Storybook component is unstyled because it's wrapped inside the react-shadow-dom.
+ * It loads styles as url and inject as <style> tag but it doesn't work in storybook
+ */
 export default {
   title: "Components/SelectionToolPopover",
   component: SelectionToolPopover,
