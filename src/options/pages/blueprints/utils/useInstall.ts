@@ -22,7 +22,6 @@ import { useDispatch } from "react-redux";
 import { useCallback } from "react";
 import { FormikHelpers } from "formik";
 import { WizardValues } from "@/options/pages/marketplace/wizardTypes";
-import { selectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
 import { uniq } from "lodash";
 import {
   containsPermissions,
@@ -33,7 +32,6 @@ import { push } from "connected-react-router";
 import { resolveRecipe } from "@/registry/internal";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import extensionsSlice from "@/store/extensionsSlice";
-import useFlags from "@/hooks/useFlags";
 
 const { installRecipe } = extensionsSlice.actions;
 
@@ -44,15 +42,13 @@ type InstallRecipe = (
 
 function useInstall(recipe: RecipeDefinition): InstallRecipe {
   const dispatch = useDispatch();
-  const { flagOn } = useFlags();
 
   return useCallback(
     async (values, { setSubmitting }: FormikHelpers<WizardValues>) => {
       console.debug("Wizard form values", values);
 
-      const selected = selectedExtensions(values, recipe.extensionPoints);
       const requiredServiceIds = uniq(
-        selected
+        recipe.extensionPoints
           .flatMap((x) => Object.values(x.services ?? {}))
           .filter((x) => x !== PIXIEBRIX_SERVICE_ID)
       );
@@ -66,19 +62,10 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
 
       const enabled = await containsPermissions(
         await collectPermissions(
-          await resolveRecipe(recipe, selected),
+          await resolveRecipe(recipe, recipe.extensionPoints),
           configuredAuths
         )
       );
-
-      if (selected.length === 0) {
-        notify.error({
-          message: "Select at least one brick to activate",
-          reportError: false,
-        });
-        setSubmitting(false);
-        return;
-      }
 
       if (missingServiceIds.length > 0) {
         const missing = missingServiceIds.join(", ");
@@ -104,7 +91,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         dispatch(
           installRecipe({
             recipe,
-            extensionPoints: selected,
+            extensionPoints: recipe.extensionPoints,
             services: Object.fromEntries(
               values.services.map(({ id, config }) => [id, config])
             ),
@@ -128,7 +115,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         setSubmitting(false);
       }
     },
-    [flagOn, dispatch, recipe]
+    [dispatch, recipe]
   );
 }
 

@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import styles from "./ServicesBody.module.scss";
 
 import React, { useMemo } from "react";
 import { ServiceDefinition } from "@/types/definitions";
@@ -27,19 +28,12 @@ const ServiceDescriptor: React.FunctionComponent<{
     [serviceId, serviceConfigs]
   );
 
-  if (config) {
-    return (
-      <div>
-        <div>{config && <span>{config.metadata.name}</span>}</div>
-        <code className="small p-0">{serviceId}</code>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      {config && <span>{config.metadata.name}</span>}
-      <code className="p-0">{serviceId}</code>
+    <div className={styles.serviceCardHeader}>
+      {config && (
+        <h5 className={styles.serviceHeading}>{config.metadata.name}</h5>
+      )}
+      <code className={styles.serviceId}>{serviceId}</code>
     </div>
   );
 };

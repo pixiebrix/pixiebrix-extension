@@ -149,7 +149,7 @@ const AuthWidget: React.FunctionComponent<{
         />
       )}
 
-      <div className="d-inline-flex">
+      <div className="d-inline-flex justify-content-end">
         {options.length > 0 ? (
           <>
             <div className={styles.selector}>
