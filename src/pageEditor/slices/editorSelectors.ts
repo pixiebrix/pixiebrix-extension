@@ -23,7 +23,7 @@ import {
   RootState,
 } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { flatMap, isEmpty, pick, uniqBy } from "lodash";
+import { flatMap, isEmpty, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { ElementUIState, TabUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
@@ -288,11 +288,18 @@ const annotationsForPathSelector = createSelector(
 export const selectAnnotationsForPath = (path: string) => (state: RootState) =>
   annotationsForPathSelector(state, path);
 
-export const selectExtensionAvailability = ({ editor }: EditorRootState) =>
-  pick(editor, [
-    "availableInstalledIds",
-    "isLoadingInstalledExtensions",
-    "availableDynamicIds",
-    "isLoadingDynamicExtensions",
-    "unavailableCount",
-  ]);
+export const selectExtensionAvailability = ({
+  editor: {
+    availableInstalledIds,
+    isLoadingInstalledExtensions,
+    availableDynamicIds,
+    isLoadingDynamicExtensions,
+    unavailableCount,
+  },
+}: EditorRootState) => ({
+  availableInstalledIds,
+  isLoadingInstalledExtensions,
+  availableDynamicIds,
+  isLoadingDynamicExtensions,
+  unavailableCount,
+});
