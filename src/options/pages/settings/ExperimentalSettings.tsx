@@ -95,11 +95,11 @@ const ExperimentalSettings: React.FunctionComponent = () => {
           <Form.Group controlId="selectionTools">
             <div>
               <Form.Label>
-                Detect and Support Multi-element Selector :{" "}
+                Detect and Support Multi-Element Selection Tools:{" "}
                 <i>{selectionTools ? "Enabled" : "Disabled"}</i>
               </Form.Label>
               <Form.Text muted className="mb-2">
-                Toggle on to support multi-element selector.
+                Toggle on to support multi-element selection tools
               </Form.Text>
             </div>
             <BootstrapSwitchButton
