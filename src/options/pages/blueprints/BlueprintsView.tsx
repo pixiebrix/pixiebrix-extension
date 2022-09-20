@@ -27,6 +27,7 @@ import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTyp
 import OnboardingView from "@/options/pages/blueprints/onboardingView/OnboardingView";
 import EmptyView from "@/options/pages/blueprints/emptyView/EmptyView";
 import GetStartedView from "@/options/pages/blueprints/GetStartedView";
+import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
 
 const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
@@ -35,6 +36,7 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
 }) => {
   const view = useSelector(selectView);
   const activeTab = useSelector(selectActiveTab);
+  const { onboardingType, onboardingFilter, isLoading } = useOnboarding();
 
   const {
     state: { globalFilter },
@@ -63,7 +65,15 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
     );
   }
 
-  return <OnboardingView width={width} height={height} />;
+  return (
+    <OnboardingView
+      onboardingType={onboardingType}
+      isLoading={isLoading}
+      filter={onboardingFilter}
+      width={width}
+      height={height}
+    />
+  );
 };
 
 export default BlueprintsView;
