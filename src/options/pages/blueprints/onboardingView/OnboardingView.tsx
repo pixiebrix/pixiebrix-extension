@@ -22,9 +22,7 @@ import { Button, Card, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import marketplaceImage from "@img/marketplace.svg";
-import useOnboarding, {
-  OnboardingType,
-} from "@/options/pages/blueprints/onboardingView/useOnboarding";
+import { OnboardingType } from "@/options/pages/blueprints/onboardingView/useOnboarding";
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 import { useDispatch } from "react-redux";
 import workshopImage from "@img/workshop.svg";
