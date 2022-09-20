@@ -69,20 +69,22 @@ const AddExtensionPointButton: React.FunctionComponent = () => {
         })
       );
 
-      // eslint-disable-next-line security/detect-object-injection -- array index
-      return sortedExtensionPoints
-        .filter((_, index) => results[index])
-        .map((config) => (
-          <DropdownEntry
-            key={config.elementType}
-            caption={config.label}
-            icon={config.icon}
-            beta={Boolean(config.flag)}
-            onClick={() => {
-              addElement(config);
-            }}
-          />
-        ));
+      return (
+        sortedExtensionPoints
+          // eslint-disable-next-line security/detect-object-injection -- array index
+          .filter((_, index) => results[index])
+          .map((config) => (
+            <DropdownEntry
+              key={config.elementType}
+              caption={config.label}
+              icon={config.icon}
+              beta={Boolean(config.flag)}
+              onClick={() => {
+                addElement(config);
+              }}
+            />
+          ))
+      );
     },
     [],
     []
