@@ -18,28 +18,52 @@
 import { IBlock, OutputKey } from "@/core";
 import { useCallback } from "react";
 import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
-import { compact } from "lodash";
+import { compact, get } from "lodash";
 import { createNewBlock } from "@/pageEditor/createNewBlock";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { reportEvent } from "@/telemetry/events";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectActiveElementId,
+  selectActiveElement,
+  selectAddBlockLocation,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import BlockTypeAnalysis from "@/analysis/analysisVisitors/blockTypeAnalysis";
+import { joinPathParts } from "@/utils";
+import { BlockConfig } from "@/blocks/types";
+import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
+import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
+import { Analysis } from "@/analysis/analysisTypes";
+import { produce } from "immer";
 
-function useAddBlock(
-  pipelinePath: string,
-  pipelineIndex: number
-): (block: IBlock) => Promise<void> {
+type TestAddBlockResult = {
+  error?: string;
+};
+
+type AddBlock = {
+  testAddBlock: (block: IBlock) => Promise<TestAddBlockResult>;
+  addBlock: (block: IBlock) => Promise<void>;
+};
+
+function makeBlockLevelAnalyses(): Analysis[] {
+  return [
+    new BlockTypeAnalysis(),
+    new FormBrickAnalysis(),
+    new RenderersAnalysis(),
+  ];
+}
+
+function useAddBlock(): AddBlock {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
-  const activeExtensionId = useSelector(selectActiveElementId);
+  const activeExtension = useSelector(selectActiveElement);
   const pipelineMap = useSelector(selectPipelineMap);
 
-  return useCallback(
-    async (block) => {
+  const addBlockLocation = useSelector(selectAddBlockLocation);
+
+  const makeNewBlock = useCallback(
+    async (block: IBlock): Promise<BlockConfig> => {
       const outputKey = await generateFreshOutputKey(
         block,
         compact([
@@ -52,26 +76,87 @@ function useAddBlock(
         newBlock.outputKey = outputKey;
       }
 
+      return newBlock;
+    },
+    [pipelineMap]
+  );
+
+  /**
+   * Create a copy of the active extension, add the block, and then
+   * run block-level analyses to determine if there are any issues
+   * with adding the particular block.
+   */
+  const testAddBlock = useCallback(
+    async (block: IBlock): Promise<TestAddBlockResult> => {
+      if (!addBlockLocation) {
+        return {};
+      }
+
+      // Add the block to a copy of the extension
+      const newBlock = await makeNewBlock(block);
+      const newExtension = produce(activeExtension, (draft) => {
+        const pipeline = get(draft, addBlockLocation.path);
+        pipeline.splice(addBlockLocation.index, 0, newBlock);
+      });
+
+      // Run the block-level analyses and gather annotations
+      const analyses = makeBlockLevelAnalyses();
+      const annotationSets = await Promise.all(
+        analyses.map(async (analysis) => {
+          await analysis.run(newExtension);
+          return analysis.getAnnotations();
+        })
+      );
+      const annotations = annotationSets.flat();
+      const newBlockPath = joinPathParts(
+        addBlockLocation.path,
+        addBlockLocation.index
+      );
+
+      // Find annotations for the added block
+      const newBlockAnnotation = annotations.find(
+        (annotation) => annotation.position.path === newBlockPath
+      );
+
+      if (newBlockAnnotation) {
+        return { error: newBlockAnnotation.message };
+      }
+
+      return {};
+    },
+    [activeExtension, addBlockLocation, makeNewBlock]
+  );
+
+  const addBlock = useCallback(
+    async (block: IBlock) => {
+      if (!addBlockLocation) {
+        return;
+      }
+
+      const newBlock = await makeNewBlock(block);
+
       dispatch(
-        actions.addNode({ block: newBlock, pipelinePath, pipelineIndex })
+        actions.addNode({
+          block: newBlock,
+          pipelinePath: addBlockLocation.path,
+          pipelineIndex: addBlockLocation.index,
+        })
       );
 
       reportEvent("BrickAdd", {
         brickId: block.id,
         sessionId,
-        extensionId: activeExtensionId,
+        extensionId: activeExtension.uuid,
         source: "PageEditor-BrickSearchModal",
       });
     },
-    [
-      activeExtensionId,
-      dispatch,
-      pipelineIndex,
-      pipelineMap,
-      pipelinePath,
-      sessionId,
-    ]
+    [activeExtension?.uuid, addBlockLocation, dispatch, makeNewBlock, sessionId]
   );
+
+  return {
+    testAddBlock,
+    addBlock,
+  };
 }
 
 export default useAddBlock;

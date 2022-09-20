@@ -23,6 +23,8 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Icon from "@/icons/Icon";
 import { BlockResult } from "@/components/addBlockModal/addBlockModalTypes";
+import cx from "classnames";
+import Alert from "@/components/Alert";
 
 export const BLOCK_ITEM_FIXED_HEIGHT_PX = 89;
 
@@ -30,12 +32,14 @@ export type BlockItemProps = {
   block: BlockResult;
   onSelect: () => void;
   onShowDetail: () => void;
+  invalidMessage?: string;
 };
 
 const BlockGridItem: React.VFC<BlockItemProps> = ({
   block,
   onSelect,
   onShowDetail,
+  invalidMessage,
 }) => (
   <div
     onClick={onShowDetail}
@@ -48,7 +52,11 @@ const BlockGridItem: React.VFC<BlockItemProps> = ({
     role="button"
     className={styles.root}
   >
-    <div className={styles.content}>
+    <div
+      className={cx(styles.content, {
+        [styles.invalid]: Boolean(invalidMessage),
+      })}
+    >
       <div className={styles.nameRow}>
         <BrickIcon brick={block} faIconClass={styles.icon} />
         <span className={styles.name}>{block.name}</span>
@@ -78,6 +86,12 @@ const BlockGridItem: React.VFC<BlockItemProps> = ({
     >
       <FontAwesomeIcon icon={faPlus} /> Add
     </Button>
+
+    {invalidMessage && (
+      <Alert variant="warning" className={styles.invalidAlert}>
+        {invalidMessage}
+      </Alert>
+    )}
   </div>
 );
 
