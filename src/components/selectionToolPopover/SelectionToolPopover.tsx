@@ -42,7 +42,7 @@ export const SelectionToolPopover: React.FC<{
   onChangeMultiSelection: (value: boolean) => void;
   setSelectionHandler: SetSelectionHandlerType;
 }> = ({ onCancel, onDone, onChangeMultiSelection, setSelectionHandler }) => {
-  const [multiEnabled, setMultiEnabled] = useState(true);
+  const [multiEnabled, setMultiEnabled] = useState(false);
   const [matchingCount, setMatchingCount] = useState(0);
 
   useEffect(() => {

@@ -63,7 +63,7 @@ export async function userSelectElement({
   return new Promise<{ elements: HTMLElement[]; isMulti: boolean }>(
     (resolve, reject) => {
       const targets = new Set<HTMLElement>();
-      let isMulti = enableSelectionTools;
+      let isMulti = false;
       if (!overlay) {
         overlay = new Overlay();
       }
