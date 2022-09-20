@@ -179,6 +179,7 @@ export async function userSelectElement({
           } else {
             targets.add(target);
           }
+
           overlay.inspect(Array.from(targets));
           selectionHandler(targets.size);
 
