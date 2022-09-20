@@ -31,6 +31,7 @@ import custom from "./SelectionToolPopover.module.scss?loadAsUrl";
 import { Stylesheets } from "@/components/Stylesheets";
 import { Button } from "react-bootstrap";
 import { FormLabel } from "react-bootstrap";
+import pluralize from "@/utils/pluralize";
 
 export type SelectionHandlerType = (count: number) => void;
 type SetSelectionHandlerType = (handler: SelectionHandlerType) => void;
@@ -41,7 +42,7 @@ export const SelectionToolPopover: React.FC<{
   onChangeMultiSelection: (value: boolean) => void;
   setSelectionHandler: SetSelectionHandlerType;
 }> = ({ onCancel, onDone, onChangeMultiSelection, setSelectionHandler }) => {
-  const [enabled, setEnabled] = useState(false);
+  const [multiEnabled, setMultiEnabled] = useState(true);
   const [matchingCount, setMatchingCount] = useState(0);
 
   useEffect(() => {
@@ -61,18 +62,22 @@ export const SelectionToolPopover: React.FC<{
         <Draggable>
           <div className="popover-wrapper">
             <FieldSection
-              title={`Selection Tool: ${matchingCount} matching Elements`}
+              title={`Selection Tool: ${matchingCount} ${pluralize(
+                matchingCount,
+                "matching element",
+                "matching elements"
+              )}`}
             >
               <div className="d-flex align-items-center">
                 <SwitchButtonWidget
                   name="allowMulti"
-                  value={enabled}
+                  value={multiEnabled}
                   onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
-                    setEnabled(target.value);
+                    setMultiEnabled(target.value);
                     onChangeMultiSelection(target.value);
                   }}
                 />
-                <FormLabel className="align-middle mx-3">
+                <FormLabel className="align-middle mx-3 mb-0">
                   Select Multiple
                 </FormLabel>
 
