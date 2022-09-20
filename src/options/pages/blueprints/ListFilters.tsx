@@ -1,7 +1,7 @@
 import styles from "./ListFilters.module.scss";
 
 import { Col, Form, Nav } from "react-bootstrap";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import useReduxState from "@/hooks/useReduxState";
 import { selectActiveTab } from "./blueprintsSelectors";
 import blueprintsSlice from "./blueprintsSlice";
@@ -45,13 +45,13 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
 
   const isFreemiumUser = onboardingType === "default";
 
-  const hasSomeBlueprintEngagement = installableViewItems.some(
+  const hasSomeBlueprintEngagement = installableViewItems?.some(
     (installableViewItem) => {
       if (installableViewItem.sharing.source.type === "Personal") {
         return true;
       }
 
-      const isNotStarterBlueprint = starterBlueprints.some(
+      const isNotStarterBlueprint = starterBlueprints?.some(
         (starterBlueprint) =>
           installableViewItem.sharing.packageId !== starterBlueprint.metadata.id
       );
