@@ -23,10 +23,9 @@ import React, {
   useMemo,
   useReducer,
   useRef,
-  useState,
 } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { isEmpty } from "lodash";
+import { compact, isEmpty } from "lodash";
 import { IBlock, RegistryId } from "@/core";
 import { FixedSizeGrid as LazyGrid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -115,24 +114,12 @@ const slice = createSlice({
   },
 });
 
-const EMPTY_BLOCKS: IBlock[] = [];
-const EMPTY_BLOCK_OPTIONS: BlockOption[] = [];
-const EMPTY_INVALID_BLOCK_ERRORS = new Map<RegistryId, string>();
-
 const AddBlockModal: React.FC = () => {
   const [state, dispatch] = useReducer(slice.reducer, initialState);
 
   const { isAddBlockModalVisible: show } = useSelector(
     selectEditorModalVisibilities
   );
-  const [neverShown, setNeverShown] = useState(true);
-
-  useEffect(() => {
-    if (show && neverShown) {
-      setNeverShown(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- neverShown only changes here
-  }, [show]);
 
   const gridRef = useRef<LazyGrid>();
 
@@ -198,12 +185,12 @@ const AddBlockModal: React.FC = () => {
   ];
 
   const safeAllBlocks = useMemo<IBlock[]>(() => {
-    if (isLoadingAllBlocks || neverShown || isEmpty(allBlocks)) {
-      return EMPTY_BLOCKS;
+    if (isLoadingAllBlocks || isEmpty(allBlocks)) {
+      return [];
     }
 
     return [...allBlocks.values()].map(({ block }) => block);
-  }, [allBlocks, neverShown, isLoadingAllBlocks]);
+  }, [allBlocks, isLoadingAllBlocks]);
 
   const searchResults = useBlockSearch(
     safeAllBlocks,
@@ -214,7 +201,7 @@ const AddBlockModal: React.FC = () => {
 
   const blockOptions = useMemo<BlockOption[]>(() => {
     if (isEmpty(searchResults)) {
-      return EMPTY_BLOCK_OPTIONS;
+      return [];
     }
 
     const popular: BlockOption[] = [];
@@ -241,33 +228,32 @@ const AddBlockModal: React.FC = () => {
     return [...popular, ...regular];
   }, [popularBrickIds, searchResults, state.query]);
 
-  const [invalidBlockErrors, isLoadingInvalidBlockErrors] = useAsyncState<
-    Map<RegistryId, string>
-  >(async () => {
-    const errorMap = new Map<RegistryId, string>();
+  const [invalidBlockMessages] = useAsyncState<Map<RegistryId, string>>(
+    async () =>
+      new Map(
+        compact(
+          await Promise.all(
+            blockOptions.map(
+              async (blockOption): Promise<[RegistryId, string]> => {
+                const result = await testAddBlock(blockOption.blockResult);
+                if (result.error) {
+                  return [blockOption.blockResult.id, result.error];
+                }
 
-    if (isEmpty(blockOptions)) {
-      return errorMap;
-    }
-
-    await Promise.all(
-      blockOptions.map(async (blockOption, index) => {
-        const result = await testAddBlock(blockOption.blockResult);
-        if (result.error) {
-          errorMap.set(blockOptions.at(index).blockResult.id, result.error);
-        }
-      })
-    );
-
-    return errorMap;
-  }, [blockOptions]);
-
-  const isLoadingBlocks = isLoadingListings || isLoadingInvalidBlockErrors;
+                return null;
+              }
+            )
+          )
+        )
+      ),
+    [blockOptions]
+  );
 
   const gridData = useMemo<BlockGridData>(
     () => ({
       blockOptions,
-      invalidBlockErrors: invalidBlockErrors ?? EMPTY_INVALID_BLOCK_ERRORS,
+      invalidBlockMessages:
+        invalidBlockMessages ?? new Map<RegistryId, string>(),
       onSetDetailBlock(block: IBlock) {
         dispatch(slice.actions.onSetDetailBlock(block));
       },
@@ -275,7 +261,7 @@ const AddBlockModal: React.FC = () => {
         void onSelectBlock(block);
       },
     }),
-    [blockOptions, invalidBlockErrors, onSelectBlock]
+    [blockOptions, invalidBlockMessages, onSelectBlock]
   );
 
   return (
@@ -364,7 +350,7 @@ const AddBlockModal: React.FC = () => {
               )}
             </div>
             <div className={styles.brickResults}>
-              {isLoadingBlocks ? (
+              {isLoadingListings ? (
                 <Loader />
               ) : (
                 <AutoSizer>

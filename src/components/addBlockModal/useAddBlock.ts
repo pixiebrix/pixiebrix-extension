@@ -46,6 +46,14 @@ type AddBlock = {
   addBlock: (block: IBlock) => Promise<void>;
 };
 
+function makeBlockLevelAnalyses(): Analysis[] {
+  return [
+    new BlockTypeAnalysis(),
+    new FormBrickAnalysis(),
+    new RenderersAnalysis(),
+  ];
+}
+
 function useAddBlock(): AddBlock {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
@@ -73,24 +81,26 @@ function useAddBlock(): AddBlock {
     [pipelineMap]
   );
 
+  /**
+   * Create a copy of the active extension, add the block, and then
+   * run block-level analyses to determine if there are any issues
+   * with adding the particular block.
+   */
   const testAddBlock = useCallback(
     async (block: IBlock): Promise<TestAddBlockResult> => {
       if (!addBlockLocation) {
         return {};
       }
 
+      // Add the block to a copy of the extension
       const newBlock = await makeNewBlock(block);
       const newExtension = produce(activeExtension, (draft) => {
         const pipeline = get(draft, addBlockLocation.path);
         pipeline.splice(addBlockLocation.index, 0, newBlock);
       });
 
-      // Run the block-level analyses
-      const analyses: Analysis[] = [
-        new BlockTypeAnalysis(),
-        new FormBrickAnalysis(),
-        new RenderersAnalysis(),
-      ];
+      // Run the block-level analyses and gather annotations
+      const analyses = makeBlockLevelAnalyses();
       const annotationSets = await Promise.all(
         analyses.map(async (analysis) => {
           await analysis.run(newExtension);
@@ -102,6 +112,8 @@ function useAddBlock(): AddBlock {
         addBlockLocation.path,
         addBlockLocation.index
       );
+
+      // Find annotations for the added block
       const newBlockAnnotation = annotations.find(
         (annotation) => annotation.position.path === newBlockPath
       );
