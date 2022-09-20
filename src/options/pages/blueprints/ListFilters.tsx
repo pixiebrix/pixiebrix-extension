@@ -32,7 +32,11 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
   const { onboardingType, isLoading: isOnboardingLoading } = useOnboarding();
   const { data: starterBlueprints, isLoading: isStarterBlueprintsLoading } =
     useGetStarterBlueprintsQuery();
-  const { setGlobalFilter, data: installableViewItems } = tableInstance;
+  const {
+    state: { globalFilter },
+    setGlobalFilter,
+    data: installableViewItems,
+  } = tableInstance;
   const [activeTab, setActiveTab] = useReduxState(
     selectActiveTab,
     blueprintsSlice.actions.setActiveTab
@@ -97,7 +101,9 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
   // By default, search everything with the option to re-select
   // filtered category
   useEffect(() => {
-    setGlobalFilter(debouncedQuery);
+    if (globalFilter !== debouncedQuery) {
+      setGlobalFilter(debouncedQuery);
+    }
 
     if (debouncedQuery) {
       setActiveTab({
@@ -106,7 +112,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
         filters: [],
       });
     }
-  }, [debouncedQuery, setActiveTab, setGlobalFilter]);
+  }, [globalFilter, debouncedQuery, setActiveTab, setGlobalFilter]);
 
   return (
     <Col sm={12} md={3} xl={2} className={styles.root}>

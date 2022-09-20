@@ -17,33 +17,8 @@
 
 import React from "react";
 import { render } from "@/options/testHelpers";
-import BlueprintsPage from "@/options/pages/blueprints/BlueprintsPage";
-import { configureStore } from "@reduxjs/toolkit";
-import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
-import { Provider } from "react-redux";
-import { authSlice } from "@/auth/authSlice";
-import extensionsSlice from "@/store/extensionsSlice";
-import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
-import {
-  useGetCloudExtensionsQuery,
-  useGetMarketplaceListingsQuery,
-  useGetOrganizationsQuery,
-  useGetRecipesQuery,
-} from "@/services/api";
 import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
 import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
-
-function optionsStore(initialState?: any) {
-  return configureStore({
-    reducer: {
-      auth: authSlice.reducer,
-      blueprints: blueprintsSlice.reducer,
-      options: extensionsSlice.reducer,
-      blueprintModals: blueprintModalsSlice.reducer,
-    },
-    ...(initialState ?? { preloadedState: initialState }),
-  });
-}
 
 jest.mock("@/options/pages/blueprints/useInstallableViewItems", () =>
   jest.fn(() => ({
@@ -75,37 +50,29 @@ jest.mock("@/services/api", () => ({
   })),
 }));
 
-beforeEach(() => {
-  (useGetRecipesQuery as jest.Mock).mockImplementation(() => ({
-    data: [],
-    isLoading: false,
-  }));
-
-  (useGetCloudExtensionsQuery as jest.Mock).mockImplementation(() => ({
-    data: [],
-    isLoading: false,
-  }));
-
-  (useGetMarketplaceListingsQuery as jest.Mock).mockImplementation(() => ({
-    data: [],
-    isLoading: false,
-  }));
-
-  (useGetOrganizationsQuery as jest.Mock).mockImplementation(() => ({
-    data: [],
-    isLoading: false,
-  }));
-});
+// beforeEach(() => {
+//   (useGetRecipesQuery as jest.Mock).mockImplementation(() => ({
+//     data: [],
+//     isLoading: false,
+//   }));
+//
+//   (useGetCloudExtensionsQuery as jest.Mock).mockImplementation(() => ({
+//     data: [],
+//     isLoading: false,
+//   }));
+//
+//   (useGetMarketplaceListingsQuery as jest.Mock).mockImplementation(() => ({
+//     data: [],
+//     isLoading: false,
+//   }));
+//
+//   (useGetOrganizationsQuery as jest.Mock).mockImplementation(() => ({
+//     data: [],
+//     isLoading: false,
+//   }));
+// });
 
 const installables: Installable[] = [];
-
-const renderBlueprintsPage = (initialState?: any) => {
-  return render(
-    <Provider store={optionsStore(initialState)}>
-      <BlueprintsCard installables={installables} />
-    </Provider>
-  );
-};
 
 describe("BlueprintsPage", () => {
   test("it renders", () => {
