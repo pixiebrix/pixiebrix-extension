@@ -27,6 +27,11 @@ declare module "*.svg" {
   export default CONTENT;
 }
 
+declare module "*.png" {
+  const CONTENT: string;
+  export default CONTENT;
+}
+
 declare module "*?loadAsUrl" {
   const CONTENT: string;
   export default CONTENT;
@@ -180,3 +185,7 @@ interface ChromeifiedBrowser extends Browser {
 }
 
 declare const browser: ChromeifiedBrowser;
+
+declare namespace CSS {
+  function px(length: number): string;
+}

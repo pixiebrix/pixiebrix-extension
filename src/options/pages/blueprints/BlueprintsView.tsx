@@ -19,11 +19,16 @@ import React from "react";
 import ListView from "@/options/pages/blueprints/listView/ListView";
 import GridView from "@/options/pages/blueprints/gridView/GridView";
 import { useSelector } from "react-redux";
-import { selectView } from "@/options/pages/blueprints/blueprintsSelectors";
+import {
+  selectActiveTab,
+  selectView,
+} from "@/options/pages/blueprints/blueprintsSelectors";
 import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
 import OnboardingView from "@/options/pages/blueprints/onboardingView/OnboardingView";
 import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
 import EmptyView from "@/options/pages/blueprints/emptyView/EmptyView";
+import GetStartedView from "@/options/pages/blueprints/GetStartedView";
+import Loader from "@/components/Loader";
 
 const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
@@ -31,6 +36,7 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   height,
 }) => {
   const view = useSelector(selectView);
+  const activeTab = useSelector(selectActiveTab);
   const { onboardingType, onboardingFilter, isLoading } = useOnboarding();
 
   const {
@@ -39,6 +45,14 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   } = tableInstance;
 
   const BlueprintsList = view === "list" ? ListView : GridView;
+
+  if (activeTab.key === "Get Started") {
+    return <GetStartedView width={width} height={height} />;
+  }
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   if (rows.length > 0) {
     return (
