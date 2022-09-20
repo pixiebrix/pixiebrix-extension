@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { uniq } from "lodash";
+import { isEmpty, uniq } from "lodash";
 import { selectOptionalPermissions } from "@/utils/permissions";
 import Loader from "@/components/Loader";
 import { Col, Row } from "react-bootstrap";
@@ -84,7 +84,7 @@ const UrlPermissionsList: React.FunctionComponent<{
       <Row>
         <Col>{helpText}</Col>
       </Row>
-      {permissionsList.length > 0 && (
+      {!isEmpty(permissionsList) && (
         // Use Table single column table instead of ListGroup to more closely match style on other wizard tabs
         <Row>
           <Col>

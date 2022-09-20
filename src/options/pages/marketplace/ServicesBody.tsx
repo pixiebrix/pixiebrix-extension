@@ -55,25 +55,26 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   return (
     <Col>
       <Row>
-        {field.value.map(({ id: serviceId }, index) =>
-          // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
-          // consistent with the index in field.value
-          visibleServiceIds.has(serviceId) ? (
-            <Col xs={12} sm={6} xl={4}>
-              <Card key={serviceId} className={styles.serviceCard}>
-                <ServiceDescriptor
-                  serviceId={serviceId}
-                  serviceConfigs={serviceConfigs}
-                />
-                <AuthWidget
-                  authOptions={authOptions}
-                  serviceId={serviceId}
-                  name={joinName(field.name, String(index), "config")}
-                  onRefresh={refreshAuthOptions}
-                />
-              </Card>
-            </Col>
-          ) : null
+        {field.value.map(
+          ({ id: serviceId }, index) =>
+            // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
+            // consistent with the index in field.value
+            visibleServiceIds.has(serviceId) && (
+              <Col xs={12} sm={6} xl={4}>
+                <Card key={serviceId} className={styles.serviceCard}>
+                  <ServiceDescriptor
+                    serviceId={serviceId}
+                    serviceConfigs={serviceConfigs}
+                  />
+                  <AuthWidget
+                    authOptions={authOptions}
+                    serviceId={serviceId}
+                    name={joinName(field.name, String(index), "config")}
+                    onRefresh={refreshAuthOptions}
+                  />
+                </Card>
+              </Col>
+            )
         )}
       </Row>
     </Col>
