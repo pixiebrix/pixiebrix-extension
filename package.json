@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.7.8-alpha.1",
+  "version": "1.7.9-alpha.1",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "jest",
@@ -110,6 +110,7 @@
     "react-beautiful-dnd-next": "^11.0.5",
     "react-bootstrap": "^1.6.1",
     "react-dom": "^17.0.2",
+    "react-draggable": "^4.4.5",
     "react-hot-toast": "^2.1.1",
     "react-hotkeys": "^2.0.0",
     "react-image-crop": "^10.0.6",
