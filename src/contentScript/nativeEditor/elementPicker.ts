@@ -140,6 +140,10 @@ export async function userSelectElement({
 
       function handleMultiSelectionChange(value: boolean) {
         isMulti = value;
+        if (!isMulti) {
+          overlay.inspect([]);
+          targets.clear();
+        }
       }
 
       function noopMouseHandler(event: MouseEvent) {
