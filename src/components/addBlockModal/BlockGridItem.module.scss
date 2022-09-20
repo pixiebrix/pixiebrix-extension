@@ -25,6 +25,7 @@
   padding: 12px; // Need to use exact px for fixed height grid items
   align-items: center;
   margin: $verticalSpacing;
+  position: relative;
 
   &:hover {
     background: #ebebf1;
@@ -33,8 +34,11 @@
       display: none;
     }
   }
-  &:not(:hover) .addButton {
-    display: none;
+  &:not(:hover) {
+    .addButton,
+    .invalidAlert {
+      display: none;
+    }
   }
 
   &:focus {
@@ -62,6 +66,10 @@
   // description works properly.
   // See: https://stackoverflow.com/a/38224283
   min-width: 0;
+}
+
+.invalid {
+  filter: opacity(50%);
 }
 
 .icon {
@@ -92,4 +100,13 @@
 
 .popularIcon {
   margin-left: auto;
+}
+
+.invalidAlert {
+  font-size: 0.8em;
+  position: absolute;
+  left: 0.6em;
+  bottom: 0.6em;
+  padding: 0.25em;
+  margin-bottom: 0 !important;
 }

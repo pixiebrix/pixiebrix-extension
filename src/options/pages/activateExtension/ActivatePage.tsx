@@ -42,18 +42,13 @@ const ActivatePage: React.FunctionComponent = () => {
 
   return (
     <Page
-      title={
-        extension
-          ? `Activate: ${extension.label ?? extension.id}`
-          : "Activate Extension"
-      }
+      title="Activate Extension"
       icon={faCloudDownloadAlt}
-      description="Activate a personal extension from the cloud"
       error={error}
       isPending={isLoading || authOptions == null}
     >
       <Row>
-        <Col xl={8} lg={10} md={12}>
+        <Col xs={12} xl={10}>
           <ErrorBoundary>
             {extension && authOptions && (
               <ActivateForm

@@ -48,7 +48,7 @@ const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
 );
 
 const ActivateTeamBlueprintsColumn: React.VoidFunctionComponent = () => {
-  const { setFilters } = blueprintsSlice.actions;
+  const { setActiveTab } = blueprintsSlice.actions;
   const dispatch = useDispatch();
 
   return (
@@ -61,7 +61,13 @@ const ActivateTeamBlueprintsColumn: React.VoidFunctionComponent = () => {
       <Button
         size="sm"
         onClick={() => {
-          dispatch(setFilters([]));
+          dispatch(
+            setActiveTab({
+              key: "All",
+              tabTitle: "All Blueprints",
+              filters: [],
+            })
+          );
         }}
       >
         View my blueprints

@@ -33,6 +33,7 @@ import { MarketplaceListing } from "@/types/contract";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { array } from "cooky-cutter";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 jest.mock("@/services/api");
 jest.mock("@/components/asyncIcon", () => ({
@@ -78,6 +79,7 @@ describe("AddBlockModal", () => {
       //  See: https://github.com/testing-library/react-testing-library/issues/62
       container: document.body,
     });
+    await waitForEffect();
 
     expect(rendered.asFragment()).toMatchSnapshot();
   });

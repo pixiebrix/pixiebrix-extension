@@ -16,8 +16,8 @@
  */
 
 import { IBlock } from "@/core";
-import { useCallback, useMemo } from "react";
-import { sortBy } from "lodash";
+import { useMemo } from "react";
+import { isEmpty, sortBy } from "lodash";
 import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
 import {
@@ -34,25 +34,31 @@ function makeBlockOption(block: IBlock): BlockOption {
   };
 }
 
+const EMPTY_BLOCK_RESULTS: BlockOption[] = [];
+
 function useBlockSearch(
   blocks: IBlock[],
   taggedBrickIds: Record<string, Set<string>>,
   query: string,
   searchTag: string | null
 ): BlockOption[] {
-  const blockHasTag = useCallback(
-    (block: IBlock) => {
+  const { fuse, blockOptions } = useMemo(() => {
+    if (isEmpty(blocks)) {
+      return {
+        fuse: null,
+        blockOptions: EMPTY_BLOCK_RESULTS,
+      };
+    }
+
+    function blockHasTag(block: IBlock): boolean {
       if (searchTag == null || searchTag === TAG_ALL) {
         return true;
       }
 
       // eslint-disable-next-line security/detect-object-injection -- tag values come from the API
       return taggedBrickIds[searchTag].has(block.id);
-    },
-    [searchTag, taggedBrickIds]
-  );
+    }
 
-  const { fuse, blockOptions } = useMemo(() => {
     const blockOptions = sortBy(
       (blocks ?? [])
         // We should never show @internal bricks to users. They'll sometimes find their way in from the registry.
@@ -65,11 +71,11 @@ function useBlockSearch(
     });
 
     return { blockOptions, fuse };
-  }, [blockHasTag, blocks]);
+  }, [blocks, searchTag, taggedBrickIds]);
 
   return useMemo(
     () =>
-      isNullOrBlank(query)
+      isNullOrBlank(query) || !fuse
         ? blockOptions
         : fuse.search(query).map((x) => x.item),
     [query, fuse, blockOptions]
