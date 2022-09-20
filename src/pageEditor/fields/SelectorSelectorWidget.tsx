@@ -128,8 +128,14 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
     boolean
   >((x) => x.settings.excludeRandomClasses);
 
+  const enableSelectionTools = useSelector<
+    { settings: SettingsState },
+    boolean
+  >((x) => x.settings.selectionTools);
+
   const suggestions: ElementSuggestion[] = useMemo(
-    () => getSuggestionsForElement(element, { sort }),
+    () =>
+      getSuggestionsForElement(element, { sort: sort && !element?.isMulti }),
     [element, sort]
   );
 
@@ -172,6 +178,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
         traverseUp,
         root,
         excludeRandomClasses,
+        enableSelectionTools,
       });
 
       if (isEmpty(selected)) {
@@ -185,7 +192,8 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
       setElement(selected);
 
       const selectors = selected.selectors ?? [];
-      const [firstSelector] = sort ? sortBySelector(selectors) : selectors;
+      const [firstSelector] =
+        sort && !selected.isMulti ? sortBySelector(selectors) : selectors;
 
       console.debug("Setting selector", { selected, firstSelector });
       setValue(firstSelector);

@@ -110,6 +110,7 @@
     "react-beautiful-dnd-next": "^11.0.5",
     "react-bootstrap": "^1.6.1",
     "react-dom": "^17.0.2",
+    "react-draggable": "^4.4.5",
     "react-hot-toast": "^2.1.1",
     "react-hotkeys": "^2.0.0",
     "react-image-crop": "^10.0.6",
