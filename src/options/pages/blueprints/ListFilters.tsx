@@ -27,7 +27,10 @@ type ListFiltersProps = {
   tableInstance: TableInstance<InstallableViewItem>;
 };
 
-function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
+const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
+  teamFilters,
+  tableInstance,
+}) => {
   const { permit } = useFlags();
   const { onboardingType, isLoading: isOnboardingLoading } = useOnboarding();
   const { data: starterBlueprints, isLoading: isStarterBlueprintsLoading } =
@@ -259,6 +262,6 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
       </Nav>
     </Col>
   );
-}
+};
 
 export default ListFilters;

@@ -19,6 +19,7 @@ import React from "react";
 import { render } from "@/options/testHelpers";
 import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
 import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
+import TestReduxLoop from "@/options/pages/blueprints/TestReduxLoop";
 
 jest.mock("@/services/api", () => ({
   useGetRecipesQuery: jest.fn(() => ({
@@ -47,7 +48,8 @@ const installables: Installable[] = [];
 
 describe("BlueprintsPage", () => {
   test("it renders", () => {
-    const rendered = render(<BlueprintsCard installables={installables} />);
+    //const rendered = render(<BlueprintsCard installables={installables} />);
+    const rendered = render(<TestReduxLoop />);
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 });
