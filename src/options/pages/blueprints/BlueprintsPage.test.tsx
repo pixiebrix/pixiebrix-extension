@@ -47,6 +47,7 @@ const installables: Installable[] = [];
 
 describe("BlueprintsPage", () => {
   test("it renders", () => {
-    render(<BlueprintsCard installables={installables} />);
+    const rendered = render(<BlueprintsCard installables={installables} />);
+    expect(rendered.asFragment()).toMatchSnapshot();
   });
 });

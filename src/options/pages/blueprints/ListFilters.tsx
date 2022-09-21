@@ -70,11 +70,25 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
       : false;
 
   useEffect(() => {
-    if (
-      isStarterBlueprintsLoading ||
-      isOnboardingLoading ||
-      showGetStartedTab
-    ) {
+    if (isStarterBlueprintsLoading || isOnboardingLoading) {
+      return;
+    }
+
+    if (activeTab.key === null) {
+      if (showGetStartedTab) {
+        setActiveTab({
+          key: "Get Started",
+          tabTitle: "Welcome to the PixieBrix Extension Console",
+          filters: [],
+        });
+        return;
+      }
+
+      setActiveTab({
+        key: "Active",
+        tabTitle: "Active Blueprints",
+        filters: [{ id: "status", value: "Active" }],
+      });
       return;
     }
 
@@ -83,7 +97,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
     // If the "Get Started" tab is hidden due to e.g. onboarding completion,
     // but still selected as an ActiveTab, we want to reset the default to
     // the "Active Blueprints" tab.
-    if (activeTab.key === "Get Started") {
+    if (!showGetStartedTab && activeTab.key === "Get Started") {
       setActiveTab({
         key: "Active",
         tabTitle: "Active Blueprints",
@@ -93,8 +107,9 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
   }, [
     isOnboardingLoading,
     starterBlueprints,
+    isStarterBlueprintsLoading,
+    activeTab.key,
     showGetStartedTab,
-    activeTab,
     setActiveTab,
   ]);
 

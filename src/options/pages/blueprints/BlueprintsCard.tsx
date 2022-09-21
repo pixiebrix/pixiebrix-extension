@@ -18,7 +18,7 @@
 import styles from "./BlueprintsCard.module.scss";
 
 import { Col, Row as BootstrapRow } from "react-bootstrap";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   Column,
   Row,
