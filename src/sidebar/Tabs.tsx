@@ -76,7 +76,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
     >
       <Card>
         <Card.Header>
-          <Nav variant="tabs" onSelect={onSelect}>
+          <Nav fill variant="tabs" onSelect={onSelect}>
             {panels.map((panel) => (
               <Nav.Link
                 key={panel.extensionId}
