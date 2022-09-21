@@ -36,16 +36,31 @@ describe("groupListingsByTag", () => {
     });
 
     const popularListing = marketplaceListingFactory({
-      tags: [popular, category, other],
+      tags: [popular, category],
+    });
+    const regularListing = marketplaceListingFactory({
+      tags: [category],
+    });
+    const otherListing = marketplaceListingFactory({
+      tags: [other],
     });
 
     const { taggedBrickIds, popularBrickIds } = groupListingsByTag(
       [popular, other, category],
-      { [popularListing.package.name]: popularListing }
+      {
+        [popularListing.package.name]: popularListing,
+        [regularListing.package.name]: regularListing,
+        [otherListing.package.name]: otherListing,
+      }
     );
 
     expect(taggedBrickIds).toStrictEqual({
-      [category.name]: new Set([popularListing.package.name]),
+      [popular.name]: new Set([popularListing.package.name]),
+      [category.name]: new Set([
+        popularListing.package.name,
+        regularListing.package.name,
+      ]),
+      [other.name]: new Set([otherListing.package.name]),
     });
 
     expect(popularBrickIds).toStrictEqual(
