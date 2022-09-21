@@ -100,6 +100,9 @@ jest.mock("@/background/messenger/api", () => ({
 }));
 // Mock to support hook usage in the subtree, not relevant to UI tests here
 jest.mock("@/hooks/useRefresh");
+jest.mock("@/hooks/useTheme", () => ({
+  useGetTheme: jest.fn(),
+}));
 
 jest.setTimeout(30_000); // This test is flaky with the default timeout of 5000 ms
 

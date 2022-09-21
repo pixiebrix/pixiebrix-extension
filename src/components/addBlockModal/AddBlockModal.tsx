@@ -226,7 +226,7 @@ const AddBlockModal: React.FC = () => {
     const regular: BlockOption[] = [];
 
     for (const blockOption of searchResults) {
-      if (taggedBrickIds.Popular.has(blockOption.blockResult.id)) {
+      if (taggedBrickIds.Popular?.has(blockOption.blockResult.id)) {
         // Use immer to keep the class prototype and it's methods. There are downstream calls to runtime/getType which
         // depend on certain methods (e.g., transform, etc.) being present on the brick
         const newOption = produce(blockOption, (draft) => {
