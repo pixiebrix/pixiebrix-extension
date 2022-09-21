@@ -62,6 +62,8 @@ import {
 import { getItemKey } from "@/components/addBlockModal/addBlockModalHelpers";
 import useAddBlock from "@/components/addBlockModal/useAddBlock";
 import { useAsyncState } from "@/hooks/common";
+import { useGetTheme } from "@/hooks/useTheme";
+import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 
 type State = {
   query: string;
@@ -184,16 +186,32 @@ const AddBlockModal: React.FC = () => {
       })),
   ];
 
-  const safeAllBlocks = useMemo<IBlock[]>(() => {
-    if (isLoadingAllBlocks || isEmpty(allBlocks)) {
+  const partnerKey = useGetTheme();
+
+  const filteredBlocks = useMemo<IBlock[]>(() => {
+    if (isLoadingAllBlocks || isLoadingTags || isEmpty(allBlocks)) {
       return [];
     }
 
-    return [...allBlocks.values()].map(({ block }) => block);
-  }, [allBlocks, isLoadingAllBlocks]);
+    let typedBlocks = [...allBlocks.values()];
+
+    if (partnerKey === AUTOMATION_ANYWHERE_PARTNER_KEY) {
+      typedBlocks = typedBlocks.filter(
+        (typed) => !taggedBrickIds.UiPath.has(typed.block.id)
+      );
+    }
+
+    return typedBlocks.map(({ block }) => block);
+  }, [
+    allBlocks,
+    isLoadingAllBlocks,
+    isLoadingTags,
+    partnerKey,
+    taggedBrickIds.UiPath,
+  ]);
 
   const searchResults = useBlockSearch(
-    safeAllBlocks,
+    filteredBlocks,
     taggedBrickIds,
     state.query,
     state.searchTag

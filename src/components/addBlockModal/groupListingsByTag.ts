@@ -44,10 +44,8 @@ function groupListingsByTag(
     };
   }
 
-  const categoryTags = marketplaceTags.filter((tag) => tag.subtype === "role");
-
   const taggedBrickIds = Object.fromEntries(
-    categoryTags.map((tag) => [tag.name, new Set<RegistryId>()])
+    marketplaceTags.map((tag) => [tag.name, new Set<RegistryId>()])
   );
   const popularBrickIds = new Set<RegistryId>();
 
