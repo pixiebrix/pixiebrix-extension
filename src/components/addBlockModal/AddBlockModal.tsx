@@ -171,7 +171,7 @@ const AddBlockModal: React.FC = () => {
     isLoading: isLoadingListings,
   } = useGetMarketplaceListingsQuery();
 
-  const { taggedBrickIds, popularBrickIds } = useMemo(
+  const taggedBrickIds = useMemo(
     () => groupListingsByTag(marketplaceTags, listings),
     [marketplaceTags, listings]
   );
@@ -226,7 +226,7 @@ const AddBlockModal: React.FC = () => {
     const regular: BlockOption[] = [];
 
     for (const blockOption of searchResults) {
-      if (popularBrickIds.has(blockOption.blockResult.id)) {
+      if (taggedBrickIds.Popular.has(blockOption.blockResult.id)) {
         // Use immer to keep the class prototype and it's methods. There are downstream calls to runtime/getType which
         // depend on certain methods (e.g., transform, etc.) being present on the brick
         const newOption = produce(blockOption, (draft) => {
@@ -244,7 +244,7 @@ const AddBlockModal: React.FC = () => {
     }
 
     return [...popular, ...regular];
-  }, [popularBrickIds, searchResults, state.query]);
+  }, [searchResults, state.query, taggedBrickIds.Popular]);
 
   const [invalidBlockMessages] = useAsyncState<Map<RegistryId, string>>(
     async () =>
