@@ -21,27 +21,19 @@ import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
 import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 
+const EMPTY_RESPONSE = Object.freeze({
+  data: Object.freeze([]),
+  isLoading: false,
+});
+
+// Need to return the same object every time, because useInstallableViewItems doesn't destructure the object. Or maybe
+// we just need to make sure the data [] array is the same object?
 jest.mock("@/services/api", () => ({
-  useGetRecipesQuery: jest.fn(() => ({
-    data: [],
-    isLoading: false,
-  })),
-  useGetCloudExtensionsQuery: jest.fn(() => ({
-    data: [],
-    isLoading: false,
-  })),
-  useGetMarketplaceListingsQuery: jest.fn(() => ({
-    data: [],
-    isLoading: false,
-  })),
-  useGetOrganizationsQuery: jest.fn(() => ({
-    data: [],
-    isLoading: false,
-  })),
-  useGetStarterBlueprintsQuery: jest.fn(() => ({
-    data: [],
-    isLoading: false,
-  })),
+  useGetRecipesQuery: jest.fn(() => EMPTY_RESPONSE),
+  useGetCloudExtensionsQuery: jest.fn(() => EMPTY_RESPONSE),
+  useGetMarketplaceListingsQuery: jest.fn(() => EMPTY_RESPONSE),
+  useGetOrganizationsQuery: jest.fn(() => EMPTY_RESPONSE),
+  useGetStarterBlueprintsQuery: jest.fn(() => EMPTY_RESPONSE),
 }));
 
 const installables: Installable[] = [];

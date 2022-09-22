@@ -45,8 +45,6 @@ import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 
-const NO_ITEMS: readonly InstallableViewItem[] = Object.freeze([]);
-
 function useInstallableViewItems(installables: Installable[]): {
   installableViewItems: readonly InstallableViewItem[];
   isLoading: boolean;
@@ -119,48 +117,44 @@ function useInstallableViewItems(installables: Installable[]): {
     [listingsQuery]
   );
 
-  const installableViewItems = useMemo(() => {
-    if (installables.length === 0) {
-      // Was getting an infinite render loop on empty tables due to the auto-reset behavior of useTable when the
-      // data changes. Not sure why this useMemo was recalculating... :shrug:
-      return NO_ITEMS;
-    }
-
-    return installables.map((installable) => ({
-      name: getLabel(installable),
-      description: getDescription(installable),
-      sharing: {
-        packageId: getPackageId(installable),
-        source: getSharingType({
-          installable,
-          organizations,
-          scope,
+  const installableViewItems = useMemo(
+    () =>
+      installables.map((installable) => ({
+        name: getLabel(installable),
+        description: getDescription(installable),
+        sharing: {
+          packageId: getPackageId(installable),
+          source: getSharingType({
+            installable,
+            organizations,
+            scope,
+            installedExtensions,
+          }),
+        },
+        updatedAt: getUpdatedAt(installable),
+        status: getStatus(installable),
+        hasUpdate: updateAvailable(
+          recipesQuery.data,
           installedExtensions,
-        }),
-      },
-      updatedAt: getUpdatedAt(installable),
-      status: getStatus(installable),
-      hasUpdate: updateAvailable(
-        recipesQuery.data,
-        installedExtensions,
-        installable
-      ),
-      installedVersionNumber: getInstalledVersionNumber(
-        installedExtensions,
-        installable
-      ),
-      icon: installableIcon(installable),
-      installable,
-    }));
-  }, [
-    getStatus,
-    installableIcon,
-    installables,
-    installedExtensions,
-    organizations,
-    recipesQuery.data,
-    scope,
-  ]);
+          installable
+        ),
+        installedVersionNumber: getInstalledVersionNumber(
+          installedExtensions,
+          installable
+        ),
+        icon: installableIcon(installable),
+        installable,
+      })),
+    [
+      getStatus,
+      installableIcon,
+      installables,
+      installedExtensions,
+      organizations,
+      recipesQuery.data,
+      scope,
+    ]
+  );
 
   return {
     installableViewItems,
