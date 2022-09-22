@@ -402,7 +402,7 @@ describe("can add a node", () => {
 async function renderEditorPaneWithBasicFormState() {
   const element = getFormStateWithSubPipelines();
   const activeNodeId = element.extension.blockPipeline[0].instanceId;
-  render(
+  const renderResult = render(
     <div>
       <EditorPane />
       <AddBlockModal />
@@ -416,6 +416,7 @@ async function renderEditorPaneWithBasicFormState() {
     }
   );
   await waitForEffect();
+  return renderResult;
 }
 
 describe("can remove a node", () => {
@@ -613,6 +614,32 @@ describe("can copy and paste a node", () => {
     expect(nodes[2]).toHaveTextContent(/for-each loop/i);
     expect(nodes[3]).toHaveTextContent(/echo/i);
     expect(nodes[4]).toHaveTextContent(/echo/i);
+  });
+
+  test("with sub pipelines itself", async () => {
+    const { getFormState } = await renderEditorPaneWithBasicFormState();
+
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // Select the ForEach block
+    await immediateUserEvent.click(screen.getAllByText(/for-each loop/i)[0]);
+
+    // Click the copy button
+    await immediateUserEvent.click(screen.getByTestId("icon-button-copyNode"));
+
+    // There should be 5 paste buttons
+    const pasteButtons = screen.getAllByTestId(/-paste-brick/i);
+    expect(pasteButtons).toHaveLength(5);
+    // Click the last one
+    await immediateUserEvent.click(pasteButtons[4]);
+
+    // Expect nodes to be: Foundation, Echo, ForEach: [Echo], ForEach: [Echo]
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(6);
+    expect(nodes[1]).toHaveTextContent(/echo/i);
+    expect(nodes[2]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[3]).toHaveTextContent(/echo/i);
+    expect(nodes[4]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[5]).toHaveTextContent(/echo/i);
   });
 });
 
