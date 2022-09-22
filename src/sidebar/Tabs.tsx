@@ -76,11 +76,12 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
     >
       <Card>
         <Card.Header>
-          <Nav variant="tabs" onSelect={onSelect}>
+          <Nav fill variant="tabs" onSelect={onSelect}>
             {panels.map((panel) => (
               <Nav.Link
                 key={panel.extensionId}
                 eventKey={mapTabEventKey("panel", panel)}
+                className={styles.tabHeader}
               >
                 {panel.heading ?? <FontAwesomeIcon icon={faSpinner} />}
               </Nav.Link>
@@ -89,6 +90,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
               <Nav.Link
                 key={form.extensionId}
                 eventKey={mapTabEventKey("form", form)}
+                className={styles.tabHeader}
               >
                 {form.form.schema.title ?? "Form"}
               </Nav.Link>

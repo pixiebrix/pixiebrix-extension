@@ -19,3 +19,9 @@
 .paneOverrides {
   text-align: initial;
 }
+
+.tabHeader {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
