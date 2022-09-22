@@ -19,6 +19,7 @@ import React from "react";
 import { render } from "@/options/testHelpers";
 import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
 import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 jest.mock("@/services/api", () => ({
   useGetRecipesQuery: jest.fn(() => ({
@@ -46,8 +47,9 @@ jest.mock("@/services/api", () => ({
 const installables: Installable[] = [];
 
 describe("BlueprintsPage", () => {
-  test("it renders", () => {
+  test("it renders", async () => {
     const rendered = render(<BlueprintsCard installables={installables} />);
+    await waitForEffect();
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 });
