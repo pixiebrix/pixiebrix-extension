@@ -617,7 +617,7 @@ describe("can copy and paste a node", () => {
   });
 
   test("with sub pipelines itself", async () => {
-    const { getFormState } = await renderEditorPaneWithBasicFormState();
+    await renderEditorPaneWithBasicFormState();
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
     // Select the ForEach block
