@@ -177,13 +177,13 @@ export interface EditorState {
   /**
    * The available installed extensions for the current tab
    */
-  availableInstalledIds: Set<UUID>;
+  availableInstalledIds: UUID[];
   isLoadingInstalledExtensions: boolean;
 
   /**
    * The available dynamic elements for the current tab
    */
-  availableDynamicIds: Set<UUID>;
+  availableDynamicIds: UUID[];
   isLoadingDynamicExtensions: boolean;
 
   /**

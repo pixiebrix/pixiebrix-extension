@@ -107,7 +107,7 @@ const EditorContent: React.FC = () => {
     return null;
   }
 
-  if (availableDynamicIds?.size > 0 || installed.length > unavailableCount) {
+  if (availableDynamicIds?.length > 0 || installed.length > unavailableCount) {
     return <NoExtensionSelectedPane />;
   }
 

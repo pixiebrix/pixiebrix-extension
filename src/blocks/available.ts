@@ -82,8 +82,6 @@ function testSelector(selector: string): boolean {
 export async function checkAvailable(
   availability: Availability
 ): Promise<boolean> {
-  console.log("checking availability", availability);
-
   const {
     matchPatterns: rawMatchPatterns = [],
     urlPatterns: rawUrlPatterns = [],

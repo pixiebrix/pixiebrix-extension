@@ -39,7 +39,7 @@ import {
 } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
-import { cloneDeep, compact, get, isEmpty } from "lodash";
+import { cloneDeep, compact, get, isEmpty, uniq } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
@@ -87,9 +87,9 @@ export const initialState: EditorState = {
   keepLocalCopyOnCreateRecipe: false,
   deletedElementsByRecipeId: {},
   newRecipeIds: [],
-  availableInstalledIds: new Set<UUID>(),
+  availableInstalledIds: [],
   isLoadingInstalledExtensions: false,
-  availableDynamicIds: new Set<UUID>(),
+  availableDynamicIds: [],
   isLoadingDynamicExtensions: false,
   unavailableCount: 0,
 };
@@ -230,7 +230,7 @@ function activateElement(
 }
 
 type AvailableInstalled = {
-  availableInstalledIds: Set<UUID>;
+  availableInstalledIds: UUID[];
   unavailableCount: number;
 };
 
@@ -268,12 +268,10 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
     })
     .map((x) => x.id);
 
-  const availableInstalledIds = new Set<UUID>(
-    extensions
-      .filter((x) => availableExtensionPointIds.includes(x.id))
-      .map((x) => x.id)
-  );
-  const unavailableCount = extensions.length - availableInstalledIds.size;
+  const availableInstalledIds = extensions
+    .filter((x) => availableExtensionPointIds.includes(x.id))
+    .map((x) => x.id);
+  const unavailableCount = extensions.length - availableInstalledIds.length;
 
   return { availableInstalledIds, unavailableCount };
 });
@@ -282,20 +280,18 @@ async function isElementAvailable(
   tabUrl: string,
   elementExtensionPoint: BaseExtensionPointState
 ): Promise<boolean> {
-  console.log(
-    `checking availability for ${elementExtensionPoint?.metadata?.name}`
-  );
+  if (isQuickBarExtensionPoint(elementExtensionPoint)) {
+    return testMatchPatterns(
+      elementExtensionPoint.definition.documentUrlPatterns,
+      tabUrl
+    );
+  }
 
-  return isQuickBarExtensionPoint(elementExtensionPoint)
-    ? testMatchPatterns(
-        elementExtensionPoint.definition.documentUrlPatterns,
-        tabUrl
-      )
-    : checkAvailable(thisTab, elementExtensionPoint.definition.isAvailable);
+  return checkAvailable(thisTab, elementExtensionPoint.definition.isAvailable);
 }
 
 const checkAvailableDynamicElements = createAsyncThunk<
-  { availableDynamicIds: Set<UUID> },
+  { availableDynamicIds: UUID[] },
   void,
   { state: EditorRootState }
 >("editor/checkAvailableDynamicElements", async (arg, thunkAPI) => {
@@ -303,10 +299,6 @@ const checkAvailableDynamicElements = createAsyncThunk<
   const tabUrl = await getCurrentURL();
   const availableElementIds = await Promise.all(
     elements.map(async ({ uuid, extensionPoint: elementExtensionPoint }) => {
-      console.log(
-        `checking availability for ${elementExtensionPoint?.metadata?.name}`
-      );
-
       const isAvailable = await isElementAvailable(
         tabUrl,
         elementExtensionPoint
@@ -316,7 +308,7 @@ const checkAvailableDynamicElements = createAsyncThunk<
     })
   );
 
-  return { availableDynamicIds: new Set<UUID>(compact(availableElementIds)) };
+  return { availableDynamicIds: uniq(compact(availableElementIds)) };
 });
 
 const checkActiveElementAvailability = createAsyncThunk<
@@ -836,6 +828,7 @@ export const editorSlice = createSlice({
     builder
       .addCase(checkAvailableInstalledExtensions.pending, (state) => {
         state.isLoadingInstalledExtensions = true;
+        // We're not resetting the result here so that the old value remains during re-calculation
       })
       .addCase(
         checkAvailableInstalledExtensions.fulfilled,
@@ -875,9 +868,14 @@ export const editorSlice = createSlice({
           const { isAvailable } = payload;
           const activeElementId = selectActiveElementId({ editor: state });
           if (isAvailable) {
-            state.availableDynamicIds.add(activeElementId);
+            state.availableDynamicIds = [
+              activeElementId,
+              ...state.availableDynamicIds,
+            ];
           } else {
-            state.availableDynamicIds.delete(activeElementId);
+            state.availableDynamicIds = state.availableDynamicIds.filter(
+              (id) => id !== activeElementId
+            );
           }
         }
       );
