@@ -67,6 +67,9 @@ import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { enableAnalysisFieldErrors } from "@/components/form/useFieldError";
 import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/renderersAnalysis";
+import { useGetTheme } from "@/hooks/useTheme";
+import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
+import { RunProcess } from "@/contrib/uipath/process";
 
 jest.mock("@/services/api", () => ({
   appApi: {
@@ -110,6 +113,7 @@ const jqBlock = new JQTransformer();
 const alertBlock = new AlertEffect();
 const forEachBlock = new ForEach();
 const markdownBlock = new MarkdownRenderer();
+const uiPathBlock = new RunProcess();
 
 // Using events without delays with jest fake timers
 const immediateUserEvent = userEvent.setup({ delay: null });
@@ -124,7 +128,8 @@ beforeAll(async () => {
     jqBlock,
     alertBlock,
     forEachBlock,
-    markdownBlock
+    markdownBlock,
+    uiPathBlock
   );
   await blockRegistry.allTyped();
 
@@ -229,10 +234,15 @@ async function addABlock(addButton: Element, blockName: string) {
   // Run the debounced search
   await runPendingTimers();
 
+  screen.debug(screen.getByRole("dialog"));
+
+  // Sometimes unexpected extra results come back in the search,
+  // but the exact-match result to the search string should
+  // always be first in the results grid
   await immediateUserEvent.click(
-    screen.getByRole("button", {
+    screen.getAllByRole("button", {
       name: /^Add/,
-    })
+    })[0]
   );
 }
 
@@ -988,4 +998,46 @@ describe("block validation in Add Block Modal UI", () => {
       expect(firstResult).toHaveTextContent("is not allowed in this pipeline");
     }
   );
+
+  test("hides UiPath bricks for AA users", async () => {
+    (useGetTheme as jest.Mock).mockReturnValue(AUTOMATION_ANYWHERE_PARTNER_KEY);
+    const formState = formStateFactory();
+    render(
+      <>
+        <EditorPane />
+        <AddBlockModal />
+      </>,
+      {
+        setupRedux(dispatch) {
+          dispatch(editorActions.addElement(formState));
+          dispatch(editorActions.selectElement(formState.uuid));
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    const addBrickButton = screen.getByTestId(
+      "icon-button-foundation-add-brick"
+    );
+
+    await immediateUserEvent.click(addBrickButton);
+
+    // Try to find the disallowed block and make sure it's not there
+    await immediateUserEvent.type(
+      screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
+      "uipath"
+    );
+
+    // Run the debounced search
+    await runPendingTimers();
+
+    const addButtons = screen.queryAllByRole("button", { name: /add/i });
+
+    // Assert that no UiPath blocks are available
+    for (const button of addButtons) {
+      const block = button.parentElement;
+      expect(block).not.toHaveTextContent("uipath");
+    }
+  });
 });
