@@ -24,7 +24,7 @@ import { Theme } from "@/options/types";
 
 const renderNavbar = () => {
   // There doesn't seem to be significant testable differences between
-  // different Theme logos. We'll test with the default logos for now.
+  // different Theme logos. We'll test with the default PixieBrix logos for now.
   const logo = THEME_LOGOS["default" as Theme];
   return render(
     <MemoryRouter>

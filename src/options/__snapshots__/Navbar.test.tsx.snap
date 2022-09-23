@@ -50,6 +50,11 @@ exports[`Navbar renders 1`] = `
           />
         </svg>
       </button>
+      <div
+        class="extensionConsoleHeading d-none d-md-inline"
+      >
+        Extension Console
+      </div>
       <ul
         class="navbar-nav navbar-nav-right"
       />

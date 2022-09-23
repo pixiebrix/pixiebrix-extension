@@ -64,10 +64,16 @@ const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
           </button>
         )}
 
+        <div
+          className={cx(styles.extensionConsoleHeading, "d-none d-md-inline")}
+        >
+          Extension Console
+        </div>
+
         <ul className="navbar-nav navbar-nav-right">
           {serviceURL && (
             <Nav.Link
-              className="mb-1 px-3"
+              className="px-3"
               target="_blank"
               href={serviceURL ?? DEFAULT_SERVICE_URL}
             >
@@ -77,7 +83,7 @@ const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
           )}
 
           {/* TODO: pr mention part of: https://github.com/pixiebrix/pixiebrix-app/issues/494 */}
-          {email && <div className="mb-1 text-black">{email}</div>}
+          {email && <div className="text-black">{email}</div>}
         </ul>
       </div>
     </nav>
