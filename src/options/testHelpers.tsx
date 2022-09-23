@@ -20,7 +20,6 @@ import { authSlice } from "@/auth/authSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settingsSlice";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
-import { appApi } from "@/services/api";
 import { createRenderWithWrappers } from "@/testUtils/testHelpers";
 
 const renderWithWrappers = createRenderWithWrappers(() =>
@@ -30,7 +29,9 @@ const renderWithWrappers = createRenderWithWrappers(() =>
       settings: settingsSlice.reducer,
       options: extensionsSlice.reducer,
       blueprintModals: blueprintModalsSlice.reducer,
-      [appApi.reducerPath]: appApi.reducer,
+      // This api reducer may be needed at some point, but it's not mocked properly yet, so
+      //  we're not including it for now, until it becomes an issue.
+      // [appApi.reducerPath]: appApi.reducer,
     },
   })
 );
