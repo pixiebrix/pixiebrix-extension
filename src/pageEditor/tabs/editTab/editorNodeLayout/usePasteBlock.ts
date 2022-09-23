@@ -20,9 +20,10 @@ import { selectCopiedBlock } from "@/pageEditor/slices/editorSelectors";
 import { uuidv4 } from "@/types/helpers";
 import { BlockConfig } from "@/blocks/types";
 import { actions } from "@/pageEditor/slices/editorSlice";
+import { normalizePipelineForEditor } from "@/pageEditor/extensionPoints/pipelineMapping";
 
 function usePasteBlock():
-  | ((pipelinePath: string, pipelineIndex: number) => void)
+  | ((pipelinePath: string, pipelineIndex: number) => Promise<void>)
   | null {
   const dispatch = useDispatch();
   const copiedBlock = useSelector(selectCopiedBlock);
@@ -30,16 +31,19 @@ function usePasteBlock():
     return null;
   }
 
-  return (pipelinePath: string, pipelineIndex: number) => {
+  return async (pipelinePath: string, pipelineIndex: number) => {
     // Give the block a new instanceId
     const newInstanceId = uuidv4();
-    const blockToPaste: BlockConfig = {
+    const newBlock: BlockConfig = {
       ...copiedBlock,
       instanceId: newInstanceId,
     };
+    // Give all the bricks new instance ids
+    const normalizedPipeline = await normalizePipelineForEditor([newBlock]);
+    const normalizedBlock = normalizedPipeline.at(0);
     // Insert the block
     dispatch(
-      actions.addNode({ block: blockToPaste, pipelinePath, pipelineIndex })
+      actions.addNode({ block: normalizedBlock, pipelinePath, pipelineIndex })
     );
     dispatch(actions.clearCopiedBlockConfig());
   };
