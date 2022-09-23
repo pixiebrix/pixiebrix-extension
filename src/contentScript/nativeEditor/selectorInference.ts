@@ -256,6 +256,7 @@ interface SafeCssSelectorOptions {
   selectors?: Array<keyof typeof CssSelectorType>;
   root?: Element;
   excludeRandomClasses?: boolean;
+  allowMultiSelection?: boolean;
 }
 
 /**
@@ -277,7 +278,7 @@ export function getAttributeSelectorRegex(...attributes: string[]): RegExp {
  * front-end framework elements that aren't good for selectors
  */
 export function safeCssSelector(
-  element: HTMLElement,
+  elements: HTMLElement[],
   {
     selectors = DEFAULT_SELECTOR_PRIORITIES,
     excludeRandomClasses = false,
@@ -286,7 +287,7 @@ export function safeCssSelector(
   }: SafeCssSelectorOptions = {}
 ): string {
   // https://github.com/fczbkk/css-selector-generator
-  const siteSelectorHint = getSiteSelectorHint(element);
+  const siteSelectorHint = getSiteSelectorHint(elements[0]);
 
   const blacklist = [
     ...UNSTABLE_SELECTORS,
@@ -309,7 +310,7 @@ export function safeCssSelector(
     ...siteSelectorHint.stableAnchors,
   ];
 
-  const selector = getCssSelector(element, {
+  const selector = getCssSelector(elements, {
     blacklist,
     whitelist,
     selectors,
@@ -375,7 +376,7 @@ export function inferSelectors(
 ): string[] {
   const makeSelector = (allowed?: Array<keyof typeof CssSelectorType>) => {
     try {
-      return safeCssSelector(element, {
+      return safeCssSelector([element], {
         selectors: allowed,
         root,
         excludeRandomClasses,

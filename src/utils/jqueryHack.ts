@@ -19,32 +19,43 @@
 // Chrome 105 introduced native support for :has, but has a "bug" that breaks support for JQuery pseudo-selectors
 // Implementation adapted from: https://github.com/jquery/jquery/issues/5098#issuecomment-1232952901
 
-const originalQSA = document.querySelectorAll;
-// @ts-expect-error -- internal callable object
+const originalDocumentQSA = document.querySelectorAll;
+const originalElementQSA = Element.prototype.querySelectorAll;
+
+// @ts-expect-error -- $.find types missing
 const originalFind = $.find;
 
-function patchedQSA(selectors: string) {
+function patchedDocumentQSA(this: Document, selectors: string) {
   if (selectors.includes(":has")) {
     // Force use of JQuery for :has
     throw new DOMException();
   }
 
-  return originalQSA(selectors);
+  return originalDocumentQSA.call(this, selectors);
 }
 
-// @ts-expect-error -- internal callable object
+function patchedElementQSA(this: Element, selectors: string) {
+  if (selectors.includes(":has")) {
+    // Force use of JQuery for :has
+    throw new DOMException();
+  }
+
+  return originalElementQSA.call(this, selectors);
+}
+
+// @ts-expect-error -- $.find types missing
 $.find = Object.assign(function () {
-  document.querySelectorAll = patchedQSA;
-  Element.prototype.querySelectorAll = patchedQSA;
+  document.querySelectorAll = patchedDocumentQSA;
+  Element.prototype.querySelectorAll = patchedElementQSA;
 
   let result;
 
   try {
-    // @ts-expect-error -- Typescript can't infer `this`
+    // @ts-expect-error -- $.find types missing
     result = originalFind.apply(this, arguments);
   } finally {
-    document.querySelectorAll = originalQSA;
-    Element.prototype.querySelectorAll = originalQSA;
+    document.querySelectorAll = originalDocumentQSA;
+    Element.prototype.querySelectorAll = originalElementQSA;
   }
 
   return result;

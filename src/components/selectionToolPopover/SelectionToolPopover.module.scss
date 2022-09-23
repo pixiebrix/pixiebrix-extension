@@ -15,13 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Overrides for Bootstraps opinionated styling of tab content
-.paneOverrides {
-  text-align: initial;
-}
+$background: rgb(252, 252, 252);
+$border: rgba(0, 0, 0, 0.3);
 
-.tabHeader {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.popover-wrapper {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  border: 1px solid $border;
+  box-sizing: border-box;
+  background: $background;
+  cursor: pointer;
+  z-index: 10000001;
 }

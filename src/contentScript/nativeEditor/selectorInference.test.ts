@@ -128,7 +128,7 @@ describe("safeCssSelector", () => {
     document.body.innerHTML = body;
 
     const inferredSelector = safeCssSelector(
-      document.body.querySelector(selector),
+      [document.body.querySelector(selector)],
       {
         excludeRandomClasses: true,
       }
