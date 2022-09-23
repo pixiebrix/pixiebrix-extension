@@ -351,8 +351,8 @@ const usePipelineNodes = (): {
         name: `${nodeId}-paste-brick`,
         icon: faPaste,
         tooltipText: "Paste copied brick",
-        onClick() {
-          pasteBlock(pipelinePath, index + 1);
+        async onClick() {
+          await pasteBlock(pipelinePath, index + 1);
         },
       });
     }
@@ -442,8 +442,8 @@ const usePipelineNodes = (): {
             name: `${headerName}-paste-brick`,
             icon: faPaste,
             tooltipText: "Paste copied brick",
-            onClick() {
-              pasteBlock(fullSubPath, 0);
+            async onClick() {
+              await pasteBlock(fullSubPath, 0);
             },
           });
         }
@@ -600,8 +600,8 @@ const usePipelineNodes = (): {
         name: `${FOUNDATION_NODE_ID}-paste-brick`,
         icon: faPaste,
         tooltipText: "Paste copied brick",
-        onClick() {
-          pasteBlock(PIPELINE_BLOCKS_FIELD_NAME, 0);
+        async onClick() {
+          await pasteBlock(PIPELINE_BLOCKS_FIELD_NAME, 0);
         },
       });
     }
