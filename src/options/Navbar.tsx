@@ -58,15 +58,6 @@ const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
         <Link className="navbar-brand brand-logo-mini" to="/">
           <img src={logo.small} alt="PixieBrix mini logo" />
         </Link>
-        {showNavbarToggle && (
-          <button
-            className={cx("navbar-toggler", styles.collapsedSidebarToggler)}
-            type="button"
-            onClick={toggleSidebar}
-          >
-            <FontAwesomeIcon icon={faBars} />
-          </button>
-        )}
       </div>
       <div className={cx(styles.expandedWrapper, "navbar-menu-wrapper")}>
         {showNavbarToggle && (
