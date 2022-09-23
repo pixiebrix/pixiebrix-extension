@@ -832,8 +832,7 @@ export const editorSlice = createSlice({
       })
       .addCase(
         checkAvailableInstalledExtensions.fulfilled,
-        (state, { payload }) => {
-          const { availableInstalledIds, unavailableCount } = payload;
+        (state, { payload: { availableInstalledIds, unavailableCount } }) => {
           state.isLoadingInstalledExtensions = false;
           state.availableInstalledIds = availableInstalledIds;
           state.unavailableCount = unavailableCount;
@@ -852,8 +851,7 @@ export const editorSlice = createSlice({
       })
       .addCase(
         checkAvailableDynamicElements.fulfilled,
-        (state, { payload }) => {
-          const { availableDynamicIds } = payload;
+        (state, { payload: { availableDynamicIds } }) => {
           state.isLoadingDynamicExtensions = false;
           state.availableDynamicIds = availableDynamicIds;
         }
@@ -864,8 +862,7 @@ export const editorSlice = createSlice({
       })
       .addCase(
         checkActiveElementAvailability.fulfilled,
-        (state, { payload }) => {
-          const { isAvailable } = payload;
+        (state, { payload: { isAvailable } }) => {
           const activeElementId = selectActiveElementId({ editor: state });
           if (isAvailable) {
             state.availableDynamicIds = [
