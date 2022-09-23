@@ -23,6 +23,8 @@ import { THEME_LOGOS } from "@/utils/themeUtils";
 import { Theme } from "@/options/types";
 
 const renderNavbar = () => {
+  // There doesn't seem to be significant testable differences between
+  // using two different Theme logos. We'll test with the default logos for now.
   const logo = THEME_LOGOS["default" as Theme];
   return render(
     <MemoryRouter>
