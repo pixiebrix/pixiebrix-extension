@@ -45,7 +45,7 @@ function groupListingsByTag(
     const registryId = id as RegistryId;
 
     for (const listingTag of listing.tags) {
-      // The null-safe access (.?) here is just for safety in case the api
+      // The null-safe access (?.) here is just for safety in case the api
       // endpoints for listings and tags get out of sync somehow
       taggedBrickIds[listingTag.name]?.add(registryId);
     }

@@ -65,6 +65,9 @@ import { useAsyncState } from "@/hooks/common";
 import { useGetTheme } from "@/hooks/useTheme";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 
+const TAG_POPULAR = "Popular";
+const TAG_UIPATH = "UiPath";
+
 type State = {
   query: string;
   searchTag: string;
@@ -197,7 +200,8 @@ const AddBlockModal: React.FC = () => {
 
     if (partnerKey === AUTOMATION_ANYWHERE_PARTNER_KEY) {
       typedBlocks = typedBlocks.filter(
-        (typed) => !taggedBrickIds.UiPath.has(typed.block.id)
+        // eslint-disable-next-line security/detect-object-injection -- constant
+        (typed) => !taggedBrickIds[TAG_UIPATH]?.has(typed.block.id)
       );
     }
 
@@ -207,7 +211,7 @@ const AddBlockModal: React.FC = () => {
     isLoadingAllBlocks,
     isLoadingTags,
     partnerKey,
-    taggedBrickIds.UiPath,
+    taggedBrickIds,
   ]);
 
   const searchResults = useBlockSearch(
@@ -226,7 +230,8 @@ const AddBlockModal: React.FC = () => {
     const regular: BlockOption[] = [];
 
     for (const blockOption of searchResults) {
-      if (taggedBrickIds.Popular?.has(blockOption.blockResult.id)) {
+      // eslint-disable-next-line security/detect-object-injection -- constant
+      if (taggedBrickIds[TAG_POPULAR]?.has(blockOption.blockResult.id)) {
         // Use immer to keep the class prototype and it's methods. There are downstream calls to runtime/getType which
         // depend on certain methods (e.g., transform, etc.) being present on the brick
         const newOption = produce(blockOption, (draft) => {
@@ -244,7 +249,7 @@ const AddBlockModal: React.FC = () => {
     }
 
     return [...popular, ...regular];
-  }, [searchResults, state.query, taggedBrickIds.Popular]);
+  }, [searchResults, state.query, taggedBrickIds]);
 
   const [invalidBlockMessages] = useAsyncState<Map<RegistryId, string>>(
     async () =>
