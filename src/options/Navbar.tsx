@@ -90,7 +90,7 @@ const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
               Open Admin Console
             </Nav.Link>
           )}
-          ]{email && <div className="text-black">{email}</div>}
+          {email && <div className="text-black">{email}</div>}
         </ul>
       </div>
     </nav>
