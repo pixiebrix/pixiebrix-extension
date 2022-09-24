@@ -77,9 +77,7 @@ exports[`Navbar renders 1`] = `
       </div>
       <ul
         class="navbar-nav navbar-nav-right flex-grow-1 justify-content-end"
-      >
-        ]
-      </ul>
+      />
     </div>
   </nav>
 </DocumentFragment>
