@@ -90,9 +90,7 @@ const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
               Open Admin Console
             </Nav.Link>
           )}
-
-          {/* TODO: pr mention part of: https://github.com/pixiebrix/pixiebrix-app/issues/494 */}
-          {email && <div className="text-black">{email}</div>}
+          ]{email && <div className="text-black">{email}</div>}
         </ul>
       </div>
     </nav>
