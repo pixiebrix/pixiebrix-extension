@@ -72,3 +72,6 @@ export const notify = {
   error: getNotifier("NOTIFY_ERROR"),
   success: getNotifier("NOTIFY_SUCCESS"),
 };
+
+export const connectAudio = getMethod("CONNECT_AUDIO");
+export const disconnectAudio = getMethod("DISCONNECT_AUDIO");

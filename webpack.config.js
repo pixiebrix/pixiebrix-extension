@@ -152,6 +152,9 @@ function customizeManifest(manifest, isProduction) {
     policy.add("script-src", "http://localhost:8097");
     policy.add("connect-src", "ws://localhost:8097/");
     policy.add("img-src", "https://pixiebrix-marketplace-dev.s3.amazonaws.com");
+
+    // Symbl.ai demo
+    policy.add("connect-src", "wss://api.symbl.ai/");
   }
 
   manifest.content_security_policy = policy.toString();
@@ -331,6 +334,11 @@ module.exports = (env, options) =>
         ROLLBAR_BROWSER_ACCESS_TOKEN: null,
         GOOGLE_API_KEY: null,
         GOOGLE_APP_ID: null,
+
+        // XXX: SymblAI demo information. Don't merge into main
+        SYMBLAI_ACCESS_TOKEN: null,
+        SYMBLAI_APP_ID: null,
+        SYMBLAI_APP_SECRET: null,
       }),
 
       new MiniCssExtractPlugin({

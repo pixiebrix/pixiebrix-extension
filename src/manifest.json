@@ -33,6 +33,7 @@
     "storage",
     "identity",
     "tabs",
+    "tabCapture",
     "webNavigation",
     "contextMenus",
     "https://*.pixiebrix.com/*"

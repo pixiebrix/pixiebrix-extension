@@ -73,6 +73,7 @@ import {
 } from "@/contentScript/pipelineProtocol";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import { getPageState, setPageState } from "@/contentScript/pageState";
+import * as streamingAudio from "@/contentScript/streamingAudio";
 
 expectContext("contentScript");
 
@@ -130,6 +131,9 @@ declare global {
 
     GET_PAGE_STATE: typeof getPageState;
     SET_PAGE_STATE: typeof setPageState;
+
+    CONNECT_AUDIO: typeof streamingAudio.connect;
+    DISCONNECT_AUDIO: typeof streamingAudio.disconnect;
   }
 }
 
@@ -188,5 +192,8 @@ export default function registerMessenger(): void {
 
     GET_PAGE_STATE: getPageState,
     SET_PAGE_STATE: setPageState,
+
+    CONNECT_AUDIO: streamingAudio.connect,
+    DISCONNECT_AUDIO: streamingAudio.disconnect,
   });
 }
