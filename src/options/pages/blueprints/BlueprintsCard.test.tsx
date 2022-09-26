@@ -20,8 +20,13 @@ import { render } from "@/options/testHelpers";
 import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
 import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { useGetStarterBlueprintsQuery } from "@/services/api";
+import {
+  useGetMeQuery,
+  useGetOrganizationsQuery,
+  useGetStarterBlueprintsQuery,
+} from "@/services/api";
 import { screen } from "@testing-library/react";
+import { organizationFactory } from "@/testUtils/factories";
 
 const EMPTY_RESPONSE = Object.freeze({
   data: Object.freeze([]),
@@ -32,6 +37,7 @@ const EMPTY_RESPONSE = Object.freeze({
 // we just need to make sure the data [] array is the same object?
 jest.mock("@/services/api", () => ({
   useGetRecipesQuery: jest.fn(() => EMPTY_RESPONSE),
+  useGetMeQuery: jest.fn(() => EMPTY_RESPONSE),
   useGetCloudExtensionsQuery: jest.fn(() => EMPTY_RESPONSE),
   useGetMarketplaceListingsQuery: jest.fn(() => EMPTY_RESPONSE),
   useGetOrganizationsQuery: jest.fn(() => EMPTY_RESPONSE),
@@ -40,8 +46,8 @@ jest.mock("@/services/api", () => ({
 
 const installables: Installable[] = [];
 
-describe("BlueprintsPage", () => {
-  test("it renders", async () => {
+describe("BlueprintsCard", () => {
+  test("renders", async () => {
     const rendered = render(<BlueprintsCard installables={installables} />);
     await waitForEffect();
     expect(rendered.asFragment()).toMatchSnapshot();
@@ -69,5 +75,19 @@ describe("BlueprintsPage", () => {
       screen.queryByText("Welcome to the PixieBrix Extension Console")
     ).not.toBeNull();
     expect(screen.queryByText("Get Started")).not.toBeNull();
+  });
+
+  test("does not show 'Get Started' tab for enterprise users", async () => {
+    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+      isLoading: false,
+      data: { organization: organizationFactory() },
+    }));
+
+    render(<BlueprintsCard installables={installables} />);
+    await waitForEffect();
+    expect(
+      screen.queryByText("Welcome to the PixieBrix Extension Console")
+    ).toBeNull();
+    expect(screen.queryByText("Get Started")).toBeNull();
   });
 });

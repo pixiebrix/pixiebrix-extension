@@ -19,8 +19,7 @@ import {
 import { TableInstance } from "react-table";
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import useFlags from "@/hooks/useFlags";
-import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
-import { useGetStarterBlueprintsQuery } from "@/services/api";
+import { useGetMeQuery, useGetStarterBlueprintsQuery } from "@/services/api";
 
 type ListFiltersProps = {
   teamFilters: string[];
@@ -32,7 +31,7 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
   tableInstance,
 }) => {
   const { permit } = useFlags();
-  const { onboardingType, isLoading: isOnboardingLoading } = useOnboarding();
+  const { data: me, isLoading: isMeLoading } = useGetMeQuery();
   const { data: starterBlueprints, isLoading: isStarterBlueprintsLoading } =
     useGetStarterBlueprintsQuery();
   const {
@@ -50,7 +49,7 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
     leading: false,
   });
 
-  const isFreemiumUser = onboardingType === "default";
+  const isFreemiumUser = !Boolean(me.organization);
 
   const hasSomeBlueprintEngagement = installableViewItems?.some(
     (installableViewItem) => {
@@ -68,12 +67,12 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
   );
 
   const showGetStartedTab =
-    !isStarterBlueprintsLoading && !isOnboardingLoading
+    !isStarterBlueprintsLoading && !isMeLoading
       ? isFreemiumUser && !hasSomeBlueprintEngagement
       : false;
 
   useEffect(() => {
-    if (isStarterBlueprintsLoading || isOnboardingLoading) {
+    if (isStarterBlueprintsLoading || isMeLoading) {
       return;
     }
 
@@ -108,7 +107,7 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
       });
     }
   }, [
-    isOnboardingLoading,
+    isMeLoading,
     starterBlueprints,
     isStarterBlueprintsLoading,
     activeTab.key,
