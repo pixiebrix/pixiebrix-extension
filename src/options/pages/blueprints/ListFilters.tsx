@@ -4,7 +4,7 @@ import { Col, Form, Nav } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import useReduxState from "@/hooks/useReduxState";
 import { selectActiveTab } from "./blueprintsSelectors";
-import blueprintsSlice from "./blueprintsSlice";
+import blueprintsSlice, { ActiveTab } from "./blueprintsSlice";
 import { useDebounce } from "use-debounce";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -24,6 +24,46 @@ import { useGetMeQuery, useGetStarterBlueprintsQuery } from "@/services/api";
 type ListFiltersProps = {
   teamFilters: string[];
   tableInstance: TableInstance<InstallableViewItem>;
+};
+
+const BLUEPRINT_TAB_KEYS = [
+  "active",
+  "all",
+  "personal",
+  "public",
+  "getStarted",
+] as const;
+type BlueprintTabKey = typeof BLUEPRINT_TAB_KEYS[number];
+type BlueprintTabMap = {
+  [key in BlueprintTabKey]: ActiveTab;
+};
+
+const BLUEPRINTS_PAGE_TABS: BlueprintTabMap = {
+  active: {
+    key: "Active",
+    tabTitle: "Active Blueprints",
+    filters: [{ id: "status", value: "Active" }],
+  },
+  all: {
+    key: "All",
+    tabTitle: "All Blueprints",
+    filters: [],
+  },
+  personal: {
+    key: "Personal",
+    tabTitle: "Personal Blueprints",
+    filters: [{ id: "sharing.source.label", value: "Personal" }],
+  },
+  public: {
+    key: "Public",
+    tabTitle: "Public Blueprints",
+    filters: [{ id: "sharing.source.label", value: "Public" }],
+  },
+  getStarted: {
+    key: "Get Started",
+    tabTitle: "Welcome to the PixieBrix Extension Console",
+    filters: [],
+  },
 };
 
 const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
@@ -49,7 +89,7 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
     leading: false,
   });
 
-  const isFreemiumUser = !Boolean(me.organization);
+  const isFreemiumUser = !me.organization;
 
   const hasSomeBlueprintEngagement = installableViewItems?.some(
     (installableViewItem) => {
