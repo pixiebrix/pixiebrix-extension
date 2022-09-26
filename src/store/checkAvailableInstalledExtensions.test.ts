@@ -23,12 +23,16 @@ import {
 import extensionsSlice from "@/store/extensionsSlice";
 import {
   cloudExtensionFactory,
+  extensionFactory,
+  extensionPointConfigFactory,
   extensionPointDefinitionFactory,
 } from "@/testUtils/factories";
 import { EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { ExtensionsRootState } from "@/store/extensionsTypes";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
 import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
+import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 const { actions: optionsActions, reducer: extensionsReducer } = extensionsSlice;
 
@@ -41,13 +45,13 @@ describe("checkAvailableInstalledExtensions", () => {
       },
     });
 
-    const extensionPoint = extensionPointDefinitionFactory(
-      getInstalledExtensionPoints as jest.Mock
-    ).store.dispatch(
-      optionsActions.installCloudExtension({
-        extension: cloudExtensionFactory(),
-      })
-    );
+    const extension = cloudExtensionFactory();
+
+    store.dispatch(optionsActions.installCloudExtension({ extension }));
+
+    await waitForEffect();
+
+    // (getInstalledExtensionPoints as jest.Mock).mockResolvedValue()
 
     await store.dispatch(editorActions.checkAvailableInstalledExtensions());
 
@@ -55,6 +59,6 @@ describe("checkAvailableInstalledExtensions", () => {
 
     const availability = selectExtensionAvailability(state);
 
-    console.log({ availability });
+    console.log({ state, availability });
   });
 });
