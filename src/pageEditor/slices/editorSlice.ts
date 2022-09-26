@@ -229,7 +229,7 @@ function activateElement(
   ensureElementUIState(state, element.uuid);
 }
 
-type AvailableInstalled = {
+export type AvailableInstalled = {
   availableInstalledIds: UUID[];
   unavailableCount: number;
 };
