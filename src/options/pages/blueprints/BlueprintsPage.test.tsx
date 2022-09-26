@@ -20,6 +20,8 @@ import { render } from "@/options/testHelpers";
 import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
 import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { useGetStarterBlueprintsQuery } from "@/services/api";
+import { screen } from "@testing-library/react";
 
 const EMPTY_RESPONSE = Object.freeze({
   data: Object.freeze([]),
@@ -43,5 +45,29 @@ describe("BlueprintsPage", () => {
     const rendered = render(<BlueprintsCard installables={installables} />);
     await waitForEffect();
     expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  test("doesn't flash the 'Get Started' tab while loading", async () => {
+    (useGetStarterBlueprintsQuery as jest.Mock).mockImplementation(() => ({
+      isLoading: true,
+    }));
+
+    render(<BlueprintsCard installables={installables} />);
+    await waitForEffect();
+    expect(
+      screen.queryByText("Welcome to the PixieBrix Extension Console")
+    ).toBeNull();
+    expect(screen.queryByText("Get Started")).toBeNull();
+
+    (useGetStarterBlueprintsQuery as jest.Mock).mockImplementation(() => ({
+      isLoading: false,
+    }));
+
+    render(<BlueprintsCard installables={installables} />);
+    await waitForEffect();
+    expect(
+      screen.queryByText("Welcome to the PixieBrix Extension Console")
+    ).not.toBeNull();
+    expect(screen.queryByText("Get Started")).not.toBeNull();
   });
 });
