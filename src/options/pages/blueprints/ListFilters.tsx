@@ -38,7 +38,7 @@ type BlueprintTabMap = {
   [key in BlueprintTabKey]: ActiveTab;
 };
 
-const BLUEPRINTS_PAGE_TABS: BlueprintTabMap = {
+export const BLUEPRINTS_PAGE_TABS: BlueprintTabMap = {
   active: {
     key: "Active",
     tabTitle: "Active Blueprints",
@@ -89,7 +89,7 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
     leading: false,
   });
 
-  const isFreemiumUser = !me.organization;
+  const isFreemiumUser = !me?.organization;
 
   const hasSomeBlueprintEngagement = installableViewItems?.some(
     (installableViewItem) => {
@@ -118,19 +118,11 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
 
     if (activeTab.key === null) {
       if (showGetStartedTab) {
-        setActiveTab({
-          key: "Get Started",
-          tabTitle: "Welcome to the PixieBrix Extension Console",
-          filters: [],
-        });
+        setActiveTab(BLUEPRINTS_PAGE_TABS.getStarted);
         return;
       }
 
-      setActiveTab({
-        key: "Active",
-        tabTitle: "Active Blueprints",
-        filters: [{ id: "status", value: "Active" }],
-      });
+      setActiveTab(BLUEPRINTS_PAGE_TABS.active);
       return;
     }
 
@@ -140,11 +132,7 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
     // but still selected as an ActiveTab, we want to reset the default to
     // the "Active Blueprints" tab.
     if (!showGetStartedTab && activeTab.key === "Get Started") {
-      setActiveTab({
-        key: "Active",
-        tabTitle: "Active Blueprints",
-        filters: [{ id: "status", value: "Active" }],
-      });
+      setActiveTab(BLUEPRINTS_PAGE_TABS.active);
     }
   }, [
     isMeLoading,
@@ -163,11 +151,7 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
     }
 
     if (debouncedQuery) {
-      setActiveTab({
-        key: "All",
-        tabTitle: "All Blueprints",
-        filters: [],
-      });
+      setActiveTab(BLUEPRINTS_PAGE_TABS.all);
     }
   }, [globalFilter, debouncedQuery, setActiveTab, setGlobalFilter]);
 
@@ -195,11 +179,7 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
             <Nav.Link
               eventKey="Get Started"
               onClick={() => {
-                setActiveTab({
-                  key: "Get Started",
-                  tabTitle: "Welcome to the PixieBrix Extension Console",
-                  filters: [],
-                });
+                setActiveTab(BLUEPRINTS_PAGE_TABS.getStarted);
               }}
             >
               <FontAwesomeIcon icon={faRocket} /> Get Started
@@ -211,11 +191,7 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
           <Nav.Link
             eventKey="Active"
             onClick={() => {
-              setActiveTab({
-                key: "Active",
-                tabTitle: "Active Blueprints",
-                filters: [{ id: "status", value: "Active" }],
-              });
+              setActiveTab(BLUEPRINTS_PAGE_TABS.active);
             }}
           >
             <FontAwesomeIcon icon={faCheck} /> Active
@@ -225,11 +201,7 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
           <Nav.Link
             eventKey="All"
             onClick={() => {
-              setActiveTab({
-                key: "All",
-                tabTitle: "All Blueprints",
-                filters: [],
-              });
+              setActiveTab(BLUEPRINTS_PAGE_TABS.all);
             }}
           >
             <FontAwesomeIcon icon={faAsterisk} /> All Blueprints
@@ -241,13 +213,7 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
               <Nav.Link
                 eventKey="Personal"
                 onClick={() => {
-                  setActiveTab({
-                    key: "Personal",
-                    tabTitle: "Personal Blueprints",
-                    filters: [
-                      { id: "sharing.source.label", value: "Personal" },
-                    ],
-                  });
+                  setActiveTab(BLUEPRINTS_PAGE_TABS.personal);
                 }}
               >
                 <FontAwesomeIcon icon={faUser} /> Personal
@@ -257,11 +223,7 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
               <Nav.Link
                 eventKey="Public"
                 onClick={() => {
-                  setActiveTab({
-                    key: "Public",
-                    tabTitle: "Public Blueprints",
-                    filters: [{ id: "sharing.source.label", value: "Public" }],
-                  });
+                  setActiveTab(BLUEPRINTS_PAGE_TABS.public);
                 }}
               >
                 <FontAwesomeIcon icon={faGlobe} /> Public Marketplace

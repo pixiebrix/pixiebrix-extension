@@ -20,11 +20,7 @@ import { render } from "@/options/testHelpers";
 import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
 import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import {
-  useGetMeQuery,
-  useGetOrganizationsQuery,
-  useGetStarterBlueprintsQuery,
-} from "@/services/api";
+import { useGetMeQuery, useGetStarterBlueprintsQuery } from "@/services/api";
 import { screen } from "@testing-library/react";
 import { organizationFactory } from "@/testUtils/factories";
 
