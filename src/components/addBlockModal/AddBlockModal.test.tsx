@@ -39,6 +39,9 @@ jest.mock("@/services/api");
 jest.mock("@/components/asyncIcon", () => ({
   useAsyncIcon: jest.fn(),
 }));
+jest.mock("@/hooks/useTheme", () => ({
+  useGetTheme: jest.fn(),
+}));
 
 beforeAll(() => {
   const tags = array(marketplaceTagFactory, 3)({ subtype: "role" });

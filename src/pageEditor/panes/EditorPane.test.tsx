@@ -67,6 +67,9 @@ import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { enableAnalysisFieldErrors } from "@/components/form/useFieldError";
 import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/renderersAnalysis";
+import { useGetTheme } from "@/hooks/useTheme";
+import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
+import { RunProcess } from "@/contrib/uipath/process";
 
 jest.mock("@/services/api", () => ({
   appApi: {
@@ -100,6 +103,9 @@ jest.mock("@/background/messenger/api", () => ({
 }));
 // Mock to support hook usage in the subtree, not relevant to UI tests here
 jest.mock("@/hooks/useRefresh");
+jest.mock("@/hooks/useTheme", () => ({
+  useGetTheme: jest.fn(),
+}));
 
 jest.setTimeout(30_000); // This test is flaky with the default timeout of 5000 ms
 
@@ -107,6 +113,7 @@ const jqBlock = new JQTransformer();
 const alertBlock = new AlertEffect();
 const forEachBlock = new ForEach();
 const markdownBlock = new MarkdownRenderer();
+const uiPathBlock = new RunProcess();
 
 // Using events without delays with jest fake timers
 const immediateUserEvent = userEvent.setup({ delay: null });
@@ -121,7 +128,8 @@ beforeAll(async () => {
     jqBlock,
     alertBlock,
     forEachBlock,
-    markdownBlock
+    markdownBlock,
+    uiPathBlock
   );
   await blockRegistry.allTyped();
 
@@ -226,10 +234,15 @@ async function addABlock(addButton: Element, blockName: string) {
   // Run the debounced search
   await runPendingTimers();
 
+  screen.debug(screen.getByRole("dialog"));
+
+  // Sometimes unexpected extra results come back in the search,
+  // but the exact-match result to the search string should
+  // always be first in the results grid
   await immediateUserEvent.click(
-    screen.getByRole("button", {
+    screen.getAllByRole("button", {
       name: /^Add/,
-    })
+    })[0]
   );
 }
 
@@ -402,7 +415,7 @@ describe("can add a node", () => {
 async function renderEditorPaneWithBasicFormState() {
   const element = getFormStateWithSubPipelines();
   const activeNodeId = element.extension.blockPipeline[0].instanceId;
-  render(
+  const renderResult = render(
     <div>
       <EditorPane />
       <AddBlockModal />
@@ -416,6 +429,7 @@ async function renderEditorPaneWithBasicFormState() {
     }
   );
   await waitForEffect();
+  return renderResult;
 }
 
 describe("can remove a node", () => {
@@ -613,6 +627,32 @@ describe("can copy and paste a node", () => {
     expect(nodes[2]).toHaveTextContent(/for-each loop/i);
     expect(nodes[3]).toHaveTextContent(/echo/i);
     expect(nodes[4]).toHaveTextContent(/echo/i);
+  });
+
+  test("with sub pipelines itself", async () => {
+    await renderEditorPaneWithBasicFormState();
+
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // Select the ForEach block
+    await immediateUserEvent.click(screen.getAllByText(/for-each loop/i)[0]);
+
+    // Click the copy button
+    await immediateUserEvent.click(screen.getByTestId("icon-button-copyNode"));
+
+    // There should be 5 paste buttons
+    const pasteButtons = screen.getAllByTestId(/-paste-brick/i);
+    expect(pasteButtons).toHaveLength(5);
+    // Click the last one
+    await immediateUserEvent.click(pasteButtons[4]);
+
+    // Expect nodes to be: Foundation, Echo, ForEach: [Echo], ForEach: [Echo]
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(6);
+    expect(nodes[1]).toHaveTextContent(/echo/i);
+    expect(nodes[2]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[3]).toHaveTextContent(/echo/i);
+    expect(nodes[4]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[5]).toHaveTextContent(/echo/i);
   });
 });
 
@@ -958,4 +998,46 @@ describe("block validation in Add Block Modal UI", () => {
       expect(firstResult).toHaveTextContent("is not allowed in this pipeline");
     }
   );
+
+  test("hides UiPath bricks for AA users", async () => {
+    (useGetTheme as jest.Mock).mockReturnValue(AUTOMATION_ANYWHERE_PARTNER_KEY);
+    const formState = formStateFactory();
+    render(
+      <>
+        <EditorPane />
+        <AddBlockModal />
+      </>,
+      {
+        setupRedux(dispatch) {
+          dispatch(editorActions.addElement(formState));
+          dispatch(editorActions.selectElement(formState.uuid));
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    const addBrickButton = screen.getByTestId(
+      "icon-button-foundation-add-brick"
+    );
+
+    await immediateUserEvent.click(addBrickButton);
+
+    // Try to find the disallowed block and make sure it's not there
+    await immediateUserEvent.type(
+      screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
+      "uipath"
+    );
+
+    // Run the debounced search
+    await runPendingTimers();
+
+    const addButtons = screen.queryAllByRole("button", { name: /add/i });
+
+    // Assert that no UiPath blocks are available
+    for (const button of addButtons) {
+      const block = button.parentElement;
+      expect(block).not.toHaveTextContent("uipath");
+    }
+  });
 });
