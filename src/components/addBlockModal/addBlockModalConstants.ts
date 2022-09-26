@@ -17,4 +17,3 @@
 
 export const TAG_ALL = "All Categories";
 export const BLOCK_RESULT_COLUMN_COUNT = 2;
-export const POPULAR_BRICK_TAG_ID = "35367896-b38f-447e-9444-ecfecb258468";
