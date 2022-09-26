@@ -19,7 +19,7 @@ import { guessUsefulness } from "./detectRandomString";
 
 test("guessUsefulness", () => {
   expect(guessUsefulness(".Nav-item")).toMatchInlineSnapshot(`
-    Object {
+    {
       "detectorFactor": 0.13,
       "isRandom": false,
       "isSuspicious": false,
@@ -28,7 +28,7 @@ test("guessUsefulness", () => {
     }
   `);
   expect(guessUsefulness(".ePGuZuxBTv9BWrjZL4l3")).toMatchInlineSnapshot(`
-    Object {
+    {
       "detectorFactor": 0.55,
       "isRandom": true,
       "isSuspicious": true,
@@ -37,7 +37,7 @@ test("guessUsefulness", () => {
     }
   `);
   expect(guessUsefulness("._s2dF")).toMatchInlineSnapshot(`
-    Object {
+    {
       "detectorFactor": 0.2,
       "isRandom": true,
       "isSuspicious": true,
@@ -46,7 +46,7 @@ test("guessUsefulness", () => {
     }
   `);
   expect(guessUsefulness(".Nav-wd32")).toMatchInlineSnapshot(`
-    Object {
+    {
       "detectorFactor": 0.38,
       "isRandom": false,
       "isSuspicious": false,
@@ -55,7 +55,7 @@ test("guessUsefulness", () => {
     }
   `);
   expect(guessUsefulness(".footerlink")).toMatchInlineSnapshot(`
-    Object {
+    {
       "detectorFactor": 0.3,
       "isRandom": false,
       "isSuspicious": false,

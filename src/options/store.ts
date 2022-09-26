@@ -42,13 +42,13 @@ import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import { persistSettingsConfig } from "@/store/settingsStorage";
 import { SettingsState } from "@/store/settingsTypes";
 import blueprintsSlice, {
-  BlueprintsState,
   persistBlueprintsConfig,
 } from "./pages/blueprints/blueprintsSlice";
 import { logActions, logSlice } from "@/components/logViewer/logSlice";
 import { LogRootState } from "@/components/logViewer/logViewerTypes";
 import { AuthRootState } from "@/auth/authTypes";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
+import { BlueprintsRootState } from "@/options/pages/blueprints/blueprintsSelectors";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -56,8 +56,8 @@ export const hashHistory = createHashHistory();
 
 export type RootState = AuthRootState &
   LogRootState &
+  BlueprintsRootState &
   ExtensionsRootState & {
-    blueprints: BlueprintsState;
     services: ServicesState;
     settings: SettingsState;
     workshop: WorkshopState;

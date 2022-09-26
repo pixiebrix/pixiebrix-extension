@@ -92,12 +92,11 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
     <Page
       title={`${action} Blueprint`}
       icon={faStoreAlt}
-      description="Configure and activate a blueprint from the marketplace"
       isPending={fetchingBlueprint}
       error={fetchError}
     >
       <Row>
-        <Col xl={8} lg={10} md={12}>
+        <Col xs={12} xl={10}>
           <ErrorBoundary>{body}</ErrorBoundary>
         </Col>
       </Row>

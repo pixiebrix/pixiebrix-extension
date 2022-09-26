@@ -27,19 +27,13 @@ import React from "react";
 import App from "@/options/App";
 import initGoogle from "@/contrib/google/initGoogle";
 import { initToaster } from "@/utils/notify";
-import {
-  notifyContextInvalidated,
-  onContextInvalidated,
-} from "@/errors/contextInvalidated";
+import registerMessenger from "@/options/messenger/registration";
 
 function init(): void {
   render(<App />, document.querySelector("#container"));
-
-  // TODO: Replace the notification with an error bar like in the editor
-  // eslint-disable-next-line promise/prefer-await-to-then -- It's an event
-  void onContextInvalidated().then(notifyContextInvalidated);
 }
 
-initGoogle();
+registerMessenger();
+void initGoogle();
 initToaster();
 init();

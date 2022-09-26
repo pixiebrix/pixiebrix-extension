@@ -26,10 +26,10 @@ import { useGetRecipesQuery } from "@/services/api";
 import { initRecipeOptionsIfNeeded } from "@/pageEditor/extensionPoints/base";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { UUID } from "@/core";
 
 type Config = {
-  element: FormState;
+  extensionId: UUID;
   shouldShowConfirmation?: boolean;
 };
 function useResetExtension(): (useResetConfig: Config) => Promise<void> {
@@ -40,7 +40,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
   const { showConfirmation } = useModals();
 
   return useCallback(
-    async ({ element, shouldShowConfirmation = true }) => {
+    async ({ extensionId, shouldShowConfirmation = true }) => {
       if (shouldShowConfirmation) {
         const confirm = await showConfirmation({
           title: "Reset Brick?",
@@ -55,13 +55,13 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
 
       reportEvent("PageEditorReset", {
         sessionId,
-        extensionId: element.uuid,
+        extensionId,
       });
 
       try {
-        const extension = installed.find((x) => x.id === element.uuid);
+        const extension = installed.find((x) => x.id === extensionId);
         if (extension == null) {
-          dispatch(actions.removeElement(element.uuid));
+          dispatch(actions.removeElement(extensionId));
         } else {
           const formState = await extensionToFormState(extension);
           initRecipeOptionsIfNeeded(formState, recipes);
@@ -69,7 +69,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
         }
       } catch (error) {
         reportError(error);
-        dispatch(actions.adapterError({ uuid: element.uuid, error }));
+        dispatch(actions.adapterError({ uuid: extensionId, error }));
       }
     },
     [dispatch, recipes, sessionId, installed, showConfirmation]

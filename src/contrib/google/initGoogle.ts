@@ -22,6 +22,8 @@ const API_KEY = process.env.GOOGLE_API_KEY;
 import { DISCOVERY_DOCS as SHEETS_DOCS } from "./sheets/handlers";
 import { DISCOVERY_DOCS as BIGQUERY_DOCS } from "./bigquery/handlers";
 import { isChrome } from "webext-detect-page";
+import pMemoize from "p-memoize";
+import injectScriptTag from "@/utils/injectScriptTag";
 
 declare global {
   interface Window {
@@ -46,30 +48,29 @@ async function onGAPILoad(): Promise<void> {
   }
 }
 
-function initGoogle(): void {
+async function _initGoogle(): Promise<boolean> {
   if (!isChrome() || typeof document === "undefined" /* MV3 exclusion */) {
     // TODO: Use feature detection instead of sniffing the user agent
     console.info(
       "Google API not enabled because it's not supported by this browser"
     );
-    return;
+    return false;
   }
 
   if (!API_KEY) {
     console.info("Google API not enabled because the API key is not available");
-    return;
+    return false;
   }
 
   window.onGAPILoad = onGAPILoad;
 
-  const script = document.createElement("script");
-  // NOTE: there's no onGAPIError handler. You can verify by reading the https://apis.google.com/js/client.js code,
-  //   you can search for onGAPILoad handler and you'll see it's there but there's no onGAPIError or similar handler
-  script.src = "https://apis.google.com/js/client.js?onload=onGAPILoad";
-  script.addEventListener("error", (event) => {
-    reportError(event.error);
-  });
-  document.head.append(script);
+  await injectScriptTag(
+    "https://apis.google.com/js/client.js?onload=onGAPILoad"
+  );
+
+  return true;
 }
 
+// `pMemoize` will avoid multiple injections, while also allow retrying if the first injection fails
+const initGoogle = pMemoize(_initGoogle);
 export default initGoogle;

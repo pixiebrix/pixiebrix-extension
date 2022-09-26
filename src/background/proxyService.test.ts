@@ -29,6 +29,7 @@ import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
 import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories";
 import { ContextError } from "@/errors/genericErrors";
 import { RemoteServiceError } from "@/errors/clientRequestErrors";
+import { getToken } from "@/background/auth";
 
 const axiosMock = new MockAdapter(axios);
 const mockIsBackground = isBackground as jest.MockedFunction<
@@ -37,11 +38,17 @@ const mockIsBackground = isBackground as jest.MockedFunction<
 const mockIsExtensionContext = isExtensionContext as jest.MockedFunction<
   typeof isExtensionContext
 >;
+const mockGetToken = getToken as jest.Mock;
 mockIsBackground.mockImplementation(() => true);
 mockIsExtensionContext.mockImplementation(() => true);
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 
+jest.mock("@/background/auth", () => ({
+  getCachedAuthData: jest.fn().mockResolvedValue(null),
+  getToken: jest.fn().mockResolvedValue({ token: "iamatoken" }),
+  deleteCachedAuthData: jest.fn().mockResolvedValue(undefined),
+}));
 jest.mock("@/auth/token");
 jest.mock("webext-detect-page");
 jest.mock("@/services/locator");
@@ -63,6 +70,7 @@ const { pixieServiceFactory } = jest.requireActual("@/services/locator");
 (locator.pixieServiceFactory as jest.Mock) = pixieServiceFactory;
 
 const EXAMPLE_SERVICE_API = validateRegistryId("example/api");
+const EXAMPLE_SERVICE_TOKEN_API = validateRegistryId("example/token");
 
 serviceRegistry.register({
   id: PIXIEBRIX_SERVICE_ID,
@@ -80,6 +88,15 @@ serviceRegistry.register({
   ) => requestConfig,
 } as any);
 
+serviceRegistry.register({
+  id: EXAMPLE_SERVICE_TOKEN_API,
+  authenticateRequest: (
+    serviceConfig: ServiceConfig,
+    requestConfig: AxiosRequestConfig
+  ) => requestConfig,
+  isToken: true,
+} as any);
+
 const requestConfig: AxiosRequestConfig = {
   url: "https://www.example.com",
   method: "get",
@@ -88,6 +105,11 @@ const requestConfig: AxiosRequestConfig = {
 const directServiceConfig = sanitizedServiceConfigurationFactory({
   proxy: false,
   serviceId: EXAMPLE_SERVICE_API,
+});
+
+const directTokenServiceConfig = sanitizedServiceConfigurationFactory({
+  proxy: false,
+  serviceId: EXAMPLE_SERVICE_TOKEN_API,
 });
 
 const proxiedServiceConfig = sanitizedServiceConfigurationFactory({
@@ -236,5 +258,40 @@ describe("proxy service requests", () => {
         message: expect.stringMatching(/^No response received/),
       },
     });
+  });
+});
+
+describe("Retry token request", () => {
+  beforeEach(() => {
+    mockGetToken.mockClear();
+    jest
+      .spyOn(Locator.prototype, "locate")
+      .mockResolvedValue(directTokenServiceConfig);
+    jest
+      .spyOn(Locator.prototype, "getLocalConfig")
+      .mockResolvedValue(
+        directTokenServiceConfig as unknown as RawServiceConfiguration
+      );
+  });
+
+  it.each([[401], [403]])(
+    "Handles expired token for %d response",
+    async (statusCode) => {
+      axiosMock.onGet(requestConfig.url).reply(statusCode, {});
+      const response = proxyService(directTokenServiceConfig, requestConfig);
+      await expect(response).rejects.toThrow(ContextError);
+      // Once on the initial call b/c no cached auth data, and once for the retry
+      expect(mockGetToken).toHaveBeenCalledTimes(2);
+    }
+  );
+
+  it("Handles expired AA token", async () => {
+    axiosMock
+      .onGet(requestConfig.url)
+      .reply(400, { message: "Access Token has expired" });
+    const response = proxyService(directTokenServiceConfig, requestConfig);
+    await expect(response).rejects.toThrow(ContextError);
+    // Once on the initial call b/c no cached auth data, and once for the retry
+    expect(mockGetToken).toHaveBeenCalledTimes(2);
   });
 });

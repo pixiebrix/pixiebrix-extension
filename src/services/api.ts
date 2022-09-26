@@ -156,6 +156,7 @@ export const appApi = createApi({
     "CloudExtensions",
     "Package",
     "PackageVersion",
+    "StarterBlueprints",
   ],
   endpoints: (builder) => ({
     getMe: builder.query<Me, void>({
@@ -427,6 +428,18 @@ export const appApi = createApi({
       }),
       invalidatesTags: ["Me"],
     }),
+    getStarterBlueprints: builder.query<RecipeDefinition[], void>({
+      query: () => ({
+        url: "/api/onboarding/starter-blueprints/",
+        method: "get",
+        data: {
+          ignore_user_state: true,
+        },
+      }),
+      providesTags: (result, error) => [
+        { type: "StarterBlueprints", id: "LIST" },
+      ],
+    }),
   }),
 });
 
@@ -454,4 +467,5 @@ export const {
   useDeletePackageMutation,
   useListPackageVersionsQuery,
   useUpdateScopeMutation,
+  useGetStarterBlueprintsQuery,
 } = appApi;

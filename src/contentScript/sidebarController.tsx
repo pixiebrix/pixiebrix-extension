@@ -26,13 +26,7 @@ import type {
   ActivatePanelOptions,
 } from "@/sidebar/types";
 import { RendererPayload } from "@/runtime/runtimeTypes";
-import {
-  hideForm,
-  renderPanels,
-  showForm,
-  activatePanel,
-  pingSidebar,
-} from "@/sidebar/messenger/api";
+import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isEmpty } from "lodash";
 import { logPromiseDuration } from "@/utils";
 import { SimpleEventTarget } from "@/utils/SimpleEventLTarget";
@@ -68,7 +62,7 @@ export async function showSidebar(
   }
 
   try {
-    await pingSidebar({ tabId: "this", page: "/sidebar.html" });
+    await sidebarInThisTab.pingSidebar();
   } catch (error) {
     throw new Error("The sidebar did not respond in time", { cause: error });
   }
@@ -85,12 +79,13 @@ export async function showSidebar(
 
     // The sidebarSlice handles the race condition with the panels loading by keeping track of the latest pending
     // activatePanel request.
-    void activatePanel({ tabId: "this", page: "/sidebar.html" }, seqNum, {
-      ...activateOptions,
-      // If the sidebar wasn't showing, force the behavior. (Otherwise, there's a race on the initial activation, where
-      // depending on when the message is received, the sidebar might already be showing a panel)
-      force: activateOptions.force || !isShowing,
-    })
+    void sidebarInThisTab
+      .activatePanel(seqNum, {
+        ...activateOptions,
+        // If the sidebar wasn't showing, force the behavior. (Otherwise, there's a race on the initial activation, where
+        // depending on when the message is received, the sidebar might already be showing a panel)
+        force: activateOptions.force || !isShowing,
+      })
       // eslint-disable-next-line promise/prefer-await-to-then -- not in an async method
       .catch((error: unknown) => {
         reportError(
@@ -114,7 +109,7 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
   const seqNum = renderSequenceNumber;
   renderSequenceNumber++;
 
-  void activatePanel({ tabId: "this", page: "/sidebar.html" }, seqNum, {
+  void sidebarInThisTab.activatePanel(seqNum, {
     extensionId,
     force: true,
   });
@@ -174,7 +169,7 @@ function renderPanelsIfVisible(): void {
   if (isSidebarFrameVisible()) {
     const seqNum = renderSequenceNumber;
     renderSequenceNumber++;
-    void renderPanels({ tabId: "this", page: "/sidebar.html" }, seqNum, panels);
+    void sidebarInThisTab.renderPanels(seqNum, panels);
   } else {
     console.debug("Skipping renderPanels because the sidebar is not visible");
   }
@@ -189,7 +184,7 @@ export function showSidebarForm(entry: FormEntry): void {
 
   const seqNum = renderSequenceNumber;
   renderSequenceNumber++;
-  void showForm({ tabId: "this", page: "/sidebar.html" }, seqNum, entry);
+  void sidebarInThisTab.showForm(seqNum, entry);
 }
 
 export function hideSidebarForm(nonce: UUID): void {
@@ -202,7 +197,7 @@ export function hideSidebarForm(nonce: UUID): void {
 
   const seqNum = renderSequenceNumber;
   renderSequenceNumber++;
-  void hideForm({ tabId: "this", page: "/sidebar.html" }, seqNum, nonce);
+  void sidebarInThisTab.hideForm(seqNum, nonce);
 }
 
 export function removeExtension(extensionId: UUID): void {

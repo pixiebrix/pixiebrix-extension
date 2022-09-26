@@ -20,6 +20,11 @@
   justify-content: space-between;
   border: none;
   border-bottom: #f2edf3 1px solid;
+  transition: background-color 0.15s ease-in-out;
+
+  &:hover {
+    background-color: #f6f5f7;
+  }
 }
 
 .listHeader {
@@ -44,6 +49,20 @@
 
 .name {
   margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.description {
+  @extend .name;
+  font-size: 14px;
+}
+
+.packageId {
+  font-size: 14px;
+  color: #5a4e71;
+  font-weight: 400;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

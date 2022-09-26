@@ -20,6 +20,9 @@ import { RegistryId } from "@/core";
 import { isEmpty } from "lodash";
 import { POPULAR_BRICK_TAG_ID } from "@/components/addBlockModal/addBlockModalConstants";
 
+const EMPTY_TAGGED_BRICK_IDS: Record<string, Set<RegistryId>> = {};
+const EMPTY_POPULAR_BRICK_IDS = new Set<RegistryId>();
+
 function groupListingsByTag(
   marketplaceTags: MarketplaceTag[],
   listings: Record<RegistryId, MarketplaceListing>
@@ -36,8 +39,8 @@ function groupListingsByTag(
 } {
   if (isEmpty(marketplaceTags) || isEmpty(listings)) {
     return {
-      taggedBrickIds: {},
-      popularBrickIds: new Set<RegistryId>(),
+      taggedBrickIds: EMPTY_TAGGED_BRICK_IDS,
+      popularBrickIds: EMPTY_POPULAR_BRICK_IDS,
     };
   }
 

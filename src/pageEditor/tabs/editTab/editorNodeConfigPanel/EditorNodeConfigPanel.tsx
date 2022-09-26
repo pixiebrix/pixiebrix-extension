@@ -19,7 +19,6 @@ import styles from "./EditorNodeConfigPanel.module.scss";
 
 import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BlockConfiguration from "@/pageEditor/tabs/effect/BlockConfiguration";
 import { useAsyncState } from "@/hooks/common";
@@ -29,15 +28,11 @@ import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import getType from "@/runtime/getType";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import AnalysisResult from "@/pageEditor/tabs/editTab/AnalysisResult";
+import { useSelector } from "react-redux";
+import { selectActiveNodeInfo } from "@/pageEditor/slices/editorSelectors";
 
-const EditorNodeConfigPanel: React.FC<{
-  /**
-   * The block field name in the form
-   * @see BlockConfig
-   */
-  blockFieldName: string;
-  blockId: RegistryId;
-}> = ({ blockFieldName, blockId }) => {
+const EditorNodeConfigPanel: React.FC = () => {
+  const { blockId, path: blockFieldName } = useSelector(selectActiveNodeInfo);
   const [blockInfo] = useAsyncState(async () => {
     const block = await blockRegistry.lookup(blockId);
     return {

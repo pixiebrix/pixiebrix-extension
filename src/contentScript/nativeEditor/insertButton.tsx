@@ -33,11 +33,13 @@ export async function insertButton(
 ): Promise<ButtonSelectionResult> {
   let selected;
   if (useNewFilter) {
-    selected = await userSelectElement({
+    const { elements } = await userSelectElement({
       filter: `:is(a, button):not(${PRIVATE_ATTRIBUTES_SELECTOR})`,
     });
+    selected = elements;
   } else {
-    selected = await userSelectElement();
+    const { elements } = await userSelectElement();
+    selected = elements;
 
     // Anchor is an inline element, so if the structure in a > span, the user has no way of
     // selecting the outer anchor unless there's padding/margin involved.

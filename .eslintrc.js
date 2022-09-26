@@ -31,6 +31,9 @@ module.exports = {
     "pixiebrix",
   ],
   rules: {
+    // TODO: Drop this line. Rule excluded only because its autofix changes 800 files
+    "@typescript-eslint/consistent-type-imports": "off",
+
     "import/no-restricted-paths": [
       "error",
       {

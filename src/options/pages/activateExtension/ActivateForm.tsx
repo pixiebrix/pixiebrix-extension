@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "@/options/pages/marketplace/ActivateWizard.module.scss";
+
 import React, { useCallback, useMemo } from "react";
 import { AuthOption } from "@/auth/authTypes";
 import { CloudExtension } from "@/types/contract";
@@ -22,13 +24,42 @@ import { Form, Formik, FormikProps } from "formik";
 import { useDispatch } from "react-redux";
 import { push } from "connected-react-router";
 import notify from "@/utils/notify";
-import ServicesCard from "@/options/pages/activateExtension/ServicesCard";
+import ServicesRow from "@/options/pages/activateExtension/ServicesRow";
 import { FormState } from "@/options/pages/activateExtension/activateTypes";
-import ActivateCard from "@/options/pages/activateExtension/ActivateCard";
+import PermissionsRow from "@/options/pages/activateExtension/PermissionsRow";
 import extensionsSlice from "@/store/extensionsSlice";
 import { UUID } from "@/core";
+import { Card, Col, Row } from "react-bootstrap";
+import ActivateButton from "@/options/pages/activateExtension/ActivateButton";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCube } from "@fortawesome/free-solid-svg-icons";
 
 const { actions } = extensionsSlice;
+
+const ActivateHeader: React.FunctionComponent<{
+  extension: CloudExtension;
+}> = ({ extension }) => (
+  <Card.Header className={styles.wizardHeader}>
+    <Row>
+      <Col>
+        <div className={styles.wizardHeaderLayout}>
+          <div className={styles.wizardMainInfo}>
+            <span className={styles.blueprintIcon}>
+              <FontAwesomeIcon icon={faCube} />
+            </span>
+            <Card.Title>{extension.label}</Card.Title>
+          </div>
+          <div className={styles.wizardDescription}>
+            Created in the Page Editor
+          </div>
+        </div>
+        <div className={styles.activateButtonContainer}>
+          <ActivateButton />
+        </div>
+      </Col>
+    </Row>
+  </Card.Header>
+);
 
 const ActivateForm: React.FunctionComponent<{
   extension: CloudExtension;
@@ -70,11 +101,16 @@ const ActivateForm: React.FunctionComponent<{
     <Formik initialValues={initialValues} onSubmit={onSubmit}>
       {() => (
         <Form id="activate-wizard" noValidate>
-          <ServicesCard
-            authOptions={authOptions}
-            refreshAuthOptions={refreshAuthOptions}
-          />
-          <ActivateCard extension={extension} />
+          <Card>
+            <ActivateHeader extension={extension} />
+            <Card.Body>
+              <ServicesRow
+                authOptions={authOptions}
+                refreshAuthOptions={refreshAuthOptions}
+              />
+              <PermissionsRow extension={extension} />
+            </Card.Body>
+          </Card>
         </Form>
       )}
     </Formik>

@@ -16,8 +16,6 @@
  */
 
 import { IExtension, UUID } from "@/core";
-import { useContext } from "react";
-import { PageEditorTabContext } from "@/pageEditor/context";
 import { useAsyncState } from "@/hooks/common";
 import { compact } from "lodash";
 import hash from "object-hash";
@@ -31,6 +29,11 @@ import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
 import { testMatchPatterns } from "@/blocks/available";
 import { isQuickBarExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
+import { useSelector } from "react-redux";
+import {
+  selectFrameState,
+  selectTabStateError,
+} from "@/pageEditor/tabState/tabStateSelectors";
 
 export interface InstallState {
   loading: boolean;
@@ -43,14 +46,12 @@ function useInstallState(
   extensions: IExtension[],
   elements: FormState[]
 ): InstallState {
-  const {
-    error,
-    tabState: { navSequence, meta },
-  } = useContext(PageEditorTabContext);
+  const { navSequence, meta } = useSelector(selectFrameState);
+  const tabStateError = useSelector(selectTabStateError);
 
   const [availableInstalledIds, availableInstalledIdsLoading] = useAsyncState(
     async () => {
-      if (meta && !error) {
+      if (meta && !tabStateError) {
         const installedExtensionPoints = new Map(
           // eslint-disable-next-line unicorn/no-await-expression-member
           (await getInstalledExtensionPoints(thisTab)).map((extensionPoint) => [
@@ -95,7 +96,7 @@ function useInstallState(
 
       return new Set<UUID>();
     },
-    [navSequence, meta, error, extensions],
+    [navSequence, meta, tabStateError, extensions],
     new Set<UUID>()
   );
 
@@ -103,7 +104,7 @@ function useInstallState(
     async () => {
       // At this point, if the extensionPoint is an inner extension point (without its own id), then it will have
       // been expanded to extensionPoint
-      if (meta && !error) {
+      if (meta && !tabStateError) {
         const tabUrl = await getCurrentURL();
         const availableElementIds = await Promise.all(
           elements.map(
@@ -132,7 +133,7 @@ function useInstallState(
     },
     [
       meta,
-      error,
+      tabStateError,
       navSequence,
       hash(
         elements.map((x) => ({

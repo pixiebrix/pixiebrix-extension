@@ -16,23 +16,15 @@
  */
 
 import React from "react";
-import { HashRouter as Router } from "react-router-dom";
-import ErrorBoundary from "@/components/ErrorBoundary";
-import { PageEditorTabContext, useDevConnection } from "@/pageEditor/context";
-import Editor from "@/pageEditor/Editor";
-import store, { persistor } from "./store";
-import { PersistGate } from "redux-persist/integration/react";
+import store from "./store";
 import { Provider } from "react-redux";
-import { ModalProvider } from "@/components/ConfirmationModal";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import registerEditors from "@/contrib/editors";
-import ErrorBanner from "@/pageEditor/ErrorBanner";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import RequireAuth from "@/auth/RequireAuth";
-import LoginCard from "./components/LoginCard";
 import { enableAnalysisFieldErrors } from "@/components/form/useFieldError";
 import useRefresh from "@/hooks/useRefresh";
+import PanelContent from "@/pageEditor/PanelContent";
 
 // Register the built-in bricks
 registerEditors();
@@ -44,27 +36,12 @@ registerDefaultWidgets();
 enableAnalysisFieldErrors();
 
 const Panel: React.VoidFunctionComponent = () => {
-  const context = useDevConnection();
-
   // Refresh the brick registry on mount
   useRefresh({ refreshOnMount: true });
 
   return (
     <Provider store={store}>
-      <PersistGate persistor={persistor}>
-        <PageEditorTabContext.Provider value={context}>
-          <ModalProvider>
-            <ErrorBoundary>
-              <Router>
-                <ErrorBanner />
-                <RequireAuth LoginPage={LoginCard}>
-                  <Editor />
-                </RequireAuth>
-              </Router>
-            </ErrorBoundary>
-          </ModalProvider>
-        </PageEditorTabContext.Provider>
-      </PersistGate>
+      <PanelContent />
     </Provider>
   );
 };

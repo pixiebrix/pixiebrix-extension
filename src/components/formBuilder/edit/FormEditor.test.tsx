@@ -39,6 +39,8 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 
 const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
 
+jest.setTimeout(10_000); // This test is flaky with the default timeout of 5000 ms
+
 beforeAll(() => {
   registerDefaultWidgets();
 });

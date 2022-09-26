@@ -36,36 +36,38 @@ import { selectAuth } from "@/auth/authSelectors";
 
 const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
 
-const activateBackgroundTheme = async (): Promise<void> => {
+async function activateBackgroundTheme(): Promise<void> {
   // Flush the Redux state to localStorage to ensure the background page sees the latest state
   await persistor.flush();
   await activatePartnerTheme();
-};
+}
 
-export const useGetTheme = (): Theme => {
+export function useGetTheme(): Theme {
   const { theme, partnerId } = useSelector(selectSettings);
-  const { data: me } = useGetMeQuery();
   const { partner: cachedPartner } = useSelector(selectAuth);
+  const { data: me } = useGetMeQuery();
   const dispatch = useDispatch();
 
   const partnerTheme = useMemo(() => {
     if (me) {
-      return isValidTheme(me.partner?.theme) ? me.partner?.theme : null;
+      const meTheme = me.partner?.theme;
+      return isValidTheme(meTheme) ? meTheme : null;
     }
 
-    return isValidTheme(cachedPartner?.theme) ? cachedPartner?.theme : null;
+    const cachedTheme = cachedPartner?.theme;
+    return isValidTheme(cachedTheme) ? cachedTheme : null;
   }, [me, cachedPartner?.theme]);
 
   // Read from the browser's managed storage. The IT department can set as part of distributing the browser extension
   // so the correct theme is applied before authentication.
-  const [managedPartnerId, isLoading] = useAsyncState(
+  const [managedPartnerId, managedPartnerIdIsLoading] = useAsyncState(
     readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed"),
     [],
     null
   );
 
   useEffect(() => {
-    if (partnerId === null && !isLoading) {
+    if (partnerId === null && !managedPartnerIdIsLoading) {
       // Initialize initial partner id with the one in managed storage, if any
       dispatch(
         settingsSlice.actions.setPartnerId({
@@ -73,20 +75,29 @@ export const useGetTheme = (): Theme => {
         })
       );
     }
-  }, [partnerId, dispatch, isLoading, managedPartnerId]);
+  }, [partnerId, dispatch, managedPartnerIdIsLoading, managedPartnerId]);
 
   useEffect(() => {
+    // Update persisted Redux slice
     dispatch(
       settingsSlice.actions.setTheme({
         theme: partnerTheme ?? partnerId ?? DEFAULT_THEME,
       })
     );
-  }, [dispatch, me, partnerId, partnerTheme, theme]);
+  }, [dispatch, partnerId, partnerTheme, theme]);
 
   return theme;
+}
+
+type ThemeAssets = {
+  logo: ThemeLogo;
 };
 
-const useTheme = (theme?: Theme): { logo: ThemeLogo } => {
+/**
+ * Hook to activate the PixieBrix or partner theme.
+ * @param theme the theme to use, or nullish to automatically determine the theme.
+ */
+function useTheme(theme?: Theme): ThemeAssets {
   const inferredTheme = useGetTheme();
   const themeLogo = getThemeLogo(theme ?? inferredTheme);
 
@@ -99,6 +110,6 @@ const useTheme = (theme?: Theme): { logo: ThemeLogo } => {
   return {
     logo: themeLogo,
   };
-};
+}
 
 export default useTheme;

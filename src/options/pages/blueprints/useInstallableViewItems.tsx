@@ -43,7 +43,7 @@ import {
 import { MarketplaceListing } from "@/types/contract";
 import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
-import { isDeploymentActive } from "@/utils/deployment";
+import { isDeploymentActive } from "@/utils/deploymentUtils";
 
 function useInstallableViewItems(installables: Installable[]): {
   installableViewItems: InstallableViewItem[];

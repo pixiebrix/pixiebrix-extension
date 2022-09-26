@@ -32,20 +32,36 @@ afterAll(() => {
 });
 
 describe("DynamicEntry", () => {
-  test("it renders with active element", () => {
+  test("it renders not active element", () => {
     const formState = formStateFactory();
     expect(
-      render(
-        <DynamicEntry item={formState} available={true} active={false} />,
-        {
-          initialValues: formState,
-          setupRedux(dispatch) {
-            dispatch(authActions.setAuth(authStateFactory()));
-            dispatch(editorActions.addElement(formState));
-            dispatch(editorActions.selectElement(formState.uuid));
-          },
-        }
-      ).asFragment()
+      render(<DynamicEntry extension={formState} isAvailable />, {
+        initialValues: formState,
+        setupRedux(dispatch) {
+          dispatch(authActions.setAuth(authStateFactory()));
+          // The addElement also sets the active element
+          dispatch(editorActions.addElement(formStateFactory()));
+
+          // Add new element to deactivate the previous one
+          dispatch(editorActions.addElement(formState));
+          // Remove the active element and stay with one inactive item
+          dispatch(editorActions.removeElement(formState.uuid));
+        },
+      }).asFragment()
+    ).toMatchSnapshot();
+  });
+
+  test("it renders active element", () => {
+    const formState = formStateFactory();
+    expect(
+      render(<DynamicEntry extension={formState} isAvailable />, {
+        initialValues: formState,
+        setupRedux(dispatch) {
+          dispatch(authActions.setAuth(authStateFactory()));
+          // The addElement also sets the active element
+          dispatch(editorActions.addElement(formState));
+        },
+      }).asFragment()
     ).toMatchSnapshot();
   });
 });

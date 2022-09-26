@@ -36,7 +36,6 @@ import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import useRefresh from "@/hooks/useRefresh";
 
 const { saveExtension } = extensionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -128,9 +127,6 @@ function useCreate(): CreateCallback {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const { data: editablePackages } = useGetEditablePackagesQuery();
-
-  // Make sure the pages have the latest bricks for when we reactivate below
-  useRefresh({ refreshOnMount: true });
 
   const saveElement = useCallback(
     async (

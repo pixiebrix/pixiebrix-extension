@@ -35,6 +35,7 @@ export interface ElementInfo {
   tagName: string;
   hasData: boolean;
   parent?: ElementInfo;
+  isMulti?: boolean;
 }
 
 export interface DynamicDefinition<

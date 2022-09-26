@@ -20,32 +20,45 @@ import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { extensionFactory } from "@/testUtils/factories";
-import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import { PersistedExtension } from "@/core";
 import DefaultPanel from "./DefaultPanel";
 import extensionsSlice from "@/store/extensionsSlice";
+import { authSlice } from "@/auth/authSlice";
+import { AuthState } from "@/auth/authTypes";
 
-function optionsStore(initialState?: ExtensionOptionsState) {
+function optionsStore(initialState?: {
+  extensions: PersistedExtension[];
+  auth: AuthState;
+}) {
   return configureStore({
-    reducer: { options: extensionsSlice.reducer },
-    preloadedState: initialState ? { options: initialState } : undefined,
+    reducer: {
+      options: extensionsSlice.reducer,
+      auth: authSlice.reducer,
+    },
+    preloadedState: initialState ?? undefined,
   });
 }
 
 describe("renders DefaultPanel", () => {
-  it("renders no active extensions", () => {
+  it("renders Page Editor call to action", () => {
+    const state = {
+      extensions: [extensionFactory() as PersistedExtension],
+      auth: { flags: [] } as AuthState,
+    };
+
     render(
-      <Provider store={optionsStore()}>
+      <Provider store={optionsStore(state)}>
         <DefaultPanel />
       </Provider>
     );
 
-    expect(screen.queryByText("Activate an Official Blueprint")).not.toBeNull();
+    expect(screen.queryByText("Get started with PixieBrix")).not.toBeNull();
   });
 
-  it("renders no available extensions", () => {
-    const state: ExtensionOptionsState = {
+  it("renders restricted user content", () => {
+    const state = {
       extensions: [extensionFactory() as PersistedExtension],
+      auth: { flags: ["restricted-marketplace"] } as AuthState,
     };
 
     render(

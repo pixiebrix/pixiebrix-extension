@@ -17,18 +17,15 @@
 
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { IExtension, IExtensionPoint, ServiceAuthPair } from "@/core";
-import {
-  RecipeDefinition,
-  ResolvedExtensionPointConfig,
-} from "@/types/definitions";
+import { ResolvedExtensionPointConfig } from "@/types/definitions";
 import { Permissions } from "webextension-polyfill";
 import { castArray, compact, uniq } from "lodash";
-import registry from "@/services/registry";
+import serviceRegistry from "@/services/registry";
 import { mergePermissions, requestPermissions } from "@/utils/permissions";
-import { Deployment } from "@/types/contract";
-import { resolveDefinitions, resolveRecipe } from "@/registry/internal";
+import { resolveDefinitions } from "@/registry/internal";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { locateWithRetry } from "@/services/serviceUtils";
+import { expectContext } from "@/utils/expectContext";
 
 // Copied from the permissions section of manifest.json
 const MANDATORY_PERMISSIONS = new Set([
@@ -71,29 +68,6 @@ function normalizeOptionalPermissions(
       )
     ),
   };
-}
-
-/**
- * Convenience method for getting permissions required to activate a deployment.
- * @see blueprintPermissions
- * @see collectPermissions
- */
-export async function deploymentPermissions(
-  deployment: Deployment
-): Promise<Permissions.Permissions> {
-  // Don't need to worry about service permissions because for deployments they all go through the API proxy
-  return blueprintPermissions(deployment.package.config);
-}
-
-/**
- * Convenience method for getting permissions required to activate a blueprint.
- * @see collectPermissions
- */
-export async function blueprintPermissions(
-  blueprint: RecipeDefinition
-): Promise<Permissions.Permissions> {
-  const resolved = await resolveRecipe(blueprint, blueprint.extensionPoints);
-  return collectPermissions(resolved, []);
 }
 
 export async function collectPermissions(
@@ -145,6 +119,8 @@ export async function collectPermissions(
 export async function serviceOriginPermissions(
   dependency: ServiceAuthPair
 ): Promise<Permissions.Permissions> {
+  expectContext("extension");
+
   if (dependency.id === PIXIEBRIX_SERVICE_ID) {
     // Already included in the required permissions for the extension
     return { origins: [] };
@@ -160,7 +136,7 @@ export async function serviceOriginPermissions(
     return { origins: [] };
   }
 
-  const service = await registry.lookup(dependency.id);
+  const service = await serviceRegistry.lookup(dependency.id);
   const origins = service.getOrigins(localConfig.config);
   return { origins };
 }
