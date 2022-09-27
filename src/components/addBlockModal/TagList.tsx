@@ -34,8 +34,7 @@ const TagListItem: React.VFC<{
   isActive: boolean;
   onSelect: () => void;
 }> = ({ item, isActive, onSelect }) => {
-  const asyncIcon = useAsyncIcon(item.icon, faTag);
-  const icon = item.icon ? asyncIcon : null;
+  const icon = useAsyncIcon(item.icon, faTag);
 
   return (
     <button
@@ -47,7 +46,7 @@ const TagListItem: React.VFC<{
       }}
       data-testid={`search-tag-item-${item.tag}`}
     >
-      {icon && (
+      {icon && !item.svgIcon && (
         <>
           <FontAwesomeIcon icon={icon} fixedWidth />{" "}
         </>
