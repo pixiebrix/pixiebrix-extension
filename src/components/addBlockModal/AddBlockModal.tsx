@@ -64,6 +64,7 @@ import useAddBlock from "@/components/addBlockModal/useAddBlock";
 import { useAsyncState } from "@/hooks/common";
 import { useGetTheme } from "@/hooks/useTheme";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
+import aaLogo from "@img/aa-logo-small.svg";
 
 const TAG_POPULAR = "Popular";
 const TAG_UIPATH = "UiPath";
@@ -179,17 +180,33 @@ const AddBlockModal: React.FC = () => {
     [marketplaceTags, listings]
   );
 
-  const tagItems: TagItem[] = [
-    { tag: TAG_ALL },
-    ...marketplaceTags
-      .filter((tag) => tag.subtype === "role")
-      .map((tag) => ({
-        tag: tag.name,
-        icon: tag.fa_icon,
-      })),
-  ];
-
   const partnerKey = useGetTheme();
+
+  const tagItems: TagItem[] = useMemo(() => {
+    const items: TagItem[] = [{ tag: TAG_ALL }];
+    if (partnerKey === AUTOMATION_ANYWHERE_PARTNER_KEY) {
+      const aaTag = marketplaceTags.find(
+        (tag) => tag.name === "Automation Anywhere"
+      );
+      if (aaTag) {
+        items.push({
+          tag: aaTag.name,
+          svgIcon: aaLogo,
+        });
+      }
+    }
+
+    items.push(
+      ...marketplaceTags
+        .filter((tag) => tag.subtype === "role")
+        .map((tag) => ({
+          tag: tag.name,
+          icon: tag.fa_icon,
+        }))
+    );
+
+    return items;
+  }, [marketplaceTags, partnerKey]);
 
   const filteredBlocks = useMemo<IBlock[]>(() => {
     if (isLoadingAllBlocks || isLoadingTags || isEmpty(allBlocks)) {
@@ -359,7 +376,13 @@ const AddBlockModal: React.FC = () => {
           />
         ) : (
           <>
-            <div className={styles.tagList}>
+            <div
+              className={cx(styles.tagList, {
+                // Fit the "Automation Anywhere" tag name on one line
+                [styles.widerTagList]:
+                  partnerKey === AUTOMATION_ANYWHERE_PARTNER_KEY,
+              })}
+            >
               {isLoadingTags ? (
                 <Loader />
               ) : (
