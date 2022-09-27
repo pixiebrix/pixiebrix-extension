@@ -19,6 +19,7 @@
 
 $bodyHeight: calc(100vh - 100px);
 $tagListWidth: 180px;
+$altAATagListWidth: 220px;
 $modalPaddingX: calc(
   #{$horizontalSpacing} + 15px
 ); // 15px to account for scrollbars
@@ -79,6 +80,10 @@ $modalPaddingX: calc(
   flex-grow: 0;
   flex-shrink: 0;
   padding-top: $verticalSpacing;
+}
+
+.aaTagList {
+  width: $altAATagListWidth;
 }
 
 .brickResults {

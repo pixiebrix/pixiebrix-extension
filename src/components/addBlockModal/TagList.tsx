@@ -26,6 +26,7 @@ import { faTag } from "@fortawesome/free-solid-svg-icons";
 export type TagItem = {
   tag: string;
   icon?: IconStringDefinition;
+  svgIcon?: string;
 };
 
 const TagListItem: React.VFC<{
@@ -33,7 +34,8 @@ const TagListItem: React.VFC<{
   isActive: boolean;
   onSelect: () => void;
 }> = ({ item, isActive, onSelect }) => {
-  const icon = useAsyncIcon(item.icon, faTag);
+  const asyncIcon = useAsyncIcon(item.icon, faTag);
+  const icon = item.icon ? asyncIcon : null;
 
   return (
     <button
@@ -48,6 +50,11 @@ const TagListItem: React.VFC<{
       {icon && (
         <>
           <FontAwesomeIcon icon={icon} fixedWidth />{" "}
+        </>
+      )}
+      {item.svgIcon && (
+        <>
+          <img src={item.svgIcon} alt="Icon" className={styles.svgIcon} />
         </>
       )}
       {item.tag}
