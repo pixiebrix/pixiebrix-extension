@@ -378,7 +378,8 @@ const AddBlockModal: React.FC = () => {
           <>
             <div
               className={cx(styles.tagList, {
-                [styles.aaTagList]:
+                // Fit the "Automation Anywhere" tag name on one line
+                [styles.widerTagList]:
                   partnerKey === AUTOMATION_ANYWHERE_PARTNER_KEY,
               })}
             >
