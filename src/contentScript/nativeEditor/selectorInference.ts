@@ -108,7 +108,6 @@ export const UNIQUE_ATTRIBUTES_SELECTOR = UNIQUE_ATTRIBUTES.map(
 ).join(",");
 
 const UNSTABLE_SELECTORS = [
-  /^\[style/,
   // Emberjs component tracking
   /#ember/,
 
@@ -119,7 +118,8 @@ const UNSTABLE_SELECTORS = [
     // Our attributes
     EXTENSION_POINT_DATA_ATTR,
     PIXIEBRIX_DATA_ATTR,
-    CONTENT_SCRIPT_READY_ATTRIBUTE
+    CONTENT_SCRIPT_READY_ATTRIBUTE,
+    "style"
   ),
 ];
 
@@ -318,70 +318,6 @@ export function safeCssSelector(
     ...siteSelectorHint.stableAnchors,
   ];
 
-  // Handle differently if multi-element
-  if (elements.length > 1) {
-    const ancesters = elements.map((element) =>
-      findAncestorsWithIdLikeSelectors(
-        element,
-        root,
-        [...UNIQUE_ATTRIBUTES, "class"]
-          .map((attribute) => `[${attribute}]`)
-          .join(",")
-      )
-    );
-    // Get common ancester
-    const [commonAncestor] = intersection(...ancesters);
-
-    if (commonAncestor) {
-      // Get common class of elements
-      const [commonClassName] = intersection(
-        elements.map((element) => $(element).attr("class"))
-      );
-
-      // Get first common class of ancestor of elements
-      const [commonAncestorClassName] = intersection(
-        ...ancesters.map((list) =>
-          list.map((element) => $(element).attr("class"))
-        )
-      );
-
-      // Get selector of common ancestor
-      const commonAncestorSelector = getCssSelector(commonAncestor, {
-        blacklist,
-        whitelist: ["class", "tag", ...whitelist],
-        selectors,
-        combineWithinSelector: true,
-        combineBetweenSelectors: true,
-        root,
-      });
-
-      // If elements have comment class we can easily select them
-      if (commonClassName) {
-        return `${commonAncestorSelector} ${getSelectorFromClass(
-          commonClassName
-        )}`;
-      }
-
-      if (commonAncestorClassName) {
-        // If not, we use common ancestor's class
-
-        if (
-          intersection(
-            $(commonAncestorSelector).get(),
-            $(getSelectorFromClass(commonAncestorClassName)).get()
-          ).length > 0
-        ) {
-          // Make sure that commonAncestorClassName is not duplicated with commonAncestorSelector
-          return `${commonAncestorSelector} ${elements[0].tagName.toLowerCase()}`;
-        }
-
-        return `${commonAncestorSelector} ${getSelectorFromClass(
-          commonAncestorClassName
-        )} ${elements[0].tagName.toLowerCase()}`;
-      }
-    }
-  }
-
   const selector = getCssSelector(elements, {
     blacklist,
     whitelist,
@@ -411,6 +347,109 @@ export function safeCssSelector(
   }
 
   return selector;
+}
+
+/**
+ * Get common selector for multi-element
+ * It is used by expand selection feature
+ */
+export function commonCssSelector(
+  elements: HTMLElement[],
+  {
+    selectors = DEFAULT_SELECTOR_PRIORITIES,
+    excludeRandomClasses = false,
+    // eslint-disable-next-line unicorn/no-useless-undefined -- Convert null to undefined or else getCssSelector bails
+    root = undefined,
+  }: SafeCssSelectorOptions = {}
+): string {
+  // https://github.com/fczbkk/css-selector-generator
+  const siteSelectorHint = getSiteSelectorHint(elements[0]);
+
+  const blacklist = [
+    ...UNSTABLE_SELECTORS,
+    ...siteSelectorHint.badPatterns,
+
+    excludeRandomClasses
+      ? (selector: string) => {
+          if (!selector.startsWith(".")) {
+            return false;
+          }
+
+          const usefulness = guessUsefulness(selector);
+          console.debug("css-selector-generator:  ", usefulness);
+          return usefulness.isRandom;
+        }
+      : undefined,
+  ];
+  const whitelist = [
+    getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES),
+    ...siteSelectorHint.stableAnchors,
+  ];
+
+  // Handle differently if multi-element
+  const ancestors = elements.map((element) =>
+    findAncestorsWithIdLikeSelectors(
+      element,
+      root,
+      [...UNIQUE_ATTRIBUTES, "class"]
+        .map((attribute) => `[${attribute}]`)
+        .join(",")
+    )
+  );
+  // Get common ancester
+  const [commonAncestor] = intersection(...ancestors);
+
+  if (commonAncestor) {
+    // Get common class of elements
+    const [commonClassName] = intersection(
+      elements.map((element) => element.className)
+    );
+
+    // Get first common class of ancestor of elements
+    const [commonAncestorClassName] = intersection(
+      ...ancestors.map((list) => list.map((element) => element.className))
+    );
+
+    // Get selector of common ancestor
+    const commonAncestorSelector = getCssSelector(commonAncestor, {
+      blacklist,
+      whitelist: ["class", "tag", ...whitelist],
+      selectors,
+      combineWithinSelector: true,
+      combineBetweenSelectors: true,
+      root,
+    });
+
+    // If elements have comment class we can easily select them
+    if (commonClassName) {
+      return [
+        commonAncestorSelector,
+        getSelectorFromClass(commonClassName),
+      ].join(" ");
+    }
+
+    if (commonAncestorClassName) {
+      // If not, we use common ancestor's class
+
+      if (
+        intersection(
+          $(commonAncestorSelector),
+          $(getSelectorFromClass(commonAncestorClassName))
+        ).length > 0
+      ) {
+        // Make sure that commonAncestorClassName is not duplicated with commonAncestorSelector
+        return [commonAncestorSelector, elements[0].tagName.toLowerCase()].join(
+          " "
+        );
+      }
+
+      return [
+        commonAncestorSelector,
+        getSelectorFromClass(commonAncestorClassName),
+        elements[0].tagName.toLowerCase(),
+      ].join(" ");
+    }
+  }
 }
 
 function findAncestorsWithIdLikeSelectors(

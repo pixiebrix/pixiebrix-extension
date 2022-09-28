@@ -17,6 +17,7 @@
  */
 import Overlay from "@/vendors/Overlay";
 import {
+  commonCssSelector,
   findContainer,
   inferSelectorsIncludingStableAncestors,
   safeCssSelector,
@@ -32,6 +33,7 @@ import {
 } from "@/components/selectionToolPopover/SelectionToolPopover";
 
 let overlay: Overlay | null = null;
+let expandOverlay: Overlay | null = null;
 let styleElement: HTMLStyleElement = null;
 let multiSelectionToolElement: HTMLElement = null;
 let selectionHandler: SelectionHandlerType;
@@ -44,6 +46,8 @@ export function hideOverlay(): void {
   if (overlay != null) {
     overlay.remove();
     overlay = null;
+    expandOverlay.remove();
+    expandOverlay = null;
   }
 }
 
@@ -66,6 +70,7 @@ export async function userSelectElement({
       let isMulti = false;
       if (!overlay) {
         overlay = new Overlay();
+        expandOverlay = new Overlay("light");
       }
 
       function prehiglightItems() {
@@ -142,6 +147,7 @@ export async function userSelectElement({
         isMulti = value;
         if (!isMulti) {
           overlay.inspect([]);
+          expandOverlay.inspect([]);
           targets.clear();
         }
       }
@@ -186,6 +192,13 @@ export async function userSelectElement({
 
           overlay.inspect([...targets]);
           selectionHandler(targets.size);
+
+          if (targets.size > 1) {
+            const commonSelector = commonCssSelector([...targets]);
+            expandOverlay.inspect([...$(commonSelector).get()]);
+          } else {
+            expandOverlay.inspect([]);
+          }
 
           return;
         }
