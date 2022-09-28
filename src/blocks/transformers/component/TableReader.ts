@@ -97,7 +97,7 @@ export class TableReader extends Transformer {
     }
 
     throw new TypeError(
-      `Selector does not match a table or list element, found: <${lowerCase(
+      `Selector does not match a table or definition list (dl) element, found: <${lowerCase(
         table.nodeName
       )}>`
     );
