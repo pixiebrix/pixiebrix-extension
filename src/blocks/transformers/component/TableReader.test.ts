@@ -18,11 +18,10 @@
 import { TableReader } from "@/blocks/transformers/component/TableReader";
 import blockRegistry from "@/blocks/registry";
 import { BlockConfig } from "@/blocks/types";
-import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { reducePipeline } from "@/runtime/reducePipeline";
-import { testOptions } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { getTable } from "@/testUtils/tableHelpers";
-import { screen } from "@testing-library/react";
+import {
+  unsafeAssumeValidArg,
+  validateOutputKey,
+} from "@/runtime/runtimeTypes";
 
 jest.mock("@/background/messenger/api", () => {
   const actual = jest.requireActual("@/background/messenger/api");
@@ -42,7 +41,7 @@ beforeEach(() => {
 });
 
 describe("TableReader", () => {
-  test("throws an error when selector doesn't match a table/list", async () => {
+  test("runs successfully", async () => {
     const blockConfig: BlockConfig = {
       id: tableReaderBlock.id,
       config: {
@@ -60,19 +59,45 @@ describe("TableReader", () => {
       </table>
     `;
 
-    screen.debug(root);
+    const expected = {
+      fieldNames: ["Name", "Age"],
+      records: [
+        { Name: "Pete", Age: "25" },
+        { Name: "Steve", Age: "28" },
+      ],
+    };
 
-    const result = await reducePipeline(
-      blockConfig,
-      {
-        input: {},
-        root,
-        serviceContext: {},
-        optionsArgs: {},
-      },
-      testOptions("v3")
+    const result = await tableReaderBlock.run(
+      unsafeAssumeValidArg(blockConfig.config),
+      { root } as any
     );
 
-    expect(result).not.toBeNull();
+    expect(result).toStrictEqual(expected);
+  });
+
+  test("throws an error when selector doesn't match a table/list", async () => {
+    const blockConfig: BlockConfig = {
+      id: tableReaderBlock.id,
+      config: {
+        orientation: "infer",
+        selector: "th:nth-of-type(1)",
+      },
+      outputKey: validateOutputKey("table"),
+    };
+    const root = document.createElement("div");
+    root.innerHTML = `
+      <table id="myTable">
+        <tr><th>Name</th><th>Age</th></tr>
+        <tr><td>Pete</td><td>25</td></tr>
+        <tr><td>Steve</td><td>28</td></tr>
+      </table>
+    `;
+
+    const getResult = async () =>
+      tableReaderBlock.run(unsafeAssumeValidArg(blockConfig.config), {
+        root,
+      } as any);
+
+    await expect(getResult).rejects.toThrow(TypeError);
   });
 });
