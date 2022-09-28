@@ -23,6 +23,7 @@ import notify from "@/utils/notify";
 import styles from "./JsonTree.module.scss";
 import { Button } from "react-bootstrap";
 import cx from "classnames";
+import { pathFromKeyPath } from "@/runtime/pathHelpers";
 
 export function useLabelRenderer() {
   // https://github.com/reduxjs/redux-devtools/blob/85b4b0fb04b1d6d95054d5073fa17fa61efc0df3/packages/redux-devtools-inspector-monitor/src/ActionPreview.tsx
@@ -31,29 +32,33 @@ export function useLabelRenderer() {
       [key, ...rest]: Array<string | number>,
       nodeType: string,
       expanded: boolean
-    ) => (
-      <div>
-        <span>{key}</span>
-        {!expanded && ": "}
-        {/* The button must not be a form element,
-        otherwise the wrapping label from JSONTree is associated with the element's contents (the button).
-        See https://www.w3.org/TR/html401/interact/forms.html#h-17.9.1 */}
-        <Button
-          variant="text"
-          className={cx(styles.copyPath, "p-0")}
-          aria-label="copy path"
-          href="#"
-          onClick={(event) => {
-            copy([key, ...rest].reverse().join("."));
-            event.preventDefault();
-            event.stopPropagation();
-            notify.info("Copied property path to the clipboard");
-          }}
-        >
-          <FontAwesomeIcon icon={faCopy} aria-hidden />
-        </Button>
-      </div>
-    ),
+    ) => {
+      const path = pathFromKeyPath([key, ...rest].reverse());
+
+      return (
+        <div>
+          <span>{key}</span>
+          {!expanded && ": "}
+          {/* The button must not be a form element, otherwise the wrapping
+              label from JSONTree is associated with the element's contents (the button).
+              See https://www.w3.org/TR/html401/interact/forms.html#h-17.9.1 */}
+          <Button
+            variant="text"
+            className={cx(styles.copyPath, "p-0")}
+            aria-label="copy path"
+            href="#"
+            onClick={(event) => {
+              copy(path);
+              event.preventDefault();
+              event.stopPropagation();
+              notify.info("Copied property path to the clipboard");
+            }}
+          >
+            <FontAwesomeIcon icon={faCopy} aria-hidden />
+          </Button>
+        </div>
+      );
+    },
     []
   );
 }

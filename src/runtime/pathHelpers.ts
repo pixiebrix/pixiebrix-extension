@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { identity, toPath } from "lodash";
+import { identity, isNumber, toPath } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { cleanValue, InvalidPathError, isObject, joinName } from "@/utils";
 import { UnknownObject } from "@/types";
@@ -140,4 +140,27 @@ export function getFieldNamesFromPathString(
   const fieldName = path.pop();
   const parentFieldName = path.length > 0 ? joinName(null, ...path) : undefined;
   return [parentFieldName, fieldName];
+}
+
+/**
+ * Build the full path string from key-path parts. Opposite of
+ *  lodash toPath(), basically.
+ * @param keyPath The accessors to get to the desired key
+ * @returns string The full path to the key
+ */
+export function pathFromKeyPath(keyPath: Array<string | number>): string {
+  let path = "";
+  for (const part of keyPath) {
+    if (isNumber(part)) {
+      path = `${path}[${part}]`;
+    } else if (/\s/.test(part)) {
+      path = `${path}["${part}"]`;
+    } else {
+      // Don't start with a '.'
+      const base = path ? path + "." : "";
+      path = base + part;
+    }
+  }
+
+  return path;
 }
