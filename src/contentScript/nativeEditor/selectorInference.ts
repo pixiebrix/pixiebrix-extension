@@ -155,6 +155,7 @@ function getUniqueAttributeSelectors(
       ])
   );
 }
+
 /**
  * Convert classname of element to meaningful selector
  */
@@ -319,32 +320,32 @@ export function safeCssSelector(
 
   // Handle differently if multi-element
   if (elements.length > 1) {
-    const ancesters = elements.map((element) => {
-      return findAncestorsWithIdLikeSelectors(
+    const ancesters = elements.map((element) =>
+      findAncestorsWithIdLikeSelectors(
         element,
         root,
         [...UNIQUE_ATTRIBUTES, "class"]
           .map((attribute) => `[${attribute}]`)
           .join(",")
-      );
-    });
-    // get common ancester
+      )
+    );
+    // Get common ancester
     const [commonAncestor] = intersection(...ancesters);
 
     if (commonAncestor) {
-      // get common class of elements
+      // Get common class of elements
       const [commonClassName] = intersection(
         elements.map((element) => $(element).attr("class"))
       );
 
-      // get first common class of ancestor of elements
+      // Get first common class of ancestor of elements
       const [commonAncestorClassName] = intersection(
         ...ancesters.map((list) =>
           list.map((element) => $(element).attr("class"))
         )
       );
 
-      // get selector of common ancestor
+      // Get selector of common ancestor
       const commonAncestorSelector = getCssSelector(commonAncestor, {
         blacklist,
         whitelist: ["class", "tag", ...whitelist],
@@ -354,13 +355,15 @@ export function safeCssSelector(
         root,
       });
 
-      // if elements have comment class we can easily select them
+      // If elements have comment class we can easily select them
       if (commonClassName) {
         return `${commonAncestorSelector} ${getSelectorFromClass(
           commonClassName
         )}`;
-      } else if (commonAncestorClassName) {
-        // if not, we use common ancestor's class
+      }
+
+      if (commonAncestorClassName) {
+        // If not, we use common ancestor's class
 
         if (
           intersection(
@@ -368,9 +371,10 @@ export function safeCssSelector(
             $(getSelectorFromClass(commonAncestorClassName)).get()
           ).length > 0
         ) {
-          // make sure that commonAncestorClassName is not duplicated with commonAncestorSelector
+          // Make sure that commonAncestorClassName is not duplicated with commonAncestorSelector
           return `${commonAncestorSelector} ${elements[0].tagName.toLowerCase()}`;
         }
+
         return `${commonAncestorSelector} ${getSelectorFromClass(
           commonAncestorClassName
         )} ${elements[0].tagName.toLowerCase()}`;
