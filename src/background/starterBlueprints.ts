@@ -56,7 +56,7 @@ async function installBlueprints(
   let extensionsState = await loadOptions();
   for (const blueprint of blueprints) {
     const blueprintAlreadyInstalled = extensionsState.extensions.some(
-      (extension) => extension._recipe.id === blueprint.metadata.id
+      (extension) => extension._recipe?.id === blueprint.metadata.id
     );
 
     if (!blueprintAlreadyInstalled) {
