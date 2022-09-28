@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { zip, zipObject } from "lodash";
+import { isEmpty, zip, zipObject } from "lodash";
 import objectHash from "object-hash";
 import slugify from "slugify";
 
@@ -60,9 +60,21 @@ function flattenTableContent(table: HTMLTableElement): RawTableContent {
   // When a pre-filled cell is found, +1 until the first available column and fill the whole matrix there.
   const flattened: RawTableContent = [];
 
+  let maxRowLength = 0;
+
   /* eslint-disable security/detect-object-injection -- Native indexes */
   for (const [rowIndex, row] of [...table.rows].entries()) {
-    for (let [cellIndex, cell] of [...row.cells].entries()) {
+    const cells = [...row.cells];
+
+    // Normalize empty rows
+    if (isEmpty(cells)) {
+      flattened[rowIndex] = [];
+      continue;
+    }
+
+    maxRowLength = Math.max(maxRowLength, cells.length);
+
+    for (let [cellIndex, cell] of cells.entries()) {
       // Find the first available column. Cells are only pushed right, never down
       while (flattened[rowIndex]?.[cellIndex]) {
         cellIndex++;
@@ -83,22 +95,6 @@ function flattenTableContent(table: HTMLTableElement): RawTableContent {
       }
     }
     /* eslint-enable security/detect-object-injection */
-  }
-
-  const emptyRowIndexes: number[] = [];
-  let maxRowLength = 0;
-  for (const [index, row] of flattened.entries()) {
-    if (row == null) {
-      emptyRowIndexes.push(index);
-    } else {
-      maxRowLength = Math.max(maxRowLength, row.length);
-    }
-  }
-
-  // Normalize empty rows
-  for (const index of emptyRowIndexes) {
-    // eslint-disable-next-line security/detect-object-injection -- numeric array index
-    flattened[index] = [];
   }
 
   // In case of malformed tables, ensure that the result is a perfect matrix so we don't have runtime errors

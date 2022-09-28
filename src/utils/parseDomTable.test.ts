@@ -167,6 +167,30 @@ describe("parseDomTable", () => {
 
     expect(actual).toStrictEqual(expected);
   });
+
+  test("parse table with empty rows", () => {
+    const table = getTable(`
+      <tr><th>Name<th>Age
+      <tr><td>Mario<td>42
+      <tr></tr>
+      <tr><td>Luigi<td>39
+      <tr></tr>
+    `);
+
+    const expected = {
+      fieldNames: ["Name", "Age"],
+      records: [
+        { Name: "Mario", Age: "42" },
+        { Name: "", Age: "" },
+        { Name: "Luigi", Age: "39" },
+        { Name: "", Age: "" },
+      ],
+    };
+
+    const actual = parseDomTable(table);
+
+    expect(actual).toStrictEqual(expected);
+  });
 });
 
 describe("getAllTables", () => {
