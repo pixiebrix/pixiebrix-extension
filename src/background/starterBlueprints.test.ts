@@ -155,4 +155,35 @@ describe("installStarterBlueprints", () => {
     expect(extensions.length).toBe(1);
     expect(openPlaygroundPage.mock.calls).toHaveLength(0);
   });
+
+  test("extension with no _recipe doesn't throw undefined error", async () => {
+    isLinkedMock.mockResolvedValue(true);
+
+    const recipe = recipeFactory();
+
+    const extension = extensionFactory({
+      _recipe: undefined,
+    }) as PersistedExtension;
+    await saveOptions({
+      extensions: [extension],
+    });
+
+    axiosMock
+      .onGet("/api/onboarding/starter-blueprints/install/")
+      .reply(200, { install_starter_blueprints: true });
+
+    axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, [
+      {
+        extensionPoints: [extension],
+        ...recipe,
+      },
+    ]);
+
+    axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(204);
+
+    await firstTimeInstallStarterBlueprints();
+    const { extensions } = await loadOptions();
+
+    expect(extensions.length).toBe(2);
+  });
 });
