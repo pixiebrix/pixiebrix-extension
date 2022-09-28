@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { compact, identity, sortBy, uniq } from "lodash";
+import { compact, identity, intersection, sortBy, uniq } from "lodash";
 import { getCssSelector } from "css-selector-generator";
 import {
   CssSelectorType,
@@ -108,6 +108,7 @@ export const UNIQUE_ATTRIBUTES_SELECTOR = UNIQUE_ATTRIBUTES.map(
 ).join(",");
 
 const UNSTABLE_SELECTORS = [
+  /^\[style/,
   // Emberjs component tracking
   /#ember/,
 
@@ -153,6 +154,12 @@ function getUniqueAttributeSelectors(
         ...siteSelectorHint.badPatterns,
       ])
   );
+}
+/**
+ * Convert classname of element to meaningful selector
+ */
+function getSelectorFromClass(className: string): string {
+  return "." + className.split(/\s+/).join(".");
 }
 
 /** ID selectors and certain other attributes can uniquely identify items */
@@ -310,6 +317,67 @@ export function safeCssSelector(
     ...siteSelectorHint.stableAnchors,
   ];
 
+  // Handle differently if multi-element
+  if (elements.length > 1) {
+    const ancesters = elements.map((element) => {
+      return findAncestorsWithIdLikeSelectors(
+        element,
+        root,
+        [...UNIQUE_ATTRIBUTES, "class"]
+          .map((attribute) => `[${attribute}]`)
+          .join(",")
+      );
+    });
+    // get common ancester
+    const [commonAncestor] = intersection(...ancesters);
+
+    if (commonAncestor) {
+      // get common class of elements
+      const [commonClassName] = intersection(
+        elements.map((element) => $(element).attr("class"))
+      );
+
+      // get first common class of ancestor of elements
+      const [commonAncestorClassName] = intersection(
+        ...ancesters.map((list) =>
+          list.map((element) => $(element).attr("class"))
+        )
+      );
+
+      // get selector of common ancestor
+      const commonAncestorSelector = getCssSelector(commonAncestor, {
+        blacklist,
+        whitelist: ["class", "tag", ...whitelist],
+        selectors,
+        combineWithinSelector: true,
+        combineBetweenSelectors: true,
+        root,
+      });
+
+      // if elements have comment class we can easily select them
+      if (commonClassName) {
+        return `${commonAncestorSelector} ${getSelectorFromClass(
+          commonClassName
+        )}`;
+      } else if (commonAncestorClassName) {
+        // if not, we use common ancestor's class
+
+        if (
+          intersection(
+            $(commonAncestorSelector).get(),
+            $(getSelectorFromClass(commonAncestorClassName)).get()
+          ).length > 0
+        ) {
+          // make sure that commonAncestorClassName is not duplicated with commonAncestorSelector
+          return `${commonAncestorSelector} ${elements[0].tagName.toLowerCase()}`;
+        }
+        return `${commonAncestorSelector} ${getSelectorFromClass(
+          commonAncestorClassName
+        )} ${elements[0].tagName.toLowerCase()}`;
+      }
+    }
+  }
+
   const selector = getCssSelector(elements, {
     blacklist,
     whitelist,
@@ -318,6 +386,19 @@ export function safeCssSelector(
     combineBetweenSelectors: true,
     root,
   });
+
+  const allSelectors = elements.map((element) =>
+    getCssSelector(element, {
+      blacklist: [...blacklist, ":nth-child"],
+      whitelist: ["class", "tag"],
+      selectors: ["class", "tag"],
+      combineWithinSelector: true,
+      combineBetweenSelectors: true,
+      root,
+    })
+  );
+
+  console.debug("selectors", selector, allSelectors);
 
   if (root == null && selector.startsWith(":nth-child")) {
     // JQuery will happily return other matches that match the nth-child chain, so make attach it to the body
@@ -330,10 +411,11 @@ export function safeCssSelector(
 
 function findAncestorsWithIdLikeSelectors(
   element: HTMLElement,
-  root?: Element
+  root?: Element,
+  filter: string = UNIQUE_ATTRIBUTES_SELECTOR
 ): HTMLElement[] {
   // eslint-disable-next-line unicorn/no-array-callback-reference -- jQuery false positive
-  return $(element).parentsUntil(root).filter(UNIQUE_ATTRIBUTES_SELECTOR).get();
+  return $(element).parentsUntil(root).filter(filter).get();
 }
 
 export function inferSelectorsIncludingStableAncestors(
