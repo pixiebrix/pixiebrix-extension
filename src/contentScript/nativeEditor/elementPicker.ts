@@ -194,7 +194,6 @@ export async function userSelectElement({
       }
 
       function onPointerDown(event: MouseEvent) {
-        // Do not allow the user to select the multi-element selection popup.
         const target = findExpectedTarget(event.target);
         if (!target) {
           event.preventDefault();
@@ -202,6 +201,7 @@ export async function userSelectElement({
           return;
         }
 
+        // Do not allow the user to select the multi-element selection popup.
         if (target.contains(multiSelectionToolElement)) {
           return;
         }
