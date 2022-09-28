@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isEmpty, zip, zipObject } from "lodash";
+import { compact, isEmpty, zip, zipObject } from "lodash";
 import objectHash from "object-hash";
 import slugify from "slugify";
 
@@ -66,9 +66,8 @@ function flattenTableContent(table: HTMLTableElement): RawTableContent {
   for (const [rowIndex, row] of [...table.rows].entries()) {
     const cells = [...row.cells];
 
-    // Normalize empty rows
+    // Skip empty rows
     if (isEmpty(cells)) {
-      flattened[rowIndex] = [];
       continue;
     }
 
@@ -97,14 +96,16 @@ function flattenTableContent(table: HTMLTableElement): RawTableContent {
     /* eslint-enable security/detect-object-injection */
   }
 
+  const compacted = compact(flattened);
+
   // In case of malformed tables, ensure that the result is a perfect matrix so we don't have runtime errors
-  for (const row of flattened) {
+  for (const row of compacted) {
     while (row.length < maxRowLength) {
       row.push({ type: "value", value: "" });
     }
   }
 
-  return flattened;
+  return compacted;
 }
 
 function extractData(

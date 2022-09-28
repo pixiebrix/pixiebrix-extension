@@ -181,9 +181,7 @@ describe("parseDomTable", () => {
       fieldNames: ["Name", "Age"],
       records: [
         { Name: "Mario", Age: "42" },
-        { Name: "", Age: "" },
         { Name: "Luigi", Age: "39" },
-        { Name: "", Age: "" },
       ],
     };
 
