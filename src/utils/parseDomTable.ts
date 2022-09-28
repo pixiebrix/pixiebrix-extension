@@ -85,10 +85,25 @@ function flattenTableContent(table: HTMLTableElement): RawTableContent {
     /* eslint-enable security/detect-object-injection */
   }
 
+  const emptyRowIndexes: number[] = [];
+  let maxRowLength = 0;
+  for (const [index, row] of flattened.entries()) {
+    if (row == null) {
+      emptyRowIndexes.push(index);
+    } else {
+      maxRowLength = Math.max(maxRowLength, row.length);
+    }
+  }
+
+  // Normalize empty rows
+  for (const index of emptyRowIndexes) {
+    // eslint-disable-next-line security/detect-object-injection -- numeric array index
+    flattened[index] = [];
+  }
+
   // In case of malformed tables, ensure that the result is a perfect matrix so we don't have runtime errors
-  const maxRowlength = Math.max(...flattened.map((row) => row.length));
   for (const row of flattened) {
-    while (row.length < maxRowlength) {
+    while (row.length < maxRowLength) {
       row.push({ type: "value", value: "" });
     }
   }
