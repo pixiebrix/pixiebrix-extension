@@ -92,10 +92,14 @@ export function useGetTheme(): Theme {
 function useGetOrganizationTheme(): {
   showSidebarLogo: boolean;
 } {
-  const { data: me } = useGetMeQuery();
+  const { data: me, isLoading } = useGetMeQuery();
+  const organizationTheme = me?.organization?.theme;
 
   return {
-    showSidebarLogo: Boolean(me?.organization?.theme?.show_sidebar_logo),
+    showSidebarLogo:
+      !isLoading && !organizationTheme
+        ? true
+        : Boolean(organizationTheme?.show_sidebar_logo),
   };
 }
 

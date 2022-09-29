@@ -46,6 +46,7 @@ const Header: React.FunctionComponent = () => {
             src={logo.regular}
             alt="PixieBrix logo"
             className={styles.logo}
+            data-testId="sidebarHeaderLogo"
           />
         </div>
       )}
