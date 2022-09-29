@@ -19,7 +19,6 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { render } from "@/sidebar/testHelpers";
 import Header from "@/sidebar/Header";
-import { MemoryRouter } from "react-router";
 import { useGetMeQuery } from "@/services/api";
 import { waitForEffect } from "@/testUtils/testHelpers";
 
@@ -47,7 +46,7 @@ describe("Header", () => {
     expect(screen.getByTestId("sidebarHeaderLogo")).not.toBeNull();
   });
 
-  it("renders sidebar header logo per organization theme", async () => {
+  it("renders sidebar header logo per organization theme", () => {
     (useGetMeQuery as jest.Mock).mockImplementation(() => ({
       isLoading: false,
       data: {
@@ -60,9 +59,6 @@ describe("Header", () => {
     }));
 
     const rendered = render(<Header />);
-
-    await waitForEffect();
-
     expect(rendered.asFragment()).toMatchSnapshot();
     expect(screen.getByTestId("sidebarHeaderLogo")).not.toBeNull();
   });
