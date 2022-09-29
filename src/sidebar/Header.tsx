@@ -25,7 +25,7 @@ import { whoAmI } from "@/background/messenger/api";
 import useTheme from "@/hooks/useTheme";
 
 const Header: React.FunctionComponent = () => {
-  const { logo } = useTheme();
+  const { logo, showSidebarLogo } = useTheme();
 
   return (
     <div className="d-flex p-2 justify-content-between align-content-center">
@@ -40,9 +40,15 @@ const Header: React.FunctionComponent = () => {
       >
         <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
       </Button>
-      <div className="align-self-center">
-        <img src={logo.regular} alt="PixieBrix logo" className={styles.logo} />
-      </div>
+      {showSidebarLogo && (
+        <div className="align-self-center">
+          <img
+            src={logo.regular}
+            alt="PixieBrix logo"
+            className={styles.logo}
+          />
+        </div>
+      )}
       <Button
         href="/options.html"
         target="_blank"

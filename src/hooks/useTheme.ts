@@ -89,8 +89,19 @@ export function useGetTheme(): Theme {
   return theme;
 }
 
+function useGetOrganizationTheme(): {
+  showSidebarLogo: boolean;
+} {
+  const { data: me } = useGetMeQuery();
+
+  return {
+    showSidebarLogo: Boolean(me?.organization?.theme?.show_sidebar_logo),
+  };
+}
+
 type ThemeAssets = {
   logo: ThemeLogo;
+  showSidebarLogo: boolean;
 };
 
 /**
@@ -99,6 +110,7 @@ type ThemeAssets = {
  */
 function useTheme(theme?: Theme): ThemeAssets {
   const inferredTheme = useGetTheme();
+  const organizationTheme = useGetOrganizationTheme();
   const themeLogo = getThemeLogo(theme ?? inferredTheme);
 
   useEffect(() => {
@@ -109,6 +121,7 @@ function useTheme(theme?: Theme): ThemeAssets {
 
   return {
     logo: themeLogo,
+    ...organizationTheme,
   };
 }
 
