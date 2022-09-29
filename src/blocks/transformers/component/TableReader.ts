@@ -24,6 +24,7 @@ import {
   getAllDefinitionLists,
 } from "@/utils/parseDefinitionList";
 import { requireSingleElement } from "@/utils/requireSingleElement";
+import { lowerCase } from "lodash";
 
 export const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");
 export const TABLE_READER_ALL_ID = validateRegistryId(
@@ -85,15 +86,21 @@ export class TableReader extends Transformer {
   }
 
   async transform(args: BlockArg, { root }: BlockOptions): Promise<unknown> {
-    const table = requireSingleElement<HTMLTableElement | HTMLDListElement>(
-      args.selector,
-      root
-    );
+    const table = requireSingleElement(args.selector, root);
+
     if (table instanceof HTMLDListElement) {
       return parseDefinitionList(table);
     }
 
-    return parseDomTable(table, { orientation: args.orientation });
+    if (table instanceof HTMLTableElement) {
+      return parseDomTable(table, { orientation: args.orientation });
+    }
+
+    throw new TypeError(
+      `Selector does not match a table or definition list (dl) element, found: <${lowerCase(
+        table.nodeName
+      )}>`
+    );
   }
 }
 
