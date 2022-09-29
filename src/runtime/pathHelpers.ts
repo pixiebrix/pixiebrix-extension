@@ -141,3 +141,23 @@ export function getFieldNamesFromPathString(
   const parentFieldName = path.length > 0 ? joinName(null, ...path) : undefined;
   return [parentFieldName, fieldName];
 }
+
+// Counterpart to _.toPath: https://lodash.com/docs/4.17.15#toPath
+// `fromPath` Missing from lodash: https://github.com/lodash/lodash/issues/2169
+/**
+ * Stringifies an object path from an array
+ *
+ * @example getPathFromArray("user", "name") // => "user.name"
+ * @example getPathFromArray("title", "Divine Comedy") // => "title["Divine Comedy"]"
+ */
+export function getPathFromArray(parts: Array<string | number>): string {
+  return parts
+    .map((part, index) => {
+      if (part === "" || (typeof part === "string" && /[ .]/.test(part))) {
+        return `["${part}"]`;
+      }
+
+      return index === 0 ? part : `.${part}`;
+    })
+    .join("");
+}
