@@ -36,6 +36,7 @@ import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import Select, { Options } from "react-select";
+import databaseSchema from "@schemas/database.json";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
@@ -44,15 +45,8 @@ const recordIdSchema: Schema = {
   description: "Unique identifier for the data record",
 };
 
-const databaseSchemaDefinition: Schema = {
-  $id: "https://app.pixiebrix.com/schemas/database/",
-  type: "string",
-  format: "UUID",
-};
-const databaseSchema: Schema = {
-  $ref: "https://app.pixiebrix.com/schemas/database/",
-  type: "string",
-  format: "UUID",
+const databaseIdSchema: Schema = {
+  $ref: databaseSchema.$id,
 };
 
 function usePruneUnusedServiceDependencies() {
@@ -142,12 +136,11 @@ const FormRendererOptions: React.FC<{
 
       {storageType === "database" && (
         <>
-          {/* <DatabaseField name={makeName("storage", "databaseId")} /> */}
           <SchemaField
             name={makeName("storage", "databaseId")}
             label="Database"
             isRequired
-            schema={databaseSchema}
+            schema={databaseIdSchema}
           />
           <AppServiceField name={makeName("storage", "service")} />
         </>

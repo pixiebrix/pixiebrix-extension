@@ -138,6 +138,25 @@ export function getToggleOptions({
     }
   }
 
+  if (isDatabaseField(fieldSchema)) {
+    pushOptions({
+      label: "Database",
+      value: "database",
+      symbol: <OptionIcon icon="select" />,
+      Widget: DatabaseWidget,
+      interpretValue: () =>
+        typeof fieldSchema.default === "string"
+          ? String(fieldSchema.default)
+          : null,
+    });
+
+    if (allowExpressions) {
+      pushOptions(varOption);
+    }
+
+    return options;
+  }
+
   const multiSchemas = [
     ...(fieldSchema.anyOf ?? []),
     ...(fieldSchema.oneOf ?? []),
@@ -234,20 +253,7 @@ export function getToggleOptions({
     });
   }
 
-  if (isDatabaseField(fieldSchema)) {
-    pushOptions({
-      label: "Database",
-      value: "database",
-      symbol: <OptionIcon icon="select" />,
-      Widget: DatabaseWidget,
-      interpretValue: () =>
-        typeof fieldSchema.default === "string"
-          ? String(fieldSchema.default)
-          : null,
-    });
-
-    pushOptions(varOption);
-  } else if (fieldSchema.type === "string" || anyType) {
+  if (fieldSchema.type === "string" || anyType) {
     pushOptions(textOption);
     if (allowExpressions) {
       pushOptions(varOption);

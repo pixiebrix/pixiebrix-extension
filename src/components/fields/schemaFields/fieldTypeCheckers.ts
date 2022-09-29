@@ -23,6 +23,8 @@ import {
   SERVICE_FIELD_REFS,
 } from "@/services/serviceUtils";
 import { isEmpty } from "lodash";
+import keySchema from "@schemas/key.json";
+import databaseSchema from "@schemas/database.json";
 
 export const isAppServiceField = createTypePredicate(
   (schema) => schema.$ref === `${SERVICE_BASE_SCHEMA}${PIXIEBRIX_SERVICE_ID}`
@@ -48,9 +50,9 @@ export function isSelectField(schema: Schema): boolean {
 }
 
 export function isKeyStringField(schema: Schema): boolean {
-  return schema.$ref === "https://app.pixiebrix.com/schemas/key#";
+  return schema.$ref === keySchema.$id;
 }
 
 export function isDatabaseField(schema: Schema): boolean {
-  return schema.$ref === "https://app.pixiebrix.com/schemas/database/";
+  return schema.$ref === databaseSchema.$id;
 }
