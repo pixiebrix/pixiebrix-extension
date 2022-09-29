@@ -88,7 +88,7 @@ export function isTemplateExpression(
 }
 
 /**
- * Returns true if value represents an explicit template engine expression
+ * Returns true if value represents a variable expression
  * @see isExpression
  */
 export function isVarExpression(

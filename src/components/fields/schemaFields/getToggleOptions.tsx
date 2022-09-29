@@ -12,6 +12,12 @@ import { UnknownObject } from "@/types";
 import OptionIcon from "./optionIcon/OptionIcon";
 import widgetsRegistry from "./widgets/widgetsRegistry";
 import { CustomFieldToggleMode } from "@/components/fields/schemaFields/schemaFieldTypes";
+import DatabaseWidget from "@/pageEditor/fields/DatabaseWidget";
+import {
+  isKeyStringField,
+  isSelectField,
+  isDatabaseField,
+} from "./fieldTypeCheckers";
 
 type ToggleOptionInputs = {
   fieldSchema: Schema;
@@ -21,15 +27,6 @@ type ToggleOptionInputs = {
   isArrayItem: boolean;
   allowExpressions: boolean;
 };
-
-export function isSelectField(schema: Schema): boolean {
-  const values = schema.examples ?? schema.enum;
-  return schema.type === "string" && Array.isArray(values) && !isEmpty(values);
-}
-
-export function isKeyStringField(schema: Schema): boolean {
-  return schema.$ref === "https://app.pixiebrix.com/schemas/key#";
-}
 
 // eslint-disable-next-line complexity
 export function getToggleOptions({
@@ -237,7 +234,20 @@ export function getToggleOptions({
     });
   }
 
-  if (fieldSchema.type === "string" || anyType) {
+  if (isDatabaseField(fieldSchema)) {
+    pushOptions({
+      label: "Database",
+      value: "database",
+      symbol: <OptionIcon icon="select" />,
+      Widget: DatabaseWidget,
+      interpretValue: () =>
+        typeof fieldSchema.default === "string"
+          ? String(fieldSchema.default)
+          : null,
+    });
+
+    pushOptions(varOption);
+  } else if (fieldSchema.type === "string" || anyType) {
     pushOptions(textOption);
     if (allowExpressions) {
       pushOptions(varOption);

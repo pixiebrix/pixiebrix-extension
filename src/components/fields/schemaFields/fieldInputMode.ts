@@ -16,9 +16,10 @@
  */
 
 import { UnknownObject } from "@/types";
-import { isTemplateExpression } from "@/runtime/mapArgs";
+import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
 import { Schema } from "@/core";
 import { isEmpty } from "lodash";
+import { isDatabaseField } from "./fieldTypeCheckers";
 
 export type FieldInputMode =
   | "string"
@@ -28,6 +29,7 @@ export type FieldInputMode =
   | "array"
   | "object"
   | "select"
+  | "database"
   | "omit"; // An input option to remove a property
 
 /**
@@ -46,10 +48,14 @@ export function inferInputMode(
     return "omit";
   }
 
-  const hasEnum = !isEmpty(fieldSchema.examples ?? fieldSchema.enum);
-
   // eslint-disable-next-line security/detect-object-injection -- config field names
   const value = fieldConfig[fieldName];
+
+  if (isDatabaseField(fieldSchema)) {
+    return isVarExpression(value) ? "var" : "database";
+  }
+
+  const hasEnum = !isEmpty(fieldSchema.examples ?? fieldSchema.enum);
 
   if (value == null) {
     return hasEnum ? "select" : "string";

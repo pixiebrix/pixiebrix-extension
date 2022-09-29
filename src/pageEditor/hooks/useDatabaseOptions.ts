@@ -44,6 +44,12 @@ const useDatabaseOptions = () => {
     [databases, organizations]
   );
 
+  console.log("useDatabaseOptions", {
+    databases,
+    isLoadingDatabases,
+    isLoadingOrganizations,
+  });
+
   return { databaseOptions, isLoading };
 };
 

@@ -46,6 +46,9 @@ export type BooleanOption = InputModeOptionBase<"boolean"> & {
 export type ArrayOption = InputModeOptionBase<"array"> & {
   interpretValue: (oldValue: unknown) => JSONSchema7Array;
 };
+export type DatabaseOption = InputModeOptionBase<"database"> & {
+  interpretValue: (oldValue: unknown) => string | null;
+};
 export type ObjectOption = InputModeOptionBase<"object"> & {
   interpretValue: (oldValue: unknown) => UnknownObject;
 };
@@ -57,6 +60,7 @@ export type InputModeOption =
   | BooleanOption
   | ArrayOption
   | ObjectOption
+  | DatabaseOption
   | OmitOption;
 
 export type TemplateToggleWidgetProps = SchemaFieldProps & {

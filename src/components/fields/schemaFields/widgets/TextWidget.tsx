@@ -32,11 +32,9 @@ import { isTemplateExpression } from "@/runtime/mapArgs";
 import { trim } from "lodash";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
-import {
-  getToggleOptions,
-  isKeyStringField,
-} from "@/components/fields/schemaFields/getToggleOptions";
+import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
 import useUndo from "@/hooks/useUndo";
+import { isKeyStringField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 
 function schemaSupportsTemplates(schema: Schema): boolean {
   const options = getToggleOptions({

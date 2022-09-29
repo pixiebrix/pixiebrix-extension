@@ -16,12 +16,7 @@
  */
 
 import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFieldContext";
-import { Schema } from "@/core";
 import HeadingStyleWidget from "./widgets/HeadingStyleWidget";
-
-export const isHeadingStyleField = (fieldDefinition: Schema) =>
-  fieldDefinition.type === "string" &&
-  fieldDefinition.format === "heading-style";
 
 const HeadingStyleField = defaultFieldFactory(HeadingStyleWidget);
 export default HeadingStyleField;

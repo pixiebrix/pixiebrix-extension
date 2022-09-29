@@ -23,6 +23,9 @@ import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Button } from "react-bootstrap";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 import { action } from "@storybook/addon-actions";
+import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
+
+registerDefaultWidgets();
 
 export default {
   title: "Fields/SchemaField",
@@ -143,6 +146,18 @@ TextArea.args = {
   schema: {
     type: "string",
     format: "markdown",
+  },
+};
+
+export const Database = Template.bind({});
+Database.args = {
+  name: "topObj.parentObj.testField",
+  label: "Database",
+  defaultValue: "",
+  schema: {
+    $ref: "https://app.pixiebrix.com/schemas/database/",
+    type: "string",
+    format: "UUID",
   },
 };
 
