@@ -20,7 +20,6 @@ import { screen } from "@testing-library/react";
 import { render } from "@/sidebar/testHelpers";
 import Header from "@/sidebar/Header";
 import { useGetMeQuery } from "@/services/api";
-import { waitForEffect } from "@/testUtils/testHelpers";
 
 jest.mock("@/options/store", () => ({
   persistor: {
