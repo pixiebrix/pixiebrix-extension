@@ -131,6 +131,7 @@ const BlueprintsCard: React.FunctionComponent<{
         groupBy,
         sortBy,
         filters: activeTab.filters,
+        globalFilter: "",
       },
       useControlledState: (state) =>
         useMemo(

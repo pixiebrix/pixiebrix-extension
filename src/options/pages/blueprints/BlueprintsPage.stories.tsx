@@ -15,27 +15,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
+import BlueprintsPage from "@/options/pages/blueprints/BlueprintsPage";
+import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
-import extensionsSlice from "@/store/extensionsSlice";
-import settingsSlice from "@/store/settingsSlice";
-import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
-import { createRenderWithWrappers } from "@/testUtils/testHelpers";
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
+import extensionsSlice from "@/store/extensionsSlice";
+import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
+import { appApi } from "@/services/api";
 
-const renderWithWrappers = createRenderWithWrappers(() =>
-  configureStore({
+export default {
+  title: "Blueprints/BlueprintsPage",
+  component: BlueprintsPage,
+} as ComponentMeta<typeof BlueprintsPage>;
+
+function optionsStore(initialState?: any) {
+  return configureStore({
     reducer: {
       auth: authSlice.reducer,
-      settings: settingsSlice.reducer,
+      blueprints: blueprintsSlice.reducer,
       options: extensionsSlice.reducer,
       blueprintModals: blueprintModalsSlice.reducer,
-      blueprints: blueprintsSlice.reducer,
+      [appApi.reducerPath]: appApi.reducer,
     },
-  })
+    ...(initialState ?? { preloadedState: initialState }),
+  });
+}
+
+const Template: ComponentStory<typeof BlueprintsPage> = (args) => (
+  <Provider store={optionsStore()}>
+    <BlueprintsPage {...args} />
+  </Provider>
 );
 
-// eslint-disable-next-line import/export -- re-export RTL
-export * from "@testing-library/react";
-// eslint-disable-next-line import/export -- override render
-export { renderWithWrappers as render };
+export const Default = Template.bind({});

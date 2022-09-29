@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.7.9-alpha.1",
+  "version": "1.7.10-alpha.1",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "jest",
@@ -100,7 +100,7 @@
     "p-wait-for": "^5.0.0",
     "page-metadata-parser": "^1.1.4",
     "papaparse": "^5.3.1",
-    "primeicons": "^5.0.0",
+    "primeicons": "^6.0.1",
     "primereact": "^7.1.0",
     "prop-types": "^15.7.2",
     "psl": "^1.8.0",
@@ -252,8 +252,8 @@
     "style-loader": "^3.0.0",
     "svg-inline-loader": "^0.8.2",
     "terser-webpack-plugin": "^5.3.3",
-    "ts-loader": "^9.2.4",
-    "type-fest": "^2.0.0",
+    "ts-loader": "^9.4.1",
+    "type-fest": "^3.0.0",
     "typescript": "^4.8.3",
     "typescript-plugin-css-modules": "^3.4.0",
     "webpack": "^5.46.0",

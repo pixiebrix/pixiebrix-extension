@@ -22,7 +22,7 @@ import { InstallableViewItem } from "./blueprintsTypes";
 
 type View = "list" | "grid";
 
-type ActiveTab = {
+export type ActiveTab = {
   key: string;
   tabTitle: string;
   filters: Filters<InstallableViewItem>;
@@ -40,8 +40,8 @@ const initialState: BlueprintsState = {
   groupBy: [],
   sortBy: [],
   activeTab: {
-    key: "Get Started",
-    tabTitle: "Welcome to the PixieBrix Extension Console",
+    key: null,
+    tabTitle: null,
     filters: [],
   },
 };
