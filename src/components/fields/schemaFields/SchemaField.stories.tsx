@@ -149,18 +149,6 @@ TextArea.args = {
   },
 };
 
-export const Database = Template.bind({});
-Database.args = {
-  name: "topObj.parentObj.testField",
-  label: "Database",
-  defaultValue: "",
-  schema: {
-    $ref: "https://app.pixiebrix.com/schemas/database/",
-    type: "string",
-    format: "UUID",
-  },
-};
-
 export const ArrayItems = Template.bind({});
 ArrayItems.args = {
   name: "topObj.parentObj.testField",
