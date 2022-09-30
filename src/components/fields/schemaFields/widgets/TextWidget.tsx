@@ -35,6 +35,10 @@ import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
 import useUndo from "@/hooks/useUndo";
 import { isKeyStringField } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import {
+  makeTemplateExpression,
+  makeVariableExpression,
+} from "@/runtime/expressionCreators";
 
 function schemaSupportsTemplates(schema: Schema): boolean {
   const options = getToggleOptions({
@@ -127,10 +131,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
         const changeValue = target.value;
         // Automatically switch to var if user types "@" in the input
         if (templateEngine !== "var" && isVarValue(changeValue)) {
-          setValue({
-            __type__: "var",
-            __value__: changeValue,
-          });
+          setValue(makeVariableExpression(changeValue));
         } else if (
           templateEngine === "var" &&
           supportsTemplates &&
@@ -140,15 +141,9 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
           const templateValue = isVarValue(trimmed)
             ? changeValue.replace(trimmed, `{{${trimmed}}}`)
             : changeValue;
-          setValue({
-            __type__: "nunjucks",
-            __value__: templateValue,
-          });
+          setValue(makeTemplateExpression("nunjucks", templateValue));
         } else {
-          setValue({
-            __type__: templateEngine,
-            __value__: changeValue,
-          });
+          setValue(makeTemplateExpression(templateEngine, changeValue));
         }
       };
 
