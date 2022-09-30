@@ -80,10 +80,10 @@ OAuth2.storyName = "OAuth2";
 OAuth2.parameters = {
   msw: {
     handlers: [
-      rest.get("/api/me/", (request, result, context) => {
+      rest.get("/api/me/", (request, result, context) =>
         // State is blank for unauthenticated users
-        return result(context.json({}));
-      }),
+        result(context.json({}))
+      ),
     ],
   },
 };

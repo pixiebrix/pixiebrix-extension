@@ -12,7 +12,6 @@ import { UnknownObject } from "@/types";
 import OptionIcon from "./optionIcon/OptionIcon";
 import widgetsRegistry from "./widgets/widgetsRegistry";
 import { CustomFieldToggleMode } from "@/components/fields/schemaFields/schemaFieldTypes";
-import DatabaseWidget from "@/pageEditor/fields/DatabaseWidget";
 import {
   isKeyStringField,
   isSelectField,
@@ -143,7 +142,7 @@ export function getToggleOptions({
       label: "Database",
       value: "database",
       symbol: <OptionIcon icon="select" />,
-      Widget: DatabaseWidget,
+      Widget: widgetsRegistry.DatabaseWidget,
       interpretValue: () =>
         typeof fieldSchema.default === "string"
           ? String(fieldSchema.default)
