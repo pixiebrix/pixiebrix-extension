@@ -25,7 +25,7 @@ import { CONTROL_ROOM_SERVICE_ID } from "@/services/constants";
 import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/RunBot";
 import BotOptions from "@/contrib/automationanywhere/BotOptions";
 import useDependency from "@/services/useDependency";
-import { makeVariableExpression } from "@/testUtils/expressionTestHelpers";
+import { makeVariableExpression } from "@/runtime/expressionCreators";
 import { uuidv4 } from "@/types/helpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 

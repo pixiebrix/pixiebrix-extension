@@ -25,7 +25,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { IService, OutputKey } from "@/core";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import ProcessOptions from "@/contrib/uipath/ProcessOptions";
-import { makeVariableExpression } from "@/testUtils/expressionTestHelpers";
+import { makeVariableExpression } from "@/runtime/expressionCreators";
 import useDependency from "@/services/useDependency";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 

@@ -15,15 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useField } from "formik";
 import { Expression, UUID } from "@/core";
 import useDatabaseOptions from "@/pageEditor/hooks/useDatabaseOptions";
 import DatabaseCreateModal from "@/pageEditor/fields/DatabaseCreateModal";
 import { isExpression } from "@/runtime/mapArgs";
-import SelectWidget from "@/components/form/widgets/SelectWidget";
+import SelectWidget, {
+  SelectLike,
+  Option,
+} from "@/components/form/widgets/SelectWidget";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
-import { makeTemplateExpression } from "@/testUtils/expressionTestHelpers";
+import { makeTemplateExpression } from "@/runtime/expressionCreators";
+import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 
 const DatabaseWidget: React.FunctionComponent<{
   /**
@@ -32,23 +36,27 @@ const DatabaseWidget: React.FunctionComponent<{
   name: string;
 }> = ({ name }) => {
   const [showModal, setShowModal] = useState(false);
-  const [{ value: databaseId }, , { setValue: setDatabaseId }] = useField<
-    UUID | Expression
-  >(name);
+  const [{ value }, , { setValue }] = useField<UUID | Expression>(name);
+  const { allowExpressions } = useContext(FieldRuntimeContext);
 
   const { databaseOptions, isLoading: isLoadingDatabaseOptions } =
     useDatabaseOptions();
 
   const isMountedRef = useRef(true);
-  useEffect(() => {
-    if (typeof databaseId === "string") {
-      setDatabaseId(makeTemplateExpression("nunjucks", databaseId));
-    }
-
-    return () => {
+  useEffect(
+    () => () => {
       isMountedRef.current = false;
-    };
-  }, []);
+    },
+    []
+  );
+
+  const setDatabaseId = (databaseId: UUID) => {
+    if (allowExpressions) {
+      setValue(makeTemplateExpression("nunjucks", databaseId));
+    } else {
+      setValue(databaseId);
+    }
+  };
 
   const onModalClose = () => {
     if (!isMountedRef.current) {
@@ -64,10 +72,8 @@ const DatabaseWidget: React.FunctionComponent<{
     }
 
     onModalClose();
-    setDatabaseId(makeTemplateExpression("nunjucks", databaseId));
+    setDatabaseId(databaseId);
   };
-
-  console.log("DatabaseField2. render");
 
   return (
     <>
@@ -82,9 +88,9 @@ const DatabaseWidget: React.FunctionComponent<{
         name={name}
         options={databaseOptions}
         isLoading={isLoadingDatabaseOptions}
-        value={isExpression(databaseId) ? databaseId.__value__ : databaseId}
-        onChange={(event) => {
-          setDatabaseId(makeTemplateExpression("nunjucks", event.target.value));
+        value={isExpression(value) ? value.__value__ : value}
+        onChange={(event: React.ChangeEvent<SelectLike<Option<UUID>>>) => {
+          setDatabaseId(event.target.value);
         }}
         components={{
           MenuList: createMenuListWithAddButton(() => {

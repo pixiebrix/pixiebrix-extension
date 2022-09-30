@@ -36,7 +36,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import MockDate from "mockdate";
 import { BlockPipeline } from "@/blocks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { makeTemplateExpression } from "@/testUtils/expressionTestHelpers";
+import { makeTemplateExpression } from "@/runtime/expressionCreators";
 
 jest.mock("@/background/messenger/api", () => {
   const actual = jest.requireActual("@/background/messenger/api");
