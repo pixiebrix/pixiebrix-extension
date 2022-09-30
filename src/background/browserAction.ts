@@ -23,6 +23,7 @@ import pMemoize from "p-memoize";
 import webextAlert from "./webextAlert";
 import { isMac } from "@/utils";
 import { notify } from "@/options/messenger/api";
+import { browserAction } from "@/mv3/api";
 
 const ERR_UNABLE_TO_OPEN =
   "PixieBrix was unable to open the Sidebar. Try refreshing the page.";
@@ -76,7 +77,9 @@ async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
   });
 }
 
-async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
+async function handleBrowserAction(
+  tab: Tabs.Tab | chrome.tabs.Tab
+): Promise<void> {
   // The URL might not be available in certain circumstances. This silences these
   // cases and just treats them as "not allowed on this page"
   const url = String(tab.url);
@@ -96,7 +99,6 @@ async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
 }
 
 export default function initBrowserAction() {
-  // Handle namespace change between MV2/MV3
-  const action = browser.browserAction ?? browser.action;
-  action.onClicked.addListener(handleBrowserAction);
+  // Handle namespace change between MV2/MV3\
+  browserAction.onClicked.addListener(handleBrowserAction);
 }
