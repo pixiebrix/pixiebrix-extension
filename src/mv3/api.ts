@@ -19,5 +19,7 @@
 
 import { Tabs } from "webextension-polyfill";
 
+export const isMV3 = (): boolean =>
+  browser.runtime.getManifest().manifest_version === 3;
 export const browserAction = chrome.browserAction ?? chrome.action;
 export type Tab = Tabs.Tab | chrome.tabs.Tab;
