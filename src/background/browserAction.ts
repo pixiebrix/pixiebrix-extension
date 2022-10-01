@@ -96,6 +96,5 @@ async function handleBrowserAction(tab: Tab): Promise<void> {
 }
 
 export default function initBrowserAction() {
-  // Handle namespace change between MV2/MV3\
   browserAction.onClicked.addListener(handleBrowserAction);
 }

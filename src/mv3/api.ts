@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file Temporary helpers useful for the MV3 transition */
+
 import { Tabs } from "webextension-polyfill";
 
 export const browserAction = chrome.browserAction ?? chrome.action;
