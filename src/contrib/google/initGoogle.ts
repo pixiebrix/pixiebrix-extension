@@ -24,6 +24,7 @@ import { DISCOVERY_DOCS as BIGQUERY_DOCS } from "./bigquery/handlers";
 import { isChrome } from "webext-detect-page";
 import pMemoize from "p-memoize";
 import injectScriptTag from "@/utils/injectScriptTag";
+import { isMV3 } from "@/mv3/api";
 
 declare global {
   interface Window {
@@ -49,7 +50,7 @@ async function onGAPILoad(): Promise<void> {
 }
 
 async function _initGoogle(): Promise<boolean> {
-  if (!isChrome() || typeof document === "undefined" /* MV3 exclusion */) {
+  if (!isChrome() || isMV3()) {
     // TODO: Use feature detection instead of sniffing the user agent
     console.info(
       "Google API not enabled because it's not supported by this browser"

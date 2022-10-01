@@ -26,7 +26,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const CopyPlugin = require("copy-webpack-plugin");
-const { uniq, compact } = require("lodash");
+const { uniq, compact, pull } = require("lodash");
 const Policy = require("csp-parse");
 const mergeWithShared = require("./webpack.sharedConfig.js");
 
@@ -120,6 +120,44 @@ function getVersionName(isProduction) {
 }
 
 const isProd = (options) => options.mode === "production";
+
+/**
+ * @param {chrome.runtime.Manifest} manifest
+ */
+function updateManifestToV3(manifest) {
+  manifest.manifest_version = 3;
+
+  // Extract host permissions
+  pull(manifest.permissions, "https://*.pixiebrix.com/*");
+  pull(manifest.optional_permissions, "*://*/*");
+  manifest.host_permissions = ["https://*.pixiebrix.com/*", "*://*/*"];
+  manifest.permissions.push("scripting");
+
+  // Update format
+  manifest.web_accessible_resources = [
+    {
+      resources: manifest.web_accessible_resources,
+      matches: ["*://*/*"],
+    },
+  ];
+
+  // Rename keys
+  manifest.action = manifest.browser_action;
+  delete manifest.browser_action;
+
+  // Update CSP format and drop invalid values
+  const policy = new Policy(manifest.content_security_policy);
+  policy.remove("script-src", "https://apis.google.com");
+  policy.remove("script-src", "'unsafe-eval'");
+  manifest.content_security_policy = {
+    extension_pages: policy.toString(),
+  };
+
+  // Replace background script
+  manifest.background = {
+    service_worker: "background.worker.js",
+  };
+}
 
 function customizeManifest(manifest, isProduction) {
   manifest.version = getVersion();
@@ -343,6 +381,10 @@ module.exports = (env, options) =>
             transform(jsonString) {
               const manifest = JSON.parse(jsonString);
               customizeManifest(manifest, isProd(options));
+              if (process.env.MV === "3") {
+                updateManifestToV3(manifest);
+              }
+
               return JSON.stringify(manifest, null, 4);
             },
           },
