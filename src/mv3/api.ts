@@ -15,4 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Tabs } from "webextension-polyfill";
+
 export const browserAction = chrome.browserAction ?? chrome.action;
+export type Tab = Tabs.Tab | chrome.tabs.Tab;

@@ -16,14 +16,13 @@
  */
 
 import { ensureContentScript } from "@/background/util";
-import { Tabs } from "webextension-polyfill";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
 import { executeScript, isScriptableUrl } from "webext-content-scripts";
 import pMemoize from "p-memoize";
 import webextAlert from "./webextAlert";
 import { isMac } from "@/utils";
 import { notify } from "@/options/messenger/api";
-import { browserAction } from "@/mv3/api";
+import { browserAction, Tab } from "@/mv3/api";
 
 const ERR_UNABLE_TO_OPEN =
   "PixieBrix was unable to open the Sidebar. Try refreshing the page.";
@@ -77,9 +76,7 @@ async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
   });
 }
 
-async function handleBrowserAction(
-  tab: Tabs.Tab | chrome.tabs.Tab
-): Promise<void> {
+async function handleBrowserAction(tab: Tab): Promise<void> {
   // The URL might not be available in certain circumstances. This silences these
   // cases and just treats them as "not allowed on this page"
   const url = String(tab.url);
