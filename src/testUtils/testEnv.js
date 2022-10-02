@@ -24,6 +24,7 @@ import "urlpattern-polyfill";
 
 process.env.SERVICE_URL = "https://app.pixiebrix.com";
 
+global.jest = vi;
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
 global.PromiseRejectionEvent = class PromiseRejectionEvent extends Event {
