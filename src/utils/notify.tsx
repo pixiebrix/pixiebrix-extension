@@ -175,18 +175,21 @@ export function showNotification({
   switch (type) {
     case "error":
     case "success":
-    case "loading":
+    case "loading": {
       // eslint-disable-next-line security/detect-object-injection -- Filtered
       toast[type](component, options);
       break;
+    }
 
-    case "warning":
+    case "warning": {
       // eslint-disable-next-line security/detect-object-injection -- Filtered
       toast(component, merge(options, toastStyle[type]));
       break;
+    }
 
-    default:
+    default: {
       toast(component, options);
+    }
   }
 
   if (willReport) {

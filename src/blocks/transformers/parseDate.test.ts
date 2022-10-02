@@ -94,7 +94,7 @@ describe("ParseDate block", () => {
         root: null,
         runPipeline: neverPromise,
       });
-    }).rejects.toThrowError(BusinessError);
+    }).rejects.toThrow(BusinessError);
   });
 
   test("Throw BusinessError on invalid date", async () => {
@@ -107,7 +107,7 @@ describe("ParseDate block", () => {
         root: null,
         runPipeline: neverPromise,
       });
-    }).rejects.toThrowError(BusinessError);
+    }).rejects.toThrow(BusinessError);
   });
 
   test("Results snapshot - GMT input", async () => {

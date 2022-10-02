@@ -77,7 +77,7 @@ describe("parseUrl", () => {
     const promise = new UrlParser().transform(
       unsafeAssumeValidArg({ url: "42" })
     );
-    await expect(promise).rejects.toThrowError(BusinessError);
-    await expect(promise).rejects.toThrowError("Invalid URL: 42");
+    await expect(promise).rejects.toThrow(BusinessError);
+    await expect(promise).rejects.toThrow("Invalid URL: 42");
   });
 });

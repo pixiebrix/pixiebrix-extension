@@ -50,23 +50,34 @@ const BrickNodeContent: React.FC<BrickNodeContentProps> = ({
   let badgeSource: string;
 
   switch (runStatus) {
-    case RunStatus.SUCCESS:
+    case RunStatus.SUCCESS: {
       badgeSource = "/img/fa-check-circle-solid-custom.svg";
       break;
-    case RunStatus.SKIPPED:
+    }
+
+    case RunStatus.SKIPPED: {
       badgeSource = "/img/fa-minus-circle-solid-custom.svg";
       break;
-    case RunStatus.WARNING:
+    }
+
+    case RunStatus.WARNING: {
       badgeSource = "/img/fa-exclamation-triangle-custom.svg";
       break;
-    case RunStatus.ERROR:
+    }
+
+    case RunStatus.ERROR: {
       badgeSource = "/img/fa-exclamation-circle-custom.svg";
       break;
-    case RunStatus.PENDING:
+    }
+
+    case RunStatus.PENDING: {
       badgeSource = "/img/fa-circle-solid-loading-custom.svg";
       break;
-    default:
+    }
+
+    default: {
       badgeSource = null;
+    }
   }
 
   const badge = badgeSource ? (

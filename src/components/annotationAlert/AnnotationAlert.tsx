@@ -34,20 +34,24 @@ const AnnotationAlert: React.FunctionComponent<AnnotationAlertProps> = ({
 }) => {
   let Icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
   switch (type) {
-    case AnnotationType.Error:
+    case AnnotationType.Error: {
       Icon = ErrorIcon;
       break;
+    }
 
-    case AnnotationType.Warning:
+    case AnnotationType.Warning: {
       Icon = WarningIcon;
       break;
+    }
 
-    case AnnotationType.Info:
+    case AnnotationType.Info: {
       Icon = InfoIcon;
       break;
+    }
 
-    default:
+    default: {
       throw new Error(`Unsupported annotation type: ${type}`);
+    }
   }
 
   return (

@@ -146,27 +146,36 @@ const OnboardingView: React.VoidFunctionComponent<{
     }
 
     switch (onboardingType) {
-      case "hasDeployments":
+      case "hasDeployments": {
         return <ActivateFromDeploymentBannerColumn />;
-      case "restricted":
+      }
+
+      case "restricted": {
         return <ContactTeamAdminColumn />;
-      case "hasTeamBlueprints":
+      }
+
+      case "hasTeamBlueprints": {
         return (
           <>
             <ActivateTeamBlueprintsColumn />
             <CreateBrickColumn />
           </>
         );
-      default:
+      }
+
+      default: {
         return <UnaffiliatedColumn />;
+      }
     }
   }, [filter, onboardingType]);
 
   const onboardingCallout = useMemo(() => {
     switch (onboardingType) {
-      case "restricted":
+      case "restricted": {
         return "Welcome to PixieBrix! Ready to get started?";
-      default:
+      }
+
+      default: {
         if (filter === "personal") {
           return "Create your own extensions";
         }
@@ -176,6 +185,7 @@ const OnboardingView: React.VoidFunctionComponent<{
         }
 
         return "Welcome to PixieBrix! Ready to get started?";
+      }
     }
   }, [filter, onboardingType]);
 

@@ -67,7 +67,7 @@ describe("inferRecipeAuths", () => {
         { services: [dependency] },
         { services: [{ ...dependency, config: uuidv4() }] },
       ])
-    ).toThrowError(/has multiple configurations/);
+    ).toThrow(/has multiple configurations/);
   });
 
   it("throw on missing config", () => {
@@ -77,7 +77,7 @@ describe("inferRecipeAuths", () => {
       outputKey: validateOutputKey("foo"),
     };
 
-    expect(() => inferRecipeAuths([{ services: [dependency] }])).toThrowError(
+    expect(() => inferRecipeAuths([{ services: [dependency] }])).toThrow(
       /is not configured/
     );
   });
