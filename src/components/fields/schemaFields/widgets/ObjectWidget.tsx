@@ -166,8 +166,10 @@ export function getPropertyRow(
 ): React.FunctionComponent<PropertyRowProps> {
   switch (schema?.type) {
     case "array":
-    case "object":
+    case "object": {
       return CompositePropertyRow;
+    }
+
     default: {
       return ValuePropertyRow;
     }

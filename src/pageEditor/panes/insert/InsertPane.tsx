@@ -41,17 +41,22 @@ const InsertPane: React.FC<{ inserting: ExtensionPointType }> = ({
   useEscapeHandler(cancelInsert, inserting != null);
 
   switch (inserting) {
-    case "menuItem":
+    case "menuItem": {
       return <InsertMenuItemPane cancel={cancelInsert} />;
-    case "panel":
+    }
+
+    case "panel": {
       return <InsertPanelPane cancel={cancelInsert} />;
-    default:
+    }
+
+    default: {
       return (
         <GenericInsertPane
           cancel={cancelInsert}
           config={ADAPTERS.get(inserting)}
         />
       );
+    }
   }
 };
 

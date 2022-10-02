@@ -107,7 +107,7 @@ describe("Trace render error", () => {
         simpleInput({ inputArg: "hello" }),
         testOptions("v3")
       )
-    ).rejects.toThrowError(/doesNotExist/);
+    ).rejects.toThrow(/doesNotExist/);
 
     expect(traces.addEntry).toHaveBeenCalledTimes(1);
     expect(traces.addEntry).toHaveBeenCalledWith(

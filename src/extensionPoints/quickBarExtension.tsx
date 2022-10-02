@@ -147,13 +147,18 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
 
   decideRoot(target: HTMLElement | Document): HTMLElement | Document {
     switch (this.targetMode) {
-      case "eventTarget":
+      case "eventTarget": {
         return target;
-      case "document":
+      }
+
+      case "document": {
         return document;
-      default:
+      }
+
+      default: {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
         throw new BusinessError(`Unknown targetMode: ${this.targetMode}`);
+      }
     }
   }
 

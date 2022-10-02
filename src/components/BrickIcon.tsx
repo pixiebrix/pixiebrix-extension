@@ -52,16 +52,25 @@ export function getDefaultBrickIcon(
   }
 
   switch (blockType) {
-    case "reader":
+    case "reader": {
       return faBookReader;
-    case "transform":
+    }
+
+    case "transform": {
       return faRandom;
-    case "effect":
+    }
+
+    case "effect": {
       return faMagic;
-    case "renderer":
+    }
+
+    case "renderer": {
       return faWindowMaximize;
-    default:
+    }
+
+    default: {
       break;
+    }
   }
 
   if (brick instanceof TriggerExtensionPoint) {
