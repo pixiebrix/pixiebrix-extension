@@ -1,6 +1,6 @@
 import crypto from "crypto";
 
-// Enable crypto.randomUUID() on Node
-if (!("crypto" in globalThis)) {
-  globalThis.crypto = crypto;
-}
+globalThis.crypto ??= crypto;
+
+// The global might already exist, but lack this method
+globalThis.crypto.randomUUID ??= crypto.randomUUID;
