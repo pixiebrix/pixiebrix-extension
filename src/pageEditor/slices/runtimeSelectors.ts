@@ -38,7 +38,7 @@ export const selectExtensionTrace: EditorSelector<TraceRecord[]> = ({
  */
 export const selectTraceErrors = createSelector(
   selectExtensionTrace,
-  // eslint-disable-next-line unicorn/no-array-callback-reference -- a proxy function breaks the type inference
+  // eslint-disable-next-line unicorn/no-array-callback-reference -- a proxy function breaks the type inference of isTraceError
   (records) => records.filter(isTraceError)
 );
 

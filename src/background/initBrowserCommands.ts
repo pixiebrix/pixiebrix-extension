@@ -16,15 +16,13 @@
  */
 
 import { toggleQuickBar } from "@/contentScript/messenger/api";
+import { Tab } from "@/mv3/api";
 import { Target } from "@/types";
 import { expectContext } from "@/utils/expectContext";
 import { canReceiveContentScript } from "@/utils/permissions";
 import { ensureContentScript } from "./util";
 
-async function handleCommand(
-  command: string,
-  tab: chrome.tabs.Tab
-): Promise<void> {
+async function handleCommand(command: string, tab: Tab): Promise<void> {
   if (command !== "toggle-quick-bar" || !canReceiveContentScript(tab.url)) {
     return;
   }
@@ -40,6 +38,5 @@ async function handleCommand(
 
 export default function initBrowserCommands(): void {
   expectContext("background");
-  // TODO: Use browser.* when its types are fixed https://github.com/Lusito/webextension-polyfill-ts/issues/70
-  chrome.commands.onCommand.addListener(handleCommand);
+  browser.commands.onCommand.addListener(handleCommand);
 }

@@ -95,7 +95,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
       const contextError = await pipeline.catch((error) => error);
 
       expect(sendDeploymentAlert).toHaveBeenCalledTimes(1);
-      expect(sendDeploymentAlert).toBeCalledWith({
+      expect(sendDeploymentAlert).toHaveBeenCalledWith({
         deploymentId,
         data: {
           id: throwBlock.id,

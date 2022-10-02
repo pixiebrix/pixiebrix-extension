@@ -33,7 +33,7 @@ const BlockGridItemRenderer: React.VFC<ItemRendererProps> = ({
   columnIndex,
   rowIndex,
   style,
-  data: { blockOptions, onSetDetailBlock, onSelectBlock },
+  data: { blockOptions, invalidBlockMessages, onSetDetailBlock, onSelectBlock },
 }) => {
   const index = getFlatArrayIndex({ rowIndex, columnIndex });
   const blockResult = blockOptions.at(index)?.blockResult;
@@ -49,6 +49,7 @@ const BlockGridItemRenderer: React.VFC<ItemRendererProps> = ({
           onShowDetail={() => {
             onSetDetailBlock(blockResult);
           }}
+          invalidMessage={invalidBlockMessages.get(blockResult.id)}
         />
       )}
     </div>

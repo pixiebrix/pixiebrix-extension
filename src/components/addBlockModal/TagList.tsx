@@ -26,6 +26,7 @@ import { faTag } from "@fortawesome/free-solid-svg-icons";
 export type TagItem = {
   tag: string;
   icon?: IconStringDefinition;
+  svgIcon?: string;
 };
 
 const TagListItem: React.VFC<{
@@ -45,9 +46,14 @@ const TagListItem: React.VFC<{
       }}
       data-testid={`search-tag-item-${item.tag}`}
     >
-      {icon && (
+      {icon && !item.svgIcon && (
         <>
           <FontAwesomeIcon icon={icon} fixedWidth />{" "}
+        </>
+      )}
+      {item.svgIcon && (
+        <>
+          <img src={item.svgIcon} alt="Icon" className={styles.svgIcon} />
         </>
       )}
       {item.tag}

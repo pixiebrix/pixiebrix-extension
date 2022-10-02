@@ -51,6 +51,14 @@ export const selectShowV3UpgradeMessageForActiveElement = createSelector(
     showV3UpgradeMessageByElement[activeElementId] ?? false
 );
 
+export const selectInserting = ({ editor }: EditorRootState) =>
+  editor.inserting;
+
+export const selectErrorState = ({ editor }: EditorRootState) => ({
+  isBetaError: editor.error && editor.beta,
+  editorError: editor.error,
+});
+
 export const selectDirty = ({ editor }: EditorRootState) => editor.dirty;
 
 export const selectDirtyRecipeOptions = ({ editor }: EditorRootState) =>
@@ -140,9 +148,6 @@ export const selectRecipeIsDirty =
 export const selectIsAddToRecipeModalVisible = ({ editor }: EditorRootState) =>
   editor.visibleModalKey === ModalKey.ADD_TO_RECIPE;
 
-export const selectIsAddBlockModalVisible = ({ editor }: EditorRootState) =>
-  editor.visibleModalKey === ModalKey.ADD_BLOCK;
-
 export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
   isAddToRecipeModalVisible: editor.visibleModalKey === ModalKey.ADD_TO_RECIPE,
   isRemoveFromRecipeModalVisible:
@@ -210,12 +215,8 @@ export const selectActiveNodeInfo = createSelector(
   selectActiveElementUIState,
   selectActiveNodeId,
   (uiState: ElementUIState, activeNodeId: UUID) =>
+    // eslint-disable-next-line security/detect-object-injection -- UUID
     uiState.pipelineMap[activeNodeId]
-);
-
-export const selectActiveNode = createSelector(
-  selectActiveNodeInfo,
-  (nodeInfo) => nodeInfo.blockConfig
 );
 
 export const selectNodeDataPanelTabSelected: (
@@ -253,13 +254,8 @@ const annotationsForPathSelector = createSelector(
     },
     (state, path: string) => path,
   ],
-  (extensionAnnotations, path) => {
-    const pathAnnotations = extensionAnnotations.filter(
-      (x) => x.position.path === path
-    );
-
-    return pathAnnotations;
-  }
+  (extensionAnnotations, path) =>
+    extensionAnnotations.filter((x) => x.position.path === path)
 );
 
 /**
@@ -268,3 +264,6 @@ const annotationsForPathSelector = createSelector(
  */
 export const selectAnnotationsForPath = (path: string) => (state: RootState) =>
   annotationsForPathSelector(state, path);
+
+export const selectCopiedBlock = ({ editor }: EditorRootState) =>
+  editor.copiedBlock;

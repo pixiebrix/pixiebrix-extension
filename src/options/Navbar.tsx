@@ -18,16 +18,10 @@
 import styles from "./Navbar.module.scss";
 
 import React from "react";
-import { Dropdown, Nav } from "react-bootstrap";
+import { Nav } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBars,
-  faCaretDown,
-  faExternalLinkAlt,
-  faSignOutAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBars, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import { DEFAULT_SERVICE_URL, getBaseURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
 import { isLinked } from "@/auth/token";
@@ -36,16 +30,15 @@ import { toggleSidebar } from "./toggleSidebar";
 import { SettingsState } from "@/store/settingsTypes";
 import cx from "classnames";
 import { selectAuth } from "@/auth/authSelectors";
-import useTheme from "@/hooks/useTheme";
+import { ThemeLogo } from "@/utils/themeUtils";
 
-const Navbar: React.FunctionComponent = () => {
-  const { email, extension } = useSelector(selectAuth);
+const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
+  const { email } = useSelector(selectAuth);
   const [serviceURL] = useAsyncState<string>(getBaseURL);
   const [connected, connectedPending] = useAsyncState(isLinked);
   const mode = useSelector<{ settings: SettingsState }, string>(
     ({ settings }) => settings.mode
   );
-  const { logo } = useTheme();
 
   // Use `connectedPending` to optimistically show the toggle
   const showNavbarToggle = mode === "local" || connected || connectedPending;
@@ -80,10 +73,16 @@ const Navbar: React.FunctionComponent = () => {
           </button>
         )}
 
-        <ul className="navbar-nav navbar-nav-right">
+        <div
+          className={cx(styles.extensionConsoleHeading, "d-none d-md-inline")}
+        >
+          Extension Console
+        </div>
+
+        <ul className="navbar-nav navbar-nav-right flex-grow-1 justify-content-end">
           {serviceURL && (
             <Nav.Link
-              className="mb-1 px-3"
+              className="px-3"
               target="_blank"
               href={serviceURL ?? DEFAULT_SERVICE_URL}
             >
@@ -91,41 +90,7 @@ const Navbar: React.FunctionComponent = () => {
               Open Admin Console
             </Nav.Link>
           )}
-
-          {email && !extension && (
-            // FIXME: remove https://github.com/pixiebrix/pixiebrix-app/issues/494
-            <li className="nav-item nav-profile">
-              <Dropdown alignRight>
-                <Dropdown.Toggle id="profile-dropdown" className="nav-link">
-                  <div className="d-flex">
-                    <div className="mb-1 text-black">{email}</div>
-                    <div className="ml-2 text-primary">
-                      <FontAwesomeIcon icon={faCaretDown} />
-                    </div>
-                  </div>
-                </Dropdown.Toggle>
-
-                <Dropdown.Menu className="navbar-dropdown">
-                  <Dropdown.Item
-                    href="#"
-                    onClick={async (event) => {
-                      event.preventDefault();
-                      // Posting to the Django view, not the API
-                      await axios.post("/logout/");
-                      location.href = "/";
-                    }}
-                  >
-                    <FontAwesomeIcon
-                      icon={faSignOutAlt}
-                      className="mr-2 text-primary"
-                    />
-                    Logout
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </li>
-          )}
-          {email && extension && <div className="mb-1 text-black">{email}</div>}
+          {email && <div className="text-black">{email}</div>}
         </ul>
       </div>
     </nav>

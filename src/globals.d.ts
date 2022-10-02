@@ -27,6 +27,11 @@ declare module "*.svg" {
   export default CONTENT;
 }
 
+declare module "*.png" {
+  const CONTENT: string;
+  export default CONTENT;
+}
+
 declare module "*?loadAsUrl" {
   const CONTENT: string;
   export default CONTENT;
@@ -112,11 +117,6 @@ declare module "@/vendors/initialize" {
   export default initialize;
 }
 
-// Missing from TS types, but it's a standard
-interface HTMLDialogElement extends HTMLElement {
-  showModal(): void;
-}
-
 // `useUnknownInCatchVariables` for .catch method https://github.com/microsoft/TypeScript/issues/45602
 interface Promise<T> {
   /**
@@ -180,3 +180,7 @@ interface ChromeifiedBrowser extends Browser {
 }
 
 declare const browser: ChromeifiedBrowser;
+
+declare namespace CSS {
+  function px(length: number): string;
+}

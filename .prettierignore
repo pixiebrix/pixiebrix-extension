@@ -4,3 +4,4 @@ coverage
 
 # ignore libraries
 node_modules
+public/mockServiceWorker.js

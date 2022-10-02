@@ -48,7 +48,7 @@ import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
-import { isDeploymentActive } from "@/utils/deployment";
+import { isDeploymentActive } from "@/utils/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
@@ -234,26 +234,36 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   decideReaderRoot(target: HTMLElement | Document): HTMLElement | Document {
     switch (this.targetMode) {
       case "legacy":
-      case "eventTarget":
+      case "eventTarget": {
         return target;
-      case "document":
+      }
+
+      case "document": {
         return document;
-      default:
+      }
+
+      default: {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
         throw new BusinessError(`Unknown targetMode: ${this.targetMode}`);
+      }
     }
   }
 
   decidePipelineRoot(target: HTMLElement | Document): HTMLElement | Document {
     switch (this.targetMode) {
-      case "eventTarget":
+      case "eventTarget": {
         return target;
+      }
+
       case "legacy":
-      case "document":
+      case "document": {
         return document;
-      default:
+      }
+
+      default: {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
         throw new BusinessError(`Unknown targetMode: ${this.targetMode}`);
+      }
     }
   }
 

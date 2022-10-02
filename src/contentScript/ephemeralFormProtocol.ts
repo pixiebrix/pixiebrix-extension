@@ -85,13 +85,15 @@ export async function resolveForm(
 }
 
 /**
- * Cancel the form. Is a NOP if the form is no longer registered.
- * @param formNonce the form nonce
+ * Cancel some forms. Is a NOP if a form is no longer registered.
+ * @param formNonces the form nonces
  */
-export async function cancelForm(formNonce: UUID): Promise<void> {
+export async function cancelForm(...formNonces: UUID[]): Promise<void> {
   expectContext("contentScript");
 
-  const form = forms.get(formNonce);
-  form?.registration.reject(new CancelError("User cancelled the action"));
-  unregisterForm(formNonce);
+  for (const formNonce of formNonces) {
+    const form = forms.get(formNonce);
+    form?.registration.reject(new CancelError("User cancelled the action"));
+    unregisterForm(formNonce);
+  }
 }

@@ -55,7 +55,10 @@ export const CONTEXT_INVALIDATED_ERROR = "Extension context invalidated.";
  */
 export const IGNORED_ERROR_PATTERNS = [
   "ResizeObserver loop limit exceeded",
+  "Network Error",
   "Promise was cancelled",
+  "Action cancelled",
+  "User cancelled the action",
   "Uncaught Error: PixieBrix contentScript already installed",
   "Could not establish connection. Receiving end does not exist.",
   "The frame was removed.",

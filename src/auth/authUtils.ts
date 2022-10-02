@@ -79,6 +79,7 @@ export function selectExtensionAuthState({
   flags = [],
   organization_memberships: organizationMemberships = [],
   group_memberships = [],
+  partner,
   enforce_update_millis: enforceUpdateMillis,
 }: Me): AuthState {
   const organizations = selectOrganizations(organizationMemberships);
@@ -95,6 +96,7 @@ export function selectExtensionAuthState({
     organizations,
     groups,
     flags,
+    partner,
     enforceUpdateMillis,
   };
 }

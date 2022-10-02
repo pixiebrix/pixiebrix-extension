@@ -23,10 +23,16 @@ import { castArray, uniq } from "lodash";
  *
  * Does not support changing the initial href(s)
  */
-export const Stylesheets: React.FC<{ href: string | string[] }> = ({
-  href,
-  children,
-}) => {
+export const Stylesheets: React.FC<{
+  href: string | string[];
+  /**
+   * If true, we mount the component after the stylesheets are loaded.
+   * Chrome doesn't focus on the hidden elements so we want to make sure that component is rendered after the stylesheets are loaded.
+   * If false, we mount the component immediately.
+   * Include the DOM to start loading the subresources too
+   */
+  mountOnLoad?: boolean;
+}> = ({ href, children, mountOnLoad = false }) => {
   const urls = uniq(castArray(href));
   const [resolved, setResolved] = useState<string[]>([]);
 
@@ -51,8 +57,11 @@ export const Stylesheets: React.FC<{ href: string | string[] }> = ({
           />
         );
       })}
-      {/* Include the DOM to start loading the subresources too */}
-      <div hidden={!allResolved}>{children}</div>
+      {mountOnLoad ? (
+        allResolved && <div>{children}</div>
+      ) : (
+        <div hidden={!allResolved}>{children}</div>
+      )}
     </>
   );
 };

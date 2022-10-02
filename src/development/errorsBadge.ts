@@ -16,19 +16,20 @@
  */
 
 import { getErrorMessage } from "@/errors/errorHelpers";
+import { browserAction } from "@/mv3/api";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
 
 let counter = 0;
 let timer: NodeJS.Timeout;
 
 function updateBadge(errorMessage: string | null): void {
-  void chrome.browserAction.setTitle({
+  void browserAction.setTitle({
     title: errorMessage ?? "Unknown error (no error message provided)",
   });
-  void chrome.browserAction.setBadgeText({
+  void browserAction.setBadgeText({
     text: counter ? String(counter) : undefined,
   });
-  void chrome.browserAction.setBadgeBackgroundColor({ color: "#F00" });
+  void browserAction.setBadgeBackgroundColor({ color: "#F00" });
 }
 
 function backgroundErrorsBadge(_: unknown, error: unknown) {

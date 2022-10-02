@@ -14,25 +14,25 @@ import { isEmpty, mapValues, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { Schema } from "@/core";
 import { isPrimitive } from "@/utils";
-import ConfigureBody from "@/options/pages/marketplace/ConfigureBody";
+import ExtensionsBody from "@/options/pages/marketplace/ExtensionsBody";
 import OptionsBody from "@/options/pages/marketplace/OptionsBody";
 import ServicesBody from "@/options/pages/marketplace/ServicesBody";
-import ActivateBody from "@/options/pages/marketplace/ActivateBody";
+import PermissionsBody from "@/options/pages/marketplace/PermissionsBody";
 import { inputProperties } from "@/helpers";
 
 const STEPS: WizardStep[] = [
-  { key: "review", label: "Select Bricks", Component: ConfigureBody },
   // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for TypeScript
   // to realize it's OK to pass in a whole RecipeDefinition for something that just needs the options prop
   {
     key: "options",
-    label: "Personalize Blueprint",
+    label: "Configure Blueprint",
     Component: OptionsBody as React.FunctionComponent<{
       blueprint: RecipeDefinition;
     }>,
   },
-  { key: "services", label: "Select Integrations", Component: ServicesBody },
-  { key: "activate", label: "Review & Activate", Component: ActivateBody },
+  { key: "services", label: "Integrations", Component: ServicesBody },
+  { key: "review", label: "Extensions Contained", Component: ExtensionsBody },
+  { key: "activate", label: "Permissions & URLs", Component: PermissionsBody },
 ];
 
 function useWizard(blueprint: RecipeDefinition): [WizardStep[], WizardValues] {

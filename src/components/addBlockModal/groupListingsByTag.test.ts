@@ -19,14 +19,12 @@ import {
   marketplaceListingFactory,
   marketplaceTagFactory,
 } from "@/testUtils/factories";
-import { POPULAR_BRICK_TAG_ID } from "@/components/addBlockModal/addBlockModalConstants";
 import groupListingsByTag from "@/components/addBlockModal/groupListingsByTag";
 
 describe("groupListingsByTag", () => {
   it("groups tags", () => {
     const popular = marketplaceTagFactory({
       subtype: "generic",
-      id: POPULAR_BRICK_TAG_ID,
       name: "Popular",
     });
     const category = marketplaceTagFactory({ subtype: "role", name: "Other" });
@@ -36,20 +34,28 @@ describe("groupListingsByTag", () => {
     });
 
     const popularListing = marketplaceListingFactory({
-      tags: [popular, category, other],
+      tags: [popular, category],
+    });
+    const regularListing = marketplaceListingFactory({
+      tags: [category],
+    });
+    const otherListing = marketplaceListingFactory({
+      tags: [other],
     });
 
-    const { taggedBrickIds, popularBrickIds } = groupListingsByTag(
-      [popular, other, category],
-      { [popularListing.package.name]: popularListing }
-    );
+    const taggedBrickIds = groupListingsByTag([popular, other, category], {
+      [popularListing.package.name]: popularListing,
+      [regularListing.package.name]: regularListing,
+      [otherListing.package.name]: otherListing,
+    });
 
     expect(taggedBrickIds).toStrictEqual({
-      [category.name]: new Set([popularListing.package.name]),
+      [popular.name]: new Set([popularListing.package.name]),
+      [category.name]: new Set([
+        popularListing.package.name,
+        regularListing.package.name,
+      ]),
+      [other.name]: new Set([otherListing.package.name]),
     });
-
-    expect(popularBrickIds).toStrictEqual(
-      new Set([popularListing.package.name])
-    );
   });
 });

@@ -18,40 +18,29 @@
 import { Deployment } from "@/types/contract";
 import { useCallback, useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
-import { blueprintPermissions, ensureAllPermissions } from "@/permissions";
+import { ensureAllPermissions } from "@/permissions";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
-import { getUID } from "@/background/messenger/api";
+import { getUID, services } from "@/background/messenger/api";
 import { getExtensionVersion } from "@/chrome";
-import { selectInstalledDeployments } from "@/background/deployment";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { Dispatch } from "redux";
-import { mergePermissions } from "@/utils/permissions";
-import { Permissions } from "webextension-polyfill";
-import { IExtension, RegistryId, UUID } from "@/core";
+import { IExtension } from "@/core";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import extensionsSlice from "@/store/extensionsSlice";
 import useFlags from "@/hooks/useFlags";
 import {
   checkExtensionUpdateRequired,
   makeUpdatedFilter,
-} from "@/utils/deployment";
+  mergeDeploymentServiceConfigurations,
+  selectInstalledDeployments,
+} from "@/utils/deploymentUtils";
 import settingsSlice from "@/store/settingsSlice";
+import { selectDeploymentPermissions } from "@/utils/deploymentPermissionUtils";
 
 const { actions } = extensionsSlice;
-
-async function selectDeploymentPermissions(
-  deployments: Deployment[]
-): Promise<Permissions.Permissions> {
-  const blueprints = deployments.map((x) => x.package.config);
-  // Deployments can only use proxied services, so there's no additional permissions to request for the serviceAuths.
-  const permissions = await Promise.all(
-    blueprints.map(async (x) => blueprintPermissions(x))
-  );
-  return mergePermissions(permissions);
-}
 
 /**
  * Fetch deployments, or return empty array if the extension is not linked to the PixieBrix API.
@@ -78,41 +67,62 @@ async function fetchDeployments(
   return deployments;
 }
 
-function activateDeployments(
+async function activateDeployment(
+  dispatch: Dispatch,
+  deployment: Deployment,
+  installed: IExtension[]
+): Promise<void> {
+  // Clear existing installations of the blueprint
+  for (const extension of installed) {
+    // Extension won't have recipe if it was locally created by a developer
+    if (extension._recipe?.id === deployment.package.package_id) {
+      dispatch(
+        actions.removeExtension({
+          extensionId: extension.id,
+        })
+      );
+    }
+  }
+
+  // Install the blueprint with the service definition
+  dispatch(
+    actions.installRecipe({
+      recipe: deployment.package.config,
+      extensionPoints: deployment.package.config.extensionPoints,
+      services: await mergeDeploymentServiceConfigurations(
+        deployment,
+        services.locateAllForId
+      ),
+      deployment,
+    })
+  );
+
+  reportEvent("DeploymentActivate", {
+    deployment: deployment.id,
+  });
+}
+
+async function activateDeployments(
   dispatch: Dispatch,
   deployments: Deployment[],
   installed: IExtension[]
-) {
+): Promise<void> {
+  // Activate as many as we can
+  const errors = [];
+
   for (const deployment of deployments) {
-    // Clear existing installs of the blueprint
-    for (const extension of installed) {
-      // Extension won't have recipe if it was locally created by a developer
-      if (extension._recipe?.id === deployment.package.package_id) {
-        dispatch(
-          actions.removeExtension({
-            extensionId: extension.id,
-          })
-        );
-      }
+    try {
+      // eslint-disable-next-line no-await-in-loop -- modifies redux state
+      await activateDeployment(dispatch, deployment, installed);
+    } catch (error) {
+      errors.push(error);
     }
+  }
 
-    // Install the blueprint with the service definition
-    dispatch(
-      actions.installRecipe({
-        recipe: deployment.package.config,
-        extensionPoints: deployment.package.config.extensionPoints,
-        services: Object.fromEntries(
-          deployment.bindings.map(
-            (x) => [x.auth.service_id, x.auth.id] as [RegistryId, UUID]
-          )
-        ),
-        deployment,
-      })
-    );
-
-    reportEvent("DeploymentActivate", {
-      deployment: deployment.id,
-    });
+  if (errors.length > 0) {
+    // XXX: only throwing the first is OK, because the user will see the next error if they fix this error and then
+    // activate deployments again
+    throw errors[0];
   }
 }
 
@@ -202,7 +212,10 @@ function useDeployments(): DeploymentState {
       return;
     }
 
-    const permissions = await selectDeploymentPermissions(deployments);
+    const permissions = await selectDeploymentPermissions(
+      deployments,
+      services.locateAllForId
+    );
 
     let accepted = false;
     try {
@@ -222,7 +235,7 @@ function useDeployments(): DeploymentState {
     }
 
     try {
-      activateDeployments(dispatch, deployments, installedExtensions);
+      await activateDeployments(dispatch, deployments, installedExtensions);
       notify.success("Activated team deployments");
     } catch (error) {
       notify.error({ message: "Error activating team deployments", error });

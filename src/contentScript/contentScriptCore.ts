@@ -36,7 +36,6 @@ import { initPartnerIntegrations } from "@/contentScript/partnerIntegrations";
 import {
   isContextInvalidatedError,
   notifyContextInvalidated,
-  onContextInvalidated,
 } from "@/errors/contextInvalidated";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
 import { UUID } from "@/core";
@@ -48,7 +47,7 @@ function ignoreContextInvalidatedErrors(
   // they're actually interacting with PixieBrix, otherwise they might receive the notification
   // at random times.
   if (isContextInvalidatedError(errorEvent)) {
-    notifyContextInvalidated();
+    void notifyContextInvalidated();
     errorEvent.preventDefault();
   }
 }
@@ -77,11 +76,4 @@ export async function init(uuid: UUID): Promise<void> {
 
   // Let the partner page know
   initPartnerIntegrations();
-
-  // Put here instead of in the sync contentScript because contextInvalidated has a transitive dependency on the
-  // messenger (which causes a race on messenger initialization)
-  // eslint-disable-next-line promise/prefer-await-to-then -- It's an unrelated event listener
-  void onContextInvalidated().then(() => {
-    console.debug("contentScript: invalidated", uuid);
-  });
 }
