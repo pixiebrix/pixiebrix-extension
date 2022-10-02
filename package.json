@@ -237,7 +237,7 @@
     "jest-environment-jsdom": "^29.0.2",
     "jest-extended": "^3.1.0",
     "jest-webextension-mock": "^3.7.17",
-    "jsdom": "^20.0.0",
+    "jsdom": "^20.0.1",
     "min-document": "^2.19.0",
     "mini-css-extract-plugin": "^2.4.1",
     "mockdate": "^3.0.5",
