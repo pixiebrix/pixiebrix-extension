@@ -26,6 +26,19 @@ import userEvent from "@testing-library/user-event";
 import { uniq } from "lodash";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
+import databaseSchema from "@schemas/database.json";
+
+jest.mock("@/pageEditor/hooks/useDatabaseOptions", () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue({
+    databaseOptions: [],
+    isLoading: false,
+  }),
+}));
+jest.mock("@/pageEditor/fields/DatabaseCreateModal", () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue(() => <div>DatabaseCreateModal</div>),
+}));
 
 type SchemaTestCase = {
   name: string;
@@ -388,6 +401,38 @@ describe("SchemaField", () => {
           expect(testIds.at(-1)).toEqual("omit");
         }
       });
+    }
+  );
+
+  const databaseFieldTestCases = [
+    {
+      isRequired: true,
+      expectedOptions: ["database", "var"],
+    },
+    {
+      isRequired: false,
+      expectedOptions: ["database", "var", "omit"],
+    },
+  ];
+  test.each(databaseFieldTestCases)(
+    "database field toggle options (required: $isRequired)",
+    async ({ isRequired, expectedOptions }) => {
+      const { container } = render(
+        <Formik
+          onSubmit={() => {}}
+          initialValues={{ apiVersion: "v3", testField: null }}
+        >
+          <SchemaField
+            name="testField"
+            schema={{
+              $ref: databaseSchema.$id,
+            }}
+            isRequired={isRequired}
+          />
+        </Formik>
+      );
+
+      await expectToggleOptions(container, expectedOptions);
     }
   );
 });
