@@ -18,7 +18,7 @@
 const zipdir = require("zip-dir");
 const fs = require("fs");
 const os = require("os");
-const onetime = require("onetime");
+const { once } = require("lodash");
 const webdriver = require("selenium-webdriver");
 const chrome = require("selenium-webdriver/chrome");
 const extensionLocation = require("../package.json").webExt.sourceDir;
@@ -45,7 +45,7 @@ function getBuilder() {
 
 // Only paths are accepted in Firefox
 // https://github.com/SeleniumHQ/selenium/issues/8357
-const getZippedExtensionAsPath = onetime(async function () {
+const getZippedExtensionAsPath = once(async function () {
   const tempDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "pixie-"));
   const tempZippedFile = path.join(tempDirectory, "extension.zip");
   console.log("Storing zip in", tempZippedFile);
