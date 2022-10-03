@@ -23,6 +23,9 @@ import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Button } from "react-bootstrap";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 import { action } from "@storybook/addon-actions";
+import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
+
+registerDefaultWidgets();
 
 export default {
   title: "Fields/SchemaField",
