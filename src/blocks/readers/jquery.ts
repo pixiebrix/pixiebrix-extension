@@ -71,16 +71,23 @@ function cleanValue(value: string): string {
 
 function castValue(value: string, type?: CastType): Result {
   switch (type) {
-    case "boolean":
+    case "boolean": {
       return Boolean(value);
-    case "number":
+    }
+
+    case "number": {
       return Number(value);
+    }
+
     case undefined:
     case null:
-    case "string":
+    case "string": {
       return value;
-    default:
+    }
+
+    default: {
       throw new BusinessError(`Cast type ${type as string} not supported`);
+    }
   }
 }
 

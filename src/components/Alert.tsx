@@ -37,19 +37,25 @@ const Alert: React.FunctionComponent<AlertProps> = ({
 }) => {
   let icon: IconDefinition;
   switch (variant) {
-    case "info":
+    case "info": {
       icon = faInfoCircle;
       break;
-    case "warning":
+    }
+
+    case "warning": {
       icon = faExclamationTriangle;
       break;
-    case "danger":
+    }
+
+    case "danger": {
       icon = faExclamationCircle;
       break;
+    }
 
-    default:
+    default: {
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamically inferring never
       throw new Error(`Unknown variant: ${variant}`);
+    }
   }
 
   return (

@@ -67,8 +67,8 @@ describe("parse compile error", () => {
       }
     );
 
-    await expect(promise).rejects.toThrowError(InputValidationError);
-    await expect(promise).rejects.toThrowError(
+    await expect(promise).rejects.toThrow(InputValidationError);
+    await expect(promise).rejects.toThrow(
       'date "" does not match format "%Y-%m-%dT%H:%M:%SZ"'
     );
   });
@@ -85,8 +85,8 @@ describe("parse compile error", () => {
       }
     );
 
-    await expect(promise).rejects.toThrowError(InputValidationError);
-    await expect(promise).rejects.toThrowError(
+    await expect(promise).rejects.toThrow(InputValidationError);
+    await expect(promise).rejects.toThrow(
       "Unexpected end of jq filter, are you missing a parentheses, brace, and/or quote mark?"
     );
   });
@@ -103,9 +103,7 @@ describe("parse compile error", () => {
       }
     );
 
-    await expect(promise).rejects.toThrowError(BusinessError);
-    await expect(promise).rejects.toThrowError(
-      "Cannot iterate over null (null)"
-    );
+    await expect(promise).rejects.toThrow(BusinessError);
+    await expect(promise).rejects.toThrow("Cannot iterate over null (null)");
   });
 });

@@ -25,36 +25,43 @@ export function createNewElement(elementType: DocumentElementType) {
   };
 
   switch (elementType) {
-    case "header":
+    case "header": {
       element.config.title = "Header";
       element.config.heading = "h1";
       break;
+    }
 
-    case "text":
+    case "text": {
       element.config.text = "Paragraph text. **Markdown** is supported.";
       element.config.enableMarkdown = true;
       break;
+    }
 
-    case "image":
+    case "image": {
       element.config.url = null;
       break;
+    }
 
-    case "container":
+    case "container": {
       element.children = [createNewElement("row")];
       break;
+    }
 
-    case "row":
+    case "row": {
       element.children = [createNewElement("column")];
       break;
+    }
 
-    case "column":
+    case "column": {
       element.children = [];
       break;
+    }
 
-    case "card":
+    case "card": {
       element.config.heading = "Header";
       element.children = [];
       break;
+    }
 
     case "pipeline": {
       element.config.label = "Brick";
@@ -77,17 +84,19 @@ export function createNewElement(elementType: DocumentElementType) {
       break;
     }
 
-    case "list":
+    case "list": {
       element.config.element = {
         __type__: "defer",
         __value__: createNewElement("text"),
       } as DeferExpression<DocumentElement>;
       break;
+    }
 
-    default:
+    default: {
       throw new Error(
         `Can't create new element. Type "${elementType} is not supported.`
       );
+    }
   }
 
   return element;

@@ -117,11 +117,6 @@ declare module "@/vendors/initialize" {
   export default initialize;
 }
 
-// Missing from TS types, but it's a standard
-interface HTMLDialogElement extends HTMLElement {
-  showModal(): void;
-}
-
 // `useUnknownInCatchVariables` for .catch method https://github.com/microsoft/TypeScript/issues/45602
 interface Promise<T> {
   /**

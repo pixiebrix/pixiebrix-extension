@@ -1,14 +1,14 @@
 /** @file It's possible that some of these tabs might lose the permission in the meantime, we can't track that exactly */
 
-import { Tabs } from "webextension-polyfill";
 import { updatePageEditor } from "@/pageEditor/messenger/api";
 import { canReceiveContentScript } from "@/utils/permissions";
+import { browserAction, Tab } from "@/mv3/api";
 
 type TabId = number;
 type Origin = string;
 export const possiblyActiveTabs = new Map<TabId, Origin>();
 
-function track(tab: Tabs.Tab): void {
+function track(tab: Tab): void {
   if (tab.url && canReceiveContentScript(tab.url)) {
     console.debug("ActiveTab added:", tab.id, tab.url);
     possiblyActiveTabs.set(tab.id, new URL(tab.url).origin);
@@ -19,7 +19,7 @@ function track(tab: Tabs.Tab): void {
 }
 
 export default function initActiveTabTracking() {
-  browser.browserAction.onClicked.addListener(track);
+  browserAction.onClicked.addListener(track);
   browser.contextMenus.onClicked.addListener((_, tab) => {
     track(tab);
   });
