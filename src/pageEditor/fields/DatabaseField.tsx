@@ -68,12 +68,11 @@ const DatabaseField: React.FunctionComponent<{
 
   return (
     <>
-      {showModal && (
-        <DatabaseCreateModal
-          onClose={onModalClose}
-          onDatabaseCreated={onDatabaseCreated}
-        />
-      )}
+      <DatabaseCreateModal
+        show={showModal}
+        onClose={onModalClose}
+        onDatabaseCreated={onDatabaseCreated}
+      />
       {isExpression(databaseId) ? (
         <FieldTemplate
           name={name}

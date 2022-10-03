@@ -77,12 +77,11 @@ const DatabaseWidget: React.FunctionComponent<{
 
   return (
     <>
-      {showModal && (
-        <DatabaseCreateModal
-          onClose={onModalClose}
-          onDatabaseCreated={onDatabaseCreated}
-        />
-      )}
+      <DatabaseCreateModal
+        show={showModal}
+        onClose={onModalClose}
+        onDatabaseCreated={onDatabaseCreated}
+      />
 
       <SelectWidget
         name={name}
