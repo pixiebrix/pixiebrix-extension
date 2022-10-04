@@ -94,12 +94,16 @@ function useGetOrganizationTheme(): {
 } {
   const { data: me, isLoading } = useGetMeQuery();
   const organizationTheme = me?.organization?.theme;
+  const defaultTheme = {
+    showSidebarLogo: true,
+  };
+
+  const showSidebarLogo = organizationTheme
+    ? Boolean(organizationTheme.show_sidebar_logo)
+    : defaultTheme.showSidebarLogo;
 
   return {
-    showSidebarLogo:
-      !isLoading && !organizationTheme
-        ? true
-        : Boolean(organizationTheme?.show_sidebar_logo),
+    showSidebarLogo: isLoading ? false : showSidebarLogo,
   };
 }
 
