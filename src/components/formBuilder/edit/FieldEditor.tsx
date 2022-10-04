@@ -26,7 +26,6 @@ import {
 import { UI_WIDGET } from "@/components/formBuilder/schemaFieldNames";
 import {
   FIELD_TYPES_WITHOUT_DEFAULT,
-  FIELD_TYPE_OPTIONS,
   parseUiType,
   produceSchemaOnPropertyNameChange,
   produceSchemaOnUiTypeChange,
@@ -59,13 +58,8 @@ const FieldEditor: React.FC<{
   name: string;
   propertyName: string;
   setActiveField: SetActiveField;
-  fieldTypes?: SelectStringOption[];
-}> = ({
-  name,
-  propertyName,
-  setActiveField,
-  fieldTypes = FIELD_TYPE_OPTIONS,
-}) => {
+  fieldTypes: SelectStringOption[];
+}> = ({ name, propertyName, setActiveField, fieldTypes }) => {
   const [{ value: rjsfSchema }, , { setValue: setRjsfSchema }] =
     useField<RJSFSchema>(name);
   const { schema, uiSchema } = rjsfSchema;

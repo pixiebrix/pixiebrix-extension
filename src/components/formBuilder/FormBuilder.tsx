@@ -22,6 +22,7 @@ import FormEditor from "./edit/FormEditor";
 import FormPreview from "./preview/FormPreview";
 import { useField } from "formik";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
+import { stringifyUiType } from "./formBuilderHelpers";
 
 const FormBuilder: React.FC<{
   name: string;
@@ -37,6 +38,19 @@ const FormBuilder: React.FC<{
           name={name}
           activeField={activeField}
           setActiveField={setActiveField}
+          fieldTypes={[
+            {
+              label: "Single line text",
+              value: stringifyUiType({ propertyType: "string" }),
+            },
+            {
+              label: "Paragraph text",
+              value: stringifyUiType({
+                propertyType: "string",
+                uiWidget: "textarea",
+              }),
+            },
+          ]}
         />
       </div>
       <div className={styles.column} data-testid="preview">

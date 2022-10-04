@@ -36,6 +36,7 @@ import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import Select, { Options } from "react-select";
+import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import databaseSchema from "@schemas/database.json";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
@@ -177,6 +178,7 @@ const FormRendererOptions: React.FC<{
           name={configName}
           activeField={activeElement}
           setActiveField={setActiveElement}
+          fieldTypes={FORM_FIELD_TYPE_OPTIONS}
         />
       </ConfigErrorBoundary>
     </div>
