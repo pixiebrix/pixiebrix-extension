@@ -24,7 +24,7 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
-import { makePipelineExpression } from "@/testUtils/expressionTestHelpers";
+import { makePipelineExpression } from "@/runtime/expressionCreators";
 
 jest.mock("@/background/messenger/api", () => {
   const actual = jest.requireActual("@/background/messenger/api");

@@ -21,12 +21,16 @@ import { joinName } from "@/utils";
 import { partial } from "lodash";
 import React from "react";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
-import DatabaseField from "@/pageEditor/fields/DatabaseField";
+import databaseSchema from "@schemas/database.json";
 
 const keySchema: Schema = {
   type: "string",
   title: "Key",
   description: "The unique key for the record",
+};
+
+const databaseIdSchema: Schema = {
+  $ref: databaseSchema.$id,
 };
 
 const mergeStrategySchema: Schema = {
@@ -72,8 +76,12 @@ const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
   return (
     <div>
       <SchemaField name={configName("key")} schema={keySchema} isRequired />
-
-      <DatabaseField name={configName("databaseId")} />
+      <SchemaField
+        name={configName("databaseId")}
+        label="Database"
+        schema={databaseIdSchema}
+        isRequired
+      />
 
       {showValueField ? (
         <>

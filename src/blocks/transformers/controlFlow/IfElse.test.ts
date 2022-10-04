@@ -25,7 +25,7 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { makePipelineExpression } from "@/testUtils/expressionTestHelpers";
+import { makePipelineExpression } from "@/runtime/expressionCreators";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 jest.mock("@/background/messenger/api", () => {
