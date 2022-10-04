@@ -40,9 +40,17 @@ export const SelectionToolPopover: React.FC<{
   onCancel: () => void;
   onDone: () => void;
   onChangeMultiSelection: (value: boolean) => void;
+  onChangeSimilarSelection: (value: boolean) => void;
   setSelectionHandler: SetSelectionHandlerType;
-}> = ({ onCancel, onDone, onChangeMultiSelection, setSelectionHandler }) => {
+}> = ({
+  onCancel,
+  onDone,
+  onChangeMultiSelection,
+  onChangeSimilarSelection,
+  setSelectionHandler,
+}) => {
   const [multiEnabled, setMultiEnabled] = useState(false);
+  const [similarEnabled, setSimilarEnabled] = useState(false);
   const [matchingCount, setMatchingCount] = useState(0);
 
   useEffect(() => {
@@ -74,11 +82,27 @@ export const SelectionToolPopover: React.FC<{
                   value={multiEnabled}
                   onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
                     setMultiEnabled(target.value);
+                    if (!target.value) {
+                      setSimilarEnabled(false);
+                    }
+
                     onChangeMultiSelection(target.value);
                   }}
                 />
                 <FormLabel className="align-middle mx-3 mb-0">
                   Select Multiple
+                </FormLabel>
+
+                <SwitchButtonWidget
+                  name="allowMulti"
+                  value={similarEnabled}
+                  onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+                    setSimilarEnabled(target.value);
+                    onChangeSimilarSelection(target.value);
+                  }}
+                />
+                <FormLabel className="align-middle mx-3 mb-0">
+                  Select Similar
                 </FormLabel>
 
                 <Button size="sm" variant="info" onClick={onCancel}>
@@ -105,20 +129,23 @@ export const showSelectionToolPopover = ({
   rootElement,
   handleCancel,
   handleDone,
-  handleChange,
+  handleMultiChange,
+  handleSimilarChange,
   setSelectionHandler,
 }: {
   rootElement: HTMLElement;
   handleCancel: () => void;
   handleDone: () => void;
-  handleChange: (value: boolean) => void;
+  handleMultiChange: (value: boolean) => void;
+  handleSimilarChange: (value: boolean) => void;
   setSelectionHandler: SetSelectionHandlerType;
 }) => {
   ReactDOM.render(
     <SelectionToolPopover
       onDone={handleDone}
       onCancel={handleCancel}
-      onChangeMultiSelection={handleChange}
+      onChangeMultiSelection={handleMultiChange}
+      onChangeSimilarSelection={handleSimilarChange}
       setSelectionHandler={setSelectionHandler}
     />,
     rootElement

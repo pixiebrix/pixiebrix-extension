@@ -63,235 +63,249 @@ export async function userSelectElement({
   root,
   filter,
   enableSelectionTools = false,
-}: UserSelection = {}): Promise<{ elements: HTMLElement[]; isMulti: boolean }> {
-  return new Promise<{ elements: HTMLElement[]; isMulti: boolean }>(
-    (resolve, reject) => {
-      const targets = new Set<HTMLElement>();
-      let isMulti = false;
-      if (!overlay) {
-        overlay = new Overlay();
-        expandOverlay = new Overlay("light");
-      }
+}: UserSelection = {}): Promise<{
+  elements: HTMLElement[];
+  isMulti: boolean;
+  shouldSelectSimilar: boolean;
+}> {
+  return new Promise<{
+    elements: HTMLElement[];
+    isMulti: boolean;
+    shouldSelectSimilar: boolean;
+  }>((resolve, reject) => {
+    const targets = new Set<HTMLElement>();
+    let isMulti = false;
+    let shouldSelectSimilar = false;
+    if (!overlay) {
+      overlay = new Overlay();
+      expandOverlay = new Overlay("light");
+    }
 
-      function prehiglightItems() {
-        let filteredElements: HTMLElement[];
-        if (filter) {
-          filteredElements = [
-            ...document.querySelectorAll<HTMLElement>(filter),
-          ];
-          const updateOverlay = () => {
-            if (!_cancelSelect) {
-              // The operation has completed
-              return;
-            }
-
-            overlay.inspect(filteredElements);
-            setTimeout(() => requestAnimationFrame(updateOverlay), 30); // Only when the tab is visible
-          };
-
-          if (filteredElements.length > 0) {
-            updateOverlay();
-          }
-        }
-      }
-
-      function findExpectedTarget(target: EventTarget): HTMLElement | void {
-        if (!(target instanceof HTMLElement)) {
-          return;
-        }
-
-        if (!filter) {
-          return target;
-        }
-
-        return target.closest<HTMLElement>(filter);
-      }
-
-      function startInspectingNative() {
-        _cancelSelect = cancel;
-        registerListenersOnWindow(window);
-        addInspectingModeStyles(window);
-        if (enableSelectionTools) {
-          addMultiSelectionTool(window);
-        }
-
-        prehiglightItems();
-      }
-
-      function stopInspectingNative() {
-        hideOverlay();
-        _cancelSelect = null;
-        removeListenersOnWindow(window);
-        removeInspectingModeStyles();
-        if (enableSelectionTools) {
-          removeMultiSelectionTool();
-        }
-      }
-
-      function handleDone(target?: HTMLElement) {
-        try {
-          const result = uniq(compact([...targets, target]));
-          if (root && result.some((x) => !root.contains(x))) {
-            throw new Error(
-              "One or more selected elements are not contained within the root container"
-            );
+    function prehiglightItems() {
+      let filteredElements: HTMLElement[];
+      if (filter) {
+        filteredElements = [...document.querySelectorAll<HTMLElement>(filter)];
+        const updateOverlay = () => {
+          if (!_cancelSelect) {
+            // The operation has completed
+            return;
           }
 
-          resolve({ elements: result, isMulti });
-        } finally {
-          stopInspectingNative();
+          overlay.inspect(filteredElements);
+          setTimeout(() => requestAnimationFrame(updateOverlay), 30); // Only when the tab is visible
+        };
+
+        if (filteredElements.length > 0) {
+          updateOverlay();
         }
       }
+    }
 
-      function handleMultiSelectionChange(value: boolean) {
-        isMulti = value;
-        if (!isMulti) {
-          overlay.inspect([]);
-          expandOverlay.inspect([]);
-          targets.clear();
-        }
+    function findExpectedTarget(target: EventTarget): HTMLElement | void {
+      if (!(target instanceof HTMLElement)) {
+        return;
       }
 
-      function noopMouseHandler(event: MouseEvent) {
-        const target = findExpectedTarget(event.target);
-        if (!target) {
-          event.preventDefault();
-          event.stopPropagation();
-          return;
-        }
-
-        // Do not prevent mouse event in order to drag feature working.
-        if (target.contains(multiSelectionToolElement)) {
-          return;
-        }
-
-        event.preventDefault();
-        event.stopPropagation();
+      if (!filter) {
+        return target;
       }
 
-      function onClick(event: MouseEvent) {
-        const target = findExpectedTarget(event.target);
-        if (event.altKey || !target) {
-          return;
-        }
+      return target.closest<HTMLElement>(filter);
+    }
 
-        // Do not allow the user to select the multi-element selection popup.
-        if (target.contains(multiSelectionToolElement)) {
-          return;
-        }
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        if (event.shiftKey || isMulti) {
-          if (targets.has(target)) {
-            targets.delete(target);
-          } else {
-            targets.add(target);
-          }
-
-          overlay.inspect([...targets]);
-          selectionHandler(targets.size);
-
-          if (targets.size > 1) {
-            const commonSelector = commonCssSelector([...targets]);
-            expandOverlay.inspect([...$(commonSelector).get()]);
-          } else {
-            expandOverlay.inspect([]);
-          }
-
-          return;
-        }
-
-        handleDone(target);
+    function startInspectingNative() {
+      _cancelSelect = cancel;
+      registerListenersOnWindow(window);
+      addInspectingModeStyles(window);
+      if (enableSelectionTools) {
+        addMultiSelectionTool(window);
       }
 
-      function onPointerDown(event: MouseEvent) {
-        const target = findExpectedTarget(event.target);
-        if (!target) {
-          event.preventDefault();
-          event.stopPropagation();
-          return;
-        }
+      prehiglightItems();
+    }
 
-        // Do not allow the user to select the multi-element selection popup.
-        if (target.contains(multiSelectionToolElement)) {
-          return;
-        }
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        console.debug("Pointer down:", event.target);
+    function stopInspectingNative() {
+      hideOverlay();
+      _cancelSelect = null;
+      removeListenersOnWindow(window);
+      removeInspectingModeStyles();
+      if (enableSelectionTools) {
+        removeMultiSelectionTool();
       }
+    }
 
-      function onPointerOver(event: MouseEvent) {
-        event.preventDefault();
-        event.stopPropagation();
-        const target = findExpectedTarget(event.target);
-
-        if (target) {
-          overlay.inspect([...targets, target]);
-        }
-      }
-
-      function onPointerLeave() {
-        overlay.inspect([...targets]);
-      }
-
-      function escape(event: KeyboardEvent) {
-        if (event.type === "keyup" && event.key === "Escape") {
-          event.preventDefault();
-          event.stopPropagation();
-          cancel();
-        }
-      }
-
-      function cancel() {
-        stopInspectingNative();
-        reject(new Error("Selection cancelled"));
-      }
-
-      function registerListenersOnWindow(window: Window) {
-        window.addEventListener("click", onClick, true);
-        window.addEventListener("mousedown", noopMouseHandler, true);
-        window.addEventListener("mouseover", noopMouseHandler, true);
-        window.addEventListener("mouseup", noopMouseHandler, true);
-        window.addEventListener("pointerdown", onPointerDown, true);
-
-        if (!filter) {
-          window.addEventListener("pointerover", onPointerOver, true);
-          window.document.addEventListener(
-            "pointerleave",
-            onPointerLeave,
-            true
+    function handleDone(target?: HTMLElement) {
+      try {
+        const result = uniq(compact([...targets, target]));
+        if (root && result.some((x) => !root.contains(x))) {
+          throw new Error(
+            "One or more selected elements are not contained within the root container"
           );
         }
 
-        window.addEventListener("pointerup", noopMouseHandler, true);
-        window.addEventListener("keyup", escape, true);
+        resolve({ elements: result, isMulti, shouldSelectSimilar });
+      } finally {
+        stopInspectingNative();
+      }
+    }
+
+    function handleMultiSelectionChange(value: boolean) {
+      isMulti = value;
+      if (!isMulti) {
+        shouldSelectSimilar = false;
+        overlay.inspect([]);
+        expandOverlay.inspect([]);
+        targets.clear();
+      }
+    }
+
+    function handleSimilarSelectionChange(value: boolean) {
+      shouldSelectSimilar = value;
+      if (shouldSelectSimilar) {
+        const commonSelector = commonCssSelector([...targets]);
+        const expandTargets = $(commonSelector);
+        selectionHandler(expandTargets.length);
+        expandOverlay.inspect([...expandTargets]);
+      } else {
+        selectionHandler(targets.size);
+        expandOverlay.inspect([]);
+      }
+    }
+
+    function noopMouseHandler(event: MouseEvent) {
+      const target = findExpectedTarget(event.target);
+      if (!target) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
       }
 
-      function removeListenersOnWindow(window: Window) {
-        window.removeEventListener("click", onClick, true);
-        window.removeEventListener("mousedown", noopMouseHandler, true);
-        window.removeEventListener("mouseover", noopMouseHandler, true);
-        window.removeEventListener("mouseup", noopMouseHandler, true);
-        window.removeEventListener("pointerdown", onPointerDown, true);
-        window.removeEventListener("pointerover", onPointerOver, true);
-        window.document.removeEventListener(
-          "pointerleave",
-          onPointerLeave,
-          true
-        );
-        window.removeEventListener("pointerup", noopMouseHandler, true);
-        window.removeEventListener("keyup", escape, true);
+      // Do not prevent mouse event in order to drag feature working.
+      if (target.contains(multiSelectionToolElement)) {
+        return;
       }
 
-      function addInspectingModeStyles(window: Window) {
-        const doc = window.document;
-        styleElement = doc.createElement("style");
-        styleElement.innerHTML = `
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    function onClick(event: MouseEvent) {
+      const target = findExpectedTarget(event.target);
+      if (event.altKey || !target) {
+        return;
+      }
+
+      // Do not allow the user to select the multi-element selection popup.
+      if (target.contains(multiSelectionToolElement)) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (event.shiftKey || isMulti) {
+        if (targets.has(target)) {
+          targets.delete(target);
+        } else {
+          targets.add(target);
+        }
+
+        overlay.inspect([...targets]);
+
+        if (targets.size > 1 && shouldSelectSimilar) {
+          const commonSelector = commonCssSelector([...targets]);
+          const expandTargets = $(commonSelector);
+          selectionHandler(expandTargets.length);
+          expandOverlay.inspect([...expandTargets]);
+        } else {
+          selectionHandler(targets.size);
+          expandOverlay.inspect([]);
+        }
+
+        return;
+      }
+
+      handleDone(target);
+    }
+
+    function onPointerDown(event: MouseEvent) {
+      const target = findExpectedTarget(event.target);
+      if (!target) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+
+      // Do not allow the user to select the multi-element selection popup.
+      if (target.contains(multiSelectionToolElement)) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      console.debug("Pointer down:", event.target);
+    }
+
+    function onPointerOver(event: MouseEvent) {
+      event.preventDefault();
+      event.stopPropagation();
+      const target = findExpectedTarget(event.target);
+
+      if (target) {
+        overlay.inspect([...targets, target]);
+      }
+    }
+
+    function onPointerLeave() {
+      overlay.inspect([...targets]);
+    }
+
+    function escape(event: KeyboardEvent) {
+      if (event.type === "keyup" && event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        cancel();
+      }
+    }
+
+    function cancel() {
+      stopInspectingNative();
+      reject(new Error("Selection cancelled"));
+    }
+
+    function registerListenersOnWindow(window: Window) {
+      window.addEventListener("click", onClick, true);
+      window.addEventListener("mousedown", noopMouseHandler, true);
+      window.addEventListener("mouseover", noopMouseHandler, true);
+      window.addEventListener("mouseup", noopMouseHandler, true);
+      window.addEventListener("pointerdown", onPointerDown, true);
+
+      if (!filter) {
+        window.addEventListener("pointerover", onPointerOver, true);
+        window.document.addEventListener("pointerleave", onPointerLeave, true);
+      }
+
+      window.addEventListener("pointerup", noopMouseHandler, true);
+      window.addEventListener("keyup", escape, true);
+    }
+
+    function removeListenersOnWindow(window: Window) {
+      window.removeEventListener("click", onClick, true);
+      window.removeEventListener("mousedown", noopMouseHandler, true);
+      window.removeEventListener("mouseover", noopMouseHandler, true);
+      window.removeEventListener("mouseup", noopMouseHandler, true);
+      window.removeEventListener("pointerdown", onPointerDown, true);
+      window.removeEventListener("pointerover", onPointerOver, true);
+      window.document.removeEventListener("pointerleave", onPointerLeave, true);
+      window.removeEventListener("pointerup", noopMouseHandler, true);
+      window.removeEventListener("keyup", escape, true);
+    }
+
+    function addInspectingModeStyles(window: Window) {
+      const doc = window.document;
+      styleElement = doc.createElement("style");
+      styleElement.innerHTML = `
         html:not(:hover):before {
           content: '';
           border: solid 10px rgba(182, 109, 255, 0.3);
@@ -308,52 +322,52 @@ export async function userSelectElement({
             border-width: 25px;
           }
         }`;
-        doc.body.append(styleElement);
-      }
-
-      function removeInspectingModeStyles() {
-        if (!styleElement) {
-          return;
-        }
-
-        if (styleElement.parentNode) {
-          styleElement.remove();
-        }
-
-        styleElement = null;
-      }
-
-      function addMultiSelectionTool(window: Window) {
-        const doc = window.document;
-        multiSelectionToolElement = doc.createElement("div");
-        doc.body.append(multiSelectionToolElement);
-
-        showSelectionToolPopover({
-          rootElement: multiSelectionToolElement,
-          handleCancel: cancel,
-          handleDone() {
-            handleDone();
-          },
-          handleChange: handleMultiSelectionChange,
-          setSelectionHandler,
-        });
-      }
-
-      function removeMultiSelectionTool() {
-        if (!multiSelectionToolElement) {
-          return;
-        }
-
-        if (multiSelectionToolElement.parentNode) {
-          multiSelectionToolElement.remove();
-        }
-
-        multiSelectionToolElement = null;
-      }
-
-      startInspectingNative();
+      doc.body.append(styleElement);
     }
-  );
+
+    function removeInspectingModeStyles() {
+      if (!styleElement) {
+        return;
+      }
+
+      if (styleElement.parentNode) {
+        styleElement.remove();
+      }
+
+      styleElement = null;
+    }
+
+    function addMultiSelectionTool(window: Window) {
+      const doc = window.document;
+      multiSelectionToolElement = doc.createElement("div");
+      doc.body.append(multiSelectionToolElement);
+
+      showSelectionToolPopover({
+        rootElement: multiSelectionToolElement,
+        handleCancel: cancel,
+        handleDone() {
+          handleDone();
+        },
+        handleMultiChange: handleMultiSelectionChange,
+        handleSimilarChange: handleSimilarSelectionChange,
+        setSelectionHandler,
+      });
+    }
+
+    function removeMultiSelectionTool() {
+      if (!multiSelectionToolElement) {
+        return;
+      }
+
+      if (multiSelectionToolElement.parentNode) {
+        multiSelectionToolElement.remove();
+      }
+
+      multiSelectionToolElement = null;
+    }
+
+    startInspectingNative();
+  });
 }
 
 export async function cancelSelect() {
@@ -379,7 +393,7 @@ export async function selectElement({
   enableSelectionTools?: boolean;
 }) {
   const rootElement = root == null ? undefined : requireSingleElement(root);
-  const { elements, isMulti } = await userSelectElement({
+  const { elements, isMulti, shouldSelectSimilar } = await userSelectElement({
     root: rootElement,
     enableSelectionTools,
   });
@@ -403,10 +417,15 @@ export async function selectElement({
     }
 
     case "element": {
-      const selector = safeCssSelector(elements, {
-        root: rootElement,
-        excludeRandomClasses,
-      });
+      const selector = shouldSelectSimilar
+        ? commonCssSelector(elements, {
+            root: rootElement,
+            excludeRandomClasses,
+          })
+        : safeCssSelector(elements, {
+            root: rootElement,
+            excludeRandomClasses,
+          });
 
       console.debug(`Generated selector: ${selector}`);
 
