@@ -36,6 +36,7 @@ import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import SelectWidgetPreview from "./SelectWidgetPreview";
 import FormPreviewSchemaField from "./FormPreviewSchemaField";
+import databaseSchema from "@schemas/database.json";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -70,6 +71,18 @@ const FormPreview: React.FC<FormPreviewProps> = ({
         }
 
         unwrapTemplateExpressions(draft);
+
+        for (const value of Object.values(draftSchema.properties).filter(
+          (value) =>
+            typeof value === "object" && value.$ref === databaseSchema.$id
+        )) {
+          // @ts-expect-error -- value is a schema object
+          value.type = "string";
+          // @ts-expect-error -- value is a schema object
+          value.enum = "Select...";
+          // @ts-expect-error -- value is a schema object
+          delete value.$ref;
+        }
 
         // RJSF Form throws when Dropdown with labels selected, no options set and default is empty. Let's fix that!
         // We only interested in select with labels, otherwise we don't need to do anything.
@@ -129,6 +142,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
   const widgets = {
     imageCrop: ImageCropWidgetPreview,
+    database: SelectWidgetPreview,
     SelectWidget: SelectWidgetPreview,
   };
 
