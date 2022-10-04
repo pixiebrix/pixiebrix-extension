@@ -28,6 +28,7 @@ import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 import { freshIdentifier } from "@/utils";
 import { produce } from "immer";
 import { WritableDraft } from "immer/dist/types/types-external";
+import databaseSchema from "@schemas/database.json";
 
 export const getMinimalSchema: () => Schema = () => ({
   type: "object",
@@ -205,23 +206,56 @@ export const produceSchemaOnUiTypeChange = (
     parseUiType(nextUiType);
 
   return produce(rjsfSchema, (draft) => {
-    // Relying on Immer to protect against object injections
-    /* eslint-disable @typescript-eslint/no-dynamic-delete, security/detect-object-injection */
-    const draftPropertySchema = draft.schema.properties[propertyName] as Schema;
-    draftPropertySchema.type = propertyType;
-
-    if (propertyFormat) {
-      draftPropertySchema.format = propertyFormat;
+    if (uiWidget === "database") {
+      draft.schema.properties[propertyName] = {
+        $ref: databaseSchema.$id,
+      } as Schema;
     } else {
-      delete draftPropertySchema.format;
-    }
+      // Relying on Immer to protect against object injections
+      /* eslint-disable @typescript-eslint/no-dynamic-delete, security/detect-object-injection */
+      const draftPropertySchema = draft.schema.properties[
+        propertyName
+      ] as Schema;
 
-    const propertySchema = rjsfSchema.schema.properties[propertyName] as Schema;
-    if (
-      propertySchema.type !== propertyType ||
-      propertySchema.format !== propertyFormat
-    ) {
-      delete draftPropertySchema.default;
+      draftPropertySchema.type = propertyType;
+      delete draftPropertySchema.$ref;
+
+      if (propertyFormat) {
+        draftPropertySchema.format = propertyFormat;
+      } else {
+        delete draftPropertySchema.format;
+      }
+
+      const propertySchema = rjsfSchema.schema.properties[
+        propertyName
+      ] as Schema;
+      if (
+        propertySchema.type !== propertyType ||
+        propertySchema.format !== propertyFormat
+      ) {
+        delete draftPropertySchema.default;
+      }
+
+      if (uiWidget === "select") {
+        if (extra === "selectWithLabels") {
+          // If switching from Dropdown, convert the enum to options with labels
+          draftPropertySchema.oneOf = Array.isArray(draftPropertySchema.enum)
+            ? draftPropertySchema.enum.map(
+                (item) => ({ const: item } as SchemaDefinition)
+              )
+            : [];
+          delete draftPropertySchema.enum;
+        } else {
+          // If switching from Dropdown with labels, convert the values to enum
+          draftPropertySchema.enum = Array.isArray(draftPropertySchema.oneOf)
+            ? draftPropertySchema.oneOf.map((item: Schema) => item.const)
+            : [];
+          delete draftPropertySchema.oneOf;
+        }
+      } else {
+        delete draftPropertySchema.enum;
+        delete draftPropertySchema.oneOf;
+      }
     }
 
     if (uiWidget) {
@@ -232,27 +266,6 @@ export const produceSchemaOnUiTypeChange = (
       draft.uiSchema[propertyName][UI_WIDGET] = uiWidget;
     } else if (draft.uiSchema[propertyName]) {
       delete draft.uiSchema[propertyName][UI_WIDGET];
-    }
-
-    if (uiWidget === "select") {
-      if (extra === "selectWithLabels") {
-        // If switching from Dropdown, convert the enum to options with labels
-        draftPropertySchema.oneOf = Array.isArray(draftPropertySchema.enum)
-          ? draftPropertySchema.enum.map(
-              (item) => ({ const: item } as SchemaDefinition)
-            )
-          : [];
-        delete draftPropertySchema.enum;
-      } else {
-        // If switching from Dropdown with labels, convert the values to enum
-        draftPropertySchema.enum = Array.isArray(draftPropertySchema.oneOf)
-          ? draftPropertySchema.oneOf.map((item: Schema) => item.const)
-          : [];
-        delete draftPropertySchema.oneOf;
-      }
-    } else {
-      delete draftPropertySchema.enum;
-      delete draftPropertySchema.oneOf;
     }
     /* eslint-enable @typescript-eslint/no-dynamic-delete, security/detect-object-injection */
   });

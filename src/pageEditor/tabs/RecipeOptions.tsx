@@ -53,9 +53,11 @@ const fieldTypes = FORM_FIELD_TYPE_OPTIONS.filter(
 ).concat([
   {
     label: "Database selector",
-    value: stringifyUiType({ propertyType: "string", uiWidget: "select" }),
+    value: stringifyUiType({ propertyType: "string", uiWidget: "database" }),
   },
 ]);
+
+console.log("fieldTypes", fieldTypes);
 
 const formRuntimeContext: RuntimeContext = {
   apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,

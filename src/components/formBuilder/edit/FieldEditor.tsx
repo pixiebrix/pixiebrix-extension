@@ -47,6 +47,7 @@ import SwitchButtonWidget, {
 import { uniq } from "lodash";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import databaseSchema from "@schemas/database.json";
 
 const imageForCroppingSourceSchema: Schema = {
   type: "string",
@@ -125,9 +126,13 @@ const FieldEditor: React.FC<{
   };
 
   const getSelectedUiTypeOption = () => {
-    const propertyType = propertySchema.type as SchemaPropertyType;
     // eslint-disable-next-line security/detect-object-injection
     const uiWidget = uiSchema?.[propertyName]?.[UI_WIDGET];
+    const propertyType =
+      uiWidget === "database"
+        ? "string"
+        : (propertySchema.type as SchemaPropertyType);
+
     const propertyFormat = propertySchema.format;
     const extra: UiTypeExtra =
       uiWidget === "select" && typeof propertySchema.oneOf !== "undefined"
@@ -209,9 +214,14 @@ const FieldEditor: React.FC<{
       ? null
       : {
           name: getFullFieldName("default"),
-          schema: {
-            type: uiType.propertyType,
-          },
+          schema:
+            uiType.uiWidget === "database"
+              ? {
+                  $ref: databaseSchema.$id,
+                }
+              : {
+                  type: uiType.propertyType,
+                },
           label: "Default value",
           description:
             uiType.extra === "selectWithLabels"
