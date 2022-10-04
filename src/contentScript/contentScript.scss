@@ -43,16 +43,13 @@
     rgba(164, 73, 255, 0.4),
     rgba(164, 73, 255, 0.1)
   ) !important;
-}
-
-/* Overlay.tsx has no classes, so we target each layer by using its hardcoded values */
-.light[style="z-index: 10000000;"] [style*="rgba(255, 200, 50, 0.3)"] {
-  border-color: transparent !important;
-  background: linear-gradient(
-    20deg,
-    rgba(213, 170, 255, 0.4),
-    rgba(213, 170, 255, 0.1)
-  ) !important;
+  &.light {
+    background: linear-gradient(
+      20deg,
+      rgba(213, 170, 255, 0.4),
+      rgba(213, 170, 255, 0.1)
+    ) !important;
+  }
 }
 
 [style="z-index: 10000000;"] [style*="rgba(255, 155, 0, 0.3)"],
