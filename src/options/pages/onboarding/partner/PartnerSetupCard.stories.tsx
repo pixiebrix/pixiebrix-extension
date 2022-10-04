@@ -65,8 +65,6 @@ const Template: Story<{
     },
   });
 
-  console.log("Template", { auth, state: templateStore.getState() });
-
   return (
     <Provider store={templateStore}>
       <PartnerSetupCard />
@@ -82,11 +80,10 @@ OAuth2.storyName = "OAuth2";
 OAuth2.parameters = {
   msw: {
     handlers: [
-      rest.get("/api/me/", (request, result, context) => {
-        console.log("Running mock endpoint /api/me/");
+      rest.get("/api/me/", (request, result, context) =>
         // State is blank for unauthenticated users
-        return result(context.json({}));
-      }),
+        result(context.json({}))
+      ),
     ],
   },
 };

@@ -404,7 +404,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
     const locator = async () => [auth];
     await expect(
       mergeDeploymentServiceConfigurations(deployment, locator)
-    ).rejects.toThrowError("No configuration found for integration");
+    ).rejects.toThrow("No configuration found for integration");
   });
 
   test("reject multiple personal configurations", async () => {
@@ -434,8 +434,6 @@ describe("mergeDeploymentServiceConfigurations", () => {
     ];
     await expect(
       mergeDeploymentServiceConfigurations(deployment, locator)
-    ).rejects.toThrowError(
-      "Multiple local configurations found for integration:"
-    );
+    ).rejects.toThrow("Multiple local configurations found for integration:");
   });
 });

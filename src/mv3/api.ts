@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browserAction } from "@/mv3/api";
+/** @file Temporary helpers useful for the MV3 transition */
 
-export default function activateBrowserActionIcon() {
-  // This re-sets the colored manifest icons
-  const { icons: path } = browser.runtime.getManifest();
-  browserAction.setIcon({ path });
-}
+import { Tabs } from "webextension-polyfill";
+
+export const isMV3 = (): boolean =>
+  browser.runtime.getManifest().manifest_version === 3;
+export const browserAction = chrome.browserAction ?? chrome.action;
+export type Tab = Tabs.Tab | chrome.tabs.Tab;
