@@ -206,56 +206,30 @@ export const produceSchemaOnUiTypeChange = (
     parseUiType(nextUiType);
 
   return produce(rjsfSchema, (draft) => {
-    if (uiWidget === "database") {
-      draft.schema.properties[propertyName] = {
-        $ref: databaseSchema.$id,
-      } as Schema;
-    } else {
-      // Relying on Immer to protect against object injections
-      /* eslint-disable @typescript-eslint/no-dynamic-delete, security/detect-object-injection */
-      const draftPropertySchema = draft.schema.properties[
-        propertyName
-      ] as Schema;
+    // Relying on Immer to protect against object injections
+    /* eslint-disable @typescript-eslint/no-dynamic-delete, security/detect-object-injection */
+    const draftPropertySchema = draft.schema.properties[propertyName] as Schema;
 
+    if (uiWidget === "database") {
+      draftPropertySchema.$ref = databaseSchema.$id;
+      delete draftPropertySchema.type;
+    } else {
       draftPropertySchema.type = propertyType;
       delete draftPropertySchema.$ref;
+    }
 
-      if (propertyFormat) {
-        draftPropertySchema.format = propertyFormat;
-      } else {
-        delete draftPropertySchema.format;
-      }
+    if (propertyFormat) {
+      draftPropertySchema.format = propertyFormat;
+    } else {
+      delete draftPropertySchema.format;
+    }
 
-      const propertySchema = rjsfSchema.schema.properties[
-        propertyName
-      ] as Schema;
-      if (
-        propertySchema.type !== propertyType ||
-        propertySchema.format !== propertyFormat
-      ) {
-        delete draftPropertySchema.default;
-      }
-
-      if (uiWidget === "select") {
-        if (extra === "selectWithLabels") {
-          // If switching from Dropdown, convert the enum to options with labels
-          draftPropertySchema.oneOf = Array.isArray(draftPropertySchema.enum)
-            ? draftPropertySchema.enum.map(
-                (item) => ({ const: item } as SchemaDefinition)
-              )
-            : [];
-          delete draftPropertySchema.enum;
-        } else {
-          // If switching from Dropdown with labels, convert the values to enum
-          draftPropertySchema.enum = Array.isArray(draftPropertySchema.oneOf)
-            ? draftPropertySchema.oneOf.map((item: Schema) => item.const)
-            : [];
-          delete draftPropertySchema.oneOf;
-        }
-      } else {
-        delete draftPropertySchema.enum;
-        delete draftPropertySchema.oneOf;
-      }
+    const propertySchema = rjsfSchema.schema.properties[propertyName] as Schema;
+    if (
+      propertySchema.type !== propertyType ||
+      propertySchema.format !== propertyFormat
+    ) {
+      delete draftPropertySchema.default;
     }
 
     if (uiWidget) {
@@ -266,6 +240,27 @@ export const produceSchemaOnUiTypeChange = (
       draft.uiSchema[propertyName][UI_WIDGET] = uiWidget;
     } else if (draft.uiSchema[propertyName]) {
       delete draft.uiSchema[propertyName][UI_WIDGET];
+    }
+
+    if (uiWidget === "select") {
+      if (extra === "selectWithLabels") {
+        // If switching from Dropdown, convert the enum to options with labels
+        draftPropertySchema.oneOf = Array.isArray(draftPropertySchema.enum)
+          ? draftPropertySchema.enum.map(
+              (item) => ({ const: item } as SchemaDefinition)
+            )
+          : [];
+        delete draftPropertySchema.enum;
+      } else {
+        // If switching from Dropdown with labels, convert the values to enum
+        draftPropertySchema.enum = Array.isArray(draftPropertySchema.oneOf)
+          ? draftPropertySchema.oneOf.map((item: Schema) => item.const)
+          : [];
+        delete draftPropertySchema.oneOf;
+      }
+    } else {
+      delete draftPropertySchema.enum;
+      delete draftPropertySchema.oneOf;
     }
     /* eslint-enable @typescript-eslint/no-dynamic-delete, security/detect-object-injection */
   });
