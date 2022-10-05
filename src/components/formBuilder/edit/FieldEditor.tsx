@@ -126,12 +126,18 @@ const FieldEditor: React.FC<{
   };
 
   const getSelectedUiTypeOption = () => {
+    const isDatabaseSelector =
+      (schema?.properties?.[propertyName] as Schema)?.$ref ===
+      databaseSchema.$id;
+
+    const propertyType = isDatabaseSelector
+      ? "string"
+      : (propertySchema.type as SchemaPropertyType);
+
     // eslint-disable-next-line security/detect-object-injection
-    const uiWidget = uiSchema?.[propertyName]?.[UI_WIDGET];
-    const propertyType =
-      uiWidget === "database"
-        ? "string"
-        : (propertySchema.type as SchemaPropertyType);
+    const uiWidget = isDatabaseSelector
+      ? "database"
+      : uiSchema?.[propertyName]?.[UI_WIDGET];
 
     const propertyFormat = propertySchema.format;
     const extra: UiTypeExtra =
