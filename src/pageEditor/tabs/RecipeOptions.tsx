@@ -48,14 +48,15 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/pageEditor/components/Effect";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
-const fieldTypes = FORM_FIELD_TYPE_OPTIONS.filter(
-  (type) => !["File", "Image crop"].includes(type.label)
-).concat([
+const fieldTypes = [
+  ...FORM_FIELD_TYPE_OPTIONS.filter(
+    (type) => !["File", "Image crop"].includes(type.label)
+  ),
   {
     label: "Database selector",
     value: stringifyUiType({ propertyType: "string", uiWidget: "database" }),
   },
-]);
+];
 
 console.log("fieldTypes", fieldTypes);
 
