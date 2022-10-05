@@ -43,6 +43,7 @@ const defaultFrameState: FrameConnectionState = {
 const initialTabState: TabState = {
   isConnecting: false,
   frameState: defaultFrameState,
+  error: null,
 };
 
 const connectToContentScript = createAsyncThunk<
@@ -114,14 +115,11 @@ const connectToContentScript = createAsyncThunk<
  * to be invalidated, and then resolves with an error.
  */
 const awaitContextInvalidated = createAsyncThunk<
-  Error,
+  void,
   void,
   { state: TabStateRootState }
 >("tabState/awaitContextInvalidated", async () => {
   await onContextInvalidated();
-  return new Error(
-    "PixieBrix was updated or restarted. Reload the Page Editor to continue."
-  );
 });
 
 export const tabStateSlice = createSlice({
@@ -132,7 +130,9 @@ export const tabStateSlice = createSlice({
     builder
       .addCase(connectToContentScript.pending, (state) => {
         state.isConnecting = true;
-        state.error = undefined;
+        // Null-out the error every time this is pending, but don't clear the
+        // frame state, so that the previous result is still available while loading
+        state.error = null;
       })
       .addCase(
         connectToContentScript.fulfilled,
@@ -144,16 +144,14 @@ export const tabStateSlice = createSlice({
       .addCase(connectToContentScript.rejected, (state, { error }) => {
         state.isConnecting = false;
         state.frameState = defaultFrameState;
-        state.error = error;
+        state.error = error.message;
       })
-      .addCase(
-        awaitContextInvalidated.fulfilled,
-        (state, { payload: error }) => {
-          state.isConnecting = false;
-          state.frameState = defaultFrameState;
-          state.error = error;
-        }
-      );
+      .addCase(awaitContextInvalidated.fulfilled, (state) => {
+        state.isConnecting = false;
+        state.frameState = defaultFrameState;
+        state.error =
+          "PixieBrix was updated or restarted. Reload the Page Editor to continue.";
+      });
   },
 });
 
