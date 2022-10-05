@@ -94,6 +94,8 @@ export type Organization = components["schemas"]["Organization"] & {
   role: UserRole;
 };
 
+export type OrganizationTheme = components["schemas"]["Organization"]["theme"];
+
 export type Group = components["schemas"]["Group"];
 
 export type Database = components["schemas"]["Database"];
