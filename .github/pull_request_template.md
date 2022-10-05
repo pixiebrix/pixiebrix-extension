@@ -35,4 +35,5 @@ _Leave all that are relevant and check off as completed_
 ## Checklist
 
 - [ ] Add tests
+- [ ] Run Storybook and manually confirm that all stories are working
 - [ ] Designate a primary reviewer
