@@ -134,7 +134,6 @@ const FieldEditor: React.FC<{
       ? "string"
       : (propertySchema.type as SchemaPropertyType);
 
-    // eslint-disable-next-line security/detect-object-injection
     const uiWidget = isDatabaseSelector
       ? "database"
       : uiSchema?.[propertyName]?.[UI_WIDGET];
