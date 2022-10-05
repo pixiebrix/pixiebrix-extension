@@ -64,7 +64,12 @@ const SelectWidgetPreview: React.VFC<WidgetProps> = (props) => {
     return <div>Please fill the values for each option.</div>;
   }
 
-  return <RjsfSelectWidget {...props} />;
+  return (
+    <RjsfSelectWidget
+      {...props}
+      value={props.value ?? props.schema.default ?? ""}
+    />
+  );
 };
 
 export default SelectWidgetPreview;
