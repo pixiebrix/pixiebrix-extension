@@ -29,7 +29,6 @@ import {
   hasSpecificErrorCause,
   IGNORED_ERROR_PATTERNS,
   isContextError,
-  selectSpecificError,
 } from "@/errors/errorHelpers";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { matchesAnyPattern } from "@/utils";
@@ -37,7 +36,7 @@ import {
   reportToErrorService,
   selectExtraContext,
 } from "@/services/errorService";
-import { BusinessError, CancelError } from "@/errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
