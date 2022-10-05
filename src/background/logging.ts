@@ -236,7 +236,8 @@ async function reportToRollbar(
   flatContext: MessageContext,
   message: string
 ): Promise<void> {
-  if (hasSpecificErrorCause(error, CancelError)) {
+  // Business errors are now sent to the PixieBrix error service instead of Rollbar - see reportToErrorService
+  if (hasSpecificErrorCause(error, BusinessError)) {
     return;
   }
 
@@ -252,12 +253,7 @@ async function reportToRollbar(
   const rollbar = await getRollbar();
   const details = await selectExtraContext(error);
 
-  // Send business errors debug level so it doesn't trigger devops notifications
-  if (selectSpecificError(error, BusinessError)) {
-    rollbar.debug(message, error, { ...flatContext, ...details });
-  } else {
-    rollbar.error(message, error, { ...flatContext, ...details });
-  }
+  rollbar.error(message, error, { ...flatContext, ...details });
 }
 
 export async function recordError(
