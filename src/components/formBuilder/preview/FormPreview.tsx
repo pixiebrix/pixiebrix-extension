@@ -86,7 +86,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
             property.type = "string";
 
             /** Intentionally setting a string value, not an array. @see FormPreviewSchemaField for details */
-            // @ts-expect-error
+            // @ts-expect-error -- intentionally assigning to a string
             property.enum = "Select...";
             delete property.$ref;
           }
