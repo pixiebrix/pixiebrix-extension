@@ -22,6 +22,9 @@ import { SchemaDefinition } from "@/core";
 
 const RjsfSchemaField = RjsfTheme.fields.SchemaField;
 
+/**
+ * A base field used by RJSF to render a field preview.
+ */
 const FormPreviewSchemaField: React.FC<FormPreviewFieldProps> = (props) => {
   let fieldProps: FormPreviewFieldProps;
 

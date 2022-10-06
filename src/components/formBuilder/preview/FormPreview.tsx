@@ -80,11 +80,13 @@ const FormPreview: React.FC<FormPreviewProps> = ({
           ).filter(
             (value) =>
               typeof value === "object" && value.$ref === databaseSchema.$id
-          ) as WritableDraft<Schema>[];
+          ) as Array<WritableDraft<Schema>>;
 
           for (const property of databaseProperties) {
             property.type = "string";
-            // @ts-expect-error -- intentionally setting a string value, not an array, FormPreviewSchemaField will handle it
+
+            /** Intentionally setting a string value, not an array. @see FormPreviewSchemaField for details */
+            // @ts-expect-error
             property.enum = "Select...";
             delete property.$ref;
           }
