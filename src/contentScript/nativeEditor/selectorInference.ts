@@ -401,10 +401,14 @@ export function commonCssSelector(
   // Get common ancester
   const [commonAncestor] = intersection(...ancestors);
 
+  const [commonParentClassName] = intersection(
+    ...elements.map((element) => [$(element).parent().attr("class")])
+  );
+
   if (commonAncestor) {
     // Get common class of elements
     const [commonClassName] = intersection(
-      elements.map((element) => element.className)
+      ...elements.map((element) => element.className)
     );
 
     // Get first common class of ancestor of elements
@@ -427,6 +431,15 @@ export function commonCssSelector(
       return [
         commonAncestorSelector,
         getSelectorFromClass(commonClassName),
+      ].join(" ");
+    }
+
+    if (commonParentClassName) {
+      return [
+        commonAncestorSelector,
+        getSelectorFromClass(commonParentClassName),
+        ">",
+        elements[0].tagName.toLowerCase(),
       ].join(" ");
     }
 
