@@ -52,7 +52,7 @@ export type TabState = {
    * The error connecting to the content script, or undefined.
    * @see connectToContentScript
    */
-  error?: unknown;
+  error: string | null;
 };
 
 export type TabStateRootState = {
