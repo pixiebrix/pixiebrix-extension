@@ -390,13 +390,14 @@ export function commonCssSelector(
 
   // Handle differently if multi-element
   const ancestors = elements.map((element) =>
-    findAncestorsWithIdLikeSelectors(
-      element,
-      root,
-      [...UNIQUE_ATTRIBUTES, "class"]
-        .map((attribute) => `[${attribute}]`)
-        .join(",")
-    )
+    $(element)
+      .parentsUntil(root)
+      .filter(
+        [...UNIQUE_ATTRIBUTES, "class"]
+          .map((attribute) => `[${attribute}]`)
+          .join(",")
+      )
+      .get()
   );
   // Get common ancester
   const [commonAncestor] = intersection(...ancestors);
@@ -469,11 +470,10 @@ export function commonCssSelector(
 
 function findAncestorsWithIdLikeSelectors(
   element: HTMLElement,
-  root?: Element,
-  filter: string = UNIQUE_ATTRIBUTES_SELECTOR
+  root?: Element
 ): HTMLElement[] {
   // eslint-disable-next-line unicorn/no-array-callback-reference -- jQuery false positive
-  return $(element).parentsUntil(root).filter(filter).get();
+  return $(element).parentsUntil(root).filter(UNIQUE_ATTRIBUTES_SELECTOR).get();
 }
 
 export function inferSelectorsIncludingStableAncestors(
