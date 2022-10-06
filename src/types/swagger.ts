@@ -214,6 +214,10 @@ export interface paths {
     /** Detail view for an organization's memberships. */
     patch: operations["partialUpdateOrganizationMembership"];
   };
+  "/api/onboarding/starter-blueprints/install/": {
+    get: operations["queryInstallationStarterBlueprint"];
+    post: operations["confirmInstallationStarterBlueprint"];
+  };
   "/api/onboarding/starter-blueprints/": {
     get: operations["listStarterBlueprints"];
   };
@@ -399,9 +403,6 @@ export interface paths {
   };
   "/api/onboarding/": {
     post: operations["createOnboarding"];
-  };
-  "/api/onboarding/starter-blueprints/install/": {
-    post: operations["confirmInstallationStarterBlueprints"];
   };
   "/api/organizations/{organization_pk}/subscriptions/jobs/": {
     post: operations["createOrganizationSubscriptionsJob"];
@@ -643,7 +644,7 @@ export interface components {
       /** Format: date-time */
       last_write_at?: string;
       num_records?: number;
-      groups: {
+      groups?: {
         /** Format: uuid */
         id?: string;
         name: string;
@@ -1065,6 +1066,9 @@ export interface components {
            */
           url: string;
         };
+        theme?: {
+          show_sidebar_logo?: boolean;
+        };
       };
       telemetry_organization?: {
         /** Format: uuid */
@@ -1080,6 +1084,9 @@ export interface components {
            */
           url: string;
         };
+        theme?: {
+          show_sidebar_logo?: boolean;
+        };
       };
       organization_memberships?: {
         /** Format: uuid */
@@ -1089,7 +1096,7 @@ export interface components {
         role: 1 | 2 | 3 | 4 | 5;
         scope: string | null;
         /** @description True if user is a manager of one or more team deployments */
-        is_deployment_manager?: string;
+        is_deployment_manager?: boolean;
         control_room: {
           /** Format: uuid */
           id?: string;
@@ -1144,6 +1151,9 @@ export interface components {
         created_at?: string;
       }[];
     };
+    StarterBlueprintsInstallation: {
+      install_starter_blueprints?: string;
+    };
     Organization: {
       /** Format: uuid */
       id?: string;
@@ -1196,6 +1206,9 @@ export interface components {
       sso_domain?: string | null;
       /** @description The number of milliseconds restricted team members have to apply manual deployments or browser extension update. */
       enforce_update_millis?: number | null;
+      theme?: {
+        show_sidebar_logo?: boolean;
+      };
     };
     UserDetail: {
       /** Format: uuid */
@@ -1332,13 +1345,13 @@ export interface components {
       verbose_name?: string | null;
       version?: string;
       kind: string;
-      config: { [key: string]: unknown };
       /** Format: date-time */
       updated_at: string;
       sharing: {
         public?: boolean;
         organizations?: string[];
       };
+      config: { [key: string]: unknown };
     };
     SanitizedAuth: {
       /** Format: uuid */
@@ -3295,6 +3308,35 @@ export interface operations {
       };
     };
   };
+  queryInstallationStarterBlueprint: {
+    parameters: {};
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["StarterBlueprintsInstallation"];
+          "application/vnd.pixiebrix.api+json": components["schemas"]["StarterBlueprintsInstallation"];
+        };
+      };
+    };
+  };
+  confirmInstallationStarterBlueprint: {
+    parameters: {};
+    responses: {
+      201: {
+        content: {
+          "application/json": components["schemas"]["StarterBlueprintsInstallation"];
+          "application/vnd.pixiebrix.api+json": components["schemas"]["StarterBlueprintsInstallation"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["StarterBlueprintsInstallation"];
+        "application/x-www-form-urlencoded": components["schemas"]["StarterBlueprintsInstallation"];
+        "multipart/form-data": components["schemas"]["StarterBlueprintsInstallation"];
+      };
+    };
+  };
   listStarterBlueprints: {
     parameters: {};
     responses: {
@@ -4655,24 +4697,6 @@ export interface operations {
         "application/json": components["schemas"]["Onboarding"];
         "application/x-www-form-urlencoded": components["schemas"]["Onboarding"];
         "multipart/form-data": components["schemas"]["Onboarding"];
-      };
-    };
-  };
-  confirmInstallationStarterBlueprints: {
-    parameters: {};
-    responses: {
-      201: {
-        content: {
-          "application/json": components["schemas"]["PackageConfigList"];
-          "application/vnd.pixiebrix.api+json": components["schemas"]["PackageConfigList"];
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["PackageConfigList"];
-        "application/x-www-form-urlencoded": components["schemas"]["PackageConfigList"];
-        "multipart/form-data": components["schemas"]["PackageConfigList"];
       };
     };
   };
