@@ -339,7 +339,9 @@ module.exports = (env, options) =>
         // Specify the least amount of polyfills because by default it event polyfills `console`
         includeAliases: ["buffer", "Buffer", "http", "https"],
       }),
-      new WebExtensionTarget(),
+      new WebExtensionTarget({
+        weakRuntimeCheck: true,
+      }),
       new webpack.ProvidePlugin({
         $: "jquery",
         jQuery: "jquery",
@@ -401,7 +403,11 @@ module.exports = (env, options) =>
         {
           test: /\.s?css$/,
           resourceQuery: { not: [/loadAsUrl/] },
-          use: [MiniCssExtractPlugin.loader, "css-loader"],
+          use: [
+            MiniCssExtractPlugin.loader,
+            // "style-loader",
+            "css-loader",
+          ],
         },
         {
           test: /\.scss$/,
