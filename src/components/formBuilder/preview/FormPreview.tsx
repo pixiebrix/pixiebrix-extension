@@ -37,6 +37,8 @@ import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import SelectWidgetPreview from "./SelectWidgetPreview";
 import FormPreviewSchemaField from "./FormPreviewSchemaField";
 import databaseSchema from "@schemas/database.json";
+import { WritableDraft } from "immer/dist/internal";
+import { Schema } from "@/core";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -73,16 +75,18 @@ const FormPreview: React.FC<FormPreviewProps> = ({
         unwrapTemplateExpressions(draft);
 
         if (typeof draftSchema.properties === "object") {
-          for (const value of Object.values(draftSchema.properties).filter(
+          const databaseProperties = Object.values(
+            draftSchema.properties
+          ).filter(
             (value) =>
               typeof value === "object" && value.$ref === databaseSchema.$id
-          )) {
-            // @ts-expect-error -- value is a schema object
-            value.type = "string";
-            // @ts-expect-error -- value is a schema object
-            value.enum = "Select...";
-            // @ts-expect-error -- value is a schema object
-            delete value.$ref;
+          ) as WritableDraft<Schema>[];
+
+          for (const property of databaseProperties) {
+            property.type = "string";
+            // @ts-expect-error -- intentionally setting a string value, not an array, FormPreviewSchemaField will handle it
+            property.enum = "Select...";
+            delete property.$ref;
           }
         }
 

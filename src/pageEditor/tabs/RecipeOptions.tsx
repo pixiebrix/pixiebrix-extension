@@ -58,8 +58,6 @@ const fieldTypes = [
   },
 ];
 
-console.log("fieldTypes", fieldTypes);
-
 const formRuntimeContext: RuntimeContext = {
   apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   allowExpressions: false,

@@ -25,7 +25,9 @@ const RjsfSchemaField = RjsfTheme.fields.SchemaField;
 const FormPreviewSchemaField: React.FC<FormPreviewFieldProps> = (props) => {
   let fieldProps: FormPreviewFieldProps;
 
-  // If we render a dropdown with @var value, use the name of the var and the single option
+  // The value of oneOf/enum is a string when we render a @var
+  // or in some special cases when the dropdown should be disabled (e.g. database selector)
+  // In such case use this string value as a single option
   if (typeof props.schema.oneOf === "string") {
     // Not using immer.produce to clone `props` because it accesses `props.key` that throws an error
     fieldProps = {
