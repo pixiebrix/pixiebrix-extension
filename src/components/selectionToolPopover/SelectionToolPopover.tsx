@@ -94,7 +94,7 @@ export const SelectionToolPopover: React.FC<{
                 </FormLabel>
 
                 <SwitchButtonWidget
-                  name="allowMulti"
+                  name="allowSimilar"
                   value={similarEnabled}
                   onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
                     setSimilarEnabled(target.value);
