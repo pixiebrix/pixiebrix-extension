@@ -24,6 +24,7 @@ import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 
 export const FORM_MODAL_ID = validateRegistryId("@pixiebrix/form-modal");
 
@@ -64,6 +65,7 @@ const FormModalOptions: React.FC<{
           name={configName}
           activeField={activeElement}
           setActiveField={setActiveElement}
+          fieldTypes={FORM_FIELD_TYPE_OPTIONS}
         />
       </ConfigErrorBoundary>
 
