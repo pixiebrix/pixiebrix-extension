@@ -403,11 +403,7 @@ module.exports = (env, options) =>
         {
           test: /\.s?css$/,
           resourceQuery: { not: [/loadAsUrl/] },
-          use: [
-            MiniCssExtractPlugin.loader,
-            // "style-loader",
-            "css-loader",
-          ],
+          use: [MiniCssExtractPlugin.loader, "css-loader"],
         },
         {
           test: /\.scss$/,

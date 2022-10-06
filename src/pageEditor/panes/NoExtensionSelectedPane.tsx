@@ -20,16 +20,12 @@ import styles from "@/pageEditor/panes/Pane.module.scss";
 import React from "react";
 import Centered from "@/pageEditor/components/Centered";
 import IntroButtons from "./IntroButtons";
-// import bkg from "./bkg.jpg";
 
 const NoExtensionSelectedPane: React.FunctionComponent = () => (
   <Centered>
-    <div
-      className={styles.bkg}
-      // style={{
-      //   backgroundImage: `url(${bkg})`,
-      // }}
-    >
+    <div className={styles.title}>No extension selected</div>
+
+    <div className="text-left">
       <p>Select an extension in the sidebar to edit</p>
       <p>
         Or, click the <span className="text-info">Add</span> button in the
