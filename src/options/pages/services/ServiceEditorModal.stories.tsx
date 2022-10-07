@@ -42,8 +42,8 @@ export default {
 } as ComponentMeta<typeof ServiceEditorModal>;
 
 const Template: Story<StoryType> = ({ fixture, ...args }) => {
-  // eslint-disable-next-line security/detect-object-injection -- type checked from fixture object
   const service = fromJS(
+    // eslint-disable-next-line security/detect-object-injection -- type checked from fixture object
     loadBrickYaml(dumpBrickYaml(FIXTURES[fixture])) as ServiceDefinition
   );
 
