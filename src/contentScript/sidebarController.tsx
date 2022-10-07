@@ -29,7 +29,7 @@ import { RendererPayload } from "@/runtime/runtimeTypes";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isEmpty } from "lodash";
 import { logPromiseDuration } from "@/utils";
-import { SimpleEventTarget } from "@/utils/SimpleEventLTarget";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import {
   insertSidebarFrame,
   isSidebarFrameVisible,

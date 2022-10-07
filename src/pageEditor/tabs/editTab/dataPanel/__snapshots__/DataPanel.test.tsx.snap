@@ -143,7 +143,7 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
                         </span>
                         : 
                         <a
-                          aria-label="copy path"
+                          aria-label="Copy path"
                           class="copyPath p-0 btn btn-text"
                           href="#"
                           role="button"
@@ -184,7 +184,7 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
                         </span>
                         : 
                         <a
-                          aria-label="copy path"
+                          aria-label="Copy path"
                           class="copyPath p-0 btn btn-text"
                           href="#"
                           role="button"
@@ -234,7 +234,7 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
                         </span>
                         : 
                         <a
-                          aria-label="copy path"
+                          aria-label="Copy path"
                           class="copyPath p-0 btn btn-text"
                           href="#"
                           role="button"
