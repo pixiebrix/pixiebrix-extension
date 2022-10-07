@@ -28,6 +28,7 @@ import { SettingsState } from "@/store/settingsTypes";
 import useFlags from "@/hooks/useFlags";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectFrameState } from "@/pageEditor/tabState/tabStateSelectors";
+import { reportEvent } from "@/telemetry/events";
 
 type AddElement = (config: ElementConfig) => void;
 
@@ -77,6 +78,10 @@ function useAddElement(): AddElement {
         );
 
         dispatch(actions.addElement(initialState as FormState));
+
+        reportEvent("ExtensionAddNew", {
+          type: config.elementType,
+        });
       } catch (error) {
         if (getErrorMessage(error) === "Selection cancelled") {
           return;
