@@ -40,9 +40,16 @@
   border-color: transparent !important;
   background: linear-gradient(
     20deg,
-    rgba(182, 109, 255, 0.4),
-    rgba(182, 109, 255, 0.1)
+    rgba(164, 73, 255, 0.4),
+    rgba(164, 73, 255, 0.1)
   ) !important;
+  &.light {
+    background: linear-gradient(
+      20deg,
+      rgba(213, 170, 255, 0.4),
+      rgba(213, 170, 255, 0.1)
+    ) !important;
+  }
 }
 
 [style="z-index: 10000000;"] [style*="rgba(255, 155, 0, 0.3)"],
