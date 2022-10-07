@@ -67,7 +67,7 @@ function useBlockSearch(
       (x) => x.label
     );
     const fuse = new Fuse<BlockOption>(blockOptions, {
-      keys: ["label", "data.id", "data.description"],
+      keys: ["label", "blockResult.description", "value"],
     });
 
     return { blockOptions, fuse };
