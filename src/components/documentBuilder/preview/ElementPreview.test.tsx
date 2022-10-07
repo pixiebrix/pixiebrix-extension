@@ -95,7 +95,7 @@ test("calls setActiveElement callback on click", async () => {
 });
 
 test("prevents navigation on link click", async () => {
-  var consoleError = jest.spyOn(global.console, "error");
+  const consoleError = jest.spyOn(global.console, "error");
 
   const element = createNewElement("text");
   element.config.text = "Link in markdown [www.google.com](https://google.com)";
