@@ -37,6 +37,7 @@ import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import { PipelineExpression } from "@/runtime/mapArgs";
 import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
+import userEvent from "@testing-library/user-event";
 
 const renderElementPreview = (
   element: DocumentElement,
@@ -91,6 +92,24 @@ test("calls setActiveElement callback on click", async () => {
     fireEvent.click(container.querySelector("p"));
   });
   expect(setActiveElementMock).toHaveBeenCalledWith("element");
+});
+
+test("prevents navigation on link click", async () => {
+  const consoleError = jest.spyOn(global.console, "error");
+
+  const element = createNewElement("text");
+  element.config.text = "Link in markdown [www.google.com](https://google.com)";
+  const rendered = renderElementPreview(element, {
+    setActiveElement: jest.fn(),
+  });
+
+  await userEvent.click(rendered.getByText("www.google.com"));
+  expect(rendered.getByText("Link in markdown")).toBeInTheDocument();
+
+  // On navigation jest calls console.error, fail the test if it is called
+  expect(consoleError).not.toHaveBeenCalled();
+
+  consoleError.mockRestore();
 });
 
 test("adds a CSS class to an active element", async () => {
