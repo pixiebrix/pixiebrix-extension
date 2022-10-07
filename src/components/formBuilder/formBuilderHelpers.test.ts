@@ -32,6 +32,7 @@ import {
 import { RJSFSchema } from "./formBuilderTypes";
 import { initRenamingCases } from "./formEditor.testCases";
 import { UI_WIDGET } from "./schemaFieldNames";
+import databaseSchema from "@schemas/database.json";
 
 describe("replaceStringInArray", () => {
   let array: string[];
@@ -338,5 +339,68 @@ describe("produceSchemaOnUiTypeChange", () => {
       "bar",
       "baz",
     ]);
+  });
+
+  test("produce valid database schema", () => {
+    const schema: RJSFSchema = {
+      schema: {
+        ...getMinimalSchema(),
+        properties: {
+          field1: {
+            title: "Field 1",
+            type: "string",
+          },
+        },
+      },
+      uiSchema: getMinimalUiSchema(),
+    };
+
+    const nextSchema = produceSchemaOnUiTypeChange(
+      schema,
+      "field1",
+      stringifyUiType({ propertyType: "string", uiWidget: "database" })
+    );
+
+    expect(nextSchema.schema.properties.field1).toEqual({
+      title: "Field 1",
+      $ref: databaseSchema.$id,
+    });
+
+    expect(nextSchema.uiSchema.field1).toEqual({
+      [UI_WIDGET]: "database",
+    });
+  });
+
+  test("removes ref when switches from database", () => {
+    const schema: RJSFSchema = {
+      schema: {
+        ...getMinimalSchema(),
+        properties: {
+          field1: {
+            title: "Field 1",
+            $ref: databaseSchema.$id,
+          },
+        },
+      },
+      uiSchema: {
+        ...getMinimalUiSchema(),
+        field1: {
+          [UI_WIDGET]: "database",
+        },
+      },
+    };
+
+    const nextSchema = produceSchemaOnUiTypeChange(
+      schema,
+      "field1",
+      stringifyUiType({ propertyType: "string" })
+    );
+
+    expect(nextSchema.schema.properties.field1).toEqual({
+      title: "Field 1",
+      type: "string",
+    });
+
+    expect(nextSchema.uiSchema.field1).toEqual({});
   });
 });
