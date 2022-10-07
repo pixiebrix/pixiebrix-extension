@@ -238,7 +238,7 @@ export default class Overlay {
   tip: OverlayTip;
   rects: Array<OverlayRect>;
 
-  constructor() {
+  constructor(theme?: string) {
     // Find the root window, because overlays are positioned relative to it.
     const currentWindow = window; // window.__REACT_DEVTOOLS_TARGET_WINDOW__ || window;
     this.window = window;
@@ -250,6 +250,10 @@ export default class Overlay {
     const doc = currentWindow.document;
     this.container = doc.createElement("div");
     this.container.style.zIndex = "10000000";
+
+    if (theme) {
+      this.container.className = theme;
+    }
 
     this.tip = new OverlayTip(doc, this.container);
     this.rects = [];
