@@ -236,7 +236,7 @@
     "min-document": "^2.19.0",
     "mini-css-extract-plugin": "^2.6.1",
     "mockdate": "^3.0.5",
-    "msw": "^0.47.3",
+    "msw": "^0.47.4",
     "msw-storybook-addon": "^1.6.3",
     "node-polyfill-webpack-plugin": "^2.0.0",
     "node-sass": "^7.0.3",
