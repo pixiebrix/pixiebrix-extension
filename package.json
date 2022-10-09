@@ -31,7 +31,7 @@
   "repository": "https://github.com/pixiebrix/pixiebrix-extension",
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^9.0.9",
-    "@atlaskit/tree": "^8.6.1",
+    "@atlaskit/tree": "^8.6.3",
     "@cfworker/json-schema": "^1.8.1",
     "@fortawesome/fontawesome-svg-core": "1.2.36",
     "@fortawesome/free-brands-svg-icons": "^5.15.4",
