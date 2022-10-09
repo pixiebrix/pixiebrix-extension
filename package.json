@@ -46,7 +46,7 @@
     "@xobotyi/scrollbar-width": "^1.9.5",
     "ace-builds": "^1.10.1",
     "autocompleter": "^6.1.2",
-    "axios": "^0.27.2",
+    "axios": "^1.1.2",
     "bootstrap": "^4.6.0",
     "bootstrap-icons": "^1.5.0",
     "bootstrap-switch-button-react": "^1.2.0",
