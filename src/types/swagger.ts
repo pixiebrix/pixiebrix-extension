@@ -3,6 +3,8 @@
  * Do not make direct changes to the file.
  */
 
+import { Primitive } from "type-fest";
+
 export interface paths {
   "/api/audit/organizations/{id}/": {
     get: operations["listAuditEvents"];
@@ -727,6 +729,7 @@ export interface components {
         auth: string;
       }[];
       active?: boolean;
+      options_config?: Record<string, Primitive>;
     };
     DependencyTree: {
       name: string;
