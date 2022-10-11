@@ -22,15 +22,20 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
 import { hideSidebar } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
-import useTheme from "@/hooks/useTheme";
+import useTheme, { useGetTheme } from "@/hooks/useTheme";
+import cx from "classnames";
 
 const Header: React.FunctionComponent = () => {
+  const theme = useGetTheme();
   const { logo, showSidebarLogo } = useTheme();
 
   return (
     <div className="d-flex p-2 justify-content-between align-content-center">
       <Button
-        className={styles.button}
+        className={cx(
+          styles.button,
+          theme === "default" ? styles.nonThemeColor : styles.themeColor
+        )}
         onClick={async () => {
           const sidebar = await whoAmI();
           await hideSidebar({ tabId: sidebar.tab.id });
@@ -55,7 +60,10 @@ const Header: React.FunctionComponent = () => {
         target="_blank"
         size="sm"
         variant="link"
-        className={styles.button}
+        className={cx(
+          styles.button,
+          theme === "default" ? styles.nonThemeColor : styles.themeColor
+        )}
       >
         <span>
           Options <FontAwesomeIcon icon={faCog} />
