@@ -329,19 +329,6 @@ export function safeCssSelector(
     root,
   });
 
-  const allSelectors = elements.map((element) =>
-    getCssSelector(element, {
-      blacklist: [...blacklist, ":nth-child"],
-      whitelist: ["class", "tag"],
-      selectors: ["class", "tag"],
-      combineWithinSelector: true,
-      combineBetweenSelectors: true,
-      root,
-    })
-  );
-
-  console.debug("selectors", selector, allSelectors);
-
   if (root == null && selector.startsWith(":nth-child")) {
     // JQuery will happily return other matches that match the nth-child chain, so make attach it to the body
     // to get the expected CSS selector behavior
