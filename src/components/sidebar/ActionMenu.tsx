@@ -18,6 +18,7 @@
 import React from "react";
 import SaveButton from "@/pageEditor/sidebar/SaveButton";
 import {
+  faClone,
   faFileExport,
   faFileImport,
   faHistory,
@@ -32,6 +33,7 @@ import EllipsisMenu, {
 export type ActionMenuProps = {
   onSave: () => Promise<void>;
   onRemove: () => Promise<void>;
+  onClone: () => Promise<void>;
   onReset?: () => Promise<void>;
   isDirty?: boolean;
   onAddToRecipe?: () => Promise<void>;
@@ -42,6 +44,7 @@ export type ActionMenuProps = {
 const ActionMenu: React.FC<ActionMenuProps> = ({
   onSave,
   onRemove,
+  onClone,
   onReset,
   isDirty,
   onAddToRecipe,
@@ -96,6 +99,15 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
       ),
       hide: !onRemoveFromRecipe,
       action: onRemoveFromRecipe,
+      disabled,
+    },
+    {
+      title: (
+        <>
+          <FontAwesomeIcon icon={faClone} fixedWidth /> Make a copy
+        </>
+      ),
+      action: onClone,
       disabled,
     },
   ];

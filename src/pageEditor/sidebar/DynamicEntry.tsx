@@ -105,6 +105,10 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
 
   const onRemove = async () => removeExtension({ extensionId: extension.uuid });
 
+  const onClone = async () => {
+    dispatch(actions.cloneActiveExtension());
+  };
+
   return (
     <ListGroup.Item
       className={cx(styles.root, {
@@ -158,6 +162,7 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
         <ActionMenu
           onSave={onSave}
           onRemove={onRemove}
+          onClone={onClone}
           onReset={extension.installed ? onReset : undefined}
           isDirty={isDirty}
           onAddToRecipe={

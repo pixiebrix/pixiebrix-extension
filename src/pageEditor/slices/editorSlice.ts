@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { RecipeMetadata, RegistryId, UUID } from "@/core";
@@ -32,8 +32,9 @@ import {
   RecipeMetadataFormState,
 } from "@/types/definitions";
 import {
-  EditorState,
   AddBlockLocation,
+  EditorRootState,
+  EditorState,
   ModalKey,
 } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
@@ -48,6 +49,8 @@ import {
   selectActiveElementUIState,
 } from "./editorSelectors";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { produce } from "immer";
+import { normalizePipelineForEditor } from "@/pageEditor/extensionPoints/pipelineMapping";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -191,6 +194,31 @@ function editRecipeOptions(
 
   state.dirtyRecipeOptionsById[recipeId] = options;
 }
+
+const cloneActiveExtension = createAsyncThunk<
+  void,
+  void,
+  { state: EditorRootState }
+>("editor/cloneActiveExtension", async (arg, thunkAPI) => {
+  const state = thunkAPI.getState();
+  const newElement = await produce(
+    selectActiveElement(state),
+    async (draft) => {
+      // Give it a new id
+      draft.uuid = uuidv4();
+      // Remove from its recipe, if any (the user can add it to any recipe after creation)
+      delete draft.recipe;
+      // Append " - copy" to the name
+      draft.label += " - copy";
+      // Re-generate instance IDs for all the bricks in the extension
+      draft.extension.blockPipeline = await normalizePipelineForEditor(
+        draft.extension.blockPipeline
+      );
+    }
+  );
+  // Add the cloned extension
+  thunkAPI.dispatch(actions.addElement(newElement));
+});
 
 function activateElement(
   state: WritableDraft<EditorState>,
@@ -711,4 +739,7 @@ export const editorSlice = createSlice({
 });
 /* eslint-enable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- re-enable rule */
 
-export const { actions } = editorSlice;
+export const actions = {
+  ...editorSlice.actions,
+  cloneActiveExtension,
+};
