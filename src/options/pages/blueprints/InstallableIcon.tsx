@@ -53,19 +53,7 @@ const InstallableIcon: React.FunctionComponent<{
     return <FontAwesomeIcon icon={faCube} color={DARK_LAVENDER} size={size} />;
   }
 
-  if (!listing?.image) {
-    return (
-      <FontAwesomeIcon
-        icon={listingFaIcon}
-        color={listing?.icon_color ?? DARK_LAVENDER}
-        className={faIconClass}
-        size={size}
-        fixedWidth
-      />
-    );
-  }
-
-  return (
+  return listing?.image ? (
     <img
       src={listing.image.url}
       alt="Icon"
@@ -73,6 +61,14 @@ const InstallableIcon: React.FunctionComponent<{
         [styles.size1]: size === "1x",
         [styles.size2]: size === "2x",
       })}
+    />
+  ) : (
+    <FontAwesomeIcon
+      icon={listingFaIcon}
+      color={listing?.icon_color ?? DARK_LAVENDER}
+      className={faIconClass}
+      size={size}
+      fixedWidth
     />
   );
 };
