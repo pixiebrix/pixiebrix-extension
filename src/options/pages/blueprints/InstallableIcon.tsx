@@ -22,6 +22,8 @@ import { useAsyncIcon } from "@/components/asyncIcon";
 import { MarketplaceListing } from "@/types/contract";
 import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 import { isBlueprint } from "@/options/pages/blueprints/utils/installableUtils";
+import cx from "classnames";
+import styles from "./InstallableIcon.module.scss";
 
 function getDefaultInstallableIcon(installable: Installable) {
   if (isBlueprint(installable) && installable.extensionPoints.length > 1) {
@@ -31,7 +33,6 @@ function getDefaultInstallableIcon(installable: Installable) {
   return faCube;
 }
 
-const SIZE_REGEX = /^(?<size>\d)x$/i;
 const DARK_LAVENDER = "rgb(101, 98, 170)";
 
 const InstallableIcon: React.FunctionComponent<{
@@ -48,28 +49,30 @@ const InstallableIcon: React.FunctionComponent<{
   const defaultIcon = useMemo(() => getDefaultInstallableIcon(installable), []);
   const listingFaIcon = useAsyncIcon(listing?.fa_icon, defaultIcon);
 
-  const sizeMultiplier = SIZE_REGEX.exec(size).groups?.size;
-  // Setting height and width via em allows for scaling with font size
-  const cssSize = `${sizeMultiplier}em`;
-
   if (isLoading) {
     return <FontAwesomeIcon icon={faCube} color={DARK_LAVENDER} size={size} />;
   }
 
-  return listing?.image ? (
-    // Don't use the `width`/`height` attributes because they don't work with `em`
+  if (!listing?.image) {
+    return (
+      <FontAwesomeIcon
+        icon={listingFaIcon}
+        color={listing?.icon_color ?? DARK_LAVENDER}
+        className={faIconClass}
+        size={size}
+        fixedWidth
+      />
+    );
+  }
+
+  return (
     <img
       src={listing.image.url}
       alt="Icon"
-      style={{ width: cssSize, height: cssSize }}
-    />
-  ) : (
-    <FontAwesomeIcon
-      icon={listingFaIcon}
-      color={listing?.icon_color ?? DARK_LAVENDER}
-      className={faIconClass}
-      size={size}
-      fixedWidth
+      className={cx(styles.imageIcon, {
+        [styles.size1]: size === "1x",
+        [styles.size2]: size === "2x",
+      })}
     />
   );
 };
