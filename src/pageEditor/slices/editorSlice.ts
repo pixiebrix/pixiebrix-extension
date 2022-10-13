@@ -59,7 +59,6 @@ import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
 import { testMatchPatterns } from "@/blocks/available";
 import reportError from "@/telemetry/reportError";
 import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
   activateElement,
   editRecipeMetadata,
