@@ -31,6 +31,7 @@ import { push } from "connected-react-router";
 import useWizard from "@/options/pages/marketplace/useWizard";
 import ActivateButton from "@/options/pages/marketplace/ActivateButton";
 import useInstallableViewItems from "@/options/pages/blueprints/useInstallableViewItems";
+import BlockFormSubmissionViaEnterIfFirstChild from "@/components/BlockFormSubmissionViaEnterIfFirstChild";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -104,22 +105,8 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   return (
     <Formik initialValues={initialValues} onSubmit={install}>
       {({ handleSubmit }) => (
-        <Form
-          id="activate-wizard"
-          noValidate
-          onSubmit={(event) => {
-            if (stepKey === blueprintSteps.at(-1).key) {
-              // Actually "submit" if on the last step
-              handleSubmit(event);
-            } else {
-              // Move to the next step if on an earlier step
-              const step = blueprintSteps.findIndex(
-                ({ key }) => key === stepKey
-              );
-              setStep(blueprintSteps[step + 1].key);
-            }
-          }}
-        >
+        <Form id="activate-wizard" noValidate onSubmit={handleSubmit}>
+          <BlockFormSubmissionViaEnterIfFirstChild />
           <Card>
             <ActivateHeader blueprint={blueprint} />
             <Card.Body className={styles.wizardBody}>
