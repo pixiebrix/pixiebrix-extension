@@ -47,6 +47,7 @@ import useSaveExtension from "@/pageEditor/hooks/useSaveExtension";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
+import { cloneActiveExtension } from "@/pageEditor/slices/editorThunks";
 
 type DynamicEntryProps = {
   extension: FormState;
@@ -106,7 +107,7 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
   const onRemove = async () => removeExtension({ extensionId: extension.uuid });
 
   const onClone = async () => {
-    dispatch(actions.cloneActiveExtension());
+    dispatch(cloneActiveExtension());
   };
 
   return (
