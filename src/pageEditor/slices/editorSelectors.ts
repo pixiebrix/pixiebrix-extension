@@ -285,15 +285,15 @@ export const selectCopiedBlock = ({ editor }: EditorRootState) =>
 export const selectExtensionAvailability = ({
   editor: {
     availableInstalledIds,
-    isLoadingInstalledExtensions,
+    isPendingInstalledExtensions,
     availableDynamicIds,
-    isLoadingDynamicExtensions,
+    isPendingDynamicExtensions,
     unavailableCount,
   },
 }: EditorRootState) => ({
   availableInstalledIds,
-  isLoadingInstalledExtensions,
+  isPendingInstalledExtensions,
   availableDynamicIds,
-  isLoadingDynamicExtensions,
+  isPendingDynamicExtensions,
   unavailableCount,
 });

@@ -178,13 +178,21 @@ export interface EditorState {
    * The available installed extensions for the current tab
    */
   availableInstalledIds: UUID[];
-  isLoadingInstalledExtensions: boolean;
+
+  /**
+   * availableInstalledIds are being calculated
+   */
+  isPendingInstalledExtensions: boolean;
 
   /**
    * The available dynamic elements for the current tab
    */
   availableDynamicIds: UUID[];
-  isLoadingDynamicExtensions: boolean;
+
+  /**
+   * availableDynamicIds are being calculated
+   */
+  isPendingDynamicExtensions: boolean;
 
   /**
    * How many installed extensions are not available on the current tab?

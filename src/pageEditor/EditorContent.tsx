@@ -52,11 +52,11 @@ const EditorContent: React.FC = () => {
   const {
     availableDynamicIds,
     unavailableCount,
-    isLoadingInstalledExtensions,
-    isLoadingDynamicExtensions,
+    isPendingInstalledExtensions,
+    isPendingDynamicExtensions,
   } = useSelector(selectExtensionAvailability);
-  const isLoadingExtensions =
-    isLoadingInstalledExtensions || isLoadingDynamicExtensions;
+  const isPendingExtensions =
+    isPendingInstalledExtensions || isPendingDynamicExtensions;
 
   // Fetch-and-cache marketplace content for rendering in the Brick Selection modal
   useGetMarketplaceListingsQuery();
@@ -99,7 +99,7 @@ const EditorContent: React.FC = () => {
     return <RecipePane />;
   }
 
-  if (isLoadingExtensions || isConnectingToContentScript) {
+  if (isPendingExtensions || isConnectingToContentScript) {
     // Avoid flashing the panes below while the state is loading. This condition should probably
     // not be moved below <NoExtensionSelectedPane>, <NoExtensionsPane>, or <WelcomePane>.
     // It loads fast enough to not require a <Loader> either.

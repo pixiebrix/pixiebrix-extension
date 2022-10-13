@@ -80,9 +80,9 @@ export const initialState: EditorState = {
   deletedElementsByRecipeId: {},
   newRecipeIds: [],
   availableInstalledIds: [],
-  isLoadingInstalledExtensions: false,
+  isPendingInstalledExtensions: false,
   availableDynamicIds: [],
-  isLoadingDynamicExtensions: false,
+  isPendingDynamicExtensions: false,
   unavailableCount: 0,
 };
 
