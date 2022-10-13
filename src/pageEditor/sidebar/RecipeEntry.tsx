@@ -94,6 +94,7 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
         className={cx(styles.root, "list-group-item-action", {
           [styles.recipeBackground]: hasRecipeBackground,
         })}
+        tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
         active={isActive}
         key={`recipe-${recipeId}`}
         onClick={() =>
