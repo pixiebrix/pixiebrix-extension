@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { RecipeMetadata, RegistryId, UUID } from "@/core";
@@ -30,10 +30,9 @@ import {
   AddBlockLocation,
   EditorState,
   ModalKey,
-  EditorRootState,
 } from "@/pageEditor/pageEditorTypes";
 import { uuidv4 } from "@/types/helpers";
-import { cloneDeep, compact, get, isEmpty, uniq } from "lodash";
+import { cloneDeep, get, isEmpty } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getInvalidPath } from "@/utils/debugUtils";
@@ -41,24 +40,9 @@ import {
   selectActiveElement,
   selectActiveElementId,
   selectActiveElementUIState,
-  selectNotDeletedElements,
-  selectNotDeletedExtensions,
 } from "./editorSelectors";
-import {
-  FormState,
-  isQuickBarExtensionPoint,
-} from "@/pageEditor/extensionPoints/formStateTypes";
-import { ExtensionsRootState } from "@/store/extensionsTypes";
-import {
-  checkAvailable,
-  getInstalledExtensionPoints,
-} from "@/contentScript/messenger/api";
-import { getCurrentURL, thisTab } from "@/pageEditor/utils";
-import { resolveDefinitions } from "@/registry/internal";
-import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
-import { testMatchPatterns } from "@/blocks/available";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import reportError from "@/telemetry/reportError";
-import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
 import {
   activateElement,
   editRecipeMetadata,
@@ -69,6 +53,11 @@ import {
   setActiveNodeId,
   syncElementNodeUIStates,
 } from "@/pageEditor/slices/editorSliceHelpers";
+import {
+  checkActiveElementAvailability,
+  checkAvailableDynamicElements,
+  checkAvailableInstalledExtensions,
+} from "@/pageEditor/slices/editorThunks";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -98,99 +87,6 @@ export const initialState: EditorState = {
 };
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
-
-export type AvailableInstalled = {
-  availableInstalledIds: UUID[];
-  unavailableCount: number;
-};
-
-const checkAvailableInstalledExtensions = createAsyncThunk<
-  AvailableInstalled,
-  void,
-  { state: EditorRootState & ExtensionsRootState }
->("editor/checkAvailableInstalledExtensions", async (arg, thunkAPI) => {
-  const extensions = selectNotDeletedExtensions(thunkAPI.getState());
-  const installedExtensionPoints = new Map(
-    // eslint-disable-next-line unicorn/no-await-expression-member
-    (await getInstalledExtensionPoints(thisTab)).map((extensionPoint) => [
-      extensionPoint.id,
-      extensionPoint,
-    ])
-  );
-  const resolved = await Promise.all(
-    extensions.map(async (extension) => resolveDefinitions(extension))
-  );
-  const tabUrl = await getCurrentURL();
-  const availableExtensionPointIds = resolved
-    .filter((x) => {
-      const extensionPoint = installedExtensionPoints.get(x.extensionPointId);
-      // Not installed means not available
-      if (extensionPoint == null) {
-        return false;
-      }
-
-      // QuickBar is installed on every page, need to filter by the documentUrlPatterns
-      if (QuickBarExtensionPoint.isQuickBarExtensionPoint(extensionPoint)) {
-        return testMatchPatterns(extensionPoint.documentUrlPatterns, tabUrl);
-      }
-
-      return true;
-    })
-    .map((x) => x.id);
-
-  const availableInstalledIds = extensions
-    .filter((x) => availableExtensionPointIds.includes(x.id))
-    .map((x) => x.id);
-  const unavailableCount = extensions.length - availableInstalledIds.length;
-
-  return { availableInstalledIds, unavailableCount };
-});
-
-async function isElementAvailable(
-  tabUrl: string,
-  elementExtensionPoint: BaseExtensionPointState
-): Promise<boolean> {
-  if (isQuickBarExtensionPoint(elementExtensionPoint)) {
-    return testMatchPatterns(
-      elementExtensionPoint.definition.documentUrlPatterns,
-      tabUrl
-    );
-  }
-
-  return checkAvailable(thisTab, elementExtensionPoint.definition.isAvailable);
-}
-
-const checkAvailableDynamicElements = createAsyncThunk<
-  { availableDynamicIds: UUID[] },
-  void,
-  { state: EditorRootState }
->("editor/checkAvailableDynamicElements", async (arg, thunkAPI) => {
-  const elements = selectNotDeletedElements(thunkAPI.getState());
-  const tabUrl = await getCurrentURL();
-  const availableElementIds = await Promise.all(
-    elements.map(async ({ uuid, extensionPoint: elementExtensionPoint }) => {
-      const isAvailable = await isElementAvailable(
-        tabUrl,
-        elementExtensionPoint
-      );
-
-      return isAvailable ? uuid : null;
-    })
-  );
-
-  return { availableDynamicIds: uniq(compact(availableElementIds)) };
-});
-
-const checkActiveElementAvailability = createAsyncThunk<
-  { isAvailable: boolean },
-  void,
-  { state: EditorRootState }
->("editor/checkDynamicElementAvailability", async (arg, thunkAPI) => {
-  const tabUrl = await getCurrentURL();
-  const element = selectActiveElement(thunkAPI.getState());
-  const isAvailable = await isElementAvailable(tabUrl, element.extensionPoint);
-  return { isAvailable };
-});
 
 export const editorSlice = createSlice({
   name: "editor",
@@ -750,9 +646,4 @@ export const editorSlice = createSlice({
 });
 /* eslint-enable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- re-enable rule */
 
-export const actions = {
-  ...editorSlice.actions,
-  checkAvailableInstalledExtensions,
-  checkAvailableDynamicElements,
-  checkActiveElementAvailability,
-};
+export const { actions } = editorSlice;
