@@ -26,6 +26,7 @@ import { OnboardingType } from "@/options/pages/blueprints/onboardingView/useOnb
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 import { useDispatch } from "react-redux";
 import workshopImage from "@img/workshop.svg";
+import { BLUEPRINTS_PAGE_TABS } from "@/options/pages/blueprints/ListFilters";
 
 const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
   <Col className="d-flex justify-content-center flex-column text-center">
@@ -61,13 +62,7 @@ const ActivateTeamBlueprintsColumn: React.VoidFunctionComponent = () => {
       <Button
         size="sm"
         onClick={() => {
-          dispatch(
-            setActiveTab({
-              key: "All",
-              tabTitle: "All Blueprints",
-              filters: [],
-            })
-          );
+          dispatch(setActiveTab(BLUEPRINTS_PAGE_TABS.all));
         }}
       >
         View my blueprints
@@ -151,27 +146,36 @@ const OnboardingView: React.VoidFunctionComponent<{
     }
 
     switch (onboardingType) {
-      case "hasDeployments":
+      case "hasDeployments": {
         return <ActivateFromDeploymentBannerColumn />;
-      case "restricted":
+      }
+
+      case "restricted": {
         return <ContactTeamAdminColumn />;
-      case "hasTeamBlueprints":
+      }
+
+      case "hasTeamBlueprints": {
         return (
           <>
             <ActivateTeamBlueprintsColumn />
             <CreateBrickColumn />
           </>
         );
-      default:
+      }
+
+      default: {
         return <UnaffiliatedColumn />;
+      }
     }
   }, [filter, onboardingType]);
 
   const onboardingCallout = useMemo(() => {
     switch (onboardingType) {
-      case "restricted":
+      case "restricted": {
         return "Welcome to PixieBrix! Ready to get started?";
-      default:
+      }
+
+      default: {
         if (filter === "personal") {
           return "Create your own extensions";
         }
@@ -181,6 +185,7 @@ const OnboardingView: React.VoidFunctionComponent<{
         }
 
         return "Welcome to PixieBrix! Ready to get started?";
+      }
     }
   }, [filter, onboardingType]);
 

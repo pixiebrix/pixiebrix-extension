@@ -36,6 +36,7 @@ import {
 } from "@/components/formBuilder/formEditor.testCases";
 import selectEvent from "react-select-event";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 
 const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
 
@@ -49,6 +50,7 @@ describe("FormEditor", () => {
   const defaultProps: Except<FormEditorProps, "activeField"> = {
     name: RJSF_SCHEMA_PROPERTY_NAME,
     setActiveField: jest.fn(),
+    fieldTypes: FORM_FIELD_TYPE_OPTIONS,
   };
 
   describe("renders", () => {

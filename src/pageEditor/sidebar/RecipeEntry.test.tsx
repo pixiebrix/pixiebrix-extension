@@ -62,6 +62,7 @@ beforeEach(() => {
       isSaving: false,
       onReset: jest.fn(),
       onRemove: jest.fn(),
+      onClone: jest.fn(),
     },
   });
 });

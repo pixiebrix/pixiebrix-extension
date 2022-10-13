@@ -46,6 +46,7 @@ import innerDefinitionSchema from "@schemas/innerDefinition.json";
 import refSchema from "@schemas/ref.json";
 import componentSchema from "@schemas/component.json";
 import pipelineSchema from "@schemas/pipeline.json";
+import databaseSchema from "@schemas/database.json";
 import { resolveDefinitions } from "@/registry/internal";
 import Lazy from "yup/lib/Lazy";
 import * as Yup from "yup";
@@ -72,6 +73,7 @@ const SCHEMA_URLS: Record<string, UnknownObject> = {
   "https://app.pixiebrix.com/schemas/component": componentSchema,
   "https://app.pixiebrix.com/schemas/ref": refSchema,
   "https://app.pixiebrix.com/schemas/innerDefinition": innerDefinitionSchema,
+  "https://app.pixiebrix.com/schemas/database": databaseSchema,
 };
 
 const BASE_SCHEMA_URI = "https://app.pixiebrix.com/schemas/";

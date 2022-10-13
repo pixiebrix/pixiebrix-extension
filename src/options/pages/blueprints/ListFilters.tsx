@@ -4,7 +4,7 @@ import { Col, Form, Nav } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import useReduxState from "@/hooks/useReduxState";
 import { selectActiveTab } from "./blueprintsSelectors";
-import blueprintsSlice from "./blueprintsSlice";
+import blueprintsSlice, { ActiveTab } from "./blueprintsSlice";
 import { useDebounce } from "use-debounce";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -19,20 +19,66 @@ import {
 import { TableInstance } from "react-table";
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import useFlags from "@/hooks/useFlags";
-import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
-import { useGetStarterBlueprintsQuery } from "@/services/api";
+import { useGetMeQuery, useGetStarterBlueprintsQuery } from "@/services/api";
 
 type ListFiltersProps = {
   teamFilters: string[];
   tableInstance: TableInstance<InstallableViewItem>;
 };
 
-function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
+const BLUEPRINT_TAB_KEYS = [
+  "active",
+  "all",
+  "personal",
+  "public",
+  "getStarted",
+] as const;
+type BlueprintTabKey = typeof BLUEPRINT_TAB_KEYS[number];
+type BlueprintTabMap = {
+  [key in BlueprintTabKey]: ActiveTab;
+};
+
+export const BLUEPRINTS_PAGE_TABS: BlueprintTabMap = {
+  active: {
+    key: "Active",
+    tabTitle: "Active Blueprints",
+    filters: [{ id: "status", value: "Active" }],
+  },
+  all: {
+    key: "All",
+    tabTitle: "All Blueprints",
+    filters: [],
+  },
+  personal: {
+    key: "Personal",
+    tabTitle: "Personal Blueprints",
+    filters: [{ id: "sharing.source.label", value: "Personal" }],
+  },
+  public: {
+    key: "Public",
+    tabTitle: "Public Blueprints",
+    filters: [{ id: "sharing.source.label", value: "Public" }],
+  },
+  getStarted: {
+    key: "Get Started",
+    tabTitle: "Welcome to the PixieBrix Extension Console",
+    filters: [],
+  },
+};
+
+const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
+  teamFilters,
+  tableInstance,
+}) => {
   const { permit } = useFlags();
-  const { onboardingType, isLoading: isOnboardingLoading } = useOnboarding();
+  const { data: me, isLoading: isMeLoading } = useGetMeQuery();
   const { data: starterBlueprints, isLoading: isStarterBlueprintsLoading } =
     useGetStarterBlueprintsQuery();
-  const { setGlobalFilter, data: installableViewItems } = tableInstance;
+  const {
+    state: { globalFilter },
+    setGlobalFilter,
+    data: installableViewItems,
+  } = tableInstance;
   const [activeTab, setActiveTab] = useReduxState(
     selectActiveTab,
     blueprintsSlice.actions.setActiveTab
@@ -43,7 +89,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
     leading: false,
   });
 
-  const isFreemiumUser = onboardingType === "default";
+  const isFreemiumUser = !me?.organization;
 
   const hasSomeBlueprintEngagement = installableViewItems?.some(
     (installableViewItem) => {
@@ -61,16 +107,22 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
   );
 
   const showGetStartedTab =
-    !isStarterBlueprintsLoading && !isOnboardingLoading
+    !isStarterBlueprintsLoading && !isMeLoading
       ? isFreemiumUser && !hasSomeBlueprintEngagement
       : false;
 
   useEffect(() => {
-    if (
-      isStarterBlueprintsLoading ||
-      isOnboardingLoading ||
-      showGetStartedTab
-    ) {
+    if (isStarterBlueprintsLoading || isMeLoading) {
+      return;
+    }
+
+    if (activeTab.key === null) {
+      if (showGetStartedTab) {
+        setActiveTab(BLUEPRINTS_PAGE_TABS.getStarted);
+        return;
+      }
+
+      setActiveTab(BLUEPRINTS_PAGE_TABS.active);
       return;
     }
 
@@ -79,34 +131,29 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
     // If the "Get Started" tab is hidden due to e.g. onboarding completion,
     // but still selected as an ActiveTab, we want to reset the default to
     // the "Active Blueprints" tab.
-    if (activeTab.key === "Get Started") {
-      setActiveTab({
-        key: "Active",
-        tabTitle: "Active Blueprints",
-        filters: [{ id: "status", value: "Active" }],
-      });
+    if (!showGetStartedTab && activeTab.key === "Get Started") {
+      setActiveTab(BLUEPRINTS_PAGE_TABS.active);
     }
   }, [
-    isOnboardingLoading,
+    isMeLoading,
     starterBlueprints,
+    isStarterBlueprintsLoading,
+    activeTab.key,
     showGetStartedTab,
-    activeTab,
     setActiveTab,
   ]);
 
   // By default, search everything with the option to re-select
   // filtered category
   useEffect(() => {
-    setGlobalFilter(debouncedQuery);
+    if (globalFilter !== debouncedQuery) {
+      setGlobalFilter(debouncedQuery);
+    }
 
     if (debouncedQuery) {
-      setActiveTab({
-        key: "All",
-        tabTitle: "All Blueprints",
-        filters: [],
-      });
+      setActiveTab(BLUEPRINTS_PAGE_TABS.all);
     }
-  }, [debouncedQuery, setActiveTab, setGlobalFilter]);
+  }, [globalFilter, debouncedQuery, setActiveTab, setGlobalFilter]);
 
   return (
     <Col sm={12} md={3} xl={2} className={styles.root}>
@@ -132,11 +179,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
             <Nav.Link
               eventKey="Get Started"
               onClick={() => {
-                setActiveTab({
-                  key: "Get Started",
-                  tabTitle: "Welcome to the PixieBrix Extension Console",
-                  filters: [],
-                });
+                setActiveTab(BLUEPRINTS_PAGE_TABS.getStarted);
               }}
             >
               <FontAwesomeIcon icon={faRocket} /> Get Started
@@ -148,11 +191,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
           <Nav.Link
             eventKey="Active"
             onClick={() => {
-              setActiveTab({
-                key: "Active",
-                tabTitle: "Active Blueprints",
-                filters: [{ id: "status", value: "Active" }],
-              });
+              setActiveTab(BLUEPRINTS_PAGE_TABS.active);
             }}
           >
             <FontAwesomeIcon icon={faCheck} /> Active
@@ -162,11 +201,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
           <Nav.Link
             eventKey="All"
             onClick={() => {
-              setActiveTab({
-                key: "All",
-                tabTitle: "All Blueprints",
-                filters: [],
-              });
+              setActiveTab(BLUEPRINTS_PAGE_TABS.all);
             }}
           >
             <FontAwesomeIcon icon={faAsterisk} /> All Blueprints
@@ -178,13 +213,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
               <Nav.Link
                 eventKey="Personal"
                 onClick={() => {
-                  setActiveTab({
-                    key: "Personal",
-                    tabTitle: "Personal Blueprints",
-                    filters: [
-                      { id: "sharing.source.label", value: "Personal" },
-                    ],
-                  });
+                  setActiveTab(BLUEPRINTS_PAGE_TABS.personal);
                 }}
               >
                 <FontAwesomeIcon icon={faUser} /> Personal
@@ -194,11 +223,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
               <Nav.Link
                 eventKey="Public"
                 onClick={() => {
-                  setActiveTab({
-                    key: "Public",
-                    tabTitle: "Public Blueprints",
-                    filters: [{ id: "sharing.source.label", value: "Public" }],
-                  });
+                  setActiveTab(BLUEPRINTS_PAGE_TABS.public);
                 }}
               >
                 <FontAwesomeIcon icon={faGlobe} /> Public Marketplace
@@ -238,6 +263,6 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
       </Nav>
     </Col>
   );
-}
+};
 
 export default ListFilters;

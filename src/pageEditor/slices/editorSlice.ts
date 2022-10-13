@@ -19,12 +19,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { RecipeMetadata, RegistryId, UUID } from "@/core";
-import {
-  FOUNDATION_NODE_ID,
-  makeInitialElementUIState,
-  makeInitialNodeUIState,
-} from "@/pageEditor/uiState/uiState";
-import { WritableDraft } from "immer/dist/types/types-external";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { BlockConfig } from "@/blocks/types";
 import { ExtensionPointType } from "@/extensionPoints/types";
 import {
@@ -32,17 +27,15 @@ import {
   RecipeMetadataFormState,
 } from "@/types/definitions";
 import {
-  EditorState,
   AddBlockLocation,
+  EditorState,
   ModalKey,
   EditorRootState,
 } from "@/pageEditor/pageEditorTypes";
-import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
 import { cloneDeep, compact, get, isEmpty, uniq } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
-import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import { getInvalidPath } from "@/utils/debugUtils";
 import {
   selectActiveElement,
@@ -66,6 +59,17 @@ import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
 import { testMatchPatterns } from "@/blocks/available";
 import reportError from "@/telemetry/reportError";
 import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import {
+  activateElement,
+  editRecipeMetadata,
+  editRecipeOptions,
+  ensureElementUIState,
+  removeElement,
+  selectRecipeId,
+  setActiveNodeId,
+  syncElementNodeUIStates,
+} from "@/pageEditor/slices/editorSliceHelpers";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -95,139 +99,6 @@ export const initialState: EditorState = {
 };
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
-
-function ensureElementUIState(
-  state: WritableDraft<EditorState>,
-  elementId: UUID
-) {
-  if (!state.elementUIStates[elementId]) {
-    state.elementUIStates[elementId] = makeInitialElementUIState();
-    const pipeline = state.elements.find((x) => x.uuid === elementId).extension
-      .blockPipeline;
-    state.elementUIStates[elementId].pipelineMap = getPipelineMap(pipeline);
-  }
-}
-
-function ensureNodeUIState(state: WritableDraft<ElementUIState>, nodeId: UUID) {
-  if (!state.nodeUIStates[nodeId]) {
-    state.nodeUIStates[nodeId] = makeInitialNodeUIState(nodeId);
-  }
-}
-
-function syncElementNodeUIStates(
-  state: WritableDraft<EditorState>,
-  element: FormState
-) {
-  const elementUIState = state.elementUIStates[element.uuid];
-
-  const pipelineMap = getPipelineMap(element.extension.blockPipeline);
-
-  elementUIState.pipelineMap = pipelineMap;
-
-  // Pipeline block instance IDs may have changed
-  if (pipelineMap[elementUIState.activeNodeId] == null) {
-    elementUIState.activeNodeId = FOUNDATION_NODE_ID;
-  }
-
-  // Remove NodeUIStates for invalid IDs
-  for (const nodeId of Object.keys(elementUIState.nodeUIStates) as UUID[]) {
-    // Don't remove the foundation NodeUIState
-    if (nodeId !== FOUNDATION_NODE_ID && pipelineMap[nodeId] == null) {
-      delete elementUIState.nodeUIStates[nodeId];
-    }
-  }
-
-  // Add missing NodeUIStates
-  for (const nodeId of Object.keys(pipelineMap) as UUID[]) {
-    ensureNodeUIState(elementUIState, nodeId);
-  }
-}
-
-function setActiveNodeId(state: WritableDraft<EditorState>, nodeId: UUID) {
-  const elementUIState = state.elementUIStates[state.activeElementId];
-  ensureNodeUIState(elementUIState, nodeId);
-  elementUIState.activeNodeId = nodeId;
-}
-
-function removeElement(state: WritableDraft<EditorState>, uuid: UUID) {
-  if (state.activeElementId === uuid) {
-    state.activeElementId = null;
-  }
-
-  // This is called from the remove-recipe logic. When removing all extensions
-  // in a recipe, some of them may not have been selected by the user in the UI yet,
-  // and so may not have been moved into state.elements yet.
-  const index = state.elements.findIndex((x) => x.uuid === uuid);
-  if (index > -1) {
-    state.elements.splice(index, 1);
-  }
-
-  delete state.dirty[uuid];
-  delete state.elementUIStates[uuid];
-
-  // Make sure we're not keeping any private data around from Page Editor sessions
-  void clearExtensionTraces(uuid);
-}
-
-function selectRecipeId(
-  state: WritableDraft<EditorState>,
-  recipeId: RegistryId
-) {
-  state.error = null;
-  state.beta = false;
-  state.activeElementId = null;
-
-  if (
-    state.expandedRecipeId === recipeId &&
-    state.activeRecipeId === recipeId
-  ) {
-    // "un-toggle" the recipe, if it's already selected
-    state.expandedRecipeId = null;
-  } else {
-    state.expandedRecipeId = recipeId;
-  }
-
-  state.activeRecipeId = recipeId;
-  state.selectionSeq++;
-}
-
-function editRecipeMetadata(
-  state: WritableDraft<EditorState>,
-  metadata: RecipeMetadataFormState
-) {
-  const recipeId = state.activeRecipeId;
-  if (recipeId == null) {
-    return;
-  }
-
-  state.dirtyRecipeMetadataById[recipeId] = metadata;
-}
-
-function editRecipeOptions(
-  state: WritableDraft<EditorState>,
-  options: OptionsDefinition
-) {
-  const recipeId = state.activeRecipeId;
-  if (recipeId == null) {
-    return;
-  }
-
-  state.dirtyRecipeOptionsById[recipeId] = options;
-}
-
-function activateElement(
-  state: WritableDraft<EditorState>,
-  element: FormState
-) {
-  state.error = null;
-  state.beta = false;
-  state.activeElementId = element.uuid;
-  state.activeRecipeId = null;
-  state.expandedRecipeId = element.recipe?.id ?? state.expandedRecipeId;
-  state.selectionSeq++;
-
-  ensureElementUIState(state, element.uuid);
-}
 
 export type AvailableInstalled = {
   availableInstalledIds: UUID[];

@@ -48,5 +48,5 @@ test("Throw BusinessError on invalid JSON", async () => {
       root: null,
       runPipeline: neverPromise,
     });
-  }).rejects.toThrowError(BusinessError);
+  }).rejects.toThrow(BusinessError);
 });

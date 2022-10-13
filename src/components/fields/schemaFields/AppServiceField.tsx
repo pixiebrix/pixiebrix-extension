@@ -20,16 +20,10 @@ import { useField, useFormikContext } from "formik";
 import { Expression, OutputKey, ServiceKeyVar } from "@/core";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { produce } from "immer";
-import { createTypePredicate } from "@/components/fields/fieldUtils";
-import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
 import { isEqual, set } from "lodash";
 import { keyToFieldValue, ServiceSlice } from "./serviceFieldUtils";
 
 const PIXIEBRIX_OUTPUT_KEY = "pixiebrix" as OutputKey;
-
-export const isAppServiceField = createTypePredicate(
-  (schema) => schema.$ref === `${SERVICE_BASE_SCHEMA}${PIXIEBRIX_SERVICE_ID}`
-);
 
 /**
  * Schema-based field for the PixieBrix API (@pixiebrix/api).

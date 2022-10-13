@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { compact, identity, sortBy, uniq } from "lodash";
+import { compact, identity, intersection, sortBy, uniq } from "lodash";
 import { getCssSelector } from "css-selector-generator";
 import {
   CssSelectorType,
@@ -118,7 +118,8 @@ const UNSTABLE_SELECTORS = [
     // Our attributes
     EXTENSION_POINT_DATA_ATTR,
     PIXIEBRIX_DATA_ATTR,
-    CONTENT_SCRIPT_READY_ATTRIBUTE
+    CONTENT_SCRIPT_READY_ATTRIBUTE,
+    "style"
   ),
 ];
 
@@ -153,6 +154,15 @@ function getUniqueAttributeSelectors(
         ...siteSelectorHint.badPatterns,
       ])
   );
+}
+
+/**
+ * Convert classname of element to meaningful selector
+ */
+const classHelper = document.createElement("i");
+function getSelectorFromClass(className: string): string {
+  classHelper.className = className;
+  return "." + [...classHelper.classList].join(".");
 }
 
 /** ID selectors and certain other attributes can uniquely identify items */
@@ -319,6 +329,19 @@ export function safeCssSelector(
     root,
   });
 
+  const allSelectors = elements.map((element) =>
+    getCssSelector(element, {
+      blacklist: [...blacklist, ":nth-child"],
+      whitelist: ["class", "tag"],
+      selectors: ["class", "tag"],
+      combineWithinSelector: true,
+      combineBetweenSelectors: true,
+      root,
+    })
+  );
+
+  console.debug("selectors", selector, allSelectors);
+
   if (root == null && selector.startsWith(":nth-child")) {
     // JQuery will happily return other matches that match the nth-child chain, so make attach it to the body
     // to get the expected CSS selector behavior
@@ -326,6 +349,123 @@ export function safeCssSelector(
   }
 
   return selector;
+}
+
+/**
+ * Get common selector for multi-element
+ * It is used by expand selection feature
+ */
+export function commonCssSelector(
+  elements: HTMLElement[],
+  {
+    selectors = DEFAULT_SELECTOR_PRIORITIES,
+    excludeRandomClasses = false,
+    // eslint-disable-next-line unicorn/no-useless-undefined -- Convert null to undefined or else getCssSelector bails
+    root = undefined,
+  }: SafeCssSelectorOptions = {}
+): string {
+  // https://github.com/fczbkk/css-selector-generator
+  const siteSelectorHint = getSiteSelectorHint(elements[0]);
+
+  const blacklist = [
+    ...UNSTABLE_SELECTORS,
+    ...siteSelectorHint.badPatterns,
+
+    excludeRandomClasses
+      ? (selector: string) => {
+          if (!selector.startsWith(".")) {
+            return false;
+          }
+
+          const usefulness = guessUsefulness(selector);
+          console.debug("css-selector-generator:  ", usefulness);
+          return usefulness.isRandom;
+        }
+      : undefined,
+  ];
+  const whitelist = [
+    getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES),
+    ...siteSelectorHint.stableAnchors,
+  ];
+
+  // Handle differently if multi-element
+  const ancestors = elements.map((element) =>
+    $(element)
+      .parentsUntil(root)
+      .filter(
+        [...UNIQUE_ATTRIBUTES, "class"]
+          .map((attribute) => `[${attribute}]`)
+          .join(",")
+      )
+      .get()
+  );
+  // Get common ancester
+  const [commonAncestor] = intersection(...ancestors);
+
+  const [commonParentClassName] = intersection(
+    ...elements.map((element) => [$(element).parent().attr("class")])
+  );
+
+  if (commonAncestor) {
+    // Get common class of elements
+    const [commonClassName] = intersection(
+      ...elements.map((element) => element.className)
+    );
+
+    // Get first common class of ancestor of elements
+    const [commonAncestorClassName] = intersection(
+      ...ancestors.map((list) => list.map((element) => element.className))
+    );
+
+    // Get selector of common ancestor
+    const commonAncestorSelector = getCssSelector(commonAncestor, {
+      blacklist,
+      whitelist: ["class", "tag", ...whitelist],
+      selectors,
+      combineWithinSelector: true,
+      combineBetweenSelectors: true,
+      root,
+    });
+
+    // If elements have comment class we can easily select them
+    if (commonClassName) {
+      return [
+        commonAncestorSelector,
+        getSelectorFromClass(commonClassName),
+      ].join(" ");
+    }
+
+    if (commonParentClassName) {
+      return [
+        commonAncestorSelector,
+        getSelectorFromClass(commonParentClassName),
+        ">",
+        elements[0].tagName.toLowerCase(),
+      ].join(" ");
+    }
+
+    if (commonAncestorClassName) {
+      // If not, we use common ancestor's class
+
+      if (
+        intersection(
+          $(commonAncestorSelector),
+          $(getSelectorFromClass(commonAncestorClassName))
+        ).length > 0
+      ) {
+        // Make sure that commonAncestorClassName is not duplicated with commonAncestorSelector
+        return [commonAncestorSelector, elements[0].tagName.toLowerCase()].join(
+          " "
+        );
+      }
+
+      return [
+        commonAncestorSelector,
+        getSelectorFromClass(commonAncestorClassName),
+        elements[0].tagName.toLowerCase(),
+      ].join(" ");
+    }
+  }
 }
 
 function findAncestorsWithIdLikeSelectors(

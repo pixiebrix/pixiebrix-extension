@@ -20,7 +20,7 @@ import { ComponentMeta, Story } from "@storybook/react";
 import ServiceEditorModal from "./ServiceEditorModal";
 import { action } from "@storybook/addon-actions";
 import { fromJS } from "@/services/factory";
-import { loadBrickYaml } from "@/runtime/brickYaml";
+import { dumpBrickYaml, loadBrickYaml } from "@/runtime/brickYaml";
 import { ServiceDefinition } from "@/types/definitions";
 
 import pipedriveYaml from "@contrib/services/pipedrive.yaml?loadAsText";
@@ -42,8 +42,10 @@ export default {
 } as ComponentMeta<typeof ServiceEditorModal>;
 
 const Template: Story<StoryType> = ({ fixture, ...args }) => {
-  // eslint-disable-next-line security/detect-object-injection -- type checked from fixture object
-  const service = fromJS(loadBrickYaml(FIXTURES[fixture]) as ServiceDefinition);
+  const service = fromJS(
+    // eslint-disable-next-line security/detect-object-injection -- type checked from fixture object
+    loadBrickYaml(dumpBrickYaml(FIXTURES[fixture])) as ServiceDefinition
+  );
 
   // Cheap call, just call in the render function
   registerDefaultWidgets();

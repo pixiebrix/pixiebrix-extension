@@ -46,7 +46,7 @@ import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 
 function useInstallableViewItems(installables: Installable[]): {
-  installableViewItems: InstallableViewItem[];
+  installableViewItems: readonly InstallableViewItem[];
   isLoading: boolean;
 } {
   const scope = useSelector(selectScope);

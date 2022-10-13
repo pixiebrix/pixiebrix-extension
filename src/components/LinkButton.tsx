@@ -22,7 +22,7 @@ import { Except } from "type-fest";
 
 type PropType = Except<ButtonProps, "variant" | "size" | "href" | "target">;
 
-/** A button that looks like plain text. The right alternative to fake links like `<a href="#">` */
+/** A button that looks like plain bootstrap link. The right alternative to fake links like `<a href="#">` */
 export const LinkButton: React.FC<PropType> = (props: PropType) => {
   const { className, ...otherProps } = props;
   return (

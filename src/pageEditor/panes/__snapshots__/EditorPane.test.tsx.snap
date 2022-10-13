@@ -1372,7 +1372,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                                 </span>
                                 : 
                                 <a
-                                  aria-label="copy path"
+                                  aria-label="Copy path"
                                   class="copyPath p-0 btn btn-text"
                                   href="#"
                                   role="button"

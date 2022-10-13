@@ -12,6 +12,11 @@ import { UnknownObject } from "@/types";
 import OptionIcon from "./optionIcon/OptionIcon";
 import widgetsRegistry from "./widgets/widgetsRegistry";
 import { CustomFieldToggleMode } from "@/components/fields/schemaFields/schemaFieldTypes";
+import {
+  isKeyStringField,
+  isSelectField,
+  isDatabaseField,
+} from "./fieldTypeCheckers";
 
 type ToggleOptionInputs = {
   fieldSchema: Schema;
@@ -22,15 +27,7 @@ type ToggleOptionInputs = {
   allowExpressions: boolean;
 };
 
-export function isSelectField(schema: Schema): boolean {
-  const values = schema.examples ?? schema.enum;
-  return schema.type === "string" && Array.isArray(values) && !isEmpty(values);
-}
-
-export function isKeyStringField(schema: Schema): boolean {
-  return schema.$ref === "https://app.pixiebrix.com/schemas/key#";
-}
-
+// TODO refactor this function to be more readable (complexity of 28)
 // eslint-disable-next-line complexity
 export function getToggleOptions({
   fieldSchema,
@@ -40,66 +37,6 @@ export function getToggleOptions({
   isArrayItem,
   allowExpressions,
 }: ToggleOptionInputs): InputModeOption[] {
-  const varOption: StringOption = {
-    label: "Variable",
-    value: "var",
-    symbol: <OptionIcon icon="variable" />,
-    Widget: widgetsRegistry.TextWidget,
-    interpretValue(oldValue: unknown) {
-      let newValue = "";
-      if (typeof oldValue === "string") {
-        newValue = oldValue;
-      } else if (typeof oldValue === "number" && oldValue > 0) {
-        newValue = String(oldValue);
-      } else if (isTemplateExpression(oldValue)) {
-        newValue = oldValue.__value__;
-      }
-
-      return {
-        // Cast as ExpressionType because without it there's a type error compiling in the app project. (Because
-        // TypeScript treats the return value as string and doesn't unify it with unknown)
-        __type__: "var" as ExpressionType,
-        __value__: newValue,
-      };
-    },
-  };
-
-  const removeOption: OmitOption = {
-    label: "Remove",
-    value: "omit",
-    symbol: <OptionIcon icon="exclude" />,
-    Widget: widgetsRegistry.OmitFieldWidget,
-  };
-
-  const excludeOption: OmitOption = {
-    label: "Exclude",
-    value: "omit",
-    symbol: <OptionIcon icon="exclude" />,
-    Widget: widgetsRegistry.OmitFieldWidget,
-  };
-
-  let options: InputModeOption[] = [];
-
-  function pushOptions(...newOptions: InputModeOption[]) {
-    for (const newOption of newOptions) {
-      const existingOption = getOptionForInputMode(options, newOption.value);
-
-      if (!existingOption) {
-        options.push(newOption);
-      } else if (
-        existingOption.value !== "omit" &&
-        existingOption.label === newOption.label
-      ) {
-        // Handle the case where the field supports anyOf/oneOf where the sub-schemas have different documentation.
-        options = options.filter((x) => x.value !== newOption.value);
-        options.push({
-          ...existingOption,
-          description: "Multiple input data types supported",
-        });
-      }
-    }
-  }
-
   const textOption: StringOption = {
     label: "Text",
     value: "string",
@@ -130,8 +67,76 @@ export function getToggleOptions({
     },
   };
 
+  let options: InputModeOption[] = [];
+
+  function pushOptions(...newOptions: InputModeOption[]) {
+    for (const newOption of newOptions) {
+      const existingOption = getOptionForInputMode(options, newOption.value);
+
+      if (!existingOption) {
+        options.push(newOption);
+      } else if (
+        existingOption.value !== "omit" &&
+        existingOption.label === newOption.label
+      ) {
+        // Handle the case where the field supports anyOf/oneOf where the sub-schemas have different documentation.
+        options = options.filter((x) => x.value !== newOption.value);
+        options.push({
+          ...existingOption,
+          description: "Multiple input data types supported",
+        });
+      }
+    }
+  }
+
+  function handleOptionalValue() {
+    if (isRequired) {
+      return;
+    }
+
+    const omitOption: OmitOption = {
+      label: isArrayItem ? "Remove" : "Exclude",
+      value: "omit",
+      symbol: <OptionIcon icon="exclude" />,
+      Widget: widgetsRegistry.OmitFieldWidget,
+    };
+
+    pushOptions(omitOption);
+  }
+
+  function handleVarOption() {
+    if (allowExpressions) {
+      const varOption: StringOption = {
+        label: "Variable",
+        value: "var",
+        symbol: <OptionIcon icon="variable" />,
+        Widget: widgetsRegistry.TextWidget,
+        interpretValue(oldValue: unknown) {
+          let newValue = "";
+          if (typeof oldValue === "string") {
+            newValue = oldValue;
+          } else if (typeof oldValue === "number" && oldValue > 0) {
+            newValue = String(oldValue);
+          } else if (isTemplateExpression(oldValue)) {
+            newValue = oldValue.__value__;
+          }
+
+          return {
+            // Cast as ExpressionType because without it there's a type error compiling in the app project. (Because
+            // TypeScript treats the return value as string and doesn't unify it with unknown)
+            __type__: "var" as ExpressionType,
+            __value__: newValue,
+          };
+        },
+      };
+      pushOptions(varOption);
+    }
+  }
+
   if (isKeyStringField(fieldSchema)) {
-    return isRequired ? [textOption] : [textOption, excludeOption];
+    pushOptions(textOption);
+    handleOptionalValue();
+    return options;
   }
 
   for (const mode of customToggleModes) {
@@ -139,6 +144,24 @@ export function getToggleOptions({
     if (mode.match(fieldSchema)) {
       pushOptions(mode.option);
     }
+  }
+
+  if (isDatabaseField(fieldSchema)) {
+    pushOptions({
+      label: "Database",
+      value: "database",
+      symbol: <OptionIcon icon="select" />,
+      Widget: widgetsRegistry.DatabaseWidget,
+      interpretValue: () =>
+        typeof fieldSchema.default === "string"
+          ? String(fieldSchema.default)
+          : null,
+    });
+
+    handleVarOption();
+    handleOptionalValue();
+
+    return options;
   }
 
   const multiSchemas = [
@@ -178,9 +201,7 @@ export function getToggleOptions({
       interpretValue: () =>
         Array.isArray(fieldSchema.default) ? fieldSchema.default : [],
     });
-    if (allowExpressions) {
-      pushOptions(varOption);
-    }
+    handleVarOption();
   }
 
   if (
@@ -205,9 +226,7 @@ export function getToggleOptions({
           ? fieldSchema.default
           : {}) as UnknownObject,
     });
-    if (allowExpressions) {
-      pushOptions(varOption);
-    }
+    handleVarOption();
   }
 
   if (fieldSchema.type === "boolean" || anyType) {
@@ -219,9 +238,7 @@ export function getToggleOptions({
       interpretValue: () =>
         typeof fieldSchema.default === "boolean" ? fieldSchema.default : false,
     });
-    if (allowExpressions) {
-      pushOptions(varOption);
-    }
+    handleVarOption();
   }
 
   if (isSelectField(fieldSchema)) {
@@ -239,9 +256,7 @@ export function getToggleOptions({
 
   if (fieldSchema.type === "string" || anyType) {
     pushOptions(textOption);
-    if (allowExpressions) {
-      pushOptions(varOption);
-    }
+    handleVarOption();
   }
 
   // Don't include integer for "anyType", only include number, which can also accept integers
@@ -270,9 +285,7 @@ export function getToggleOptions({
           : 0;
       },
     });
-    if (allowExpressions) {
-      pushOptions(varOption);
-    }
+    handleVarOption();
   }
 
   if (fieldSchema.type === "number" || anyType) {
@@ -300,9 +313,7 @@ export function getToggleOptions({
           : 0;
       },
     });
-    if (allowExpressions) {
-      pushOptions(varOption);
-    }
+    handleVarOption();
   }
 
   const multiOptions = multiSchemas.flatMap((subSchema) => {
@@ -326,13 +337,7 @@ export function getToggleOptions({
     pushOptions(...multiOptions);
   }
 
-  if (!isRequired) {
-    if (isArrayItem) {
-      pushOptions(removeOption);
-    } else {
-      pushOptions(excludeOption);
-    }
-  }
+  handleOptionalValue();
 
   return sortBy(options, (opt: InputModeOption) => opt.value === "omit");
 }

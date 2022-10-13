@@ -16,6 +16,8 @@
  */
 
 import fs from "fs";
+// eslint-disable-next-line import/no-unassigned-import -- Until Node adds the global
+import "./cryptoNodePolyfill.js";
 import blockRegistry from "@/blocks/registry";
 
 // Maintaining this number is a simple way to ensure bricks don't accidentally get dropped

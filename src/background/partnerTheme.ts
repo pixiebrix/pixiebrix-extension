@@ -19,6 +19,7 @@ import { getSettingsState } from "@/store/settingsStorage";
 import { getThemeLogo } from "@/utils/themeUtils";
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
 import { DEFAULT_THEME } from "@/options/types";
+import { browserAction } from "@/mv3/api";
 
 async function setToolbarIcon(): Promise<void> {
   const { theme } = await getSettingsState();
@@ -29,7 +30,7 @@ async function setToolbarIcon(): Promise<void> {
   }
 
   const themeLogo = getThemeLogo(theme);
-  (chrome.browserAction ?? chrome.action).setIcon({ path: themeLogo.small });
+  browserAction.setIcon({ path: themeLogo.small });
 }
 
 export default function initPartnerTheme() {

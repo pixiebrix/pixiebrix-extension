@@ -31,6 +31,7 @@ import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
 import { TreeItem } from "@atlaskit/tree/types";
 import { acceptDrop } from "@/components/documentBuilder/hooks/useMoveElement";
+import { UnstyledButton } from "@/components/UnstyledButton";
 
 export const LEVEL_PADDING_PX = 15;
 
@@ -112,8 +113,7 @@ const OutlineItem: React.FunctionComponent<
         </div>
         {hover && (
           <div>
-            <span
-              role="button"
+            <UnstyledButton
               tabIndex={-1}
               onClick={(event) => {
                 event.preventDefault();
@@ -123,7 +123,7 @@ const OutlineItem: React.FunctionComponent<
               className="text-danger"
             >
               <FontAwesomeIcon fixedWidth icon={faTrash} />
-            </span>
+            </UnstyledButton>
           </div>
         )}
       </div>

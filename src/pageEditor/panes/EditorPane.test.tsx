@@ -51,7 +51,7 @@ import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import {
   makePipelineExpression,
   makeTemplateExpression,
-} from "@/testUtils/expressionTestHelpers";
+} from "@/runtime/expressionCreators";
 import { PipelineExpression } from "@/runtime/mapArgs";
 import { OutputKey, RegistryId } from "@/core";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";

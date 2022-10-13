@@ -28,8 +28,8 @@ import {
   faCaretRight,
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
-import { isServiceField } from "@/components/fields/schemaFields/ServiceField";
 import cx from "classnames";
+import { isServiceField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 
 type SchemaTreeRow = {
   name: string;

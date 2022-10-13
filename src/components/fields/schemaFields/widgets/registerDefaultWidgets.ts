@@ -31,6 +31,7 @@ import widgetsRegistry from "./widgetsRegistry";
 import WorkshopMessageWidget from "./WorkshopMessageWidget";
 import SelectorMatchWidget from "@/pageEditor/components/SelectorMatchWidget";
 import CssClassWidget from "@/components/fields/schemaFields/widgets/CssClassWidget";
+import DatabaseWidget from "./DatabaseWidget";
 
 function registerDefaultWidgets() {
   if (typeof TextWidget === "undefined" || TextWidget == null) {
@@ -60,6 +61,7 @@ function registerDefaultWidgets() {
   widgetsRegistry.SelectorMatchWidget = SelectorMatchWidget;
   widgetsRegistry.CssClassWidget = CssClassWidget;
   widgetsRegistry.WorkshopMessageWidget = WorkshopMessageWidget;
+  widgetsRegistry.DatabaseWidget = DatabaseWidget;
 }
 
 export default registerDefaultWidgets;

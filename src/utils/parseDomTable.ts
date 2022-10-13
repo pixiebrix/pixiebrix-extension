@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { zip, zipObject } from "lodash";
+import { compact, isEmpty, zip, zipObject } from "lodash";
 import objectHash from "object-hash";
 import slugify from "slugify";
 
@@ -60,9 +60,20 @@ function flattenTableContent(table: HTMLTableElement): RawTableContent {
   // When a pre-filled cell is found, +1 until the first available column and fill the whole matrix there.
   const flattened: RawTableContent = [];
 
+  let maxRowLength = 0;
+
   /* eslint-disable security/detect-object-injection -- Native indexes */
   for (const [rowIndex, row] of [...table.rows].entries()) {
-    for (let [cellIndex, cell] of [...row.cells].entries()) {
+    const cells = [...row.cells];
+
+    // Skip empty rows
+    if (isEmpty(cells)) {
+      continue;
+    }
+
+    maxRowLength = Math.max(maxRowLength, cells.length);
+
+    for (let [cellIndex, cell] of cells.entries()) {
       // Find the first available column. Cells are only pushed right, never down
       while (flattened[rowIndex]?.[cellIndex]) {
         cellIndex++;
@@ -85,15 +96,16 @@ function flattenTableContent(table: HTMLTableElement): RawTableContent {
     /* eslint-enable security/detect-object-injection */
   }
 
+  const compacted = compact(flattened);
+
   // In case of malformed tables, ensure that the result is a perfect matrix so we don't have runtime errors
-  const maxRowlength = Math.max(...flattened.map((row) => row.length));
-  for (const row of flattened) {
-    while (row.length < maxRowlength) {
+  for (const row of compacted) {
+    while (row.length < maxRowLength) {
       row.push({ type: "value", value: "" });
     }
   }
 
-  return flattened;
+  return compacted;
 }
 
 function extractData(
