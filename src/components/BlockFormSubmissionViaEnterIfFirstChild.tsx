@@ -24,7 +24,7 @@ const preventDefault = (event: React.MouseEvent) => {
 /**
  * Use on forms that must not be implicitly submitted via "enter key on field".
  * NOTE: This component must be added before any other `button` in the form.
- * Based on the implicit submission logic https://html.spec.whatwg.org/#implicit-submission
+ * Based on the implicit submission logic https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#implicit-submission
  */
 const BlockFormSubmissionViaEnterIfFirstChild = () => (
   <input type="submit" disabled hidden onClick={preventDefault} />
