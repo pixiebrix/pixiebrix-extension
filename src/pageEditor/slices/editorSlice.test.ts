@@ -21,9 +21,16 @@ import {
   initialState,
 } from "@/pageEditor/slices/editorSlice";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import { formStateFactory } from "@/testUtils/factories";
-import { EditorState } from "@/pageEditor/pageEditorTypes";
+import { blockConfigFactory, formStateFactory } from "@/testUtils/factories";
+import { EditorRootState, EditorState } from "@/pageEditor/pageEditorTypes";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
+import blockRegistry from "@/blocks/registry";
+import {
+  echoBlock,
+  teapotBlock,
+} from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { OutputKey } from "@/core";
+import { defaultBlockConfig } from "@/blocks/util";
 
 function getTabState(
   state: EditorState,
@@ -34,7 +41,7 @@ function getTabState(
   ].dataPanel[tabKey];
 }
 
-describe("PataPanel state", () => {
+describe("DataPanel state", () => {
   let state: EditorState;
 
   beforeEach(() => {
@@ -85,5 +92,68 @@ describe("PataPanel state", () => {
     expect(
       getTabState(editorState, DataPanelTabKey.Preview).activeElement
     ).toEqual("test-field");
+  });
+});
+
+describe("Cloning", () => {
+  test("Can clone an extension", async () => {
+    blockRegistry.clear();
+    blockRegistry.register(echoBlock, teapotBlock);
+
+    const source = formStateFactory(
+      {
+        label: "Test Extension",
+      },
+      [
+        blockConfigFactory({
+          id: echoBlock.id,
+          outputKey: "echoOutput" as OutputKey,
+          config: defaultBlockConfig(echoBlock.inputSchema),
+        }),
+        blockConfigFactory({
+          id: teapotBlock.id,
+          outputKey: "teapotOutput" as OutputKey,
+          config: defaultBlockConfig(teapotBlock.inputSchema),
+        }),
+      ]
+    );
+
+    const editor = editorSlice.reducer(
+      initialState,
+      actions.selectInstalled(source)
+    );
+    const dispatch = jest.fn();
+    const getState: () => EditorRootState = () => ({ editor });
+
+    await actions.cloneActiveExtension()(dispatch, getState, undefined);
+
+    // Dispatch call args (actions) should be:
+    //  1. thunk pending
+    //  2. addElement
+    //  3. thunk fulfilled
+
+    expect(dispatch).toHaveBeenCalledTimes(3);
+
+    const action1 = dispatch.mock.calls[0][0];
+    expect(action1).toHaveProperty(
+      "type",
+      "editor/cloneActiveExtension/pending"
+    );
+
+    const action2 = dispatch.mock.calls[1][0];
+    expect(action2).toHaveProperty("type", "editor/addElement");
+    expect(action2.payload).toEqual(
+      expect.objectContaining({
+        uuid: expect.not.stringMatching(source.uuid),
+        label: "Test Extension - copy",
+      })
+    );
+    expect(action2.payload).not.toHaveProperty("recipe");
+
+    const action3 = dispatch.mock.calls[2][0];
+    expect(action3).toHaveProperty(
+      "type",
+      "editor/cloneActiveExtension/fulfilled"
+    );
   });
 });
