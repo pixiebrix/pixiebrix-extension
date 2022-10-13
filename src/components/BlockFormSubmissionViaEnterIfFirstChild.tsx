@@ -14,22 +14,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import styles from "./LinkButton.module.scss";
+
 import React from "react";
-import { Button, ButtonProps } from "react-bootstrap";
-import cx from "classnames";
-import { Except } from "type-fest";
 
-type PropType = Except<ButtonProps, "variant" | "size" | "href" | "target">;
-
-/** A button that looks like plain bootstrap link. The right alternative to fake links like `<a href="#">` */
-export const LinkButton: React.FC<PropType> = (props: PropType) => {
-  const { className, ...otherProps } = props;
-  return (
-    <Button
-      variant="link"
-      className={cx(styles.root, className)}
-      {...otherProps}
-    />
-  );
+const preventDefault = (event: React.MouseEvent) => {
+  event.preventDefault();
 };
+
+/**
+ * Use on forms that must not be implicitly submitted via "enter key on field".
+ * NOTE: This component must be added before any other `button` in the form.
+ * Based on the implicit submission logic https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#implicit-submission
+ */
+const BlockFormSubmissionViaEnterIfFirstChild = () => (
+  <input type="submit" disabled hidden onClick={preventDefault} />
+);
+
+export default BlockFormSubmissionViaEnterIfFirstChild;

@@ -14,22 +14,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import styles from "./LinkButton.module.scss";
-import React from "react";
-import { Button, ButtonProps } from "react-bootstrap";
-import cx from "classnames";
-import { Except } from "type-fest";
 
-type PropType = Except<ButtonProps, "variant" | "size" | "href" | "target">;
-
-/** A button that looks like plain bootstrap link. The right alternative to fake links like `<a href="#">` */
-export const LinkButton: React.FC<PropType> = (props: PropType) => {
-  const { className, ...otherProps } = props;
-  return (
-    <Button
-      variant="link"
-      className={cx(styles.root, className)}
-      {...otherProps}
-    />
-  );
-};
+// Sizing an image via "em" and "font-size" mimics the sizing of the FontAwesomeIcon
+// This way SVG and image icons have the same width
+.imageIcon {
+  width: 1.25em;
+  max-width: 1.25em;
+  max-height: 1.25em;
+}
+.size1 {
+  font-size: 1em;
+}
+.size2 {
+  font-size: 2em;
+}

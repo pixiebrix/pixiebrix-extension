@@ -65,7 +65,6 @@ const TemplateWidget: React.FC<TemplateWidgetProps> = ({
               className="ml-2"
               onClick={(event) => {
                 insertSnippet(snippet.value);
-                event.preventDefault();
               }}
             >
               {snippet.label}

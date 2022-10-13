@@ -165,18 +165,13 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
                 <div
                   class="field"
                 >
-                  <div
-                    role="button"
-                    tabindex="0"
-                  >
-                    <input
-                      class="form-control"
-                      disabled=""
-                      id="config.subdomain"
-                      name="config.subdomain"
-                      value=""
-                    />
-                  </div>
+                  <input
+                    class="form-control"
+                    id="config.subdomain"
+                    name="config.subdomain"
+                    readonly=""
+                    value=""
+                  />
                 </div>
                 <div
                   class="dropdown dropdown"

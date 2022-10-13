@@ -23,18 +23,13 @@ exports[`Marketplace Activate Wizard OptionsBody renders text field 1`] = `
           <div
             class="field"
           >
-            <div
-              role="button"
-              tabindex="0"
-            >
-              <input
-                class="form-control"
-                disabled=""
-                id="optionsArgs.textField"
-                name="optionsArgs.textField"
-                value=""
-              />
-            </div>
+            <input
+              class="form-control"
+              id="optionsArgs.textField"
+              name="optionsArgs.textField"
+              readonly=""
+              value=""
+            />
           </div>
           <div
             class="dropdown dropdown"

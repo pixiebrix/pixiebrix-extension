@@ -31,6 +31,7 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { OutputKey } from "@/core";
 import { defaultBlockConfig } from "@/blocks/util";
+import { cloneActiveExtension } from "@/pageEditor/slices/editorThunks";
 
 function getTabState(
   state: EditorState,
@@ -125,7 +126,7 @@ describe("Cloning", () => {
     const dispatch = jest.fn();
     const getState: () => EditorRootState = () => ({ editor });
 
-    await actions.cloneActiveExtension()(dispatch, getState, undefined);
+    await cloneActiveExtension()(dispatch, getState, undefined);
 
     // Dispatch call args (actions) should be:
     //  1. thunk pending
