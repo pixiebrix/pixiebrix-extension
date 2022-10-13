@@ -18,7 +18,13 @@
 /* Do not use `registerMethod` in this file */
 import { getMethod } from "webext-messenger";
 
-export const renderPanels = getMethod("SIDEBAR_RENDER_PANELS");
-export const activatePanel = getMethod("SIDEBAR_ACTIVATE_PANEL");
-export const showForm = getMethod("SIDEBAR_SHOW_FORM");
-export const hideForm = getMethod("SIDEBAR_HIDE_FORM");
+const target = { tabId: "this", page: "/sidebar.html" } as const;
+const sidebarInThisTab = {
+  renderPanels: getMethod("SIDEBAR_RENDER_PANELS", target),
+  activatePanel: getMethod("SIDEBAR_ACTIVATE_PANEL", target),
+  showForm: getMethod("SIDEBAR_SHOW_FORM", target),
+  hideForm: getMethod("SIDEBAR_HIDE_FORM", target),
+  pingSidebar: getMethod("SIDEBAR_PING", target),
+};
+
+export default sidebarInThisTab;

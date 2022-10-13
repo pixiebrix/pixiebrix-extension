@@ -11,17 +11,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          # 16.15.1 was having problems with peer dependency conflicts
-          # https://github.com/pixiebrix/pixiebrix-extension/pull/3598#issuecomment-1148930727
-          node-version: "16.15.0"
+          node-version-file: ".nvmrc"
           cache: npm
       - run: npm ci
       - run: npm run test -- --coverage
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: true
           verbose: true
@@ -33,12 +31,10 @@ jobs:
       SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          # 16.15.1 was having problems with peer dependency conflicts
-          # https://github.com/pixiebrix/pixiebrix-extension/pull/3598#issuecomment-1148930727
-          node-version: "16.15.0"
+          node-version-file: ".nvmrc"
           cache: npm
       - run: npm ci
       - run: npm run build:webpack
@@ -63,7 +59,7 @@ jobs:
           retention-days: 5
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         name: Save report.html
         with:
           name: staging-build-size
@@ -84,17 +80,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          # 16.15.1 was having problems with peer dependency conflicts
-          # https://github.com/pixiebrix/pixiebrix-extension/pull/3598#issuecomment-1148930727
-          node-version: "16.15.0"
+          node-version-file: ".nvmrc"
           cache: npm
       - run: npm ci
       - run: npm run build:scripts
       - run: npm run generate:headers
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         name: Save headers.json
         with:
           name: brick-headers
@@ -107,12 +101,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          # 16.15.1 was having problems with peer dependency conflicts
-          # https://github.com/pixiebrix/pixiebrix-extension/pull/3598#issuecomment-1148930727
-          node-version: "16.15.0"
+          node-version-file: ".nvmrc"
           cache: npm
       - run: npm ci
       - run: npm run build:typescript
@@ -121,12 +113,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          # 16.15.1 was having problems with peer dependency conflicts
-          # https://github.com/pixiebrix/pixiebrix-extension/pull/3598#issuecomment-1148930727
-          node-version: "16.15.0"
+          node-version-file: ".nvmrc"
           cache: npm
       - run: npm ci
       - run: npm run lint -- --quiet
@@ -135,12 +125,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          # 16.15.1 was having problems with peer dependency conflicts
-          # https://github.com/pixiebrix/pixiebrix-extension/pull/3598#issuecomment-1148930727
-          node-version: "16.15.0"
+          node-version-file: ".nvmrc"
           cache: npm
       # Fixed version to avoid random breaks. Not in package.json due to #1084
       - run: npm install --global madge@5.0.1
@@ -151,6 +139,6 @@ jobs:
   prettier:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - uses: pre-commit/action@v2.0.3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+      - uses: pre-commit/action@v3.0.0

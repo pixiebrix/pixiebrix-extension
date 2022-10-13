@@ -25,13 +25,8 @@ import {
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { flatMap, isEmpty, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import {
-  ElementUIState,
-  ErrorMap,
-  TabUIState,
-} from "@/pageEditor/uiState/uiStateTypes";
+import { ElementUIState, TabUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
 export const selectActiveElementId = ({ editor }: EditorRootState) =>
   editor.activeElementId;
@@ -55,6 +50,14 @@ export const selectShowV3UpgradeMessageForActiveElement = createSelector(
     // eslint-disable-next-line security/detect-object-injection -- using an internally-looked-up uuid
     showV3UpgradeMessageByElement[activeElementId] ?? false
 );
+
+export const selectInserting = ({ editor }: EditorRootState) =>
+  editor.inserting;
+
+export const selectErrorState = ({ editor }: EditorRootState) => ({
+  isBetaError: editor.error && editor.beta,
+  editorError: editor.error,
+});
 
 export const selectDirty = ({ editor }: EditorRootState) => editor.dirty;
 
@@ -145,9 +148,6 @@ export const selectRecipeIsDirty =
 export const selectIsAddToRecipeModalVisible = ({ editor }: EditorRootState) =>
   editor.visibleModalKey === ModalKey.ADD_TO_RECIPE;
 
-export const selectIsAddBlockModalVisible = ({ editor }: EditorRootState) =>
-  editor.visibleModalKey === ModalKey.ADD_BLOCK;
-
 export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
   isAddToRecipeModalVisible: editor.visibleModalKey === ModalKey.ADD_TO_RECIPE,
   isRemoveFromRecipeModalVisible:
@@ -215,12 +215,8 @@ export const selectActiveNodeInfo = createSelector(
   selectActiveElementUIState,
   selectActiveNodeId,
   (uiState: ElementUIState, activeNodeId: UUID) =>
+    // eslint-disable-next-line security/detect-object-injection -- UUID
     uiState.pipelineMap[activeNodeId]
-);
-
-export const selectActiveNode = createSelector(
-  selectActiveNodeInfo,
-  (nodeInfo) => nodeInfo.blockConfig
 );
 
 export const selectNodeDataPanelTabSelected: (
@@ -247,22 +243,10 @@ export function selectNodePreviewActiveElement(state: EditorRootState): string {
     .activeElement;
 }
 
-export const selectErrorMap = createSelector(
-  selectActiveElementUIState,
-  (uiState: ElementUIState) => uiState.errorMap
-);
-
-export const selectActiveNodeError = createSelector(
-  selectErrorMap,
-  selectActiveNodeId,
-  // eslint-disable-next-line security/detect-object-injection -- activeNodeId is supposed to be UUID, not from user input
-  (errorMap: ErrorMap, activeNodeId: UUID) => errorMap[activeNodeId]
-);
-
 export const selectAddBlockLocation = ({ editor }: RootState) =>
   editor.addBlockLocation;
 
-const selectAnnotationsForPathSelector = createSelector(
+const annotationsForPathSelector = createSelector(
   [
     (state: RootState) => {
       const activeElementId = selectActiveElementId(state);
@@ -270,17 +254,8 @@ const selectAnnotationsForPathSelector = createSelector(
     },
     (state, path: string) => path,
   ],
-  (extensionAnnotations, path) => {
-    const relativeBlockPath = path.startsWith(PIPELINE_BLOCKS_FIELD_NAME)
-      ? path.slice(PIPELINE_BLOCKS_FIELD_NAME.length + 1)
-      : path;
-
-    const pathAnnotations = extensionAnnotations.filter(
-      (x) => x.position.path === relativeBlockPath
-    );
-
-    return pathAnnotations;
-  }
+  (extensionAnnotations, path) =>
+    extensionAnnotations.filter((x) => x.position.path === path)
 );
 
 /**
@@ -288,4 +263,7 @@ const selectAnnotationsForPathSelector = createSelector(
  * @param path A path relative to the root of the extension or root pipeline
  */
 export const selectAnnotationsForPath = (path: string) => (state: RootState) =>
-  selectAnnotationsForPathSelector(state, path);
+  annotationsForPathSelector(state, path);
+
+export const selectCopiedBlock = ({ editor }: EditorRootState) =>
+  editor.copiedBlock;

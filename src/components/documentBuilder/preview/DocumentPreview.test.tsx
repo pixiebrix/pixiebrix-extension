@@ -90,7 +90,7 @@ describe("Add new element", () => {
     const { container } = rendered;
 
     await userEvent.click(container.querySelector(".col .addElement button"));
-    await userEvent.click(rendered.getByText("Header 1", { selector: "a" }));
+    await userEvent.click(rendered.getByText("Header", { selector: "a" }));
 
     const header = container.querySelector("h1");
 

@@ -18,49 +18,40 @@
 import { MarketplaceListing, MarketplaceTag } from "@/types/contract";
 import { RegistryId } from "@/core";
 import { isEmpty } from "lodash";
-import { POPULAR_BRICK_TAG_ID } from "@/components/addBlockModal/addBlockModalConstants";
 
+const EMPTY_TAGGED_BRICK_IDS: Record<string, Set<RegistryId>> = {};
+
+/**
+ * Groups marketplace listings by their tags
+ * @param marketplaceTags The tags to use as grouping keys
+ * @param listings The listings to group
+ * @returns Record<string, Set<RegistryId>> A record with the tag names as keys, and sets of listings as the values
+ */
 function groupListingsByTag(
   marketplaceTags: MarketplaceTag[],
   listings: Record<RegistryId, MarketplaceListing>
-): {
-  /**
-   * A record with tag names as the keys, and a set of applicable brick registry ids as the values
-   */
-  taggedBrickIds: Record<string, Set<RegistryId>>;
-
-  /**
-   * A set of brick ids that have been tagged as "popular"
-   */
-  popularBrickIds: Set<RegistryId>;
-} {
+): Record<string, Set<RegistryId>> {
   if (isEmpty(marketplaceTags) || isEmpty(listings)) {
-    return {
-      taggedBrickIds: {},
-      popularBrickIds: new Set<RegistryId>(),
-    };
+    return EMPTY_TAGGED_BRICK_IDS;
   }
 
-  const categoryTags = marketplaceTags.filter((tag) => tag.subtype === "role");
-
+  // Create the Record with tag name keys and empty Set values
   const taggedBrickIds = Object.fromEntries(
-    categoryTags.map((tag) => [tag.name, new Set<RegistryId>()])
+    marketplaceTags.map((tag) => [tag.name, new Set<RegistryId>()])
   );
-  const popularBrickIds = new Set<RegistryId>();
 
+  // Populate the Record value Sets with listings that apply to each tag
   for (const [id, listing] of Object.entries(listings)) {
     const registryId = id as RegistryId;
 
     for (const listingTag of listing.tags) {
-      if (listingTag.id === POPULAR_BRICK_TAG_ID) {
-        popularBrickIds.add(registryId);
-      }
-
+      // The null-safe access (?.) here is just for safety in case the api
+      // endpoints for listings and tags get out of sync somehow
       taggedBrickIds[listingTag.name]?.add(registryId);
     }
   }
 
-  return { taggedBrickIds, popularBrickIds };
+  return taggedBrickIds;
 }
 
 export default groupListingsByTag;

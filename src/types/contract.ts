@@ -94,6 +94,8 @@ export type Organization = components["schemas"]["Organization"] & {
   role: UserRole;
 };
 
+export type OrganizationTheme = components["schemas"]["Organization"]["theme"];
+
 export type Group = components["schemas"]["Group"];
 
 export type Database = components["schemas"]["Database"];
@@ -132,10 +134,14 @@ export type SanitizedAuth = components["schemas"]["SanitizedAuth"] & {
   user?: UUID;
 };
 
-export type Deployment = components["schemas"]["DeploymentDetail"] & {
+export type Deployment = Except<
+  components["schemas"]["DeploymentDetail"],
+  "package"
+> & {
   id: UUID;
   package: Except<
     components["schemas"]["DeploymentDetail"]["package"],
+    // Patch types for the following properties which our automatic schema generation generated the wrong types for
     "config" | "id" | "package_id"
   > & {
     id: UUID;

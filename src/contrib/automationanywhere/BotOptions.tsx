@@ -15,10 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { partial } from "lodash";
+import React, { useMemo } from "react";
+import { isEmpty, partial } from "lodash";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { COMMON_PROPERTIES } from "@/contrib/automationanywhere/RunBot";
+import {
+  COMMON_PROPERTIES,
+  ENTERPRISE_EDITION_COMMON_PROPERTIES,
+} from "@/contrib/automationanywhere/RunBot";
 import { Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
@@ -29,16 +32,29 @@ import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 import { joinName } from "@/utils";
 import RequireServiceConfig from "@/contrib/RequireServiceConfig";
 import {
+  cachedFetchBotFile,
   cachedFetchBots,
   cachedFetchDevicePools,
   cachedFetchDevices,
+  cachedFetchFolder,
   cachedFetchRunAsUsers,
   cachedFetchSchema,
 } from "@/contrib/automationanywhere/aaApi";
-import { AUTOMATION_ANYWHERE_SERVICE_ID } from "./contract";
+import { AUTOMATION_ANYWHERE_SERVICE_ID, WorkspaceType } from "./contract";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import RemoteMultiSelectWidget from "@/components/form/widgets/RemoteMultiSelectWidget";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
+import { useAsyncEffect } from "use-async-effect";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { Alert } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+
+const WORKSPACE_OPTIONS = [
+  { value: "public", label: "Public" },
+  { value: "private", label: "Private/Local" },
+];
 
 const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
@@ -50,21 +66,59 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
     AUTOMATION_ANYWHERE_SERVICE_ID
   );
 
+  const [{ value: workspaceType }, , { setValue: setWorkspaceType }] =
+    useField<string>(configName("workspaceType"));
+
   const [{ value: fileId }] = useField<string>(configName("fileId"));
+
+  const [{ value: awaitResult }] = useField<boolean | null>(
+    configName("awaitResult")
+  );
+
+  // Default the workspaceType based on the file id
+  useAsyncEffect(async () => {
+    if (config && isCommunityControlRoom(config.config.controlRoomUrl)) {
+      // In community edition, each user just works in their own private workspace
+      setWorkspaceType("private");
+    }
+
+    // `workspaceType` is optional because it's not required to run the bot. However, we need it to populate dropdowns
+    // for the fields in the fieldset
+    if (hasPermissions && config && workspaceType == null && fileId) {
+      const result = await cachedFetchBotFile(config, fileId);
+      const workspaceType =
+        result.workspaceType === "PUBLIC" ? "public" : "private";
+      setWorkspaceType(workspaceType);
+    }
+
+    // Leave setWorkspaceType off the dependency list because Formik changes reference on each render
+  }, [config, fileId, hasPermissions, workspaceType]);
 
   const [remoteSchema, remoteSchemaPending, remoteSchemaError] =
     useAsyncState(async () => {
-      if (hasPermissions && config) {
-        // HACK: hack to avoid concurrent requests to the proxy. Simultaneous calls to get the token causes a
-        // server error on community edition
-        await cachedFetchDevices(config);
-        await cachedFetchBots(config);
-        await cachedFetchRunAsUsers(config);
+      if (hasPermissions && config && fileId) {
         return cachedFetchSchema(config, fileId);
       }
 
       return null;
     }, [config, fileId, hasPermissions]);
+
+  // Don't care about pending/error state b/c we just fall back to displaying the folderId
+  const [folder] = useAsyncState(async () => {
+    if (hasPermissions && config && config.config.folderId) {
+      return cachedFetchFolder(config, config.config.folderId);
+    }
+
+    return null;
+  }, [config, hasPermissions]);
+
+  // Additional args passed to the remote options factories
+  const factoryArgs = useMemo(
+    () => ({
+      workspaceType: workspaceType as WorkspaceType,
+    }),
+    [workspaceType]
+  );
 
   return (
     <RequireServiceConfig
@@ -73,12 +127,36 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
     >
       {({ config }) => (
         <>
+          {!isCommunityControlRoom(config.config.controlRoomUrl) && (
+            <ConnectedFieldTemplate
+              label="Workspace"
+              name={configName("workspaceType")}
+              description="The Control Room Workspace"
+              as={SelectWidget}
+              defaultValue="private"
+              options={WORKSPACE_OPTIONS}
+            />
+          )}
+
+          {!isEmpty(config.config.folderId) && (
+            <Alert variant="info">
+              <FontAwesomeIcon icon={faInfoCircle} /> Displaying available bots
+              from folder{" "}
+              {folder?.name
+                ? `'${folder.name}' (${config.config.folderId})`
+                : config.config.folderId}{" "}
+              configured on the integration. To choose from all bots in the
+              workspace, remove the folder from the integration configuration.
+            </Alert>
+          )}
+
           <ConnectedFieldTemplate
             label="Bot"
             name={configName("fileId")}
             description="The Automation Anywhere bot"
             as={RemoteSelectWidget}
             optionsFactory={cachedFetchBots}
+            factoryArgs={factoryArgs}
             config={config}
           />
 
@@ -89,33 +167,52 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
               description="The device to run the bot on"
               as={RemoteSelectWidget}
               optionsFactory={cachedFetchDevices}
+              factoryArgs={factoryArgs}
               config={config}
             />
           ) : (
             <>
-              <ConnectedFieldTemplate
-                label="Run as Users"
-                name={configName("runAsUserIds")}
-                description="The user(s) to run the bots"
-                as={RemoteMultiSelectWidget}
-                optionsFactory={cachedFetchRunAsUsers}
-                config={config}
-              />
-              <ConnectedFieldTemplate
-                label="Device Pools"
-                name={configName("poolIds")}
-                description="A device pool that has at least one active device (optional)"
-                as={RemoteMultiSelectWidget}
-                optionsFactory={cachedFetchDevicePools}
-                blankValue={[]}
-                config={config}
-              />
+              {workspaceType === "public" && (
+                <>
+                  <ConnectedFieldTemplate
+                    label="Run as Users"
+                    name={configName("runAsUserIds")}
+                    description="The user(s) to run the bots"
+                    as={RemoteMultiSelectWidget}
+                    optionsFactory={cachedFetchRunAsUsers}
+                    factoryArgs={factoryArgs}
+                    blankValue={[]}
+                    config={config}
+                  />
+                  <ConnectedFieldTemplate
+                    label="Device Pools"
+                    name={configName("poolIds")}
+                    description="A device pool that has at least one active device (optional)"
+                    as={RemoteMultiSelectWidget}
+                    optionsFactory={cachedFetchDevicePools}
+                    factoryArgs={factoryArgs}
+                    blankValue={[]}
+                    config={config}
+                  />
+                </>
+              )}
               <ConnectedFieldTemplate
                 label="Await Result"
                 name={configName("awaitResult")}
                 description="Wait for the bot to run and return the output"
                 as={BooleanWidget}
               />
+              {awaitResult && (
+                <SchemaField
+                  label="Result Timeout (Milliseconds)"
+                  name={configName("maxWaitMillis")}
+                  schema={
+                    ENTERPRISE_EDITION_COMMON_PROPERTIES.maxWaitMillis as Schema
+                  }
+                  // Mark as required so the widget defaults to showing the number entry
+                  isRequired
+                />
+              )}
             </>
           )}
 

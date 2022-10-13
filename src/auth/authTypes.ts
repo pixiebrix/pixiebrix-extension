@@ -91,10 +91,37 @@ export interface TokenAuthData extends UserData {
   token: string;
 }
 
+export type PartnerAuthData = {
+  /**
+   * The service auth configuration for authenticating with the PixieBrix API.
+   */
+  authId: UUID | null;
+  /**
+   * The JWT bearer token corresponding to the authId.
+   */
+  token: string | null;
+  /**
+   * Extra HTTP headers to send with every request.
+   */
+  extraHeaders: Record<string, string> | null;
+};
+
 export type OrganizationAuthState = {
-  readonly id: string;
+  /**
+   * The id of the organization.
+   */
+  readonly id: UUID;
+  /**
+   * The human-readable name of the organization.
+   */
   readonly name: string;
+  /**
+   * The package scope of the organization, or null if not set.
+   */
   readonly scope?: string;
+  /**
+   * The Automation Anywhere Control Room information
+   */
   readonly control_room?: Me["organization"]["control_room"];
 };
 
@@ -119,13 +146,23 @@ export type AuthUserOrganization = {
    * True if the user is a manager of at least one team deployment.
    */
   isDeploymentManager: boolean;
+  /**
+   * True if the organization's compliance auth token is set
+   */
+  hasComplianceAuthToken: boolean;
 };
 
 export type AuthState = {
+  /**
+   * The PixieBrix userId, or null if the user is not authenticated
+   */
   readonly userId?: UUID | null;
 
   readonly email?: string | null;
 
+  /**
+   * The user's package scope.
+   */
   readonly scope?: string | null;
 
   /**
@@ -141,7 +178,7 @@ export type AuthState = {
   readonly extension: boolean;
 
   /**
-   *  The SSO organization associated with the user's email domain
+   *  The primary organization for the user
    */
   readonly organization?: OrganizationAuthState | null;
 
@@ -160,6 +197,9 @@ export type AuthState = {
    */
   readonly flags: string[];
 
+  /**
+   * The partner, controlling theme, documentation links, etc.
+   */
   readonly partner?: Me["partner"];
 
   /**

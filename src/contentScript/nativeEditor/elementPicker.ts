@@ -17,47 +17,68 @@
  */
 import Overlay from "@/vendors/Overlay";
 import {
+  commonCssSelector,
   findContainer,
+  inferSelectorsIncludingStableAncestors,
   safeCssSelector,
 } from "@/contentScript/nativeEditor/selectorInference";
 import { Framework } from "@/messaging/constants";
-import { uniq } from "lodash";
+import { uniq, compact } from "lodash";
 import * as pageScript from "@/pageScript/protocol";
 import { requireSingleElement } from "@/utils/requireSingleElement";
 import { SelectMode } from "@/contentScript/nativeEditor/types";
+import {
+  SelectionHandlerType,
+  showSelectionToolPopover,
+} from "@/components/selectionToolPopover/SelectionToolPopover";
 
 let overlay: Overlay | null = null;
+let expandOverlay: Overlay | null = null;
 let styleElement: HTMLStyleElement = null;
+let multiSelectionToolElement: HTMLElement = null;
+let selectionHandler: SelectionHandlerType;
+
+function setSelectionHandler(handler: SelectionHandlerType) {
+  selectionHandler = handler;
+}
 
 export function hideOverlay(): void {
   if (overlay != null) {
     overlay.remove();
     overlay = null;
+    expandOverlay.remove();
+    expandOverlay = null;
   }
 }
 
 let _cancelSelect: () => void = null;
-
-function noopMouseHandler(event: MouseEvent) {
-  event.preventDefault();
-  event.stopPropagation();
-}
-
 interface UserSelection {
   root?: HTMLElement;
   /** CSS selector to limit the selection to */
   filter?: string;
+  enableSelectionTools?: boolean;
 }
 
 export async function userSelectElement({
   root,
   filter,
-}: UserSelection = {}): Promise<HTMLElement[]> {
-  return new Promise<HTMLElement[]>((resolve, reject) => {
+  enableSelectionTools = false,
+}: UserSelection = {}): Promise<{
+  elements: HTMLElement[];
+  isMulti: boolean;
+  shouldSelectSimilar: boolean;
+}> {
+  return new Promise<{
+    elements: HTMLElement[];
+    isMulti: boolean;
+    shouldSelectSimilar: boolean;
+  }>((resolve, reject) => {
     const targets = new Set<HTMLElement>();
-
+    let isMulti = false;
+    let shouldSelectSimilar = false;
     if (!overlay) {
       overlay = new Overlay();
+      expandOverlay = new Overlay("light");
     }
 
     function prehiglightItems() {
@@ -96,6 +117,10 @@ export async function userSelectElement({
       _cancelSelect = cancel;
       registerListenersOnWindow(window);
       addInspectingModeStyles(window);
+      if (enableSelectionTools) {
+        addMultiSelectionTool(window);
+      }
+
       prehiglightItems();
     }
 
@@ -104,6 +129,64 @@ export async function userSelectElement({
       _cancelSelect = null;
       removeListenersOnWindow(window);
       removeInspectingModeStyles();
+      if (enableSelectionTools) {
+        removeMultiSelectionTool();
+      }
+    }
+
+    function handleDone(target?: HTMLElement) {
+      try {
+        const result = uniq(compact([...targets, target]));
+        if (root && result.some((x) => !root.contains(x))) {
+          throw new Error(
+            "One or more selected elements are not contained within the root container"
+          );
+        }
+
+        resolve({ elements: result, isMulti, shouldSelectSimilar });
+      } finally {
+        stopInspectingNative();
+      }
+    }
+
+    function handleMultiSelectionChange(value: boolean) {
+      isMulti = value;
+      if (!isMulti) {
+        shouldSelectSimilar = false;
+        overlay.inspect([]);
+        expandOverlay.inspect([]);
+        targets.clear();
+      }
+    }
+
+    function handleSimilarSelectionChange(value: boolean) {
+      shouldSelectSimilar = value;
+      if (shouldSelectSimilar) {
+        const commonSelector = commonCssSelector([...targets]);
+        const expandTargets = $(commonSelector);
+        selectionHandler(expandTargets.length);
+        expandOverlay.inspect([...expandTargets]);
+      } else {
+        selectionHandler(targets.size);
+        expandOverlay.inspect([]);
+      }
+    }
+
+    function noopMouseHandler(event: MouseEvent) {
+      const target = findExpectedTarget(event.target);
+      if (!target) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+
+      // Do not prevent mouse event in order to drag feature working.
+      if (target.contains(multiSelectionToolElement)) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
     }
 
     function onClick(event: MouseEvent) {
@@ -112,34 +195,52 @@ export async function userSelectElement({
         return;
       }
 
+      // Do not allow the user to select the multi-element selection popup.
+      if (target.contains(multiSelectionToolElement)) {
+        return;
+      }
+
       event.preventDefault();
       event.stopPropagation();
 
-      if (event.shiftKey) {
+      if (event.shiftKey || isMulti) {
         if (targets.has(target)) {
           targets.delete(target);
         } else {
           targets.add(target);
         }
 
+        overlay.inspect([...targets]);
+
+        if (targets.size > 1 && shouldSelectSimilar) {
+          const commonSelector = commonCssSelector([...targets]);
+          const expandTargets = $(commonSelector);
+          selectionHandler(expandTargets.length);
+          expandOverlay.inspect([...expandTargets]);
+        } else {
+          selectionHandler(targets.size);
+          expandOverlay.inspect([]);
+        }
+
         return;
       }
 
-      try {
-        const result = uniq([...targets, target]);
-        if (root && result.some((x) => !root.contains(x))) {
-          throw new Error(
-            "One or more selected elements are not contained with the root container"
-          );
-        }
-
-        resolve(result);
-      } finally {
-        stopInspectingNative();
-      }
+      handleDone(target);
     }
 
     function onPointerDown(event: MouseEvent) {
+      const target = findExpectedTarget(event.target);
+      if (!target) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+
+      // Do not allow the user to select the multi-element selection popup.
+      if (target.contains(multiSelectionToolElement)) {
+        return;
+      }
+
       event.preventDefault();
       event.stopPropagation();
 
@@ -152,12 +253,12 @@ export async function userSelectElement({
       const target = findExpectedTarget(event.target);
 
       if (target) {
-        overlay.inspect([target]);
+        overlay.inspect([...targets, target]);
       }
     }
 
     function onPointerLeave() {
-      overlay.inspect([]);
+      overlay.inspect([...targets]);
     }
 
     function escape(event: KeyboardEvent) {
@@ -236,6 +337,35 @@ export async function userSelectElement({
       styleElement = null;
     }
 
+    function addMultiSelectionTool(window: Window) {
+      const doc = window.document;
+      multiSelectionToolElement = doc.createElement("div");
+      doc.body.append(multiSelectionToolElement);
+
+      showSelectionToolPopover({
+        rootElement: multiSelectionToolElement,
+        handleCancel: cancel,
+        handleDone() {
+          handleDone();
+        },
+        handleMultiChange: handleMultiSelectionChange,
+        handleSimilarChange: handleSimilarSelectionChange,
+        setSelectionHandler,
+      });
+    }
+
+    function removeMultiSelectionTool() {
+      if (!multiSelectionToolElement) {
+        return;
+      }
+
+      if (multiSelectionToolElement.parentNode) {
+        multiSelectionToolElement.remove();
+      }
+
+      multiSelectionToolElement = null;
+    }
+
     startInspectingNative();
   });
 }
@@ -252,6 +382,7 @@ export async function selectElement({
   framework,
   root,
   excludeRandomClasses,
+  enableSelectionTools = false,
 }: {
   traverseUp: number;
   framework?: Framework;
@@ -259,10 +390,15 @@ export async function selectElement({
   isMulti?: boolean;
   root?: string;
   excludeRandomClasses?: boolean;
+  enableSelectionTools?: boolean;
 }) {
   const rootElement = root == null ? undefined : requireSingleElement(root);
-  const elements = await userSelectElement({ root: rootElement });
+  const { elements, isMulti, shouldSelectSimilar } = await userSelectElement({
+    root: rootElement,
+    enableSelectionTools,
+  });
 
+  console.debug("Selected elements", { elements, isMulti });
   switch (mode) {
     case "container": {
       if (root) {
@@ -281,22 +417,64 @@ export async function selectElement({
     }
 
     case "element": {
-      const selector = safeCssSelector(elements[0], {
-        selectors: [],
-        root: rootElement,
-        excludeRandomClasses,
-      });
+      const selector = shouldSelectSimilar
+        ? commonCssSelector(elements, {
+            root: rootElement,
+            excludeRandomClasses,
+          })
+        : safeCssSelector(elements, {
+            root: rootElement,
+            excludeRandomClasses,
+          });
 
       console.debug(`Generated selector: ${selector}`);
 
-      // Double-check we have a valid selector
-      requireSingleElement(selector);
+      if (isMulti) {
+        const inferredSelectors = uniq([
+          selector,
+          // TODO: Discuss if it's worth to include stableAncestors for multi-element selector
+          // ...inferSelectorsIncludingStableAncestors(elements[0]),
+        ]);
 
-      return pageScript.getElementInfo({
+        return {
+          selectors: inferredSelectors,
+          framework: null,
+          hasData: false,
+          tagName: elements[0].tagName, // Will first element tag be enough/same for all elemtns?
+          parent: null,
+          isMulti: true,
+        };
+      }
+
+      // Double-check we have a valid selector
+      const element = requireSingleElement(selector);
+
+      // We're using pageScript getElementInfo only when specific framework is used.
+
+      // On Salesforce we were running into an issue where certain selectors weren't finding any elements when
+      // run from the pageScript. It might have something to do with the custom web components Salesforce uses?
+      // In any case, the pageScript is not necessary if framework is not specified, because selectElement
+      // only needs to return the selector alternatives.
+      if (framework) {
+        return pageScript.getElementInfo({
+          selector,
+          framework,
+          traverseUp,
+        });
+      }
+
+      const inferredSelectors = uniq([
         selector,
-        framework,
-        traverseUp,
-      });
+        ...inferSelectorsIncludingStableAncestors(element),
+      ]);
+
+      return {
+        selectors: inferredSelectors,
+        framework: null,
+        hasData: false,
+        tagName: element.tagName,
+        parent: null,
+      };
     }
 
     default: {

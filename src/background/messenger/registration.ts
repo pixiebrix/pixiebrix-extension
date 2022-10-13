@@ -40,7 +40,7 @@ import {
 import * as registry from "@/registry/localRegistry";
 import { ensureContentScript } from "@/background/util";
 import serviceRegistry from "@/services/registry";
-import { deleteCachedAuthData } from "@/background/auth";
+import { deleteCachedAuthData, getCachedAuthData } from "@/background/auth";
 import { proxyService } from "@/background/requests";
 import { readQuery } from "@/contrib/google/bigquery/handlers";
 import { getRecord, setRecord } from "@/background/dataStore";
@@ -51,6 +51,7 @@ import initPartnerTheme from "@/background/partnerTheme";
 
 import {
   clearExtensionDebugLogs,
+  clearLog,
   clearLogs,
   getLoggingConfig,
   recordError,
@@ -71,7 +72,10 @@ import {
 } from "@/background/telemetry";
 import { captureTab } from "@/background/capture";
 import { getUserData } from "@/auth/token";
-import { getPartnerPrincipals } from "@/background/partnerIntegrations";
+import {
+  getPartnerPrincipals,
+  launchAuthIntegration,
+} from "@/background/partnerIntegrations";
 
 expectContext("background");
 
@@ -95,6 +99,7 @@ declare global {
 
     ACTIVATE_PARTNER_THEME: typeof initPartnerTheme;
     GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
+    LAUNCH_AUTH_INTEGRATION: typeof launchAuthIntegration;
 
     GET_UID: typeof uid;
     ECHO_SENDER: typeof whoAmI;
@@ -107,6 +112,7 @@ declare global {
     REGISTRY_GET_KIND: typeof registry.getKind;
     REGISTRY_SYNC: typeof registry.syncRemote;
     REGISTRY_FIND: typeof registry.find;
+    LOCATE_SERVICES_FOR_ID: typeof locator.locateAllForService;
     LOCATE_SERVICE: typeof locator.locate;
     REFRESH_SERVICES: typeof refreshServices;
     LOCATOR_REFRESH_LOCAL: typeof locator.refreshLocal;
@@ -118,6 +124,7 @@ declare global {
     REQUEST_RUN_IN_ALL: typeof requestRunInBroadcast;
 
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
+    GET_CACHED_AUTH: typeof getCachedAuthData;
     PROXY: typeof proxyService;
     CLEAR_SERVICE_CACHE: VoidFunction;
     GOOGLE_BIGQUERY_READ: typeof readQuery;
@@ -131,6 +138,7 @@ declare global {
     GET_LOGGING_CONFIG: typeof getLoggingConfig;
     SET_LOGGING_CONFIG: typeof setLoggingConfig;
     CLEAR_LOGS: typeof clearLogs;
+    CLEAR_LOG: typeof clearLog;
     CLEAR_EXTENSION_DEBUG_LOGS: typeof clearExtensionDebugLogs;
 
     ADD_TRACE_ENTRY: typeof addTraceEntry;
@@ -159,6 +167,7 @@ export default function registerMessenger(): void {
 
     ACTIVATE_PARTNER_THEME: initPartnerTheme,
     GET_PARTNER_PRINCIPALS: getPartnerPrincipals,
+    LAUNCH_AUTH_INTEGRATION: launchAuthIntegration,
 
     GET_AVAILABLE_VERSION: getAvailableVersion,
     INJECT_SCRIPT: ensureContentScript,
@@ -180,6 +189,7 @@ export default function registerMessenger(): void {
     REGISTRY_GET_KIND: registry.getKind,
     REGISTRY_SYNC: registry.syncRemote,
     REGISTRY_FIND: registry.find,
+    LOCATE_SERVICES_FOR_ID: locator.locateAllForService.bind(locator),
     LOCATE_SERVICE: locator.locate.bind(locator),
     LOCATOR_REFRESH_LOCAL: locator.refreshLocal.bind(locator),
     REFRESH_SERVICES: refreshServices,
@@ -191,6 +201,7 @@ export default function registerMessenger(): void {
     REQUEST_RUN_IN_ALL: requestRunInBroadcast,
 
     DELETE_CACHED_AUTH: deleteCachedAuthData,
+    GET_CACHED_AUTH: getCachedAuthData,
     CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
     PROXY: proxyService,
     GOOGLE_BIGQUERY_READ: readQuery,
@@ -204,6 +215,7 @@ export default function registerMessenger(): void {
     GET_LOGGING_CONFIG: getLoggingConfig,
     SET_LOGGING_CONFIG: setLoggingConfig,
     CLEAR_LOGS: clearLogs,
+    CLEAR_LOG: clearLog,
     CLEAR_EXTENSION_DEBUG_LOGS: clearExtensionDebugLogs,
 
     ADD_TRACE_ENTRY: addTraceEntry,

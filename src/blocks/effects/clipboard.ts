@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types";
-import copy from "copy-to-clipboard";
+import copy from "copy-text-to-clipboard";
 import { BlockArg, Schema } from "@/core";
 import { Permissions } from "webextension-polyfill";
 

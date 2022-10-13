@@ -13,8 +13,8 @@ $logoSize: 31px;
     align-items: center;
   }
   &.expanded {
-    flex: 0 0 260px;
-    width: 260px; // Preserve width during the transition
+    flex: 0 0 270px;
+    width: 270px; // Preserve width during the transition
     z-index: 1000; // Always on top of the collapsed one *and* of the content
     &.enter,
     &.exit.exitActive {

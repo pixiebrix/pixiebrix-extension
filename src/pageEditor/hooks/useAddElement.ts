@@ -16,8 +16,7 @@
  */
 
 import { useDispatch, useSelector } from "react-redux";
-import { useCallback, useContext } from "react";
-import { PageEditorTabContext } from "@/pageEditor/context";
+import { useCallback } from "react";
 import notify from "@/utils/notify";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { internalExtensionPointMetaFactory } from "@/pageEditor/extensionPoints/base";
@@ -27,13 +26,15 @@ import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { SettingsState } from "@/store/settingsTypes";
 import useFlags from "@/hooks/useFlags";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { selectFrameState } from "@/pageEditor/tabState/tabStateSelectors";
+import { reportEvent } from "@/telemetry/events";
 
 type AddElement = (config: ElementConfig) => void;
 
 function useAddElement(): AddElement {
   const dispatch = useDispatch();
-  const { tabState } = useContext(PageEditorTabContext);
+  const { meta } = useSelector(selectFrameState);
   const { flagOff } = useFlags();
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
     (x) => x.settings.suggestElements
@@ -68,7 +69,7 @@ function useAddElement(): AddElement {
           url,
           metadata,
           element,
-          tabState.meta.frameworks ?? []
+          meta?.frameworks ?? []
         );
 
         await updateDynamicElement(
@@ -77,6 +78,10 @@ function useAddElement(): AddElement {
         );
 
         dispatch(actions.addElement(initialState as FormState));
+
+        reportEvent("ExtensionAddNew", {
+          type: config.elementType,
+        });
       } catch (error) {
         if (getErrorMessage(error) === "Selection cancelled") {
           return;
@@ -90,7 +95,7 @@ function useAddElement(): AddElement {
         dispatch(actions.toggleInsert(null));
       }
     },
-    [dispatch, tabState.meta?.frameworks, flagOff, suggestElements]
+    [dispatch, meta?.frameworks, flagOff, suggestElements]
   );
 }
 

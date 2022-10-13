@@ -16,13 +16,15 @@
  */
 
 import React from "react";
-import { Button, Card, ListGroup } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
 import styles from "./BlockGridItem.module.scss";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Icon from "@/icons/Icon";
 import { BlockResult } from "@/components/addBlockModal/addBlockModalTypes";
+import cx from "classnames";
+import Alert from "@/components/Alert";
 
 export const BLOCK_ITEM_FIXED_HEIGHT_PX = 89;
 
@@ -30,52 +32,67 @@ export type BlockItemProps = {
   block: BlockResult;
   onSelect: () => void;
   onShowDetail: () => void;
+  invalidMessage?: string;
 };
 
 const BlockGridItem: React.VFC<BlockItemProps> = ({
   block,
   onSelect,
   onShowDetail,
+  invalidMessage,
 }) => (
-  <ListGroup.Item onClick={onShowDetail} className={styles.root}>
-    <Card className={styles.card}>
-      {/* Main Content */}
-      <div className={styles.cardContent}>
-        <div className={styles.nameRow}>
-          <BrickIcon brick={block} faIconClass={styles.icon} />
-          <span className={styles.name}>{block.name}</span>
-          {block.isPopular && (
-            <Icon
-              icon="icon-sparkles"
-              library="custom"
-              className={styles.popularIcon}
-            />
-          )}
-        </div>
-        {block.description ? (
-          <div className={styles.description}>{block.description}</div>
-        ) : (
-          <small className="text-muted font-italic">
-            No description provided.
-          </small>
+  <div
+    onClick={onShowDetail}
+    onKeyPress={(event) => {
+      if (event.key === "Enter") {
+        onShowDetail();
+      }
+    }}
+    tabIndex={0}
+    role="button"
+    className={styles.root}
+  >
+    <div
+      className={cx(styles.content, {
+        [styles.invalid]: Boolean(invalidMessage),
+      })}
+    >
+      <div className={styles.nameRow}>
+        <BrickIcon brick={block} faIconClass={styles.icon} />
+        <span className={styles.name}>{block.name}</span>
+        {block.isPopular && (
+          <Icon
+            icon="icon-sparkles"
+            library="custom"
+            className={styles.popularIcon}
+          />
         )}
       </div>
+      {block.description ? (
+        <div className={styles.description}>{block.description}</div>
+      ) : (
+        <small className="text-muted font-italic">
+          No description provided.
+        </small>
+      )}
+    </div>
 
-      {/* Hover Actions */}
-      <div className={styles.actions}>
-        <span className={styles.viewDetails}>View Details</span>
-        <Button
-          variant="primary"
-          onClick={() => {
-            onSelect();
-          }}
-          className={styles.addButton}
-        >
-          <FontAwesomeIcon icon={faPlus} /> Add
-        </Button>
-      </div>
-    </Card>
-  </ListGroup.Item>
+    <Button
+      variant="primary"
+      onClick={() => {
+        onSelect();
+      }}
+      className={styles.addButton}
+    >
+      <FontAwesomeIcon icon={faPlus} /> Add
+    </Button>
+
+    {invalidMessage && (
+      <Alert variant="warning" className={styles.invalidAlert}>
+        {invalidMessage}
+      </Alert>
+    )}
+  </div>
 );
 
 export default BlockGridItem;

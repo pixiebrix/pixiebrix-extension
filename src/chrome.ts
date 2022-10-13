@@ -16,9 +16,9 @@
  */
 
 import { isExtensionContext } from "webext-detect-page";
-import { expectContext, forbidContext } from "@/utils/expectContext";
+import { forbidContext } from "@/utils/expectContext";
 import { JsonValue } from "type-fest";
-import { once } from "lodash";
+import { UnknownObject } from "@/types";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
@@ -76,13 +76,26 @@ export async function readStorage<T = unknown>(
   defaultValue?: T,
   area: "local" | "managed" = "local"
 ): Promise<T | undefined> {
-  // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
-  // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
-  const result = await browser.storage[area].get(storageKey);
+  let result: UnknownObject;
+
+  try {
+    // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
+    // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
+    // eslint-disable-next-line security/detect-object-injection -- type-checked
+    result = await browser.storage[area].get(storageKey);
+  } catch (error) {
+    if (area === "managed") {
+      // Handle Opera: https://github.com/pixiebrix/pixiebrix-extension/issues/4069
+      // We don't officially support Opera, but to keep the error telemetry clean.
+      result = {};
+    } else {
+      throw error;
+    }
+  }
 
   if (Object.prototype.hasOwnProperty.call(result, storageKey)) {
     // eslint-disable-next-line security/detect-object-injection -- Just checked with hasOwnProperty
-    return result[storageKey];
+    return result[storageKey] as T;
   }
 
   return defaultValue;
@@ -139,16 +152,3 @@ export async function onTabClose(watchedTabId: number): Promise<void> {
     browser.tabs.onRemoved.addListener(listener);
   });
 }
-
-export const onContextInvalidated = once(async (): Promise<void> => {
-  expectContext("extension");
-
-  return new Promise((resolve) => {
-    const interval = setInterval(() => {
-      if (!chrome.runtime?.id) {
-        resolve();
-        clearInterval(interval);
-      }
-    }, 200);
-  });
-});

@@ -27,7 +27,7 @@ describe("parseUrl", () => {
     await expect(
       new UrlParser().transform(unsafeAssumeValidArg({ url: url.href }))
     ).resolves.toMatchInlineSnapshot(`
-      Object {
+      {
         "hash": "",
         "host": "www.example.com",
         "hostname": "www.example.com",
@@ -38,7 +38,7 @@ describe("parseUrl", () => {
         "protocol": "https:",
         "publicSuffix": "example.com",
         "search": "",
-        "searchParams": Object {},
+        "searchParams": {},
         "username": "",
       }
     `);
@@ -54,7 +54,7 @@ describe("parseUrl", () => {
         })
       )
     ).resolves.toMatchInlineSnapshot(`
-      Object {
+      {
         "hash": "",
         "host": "www.example.com",
         "hostname": "www.example.com",
@@ -65,7 +65,7 @@ describe("parseUrl", () => {
         "protocol": "https:",
         "publicSuffix": "example.com",
         "search": "?bar=42",
-        "searchParams": Object {
+        "searchParams": {
           "bar": "42",
         },
         "username": "",
@@ -77,7 +77,7 @@ describe("parseUrl", () => {
     const promise = new UrlParser().transform(
       unsafeAssumeValidArg({ url: "42" })
     );
-    await expect(promise).rejects.toThrowError(BusinessError);
-    await expect(promise).rejects.toThrowError("Invalid URL: 42");
+    await expect(promise).rejects.toThrow(BusinessError);
+    await expect(promise).rejects.toThrow("Invalid URL: 42");
   });
 });

@@ -23,6 +23,7 @@ import { authStateFactory } from "@/testUtils/factories";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { useGetMeQuery } from "@/services/api";
 import { anonAuth } from "@/auth/authConstants";
+import { MemoryRouter } from "react-router";
 
 jest.mock("@/options/store", () => ({
   persistor: {
@@ -50,7 +51,11 @@ describe("SidebarApp", () => {
       data: anonAuth,
     });
 
-    const rendered = render(<ConnectedSidebar />);
+    const rendered = render(
+      <MemoryRouter>
+        <ConnectedSidebar />
+      </MemoryRouter>
+    );
     await waitForEffect();
 
     expect(rendered.asFragment()).toMatchSnapshot();
@@ -62,11 +67,16 @@ describe("SidebarApp", () => {
       data: authStateFactory(),
     });
 
-    const rendered = render(<ConnectedSidebar />, {
-      setupRedux(dispatch) {
-        dispatch(authActions.setAuth(authStateFactory()));
-      },
-    });
+    const rendered = render(
+      <MemoryRouter>
+        <ConnectedSidebar />
+      </MemoryRouter>,
+      {
+        setupRedux(dispatch) {
+          dispatch(authActions.setAuth(authStateFactory()));
+        },
+      }
+    );
 
     await waitForEffect();
 

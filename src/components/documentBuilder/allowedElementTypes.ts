@@ -22,9 +22,7 @@ import {
 } from "./documentBuilderTypes";
 
 export const ROOT_ELEMENT_TYPES: DocumentElementType[] = [
-  "header_1",
-  "header_2",
-  "header_3",
+  "header",
   "text",
   "image",
   "container",
@@ -45,28 +43,8 @@ export const PARENT_ELEMENT_TYPES: DocumentElementType[] = [
 const allowedChildTypes: Record<string, DocumentElementType[]> = {
   container: ["row", "list"],
   row: ["column", "list"],
-  column: [
-    "header_1",
-    "header_2",
-    "header_3",
-    "text",
-    "image",
-    "card",
-    "pipeline",
-    "button",
-    "list",
-  ],
-  card: [
-    "header_1",
-    "header_2",
-    "header_3",
-    "text",
-    "image",
-    "container",
-    "pipeline",
-    "button",
-    "list",
-  ],
+  column: ["header", "text", "image", "card", "pipeline", "button", "list"],
+  card: ["header", "text", "image", "container", "pipeline", "button", "list"],
   // Any element we can add to the list
   list: DOCUMENT_ELEMENT_TYPES as unknown as DocumentElementType[],
 };

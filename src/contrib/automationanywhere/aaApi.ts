@@ -26,9 +26,11 @@ import {
   Device,
   DevicePool,
   FAILURE_STATUSES,
+  Folder,
   Interface,
   ListResponse,
   RunAsUser,
+  WorkspaceType,
 } from "@/contrib/automationanywhere/contract";
 import { cachePromiseMethod } from "@/utils/cachePromise";
 import {
@@ -42,27 +44,140 @@ import {
   EnterpriseBotArgs,
 } from "@/contrib/automationanywhere/aaTypes";
 import { BusinessError } from "@/errors/businessErrors";
+import { castArray, cloneDeep, isEmpty, sortBy } from "lodash";
+import { AxiosRequestConfig } from "axios";
 
-const MAX_WAIT_MILLIS = 60_000;
+// https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html
+// Same as default for Control Room
+const PAGINATION_LIMIT = 100;
+
+export const DEFAULT_MAX_WAIT_MILLIS = 60_000;
 const POLL_MILLIS = 2000;
 
-async function fetchBots(
-  config: SanitizedServiceConfiguration
-): Promise<Option[]> {
-  // This endpoint works on both community and Enterprise. The /v2/repository/file/list doesn't include
-  // `type` field for filters or in the body
-  const response = await proxyService<ListResponse<Bot>>(config, {
-    url: `/v2/repository/folders/${config.config.folderId}/list`,
-    method: "POST",
-    data: {
-      filter: {
-        operator: "eq",
-        field: "type",
-        value: BOT_TYPE,
-      },
+const SORT_BY_NAME = {
+  sort: [
+    {
+      field: "name",
+      direction: "asc",
     },
+  ],
+};
+
+async function fetchAllPages<TData>(
+  config: SanitizedServiceConfiguration,
+  requestConfig: AxiosRequestConfig
+): Promise<TData[]> {
+  // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html
+
+  if (requestConfig.data.page) {
+    throw new Error("pagination parameter already set on request config");
+  }
+
+  const paginatedRequestConfig = cloneDeep(requestConfig);
+  paginatedRequestConfig.data.page = {
+    offset: 0,
+    length: PAGINATION_LIMIT,
+  };
+
+  const initialResponse = await proxyService<ListResponse<TData>>(
+    config,
+    paginatedRequestConfig
+  );
+  const results: TData[] = [...initialResponse.data.list];
+  const total = initialResponse.data.page.totalFilter;
+
+  // Note that CR API uses offset/length instead of page/size
+  let offset = results.length;
+  while (offset < total) {
+    paginatedRequestConfig.data.page = {
+      offset,
+      length: PAGINATION_LIMIT,
+    };
+    // eslint-disable-next-line no-await-in-loop -- be conservative on number of concurrent requests to CR
+    const response = await proxyService<ListResponse<TData>>(
+      config,
+      paginatedRequestConfig
+    );
+    results.push(...response.data.list);
+    offset += response.data.list.length;
+  }
+
+  return results;
+}
+
+/**
+ * Return information about a bot in a Control Room.
+ */
+async function fetchBotFile(
+  config: SanitizedServiceConfiguration,
+  fileId: string
+): Promise<Bot> {
+  // The same API endpoint can be used for any file, but for now assume it's a bot
+  const response = await proxyService<Bot>(config, {
+    url: `/v2/repository/files/${fileId}`,
+    method: "GET",
   });
-  const bots = response.data.list ?? [];
+  return response.data;
+}
+
+export const cachedFetchBotFile = cachePromiseMethod(
+  ["aa:fetchBotFile"],
+  fetchBotFile
+);
+
+/**
+ * Return information about a bot in a Control Room.
+ */
+async function fetchFolder(
+  config: SanitizedServiceConfiguration,
+  folderId: string
+): Promise<Folder> {
+  // The same API endpoint can be used for any file, but for now assume it's a bot
+  const response = await proxyService<Folder>(config, {
+    url: `/v2/repository/files/${folderId}`,
+    method: "GET",
+  });
+  return response.data;
+}
+
+export const cachedFetchFolder = cachePromiseMethod(
+  ["aa:fetchFolder"],
+  fetchFolder
+);
+
+async function fetchBots(
+  config: SanitizedServiceConfiguration,
+  options: { workspaceType: WorkspaceType }
+): Promise<Option[]> {
+  const botFilterPayload = {
+    ...SORT_BY_NAME,
+    filter: {
+      operator: "eq",
+      field: "type",
+      value: BOT_TYPE,
+    },
+  };
+
+  let bots: Bot[];
+
+  // The folderId field on the integration is now deprecated. See BotOptions for the alert shown to user if
+  // the Page Editor configuration is only showing bots for the folder id.
+  if (isEmpty(config.config.folderId)) {
+    bots = await fetchAllPages<Bot>(config, {
+      url: `/v2/repository/workspaces/${options.workspaceType}/files/list`,
+      method: "POST",
+      data: botFilterPayload,
+    });
+  } else {
+    // The /folders/:id/list endpoint works on both community and Enterprise. The /v2/repository/file/list doesn't
+    // include `type` field for filters or in the body or the response
+    bots = await fetchAllPages<Bot>(config, {
+      url: `/v2/repository/folders/${config.config.folderId}/list`,
+      method: "POST",
+      data: botFilterPayload,
+    });
+  }
+
   return bots.map((bot) => ({
     value: bot.id,
     label: bot.name,
@@ -74,22 +189,24 @@ export const cachedFetchBots = cachePromiseMethod(["aa:fetchBots"], fetchBots);
 async function fetchDevices(
   config: SanitizedServiceConfiguration
 ): Promise<Option[]> {
-  // HACK: depend on cachedFetchBots to avoid concurrent requests to the proxy. Simultaneous calls to get the
-  // token causes a server error on Community Edition
-  await cachedFetchBots(config);
-
-  const response = await proxyService<ListResponse<Device>>(config, {
+  const devices = await fetchAllPages<Device>(config, {
     url: "/v2/devices/list",
     method: "POST",
     data: {},
   });
-  const devices = response.data.list ?? [];
-  return devices.map((device) => ({
-    value: device.id,
-    label: device.nickname
+
+  const selectLabel = (device: Device) =>
+    device.nickname
       ? `${device.nickname} (${device.hostName})`
-      : device.hostName,
-  }));
+      : device.hostName;
+
+  return sortBy(
+    devices.map((device) => ({
+      value: device.id,
+      label: selectLabel(device),
+    })),
+    (option) => option.label
+  );
 }
 
 export const cachedFetchDevices = cachePromiseMethod(
@@ -100,16 +217,11 @@ export const cachedFetchDevices = cachePromiseMethod(
 async function fetchDevicePools(
   config: SanitizedServiceConfiguration
 ): Promise<Option[]> {
-  // HACK: depend on cachedFetchBots to avoid concurrent requests to the proxy. Simultaneous calls to get the
-  // token causes a server error on Community Edition
-  await cachedFetchBots(config);
-
-  const response = await proxyService<ListResponse<DevicePool>>(config, {
+  const devicePools = await fetchAllPages<DevicePool>(config, {
     url: "/v2/devices/pools/list",
     method: "POST",
-    data: {},
+    data: { ...SORT_BY_NAME },
   });
-  const devicePools = response.data.list ?? [];
   return devicePools.map((pool) => ({
     value: pool.id,
     label: pool.name,
@@ -124,18 +236,12 @@ export const cachedFetchDevicePools = cachePromiseMethod(
 async function fetchRunAsUsers(
   config: SanitizedServiceConfiguration
 ): Promise<Option[]> {
-  // HACK: depend on cachedFetchBots to avoid concurrent requests to the proxy. Simultaneous calls to get the
-  // token causes a server error
-  await cachedFetchBots(config);
-
-  const { data } = await proxyService<ListResponse<RunAsUser>>(config, {
+  const users = await fetchAllPages<RunAsUser>(config, {
     url: "/v1/devices/runasusers/list",
     method: "POST",
-    // TODO: handle pagination - potentially via search query?
     data: {},
   });
-  const users = data.list ?? [];
-  return users.map((user) => ({
+  return sortBy(users, (user) => user.username).map((user) => ({
     value: user.id,
     label: user.username,
   }));
@@ -203,7 +309,7 @@ export async function runEnterpriseBot({
       overrideDefaultDevice: poolIds?.length > 0,
       numOfRunAsUsersToUse: 1,
       poolIds,
-      runAsUserIds,
+      runAsUserIds: castArray(runAsUserIds),
     },
   });
 
@@ -214,10 +320,12 @@ export async function pollEnterpriseResult({
   service,
   deploymentId,
   logger,
+  maxWaitMillis = DEFAULT_MAX_WAIT_MILLIS,
 }: {
   service: SanitizedServiceConfiguration;
   deploymentId: string;
   logger: Logger;
+  maxWaitMillis?: number;
 }) {
   const poll = async () => {
     // Sleep first because it's unlikely it will be completed immediately after the running the bot
@@ -275,7 +383,7 @@ export async function pollEnterpriseResult({
 
   const result = await pollUntilTruthy(poll, {
     intervalMillis: 0, // Already covered by the inline `sleep`
-    maxWaitMillis: MAX_WAIT_MILLIS,
+    maxWaitMillis,
   });
 
   if (result) {
@@ -283,6 +391,6 @@ export async function pollEnterpriseResult({
   }
 
   throw new BusinessError(
-    `Bot did not finish in ${MAX_WAIT_MILLIS / 1000} seconds`
+    `Bot did not finish in ${Math.round(maxWaitMillis / 1000)} seconds`
   );
 }

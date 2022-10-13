@@ -25,20 +25,24 @@ export const authSlice = createSlice({
   name: "auth",
   initialState: anonAuth,
   reducers: {
-    setAuth: (state, { payload }: PayloadAction<AuthState>) => ({
-      ...payload,
-      scope: isEmpty(payload.scope) ? null : payload.scope,
-      flags: Array.isArray(payload.flags) ? payload.flags : [],
-      organizations: Array.isArray(payload.organizations)
-        ? payload.organizations
-        : [],
-      groups: Array.isArray(payload.groups) ? payload.groups : [],
-    }),
+    setAuth(state, { payload }: PayloadAction<AuthState>) {
+      console.debug("authSlice:setAuth", payload);
+
+      return {
+        ...payload,
+        scope: isEmpty(payload.scope) ? null : payload.scope,
+        flags: Array.isArray(payload.flags) ? payload.flags : [],
+        organizations: Array.isArray(payload.organizations)
+          ? payload.organizations
+          : [],
+        groups: Array.isArray(payload.groups) ? payload.groups : [],
+      };
+    },
   },
 });
 
 // TODO refactor to use token.ts/updateUserData
-// Current approach is not ideal, AuthState is cached along with UserDate (which is used by background script).
+// Current approach is not ideal, AuthState is cached along with UserData (which is used by background script).
 export const persistAuthConfig = {
   key: "authOptions",
   storage: localStorage,

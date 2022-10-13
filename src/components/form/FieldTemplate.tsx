@@ -25,7 +25,9 @@ import {
 } from "react-bootstrap";
 import styles from "./FieldTemplate.module.scss";
 import cx from "classnames";
-import { isPlainObject } from "lodash";
+import { castArray, isPlainObject } from "lodash";
+import AnnotationAlert from "@/components/annotationAlert/AnnotationAlert";
+import { AnnotationType } from "@/analysis/analysisTypes";
 
 export type FieldProps<As extends React.ElementType = React.ElementType> =
   FormControlProps &
@@ -35,7 +37,7 @@ export type FieldProps<As extends React.ElementType = React.ElementType> =
       fitLabelWidth?: boolean;
       widerLabel?: boolean;
       description?: ReactNode;
-      error?: string;
+      error?: string | string[];
       touched?: boolean;
 
       /**
@@ -65,11 +67,12 @@ export type CustomFieldWidget<
   > = CustomFieldWidgetProps<TValue, TInputElement>
 > = React.ComponentType<TFieldWidgetProps>;
 
-function hasOwnOrNestedError(error: unknown) {
-  // If error is an object, it means that children fields have errors.
-  // If error is a string, it means that the field has an error.
+function hasOwnError(error: unknown) {
+  // Support string and array of strings.
+  // Don't support Formik nested errors.
   return (
-    error != null && (typeof error === "object" || typeof error === "string")
+    typeof error === "string" ||
+    (Array.isArray(error) && error.every((x) => typeof x === "string"))
   );
 }
 
@@ -120,7 +123,7 @@ const FieldTemplate: React.FC<FieldProps> = ({
   className,
   ...restFieldProps
 }) => {
-  const isInvalid = touched && hasOwnOrNestedError(error);
+  const isInvalid = hasOwnError(error);
 
   // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
   const nonUndefinedValue = typeof value === "undefined" ? blankValue : value;
@@ -179,6 +182,17 @@ const FieldTemplate: React.FC<FieldProps> = ({
 
   return (
     <BootstrapForm.Group as={Row} className={cx(styles.formGroup, className)}>
+      {isInvalid && (
+        <Col xs="12" className="mb-2">
+          {castArray(error).map((errorMessage, index) => (
+            <AnnotationAlert
+              key={`${errorMessage}-${index}`}
+              message={errorMessage}
+              type={AnnotationType.Error}
+            />
+          ))}
+        </Col>
+      )}
       {label && (
         <BootstrapForm.Label
           column
@@ -195,9 +209,6 @@ const FieldTemplate: React.FC<FieldProps> = ({
           <BootstrapForm.Text className="text-muted">
             {description}
           </BootstrapForm.Text>
-        )}
-        {isInvalid && typeof error === "string" && (
-          <div className={styles.invalidMessage}>{error}</div>
         )}
       </Col>
     </BootstrapForm.Group>

@@ -18,10 +18,11 @@
     "^.+\\.txt$": "<rootDir>/src/testUtils/rawJestTransformer.mjs"
   },
   "transformIgnorePatterns": [
-    "node_modules/(?!@cfworker|escape-string-regex|filename-reserved-regex|filenamify|idb|webext-|p-timeout|p-retry|p-defer|p-memoize|serialize-error|strip-outer|trim-repeated|mimic-fn|urlpattern-polyfill|url-join|uuid|nanoid|use-debounce)"
+    "node_modules/(?!@cfworker|escape-string-regex|filename-reserved-regex|filenamify|idb|webext-|p-timeout|p-retry|p-defer|p-memoize|serialize-error|strip-outer|trim-repeated|mimic-fn|urlpattern-polyfill|url-join|uuid|nanoid|use-debounce|copy-text-to-clipboard)"
   ],
   "setupFiles": [
     "<rootDir>/src/testUtils/testEnv.js",
+    "<rootDir>/src/development/cryptoNodePolyfill.js",
     "jest-webextension-mock",
     "fake-indexeddb/auto"
   ],
@@ -38,7 +39,7 @@
   ],
   "moduleNameMapper": {
     "\\.s?css$": "identity-obj-proxy",
-    "\\.(gif|svg)$|\\?loadAsUrl$|\\?loadAsComponent$": "<rootDir>/src/__mocks__/stringMock.js",
+    "\\.(gif|svg|png)$|\\?loadAsUrl$|\\?loadAsComponent$": "<rootDir>/src/__mocks__/stringMock.js",
     "^@contrib/(.*?)(\\?loadAsText)?$": "<rootDir>/contrib/$1",
     "^@schemas/(.*)": "<rootDir>/schemas/$1",
     "^@/(.*)$": ["<rootDir>/src/__mocks__/@/$1", "<rootDir>/src/$1"]

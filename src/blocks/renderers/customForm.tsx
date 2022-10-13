@@ -33,17 +33,17 @@ import { dataStore, proxyService, whoAmI } from "@/background/messenger/api";
 import notify from "@/utils/notify";
 import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
-import ImageCropStylesheet from "@/blocks/renderers/ImageCropStylesheet";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { validateRegistryId } from "@/types/helpers";
-import BootstrapStylesheet from "@/blocks/renderers/BootstrapStylesheet";
+import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import { isObject } from "@/utils";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import safeJsonStringify from "json-stringify-safe";
-import { get, isEmpty, set } from "lodash";
+import { isEmpty, set } from "lodash";
+import { Stylesheets } from "@/components/Stylesheets";
 
 const fields = {
   DescriptionField,
@@ -51,6 +51,11 @@ const fields = {
 const uiWidgets = {
   imageCrop: ImageCropWidget,
 };
+
+interface DatabaseResult {
+  success: boolean;
+  data: unknown;
+}
 
 export type Storage =
   | { type: "localStorage" }
@@ -70,26 +75,25 @@ const CustomFormComponent: React.FunctionComponent<{
 }> = ({ schema, uiSchema, submitCaption, formData, onSubmit }) => (
   <div className="CustomForm p-3">
     <ErrorBoundary>
-      <BootstrapStylesheet />
-      <ImageCropStylesheet />
-      <link rel="stylesheet" href={custom} />
-      <JsonSchemaForm
-        schema={schema}
-        uiSchema={uiSchema}
-        formData={formData}
-        fields={fields}
-        widgets={uiWidgets}
-        FieldTemplate={FieldTemplate}
-        onSubmit={async ({ formData }) => {
-          await onSubmit(formData);
-        }}
-      >
-        <div>
-          <button className="btn btn-primary" type="submit">
-            {submitCaption}
-          </button>
-        </div>
-      </JsonSchemaForm>
+      <Stylesheets href={[bootstrap, custom]}>
+        <JsonSchemaForm
+          schema={schema}
+          uiSchema={uiSchema}
+          formData={formData}
+          fields={fields}
+          widgets={uiWidgets}
+          FieldTemplate={FieldTemplate}
+          onSubmit={async ({ formData }) => {
+            await onSubmit(formData);
+          }}
+        >
+          <div>
+            <button className="btn btn-primary" type="submit">
+              {submitCaption}
+            </button>
+          </div>
+        </JsonSchemaForm>
+      </Stylesheets>
     </ErrorBoundary>
   </div>
 );
@@ -128,7 +132,7 @@ async function getInitialData(
     case "database": {
       const {
         data: { data },
-      } = await proxyService(storage.service, {
+      } = await proxyService<DatabaseResult>(storage.service, {
         url: `/api/databases/${storage.databaseId}/records/${encodeURIComponent(
           recordId
         )}/`,
@@ -288,21 +292,17 @@ export const customFormRendererSchema = {
   required: ["schema"],
 };
 
-// Ensure that all string fields contain string values (can be empty string "", but not null or undefined)
-// so the form updates the displayed values of the input correctly
+// Server can send null or undefined for an empty field.
+// In order for RJSF to handle an absence of value properly,
+// the field must not be present on the data object at all
+// (not event undefined - this prevents setting the default value properly)
 export function normalizeIncomingFormData(schema: Schema, data: UnknownObject) {
   const normalizedData: UnknownObject = {};
-  for (const [key, property] of Object.entries(schema.properties)) {
-    const fieldValue = get(data, key);
-    if (fieldValue == null) {
-      if (
-        typeof property === "object" &&
-        property.type === "string" &&
-        isEmpty(property.default)
-      ) {
-        set(normalizedData, key, "");
-      }
-    } else {
+  for (const key of Object.keys(schema.properties)) {
+    // eslint-disable-next-line security/detect-object-injection -- iterating over object keys
+    const fieldValue = data[key];
+
+    if (fieldValue != null) {
       set(normalizedData, key, fieldValue);
     }
   }

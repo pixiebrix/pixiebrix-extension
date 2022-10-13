@@ -20,7 +20,6 @@ import {
   EXTENSION_POINT_DATA_ATTR,
   PANEL_FRAME_ID,
   PIXIEBRIX_DATA_ATTR,
-  PIXIEBRIX_READY_ATTRIBUTE,
 } from "@/common";
 import {
   BUTTON_TAGS,
@@ -28,6 +27,7 @@ import {
 } from "@/contentScript/nativeEditor/selectorInference";
 import { intersection, unary, uniq } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
+import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
 
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
 const ICON_TAGS = ["svg", "img"];
@@ -55,7 +55,7 @@ const TEMPLATE_ATTR_EXCLUDE_PATTERNS = [
 
   EXTENSION_POINT_DATA_ATTR,
   PIXIEBRIX_DATA_ATTR,
-  PIXIEBRIX_READY_ATTRIBUTE,
+  CONTENT_SCRIPT_READY_ATTRIBUTE,
 
   // Angular attributes
   /^_ngcontent-/,

@@ -29,23 +29,8 @@ import {
   RecipeMetadataFormState,
 } from "@/types/definitions";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
-import {
-  ActionFormState,
-  SidebarFormState,
-  TriggerFormState,
-  PanelFormState,
-  ContextMenuFormState,
-  QuickBarFormState,
-} from "./extensionPoints/formStateTypes";
 import { AnalysisRootState } from "@/analysis/analysisTypes";
-
-export type FormState =
-  | ActionFormState
-  | SidebarFormState
-  | TriggerFormState
-  | PanelFormState
-  | ContextMenuFormState
-  | QuickBarFormState;
+import { FormState } from "./extensionPoints/formStateTypes";
 
 export enum PipelineFlavor {
   AllBlocks = "allBlocks",

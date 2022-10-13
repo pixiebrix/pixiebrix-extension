@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://app.pixiebrix.com/schemas/innerDefinition#",
+  "type": "object",
+  "title": "PixieBrix Inner Definition",
+  "description": "An inner definition without an explicit id/version",
+  "properties": {
+    "apiVersion": {
+      "type": "string",
+      "enum": ["v1", "v2", "v3"]
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["reader", "extensionPoint", "component"]
+    }
+  }
+}

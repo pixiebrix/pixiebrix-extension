@@ -49,6 +49,7 @@ import {
   ButtonSelectionResult,
 } from "@/contentScript/nativeEditor/types";
 import { ActionFormState } from "./formStateTypes";
+import { makeEmptyPermissions } from "@/utils/permissions";
 
 function fromNativeElement(
   url: string,
@@ -78,6 +79,8 @@ function fromNativeElement(
       caption: button.item.caption,
       blockPipeline: [],
       dynamicCaption: false,
+      onSuccess: true,
+      synchronous: false,
     },
   };
 }
@@ -114,6 +117,8 @@ function selectExtension(
       ? extension.blockPipeline
       : omitEditorMetadata(extension.blockPipeline),
     dynamicCaption: extension.dynamicCaption,
+    onSuccess: extension.onSuccess,
+    synchronous: extension.synchronous,
   };
   return removeEmptyValues({
     ...baseSelectExtension(state),
@@ -137,7 +142,7 @@ async function fromExtensionPoint(
     label: `My ${getDomain(url)} button`,
 
     services: [],
-    permissions: {},
+    permissions: makeEmptyPermissions(),
 
     optionsArgs: {},
 
@@ -145,6 +150,8 @@ async function fromExtensionPoint(
       caption:
         extensionPoint.definition.defaultOptions?.caption ?? "Custom Action",
       blockPipeline: [],
+      onSuccess: true,
+      synchronous: false,
     },
 
     // There's no containerInfo for the page because the user did not select it during the session
@@ -176,7 +183,10 @@ async function fromExtension(
   >(config, "menuItem");
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
-  const extension = extensionWithNormalizedPipeline(config.config, "action");
+  const extension = await extensionWithNormalizedPipeline(
+    config.config,
+    "action"
+  );
 
   return {
     ...base,

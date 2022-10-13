@@ -19,18 +19,30 @@ import styles from "./notify.module.scss";
 
 import React from "react";
 import { render } from "react-dom";
-import { toast, Toaster, DefaultToastOptions } from "react-hot-toast";
+import {
+  toast,
+  Toaster,
+  DefaultToastOptions,
+  ToastOptions,
+} from "react-hot-toast";
 import { uuidv4 } from "@/types/helpers";
 import { NOTIFICATIONS_Z_INDEX } from "@/common";
 import reportError from "@/telemetry/reportError";
 import { Except, RequireAtLeastOne } from "type-fest";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { truncate } from "lodash";
-import { SIDEBAR_WIDTH_CSS_PROPERTY } from "@/contentScript/sidebarController";
+import { merge, truncate } from "lodash";
+import { SIDEBAR_WIDTH_CSS_PROPERTY } from "@/contentScript/sidebarDomControllerLite";
+import ErrorIcon from "@/icons/error.svg?loadAsComponent";
+import WarningIcon from "@/icons/warning.svg?loadAsComponent";
 
 const MINIMUM_NOTIFICATION_DURATION = 2000;
 
-type NotificationType = "info" | "success" | "error" | "warning" | "loading";
+export type NotificationType =
+  | "info"
+  | "success"
+  | "error"
+  | "warning"
+  | "loading";
 type Notification = RequireAtLeastOne<
   {
     message: string;
@@ -47,32 +59,19 @@ type Notification = RequireAtLeastOne<
 
 type SimpleNotification = string | Except<Notification, "type">;
 
-const containerStyle: React.CSSProperties = {
-  zIndex: NOTIFICATIONS_Z_INDEX,
-  fontFamily: "sans-serif",
-};
+type ToastStyle = Partial<Record<NotificationType, ToastOptions>>;
 
-const toastOptions: DefaultToastOptions = {
-  // These colors match react-hot-toast’s status icons
-  success: {
-    style: {
-      border: "solid 2px #61d345",
-    },
-  },
-  error: {
-    style: {
-      border: "solid 2px #ff4b4b",
-    },
-  },
-};
-
-const Message: React.VoidFunctionComponent<{
+const Message: React.FunctionComponent<{
   message: string;
   id: string;
   dismissable: boolean;
 }> = ({ message, id, dismissable }) => (
   <>
-    <span className={styles.message}>{message}</span>
+    <div className={styles.message}>
+      {message.split("\n").map((line, number) => (
+        <div key={number}>{line}</div>
+      ))}
+    </div>
     {dismissable ? (
       <button
         className={styles.closeButton}
@@ -85,6 +84,31 @@ const Message: React.VoidFunctionComponent<{
     ) : undefined}
   </>
 );
+
+const getIcon = (
+  Icon: React.FC<React.SVGProps<SVGSVGElement>>,
+  color: string
+) => <Icon style={{ height: 24, color, flex: "0 0 24px" }} />;
+
+const toastStyle: ToastStyle = {
+  success: {
+    style: {
+      border: "solid 2px #61d345",
+    },
+  },
+  warning: {
+    icon: getIcon(WarningIcon, "#e89c00"),
+    style: {
+      border: "solid 2px #e89c00",
+    },
+  },
+  error: {
+    icon: getIcon(ErrorIcon, "#e84e2c"),
+    style: {
+      border: "solid 2px #e84e2c",
+    },
+  },
+};
 
 function getMessageDisplayTime(message: string): number {
   const wpm = 100; // 180 is the average words read per minute, make it slower
@@ -100,6 +124,18 @@ export function initToaster(): void {
   root.setAttribute("style", "all: initial");
 
   document.body.append(root);
+
+  const containerStyle: React.CSSProperties = {
+    zIndex: NOTIFICATIONS_Z_INDEX,
+    fontFamily: "sans-serif",
+  };
+
+  // Override for built-in toasts
+  const toastOptions: DefaultToastOptions = {
+    // These colors match react-hot-toast’s status icons
+    success: toastStyle.success,
+    error: toastStyle.error,
+  };
   render(<Toaster {...{ containerStyle, toastOptions }} />, root);
 }
 
@@ -119,7 +155,7 @@ export function showNotification({
     if (!message) {
       message = getErrorMessage(error);
     } else if (includeErrorDetails) {
-      message = message.replace(/[\s.:]$/, "") + ": " + getErrorMessage(error);
+      message += "\n" + getErrorMessage(error);
     }
   }
 
@@ -128,13 +164,7 @@ export function showNotification({
 
   duration ??= getMessageDisplayTime(message);
 
-  // TODO: Temporary style override until warnings are natively supported
-  //  https://github.com/timolins/react-hot-toast/issues/29
-  if (type === "warning") {
-    type = "error";
-  }
-
-  const options = {
+  const options: ToastOptions = {
     id,
     duration,
     // Keep the notification centered on the document even when the sidebar is open
@@ -145,13 +175,21 @@ export function showNotification({
   switch (type) {
     case "error":
     case "success":
-    case "loading":
+    case "loading": {
       // eslint-disable-next-line security/detect-object-injection -- Filtered
       toast[type](component, options);
       break;
+    }
 
-    default:
+    case "warning": {
+      // eslint-disable-next-line security/detect-object-injection -- Filtered
+      toast(component, merge(options, toastStyle[type]));
+      break;
+    }
+
+    default: {
       toast(component, options);
+    }
   }
 
   if (willReport) {
@@ -200,7 +238,7 @@ function _show(
 }
 
 // Please only add logic to `showNotification`
-const notify = {
+export const notify = {
   /**
    * @example notify.error('User message')
    * @example notify.error({error: new Error('Error that can be shown to the user')})

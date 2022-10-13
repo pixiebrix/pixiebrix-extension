@@ -46,6 +46,7 @@ import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import React from "react";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 import { SidebarFormState } from "./formStateTypes";
+import { makeEmptyPermissions } from "@/utils/permissions";
 
 function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
   const base = makeInitialBaseState();
@@ -152,7 +153,7 @@ export async function fromExtensionPoint(
     label: heading,
 
     services: [],
-    permissions: {},
+    permissions: makeEmptyPermissions(),
 
     optionsArgs: {},
 
@@ -186,7 +187,10 @@ async function fromExtension(
   >(config, "actionPanel");
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
-  const extension = extensionWithNormalizedPipeline(config.config, "body");
+  const extension = await extensionWithNormalizedPipeline(
+    config.config,
+    "body"
+  );
 
   const {
     trigger = "load",

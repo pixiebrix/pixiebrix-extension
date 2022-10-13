@@ -42,9 +42,11 @@ import iconSchema from "@schemas/icon.json";
 import recipeSchema from "@schemas/recipe.json";
 import keySchema from "@schemas/key.json";
 import metadataSchema from "@schemas/metadata.json";
+import innerDefinitionSchema from "@schemas/innerDefinition.json";
 import refSchema from "@schemas/ref.json";
 import componentSchema from "@schemas/component.json";
 import pipelineSchema from "@schemas/pipeline.json";
+import databaseSchema from "@schemas/database.json";
 import { resolveDefinitions } from "@/registry/internal";
 import Lazy from "yup/lib/Lazy";
 import * as Yup from "yup";
@@ -70,6 +72,8 @@ const SCHEMA_URLS: Record<string, UnknownObject> = {
   "https://app.pixiebrix.com/schemas/pipeline": pipelineSchema,
   "https://app.pixiebrix.com/schemas/component": componentSchema,
   "https://app.pixiebrix.com/schemas/ref": refSchema,
+  "https://app.pixiebrix.com/schemas/innerDefinition": innerDefinitionSchema,
+  "https://app.pixiebrix.com/schemas/database": databaseSchema,
 };
 
 const BASE_SCHEMA_URI = "https://app.pixiebrix.com/schemas/";
@@ -466,13 +470,17 @@ const pixieResolver: ResolverOptions = {
 
 export async function bundle(schema: Schema): Promise<Schema> {
   return $RefParser.bundle(schema as any, {
-    resolve: { pixieResolver },
+    // Disable built-in resolvers
+    // https://apitools.dev/json-schema-ref-parser/docs/options.html
+    resolve: { pixieResolver, http: false, file: false },
   }) as Promise<Schema>;
 }
 
 export async function dereference(schema: Schema): Promise<Schema> {
   return $RefParser.dereference(schema as any, {
-    resolve: { pixieResolver },
+    // Disable built-in resolvers
+    // https://apitools.dev/json-schema-ref-parser/docs/options.html
+    resolve: { pixieResolver, http: false, file: false },
     dereference: {
       circular: "ignore",
     },

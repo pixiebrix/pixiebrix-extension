@@ -20,12 +20,22 @@ import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import {
+  DEFAULT_MAX_WAIT_MILLIS,
   pollEnterpriseResult,
   runCommunityBot,
   runEnterpriseBot,
 } from "@/contrib/automationanywhere/aaApi";
-import { BotArgs } from "@/contrib/automationanywhere/aaTypes";
-import { PropError } from "@/errors/businessErrors";
+import {
+  BotArgs,
+  EnterpriseBotArgs,
+} from "@/contrib/automationanywhere/aaTypes";
+import { BusinessError, PropError } from "@/errors/businessErrors";
+import {
+  CONTROL_ROOM_OAUTH_SERVICE_ID,
+  CONTROL_ROOM_SERVICE_ID,
+} from "@/services/constants";
+import { isEmpty } from "lodash";
+import { getCachedAuthData } from "@/background/messenger/api";
 
 export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
   "@pixiebrix/automation-anywhere/run-bot"
@@ -33,7 +43,17 @@ export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
 
 export const COMMON_PROPERTIES: SchemaProperties = {
   service: {
-    $ref: "https://app.pixiebrix.com/schemas/services/automation-anywhere/control-room",
+    anyOf: [CONTROL_ROOM_SERVICE_ID, CONTROL_ROOM_OAUTH_SERVICE_ID].map(
+      (id) => ({
+        $ref: `https://app.pixiebrix.com/schemas/services/${id}`,
+      })
+    ),
+  },
+  workspaceType: {
+    type: "string",
+    enum: ["private", "public"],
+    description: "The workspace that contains the bot",
+    default: "private",
   },
   fileId: {
     type: "string",
@@ -55,8 +75,22 @@ const COMMUNITY_EDITION_PROPERTIES: SchemaProperties = {
   },
 };
 
-const ENTERPRISE_EDITION_PROPERTIES: SchemaProperties = {
-  runAsUsers: {
+export const ENTERPRISE_EDITION_COMMON_PROPERTIES: SchemaProperties = {
+  awaitResult: {
+    type: "boolean",
+    default: false,
+    description: "Wait for the bot to complete and return the output",
+  },
+  maxWaitMillis: {
+    type: "number",
+    default: DEFAULT_MAX_WAIT_MILLIS,
+    description:
+      "Maximum time (in milliseconds) to wait for the bot to complete when awaiting result.",
+  },
+};
+
+export const ENTERPRISE_EDITION_PUBLIC_PROPERTIES: SchemaProperties = {
+  runAsUserIds: {
     type: "array",
     description: "The user(s) to run the bot",
     items: {
@@ -64,15 +98,11 @@ const ENTERPRISE_EDITION_PROPERTIES: SchemaProperties = {
     },
   },
   poolIds: {
+    type: "array",
     description: "A device pool that has at least one active device (optional)",
     items: {
       type: "string",
     },
-  },
-  awaitResult: {
-    type: "boolean",
-    default: false,
-    description: "Wait for the bot to complete and return the output",
   },
 };
 
@@ -99,11 +129,21 @@ export class RunBot extends Transformer {
         type: "object",
         properties: {
           ...COMMON_PROPERTIES,
-          ...ENTERPRISE_EDITION_PROPERTIES,
+          ...ENTERPRISE_EDITION_COMMON_PROPERTIES,
+          ...ENTERPRISE_EDITION_PUBLIC_PROPERTIES,
+        },
+      },
+      {
+        type: "object",
+        properties: {
+          ...COMMON_PROPERTIES,
+          ...ENTERPRISE_EDITION_COMMON_PROPERTIES,
         },
       },
     ],
   };
+
+  defaultOutputKey = "bot";
 
   override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -115,7 +155,12 @@ export class RunBot extends Transformer {
     args: BlockArg<BotArgs>,
     { logger }: BlockOptions
   ): Promise<UnknownObject> {
-    const { awaitResult, service } = args;
+    const {
+      awaitResult,
+      maxWaitMillis = DEFAULT_MAX_WAIT_MILLIS,
+      service,
+      workspaceType,
+    } = args;
 
     if (isCommunityControlRoom(service.config.controlRoomUrl)) {
       if (!("deviceId" in args)) {
@@ -140,16 +185,50 @@ export class RunBot extends Transformer {
       return {};
     }
 
-    if (!("runAsUserIds" in args)) {
+    const enterpriseBotArgs: EnterpriseBotArgs =
+      args as unknown as EnterpriseBotArgs;
+
+    let runAsUserIds: number[];
+    if (
+      workspaceType === "public" ||
+      !isEmpty(enterpriseBotArgs.runAsUserIds)
+    ) {
+      runAsUserIds = enterpriseBotArgs.runAsUserIds;
+    } else if (
+      workspaceType === "private" &&
+      service.serviceId === CONTROL_ROOM_OAUTH_SERVICE_ID
+    ) {
       throw new PropError(
-        "runAsUserIds is required for Enterprise Edition",
+        "Running local bots with OAuth2 authentication is not yet supported",
         this.id,
-        "runAsUserIds",
-        undefined
+        "workspaceType",
+        workspaceType
       );
+    } else if (workspaceType === "private" || workspaceType == null) {
+      // Get the user id from the cached token data. AA doesn't have any endpoints for retrieving the user id that
+      // we could automatically fetch in the Page Editor
+      const userData = (await getCachedAuthData(service.id)) as unknown as {
+        user: { id: number };
+      };
+      if (!userData) {
+        throw new BusinessError(
+          "User profile for Control Room not found. Reconnect the Control Room integration"
+        );
+      }
+
+      const userId = userData?.user?.id;
+      if (userId == null) {
+        // Indicates the Control Room provided an unexpected response shape
+        throw new Error("Control Room token response missing user id.");
+      }
+
+      runAsUserIds = [userId];
     }
 
-    const deployment = await runEnterpriseBot(args);
+    const deployment = await runEnterpriseBot({
+      ...enterpriseBotArgs,
+      runAsUserIds,
+    });
 
     if (!awaitResult) {
       return deployment;
@@ -159,6 +238,7 @@ export class RunBot extends Transformer {
       service,
       deploymentId: deployment.deploymentId,
       logger,
+      maxWaitMillis,
     });
   }
 }

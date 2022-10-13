@@ -18,6 +18,7 @@
 import Cookies from "js-cookie";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
+  PartnerAuthData,
   TokenAuthData,
   USER_DATA_UPDATE_KEYS,
   UserData,
@@ -25,9 +26,11 @@ import {
 } from "./authTypes";
 import { isExtensionContext } from "webext-detect-page";
 import { expectContext } from "@/utils/expectContext";
-import { omit, remove } from "lodash";
+import { isEmpty, omit, remove } from "lodash";
+import { UnknownObject } from "@/types";
 
 const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
+const STORAGE_PARTNER_TOKEN = "partnerToken" as ManualStorageKey;
 
 type AuthListener = (auth: Partial<TokenAuthData>) => void;
 
@@ -48,14 +51,59 @@ export async function readAuthData(): Promise<
   return readStorage(STORAGE_EXTENSION_KEY, {});
 }
 
+export async function readPartnerAuthData(): Promise<Partial<PartnerAuthData>> {
+  return readStorage(STORAGE_PARTNER_TOKEN, {});
+}
+
 export async function flagOn(flag: string): Promise<boolean> {
   const authData = await readAuthData();
   return authData.flags?.includes(flag);
 }
 
+/**
+ * Return the PixieBrix API token (issued by the PixieBrix API).
+ */
 export async function getExtensionToken(): Promise<string | undefined> {
   const { token } = await readAuthData();
   return token;
+}
+
+/**
+ * Set authentication data when using the partner JWT to authenticate.
+ */
+export async function setPartnerAuth(data: PartnerAuthData): Promise<void> {
+  if (!isEmpty(data.authId) && isEmpty(data.token)) {
+    throw new Error("Received null/blank token for partner integration");
+  }
+
+  return setStorage(STORAGE_PARTNER_TOKEN, data);
+}
+
+/**
+ * Return PixieBrix API authentication headers, or null if not authenticated.
+ */
+export async function getAuthHeaders(): Promise<UnknownObject | null> {
+  const [nativeToken, partnerAuth] = await Promise.all([
+    getExtensionToken(),
+    readPartnerAuthData(),
+  ]);
+
+  if (nativeToken) {
+    return {
+      Authorization: `Token ${nativeToken}`,
+    };
+  }
+
+  if (partnerAuth?.token) {
+    return {
+      ...partnerAuth.extraHeaders,
+      // Put Authorization second to avoid overriding Authorization header. (Is defensive for now, currently
+      // the extra headers are hard-coded)
+      Authorization: `Bearer ${partnerAuth.token}`,
+    };
+  }
+
+  return null;
 }
 
 /**
@@ -68,7 +116,7 @@ export async function getExtensionToken(): Promise<string | undefined> {
  * @see maybeGetLinkedApiClient
  */
 export async function isLinked(): Promise<boolean> {
-  return (await getExtensionToken()) != null;
+  return (await getAuthHeaders()) != null;
 }
 
 /**
@@ -96,7 +144,9 @@ export async function getExtensionAuth(): Promise<
  * Clear the extension state. The options page will show as "unlinked" and prompt the user to link their account.
  */
 export async function clearExtensionAuth(): Promise<void> {
+  console.debug("Clearing extension auth");
   await browser.storage.local.remove(STORAGE_EXTENSION_KEY);
+  await browser.storage.local.remove(STORAGE_PARTNER_TOKEN);
   Cookies.remove("csrftoken");
   Cookies.remove("sessionid");
 }
@@ -151,8 +201,9 @@ export async function linkExtension(auth: TokenAuthData): Promise<boolean> {
 if (isExtensionContext()) {
   browser.storage.onChanged.addListener((changes, storage) => {
     if (storage === "local") {
-      // eslint-disable-next-line security/detect-object-injection -- compile time constant
-      const change = changes[STORAGE_EXTENSION_KEY];
+      const change =
+        // eslint-disable-next-line security/detect-object-injection -- compile time constants
+        changes[STORAGE_EXTENSION_KEY] ?? changes[STORAGE_PARTNER_TOKEN];
 
       if (change) {
         for (const listener of listeners) {

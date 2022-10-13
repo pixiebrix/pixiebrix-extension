@@ -24,15 +24,21 @@ import {
   SetActiveField,
 } from "@/components/formBuilder/formBuilderTypes";
 import FormPreviewStringField from "./FormPreviewStringField";
-import { UI_SCHEMA_ACTIVE } from "@/components/formBuilder/schemaFieldNames";
+import {
+  UI_SCHEMA_ACTIVE,
+  UI_WIDGET,
+} from "@/components/formBuilder/schemaFieldNames";
 import { produce } from "immer";
 import FormPreviewBooleanField from "./FormPreviewBooleanField";
-import { getPreviewValues } from "@/components/fields/fieldUtils";
+import { unwrapTemplateExpressions } from "@/components/fields/fieldUtils";
 import ImageCropWidgetPreview from "@/components/formBuilder/preview/ImageCropWidgetPreview";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import SelectWidgetPreview from "./SelectWidgetPreview";
 import FormPreviewSchemaField from "./FormPreviewSchemaField";
+import databaseSchema from "@schemas/database.json";
+import { WritableDraft } from "immer/dist/internal";
+import { Schema } from "@/core";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -50,33 +56,73 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     setData(formData);
   };
 
-  // Maintain a local version of the RJSF schema to reflect the active field
-  // Important to have schema and uiSchema always in sync, hence caching both
-  const [{ schema, uiSchema }, setLocalRjsfSchema] =
-    useState<RJSFSchema>(rjsfSchema);
+  const { schema: previewSchema, uiSchema: previewUiSchema } = useMemo(
+    () =>
+      produce(rjsfSchema, (draft) => {
+        const { schema: draftSchema, uiSchema: draftUiSchema } = draft;
+        if (!draftSchema || !draftUiSchema) {
+          return;
+        }
 
-  const previewSchema = useMemo(() => getPreviewValues(schema), [schema]);
+        if (activeField) {
+          if (!draftUiSchema[activeField]) {
+            draftUiSchema[activeField] = {};
+          }
+
+          draftUiSchema[activeField][UI_SCHEMA_ACTIVE] = true;
+        }
+
+        unwrapTemplateExpressions(draft);
+
+        if (typeof draftSchema.properties === "object") {
+          const databaseProperties = Object.values(
+            draftSchema.properties
+          ).filter(
+            (value) =>
+              typeof value === "object" && value.$ref === databaseSchema.$id
+          ) as Array<WritableDraft<Schema>>;
+
+          for (const property of databaseProperties) {
+            property.type = "string";
+
+            /** Intentionally setting a string value, not an array. @see FormPreviewSchemaField for details */
+            // @ts-expect-error -- intentionally assigning to a string
+            property.enum = "Select...";
+            delete property.$ref;
+          }
+        }
+
+        // RJSF Form throws when Dropdown with labels selected, no options set and default is empty. Let's fix that!
+        // We only interested in select with labels, otherwise we don't need to do anything.
+        // Loop through the uiSchema props, because UI Widget must be set for the Select, then take a look at the oneOf property.
+        for (const [key, value] of Object.entries(draftUiSchema)) {
+          const propertySchema = draftSchema.properties[key];
+
+          if (
+            !(UI_WIDGET in value) ||
+            value[UI_WIDGET] !== "select" ||
+            typeof propertySchema !== "object" ||
+            typeof propertySchema.oneOf === "undefined"
+          ) {
+            continue;
+          }
+
+          if (propertySchema.default == null) {
+            // Setting the default value for preview to hide an empty option
+            propertySchema.default = "";
+          }
+
+          if (!propertySchema.oneOf?.length) {
+            propertySchema.oneOf = [{ const: "" }];
+          }
+        }
+      }),
+    [rjsfSchema, activeField]
+  );
 
   useEffect(() => {
     setData(null);
   }, [rjsfSchema]);
-
-  // Setting local schema
-  useEffect(() => {
-    if (activeField) {
-      const nextLocalRjsfSchema = produce<RJSFSchema>(rjsfSchema, (draft) => {
-        if (!draft.uiSchema[activeField]) {
-          draft.uiSchema[activeField] = {};
-        }
-
-        draft.uiSchema[activeField][UI_SCHEMA_ACTIVE] = true;
-      });
-
-      setLocalRjsfSchema(nextLocalRjsfSchema);
-    } else {
-      setLocalRjsfSchema(rjsfSchema);
-    }
-  }, [activeField, rjsfSchema]);
 
   const StringField = useCallback(
     (props: FieldProps) => (
@@ -91,7 +137,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     [setActiveField]
   );
 
-  if (!schema || !uiSchema) {
+  if (!previewSchema || !previewUiSchema) {
     return null;
   }
 
@@ -104,6 +150,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
   const widgets = {
     imageCrop: ImageCropWidgetPreview,
+    database: SelectWidgetPreview,
     SelectWidget: SelectWidgetPreview,
   };
 
@@ -114,7 +161,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
       fields={fields}
       widgets={widgets}
       schema={previewSchema}
-      uiSchema={uiSchema}
+      uiSchema={previewUiSchema}
       onChange={onDataChanged}
       FieldTemplate={FieldTemplate}
     >

@@ -31,7 +31,7 @@ import {
 import ListFilters from "./ListFilters";
 import { Installable, InstallableViewItem } from "./blueprintsTypes";
 import {
-  selectFilters,
+  selectActiveTab,
   selectGroupBy,
   selectSortBy,
 } from "./blueprintsSelectors";
@@ -121,7 +121,7 @@ const BlueprintsCard: React.FunctionComponent<{
 
   const groupBy = useSelector(selectGroupBy);
   const sortBy = useSelector(selectSortBy);
-  const filters = useSelector(selectFilters);
+  const activeTab = useSelector(selectActiveTab);
 
   const tableInstance = useTable<InstallableViewItem>(
     {
@@ -130,7 +130,8 @@ const BlueprintsCard: React.FunctionComponent<{
       initialState: {
         groupBy,
         sortBy,
-        filters,
+        filters: activeTab.filters,
+        globalFilter: "",
       },
       useControlledState: (state) =>
         useMemo(
@@ -138,10 +139,10 @@ const BlueprintsCard: React.FunctionComponent<{
             ...state,
             groupBy,
             sortBy,
-            filters,
+            filters: activeTab.filters,
           }),
           // eslint-disable-next-line react-hooks/exhaustive-deps -- table props are required dependencies
-          [state, groupBy, sortBy, filters]
+          [state, groupBy, sortBy, activeTab.filters]
         ),
     },
     useFilters,
@@ -150,10 +151,6 @@ const BlueprintsCard: React.FunctionComponent<{
     useSortBy
   );
 
-  if (isLoading) {
-    return <Loader />;
-  }
-
   return (
     <BootstrapRow className={styles.root}>
       <ListFilters teamFilters={teamFilters} tableInstance={tableInstance} />
@@ -161,15 +158,19 @@ const BlueprintsCard: React.FunctionComponent<{
         <BlueprintsToolbar tableInstance={tableInstance} />
         {/* This wrapper prevents AutoSizer overflow in a flex box container */}
         <div style={{ flex: "1 1 auto" }}>
-          <AutoSizer defaultHeight={500}>
-            {({ height, width }) => (
-              <BlueprintsView
-                tableInstance={tableInstance}
-                width={width}
-                height={height}
-              />
-            )}
-          </AutoSizer>
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <AutoSizer defaultHeight={500}>
+              {({ height, width }) => (
+                <BlueprintsView
+                  tableInstance={tableInstance}
+                  width={width}
+                  height={height}
+                />
+              )}
+            </AutoSizer>
+          )}
         </div>
       </Col>
     </BootstrapRow>

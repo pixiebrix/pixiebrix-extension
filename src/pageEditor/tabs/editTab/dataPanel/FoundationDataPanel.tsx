@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { UUID } from "@/core";
 import { useSelector } from "react-redux";
 import { makeSelectBlockTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { Nav, Tab } from "react-bootstrap";
@@ -31,14 +30,16 @@ import StateTab from "./tabs/StateTab";
 import ConfigurationTab from "./tabs/ConfigurationTab";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 
-const FoundationDataPanel: React.FC<{
-  firstBlockInstanceId?: UUID;
-}> = ({ firstBlockInstanceId }) => {
+const FoundationDataPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showDeveloperTabs = flagOn("page-editor-developer");
 
   const activeElement = useSelector(selectActiveElement);
-  const { extensionPoint } = activeElement;
+  const {
+    extension: { blockPipeline },
+    extensionPoint,
+  } = activeElement;
+  const firstBlockInstanceId = blockPipeline[0]?.instanceId;
 
   const { record: firstBlockTraceRecord } = useSelector(
     makeSelectBlockTrace(firstBlockInstanceId)

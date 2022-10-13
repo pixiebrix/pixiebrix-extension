@@ -36,13 +36,13 @@ import {
   uuidSequence,
 } from "@/testUtils/factories";
 import blockRegistry from "@/blocks/registry";
-import { FormState, PipelineFlavor } from "@/pageEditor/pageEditorTypes";
+import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import {
   echoBlock,
   teapotBlock,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { defaultBlockConfig } from "@/blocks/util";
-import { waitForEffect } from "@/testUtils/testHelpers";
+import { runPendingTimers, waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
 import { JQTransformer } from "@/blocks/transformers/jq";
@@ -51,9 +51,8 @@ import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import {
   makePipelineExpression,
   makeTemplateExpression,
-} from "@/testUtils/expressionTestHelpers";
+} from "@/runtime/expressionCreators";
 import { PipelineExpression } from "@/runtime/mapArgs";
-import { act } from "react-dom/test-utils";
 import { OutputKey, RegistryId } from "@/core";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import * as api from "@/services/api";
@@ -65,6 +64,12 @@ import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import getType from "@/runtime/getType";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { enableAnalysisFieldErrors } from "@/components/form/useFieldError";
+import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/renderersAnalysis";
+import { useGetTheme } from "@/hooks/useTheme";
+import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
+import { RunProcess } from "@/contrib/uipath/process";
 
 jest.mock("@/services/api", () => ({
   appApi: {
@@ -84,6 +89,23 @@ jest.mock("@/services/api", () => ({
 jest.mock("@/components/asyncIcon", () => ({
   useAsyncIcon: jest.fn(),
 }));
+jest.mock("@/telemetry/events", () => ({
+  reportEvent: jest.fn(),
+}));
+jest.mock("@/permissions", () => {
+  const permissions = {};
+  return {
+    extensionPermissions: jest.fn().mockResolvedValue(permissions),
+  };
+});
+jest.mock("@/background/messenger/api", () => ({
+  containsPermissions: jest.fn().mockResolvedValue(true),
+}));
+// Mock to support hook usage in the subtree, not relevant to UI tests here
+jest.mock("@/hooks/useRefresh");
+jest.mock("@/hooks/useTheme", () => ({
+  useGetTheme: jest.fn(),
+}));
 
 jest.setTimeout(30_000); // This test is flaky with the default timeout of 5000 ms
 
@@ -91,12 +113,14 @@ const jqBlock = new JQTransformer();
 const alertBlock = new AlertEffect();
 const forEachBlock = new ForEach();
 const markdownBlock = new MarkdownRenderer();
+const uiPathBlock = new RunProcess();
 
 // Using events without delays with jest fake timers
 const immediateUserEvent = userEvent.setup({ delay: null });
 
 beforeAll(async () => {
   registerDefaultWidgets();
+  enableAnalysisFieldErrors();
   blockRegistry.clear();
   blockRegistry.register(
     echoBlock,
@@ -104,7 +128,8 @@ beforeAll(async () => {
     jqBlock,
     alertBlock,
     forEachBlock,
-    markdownBlock
+    markdownBlock,
+    uiPathBlock
   );
   await blockRegistry.allTyped();
 
@@ -163,6 +188,7 @@ const getPlainFormState = (): FormState =>
     }),
     blockConfigFactory({
       id: teapotBlock.id,
+      outputKey: "teapotOutput" as OutputKey,
       config: defaultBlockConfig(teapotBlock.inputSchema),
     }),
   ]);
@@ -201,25 +227,23 @@ async function addABlock(addButton: Element, blockName: string) {
 
   // Filter for the specified block
   await immediateUserEvent.type(
-    screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
+    screen.getByTestId("tag-search-input"),
     blockName
   );
 
   // Run the debounced search
-  act(() => {
-    jest.runOnlyPendingTimers();
-  });
+  await runPendingTimers();
 
+  screen.debug(screen.getByRole("dialog"));
+
+  // Sometimes unexpected extra results come back in the search,
+  // but the exact-match result to the search string should
+  // always be first in the results grid
   await immediateUserEvent.click(
     screen.getAllByRole("button", {
-      name: /add/i,
+      name: /^Add/,
     })[0]
   );
-
-  // Run validation
-  act(() => {
-    jest.runOnlyPendingTimers();
-  });
 }
 
 describe("renders", () => {
@@ -388,27 +412,40 @@ describe("can add a node", () => {
   });
 });
 
-describe("can remove a node", () => {
-  test("from root pipeline", async () => {
-    const element = getFormStateWithSubPipelines();
-    render(<EditorPane />, {
+async function renderEditorPaneWithBasicFormState() {
+  const element = getFormStateWithSubPipelines();
+  const activeNodeId = element.extension.blockPipeline[0].instanceId;
+  const renderResult = render(
+    <div>
+      <EditorPane />
+      <AddBlockModal />
+    </div>,
+    {
       setupRedux(dispatch) {
         dispatch(editorActions.addElement(element));
         dispatch(editorActions.selectElement(element.uuid));
-        dispatch(
-          editorActions.setElementActiveNodeId(
-            element.extension.blockPipeline[0].instanceId
-          )
-        );
+        dispatch(editorActions.setElementActiveNodeId(activeNodeId));
       },
-    });
-    await waitForEffect();
+    }
+  );
+  await waitForEffect();
+  return renderResult;
+}
 
+describe("can remove a node", () => {
+  test("from root pipeline", async () => {
+    await renderEditorPaneWithBasicFormState();
+
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // Select the first Echo block
+    await immediateUserEvent.click(screen.getAllByText(/echo/i)[0]);
+
+    // Click the remove button
     await immediateUserEvent.click(
       screen.getByTestId("icon-button-removeNode")
     );
 
-    // Nodes. Root: Foundation, ForEach: Echo
+    // Expect nodes to be: Foundation, ForEach: Echo
     const nodes = screen.getAllByTestId("editor-node");
     expect(nodes).toHaveLength(3);
     expect(nodes[1]).toHaveTextContent(/for-each loop/i);
@@ -416,30 +453,206 @@ describe("can remove a node", () => {
   });
 
   test("from sub pipeline", async () => {
-    const element = getFormStateWithSubPipelines();
-    render(<EditorPane />, {
-      setupRedux(dispatch) {
-        dispatch(editorActions.addElement(element));
-        dispatch(editorActions.selectElement(element.uuid));
-        const subPipelineNodeId = (
-          element.extension.blockPipeline[1].config.body as PipelineExpression
-        ).__value__[0].instanceId;
-        dispatch(editorActions.setElementActiveNodeId(subPipelineNodeId));
-      },
-    });
-    await waitForEffect();
+    await renderEditorPaneWithBasicFormState();
 
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // Select the second Echo block
+    await immediateUserEvent.click(screen.getAllByText(/echo block/i)[1]);
+
+    // Click the remove button
     await immediateUserEvent.click(
       screen.getByTestId("icon-button-removeNode")
     );
 
-    // Nodes. Root: Foundation, ForEach: Echo
+    // Expect nodes to be: Foundation, Echo, ForEach
     const nodes = screen.getAllByTestId("editor-node");
     expect(nodes).toHaveLength(3);
-
-    // Selecting the first node after Foundation
     expect(nodes[1]).toHaveTextContent(/echo/i);
     expect(nodes[2]).toHaveTextContent(/for-each loop/i);
+  });
+});
+
+describe("can move a node up", () => {
+  test("in root pipeline", async () => {
+    await renderEditorPaneWithBasicFormState();
+
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // There should be 2 move up buttons
+    const moveUpButtons = screen.getAllByTitle("Move brick higher");
+    expect(moveUpButtons).toHaveLength(2);
+    // First one should be disabled
+    expect(moveUpButtons[0]).toBeDisabled();
+    // Click the second one
+    expect(moveUpButtons[1]).not.toBeDisabled();
+    await immediateUserEvent.click(moveUpButtons[1]);
+
+    // Expect nodes to now be: Foundation, ForEach: [Echo], Echo
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(4);
+    expect(nodes[1]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[2]).toHaveTextContent(/echo/i);
+    expect(nodes[3]).toHaveTextContent(/echo/i);
+  });
+
+  test("in sub pipeline", async () => {
+    jest.useFakeTimers();
+
+    await renderEditorPaneWithBasicFormState();
+
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // There should be 5 add buttons
+    const addButtons = screen.getAllByTestId(/-add-brick/i);
+    expect(addButtons).toHaveLength(5);
+    // Click the second-to-last one to add a brick to the sub-pipeline
+    await addABlock(addButtons[3], "jq - json processor");
+    // Nodes should be: Foundation, Echo, ForEach: [Echo, JQ]
+    // There should be 4 move up buttons
+    const moveUpButtons = screen.getAllByTitle("Move brick higher");
+    expect(moveUpButtons).toHaveLength(4);
+    // First one in sub-pipeline, second-to-last, should be disabled
+    expect(moveUpButtons[2]).toBeDisabled();
+    // Click the last one, last in sub-pipeline
+    await immediateUserEvent.click(moveUpButtons[3]);
+    // Expect nodes to be: Foundation, Echo, ForEach: [JQ, Echo]
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(5);
+    expect(nodes[1]).toHaveTextContent(/echo/i);
+    expect(nodes[2]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[3]).toHaveTextContent(/jq - json processor/i);
+    expect(nodes[4]).toHaveTextContent(/echo/i);
+
+    jest.useRealTimers();
+  });
+});
+
+describe("can move a node down", () => {
+  test("in root pipeline", async () => {
+    await renderEditorPaneWithBasicFormState();
+
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // There should be 2 move down buttons
+    const moveDownButtons = screen.getAllByTitle("Move brick lower");
+    expect(moveDownButtons).toHaveLength(2);
+    // Second one should be disabled
+    expect(moveDownButtons[1]).toBeDisabled();
+    // Click the first one
+    expect(moveDownButtons[0]).not.toBeDisabled();
+    await immediateUserEvent.click(moveDownButtons[0]);
+
+    // Expect nodes to now be: Foundation, ForEach: [Echo], Echo
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(4);
+    expect(nodes[1]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[2]).toHaveTextContent(/echo/i);
+    expect(nodes[3]).toHaveTextContent(/echo/i);
+  });
+
+  test("in sub pipeline", async () => {
+    jest.useFakeTimers();
+
+    await renderEditorPaneWithBasicFormState();
+
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // There should be 5 add buttons
+    const addButtons = screen.getAllByTestId(/-add-brick/i);
+    expect(addButtons).toHaveLength(5);
+    // Click the second-to-last one to add a brick to the sub-pipeline
+    await addABlock(addButtons[3], "jq - json processor");
+    // Nodes should be: Foundation, Echo, ForEach: [Echo, JQ]
+    // There should be 4 move down buttons
+    const moveDownButtons = screen.getAllByTitle("Move brick lower");
+    expect(moveDownButtons).toHaveLength(4);
+    // Last one should be disabled
+    expect(moveDownButtons[3]).toBeDisabled();
+    // Click the second-to-last one, first in sub pipeline
+    await immediateUserEvent.click(moveDownButtons[2]);
+    // Expect nodes to be: Foundation, Echo, ForEach: [JQ, Echo]
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(5);
+    expect(nodes[1]).toHaveTextContent(/echo/i);
+    expect(nodes[2]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[3]).toHaveTextContent(/jq - json processor/i);
+    expect(nodes[4]).toHaveTextContent(/echo/i);
+
+    jest.useRealTimers();
+  });
+});
+
+describe("can copy and paste a node", () => {
+  test("in root pipeline", async () => {
+    await renderEditorPaneWithBasicFormState();
+
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // Select the first Echo block
+    await immediateUserEvent.click(screen.getAllByText(/echo block/i)[0]);
+
+    // Click the copy button
+    await immediateUserEvent.click(screen.getByTestId("icon-button-copyNode"));
+
+    // There should be 5 paste buttons
+    const pasteButtons = screen.getAllByTestId(/-paste-brick/i);
+    expect(pasteButtons).toHaveLength(5);
+    // Click the last one
+    await immediateUserEvent.click(pasteButtons[4]);
+
+    // Expect nodes to be: Foundation, Echo, ForEach: [Echo], Echo
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(5);
+    expect(nodes[1]).toHaveTextContent(/echo/i);
+    expect(nodes[2]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[3]).toHaveTextContent(/echo/i);
+    expect(nodes[4]).toHaveTextContent(/echo/i);
+  });
+
+  test("in sub pipeline", async () => {
+    await renderEditorPaneWithBasicFormState();
+
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // Select the first Echo block
+    await immediateUserEvent.click(screen.getAllByText(/echo block/i)[0]);
+
+    // Click the copy button
+    await immediateUserEvent.click(screen.getByTestId("icon-button-copyNode"));
+
+    // There should be 5 paste buttons
+    const pasteButtons = screen.getAllByTestId(/-paste-brick/i);
+    expect(pasteButtons).toHaveLength(5);
+    // Click the second-to-last one to paste the brick inside the sub pipeline
+    await immediateUserEvent.click(pasteButtons[3]);
+
+    // Expect nodes to be: Foundation, Echo, ForEach: [Echo, Echo]
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(5);
+    expect(nodes[1]).toHaveTextContent(/echo/i);
+    expect(nodes[2]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[3]).toHaveTextContent(/echo/i);
+    expect(nodes[4]).toHaveTextContent(/echo/i);
+  });
+
+  test("with sub pipelines itself", async () => {
+    await renderEditorPaneWithBasicFormState();
+
+    // Nodes are: Foundation, Echo, ForEach: [Echo]
+    // Select the ForEach block
+    await immediateUserEvent.click(screen.getAllByText(/for-each loop/i)[0]);
+
+    // Click the copy button
+    await immediateUserEvent.click(screen.getByTestId("icon-button-copyNode"));
+
+    // There should be 5 paste buttons
+    const pasteButtons = screen.getAllByTestId(/-paste-brick/i);
+    expect(pasteButtons).toHaveLength(5);
+    // Click the last one
+    await immediateUserEvent.click(pasteButtons[4]);
+
+    // Expect nodes to be: Foundation, Echo, ForEach: [Echo], ForEach: [Echo]
+    const nodes = screen.getAllByTestId("editor-node");
+    expect(nodes).toHaveLength(6);
+    expect(nodes[1]).toHaveTextContent(/echo/i);
+    expect(nodes[2]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[3]).toHaveTextContent(/echo/i);
+    expect(nodes[4]).toHaveTextContent(/for-each loop/i);
+    expect(nodes[5]).toHaveTextContent(/echo/i);
   });
 });
 
@@ -486,11 +699,9 @@ describe("validation", () => {
 
     // By some reason, the validation doesn't fire with userEvent.type
     fireTextInput(rendered.getByLabelText("message"), "{{!");
-    await waitForEffect();
-    act(() => {
-      // Run the timers of the Formik-Redux validation synchronization
-      jest.runOnlyPendingTimers();
-    });
+
+    // Run the timers of the Formik-Redux state synchronization
+    await runPendingTimers();
 
     expectEditorError(
       rendered.container,
@@ -531,12 +742,14 @@ describe("validation", () => {
     await waitForEffect();
 
     // Make invalid string template
-    // This is field level error, reported via Formik
+    // This is field level error
     fireTextInput(rendered.getByLabelText("message"), "{{!");
-    await waitForEffect();
+
+    // Run the timers of the Formik-Redux state synchronization
+    await runPendingTimers();
 
     // Adding a renderer in the first position in the pipeline
-    // This is a node level error, reported via Redux
+    // This is a node level error
     const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
       exact: false,
     });
@@ -546,6 +759,13 @@ describe("validation", () => {
     // Select foundation node.
     // For testing purposes we don't want a node with error to be active when we select extension1 again
     await immediateUserEvent.click(rendered.queryAllByTestId("editor-node")[0]);
+
+    // Ensure 2 nodes have error badges
+    expect(
+      rendered.container.querySelectorAll(
+        '[data-testid="editor-node"] span.badge'
+      )
+    ).toHaveLength(2);
 
     // Selecting another extension. Only possible with Redux
     const store = rendered.getReduxStore();
@@ -561,25 +781,22 @@ describe("validation", () => {
     store.dispatch(editorActions.selectElement(extension1.uuid));
 
     // Should show 2 error in the Node Layout
-    const errorBadges = rendered.container.querySelectorAll(
-      '[data-testid="editor-node"] span.badge'
-    );
-    expect(errorBadges).toHaveLength(2);
+    expect(
+      rendered.container.querySelectorAll(
+        '[data-testid="editor-node"] span.badge'
+      )
+    ).toHaveLength(2);
 
     const editorNodes = rendered.queryAllByTestId("editor-node");
 
     // Selecting the markdown block in the first extension
     await immediateUserEvent.click(editorNodes[1]);
-    act(() => {
-      jest.runOnlyPendingTimers();
-    });
+
     expectEditorError(rendered.container, "A renderer must be the last brick.");
 
     // Selecting the echo block
     await immediateUserEvent.click(editorNodes[2]);
-    act(() => {
-      jest.runOnlyPendingTimers();
-    });
+
     expectEditorError(
       rendered.container,
       "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
@@ -618,10 +835,7 @@ describe("validation", () => {
     const addButton = addButtons.at(0);
     await addABlock(addButton, "markdown");
 
-    expectEditorError(
-      rendered.container,
-      "A panel can only have one renderer. There are one or more renderers configured after this brick. A renderer must be the last brick."
-    );
+    expectEditorError(rendered.container, MULTIPLE_RENDERERS_ERROR_MESSAGE);
   });
 
   test("validates that renderer is the last node on move", async () => {
@@ -653,11 +867,6 @@ describe("validation", () => {
     );
 
     await immediateUserEvent.click(moveUpButton);
-
-    // This enables the Formik to re-render the form after the Element's change
-    act(() => {
-      jest.runOnlyPendingTimers();
-    });
 
     expectEditorError(rendered.container, "A renderer must be the last brick.");
   });
@@ -711,11 +920,6 @@ describe("validation", () => {
 
       await waitForEffect();
 
-      // This enables the Formik to re-render the form after the Element's change
-      act(() => {
-        jest.runOnlyPendingTimers();
-      });
-
       const blockType = await getType(disallowedBlock);
       expectEditorError(
         rendered.container,
@@ -754,7 +958,7 @@ describe("block validation in Add Block Modal UI", () => {
   ];
 
   test.each(testCases)(
-    "filters blocks for $pipelineFlavor pipeline",
+    "shows alert on blocks for $pipelineFlavor pipeline",
     async ({ formFactory, disallowedBlockName }) => {
       const formState = formFactory();
       render(
@@ -785,15 +989,55 @@ describe("block validation in Add Block Modal UI", () => {
       );
 
       // Run the debounced search
-      act(() => {
-        jest.runOnlyPendingTimers();
-      });
+      await runPendingTimers();
 
-      expect(
-        screen.queryAllByRole("button", {
-          name: /add/i,
-        })
-      ).toHaveLength(0);
+      // Check for the alert on hover
+      const firstResult = screen.queryAllByRole("button", { name: /add/i })[0]
+        .parentElement;
+      await immediateUserEvent.hover(firstResult);
+      expect(firstResult).toHaveTextContent("is not allowed in this pipeline");
     }
   );
+
+  test("hides UiPath bricks for AA users", async () => {
+    (useGetTheme as jest.Mock).mockReturnValue(AUTOMATION_ANYWHERE_PARTNER_KEY);
+    const formState = formStateFactory();
+    render(
+      <>
+        <EditorPane />
+        <AddBlockModal />
+      </>,
+      {
+        setupRedux(dispatch) {
+          dispatch(editorActions.addElement(formState));
+          dispatch(editorActions.selectElement(formState.uuid));
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    const addBrickButton = screen.getByTestId(
+      "icon-button-foundation-add-brick"
+    );
+
+    await immediateUserEvent.click(addBrickButton);
+
+    // Try to find the disallowed block and make sure it's not there
+    await immediateUserEvent.type(
+      screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
+      "uipath"
+    );
+
+    // Run the debounced search
+    await runPendingTimers();
+
+    const addButtons = screen.queryAllByRole("button", { name: /add/i });
+
+    // Assert that no UiPath blocks are available
+    for (const button of addButtons) {
+      const block = button.parentElement;
+      expect(block).not.toHaveTextContent("uipath");
+    }
+  });
 });

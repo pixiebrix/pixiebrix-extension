@@ -48,7 +48,7 @@ jest.mock("@/background/util", () => ({
 
 jest.mock("webext-messenger");
 
-jest.mock("@/permissions", () => ({
+jest.mock("@/utils/deploymentPermissionUtils", () => ({
   deploymentPermissions: jest
     .fn()
     .mockResolvedValue({ permissions: [], origins: [] }),
@@ -76,6 +76,7 @@ jest.mock("@/background/messenger/api", () => ({
 
 jest.mock("@/auth/token", () => ({
   getExtensionToken: async () => "TESTTOKEN",
+  getAuthHeaders: jest.fn().mockResolvedValue({}),
   readAuthData: jest.fn().mockResolvedValue({
     organizationId: "00000000-00000000-00000000-00000000",
   }),
@@ -105,7 +106,7 @@ const getManifestMock = browser.runtime.getManifest as jest.Mock;
 const openOptionsPageMock = browser.runtime.openOptionsPage as jest.Mock;
 const browserManagedStorageMock = browser.storage.managed.get as jest.Mock;
 const containsPermissionsMock = browser.permissions.contains as jest.Mock;
-const refreshRegistriesMock = refreshRegistries as jest.Mock;
+const refreshRegistriesMock = refreshRegistries as unknown as jest.Mock;
 const isUpdateAvailableMock = isUpdateAvailable as jest.Mock;
 const getSettingsStateMock = getSettingsState as jest.Mock;
 const saveSettingsStateMock = saveSettingsState as jest.Mock;

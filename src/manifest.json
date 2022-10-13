@@ -22,7 +22,7 @@
   "content_scripts": [
     {
       "matches": ["https://*.pixiebrix.com/*"],
-      "js": ["vendors.js", "contentScript.js"],
+      "js": ["contentScript.js"],
       "css": ["contentScript.css"],
       "run_at": "document_idle"
     }
@@ -79,7 +79,7 @@
     }
   },
   "background": {
-    "scripts": ["grayIconWhileLoading.js", "vendors.js", "background.js"]
+    "scripts": ["grayIconWhileLoading.js", "background.js"]
   },
   "options_ui": {
     "page": "options.html",

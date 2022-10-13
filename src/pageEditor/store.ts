@@ -32,9 +32,9 @@ import extensionsSlice from "@/store/extensionsSlice";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import { logActions, logSlice } from "@/components/logViewer/logSlice";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import validationListenerMiddleware from "./validation/validationListenerMiddleware";
 import analysisSlice from "@/analysis/analysisSlice";
-import analysisManager from "./analysisManager";
+import pageEditorAnalysisManager from "./analysisManager";
+import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -70,6 +70,7 @@ const store = configureStore({
     runtime: runtimeSlice.reducer,
     logs: logSlice.reducer,
     analysis: analysisSlice.reducer,
+    tabState: tabStateSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {
@@ -81,8 +82,7 @@ const store = configureStore({
       },
     })
       .concat(appApi.middleware)
-      .concat(validationListenerMiddleware)
-      .concat(analysisManager.middleware)
+      .concat(pageEditorAnalysisManager.middleware)
       .concat(conditionalMiddleware);
     /* eslint-enable unicorn/prefer-spread */
   },

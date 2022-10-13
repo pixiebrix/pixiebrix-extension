@@ -25,7 +25,7 @@ import React, {
   useRef,
 } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { isEmpty } from "lodash";
+import { compact, isEmpty } from "lodash";
 import { IBlock, RegistryId } from "@/core";
 import { FixedSizeGrid as LazyGrid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -45,17 +45,12 @@ import Loader from "@/components/Loader";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { produce } from "immer";
 import { useDispatch, useSelector } from "react-redux";
-import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 import useBlockSearch from "@/components/addBlockModal/useBlockSearch";
 import BlockGridItemRenderer from "@/components/addBlockModal/BlockGridItemRenderer";
 import groupListingsByTag from "@/components/addBlockModal/groupListingsByTag";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import {
-  selectAddBlockLocation,
-  selectIsAddBlockModalVisible,
-} from "@/pageEditor/slices/editorSelectors";
-import { makeIsBlockAllowedForPipeline } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import { selectEditorModalVisibilities } from "@/pageEditor/slices/editorSelectors";
 import {
   BLOCK_RESULT_COLUMN_COUNT,
   TAG_ALL,
@@ -66,6 +61,13 @@ import {
 } from "@/components/addBlockModal/addBlockModalTypes";
 import { getItemKey } from "@/components/addBlockModal/addBlockModalHelpers";
 import useAddBlock from "@/components/addBlockModal/useAddBlock";
+import { useAsyncState } from "@/hooks/common";
+import { useGetTheme } from "@/hooks/useTheme";
+import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
+import aaLogo from "@img/aa-logo-small.svg";
+
+const TAG_POPULAR = "Popular";
+const TAG_UIPATH = "UiPath";
 
 type State = {
   query: string;
@@ -118,13 +120,16 @@ const slice = createSlice({
   },
 });
 
-const AddBlockModal: React.VFC = () => {
-  const show = useSelector(selectIsAddBlockModalVisible);
+const AddBlockModal: React.FC = () => {
   const [state, dispatch] = useReducer(slice.reducer, initialState);
+
+  const { isAddBlockModalVisible: show } = useSelector(
+    selectEditorModalVisibilities
+  );
 
   const gridRef = useRef<LazyGrid>();
 
-  const [allBlocks, isLoadingAllBlocks] = useAllBlocks();
+  const { allBlocks, isLoading: isLoadingAllBlocks } = useAllBlocks();
 
   const reduxDispatch = useDispatch();
   const closeModal = useCallback(() => {
@@ -132,36 +137,20 @@ const AddBlockModal: React.VFC = () => {
     dispatch(slice.actions.resetState);
   }, [reduxDispatch]);
 
-  const addBlockLocation = useSelector(selectAddBlockLocation);
-  const pipelinePath = addBlockLocation?.path ?? "";
-  const pipelineFlavor = addBlockLocation?.flavor ?? PipelineFlavor.AllBlocks;
-  const pipelineIndex = addBlockLocation?.index ?? 0;
-
-  const addBlock = useAddBlock(pipelinePath, pipelineIndex);
+  const { testAddBlock, addBlock } = useAddBlock();
 
   const onSelectBlock = useCallback(
     async (block: IBlock) => {
       try {
         await addBlock(block);
-        closeModal();
       } catch (error) {
         console.error(error);
       }
+
+      closeModal();
     },
     [addBlock, closeModal]
   );
-
-  const filteredBlocks = useMemo<IBlock[]>(() => {
-    if (isLoadingAllBlocks) {
-      return [];
-    }
-
-    const isBlockAllowed = makeIsBlockAllowedForPipeline(pipelineFlavor);
-
-    return [...allBlocks.entries()]
-      .filter(([_, typedBlock]) => isBlockAllowed(typedBlock))
-      .map(([_, { block }]) => block);
-  }, [allBlocks, pipelineFlavor, isLoadingAllBlocks]);
 
   useEffect(() => {
     if (!gridRef.current) {
@@ -186,20 +175,61 @@ const AddBlockModal: React.VFC = () => {
     isLoading: isLoadingListings,
   } = useGetMarketplaceListingsQuery();
 
-  const { taggedBrickIds, popularBrickIds } = useMemo(
+  const taggedBrickIds = useMemo(
     () => groupListingsByTag(marketplaceTags, listings),
     [marketplaceTags, listings]
   );
 
-  const tagItems: TagItem[] = [
-    { tag: TAG_ALL },
-    ...marketplaceTags
-      .filter((tag) => tag.subtype === "role")
-      .map((tag) => ({
-        tag: tag.name,
-        icon: tag.fa_icon,
-      })),
-  ];
+  const partnerKey = useGetTheme();
+
+  const tagItems: TagItem[] = useMemo(() => {
+    const items: TagItem[] = [{ tag: TAG_ALL }];
+    if (partnerKey === AUTOMATION_ANYWHERE_PARTNER_KEY) {
+      const aaTag = marketplaceTags.find(
+        (tag) => tag.name === "Automation Anywhere"
+      );
+      if (aaTag) {
+        items.push({
+          tag: aaTag.name,
+          svgIcon: aaLogo,
+        });
+      }
+    }
+
+    items.push(
+      ...marketplaceTags
+        .filter((tag) => tag.subtype === "role")
+        .map((tag) => ({
+          tag: tag.name,
+          icon: tag.fa_icon,
+        }))
+    );
+
+    return items;
+  }, [marketplaceTags, partnerKey]);
+
+  const filteredBlocks = useMemo<IBlock[]>(() => {
+    if (isLoadingAllBlocks || isLoadingTags || isEmpty(allBlocks)) {
+      return [];
+    }
+
+    let typedBlocks = [...allBlocks.values()];
+
+    if (partnerKey === AUTOMATION_ANYWHERE_PARTNER_KEY) {
+      typedBlocks = typedBlocks.filter(
+        // eslint-disable-next-line security/detect-object-injection -- constant
+        (typed) => !taggedBrickIds[TAG_UIPATH]?.has(typed.block.id)
+      );
+    }
+
+    return typedBlocks.map(({ block }) => block);
+  }, [
+    allBlocks,
+    isLoadingAllBlocks,
+    isLoadingTags,
+    partnerKey,
+    taggedBrickIds,
+  ]);
 
   const searchResults = useBlockSearch(
     filteredBlocks,
@@ -217,7 +247,8 @@ const AddBlockModal: React.VFC = () => {
     const regular: BlockOption[] = [];
 
     for (const blockOption of searchResults) {
-      if (popularBrickIds.has(blockOption.blockResult.id)) {
+      // eslint-disable-next-line security/detect-object-injection -- constant
+      if (taggedBrickIds[TAG_POPULAR]?.has(blockOption.blockResult.id)) {
         // Use immer to keep the class prototype and it's methods. There are downstream calls to runtime/getType which
         // depend on certain methods (e.g., transform, etc.) being present on the brick
         const newOption = produce(blockOption, (draft) => {
@@ -235,11 +266,34 @@ const AddBlockModal: React.VFC = () => {
     }
 
     return [...popular, ...regular];
-  }, [popularBrickIds, searchResults, state.query]);
+  }, [searchResults, state.query, taggedBrickIds]);
+
+  const [invalidBlockMessages] = useAsyncState<Map<RegistryId, string>>(
+    async () =>
+      new Map(
+        compact(
+          await Promise.all(
+            blockOptions.map(
+              async (blockOption): Promise<[RegistryId, string]> => {
+                const result = await testAddBlock(blockOption.blockResult);
+                if (result.error) {
+                  return [blockOption.blockResult.id, result.error];
+                }
+
+                return null;
+              }
+            )
+          )
+        )
+      ),
+    [blockOptions]
+  );
 
   const gridData = useMemo<BlockGridData>(
     () => ({
       blockOptions,
+      invalidBlockMessages:
+        invalidBlockMessages ?? new Map<RegistryId, string>(),
       onSetDetailBlock(block: IBlock) {
         dispatch(slice.actions.onSetDetailBlock(block));
       },
@@ -247,7 +301,7 @@ const AddBlockModal: React.VFC = () => {
         void onSelectBlock(block);
       },
     }),
-    [blockOptions, onSelectBlock]
+    [blockOptions, invalidBlockMessages, onSelectBlock]
   );
 
   return (
@@ -322,7 +376,13 @@ const AddBlockModal: React.VFC = () => {
           />
         ) : (
           <>
-            <div className={styles.tagList}>
+            <div
+              className={cx(styles.tagList, {
+                // Fit the "Automation Anywhere" tag name on one line
+                [styles.widerTagList]:
+                  partnerKey === AUTOMATION_ANYWHERE_PARTNER_KEY,
+              })}
+            >
               {isLoadingTags ? (
                 <Loader />
               ) : (

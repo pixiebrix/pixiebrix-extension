@@ -23,15 +23,13 @@ import { Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useAsyncState } from "@/hooks/common";
 import ReloadToolbar from "@/pageEditor/toolbar/ReloadToolbar";
-import ActionToolbar from "@/pageEditor/toolbar/ActionToolbar";
 import { WizardStep } from "@/pageEditor/extensionPoints/base";
 import PermissionsToolbar from "@/pageEditor/toolbar/PermissionsToolbar";
 import LogsTab, { LOGS_EVENT_KEY } from "@/pageEditor/tabs/logs/LogsTab";
 import { thisTab } from "@/pageEditor/utils";
 import { checkAvailable } from "@/contentScript/messenger/api";
 import EditTab from "@/pageEditor/tabs/editTab/EditTab";
-import useSavingWizard from "./panes/save/useSavingWizard";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { produce } from "immer";
 import { useAsyncEffect } from "use-async-effect";
 import { upgradePipelineToV3 } from "@/pageEditor/extensionPoints/upgrade";
@@ -39,10 +37,7 @@ import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
 import cx from "classnames";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
-import useRecipeSaver from "@/pageEditor/panes/save/useRecipeSaver";
-import { FormState } from "@/pageEditor/pageEditorTypes";
-import { reportEvent } from "@/telemetry/events";
-import { selectSessionId } from "./slices/sessionSelectors";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
@@ -80,31 +75,7 @@ const ElementWizard: React.FunctionComponent<{
     [availableDefinition]
   );
 
-  const { isValid, status, handleReset, setStatus } =
-    useFormikContext<FormState>();
-
-  const { isSaving: isSavingWizard, save } = useSavingWizard();
-  const { save: saveRecipe, isSaving: isSavingRecipe } = useRecipeSaver();
-  const isSaving = isSavingRecipe || isSavingWizard;
-
-  const sessionId = useSelector(selectSessionId);
-
-  const onSave = async () => {
-    try {
-      if (element.recipe) {
-        await saveRecipe(element.recipe.id);
-      } else {
-        await save();
-      }
-
-      reportEvent("PageEditorSave", {
-        sessionId,
-        extensionId: element.uuid,
-      });
-    } catch (error) {
-      setStatus(error);
-    }
-  };
+  const { isValid, status, handleReset } = useFormikContext<FormState>();
 
   const dispatch = useDispatch();
 
@@ -143,9 +114,6 @@ const ElementWizard: React.FunctionComponent<{
       <BootstrapForm
         autoComplete="off"
         noValidate
-        onSubmit={(event) => {
-          event.preventDefault();
-        }}
         onReset={handleReset}
         className={cx(styles.form, "full-height")}
       >
@@ -167,18 +135,9 @@ const ElementWizard: React.FunctionComponent<{
           {/* spacer */}
           <div className="flex-grow-1" />
 
-          <PermissionsToolbar
-            element={element}
-            disabled={isSaving || !isValid}
-          />
+          <PermissionsToolbar element={element} disabled={!isValid} />
 
-          <ReloadToolbar element={element} disabled={isSaving} />
-
-          <ActionToolbar
-            element={element}
-            disabled={isSaving}
-            onSave={onSave}
-          />
+          <ReloadToolbar element={element} />
         </Nav>
 
         {status && <div className="text-danger">{status}</div>}

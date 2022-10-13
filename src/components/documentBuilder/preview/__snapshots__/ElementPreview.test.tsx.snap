@@ -43,7 +43,7 @@ exports[`can preview default card 1`] = `
           Header
         </div>
         <div
-          class="container overflow-auto card-body"
+          class="container cardBody overflow-auto card-body"
         >
           <div
             class="addElement dropdown"
@@ -241,7 +241,7 @@ exports[`can preview default container 1`] = `
 </DocumentFragment>
 `;
 
-exports[`can preview default header_1 1`] = `
+exports[`can preview default header 1`] = `
 <DocumentFragment>
   <form
     action="#"
@@ -252,48 +252,6 @@ exports[`can preview default header_1 1`] = `
       <h1>
         Header
       </h1>
-    </div>
-    <button
-      type="submit"
-    >
-      Submit
-    </button>
-  </form>
-</DocumentFragment>
-`;
-
-exports[`can preview default header_2 1`] = `
-<DocumentFragment>
-  <form
-    action="#"
-  >
-    <div
-      class="shiftRightWrapper root"
-    >
-      <h2>
-        Header
-      </h2>
-    </div>
-    <button
-      type="submit"
-    >
-      Submit
-    </button>
-  </form>
-</DocumentFragment>
-`;
-
-exports[`can preview default header_3 1`] = `
-<DocumentFragment>
-  <form
-    action="#"
-  >
-    <div
-      class="shiftRightWrapper root"
-    >
-      <h3>
-        Header
-      </h3>
     </div>
     <button
       type="submit"
@@ -348,9 +306,17 @@ exports[`can preview default list 1`] = `
       <div
         class="shiftRightWrapper root"
       >
-        <p>
-          Paragraph text.
-        </p>
+        <div>
+          <p>
+            Paragraph text. 
+            <strong>
+              Markdown
+            </strong>
+             is supported.
+          </p>
+          
+
+        </div>
       </div>
     </div>
     <button
@@ -470,9 +436,17 @@ exports[`can preview default text 1`] = `
     <div
       class="shiftRightWrapper root"
     >
-      <p>
-        Paragraph text.
-      </p>
+      <div>
+        <p>
+          Paragraph text. 
+          <strong>
+            Markdown
+          </strong>
+           is supported.
+        </p>
+        
+
+      </div>
     </div>
     <button
       type="submit"
@@ -495,7 +469,7 @@ exports[`can preview pipeline element with bricks 1`] = `
         Brick
       </h3>
       <p>
-        testing/block-id_18
+        testing/block-id_17
       </p>
       <p>
         @pixiebrix/markdown

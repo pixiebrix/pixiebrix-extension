@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { browserAction } from "@/mv3/api";
+
 export default function activateBrowserActionIcon() {
   // This re-sets the colored manifest icons
   const { icons: path } = browser.runtime.getManifest();
-  (chrome.browserAction ?? chrome.action).setIcon({ path });
+  browserAction.setIcon({ path });
 }

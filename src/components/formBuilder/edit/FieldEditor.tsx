@@ -26,7 +26,6 @@ import {
 import { UI_WIDGET } from "@/components/formBuilder/schemaFieldNames";
 import {
   FIELD_TYPES_WITHOUT_DEFAULT,
-  FIELD_TYPE_OPTIONS,
   parseUiType,
   produceSchemaOnPropertyNameChange,
   produceSchemaOnUiTypeChange,
@@ -48,6 +47,7 @@ import SwitchButtonWidget, {
 import { uniq } from "lodash";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import databaseSchema from "@schemas/database.json";
 
 const imageForCroppingSourceSchema: Schema = {
   type: "string",
@@ -59,13 +59,8 @@ const FieldEditor: React.FC<{
   name: string;
   propertyName: string;
   setActiveField: SetActiveField;
-  fieldTypes?: SelectStringOption[];
-}> = ({
-  name,
-  propertyName,
-  setActiveField,
-  fieldTypes = FIELD_TYPE_OPTIONS,
-}) => {
+  fieldTypes: SelectStringOption[];
+}> = ({ name, propertyName, setActiveField, fieldTypes }) => {
   const [{ value: rjsfSchema }, , { setValue: setRjsfSchema }] =
     useField<RJSFSchema>(name);
   const { schema, uiSchema } = rjsfSchema;
@@ -131,9 +126,18 @@ const FieldEditor: React.FC<{
   };
 
   const getSelectedUiTypeOption = () => {
-    const propertyType = propertySchema.type as SchemaPropertyType;
-    // eslint-disable-next-line security/detect-object-injection
-    const uiWidget = uiSchema?.[propertyName]?.[UI_WIDGET];
+    const isDatabaseSelector =
+      (schema?.properties?.[propertyName] as Schema)?.$ref ===
+      databaseSchema.$id;
+
+    const propertyType = isDatabaseSelector
+      ? "string"
+      : (propertySchema.type as SchemaPropertyType);
+
+    const uiWidget = isDatabaseSelector
+      ? "database"
+      : uiSchema?.[propertyName]?.[UI_WIDGET];
+
     const propertyFormat = propertySchema.format;
     const extra: UiTypeExtra =
       uiWidget === "select" && typeof propertySchema.oneOf !== "undefined"
@@ -149,12 +153,12 @@ const FieldEditor: React.FC<{
 
     const selected = fieldTypes.find((option) => option.value === uiType);
 
-    return selected == null
-      ? {
-          label: "unknown",
-          value: null,
-        }
-      : selected;
+    return (
+      selected ?? {
+        label: "unknown",
+        value: null,
+      }
+    );
   };
 
   const onRequiredChange = ({
@@ -215,12 +219,19 @@ const FieldEditor: React.FC<{
       ? null
       : {
           name: getFullFieldName("default"),
-          schema: {
-            type: uiType.propertyType,
-          },
+          schema:
+            uiType.uiWidget === "database"
+              ? {
+                  $ref: databaseSchema.$id,
+                }
+              : {
+                  type: uiType.propertyType,
+                },
           label: "Default value",
-          // RJSF Form throws when Dropdown with labels selected, no options set and default is empty
-          isRequired: uiType.extra === "selectWithLabels",
+          description:
+            uiType.extra === "selectWithLabels"
+              ? 'Should match one of the "const" values from the "Options" field'
+              : undefined,
         };
 
   return (

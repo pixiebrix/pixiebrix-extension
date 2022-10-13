@@ -29,6 +29,7 @@ export type BlockOption = {
 
 export type BlockGridData = {
   blockOptions: BlockOption[];
+  invalidBlockMessages: Map<RegistryId, string>;
   onSetDetailBlock: (block: IBlock) => void;
   onSelectBlock: (block: IBlock) => void;
 };

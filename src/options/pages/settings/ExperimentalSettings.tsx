@@ -26,7 +26,8 @@ import { selectSettings } from "@/store/settingsSelectors";
 
 const ExperimentalSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { suggestElements, excludeRandomClasses } = useSelector(selectSettings);
+  const { suggestElements, excludeRandomClasses, selectionTools } =
+    useSelector(selectSettings);
 
   return (
     <Card>
@@ -85,6 +86,33 @@ const ExperimentalSettings: React.FunctionComponent = () => {
                 dispatch(
                   settingsSlice.actions.setFlag({
                     flag: "excludeRandomClasses",
+                    value,
+                  })
+                );
+              }}
+            />
+          </Form.Group>
+          <Form.Group controlId="selectionTools">
+            <div>
+              <Form.Label>
+                Detect and Support Multi-Element Selection Tools:{" "}
+                <i>{selectionTools ? "Enabled" : "Disabled"}</i>
+              </Form.Label>
+              <Form.Text muted className="mb-2">
+                Toggle on to support multi-element selection tools
+              </Form.Text>
+            </div>
+            <BootstrapSwitchButton
+              size="sm"
+              onstyle="info"
+              offstyle="light"
+              onlabel=" "
+              offlabel=" "
+              checked={selectionTools}
+              onChange={async (value) => {
+                dispatch(
+                  settingsSlice.actions.setFlag({
+                    flag: "selectionTools",
                     value,
                   })
                 );

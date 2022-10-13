@@ -23,6 +23,7 @@ import { JsonObject } from "type-fest";
  * @see selectEventData
  */
 export function reportEvent(event: string, data: JsonObject = {}): void {
-  console.debug(event, data);
+  // eslint-disable-next-line prefer-rest-params -- Needs `arguments` to avoid printing the default
+  console.debug(...arguments);
   recordEvent({ event, data });
 }

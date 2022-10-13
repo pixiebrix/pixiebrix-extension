@@ -23,11 +23,12 @@ import {
   SchemaPropertyType,
   UiSchema,
 } from "@/core";
-import { RJSFSchema, SelectStringOption } from "./formBuilderTypes";
+import { RJSFSchema } from "./formBuilderTypes";
 import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 import { freshIdentifier } from "@/utils";
 import { produce } from "immer";
 import { WritableDraft } from "immer/dist/types/types-external";
+import databaseSchema from "@schemas/database.json";
 
 export const getMinimalSchema: () => Schema = () => ({
   type: "object",
@@ -66,70 +67,6 @@ export const stringifyUiType = ({
   extra,
 }: Partial<UiType>) =>
   `${propertyType}:${uiWidget ?? ""}:${propertyFormat ?? ""}:${extra ?? ""}`;
-
-export const FIELD_TYPE_OPTIONS: SelectStringOption[] = [
-  {
-    label: "Single line text",
-    value: stringifyUiType({ propertyType: "string" }),
-  },
-  {
-    label: "Paragraph text",
-    value: stringifyUiType({ propertyType: "string", uiWidget: "textarea" }),
-  },
-  {
-    label: "Email",
-    value: stringifyUiType({ propertyType: "string", propertyFormat: "email" }),
-  },
-  {
-    label: "Website",
-    value: stringifyUiType({ propertyType: "string", propertyFormat: "uri" }),
-  },
-  {
-    label: "File",
-    value: stringifyUiType({
-      propertyType: "string",
-      propertyFormat: "data-url",
-    }),
-  },
-  {
-    label: "Date",
-    value: stringifyUiType({ propertyType: "string", propertyFormat: "date" }),
-  },
-  {
-    label: "Date and time",
-    value: stringifyUiType({
-      propertyType: "string",
-      propertyFormat: "date-time",
-    }),
-  },
-  {
-    label: "Number",
-    value: stringifyUiType({ propertyType: "number" }),
-  },
-  {
-    label: "Dropdown",
-    value: stringifyUiType({ propertyType: "string", uiWidget: "select" }),
-  },
-  {
-    label: "Dropdown with labels",
-    value: stringifyUiType({
-      propertyType: "string",
-      uiWidget: "select",
-      extra: "selectWithLabels",
-    }),
-  },
-  {
-    label: "Checkbox",
-    value: stringifyUiType({ propertyType: "boolean" }),
-  },
-  {
-    label: "Image crop",
-    value: stringifyUiType({
-      propertyType: "string",
-      uiWidget: "imageCrop",
-    }),
-  },
-];
 
 export const FIELD_TYPES_WITHOUT_DEFAULT = [
   stringifyUiType({
@@ -272,7 +209,14 @@ export const produceSchemaOnUiTypeChange = (
     // Relying on Immer to protect against object injections
     /* eslint-disable @typescript-eslint/no-dynamic-delete, security/detect-object-injection */
     const draftPropertySchema = draft.schema.properties[propertyName] as Schema;
-    draftPropertySchema.type = propertyType;
+
+    if (uiWidget === "database") {
+      draftPropertySchema.$ref = databaseSchema.$id;
+      delete draftPropertySchema.type;
+    } else {
+      draftPropertySchema.type = propertyType;
+      delete draftPropertySchema.$ref;
+    }
 
     if (propertyFormat) {
       draftPropertySchema.format = propertyFormat;
@@ -306,7 +250,6 @@ export const produceSchemaOnUiTypeChange = (
               (item) => ({ const: item } as SchemaDefinition)
             )
           : [];
-        draftPropertySchema.default = "";
         delete draftPropertySchema.enum;
       } else {
         // If switching from Dropdown with labels, convert the values to enum

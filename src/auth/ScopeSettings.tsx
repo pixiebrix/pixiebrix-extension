@@ -24,7 +24,6 @@ import { castArray, mapValues } from "lodash";
 import { faEyeSlash, faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { StatusCodes } from "http-status-codes";
-import reportError from "@/telemetry/reportError";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { appApi } from "@/services/api";
@@ -103,7 +102,6 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
           }
 
           default: {
-            reportError(error);
             notify.error({ message: "Error updating account alias", error });
             return;
           }

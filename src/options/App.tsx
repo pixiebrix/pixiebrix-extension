@@ -32,7 +32,6 @@ import Sidebar from "@/options/Sidebar";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
 import EnvironmentBanner from "@/layout/EnvironmentBanner";
-import ErrorModal from "@/layout/ErrorModal";
 import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprintPage";
 import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
 import useRefresh from "@/hooks/useRefresh";
@@ -67,12 +66,12 @@ const RefreshBricks: React.VFC = () => {
 };
 
 const Layout = () => {
-  useTheme();
+  const { logo } = useTheme();
   const { permit } = useFlags();
 
   return (
     <div>
-      <Navbar />
+      <Navbar logo={logo} />
       <Container fluid className="page-body-wrapper">
         {/* It is guaranteed that under RequireAuth the user has a valid API token. */}
         <ErrorBoundary>
@@ -80,7 +79,6 @@ const Layout = () => {
             <RefreshBricks />
             <Sidebar />
             <div className="main-panel">
-              <ErrorModal />
               <BrowserBanner />
               <EnvironmentBanner />
               <UpdateBanner />

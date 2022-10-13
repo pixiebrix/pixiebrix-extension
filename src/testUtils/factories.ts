@@ -43,12 +43,12 @@ import {
   validateTimestamp,
   validateUUID,
 } from "@/types/helpers";
-import { Permissions } from "webextension-polyfill";
 import { BaseExtensionState } from "@/pageEditor/extensionPoints/elementConfig";
 import trigger from "@/pageEditor/extensionPoints/trigger";
 import menuItem from "@/pageEditor/extensionPoints/menuItem";
 import {
   ActionFormState,
+  FormState,
   TriggerFormState,
 } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
@@ -61,10 +61,6 @@ import {
   ExtensionPointDefinition as ExtensionPointConfigDefinition,
   ExtensionPointType,
 } from "@/extensionPoints/types";
-import {
-  Context as PageEditorTabContextType,
-  FrameConnectionState,
-} from "@/pageEditor/context";
 import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
 import {
   CloudExtension,
@@ -75,7 +71,6 @@ import {
 } from "@/types/contract";
 import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
 import getType from "@/runtime/getType";
-import { FormState } from "@/pageEditor/pageEditorTypes";
 import { freshIdentifier } from "@/utils";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
 import { padStart } from "lodash";
@@ -86,6 +81,7 @@ import {
 } from "@/auth/authTypes";
 import { JsonObject } from "type-fest";
 import objectHash from "object-hash";
+import { makeEmptyPermissions } from "@/utils/permissions";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -104,6 +100,7 @@ export const organizationFactory = define<AuthUserOrganization>({
     return `@organization-${n}`;
   },
   isDeploymentManager: false,
+  hasComplianceAuthToken: false,
 });
 
 export const authStateFactory = define<AuthState>({
@@ -178,18 +175,6 @@ export const installedRecipeMetadataFactory = define<RecipeMetadata>({
   version: validateSemVerString("1.0.0"),
   updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
   sharing: sharingDefinitionFactory,
-});
-
-const tabStateFactory = define<FrameConnectionState>({
-  frameId: 0,
-  hasPermissions: true,
-  navSequence: uuidSequence,
-  meta: null,
-});
-
-export const activeDevToolContextFactory = define<PageEditorTabContextType>({
-  connecting: false,
-  tabState: tabStateFactory,
 });
 
 export const extensionFactory = define<IExtension>({
@@ -292,12 +277,12 @@ export const blockFactory = define<IBlock>({
   name: (i: number) => `${TEST_BLOCK_ID} ${i}`,
   inputSchema: null as Schema,
   defaultOptions: null,
-  permissions: {} as Permissions.Permissions,
+  permissions: makeEmptyPermissions(),
   run: jest.fn(),
 });
 
 export const typedBlockFactory = async (
-  partialBlock: FactoryConfig<IBlock>
+  partialBlock?: FactoryConfig<IBlock>
 ) => {
   const block = blockFactory(partialBlock);
   return {
@@ -349,7 +334,7 @@ export const extensionPointConfigFactory = define<ExtensionPointConfig>({
   id: "extensionPoint" as InnerDefinitionRef,
   label: (n: number) => `Test Extension ${n}`,
   services: {},
-  permissions: {},
+  permissions: makeEmptyPermissions(),
   config: () => ({
     caption: "Button",
     action: [] as BlockPipeline,
@@ -420,7 +405,7 @@ export const versionedExtensionPointRecipeFactory = ({
         id: extensionPointId ?? validateRegistryId("test/extension-point"),
         label: `Test Extension for Recipe ${n}`,
         services: {},
-        permissions: {},
+        permissions: makeEmptyPermissions(),
         config: {
           caption: "Button",
           action: [] as BlockPipeline,
@@ -516,7 +501,7 @@ export const innerExtensionPointRecipeFactory = ({
  */
 export const recipeFactory = innerExtensionPointRecipeFactory();
 
-const deploymentPackageFactory = define<Deployment["package"]>({
+export const deploymentPackageFactory = define<Deployment["package"]>({
   id: uuidSequence,
   name: derive<Deployment["package"], string>(
     ({ config }) => config.metadata.name,
@@ -530,7 +515,7 @@ const deploymentPackageFactory = define<Deployment["package"]>({
     ({ config }) => config.metadata.id,
     "config"
   ),
-  config: recipeDefinitionFactory as any,
+  config: recipeDefinitionFactory,
 });
 
 export const deploymentFactory = define<Deployment>({

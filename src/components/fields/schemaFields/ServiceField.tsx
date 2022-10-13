@@ -27,7 +27,6 @@ import {
   ServiceKeyVar,
   UUID,
 } from "@/core";
-import { createTypePredicate } from "@/components/fields/fieldUtils";
 import { useAuthOptions } from "@/hooks/auth";
 import { AuthOption } from "@/auth/authTypes";
 import { produce } from "immer";
@@ -41,11 +40,7 @@ import {
 } from "@/components/form/widgets/SelectWidget";
 import { isEmpty, isEqual } from "lodash";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import {
-  extractServiceIds,
-  SERVICE_BASE_SCHEMA,
-  SERVICE_FIELD_REFS,
-} from "@/services/serviceUtils";
+import { extractServiceIds } from "@/services/serviceUtils";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import {
   keyToFieldValue,
@@ -55,12 +50,6 @@ import {
 import ServiceSelectWidget from "@/components/fields/schemaFields/widgets/ServiceSelectWidget";
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
-
-export const isServiceField = createTypePredicate(
-  (x) =>
-    x.$ref?.startsWith(SERVICE_BASE_SCHEMA) ||
-    SERVICE_FIELD_REFS.includes(x.$ref)
-);
 
 function defaultOutputKey(
   serviceId: RegistryId | null,

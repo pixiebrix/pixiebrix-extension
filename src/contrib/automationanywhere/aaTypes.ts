@@ -34,5 +34,7 @@ export type EnterpriseBotArgs = {
 };
 
 export type BotArgs = (CommunityBotArgs | EnterpriseBotArgs) & {
+  workspaceType?: "public" | "private" | null;
   awaitResult: boolean;
+  maxWaitMillis: number;
 };

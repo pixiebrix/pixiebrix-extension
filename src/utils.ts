@@ -527,9 +527,34 @@ export async function pollUntilTruthy<T>(
   } while (Date.now() < endBy);
 }
 
+export async function logPromiseDuration<P>(
+  title: string,
+  promise: Promise<P>
+): Promise<P> {
+  const start = Date.now();
+  try {
+    return await promise;
+  } finally {
+    // Prefer `debug` level; `console.time` has `log` level
+    console.debug(title, `${Math.round(Date.now() - start)}ms`);
+  }
+}
+
+export async function logFunctionDuration<
+  Fn extends (...args: unknown[]) => Promise<unknown>
+>(title: string, fn: Fn): Promise<ReturnType<Fn>> {
+  const start = Date.now();
+  try {
+    return (await fn()) as Awaited<ReturnType<Fn>>;
+  } finally {
+    // Prefer `debug` level; `console.time` has `log` level
+    console.debug(title, `${Math.round(Date.now() - start)}ms`);
+  }
+}
+
 export function isMac(): boolean {
   // https://stackoverflow.com/a/27862868/402560
-  return navigator.platform.includes("Mac");
+  return globalThis.navigator?.platform.includes("Mac");
 }
 
 /** Tests a target string against a list of strings (full match) or regexes (can be mixed) */

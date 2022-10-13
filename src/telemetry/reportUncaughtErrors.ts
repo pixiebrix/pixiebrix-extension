@@ -67,5 +67,5 @@ export const uncaughtErrorHandlers = [ignoreKnownPatterns];
 // When imported, the file will be executed immediately, whereas if it exports
 // an `init` function will be called after every top-level imports (and their deps)
 // has been executed.
-window.addEventListener("error", errorListener);
-window.addEventListener("unhandledrejection", errorListener);
+self.addEventListener("error", errorListener);
+self.addEventListener("unhandledrejection", errorListener);

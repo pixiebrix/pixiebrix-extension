@@ -24,20 +24,22 @@ import { isInnerExtensionPoint } from "@/registry/internal";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
-import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
+import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { useSelector } from "react-redux";
+import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 
-const FoundationNodeConfigPanel: React.FC<{
-  extensionPoint: BaseExtensionPointState;
-  EditorNode: React.ComponentType<{ isLocked: boolean }>;
-}> = ({ extensionPoint, EditorNode }) => {
+const FoundationNodeConfigPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showVersionField = flagOn("page-editor-developer");
+  const { extensionPoint } = useSelector(selectActiveElement);
 
   // For now, don't allow modifying extensionPoint packages via the Page Editor.
   const isLocked = useMemo(
     () => !isInnerExtensionPoint(extensionPoint.metadata.id),
     [extensionPoint.metadata.id]
   );
+
+  const { EditorNode } = ADAPTERS.get(extensionPoint.definition.type);
 
   return (
     <>

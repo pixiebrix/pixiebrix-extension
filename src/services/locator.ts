@@ -21,7 +21,6 @@ import {
   IService,
   RawServiceConfiguration,
   ServiceConfig,
-  ServiceLocator,
   SanitizedConfig,
   KeyedConfig,
   RegistryId,
@@ -33,7 +32,7 @@ import { inputProperties } from "@/helpers";
 import { fetch } from "@/hooks/fetch";
 import { validateRegistryId } from "@/types/helpers";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { forbidContext } from "@/utils/expectContext";
+import { expectContext, forbidContext } from "@/utils/expectContext";
 import { ExtensionNotLinkedError } from "@/errors/genericErrors";
 import {
   MissingConfigurationError,
@@ -192,10 +191,6 @@ class LazyLocatorFactory {
     );
   }
 
-  getLocator(): ServiceLocator {
-    return LazyLocatorFactory.prototype.locate.bind(this);
-  }
-
   /**
    * Return the raw integration configuration with UUID authId, or return `null` if not available locally.
    * @param authId UUID of the integration configuration
@@ -237,6 +232,11 @@ class LazyLocatorFactory {
     serviceId: RegistryId,
     authId: UUID
   ): Promise<SanitizedServiceConfiguration> {
+    expectContext(
+      "background",
+      "The service locator must run in the background worker"
+    );
+
     if (!this.initialized) {
       await this.refresh();
     }

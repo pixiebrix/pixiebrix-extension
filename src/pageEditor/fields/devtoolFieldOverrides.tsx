@@ -16,14 +16,11 @@
  */
 
 import React from "react";
-import SelectorSelectorField from "@/components/fields/schemaFields/SelectorSelectorField";
 import SelectorSelectorWidget from "@/pageEditor/fields/SelectorSelectorWidget";
-import { createTypePredicate } from "@/components/fields/fieldUtils";
 import { Schema } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import OptionIcon from "@/components/fields/schemaFields/optionIcon/OptionIcon";
 import { CustomFieldDefinitions } from "@/components/fields/schemaFields/schemaFieldTypes";
-import CssClassWidget from "@/components/fields/schemaFields/widgets/CssClassWidget";
 
 export const ClearableSelectorWidget: React.FunctionComponent<{
   name: string;
@@ -32,27 +29,7 @@ export const ClearableSelectorWidget: React.FunctionComponent<{
 const isSelectorField = (schema: Schema) =>
   schema.type === "string" && schema.format === "selector";
 
-const hasAnySelectorField = createTypePredicate(isSelectorField);
-
 const devtoolFieldOverrides: CustomFieldDefinitions = {
-  customFields: [
-    {
-      match: hasAnySelectorField,
-      Component: SelectorSelectorField,
-    },
-  ],
-  customWidgets: [
-    {
-      match: hasAnySelectorField,
-      Component: ClearableSelectorWidget,
-    },
-    {
-      // See getElementEditSchemas.ts:getClassNameEdit
-      match: (schema) =>
-        schema.type === "string" && schema.format === "bootstrap-class",
-      Component: CssClassWidget,
-    },
-  ],
   customToggleModes: [
     {
       match: isSelectorField,

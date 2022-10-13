@@ -39,12 +39,14 @@ export const waitForTargetByUrl = getMethod("WAIT_FOR_TARGET_BY_URL", bg);
 
 export const activatePartnerTheme = getMethod("ACTIVATE_PARTNER_THEME", bg);
 export const getPartnerPrincipals = getMethod("GET_PARTNER_PRINCIPALS", bg);
+export const launchAuthIntegration = getMethod("LAUNCH_AUTH_INTEGRATION", bg);
 
 export const activateTab = getMethod("ACTIVATE_TAB", bg);
 export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);
 
 export const closeTab = getMethod("CLOSE_TAB", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
+export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
 export const readGoogleBigQuery = getMethod("GOOGLE_BIGQUERY_READ", bg);
 
@@ -89,6 +91,7 @@ export const contextMenus = {
 };
 
 export const services = {
+  locateAllForId: getMethod("LOCATE_SERVICES_FOR_ID", bg),
   locate: getMethod("LOCATE_SERVICE", bg),
   refresh: getMethod("REFRESH_SERVICES", bg),
   refreshLocal: getMethod("LOCATOR_REFRESH_LOCAL", bg),
@@ -108,6 +111,7 @@ export const recordEvent = getNotifier("RECORD_EVENT", bg);
 export const getLoggingConfig = getMethod("GET_LOGGING_CONFIG", bg);
 export const setLoggingConfig = getMethod("SET_LOGGING_CONFIG", bg);
 export const clearLogs = getMethod("CLEAR_LOGS", bg);
+export const clearLog = getMethod("CLEAR_LOG", bg);
 export const clearExtensionDebugLogs = getMethod(
   "CLEAR_EXTENSION_DEBUG_LOGS",
   bg

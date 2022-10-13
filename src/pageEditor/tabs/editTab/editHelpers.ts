@@ -20,11 +20,10 @@ import { freshIdentifier } from "@/utils";
 import { selectReaderIds } from "@/blocks/readers/readerUtils";
 import getType from "@/runtime/getType";
 import { BlockType } from "@/runtime/runtimeTypes";
-import { FormState } from "@/pageEditor/pageEditorTypes";
-import { traversePipeline } from "@/pageEditor/utils";
-import { BlockPipeline } from "@/blocks/types";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { BlockConfig, BlockPipeline, BlockPosition } from "@/blocks/types";
 import { PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import PipelineVisitor, { VisitBlockExtra } from "@/blocks/PipelineVisitor";
 
 export function collectRegistryIds(form: FormState): RegistryId[] {
   return [
@@ -76,30 +75,33 @@ export async function generateFreshOutputKey(
   return freshIdentifier(type as SafeString, outputKeys) as OutputKey;
 }
 
-export function getPipelineMap(pipeline: BlockPipeline) {
-  const pipelineMap: PipelineMap = {};
-  traversePipeline({
-    pipeline,
-    pipelinePath: PIPELINE_BLOCKS_FIELD_NAME,
-    visitBlock({
-      blockConfig,
-      index,
-      path,
-      pipelinePath,
-      pipeline,
-      parentNodeId,
-    }) {
-      pipelineMap[blockConfig.instanceId] = {
-        blockId: blockConfig.id,
-        path,
-        blockConfig,
-        index,
-        pipelinePath,
-        pipeline,
-        parentNodeId,
-      };
-    },
-  });
+class PipelineMapVisitor extends PipelineVisitor {
+  private readonly map: PipelineMap = {};
+  get pipelineMap(): PipelineMap {
+    return this.map;
+  }
 
-  return pipelineMap;
+  override visitBlock(
+    position: BlockPosition,
+    blockConfig: BlockConfig,
+    extra: VisitBlockExtra
+  ): void {
+    this.pipelineMap[blockConfig.instanceId] = {
+      blockId: blockConfig.id,
+      path: position.path,
+      blockConfig,
+      index: extra.index,
+      pipeline: extra.pipeline,
+      pipelinePath: extra.pipelinePosition.path,
+      parentNodeId: extra.parentNodeId,
+    };
+
+    super.visitBlock(position, blockConfig, extra);
+  }
+}
+
+export function getPipelineMap(pipeline: BlockPipeline): PipelineMap {
+  const visitor = new PipelineMapVisitor();
+  visitor.visitRootPipeline(pipeline);
+  return visitor.pipelineMap;
 }

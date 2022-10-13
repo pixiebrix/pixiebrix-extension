@@ -17,6 +17,7 @@
 
 import documentTreeStyles from "./documentTree.module.scss";
 import {
+  ButtonDocumentConfig,
   DocumentComponent,
   DocumentElement,
   DynamicPath,
@@ -60,6 +61,7 @@ function getPreviewComponentDefinition(
     case "header_1":
     case "header_2":
     case "header_3":
+    case "header":
     case "text": {
       const documentComponent = getComponentDefinition(
         element,
@@ -140,7 +142,7 @@ function getPreviewComponentDefinition(
     }
 
     case "button": {
-      const buttonProps = { ...config };
+      const buttonProps = { ...(config as ButtonDocumentConfig) };
       filterCssClassesForPreview(buttonProps);
 
       return {

@@ -25,7 +25,7 @@ import {
   installedRecipeMetadataFactory,
 } from "@/testUtils/factories";
 import { getPageState } from "@/contentScript/messenger/api";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { Tab } from "react-bootstrap";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 

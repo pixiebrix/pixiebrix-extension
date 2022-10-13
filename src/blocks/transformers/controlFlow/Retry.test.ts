@@ -23,7 +23,7 @@ import {
   throwBlock,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { makePipelineExpression } from "@/testUtils/expressionTestHelpers";
+import { makePipelineExpression } from "@/runtime/expressionCreators";
 import Retry from "@/blocks/transformers/controlFlow/Retry";
 
 jest.mock("@/background/messenger/api", () => {

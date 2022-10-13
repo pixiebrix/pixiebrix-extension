@@ -19,7 +19,6 @@ import styles from "./EditorNodeConfigPanel.module.scss";
 
 import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { RegistryId, UUID } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BlockConfiguration from "@/pageEditor/tabs/effect/BlockConfiguration";
 import { useAsyncState } from "@/hooks/common";
@@ -27,24 +26,13 @@ import blockRegistry from "@/blocks/registry";
 import { showOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import getType from "@/runtime/getType";
-import { useSelector } from "react-redux";
-import { selectActiveNodeError } from "@/pageEditor/slices/editorSelectors";
-import useNodeValidation from "@/pageEditor/validation/useNodeValidation";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
-import { ErrorLevel } from "@/pageEditor/uiState/uiStateTypes";
 import AnalysisResult from "@/pageEditor/tabs/editTab/AnalysisResult";
+import { useSelector } from "react-redux";
+import { selectActiveNodeInfo } from "@/pageEditor/slices/editorSelectors";
 
-const EditorNodeConfigPanel: React.FC<{
-  /**
-   * The block field name in the form
-   * @see BlockConfig
-   */
-  blockFieldName: string;
-  blockId: RegistryId;
-  nodeId: UUID;
-}> = ({ blockFieldName, blockId, nodeId }) => {
-  useNodeValidation(blockFieldName, nodeId);
-
+const EditorNodeConfigPanel: React.FC = () => {
+  const { blockId, path: blockFieldName } = useSelector(selectActiveNodeInfo);
   const [blockInfo] = useAsyncState(async () => {
     const block = await blockRegistry.lookup(blockId);
     return {
@@ -68,28 +56,8 @@ const EditorNodeConfigPanel: React.FC<{
     />
   );
 
-  const errorInfo = useSelector(selectActiveNodeError);
-  const blockErrorMessage = errorInfo?.errors
-    ?.filter((error) => error.level === ErrorLevel.Critical)
-    ?.map((x) => x.message)
-    .join(" ");
-  const blockWarningMessage = errorInfo?.errors
-    ?.filter((error) => error.level === ErrorLevel.Warning)
-    ?.map((x) => x.message)
-    .join(" ");
-
   return (
     <>
-      {blockErrorMessage && (
-        <Row>
-          <Col className="text-danger">{blockErrorMessage}</Col>
-        </Row>
-      )}
-      {blockWarningMessage && (
-        <Row>
-          <Col className="text-warning">{blockWarningMessage}</Col>
-        </Row>
-      )}
       <AnalysisResult />
       <Row className={styles.topRow}>
         <Col xl>

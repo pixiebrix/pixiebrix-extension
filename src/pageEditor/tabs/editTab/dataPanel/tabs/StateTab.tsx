@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  selectErrorMap,
-  selectActiveElement,
-} from "@/pageEditor/slices/editorSelectors";
+import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
@@ -30,7 +27,6 @@ import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 
 const StateTab: React.FC = () => {
   const activeElement = useSelector(selectActiveElement);
-  const errors = useSelector(selectErrorMap);
   const annotations = useSelector(
     selectExtensionAnnotations(activeElement.uuid)
   );
@@ -42,7 +38,7 @@ const StateTab: React.FC = () => {
         developers
       </div>
       <DataTabJsonTree
-        data={{ activeElement, annotations, errors }}
+        data={{ activeElement, annotations }}
         searchable
         tabKey={DataPanelTabKey.State}
         label="Element State"

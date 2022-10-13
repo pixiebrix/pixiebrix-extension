@@ -26,7 +26,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const CopyPlugin = require("copy-webpack-plugin");
-const { uniq, compact } = require("lodash");
+const { uniq, compact, pull } = require("lodash");
 const Policy = require("csp-parse");
 const mergeWithShared = require("./webpack.sharedConfig.js");
 
@@ -121,6 +121,44 @@ function getVersionName(isProduction) {
 
 const isProd = (options) => options.mode === "production";
 
+/**
+ * @param {chrome.runtime.Manifest} manifest
+ */
+function updateManifestToV3(manifest) {
+  manifest.manifest_version = 3;
+
+  // Extract host permissions
+  pull(manifest.permissions, "https://*.pixiebrix.com/*");
+  pull(manifest.optional_permissions, "*://*/*");
+  manifest.host_permissions = ["https://*.pixiebrix.com/*", "*://*/*"];
+  manifest.permissions.push("scripting");
+
+  // Update format
+  manifest.web_accessible_resources = [
+    {
+      resources: manifest.web_accessible_resources,
+      matches: ["*://*/*"],
+    },
+  ];
+
+  // Rename keys
+  manifest.action = manifest.browser_action;
+  delete manifest.browser_action;
+
+  // Update CSP format and drop invalid values
+  const policy = new Policy(manifest.content_security_policy);
+  policy.remove("script-src", "https://apis.google.com");
+  policy.remove("script-src", "'unsafe-eval'");
+  manifest.content_security_policy = {
+    extension_pages: policy.toString(),
+  };
+
+  // Replace background script
+  manifest.background = {
+    service_worker: "background.worker.js",
+  };
+}
+
 function customizeManifest(manifest, isProduction) {
   manifest.version = getVersion();
   manifest.version_name = getVersionName(isProduction);
@@ -214,40 +252,26 @@ module.exports = (env, options) =>
       },
     },
 
-    entry: {
-      // All of these entries require the `vendors.js` file to be included first
-      ...Object.fromEntries(
-        [
-          "background/background",
-          "contentScript/contentScript",
-          "pageEditor/pageEditor",
-          "options/options",
-          "sidebar/sidebar",
-          "tinyPages/ephemeralForm",
-          "tinyPages/permissionsPopup",
-        ].map((name) => [
-          path.basename(name),
-          { import: `./src/${name}`, dependOn: "vendors" },
-        ])
-      ),
+    entry: Object.fromEntries(
+      [
+        "background/background",
+        "contentScript/contentScript",
+        "pageEditor/pageEditor",
+        "options/options",
+        "sidebar/sidebar",
+        "tinyPages/ephemeralForm",
+        "tinyPages/permissionsPopup",
+        "tinyPages/browserActionInstantHandler",
 
-      // This creates a `vendors.js` file that must be included together with the bundles generated above
-      vendors: [
-        "react",
-        "react-dom",
-        "jquery",
-        "lodash-es",
-        "@rjsf/bootstrap-4",
-        "@fortawesome/free-solid-svg-icons",
-      ],
+        // Tiny files without imports
+        "tinyPages/frame",
+        "tinyPages/alert",
+        "tinyPages/devtools",
 
-      // Tiny files without imports, no vendors needed
-      frame: "./src/tinyPages/frame",
-      devtools: "./src/tinyPages/devtools",
-
-      // The script that gets injected into the host page should not have a vendor chunk
-      pageScript: "./src/pageScript/pageScript",
-    },
+        // The script that gets injected into the host page
+        "pageScript/pageScript",
+      ].map((name) => [path.basename(name), `./src/${name}`])
+    ),
 
     resolve: {
       alias: {
@@ -256,14 +280,6 @@ module.exports = (env, options) =>
         ...(isProd(options) || process.env.DEV_REDUX_LOGGER === "false"
           ? { "redux-logger": false }
           : {}),
-
-        // Enables static analysis and removal of dead code
-        "webext-detect-page": path.resolve(
-          "src/vendors/webextDetectPage.static.js"
-        ),
-
-        // Lighter jQuery version
-        jquery: "jquery/dist/jquery.slim.min.js",
       },
     },
 
@@ -319,23 +335,32 @@ module.exports = (env, options) =>
           excludeAssets: /svg-icons/,
         }),
 
-      new NodePolyfillPlugin(),
-      new WebExtensionTarget(),
+      new NodePolyfillPlugin({
+        // Specify the least amount of polyfills because by default it event polyfills `console`
+        includeAliases: ["buffer", "Buffer", "http", "https"],
+      }),
+      new WebExtensionTarget({
+        weakRuntimeCheck: true,
+      }),
       new webpack.ProvidePlugin({
         $: "jquery",
         jQuery: "jquery",
         browser: "webextension-polyfill",
+        process: path.resolve("src/vendors/process.js"),
       }),
 
       // This will inject the current ENVs into the bundle, if found
       new webpack.EnvironmentPlugin({
         // If not found, these values will be used as defaults
         DEBUG: !isProd(options),
+        NODE_DEBUG: false,
         REDUX_DEV_TOOLS: !isProd(options),
         NPM_PACKAGE_VERSION: process.env.npm_package_version,
-        ENVIRONMENT: process.env.ENVIRONMENT ?? options.mode,
+        ENVIRONMENT: options.mode,
         WEBEXT_MESSENGER_LOGGING: "false",
         ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl ?? "extension://dynamichost/",
+        // Record telemetry events in development?
+        DEV_EVENT_TELEMETRY: false,
 
         // If not found, "undefined" will cause the build to fail
         SERVICE_URL: undefined,
@@ -358,6 +383,10 @@ module.exports = (env, options) =>
             transform(jsonString) {
               const manifest = JSON.parse(jsonString);
               customizeManifest(manifest, isProd(options));
+              if (process.env.MV === "3") {
+                updateManifestToV3(manifest);
+              }
+
               return JSON.stringify(manifest, null, 4);
             },
           },
@@ -374,9 +403,11 @@ module.exports = (env, options) =>
         {
           test: /\.s?css$/,
           resourceQuery: { not: [/loadAsUrl/] },
+          use: [MiniCssExtractPlugin.loader, "css-loader"],
+        },
+        {
+          test: /\.scss$/,
           use: [
-            MiniCssExtractPlugin.loader,
-            "css-loader",
             {
               loader: "sass-loader",
               options: {

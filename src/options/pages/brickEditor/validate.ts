@@ -38,6 +38,10 @@ export async function validateSchema(
     };
   }
 
+  if (typeof value !== "string") {
+    throw new TypeError("Expected string value");
+  }
+
   let json: PartialSchema;
 
   try {

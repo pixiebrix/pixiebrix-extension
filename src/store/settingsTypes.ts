@@ -16,6 +16,7 @@
  */
 
 import { Theme } from "@/options/types";
+import { RegistryId } from "@/core";
 
 export type InstallMode = "local" | "remote";
 
@@ -48,9 +49,22 @@ export type SettingsState = SkunkworksSettings & {
   browserWarningDismissed: boolean;
 
   /**
-   * Partner id for the user, if any
+   * Partner id for the user, if any.
    */
   partnerId: string | null;
+
+  /**
+   * Registry id of the integration to use for authentication with the PixieBrix server.
+   *
+   * For partner integrations, PixieBrix is supporting using partner JWT for authenticating. The PixieBrix server
+   * verifies the JWT.
+   *
+   * Only set if the user has provided the settings on the Settings Screen. Otherwise, is determined by configuration
+   * of the user's primary organization.
+   *
+   * @since 1.7.5
+   */
+  authServiceId: RegistryId | null;
 
   /**
    * Theme name for the extension
@@ -68,4 +82,9 @@ export type SkunkworksSettings = {
    * Experimental setting to detect and exclude random classes when generating selectors
    */
   excludeRandomClasses?: boolean;
+
+  /**
+   * Experimental setting to support multi-element selector.
+   */
+  selectionTools?: boolean;
 };

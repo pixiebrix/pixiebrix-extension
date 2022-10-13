@@ -15,89 +15,85 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { RecipeDefinition } from "@/types/definitions";
 import React, { useMemo } from "react";
-import { uniq } from "lodash";
-import { selectOptionalPermissions } from "@/utils/permissions";
-import Loader from "@/components/Loader";
-import { Card, Table } from "react-bootstrap";
-import useReportError from "@/hooks/useReportError";
-import { Permissions } from "webextension-polyfill";
-import { getErrorMessage } from "@/errors/errorHelpers";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Alert, Col } from "react-bootstrap";
+import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
+import UrlPermissionsList from "@/options/pages/marketplace/UrlPermissionsList";
+import { resolveRecipe } from "@/registry/internal";
+import extensionPointRegistry from "@/extensionPoints/registry";
+import { useAsyncState } from "@/hooks/common";
+import { allSettledValues } from "@/utils";
+import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
+import { WizardValues } from "@/options/pages/marketplace/wizardTypes";
+import { ServiceAuthPair } from "@/core";
+import { useFormikContext } from "formik";
+
+function selectedAuths(values: WizardValues): ServiceAuthPair[] {
+  return values.services.filter((x) => x.config);
+}
+
+export function useSelectedAuths(): ServiceAuthPair[] {
+  const { values } = useFormikContext<WizardValues>();
+  return useMemo(() => selectedAuths(values), [values]);
+}
+
+const QuickBarAlert = () => (
+  <Alert variant="warning">
+    <FontAwesomeIcon icon={faExclamationTriangle} /> This blueprint contains a
+    Quick Bar action, but you have not{" "}
+    <a
+      href="chrome://extensions/shortcuts"
+      onClick={(event) => {
+        event.preventDefault();
+        void browser.tabs.create({ url: event.currentTarget.href });
+      }}
+    >
+      <u>configured your Quick Bar shortcut</u>.
+    </a>{" "}
+    Learn more about{" "}
+    <a href="https://docs.pixiebrix.com/quick-bar-setup">
+      <u>configuring keyboard shortcuts</u>
+    </a>
+  </Alert>
+);
 
 const PermissionsBody: React.FunctionComponent<{
-  enabled: boolean;
-  isPending: boolean;
-  error: unknown;
-  permissions: Permissions.Permissions;
-}> = ({ error, enabled, isPending, permissions }) => {
-  useReportError(error);
+  blueprint: RecipeDefinition;
+}> = ({ blueprint }) => {
+  const selectedAuths = useSelectedAuths();
+  const permissionsState = useEnsurePermissions(
+    blueprint,
+    blueprint.extensionPoints,
+    selectedAuths
+  );
 
-  const permissionsList = useMemo(() => {
-    if (permissions == null) {
-      return [];
-    }
+  const { isConfigured: isShortcutConfigured } = useQuickbarShortcut();
 
-    // `selectOptionalPermissions` never returns any origins because we request *://*
-    return uniq([
-      ...selectOptionalPermissions(permissions.permissions),
-      ...permissions.origins,
-    ]);
-  }, [permissions]);
-
-  const helpText = useMemo(() => {
-    if (isPending) {
-      return <Loader />;
-    }
-
-    if (error) {
-      return (
-        <Card.Text className="text-danger">
-          An error occurred determining additional permissions:{" "}
-          {getErrorMessage(error)}
-        </Card.Text>
+  const [hasQuickBar] = useAsyncState(
+    async () => {
+      const extensions = await resolveRecipe(
+        blueprint,
+        blueprint.extensionPoints
       );
-    }
-
-    if (permissionsList.length === 0) {
-      return <Card.Text>No special permissions required</Card.Text>;
-    }
-
-    if (enabled) {
-      return (
-        <Card.Text>
-          PixieBrix already has the permissions required for the bricks
-          you&apos;ve selected
-        </Card.Text>
+      const extensionPoints = await allSettledValues(
+        extensions.map(async (config) =>
+          extensionPointRegistry.lookup(config.id)
+        )
       );
-    }
-
-    return (
-      <Card.Text>
-        Your browser will prompt to you approve any permissions you haven&apos;t
-        granted yet
-      </Card.Text>
-    );
-  }, [permissionsList, enabled, error, isPending]);
+      return extensionPoints.some((x) => x.kind === "quickBar");
+    },
+    [],
+    false
+  );
 
   return (
-    <>
-      <Card.Body className="p-3">
-        <Card.Subtitle>Permissions & URLs</Card.Subtitle>
-        {helpText}
-      </Card.Body>
-      {permissionsList.length > 0 && (
-        // Use Table single column table instead of ListGroup to more closely match style on other wizard tabs
-        <Table variant="flush">
-          <tbody>
-            {permissionsList.map((permission) => (
-              <tr key={permission}>
-                <td>{permission}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      )}
-    </>
+    <Col>
+      {hasQuickBar && !isShortcutConfigured && <QuickBarAlert />}
+      <UrlPermissionsList {...permissionsState} />
+    </Col>
   );
 };
 

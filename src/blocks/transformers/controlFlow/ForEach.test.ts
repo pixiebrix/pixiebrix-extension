@@ -26,7 +26,7 @@ import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import {
   makePipelineExpression,
   makeTemplateExpression,
-} from "@/testUtils/expressionTestHelpers";
+} from "@/runtime/expressionCreators";
 
 jest.mock("@/background/messenger/api", () => {
   const actual = jest.requireActual("@/background/messenger/api");

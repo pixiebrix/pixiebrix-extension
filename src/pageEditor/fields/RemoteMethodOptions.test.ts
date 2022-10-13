@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { makeTemplateExpression } from "@/testUtils/expressionTestHelpers";
+import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { isJsonString } from "./RemoteMethodOptions";
 
 describe("isJsonString", () => {

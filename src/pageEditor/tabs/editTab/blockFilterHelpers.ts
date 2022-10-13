@@ -84,18 +84,23 @@ export function makeIsBlockAllowedForPipeline(pipelineFlavor: PipelineFlavor) {
   let excludedType: BlockType;
 
   switch (pipelineFlavor) {
-    case PipelineFlavor.NoEffect:
+    case PipelineFlavor.NoEffect: {
       excludedType = "effect";
       break;
-    case PipelineFlavor.NoRenderer:
+    }
+
+    case PipelineFlavor.NoRenderer: {
       excludedType = "renderer";
       break;
-    default:
+    }
+
+    default: {
       console.warn(
         "Unknown pipeline flavor, allowing all bricks",
         pipelineFlavor
       );
       return stubTrue;
+    }
   }
 
   return ({ type, block }: TypedBlock) =>

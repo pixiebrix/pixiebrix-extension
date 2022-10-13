@@ -21,9 +21,7 @@ import { DeferExpression, PipelineExpression } from "@/runtime/mapArgs";
 import { ElementType, MouseEventHandler } from "react";
 
 export const DOCUMENT_ELEMENT_TYPES = [
-  "header_1",
-  "header_2",
-  "header_3",
+  "header",
   "text",
   "image",
   "container",
@@ -33,6 +31,11 @@ export const DOCUMENT_ELEMENT_TYPES = [
   "pipeline",
   "button",
   "list",
+
+  // For backwards compatibility
+  "header_1",
+  "header_2",
+  "header_3",
 ] as const;
 
 export type DocumentElementType = typeof DOCUMENT_ELEMENT_TYPES[number];
@@ -60,6 +63,7 @@ export function isListElement(
 }
 
 export type PipelineDocumentConfig = {
+  label: string;
   pipeline: PipelineExpression;
 };
 export type PipelineDocumentElement = DocumentElement<
@@ -74,6 +78,7 @@ export function isPipelineElement(
 }
 
 export type ButtonDocumentConfig = {
+  label: string;
   title: string | Expression;
   variant?: string | Expression;
   // Default size type coming from Bootstrap Button

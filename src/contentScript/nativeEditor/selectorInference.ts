@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { compact, identity, sortBy, uniq } from "lodash";
+import { compact, identity, intersection, sortBy, uniq } from "lodash";
 import { getCssSelector } from "css-selector-generator";
-import { CssSelectorType } from "css-selector-generator/types/types";
-import { $safeFind } from "@/helpers";
 import {
-  EXTENSION_POINT_DATA_ATTR,
-  PIXIEBRIX_DATA_ATTR,
-  PIXIEBRIX_READY_ATTRIBUTE,
-} from "@/common";
+  CssSelectorType,
+  CssSelectorMatch,
+} from "css-selector-generator/types/types";
+import { $safeFind } from "@/helpers";
+import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";
 import { guessUsefulness, isRandomString } from "@/utils/detectRandomString";
 import { matchesAnyPattern } from "@/utils";
 import { escapeSingleQuotes } from "@/utils/escape";
+import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
 
 export const BUTTON_TAGS: string[] = [
   "li",
@@ -38,6 +38,51 @@ export const BUTTON_TAGS: string[] = [
 ];
 const MENU_TAGS = ["ul", "tbody"];
 
+export type SiteSelectorHint = {
+  /**
+   * Name for the rule hint-set.
+   */
+  siteName: string;
+  /**
+   * Return true if the these hints apply to the current site.
+   */
+  siteValidator: (element?: HTMLElement) => boolean;
+  badPatterns: CssSelectorMatch[];
+  uniqueAttributes: string[];
+  stableAnchors: CssSelectorMatch[];
+};
+
+const SELECTOR_HINTS: SiteSelectorHint[] = [
+  {
+    // Matches all sites using Salesforce's Lightning framework
+    // https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/intro_components.htm
+    siteName: "Salesforce",
+    siteValidator: (element) =>
+      $(element).closest("[data-aura-rendered-by]").length > 0,
+    badPatterns: [
+      getAttributeSelectorRegex(
+        // Salesforce Aura component tracking
+        "data-aura-rendered-by"
+      ),
+
+      /#\\+\d+ \d+\\+:0/,
+      /#\w+[_-]\d+/,
+      /.*\.hover.*/,
+      /.*\.not-selected.*/,
+      /^\[name='leftsidebar'] */,
+    ],
+    uniqueAttributes: ["data-component-id"],
+    stableAnchors: [
+      ".consoleRelatedRecord",
+      /\.consoleRelatedRecord\d+/,
+      ".navexWorkspaceManager",
+      ".active",
+      ".oneConsoleTab",
+      ".tabContent",
+    ],
+  },
+];
+
 export const UNIQUE_ATTRIBUTES: string[] = [
   "id",
   "name",
@@ -48,7 +93,11 @@ export const UNIQUE_ATTRIBUTES: string[] = [
   "data-id",
   "data-test",
   "data-test-id",
+
+  // Register UNIQUE_ATTRIBUTES from all hints because we can't check site rules in this usage.
+  ...SELECTOR_HINTS.flatMap((hint) => hint.uniqueAttributes),
 ];
+
 // eslint-disable-next-line security/detect-non-literal-regexp -- Not user-provided
 const UNIQUE_ATTRIBUTES_REGEX = new RegExp(
   UNIQUE_ATTRIBUTES.map((attribute) => `^\\[${attribute}=`).join("|")
@@ -66,20 +115,54 @@ const UNSTABLE_SELECTORS = [
   /^\[data-v-/,
 
   getAttributeSelectorRegex(
-    // Salesforce Aura component tracking
-    "data-aura-rendered-by",
-
     // Our attributes
     EXTENSION_POINT_DATA_ATTR,
     PIXIEBRIX_DATA_ATTR,
-    PIXIEBRIX_READY_ATTRIBUTE
+    CONTENT_SCRIPT_READY_ATTRIBUTE,
+    "style"
   ),
 ];
 
-function getUniqueAttributeSelectors(element: HTMLElement): string[] {
+function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {
+  let siteSelectorHint = SELECTOR_HINTS.find((hint) =>
+    hint.siteValidator(element)
+  );
+  if (!siteSelectorHint) {
+    siteSelectorHint = {
+      siteName: "",
+      siteValidator: () => false,
+      badPatterns: [],
+      uniqueAttributes: [],
+      stableAnchors: [],
+    };
+  }
+
+  return siteSelectorHint;
+}
+
+function getUniqueAttributeSelectors(
+  element: HTMLElement,
+  siteSelectorHint: SiteSelectorHint
+): string[] {
   return UNIQUE_ATTRIBUTES.map((attribute) =>
     getAttributeSelector(attribute, element.getAttribute(attribute))
-  ).filter((selector) => !matchesAnyPattern(selector, UNSTABLE_SELECTORS));
+  ).filter(
+    (selector) =>
+      !matchesAnyPattern(selector, [
+        ...UNSTABLE_SELECTORS,
+        // We need to include salesforce BAD_PATTERNS here as well since this function is used to get inferSelectorsIncludingStableAncestors
+        ...siteSelectorHint.badPatterns,
+      ])
+  );
+}
+
+/**
+ * Convert classname of element to meaningful selector
+ */
+const classHelper = document.createElement("i");
+function getSelectorFromClass(className: string): string {
+  classHelper.className = className;
+  return "." + [...classHelper.classList].join(".");
 }
 
 /** ID selectors and certain other attributes can uniquely identify items */
@@ -119,8 +202,11 @@ export function sortBySelector<Item = string>(
  * Do not call directly. Instead, call sortBySelector
  *
  * @example
- * -2  '#best-link-on-the-page'
- * -1  "[data-cy='b4da55']"
+ * -4  '#best-link-on-the-page'
+ * -3  "[data-cy='b4da55']"
+ * -2  '.iAmAUniqueGreatClassSelector' // it's rare case but happens when classname is unique
+ * -1  '#parentId a' // tag name followed by parent unique Selector
+ * -1  '[data-test-id='b4da55'] input' // tag name followed by parent unique Selector
  *  0  '.navItem'
  *  0  '.birdsArentReal'
  *  1  'a'
@@ -128,17 +214,36 @@ export function sortBySelector<Item = string>(
  * @see sortBySelector
  */
 export function getSelectorPreference(selector: string): number {
+  // @ts-expect-error: TS compiler can't find the propery find in $
+  const tokenized = $.find.tokenize(selector);
+  if (tokenized.length > 1) {
+    throw new TypeError(
+      "Expected single selector, received selector list: " + selector
+    );
+  }
+
+  const tokenCount = tokenized[0].length;
+
   if (selector.includes(":nth-child")) {
     // Structural selectors are fragile to page changes, so give low score
     return 2;
   }
 
-  if (selector.startsWith("#")) {
-    return -2;
+  // Unique ID selectors can only be simple. When composed, ID selectors are always followed by non-unique parts
+  if (selector.startsWith("#") && tokenCount === 1) {
+    return -4;
   }
 
   if (isSelectorUsuallyUnique(selector)) {
+    if (tokenCount === 1) {
+      return -3;
+    }
+
     return -1;
+  }
+
+  if (selector.startsWith(".") && tokenCount === 1) {
+    return -2;
   }
 
   if (selector.startsWith(".")) {
@@ -161,6 +266,7 @@ interface SafeCssSelectorOptions {
   selectors?: Array<keyof typeof CssSelectorType>;
   root?: Element;
   excludeRandomClasses?: boolean;
+  allowMultiSelection?: boolean;
 }
 
 /**
@@ -182,7 +288,7 @@ export function getAttributeSelectorRegex(...attributes: string[]): RegExp {
  * front-end framework elements that aren't good for selectors
  */
 export function safeCssSelector(
-  element: HTMLElement,
+  elements: HTMLElement[],
   {
     selectors = DEFAULT_SELECTOR_PRIORITIES,
     excludeRandomClasses = false,
@@ -191,29 +297,50 @@ export function safeCssSelector(
   }: SafeCssSelectorOptions = {}
 ): string {
   // https://github.com/fczbkk/css-selector-generator
+  const siteSelectorHint = getSiteSelectorHint(elements[0]);
 
-  const selector = getCssSelector(element, {
-    blacklist: [
-      ...UNSTABLE_SELECTORS,
+  const blacklist = [
+    ...UNSTABLE_SELECTORS,
+    ...siteSelectorHint.badPatterns,
 
-      excludeRandomClasses
-        ? (selector) => {
-            if (!selector.startsWith(".")) {
-              return false;
-            }
-
-            const usefulness = guessUsefulness(selector);
-            console.debug("css-selector-generator:  ", usefulness);
-            return usefulness.isRandom;
+    excludeRandomClasses
+      ? (selector: string) => {
+          if (!selector.startsWith(".")) {
+            return false;
           }
-        : undefined,
-    ],
-    whitelist: [getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES)],
+
+          const usefulness = guessUsefulness(selector);
+          console.debug("css-selector-generator:  ", usefulness);
+          return usefulness.isRandom;
+        }
+      : undefined,
+  ];
+  const whitelist = [
+    getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES),
+    ...siteSelectorHint.stableAnchors,
+  ];
+
+  const selector = getCssSelector(elements, {
+    blacklist,
+    whitelist,
     selectors,
     combineWithinSelector: true,
     combineBetweenSelectors: true,
     root,
   });
+
+  const allSelectors = elements.map((element) =>
+    getCssSelector(element, {
+      blacklist: [...blacklist, ":nth-child"],
+      whitelist: ["class", "tag"],
+      selectors: ["class", "tag"],
+      combineWithinSelector: true,
+      combineBetweenSelectors: true,
+      root,
+    })
+  );
+
+  console.debug("selectors", selector, allSelectors);
 
   if (root == null && selector.startsWith(":nth-child")) {
     // JQuery will happily return other matches that match the nth-child chain, so make attach it to the body
@@ -222,6 +349,123 @@ export function safeCssSelector(
   }
 
   return selector;
+}
+
+/**
+ * Get common selector for multi-element
+ * It is used by expand selection feature
+ */
+export function commonCssSelector(
+  elements: HTMLElement[],
+  {
+    selectors = DEFAULT_SELECTOR_PRIORITIES,
+    excludeRandomClasses = false,
+    // eslint-disable-next-line unicorn/no-useless-undefined -- Convert null to undefined or else getCssSelector bails
+    root = undefined,
+  }: SafeCssSelectorOptions = {}
+): string {
+  // https://github.com/fczbkk/css-selector-generator
+  const siteSelectorHint = getSiteSelectorHint(elements[0]);
+
+  const blacklist = [
+    ...UNSTABLE_SELECTORS,
+    ...siteSelectorHint.badPatterns,
+
+    excludeRandomClasses
+      ? (selector: string) => {
+          if (!selector.startsWith(".")) {
+            return false;
+          }
+
+          const usefulness = guessUsefulness(selector);
+          console.debug("css-selector-generator:  ", usefulness);
+          return usefulness.isRandom;
+        }
+      : undefined,
+  ];
+  const whitelist = [
+    getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES),
+    ...siteSelectorHint.stableAnchors,
+  ];
+
+  // Handle differently if multi-element
+  const ancestors = elements.map((element) =>
+    $(element)
+      .parentsUntil(root)
+      .filter(
+        [...UNIQUE_ATTRIBUTES, "class"]
+          .map((attribute) => `[${attribute}]`)
+          .join(",")
+      )
+      .get()
+  );
+  // Get common ancester
+  const [commonAncestor] = intersection(...ancestors);
+
+  const [commonParentClassName] = intersection(
+    ...elements.map((element) => [$(element).parent().attr("class")])
+  );
+
+  if (commonAncestor) {
+    // Get common class of elements
+    const [commonClassName] = intersection(
+      ...elements.map((element) => element.className)
+    );
+
+    // Get first common class of ancestor of elements
+    const [commonAncestorClassName] = intersection(
+      ...ancestors.map((list) => list.map((element) => element.className))
+    );
+
+    // Get selector of common ancestor
+    const commonAncestorSelector = getCssSelector(commonAncestor, {
+      blacklist,
+      whitelist: ["class", "tag", ...whitelist],
+      selectors,
+      combineWithinSelector: true,
+      combineBetweenSelectors: true,
+      root,
+    });
+
+    // If elements have comment class we can easily select them
+    if (commonClassName) {
+      return [
+        commonAncestorSelector,
+        getSelectorFromClass(commonClassName),
+      ].join(" ");
+    }
+
+    if (commonParentClassName) {
+      return [
+        commonAncestorSelector,
+        getSelectorFromClass(commonParentClassName),
+        ">",
+        elements[0].tagName.toLowerCase(),
+      ].join(" ");
+    }
+
+    if (commonAncestorClassName) {
+      // If not, we use common ancestor's class
+
+      if (
+        intersection(
+          $(commonAncestorSelector),
+          $(getSelectorFromClass(commonAncestorClassName))
+        ).length > 0
+      ) {
+        // Make sure that commonAncestorClassName is not duplicated with commonAncestorSelector
+        return [commonAncestorSelector, elements[0].tagName.toLowerCase()].join(
+          " "
+        );
+      }
+
+      return [
+        commonAncestorSelector,
+        getSelectorFromClass(commonAncestorClassName),
+        elements[0].tagName.toLowerCase(),
+      ].join(" ");
+    }
+  }
 }
 
 function findAncestorsWithIdLikeSelectors(
@@ -237,13 +481,14 @@ export function inferSelectorsIncludingStableAncestors(
   root?: Element,
   excludeRandomClasses?: boolean
 ): string[] {
+  const siteSelectorHint = getSiteSelectorHint(element);
   const stableAncestors = findAncestorsWithIdLikeSelectors(
     element,
     root
   ).flatMap((stableAncestor) =>
     inferSelectors(element, stableAncestor, excludeRandomClasses).flatMap(
       (selector) =>
-        getUniqueAttributeSelectors(stableAncestor)
+        getUniqueAttributeSelectors(stableAncestor, siteSelectorHint)
           .filter(Boolean)
           .map((stableAttributeSelector) =>
             [stableAttributeSelector, selector].join(" ")
@@ -271,7 +516,7 @@ export function inferSelectors(
 ): string[] {
   const makeSelector = (allowed?: Array<keyof typeof CssSelectorType>) => {
     try {
-      return safeCssSelector(element, {
+      return safeCssSelector([element], {
         selectors: allowed,
         root,
         excludeRandomClasses,
@@ -293,6 +538,7 @@ export function inferSelectors(
         makeSelector(["tag", "class", "attribute", "nthchild"]),
         makeSelector(["id", "tag", "attribute", "nthchild"]),
         makeSelector(["id", "tag", "attribute"]),
+        makeSelector(["class", "tag", "attribute"]),
         makeSelector(),
       ])
     )
@@ -468,7 +714,7 @@ function getSelectorTree(target: HTMLElement): string[] {
     .parentsUntil("body")
     .addBack()
     .get()
-    .map((ancestor) => getElementSelector(ancestor));
+    .map((ancestor: Element) => getElementSelector(ancestor));
 }
 
 /**

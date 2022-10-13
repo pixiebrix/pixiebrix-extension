@@ -22,8 +22,7 @@ import "@/development/autoreload";
 import "@/development/errorsBadge";
 
 // Required for MV3; Service Workers don't have XMLHttpRequest
-// TODO: Disabled due to https://github.com/pixiebrix/pixiebrix-extension/issues/3020
-// import "@/background/axiosFetch";
+import "@/background/axiosFetch";
 
 import "webext-dynamic-content-scripts";
 
@@ -42,6 +41,7 @@ import initFirefoxCompat from "@/background/firefoxCompat";
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
 import initActiveTabTracking from "@/background/activeTab";
 import initPartnerTheme from "@/background/partnerTheme";
+import initStarterBlueprints from "@/background/starterBlueprints";
 
 void initLocator();
 registerMessenger();
@@ -50,7 +50,7 @@ initBrowserAction();
 initInstaller();
 initNavigation();
 initExecutor();
-initGoogle();
+void initGoogle();
 initContextMenus();
 initBrowserCommands();
 initDeploymentUpdater();
@@ -58,3 +58,4 @@ initFirefoxCompat();
 activateBrowserActionIcon();
 initActiveTabTracking();
 initPartnerTheme();
+initStarterBlueprints();

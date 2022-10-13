@@ -47,6 +47,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { produce } from "immer";
 import { sortBy } from "lodash";
 import { serializeError } from "serialize-error";
+import { UnknownObject } from "@/types";
 
 type QueryArgs = {
   /**
@@ -155,6 +156,7 @@ export const appApi = createApi({
     "CloudExtensions",
     "Package",
     "PackageVersion",
+    "StarterBlueprints",
   ],
   endpoints: (builder) => ({
     getMe: builder.query<Me, void>({
@@ -355,7 +357,11 @@ export const appApi = createApi({
           },
         };
       },
-      invalidatesTags: ["Recipes", "EditablePackages"],
+      invalidatesTags: (result, error, { packageId }) => [
+        { type: "Package", id: packageId },
+        "Recipes",
+        "EditablePackages",
+      ],
     }),
     getInvitations: builder.query<PendingInvitation[], void>({
       query: () => ({ url: "/api/invitations/me", method: "get" }),
@@ -364,6 +370,43 @@ export const appApi = createApi({
     getPackage: builder.query<Package, { id: UUID }>({
       query: ({ id }) => ({ url: `/api/bricks/${id}/`, method: "get" }),
       providesTags: (result, error, { id }) => [{ type: "Package", id }],
+    }),
+    createPackage: builder.mutation<PackageUpsertResponse, UnknownObject>({
+      query(data) {
+        return {
+          url: "api/bricks/",
+          method: "post",
+          data,
+        };
+      },
+      invalidatesTags: ["Recipes", "EditablePackages"],
+    }),
+    updatePackage: builder.mutation<
+      PackageUpsertResponse,
+      { id: UUID } & UnknownObject
+    >({
+      query(data) {
+        return {
+          url: `api/bricks/${data.id}/`,
+          method: "put",
+          data,
+        };
+      },
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Package", id },
+        "Recipes",
+        "EditablePackages",
+      ],
+    }),
+    deletePackage: builder.mutation<void, { id: UUID }>({
+      query({ id }) {
+        return { url: `/api/bricks/${id}/`, method: "delete" };
+      },
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Package", id },
+        "Recipes",
+        "EditablePackages",
+      ],
     }),
     listPackageVersions: builder.query<PackageVersion[], { id: UUID }>({
       query: ({ id }) => ({
@@ -384,6 +427,18 @@ export const appApi = createApi({
         data: { scope },
       }),
       invalidatesTags: ["Me"],
+    }),
+    getStarterBlueprints: builder.query<RecipeDefinition[], void>({
+      query: () => ({
+        url: "/api/onboarding/starter-blueprints/",
+        method: "get",
+        data: {
+          ignore_user_state: true,
+        },
+      }),
+      providesTags: (result, error) => [
+        { type: "StarterBlueprints", id: "LIST" },
+      ],
     }),
   }),
 });
@@ -407,6 +462,10 @@ export const {
   useUpdateRecipeMutation,
   useGetInvitationsQuery,
   useGetPackageQuery,
+  useCreatePackageMutation,
+  useUpdatePackageMutation,
+  useDeletePackageMutation,
   useListPackageVersionsQuery,
   useUpdateScopeMutation,
+  useGetStarterBlueprintsQuery,
 } = appApi;

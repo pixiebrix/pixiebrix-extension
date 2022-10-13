@@ -18,9 +18,7 @@
 import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
 
 const elementTypeLabels: Record<DocumentElementType, string> = {
-  header_1: "Header 1",
-  header_2: "Header 2",
-  header_3: "Header 3",
+  header: "Header",
   container: "Container",
   row: "Row",
   column: "Column",
@@ -30,6 +28,11 @@ const elementTypeLabels: Record<DocumentElementType, string> = {
   button: "Button",
   pipeline: "Brick",
   list: "List",
+
+  // For backwards compatibility
+  header_1: "Header 1",
+  header_2: "Header 2",
+  header_3: "Header 3",
 };
 
 export default elementTypeLabels;

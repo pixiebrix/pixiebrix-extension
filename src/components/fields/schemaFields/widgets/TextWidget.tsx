@@ -32,14 +32,13 @@ import { isTemplateExpression } from "@/runtime/mapArgs";
 import { trim } from "lodash";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
-import {
-  getToggleOptions,
-  isKeyStringField,
-} from "@/components/fields/schemaFields/getToggleOptions";
+import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
 import useUndo from "@/hooks/useUndo";
-
-const TEMPLATE_ERROR_MESSAGE =
-  "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";
+import { isKeyStringField } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import {
+  makeTemplateExpression,
+  makeVariableExpression,
+} from "@/runtime/expressionCreators";
 
 function schemaSupportsTemplates(schema: Schema): boolean {
   const options = getToggleOptions({
@@ -74,18 +73,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   focusInput,
   ...formControlProps
 }) => {
-  const [{ value, ...restInputProps }, , { setValue }] = useField({
-    name,
-    validate(value) {
-      if (
-        isTemplateExpression(value) &&
-        value.__type__ !== "mustache" &&
-        isMustacheOnly(value.__value__)
-      ) {
-        return TEMPLATE_ERROR_MESSAGE;
-      }
-    },
-  });
+  const [{ value, ...restInputProps }, , { setValue }] = useField(name);
 
   const { allowExpressions: allowExpressionsContext } =
     useContext(FieldRuntimeContext);
@@ -143,10 +131,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
         const changeValue = target.value;
         // Automatically switch to var if user types "@" in the input
         if (templateEngine !== "var" && isVarValue(changeValue)) {
-          setValue({
-            __type__: "var",
-            __value__: changeValue,
-          });
+          setValue(makeVariableExpression(changeValue));
         } else if (
           templateEngine === "var" &&
           supportsTemplates &&
@@ -156,15 +141,9 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
           const templateValue = isVarValue(trimmed)
             ? changeValue.replace(trimmed, `{{${trimmed}}}`)
             : changeValue;
-          setValue({
-            __type__: "nunjucks",
-            __value__: templateValue,
-          });
+          setValue(makeTemplateExpression("nunjucks", templateValue));
         } else {
-          setValue({
-            __type__: templateEngine,
-            __value__: changeValue,
-          });
+          setValue(makeTemplateExpression(templateEngine, changeValue));
         }
       };
 

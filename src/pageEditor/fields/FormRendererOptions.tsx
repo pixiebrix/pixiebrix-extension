@@ -32,17 +32,22 @@ import {
   Storage,
 } from "@/blocks/renderers/customForm";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
-import DatabaseField from "@/pageEditor/fields/DatabaseField";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import Select, { Options } from "react-select";
+import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
+import databaseSchema from "@schemas/database.json";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
 const recordIdSchema: Schema = {
   type: "string",
   description: "Unique identifier for the data record",
+};
+
+const databaseIdSchema: Schema = {
+  $ref: databaseSchema.$id,
 };
 
 function usePruneUnusedServiceDependencies() {
@@ -132,7 +137,12 @@ const FormRendererOptions: React.FC<{
 
       {storageType === "database" && (
         <>
-          <DatabaseField name={makeName("storage", "databaseId")} />
+          <SchemaField
+            name={makeName("storage", "databaseId")}
+            label="Database"
+            isRequired
+            schema={databaseIdSchema}
+          />
           <AppServiceField name={makeName("storage", "service")} />
         </>
       )}
@@ -168,6 +178,7 @@ const FormRendererOptions: React.FC<{
           name={configName}
           activeField={activeElement}
           setActiveField={setActiveElement}
+          fieldTypes={FORM_FIELD_TYPE_OPTIONS}
         />
       </ConfigErrorBoundary>
     </div>

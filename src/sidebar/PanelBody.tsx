@@ -26,8 +26,6 @@ import RendererComponent from "@/sidebar/RendererComponent";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useAsyncEffect } from "use-async-effect";
-import GridLoader from "react-spinners/GridLoader";
-import styles from "./PanelBody.module.scss";
 import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
 import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
@@ -45,11 +43,7 @@ const BodyContainer: React.FC<BodyProps & { isFetching: boolean }> = ({
   meta,
 }) => (
   <>
-    {isFetching && (
-      <span className={styles.loader}>
-        <GridLoader size={8} />
-      </span>
-    )}
+    {isFetching && <Loader />}
 
     <div className="full-height" data-block-id={blockId}>
       <ReactShadowRoot>
@@ -185,11 +179,7 @@ const PanelBody: React.FunctionComponent<{
     if (cancelError) {
       return (
         <>
-          {state.isFetching && (
-            <span className={styles.loader}>
-              <GridLoader size={8} />
-            </span>
-          )}
+          {state.isFetching && <Loader size={8} />}
           {isRootPanel ? (
             <RootCancelledPanel error={cancelError} />
           ) : (
@@ -203,11 +193,7 @@ const PanelBody: React.FunctionComponent<{
 
     return (
       <>
-        {state.isFetching && (
-          <span className={styles.loader}>
-            <GridLoader size={8} />
-          </span>
-        )}
+        {state.isFetching && <Loader size={8} />}
         {isRootPanel ? (
           <RootErrorPanel error={state.error} />
         ) : (

@@ -40,11 +40,16 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { RecipeDefinition } from "@/types/definitions";
 import * as semver from "semver";
+import ActionMenu from "@/components/sidebar/ActionMenu";
 
 export type RecipeEntryProps = PropsWithChildren<{
   recipe: RecipeDefinition | undefined;
   isActive?: boolean;
   installedVersion: SemVerString;
+  onSave: () => Promise<void>;
+  isSaving: boolean;
+  onReset: () => Promise<void>;
+  onRemove: () => Promise<void>;
 }>;
 
 const RecipeEntry: React.FC<RecipeEntryProps> = ({
@@ -52,6 +57,10 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
   isActive,
   children,
   installedVersion,
+  onSave,
+  isSaving,
+  onReset,
+  onRemove,
 }) => {
   const dispatch = useDispatch();
 
@@ -95,7 +104,7 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
           <FontAwesomeIcon icon={faFile} /> <FontAwesomeIcon icon={caretIcon} />
         </span>
         <span className={styles.name}>{name}</span>
-        {isDirty && (
+        {isDirty && !isActive && (
           <span className={cx(styles.icon, "text-danger")}>
             <UnsavedChangesIcon />
           </span>
@@ -106,6 +115,15 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
               title={`You are editing version ${installedVersion} of this blueprint, the latest version is ${latestRecipeVersion}.`}
             />
           </span>
+        )}
+        {isActive && (
+          <ActionMenu
+            onSave={onSave}
+            onReset={onReset}
+            onRemove={onRemove}
+            isDirty={isDirty}
+            disabled={isSaving}
+          />
         )}
       </Accordion.Toggle>
       <Accordion.Collapse eventKey={recipeId}>

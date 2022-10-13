@@ -30,10 +30,11 @@ import cx from "classnames";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import {
-  FIELD_TYPE_OPTIONS,
   getMinimalSchema,
   getMinimalUiSchema,
+  stringifyUiType,
 } from "@/components/formBuilder/formBuilderHelpers";
+import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveRecipeId,
@@ -47,9 +48,15 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/pageEditor/components/Effect";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
-const fieldTypes = FIELD_TYPE_OPTIONS.filter(
-  (type) => !["File", "Image crop"].includes(type.label)
-);
+const fieldTypes = [
+  ...FORM_FIELD_TYPE_OPTIONS.filter(
+    (type) => !["File", "Image crop"].includes(type.label)
+  ),
+  {
+    label: "Database selector",
+    value: stringifyUiType({ propertyType: "string", uiWidget: "database" }),
+  },
+];
 
 const formRuntimeContext: RuntimeContext = {
   apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,

@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectBlockContainerRendered"] }] */
+
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@testing-library/react";
@@ -106,6 +108,19 @@ describe("When rendered in panel", () => {
     expect(element).not.toBeNull();
     expect(element).toHaveClass("test-class");
     expect(element).toHaveTextContent("Test Paragraph");
+  });
+
+  test("renders markdown", () => {
+    const config = {
+      type: "text",
+      config: {
+        text: "Test ~~Paragraph~~",
+        enableMarkdown: true,
+        className: "test-class",
+      },
+    };
+    const rendered = renderDocument(config);
+    expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   test("renders unknown type", () => {

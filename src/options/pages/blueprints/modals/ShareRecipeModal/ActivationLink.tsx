@@ -17,7 +17,7 @@
 
 import { RegistryId } from "@/core";
 import React from "react";
-import copy from "copy-to-clipboard";
+import copy from "copy-text-to-clipboard";
 import notify from "@/utils/notify";
 import { Button, Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

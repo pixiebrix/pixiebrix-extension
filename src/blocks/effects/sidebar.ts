@@ -64,7 +64,7 @@ export class ShowSidebar extends Effect {
   ): Promise<void> {
     // Don't pass extensionId here because the extensionId in showOptions refers to the extensionId of the panel,
     // not the extensionId of the extension toggling the sidebar
-    showSidebar({
+    void showSidebar({
       force: forcePanel,
       panelHeading,
       blueprintId: logger.context.blueprintId,

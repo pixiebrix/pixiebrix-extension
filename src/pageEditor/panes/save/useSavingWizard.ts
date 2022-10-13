@@ -48,7 +48,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import pDefer, { DeferredPromise } from "p-defer";
 import { PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -134,7 +134,7 @@ const useSavingWizard = () => {
     };
 
     dispatch(editorActions.addElement(personalElement));
-    await reset({ element, shouldShowConfirmation: false });
+    await reset({ extensionId: element.uuid, shouldShowConfirmation: false });
     const error = await create({ element: personalElement, pushToCloud: true });
     if (!error) {
       dispatch(editorActions.removeElement(element.uuid));

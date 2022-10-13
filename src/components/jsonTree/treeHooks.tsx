@@ -16,13 +16,14 @@
  */
 
 import React, { useCallback } from "react";
-import copy from "copy-to-clipboard";
+import copy from "copy-text-to-clipboard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import notify from "@/utils/notify";
 import styles from "./JsonTree.module.scss";
 import { Button } from "react-bootstrap";
 import cx from "classnames";
+import { getPathFromArray } from "@/runtime/pathHelpers";
 
 export function useLabelRenderer() {
   // https://github.com/reduxjs/redux-devtools/blob/85b4b0fb04b1d6d95054d5073fa17fa61efc0df3/packages/redux-devtools-inspector-monitor/src/ActionPreview.tsx
@@ -41,10 +42,10 @@ export function useLabelRenderer() {
         <Button
           variant="text"
           className={cx(styles.copyPath, "p-0")}
-          aria-label="copy path"
+          aria-label="Copy path"
           href="#"
           onClick={(event) => {
-            copy([key, ...rest].reverse().join("."));
+            copy(getPathFromArray([key, ...rest].reverse()));
             event.preventDefault();
             event.stopPropagation();
             notify.info("Copied property path to the clipboard");

@@ -17,9 +17,9 @@
 
 import { Renderer } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg, SafeHTML } from "@/core";
-import safeMarkdown from "@/utils/safeMarkdown";
+import { BlockArg, ComponentRef } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
+import MarkdownLazy from "@/components/MarkdownLazy";
 
 export class MarkdownRenderer extends Renderer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/markdown");
@@ -43,7 +43,12 @@ export class MarkdownRenderer extends Renderer {
     ["markdown"]
   );
 
-  async render({ markdown }: BlockArg): Promise<SafeHTML> {
-    return safeMarkdown(markdown);
+  async render({ markdown }: BlockArg): Promise<ComponentRef> {
+    return {
+      Component: MarkdownLazy,
+      props: {
+        markdown,
+      },
+    };
   }
 }

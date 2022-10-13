@@ -66,6 +66,7 @@ import {
 } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
 import { Permissions } from "webextension-polyfill";
+import { makeEmptyPermissions } from "@/utils/permissions";
 
 export interface WizardStep {
   step: string;
@@ -192,7 +193,7 @@ export function makeInitialBaseState(
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     services: [],
-    permissions: {},
+    permissions: makeEmptyPermissions(),
     optionsArgs: {},
     extension: {
       blockPipeline: [],
@@ -428,17 +429,17 @@ export function readerTypeHack(reader: ReaderConfig): SingleLayerReaderConfig {
  * @param pipelineProp the name of the pipeline prop, currently either "action" or "body"
  * @param defaults
  */
-export function extensionWithNormalizedPipeline<
+export async function extensionWithNormalizedPipeline<
   T extends UnknownObject,
   Prop extends keyof T
 >(
   config: T,
   pipelineProp: Prop,
   defaults: Partial<T> = {}
-): BaseExtensionState & Omit<T, Prop> {
+): Promise<BaseExtensionState & Omit<T, Prop>> {
   const { [pipelineProp]: pipeline, ...rest } = { ...config };
   return {
-    blockPipeline: normalizePipelineForEditor(
+    blockPipeline: await normalizePipelineForEditor(
       castArray(pipeline) as BlockPipeline
     ),
     ...defaults,

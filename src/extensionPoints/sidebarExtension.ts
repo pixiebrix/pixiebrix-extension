@@ -24,8 +24,6 @@ import {
   IExtension,
   IExtensionPoint,
   IReader,
-  Logger,
-  Metadata,
   ReaderOutput,
   ResolvedExtension,
   RunArgs,
@@ -45,12 +43,9 @@ import { Permissions } from "webextension-polyfill";
 import { checkAvailable } from "@/blocks/available";
 import notify from "@/utils/notify";
 import {
-  isSidebarVisible,
-  registerShowCallback,
   removeExtensionPoint,
-  removeShowCallback,
   reservePanels,
-  ShowCallback,
+  sidebarShowEvents,
   updateHeading,
   upsertPanel,
 } from "@/contentScript/sidebarController";
@@ -70,6 +65,7 @@ import { mergeReaders } from "@/blocks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { NoRendererError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
+import { isSidebarFrameVisible } from "@/contentScript/sidebarDomControllerLite";
 
 export type SidebarConfig = {
   heading: string;
@@ -97,8 +93,6 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
 
   readonly permissions: Permissions.Permissions = {};
 
-  readonly showCallback: ShowCallback;
-
   /**
    * Controller to drop all listeners and timers
    * @private
@@ -106,30 +100,6 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   private abortController = new AbortController();
 
   private installedListeners = false;
-
-  /**
-   * A bound version of eventHandler
-   * @private
-   */
-  private readonly boundEventHandler: JQuery.EventHandler<unknown>;
-
-  protected constructor(metadata: Metadata, logger: Logger) {
-    super(metadata, logger);
-    this.showCallback = SidebarExtensionPoint.prototype.run.bind(this);
-    // Bind so we can pass as callback
-    this.boundEventHandler = this.eventHandler.bind(this);
-  }
-
-  /**
-   * Refresh all panels for the extension point
-   * @private
-   */
-  // Can't set in constructor because the constructor doesn't have access to debounceOptions
-  private debouncedRefreshPanelsAndNotify: ({
-    shouldRunExtension,
-  }: {
-    shouldRunExtension: (extension: IExtension) => boolean;
-  }) => Promise<void>;
 
   inputSchema: Schema = propertiesToSchema(
     {
@@ -169,7 +139,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   public override uninstall(): void {
     this.removeExtensions();
     removeExtensionPoint(this.id);
-    removeShowCallback(this.showCallback);
+    sidebarShowEvents.remove(this.run);
     this.cancelListeners();
   }
 
@@ -181,7 +151,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   public HACK_uninstallExceptExtension(extensionId: UUID): void {
     this.removeExtensions();
     removeExtensionPoint(this.id, { preserveExtensionIds: [extensionId] });
-    removeShowCallback(this.showCallback);
+    sidebarShowEvents.remove(this.run);
   }
 
   private async runExtension(
@@ -255,11 +225,11 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   /**
    * DO NOT CALL DIRECTLY - call debouncedRefreshPanels
    */
-  private async refreshPanels({
+  private readonly refreshPanels = async ({
     shouldRunExtension = stubTrue,
   }: {
     shouldRunExtension?: (extension: IExtension) => boolean;
-  }): Promise<void> {
+  }): Promise<void> => {
     const extensionsToRefresh = this.extensions.filter((extension) =>
       shouldRunExtension(extension)
     );
@@ -295,7 +265,13 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
     if (errors.length > 0) {
       notify.error(`An error occurred adding ${errors.length} panels(s)`);
     }
-  }
+  };
+
+  /**
+   * Refresh all panels for the extension point
+   * @private
+   */
+  private debouncedRefreshPanels = this.refreshPanels; // Default to un-debounced
 
   addCancelHandler(callback: () => void): void {
     this.abortController.signal.addEventListener("abort", callback);
@@ -317,7 +293,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   private readonly eventHandler: JQuery.EventHandler<unknown> = async (
     event
   ) => {
-    await this.debouncedRefreshPanelsAndNotify({
+    await this.debouncedRefreshPanels({
       shouldRunExtension:
         this.trigger === "statechange"
           ? makeShouldRunExtensionForStateChange(event.originalEvent)
@@ -328,17 +304,17 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   private attachEventTrigger(eventName: string): void {
     const $document = $(document);
 
-    $document.off(eventName, this.boundEventHandler);
+    $document.off(eventName, this.eventHandler);
 
     // Install the DOM trigger
-    $document.on(eventName, this.boundEventHandler);
+    $document.on(eventName, this.eventHandler);
 
     this.addCancelHandler(() => {
-      $document.off(eventName, this.boundEventHandler);
+      $document.off(eventName, this.eventHandler);
     });
   }
 
-  async run({ reason }: RunArgs): Promise<void> {
+  run = async ({ reason }: RunArgs): Promise<void> => {
     if (!(await this.isAvailable())) {
       // Keep sidebar up-to-date regardless of trigger policy
       removeExtensionPoint(this.id);
@@ -353,7 +329,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
       return;
     }
 
-    if (!isSidebarVisible()) {
+    if (!isSidebarFrameVisible()) {
       console.debug(
         "Skipping run for %s because sidebar is not visible",
         this.id
@@ -374,7 +350,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
       this.trigger === "load" ||
       [RunReason.MANUAL, RunReason.INITIAL_LOAD].includes(reason)
     ) {
-      void this.debouncedRefreshPanelsAndNotify({
+      void this.debouncedRefreshPanels({
         shouldRunExtension: stubTrue,
       });
     }
@@ -394,23 +370,24 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
 
       this.installedListeners = true;
     }
-  }
+  };
 
   async install(): Promise<boolean> {
     const available = await this.isAvailable();
     if (available) {
-      registerShowCallback(this.showCallback);
+      sidebarShowEvents.add(this.run);
     } else {
       removeExtensionPoint(this.id);
     }
 
-    const boundRefresh = this.refreshPanels.bind(this);
-
-    this.debouncedRefreshPanelsAndNotify = this.debounceOptions
-      ? debounce(boundRefresh, this.debounceOptions.waitMillis ?? 0, {
-          ...this.debounceOptions,
-        })
-      : boundRefresh;
+    if (this.debounceOptions?.waitMillis) {
+      const { waitMillis, ...options } = this.debounceOptions;
+      this.debouncedRefreshPanels = debounce(
+        this.refreshPanels,
+        waitMillis,
+        options
+      );
+    }
 
     return available;
   }

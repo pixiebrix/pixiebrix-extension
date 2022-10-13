@@ -39,6 +39,9 @@ const shared = {
 
       // https://github.com/webpack/webpack/pull/12693#issuecomment-914079083
       filenamify: "filenamify/browser",
+
+      // Lighter jQuery version
+      jquery: "jquery/dist/jquery.slim.min.js",
     },
     extensions: [".ts", ".tsx", ".jsx", ".js"],
     fallback: {
@@ -113,10 +116,12 @@ const shared = {
         type: "asset/source",
       },
       {
+        // CSS-only, must include .css or else it may output .scss files
+        test: /\.s?css$/,
         resourceQuery: /loadAsUrl/,
         type: "asset/resource",
         generator: {
-          filename: "css/[name][ext]",
+          filename: "css/[name].css",
         },
       },
     ],

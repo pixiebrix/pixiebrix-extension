@@ -27,27 +27,39 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type AlertProps = PropsWithChildren<{
   variant: "info" | "warning" | "danger";
+  className?: string;
 }>;
 
-const Alert: React.FunctionComponent<AlertProps> = ({ variant, children }) => {
+const Alert: React.FunctionComponent<AlertProps> = ({
+  variant,
+  className,
+  children,
+}) => {
   let icon: IconDefinition;
   switch (variant) {
-    case "info":
+    case "info": {
       icon = faInfoCircle;
       break;
-    case "warning":
+    }
+
+    case "warning": {
       icon = faExclamationTriangle;
       break;
-    case "danger":
+    }
+
+    case "danger": {
       icon = faExclamationCircle;
       break;
+    }
 
-    default:
+    default: {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamically inferring never
       throw new Error(`Unknown variant: ${variant}`);
+    }
   }
 
   return (
-    <BootstrapAlert variant={variant}>
+    <BootstrapAlert variant={variant} className={className}>
       <FontAwesomeIcon icon={icon} /> {children}
     </BootstrapAlert>
   );

@@ -24,6 +24,7 @@ import {
   showForm,
 } from "@/sidebar/protocol";
 import { isBrowserSidebar } from "@/chrome";
+import { noop } from "lodash";
 
 // TODO: Use `expectContext("sidebar")` when it’s supported
 if (!isBrowserSidebar()) {
@@ -36,6 +37,7 @@ declare global {
     SIDEBAR_RENDER_PANELS: typeof renderPanels;
     SIDEBAR_SHOW_FORM: typeof showForm;
     SIDEBAR_HIDE_FORM: typeof hideForm;
+    SIDEBAR_PING: typeof noop;
   }
 }
 
@@ -45,5 +47,6 @@ export default function registerMessenger(): void {
     SIDEBAR_RENDER_PANELS: renderPanels,
     SIDEBAR_SHOW_FORM: showForm,
     SIDEBAR_HIDE_FORM: hideForm,
+    SIDEBAR_PING: noop,
   });
 }

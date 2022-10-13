@@ -15,48 +15,63 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import reportError from "@/telemetry/reportError";
+
 const API_KEY = process.env.GOOGLE_API_KEY;
 
 import { DISCOVERY_DOCS as SHEETS_DOCS } from "./sheets/handlers";
 import { DISCOVERY_DOCS as BIGQUERY_DOCS } from "./bigquery/handlers";
 import { isChrome } from "webext-detect-page";
+import pMemoize from "p-memoize";
+import injectScriptTag from "@/utils/injectScriptTag";
+import { isMV3 } from "@/mv3/api";
 
 declare global {
   interface Window {
-    onGAPILoad?: () => void;
+    onGAPILoad?: () => Promise<void>;
   }
 }
 
 // https://bumbu.me/gapi-in-chrome-extension
 async function onGAPILoad(): Promise<void> {
-  await gapi.client.init({
-    // Don't pass client nor scope as these will init auth2, which we don't want
-    // until the user actually uses a brick
-    apiKey: API_KEY,
-    discoveryDocs: [...BIGQUERY_DOCS, ...SHEETS_DOCS],
-  });
-  console.info("gapi initialized");
+  try {
+    await gapi.client.init({
+      // Don't pass client nor scope as these will init auth2, which we don't want
+      // until the user actually uses a brick
+      apiKey: API_KEY,
+      discoveryDocs: [...BIGQUERY_DOCS, ...SHEETS_DOCS],
+    });
+    console.info("gapi initialized");
+  } catch (error) {
+    // Catch explicitly instead of letting it reach to top-level rejected promise handler
+    // https://github.com/google/google-api-javascript-client/issues/64#issuecomment-336488275
+    reportError(error);
+  }
 }
 
-function initGoogle(): void {
-  if (!isChrome() || typeof document === "undefined" /* MV3 exclusion */) {
+async function _initGoogle(): Promise<boolean> {
+  if (!isChrome() || isMV3()) {
     // TODO: Use feature detection instead of sniffing the user agent
     console.info(
       "Google API not enabled because it's not supported by this browser"
     );
-    return;
+    return false;
   }
 
   if (!API_KEY) {
     console.info("Google API not enabled because the API key is not available");
-    return;
+    return false;
   }
 
   window.onGAPILoad = onGAPILoad;
 
-  const script = document.createElement("script");
-  script.src = "https://apis.google.com/js/client.js?onload=onGAPILoad";
-  document.head.append(script);
+  await injectScriptTag(
+    "https://apis.google.com/js/client.js?onload=onGAPILoad"
+  );
+
+  return true;
 }
 
+// `pMemoize` will avoid multiple injections, while also allow retrying if the first injection fails
+const initGoogle = pMemoize(_initGoogle);
 export default initGoogle;

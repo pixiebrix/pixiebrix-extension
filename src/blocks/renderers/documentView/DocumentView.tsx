@@ -16,17 +16,15 @@
  */
 
 import { buildDocumentBranch } from "@/components/documentBuilder/documentTree";
-import React, { useState } from "react";
+import React from "react";
 import ReactShadowRoot from "react-shadow-root";
-import BootstrapStylesheet from "@/blocks/renderers/BootstrapStylesheet";
+import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import { DocumentViewProps } from "./DocumentViewProps";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { joinPathParts } from "@/utils";
+import { Stylesheets } from "@/components/Stylesheets";
 
 const DocumentView: React.FC<DocumentViewProps> = ({ body, options, meta }) => {
-  // Track style loading to avoid a FOUC
-  const [styleLoaded, setStyleLoaded] = useState(false);
-
   if (!meta?.runId) {
     // The sidebar panel should dynamically pass the prop through
     throw new Error("meta.runId is required for DocumentView");
@@ -43,19 +41,15 @@ const DocumentView: React.FC<DocumentViewProps> = ({ body, options, meta }) => {
     <DocumentContext.Provider value={{ options, meta }}>
       <div className="h-100">
         <ReactShadowRoot>
-          <BootstrapStylesheet
-            onLoad={() => {
-              setStyleLoaded(true);
-            }}
-          />
-          {styleLoaded &&
-            body.map((documentElement, index) => {
+          <Stylesheets href={bootstrap}>
+            {body.map((documentElement, index) => {
               const { Component, props } = buildDocumentBranch(
                 documentElement,
                 { staticId: joinPathParts("body", "children"), branches: [] }
               );
               return <Component key={index} {...props} />;
             })}
+          </Stylesheets>
         </ReactShadowRoot>
       </div>
     </DocumentContext.Provider>

@@ -125,6 +125,11 @@ export type MenuItemExtensionConfig = {
   dynamicCaption?: boolean;
 
   /**
+   * True if want to prevent button to be clicked again while action is in progress
+   */
+  synchronous: boolean;
+
+  /**
    * (Experimental) message to show on error running the extension
    */
   onError?: MessageConfig;
@@ -135,7 +140,7 @@ export type MenuItemExtensionConfig = {
   /**
    * (Experimental) message to show on success when running the extension
    */
-  onSuccess?: MessageConfig;
+  onSuccess?: MessageConfig | boolean;
 };
 
 export const actionSchema: Schema = {
@@ -179,6 +184,11 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
   private readonly cancelDependencyObservers: Map<string, () => void>;
 
   private uninstalled = false;
+
+  private readonly runningExtensionElements = new Map<
+    string,
+    WeakSet<HTMLElement>
+  >();
 
   private readonly notifyError = debounce(
     notify.error,
@@ -476,6 +486,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       onError = {},
       onSuccess = {},
       icon = { id: "box", size: 18 },
+      synchronous,
     } = extension.config;
 
     const versionOptions = apiVersionOptions(extension.apiVersion);
@@ -544,48 +555,71 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     const $menuItem = this.makeItem(html, extension);
 
     $menuItem.on("click", async (event) => {
-      event.preventDefault();
-      event.stopPropagation();
+      let runningElements: WeakSet<HTMLElement> =
+        this.runningExtensionElements.get(extension.id);
+      if (runningElements == null) {
+        runningElements = new WeakSet([event.target]);
+        this.runningExtensionElements.set(extension.id, runningElements);
+      } else {
+        if (synchronous && runningElements.has(event.target)) {
+          return;
+        }
 
-      console.debug("Run menu item", this.logger.context);
-
-      reportEvent("MenuItemClick", selectEventData(extension));
+        runningElements.add(event.target);
+      }
 
       try {
-        // Read the latest state at the time of the action
-        const reader = await this.defaultReader();
+        event.preventDefault();
+        event.stopPropagation();
 
-        const initialValues: InitialValues = {
-          input: await reader.read(this.getReaderRoot($menu)),
-          serviceContext: await makeServiceContext(extension.services),
-          optionsArgs: extension.optionsArgs,
-          root: document,
-        };
+        console.debug("Run menu item", this.logger.context);
 
-        await reduceExtensionPipeline(actionConfig, initialValues, {
-          logger: extensionLogger,
-          ...apiVersionOptions(extension.apiVersion),
-        });
+        reportEvent("MenuItemClick", selectEventData(extension));
 
-        extensionLogger.info("Successfully ran menu action");
+        try {
+          // Read the latest state at the time of the action
+          const reader = await this.defaultReader();
 
-        showNotification({
-          ...DEFAULT_ACTION_RESULTS.success,
-          ...pick(onSuccess, "message", "type"),
-        });
-      } catch (error) {
-        if (hasSpecificErrorCause(error, CancelError)) {
-          showNotification({
-            ...DEFAULT_ACTION_RESULTS.cancel,
-            ...pick(onCancel, "message", "type"),
+          const initialValues: InitialValues = {
+            input: await reader.read(this.getReaderRoot($menu)),
+            serviceContext: await makeServiceContext(extension.services),
+            optionsArgs: extension.optionsArgs,
+            root: document,
+          };
+
+          await reduceExtensionPipeline(actionConfig, initialValues, {
+            logger: extensionLogger,
+            ...apiVersionOptions(extension.apiVersion),
           });
-        } else {
-          extensionLogger.error(error);
-          showNotification({
-            ...DEFAULT_ACTION_RESULTS.error,
-            ...pick(onError, "message", "type"),
-          });
+
+          extensionLogger.info("Successfully ran menu action");
+
+          if (onSuccess) {
+            if (typeof onSuccess === "boolean") {
+              showNotification(DEFAULT_ACTION_RESULTS.success);
+            } else {
+              showNotification({
+                ...DEFAULT_ACTION_RESULTS.success,
+                ...pick(onSuccess, "message", "type"),
+              });
+            }
+          }
+        } catch (error) {
+          if (hasSpecificErrorCause(error, CancelError)) {
+            showNotification({
+              ...DEFAULT_ACTION_RESULTS.cancel,
+              ...pick(onCancel, "message", "type"),
+            });
+          } else {
+            extensionLogger.error(error);
+            showNotification({
+              ...DEFAULT_ACTION_RESULTS.error,
+              ...pick(onError, "message", "type"),
+            });
+          }
         }
+      } finally {
+        runningElements.delete(event.target);
       }
     });
 

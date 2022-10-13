@@ -63,6 +63,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
   const isHovered = hoveredElement === elementName && !isActive;
   const onClick: MouseEventHandler<HTMLDivElement> = (event) => {
     event.stopPropagation();
+    event.preventDefault();
 
     if (!isActive) {
       setActiveElement(elementName);

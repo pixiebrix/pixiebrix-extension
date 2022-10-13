@@ -15,43 +15,86 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import reportError from "@/telemetry/reportError";
-import { ensureContentScript, showErrorInOptions } from "@/background/util";
-import { Tabs } from "webextension-polyfill";
-import { toggleSidebar } from "@/contentScript/messenger/api";
-import { isScriptableUrl } from "webext-content-scripts";
+import { ensureContentScript } from "@/background/util";
+import { rehydrateSidebar } from "@/contentScript/messenger/api";
+import { executeScript, isScriptableUrl } from "webext-content-scripts";
+import pMemoize from "p-memoize";
+import webextAlert from "./webextAlert";
+import { isMac } from "@/utils";
+import { notify } from "@/options/messenger/api";
+import { browserAction, Tab } from "@/mv3/api";
 
-const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
-export const FORWARD_FRAME_NOTIFICATION = `${MESSAGE_PREFIX}/FORWARD_ACTION_FRAME_NOTIFICATION`;
+const ERR_UNABLE_TO_OPEN =
+  "PixieBrix was unable to open the Sidebar. Try refreshing the page.";
+
+const keyboardShortcut = isMac() ? "Cmd+Opt+C" : "Ctrl+Shift+C";
+const MSG_NO_SIDEBAR_ON_OPTIONS_PAGE = `PixieBrix Tip 💜\n If you want to create a new blueprint, first navigate to the page you want to modify, then open PixieBrix in the DevTools (${keyboardShortcut}).`;
 
 // The sidebar is always injected to into the top level frame
 const TOP_LEVEL_FRAME_ID = 0;
 
-async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
-  const url = String(tab.url);
-  if (!isScriptableUrl(url)) {
-    void showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE_WEBSTORE", tab.index);
-    return;
-  }
+// Avoid triggering multiple requests at once and causing multiple error alerts.
+// This patterns "debounces" calls while the promise is pending:
+// https://github.com/sindresorhus/promise-fun/issues/15
+const toggleSidebar = pMemoize(_toggleSidebar, {
+  cache: false,
+});
 
-  if (!url.startsWith("http")) {
+// Don't accept objects here as they're not easily memoizable
+async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
+  if (!tabUrl.startsWith("http") || !isScriptableUrl(tabUrl)) {
     // Page not supported. Open the options page instead
     void browser.runtime.openOptionsPage();
     return;
   }
 
+  // Load the raw toggle script first, then the content script. The browser executes them
+  // in order but we don't need to use `Promise.all` to await them at the same time as we
+  // want to catch each error separately.
+  const sidebarTogglePromise = executeScript({
+    tabId,
+    files: ["browserActionInstantHandler.js"],
+  });
+  const contentScriptPromise = ensureContentScript({
+    tabId,
+    frameId: TOP_LEVEL_FRAME_ID,
+  });
+
   try {
-    await ensureContentScript({ tabId: tab.id, frameId: TOP_LEVEL_FRAME_ID });
-    await toggleSidebar({
-      tabId: tab.id,
-    });
+    await sidebarTogglePromise;
   } catch (error) {
-    await showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE", tab.index);
-    reportError(error);
+    webextAlert(ERR_UNABLE_TO_OPEN);
+    throw error;
+  }
+
+  // NOTE: at this point, the sidebar should already be visible on the page, even if not ready.
+  // Avoid showing any alerts or notifications: further messaging can appear in the sidebar itself.
+  // Any errors are automatically reported by the global error handler.
+  await contentScriptPromise;
+  await rehydrateSidebar({
+    tabId,
+  });
+}
+
+async function handleBrowserAction(tab: Tab): Promise<void> {
+  // The URL might not be available in certain circumstances. This silences these
+  // cases and just treats them as "not allowed on this page"
+  const url = String(tab.url);
+  const optionsPage = browser.runtime.getURL("options.html");
+
+  if (url.startsWith(optionsPage)) {
+    notify.info(
+      { tabId: tab.id, page: "/options.html" },
+      {
+        id: "MSG_NO_SIDEBAR_ON_OPTIONS_PAGE",
+        message: MSG_NO_SIDEBAR_ON_OPTIONS_PAGE,
+      }
+    );
+  } else {
+    await toggleSidebar(tab.id, url);
   }
 }
 
 export default function initBrowserAction() {
-  const action = browser.browserAction ?? browser.action;
-  action.onClicked.addListener(handleBrowserAction);
+  browserAction.onClicked.addListener(handleBrowserAction);
 }

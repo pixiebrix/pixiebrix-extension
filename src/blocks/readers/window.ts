@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { withReadWindow } from "@/common";
+import { withReadWindow } from "@/messaging/protocol";
 import { ReaderOutput } from "@/core";
 import { registerFactory } from "@/blocks/readers/factory";
 

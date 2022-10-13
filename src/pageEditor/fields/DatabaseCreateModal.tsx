@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import Form from "@/components/form/Form";
 import * as yup from "yup";
@@ -34,6 +34,7 @@ import { UUID } from "@/core";
 import { validateUUID } from "@/types/helpers";
 
 type DatabaseCreateModalProps = {
+  show: boolean;
   onDatabaseCreated: (databaseId: UUID) => void;
   onClose: () => void;
 };
@@ -84,6 +85,7 @@ function getOrganizationOptions(organizations: Organization[]) {
 }
 
 const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
+  show,
   onDatabaseCreated,
   onClose,
 }) => {
@@ -124,10 +126,13 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
     onDatabaseCreated(newDbId);
   };
 
-  const organizationOptions = getOrganizationOptions(organizations);
+  const organizationOptions = useMemo(
+    () => getOrganizationOptions(organizations),
+    [organizations]
+  );
 
   return (
-    <Modal show onHide={onClose} backdrop="static" keyboard={false}>
+    <Modal show={show} onHide={onClose} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
         <Modal.Title>Create Database</Modal.Title>
       </Modal.Header>

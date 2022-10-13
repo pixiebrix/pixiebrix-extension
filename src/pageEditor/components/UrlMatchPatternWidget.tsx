@@ -32,7 +32,7 @@ import {
   Shortcut,
   UrlMatchPatternWidgetProps,
 } from "./urlMatchPatternWidgetTypes";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 const UrlMatchShortcut: React.FC<{
   caption: string;

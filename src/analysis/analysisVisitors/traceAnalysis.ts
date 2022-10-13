@@ -15,15 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import AnalysisVisitor from "@/analysis/AnalysisVisitor";
-import { AbsolutePosition, AnnotationType } from "@/analysis/analysisTypes";
-import { isTraceError, TraceRecord } from "@/telemetry/trace";
-import { BlockConfig } from "@/blocks/types";
+import { AnalysisVisitor } from "./baseAnalysisVisitors";
+import { AnnotationType } from "@/analysis/analysisTypes";
+import { isTraceError, TraceError, TraceRecord } from "@/telemetry/trace";
+import { BlockConfig, BlockPosition } from "@/blocks/types";
 import { UUID } from "@/core";
 import { groupBy } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isInputValidationError } from "@/blocks/errors";
-import { nestedPosition, VisitBlockExtra } from "@/analysis/PipelineVisitor";
+import { nestedPosition, VisitBlockExtra } from "@/blocks/PipelineVisitor";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 const requiredFieldRegex =
   /^Instance does not have required property "(?<property>.+)"\.$/;
@@ -35,7 +36,7 @@ class TraceAnalysis extends AnalysisVisitor {
     return "trace";
   }
 
-  private readonly traceMap = new Map<UUID, TraceRecord[]>();
+  private readonly traceErrorMap = new Map<UUID, TraceError[]>();
 
   /**
    * @param trace the trace for the latest run of the extension
@@ -44,23 +45,21 @@ class TraceAnalysis extends AnalysisVisitor {
     super();
 
     for (const [instanceId, records] of Object.entries(
-      groupBy(trace, (x) => x.blockInstanceId)
+      // eslint-disable-next-line unicorn/no-array-callback-reference -- a proxy function breaks the type inference of isTraceError
+      groupBy(trace.filter(isTraceError), (x) => x.blockInstanceId)
     )) {
-      this.traceMap.set(instanceId as UUID, records);
+      this.traceErrorMap.set(instanceId as UUID, records);
     }
   }
 
-  override async visitBlock(
-    position: AbsolutePosition,
+  override visitBlock(
+    position: BlockPosition,
     blockConfig: BlockConfig,
-    options: VisitBlockExtra
-  ): Promise<void> {
-    await super.visitBlock(position, blockConfig, options);
+    extra: VisitBlockExtra
+  ) {
+    super.visitBlock(position, blockConfig, extra);
 
-    const records = this.traceMap.get(blockConfig.instanceId);
-    // The callback isTraceError is used directly without a proxy here to
-    // let TS to properly infer the type of records
-    const errorRecord = records?.find(isTraceError);
+    const errorRecord = this.traceErrorMap.get(blockConfig.instanceId)?.at(0);
     if (errorRecord == null) {
       return;
     }
@@ -107,6 +106,14 @@ class TraceAnalysis extends AnalysisVisitor {
         detail: traceError,
       });
     }
+  }
+
+  override run(extension: FormState): void {
+    if (this.traceErrorMap.size === 0) {
+      return;
+    }
+
+    super.run(extension);
   }
 }
 

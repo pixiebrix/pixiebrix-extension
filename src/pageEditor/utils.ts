@@ -17,9 +17,9 @@
 
 import { Target } from "@/types";
 import { IExtension, RegistryId, UUID } from "@/core";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isExtension } from "@/pageEditor/sidebar/common";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { BlockConfig } from "@/blocks/types";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
@@ -29,13 +29,13 @@ import {
   isListElement,
   isPipelineElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
-import { joinName, joinPathParts } from "@/utils";
+import { joinPathParts } from "@/utils";
 import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 import Retry from "@/blocks/transformers/controlFlow/Retry";
-import { castArray, get } from "lodash";
-import { DocumentRenderer } from "@/blocks/renderers/document";
+import { castArray } from "lodash";
 import { Annotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
+import { isExpression } from "@/runtime/mapArgs";
 
 export async function getCurrentURL(): Promise<string> {
   if (!browser.devtools) {
@@ -96,19 +96,34 @@ export function getPipelinePropNames(block: BlockConfig): string[] {
   }
 }
 
-export function getPipelineInputKeyPropName(
-  blockId: RegistryId,
+export function getInputKeyForSubPipeline(
+  blockConfig: BlockConfig,
   pipelinePropName: string
-): string | undefined {
-  if (blockId === ForEach.BLOCK_ID && pipelinePropName === "body") {
-    return "elementKey";
+): string | null {
+  let keyPropName: string = null;
+
+  if (blockConfig.id === ForEach.BLOCK_ID && pipelinePropName === "body") {
+    keyPropName = "elementKey";
   }
 
-  if (blockId === TryExcept.BLOCK_ID && pipelinePropName === "except") {
-    return "errorKey";
+  if (blockConfig.id === TryExcept.BLOCK_ID && pipelinePropName === "except") {
+    keyPropName = "errorKey";
   }
 
-  return undefined;
+  if (!keyPropName) {
+    return null;
+  }
+
+  // eslint-disable-next-line security/detect-object-injection -- not from user input
+  const keyValue = blockConfig.config[keyPropName];
+
+  if (!keyValue) {
+    return null;
+  }
+
+  const realValue = isExpression(keyValue) ? keyValue.__value__ : keyValue;
+
+  return realValue as string;
 }
 
 /**
@@ -157,119 +172,23 @@ export function getDocumentPipelinePaths(block: BlockConfig): string[] {
   );
 }
 
-type TraversePipelineArgs = {
-  pipeline: BlockPipeline;
-  pipelinePath?: string;
-  parentNode?: BlockConfig | null;
-  visitBlock?: BlockAction;
-  visitPipeline?: VisitPipeline;
-  preVisitSubPipeline?: PreVisitSubPipeline;
-};
-
-type BlockAction = (blockInfo: {
-  blockConfig: BlockConfig;
-  index: number;
-  path: string;
-  pipelinePath: string;
-  pipeline: BlockPipeline;
-  parentNodeId: UUID | null;
-}) => void;
-
-type VisitPipeline = (pipelineInfo: {
-  pipeline: BlockPipeline;
-  pipelinePath: string;
-  parentNode?: BlockConfig | null;
-}) => void;
-
-type PreVisitSubPipeline = (subPipelineInfo: {
-  parentBlock: BlockConfig;
-  subPipelineProperty: string;
-}) => void;
-
-function getDocumentSubPipelineProperties(blockConfig: BlockConfig): string[] {
-  return getDocumentPipelinePaths(blockConfig);
-}
-
-function getBlockSubPipelineProperties(blockConfig: BlockConfig): string[] {
-  return getPipelinePropNames(blockConfig).map((subPipelineField) =>
-    joinName("config", subPipelineField)
+export function getFoundationNodeAnnotations(
+  annotations: Annotation[]
+): Annotation[] {
+  return annotations.filter(
+    (annotation) =>
+      !annotation.position.path.startsWith(PIPELINE_BLOCKS_FIELD_NAME)
   );
-}
-
-export function traversePipeline({
-  pipeline,
-  pipelinePath = "",
-  parentNode = null,
-  visitBlock,
-  visitPipeline,
-  preVisitSubPipeline,
-}: TraversePipelineArgs) {
-  if (visitPipeline) {
-    visitPipeline({
-      pipeline,
-      pipelinePath,
-      parentNode,
-    });
-  }
-
-  for (const [index, blockConfig] of Object.entries(pipeline)) {
-    const fieldName = joinName(pipelinePath, index);
-    if (visitBlock) {
-      visitBlock({
-        blockConfig,
-        index: Number(index),
-        path: fieldName,
-        pipelinePath,
-        pipeline,
-        parentNodeId: parentNode?.instanceId ?? null,
-      });
-    }
-
-    const subPipelineProperties =
-      blockConfig.id === DocumentRenderer.BLOCK_ID
-        ? getDocumentSubPipelineProperties(blockConfig)
-        : getBlockSubPipelineProperties(blockConfig);
-
-    for (const subPipelineProperty of subPipelineProperties) {
-      if (preVisitSubPipeline) {
-        preVisitSubPipeline({
-          parentBlock: blockConfig,
-          subPipelineProperty,
-        });
-      }
-
-      const subPipelineAccessor = joinPathParts(
-        subPipelineProperty,
-        "__value__"
-      );
-
-      const subPipeline = get(blockConfig, subPipelineAccessor);
-
-      if (subPipeline?.length > 0) {
-        traversePipeline({
-          pipeline: subPipeline,
-          pipelinePath: joinPathParts(fieldName, subPipelineAccessor),
-          parentNode: blockConfig,
-          visitBlock,
-          visitPipeline,
-          preVisitSubPipeline,
-        });
-      }
-    }
-  }
 }
 
 export function getBlockAnnotations(
   blockPath: string,
   annotations: Annotation[]
 ): Annotation[] {
-  const relativeBlockPath = blockPath.slice(
-    PIPELINE_BLOCKS_FIELD_NAME.length + 1
-  );
-  const pathLength = relativeBlockPath.length;
+  const pathLength = blockPath.length;
 
   const relatedAnnotations = annotations.filter((annotation) =>
-    annotation.position.path.startsWith(relativeBlockPath)
+    annotation.position.path.startsWith(blockPath)
   );
   const ownAnnotations = relatedAnnotations.filter((annotation) => {
     const restPath = annotation.position.path.slice(pathLength);

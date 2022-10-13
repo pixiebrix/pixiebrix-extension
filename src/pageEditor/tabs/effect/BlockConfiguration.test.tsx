@@ -32,7 +32,7 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { RegistryId } from "@/core";
 import { MarketplaceListing } from "@/types/contract";
 import { render } from "@/pageEditor/testHelpers";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
 
 jest.mock("@/services/api", () => {

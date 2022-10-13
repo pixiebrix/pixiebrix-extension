@@ -24,12 +24,14 @@ import { useGetMeQuery } from "@/services/api";
 import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
+import settingsSlice from "@/store/settingsSlice";
 
 function optionsStore(initialState?: any) {
   return configureStore({
     reducer: {
       auth: persistReducer(persistAuthConfig, authSlice.reducer),
       services: persistReducer(persistServicesConfig, servicesSlice.reducer),
+      settings: settingsSlice.reducer,
     },
     preloadedState: initialState,
   });

@@ -55,6 +55,7 @@ import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { QuickBarFormState } from "./formStateTypes";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
+import { makeEmptyPermissions } from "@/utils/permissions";
 
 function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
   const base = makeInitialBaseState();
@@ -144,7 +145,10 @@ async function fromExtension(
     extensionPoint.definition;
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
-  const extension = extensionWithNormalizedPipeline(config.config, "action");
+  const extension = await extensionWithNormalizedPipeline(
+    config.config,
+    "action"
+  );
 
   return {
     ...base,
@@ -191,7 +195,7 @@ async function fromExtensionPoint(
     label: `My ${getDomain(url)} quick bar item`,
 
     services: [],
-    permissions: {},
+    permissions: makeEmptyPermissions(),
     optionsArgs: {},
 
     extension: {
