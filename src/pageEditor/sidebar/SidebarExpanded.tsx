@@ -162,6 +162,9 @@ const SidebarExpanded: React.FunctionComponent<{
           onRemove={async () => {
             await removeRecipe({ recipeId: activeRecipeId });
           }}
+          onClone={async () => {
+            console.warn("Not implemented yet");
+          }}
         >
           {elements.map((element) => (
             <ExtensionEntry
