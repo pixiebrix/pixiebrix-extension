@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { RecipeMetadata, RegistryId, UUID } from "@/core";
@@ -28,7 +28,6 @@ import {
 } from "@/types/definitions";
 import {
   AddBlockLocation,
-  EditorRootState,
   EditorState,
   ModalKey,
 } from "@/pageEditor/pageEditorTypes";
@@ -42,8 +41,6 @@ import {
   selectActiveElementUIState,
 } from "./editorSelectors";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { produce } from "immer";
-import { normalizePipelineForEditor } from "@/pageEditor/extensionPoints/pipelineMapping";
 import {
   activateElement,
   editRecipeMetadata,
