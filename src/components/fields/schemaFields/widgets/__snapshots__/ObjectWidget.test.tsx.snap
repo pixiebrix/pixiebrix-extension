@@ -88,18 +88,13 @@ exports[`ObjectWidget renders widget with properties 1`] = `
                     <div
                       class="field"
                     >
-                      <div
-                        role="button"
-                        tabindex="0"
-                      >
-                        <input
-                          class="form-control"
-                          disabled=""
-                          id="testField.foo"
-                          name="testField.foo"
-                          value=""
-                        />
-                      </div>
+                      <input
+                        class="form-control"
+                        id="testField.foo"
+                        name="testField.foo"
+                        readonly=""
+                        value=""
+                      />
                     </div>
                     <div
                       class="dropdown dropdown"
@@ -149,18 +144,13 @@ exports[`ObjectWidget renders widget with properties 1`] = `
                     <div
                       class="field"
                     >
-                      <div
-                        role="button"
-                        tabindex="0"
-                      >
-                        <input
-                          class="form-control"
-                          disabled=""
-                          id="testField.bar"
-                          name="testField.bar"
-                          value=""
-                        />
-                      </div>
+                      <input
+                        class="form-control"
+                        id="testField.bar"
+                        name="testField.bar"
+                        readonly=""
+                        value=""
+                      />
                     </div>
                     <div
                       class="dropdown dropdown"
@@ -210,18 +200,13 @@ exports[`ObjectWidget renders widget with properties 1`] = `
                     <div
                       class="field"
                     >
-                      <div
-                        role="button"
-                        tabindex="0"
-                      >
-                        <input
-                          class="form-control"
-                          disabled=""
-                          id="testField.baz"
-                          name="testField.baz"
-                          value=""
-                        />
-                      </div>
+                      <input
+                        class="form-control"
+                        id="testField.baz"
+                        name="testField.baz"
+                        readonly=""
+                        value=""
+                      />
                     </div>
                     <div
                       class="dropdown dropdown"

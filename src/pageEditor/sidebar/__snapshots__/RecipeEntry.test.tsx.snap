@@ -4,7 +4,6 @@ exports[`it renders 1`] = `
 <DocumentFragment>
   <div
     class="root list-group-item-action list-group-item"
-    tabindex="0"
   >
     <span
       class="icon"
@@ -61,7 +60,6 @@ exports[`renders with empty metadata 1`] = `
 <DocumentFragment>
   <div
     class="root list-group-item-action recipeBackground list-group-item"
-    tabindex="0"
   >
     <span
       class="icon"
@@ -118,7 +116,6 @@ exports[`renders with empty recipe 1`] = `
 <DocumentFragment>
   <div
     class="root list-group-item-action recipeBackground list-group-item"
-    tabindex="0"
   >
     <span
       class="icon"
