@@ -204,12 +204,10 @@ const cloneActiveExtension = createAsyncThunk<
   const newElement = await produce(
     selectActiveElement(state),
     async (draft) => {
-      // Give it a new id
       draft.uuid = uuidv4();
+      draft.label += " - copy";
       // Remove from its recipe, if any (the user can add it to any recipe after creation)
       delete draft.recipe;
-      // Append " - copy" to the name
-      draft.label += " - copy";
       // Re-generate instance IDs for all the bricks in the extension
       draft.extension.blockPipeline = await normalizePipelineForEditor(
         draft.extension.blockPipeline
