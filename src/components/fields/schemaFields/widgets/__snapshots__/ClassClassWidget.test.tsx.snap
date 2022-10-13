@@ -271,9 +271,8 @@ exports[`CssClassWidget should render blank literal 1`] = `
             <div
               class="spacingControlContainer"
             >
-              <div
-                role="button"
-                tabindex="0"
+              <button
+                class="root"
               >
                 Margin
                  
@@ -292,7 +291,7 @@ exports[`CssClassWidget should render blank literal 1`] = `
                     fill="currentColor"
                   />
                 </svg>
-              </div>
+              </button>
               <div
                 class="ml-1"
               >
@@ -312,9 +311,8 @@ exports[`CssClassWidget should render blank literal 1`] = `
             <div
               class="spacingControlContainer"
             >
-              <div
-                role="button"
-                tabindex="0"
+              <button
+                class="root"
               >
                 Padding
                  
@@ -333,7 +331,7 @@ exports[`CssClassWidget should render blank literal 1`] = `
                     fill="currentColor"
                   />
                 </svg>
-              </div>
+              </button>
               <div
                 class="ml-1"
               >
@@ -666,9 +664,8 @@ exports[`CssClassWidget should render blank literal 1`] = `
           <div
             class="spacingControlContainer"
           >
-            <div
-              role="button"
-              tabindex="0"
+            <button
+              class="root"
             >
               Margin
                
@@ -687,7 +684,7 @@ exports[`CssClassWidget should render blank literal 1`] = `
                   fill="currentColor"
                 />
               </svg>
-            </div>
+            </button>
             <div
               class="ml-1"
             >
@@ -707,9 +704,8 @@ exports[`CssClassWidget should render blank literal 1`] = `
           <div
             class="spacingControlContainer"
           >
-            <div
-              role="button"
-              tabindex="0"
+            <button
+              class="root"
             >
               Padding
                
@@ -728,7 +724,7 @@ exports[`CssClassWidget should render blank literal 1`] = `
                   fill="currentColor"
                 />
               </svg>
-            </div>
+            </button>
             <div
               class="ml-1"
             >
