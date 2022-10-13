@@ -23,10 +23,10 @@ describe("AskQuestionModal", () => {
   test("it renders", () => {
     render(<AskQuestionModal showModal={true} setShowModal={jest.fn()} />);
 
-    expect(screen.getByRole("button", { name: /join slack/i })).toBeVisible();
+    expect(screen.getByRole("link", { name: /join slack/i })).toBeVisible();
     expect(
-      screen.getByRole("button", { name: /start a new discussion/i })
+      screen.getByRole("link", { name: /start a new discussion/i })
     ).toBeVisible();
-    expect(screen.getByRole("button", { name: /schedule/i })).toBeVisible();
+    expect(screen.getByRole("link", { name: /schedule/i })).toBeVisible();
   });
 });
