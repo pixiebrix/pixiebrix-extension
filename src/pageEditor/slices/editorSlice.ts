@@ -591,13 +591,12 @@ export const editorSlice = createSlice({
     clearActiveRecipe(state) {
       state.activeRecipeId = null;
     },
-    transitionSaveAsNewToCreateRecipeModal(state) {
+    showCreateRecipeModal(
+      state,
+      action: PayloadAction<{ keepLocalCopy: boolean }>
+    ) {
       state.visibleModalKey = ModalKey.CREATE_RECIPE;
-      state.keepLocalCopyOnCreateRecipe = false;
-    },
-    transitionAddToCreateRecipeModal(state, action: PayloadAction<boolean>) {
-      state.visibleModalKey = ModalKey.CREATE_RECIPE;
-      state.keepLocalCopyOnCreateRecipe = action.payload;
+      state.keepLocalCopyOnCreateRecipe = action.payload.keepLocalCopy;
     },
     finishSaveAsNewRecipe(
       state,

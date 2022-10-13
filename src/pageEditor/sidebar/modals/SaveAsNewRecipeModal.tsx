@@ -43,7 +43,8 @@ const SaveAsNewRecipeModal: React.FC = () => {
   };
 
   const onConfirm = () => {
-    dispatch(actions.transitionSaveAsNewToCreateRecipeModal());
+    // Don't keep the old recipe active
+    dispatch(actions.showCreateRecipeModal({ keepLocalCopy: false }));
   };
 
   if (isLoading && show) {
