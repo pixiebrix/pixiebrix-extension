@@ -3,8 +3,6 @@
  * Do not make direct changes to the file.
  */
 
-import { Primitive } from "type-fest";
-
 export interface paths {
   "/api/audit/organizations/{id}/": {
     get: operations["listAuditEvents"];
@@ -112,8 +110,7 @@ export interface paths {
     get: operations["listActiveDeployments"];
   };
   "/api/deployments/{deployment_pk}/errors/": {
-    /** View to return most recent Rollbar error report for a deployment. */
-    get: operations["retrieveErrorOccurrence"];
+    get: operations["listDeploymentErrors"];
   };
   "/api/deployments/{deployment_pk}/groups/": {
     get: operations["listDeploymentPermissions"];
@@ -282,11 +279,10 @@ export interface paths {
     get: operations["exportOrganizationBackup"];
   };
   "/api/organizations/{organization_pk}/errors/": {
-    /** View to return most recent Rollbar error report for an organization. */
-    get: operations["retrieveOrganizationErrors"];
+    get: operations["listOrganizationErrors"];
   };
   "/api/organizations/{organization_pk}/events/": {
-    get: operations["retrieveEventInterval"];
+    get: operations["listEventIntervals"];
   };
   "/api/organizations/{organization_pk}/contacts/": {
     get: operations["listOrganizationContacts"];
@@ -348,10 +344,7 @@ export interface paths {
     get: operations["retrieveSupportUserEvents"];
   };
   "/api/support/users/{user_pk}/errors/": {
-    get: operations["retrieveUserError"];
-  };
-  "/api/support/users/{user_pk}/errors/jobs/{job_pk}/": {
-    get: operations["retrieveUserErrorJob"];
+    get: operations["listUserErrors"];
   };
   "/api/support/users/{user_pk}/extensions/": {
     get: operations["listSupportUserExtensions"];
@@ -418,9 +411,6 @@ export interface paths {
   };
   "/api/run/": {
     post: operations["executeBrick"];
-  };
-  "/api/support/users/{user_pk}/errors/jobs/": {
-    post: operations["createUserErrorJob"];
   };
   "/api/telemetry/errors/": {
     post: operations["createErrorItem"];
@@ -584,6 +574,7 @@ export interface components {
       services: {
         auth: string;
       }[];
+      options_config?: { [key: string]: unknown };
     };
     CampaignSummary: {
       /** Format: uuid */
@@ -683,6 +674,7 @@ export interface components {
         };
       }[];
       active?: boolean;
+      options_config?: { [key: string]: unknown };
     };
     DeploymentTelemetry: {
       /**
@@ -729,7 +721,7 @@ export interface components {
         auth: string;
       }[];
       active?: boolean;
-      options_config?: Record<string, Primitive>;
+      options_config?: { [key: string]: unknown };
     };
     DependencyTree: {
       name: string;
@@ -784,19 +776,17 @@ export interface components {
       version?: string;
       client_version?: string;
     };
-    ErrorOccurrence: {
-      /** Format: uuid */
-      id?: string;
-      /** Format: uuid */
-      deployment: string;
-      title: string;
-      label?: string | null;
+    ErrorItemGroup: {
+      request_url: string | null;
+      deployment: string | null;
+      extension_label: string | null;
       /** Format: date-time */
       last_occurrence_timestamp: string;
-      people_count?: number | null;
-      request_url?: string | null;
+      message: string;
       occurrence_count: number;
-      code_version?: string | null;
+      people_count: number;
+      step_label: string | null;
+      user_agent_extension_version: string;
     };
     DeploymentPermission: {
       /** Format: uuid */
@@ -1427,11 +1417,19 @@ export interface components {
       extensionPointId?: string;
       label?: string;
     };
-    SupportUserError: {
-      id: string;
-      timestamp: number;
-      description: string;
+    UserErrorItem: {
+      /** @description Label of the extension, depends on the extension's telemetry settings */
+      extension_label?: string | null;
+      id?: number;
+      /** @description Just the error message, not the complete traceback */
       message: string;
+      /** @description Step of the extension, depends on the extension's telemetry settings */
+      step_label?: string | null;
+      /**
+       * Format: date-time
+       * @description Timestamp the error occurred, not the time the record is added to the db
+       */
+      timestamp: string;
     };
     UserDatabase: {
       /** Format: uuid */
@@ -2403,8 +2401,7 @@ export interface operations {
       };
     };
   };
-  /** View to return most recent Rollbar error report for a deployment. */
-  retrieveErrorOccurrence: {
+  listDeploymentErrors: {
     parameters: {
       path: {
         deployment_pk: string;
@@ -2413,8 +2410,8 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json; version=1.0": components["schemas"]["ErrorOccurrence"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ErrorOccurrence"];
+          "application/json; version=1.0": components["schemas"]["ErrorItemGroup"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ErrorItemGroup"][];
         };
       };
     };
@@ -3831,8 +3828,7 @@ export interface operations {
       };
     };
   };
-  /** View to return most recent Rollbar error report for an organization. */
-  retrieveOrganizationErrors: {
+  listOrganizationErrors: {
     parameters: {
       path: {
         organization_pk: string;
@@ -3841,13 +3837,13 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json; version=1.0": components["schemas"]["ErrorOccurrence"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ErrorOccurrence"];
+          "application/json; version=1.0": components["schemas"]["ErrorItemGroup"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ErrorItemGroup"][];
         };
       };
     };
   };
-  retrieveEventInterval: {
+  listEventIntervals: {
     parameters: {
       path: {
         organization_pk: string;
@@ -3856,8 +3852,8 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json; version=1.0": components["schemas"]["EventInterval"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["EventInterval"];
+          "application/json; version=1.0": components["schemas"]["EventInterval"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["EventInterval"][];
         };
       };
     };
@@ -4356,7 +4352,7 @@ export interface operations {
       };
     };
   };
-  retrieveUserError: {
+  listUserErrors: {
     parameters: {
       path: {
         user_pk: string;
@@ -4365,24 +4361,8 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json; version=1.0": components["schemas"]["SupportUserError"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["SupportUserError"];
-        };
-      };
-    };
-  };
-  retrieveUserErrorJob: {
-    parameters: {
-      path: {
-        user_pk: string;
-        job_pk: string;
-      };
-    };
-    responses: {
-      200: {
-        content: {
-          "application/json; version=1.0": components["schemas"]["Job"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Job"];
+          "application/json; version=1.0": components["schemas"]["UserErrorItem"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["UserErrorItem"][];
         };
       };
     };
@@ -4777,28 +4757,6 @@ export interface operations {
         "application/json": components["schemas"]["ExecutableBrick"];
         "application/x-www-form-urlencoded": components["schemas"]["ExecutableBrick"];
         "multipart/form-data": components["schemas"]["ExecutableBrick"];
-      };
-    };
-  };
-  createUserErrorJob: {
-    parameters: {
-      path: {
-        user_pk: string;
-      };
-    };
-    responses: {
-      201: {
-        content: {
-          "application/json; version=1.0": components["schemas"]["Job"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Job"];
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["Job"];
-        "application/x-www-form-urlencoded": components["schemas"]["Job"];
-        "multipart/form-data": components["schemas"]["Job"];
       };
     };
   };
