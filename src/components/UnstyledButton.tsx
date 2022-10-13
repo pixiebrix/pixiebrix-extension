@@ -14,22 +14,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import styles from "./LinkButton.module.scss";
+
+import styles from "./UnstyledButton.module.scss";
 import React from "react";
-import { Button, ButtonProps } from "react-bootstrap";
 import cx from "classnames";
-import { Except } from "type-fest";
 
-type PropType = Except<ButtonProps, "variant" | "size" | "href" | "target">;
+type PropType = React.HTMLAttributes<HTMLButtonElement>;
 
-/** A button that looks like plain bootstrap link. The right alternative to fake links like `<a href="#">` */
-export const LinkButton: React.FC<PropType> = (props: PropType) => {
-  const { className, ...otherProps } = props;
-  return (
-    <Button
-      variant="link"
-      className={cx(styles.root, className)}
-      {...otherProps}
-    />
-  );
-};
+/**
+ * A button without any native style. The right starting point
+ * for any button with completely custom styles, without having
+ * to reset the native style every time.
+ */
+export const UnstyledButton: React.FC<PropType> = ({
+  className,
+  ...otherProps
+}: PropType) => (
+  <button className={cx(styles.root, className)} {...otherProps} />
+);

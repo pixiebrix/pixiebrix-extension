@@ -50,6 +50,7 @@ export type RecipeEntryProps = PropsWithChildren<{
   isSaving: boolean;
   onReset: () => Promise<void>;
   onRemove: () => Promise<void>;
+  onClone: () => Promise<void>;
 }>;
 
 const RecipeEntry: React.FC<RecipeEntryProps> = ({
@@ -61,6 +62,7 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
   isSaving,
   onReset,
   onRemove,
+  onClone,
 }) => {
   const dispatch = useDispatch();
 
@@ -122,6 +124,7 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
             onSave={onSave}
             onReset={onReset}
             onRemove={onRemove}
+            onClone={onClone}
             isDirty={isDirty}
             disabled={isSaving}
           />

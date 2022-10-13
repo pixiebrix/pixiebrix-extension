@@ -66,7 +66,6 @@ const AskQuestionModal: React.FC<AskQuestionModalProps> = ({
       {buttons.map(({ logo, label, link }) => (
         <a
           key={label}
-          role="button"
           className={styles.button}
           href={link}
           target="_blank"

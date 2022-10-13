@@ -22,6 +22,7 @@
   ],
   "setupFiles": [
     "<rootDir>/src/testUtils/testEnv.js",
+    "<rootDir>/src/development/cryptoNodePolyfill.js",
     "jest-webextension-mock",
     "fake-indexeddb/auto"
   ],
