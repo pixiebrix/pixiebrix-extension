@@ -31,6 +31,7 @@ import { push } from "connected-react-router";
 import useWizard from "@/options/pages/marketplace/useWizard";
 import ActivateButton from "@/options/pages/marketplace/ActivateButton";
 import useInstallableViewItems from "@/options/pages/blueprints/useInstallableViewItems";
+import BlockFormSubmissionViaEnterIfFirstChild from "@/components/BlockFormSubmissionViaEnterIfFirstChild";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -104,21 +105,8 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   return (
     <Formik initialValues={initialValues} onSubmit={install}>
       {({ handleSubmit }) => (
-        <Form
-          id="activate-wizard"
-          noValidate
-          onSubmit={handleSubmit}
-          onKeyDown={(event) => {
-            if (
-              event.key === "Enter" &&
-              (event.nativeEvent.target as HTMLElement).tagName !== "TEXTAREA"
-            ) {
-              // Don't submit form on "enter" key. Only submit on using "Activate" button
-              event.preventDefault();
-              return false;
-            }
-          }}
-        >
+        <Form id="activate-wizard" noValidate onSubmit={handleSubmit}>
+          <BlockFormSubmissionViaEnterIfFirstChild />
           <Card>
             <ActivateHeader blueprint={blueprint} />
             <Card.Body className={styles.wizardBody}>

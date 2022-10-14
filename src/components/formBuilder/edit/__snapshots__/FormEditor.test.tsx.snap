@@ -23,18 +23,13 @@ exports[`FormEditor renders empty schema 1`] = `
           <div
             class="field"
           >
-            <div
-              role="button"
-              tabindex="0"
-            >
-              <input
-                class="form-control"
-                disabled=""
-                id="rjsfSchema.schema.title"
-                name="rjsfSchema.schema.title"
-                value=""
-              />
-            </div>
+            <input
+              class="form-control"
+              id="rjsfSchema.schema.title"
+              name="rjsfSchema.schema.title"
+              readonly=""
+              value=""
+            />
           </div>
           <div
             class="dropdown dropdown"
@@ -77,18 +72,13 @@ exports[`FormEditor renders empty schema 1`] = `
           <div
             class="field"
           >
-            <div
-              role="button"
-              tabindex="0"
-            >
-              <input
-                class="form-control"
-                disabled=""
-                id="rjsfSchema.schema.description"
-                name="rjsfSchema.schema.description"
-                value=""
-              />
-            </div>
+            <input
+              class="form-control"
+              id="rjsfSchema.schema.description"
+              name="rjsfSchema.schema.description"
+              readonly=""
+              value=""
+            />
           </div>
           <div
             class="dropdown dropdown"
@@ -454,18 +444,13 @@ exports[`FormEditor renders simple schema 1`] = `
             <div
               class="field"
             >
-              <div
-                role="button"
-                tabindex="0"
-              >
-                <input
-                  class="form-control"
-                  disabled=""
-                  id="rjsfSchema.schema.properties.firstName.description"
-                  name="rjsfSchema.schema.properties.firstName.description"
-                  value=""
-                />
-              </div>
+              <input
+                class="form-control"
+                id="rjsfSchema.schema.properties.firstName.description"
+                name="rjsfSchema.schema.properties.firstName.description"
+                readonly=""
+                value=""
+              />
             </div>
             <div
               class="dropdown dropdown"
@@ -1029,18 +1014,13 @@ exports[`FormEditor renders unknown field format 1`] = `
             <div
               class="field"
             >
-              <div
-                role="button"
-                tabindex="0"
-              >
-                <input
-                  class="form-control"
-                  disabled=""
-                  id="rjsfSchema.schema.properties.unknown.description"
-                  name="rjsfSchema.schema.properties.unknown.description"
-                  value=""
-                />
-              </div>
+              <input
+                class="form-control"
+                id="rjsfSchema.schema.properties.unknown.description"
+                name="rjsfSchema.schema.properties.unknown.description"
+                readonly=""
+                value=""
+              />
             </div>
             <div
               class="dropdown dropdown"

@@ -180,18 +180,13 @@ exports[`MatchRulesSection render populated section 1`] = `
                                       <div
                                         class="field"
                                       >
-                                        <div
-                                          role="button"
-                                          tabindex="0"
-                                        >
-                                          <input
-                                            class="form-control"
-                                            disabled=""
-                                            id="extensionPoint.definition.isAvailable.urlPatterns.0.hostname"
-                                            name="extensionPoint.definition.isAvailable.urlPatterns.0.hostname"
-                                            value=""
-                                          />
-                                        </div>
+                                        <input
+                                          class="form-control"
+                                          id="extensionPoint.definition.isAvailable.urlPatterns.0.hostname"
+                                          name="extensionPoint.definition.isAvailable.urlPatterns.0.hostname"
+                                          readonly=""
+                                          value=""
+                                        />
                                       </div>
                                       <div
                                         class="dropdown dropdown"
@@ -246,18 +241,13 @@ exports[`MatchRulesSection render populated section 1`] = `
                                       <div
                                         class="field"
                                       >
-                                        <div
-                                          role="button"
-                                          tabindex="0"
-                                        >
-                                          <input
-                                            class="form-control"
-                                            disabled=""
-                                            id="extensionPoint.definition.isAvailable.urlPatterns.0.pathname"
-                                            name="extensionPoint.definition.isAvailable.urlPatterns.0.pathname"
-                                            value=""
-                                          />
-                                        </div>
+                                        <input
+                                          class="form-control"
+                                          id="extensionPoint.definition.isAvailable.urlPatterns.0.pathname"
+                                          name="extensionPoint.definition.isAvailable.urlPatterns.0.pathname"
+                                          readonly=""
+                                          value=""
+                                        />
                                       </div>
                                       <div
                                         class="dropdown dropdown"
@@ -374,18 +364,13 @@ exports[`MatchRulesSection render populated section 1`] = `
                                       <div
                                         class="field"
                                       >
-                                        <div
-                                          role="button"
-                                          tabindex="0"
-                                        >
-                                          <input
-                                            class="form-control"
-                                            disabled=""
-                                            id="extensionPoint.definition.isAvailable.urlPatterns.0.search"
-                                            name="extensionPoint.definition.isAvailable.urlPatterns.0.search"
-                                            value=""
-                                          />
-                                        </div>
+                                        <input
+                                          class="form-control"
+                                          id="extensionPoint.definition.isAvailable.urlPatterns.0.search"
+                                          name="extensionPoint.definition.isAvailable.urlPatterns.0.search"
+                                          readonly=""
+                                          value=""
+                                        />
                                       </div>
                                       <div
                                         class="dropdown dropdown"
