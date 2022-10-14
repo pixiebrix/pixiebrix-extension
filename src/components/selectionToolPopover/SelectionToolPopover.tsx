@@ -32,6 +32,7 @@ import { Stylesheets } from "@/components/Stylesheets";
 import { Button } from "react-bootstrap";
 import { FormLabel } from "react-bootstrap";
 import pluralize from "@/utils/pluralize";
+import Icon from "@/icons/Icon";
 
 export type SelectionHandlerType = (count: number) => void;
 type SetSelectionHandlerType = (handler: SelectionHandlerType) => void;
@@ -70,11 +71,21 @@ export const SelectionToolPopover: React.FC<{
         <Draggable>
           <div className="popover-wrapper">
             <FieldSection
-              title={`Selection Tool: ${matchingCount} ${pluralize(
-                matchingCount,
-                "matching element",
-                "matching elements"
-              )}`}
+              title={
+                <>
+                  <Icon
+                    library="bootstrap"
+                    size={16}
+                    icon="arrows-move"
+                    className="mr-2"
+                  />
+                  {`Selection Tool: ${matchingCount} ${pluralize(
+                    matchingCount,
+                    "matching element",
+                    "matching elements"
+                  )}`}
+                </>
+              }
             >
               <div className="d-flex align-items-center">
                 <SwitchButtonWidget
@@ -93,17 +104,21 @@ export const SelectionToolPopover: React.FC<{
                   Select Multiple
                 </FormLabel>
 
-                <SwitchButtonWidget
-                  name="allowSimilar"
-                  value={similarEnabled}
-                  onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
-                    setSimilarEnabled(target.value);
-                    onChangeSimilarSelection(target.value);
-                  }}
-                />
-                <FormLabel className="align-middle mx-3 mb-0">
-                  Select Similar
-                </FormLabel>
+                {multiEnabled && (
+                  <>
+                    <SwitchButtonWidget
+                      name="allowSimilar"
+                      value={similarEnabled}
+                      onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+                        setSimilarEnabled(target.value);
+                        onChangeSimilarSelection(target.value);
+                      }}
+                    />
+                    <FormLabel className="align-middle mx-3 mb-0">
+                      Select Similar
+                    </FormLabel>
+                  </>
+                )}
 
                 <Button size="sm" variant="info" onClick={onCancel}>
                   Cancel
