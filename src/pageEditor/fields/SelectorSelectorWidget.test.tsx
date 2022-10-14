@@ -15,8 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import { ElementInfo } from "@/contentScript/nativeEditor/types";
-import { getSuggestionsForElement } from "./SelectorSelectorWidget";
+import SelectorSelectorWidget, {
+  getSuggestionsForElement,
+} from "./SelectorSelectorWidget";
+import { render } from "@/pageEditor/testHelpers";
 
 test("getSuggestionsForElement", () => {
   const elementInfo = {
@@ -35,4 +39,14 @@ test("getSuggestionsForElement", () => {
     { value: ".a" },
     { value: "a" },
   ]);
+});
+
+describe("SelectorSelectorWidget", () => {
+  test("render base widget", () => {
+    expect(
+      render(<SelectorSelectorWidget name="Test" />, {
+        initialValues: {},
+      }).asFragment()
+    ).toMatchSnapshot();
+  });
 });
