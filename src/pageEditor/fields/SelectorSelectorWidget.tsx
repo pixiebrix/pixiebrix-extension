@@ -42,6 +42,7 @@ import { SettingsState } from "@/store/settingsTypes";
 
 // eslint-disable-next-line import/no-restricted-paths -- Not ideal, but webpack should be able to treeshake the file. Maybe move to @/utils ?
 import { sortBySelector } from "@/contentScript/nativeEditor/selectorInference";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 interface ElementSuggestion extends SuggestionTypeBase {
   value: string;
@@ -198,6 +199,10 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
       console.debug("Setting selector", { selected, firstSelector });
       setValue(firstSelector);
     } catch (error) {
+      if (getErrorMessage(error) === "Selection cancelled") {
+        return;
+      }
+
       notify.error({
         message: "Error selecting element",
         error,
