@@ -22,10 +22,11 @@ import cx from "classnames";
 const Centered: React.FunctionComponent<{
   isScrollable?: boolean;
   vertically?: boolean;
-}> = ({ isScrollable = false, vertically = false, children }) => (
+  className?: string;
+}> = ({ isScrollable = false, vertically = false, className, children }) => (
   <Container
     fluid
-    className={cx({
+    className={cx(className, {
       "h-100 pb-2 overflow-auto": isScrollable,
       "h-100": vertically,
     })}

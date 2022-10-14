@@ -710,7 +710,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                       >
                         <button
                           aria-label="Select element"
-                          class="btn btn-info"
+                          class="selectButton btn btn-info"
                           disabled=""
                           type="button"
                         >

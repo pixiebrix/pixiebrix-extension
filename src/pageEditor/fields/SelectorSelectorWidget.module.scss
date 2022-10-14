@@ -17,10 +17,6 @@
 .root {
   display: flex;
   align-items: stretch;
-  button {
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-  }
   input {
     border-left: none;
     border-bottom-left-radius: 0;
@@ -29,4 +25,17 @@
   [role="combobox"] {
     flex-grow: 1;
   }
+}
+
+.selectButton {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.overlay {
+  position: fixed;
+  display: flex;
+  z-index: 1000;
+  inset: 0;
+  background: white;
 }

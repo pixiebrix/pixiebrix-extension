@@ -228,11 +228,24 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   return (
     // Do not replace this with `InputGroup` because that requires too many style overrides #2658 #2835
     <div className={styles.root}>
+      {isSelecting && (
+        <div className={styles.overlay}>
+          <button
+            className="btn btn-info m-auto"
+            onClick={() => {
+              setSelecting(false);
+            }}
+          >
+            Cancel selection
+          </button>
+        </div>
+      )}
       <Button
         onClick={select}
         disabled={isSelecting || disabled}
         variant="info"
         aria-label="Select element"
+        className={styles.selectButton}
       >
         <FontAwesomeIcon icon={faMousePointer} />
       </Button>
