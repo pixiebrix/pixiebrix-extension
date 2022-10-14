@@ -63,7 +63,12 @@ export class AlertEffect extends Effect {
       // eslint-disable-next-line no-alert
       window.alert(messageString);
     } else {
-      showNotification({ message: messageString, type, duration });
+      showNotification({
+        message: messageString,
+        type,
+        duration,
+        reportError: false,
+      });
     }
   }
 }
