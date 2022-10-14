@@ -97,7 +97,6 @@ const BlueprintsToolbar: React.FunctionComponent<{
     <div className="d-flex justify-content-between align-items-center mb-3">
       <h3 className={styles.filterTitle}>{tabContentTitle}</h3>
       <span className="d-flex align-items-center small">
-        <span className="ml-3 mr-2">Group by:</span>
         <Select
           isClearable
           placeholder="Group by"
@@ -107,10 +106,16 @@ const BlueprintsToolbar: React.FunctionComponent<{
             setGroupBy(value);
           }}
           value={groupByOptions.find((opt) => opt.value === groupBy[0])}
+          formatOptionLabel={({ label }, { context }) => (
+            <>
+              {context === "value" && <strong>Group by: </strong>}
+              {label}
+            </>
+          )}
         />
 
-        <span className="ml-3 mr-2">Sort by:</span>
         <Select
+          className="ml-3"
           isClearable
           placeholder="Sort by"
           options={sortByOptions}
@@ -120,6 +125,12 @@ const BlueprintsToolbar: React.FunctionComponent<{
             setSortBy(value);
           }}
           value={sortByOptions.find((opt) => opt.value === sortBy[0]?.id)}
+          formatOptionLabel={({ label }, { context }) => (
+            <>
+              {context === "value" && <strong>Sort by: </strong>}
+              {label}
+            </>
+          )}
         />
 
         {isSorted && (
