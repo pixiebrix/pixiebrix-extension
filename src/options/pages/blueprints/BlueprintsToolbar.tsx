@@ -98,6 +98,7 @@ const BlueprintsToolbar: React.FunctionComponent<{
       <h3 className={styles.filterTitle}>{tabContentTitle}</h3>
       <span className="d-flex align-items-center small">
         <Select
+          className="ml-2"
           isClearable
           placeholder="Group by"
           options={groupByOptions}

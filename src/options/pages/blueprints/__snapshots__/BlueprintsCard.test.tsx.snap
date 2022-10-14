@@ -213,7 +213,7 @@ exports[`BlueprintsCard renders 1`] = `
           class="d-flex align-items-center small"
         >
           <div
-            class=" css-b62m3t-container"
+            class="ml-2 css-b62m3t-container"
           >
             <span
               class="css-1f43avz-a11yText-A11yText"
