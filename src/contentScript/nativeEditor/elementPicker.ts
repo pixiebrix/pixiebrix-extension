@@ -154,6 +154,7 @@ export async function userSelectElement({
         overlay.inspect([]);
         expandOverlay.inspect([]);
         targets.clear();
+        selectionHandler(targets.size);
       }
     }
 
