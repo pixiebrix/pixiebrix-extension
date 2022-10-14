@@ -34,7 +34,7 @@ const Header: React.FunctionComponent = () => {
       <Button
         className={cx(
           styles.button,
-          theme === "default" ? styles.nonThemeColor : styles.themeColor
+          theme === "default" ? styles.themeColorOverride : styles.themeColor
         )}
         onClick={async () => {
           const sidebar = await whoAmI();
@@ -62,7 +62,7 @@ const Header: React.FunctionComponent = () => {
         variant="link"
         className={cx(
           styles.button,
-          theme === "default" ? styles.nonThemeColor : styles.themeColor
+          theme === "default" ? styles.themeColorOverride : styles.themeColor
         )}
       >
         <span>
