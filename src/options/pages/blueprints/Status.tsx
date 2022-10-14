@@ -82,7 +82,7 @@ const Status: React.VoidFunctionComponent<{
   }
 
   return (
-    <div className="text-success w-100">
+    <div className="text-success">
       <div className={styles.root}>
         <FontAwesomeIcon icon={faCheck} />
         <span className={styles.textStatus}>
