@@ -212,13 +212,8 @@ exports[`BlueprintsCard renders 1`] = `
         <span
           class="d-flex align-items-center small"
         >
-          <span
-            class="ml-3 mr-2"
-          >
-            Group by:
-          </span>
           <div
-            class=" css-b62m3t-container"
+            class="ml-2 css-b62m3t-container"
           >
             <span
               class="css-1f43avz-a11yText-A11yText"
@@ -291,13 +286,8 @@ exports[`BlueprintsCard renders 1`] = `
               </div>
             </div>
           </div>
-          <span
-            class="ml-3 mr-2"
-          >
-            Sort by:
-          </span>
           <div
-            class=" css-b62m3t-container"
+            class="ml-3 css-b62m3t-container"
           >
             <span
               class="css-1f43avz-a11yText-A11yText"
