@@ -42,7 +42,6 @@ import { SettingsState } from "@/store/settingsTypes";
 
 // eslint-disable-next-line import/no-restricted-paths -- Not ideal, but webpack should be able to treeshake the file. Maybe move to @/utils ?
 import { sortBySelector } from "@/contentScript/nativeEditor/selectorInference";
-import { CancelError } from "@/errors/businessErrors";
 import { isErrorObject } from "@/errors/errorHelpers";
 
 interface ElementSuggestion extends SuggestionTypeBase {

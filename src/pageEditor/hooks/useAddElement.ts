@@ -20,7 +20,7 @@ import { useCallback } from "react";
 import notify from "@/utils/notify";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { internalExtensionPointMetaFactory } from "@/pageEditor/extensionPoints/base";
-import { getErrorMessage, isErrorObject } from "@/errors/errorHelpers";
+import { isErrorObject } from "@/errors/errorHelpers";
 import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
@@ -29,7 +29,6 @@ import useFlags from "@/hooks/useFlags";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectFrameState } from "@/pageEditor/tabState/tabStateSelectors";
 import { reportEvent } from "@/telemetry/events";
-import { CancelError } from "@/errors/businessErrors";
 
 type AddElement = (config: ElementConfig) => void;
 
