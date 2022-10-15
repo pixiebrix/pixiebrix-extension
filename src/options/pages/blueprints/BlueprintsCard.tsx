@@ -158,25 +158,23 @@ const BlueprintsCard: React.FunctionComponent<{
         <BlueprintsToolbar tableInstance={tableInstance} />
         {/* This wrapper prevents AutoSizer overflow in a flex box container */}
         <div style={{ flex: "1 1 auto" }}>
-          <AutoSizer defaultHeight={500}>
-            {({ height, width }) =>
-              isLoading ? (
-                <div style={{ height: `${height}px`, width: `${width}px` }}>
-                  <Card>
-                    <Card.Body>
-                      <Loader />
-                    </Card.Body>
-                  </Card>
-                </div>
-              ) : (
+          {isLoading ? (
+            <Card>
+              <Card.Body>
+                <Loader />
+              </Card.Body>
+            </Card>
+          ) : (
+            <AutoSizer defaultHeight={500}>
+              {({ height, width }) => (
                 <BlueprintsView
                   tableInstance={tableInstance}
                   width={width}
                   height={height}
                 />
-              )
-            }
-          </AutoSizer>
+              )}
+            </AutoSizer>
+          )}
         </div>
       </Col>
     </BootstrapRow>
