@@ -32,7 +32,8 @@ import { Stylesheets } from "@/components/Stylesheets";
 import { Button } from "react-bootstrap";
 import { FormLabel } from "react-bootstrap";
 import pluralize from "@/utils/pluralize";
-import Icon from "@/icons/Icon";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGripHorizontal } from "@fortawesome/free-solid-svg-icons";
 
 export type SelectionHandlerType = (count: number) => void;
 type SetSelectionHandlerType = (handler: SelectionHandlerType) => void;
@@ -72,19 +73,14 @@ export const SelectionToolPopover: React.FC<{
           <div className="popover-wrapper">
             <FieldSection
               title={
-                <>
-                  <Icon
-                    library="bootstrap"
-                    size={16}
-                    icon="arrows-move"
-                    className="mr-2"
-                  />
+                <div className="popover-wrapper-header">
+                  <FontAwesomeIcon icon={faGripHorizontal} size="1x" />
                   {`Selection Tool: ${matchingCount} ${pluralize(
                     matchingCount,
                     "matching element",
                     "matching elements"
                   )}`}
-                </>
+                </div>
               }
             >
               <div className="d-flex align-items-center">
