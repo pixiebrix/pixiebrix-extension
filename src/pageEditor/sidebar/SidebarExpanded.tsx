@@ -37,7 +37,7 @@ import {
   selectElements,
   selectExpandedRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useGetRecipesQuery } from "@/services/api";
 import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
@@ -48,6 +48,7 @@ import Logo from "./Logo";
 import ReloadButton from "./ReloadButton";
 import AddExtensionPointButton from "./AddExtensionPointButton";
 import ExtensionEntry from "./ExtensionEntry";
+import { actions } from "@/pageEditor/slices/editorSlice";
 
 const SidebarExpanded: React.FunctionComponent<{
   collapseSidebar: () => void;
@@ -55,6 +56,7 @@ const SidebarExpanded: React.FunctionComponent<{
   const { data: allRecipes, isLoading: isLoadingRecipes } =
     useGetRecipesQuery();
 
+  const dispatch = useDispatch();
   const activeElementId = useSelector(selectActiveElementId);
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const expandedRecipeId = useSelector(selectExpandedRecipeId);
@@ -163,7 +165,7 @@ const SidebarExpanded: React.FunctionComponent<{
             await removeRecipe({ recipeId: activeRecipeId });
           }}
           onClone={async () => {
-            console.warn("Not implemented yet");
+            dispatch(actions.showCreateRecipeModal({ keepLocalCopy: true }));
           }}
         >
           {elements.map((element) => (
