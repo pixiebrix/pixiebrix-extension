@@ -188,9 +188,9 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
         updated_at: response.updated_at,
       };
 
-      // Replace the old recipe with the new recipe locally. The logic here is similar to what's in useReinstall.ts
-
-      await removeRecipe({ recipeId, shouldShowConfirmation: false });
+      if (!keepLocalCopy) {
+        await removeRecipe({ recipeId, shouldShowConfirmation: false });
+      }
 
       dispatch(
         optionsActions.installRecipe({
@@ -224,6 +224,7 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
       editorFormElements,
       installedExtensions,
       isDirtyByElementId,
+      keepLocalCopy,
       removeRecipe,
     ]
   );
