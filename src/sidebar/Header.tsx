@@ -44,7 +44,7 @@ const Header: React.FunctionComponent = () => {
         <div className="align-self-center">
           <img
             src={customSidebarLogo ?? logo.regular}
-            alt="PixieBrix logo"
+            alt={customSidebarLogo ? "Custom logo" : "PixieBrix logo"}
             className={styles.logo}
             data-testId="sidebarHeaderLogo"
           />

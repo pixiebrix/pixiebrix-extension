@@ -108,7 +108,7 @@ function useGetOrganizationTheme(): {
     showSidebarLogo: organizationTheme
       ? Boolean(organizationTheme.show_sidebar_logo)
       : true,
-    customSidebarLogo: organizationTheme?.logo,
+    customSidebarLogo: organizationTheme?.logo || null,
   };
 }
 
