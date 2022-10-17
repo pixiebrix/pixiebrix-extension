@@ -33,7 +33,6 @@ import {
   Timestamp,
   RegistryId,
   SemVerString,
-  UserOptions,
 } from "@/core";
 
 import { components } from "@/types/swagger";
@@ -137,7 +136,7 @@ export type SanitizedAuth = components["schemas"]["SanitizedAuth"] & {
 
 export type Deployment = Except<
   components["schemas"]["DeploymentDetail"],
-  "package" | "options_config"
+  "id" | "package"
 > & {
   id: UUID;
   package: Except<
@@ -149,7 +148,6 @@ export type Deployment = Except<
     package_id: RegistryId;
     config: RecipeDefinition;
   };
-  options_config?: UserOptions;
 };
 
 export type Brick = components["schemas"]["PackageMeta"] & {

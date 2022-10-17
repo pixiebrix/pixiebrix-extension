@@ -28,6 +28,7 @@ import type { Permissions } from "webextension-polyfill";
 import type React from "react";
 
 import { contextNames } from "webext-detect-page";
+import { UnknownObject } from "./types";
 
 // Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
@@ -930,7 +931,7 @@ export interface IconConfig {
   color?: string;
 }
 
-export type UserOptions = Record<string, Primitive>;
+export type UserOptions = UnknownObject;
 
 export type RawConfig = {
   kind: "service" | "extensionPoint" | "component" | "reader" | "recipe";
