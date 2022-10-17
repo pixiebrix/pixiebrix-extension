@@ -65,7 +65,7 @@ const Status: React.VoidFunctionComponent<{
 
   if (status === "Paused") {
     return (
-      <div className="text-muted w-100">
+      <div className="text-muted">
         <div className={styles.root}>
           <FontAwesomeIcon icon={faPause} />
           <span className={styles.textStatus}>
@@ -82,7 +82,7 @@ const Status: React.VoidFunctionComponent<{
   }
 
   return (
-    <div className="text-success w-100">
+    <div className="text-success">
       <div className={styles.root}>
         <FontAwesomeIcon icon={faCheck} />
         <span className={styles.textStatus}>

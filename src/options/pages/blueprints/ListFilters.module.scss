@@ -6,4 +6,8 @@
     font-size: 0.8rem;
     color: #bba8bff5;
   }
+
+  :global .nav-link {
+    padding-inline: 0.7rem; // Reduce horizontal padding
+  }
 }

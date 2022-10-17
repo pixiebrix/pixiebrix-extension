@@ -1,6 +1,6 @@
 import styles from "./ListFilters.module.scss";
 
-import { Col, Form, Nav } from "react-bootstrap";
+import { Col, Form, Nav, NavLinkProps } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import useReduxState from "@/hooks/useReduxState";
 import { selectActiveTab } from "./blueprintsSelectors";
@@ -20,6 +20,10 @@ import { TableInstance } from "react-table";
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import useFlags from "@/hooks/useFlags";
 import { useGetMeQuery, useGetStarterBlueprintsQuery } from "@/services/api";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+
+// eslint-disable-next-line no-restricted-imports -- Type only
+import type { BsPrefixRefForwardingComponent } from "react-bootstrap/esm/helpers";
 
 type ListFiltersProps = {
   teamFilters: string[];
@@ -65,6 +69,16 @@ export const BLUEPRINTS_PAGE_TABS: BlueprintTabMap = {
     filters: [],
   },
 };
+
+const ListItem: BsPrefixRefForwardingComponent<
+  "a",
+  NavLinkProps & { label: string; icon: IconProp }
+> = ({ label, icon, ...otherProps }) => (
+  <Nav.Link className="media" {...otherProps}>
+    <FontAwesomeIcon className="align-self-center" icon={icon} />
+    <span className="media-body ml-2">{label}</span>
+  </Nav.Link>
+);
 
 const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
   teamFilters,
@@ -157,7 +171,7 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
 
   return (
     <Col sm={12} md={3} xl={2} className={styles.root}>
-      <Form className="mr-3">
+      <Form>
         <Form.Control
           id="query"
           placeholder="Search all blueprints"
@@ -175,91 +189,79 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
         activeKey={activeTab.key}
       >
         {showGetStartedTab && (
-          <Nav.Item className="mt-3">
-            <Nav.Link
-              eventKey="Get Started"
-              onClick={() => {
-                setActiveTab(BLUEPRINTS_PAGE_TABS.getStarted);
-              }}
-            >
-              <FontAwesomeIcon icon={faRocket} /> Get Started
-            </Nav.Link>
-          </Nav.Item>
+          <ListItem
+            className="mt-3"
+            icon={faRocket}
+            label="Get Started"
+            eventKey="Get Started"
+            onClick={() => {
+              setActiveTab(BLUEPRINTS_PAGE_TABS.getStarted);
+            }}
+          />
         )}
         <h5 className="mt-3">Category Filters</h5>
-        <Nav.Item>
-          <Nav.Link
-            eventKey="Active"
-            onClick={() => {
-              setActiveTab(BLUEPRINTS_PAGE_TABS.active);
-            }}
-          >
-            <FontAwesomeIcon icon={faCheck} /> Active
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link
-            eventKey="All"
-            onClick={() => {
-              setActiveTab(BLUEPRINTS_PAGE_TABS.all);
-            }}
-          >
-            <FontAwesomeIcon icon={faAsterisk} /> All Blueprints
-          </Nav.Link>
-        </Nav.Item>
+        <ListItem
+          icon={faCheck}
+          label="Active"
+          eventKey="Active"
+          onClick={() => {
+            setActiveTab(BLUEPRINTS_PAGE_TABS.active);
+          }}
+        />
+        <ListItem
+          icon={faAsterisk}
+          label="All Blueprints"
+          eventKey="All"
+          onClick={() => {
+            setActiveTab(BLUEPRINTS_PAGE_TABS.all);
+          }}
+        />
         {permit("marketplace") && (
           <>
-            <Nav.Item>
-              <Nav.Link
-                eventKey="Personal"
-                onClick={() => {
-                  setActiveTab(BLUEPRINTS_PAGE_TABS.personal);
-                }}
-              >
-                <FontAwesomeIcon icon={faUser} /> Personal
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                eventKey="Public"
-                onClick={() => {
-                  setActiveTab(BLUEPRINTS_PAGE_TABS.public);
-                }}
-              >
-                <FontAwesomeIcon icon={faGlobe} /> Public Marketplace
-              </Nav.Link>
-            </Nav.Item>
+            <ListItem
+              icon={faUser}
+              label="Personal"
+              eventKey="Personal"
+              onClick={() => {
+                setActiveTab(BLUEPRINTS_PAGE_TABS.personal);
+              }}
+            />
+            <ListItem
+              icon={faGlobe}
+              label="Public Marketplace"
+              eventKey="Public"
+              onClick={() => {
+                setActiveTab(BLUEPRINTS_PAGE_TABS.public);
+              }}
+            />
           </>
         )}
         {teamFilters.length > 0 && <h5 className="mt-3">Shared with Me</h5>}
         {teamFilters.map((filter) => (
-          <Nav.Item key={filter}>
-            <Nav.Link
-              eventKey={filter}
-              onClick={() => {
-                setActiveTab({
-                  key: filter,
-                  tabTitle: `${filter} Blueprints`,
-                  filters: [{ id: "sharing.source.label", value: filter }],
-                });
-              }}
-            >
-              <FontAwesomeIcon icon={faUsers} /> {filter}
-            </Nav.Link>
-          </Nav.Item>
+          <ListItem
+            key={filter}
+            icon={faUsers}
+            label={filter}
+            eventKey={filter}
+            onClick={() => {
+              setActiveTab({
+                key: filter,
+                tabTitle: `${filter} Blueprints`,
+                filters: [{ id: "sharing.source.label", value: filter }],
+              });
+            }}
+          />
         ))}
       </Nav>
       <Nav className="flex-column">
         <h5>Explore</h5>
-        <Nav.Item>
-          <Nav.Link
-            href="https://www.pixiebrix.com/marketplace"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FontAwesomeIcon icon={faExternalLinkAlt} /> Open Public Marketplace
-          </Nav.Link>
-        </Nav.Item>
+        <ListItem
+          icon={faExternalLinkAlt}
+          label="Open Public Marketplace"
+          href="https://www.pixiebrix.com/marketplace"
+          target="_blank"
+          rel="noopener noreferrer"
+        />
       </Nav>
     </Col>
   );
