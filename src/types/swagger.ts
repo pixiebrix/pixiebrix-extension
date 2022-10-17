@@ -256,7 +256,7 @@ export interface paths {
     get: operations["listMemberships"];
   };
   "/api/organizations/{organization_pk}/databases/{id}/": {
-    get: operations["retrieveDatabaseStatistics"];
+    get: operations["retrieveDatabase"];
     put: operations["updateDatabase"];
     delete: operations["destroyDatabase"];
     patch: operations["partialUpdateDatabase"];
@@ -525,6 +525,10 @@ export interface components {
       enforce_schema?: boolean;
       /** @description Field indicating the record owner */
       owner_field?: string | null;
+      user?: string;
+      /** Format: date-time */
+      last_write_at?: string;
+      num_records?: number;
     };
     ExportedRecord: {
       id: string;
@@ -634,6 +638,11 @@ export interface components {
       organization_id?: string;
       /** Format: date-time */
       created_at?: string;
+      /** @description Enforce the JSON Schema for database records */
+      enforce_schema?: boolean;
+      /** @description Field indicating the record owner */
+      owner_field?: string | null;
+      user?: string;
       /** Format: date-time */
       last_write_at?: string;
       num_records?: number;
@@ -1252,21 +1261,6 @@ export interface components {
       service_id: string;
       service_name: string;
     };
-    DatabaseStatistics: {
-      /** Format: uuid */
-      id?: string;
-      name: string;
-      organization_id?: string;
-      /** Format: date-time */
-      created_at?: string;
-      /** @description Enforce the JSON Schema for database records */
-      enforce_schema?: boolean;
-      /** @description Field indicating the record owner */
-      owner_field?: string | null;
-      /** Format: date-time */
-      last_write_at?: string;
-      num_records?: number;
-    };
     DatabaseSchema: {
       database_id?: string;
       schema_text: string;
@@ -1430,15 +1424,6 @@ export interface components {
        * @description Timestamp the error occurred, not the time the record is added to the db
        */
       timestamp: string;
-    };
-    UserDatabase: {
-      /** Format: uuid */
-      id?: string;
-      user?: string;
-      name: string;
-      organization_id?: string;
-      /** Format: date-time */
-      created_at?: string;
     };
     DatabaseExportRequest: {
       name: string;
@@ -1793,16 +1778,16 @@ export interface operations {
     responses: {
       201: {
         content: {
-          "application/json; version=2.0": components["schemas"]["UserDatabase"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["UserDatabase"];
+          "application/json; version=2.0": components["schemas"]["Database"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UserDatabase"];
-        "application/x-www-form-urlencoded": components["schemas"]["UserDatabase"];
-        "multipart/form-data": components["schemas"]["UserDatabase"];
+        "application/json": components["schemas"]["Database"];
+        "application/x-www-form-urlencoded": components["schemas"]["Database"];
+        "multipart/form-data": components["schemas"]["Database"];
       };
     };
   };
@@ -1877,16 +1862,16 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json; version=2.0": components["schemas"]["UserDatabase"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["UserDatabase"];
+          "application/json; version=2.0": components["schemas"]["Database"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UserDatabase"];
-        "application/x-www-form-urlencoded": components["schemas"]["UserDatabase"];
-        "multipart/form-data": components["schemas"]["UserDatabase"];
+        "application/json": components["schemas"]["Database"];
+        "application/x-www-form-urlencoded": components["schemas"]["Database"];
+        "multipart/form-data": components["schemas"]["Database"];
       };
     };
   };
@@ -3626,7 +3611,7 @@ export interface operations {
       };
     };
   };
-  retrieveDatabaseStatistics: {
+  retrieveDatabase: {
     parameters: {
       path: {
         organization_pk: string;
@@ -3636,8 +3621,8 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json; version=2.0": components["schemas"]["DatabaseStatistics"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DatabaseStatistics"];
+          "application/json; version=2.0": components["schemas"]["Database"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
         };
       };
     };
