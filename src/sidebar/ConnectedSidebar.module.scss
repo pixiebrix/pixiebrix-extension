@@ -15,16 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.button {
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
+// Due to design system inconsistencies,
+// we have to override our primary purple color
+// for the PixieBrix theme
+.themeColorOverride {
   color: #6562aa;
 
   &:hover {
     color: #4d4b8b;
     background-color: #d1c2d7;
   }
+}
+
+.themeColor {
+  color: var(--theme-primary);
+
+  &:hover {
+    color: var(--theme-primary);
+    background-color: rgba(0, 0, 0, 0.07);
+  }
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
 }
 
 .logo {
