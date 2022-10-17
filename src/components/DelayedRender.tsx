@@ -15,15 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./Loader.module.scss";
-import React from "react";
-// eslint-disable-next-line no-restricted-imports -- The only allowed import :)
-import GridLoader from "react-spinners/GridLoader";
+import React, { useState, useEffect } from "react";
 
-const Loader: typeof GridLoader = (props) => (
-  <div className={styles.root} data-testid="loader">
-    <GridLoader {...props} />
-  </div>
-);
+type Props = {
+  children: React.ReactElement;
+  millis: number;
+};
 
-export default React.memo(Loader);
+/** Component used to reduce flashing */
+const DelayedRender = ({ children, millis }: Props) => {
+  const [isShown, setIsShown] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsShown(true);
+    }, millis);
+  }, [millis]);
+
+  return isShown ? children : null;
+};
+
+export default DelayedRender;
