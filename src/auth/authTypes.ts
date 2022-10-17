@@ -16,7 +16,7 @@
  */
 
 import { RegistryId, UUID } from "@/core";
-import { Me } from "@/types/contract";
+import { Me, OrganizationTheme } from "@/types/contract";
 import { Except } from "type-fest";
 
 export interface AuthOption {
@@ -119,6 +119,10 @@ export type OrganizationAuthState = {
    * The package scope of the organization, or null if not set.
    */
   readonly scope?: string;
+  /**
+   * The optional custom theme configured for this Organization
+   */
+  readonly theme?: OrganizationTheme;
   /**
    * The Automation Anywhere Control Room information
    */

@@ -25,7 +25,7 @@ import { whoAmI } from "@/background/messenger/api";
 import useTheme from "@/hooks/useTheme";
 
 const Header: React.FunctionComponent = () => {
-  const { logo, showSidebarLogo } = useTheme();
+  const { logo, showSidebarLogo, customSidebarLogo } = useTheme();
 
   return (
     <div className="d-flex p-2 justify-content-between align-content-center">
@@ -43,7 +43,7 @@ const Header: React.FunctionComponent = () => {
       {showSidebarLogo && (
         <div className="align-self-center">
           <img
-            src={logo.regular}
+            src={customSidebarLogo ?? logo.regular}
             alt="PixieBrix logo"
             className={styles.logo}
             data-testId="sidebarHeaderLogo"

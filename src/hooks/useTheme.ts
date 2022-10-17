@@ -91,20 +91,31 @@ export function useGetTheme(): Theme {
 
 function useGetOrganizationTheme(): {
   showSidebarLogo: boolean;
+  customSidebarLogo: string;
 } {
   const { data: me } = useGetMeQuery();
-  const organizationTheme = me?.organization?.theme;
+  const { organization: cachedOrganization } = useSelector(selectAuth);
+
+  const organizationTheme = useMemo(() => {
+    if (me) {
+      return me?.organization?.theme;
+    }
+
+    return cachedOrganization?.theme;
+  }, [me, cachedOrganization]);
 
   return {
     showSidebarLogo: organizationTheme
       ? Boolean(organizationTheme.show_sidebar_logo)
       : true,
+    customSidebarLogo: organizationTheme?.logo,
   };
 }
 
 type ThemeAssets = {
   logo: ThemeLogo;
   showSidebarLogo: boolean;
+  customSidebarLogo: string;
 };
 
 /**
