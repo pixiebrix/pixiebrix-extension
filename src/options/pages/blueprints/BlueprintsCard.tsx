@@ -17,7 +17,7 @@
 
 import styles from "./BlueprintsCard.module.scss";
 
-import { Col, Row as BootstrapRow } from "react-bootstrap";
+import { Card, Col, Row as BootstrapRow } from "react-bootstrap";
 import React, { useMemo } from "react";
 import {
   Column,
@@ -159,7 +159,11 @@ const BlueprintsCard: React.FunctionComponent<{
         {/* This wrapper prevents AutoSizer overflow in a flex box container */}
         <div style={{ flex: "1 1 auto" }}>
           {isLoading ? (
-            <Loader />
+            <Card>
+              <Card.Body>
+                <Loader />
+              </Card.Body>
+            </Card>
           ) : (
             <AutoSizer defaultHeight={500}>
               {({ height, width }) => (
