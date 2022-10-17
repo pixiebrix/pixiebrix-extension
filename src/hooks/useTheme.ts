@@ -89,7 +89,7 @@ export function useGetTheme(): Theme {
   return theme;
 }
 
-function useGetOrganizationTheme(): {
+export function useGetOrganizationTheme(): {
   showSidebarLogo: boolean;
   customSidebarLogo: string;
 } {
