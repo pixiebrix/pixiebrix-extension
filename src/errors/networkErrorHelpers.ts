@@ -29,17 +29,13 @@ export type SerializableAxiosError = Except<AxiosError, "toJSON">;
 
 // Copy of axios.isAxiosError, without risking to import the whole untreeshakeable axios library
 export function isAxiosError(error: unknown): error is SerializableAxiosError {
-  if (
+  return (
     isObject(error) &&
     // To deal with original AxiosError as well as a serialized error
     // we check 'isAxiosError' property for a non-serialized Error and 'name' for serialized object
     // Related issue to revisit RTKQ error handling: https://github.com/pixiebrix/pixiebrix-extension/issues/4032
     (Boolean(error.isAxiosError) || error.name === "AxiosError")
-  ) {
-    return true;
-  }
-
-  return false;
+  );
 }
 
 export const NO_INTERNET_MESSAGE =

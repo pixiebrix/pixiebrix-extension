@@ -26,7 +26,8 @@ import {
 import { services } from "@/background/messenger/api";
 import { pickBy } from "lodash";
 import { resolveObj } from "@/utils";
-import { isErrorLike } from "serialize-error";
+import { isSpecificError } from "@/errors/errorHelpers";
+import { MissingConfigurationError } from "@/errors/businessErrors";
 
 export const SERVICE_FIELD_REFS = [
   "https://app.pixiebrix.com/schemas/service#/definitions/configuredServiceOrVar",
@@ -66,11 +67,7 @@ export async function locateWithRetry(
   try {
     return await services.locate(serviceId, authId);
   } catch (error) {
-    if (
-      retry &&
-      isErrorLike(error) &&
-      error.name === "MissingConfigurationError"
-    ) {
+    if (retry && isSpecificError(error, MissingConfigurationError)) {
       // Retry
     } else {
       throw error;

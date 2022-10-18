@@ -17,14 +17,14 @@
 
 import pTimeout from "p-timeout";
 import { FrameworkMeta } from "@/messaging/constants";
-import { getErrorMessage, isErrorObject } from "@/errors/errorHelpers";
+import { getErrorMessage, isSpecificError } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 import { uuidv4 } from "@/types/helpers";
 import { thisTab } from "@/pageEditor/utils";
 import { detectFrameworks } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/messenger/api";
 import { canAccessTab } from "webext-tools";
-import { sleep } from "@/utils";
+import { sleep, TimeoutError } from "@/utils";
 import { onContextInvalidated } from "@/errors/contextInvalidated";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
@@ -77,10 +77,9 @@ const connectToContentScript = createAsyncThunk<
   try {
     await contentScript;
   } catch (error) {
-    const errorMessage =
-      isErrorObject(error) && error.name === "TimeoutError"
-        ? "The Page Editor could not establish a connection to the content script"
-        : getErrorMessage(error);
+    const errorMessage = isSpecificError(error, TimeoutError)
+      ? "The Page Editor could not establish a connection to the content script"
+      : getErrorMessage(error);
     reportError(error);
     throw new Error(errorMessage, { cause: error });
   }
