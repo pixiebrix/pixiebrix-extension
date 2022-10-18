@@ -37,6 +37,7 @@ let expandOverlay: Overlay | null = null;
 let styleElement: HTMLStyleElement = null;
 let multiSelectionToolElement: HTMLElement = null;
 let selectionHandler: SelectionHandlerType;
+let stopInspectingNative: () => void;
 
 function setSelectionHandler(handler: SelectionHandlerType) {
   selectionHandler = handler;
@@ -48,6 +49,12 @@ export function hideOverlay(): void {
     overlay = null;
     expandOverlay.remove();
     expandOverlay = null;
+  }
+}
+
+export function stopInspectingNativeHandler(): void {
+  if (stopInspectingNative) {
+    stopInspectingNative();
   }
 }
 
@@ -122,16 +129,6 @@ export async function userSelectElement({
       }
 
       prehiglightItems();
-    }
-
-    function stopInspectingNative() {
-      hideOverlay();
-      _cancelSelect = null;
-      removeListenersOnWindow(window);
-      removeInspectingModeStyles();
-      if (enableSelectionTools) {
-        removeMultiSelectionTool();
-      }
     }
 
     function handleDone(target?: HTMLElement) {
@@ -367,6 +364,18 @@ export async function userSelectElement({
     }
 
     startInspectingNative();
+
+    stopInspectingNative = () => {
+      hideOverlay();
+      _cancelSelect = null;
+      removeListenersOnWindow(window);
+      removeInspectingModeStyles();
+      if (enableSelectionTools) {
+        removeMultiSelectionTool();
+      }
+
+      stopInspectingNative = null;
+    };
   });
 }
 
