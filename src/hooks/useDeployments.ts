@@ -89,11 +89,12 @@ async function activateDeployment(
     actions.installRecipe({
       recipe: deployment.package.config,
       extensionPoints: deployment.package.config.extensionPoints,
+      deployment,
       services: await mergeDeploymentServiceConfigurations(
         deployment,
         services.locateAllForId
       ),
-      deployment,
+      optionsArgs: deployment.options_config,
     })
   );
 

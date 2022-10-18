@@ -168,6 +168,7 @@ async function installDeployment(
         deployment,
         locateAllForService
       ),
+      optionsArgs: deployment.options_config,
     })
   );
 

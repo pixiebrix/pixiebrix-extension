@@ -110,8 +110,7 @@ export interface paths {
     get: operations["listActiveDeployments"];
   };
   "/api/deployments/{deployment_pk}/errors/": {
-    /** View to return most recent Rollbar error report for a deployment. */
-    get: operations["retrieveErrorOccurrence"];
+    get: operations["listDeploymentErrors"];
   };
   "/api/deployments/{deployment_pk}/groups/": {
     get: operations["listDeploymentPermissions"];
@@ -257,7 +256,7 @@ export interface paths {
     get: operations["listMemberships"];
   };
   "/api/organizations/{organization_pk}/databases/{id}/": {
-    get: operations["retrieveDatabaseStatistics"];
+    get: operations["retrieveDatabase"];
     put: operations["updateDatabase"];
     delete: operations["destroyDatabase"];
     patch: operations["partialUpdateDatabase"];
@@ -280,11 +279,10 @@ export interface paths {
     get: operations["exportOrganizationBackup"];
   };
   "/api/organizations/{organization_pk}/errors/": {
-    /** View to return most recent Rollbar error report for an organization. */
-    get: operations["retrieveOrganizationErrors"];
+    get: operations["listOrganizationErrors"];
   };
   "/api/organizations/{organization_pk}/events/": {
-    get: operations["retrieveEventInterval"];
+    get: operations["listEventIntervals"];
   };
   "/api/organizations/{organization_pk}/contacts/": {
     get: operations["listOrganizationContacts"];
@@ -346,10 +344,7 @@ export interface paths {
     get: operations["retrieveSupportUserEvents"];
   };
   "/api/support/users/{user_pk}/errors/": {
-    get: operations["retrieveUserError"];
-  };
-  "/api/support/users/{user_pk}/errors/jobs/{job_pk}/": {
-    get: operations["retrieveUserErrorJob"];
+    get: operations["listUserErrors"];
   };
   "/api/support/users/{user_pk}/extensions/": {
     get: operations["listSupportUserExtensions"];
@@ -416,9 +411,6 @@ export interface paths {
   };
   "/api/run/": {
     post: operations["executeBrick"];
-  };
-  "/api/support/users/{user_pk}/errors/jobs/": {
-    post: operations["createUserErrorJob"];
   };
   "/api/telemetry/errors/": {
     post: operations["createErrorItem"];
@@ -533,6 +525,10 @@ export interface components {
       enforce_schema?: boolean;
       /** @description Field indicating the record owner */
       owner_field?: string | null;
+      user?: string;
+      /** Format: date-time */
+      last_write_at?: string;
+      num_records?: number;
     };
     ExportedRecord: {
       id: string;
@@ -582,6 +578,7 @@ export interface components {
       services: {
         auth: string;
       }[];
+      options_config?: { [key: string]: unknown };
     };
     CampaignSummary: {
       /** Format: uuid */
@@ -641,6 +638,11 @@ export interface components {
       organization_id?: string;
       /** Format: date-time */
       created_at?: string;
+      /** @description Enforce the JSON Schema for database records */
+      enforce_schema?: boolean;
+      /** @description Field indicating the record owner */
+      owner_field?: string | null;
+      user?: string;
       /** Format: date-time */
       last_write_at?: string;
       num_records?: number;
@@ -681,6 +683,7 @@ export interface components {
         };
       }[];
       active?: boolean;
+      options_config?: { [key: string]: unknown };
     };
     DeploymentTelemetry: {
       /**
@@ -727,6 +730,7 @@ export interface components {
         auth: string;
       }[];
       active?: boolean;
+      options_config?: { [key: string]: unknown };
     };
     DependencyTree: {
       name: string;
@@ -781,19 +785,17 @@ export interface components {
       version?: string;
       client_version?: string;
     };
-    ErrorOccurrence: {
-      /** Format: uuid */
-      id?: string;
-      /** Format: uuid */
-      deployment: string;
-      title: string;
-      label?: string | null;
+    ErrorItemGroup: {
+      request_url: string | null;
+      deployment: string | null;
+      extension_label: string | null;
       /** Format: date-time */
       last_occurrence_timestamp: string;
-      people_count?: number | null;
-      request_url?: string | null;
+      message: string;
       occurrence_count: number;
-      code_version?: string | null;
+      people_count: number;
+      step_label: string | null;
+      user_agent_extension_version: string;
     };
     DeploymentPermission: {
       /** Format: uuid */
@@ -1259,21 +1261,6 @@ export interface components {
       service_id: string;
       service_name: string;
     };
-    DatabaseStatistics: {
-      /** Format: uuid */
-      id?: string;
-      name: string;
-      organization_id?: string;
-      /** Format: date-time */
-      created_at?: string;
-      /** @description Enforce the JSON Schema for database records */
-      enforce_schema?: boolean;
-      /** @description Field indicating the record owner */
-      owner_field?: string | null;
-      /** Format: date-time */
-      last_write_at?: string;
-      num_records?: number;
-    };
     DatabaseSchema: {
       database_id?: string;
       schema_text: string;
@@ -1424,20 +1411,19 @@ export interface components {
       extensionPointId?: string;
       label?: string;
     };
-    SupportUserError: {
-      id: string;
-      timestamp: number;
-      description: string;
+    UserErrorItem: {
+      /** @description Label of the extension, depends on the extension's telemetry settings */
+      extension_label?: string | null;
+      id?: number;
+      /** @description Just the error message, not the complete traceback */
       message: string;
-    };
-    UserDatabase: {
-      /** Format: uuid */
-      id?: string;
-      user?: string;
-      name: string;
-      organization_id?: string;
-      /** Format: date-time */
-      created_at?: string;
+      /** @description Step of the extension, depends on the extension's telemetry settings */
+      step_label?: string | null;
+      /**
+       * Format: date-time
+       * @description Timestamp the error occurred, not the time the record is added to the db
+       */
+      timestamp: string;
     };
     DatabaseExportRequest: {
       name: string;
@@ -1792,16 +1778,16 @@ export interface operations {
     responses: {
       201: {
         content: {
-          "application/json; version=2.0": components["schemas"]["UserDatabase"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["UserDatabase"];
+          "application/json; version=2.0": components["schemas"]["Database"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UserDatabase"];
-        "application/x-www-form-urlencoded": components["schemas"]["UserDatabase"];
-        "multipart/form-data": components["schemas"]["UserDatabase"];
+        "application/json": components["schemas"]["Database"];
+        "application/x-www-form-urlencoded": components["schemas"]["Database"];
+        "multipart/form-data": components["schemas"]["Database"];
       };
     };
   };
@@ -1876,16 +1862,16 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json; version=2.0": components["schemas"]["UserDatabase"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["UserDatabase"];
+          "application/json; version=2.0": components["schemas"]["Database"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UserDatabase"];
-        "application/x-www-form-urlencoded": components["schemas"]["UserDatabase"];
-        "multipart/form-data": components["schemas"]["UserDatabase"];
+        "application/json": components["schemas"]["Database"];
+        "application/x-www-form-urlencoded": components["schemas"]["Database"];
+        "multipart/form-data": components["schemas"]["Database"];
       };
     };
   };
@@ -2400,8 +2386,7 @@ export interface operations {
       };
     };
   };
-  /** View to return most recent Rollbar error report for a deployment. */
-  retrieveErrorOccurrence: {
+  listDeploymentErrors: {
     parameters: {
       path: {
         deployment_pk: string;
@@ -2410,8 +2395,8 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json; version=1.0": components["schemas"]["ErrorOccurrence"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ErrorOccurrence"];
+          "application/json; version=1.0": components["schemas"]["ErrorItemGroup"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ErrorItemGroup"][];
         };
       };
     };
@@ -3626,7 +3611,7 @@ export interface operations {
       };
     };
   };
-  retrieveDatabaseStatistics: {
+  retrieveDatabase: {
     parameters: {
       path: {
         organization_pk: string;
@@ -3636,8 +3621,8 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json; version=2.0": components["schemas"]["DatabaseStatistics"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DatabaseStatistics"];
+          "application/json; version=2.0": components["schemas"]["Database"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
         };
       };
     };
@@ -3828,8 +3813,7 @@ export interface operations {
       };
     };
   };
-  /** View to return most recent Rollbar error report for an organization. */
-  retrieveOrganizationErrors: {
+  listOrganizationErrors: {
     parameters: {
       path: {
         organization_pk: string;
@@ -3838,13 +3822,13 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json; version=1.0": components["schemas"]["ErrorOccurrence"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ErrorOccurrence"];
+          "application/json; version=1.0": components["schemas"]["ErrorItemGroup"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ErrorItemGroup"][];
         };
       };
     };
   };
-  retrieveEventInterval: {
+  listEventIntervals: {
     parameters: {
       path: {
         organization_pk: string;
@@ -3853,8 +3837,8 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json; version=1.0": components["schemas"]["EventInterval"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["EventInterval"];
+          "application/json; version=1.0": components["schemas"]["EventInterval"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["EventInterval"][];
         };
       };
     };
@@ -4353,7 +4337,7 @@ export interface operations {
       };
     };
   };
-  retrieveUserError: {
+  listUserErrors: {
     parameters: {
       path: {
         user_pk: string;
@@ -4362,24 +4346,8 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json; version=1.0": components["schemas"]["SupportUserError"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["SupportUserError"];
-        };
-      };
-    };
-  };
-  retrieveUserErrorJob: {
-    parameters: {
-      path: {
-        user_pk: string;
-        job_pk: string;
-      };
-    };
-    responses: {
-      200: {
-        content: {
-          "application/json; version=1.0": components["schemas"]["Job"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Job"];
+          "application/json; version=1.0": components["schemas"]["UserErrorItem"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["UserErrorItem"][];
         };
       };
     };
@@ -4774,28 +4742,6 @@ export interface operations {
         "application/json": components["schemas"]["ExecutableBrick"];
         "application/x-www-form-urlencoded": components["schemas"]["ExecutableBrick"];
         "multipart/form-data": components["schemas"]["ExecutableBrick"];
-      };
-    };
-  };
-  createUserErrorJob: {
-    parameters: {
-      path: {
-        user_pk: string;
-      };
-    };
-    responses: {
-      201: {
-        content: {
-          "application/json; version=1.0": components["schemas"]["Job"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Job"];
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["Job"];
-        "application/x-www-form-urlencoded": components["schemas"]["Job"];
-        "multipart/form-data": components["schemas"]["Job"];
       };
     };
   };
