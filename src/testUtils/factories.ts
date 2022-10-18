@@ -89,7 +89,10 @@ import {
   RemoteMenuItemExtensionPoint,
 } from "@/extensionPoints/menuItemExtension";
 import { propertiesToSchema } from "@/validators/generic";
-import { RemoteQuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
+import {
+  QuickBarConfig,
+  RemoteQuickBarExtensionPoint,
+} from "@/extensionPoints/quickBarExtension";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -715,7 +718,7 @@ export const marketplaceListingFactory = define<MarketplaceListing>({
 export const quickBarExtensionPointFactory =
   define<RemoteQuickBarExtensionPoint>({
     // @ts-expect-error -- Not sure what's wrong here, possibly TS struggling with the generics?
-    extensions: () => [] as Array<ResolvedExtension<MenuItemExtensionConfig>>,
+    extensions: () => [] as Array<ResolvedExtension<QuickBarConfig>>,
     icon: "",
     id: (n: number) => validateRegistryId(`test/quickbar-extension-point-${n}`),
     inputSchema: () =>
