@@ -287,7 +287,7 @@ export interface QuickBarDefinition extends ExtensionPointDefinition {
   defaultOptions?: QuickBarDefaultOptions;
 }
 
-class RemoteQuickBarExtensionPoint extends QuickBarExtensionPoint {
+export class RemoteQuickBarExtensionPoint extends QuickBarExtensionPoint {
   private readonly _definition: QuickBarDefinition;
 
   public readonly permissions: Permissions.Permissions;

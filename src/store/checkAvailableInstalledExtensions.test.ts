@@ -16,28 +16,87 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import {
-  actions as editorActions,
-  editorSlice,
-} from "@/pageEditor/slices/editorSlice";
+import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
   cloudExtensionFactory,
-  extensionFactory,
-  extensionPointConfigFactory,
-  extensionPointDefinitionFactory,
+  menuItemExtensionPointFactory,
+  quickBarExtensionPointFactory,
 } from "@/testUtils/factories";
 import { EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { ExtensionsRootState } from "@/store/extensionsTypes";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
 import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { waitForEffect } from "@/testUtils/testHelpers";
+import { getCurrentURL } from "@/pageEditor/utils";
+import { checkAvailableInstalledExtensions } from "@/pageEditor/slices/editorThunks";
+import { validateRegistryId } from "@/types/helpers";
+
+jest.mock("@/contentScript/messenger/api", () => ({
+  getInstalledExtensionPoints: jest.fn(),
+}));
+
+jest.mock("@/pageEditor/utils", () => ({
+  getCurrentURL: jest.fn(),
+}));
 
 const { actions: optionsActions, reducer: extensionsReducer } = extensionsSlice;
 
 describe("checkAvailableInstalledExtensions", () => {
-  test("it passes", async () => {
+  test("it checks installed extensions correctly", async () => {
+    const testUrl = "https://www.myUrl.com/*";
+    (getCurrentURL as jest.Mock).mockResolvedValue(testUrl);
+
+    const availableButtonId = validateRegistryId("test/available-button");
+    const availableButton = cloudExtensionFactory({
+      extensionPointId: availableButtonId,
+    });
+    const unavailableButtonId = validateRegistryId("test/unavailable-button");
+    const unavailableButton = cloudExtensionFactory({
+      extensionPointId: unavailableButtonId,
+    });
+    const availableQbId = validateRegistryId("test/available-quickbar");
+    const availableQb = cloudExtensionFactory({
+      extensionPointId: availableQbId,
+    });
+    const unavailableQbId = validateRegistryId("test/unavailable-quickbar");
+    const unavailableQb = cloudExtensionFactory({
+      extensionPointId: unavailableQbId,
+    });
+
+    const availableButtonExtensionPoint = menuItemExtensionPointFactory({
+      // @ts-expect-error -- Not sure what's wrong here, possibly TS struggling with the generics?
+      extensions: [availableButton],
+      id: availableButtonId,
+      permissions: {
+        origins: [testUrl],
+        permissions: ["tabs", "webNavigation"],
+      },
+      _definition: {
+        isAvailable: {
+          matchPatterns: [testUrl],
+        },
+      },
+    });
+    const availableQuickbarExtensionPoint = quickBarExtensionPointFactory({
+      // @ts-expect-error -- Not sure what's wrong here, possibly TS struggling with the generics?
+      extensions: [availableQb],
+      id: availableQbId,
+      documentUrlPatterns: [testUrl],
+      permissions: {
+        origins: [testUrl],
+      },
+      _definition: {
+        documentUrlPatterns: [testUrl],
+        isAvailable: {
+          matchPatterns: [testUrl],
+        },
+      },
+    });
+    (getInstalledExtensionPoints as jest.Mock).mockResolvedValue([
+      availableButtonExtensionPoint,
+      availableQuickbarExtensionPoint,
+    ]);
+
     const store = configureStore<EditorRootState & ExtensionsRootState>({
       reducer: {
         editor: editorSlice.reducer,
@@ -45,20 +104,30 @@ describe("checkAvailableInstalledExtensions", () => {
       },
     });
 
-    const extension = cloudExtensionFactory();
+    store.dispatch(
+      optionsActions.installCloudExtension({ extension: availableButton })
+    );
+    store.dispatch(
+      optionsActions.installCloudExtension({ extension: unavailableButton })
+    );
+    store.dispatch(
+      optionsActions.installCloudExtension({ extension: availableQb })
+    );
+    store.dispatch(
+      optionsActions.installCloudExtension({ extension: unavailableQb })
+    );
 
-    store.dispatch(optionsActions.installCloudExtension({ extension }));
-
-    await waitForEffect();
-
-    // (getInstalledExtensionPoints as jest.Mock).mockResolvedValue()
-
-    await store.dispatch(editorActions.checkAvailableInstalledExtensions());
+    await store.dispatch(checkAvailableInstalledExtensions());
 
     const state = store.getState();
 
-    const availability = selectExtensionAvailability(state);
+    const { availableInstalledIds, unavailableInstalledCount } =
+      selectExtensionAvailability(state);
 
-    console.log({ state, availability });
+    expect(availableInstalledIds).toStrictEqual([
+      availableButton.id,
+      availableQb.id,
+    ]);
+    expect(unavailableInstalledCount).toStrictEqual(2);
   });
 });

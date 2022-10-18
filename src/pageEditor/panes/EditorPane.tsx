@@ -30,6 +30,7 @@ import {
   selectActiveElement,
   selectSelectionSeq,
 } from "@/pageEditor/slices/editorSelectors";
+import { checkActiveElementAvailability } from "@/pageEditor/slices/editorThunks";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -46,7 +47,7 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   const syncReduxState = useDebouncedCallback(
     (values: FormState) => {
       dispatch(editorActions.editElement(values));
-      dispatch(editorActions.checkActiveElementAvailability());
+      dispatch(checkActiveElementAvailability());
     },
     REDUX_SYNC_WAIT_MILLIS,
     { trailing: true, leading: false }

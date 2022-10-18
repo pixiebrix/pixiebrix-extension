@@ -38,7 +38,6 @@ import {
   selectNotDeletedExtensions,
 } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
 import { useGetRecipesQuery } from "@/services/api";
 import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
@@ -62,8 +61,13 @@ const SidebarExpanded: React.FunctionComponent<{
   const expandedRecipeId = useSelector(selectExpandedRecipeId);
   const installed = useSelector(selectNotDeletedExtensions);
   const elements = useSelector(selectNotDeletedElements);
-  const { availableInstalledIds, availableDynamicIds, unavailableCount } =
-    useSelector(selectExtensionAvailability);
+  const {
+    availableInstalledIds,
+    unavailableInstalledCount,
+    availableDynamicIds,
+    unavailableDynamicCount,
+  } = useSelector(selectExtensionAvailability);
+  const unavailableCount = unavailableInstalledCount + unavailableDynamicCount;
 
   const recipes = useMemo(() => {
     const installedAndElements = [...installed, ...elements];

@@ -32,7 +32,7 @@ import {
   ModalKey,
 } from "@/pageEditor/pageEditorTypes";
 import { uuidv4 } from "@/types/helpers";
-import { cloneDeep, get, isEmpty } from "lodash";
+import { cloneDeep, get, isEmpty, uniq } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getInvalidPath } from "@/utils/debugUtils";
@@ -40,6 +40,7 @@ import {
   selectActiveElement,
   selectActiveElementId,
   selectActiveElementUIState,
+  selectNotDeletedElements,
 } from "./editorSelectors";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import reportError from "@/telemetry/reportError";
@@ -80,10 +81,11 @@ export const initialState: EditorState = {
   deletedElementsByRecipeId: {},
   newRecipeIds: [],
   availableInstalledIds: [],
+  unavailableInstalledCount: 0,
   isPendingInstalledExtensions: false,
   availableDynamicIds: [],
+  unavailableDynamicCount: 0,
   isPendingDynamicExtensions: false,
-  unavailableCount: 0,
 };
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
@@ -592,37 +594,40 @@ export const editorSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(checkAvailableInstalledExtensions.pending, (state) => {
-        state.isLoadingInstalledExtensions = true;
+        state.isPendingInstalledExtensions = true;
         // We're not resetting the result here so that the old value remains during re-calculation
       })
       .addCase(
         checkAvailableInstalledExtensions.fulfilled,
         (state, { payload: { availableInstalledIds, unavailableCount } }) => {
-          state.isLoadingInstalledExtensions = false;
+          state.isPendingInstalledExtensions = false;
           state.availableInstalledIds = availableInstalledIds;
-          state.unavailableCount = unavailableCount;
+          state.unavailableInstalledCount = unavailableCount;
         }
       )
       .addCase(
         checkAvailableInstalledExtensions.rejected,
         (state, { error }) => {
-          state.isLoadingInstalledExtensions = false;
-          state.unavailableCount = 0;
+          state.isPendingInstalledExtensions = false;
+          state.unavailableInstalledCount = 0;
           reportError(error);
         }
       )
       .addCase(checkAvailableDynamicElements.pending, (state) => {
-        state.isLoadingDynamicExtensions = true;
+        state.isPendingDynamicExtensions = true;
+        // We're not resetting the result here so that the old value remains during re-calculation
       })
       .addCase(
         checkAvailableDynamicElements.fulfilled,
-        (state, { payload: { availableDynamicIds } }) => {
-          state.isLoadingDynamicExtensions = false;
+        (state, { payload: { availableDynamicIds, unavailableCount } }) => {
+          state.isPendingDynamicExtensions = false;
           state.availableDynamicIds = availableDynamicIds;
+          state.unavailableDynamicCount = unavailableCount;
         }
       )
       .addCase(checkAvailableDynamicElements.rejected, (state, { error }) => {
-        state.isLoadingDynamicExtensions = false;
+        state.isPendingDynamicExtensions = false;
+        state.unavailableDynamicCount = 0;
         reportError(error);
       })
       .addCase(
@@ -630,15 +635,19 @@ export const editorSlice = createSlice({
         (state, { payload: { isAvailable } }) => {
           const activeElementId = selectActiveElementId({ editor: state });
           if (isAvailable) {
-            state.availableDynamicIds = [
+            state.availableDynamicIds = uniq([
               activeElementId,
               ...state.availableDynamicIds,
-            ];
+            ]);
           } else {
             state.availableDynamicIds = state.availableDynamicIds.filter(
               (id) => id !== activeElementId
             );
           }
+
+          const elements = selectNotDeletedElements({ editor: state });
+          state.unavailableDynamicCount =
+            elements.length - state.availableDynamicIds.length;
         }
       );
   },

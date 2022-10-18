@@ -180,7 +180,12 @@ export interface EditorState {
   availableInstalledIds: UUID[];
 
   /**
-   * availableInstalledIds are being calculated
+   * How many installed extensions are not available on the current tab?
+   */
+  unavailableInstalledCount: number;
+
+  /**
+   * The availableInstalledIds are being calculated
    */
   isPendingInstalledExtensions: boolean;
 
@@ -190,14 +195,14 @@ export interface EditorState {
   availableDynamicIds: UUID[];
 
   /**
-   * availableDynamicIds are being calculated
+   * The availableDynamicIds are being calculated
    */
   isPendingDynamicExtensions: boolean;
 
   /**
-   * How many installed extensions are not available on the current tab?
+   * How many dynamic elements are not available on the current tab?
    */
-  unavailableCount: number;
+  unavailableDynamicCount: number;
 }
 
 export type EditorRootState = {

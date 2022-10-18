@@ -74,12 +74,9 @@ export const checkAvailableInstalledExtensions = createAsyncThunk<
   { state: EditorRootState & ExtensionsRootState }
 >("editor/checkAvailableInstalledExtensions", async (arg, thunkAPI) => {
   const extensions = selectNotDeletedExtensions(thunkAPI.getState());
+  const extensionPoints = await getInstalledExtensionPoints(thisTab);
   const installedExtensionPoints = new Map(
-    // eslint-disable-next-line unicorn/no-await-expression-member
-    (await getInstalledExtensionPoints(thisTab)).map((extensionPoint) => [
-      extensionPoint.id,
-      extensionPoint,
-    ])
+    extensionPoints.map((extensionPoint) => [extensionPoint.id, extensionPoint])
   );
   const resolved = await Promise.all(
     extensions.map(async (extension) => resolveDefinitions(extension))
@@ -121,11 +118,20 @@ async function isElementAvailable(
     );
   }
 
-  return checkAvailable(thisTab, elementExtensionPoint.definition.isAvailable);
+  return checkAvailable(
+    thisTab,
+    elementExtensionPoint.definition.isAvailable,
+    tabUrl
+  );
 }
 
+export type AvailableDynamic = {
+  availableDynamicIds: UUID[];
+  unavailableCount: number;
+};
+
 export const checkAvailableDynamicElements = createAsyncThunk<
-  { availableDynamicIds: UUID[] },
+  AvailableDynamic,
   void,
   { state: EditorRootState }
 >("editor/checkAvailableDynamicElements", async (arg, thunkAPI) => {
@@ -142,7 +148,10 @@ export const checkAvailableDynamicElements = createAsyncThunk<
     })
   );
 
-  return { availableDynamicIds: uniq(compact(availableElementIds)) };
+  const availableDynamicIds = uniq(compact(availableElementIds));
+  const unavailableCount = elements.length - availableDynamicIds.length;
+
+  return { availableDynamicIds, unavailableCount };
 });
 
 export const checkActiveElementAvailability = createAsyncThunk<
