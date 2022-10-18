@@ -21,7 +21,7 @@ import { getErrorMessage, hasSpecificErrorCause } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 import { noop } from "lodash";
 import { handleMenuAction, notify } from "@/contentScript/messenger/api";
-import { ensureContentScript } from "@/background/util";
+import { ensureContentScript } from "@/background/contentScript";
 import { reportEvent } from "@/telemetry/events";
 import { UUID, IExtension, ResolvedExtension } from "@/core";
 import { expectContext } from "@/utils/expectContext";

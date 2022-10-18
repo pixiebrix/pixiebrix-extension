@@ -42,7 +42,7 @@ jest.mock("@/hooks/useRefresh", () => ({
   refreshRegistries: jest.fn(),
 }));
 
-jest.mock("@/background/util", () => ({
+jest.mock("@/chrome", () => ({
   forEachTab: jest.fn().mockResolvedValue(undefined),
 }));
 

@@ -18,6 +18,7 @@
 import { isExtensionContext } from "webext-detect-page";
 import { forbidContext } from "@/utils/expectContext";
 import { JsonValue } from "type-fest";
+import { getTabsWithAccess } from "@/background/activeTab";
 import { UnknownObject } from "@/types";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
@@ -151,4 +152,12 @@ export async function onTabClose(watchedTabId: number): Promise<void> {
 
     browser.tabs.onRemoved.addListener(listener);
   });
+}
+
+export async function forEachTab<
+  TCallback extends (target: { tabId: number }) => void
+>(callback: TCallback): Promise<void> {
+  for (const tabId of await getTabsWithAccess()) {
+    callback({ tabId });
+  }
 }

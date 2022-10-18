@@ -38,7 +38,7 @@ import {
   requestRunInTop,
 } from "@/background/executor";
 import * as registry from "@/registry/localRegistry";
-import { ensureContentScript } from "@/background/util";
+import { ensureContentScript } from "@/background/contentScript";
 import serviceRegistry from "@/services/registry";
 import { deleteCachedAuthData, getCachedAuthData } from "@/background/auth";
 import { proxyService } from "@/background/requests";

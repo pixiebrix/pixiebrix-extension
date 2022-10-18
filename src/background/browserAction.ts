@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ensureContentScript } from "@/background/util";
+import { ensureContentScript } from "@/background/contentScript";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
 import { executeScript, isScriptableUrl } from "webext-content-scripts";
 import pMemoize from "p-memoize";

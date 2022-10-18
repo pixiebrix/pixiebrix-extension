@@ -19,7 +19,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { RecipeDefinition } from "@/types/definitions";
-import { forEachTab } from "@/background/util";
+import { forEachTab } from "@/chrome";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";
