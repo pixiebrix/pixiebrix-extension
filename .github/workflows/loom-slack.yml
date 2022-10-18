@@ -12,30 +12,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Find first loom
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        PR=${{ github.event.pull_request.number }}
-        LOOM_REGEX="https://www.loom.com/share/\w\{32\}"
+      - name: Find first loom
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR=${{ github.event.pull_request.number }}
+          LOOM_REGEX="https://www.loom.com/share/\w\{32\}"
 
-        echo FIRST POST
-        echo ----------
-        FIRST_POST=$(gh pr view $PR --repo $GITHUB_REPOSITORY)
-        echo $FIRST_POST
-        
-        echo
+          echo FIRST POST
+          echo ----------
+          FIRST_POST=$(gh pr view $PR --repo $GITHUB_REPOSITORY)
+          echo $FIRST_POST
 
-        echo LOOM LINK
-        echo ----------
-        LOOM_LINK=$(echo $FIRST_POST | grep $LOOM_REGEX --max-count 1 --only-matching | true)
-        echo $LOOM_LINK
-        
-        echo "LOOM_LINK=$LOOM_LINK" >> $GITHUB_ENV
+          echo
 
-    - uses: rtCamp/action-slack-notify@v2
-      env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        SLACK_CHANNEL: sprint-demo
-        SLACK_MESSAGE: ${{ env.LOOM_LINK }}
-        SLACK_FOOTER: 🚀 # Hides ad
+          echo LOOM LINK
+          echo ----------
+          LOOM_LINK=$(echo $FIRST_POST | grep $LOOM_REGEX --max-count 1 --only-matching | true)
+          echo $LOOM_LINK
+
+          echo "LOOM_LINK=$LOOM_LINK" >> $GITHUB_ENV
+
+      - uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: sprint-demo
+          SLACK_MESSAGE: ${{ env.LOOM_LINK }}
+          SLACK_FOOTER: 🚀 # Hides ad
+          MSG_MINIMAL: true
