@@ -31,6 +31,7 @@ import {
   SelectionHandlerType,
   showSelectionToolPopover,
 } from "@/components/selectionToolPopover/SelectionToolPopover";
+import { CancelError } from "@/errors/businessErrors";
 
 let overlay: Overlay | null = null;
 let expandOverlay: Overlay | null = null;
@@ -271,7 +272,7 @@ export async function userSelectElement({
 
     function cancel() {
       stopInspectingNative();
-      reject(new Error("Selection cancelled"));
+      reject(new CancelError("Selection cancelled"));
     }
 
     function registerListenersOnWindow(window: Window) {
