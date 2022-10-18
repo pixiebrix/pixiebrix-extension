@@ -162,8 +162,8 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
     })
     .map((x) => x.id);
 
-  // Note: we can take out this filter if and when we start persisting the
-  // editor slice and removing installed extensions when they become dynamic elements
+  // Note: we can take out this filter if and when we persist the editor
+  // slice and remove installed extensions when they become dynamic elements
   const notDynamicInstalled = extensions.filter(
     (extension) => !elements.some((element) => element.uuid === extension.id)
   );
