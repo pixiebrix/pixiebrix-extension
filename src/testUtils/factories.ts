@@ -15,14 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  array,
-  Config,
-  define,
-  derive,
-  extend,
-  FactoryConfig,
-} from "cooky-cutter";
+import { array, Config, define, derive, FactoryConfig } from "cooky-cutter";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import {
   ApiVersion,
@@ -89,7 +82,6 @@ import {
 import { JsonObject } from "type-fest";
 import objectHash from "object-hash";
 import { makeEmptyPermissions } from "@/utils/permissions";
-import { QuickBarDefinition } from "@/extensionPoints/quickBarExtension";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -385,23 +377,6 @@ export const extensionPointDefinitionFactory = define<ExtensionPointDefinition>(
     },
   }
 );
-
-export const quickbarExtensionPointDefinitionFactory = extend<
-  ExtensionPointDefinition,
-  ExtensionPointDefinition<QuickBarDefinition>
->(extensionPointDefinitionFactory, {
-  definition(n: number): QuickBarDefinition {
-    return {
-      type: "quickBar",
-      isAvailable: {
-        matchPatterns: [`https://www.mySite${n}.com/*`],
-      },
-      reader: validateRegistryId("@pixiebrix/document-context"),
-      contexts: ["all"],
-      targetMode: "eventTarget",
-    };
-  },
-});
 
 type ExternalExtensionPointParams = {
   extensionPointId?: RegistryId;
