@@ -29,6 +29,9 @@ import {
   TabState,
   TabStateRootState,
 } from "@/pageEditor/tabState/tabStateTypes";
+import { EditorRootState } from "@/pageEditor/pageEditorTypes";
+import { ExtensionsRootState } from "@/store/extensionsTypes";
+import { actions } from "@/pageEditor/slices/editorSlice";
 
 const defaultFrameState: FrameConnectionState = {
   navSequence: undefined,
@@ -46,8 +49,9 @@ const initialTabState: TabState = {
 const connectToContentScript = createAsyncThunk<
   FrameConnectionState,
   void,
-  { state: TabStateRootState }
->("tabState/connectToContentScript", async (arg, thunkAPI) => {
+  // We need to include these states to enable dispatching the availability async thunk actions
+  { state: TabStateRootState & EditorRootState & ExtensionsRootState }
+>("tabState/connectToContentScript", async (_, thunkAPI) => {
   const uuid = uuidv4();
   const common = { ...defaultFrameState, navSequence: uuid };
 
@@ -72,10 +76,9 @@ const connectToContentScript = createAsyncThunk<
     });
   }
 
-  // We want to dispatch this for a successful connection, but we don't want
-  // to block the current thunk from resolving (awaitContextInvalidated is a
-  // long-running thunk)
   void thunkAPI.dispatch(awaitContextInvalidated());
+  void thunkAPI.dispatch(actions.checkAvailableDynamicElements());
+  void thunkAPI.dispatch(actions.checkAvailableInstalledExtensions());
 
   console.debug(`connectToContentScript: replacing tabState for ${uuid}`);
   return {

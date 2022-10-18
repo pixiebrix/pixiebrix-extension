@@ -17,11 +17,9 @@
 
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
-import useInstallState from "@/pageEditor/hooks/useInstallState";
 import PermissionsPane from "@/pageEditor/panes/PermissionsPane";
 import BetaPane from "@/pageEditor/panes/BetaPane";
 import EditorPane from "@/pageEditor/panes/EditorPane";
@@ -32,8 +30,9 @@ import WelcomePane from "@/pageEditor/panes/WelcomePane";
 import {
   selectActiveElementId,
   selectActiveRecipeId,
-  selectElements,
   selectErrorState,
+  selectExtensionAvailability,
+  selectNotDeletedExtensions,
 } from "@/pageEditor/slices/editorSelectors";
 import {
   selectTabHasPermissions,
@@ -45,18 +44,21 @@ const EditorContent: React.FC = () => {
   const isConnectingToContentScript = useSelector(
     selectTabIsConnectingToContentScript
   );
-  const installed = useSelector(selectExtensions);
+  const installed = useSelector(selectNotDeletedExtensions);
   const sessionId = useSelector(selectSessionId);
-  const elements = useSelector(selectElements);
   const { isBetaError, editorError } = useSelector(selectErrorState);
   const activeElementId = useSelector(selectActiveElementId);
   const activeRecipeId = useSelector(selectActiveRecipeId);
-
   const {
     availableDynamicIds,
-    unavailableCount,
-    loading: isLoadingExtensions,
-  } = useInstallState(installed, elements);
+    unavailableDynamicCount,
+    unavailableInstalledCount,
+    isPendingInstalledExtensions,
+    isPendingDynamicExtensions,
+  } = useSelector(selectExtensionAvailability);
+  const unavailableCount = unavailableInstalledCount + unavailableDynamicCount;
+  const isPendingExtensions =
+    isPendingInstalledExtensions || isPendingDynamicExtensions;
 
   // Fetch-and-cache marketplace content for rendering in the Brick Selection modal
   useGetMarketplaceListingsQuery();
@@ -99,7 +101,7 @@ const EditorContent: React.FC = () => {
     return <RecipePane />;
   }
 
-  if (isLoadingExtensions || isConnectingToContentScript) {
+  if (isPendingExtensions || isConnectingToContentScript) {
     // Avoid flashing the panes below while the state is loading. This condition should probably
     // not be moved below <NoExtensionSelectedPane>, <NoExtensionsPane>, or <WelcomePane>.
     // It loads fast enough to not require a <Loader> either.
@@ -107,7 +109,7 @@ const EditorContent: React.FC = () => {
     return null;
   }
 
-  if (availableDynamicIds?.size > 0 || installed.length > unavailableCount) {
+  if (availableDynamicIds?.length > 0 || installed.length > unavailableCount) {
     return <NoExtensionSelectedPane />;
   }
 

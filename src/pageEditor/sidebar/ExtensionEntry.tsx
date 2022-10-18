@@ -26,8 +26,8 @@ import InstalledEntry from "./InstalledEntry";
 type ExtensionEntryProps = {
   extension: IExtension | FormState;
   recipes: RecipeDefinition[];
-  availableInstalledIds: Set<UUID>;
-  availableDynamicIds: Set<UUID>;
+  availableInstalledIds: UUID[];
+  availableDynamicIds: UUID[];
   isNested?: boolean;
 };
 
@@ -44,7 +44,7 @@ const ExtensionEntry: React.FunctionComponent<ExtensionEntryProps> = ({
       extension={extension}
       recipes={recipes}
       isAvailable={
-        !availableInstalledIds || availableInstalledIds.has(extension.id)
+        !availableInstalledIds || availableInstalledIds.includes(extension.id)
       }
       isNested={isNested}
     />
@@ -53,7 +53,7 @@ const ExtensionEntry: React.FunctionComponent<ExtensionEntryProps> = ({
       key={`dynamic-${extension.uuid}`}
       extension={extension}
       isAvailable={
-        !availableDynamicIds || availableDynamicIds.has(extension.uuid)
+        !availableDynamicIds || availableDynamicIds.includes(extension.uuid)
       }
       isNested={isNested}
     />

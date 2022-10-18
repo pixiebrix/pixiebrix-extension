@@ -31,6 +31,7 @@ import {
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { AnalysisRootState } from "@/analysis/analysisTypes";
 import { FormState } from "./extensionPoints/formStateTypes";
+import { TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
 
 export enum PipelineFlavor {
   AllBlocks = "allBlocks",
@@ -172,6 +173,36 @@ export interface EditorState {
    * Newly created recipes that have not been saved yet
    */
   newRecipeIds: RegistryId[];
+
+  /**
+   * The available installed extensions for the current tab
+   */
+  availableInstalledIds: UUID[];
+
+  /**
+   * How many installed extensions are not available on the current tab?
+   */
+  unavailableInstalledCount: number;
+
+  /**
+   * The availableInstalledIds are being calculated
+   */
+  isPendingInstalledExtensions: boolean;
+
+  /**
+   * The available dynamic elements for the current tab
+   */
+  availableDynamicIds: UUID[];
+
+  /**
+   * The availableDynamicIds are being calculated
+   */
+  isPendingDynamicExtensions: boolean;
+
+  /**
+   * How many dynamic elements are not available on the current tab?
+   */
+  unavailableDynamicCount: number;
 }
 
 export type EditorRootState = {
@@ -186,4 +217,4 @@ export type RootState = AuthRootState &
     savingExtension: SavingExtensionState;
     settings: SettingsState;
     runtime: RuntimeState;
-  };
+  } & TabStateRootState;

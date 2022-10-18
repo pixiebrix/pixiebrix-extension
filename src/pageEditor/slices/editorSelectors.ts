@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RecipeMetadata, RegistryId, UUID } from "@/core";
+import { IExtension, RecipeMetadata, RegistryId, UUID } from "@/core";
 import { createSelector } from "reselect";
 import {
   EditorRootState,
@@ -27,6 +27,8 @@ import { flatMap, isEmpty, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { ElementUIState, TabUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
+import { ExtensionsRootState } from "@/store/extensionsTypes";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 export const selectActiveElementId = ({ editor }: EditorRootState) =>
   editor.activeElementId;
@@ -98,6 +100,24 @@ export const selectAllDeletedElementIds = ({ editor }: EditorRootState) =>
   new Set(
     flatMap(editor.deletedElementsByRecipeId).map((formState) => formState.uuid)
   );
+
+export const selectNotDeletedElements: ({
+  editor,
+}: EditorRootState) => FormState[] = createSelector(
+  selectElements,
+  selectAllDeletedElementIds,
+  (elements, deletedElementIds) =>
+    elements.filter(({ uuid }) => !deletedElementIds.has(uuid))
+);
+
+export const selectNotDeletedExtensions: ({
+  options,
+}: ExtensionsRootState) => IExtension[] = createSelector(
+  selectExtensions,
+  selectAllDeletedElementIds,
+  (extensions, deletedElementIds) =>
+    extensions.filter(({ id }) => !deletedElementIds.has(id))
+);
 
 const elementIsDirtySelector = createSelector(
   selectDirty,
@@ -267,3 +287,21 @@ export const selectAnnotationsForPath = (path: string) => (state: RootState) =>
 
 export const selectCopiedBlock = ({ editor }: EditorRootState) =>
   editor.copiedBlock;
+
+export const selectExtensionAvailability = ({
+  editor: {
+    availableInstalledIds,
+    unavailableInstalledCount,
+    isPendingInstalledExtensions,
+    availableDynamicIds,
+    unavailableDynamicCount,
+    isPendingDynamicExtensions,
+  },
+}: EditorRootState) => ({
+  availableInstalledIds,
+  unavailableInstalledCount,
+  isPendingInstalledExtensions,
+  availableDynamicIds,
+  unavailableDynamicCount,
+  isPendingDynamicExtensions,
+});

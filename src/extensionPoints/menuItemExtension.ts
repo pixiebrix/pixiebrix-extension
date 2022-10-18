@@ -819,7 +819,7 @@ export interface MenuDefinition extends ExtensionPointDefinition {
   shadowDOM?: ShadowDOM;
 }
 
-class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
+export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
   private readonly _definition: MenuDefinition;
 
   public readonly permissions: Permissions.Permissions;
