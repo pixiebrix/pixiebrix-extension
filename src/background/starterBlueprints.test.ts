@@ -32,7 +32,7 @@ jest.mock("@/auth/token", () => ({
   isLinked: jest.fn().mockResolvedValue(true),
 }));
 
-jest.mock("@/background/util", () => ({
+jest.mock("@/background/activeTab", () => ({
   forEachTab: jest.fn().mockResolvedValue(undefined),
 }));
 
