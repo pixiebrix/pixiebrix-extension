@@ -49,7 +49,6 @@ import {
   selectActiveElement,
   selectActiveRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
-import { checkActiveElementAvailability } from "@/pageEditor/slices/editorThunks";
 
 /**
  * A sidebar menu entry corresponding to an installed/saved extension point
@@ -97,7 +96,7 @@ const InstalledEntry: React.FunctionComponent<{
         //  be getting handled by lifecycle.ts? Need to add some logging to figure out how other ones work
         // -- We can remove the extension once we're also persisting the editor slice
         dispatch(actions.selectInstalled(state));
-        dispatch(checkActiveElementAvailability());
+        dispatch(actions.checkActiveElementAvailability());
 
         if (type === "actionPanel") {
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching

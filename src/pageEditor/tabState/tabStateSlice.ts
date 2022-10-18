@@ -34,10 +34,7 @@ import {
 } from "@/pageEditor/tabState/tabStateTypes";
 import { EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { ExtensionsRootState } from "@/store/extensionsTypes";
-import {
-  checkAvailableDynamicElements,
-  checkAvailableInstalledExtensions,
-} from "@/pageEditor/slices/editorThunks";
+import { actions } from "@/pageEditor/slices/editorSlice";
 
 const defaultFrameState: FrameConnectionState = {
   navSequence: undefined,
@@ -105,8 +102,8 @@ const connectToContentScript = createAsyncThunk<
   }
 
   void thunkAPI.dispatch(awaitContextInvalidated());
-  void thunkAPI.dispatch(checkAvailableDynamicElements());
-  void thunkAPI.dispatch(checkAvailableInstalledExtensions());
+  void thunkAPI.dispatch(actions.checkAvailableDynamicElements());
+  void thunkAPI.dispatch(actions.checkAvailableInstalledExtensions());
 
   console.debug(`connectToContentScript: replacing tabState for ${uuid}`);
   return {

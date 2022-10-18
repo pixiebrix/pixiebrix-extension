@@ -16,7 +16,7 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
   cloudExtensionFactory,
@@ -28,7 +28,6 @@ import { ExtensionsRootState } from "@/store/extensionsTypes";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
 import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
 import { getCurrentURL } from "@/pageEditor/utils";
-import { checkAvailableInstalledExtensions } from "@/pageEditor/slices/editorThunks";
 import { validateRegistryId } from "@/types/helpers";
 
 jest.mock("@/contentScript/messenger/api", () => ({
@@ -117,7 +116,7 @@ describe("checkAvailableInstalledExtensions", () => {
       optionsActions.installCloudExtension({ extension: unavailableQb })
     );
 
-    await store.dispatch(checkAvailableInstalledExtensions());
+    await store.dispatch(actions.checkAvailableInstalledExtensions());
 
     const state = store.getState();
 

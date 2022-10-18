@@ -22,10 +22,6 @@ import { menuItemFormStateFactory } from "@/testUtils/factories";
 import { RegistryId } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
-import {
-  checkAvailableDynamicElements,
-  checkAvailableInstalledExtensions,
-} from "@/pageEditor/slices/editorThunks";
 import { getCurrentURL } from "@/pageEditor/utils";
 import { checkAvailable } from "@/contentScript/messenger/api";
 import { checkAvailable as backgroundCheckAvailable } from "@/blocks/available";
@@ -104,8 +100,8 @@ describe("checkAvailableDynamicElements", () => {
       ) => backgroundCheckAvailable(availability, url)
     );
 
-    await store.dispatch(checkAvailableDynamicElements());
-    await store.dispatch(checkAvailableInstalledExtensions());
+    await store.dispatch(actions.checkAvailableDynamicElements());
+    await store.dispatch(actions.checkAvailableInstalledExtensions());
 
     const state = store.getState();
 
