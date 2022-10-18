@@ -73,6 +73,7 @@ export const checkAvailableInstalledExtensions = createAsyncThunk<
   void,
   { state: EditorRootState & ExtensionsRootState }
 >("editor/checkAvailableInstalledExtensions", async (arg, thunkAPI) => {
+  const elements = selectNotDeletedElements(thunkAPI.getState());
   const extensions = selectNotDeletedExtensions(thunkAPI.getState());
   const extensionPoints = await getInstalledExtensionPoints(thisTab);
   const installedExtensionPoints = new Map(
@@ -99,10 +100,18 @@ export const checkAvailableInstalledExtensions = createAsyncThunk<
     })
     .map((x) => x.id);
 
-  const availableInstalledIds = extensions
+  // Note: we can take out this filter if and when we start persisting the
+  // editor slice and removing installed extensions when they become dynamic elements
+  const notDynamicInstalled = extensions.filter(
+    (extension) => !elements.some((element) => element.uuid === extension.id)
+  );
+
+  const availableInstalledIds = notDynamicInstalled
     .filter((x) => availableExtensionPointIds.includes(x.id))
     .map((x) => x.id);
-  const unavailableCount = extensions.length - availableInstalledIds.length;
+
+  const unavailableCount =
+    notDynamicInstalled.length - availableInstalledIds.length;
 
   return { availableInstalledIds, unavailableCount };
 });

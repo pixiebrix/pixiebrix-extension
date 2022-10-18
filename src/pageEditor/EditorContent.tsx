@@ -51,10 +51,12 @@ const EditorContent: React.FC = () => {
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const {
     availableDynamicIds,
-    unavailableCount,
+    unavailableDynamicCount,
+    unavailableInstalledCount,
     isPendingInstalledExtensions,
     isPendingDynamicExtensions,
   } = useSelector(selectExtensionAvailability);
+  const unavailableCount = unavailableInstalledCount + unavailableDynamicCount;
   const isPendingExtensions =
     isPendingInstalledExtensions || isPendingDynamicExtensions;
 
