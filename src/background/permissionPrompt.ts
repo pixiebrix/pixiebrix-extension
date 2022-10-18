@@ -18,23 +18,10 @@
 import { Tabs, Windows } from "webextension-polyfill";
 import { isFirefox } from "webext-detect-page";
 import { isMac } from "@/utils";
+import { onTabClose } from "@/chrome";
 
 const POPUP_WIDTH_PX = 400; // Makes the native prompt appear centered
 const POPUP_HEIGHT_PX = 215; // Includes titlebar height, must fit the content and error to avoid scrollbars
-
-async function onTabClose(tabId: number): Promise<void> {
-  return new Promise((resolve) => {
-    const handlePossibleClosure = (closeTabId: number) => {
-      if (closeTabId === tabId) {
-        // Remove listener first to ensure it's removed even if resolve throws
-        browser.tabs.onRemoved.removeListener(handlePossibleClosure);
-        resolve();
-      }
-    };
-
-    browser.tabs.onRemoved.addListener(handlePossibleClosure);
-  });
-}
 
 async function openTab(url: string, openerTabId: number): Promise<Tabs.Tab> {
   return browser.tabs.create({
