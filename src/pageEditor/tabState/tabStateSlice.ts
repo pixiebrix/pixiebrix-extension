@@ -17,14 +17,11 @@
 
 import pTimeout from "p-timeout";
 import { FrameworkMeta } from "@/messaging/constants";
-import { getErrorMessage, isSpecificError } from "@/errors/errorHelpers";
-import reportError from "@/telemetry/reportError";
 import { uuidv4 } from "@/types/helpers";
 import { thisTab } from "@/pageEditor/utils";
 import { detectFrameworks } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/messenger/api";
 import { canAccessTab } from "webext-tools";
-import { sleep, TimeoutError } from "@/utils";
 import { onContextInvalidated } from "@/errors/contextInvalidated";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
@@ -61,28 +58,7 @@ const connectToContentScript = createAsyncThunk<
   }
 
   console.debug("connectToContentScript: ensuring contentScript");
-  const firstTimeout = Symbol("firstTimeout");
-  const contentScript = ensureContentScript(thisTab, 15_000);
-  const result = await Promise.race([
-    sleep(4000).then(() => firstTimeout),
-    contentScript,
-  ]);
-
-  if (result === firstTimeout) {
-    throw new Error(
-      "The Page Editor could not establish a connection to the page, retrying…"
-    );
-  }
-
-  try {
-    await contentScript;
-  } catch (error) {
-    const errorMessage = isSpecificError(error, TimeoutError)
-      ? "The Page Editor could not establish a connection to the content script"
-      : getErrorMessage(error);
-    reportError(error);
-    throw new Error(errorMessage, { cause: error });
-  }
+  await ensureContentScript(thisTab, 4500);
 
   let frameworks: FrameworkMeta[] = [];
   try {
