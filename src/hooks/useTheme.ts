@@ -96,13 +96,9 @@ export function useGetOrganizationTheme(): {
   const { data: me } = useGetMeQuery();
   const { organization: cachedOrganization } = useSelector(selectAuth);
 
-  const organizationTheme = useMemo(() => {
-    if (me) {
-      return me?.organization?.theme;
-    }
-
-    return cachedOrganization?.theme;
-  }, [me, cachedOrganization]);
+  const organizationTheme = me
+    ? me.organization?.theme
+    : cachedOrganization?.theme;
 
   return {
     showSidebarLogo: organizationTheme
