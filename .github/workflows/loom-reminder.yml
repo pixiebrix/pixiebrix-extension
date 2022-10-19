@@ -1,6 +1,7 @@
 name: Loom Reminder
 
 on:
+  workflow_call: # Enable workflow reuse/import
   pull_request_review:
     types:
       - submitted
