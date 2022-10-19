@@ -44,16 +44,16 @@ const persistSettingsConfig = {
 };
 
 const conditionalMiddleware: Middleware[] = [];
-if (typeof createLogger === "function") {
-  // Allow tree shaking of logger in production
-  // https://github.com/LogRocket/redux-logger/issues/6
-  conditionalMiddleware.push(
-    createLogger({
-      // Do not log polling actions (they happen too often)
-      predicate: (getState, action) => !action.type.includes("logs/polling"),
-    })
-  );
-}
+// if (typeof createLogger === "function") {
+//   // Allow tree shaking of logger in production
+//   // https://github.com/LogRocket/redux-logger/issues/6
+//   conditionalMiddleware.push(
+//     createLogger({
+//       // Do not log polling actions (they happen too often)
+//       predicate: (getState, action) => !action.type.includes("logs/polling"),
+//     })
+//   );
+// }
 
 const store = configureStore({
   reducer: {

@@ -17,9 +17,25 @@
 
 import { VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { BlockPosition, BlockConfig } from "@/blocks/types";
+import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { makeServiceContext } from "@/services/serviceUtils";
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
 
+enum VarExistence {
+  MAYBE,
+  DEFINITELY,
+}
+
+type BlockVars = Map<string, VarExistence>;
+type ExtensionVars = Map<string, BlockVars>;
+type PreviousVisitedBlock = {
+  vars: BlockVars;
+  output: BlockVars | null;
+};
 class VarAnalysis extends AnalysisVisitor {
+  varMap: ExtensionVars = new Map<string, BlockVars>();
+  previousVisitedBlock: PreviousVisitedBlock = null;
+
   get id() {
     return "var";
   }
@@ -29,15 +45,80 @@ class VarAnalysis extends AnalysisVisitor {
     blockConfig: BlockConfig,
     extra: VisitBlockExtra
   ) {
-    super.visitBlock(position, blockConfig, extra);
+    const currentBlockVars = new Map<string, VarExistence>([
+      ...this.previousVisitedBlock.vars,
+      ...(this.previousVisitedBlock.output ?? []),
+    ]);
+    this.varMap.set(position.path, currentBlockVars);
+
+    const currentBlockOutput = new Map<string, VarExistence>();
 
     if (blockConfig.outputKey) {
-      console.log("block", {
-        blockConfig,
-        outputKey: blockConfig.outputKey,
-      });
+      currentBlockOutput.set(blockConfig.outputKey, VarExistence.DEFINITELY);
+
+      // TODO: revisit the wildcard/regex format of MAYBE vars
+      currentBlockOutput.set(`${blockConfig.outputKey}.*`, VarExistence.MAYBE);
+    }
+
+    this.previousVisitedBlock = {
+      vars: currentBlockVars,
+      output: currentBlockOutput,
+    };
+
+    super.visitBlock(position, blockConfig, extra);
+  }
+
+  override async run(extension: FormState): Promise<void> {
+    let context: any = {};
+
+    const serviceContext = extension.services?.length
+      ? await makeServiceContext(extension.services)
+      : null;
+    if (serviceContext) {
+      context = {
+        ...context,
+        ...serviceContext,
+      };
+    }
+
+    // TODO: properly get reader context,
+    // see @/extensionPoints/sidebarExtension.ts#L242
+    const readerContext = {
+      icon: "",
+      title: "",
+      url: "",
+    };
+    context.input = readerContext;
+
+    // TODO: should we check the blueprint definition instead?
+    if (extension.optionsArgs) {
+      context.options = extension.optionsArgs;
+    }
+
+    const definitelyVars = getVarsFromObject(context);
+    this.previousVisitedBlock = {
+      vars: new Map<string, VarExistence>(
+        definitelyVars.map((x) => [x, VarExistence.DEFINITELY])
+      ),
+      output: null,
+    };
+    super.run(extension);
+
+    console.log("varMap", this.varMap);
+  }
+}
+
+export function getVarsFromObject(obj: unknown): string[] {
+  const vars: string[] = [];
+  for (const [key, value] of Object.entries(obj)) {
+    vars.push(key);
+    if (typeof value === "object") {
+      const nestedVars = getVarsFromObject(value);
+      vars.push(...nestedVars.map((x) => `${key}.${x}`));
     }
   }
+
+  return vars;
 }
 
 export default VarAnalysis;
