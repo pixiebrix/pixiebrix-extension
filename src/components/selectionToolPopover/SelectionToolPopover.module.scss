@@ -19,6 +19,16 @@ $background: rgb(252, 252, 252);
 $border: rgba(0, 0, 0, 0.3);
 
 .popover-wrapper {
+  // I grabbed this fonts from the page editor stylesheet.
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #212529;
+  letter-spacing: normal;
   position: fixed;
   bottom: 30px;
   left: 30px;
@@ -37,5 +47,37 @@ $border: rgba(0, 0, 0, 0.3);
       width: 24px;
       margin-right: 8px;
     }
+  }
+
+  // We're overriding bootstrap components style here to prevent style breaks in react-shadow-dom
+  .card-header:first-child {
+    border-radius: calc(0.25em - 1px) calc(0.25em - 1px) 0 0;
+  }
+  .card-header {
+    padding: 0.75em 1.25em;
+  }
+  .card-body {
+    padding: 1.25em;
+  }
+
+  .btn {
+    font-size: 1em;
+  }
+  .switch.btn {
+    min-width: 3.7em;
+    min-height: calc(1.5em + 0.75em + 2px);
+  }
+  .switch-on.btn {
+    padding-right: 1.5em;
+  }
+  .switch-off.btn {
+    padding-left: 1.5em;
+  }
+
+  .btn-sm {
+    padding: 0.5em 0.75em;
+    font-size: 1em;
+    line-height: 1.5;
+    border-radius: 0.2em;
   }
 }
