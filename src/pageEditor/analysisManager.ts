@@ -32,6 +32,7 @@ import { isAnyOf } from "@reduxjs/toolkit";
 import RequestPermissionAnalysis from "@/analysis/analysisVisitors/requestPermissionAnalysis";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import { selectExtensionTrace } from "./slices/runtimeSelectors";
+import VarAnalysis from "@/analysis/analysisVisitors/varAnalysis";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -126,5 +127,11 @@ pageEditorAnalysisManager.registerAnalysisEffect(
     matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
   }
 );
+
+pageEditorAnalysisManager.registerAnalysisEffect(() => new VarAnalysis(), {
+  // Only needed on editorActions.editElement,
+  // but the block path can change when node tree is mutated
+  matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+});
 
 export default pageEditorAnalysisManager;
