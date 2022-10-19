@@ -78,7 +78,8 @@ export function insertSidebarFrame(): boolean {
     position: "fixed",
     top: 0,
     right: 0,
-    zIndex: MAX_Z_INDEX,
+    // `-1` keeps it under the QuickBar #4130
+    zIndex: MAX_Z_INDEX - 1,
     width: CSS.px(SIDEBAR_WIDTH_PX),
     height: "100%",
     border: 0,

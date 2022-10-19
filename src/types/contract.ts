@@ -136,7 +136,7 @@ export type SanitizedAuth = components["schemas"]["SanitizedAuth"] & {
 
 export type Deployment = Except<
   components["schemas"]["DeploymentDetail"],
-  "package"
+  "id" | "package"
 > & {
   id: UUID;
   package: Except<

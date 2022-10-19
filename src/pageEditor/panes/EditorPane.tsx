@@ -16,7 +16,10 @@
  */
 
 import React, { useEffect } from "react";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import {
+  actions,
+  actions as editorActions,
+} from "@/pageEditor/slices/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useDebouncedCallback } from "use-debounce";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -46,6 +49,7 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   const syncReduxState = useDebouncedCallback(
     (values: FormState) => {
       dispatch(editorActions.editElement(values));
+      dispatch(actions.checkActiveElementAvailability());
     },
     REDUX_SYNC_WAIT_MILLIS,
     { trailing: true, leading: false }

@@ -28,7 +28,7 @@ import {
   getErrorMessage,
   hasSpecificErrorCause,
   IGNORED_ERROR_PATTERNS,
-  isContextError,
+  isSpecificError,
 } from "@/errors/errorHelpers";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { matchesAnyPattern } from "@/utils";
@@ -37,6 +37,7 @@ import {
   selectExtraContext,
 } from "@/services/errorService";
 import { BusinessError } from "@/errors/businessErrors";
+import { ContextError } from "@/errors/genericErrors";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -209,7 +210,7 @@ function flattenContext(
   error: Error | SerializedError,
   context: MessageContext
 ): MessageContext {
-  if (isContextError(error)) {
+  if (isSpecificError(error, ContextError)) {
     const currentContext =
       typeof error.context === "object" ? error.context : {};
     const innerContext = flattenContext(

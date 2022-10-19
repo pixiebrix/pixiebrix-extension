@@ -80,7 +80,8 @@ function testSelector(selector: string): boolean {
 }
 
 export async function checkAvailable(
-  availability: Availability
+  availability: Availability,
+  url?: string
 ): Promise<boolean> {
   const {
     matchPatterns: rawMatchPatterns = [],
@@ -116,7 +117,7 @@ export async function checkAvailable(
 
   // Check matchPatterns and urlPatterns first b/c they're faster than searching selectors
 
-  if (matchPatterns.length > 0 && !testMatchPatterns(matchPatterns)) {
+  if (matchPatterns.length > 0 && !testMatchPatterns(matchPatterns, url)) {
     return false;
   }
 

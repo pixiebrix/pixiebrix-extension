@@ -23,7 +23,7 @@ import {
   safeCssSelector,
 } from "@/contentScript/nativeEditor/selectorInference";
 import { Framework } from "@/messaging/constants";
-import { uniq, compact } from "lodash";
+import { uniq, compact, difference } from "lodash";
 import * as pageScript from "@/pageScript/protocol";
 import { requireSingleElement } from "@/utils/requireSingleElement";
 import { SelectMode } from "@/contentScript/nativeEditor/types";
@@ -31,12 +31,14 @@ import {
   SelectionHandlerType,
   showSelectionToolPopover,
 } from "@/components/selectionToolPopover/SelectionToolPopover";
+import { CancelError } from "@/errors/businessErrors";
 
 let overlay: Overlay | null = null;
 let expandOverlay: Overlay | null = null;
 let styleElement: HTMLStyleElement = null;
 let multiSelectionToolElement: HTMLElement = null;
 let selectionHandler: SelectionHandlerType;
+let stopInspectingNative: () => void;
 
 function setSelectionHandler(handler: SelectionHandlerType) {
   selectionHandler = handler;
@@ -48,6 +50,12 @@ export function hideOverlay(): void {
     overlay = null;
     expandOverlay.remove();
     expandOverlay = null;
+  }
+}
+
+export function stopInspectingNativeHandler(): void {
+  if (stopInspectingNative) {
+    stopInspectingNative();
   }
 }
 
@@ -124,16 +132,6 @@ export async function userSelectElement({
       prehiglightItems();
     }
 
-    function stopInspectingNative() {
-      hideOverlay();
-      _cancelSelect = null;
-      removeListenersOnWindow(window);
-      removeInspectingModeStyles();
-      if (enableSelectionTools) {
-        removeMultiSelectionTool();
-      }
-    }
-
     function handleDone(target?: HTMLElement) {
       try {
         const result = uniq(compact([...targets, target]));
@@ -156,6 +154,7 @@ export async function userSelectElement({
         overlay.inspect([]);
         expandOverlay.inspect([]);
         targets.clear();
+        selectionHandler(targets.size);
       }
     }
 
@@ -163,7 +162,7 @@ export async function userSelectElement({
       shouldSelectSimilar = value;
       if (shouldSelectSimilar) {
         const commonSelector = commonCssSelector([...targets]);
-        const expandTargets = $(commonSelector);
+        const expandTargets = difference($(commonSelector), [...targets]);
         selectionHandler(expandTargets.length);
         expandOverlay.inspect([...expandTargets]);
       } else {
@@ -214,7 +213,7 @@ export async function userSelectElement({
 
         if (targets.size > 1 && shouldSelectSimilar) {
           const commonSelector = commonCssSelector([...targets]);
-          const expandTargets = $(commonSelector);
+          const expandTargets = difference($(commonSelector), [...targets]);
           selectionHandler(expandTargets.length);
           expandOverlay.inspect([...expandTargets]);
         } else {
@@ -271,7 +270,7 @@ export async function userSelectElement({
 
     function cancel() {
       stopInspectingNative();
-      reject(new Error("Selection cancelled"));
+      reject(new CancelError("Selection cancelled"));
     }
 
     function registerListenersOnWindow(window: Window) {
@@ -367,6 +366,18 @@ export async function userSelectElement({
     }
 
     startInspectingNative();
+
+    stopInspectingNative = () => {
+      hideOverlay();
+      _cancelSelect = null;
+      removeListenersOnWindow(window);
+      removeInspectingModeStyles();
+      if (enableSelectionTools) {
+        removeMultiSelectionTool();
+      }
+
+      stopInspectingNative = null;
+    };
   });
 }
 

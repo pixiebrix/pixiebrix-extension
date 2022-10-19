@@ -39,3 +39,11 @@ export async function getTabsWithAccess(): Promise<TabId[]> {
   const tabs = await browser.tabs.query({ url: origins });
   return [...tabs.map((x) => x.id), ...possiblyActiveTabs.keys()];
 }
+
+export async function forEachTab<
+  TCallback extends (target: { tabId: number }) => void
+>(callback: TCallback): Promise<void> {
+  for (const tabId of await getTabsWithAccess()) {
+    callback({ tabId });
+  }
+}

@@ -22,7 +22,6 @@ import { getRecipeById } from "@/utils";
 import { Accordion, Button, Form, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import hash from "object-hash";
-import useInstallState from "@/pageEditor/hooks/useInstallState";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
@@ -33,12 +32,12 @@ import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import {
   selectActiveElementId,
   selectActiveRecipeId,
-  selectAllDeletedElementIds,
-  selectElements,
   selectExpandedRecipeId,
+  selectExtensionAvailability,
+  selectNotDeletedElements,
+  selectNotDeletedExtensions,
 } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
 import { useGetRecipesQuery } from "@/services/api";
 import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
@@ -60,17 +59,15 @@ const SidebarExpanded: React.FunctionComponent<{
   const activeElementId = useSelector(selectActiveElementId);
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const expandedRecipeId = useSelector(selectExpandedRecipeId);
-  const deletedElementIds = useSelector(selectAllDeletedElementIds);
-  const allInstalled = useSelector(selectExtensions);
-  const installed = useMemo(
-    () => allInstalled.filter(({ id }) => !deletedElementIds.has(id)),
-    [allInstalled, deletedElementIds]
-  );
-  const allElements = useSelector(selectElements);
-  const elements = useMemo(
-    () => allElements.filter(({ uuid }) => !deletedElementIds.has(uuid)),
-    [allElements, deletedElementIds]
-  );
+  const installed = useSelector(selectNotDeletedExtensions);
+  const elements = useSelector(selectNotDeletedElements);
+  const {
+    availableInstalledIds,
+    unavailableInstalledCount,
+    availableDynamicIds,
+    unavailableDynamicCount,
+  } = useSelector(selectExtensionAvailability);
+  const unavailableCount = unavailableInstalledCount + unavailableDynamicCount;
 
   const recipes = useMemo(() => {
     const installedAndElements = [...installed, ...elements];
@@ -89,9 +86,6 @@ const SidebarExpanded: React.FunctionComponent<{
     flagOn("page-editor-developer");
 
   const [showAll, setShowAll] = useState(false);
-
-  const { availableInstalledIds, availableDynamicIds, unavailableCount } =
-    useInstallState(installed, elements);
 
   const elementHash = hash(
     sortBy(

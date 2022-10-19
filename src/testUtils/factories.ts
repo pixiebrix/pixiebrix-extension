@@ -28,6 +28,7 @@ import {
   RecipeMetadata,
   RegistryId,
   RenderedArgs,
+  ResolvedExtension,
   SafeString,
   SanitizedConfig,
   SanitizedServiceConfiguration,
@@ -82,6 +83,13 @@ import {
 import { JsonObject } from "type-fest";
 import objectHash from "object-hash";
 import { makeEmptyPermissions } from "@/utils/permissions";
+import {
+  actionSchema,
+  MenuItemExtensionConfig,
+  RemoteMenuItemExtensionPoint,
+} from "@/extensionPoints/menuItemExtension";
+import { propertiesToSchema } from "@/validators/generic";
+import { RemoteQuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -179,7 +187,7 @@ export const installedRecipeMetadataFactory = define<RecipeMetadata>({
 
 export const extensionFactory = define<IExtension>({
   id: uuidSequence,
-  apiVersion: "v2" as ApiVersion,
+  apiVersion: "v3" as ApiVersion,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/extension-point-${n}`),
   _recipe: undefined,
@@ -189,7 +197,7 @@ export const extensionFactory = define<IExtension>({
     return [];
   },
   config: (n: number) => ({
-    apiVersion: "v2" as ApiVersion,
+    apiVersion: "v3" as ApiVersion,
     kind: "component",
     metadata: recipeMetadataFactory({
       id: validateRegistryId(`test/component-${n}`),
@@ -218,7 +226,9 @@ export const extensionFactory = define<IExtension>({
   active: true,
 });
 
-export const cloudExtensionFactory = (override?: Config<CloudExtension>) => {
+export const cloudExtensionFactory = (
+  override?: Partial<Config<CloudExtension>>
+) => {
   const extension = extensionFactory(
     override as Config<IExtension>
   ) as CloudExtension;
@@ -701,3 +711,120 @@ export const marketplaceListingFactory = define<MarketplaceListing>({
       name: `@test/test-${n}`,
     } as unknown as MarketplaceListing["package"]),
 });
+
+export const quickBarExtensionPointFactory =
+  define<RemoteQuickBarExtensionPoint>({
+    // @ts-expect-error -- Not sure what's wrong here, possibly TS struggling with the generics?
+    extensions: () => [] as Array<ResolvedExtension<MenuItemExtensionConfig>>,
+    icon: "",
+    id: (n: number) => validateRegistryId(`test/quickbar-extension-point-${n}`),
+    inputSchema: () =>
+      propertiesToSchema(
+        {
+          title: {
+            type: "string",
+            description:
+              "The text to display in the item. When the context is selection, use %s within the string to show the selected text.",
+          },
+          icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
+          action: {
+            oneOf: [
+              { $ref: "https://app.pixiebrix.com/schemas/effect#" },
+              {
+                type: "array",
+                items: { $ref: "https://app.pixiebrix.com/schemas/block#" },
+              },
+            ],
+          },
+        },
+        ["title", "action"]
+      ),
+    instanceId: uuidSequence,
+    kind(): "quickBar" {
+      return "quickBar";
+    },
+    name: (n: number) => `Test Quickbar Extension Point - ${n}`,
+    permissions: {},
+    uninstalled: false,
+    _definition: {
+      contexts: ["all"],
+      documentUrlPatterns: [],
+      targetMode: "eventTarget",
+      isAvailable: {
+        matchPatterns: [],
+        selectors: [],
+        urlSelectors: [],
+      },
+      reader: [],
+      type: "quickBar",
+    },
+  });
+
+export const menuItemExtensionPointFactory =
+  define<RemoteMenuItemExtensionPoint>({
+    // @ts-expect-error -- Not sure what's wrong here, possibly TS struggling with the generics?
+    extensions: () => [] as Array<ResolvedExtension<MenuItemExtensionConfig>>,
+    icon: "",
+    id: (n: number) => validateRegistryId(`test/button-extension-point-${n}`),
+    inputSchema: () =>
+      propertiesToSchema(
+        {
+          caption: {
+            type: "string",
+            description: "The caption for the menu item.",
+          },
+          dynamicCaption: {
+            type: "boolean",
+            description:
+              "True if the caption can refer to data from the reader",
+            default: "false",
+          },
+          if: actionSchema,
+          dependencies: {
+            type: "array",
+            items: {
+              type: "string",
+            },
+            minItems: 1,
+          },
+          action: actionSchema,
+          icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
+          shadowDOM: {
+            type: "object",
+            description:
+              "When provided, renders the menu item as using the shadowDOM",
+            properties: {
+              tag: {
+                type: "string",
+              },
+              mode: {
+                type: "string",
+                enum: ["open", "closed"],
+                default: "closed",
+              },
+            },
+            required: ["tag"],
+          },
+        },
+        ["caption", "action"]
+      ),
+    instanceId: uuidSequence,
+    kind(): "menuItem" {
+      return "menuItem";
+    },
+    name: (n: number) => `Test Button Extension Point - ${n}`,
+    permissions: {},
+    uninstalled: false,
+    _definition: {
+      containerSelector: "",
+      isAvailable: {
+        matchPatterns: [],
+        selectors: [],
+        urlSelectors: [],
+      },
+      position: "append",
+      reader: [],
+      template: "",
+      type: "menuItem",
+    },
+  });

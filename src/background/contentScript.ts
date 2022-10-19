@@ -24,7 +24,6 @@ import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
 import { expectContext } from "@/utils/expectContext";
 import pTimeout from "p-timeout";
 import type { Target } from "@/types";
-import { getTabsWithAccess } from "./activeTab";
 
 // eslint-disable-next-line import/no-restricted-paths -- TODO: Migrate to webext-messenger?
 import { getTargetState } from "@/contentScript/ready";
@@ -83,56 +82,59 @@ export async function ensureContentScript(
 ): Promise<void> {
   expectContext("background");
 
-  console.debug("ensureContentScript: requested", target);
-
   const controller = new AbortController();
-
-  // Start waiting for the notification as early as possible,
-  // `webext-dynamic-content-scripts` might have already injected the content script
-  const readyNotificationPromise = onReadyNotification(controller.signal);
+  const { signal } = controller;
 
   try {
-    const result = await Promise.race([
-      readyNotificationPromise,
-      getTargetState(target), // It will throw if we don't have permissions
-    ]);
+    console.debug("ensureContentScript: requested", target);
 
-    if (!result || result.ready) {
-      console.debug("ensureContentScript: already exists and is ready", target);
-      return;
-    }
-
-    if (result.installed || (await isContentScriptRegistered(result.url))) {
-      console.debug(
-        "ensureContentScript: already exists or will be injected automatically",
-        target
-      );
-    } else {
-      console.debug("ensureContentScript: injecting", target);
-      const scripts = browser.runtime
-        .getManifest()
-        .content_scripts.map((script) => {
-          script.all_frames = false;
-          return script;
-        });
-
-      await injectContentScript(target, scripts);
-    }
-
-    await pTimeout(readyNotificationPromise, {
+    // TODO: Simplify after https://github.com/sindresorhus/p-timeout/issues/31
+    await pTimeout(ensureContentScriptWithoutTimeout(target, signal), {
+      signal,
       milliseconds: timeoutMillis,
       message: `contentScript not ready in ${timeoutMillis}ms`,
     });
+
     console.debug("ensureContentScript: ready", target);
   } finally {
     controller.abort();
   }
 }
 
-export async function forEachTab<
-  TCallback extends (target: { tabId: number }) => void
->(callback: TCallback): Promise<void> {
-  for (const tabId of await getTabsWithAccess()) {
-    callback({ tabId });
+async function ensureContentScriptWithoutTimeout(
+  target: Target,
+  signal: AbortSignal
+): Promise<void> {
+  // Start waiting for the notification as early as possible,
+  // `webext-dynamic-content-scripts` might have already injected the content script
+  const readyNotificationPromise = onReadyNotification(signal);
+
+  const result = await getTargetState(target); // It will throw if we don't have permissions
+
+  if (result.ready) {
+    console.debug("ensureContentScript: already exists and is ready", target);
+    return;
   }
+
+  if (result.installed || (await isContentScriptRegistered(result.url))) {
+    // TODO: Potentially inject anyway on pixiebrix.com https://github.com/pixiebrix/pixiebrix-extension/issues/4189
+    console.debug(
+      "ensureContentScript: already exists or will be injected automatically",
+      target
+    );
+
+    await readyNotificationPromise;
+    return;
+  }
+
+  console.debug("ensureContentScript: injecting", target);
+  const scripts = browser.runtime
+    .getManifest()
+    .content_scripts.map((script) => {
+      script.all_frames = false;
+      return script;
+    });
+
+  await injectContentScript(target, scripts);
+  await readyNotificationPromise;
 }

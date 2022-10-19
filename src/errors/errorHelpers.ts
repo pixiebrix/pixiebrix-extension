@@ -19,7 +19,6 @@ import { deserializeError, ErrorObject } from "serialize-error";
 import { isObject, smartAppendPeriod } from "@/utils";
 import safeJsonStringify from "json-stringify-safe";
 import { truncate } from "lodash";
-import type { ContextError } from "@/errors/genericErrors";
 import {
   isAxiosError,
   selectNetworkErrorMessage,
@@ -73,10 +72,6 @@ export const IGNORED_ERROR_PATTERNS = [
 export function isErrorObject(error: unknown): error is ErrorObject {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function and it uses ?.
   return typeof (error as any)?.message === "string";
-}
-
-export function isContextError(error: unknown): error is ContextError {
-  return isErrorObject(error) && error.name === "ContextError";
 }
 
 export function isSpecificError<

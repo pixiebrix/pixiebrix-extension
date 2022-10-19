@@ -578,6 +578,7 @@ export interface components {
       services: {
         auth: string;
       }[];
+      options_config?: { [key: string]: unknown };
     };
     CampaignSummary: {
       /** Format: uuid */
@@ -682,6 +683,7 @@ export interface components {
         };
       }[];
       active?: boolean;
+      options_config?: { [key: string]: unknown };
     };
     DeploymentTelemetry: {
       /**
@@ -728,6 +730,7 @@ export interface components {
         auth: string;
       }[];
       active?: boolean;
+      options_config?: { [key: string]: unknown };
     };
     DependencyTree: {
       name: string;

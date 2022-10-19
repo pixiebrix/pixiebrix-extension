@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { resetTab } from "@/contentScript/messenger/api";
+import { resetTab, stopInspectingNative } from "@/contentScript/messenger/api";
 import { thisTab } from "./utils";
 import { Target } from "@/types";
 import { updatePageEditor } from "./events";
@@ -38,6 +38,7 @@ async function onNavigation(target: Target): Promise<void> {
 
 function onEditorClose(): void {
   resetTab(thisTab);
+  stopInspectingNative(thisTab);
 }
 
 export function watchNavigation(): void {

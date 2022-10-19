@@ -25,8 +25,8 @@ type ArrangeElementsArgs = {
   elements: FormState[];
   installed: IExtension[];
   recipes: RecipeDefinition[];
-  availableInstalledIds: Set<UUID>;
-  availableDynamicIds: Set<UUID>;
+  availableInstalledIds: UUID[];
+  availableDynamicIds: UUID[];
   showAll: boolean;
   activeElementId: UUID;
   expandedRecipeId: RegistryId | null;
@@ -44,7 +44,6 @@ function arrangeElements({
   activeElementId,
   expandedRecipeId,
 }: ArrangeElementsArgs): Array<Element | [RegistryId, Element[]]> {
-  const elementIds = new Set(elements.map((formState) => formState.uuid));
   const elementsByRecipeId = new Map<
     RegistryId,
     Array<IExtension | FormState>
@@ -52,15 +51,14 @@ function arrangeElements({
   const orphanedElements: Array<IExtension | FormState> = [];
   const filteredExtensions: IExtension[] = installed.filter(
     (extension) =>
-      !elementIds.has(extension.id) &&
-      (showAll ||
-        availableInstalledIds?.has(extension.id) ||
-        extension._recipe?.id === expandedRecipeId)
+      showAll ||
+      availableInstalledIds?.includes(extension.id) ||
+      extension._recipe?.id === expandedRecipeId
   );
   const filteredDynamicElements: FormState[] = elements.filter(
     (formState) =>
       showAll ||
-      availableDynamicIds?.has(formState.uuid) ||
+      availableDynamicIds?.includes(formState.uuid) ||
       formState.recipe?.id === expandedRecipeId ||
       activeElementId === formState.uuid
   );

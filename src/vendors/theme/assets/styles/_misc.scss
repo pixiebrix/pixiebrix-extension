@@ -1,4 +1,4 @@
-/* Miscellanoeous */
+/* Miscellaneous */
 body,
 html {
   overflow-x: hidden;
@@ -6,7 +6,8 @@ html {
 }
 
 body {
-  background: $content-bg;
+  background: var(--theme-bg-light);
+  transition: background-color 0.3s ease-in-out;
 }
 
 *:-moz-full-screen,

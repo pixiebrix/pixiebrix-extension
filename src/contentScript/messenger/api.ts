@@ -59,6 +59,7 @@ export const handleNavigate = getNotifier("HANDLE_NAVIGATE");
 export const runBrick = getMethod("RUN_BRICK");
 export const cancelSelect = getMethod("CANCEL_SELECT_ELEMENT");
 export const selectElement = getMethod("SELECT_ELEMENT");
+export const stopInspectingNative = getNotifier("STOP_INSPECTING_NATIVE");
 
 export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
 export const runEffectPipeline = getMethod("RUN_EFFECT_PIPELINE");

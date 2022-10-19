@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { RecipeMetadata, RegistryId, UUID } from "@/core";
@@ -28,19 +28,27 @@ import {
 } from "@/types/definitions";
 import {
   AddBlockLocation,
+  EditorRootState,
   EditorState,
   ModalKey,
 } from "@/pageEditor/pageEditorTypes";
 import { uuidv4 } from "@/types/helpers";
-import { cloneDeep, get, isEmpty } from "lodash";
+import { cloneDeep, compact, get, isEmpty, uniq } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getInvalidPath } from "@/utils/debugUtils";
 import {
   selectActiveElement,
+  selectActiveElementId,
   selectActiveElementUIState,
+  selectNotDeletedElements,
+  selectNotDeletedExtensions,
 } from "./editorSelectors";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import {
+  FormState,
+  isQuickBarExtensionPoint,
+} from "@/pageEditor/extensionPoints/formStateTypes";
+import reportError from "@/telemetry/reportError";
 import {
   activateElement,
   editRecipeMetadata,
@@ -51,6 +59,18 @@ import {
   setActiveNodeId,
   syncElementNodeUIStates,
 } from "@/pageEditor/slices/editorSliceHelpers";
+import { produce } from "immer";
+import { normalizePipelineForEditor } from "@/pageEditor/extensionPoints/pipelineMapping";
+import { ExtensionsRootState } from "@/store/extensionsTypes";
+import {
+  checkAvailable,
+  getInstalledExtensionPoints,
+} from "@/contentScript/messenger/api";
+import { getCurrentURL, thisTab } from "@/pageEditor/utils";
+import { resolveDefinitions } from "@/registry/internal";
+import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
+import { testMatchPatterns } from "@/blocks/available";
+import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -72,9 +92,149 @@ export const initialState: EditorState = {
   keepLocalCopyOnCreateRecipe: false,
   deletedElementsByRecipeId: {},
   newRecipeIds: [],
+  availableInstalledIds: [],
+  unavailableInstalledCount: 0,
+  isPendingInstalledExtensions: false,
+  availableDynamicIds: [],
+  unavailableDynamicCount: 0,
+  isPendingDynamicExtensions: false,
 };
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
+
+const cloneActiveExtension = createAsyncThunk<
+  void,
+  void,
+  { state: EditorRootState }
+>("editor/cloneActiveExtension", async (arg, thunkAPI) => {
+  const state = thunkAPI.getState();
+  const newElement = await produce(
+    selectActiveElement(state),
+    async (draft) => {
+      draft.uuid = uuidv4();
+      draft.label += " - copy";
+      // Remove from its recipe, if any (the user can add it to any recipe after creation)
+      delete draft.recipe;
+      // Re-generate instance IDs for all the bricks in the extension
+      draft.extension.blockPipeline = await normalizePipelineForEditor(
+        draft.extension.blockPipeline
+      );
+    }
+  );
+  // Add the cloned extension
+  thunkAPI.dispatch(actions.addElement(newElement));
+});
+
+type AvailableInstalled = {
+  availableInstalledIds: UUID[];
+  unavailableCount: number;
+};
+
+const checkAvailableInstalledExtensions = createAsyncThunk<
+  AvailableInstalled,
+  void,
+  { state: EditorRootState & ExtensionsRootState }
+>("editor/checkAvailableInstalledExtensions", async (arg, thunkAPI) => {
+  const elements = selectNotDeletedElements(thunkAPI.getState());
+  const extensions = selectNotDeletedExtensions(thunkAPI.getState());
+  const extensionPoints = await getInstalledExtensionPoints(thisTab);
+  const installedExtensionPoints = new Map(
+    extensionPoints.map((extensionPoint) => [extensionPoint.id, extensionPoint])
+  );
+  const resolved = await Promise.all(
+    extensions.map(async (extension) => resolveDefinitions(extension))
+  );
+  const tabUrl = await getCurrentURL();
+  const availableExtensionPointIds = resolved
+    .filter((x) => {
+      const extensionPoint = installedExtensionPoints.get(x.extensionPointId);
+      // Not installed means not available
+      if (extensionPoint == null) {
+        return false;
+      }
+
+      // QuickBar is installed on every page, need to filter by the documentUrlPatterns
+      if (QuickBarExtensionPoint.isQuickBarExtensionPoint(extensionPoint)) {
+        return testMatchPatterns(extensionPoint.documentUrlPatterns, tabUrl);
+      }
+
+      return true;
+    })
+    .map((x) => x.id);
+
+  // Note: we can take out this filter if and when we start persisting the
+  // editor slice and removing installed extensions when they become dynamic elements
+  const notDynamicInstalled = extensions.filter(
+    (extension) => !elements.some((element) => element.uuid === extension.id)
+  );
+
+  const availableInstalledIds = notDynamicInstalled
+    .filter((x) => availableExtensionPointIds.includes(x.id))
+    .map((x) => x.id);
+
+  const unavailableCount =
+    notDynamicInstalled.length - availableInstalledIds.length;
+
+  return { availableInstalledIds, unavailableCount };
+});
+
+async function isElementAvailable(
+  tabUrl: string,
+  elementExtensionPoint: BaseExtensionPointState
+): Promise<boolean> {
+  if (isQuickBarExtensionPoint(elementExtensionPoint)) {
+    return testMatchPatterns(
+      elementExtensionPoint.definition.documentUrlPatterns,
+      tabUrl
+    );
+  }
+
+  return checkAvailable(
+    thisTab,
+    elementExtensionPoint.definition.isAvailable,
+    tabUrl
+  );
+}
+
+type AvailableDynamic = {
+  availableDynamicIds: UUID[];
+  unavailableCount: number;
+};
+
+const checkAvailableDynamicElements = createAsyncThunk<
+  AvailableDynamic,
+  void,
+  { state: EditorRootState }
+>("editor/checkAvailableDynamicElements", async (arg, thunkAPI) => {
+  const elements = selectNotDeletedElements(thunkAPI.getState());
+  const tabUrl = await getCurrentURL();
+  const availableElementIds = await Promise.all(
+    elements.map(async ({ uuid, extensionPoint: elementExtensionPoint }) => {
+      const isAvailable = await isElementAvailable(
+        tabUrl,
+        elementExtensionPoint
+      );
+
+      return isAvailable ? uuid : null;
+    })
+  );
+
+  const availableDynamicIds = uniq(compact(availableElementIds));
+  const unavailableCount = elements.length - availableDynamicIds.length;
+
+  return { availableDynamicIds, unavailableCount };
+});
+
+const checkActiveElementAvailability = createAsyncThunk<
+  { isAvailable: boolean },
+  void,
+  { state: EditorRootState }
+>("editor/checkDynamicElementAvailability", async (arg, thunkAPI) => {
+  const tabUrl = await getCurrentURL();
+  const element = selectActiveElement(thunkAPI.getState());
+  const isAvailable = await isElementAvailable(tabUrl, element.extensionPoint);
+  return { isAvailable };
+});
 
 export const editorSlice = createSlice({
   name: "editor",
@@ -577,7 +737,73 @@ export const editorSlice = createSlice({
       state.visibleModalKey = null;
     },
   },
+  extraReducers(builder) {
+    builder
+      .addCase(checkAvailableInstalledExtensions.pending, (state) => {
+        state.isPendingInstalledExtensions = true;
+        // We're not resetting the result here so that the old value remains during re-calculation
+      })
+      .addCase(
+        checkAvailableInstalledExtensions.fulfilled,
+        (state, { payload: { availableInstalledIds, unavailableCount } }) => {
+          state.isPendingInstalledExtensions = false;
+          state.availableInstalledIds = availableInstalledIds;
+          state.unavailableInstalledCount = unavailableCount;
+        }
+      )
+      .addCase(
+        checkAvailableInstalledExtensions.rejected,
+        (state, { error }) => {
+          state.isPendingInstalledExtensions = false;
+          state.unavailableInstalledCount = 0;
+          reportError(error);
+        }
+      )
+      .addCase(checkAvailableDynamicElements.pending, (state) => {
+        state.isPendingDynamicExtensions = true;
+        // We're not resetting the result here so that the old value remains during re-calculation
+      })
+      .addCase(
+        checkAvailableDynamicElements.fulfilled,
+        (state, { payload: { availableDynamicIds, unavailableCount } }) => {
+          state.isPendingDynamicExtensions = false;
+          state.availableDynamicIds = availableDynamicIds;
+          state.unavailableDynamicCount = unavailableCount;
+        }
+      )
+      .addCase(checkAvailableDynamicElements.rejected, (state, { error }) => {
+        state.isPendingDynamicExtensions = false;
+        state.unavailableDynamicCount = 0;
+        reportError(error);
+      })
+      .addCase(
+        checkActiveElementAvailability.fulfilled,
+        (state, { payload: { isAvailable } }) => {
+          const activeElementId = selectActiveElementId({ editor: state });
+          if (isAvailable) {
+            state.availableDynamicIds = uniq([
+              activeElementId,
+              ...state.availableDynamicIds,
+            ]);
+          } else {
+            state.availableDynamicIds = state.availableDynamicIds.filter(
+              (id) => id !== activeElementId
+            );
+          }
+
+          const elements = selectNotDeletedElements({ editor: state });
+          state.unavailableDynamicCount =
+            elements.length - state.availableDynamicIds.length;
+        }
+      );
+  },
 });
 /* eslint-enable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- re-enable rule */
 
-export const { actions } = editorSlice;
+export const actions = {
+  ...editorSlice.actions,
+  cloneActiveExtension,
+  checkAvailableInstalledExtensions,
+  checkAvailableDynamicElements,
+  checkActiveElementAvailability,
+};

@@ -27,7 +27,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { RegistryId, UUID } from "@/core";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
-import { forEachTab } from "./util";
+import { forEachTab } from "@/background/activeTab";
 import { parse as parseSemVer, satisfies, SemVer } from "semver";
 import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -168,6 +168,7 @@ async function installDeployment(
         deployment,
         locateAllForService
       ),
+      optionsArgs: deployment.options_config,
     })
   );
 

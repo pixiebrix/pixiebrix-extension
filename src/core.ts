@@ -26,7 +26,6 @@ import type { Except, Primitive } from "type-fest";
 import type { ErrorObject } from "serialize-error";
 import type { Permissions } from "webextension-polyfill";
 import type React from "react";
-
 import { contextNames } from "webext-detect-page";
 
 // Use our own name in the project so we can re-map/adjust the typing as necessary
@@ -930,7 +929,7 @@ export interface IconConfig {
   color?: string;
 }
 
-export type UserOptions = Record<string, Primitive>;
+export type UserOptions = Record<string, unknown>;
 
 export type RawConfig = {
   kind: "service" | "extensionPoint" | "component" | "reader" | "recipe";
