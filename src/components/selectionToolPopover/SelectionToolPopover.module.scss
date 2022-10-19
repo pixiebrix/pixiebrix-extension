@@ -27,4 +27,15 @@ $border: rgba(0, 0, 0, 0.3);
   background: $background;
   cursor: pointer;
   z-index: 10000001;
+
+  .popover-wrapper-header {
+    display: flex;
+    align-items: center;
+    cursor: move;
+
+    svg {
+      width: 24px;
+      margin-right: 8px;
+    }
+  }
 }
