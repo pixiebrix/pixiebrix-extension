@@ -1070,6 +1070,11 @@ export interface components {
         };
         theme?: {
           show_sidebar_logo?: boolean;
+          /**
+           * Format: uri
+           * @description The image url of a custom logo. Image format must be svg.
+           */
+          logo?: string | null;
         };
       };
       telemetry_organization?: {
@@ -1088,6 +1093,11 @@ export interface components {
         };
         theme?: {
           show_sidebar_logo?: boolean;
+          /**
+           * Format: uri
+           * @description The image url of a custom logo. Image format must be svg.
+           */
+          logo?: string | null;
         };
       };
       organization_memberships?: {
@@ -1210,6 +1220,11 @@ export interface components {
       enforce_update_millis?: number | null;
       theme?: {
         show_sidebar_logo?: boolean;
+        /**
+         * Format: uri
+         * @description The image url of a custom logo. Image format must be svg.
+         */
+        logo?: string | null;
       };
     };
     UserDetail: {

@@ -26,8 +26,8 @@ import useTheme, { useGetTheme } from "@/hooks/useTheme";
 import cx from "classnames";
 
 const Header: React.FunctionComponent = () => {
+  const { logo, showSidebarLogo, customSidebarLogo } = useTheme();
   const theme = useGetTheme();
-  const { logo, showSidebarLogo } = useTheme();
 
   return (
     <div className="d-flex p-2 justify-content-between align-content-center">
@@ -48,8 +48,8 @@ const Header: React.FunctionComponent = () => {
       {showSidebarLogo && (
         <div className="align-self-center">
           <img
-            src={logo.regular}
-            alt="PixieBrix logo"
+            src={customSidebarLogo ?? logo.regular}
+            alt={customSidebarLogo ? "Custom logo" : "PixieBrix logo"}
             className={styles.logo}
             data-testId="sidebarHeaderLogo"
           />

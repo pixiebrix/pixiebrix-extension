@@ -89,22 +89,29 @@ export function useGetTheme(): Theme {
   return theme;
 }
 
-function useGetOrganizationTheme(): {
+export function useGetOrganizationTheme(): {
   showSidebarLogo: boolean;
+  customSidebarLogo: string;
 } {
   const { data: me } = useGetMeQuery();
-  const organizationTheme = me?.organization?.theme;
+  const { organization: cachedOrganization } = useSelector(selectAuth);
+
+  const organizationTheme = me
+    ? me.organization?.theme
+    : cachedOrganization?.theme;
 
   return {
     showSidebarLogo: organizationTheme
       ? Boolean(organizationTheme.show_sidebar_logo)
       : true,
+    customSidebarLogo: organizationTheme?.logo || null,
   };
 }
 
 type ThemeAssets = {
   logo: ThemeLogo;
   showSidebarLogo: boolean;
+  customSidebarLogo: string;
 };
 
 /**

@@ -22,7 +22,7 @@ import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { persistSettingsConfig } from "@/store/settingsStorage";
 import settingsSlice from "@/store/settingsSlice";
 import { renderHook } from "@testing-library/react-hooks";
-import { useGetTheme } from "@/hooks/useTheme";
+import { useGetOrganizationTheme, useGetTheme } from "@/hooks/useTheme";
 import { Provider } from "react-redux";
 import { DEFAULT_THEME } from "@/options/types";
 import { useGetMeQuery } from "@/services/api";
@@ -182,5 +182,79 @@ describe("useGetTheme", () => {
     });
 
     expect(theme).toBe("automation-anywhere");
+  });
+});
+
+describe("useGetOrganizationTheme", () => {
+  const customTestLogoUrl = "https://test-logo.svg";
+
+  test("no loading flicker with cached organization theme", () => {
+    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+      isLoading: true,
+      data: null,
+    }));
+
+    const {
+      result: { current: organizationTheme },
+    } = renderHook(() => useGetOrganizationTheme(), {
+      wrapper: ({ children }) => (
+        <Provider
+          store={optionsStore({
+            auth: {
+              organization: {
+                theme: {
+                  show_sidebar_logo: false,
+                  logo: customTestLogoUrl,
+                },
+              },
+            },
+          })}
+        >
+          {children}
+        </Provider>
+      ),
+    });
+
+    expect(organizationTheme.showSidebarLogo).toBe(false);
+    expect(organizationTheme.customSidebarLogo).toBe(customTestLogoUrl);
+  });
+
+  test("new organization theme trumps cached organization theme", () => {
+    const newTestLogoUrl = "https://new-test-logo.svg";
+    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+      isLoading: false,
+      data: {
+        organization: {
+          theme: {
+            show_sidebar_logo: false,
+            logo: newTestLogoUrl,
+          },
+        },
+      },
+    }));
+
+    const {
+      result: { current: organizationTheme },
+    } = renderHook(() => useGetOrganizationTheme(), {
+      wrapper: ({ children }) => (
+        <Provider
+          store={optionsStore({
+            auth: {
+              organization: {
+                theme: {
+                  show_sidebar_logo: true,
+                  logo: customTestLogoUrl,
+                },
+              },
+            },
+          })}
+        >
+          {children}
+        </Provider>
+      ),
+    });
+
+    expect(organizationTheme.showSidebarLogo).toBe(false);
+    expect(organizationTheme.customSidebarLogo).toBe(newTestLogoUrl);
   });
 });
