@@ -21,9 +21,12 @@ jobs:
         run: bash .github/workflows/loom-get.sh ${{ github.event.pull_request.number }}
 
       - uses: rtCamp/action-slack-notify@v2
+        if: env.LOOM_LINK
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_CHANNEL: sprint-demo
           SLACK_MESSAGE: ${{ env.LOOM_LINK }}
-          SLACK_FOOTER: 🚀 # Hides ad
+          SLACK_FOOTER: |
+            *${{ github.event.pull_request.title }}*
+            ${{ github.event.pull_request.html_url }}
           MSG_MINIMAL: true
