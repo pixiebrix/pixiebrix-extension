@@ -23,7 +23,7 @@ import {
   safeCssSelector,
 } from "@/contentScript/nativeEditor/selectorInference";
 import { Framework } from "@/messaging/constants";
-import { uniq, compact } from "lodash";
+import { uniq, compact, difference } from "lodash";
 import * as pageScript from "@/pageScript/protocol";
 import { requireSingleElement } from "@/utils/requireSingleElement";
 import { SelectMode } from "@/contentScript/nativeEditor/types";
@@ -154,6 +154,7 @@ export async function userSelectElement({
         overlay.inspect([]);
         expandOverlay.inspect([]);
         targets.clear();
+        selectionHandler(targets.size);
       }
     }
 
@@ -161,7 +162,7 @@ export async function userSelectElement({
       shouldSelectSimilar = value;
       if (shouldSelectSimilar) {
         const commonSelector = commonCssSelector([...targets]);
-        const expandTargets = $(commonSelector);
+        const expandTargets = difference($(commonSelector), [...targets]);
         selectionHandler(expandTargets.length);
         expandOverlay.inspect([...expandTargets]);
       } else {
@@ -212,7 +213,7 @@ export async function userSelectElement({
 
         if (targets.size > 1 && shouldSelectSimilar) {
           const commonSelector = commonCssSelector([...targets]);
-          const expandTargets = $(commonSelector);
+          const expandTargets = difference($(commonSelector), [...targets]);
           selectionHandler(expandTargets.length);
           expandOverlay.inspect([...expandTargets]);
         } else {

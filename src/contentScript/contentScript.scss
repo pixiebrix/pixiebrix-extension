@@ -36,18 +36,21 @@
 }
 
 /* Overlay.tsx has no classes, so we target each layer by using its hardcoded values */
-[style="z-index: 10000000;"] [style*="rgba(255, 200, 50, 0.3)"] {
-  border-color: transparent !important;
-  background: linear-gradient(
-    20deg,
-    rgba(164, 73, 255, 0.4),
-    rgba(164, 73, 255, 0.1)
-  ) !important;
-  &.light {
+[style="z-index: 10000000;"] {
+  &.light [style*="rgba(255, 200, 50, 0.3)"] {
     background: linear-gradient(
       20deg,
-      rgba(213, 170, 255, 0.4),
+      rgba(212, 169, 255, 0.3),
       rgba(213, 170, 255, 0.1)
+    ) !important;
+  }
+
+  [style*="rgba(255, 200, 50, 0.3)"] {
+    border-color: transparent !important;
+    background: linear-gradient(
+      20deg,
+      rgba(135, 14, 255, 0.5),
+      rgba(164, 73, 255, 0.1)
     ) !important;
   }
 }
