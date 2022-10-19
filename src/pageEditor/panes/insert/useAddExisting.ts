@@ -19,7 +19,7 @@ import { useCallback } from "react";
 import { reportEvent } from "@/telemetry/events";
 import { useDispatch, useSelector } from "react-redux";
 import notify from "@/utils/notify";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { getCurrentURL } from "@/pageEditor/utils";
@@ -54,6 +54,7 @@ function useAddExisting<T extends { rawConfig: ExtensionPointConfig }>(
         });
 
         dispatch(addElement(state as FormState));
+        dispatch(actions.checkActiveElementAvailability());
       } catch (error) {
         notify.error({ message: `Error adding ${config.label}`, error });
       }
