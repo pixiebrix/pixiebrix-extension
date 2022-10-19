@@ -6,7 +6,7 @@ die () {
 
 [ "$#" -eq 1 ] || die "PR number required as argument"
 
-gh pr view $1 --repo $GITHUB_REPOSITORY |
+gh pr view $1 |
 grep "https://www.loom.com/share/\w\{32\}" --max-count 1 --only-matching |
 tee LOOM_LINK || true
 

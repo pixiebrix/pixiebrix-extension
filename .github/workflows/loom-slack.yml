@@ -12,26 +12,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v3
+
       - name: Find first loom
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          PR=${{ github.event.pull_request.number }}
-          LOOM_REGEX="https://www.loom.com/share/\w\{32\}"
-
-          echo FIRST POST
-          echo ----------
-          FIRST_POST=$(gh pr view $PR --repo $GITHUB_REPOSITORY)
-          echo $FIRST_POST
-
-          echo
-
-          echo LOOM LINK
-          echo ----------
-          LOOM_LINK=$(echo $FIRST_POST | grep $LOOM_REGEX --max-count 1 --only-matching | true)
-          echo $LOOM_LINK
-
-          echo "LOOM_LINK=$LOOM_LINK" >> $GITHUB_ENV
+        run: bash .github/workflows/loom-get.sh ${{ github.event.pull_request.number }}
 
       - uses: rtCamp/action-slack-notify@v2
         env:

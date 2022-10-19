@@ -1,0 +1,36 @@
+name: Loom Reminder
+
+on:
+  pull_request_review:
+    types:
+      - submitted
+
+jobs:
+  reminder:
+    if: github.event.review.state == 'approved'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Find first loom
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash .github/workflows/loom-get.sh ${{ github.event.pull_request.number }}
+
+      - name: Post loom if present
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: env.LOOM_LINK
+        with:
+          message: |
+            After the PR is merged, this loom will be posted to `#sprint-demo` on Slack:
+
+            ${{ env.LOOM_LINK }}
+
+      - name: Remind to post loom if missing
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: ${{ ! env.LOOM_LINK }}
+        with:
+          message: |
+            No loom links were found in the first post. Please add one if you'd like to it to appear on Slack.
