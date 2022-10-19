@@ -23,7 +23,7 @@ import useAvailableExtensionPoints from "@/pageEditor/hooks/useAvailableExtensio
 import Centered from "@/pageEditor/components/Centered";
 import { Button, Row } from "react-bootstrap";
 import BrickModal from "@/components/brickModalNoTags/BrickModal";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { internalExtensionPointMetaFactory } from "@/pageEditor/extensionPoints/base";
@@ -55,6 +55,7 @@ const GenericInsertPane: React.FunctionComponent<{
     async (state: FormState) => {
       try {
         dispatch(addElement(state));
+        dispatch(actions.checkActiveElementAvailability());
 
         await updateDynamicElement(thisTab, config.asDynamicElement(state));
 

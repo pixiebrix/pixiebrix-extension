@@ -49,11 +49,15 @@ function arrangeElements({
     Array<IExtension | FormState>
   >();
   const orphanedElements: Array<IExtension | FormState> = [];
+  const elementIds = new Set(elements.map((formState) => formState.uuid));
   const filteredExtensions: IExtension[] = installed.filter(
     (extension) =>
-      showAll ||
-      availableInstalledIds?.includes(extension.id) ||
-      extension._recipe?.id === expandedRecipeId
+      // Note: we can take out this elementIds filter if and when we persist the editor
+      // slice and remove installed extensions when they become dynamic elements
+      !elementIds.has(extension.id) &&
+      (showAll ||
+        availableInstalledIds?.includes(extension.id) ||
+        extension._recipe?.id === expandedRecipeId)
   );
   const filteredDynamicElements: FormState[] = elements.filter(
     (formState) =>

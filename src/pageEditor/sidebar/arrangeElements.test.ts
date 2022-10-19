@@ -109,6 +109,11 @@ const installedOrphanH: IExtension = extensionFactory({
   label: "H",
 });
 
+const dynamicOrphanH: ActionFormState = menuItemFormStateFactory({
+  uuid: ID_ORPHAN_H,
+  label: "H",
+});
+
 describe("arrangeElements()", () => {
   test("sort orphaned recipes by metadata.name", () => {
     const elements = arrangeElements({
@@ -200,5 +205,20 @@ describe("arrangeElements()", () => {
     expect(elements).toStrictEqual([
       [recipeFoo.metadata.id, [installedFooA, dynamicFooB]],
     ]);
+  });
+
+  test("do not duplicate extension/element pairs in the results", () => {
+    const elements = arrangeElements({
+      elements: [dynamicOrphanH],
+      installed: [installedOrphanH],
+      recipes: [],
+      availableInstalledIds: [installedOrphanH.id],
+      availableDynamicIds: [dynamicOrphanH.uuid],
+      showAll: false,
+      activeElementId: ID_ORPHAN_H,
+      expandedRecipeId: null,
+    });
+
+    expect(elements).toStrictEqual([dynamicOrphanH]);
   });
 });

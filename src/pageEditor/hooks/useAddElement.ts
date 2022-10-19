@@ -79,6 +79,7 @@ function useAddElement(): AddElement {
         );
 
         dispatch(actions.addElement(initialState as FormState));
+        dispatch(actions.checkActiveElementAvailability());
 
         reportEvent("ExtensionAddNew", {
           type: config.elementType,

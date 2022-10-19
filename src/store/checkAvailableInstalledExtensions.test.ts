@@ -20,8 +20,8 @@ import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
   cloudExtensionFactory,
-  menuItemExtensionPointFactory,
-  quickBarExtensionPointFactory,
+  extensionPointDefinitionFactory,
+  recipeMetadataFactory,
 } from "@/testUtils/factories";
 import { EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { ExtensionsRootState } from "@/store/extensionsTypes";
@@ -29,6 +29,16 @@ import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors
 import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
 import { getCurrentURL } from "@/pageEditor/utils";
 import { validateRegistryId } from "@/types/helpers";
+import {
+  MenuDefinition,
+  RemoteMenuItemExtensionPoint,
+} from "@/extensionPoints/menuItemExtension";
+import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { Metadata } from "@/core";
+import {
+  QuickBarDefinition,
+  RemoteQuickBarExtensionPoint,
+} from "@/extensionPoints/quickBarExtension";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   getInstalledExtensionPoints: jest.fn(),
@@ -62,35 +72,53 @@ describe("checkAvailableInstalledExtensions", () => {
       extensionPointId: unavailableQbId,
     });
 
-    const availableButtonExtensionPoint = menuItemExtensionPointFactory({
-      // @ts-expect-error -- Not sure what's wrong here, possibly TS struggling with the generics?
-      extensions: [availableButton],
-      id: availableButtonId,
-      permissions: {
-        origins: [testUrl],
-        permissions: ["tabs", "webNavigation"],
-      },
-      _definition: {
-        isAvailable: {
-          matchPatterns: [testUrl],
+    const availableButtonExtensionPointConfig = extensionPointDefinitionFactory(
+      {
+        metadata(): Metadata {
+          return recipeMetadataFactory({
+            id: availableButtonId,
+          });
         },
-      },
-    });
-    const availableQuickbarExtensionPoint = quickBarExtensionPointFactory({
-      // @ts-expect-error -- Not sure what's wrong here, possibly TS struggling with the generics?
-      extensions: [availableQb],
-      id: availableQbId,
-      documentUrlPatterns: [testUrl],
-      permissions: {
-        origins: [testUrl],
-      },
-      _definition: {
-        documentUrlPatterns: [testUrl],
-        isAvailable: {
-          matchPatterns: [testUrl],
+        definition(): MenuDefinition {
+          return {
+            type: "menuItem",
+            containerSelector: "",
+            template: "",
+            isAvailable: {
+              matchPatterns: [testUrl],
+            },
+            reader: validateRegistryId("@pixiebrix/document-context"),
+          };
         },
-      },
-    });
+      }
+    ) as ExtensionPointConfig<MenuDefinition>;
+    const availableButtonExtensionPoint = new RemoteMenuItemExtensionPoint(
+      availableButtonExtensionPointConfig
+    );
+
+    const availableQuickbarExtensionPointConfig =
+      extensionPointDefinitionFactory({
+        metadata(): Metadata {
+          return recipeMetadataFactory({
+            id: availableQbId,
+          });
+        },
+        definition(): QuickBarDefinition {
+          return {
+            type: "quickBar",
+            contexts: ["all"],
+            documentUrlPatterns: [testUrl],
+            isAvailable: {
+              matchPatterns: [testUrl],
+            },
+            reader: validateRegistryId("@pixiebrix/document-context"),
+            targetMode: "document",
+          };
+        },
+      }) as ExtensionPointConfig<QuickBarDefinition>;
+    const availableQuickbarExtensionPoint = new RemoteQuickBarExtensionPoint(
+      availableQuickbarExtensionPointConfig
+    );
     (getInstalledExtensionPoints as jest.Mock).mockResolvedValue([
       availableButtonExtensionPoint,
       availableQuickbarExtensionPoint,
