@@ -82,6 +82,7 @@ import {
 import { JsonObject } from "type-fest";
 import objectHash from "object-hash";
 import { makeEmptyPermissions } from "@/utils/permissions";
+import { Permissions } from "webextension-polyfill";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -335,8 +336,12 @@ export const baseExtensionStateFactory = define<BaseExtensionState>({
 export const extensionPointConfigFactory = define<ExtensionPointConfig>({
   id: "extensionPoint" as InnerDefinitionRef,
   label: (n: number) => `Test Extension ${n}`,
-  services: {},
-  permissions: makeEmptyPermissions(),
+  services(): Record<OutputKey, RegistryId> {
+    return {};
+  },
+  permissions(): Permissions.Permissions {
+    return makeEmptyPermissions();
+  },
   config: () => ({
     caption: "Button",
     action: [] as BlockPipeline,
