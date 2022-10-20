@@ -15,15 +15,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateKind } from "@/validators/generic";
+import { validateInput, validateKind } from "@/validators/generic";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { UnknownObject } from "@/types";
 import serviceText from "@contrib/raw/hunter.txt";
+import { Schema } from "@/core";
+import { uuidv4 } from "@/types/helpers";
 
 describe("validateKind", () => {
   test("can validate service", async () => {
     const json = loadBrickYaml(serviceText) as UnknownObject;
     const result = await validateKind(json, "service");
+    expect(result.errors).toHaveLength(0);
+    expect(result.valid).toBe(true);
+  });
+});
+
+describe("validateInput", () => {
+  test("can validate DB ref parameter", async () => {
+    const inputSchema = {
+      type: "object",
+      $schema: "https://json-schema.org/draft/2019-09/schema#",
+      properties: {
+        db: {
+          $ref: "https://app.pixiebrix.com/schemas/database#",
+        },
+      },
+    } as Schema;
+    const inputInstance = {
+      db: uuidv4(),
+    };
+
+    const result = await validateInput(inputSchema, inputInstance);
     expect(result.errors).toHaveLength(0);
     expect(result.valid).toBe(true);
   });
