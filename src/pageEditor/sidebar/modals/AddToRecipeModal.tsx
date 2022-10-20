@@ -64,15 +64,6 @@ const AddToRecipeModal: React.FC = () => {
   const activeElement = useSelector(selectActiveElement);
   const removeExtension = useRemoveExtension();
 
-  const recipeMetadataById = useMemo(() => {
-    const result: Record<RegistryId, RecipeMetadata> = {};
-    for (const metadata of recipeMetadatas) {
-      result[metadata.id] = metadata;
-    }
-
-    return result;
-  }, [recipeMetadatas]);
-
   const dispatch = useDispatch();
 
   const hideModal = useCallback(() => {
@@ -90,8 +81,7 @@ const AddToRecipeModal: React.FC = () => {
       return;
     }
 
-    // eslint-disable-next-line security/detect-object-injection -- recipe id is from select options
-    const recipeMetadata = recipeMetadataById[recipeId];
+    const recipeMetadata = recipeMetadatas.find(({ id }) => id === recipeId);
 
     try {
       const elementId = activeElement.uuid;

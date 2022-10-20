@@ -16,9 +16,15 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockArg, Schema } from "@/core";
+import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { $safeFind } from "@/helpers";
+
+function isCheckbox(
+  element: HTMLInputElement | HTMLTextAreaElement
+): element is HTMLInputElement {
+  return element.type === "checkbox";
+}
 
 export class FormData extends Transformer {
   defaultOutputKey = "form";
@@ -48,16 +54,27 @@ export class FormData extends Transformer {
     additionalProperties: true,
   };
 
-  async transform({ selector }: BlockArg): Promise<Record<string, unknown>> {
-    const result: Record<string, unknown> = {};
-    $safeFind(selector)
-      .find(":input")
-      .each(function () {
-        const name = $(this).attr("name") ?? "";
-        if (name !== "") {
-          result[name] = $(this).val();
+  async transform(
+    { selector }: BlockArg,
+    { root }: BlockOptions
+  ): Promise<Record<string, unknown>> {
+    const result = $safeFind(selector, root)
+      .find<HTMLInputElement | HTMLTextAreaElement>(":input")
+      .get()
+      .map((input) => {
+        if (!input.name) {
+          return;
         }
+
+        if (!isCheckbox(input)) {
+          return [input.name, $(input).val()];
+        }
+
+        // Cast `"on"` to `true`, un-checked to `false`
+        const value = input.checked && (input.value === "on" || input.value);
+        return [input.name, value];
       });
-    return result;
+
+    return Object.fromEntries(result);
   }
 }
