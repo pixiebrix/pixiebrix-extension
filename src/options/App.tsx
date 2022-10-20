@@ -50,6 +50,7 @@ import useFlags from "@/hooks/useFlags";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import RequireAuth from "@/auth/RequireAuth";
 import useTheme from "@/hooks/useTheme";
+import { logActions } from "@/components/logViewer/logSlice";
 
 // Register the built-in bricks
 registerEditors();
@@ -58,6 +59,9 @@ registerContribBlocks();
 
 // Register Widgets
 registerDefaultWidgets();
+
+// Start polling the logs
+void store.dispatch(logActions.pollLogs());
 
 const RefreshBricks: React.VFC = () => {
   // Get the latest brick definitions. Defined as a component to put inside the RequireAuth gate in the layout.
