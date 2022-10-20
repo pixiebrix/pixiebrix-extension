@@ -44,7 +44,7 @@ import { SettingsState } from "@/store/settingsTypes";
 import blueprintsSlice, {
   persistBlueprintsConfig,
 } from "./pages/blueprints/blueprintsSlice";
-import { logActions, logSlice } from "@/components/logViewer/logSlice";
+import { logSlice } from "@/components/logViewer/logSlice";
 import { LogRootState } from "@/components/logViewer/logViewerTypes";
 import { AuthRootState } from "@/auth/authTypes";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
@@ -118,7 +118,5 @@ export const persistor = persistStore(store);
 // Optional, but required for refetchOnFocus/refetchOnReconnect behaviors see `setupListeners` docs - takes an optional
 // callback as the 2nd arg for customization
 setupListeners(store.dispatch);
-
-void store.dispatch(logActions.pollLogs());
 
 export default store;
