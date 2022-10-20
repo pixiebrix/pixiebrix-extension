@@ -17,13 +17,14 @@
 
 import { VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { BlockPosition, BlockConfig } from "@/blocks/types";
+import { BlockArgContext } from "@/core";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
 
 enum VarExistence {
-  MAYBE,
-  DEFINITELY,
+  MAYBE = "MAYBE",
+  DEFINITELY = "DEFINITELY",
 }
 
 type BlockVars = Map<string, VarExistence>;
@@ -33,7 +34,7 @@ type PreviousVisitedBlock = {
   output: BlockVars | null;
 };
 class VarAnalysis extends AnalysisVisitor {
-  varMap: ExtensionVars = new Map<string, BlockVars>();
+  knownVars: ExtensionVars = new Map<string, BlockVars>();
   previousVisitedBlock: PreviousVisitedBlock = null;
 
   get id() {
@@ -49,7 +50,7 @@ class VarAnalysis extends AnalysisVisitor {
       ...this.previousVisitedBlock.vars,
       ...(this.previousVisitedBlock.output ?? []),
     ]);
-    this.varMap.set(position.path, currentBlockVars);
+    this.knownVars.set(position.path, currentBlockVars);
 
     const currentBlockOutput = new Map<string, VarExistence>();
 
@@ -69,7 +70,7 @@ class VarAnalysis extends AnalysisVisitor {
   }
 
   override async run(extension: FormState): Promise<void> {
-    let context: any = {};
+    let context = {} as BlockArgContext;
 
     const serviceContext = extension.services?.length
       ? await makeServiceContext(extension.services)
@@ -88,11 +89,11 @@ class VarAnalysis extends AnalysisVisitor {
       title: "",
       url: "",
     };
-    context.input = readerContext;
+    context["@input"] = readerContext;
 
     // TODO: should we check the blueprint definition instead?
     if (extension.optionsArgs) {
-      context.options = extension.optionsArgs;
+      context["@options"] = extension.optionsArgs;
     }
 
     const definitelyVars = getVarsFromObject(context);
@@ -104,7 +105,7 @@ class VarAnalysis extends AnalysisVisitor {
     };
     super.run(extension);
 
-    console.log("varMap", this.varMap);
+    console.log("varMap", this.knownVars);
   }
 }
 

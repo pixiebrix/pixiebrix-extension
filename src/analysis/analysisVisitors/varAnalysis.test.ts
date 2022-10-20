@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getVarsFromObject } from "./varAnalysis";
+import { blockConfigFactory, formStateFactory } from "@/testUtils/factories";
+import VarAnalysis, { getVarsFromObject } from "./varAnalysis";
 
 describe("getVarsFromObject", () => {
   test("gets all the root keys", () => {
@@ -33,5 +34,30 @@ describe("getVarsFromObject", () => {
       },
     };
     expect(getVarsFromObject(obj)).toEqual(["foo", "foo.bar"]);
+  });
+});
+
+describe("VarAnalysis", () => {
+  test("gets the context vars", async () => {
+    // TODO add @options
+    const extension = formStateFactory(
+      {
+        // mock getting services
+        services: [
+          {
+            outputKey: "pixiebrix",
+            id: "@pixiebrix/api",
+          },
+        ],
+      },
+      [blockConfigFactory()]
+    );
+    const analysis = new VarAnalysis();
+    await analysis.run(extension);
+
+    expect(analysis.knownVars.size).toBe(1);
+    expect([
+      ...analysis.knownVars.get("extension.blockPipeline.0").keys(),
+    ]).toEqual(["@input", "@input.icon", "@input.title", "@input.url"]);
   });
 });
