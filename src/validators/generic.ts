@@ -135,7 +135,12 @@ export async function validateInput(
     ...schema,
   } as ValidatorSchema);
 
-  for (const inputArgSchema of [serviceSchema, pipelineSchema, refSchema]) {
+  for (const inputArgSchema of [
+    serviceSchema,
+    pipelineSchema,
+    refSchema,
+    databaseSchema,
+  ]) {
     // @ts-expect-error: loading statically
     validator.addSchema(inputArgSchema);
   }
