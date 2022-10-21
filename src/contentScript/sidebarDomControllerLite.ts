@@ -21,6 +21,7 @@
  */
 
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
+import shadowWrap from "@/utils/shadowWrap";
 
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-margin-right";
 
@@ -41,7 +42,8 @@ export const isSidebarFrameVisible = (): boolean => Boolean(getSidebar());
 export function removeSidebarFrame(): boolean {
   const sidebar = getSidebar();
   if (sidebar) {
-    sidebar.remove();
+    sidebar.parentElement /* Shadow root */
+      .remove();
     Object.assign(html.style, {
       marginRight: html.dataset.pbSidebarWidth,
       [SIDEBAR_WIDTH_CSS_PROPERTY]: "",
@@ -86,7 +88,7 @@ export function insertSidebarFrame(): boolean {
     borderLeft: "1px solid lightgray",
     background: "#f2edf3",
   });
-  html.append(iframe);
+  html.append(shadowWrap(iframe));
 
   return true;
 }
