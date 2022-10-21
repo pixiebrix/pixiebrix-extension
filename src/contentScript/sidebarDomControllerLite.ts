@@ -23,15 +23,32 @@
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
 import shadowWrap from "@/utils/shadowWrap";
 
-export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-margin-right";
+export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
+const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
 
 const html = globalThis.document?.documentElement;
 const SIDEBAR_WIDTH_PX = 400;
 
 function storeOriginalCSSOnce() {
-  // Store data in the DOM because it must persist across sessions
-  html.dataset.pbSidebarWidth ??=
-    getComputedStyle(html).getPropertyValue("margin-right");
+  if (html.style.getPropertyValue(ORIGINAL_MARGIN_CSS_PROPERTY)) {
+    return;
+  }
+
+  // Store the original margin so it can be reused in future calculations. It must also persist across sessions
+  html.style.setProperty(
+    ORIGINAL_MARGIN_CSS_PROPERTY,
+    getComputedStyle(html).getPropertyValue("margin-right")
+  );
+
+  // Make margin dynamic so it always follows the original margin AND the sidebar width, if open
+  html.style.setProperty(
+    "margin-right",
+    `calc(var(${ORIGINAL_MARGIN_CSS_PROPERTY}) + var(${SIDEBAR_WIDTH_CSS_PROPERTY}))`
+  );
+}
+
+function setSidebarWidth(pixels: number): void {
+  html.style.setProperty(SIDEBAR_WIDTH_CSS_PROPERTY, CSS.px(pixels));
 }
 
 const getSidebar = (): Element => document.querySelector(`#${PANEL_FRAME_ID}`);
@@ -43,10 +60,7 @@ export function removeSidebarFrame(): boolean {
   const sidebar = getSidebar();
   if (sidebar) {
     sidebar.remove();
-    Object.assign(html.style, {
-      marginRight: html.dataset.pbSidebarWidth,
-      [SIDEBAR_WIDTH_CSS_PROPERTY]: "",
-    });
+    setSidebarWidth(0);
   }
 
   return Boolean(sidebar);
@@ -58,17 +72,11 @@ export function insertSidebarFrame(): boolean {
     return false;
   }
 
-  console.debug("SidePanel is not on the page, attaching side panel");
-
   storeOriginalCSSOnce();
   const nonce = crypto.randomUUID();
   const actionURL = browser.runtime.getURL("sidebar.html");
 
-  html.style.setProperty("margin-right", `var(${SIDEBAR_WIDTH_CSS_PROPERTY})`);
-  html.style.setProperty(
-    SIDEBAR_WIDTH_CSS_PROPERTY,
-    CSS.px(Number.parseFloat(html.dataset.pbSidebarWidth) + SIDEBAR_WIDTH_PX)
-  );
+  setSidebarWidth(SIDEBAR_WIDTH_PX);
 
   const iframe = document.createElement("iframe");
   iframe.src = `${actionURL}?nonce=${nonce}`;
@@ -79,6 +87,8 @@ export function insertSidebarFrame(): boolean {
     right: 0,
     // `-1` keeps it under the QuickBar #4130
     zIndex: MAX_Z_INDEX - 1,
+
+    // Note that it can't use the variable because the frame is in the shadow DOM
     width: CSS.px(SIDEBAR_WIDTH_PX),
     height: "100%",
     border: 0,
