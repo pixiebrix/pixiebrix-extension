@@ -20,8 +20,8 @@ import blockRegistry from "@/blocks/registry";
 import serviceRegistry from "@/services/registry";
 import { refreshServices } from "./locator";
 
-export async function refreshRegistries(): Promise<[void, void, void, void]> {
-  return Promise.all([
+export async function refreshRegistries(): Promise<void> {
+  await Promise.all([
     extensionPointRegistry.fetch(),
     blockRegistry.fetch(),
     serviceRegistry.fetch(),

@@ -24,12 +24,12 @@ import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";
 import { debounce } from "lodash";
+import pMemoize from "p-memoize";
 import { refreshRegistries } from "./refreshRegistries";
 
 const { reducer, actions } = extensionsSlice;
 
 const PLAYGROUND_URL = "https://www.pixiebrix.com/playground";
-let isInstallingBlueprints = false;
 const BLUEPRINT_INSTALLATION_DEBOUNCE_MS = 10_000;
 const BLUEPRINT_INSTALLATION_MAX_MS = 60_000;
 
@@ -126,31 +126,27 @@ async function getStarterBlueprints(): Promise<RecipeDefinition[]> {
  * @returns true if any of the starter blueprints were installed
  */
 const _installStarterBlueprints = async (): Promise<boolean> => {
-  if (isInstallingBlueprints) {
-    return false;
-  }
-
-  isInstallingBlueprints = true;
   const starterBlueprints = await getStarterBlueprints();
-  const installPromise = installBlueprints(starterBlueprints);
-
-  // Pulling the updates from remote registries to make sure
-  // that all the bricks used in starter blueprints are available
-  const refreshRegistriesPromise = refreshRegistries();
 
   let installed = false;
   try {
-    [installed] = await Promise.all([installPromise, refreshRegistriesPromise]);
+    // Installing Starter Blueprints and pulling the updates from remote registries to make sure
+    // that all the bricks used in starter blueprints are available
+    [installed] = await Promise.all([
+      installBlueprints(starterBlueprints),
+      refreshRegistries(),
+    ]);
   } catch (error) {
     reportError(error);
   }
 
-  isInstallingBlueprints = false;
   return installed;
 };
 
 const debouncedInstallStarterBlueprints = debounce(
-  _installStarterBlueprints,
+  pMemoize(_installStarterBlueprints, {
+    cache: false,
+  }),
   BLUEPRINT_INSTALLATION_DEBOUNCE_MS,
   {
     leading: true,
