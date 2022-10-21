@@ -27,6 +27,14 @@ export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-margin-right";
 const html = globalThis.document?.documentElement;
 const SIDEBAR_WIDTH_PX = 400;
 
+function css(element: HTMLElement, style: Record<string, string>): void {
+  for (const [property, value] of Object.entries(style)) {
+    console.log(property, value);
+
+    element.style.setProperty(property, value);
+  }
+}
+
 function storeOriginalCSSOnce() {
   // Store data in the DOM because it must persist across sessions
   html.dataset.pbSidebarWidth ??=
@@ -42,8 +50,8 @@ export function removeSidebarFrame(): boolean {
   const sidebar = getSidebar();
   if (sidebar) {
     sidebar.remove();
-    Object.assign(html.style, {
-      marginRight: html.dataset.pbSidebarWidth,
+    css(html, {
+      "margin-right": html.dataset.pbSidebarWidth,
       [SIDEBAR_WIDTH_CSS_PROPERTY]: "",
     });
   }
@@ -63,11 +71,12 @@ export function insertSidebarFrame(): boolean {
   const nonce = crypto.randomUUID();
   const actionURL = browser.runtime.getURL("sidebar.html");
 
-  html.style.setProperty("margin-right", `var(${SIDEBAR_WIDTH_CSS_PROPERTY})`);
-  html.style.setProperty(
-    SIDEBAR_WIDTH_CSS_PROPERTY,
-    CSS.px(Number.parseFloat(html.dataset.pbSidebarWidth) + SIDEBAR_WIDTH_PX)
-  );
+  css(html, {
+    "margin-right": `var(${SIDEBAR_WIDTH_CSS_PROPERTY})`,
+    [SIDEBAR_WIDTH_CSS_PROPERTY]: CSS.px(
+      Number.parseFloat(html.dataset.pbSidebarWidth) + SIDEBAR_WIDTH_PX
+    ),
+  });
 
   const iframe = document.createElement("iframe");
   iframe.dataset.nonce = nonce;
