@@ -24,6 +24,10 @@ import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";
 import { debounce } from "lodash";
+import extensionPointRegistry from "@/extensionPoints/registry";
+import blockRegistry from "@/blocks/registry";
+import serviceRegistry from "@/services/registry";
+import { refreshServices } from "./locator";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -120,6 +124,10 @@ async function getStarterBlueprints(): Promise<RecipeDefinition[]> {
   }
 }
 
+/**
+ * Installs starter blueprints and refreshes local registries from remote.
+ * @returns true if any of the starter blueprints were installed
+ */
 const _installStarterBlueprints = async (): Promise<boolean> => {
   if (isInstallingBlueprints) {
     return false;
@@ -127,7 +135,24 @@ const _installStarterBlueprints = async (): Promise<boolean> => {
 
   isInstallingBlueprints = true;
   const starterBlueprints = await getStarterBlueprints();
-  const installed = await installBlueprints(starterBlueprints);
+  const installPromise = installBlueprints(starterBlueprints);
+
+  // Pulling the updates from remote registries to make sure
+  // that all the bricks used in starter blueprints are available
+  const refreshRegistriesPromise = Promise.all([
+    extensionPointRegistry.fetch(),
+    blockRegistry.fetch(),
+    serviceRegistry.fetch(),
+    refreshServices(),
+  ]);
+
+  let installed = false;
+  try {
+    [installed] = await Promise.all([installPromise, refreshRegistriesPromise]);
+  } catch (error) {
+    reportError(error);
+  }
+
   isInstallingBlueprints = false;
   return installed;
 };
