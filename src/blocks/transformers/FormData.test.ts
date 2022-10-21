@@ -18,42 +18,40 @@
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { neverPromise } from "@/testUtils/testHelpers";
 import { html } from "@/utils";
-import { JSDOM } from "jsdom";
 import { FormData } from "./FormData";
 
-function getDocument(html: string): Document {
-  return new JSDOM(html).window.document;
-}
-
 describe("FormData block", () => {
-  test("Parse object", async () => {
+  test("Basic form serialization", async () => {
     const brick = new FormData();
-    const document = getDocument(html`
-      <form>
-        <input name="no-value" />
+    document.body.insertAdjacentHTML(
+      "afterbegin",
+      html`
+        <form id="serialize">
+          <input name="no-value" />
 
-        <input name="no-type" value="mongolia" />
+          <input name="no-type" value="mongolia" />
 
-        <input type="text" name="text" value="georgia" />
+          <input type="text" name="text" value="georgia" />
 
-        <input type="checkbox" name="check" value="uruguay" />
-        <input type="checkbox" name="check" value="burundi" checked />
+          <input type="checkbox" name="check" value="uruguay" />
+          <input type="checkbox" name="check" value="burundi" checked />
 
-        <input type="checkbox" name="check-no-val" checked />
+          <input type="checkbox" name="check-no-val" checked />
 
-        <input type="checkbox" name="check-no-val-unchecked" />
+          <input type="checkbox" name="check-no-val-unchecked" />
 
-        <input type="radio" name="radio" value="bahamas" />
-        <input type="radio" name="radio" value="benin" checked />
-      </form>
-    `);
+          <input type="radio" name="radio" value="bahamas" />
+          <input type="radio" name="radio" value="benin" checked />
+        </form>
+      `
+    );
 
-    const arg = unsafeAssumeValidArg({ selector: "form" });
+    const arg = unsafeAssumeValidArg({ selector: "#serialize" });
 
     const result = await brick.run(arg, {
       ctxt: null,
       logger: null,
-      root: document,
+      root: null,
       runPipeline: neverPromise,
     });
 

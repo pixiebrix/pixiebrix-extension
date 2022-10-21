@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { $safeFind } from "@/helpers";
 
@@ -54,11 +54,8 @@ export class FormData extends Transformer {
     additionalProperties: true,
   };
 
-  async transform(
-    { selector }: BlockArg,
-    { root }: BlockOptions
-  ): Promise<Record<string, unknown>> {
-    const result = $safeFind(selector, root)
+  async transform({ selector }: BlockArg): Promise<Record<string, unknown>> {
+    const result = $safeFind(selector)
       .find<HTMLInputElement | HTMLTextAreaElement>(":input")
       .get()
       .map((input) => {
