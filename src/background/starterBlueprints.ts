@@ -24,10 +24,7 @@ import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";
 import { debounce } from "lodash";
-import extensionPointRegistry from "@/extensionPoints/registry";
-import blockRegistry from "@/blocks/registry";
-import serviceRegistry from "@/services/registry";
-import { refreshServices } from "./locator";
+import { refreshRegistries } from "./refreshRegistries";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -139,12 +136,7 @@ const _installStarterBlueprints = async (): Promise<boolean> => {
 
   // Pulling the updates from remote registries to make sure
   // that all the bricks used in starter blueprints are available
-  const refreshRegistriesPromise = Promise.all([
-    extensionPointRegistry.fetch(),
-    blockRegistry.fetch(),
-    serviceRegistry.fetch(),
-    refreshServices(),
-  ]);
+  const refreshRegistriesPromise = refreshRegistries();
 
   let installed = false;
   try {
