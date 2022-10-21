@@ -28,26 +28,22 @@ const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
 const html = globalThis.document?.documentElement;
 const SIDEBAR_WIDTH_PX = 400;
 
-function css(element: HTMLElement, style: Record<string, string>): void {
-  for (const [property, value] of Object.entries(style)) {
-    element.style.setProperty(property, value);
-  }
-}
-
 function storeOriginalCSSOnce() {
   if (html.style.getPropertyValue(ORIGINAL_MARGIN_CSS_PROPERTY)) {
     return;
   }
 
-  // Store data in the DOM because it must persist across sessions
-  css(html, {
-    // Store the original margin so it can be reused in future calculations
-    [ORIGINAL_MARGIN_CSS_PROPERTY]:
-      getComputedStyle(html).getPropertyValue("margin-right"),
+  // Store the original margin so it can be reused in future calculations. It must also persist across sessions
+  html.style.setProperty(
+    ORIGINAL_MARGIN_CSS_PROPERTY,
+    getComputedStyle(html).getPropertyValue("margin-right")
+  );
 
-    // Permanently allow the margin to summed
-    "margin-right": `calc(var(${ORIGINAL_MARGIN_CSS_PROPERTY}) + var(${SIDEBAR_WIDTH_CSS_PROPERTY}))`,
-  });
+  // Permanently allow the margin to summed
+  html.style.setProperty(
+    "margin-right",
+    `calc(var(${ORIGINAL_MARGIN_CSS_PROPERTY}) + var(${SIDEBAR_WIDTH_CSS_PROPERTY}))`
+  );
 }
 
 function setSidebarWidth(pixels: number): void {
