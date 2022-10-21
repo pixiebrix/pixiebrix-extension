@@ -29,15 +29,13 @@ const SIDEBAR_WIDTH_PX = 400;
 
 function css(element: HTMLElement, style: Record<string, string>): void {
   for (const [property, value] of Object.entries(style)) {
-    console.log(property, value);
-
     element.style.setProperty(property, value);
   }
 }
 
 function storeOriginalCSSOnce() {
   // Store data in the DOM because it must persist across sessions
-  html.dataset.pbSidebarWidth ??=
+  html.dataset.pbOriginalMargin ??=
     getComputedStyle(html).getPropertyValue("margin-right");
 }
 
@@ -51,7 +49,7 @@ export function removeSidebarFrame(): boolean {
   if (sidebar) {
     sidebar.remove();
     css(html, {
-      "margin-right": html.dataset.pbSidebarWidth,
+      "margin-right": html.dataset.pbOriginalMargin,
       [SIDEBAR_WIDTH_CSS_PROPERTY]: "",
     });
   }
@@ -65,8 +63,6 @@ export function insertSidebarFrame(): boolean {
     return false;
   }
 
-  console.debug("SidePanel is not on the page, attaching side panel");
-
   storeOriginalCSSOnce();
   const nonce = crypto.randomUUID();
   const actionURL = browser.runtime.getURL("sidebar.html");
@@ -74,7 +70,7 @@ export function insertSidebarFrame(): boolean {
   css(html, {
     "margin-right": `var(${SIDEBAR_WIDTH_CSS_PROPERTY})`,
     [SIDEBAR_WIDTH_CSS_PROPERTY]: CSS.px(
-      Number.parseFloat(html.dataset.pbSidebarWidth) + SIDEBAR_WIDTH_PX
+      Number.parseFloat(html.dataset.pbOriginalMargin) + SIDEBAR_WIDTH_PX
     ),
   });
 
