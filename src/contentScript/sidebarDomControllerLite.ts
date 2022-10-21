@@ -34,7 +34,8 @@ function storeOriginalCSSOnce() {
     getComputedStyle(html).getPropertyValue("margin-right");
 }
 
-const getSidebar = (): Element => document.querySelector(`#${PANEL_FRAME_ID}`);
+// eslint-disable-next-line unicorn/prefer-query-selector -- Easier with ID var
+const getSidebar = (): Element => document.getElementById(PANEL_FRAME_ID);
 
 export const isSidebarFrameVisible = (): boolean => Boolean(getSidebar());
 
@@ -42,8 +43,7 @@ export const isSidebarFrameVisible = (): boolean => Boolean(getSidebar());
 export function removeSidebarFrame(): boolean {
   const sidebar = getSidebar();
   if (sidebar) {
-    sidebar.parentElement /* Shadow root */
-      .remove();
+    sidebar.remove();
     Object.assign(html.style, {
       marginRight: html.dataset.pbSidebarWidth,
       [SIDEBAR_WIDTH_CSS_PROPERTY]: "",
@@ -72,8 +72,6 @@ export function insertSidebarFrame(): boolean {
   );
 
   const iframe = document.createElement("iframe");
-  iframe.dataset.nonce = nonce;
-  iframe.id = PANEL_FRAME_ID;
   iframe.src = `${actionURL}?nonce=${nonce}`;
 
   Object.assign(iframe.style, {
@@ -88,7 +86,10 @@ export function insertSidebarFrame(): boolean {
     borderLeft: "1px solid lightgray",
     background: "#f2edf3",
   });
-  html.append(shadowWrap(iframe));
+
+  const wrapper = shadowWrap(iframe);
+  wrapper.id = PANEL_FRAME_ID;
+  html.append(wrapper);
 
   return true;
 }
