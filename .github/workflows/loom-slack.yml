@@ -57,7 +57,7 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_CHANNEL: sprint-demo
           SLACK_MESSAGE: |
-            # ${{ github.event.pull_request.title }}
+            *${{ github.event.pull_request.title }}*
 
             <${{ github.event.pull_request.html_url }}|Pull request #${{ github.event.pull_request.number }}>
             <${{ needs.search.outputs.link }}|Demo video>
