@@ -40,7 +40,7 @@ function storeOriginalCSSOnce() {
     getComputedStyle(html).getPropertyValue("margin-right")
   );
 
-  // Permanently allow the margin to summed
+  // Make margin dynamic so it always follows the original margin AND the sidebar width, if open
   html.style.setProperty(
     "margin-right",
     `calc(var(${ORIGINAL_MARGIN_CSS_PROPERTY}) + var(${SIDEBAR_WIDTH_CSS_PROPERTY}))`
@@ -87,7 +87,9 @@ export function insertSidebarFrame(): boolean {
     right: 0,
     // `-1` keeps it under the QuickBar #4130
     zIndex: MAX_Z_INDEX - 1,
-    width: `var(${SIDEBAR_WIDTH_CSS_PROPERTY}, ${CSS.px(SIDEBAR_WIDTH_PX)})`,
+
+    // Note that it can't use the variable because the frame is in the shadow DOM
+    width: CSS.px(SIDEBAR_WIDTH_PX),
     height: "100%",
     border: 0,
     borderLeft: "1px solid lightgray",
