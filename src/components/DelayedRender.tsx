@@ -32,7 +32,7 @@ const DelayedRender = ({ children, millis }: Props) => {
     }, millis);
   }, [millis]);
 
-  return isShown ? children : null;
+  return isShown ? children : <div hidden>{children}</div>;
 };
 
 export default DelayedRender;
