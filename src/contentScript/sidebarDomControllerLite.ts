@@ -34,8 +34,7 @@ function storeOriginalCSSOnce() {
     getComputedStyle(html).getPropertyValue("margin-right");
 }
 
-// eslint-disable-next-line unicorn/prefer-query-selector -- Easier with ID var
-const getSidebar = (): Element => document.getElementById(PANEL_FRAME_ID);
+const getSidebar = (): Element => document.querySelector(`#${PANEL_FRAME_ID}`);
 
 export const isSidebarFrameVisible = (): boolean => Boolean(getSidebar());
 
