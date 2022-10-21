@@ -21,6 +21,7 @@
  */
 
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
+import shadowWrap from "@/utils/shadowWrap";
 
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
@@ -78,8 +79,6 @@ export function insertSidebarFrame(): boolean {
   setSidebarWidth(SIDEBAR_WIDTH_PX);
 
   const iframe = document.createElement("iframe");
-  iframe.dataset.nonce = nonce;
-  iframe.id = PANEL_FRAME_ID;
   iframe.src = `${actionURL}?nonce=${nonce}`;
 
   Object.assign(iframe.style, {
@@ -94,7 +93,10 @@ export function insertSidebarFrame(): boolean {
     borderLeft: "1px solid lightgray",
     background: "#f2edf3",
   });
-  html.append(iframe);
+
+  const wrapper = shadowWrap(iframe);
+  wrapper.id = PANEL_FRAME_ID;
+  html.append(wrapper);
 
   return true;
 }

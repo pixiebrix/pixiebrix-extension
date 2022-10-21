@@ -2,31 +2,64 @@ name: Loom to slack
 
 on:
   workflow_call: # Enable workflow reuse/import
+  pull_request_review:
+    types:
+      - submitted
   pull_request:
     types:
       - closed
 
 jobs:
-  post:
-    if: github.event.pull_request.merged
-
+  search:
     runs-on: ubuntu-latest
-
+    # https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs
+    outputs:
+      link: ${{ env.LOOM_LINK }}
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Find first loom
+      - name: Fetch first post
+        run: gh pr view ${{ github.event.pull_request.number }} --repo ${{ github.repository }} | tee ./FIRST_POST
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bash .github/workflows/loom-get.sh ${{ github.event.pull_request.number }}
 
+      # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
+      - name: Find loom
+        run: |
+          REGEX="https://\(www\.\)\?loom\.com/share/\w\{32\}"
+          grep $REGEX ./FIRST_POST --max-count 1 --only-matching | tee ./LOOM_LINK || true
+          echo "LOOM_LINK=$(cat LOOM_LINK)" >> $GITHUB_ENV
+
+  reminder:
+    needs: search
+    if: github.event.review.state == 'approved'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post loom if present
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: ${{ needs.search.outputs.link }}
+        with:
+          message: |
+            When the PR is merged, the [first loom link found on this PR](${{ needs.search.outputs.link }}) will be posted to `#sprint-demo` on Slack. _Do not edit this comment manually._
+
+      - name: Remind to post loom if missing
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: ${{ ! needs.search.outputs.link }}
+        with:
+          message: |
+            No loom links were found in the first post. Please add one there if you'd like to it to appear on Slack. _Do not edit this comment manually._
+
+  slack:
+    needs: search
+    if: github.event.pull_request.merged && needs.search.outputs.link
+    runs-on: ubuntu-latest
+    steps:
       - uses: rtCamp/action-slack-notify@v2
-        if: env.LOOM_LINK
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_CHANNEL: sprint-demo
-          SLACK_MESSAGE: ${{ env.LOOM_LINK }}
-          SLACK_FOOTER: |
+          SLACK_MESSAGE: |
             *${{ github.event.pull_request.title }}*
-            ${{ github.event.pull_request.html_url }}
+
+            <${{ github.event.pull_request.html_url }}|Pull request #${{ github.event.pull_request.number }}>
+            <${{ needs.search.outputs.link }}|Demo video>
+          SLACK_FOOTER: 🚀
           MSG_MINIMAL: true
