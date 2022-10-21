@@ -22,7 +22,8 @@
 
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
 
-export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-margin-right";
+export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
+const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
 
 const html = globalThis.document?.documentElement;
 const SIDEBAR_WIDTH_PX = 400;
@@ -34,9 +35,23 @@ function css(element: HTMLElement, style: Record<string, string>): void {
 }
 
 function storeOriginalCSSOnce() {
+  if (html.style.getPropertyValue(ORIGINAL_MARGIN_CSS_PROPERTY)) {
+    return;
+  }
+
   // Store data in the DOM because it must persist across sessions
-  html.dataset.pbOriginalMargin ??=
-    getComputedStyle(html).getPropertyValue("margin-right");
+  css(html, {
+    // Store the original margin so it can be reused in future calculations
+    [ORIGINAL_MARGIN_CSS_PROPERTY]:
+      getComputedStyle(html).getPropertyValue("margin-right"),
+
+    // Permanently allow the margin to summed
+    "margin-right": `calc(var(${ORIGINAL_MARGIN_CSS_PROPERTY}) + var(${SIDEBAR_WIDTH_CSS_PROPERTY}))`,
+  });
+}
+
+function setSidebarWidth(pixels: number): void {
+  html.style.setProperty(SIDEBAR_WIDTH_CSS_PROPERTY, CSS.px(pixels));
 }
 
 const getSidebar = (): Element => document.querySelector(`#${PANEL_FRAME_ID}`);
@@ -48,10 +63,7 @@ export function removeSidebarFrame(): boolean {
   const sidebar = getSidebar();
   if (sidebar) {
     sidebar.remove();
-    css(html, {
-      "margin-right": html.dataset.pbOriginalMargin,
-      [SIDEBAR_WIDTH_CSS_PROPERTY]: "",
-    });
+    setSidebarWidth(0);
   }
 
   return Boolean(sidebar);
@@ -67,12 +79,7 @@ export function insertSidebarFrame(): boolean {
   const nonce = crypto.randomUUID();
   const actionURL = browser.runtime.getURL("sidebar.html");
 
-  css(html, {
-    "margin-right": `var(${SIDEBAR_WIDTH_CSS_PROPERTY})`,
-    [SIDEBAR_WIDTH_CSS_PROPERTY]: CSS.px(
-      Number.parseFloat(html.dataset.pbOriginalMargin) + SIDEBAR_WIDTH_PX
-    ),
-  });
+  setSidebarWidth(SIDEBAR_WIDTH_PX);
 
   const iframe = document.createElement("iframe");
   iframe.dataset.nonce = nonce;
@@ -85,7 +92,7 @@ export function insertSidebarFrame(): boolean {
     right: 0,
     // `-1` keeps it under the QuickBar #4130
     zIndex: MAX_Z_INDEX - 1,
-    width: CSS.px(SIDEBAR_WIDTH_PX),
+    width: `var(${SIDEBAR_WIDTH_CSS_PROPERTY}, ${CSS.px(SIDEBAR_WIDTH_PX)})`,
     height: "100%",
     border: 0,
     borderLeft: "1px solid lightgray",
