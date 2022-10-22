@@ -19,13 +19,11 @@ import React, { useCallback, useState } from "react";
 import Centered from "@/pageEditor/components/Centered";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
-import { isScriptableUrl, requestPermissions } from "@/utils/permissions";
+import { requestPermissions } from "@/utils/permissions";
 import AsyncButton from "@/components/AsyncButton";
-import { getCurrentURL } from "@/pageEditor/utils";
 import { safeParseUrl } from "@/utils";
 import { parse as parseDomain } from "psl";
-import CantModifyPane from "@/pageEditor/panes/CantModifyPane";
-import { useAsyncState } from "@/hooks/common";
+import useCurrentUrl from "@/pageEditor/hooks/useCurrentUrl";
 
 function getLabel(url: string): string {
   const { hostname } = safeParseUrl(url);
@@ -37,19 +35,14 @@ function getLabel(url: string): string {
 
 const PermissionsPane: React.FunctionComponent = () => {
   const [rejected, setRejected] = useState(false);
-  const [url] = useAsyncState(getCurrentURL(), [], null);
 
-  const allowed = url && isScriptableUrl(url);
+  const url = useCurrentUrl();
   const siteLabel = (url && getLabel(url)) || "this page";
 
   const onRequestPermission = useCallback(async () => {
     const wasApproved = await requestPermissions({ origins: [url] });
     setRejected(!wasApproved);
   }, [url]);
-
-  if (!allowed) {
-    return <CantModifyPane url={url} />;
-  }
 
   return (
     <Centered vertically={true}>
