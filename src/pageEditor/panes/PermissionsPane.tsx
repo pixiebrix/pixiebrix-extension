@@ -19,44 +19,36 @@ import React, { useCallback, useState } from "react";
 import Centered from "@/pageEditor/components/Centered";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
-import {
-  canReceiveContentScript,
-  requestPermissions,
-} from "@/utils/permissions";
+import { isScriptableUrl, requestPermissions } from "@/utils/permissions";
 import AsyncButton from "@/components/AsyncButton";
 import { getCurrentURL } from "@/pageEditor/utils";
 import { safeParseUrl } from "@/utils";
 import { parse as parseDomain } from "psl";
-import { useAsyncEffect } from "use-async-effect";
 import CantModifyPane from "@/pageEditor/panes/CantModifyPane";
+import { useAsyncState } from "@/hooks/common";
+
+function getLabel(url: string): string {
+  const { hostname } = safeParseUrl(url);
+  const result = parseDomain(hostname);
+  if ("domain" in result && result.domain) {
+    return result.domain;
+  }
+}
 
 const PermissionsPane: React.FunctionComponent = () => {
   const [rejected, setRejected] = useState(false);
-  const [allowed, setAllowed] = useState(true);
-  const [siteLabel, setSiteLabel] = useState("this page");
+  const [url] = useAsyncState(getCurrentURL(), [], null);
 
-  useAsyncEffect(async (isMounted) => {
-    const url = await getCurrentURL();
-    if (!isMounted()) {
-      return;
-    }
-
-    const { hostname } = safeParseUrl(url);
-    setAllowed(canReceiveContentScript(url));
-    const result = parseDomain(hostname);
-    if ("domain" in result && result.domain) {
-      setSiteLabel(result.domain);
-    }
-  }, []);
+  const allowed = url && isScriptableUrl(url);
+  const siteLabel = (url && getLabel(url)) || "this page";
 
   const onRequestPermission = useCallback(async () => {
-    const url = await getCurrentURL();
     const wasApproved = await requestPermissions({ origins: [url] });
     setRejected(!wasApproved);
-  }, []);
+  }, [url]);
 
   if (!allowed) {
-    return <CantModifyPane />;
+    return <CantModifyPane url={url} />;
   }
 
   return (

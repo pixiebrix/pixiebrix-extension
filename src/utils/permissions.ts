@@ -21,8 +21,13 @@ import {
   containsPermissions,
   openPopupPrompt,
 } from "@/background/messenger/api";
-import { isScriptableUrl } from "webext-content-scripts";
+import { isScriptableUrl as _isScriptableUrl } from "webext-content-scripts";
 import { isUrlPermittedByManifest } from "webext-additional-permissions";
+import {
+  getTabUrl,
+  canAccessTab as _canAccessTab,
+  type Target,
+} from "webext-tools";
 
 /** Filters out any permissions that are not part of `optional_permissions` */
 export function selectOptionalPermissions(
@@ -84,13 +89,27 @@ export async function requestPermissions(
 }
 
 /**
- * Determines whether a page can potentially execute a content script.
- * This excludes non-http pages and extension gallery pages.
+ * Determines whether a URL can potentially execute a content script.
+ * This excludes non-https URLs and extension gallery pages.
  */
-export function canReceiveContentScript(url: string): boolean {
-  return url.startsWith("http") && isScriptableUrl(url);
+export function isScriptableUrl(url: string): boolean {
+  return url.startsWith("https") && _isScriptableUrl(url);
 }
 
 export function makeEmptyPermissions(): Permissions.Permissions {
   return { origins: [], permissions: [] };
+}
+
+/**
+ * Determines whether PixieBrix can access the tab, depending on permissions and
+ * artificial protocol-based limitations
+ */
+export async function canAccessTab(tab: number | Target): Promise<boolean> {
+  const [url, hasAccess] = await Promise.all([
+    getTabUrl(tab),
+    _canAccessTab(tab),
+  ]);
+
+  // We may have `activeTab`, but we don't support non-HTTPS websites
+  return url && hasAccess && isScriptableUrl(url);
 }
