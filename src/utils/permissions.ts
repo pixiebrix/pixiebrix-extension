@@ -93,6 +93,7 @@ export async function requestPermissions(
  * This excludes non-https URLs and extension gallery pages.
  */
 export function isScriptableUrl(url: string | void): boolean {
+  // eslint-disable-next-line @typescript-eslint/prefer-optional-chain -- Not equivalent
   return url && url.startsWith("https") && _isScriptableUrl(url);
 }
 
