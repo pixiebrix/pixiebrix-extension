@@ -37,12 +37,12 @@ function backgroundErrorsBadge(_: unknown, error: unknown) {
   // Show the last error as tooltip
   updateBadge(getErrorMessage(error));
 
-  // Reset the counter after a minute of inactivity
+  // Reset the counter after some inactivity
   clearTimeout(timer);
   timer = setTimeout(() => {
     counter = 0;
     updateBadge(null); // Resets it
-  }, 60_000);
+  }, 15_000);
 }
 
 if (process.env.ENVIRONMENT === "development") {
