@@ -24,6 +24,8 @@ import { ensureContentScript } from "@/background/messenger/api";
 import { canAccessTab } from "webext-tools";
 import { onContextInvalidated } from "@/errors/contextInvalidated";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { isSpecificError } from "@/errors/errorHelpers";
+import { TimeoutError } from "@/utils";
 import {
   FrameConnectionState,
   TabState,
@@ -62,7 +64,18 @@ const connectToContentScript = createAsyncThunk<
   }
 
   console.debug("connectToContentScript: ensuring contentScript");
-  await ensureContentScript(thisTab, 4500);
+  try {
+    await ensureContentScript(thisTab, 4500);
+  } catch (error) {
+    if (isSpecificError(error, TimeoutError)) {
+      throw new TimeoutError(
+        "The Page Editor could not establish a connection to the page",
+        { cause: error }
+      );
+    }
+
+    throw error;
+  }
 
   let frameworks: FrameworkMeta[] = [];
   try {

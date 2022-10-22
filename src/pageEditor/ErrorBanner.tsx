@@ -17,11 +17,8 @@
 
 import React from "react";
 import { Button } from "react-bootstrap";
-import { getErrorMessage, isSpecificError } from "@/errors/errorHelpers";
 import { useSelector } from "react-redux";
 import { selectTabStateError } from "@/pageEditor/tabState/tabStateSelectors";
-import { TimeoutError } from "@/utils";
-
 /**
  * Error banner for Page Editor browser connection errors.
  *
@@ -30,19 +27,15 @@ import { TimeoutError } from "@/utils";
  * @see RequireAuth
  */
 const ErrorBanner: React.VFC = () => {
-  const error = useSelector(selectTabStateError);
+  const errorMessage = useSelector(selectTabStateError);
 
-  if (!error) {
+  if (!errorMessage) {
     return null;
   }
 
-  const message = isSpecificError(error, TimeoutError)
-    ? "The Page Editor could not establish a connection to the page"
-    : getErrorMessage(error);
-
   return (
     <div className="d-flex p-2 align-items-center alert-danger flex-align-center">
-      <div className="flex-grow-1">{message}</div>
+      <div className="flex-grow-1">{errorMessage}</div>
       <div>
         <Button
           className="ml-2"
