@@ -27,6 +27,7 @@ import { selectTabStateError } from "@/pageEditor/tabState/tabStateSelectors";
  * @see RequireAuth
  */
 const ErrorBanner: React.VFC = () => {
+  // Revert #4526 if this becomes an Error instance
   const errorMessage = useSelector(selectTabStateError);
 
   if (!errorMessage) {
