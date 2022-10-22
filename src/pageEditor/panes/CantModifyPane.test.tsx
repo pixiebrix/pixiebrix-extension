@@ -16,29 +16,23 @@
  */
 
 import React from "react";
-import PermissionsPane from "@/pageEditor/panes/PermissionsPane";
+import CantModifyPane from "@/pageEditor/panes/CantModifyPane";
 import { render, screen } from "@/pageEditor/testHelpers";
-import useCurrentUrl from "@/pageEditor/hooks/useCurrentUrl";
 import { waitFor } from "@testing-library/react";
 
-jest.mock("@/pageEditor/hooks/useCurrentUrl", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-
-describe("PermissionsPane", () => {
+describe("CantModifyPane", () => {
   test("it renders", () => {
-    (useCurrentUrl as jest.Mock).mockReturnValue("https://test.url");
-    const rendered = render(<PermissionsPane />);
+    const rendered = render(<CantModifyPane url="https://test.url" />);
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it renders right copy when the URL isn't available", async () => {
-    (useCurrentUrl as jest.Mock).mockReturnValue(undefined);
-    render(<PermissionsPane />);
+  test("it renders right copy when the URL is HTTP", async () => {
+    render(<CantModifyPane url="http://example.com" />);
 
     await waitFor(() => {
-      expect(screen.getByText("Enable PixieBrix on this page")).not.toBeNull();
+      expect(
+        screen.getByText("PixieBrix cannot modify insecure HTTP pages")
+      ).not.toBeNull();
     });
   });
 });
