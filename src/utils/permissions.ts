@@ -92,8 +92,8 @@ export async function requestPermissions(
  * Determines whether a URL can potentially execute a content script.
  * This excludes non-https URLs and extension gallery pages.
  */
-export function isScriptableUrl(url: string): boolean {
-  return url.startsWith("https") && _isScriptableUrl(url);
+export function isScriptableUrl(url: string | void): boolean {
+  return url && url.startsWith("https") && _isScriptableUrl(url);
 }
 
 export function makeEmptyPermissions(): Permissions.Permissions {
@@ -105,11 +105,8 @@ export function makeEmptyPermissions(): Permissions.Permissions {
  * artificial protocol-based limitations
  */
 export async function canAccessTab(tab: number | Target): Promise<boolean> {
-  const [url, hasAccess] = await Promise.all([
-    getTabUrl(tab),
-    _canAccessTab(tab),
-  ]);
-
-  // We may have `activeTab`, but we don't support non-HTTPS websites
-  return url && hasAccess && isScriptableUrl(url);
+  const urlPromise = getTabUrl(tab);
+  const accessPromise = _canAccessTab(tab);
+  // We may have `activeTab` (_canAccessTab), but we don't support non-HTTPS websites (!isScriptableUrl)
+  return isScriptableUrl(await urlPromise) && accessPromise;
 }
