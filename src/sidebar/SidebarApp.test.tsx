@@ -33,7 +33,6 @@ jest.mock("@/hooks/useContextInvalidated", () => ({
 
 describe("SidebarApp", () => {
   test("it renders", () => {
-    (useContextInvalidated as jest.Mock).mockReturnValue(false);
     const rendered = render(<SidebarApp />);
     expect(rendered.asFragment()).toMatchSnapshot();
   });
