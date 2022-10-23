@@ -19,8 +19,8 @@ import React from "react";
 import useContextInvalidated from "@/hooks/useContextInvalidated";
 
 // Note, it's currently impossible to have a "Reload sidebar" button because it can
-// only be done from the content script + after context invalidation the page loses
-// all contact to the outside world (chrome.runtime and  chrome.tabs become undefined)
+// only be done from the content script + contact to the outside world is lost after
+// context invalidation (chrome.runtime and chrome.tabs become undefined)
 const ErrorBanner: React.VFC = () => {
   const wasContextInvalidated = useContextInvalidated();
 
