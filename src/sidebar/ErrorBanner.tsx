@@ -23,7 +23,6 @@ import useContextInvalidated from "@/hooks/useContextInvalidated";
 // context invalidation (chrome.runtime and chrome.tabs become undefined)
 const ErrorBanner: React.VFC = () => {
   const wasContextInvalidated = useContextInvalidated();
-
   if (!wasContextInvalidated) {
     return null;
   }
