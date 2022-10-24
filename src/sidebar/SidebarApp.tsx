@@ -22,6 +22,7 @@ import Loader from "@/components/Loader";
 import { PersistGate } from "redux-persist/integration/react";
 import ConnectedSidebar from "./ConnectedSidebar";
 import Header from "./Header";
+import ErrorBanner from "./ErrorBanner";
 import { MemoryRouter } from "react-router";
 
 // Include MemoryRouter because some of our authentication-gate hooks use useLocation. However, there's currently no
@@ -30,6 +31,7 @@ const SidebarApp: React.FunctionComponent = () => (
   <Provider store={store}>
     <PersistGate loading={<Loader />} persistor={persistor}>
       <MemoryRouter>
+        <ErrorBanner />
         <Header />
         <ConnectedSidebar />
       </MemoryRouter>
