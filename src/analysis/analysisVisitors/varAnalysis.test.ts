@@ -20,6 +20,8 @@ import VarAnalysis, { getVarsFromObject, VarExistence } from "./varAnalysis";
 import { services } from "@/background/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import IfElse from "@/blocks/transformers/controlFlow/IfElse";
+import { toExpression } from "@/testUtils/testHelpers";
 
 jest.mock("@/background/messenger/api", () => ({
   __esModule: true,
@@ -110,9 +112,9 @@ describe("VarAnalysis", () => {
     const analysis = new VarAnalysis();
     await analysis.run(extension);
 
-    expect([
-      ...analysis.knownVars.get("extension.blockPipeline.0").keys(),
-    ]).not.toContain("@foo");
+    expect(
+      analysis.knownVars.get("extension.blockPipeline.0").get("@foo")
+    ).toBeUndefined();
 
     expect(
       analysis.knownVars.get("extension.blockPipeline.1").get("@foo")
@@ -134,9 +136,9 @@ describe("VarAnalysis", () => {
     const analysis = new VarAnalysis();
     await analysis.run(extension);
 
-    expect([
-      ...analysis.knownVars.get("extension.blockPipeline.0").keys(),
-    ]).not.toContain("@foo");
+    expect(
+      analysis.knownVars.get("extension.blockPipeline.0").get("@foo")
+    ).toBeUndefined();
 
     expect(
       analysis.knownVars.get("extension.blockPipeline.1").get("@foo")
@@ -144,5 +146,67 @@ describe("VarAnalysis", () => {
     expect(
       analysis.knownVars.get("extension.blockPipeline.1").get("@foo.*")
     ).toBe(VarExistence.MAYBE);
+  });
+
+  describe("if-else brick", () => {
+    let analysis: VarAnalysis;
+    beforeAll(async () => {
+      const ifElseBlock = {
+        id: IfElse.BLOCK_ID,
+        outputKey: validateOutputKey("ifOutput"),
+        config: {
+          condition: true,
+          if: toExpression("pipeline", [
+            blockConfigFactory({
+              outputKey: validateOutputKey("foo"),
+            }),
+            blockConfigFactory(),
+          ]),
+          else: toExpression("pipeline", [
+            blockConfigFactory({
+              outputKey: validateOutputKey("bar"),
+            }),
+            blockConfigFactory(),
+          ]),
+        },
+      };
+
+      const extension = formStateFactory(undefined, [
+        ifElseBlock,
+        blockConfigFactory(),
+      ]);
+
+      analysis = new VarAnalysis();
+      await analysis.run(extension);
+    });
+
+    test("adds if-else output after the brick", async () => {
+      expect(
+        analysis.knownVars.get("extension.blockPipeline.1").get("@ifOutput")
+      ).toBe(VarExistence.DEFINITELY);
+    });
+
+    test.each([
+      "extension.blockPipeline.0.config.if.__value__.0",
+      "extension.blockPipeline.0.config.if.__value__.1",
+      "extension.blockPipeline.0.config.else.__value__.0",
+      "extension.blockPipeline.0.config.else.__value__.1",
+    ])(
+      "doesn't add if-else output to sub pipelines (%s)",
+      async (blockPath) => {
+        expect(
+          analysis.knownVars.get(blockPath).get("@ifOutput")
+        ).toBeUndefined();
+      }
+    );
+
+    test("doesn't leak sub pipeline outputs", async () => {
+      expect(
+        analysis.knownVars.get("extension.blockPipeline.1").get("@foo")
+      ).toBeUndefined();
+      expect(
+        analysis.knownVars.get("extension.blockPipeline.1").get("@bar")
+      ).toBeUndefined();
+    });
   });
 });

@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { VisitBlockExtra } from "@/blocks/PipelineVisitor";
+import { VisitBlockExtra, VisitPipelineExtra } from "@/blocks/PipelineVisitor";
 import { BlockPosition, BlockConfig } from "@/blocks/types";
 import { BlockArgContext } from "@/core";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { makeServiceContext } from "@/services/serviceUtils";
+import { isEmpty } from "lodash";
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
 
 export enum VarExistence {
@@ -36,6 +37,7 @@ type PreviousVisitedBlock = {
 class VarAnalysis extends AnalysisVisitor {
   knownVars: ExtensionVars = new Map<string, BlockVars>();
   previousVisitedBlock: PreviousVisitedBlock = null;
+  contextStack: PreviousVisitedBlock[] = [];
 
   get id() {
     return "var";
@@ -72,6 +74,22 @@ class VarAnalysis extends AnalysisVisitor {
     super.visitBlock(position, blockConfig, extra);
   }
 
+  override visitPipeline(
+    position: BlockPosition,
+    pipeline: BlockConfig[],
+    extra: VisitPipelineExtra
+  ) {
+    this.contextStack.push(this.previousVisitedBlock);
+    this.previousVisitedBlock = {
+      vars: this.previousVisitedBlock.vars,
+      output: null,
+    };
+
+    super.visitPipeline(position, pipeline, extra);
+
+    this.previousVisitedBlock = this.contextStack.pop();
+  }
+
   override async run(extension: FormState): Promise<void> {
     let context = {} as BlockArgContext;
 
@@ -95,7 +113,7 @@ class VarAnalysis extends AnalysisVisitor {
     context["@input"] = readerContext;
 
     // TODO: should we check the blueprint definition instead?
-    if (extension.optionsArgs) {
+    if (!isEmpty(extension.optionsArgs)) {
       context["@options"] = extension.optionsArgs;
     }
 

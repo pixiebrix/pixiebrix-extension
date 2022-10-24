@@ -131,7 +131,11 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 pageEditorAnalysisManager.registerAnalysisEffect(() => new VarAnalysis(), {
   // Only needed on editorActions.editElement,
   // but the block path can change when node tree is mutated
-  matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+  matcher: isAnyOf(
+    editorActions.editElement,
+    runtimeActions.setExtensionTrace,
+    ...nodeListMutationActions
+  ),
 });
 
 export default pageEditorAnalysisManager;
