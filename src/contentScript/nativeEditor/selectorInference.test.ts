@@ -16,6 +16,7 @@
  */
 
 import {
+  commonCssSelector,
   generateSelector,
   getAttributeSelector,
   getAttributeSelectorRegex,
@@ -250,6 +251,71 @@ describe("safeCssSelector", () => {
         </ul>
       `
     );
+  });
+
+  /* eslint-enable jest/expect-expect */
+});
+
+describe("commonCssSelector", () => {
+  /* eslint-disable jest/expect-expect -- Custom expectSelector */
+  const expectSelector = (selector: string, body: string) => {
+    document.body.innerHTML = body;
+
+    const elements = [...document.body.querySelectorAll(selector)] as [
+      HTMLElement
+    ];
+    const inferredSelector = commonCssSelector(elements);
+    expect(inferredSelector).toBe(selector);
+  };
+
+  const body = html`
+    <div>
+      <div>
+        <div>Hello</div>
+        <div class="title"></div>
+        <span class="titleline"><a href="#">GitHub</a></span>
+      </div>
+      <div class="itemlist">
+        <span class="titleline"><a href="#">Almost</a> </span>
+        <div class="athing">
+          <div class="title">
+            <span class="rank">1.</span>
+          </div>
+          <div valign="top" class="votelinks">
+            <a id="up_33240341" href="#">
+              <div class="votearrow" title="upvote"></div>
+            </a>
+          </div>
+          <div class="title">
+            <span class="titleline"><a href="#">GitHub</a></span>
+          </div>
+        </div>
+        <div>extra text</div>
+        <div class="spacer" style="height:5px"></div>
+        <div class="athing">
+          <div valign="top" class="votelinks">
+            <a id="up_33239220" href="#"
+              ><div class="votearrow" title="upvote"></div
+            ></a>
+          </div>
+          <div class="title">
+            <span class="titleline"><a href="#">Almost</a> </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  test("common ancester classname, parent classname, element tag", () => {
+    expectSelector(".itemlist .titleline > a", body);
+  });
+
+  test("common ancester classname, common element classname", () => {
+    expectSelector(".itemlist .votearrow", body);
+  });
+
+  test("common ancester classname, common parent classname, common element classname", () => {
+    expectSelector(".itemlist .title .titleline", body);
   });
 
   /* eslint-enable jest/expect-expect */
