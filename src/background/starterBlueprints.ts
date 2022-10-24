@@ -128,19 +128,18 @@ async function getStarterBlueprints(): Promise<RecipeDefinition[]> {
 const _installStarterBlueprints = async (): Promise<boolean> => {
   const starterBlueprints = await getStarterBlueprints();
 
-  let installed = false;
   try {
     // Installing Starter Blueprints and pulling the updates from remote registries to make sure
     // that all the bricks used in starter blueprints are available
-    [installed] = await Promise.all([
+    const [installed] = await Promise.all([
       installBlueprints(starterBlueprints),
       refreshRegistries(),
     ]);
+    return installed;
   } catch (error) {
     reportError(error);
+    return false;
   }
-
-  return installed;
 };
 
 const debouncedInstallStarterBlueprints = debounce(
