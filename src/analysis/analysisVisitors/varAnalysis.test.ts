@@ -16,7 +16,17 @@
  */
 
 import { blockConfigFactory, formStateFactory } from "@/testUtils/factories";
-import VarAnalysis, { getVarsFromObject } from "./varAnalysis";
+import VarAnalysis, { getVarsFromObject, VarExistence } from "./varAnalysis";
+import { services } from "@/background/messenger/api";
+import { validateRegistryId } from "@/types/helpers";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+
+jest.mock("@/background/messenger/api", () => ({
+  __esModule: true,
+  services: {
+    locate: jest.fn(),
+  },
+}));
 
 describe("getVarsFromObject", () => {
   test("gets all the root keys", () => {
@@ -38,26 +48,52 @@ describe("getVarsFromObject", () => {
 });
 
 describe("VarAnalysis", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   test("gets the context vars", async () => {
-    // TODO add @options
+    (services.locate as jest.Mock).mockResolvedValue({
+      serviceId: "@test/service",
+    });
+
     const extension = formStateFactory(
       {
-        // mock getting services
+        // Let this extension to have a service reference
         services: [
           {
-            outputKey: "pixiebrix",
-            id: "@pixiebrix/api",
+            outputKey: validateOutputKey("pixiebrix"),
+            id: validateRegistryId("@test/service"),
           },
         ],
+        optionsArgs: {
+          foo: "bar",
+        },
       },
       [blockConfigFactory()]
     );
+
     const analysis = new VarAnalysis();
     await analysis.run(extension);
 
     expect(analysis.knownVars.size).toBe(1);
     expect([
       ...analysis.knownVars.get("extension.blockPipeline.0").keys(),
-    ]).toEqual(["@input", "@input.icon", "@input.title", "@input.url"]);
+    ]).toEqual([
+      "@pixiebrix",
+      "@pixiebrix.__service",
+      "@pixiebrix.__service.serviceId",
+      "@input",
+      "@input.icon",
+      "@input.title",
+      "@input.url",
+      "@options",
+      "@options.foo",
+    ]);
+    expect(
+      [...analysis.knownVars.get("extension.blockPipeline.0").values()].every(
+        (x) => x === VarExistence.DEFINITELY
+      )
+    ).toBeTrue();
   });
 });

@@ -22,7 +22,7 @@ import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
 
-enum VarExistence {
+export enum VarExistence {
   MAYBE = "MAYBE",
   DEFINITELY = "DEFINITELY",
 }
