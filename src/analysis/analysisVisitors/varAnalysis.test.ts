@@ -48,15 +48,17 @@ describe("getVarsFromObject", () => {
 });
 
 describe("VarAnalysis", () => {
+  beforeAll(() => {
+    (services.locate as jest.Mock).mockResolvedValue({
+      serviceId: "@test/service",
+    });
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  test("gets the context vars", async () => {
-    (services.locate as jest.Mock).mockResolvedValue({
-      serviceId: "@test/service",
-    });
-
+  test("collects the context vars", async () => {
     const extension = formStateFactory(
       {
         // Let this extension to have a service reference
@@ -95,5 +97,52 @@ describe("VarAnalysis", () => {
         (x) => x === VarExistence.DEFINITELY
       )
     ).toBeTrue();
+  });
+
+  test("collects the output key", async () => {
+    const extension = formStateFactory(undefined, [
+      blockConfigFactory({
+        outputKey: validateOutputKey("foo"),
+      }),
+      blockConfigFactory(),
+    ]);
+
+    const analysis = new VarAnalysis();
+    await analysis.run(extension);
+
+    expect([
+      ...analysis.knownVars.get("extension.blockPipeline.0").keys(),
+    ]).not.toContain("@foo");
+
+    expect(
+      analysis.knownVars.get("extension.blockPipeline.1").get("@foo")
+    ).toBe(VarExistence.DEFINITELY);
+    expect(
+      analysis.knownVars.get("extension.blockPipeline.1").get("@foo.*")
+    ).toBe(VarExistence.MAYBE);
+  });
+
+  test("collects the output key of a conditional block", async () => {
+    const extension = formStateFactory(undefined, [
+      blockConfigFactory({
+        if: false,
+        outputKey: validateOutputKey("foo"),
+      }),
+      blockConfigFactory(),
+    ]);
+
+    const analysis = new VarAnalysis();
+    await analysis.run(extension);
+
+    expect([
+      ...analysis.knownVars.get("extension.blockPipeline.0").keys(),
+    ]).not.toContain("@foo");
+
+    expect(
+      analysis.knownVars.get("extension.blockPipeline.1").get("@foo")
+    ).toBe(VarExistence.MAYBE);
+    expect(
+      analysis.knownVars.get("extension.blockPipeline.1").get("@foo.*")
+    ).toBe(VarExistence.MAYBE);
   });
 });

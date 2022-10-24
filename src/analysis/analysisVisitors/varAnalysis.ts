@@ -55,10 +55,13 @@ class VarAnalysis extends AnalysisVisitor {
     const currentBlockOutput = new Map<string, VarExistence>();
 
     if (blockConfig.outputKey) {
-      currentBlockOutput.set(blockConfig.outputKey, VarExistence.DEFINITELY);
+      currentBlockOutput.set(
+        `@${blockConfig.outputKey}`,
+        blockConfig.if == null ? VarExistence.DEFINITELY : VarExistence.MAYBE
+      );
 
       // TODO: revisit the wildcard/regex format of MAYBE vars
-      currentBlockOutput.set(`${blockConfig.outputKey}.*`, VarExistence.MAYBE);
+      currentBlockOutput.set(`@${blockConfig.outputKey}.*`, VarExistence.MAYBE);
     }
 
     this.previousVisitedBlock = {
