@@ -56,7 +56,8 @@ export type VisitResolvedBlockExtra = VisitBlockExtra & {
 };
 export type VisitPipelineExtra = {
   flavor: PipelineFlavor;
-  parentNodeId?: UUID | undefined;
+  parentNode?: BlockConfig | undefined;
+  pipelinePropName?: string | undefined;
 };
 export type VisitRootPipelineExtra = {
   extensionPointType: ExtensionPointType;
@@ -95,7 +96,8 @@ class PipelineVisitor {
         );
         this.visitPipeline(pipelinePosition, value.__value__, {
           flavor: pipelineFlavor,
-          parentNodeId: blockConfig.instanceId,
+          parentNode: blockConfig,
+          pipelinePropName: prop,
         });
       }
     }
@@ -121,7 +123,7 @@ class PipelineVisitor {
         );
         this.visitPipeline(pipelinePosition, subPipeline, {
           flavor: pipelineFlavor,
-          parentNodeId: blockConfig.instanceId,
+          parentNode: blockConfig,
         });
       }
     }
@@ -130,12 +132,12 @@ class PipelineVisitor {
   public visitPipeline(
     position: BlockPosition,
     pipeline: BlockConfig[],
-    { flavor, parentNodeId }: VisitPipelineExtra
+    { flavor, parentNode }: VisitPipelineExtra
   ): void {
     for (const [index, blockConfig] of pipeline.entries()) {
       this.visitBlock(nestedPosition(position, String(index)), blockConfig, {
         index,
-        parentNodeId,
+        parentNodeId: parentNode?.instanceId,
         pipeline,
         pipelinePosition: position,
         pipelineFlavor: flavor,

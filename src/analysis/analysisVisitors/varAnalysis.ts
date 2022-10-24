@@ -19,6 +19,7 @@ import { VisitBlockExtra, VisitPipelineExtra } from "@/blocks/PipelineVisitor";
 import { BlockPosition, BlockConfig } from "@/blocks/types";
 import { BlockArgContext } from "@/core";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { getInputKeyForSubPipeline } from "@/pageEditor/utils";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { isEmpty } from "lodash";
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
@@ -79,14 +80,26 @@ class VarAnalysis extends AnalysisVisitor {
     pipeline: BlockConfig[],
     extra: VisitPipelineExtra
   ) {
+    // Getting element key for sub pipeline if applicable (e.g. for a for-each block)
+    const subPipelineInput =
+      extra.parentNode && extra.pipelinePropName
+        ? getInputKeyForSubPipeline(extra.parentNode, extra.pipelinePropName)
+        : null;
+
+    // Before visiting the sub pipeline, we need to save the current context
     this.contextStack.push(this.previousVisitedBlock);
+
+    // Creating context for the sub pipeline
     this.previousVisitedBlock = {
       vars: this.previousVisitedBlock.vars,
-      output: null,
+      output: subPipelineInput
+        ? new Map([[`@${subPipelineInput}`, VarExistence.DEFINITELY]])
+        : null,
     };
 
     super.visitPipeline(position, pipeline, extra);
 
+    // Restoring the context of the parent pipeline
     this.previousVisitedBlock = this.contextStack.pop();
   }
 

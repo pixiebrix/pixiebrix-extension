@@ -22,6 +22,11 @@ import { validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import { toExpression } from "@/testUtils/testHelpers";
+import ForEach from "@/blocks/transformers/controlFlow/ForEach";
+import {
+  makePipelineExpression,
+  makeTemplateExpression,
+} from "@/runtime/expressionCreators";
 
 jest.mock("@/background/messenger/api", () => ({
   __esModule: true,
@@ -156,13 +161,13 @@ describe("VarAnalysis", () => {
         outputKey: validateOutputKey("ifOutput"),
         config: {
           condition: true,
-          if: toExpression("pipeline", [
+          if: makePipelineExpression([
             blockConfigFactory({
               outputKey: validateOutputKey("foo"),
             }),
             blockConfigFactory(),
           ]),
-          else: toExpression("pipeline", [
+          else: makePipelineExpression([
             blockConfigFactory({
               outputKey: validateOutputKey("bar"),
             }),
@@ -206,6 +211,74 @@ describe("VarAnalysis", () => {
       ).toBeUndefined();
       expect(
         analysis.knownVars.get("extension.blockPipeline.1").get("@bar")
+      ).toBeUndefined();
+    });
+  });
+
+  describe("for-each brick", () => {
+    let analysis: VarAnalysis;
+    beforeAll(async () => {
+      const forEachBlock = {
+        id: ForEach.BLOCK_ID,
+        outputKey: validateOutputKey("forEachOutput"),
+        config: {
+          elementKey: "element",
+          elements: [makeTemplateExpression("nunjucks", "1")],
+          body: makePipelineExpression([
+            blockConfigFactory({
+              outputKey: validateOutputKey("foo"),
+            }),
+            blockConfigFactory(),
+          ]),
+        },
+      };
+
+      const extension = formStateFactory(undefined, [
+        forEachBlock,
+        blockConfigFactory(),
+      ]);
+
+      analysis = new VarAnalysis();
+      await analysis.run(extension);
+    });
+
+    test("adds for-each output after the brick", async () => {
+      expect(
+        analysis.knownVars
+          .get("extension.blockPipeline.1")
+          .get("@forEachOutput")
+      ).toBe(VarExistence.DEFINITELY);
+    });
+
+    test.each([
+      "extension.blockPipeline.0.config.body.__value__.0",
+      "extension.blockPipeline.0.config.body.__value__.1",
+    ])(
+      "doesn't add for-each output to sub pipelines (%s)",
+      async (blockPath) => {
+        expect(
+          analysis.knownVars.get(blockPath).get("@forEachOutput")
+        ).toBeUndefined();
+      }
+    );
+
+    test("doesn't leak sub pipeline outputs", async () => {
+      expect(
+        analysis.knownVars.get("extension.blockPipeline.1").get("@foo")
+      ).toBeUndefined();
+    });
+
+    test("adds the element key to the sub pipeline", async () => {
+      expect(
+        analysis.knownVars
+          .get("extension.blockPipeline.0.config.body.__value__.0")
+          .get("@element")
+      ).toBe(VarExistence.DEFINITELY);
+    });
+
+    test("doesn't leak the sub pipeline element key", async () => {
+      expect(
+        analysis.knownVars.get("extension.blockPipeline.1").get("@element")
       ).toBeUndefined();
     });
   });
