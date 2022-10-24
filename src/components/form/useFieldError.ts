@@ -43,14 +43,16 @@ function useAnalysisFieldError(fieldPath: string): string[] | undefined {
 let shouldUseAnalysis = false;
 function useFieldError(
   fieldPath: string,
-  forceFormik?: boolean,
-  showUntouchedErrors?: boolean
+  options?: {
+    forceFormik?: boolean;
+    showUntouchedErrors?: boolean;
+  }
 ): string | string[] | undefined {
-  return shouldUseAnalysis && !forceFormik
+  return shouldUseAnalysis && !options?.forceFormik
     ? // eslint-disable-next-line react-hooks/rules-of-hooks -- shouldUseAnalysis is set once before render
       useAnalysisFieldError(fieldPath)
     : // eslint-disable-next-line react-hooks/rules-of-hooks -- shouldUseAnalysis is set once before render
-      useFormikFieldError(fieldPath, showUntouchedErrors);
+      useFormikFieldError(fieldPath, options?.showUntouchedErrors);
 }
 
 /**

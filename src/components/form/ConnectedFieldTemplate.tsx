@@ -39,11 +39,10 @@ const FormikFieldTemplate = <Values,>({
   showUntouchedErrors,
   ...fieldProps
 }: ConnectedFieldProps<Values>) => {
-  const error = useFieldError(
-    fieldProps.name,
-    useFormikErrors,
-    showUntouchedErrors
-  );
+  const error = useFieldError(fieldProps.name, {
+    forceFormik: useFormikErrors,
+    showUntouchedErrors,
+  });
   const touched = getIn(formik.touched, fieldProps.name);
   const value = getIn(formik.values, fieldProps.name);
 
