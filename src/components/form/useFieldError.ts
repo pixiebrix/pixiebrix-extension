@@ -19,8 +19,16 @@ import { useSelector } from "react-redux";
 import { selectAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
 import { useField } from "formik";
 
-function useFormikFieldError(fieldPath: string): string | undefined {
+function useFormikFieldError(
+  fieldPath: string,
+  showUntouched?: boolean
+): string | undefined {
   const [, { error, touched }] = useField(fieldPath);
+
+  if (showUntouched) {
+    return error;
+  }
+
   return touched ? error : null;
 }
 
@@ -33,12 +41,16 @@ function useAnalysisFieldError(fieldPath: string): string[] | undefined {
 }
 
 let shouldUseAnalysis = false;
-function useFieldError(fieldPath: string): string | string[] | undefined {
-  return shouldUseAnalysis
+function useFieldError(
+  fieldPath: string,
+  forceFormik?: boolean,
+  showUntouchedErrors?: boolean
+): string | string[] | undefined {
+  return shouldUseAnalysis && !forceFormik
     ? // eslint-disable-next-line react-hooks/rules-of-hooks -- shouldUseAnalysis is set once before render
       useAnalysisFieldError(fieldPath)
     : // eslint-disable-next-line react-hooks/rules-of-hooks -- shouldUseAnalysis is set once before render
-      useFormikFieldError(fieldPath);
+      useFormikFieldError(fieldPath, showUntouchedErrors);
 }
 
 /**

@@ -380,24 +380,32 @@ const CreateRecipeModal: React.FC = () => {
         description={FieldDescriptions.BLUEPRINT_ID}
         widerLabel
         as={RegistryIdWidget}
+        useFormikErrors
+        showUntouchedErrors
       />
       <ConnectedFieldTemplate
         name="name"
         label="Name"
         widerLabel
         description={FieldDescriptions.BLUEPRINT_NAME}
+        useFormikErrors
+        showUntouchedErrors
       />
       <ConnectedFieldTemplate
         name="version"
         label="Version"
         widerLabel
         description={FieldDescriptions.BLUEPRINT_VERSION}
+        useFormikErrors
+        showUntouchedErrors
       />
       <ConnectedFieldTemplate
         name="description"
         label="Description"
         widerLabel
         description={FieldDescriptions.BLUEPRINT_DESCRIPTION}
+        useFormikErrors
+        showUntouchedErrors
       />
     </Modal.Body>
   );
@@ -425,6 +433,7 @@ const CreateRecipeModal: React.FC = () => {
       <RequireScope scopeSettingsDescription="To create a blueprint, you must first set an account alias for your PixieBrix account">
         <Form
           validationSchema={formSchema}
+          validateOnMount
           initialValues={initialFormState}
           onSubmit={onSubmit}
           renderBody={renderBody}
