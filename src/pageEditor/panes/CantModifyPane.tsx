@@ -19,6 +19,7 @@ import styles from "./CantModifyPane.module.scss";
 import React from "react";
 import { Col, Row, Container } from "react-bootstrap";
 import workshopImage from "@img/workshop.svg";
+import Alert from "@/components/Alert";
 
 const GetStarted: React.FunctionComponent = () => (
   <>
@@ -73,7 +74,9 @@ const CantModifyPane: React.FunctionComponent<{ url: string }> = ({ url }) => (
       <Row className={styles.paneRow}>
         <Col lg={9}>
           {url?.startsWith("http://") ? (
-            <p>PixieBrix cannot modify insecure HTTP pages</p>
+            <Alert variant="warning">
+              PixieBrix cannot modify insecure HTTP pages
+            </Alert>
           ) : (
             <GetStarted />
           )}
