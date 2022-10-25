@@ -54,8 +54,6 @@ const SetupPage: React.FunctionComponent = () => {
 
   const isStartUrl = location.hash.startsWith("#/start");
 
-  const { authServiceId } = useSelector(selectSettings);
-
   const [baseURL, baseURLPending] = useAsyncState(getBaseURL, []);
 
   if (baseURLPending || isPartnerLoading) {
