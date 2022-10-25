@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,49 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  height: 100%;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  text-align: center;
+import { useState } from "react";
+import useAsyncEffect from "use-async-effect";
+import {
+  onContextInvalidated,
+  wasContextInvalidated,
+} from "@/errors/contextInvalidated";
 
-  p {
-    font-size: 16px;
-    color: #41335b;
-  }
+export default function useContextInvalidated(): boolean {
+  const [invalidated, setInvalidated] = useState(wasContextInvalidated());
+  useAsyncEffect(async (isMounted) => {
+    await onContextInvalidated();
 
-  a {
-    color: #170637;
-    font-weight: 500;
-    padding-bottom: 1px;
-    border-bottom: 2px solid #5a19da;
-    text-decoration: none;
-  }
-}
+    if (isMounted()) {
+      setInvalidated(true);
+    }
+  });
 
-.paneRow {
-  text-align: center;
-  padding: 20px 0;
-  align-items: center;
-}
-
-.paneRowWithDivider {
-  @extend .paneRow;
-  border-top: 1px solid #e1dfe5;
-}
-
-.callout {
-  color: #170637;
-  font-size: 25px;
-  font-weight: 700;
-}
-
-.tinyCallout {
-  @extend .callout;
-  font-size: 16px;
-}
-
-.illustration {
-  max-width: 300px;
+  return invalidated;
 }

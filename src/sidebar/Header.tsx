@@ -24,27 +24,31 @@ import { hideSidebar } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 import useTheme, { useGetTheme } from "@/hooks/useTheme";
 import cx from "classnames";
+import useContextInvalidated from "@/hooks/useContextInvalidated";
 
 const Header: React.FunctionComponent = () => {
   const { logo, showSidebarLogo, customSidebarLogo } = useTheme();
   const theme = useGetTheme();
+  const wasContextInvalidated = useContextInvalidated();
 
   return (
     <div className="d-flex p-2 justify-content-between align-content-center">
-      <Button
-        className={cx(
-          styles.button,
-          theme === "default" ? styles.themeColorOverride : styles.themeColor
-        )}
-        onClick={async () => {
-          const sidebar = await whoAmI();
-          await hideSidebar({ tabId: sidebar.tab.id });
-        }}
-        size="sm"
-        variant="link"
-      >
-        <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
-      </Button>
+      {wasContextInvalidated || ( // /* The button doesn't work after invalidation #2359 */
+        <Button
+          className={cx(
+            styles.button,
+            theme === "default" ? styles.themeColorOverride : styles.themeColor
+          )}
+          onClick={async () => {
+            const sidebar = await whoAmI();
+            await hideSidebar({ tabId: sidebar.tab.id });
+          }}
+          size="sm"
+          variant="link"
+        >
+          <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
+        </Button>
+      )}
       {showSidebarLogo && (
         <div className="align-self-center">
           <img
