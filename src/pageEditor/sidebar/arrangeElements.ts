@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { lowerCase, sortBy } from "lodash";
+import { groupBy, lowerCase, sortBy } from "lodash";
 import { IExtension, RegistryId, UUID } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
@@ -45,11 +45,6 @@ function arrangeElements({
   activeElementId,
   expandedRecipeId,
 }: ArrangeElementsArgs): Array<Element | [RegistryId, Element[]]> {
-  const elementsByRecipeId = new Map<
-    RegistryId,
-    Array<IExtension | FormState>
-  >();
-  const orphanedElements: Array<IExtension | FormState> = [];
   const elementIds = new Set(elements.map((formState) => formState.uuid));
   const filteredExtensions: IExtension[] = installed.filter(
     (extension) =>
@@ -68,31 +63,20 @@ function arrangeElements({
       activeElementId === formState.uuid
   );
 
-  for (const extension of filteredExtensions) {
-    if (extension._recipe) {
-      const recipeId = extension._recipe.id;
-      if (elementsByRecipeId.has(recipeId)) {
-        elementsByRecipeId.get(recipeId).push(extension);
-      } else {
-        elementsByRecipeId.set(recipeId, [extension]);
-      }
-    } else {
-      orphanedElements.push(extension);
-    }
-  }
+  const grouped = groupBy(
+    [...filteredExtensions, ...filteredDynamicElements],
+    (extension) =>
+      isExtension(extension) ? extension._recipe?.id : extension.recipe?.id
+  );
 
-  for (const element of filteredDynamicElements) {
-    if (element.recipe) {
-      const recipeId = element.recipe.id;
-      if (elementsByRecipeId.has(recipeId)) {
-        elementsByRecipeId.get(recipeId).push(element);
-      } else {
-        elementsByRecipeId.set(recipeId, [element]);
-      }
-    } else {
-      orphanedElements.push(element);
-    }
-  }
+  const _elementsByRecipeId = new Map<string, Element[]>(
+    Object.entries(grouped)
+  );
+  const orphanedElements = _elementsByRecipeId.get("undefined") ?? [];
+  _elementsByRecipeId.delete("undefined");
+
+  // @ts-expect-error -- Nominal type redirect. This line exists to limit the impact of ignoring types
+  const elementsByRecipeId: Map<RegistryId, Element[]> = _elementsByRecipeId;
 
   for (const elements of elementsByRecipeId.values()) {
     elements.sort((a, b) =>
@@ -103,28 +87,27 @@ function arrangeElements({
   const sortedElements = sortBy(
     [...elementsByRecipeId, ...orphanedElements],
     (item) => {
-      if (Array.isArray(item)) {
-        const recipeId = item[0];
-        const recipe = getRecipeById(recipes, recipeId);
-        if (recipe) {
-          return lowerCase(recipe?.metadata?.name ?? "");
-        }
-
-        // Look for a recipe name in the elements/extensions in case recipes are still loading
-        for (const element of item[1]) {
-          if (isExtension(element)) {
-            if (element._recipe?.name) {
-              return element._recipe.name;
-            }
-          } else if (element.recipe?.name) {
-            return element.recipe.name;
-          }
-        }
-
-        return "";
+      if (!Array.isArray(item)) {
+        return lowerCase(item.label);
       }
 
-      return lowerCase(item.label);
+      const [recipeId, elements] = item;
+      const recipe = getRecipeById(recipes, recipeId);
+      if (recipe) {
+        return lowerCase(recipe?.metadata?.name ?? "");
+      }
+
+      // Look for a recipe name in the elements/extensions in case recipes are still loading
+      for (const element of elements) {
+        const name = isExtension(element)
+          ? element._recipe?.name
+          : element.recipe?.name;
+        if (name) {
+          return lowerCase(name);
+        }
+      }
+
+      return "";
     }
   );
 
