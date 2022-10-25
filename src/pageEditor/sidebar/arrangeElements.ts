@@ -72,44 +72,42 @@ function arrangeElements({
   const _elementsByRecipeId = new Map<string, Element[]>(
     Object.entries(grouped)
   );
-  const orphanedElements = _elementsByRecipeId.get("undefined") ?? [];
-  _elementsByRecipeId.delete("undefined");
-
-  // @ts-expect-error -- Nominal type redirect. This line exists to limit the impact of ignoring types
-  const elementsByRecipeId: Map<RegistryId, Element[]> = _elementsByRecipeId;
-
-  for (const elements of elementsByRecipeId.values()) {
+  for (const elements of _elementsByRecipeId.values()) {
     elements.sort((a, b) =>
       lowerCase(a.label).localeCompare(lowerCase(b.label))
     );
   }
 
-  const sortedElements = sortBy(
-    [...elementsByRecipeId, ...orphanedElements],
-    (item) => {
-      if (!Array.isArray(item)) {
-        return lowerCase(item.label);
-      }
+  const orphanedElements = _elementsByRecipeId.get("undefined") ?? [];
+  _elementsByRecipeId.delete("undefined");
+  const unsortedElements = [
+    ...(_elementsByRecipeId as Map<RegistryId, Element[]>),
+    ...orphanedElements,
+  ];
 
-      const [recipeId, elements] = item;
-      const recipe = getRecipeById(recipes, recipeId);
-      if (recipe) {
-        return lowerCase(recipe?.metadata?.name ?? "");
-      }
-
-      // Look for a recipe name in the elements/extensions in case recipes are still loading
-      for (const element of elements) {
-        const name = isExtension(element)
-          ? element._recipe?.name
-          : element.recipe?.name;
-        if (name) {
-          return lowerCase(name);
-        }
-      }
-
-      return "";
+  const sortedElements = sortBy(unsortedElements, (item) => {
+    if (!Array.isArray(item)) {
+      return lowerCase(item.label);
     }
-  );
+
+    const [recipeId, elements] = item;
+    const recipe = getRecipeById(recipes, recipeId);
+    if (recipe) {
+      return lowerCase(recipe?.metadata?.name ?? "");
+    }
+
+    // Look for a recipe name in the elements/extensions in case recipes are still loading
+    for (const element of elements) {
+      const name = isExtension(element)
+        ? element._recipe?.name
+        : element.recipe?.name;
+      if (name) {
+        return lowerCase(name);
+      }
+    }
+
+    return "";
+  });
 
   return sortedElements;
 }
