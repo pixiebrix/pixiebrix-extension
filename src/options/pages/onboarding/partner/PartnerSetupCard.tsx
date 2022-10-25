@@ -30,7 +30,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";
-import { useLocation } from "react-router";
 import settingsSlice from "@/store/settingsSlice";
 
 function useInstallUrl() {
@@ -94,7 +93,6 @@ function usePartnerLoginMode(): "token" | "oauth2" {
  */
 const PartnerSetupCard: React.FunctionComponent = () => {
   const mode = usePartnerLoginMode();
-  const location = useLocation();
   const dispatch = useDispatch();
   const hostname = new URLSearchParams(location.search).get("hostname");
 
