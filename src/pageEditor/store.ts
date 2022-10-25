@@ -78,9 +78,8 @@ const store = configureStore({
     return getDefaultMiddleware({
       // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
       serializableCheck: {
-        ignoredActions: ["persist/PERSIST"],
-        // Actions are also checked, filter out the "payload" path
-        ignoredPaths: ["payload", "analysis.knownVars"],
+        ignoredActions: ["persist/PERSIST", "analysis/setKnownVars"],
+        ignoredPaths: ["analysis.knownVars"],
       },
       // With RTK we're effectively using Immer, no need for extra check
       immutableCheck: false,
