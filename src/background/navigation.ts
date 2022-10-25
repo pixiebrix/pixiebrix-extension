@@ -17,8 +17,8 @@
 
 import { reactivateTab, handleNavigate } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/background/activeTab";
-import { canAccessTab } from "webext-tools";
 import { Target } from "@/types";
+import { canAccessTab } from "@/utils/permissions";
 
 export function reactivateEveryTab(): void {
   console.debug("Reactivate all tabs");

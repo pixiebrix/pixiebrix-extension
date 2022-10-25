@@ -21,7 +21,6 @@ import { uuidv4 } from "@/types/helpers";
 import { thisTab } from "@/pageEditor/utils";
 import { detectFrameworks } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/messenger/api";
-import { canAccessTab } from "webext-tools";
 import { onContextInvalidated } from "@/errors/contextInvalidated";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
@@ -32,6 +31,7 @@ import {
 import { EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { ExtensionsRootState } from "@/store/extensionsTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
+import { canAccessTab } from "@/utils/permissions";
 
 const defaultFrameState: FrameConnectionState = {
   navSequence: undefined,

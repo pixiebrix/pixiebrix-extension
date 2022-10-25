@@ -29,11 +29,11 @@ import { runBrick } from "@/contentScript/messenger/api";
 import { Target } from "@/types";
 import { RemoteExecutionError } from "@/blocks/errors";
 import pDefer from "p-defer";
-import { canAccessTab } from "webext-tools";
 import { getErrorMessage } from "@/errors/errorHelpers";
 // eslint-disable-next-line import/no-restricted-paths -- Type only
 import type { RunBlock } from "@/contentScript/runBlockTypes";
 import { BusinessError } from "@/errors/businessErrors";
+import { canAccessTab } from "@/utils/permissions";
 
 type TabId = number;
 

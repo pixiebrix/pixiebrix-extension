@@ -17,12 +17,13 @@
 
 import { ensureContentScript } from "@/background/contentScript";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
-import { executeScript, isScriptableUrl } from "webext-content-scripts";
+import { executeScript } from "webext-content-scripts";
 import pMemoize from "p-memoize";
 import webextAlert from "./webextAlert";
 import { isMac } from "@/utils";
 import { notify } from "@/options/messenger/api";
 import { browserAction, Tab } from "@/mv3/api";
+import { isScriptableUrl } from "@/utils/permissions";
 
 const ERR_UNABLE_TO_OPEN =
   "PixieBrix was unable to open the Sidebar. Try refreshing the page.";
@@ -42,7 +43,7 @@ const toggleSidebar = pMemoize(_toggleSidebar, {
 
 // Don't accept objects here as they're not easily memoizable
 async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
-  if (!tabUrl.startsWith("http") || !isScriptableUrl(tabUrl)) {
+  if (!isScriptableUrl(tabUrl)) {
     // Page not supported. Open the options page instead
     void browser.runtime.openOptionsPage();
     return;

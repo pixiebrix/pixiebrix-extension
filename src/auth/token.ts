@@ -81,6 +81,10 @@ export async function setPartnerAuth(data: PartnerAuthData): Promise<void> {
 
 /**
  * Return PixieBrix API authentication headers, or null if not authenticated.
+ *
+ * Headers can either be:
+ * - Native PixieBrix token
+ * - Partner Bearer JWT
  */
 export async function getAuthHeaders(): Promise<UnknownObject | null> {
   const [nativeToken, partnerAuth] = await Promise.all([

@@ -32,6 +32,13 @@ export function withoutTrailingSlash(url: string): string {
   return url.replace(/\/$/, "");
 }
 
+/**
+ * Return the base URL of the PixieBrix service.
+ *
+ * Can be overriden by:
+ * - Settings on the SettingsPage
+ * - Managed storage (configured by Enterprise IT)
+ */
 export async function getBaseURL(): Promise<string> {
   if (isExtensionContext()) {
     const configured = await readStorage<ConfiguredHost>(SERVICE_STORAGE_KEY);
