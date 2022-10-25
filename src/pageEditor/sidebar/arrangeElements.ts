@@ -20,6 +20,7 @@ import { IExtension, RegistryId, UUID } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getRecipeById } from "@/utils";
+import { isExtension } from "@/pageEditor/sidebar/common";
 
 type ArrangeElementsArgs = {
   elements: FormState[];
@@ -105,7 +106,22 @@ function arrangeElements({
       if (Array.isArray(item)) {
         const recipeId = item[0];
         const recipe = getRecipeById(recipes, recipeId);
-        return lowerCase(recipe?.metadata?.name ?? "");
+        if (recipe) {
+          return lowerCase(recipe?.metadata?.name ?? "");
+        }
+
+        // Look for a recipe name in the elements/extensions in case recipes are still loading
+        for (const element of item[1]) {
+          if (isExtension(element)) {
+            if (element._recipe?.name) {
+              return element._recipe.name;
+            }
+          } else if (element.recipe?.name) {
+            return element.recipe.name;
+          }
+        }
+
+        return "";
       }
 
       return lowerCase(item.label);
