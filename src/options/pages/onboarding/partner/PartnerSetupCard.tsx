@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import OnboardingChecklistCard, {
   OnboardingStep,
 } from "@/components/onboarding/OnboardingChecklistCard";
 import ControlRoomOAuthForm from "@/options/pages/onboarding/partner/ControlRoomOAuthForm";
 import ControlRoomTokenForm from "@/options/pages/onboarding/partner/ControlRoomTokenForm";
+import { selectSettings } from "@/store/settingsSelectors";
 import { useGetMeQuery } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectIsLoggedIn } from "@/auth/authSelectors";
@@ -55,16 +56,42 @@ function useInstallUrl() {
 }
 
 /**
+ * Helper method to decide partner authentication method given local settings overrides, and current login state.
+ */
+function usePartnerLoginMode(): "token" | "oauth2" {
+  const { authMethod } = useSelector(selectSettings);
+  const hasCachedLoggedIn = useSelector(selectIsLoggedIn);
+
+  switch (authMethod) {
+    case "partner-token": {
+      return "token";
+    }
+
+    case "partner-oauth2": {
+      return "oauth2";
+    }
+
+    case "pixiebrix-token": {
+      throw new Error(
+        "Unexpected authMode 'pixiebrix-token' for usePartnerLoginMode"
+      );
+    }
+
+    default: {
+      // If the user is logged in using PixieBrix, show the token configuration screen. They'll keep using their
+      // PixieBrix token login instead of switching to the AA JWT login
+      return hasCachedLoggedIn ? "token" : "oauth2";
+    }
+  }
+}
+
+/**
  * A card to set up a required partner integration.
  *
  * Currently, supports the Automation Anywhere partner integration.
  */
 const PartnerSetupCard: React.FunctionComponent = () => {
-  const hasCachedLoggedIn = useSelector(selectIsLoggedIn);
-
-  // If the user is logged in, show the token configuration screen. They'll keep using their PixieBrix login instead
-  // of switching to the AA JWT login
-  const [mode] = useState(hasCachedLoggedIn ? "token" : "oauth2");
+  const mode = usePartnerLoginMode();
   const { data: me } = useGetMeQuery();
   const { installURL } = useInstallUrl();
 
