@@ -15,20 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import OnboardingChecklistCard, {
   OnboardingStep,
 } from "@/components/onboarding/OnboardingChecklistCard";
 import ControlRoomOAuthForm from "@/options/pages/onboarding/partner/ControlRoomOAuthForm";
 import ControlRoomTokenForm from "@/options/pages/onboarding/partner/ControlRoomTokenForm";
 import { useGetMeQuery } from "@/services/api";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";
+import { useLocation } from "react-router";
+import settingsSlice from "@/store/settingsSlice";
 
 function useInstallUrl() {
   const { data: me } = useGetMeQuery();
@@ -60,6 +62,9 @@ function useInstallUrl() {
  * Currently, supports the Automation Anywhere partner integration.
  */
 const PartnerSetupCard: React.FunctionComponent = () => {
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const hostname = new URLSearchParams(location.search).get("hostname");
   const hasCachedLoggedIn = useSelector(selectIsLoggedIn);
 
   // If the user is logged in, show the token configuration screen. They'll keep using their PixieBrix login instead
@@ -69,14 +74,17 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   const { installURL } = useInstallUrl();
 
   // TODO: prefer managed storage for the Control Room URL
-  const controlRoomUrl = me?.organization?.control_room?.url ?? "";
-  const initialValues = useMemo(
-    () => ({
-      controlRoomUrl,
-      username: "",
-      password: "",
-    }),
-    [controlRoomUrl]
+  const controlRoomUrl = hostname ?? me?.organization?.control_room?.url ?? "";
+  const initialValues = {
+    controlRoomUrl,
+    username: "",
+    password: "",
+  };
+
+  dispatch(
+    settingsSlice.actions.setPartnerId({
+      partnerId: "automation-anywhere",
+    })
   );
 
   if (mode === "oauth2") {

@@ -154,6 +154,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   // This is a very simplified version of what otherwise useRouteMatch from react-router would do.
   // We don't want to pull the Router in the Page Editor app.
   const isSettingsPage = location.hash.startsWith("#/settings");
+  const isStartPage = location.hash.startsWith("#/start");
 
   const {
     isAccountUnlinked,
@@ -172,6 +173,10 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   if (isSettingsPage) {
     // Always let people see the settings page in order to fix broken settings
     return <>{children}</>;
+  }
+
+  if (isStartPage) {
+    return <LoginPage />;
   }
 
   // Show SetupPage if there is auth error or user not logged in

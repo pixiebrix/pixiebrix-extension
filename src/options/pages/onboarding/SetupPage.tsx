@@ -43,6 +43,8 @@ const SetupPage: React.FunctionComponent = () => {
     hasConfiguredIntegration,
   } = useRequiredPartnerAuth();
 
+  const isStartUrl = location.hash.startsWith("#/start");
+
   const { authServiceId } = useSelector(selectSettings);
 
   const [baseURL, baseURLPending] = useAsyncState(getBaseURL, []);
@@ -58,6 +60,7 @@ const SetupPage: React.FunctionComponent = () => {
   let setupCard = <DefaultSetupCard installURL={baseURL} />;
 
   if (
+    isStartUrl ||
     (!isEmpty(authServiceId) && authServiceId !== PIXIEBRIX_SERVICE_ID) ||
     (hasPartner && !hasConfiguredIntegration)
   ) {
