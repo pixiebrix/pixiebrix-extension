@@ -389,10 +389,6 @@ export function commonCssSelector(
   // Get common ancester
   const [commonAncestor] = intersection(...ancestors);
 
-  const [commonParentClassName] = intersection(
-    ...elements.map((element) => [$(element).parent().attr("class")])
-  );
-
   if (commonAncestor) {
     // Get common class of elements
     const [commonClassName] = intersection(
@@ -400,7 +396,7 @@ export function commonCssSelector(
     );
 
     // Get selector of common ancestor
-    const commonAncestorSelector = getCssSelector(commonAncestor, {
+    let commonAncestorSelector = getCssSelector(commonAncestor, {
       blacklist,
       whitelist: ["class", "tag", ...whitelist],
       selectors,
@@ -409,35 +405,55 @@ export function commonCssSelector(
       root,
     });
 
+    const [commonParentClassName] = intersection(
+      ...elements.map((element) => [$(element).parent().attr("class")])
+    );
+
+    // Make sure that commonAncestorSelector is not duplicated with commonParentClassName and use more generic selector
+    // This happens when user select two elements in the same parent.
+    if (
+      intersection(
+        $(commonAncestorSelector),
+        $(getSelectorFromClass(commonParentClassName))
+      ).length > 0
+    ) {
+      // Ex: "tr:nth-of-type(17) .subline" vs ".subline". Use ".subline" since it's more generic
+      commonAncestorSelector =
+        getSelectorFromClass(commonParentClassName) + " >";
+    }
+
+    if (commonParentClassName) {
+      commonAncestorSelector =
+        commonAncestorSelector +
+        " " +
+        getSelectorFromClass(commonParentClassName) +
+        " >";
+    }
+
     // If elements have comment class we can easily select them
     if (commonClassName) {
-      // Make sure to not include the elements with same classname but in different parent class
-      if (commonParentClassName) {
-        return [
-          commonAncestorSelector,
-          getSelectorFromClass(commonParentClassName),
-          getSelectorFromClass(commonClassName),
-        ].join(" ");
-      }
-
       return [
         commonAncestorSelector,
         getSelectorFromClass(commonClassName),
       ].join(" ");
     }
 
-    if (commonParentClassName) {
-      return [
-        commonAncestorSelector,
-        getSelectorFromClass(commonParentClassName),
-        ">",
-        elements[0].tagName.toLowerCase(),
-      ].join(" ");
+    const [commonTagName] = intersection(
+      ...elements.map((element) => [element.tagName])
+    );
+
+    if (commonTagName) {
+      return [commonAncestorSelector, commonTagName.toLowerCase()].join(" ");
     }
 
-    return [commonAncestorSelector, elements[0].tagName.toLowerCase()].join(
-      " "
-    );
+    // Use commonTagName and if there is no commonTagName, we're using all uniq tagNames as selector separated by comma.
+    const uniqTagNames = uniq(elements.map((element) => element.tagName));
+
+    return uniqTagNames
+      .map((tagName) =>
+        [commonAncestorSelector, tagName.toLowerCase()].join(" ")
+      )
+      .join(", ");
   }
 }
 
