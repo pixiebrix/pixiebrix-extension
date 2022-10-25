@@ -34,7 +34,6 @@ registerBuiltinBlocks();
 
 // Register Widgets
 registerDefaultWidgets();
-enableAnalysisFieldErrors();
 
 void store.dispatch(logActions.pollLogs());
 

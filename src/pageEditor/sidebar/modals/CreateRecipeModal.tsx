@@ -436,6 +436,7 @@ const CreateRecipeModal: React.FC = () => {
       <RequireScope scopeSettingsDescription="To create a blueprint, you must first set an account alias for your PixieBrix account">
         <Form
           validationSchema={formSchema}
+          showUntouchedErrors
           validateOnMount
           initialValues={initialFormState}
           onSubmit={onSubmit}

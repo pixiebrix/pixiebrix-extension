@@ -38,6 +38,7 @@ import cx from "classnames";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { FormErrorContext } from "@/components/form/Form";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
@@ -111,47 +112,54 @@ const ElementWizard: React.FunctionComponent<{
 
   return (
     <Tab.Container activeKey={step} key={element.uuid}>
-      <BootstrapForm
-        autoComplete="off"
-        noValidate
-        onReset={handleReset}
-        className={cx(styles.form, "full-height")}
+      <FormErrorContext.Provider
+        value={{
+          shouldUseAnalysis: true,
+          showUntouchedErrors: false,
+        }}
       >
-        <Nav
-          variant="pills"
-          activeKey={step}
-          onSelect={selectTabHandler}
-          className={styles.nav}
+        <BootstrapForm
+          autoComplete="off"
+          noValidate
+          onReset={handleReset}
+          className={cx(styles.form, "full-height")}
         >
-          {wizardSteps.map((step) => (
-            <WizardNavItem key={step.step} step={step} />
-          ))}
+          <Nav
+            variant="pills"
+            activeKey={step}
+            onSelect={selectTabHandler}
+            className={styles.nav}
+          >
+            {wizardSteps.map((step) => (
+              <WizardNavItem key={step.step} step={step} />
+            ))}
 
-          {/* spacer */}
-          <div className="mr-2" />
+            {/* spacer */}
+            <div className="mr-2" />
 
-          <AskQuestionModalButton />
+            <AskQuestionModalButton />
 
-          {/* spacer */}
-          <div className="flex-grow-1" />
+            {/* spacer */}
+            <div className="flex-grow-1" />
 
-          <PermissionsToolbar element={element} disabled={!isValid} />
+            <PermissionsToolbar element={element} disabled={!isValid} />
 
-          <ReloadToolbar element={element} />
-        </Nav>
+            <ReloadToolbar element={element} />
+          </Nav>
 
-        {status && <div className="text-danger">{status}</div>}
-        <Tab.Content className={styles.content}>
-          {wizardSteps.map(({ Component, step }) => (
-            <Component
-              key={step}
-              eventKey={step}
-              editable={editable}
-              available={available}
-            />
-          ))}
-        </Tab.Content>
-      </BootstrapForm>
+          {status && <div className="text-danger">{status}</div>}
+          <Tab.Content className={styles.content}>
+            {wizardSteps.map(({ Component, step }) => (
+              <Component
+                key={step}
+                eventKey={step}
+                editable={editable}
+                available={available}
+              />
+            ))}
+          </Tab.Content>
+        </BootstrapForm>
+      </FormErrorContext.Provider>
     </Tab.Container>
   );
 };
