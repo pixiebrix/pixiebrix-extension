@@ -20,6 +20,13 @@ import { RegistryId } from "@/core";
 
 export type InstallMode = "local" | "remote";
 
+export const AUTH_METHODS = [
+  "default",
+  "pixiebrix-token",
+  "partner-token",
+  "partner-oauth2",
+] as const;
+
 export type SettingsState = SkunkworksSettings & {
   /**
    * Whether the extension is synced to the app for provisioning.
@@ -65,6 +72,16 @@ export type SettingsState = SkunkworksSettings & {
    * @since 1.7.5
    */
   authServiceId: RegistryId | null;
+
+  /**
+   * Force a particular authentication method. Will force user to authenticate, even if the user is authenticated via
+   * another method.
+   *
+   * Use "default" to infer based on primary organization, etc.
+   *
+   * @since 1.7.12
+   */
+  authMethod: typeof AUTH_METHODS[number] | null;
 
   /**
    * Theme name for the extension
