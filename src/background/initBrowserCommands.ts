@@ -19,11 +19,11 @@ import { toggleQuickBar } from "@/contentScript/messenger/api";
 import { Tab } from "@/mv3/api";
 import { Target } from "@/types";
 import { expectContext } from "@/utils/expectContext";
-import { canReceiveContentScript } from "@/utils/permissions";
+import { isScriptableUrl } from "@/utils/permissions";
 import { ensureContentScript } from "./contentScript";
 
 async function handleCommand(command: string, tab: Tab): Promise<void> {
-  if (command !== "toggle-quick-bar" || !canReceiveContentScript(tab.url)) {
+  if (command !== "toggle-quick-bar" || !isScriptableUrl(tab.url)) {
     return;
   }
 

@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CantModifyPane it renders 1`] = `
+<DocumentFragment>
+  <div
+    class="root container-fluid"
+  >
+    <div
+      class="my-auto"
+    >
+      <div
+        class="paneRow row"
+      >
+        <div
+          class="col-lg-9"
+        >
+          <h4
+            class="callout"
+          >
+            Get started with PixieBrix
+          </h4>
+          <p>
+            This is the PixieBrix Page Editor where you can create and modify Blueprints.
+          </p>
+          <p>
+            To get started, try navigating to a page you'd like to edit.
+          </p>
+          <p>
+            Try the 
+            <a
+              href="https://www.pixiebrix.com/playground/playground"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              PixieBrix Playground
+            </a>
+            .
+          </p>
+        </div>
+        <div
+          class="d-flex align-items-center justify-content-center col-lg-3"
+        >
+          <img
+            alt=""
+            class="illustration"
+            src="test-file-stub"
+            width="100%"
+          />
+        </div>
+      </div>
+      <div
+        class="paneRowWithDivider row"
+      >
+        <div
+          class="col-lg-9"
+        >
+          <div>
+            <h4
+              class="tinyCallout"
+            >
+              Need more help?
+            </h4>
+            <p>
+              Visit the 
+              <a
+                href="https://docs.pixiebrix.com/quick-start-guide"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                Quick Start Guide
+              </a>
+               or ask questions in the 
+              <a
+                href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                Slack Community
+              </a>
+              . 
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
