@@ -21,6 +21,7 @@ import {
   uuidv4,
   testIsSemVerString,
   validateSemVerString,
+  validateRegistryId,
 } from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -251,19 +252,24 @@ function useInitialFormState({
   );
   const recipeMetadata = dirtyMetadata ?? activeRecipe?.metadata;
 
+  // Handle the "Save As New" case, where an existing recipe, or an
+  // extension within an existing recipe, is selected
   if (recipeMetadata) {
-    // Handle the "Save As New" case, where an existing recipe, or an
-    // extension within an existing recipe, is selected
+    let newId = generateScopeBrickId(scope, recipeMetadata.id);
+    if (newId === recipeMetadata.id) {
+      newId = validateRegistryId(newId + "-copy");
+    }
+
     return {
-      id: generateScopeBrickId(scope, recipeMetadata.id),
+      id: newId,
       name: recipeMetadata.name,
       version: validateSemVerString("1.0.0"),
       description: recipeMetadata.description,
     };
   }
 
+  // Handle creating a new blueprint from a selected extension
   if (activeElement) {
-    // Handle creating a new blueprint from a selected extension
     return {
       id: generateRecipeId(scope, activeElement.label),
       name: activeElement.label,
