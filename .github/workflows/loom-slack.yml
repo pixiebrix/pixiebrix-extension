@@ -11,6 +11,7 @@ on:
 
 jobs:
   search:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     # https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs
     outputs:
@@ -54,7 +55,9 @@ jobs:
         if: ${{ ! needs.search.outputs.link && env.STATUS == 'OPEN' }}
         with:
           message: |
-            No loom links were found in the first post. Please add one there if you'd like to it to appear on Slack. _Do not edit this comment manually._
+            No loom links were found in the first post. Please add one there if you'd like to it to appear on Slack.
+
+            _Do not edit this comment manually._
 
   slack:
     needs: search
