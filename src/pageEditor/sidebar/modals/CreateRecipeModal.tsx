@@ -290,10 +290,13 @@ function useFormSchema() {
   // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
   return object({
     id: string()
-      .matches(PACKAGE_REGEX, "Invalid registry id")
-      .notOneOf(allRecipeIds, "This id is already in use")
-      .required(),
-    name: string().required(),
+      .matches(
+        PACKAGE_REGEX,
+        "Blueprint ID is required, and may only include lowercase letters, numbers, and the symbols - _ ~"
+      )
+      .notOneOf(allRecipeIds, "Blueprint ID is already in use")
+      .required("Blueprint ID is required"),
+    name: string().required("Name is required"),
     version: string()
       .test(
         "semver",
