@@ -21,7 +21,6 @@ import { services } from "@/background/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
-import { toExpression } from "@/testUtils/testHelpers";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import {
   makePipelineExpression,
@@ -247,7 +246,8 @@ describe("VarAnalysis", () => {
 
     test("adds for-each output after the brick", async () => {
       expect(
-        analysis.knownVars
+        analysis
+          .getKnownVars()
           .get("extension.blockPipeline.1")
           .get("@forEachOutput")
       ).toBe(VarExistence.DEFINITELY);
@@ -273,7 +273,8 @@ describe("VarAnalysis", () => {
 
     test("adds the element key to the sub pipeline", async () => {
       expect(
-        analysis.knownVars
+        analysis
+          .getKnownVars()
           .get("extension.blockPipeline.0.config.body.__value__.0")
           .get("@element")
       ).toBe(VarExistence.DEFINITELY);
