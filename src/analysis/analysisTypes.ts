@@ -68,6 +68,7 @@ export interface Analysis {
 
 export type AnalysisState = {
   extensionAnnotations: Record<UUID, Annotation[]>;
+  knownVars: any;
 };
 
 export type AnalysisRootState = {

@@ -21,6 +21,7 @@ import { UUID } from "@/core";
 
 const initialState: AnalysisState = {
   extensionAnnotations: {},
+  knownVars: {},
 };
 
 const analysisSlice = createSlice({
@@ -57,6 +58,9 @@ const analysisSlice = createSlice({
         ...state.extensionAnnotations[extensionId],
         ...annotations,
       ];
+    },
+    setKnownVars(state, action: PayloadAction<any>) {
+      state.knownVars = action.payload;
     },
   },
 });

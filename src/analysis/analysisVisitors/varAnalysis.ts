@@ -36,12 +36,16 @@ type PreviousVisitedBlock = {
   output: BlockVars | null;
 };
 class VarAnalysis extends AnalysisVisitor {
-  knownVars: ExtensionVars = new Map<string, BlockVars>();
-  previousVisitedBlock: PreviousVisitedBlock = null;
-  contextStack: PreviousVisitedBlock[] = [];
+  private readonly knownVars: ExtensionVars = new Map<string, BlockVars>();
+  private previousVisitedBlock: PreviousVisitedBlock = null;
+  private readonly contextStack: PreviousVisitedBlock[] = [];
 
   get id() {
     return "var";
+  }
+
+  getKnownVars() {
+    return this.knownVars;
   }
 
   override visitBlock(

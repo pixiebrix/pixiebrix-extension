@@ -44,16 +44,16 @@ const persistSettingsConfig = {
 };
 
 const conditionalMiddleware: Middleware[] = [];
-// if (typeof createLogger === "function") {
-//   // Allow tree shaking of logger in production
-//   // https://github.com/LogRocket/redux-logger/issues/6
-//   conditionalMiddleware.push(
-//     createLogger({
-//       // Do not log polling actions (they happen too often)
-//       predicate: (getState, action) => !action.type.includes("logs/polling"),
-//     })
-//   );
-// }
+if (typeof createLogger === "function") {
+  // Allow tree shaking of logger in production
+  // https://github.com/LogRocket/redux-logger/issues/6
+  conditionalMiddleware.push(
+    createLogger({
+      // Do not log polling actions (they happen too often)
+      predicate: (getState, action) => !action.type.includes("logs/polling"),
+    })
+  );
+}
 
 const store = configureStore({
   reducer: {
@@ -79,7 +79,11 @@ const store = configureStore({
       // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
       serializableCheck: {
         ignoredActions: ["persist/PERSIST"],
+        // Actions are also checked, filter out the "payload" path
+        ignoredPaths: ["payload", "analysis.knownVars"],
       },
+      // With RTK we're effectively using Immer, no need for extra check
+      immutableCheck: false,
     })
       .concat(appApi.middleware)
       .concat(pageEditorAnalysisManager.middleware)

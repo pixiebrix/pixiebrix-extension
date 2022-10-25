@@ -24,6 +24,7 @@ import {
 } from "@reduxjs/toolkit";
 import analysisSlice from "./analysisSlice";
 import {
+  ListenerEffectAPI,
   MatchFunction,
   TypedActionCreator,
 } from "@reduxjs/toolkit/dist/listenerMiddleware/types";
@@ -36,18 +37,28 @@ type AnalysisEffect = ListenerEffect<
   ThunkDispatch<unknown, unknown, AnyAction>
 >;
 
-type AnalysisEffectConfig =
+type AnalysisEffectConfig<TAnalysis extends Analysis = Analysis> = (
   | {
       actionCreator: TypedActionCreator<any>;
     }
   | {
       matcher: MatchFunction<AnyAction>;
-    };
+    }
+) & {
+  postAnalysisAction?: (
+    analysis: TAnalysis,
+    listenerApi: ListenerEffectAPI<
+      RootState,
+      ThunkDispatch<unknown, unknown, AnyAction>
+    >
+  ) => void;
+};
 
-type AnalysisFactory<TAction = AnyAction, TState = unknown> = (
-  action: TAction,
-  state: TState
-) => Analysis | null;
+type AnalysisFactory<
+  TAnalysis extends Analysis,
+  TAction = AnyAction,
+  TState = unknown
+> = (action: TAction, state: TState) => TAnalysis | null;
 
 class ReduxAnalysisManager {
   private readonly listenerMiddleware = createListenerMiddleware();
@@ -55,9 +66,9 @@ class ReduxAnalysisManager {
     return this.listenerMiddleware.middleware;
   }
 
-  public registerAnalysisEffect(
-    analysisFactory: AnalysisFactory,
-    config: AnalysisEffectConfig
+  public registerAnalysisEffect<TAnalysis extends Analysis>(
+    analysisFactory: AnalysisFactory<TAnalysis>,
+    config: AnalysisEffectConfig<TAnalysis>
   ) {
     const effect: AnalysisEffect = async (action, listenerApi) => {
       const state = listenerApi.getState();
@@ -89,6 +100,10 @@ class ReduxAnalysisManager {
           annotations: analysis.getAnnotations(),
         })
       );
+
+      if (config.postAnalysisAction) {
+        config.postAnalysisAction(analysis, listenerApi);
+      }
     };
 
     this.listenerMiddleware.startListening({

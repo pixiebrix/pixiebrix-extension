@@ -33,6 +33,7 @@ import RequestPermissionAnalysis from "@/analysis/analysisVisitors/requestPermis
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import { selectExtensionTrace } from "./slices/runtimeSelectors";
 import VarAnalysis from "@/analysis/analysisVisitors/varAnalysis";
+import analysisSlice from "@/analysis/analysisSlice";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -136,6 +137,11 @@ pageEditorAnalysisManager.registerAnalysisEffect(() => new VarAnalysis(), {
     runtimeActions.setExtensionTrace,
     ...nodeListMutationActions
   ),
+  postAnalysisAction(analysis, listenerApi) {
+    listenerApi.dispatch(
+      analysisSlice.actions.setKnownVars(analysis.getKnownVars())
+    );
+  },
 });
 
 export default pageEditorAnalysisManager;
