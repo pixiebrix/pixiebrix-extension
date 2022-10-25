@@ -315,7 +315,7 @@ describe("commonCssSelector", () => {
   });
 
   test("common ancester classname, common parent classname, common element classname", () => {
-    expectSelector(".itemlist .title .titleline", body);
+    expectSelector(".itemlist .title > .titleline", body);
   });
 
   /* eslint-enable jest/expect-expect */
