@@ -19,8 +19,11 @@ import { BlockPosition } from "@/blocks/types";
 import { toExpression } from "@/testUtils/testHelpers";
 import TemplateAnalysis from "./templateAnalysis";
 
-const position: BlockPosition = {
+const blockPosition: BlockPosition = {
   path: "test.path",
+};
+const position: BlockPosition = {
+  path: `${blockPosition.path}.property`,
 };
 
 describe("TemplateAnalysis", () => {
@@ -34,7 +37,11 @@ describe("TemplateAnalysis", () => {
     "accepts valid nunjucks [%s]",
     (template) => {
       const analysis = new TemplateAnalysis();
-      analysis.visitExpression(position, toExpression("nunjucks", template));
+      analysis.visitExpression(
+        position,
+        toExpression("nunjucks", template),
+        blockPosition
+      );
 
       expect(analysis.getAnnotations()).toHaveLength(0);
     }
@@ -48,7 +55,11 @@ describe("TemplateAnalysis", () => {
     "accepts valid mustache [%s]",
     (template) => {
       const analysis = new TemplateAnalysis();
-      analysis.visitExpression(position, toExpression("mustache", template));
+      analysis.visitExpression(
+        position,
+        toExpression("mustache", template),
+        blockPosition
+      );
 
       expect(analysis.getAnnotations()).toHaveLength(0);
     }
@@ -58,7 +69,11 @@ describe("TemplateAnalysis", () => {
     "rejects mustache template in non-mustache expression [%s]",
     (template) => {
       const analysis = new TemplateAnalysis();
-      analysis.visitExpression(position, toExpression("nunjucks", template));
+      analysis.visitExpression(
+        position,
+        toExpression("nunjucks", template),
+        blockPosition
+      );
 
       expect(analysis.getAnnotations()).toHaveLength(1);
     }
@@ -70,7 +85,11 @@ describe("TemplateAnalysis", () => {
     "rejects invalid nunjucks [%s]",
     (template) => {
       const analysis = new TemplateAnalysis();
-      analysis.visitExpression(position, toExpression("nunjucks", template));
+      analysis.visitExpression(
+        position,
+        toExpression("nunjucks", template),
+        blockPosition
+      );
       expect(analysis.getAnnotations()).toHaveLength(1);
     }
   );

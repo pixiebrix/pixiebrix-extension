@@ -46,7 +46,11 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
     for (const [prop, value] of Object.entries(blockConfig.config)) {
       if (isExpression(value)) {
         // TODO: Handle anyOf/oneOf/allOf
-        this.visitExpression(nestedPosition(position, "config", prop), value);
+        this.visitExpression(
+          nestedPosition(position, "config", prop),
+          value,
+          position
+        );
       }
     }
   }
@@ -76,7 +80,8 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
       if (isExpression(value)) {
         this.visitExpression(
           nestedPosition(position, pathInBlock, "config", prop),
-          value
+          value,
+          position
         );
       }
     }
@@ -95,7 +100,8 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
 
   abstract visitExpression(
     position: BlockPosition,
-    expression: Expression<unknown>
+    expression: Expression<unknown>,
+    blockPosition: BlockPosition
   ): void;
 }
 

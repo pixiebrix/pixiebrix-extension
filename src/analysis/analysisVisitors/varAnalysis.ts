@@ -15,17 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import PipelineExpressionVisitor from "@/blocks/PipelineExpressionVisitor";
 import { VisitBlockExtra, VisitPipelineExtra } from "@/blocks/PipelineVisitor";
 import { BlockPosition, BlockConfig } from "@/blocks/types";
-import { BlockArgContext } from "@/core";
+import { BlockArgContext, Expression } from "@/core";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getInputKeyForSubPipeline } from "@/pageEditor/utils";
+import { isVarExpression } from "@/runtime/mapArgs";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { isEmpty, pick } from "lodash";
-import { AnalysisVisitor } from "./baseAnalysisVisitors";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { makeInternalId } from "@/registry/internal";
+import { Analysis, Annotation, AnnotationType } from "@/analysis/analysisTypes";
 
 export enum VarExistence {
   MAYBE = "MAYBE",
@@ -38,13 +40,18 @@ type PreviousVisitedBlock = {
   vars: BlockVars;
   output: BlockVars | null;
 };
-class VarAnalysis extends AnalysisVisitor {
+class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   private readonly knownVars: ExtensionVars = new Map<string, BlockVars>();
   private previousVisitedBlock: PreviousVisitedBlock = null;
   private readonly contextStack: PreviousVisitedBlock[] = [];
+  protected readonly annotations: Annotation[] = [];
 
   get id() {
     return "var";
+  }
+
+  getAnnotations(): Annotation[] {
+    return this.annotations;
   }
 
   getKnownVars() {
@@ -82,6 +89,40 @@ class VarAnalysis extends AnalysisVisitor {
     super.visitBlock(position, blockConfig, extra);
   }
 
+  override visitExpression(
+    position: BlockPosition,
+    expression: Expression<unknown>,
+    blockPosition: BlockPosition
+  ): void {
+    if (!isVarExpression(expression)) {
+      return;
+    }
+
+    const varName = expression.__value__;
+    const blockKnownVars = this.knownVars.get(blockPosition.path);
+    if (blockKnownVars?.get(varName) == null) {
+      // TODO refactor the following check, it's very inefficient
+      const wildcardVars = [...blockKnownVars.keys()].filter((x) =>
+        x.endsWith(".*")
+      );
+      const matchWildcard = wildcardVars.some((x) =>
+        varName.startsWith(x.slice(0, -1))
+      );
+      if (!matchWildcard) {
+        this.annotations.push({
+          position,
+          message: `Variable ${varName} might not be defined`,
+          analysisId: this.id,
+          type: AnnotationType.Warning,
+          detail: {
+            expression,
+            knownVars: blockKnownVars?.keys(),
+          },
+        });
+      }
+    }
+  }
+
   override visitPipeline(
     position: BlockPosition,
     pipeline: BlockConfig[],
@@ -110,7 +151,7 @@ class VarAnalysis extends AnalysisVisitor {
     this.previousVisitedBlock = this.contextStack.pop();
   }
 
-  override async run(extension: FormState): Promise<void> {
+  async run(extension: FormState): Promise<void> {
     let context = {} as BlockArgContext;
 
     const serviceContext = extension.services?.length
@@ -151,7 +192,10 @@ class VarAnalysis extends AnalysisVisitor {
       ),
       output: null,
     };
-    super.run(extension);
+
+    this.visitRootPipeline(extension.extension.blockPipeline, {
+      extensionPointType: extension.type,
+    });
   }
 }
 
