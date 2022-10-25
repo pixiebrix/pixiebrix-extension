@@ -92,9 +92,8 @@ export async function requestPermissions(
  * Determines whether a URL can potentially execute a content script.
  * This excludes non-https URLs and extension gallery pages.
  */
-export function isScriptableUrl(url: string | void): boolean {
-  // eslint-disable-next-line @typescript-eslint/prefer-optional-chain -- Not equivalent
-  return url && url.startsWith("https") && _isScriptableUrl(url);
+export function isScriptableUrl(url: string | null): boolean {
+  return url?.startsWith("https") && _isScriptableUrl(url);
 }
 
 export function makeEmptyPermissions(): Permissions.Permissions {
