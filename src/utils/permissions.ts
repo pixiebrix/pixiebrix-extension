@@ -92,7 +92,7 @@ export async function requestPermissions(
  * Determines whether a URL can potentially execute a content script.
  * This excludes non-https URLs and extension gallery pages.
  */
-export function isScriptableUrl(url: string | null): boolean {
+export function isScriptableUrl(url?: string): boolean {
   return url?.startsWith("https") && _isScriptableUrl(url);
 }
 
