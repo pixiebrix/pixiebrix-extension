@@ -15,28 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Keep in order so precedence is preserved
-import "@/vendors/theme/app/app.scss";
-import "@/vendors/overrides.scss";
-import "@/utils/layout.scss";
-import "./sidebar.scss";
-
-import "@/extensionContext";
-
-import registerMessenger from "@/sidebar/messenger/registration";
-import App from "@/sidebar/SidebarApp";
-import ReactDOM from "react-dom";
 import React from "react";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
-import { initToaster } from "@/utils/notify";
+import useContextInvalidated from "@/hooks/useContextInvalidated";
 
-function init(): void {
-  ReactDOM.render(<App />, document.querySelector("#container"));
-}
+// Note, it's currently impossible to have a "Reload sidebar" button because it can
+// only be done from the content script + contact to the outside world is lost after
+// context invalidation (chrome.runtime and chrome.tabs become undefined)
+const ErrorBanner: React.VFC = () => {
+  const wasContextInvalidated = useContextInvalidated();
+  if (!wasContextInvalidated) {
+    return null;
+  }
 
-registerMessenger();
-registerContribBlocks();
-registerBuiltinBlocks();
-initToaster();
-init();
+  return (
+    <div className="p-3 alert-danger">
+      PixieBrix was updated or restarted. <br />
+      Close and reopen the sidebar to continue.
+    </div>
+  );
+};
+
+export default ErrorBanner;
