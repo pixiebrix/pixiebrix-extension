@@ -85,9 +85,9 @@ describe("VarAnalysis", () => {
     const analysis = new VarAnalysis();
     await analysis.run(extension);
 
-    expect(analysis.knownVars.size).toBe(1);
+    expect(analysis.getKnownVars().size).toBe(1);
     expect([
-      ...analysis.knownVars.get("extension.blockPipeline.0").keys(),
+      ...analysis.getKnownVars().get("extension.blockPipeline.0").keys(),
     ]).toEqual([
       "@pixiebrix",
       "@pixiebrix.__service",
@@ -100,9 +100,9 @@ describe("VarAnalysis", () => {
       "@options.foo",
     ]);
     expect(
-      [...analysis.knownVars.get("extension.blockPipeline.0").values()].every(
-        (x) => x === VarExistence.DEFINITELY
-      )
+      [
+        ...analysis.getKnownVars().get("extension.blockPipeline.0").values(),
+      ].every((x) => x === VarExistence.DEFINITELY)
     ).toBeTrue();
   });
 
@@ -118,14 +118,14 @@ describe("VarAnalysis", () => {
     await analysis.run(extension);
 
     expect(
-      analysis.knownVars.get("extension.blockPipeline.0").get("@foo")
+      analysis.getKnownVars().get("extension.blockPipeline.0").get("@foo")
     ).toBeUndefined();
 
     expect(
-      analysis.knownVars.get("extension.blockPipeline.1").get("@foo")
+      analysis.getKnownVars().get("extension.blockPipeline.1").get("@foo")
     ).toBe(VarExistence.DEFINITELY);
     expect(
-      analysis.knownVars.get("extension.blockPipeline.1").get("@foo.*")
+      analysis.getKnownVars().get("extension.blockPipeline.1").get("@foo.*")
     ).toBe(VarExistence.MAYBE);
   });
 
@@ -142,14 +142,14 @@ describe("VarAnalysis", () => {
     await analysis.run(extension);
 
     expect(
-      analysis.knownVars.get("extension.blockPipeline.0").get("@foo")
+      analysis.getKnownVars().get("extension.blockPipeline.0").get("@foo")
     ).toBeUndefined();
 
     expect(
-      analysis.knownVars.get("extension.blockPipeline.1").get("@foo")
+      analysis.getKnownVars().get("extension.blockPipeline.1").get("@foo")
     ).toBe(VarExistence.MAYBE);
     expect(
-      analysis.knownVars.get("extension.blockPipeline.1").get("@foo.*")
+      analysis.getKnownVars().get("extension.blockPipeline.1").get("@foo.*")
     ).toBe(VarExistence.MAYBE);
   });
 
@@ -187,7 +187,10 @@ describe("VarAnalysis", () => {
 
     test("adds if-else output after the brick", async () => {
       expect(
-        analysis.knownVars.get("extension.blockPipeline.1").get("@ifOutput")
+        analysis
+          .getKnownVars()
+          .get("extension.blockPipeline.1")
+          .get("@ifOutput")
       ).toBe(VarExistence.DEFINITELY);
     });
 
@@ -200,17 +203,17 @@ describe("VarAnalysis", () => {
       "doesn't add if-else output to sub pipelines (%s)",
       async (blockPath) => {
         expect(
-          analysis.knownVars.get(blockPath).get("@ifOutput")
+          analysis.getKnownVars().get(blockPath).get("@ifOutput")
         ).toBeUndefined();
       }
     );
 
     test("doesn't leak sub pipeline outputs", async () => {
       expect(
-        analysis.knownVars.get("extension.blockPipeline.1").get("@foo")
+        analysis.getKnownVars().get("extension.blockPipeline.1").get("@foo")
       ).toBeUndefined();
       expect(
-        analysis.knownVars.get("extension.blockPipeline.1").get("@bar")
+        analysis.getKnownVars().get("extension.blockPipeline.1").get("@bar")
       ).toBeUndefined();
     });
   });
@@ -257,14 +260,14 @@ describe("VarAnalysis", () => {
       "doesn't add for-each output to sub pipelines (%s)",
       async (blockPath) => {
         expect(
-          analysis.knownVars.get(blockPath).get("@forEachOutput")
+          analysis.getKnownVars().get(blockPath).get("@forEachOutput")
         ).toBeUndefined();
       }
     );
 
     test("doesn't leak sub pipeline outputs", async () => {
       expect(
-        analysis.knownVars.get("extension.blockPipeline.1").get("@foo")
+        analysis.getKnownVars().get("extension.blockPipeline.1").get("@foo")
       ).toBeUndefined();
     });
 
@@ -278,7 +281,7 @@ describe("VarAnalysis", () => {
 
     test("doesn't leak the sub pipeline element key", async () => {
       expect(
-        analysis.knownVars.get("extension.blockPipeline.1").get("@element")
+        analysis.getKnownVars().get("extension.blockPipeline.1").get("@element")
       ).toBeUndefined();
     });
   });

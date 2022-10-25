@@ -18,11 +18,14 @@
 import { VisitBlockExtra, VisitPipelineExtra } from "@/blocks/PipelineVisitor";
 import { BlockPosition, BlockConfig } from "@/blocks/types";
 import { BlockArgContext } from "@/core";
+import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getInputKeyForSubPipeline } from "@/pageEditor/utils";
 import { makeServiceContext } from "@/services/serviceUtils";
-import { isEmpty } from "lodash";
+import { isEmpty, pick } from "lodash";
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
+import extensionPointRegistry from "@/extensionPoints/registry";
+import { makeInternalId } from "@/registry/internal";
 
 export enum VarExistence {
   MAYBE = "MAYBE",
@@ -120,14 +123,21 @@ class VarAnalysis extends AnalysisVisitor {
       };
     }
 
-    // TODO: properly get reader context,
-    // see @/extensionPoints/sidebarExtension.ts#L242
-    const readerContext = {
-      icon: "",
-      title: "",
-      url: "",
-    };
-    context["@input"] = readerContext;
+    // Getting the extensions @input vars
+    const { selectExtensionPoint } = ADAPTERS.get(extension.type);
+    const extensionPointConfig = selectExtensionPoint(extension);
+    const obj = pick(extensionPointConfig, ["kind", "definition"]);
+    const registryId = makeInternalId(obj);
+    const extensionPoint = await extensionPointRegistry.lookup(registryId);
+    const reader = await extensionPoint?.defaultReader();
+    const readerProperties = reader?.outputSchema?.properties || {};
+    const readerKeys = Object.keys(readerProperties);
+    if (readerKeys.length > 0) {
+      context["@input"] = {};
+      for (const key of readerKeys) {
+        context["@input"][key] = "";
+      }
+    }
 
     // TODO: should we check the blueprint definition instead?
     if (!isEmpty(extension.optionsArgs)) {
@@ -142,8 +152,6 @@ class VarAnalysis extends AnalysisVisitor {
       output: null,
     };
     super.run(extension);
-
-    console.log("varMap", this.knownVars);
   }
 }
 
