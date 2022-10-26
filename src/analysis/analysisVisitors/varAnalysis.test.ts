@@ -17,7 +17,6 @@
 
 import { blockConfigFactory, formStateFactory } from "@/testUtils/factories";
 import VarAnalysis from "./varAnalysis";
-import { VarExistence } from "./VarExistence";
 import { validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
@@ -26,6 +25,7 @@ import {
   makePipelineExpression,
   makeTemplateExpression,
 } from "@/runtime/expressionCreators";
+import { VarExistence } from "./varMap";
 
 jest.mock("@/background/messenger/api", () => ({
   __esModule: true,
