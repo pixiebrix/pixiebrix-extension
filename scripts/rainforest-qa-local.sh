@@ -16,6 +16,5 @@ set +a
 : "${AWS_SECRET_ACCESS_KEY?Need to set AWS_SECRET_ACCESS_KEY}"
 : "${AWS_DEFAULT_REGION?Need to set AWS_DEFAULT_REGION}"
 
-npm run build
-zip -r "$BUILD_FILENAME" dist -x '*.map'
-aws s3 cp "$BUILD_FILENAME" "s3://pixiebrix-extension-builds/$BUILD_PATH" --no-progress
+web-ext build --filename=$BUILD_FILENAME
+aws s3 cp "web-ext-artifacts/$BUILD_FILENAME" "s3://pixiebrix-extension-builds/$BUILD_PATH" --no-progress
