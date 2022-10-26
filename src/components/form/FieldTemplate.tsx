@@ -123,6 +123,7 @@ const FieldTemplate: React.FC<FieldProps> = ({
   className,
   ...restFieldProps
 }) => {
+  // TODO get error type to show a warning instead of an error
   const isInvalid = hasOwnError(error);
 
   // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled

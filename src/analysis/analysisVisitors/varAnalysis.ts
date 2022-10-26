@@ -28,20 +28,19 @@ import { isEmpty, pick } from "lodash";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { makeInternalId } from "@/registry/internal";
 import { Analysis, Annotation, AnnotationType } from "@/analysis/analysisTypes";
+import VarMap from "./varMap";
 
 export enum VarExistence {
   MAYBE = "MAYBE",
   DEFINITELY = "DEFINITELY",
 }
 
-type BlockVars = Map<string, VarExistence>;
-type ExtensionVars = Map<string, BlockVars>;
 type PreviousVisitedBlock = {
-  vars: BlockVars;
-  output: BlockVars | null;
+  vars: VarMap;
+  output: VarMap | null;
 };
 class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
-  private readonly knownVars: ExtensionVars = new Map<string, BlockVars>();
+  private readonly knownVars = new Map<string, VarMap>();
   private previousVisitedBlock: PreviousVisitedBlock = null;
   private readonly contextStack: PreviousVisitedBlock[] = [];
   protected readonly annotations: Annotation[] = [];
@@ -63,28 +62,36 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     blockConfig: BlockConfig,
     extra: VisitBlockExtra
   ) {
-    const currentBlockVars = new Map<string, VarExistence>([
-      ...this.previousVisitedBlock.vars,
-      ...(this.previousVisitedBlock.output ?? []),
-    ]);
+    // TODO include the values from a run trace if available
+    const currentBlockVars =
+      this.previousVisitedBlock.output == null
+        ? this.previousVisitedBlock.vars.clone()
+        : this.previousVisitedBlock.vars.merge(
+            this.previousVisitedBlock.output
+          );
+
     this.knownVars.set(position.path, currentBlockVars);
 
-    const currentBlockOutput = new Map<string, VarExistence>();
+    this.previousVisitedBlock = {
+      vars: currentBlockVars,
+      output: null,
+    };
 
     if (blockConfig.outputKey) {
-      currentBlockOutput.set(
+      const currentBlockOutput = new VarMap();
+      currentBlockOutput.setExistence(
         `@${blockConfig.outputKey}`,
         blockConfig.if == null ? VarExistence.DEFINITELY : VarExistence.MAYBE
       );
 
-      // TODO: revisit the wildcard/regex format of MAYBE vars
-      currentBlockOutput.set(`@${blockConfig.outputKey}.*`, VarExistence.MAYBE);
-    }
+      // TODO get the output schema and use its properties to be more precise
+      currentBlockOutput.setExistence(
+        `@${blockConfig.outputKey}.*`,
+        VarExistence.MAYBE
+      );
 
-    this.previousVisitedBlock = {
-      vars: currentBlockVars,
-      output: currentBlockOutput,
-    };
+      this.previousVisitedBlock.output = currentBlockOutput;
+    }
 
     super.visitBlock(position, blockConfig, extra);
   }
@@ -100,26 +107,16 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
 
     const varName = expression.__value__;
     const blockKnownVars = this.knownVars.get(blockPosition.path);
-    if (blockKnownVars?.get(varName) == null) {
-      // TODO refactor the following check, it's very inefficient
-      const wildcardVars = [...blockKnownVars.keys()].filter((x) =>
-        x.endsWith(".*")
-      );
-      const matchWildcard = wildcardVars.some((x) =>
-        varName.startsWith(x.slice(0, -1))
-      );
-      if (!matchWildcard) {
-        this.annotations.push({
-          position,
-          message: `Variable ${varName} might not be defined`,
-          analysisId: this.id,
-          type: AnnotationType.Warning,
-          detail: {
-            expression,
-            knownVars: blockKnownVars?.keys(),
-          },
-        });
-      }
+    if (blockKnownVars?.getExistence(varName) == null) {
+      this.annotations.push({
+        position,
+        message: `Variable ${varName} might not be defined`,
+        analysisId: this.id,
+        type: AnnotationType.Warning,
+        detail: {
+          expression,
+        },
+      });
     }
   }
 
@@ -137,12 +134,19 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     // Before visiting the sub pipeline, we need to save the current context
     this.contextStack.push(this.previousVisitedBlock);
 
+    let subPipelineVars: VarMap;
+    if (subPipelineInput) {
+      subPipelineVars = new VarMap();
+      subPipelineVars.setExistence(
+        `@${subPipelineInput}`,
+        VarExistence.DEFINITELY
+      );
+    }
+
     // Creating context for the sub pipeline
     this.previousVisitedBlock = {
       vars: this.previousVisitedBlock.vars,
-      output: subPipelineInput
-        ? new Map([[`@${subPipelineInput}`, VarExistence.DEFINITELY]])
-        : null,
+      output: subPipelineVars,
     };
 
     super.visitPipeline(position, pipeline, extra);
@@ -152,6 +156,8 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   async run(extension: FormState): Promise<void> {
+    const contextVars = new VarMap();
+
     let context = {} as BlockArgContext;
 
     const serviceContext = extension.services?.length
@@ -174,9 +180,8 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     const readerProperties = reader?.outputSchema?.properties || {};
     const readerKeys = Object.keys(readerProperties);
     if (readerKeys.length > 0) {
-      context["@input"] = {};
       for (const key of readerKeys) {
-        context["@input"][key] = "";
+        contextVars.setExistence(`@input.${key}`, VarExistence.DEFINITELY);
       }
     }
 
@@ -185,11 +190,9 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
       context["@options"] = extension.optionsArgs;
     }
 
-    const definitelyVars = getVarsFromObject(context);
+    contextVars.setExistenceFromObj(context);
     this.previousVisitedBlock = {
-      vars: new Map<string, VarExistence>(
-        definitelyVars.map((x) => [x, VarExistence.DEFINITELY])
-      ),
+      vars: contextVars,
       output: null,
     };
 
@@ -197,19 +200,6 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
       extensionPointType: extension.type,
     });
   }
-}
-
-export function getVarsFromObject(obj: unknown): string[] {
-  const vars: string[] = [];
-  for (const [key, value] of Object.entries(obj)) {
-    vars.push(key);
-    if (typeof value === "object") {
-      const nestedVars = getVarsFromObject(value);
-      vars.push(...nestedVars.map((x) => `${key}.${x}`));
-    }
-  }
-
-  return vars;
 }
 
 export default VarAnalysis;
