@@ -47,13 +47,13 @@ async function openInstallPage() {
 
   if (accountTab) {
     if (accountTab.url.includes("start?")) {
-      const baseUrl = browser.runtime.getURL("options.html");
-      const extensionStartUrl = new URL(
-        `${baseUrl}#/start${new URL(accountTab.url).search}`
-      );
+      const extensionStartUrl = new URL(browser.runtime.getURL("options.html"));
+      extensionStartUrl.hash = `/start${new URL(accountTab.url).search}`;
 
-      await browser.tabs.remove(accountTab.id);
-      await browser.tabs.create({ url: extensionStartUrl.href });
+      await browser.tabs.update(accountTab.id, {
+        url: extensionStartUrl.href,
+        active: true,
+      });
       return;
     }
 
