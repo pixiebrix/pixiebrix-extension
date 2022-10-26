@@ -17,12 +17,13 @@
 
 import styles from "./Form.module.scss";
 
-import React, { createContext, ReactElement } from "react";
+import React, { ReactElement } from "react";
 import { Alert, Button, Form as BootstrapForm } from "react-bootstrap";
 import { Formik, FormikConfig, FormikHelpers, FormikValues } from "formik";
 import * as yup from "yup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import { FormErrorContext } from "@/components/form/FormErrorContext";
 
 export type OnSubmit<TValues = FormikValues> = (
   values: TValues,
@@ -108,16 +109,6 @@ type FormProps = AnalysisFormProps | SchemaValidatedFormProps;
 const isSchemaValidatedForm = (
   props: FormProps
 ): props is SchemaValidatedFormProps => "validationSchema" in props;
-
-export type FormErrorContextProps = {
-  shouldUseAnalysis: boolean;
-  showUntouchedErrors: boolean;
-};
-
-export const FormErrorContext = createContext<FormErrorContextProps>({
-  shouldUseAnalysis: false,
-  showUntouchedErrors: false,
-});
 
 const defaultRenderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
   <Button type="submit" disabled={!isValid || isSubmitting}>

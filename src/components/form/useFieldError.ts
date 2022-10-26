@@ -18,8 +18,7 @@
 import { useSelector } from "react-redux";
 import { selectAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
 import { useField } from "formik";
-import { useContext } from "react";
-import { FormErrorContext } from "@/components/form/Form";
+import { useFormErrorSettings } from "@/components/form/FormErrorContext";
 
 function useFormikFieldError(
   fieldPath: string,
@@ -38,8 +37,7 @@ function useAnalysisFieldError(fieldPath: string): string[] | undefined {
 }
 
 function useFieldError(fieldPath: string): string | string[] | undefined {
-  const { shouldUseAnalysis, showUntouchedErrors } =
-    useContext(FormErrorContext);
+  const { shouldUseAnalysis, showUntouchedErrors } = useFormErrorSettings();
 
   return shouldUseAnalysis
     ? // eslint-disable-next-line react-hooks/rules-of-hooks -- shouldUseAnalysis is set once before render

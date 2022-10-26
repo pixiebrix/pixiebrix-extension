@@ -389,32 +389,24 @@ const CreateRecipeModal: React.FC = () => {
         description={FieldDescriptions.BLUEPRINT_ID}
         widerLabel
         as={RegistryIdWidget}
-        useFormikErrors
-        showUntouchedErrors
       />
       <ConnectedFieldTemplate
         name="name"
         label="Name"
         widerLabel
         description={FieldDescriptions.BLUEPRINT_NAME}
-        useFormikErrors
-        showUntouchedErrors
       />
       <ConnectedFieldTemplate
         name="version"
         label="Version"
         widerLabel
         description={FieldDescriptions.BLUEPRINT_VERSION}
-        useFormikErrors
-        showUntouchedErrors
       />
       <ConnectedFieldTemplate
         name="description"
         label="Description"
         widerLabel
         description={FieldDescriptions.BLUEPRINT_DESCRIPTION}
-        useFormikErrors
-        showUntouchedErrors
       />
     </Modal.Body>
   );

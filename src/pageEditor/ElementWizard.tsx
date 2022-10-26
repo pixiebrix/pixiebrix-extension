@@ -38,7 +38,7 @@ import cx from "classnames";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { FormErrorContext } from "@/components/form/Form";
+import { FormErrorContext } from "@/components/form/FormErrorContext";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
