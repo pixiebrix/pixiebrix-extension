@@ -82,15 +82,24 @@ export type RequiredPartnerState = {
   error: unknown;
 };
 
+/**
+ * Hook for determining if the extension has required integrations for the partner.
+ *
+ * Covers both:
+ * - Integration required, but PixieBrix native token is still used for authentication
+ * - Int
+ *
+ */
 function useRequiredPartnerAuth(): RequiredPartnerState {
   // Prefer the most recent /api/me/ data from the server
   const { isLoading, data: me, error } = useGetMeQuery();
   const localAuth = useSelector(selectAuth);
-  const { authServiceId } = useSelector(selectSettings);
+  const { authServiceId, authMethod } = useSelector(selectSettings);
   const configuredServices = useSelector(selectConfiguredServices);
 
   // Prefer the latest remote data, but use local data to avoid blocking page load
   const { partner, organization } = me ?? localAuth;
+  const hasPartner = Boolean(partner);
 
   // If authServiceId is provided, force use of authServiceId
   const partnerServiceIds = authServiceId
@@ -103,13 +112,18 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
 
   const [isMissingPartnerToken, _tokenLoading, _tokenError, refreshTokenState] =
     useAsyncState(async () => {
+      if (authMethod === "pixiebrix-token") {
+        // User forced pixiebrix-token authentication via Advanced Settings > Authentication Method
+        return false;
+      }
+
       if (isEmpty(authServiceId)) {
         return false;
       }
 
       const { token: partnerToken } = await readPartnerAuthData();
       return partnerToken == null;
-    }, [authServiceId, localAuth]);
+    }, [authMethod, authServiceId, localAuth]);
 
   useEffect(() => {
     // Listen for token invalidation
@@ -125,10 +139,25 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     };
   }, [refreshTokenState]);
 
-  const hasPartner = Boolean(partner);
   const requiresIntegration =
+    // Primary organization has a partner and linked control room
     (hasPartner && Boolean(organization?.control_room)) ||
-    !isEmpty(authServiceId);
+    // User has overridden local settings
+    authMethod === "partner-oauth2" ||
+    authMethod === "partner-token";
+
+  if (authMethod === "pixiebrix-token") {
+    // User forced pixiebrix-token authentication via Advanced Settings > Authentication Method. Keep the theme,
+    // if any, but don't require a partner integration configuration.
+    return {
+      hasPartner,
+      partnerKey: partner?.theme,
+      requiresIntegration: false,
+      hasConfiguredIntegration: false,
+      isLoading: false,
+      error: undefined,
+    };
+  }
 
   return {
     hasPartner,
