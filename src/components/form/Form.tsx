@@ -19,7 +19,7 @@ import styles from "./Form.module.scss";
 
 import React, { ReactElement } from "react";
 import { Alert, Button, Form as BootstrapForm } from "react-bootstrap";
-import { Formik, FormikConfig, FormikHelpers, FormikValues } from "formik";
+import { Formik, FormikHelpers, FormikValues } from "formik";
 import * as yup from "yup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
@@ -46,7 +46,7 @@ export type RenderSubmit = (state: {
 
 export type RenderStatus = (state: { status: string }) => ReactElement;
 
-type BaseFormProps = {
+type FormProps = {
   /**
    * The starting formik field values for the form
    */
@@ -85,30 +85,21 @@ type BaseFormProps = {
   onSubmit: OnSubmit;
 
   /**
+   * The yup validation schema for the form
+   */
+  validationSchema?: yup.AnyObjectSchema;
+
+  /**
+   * Use the analysis annotations instead of formik to get the errors
+   * Note: validationSchema will be ignored if this is true
+   */
+  enableAnalysisFieldErrors?: boolean;
+
+  /**
    * Should we show errors on fields that are not marked touched yet?
    */
   showUntouchedErrors?: boolean;
 };
-
-type AnalysisFormProps = BaseFormProps & {
-  /**
-   * Use the analysis annotations instead of formik to get the errors
-   */
-  enableAnalysisFieldErrors: true;
-};
-
-type SchemaValidatedFormProps = BaseFormProps & {
-  /**
-   * The yup validation schema for the form
-   */
-  validationSchema: yup.AnyObjectSchema;
-};
-
-type FormProps = AnalysisFormProps | SchemaValidatedFormProps;
-
-const isSchemaValidatedForm = (
-  props: FormProps
-): props is SchemaValidatedFormProps => "validationSchema" in props;
 
 const defaultRenderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
   <Button type="submit" disabled={!isValid || isSubmitting}>
@@ -122,62 +113,51 @@ const defaultRenderStatus: RenderStatus = ({ status }) => (
   </Alert>
 );
 
-const Form: React.FC<FormProps> = (formProps) => {
-  const {
-    // Default to {} to be defensive against callers that pass through null/undefined form state when uninitialized
-    initialValues = {},
-    validateOnMount,
-    enableReinitialize,
-    children,
-    renderBody,
-    renderSubmit = defaultRenderSubmit,
-    renderStatus = defaultRenderStatus,
-    onSubmit,
-    showUntouchedErrors,
-  } = formProps;
-
-  const formikProps: FormikConfig<FormikValues> = {
-    initialValues,
-    validateOnMount,
-    enableReinitialize,
-    onSubmit,
-  };
-
-  let shouldUseAnalysis = true;
-
-  if (isSchemaValidatedForm(formProps)) {
-    // eslint-disable-next-line unicorn/consistent-destructuring -- Cannot destructure before type narrowing
-    formikProps.validationSchema = formProps.validationSchema;
-    shouldUseAnalysis = false;
-  }
-
-  return (
-    <FormErrorContext.Provider
-      value={{
-        shouldUseAnalysis,
-        showUntouchedErrors,
-      }}
+const Form: React.FC<FormProps> = ({
+  // Default to {} to be defensive against callers that pass through null/undefined form state when uninitialized
+  initialValues = {},
+  validateOnMount,
+  enableReinitialize,
+  children,
+  renderBody,
+  renderSubmit = defaultRenderSubmit,
+  renderStatus = defaultRenderStatus,
+  onSubmit,
+  validationSchema,
+  enableAnalysisFieldErrors,
+  showUntouchedErrors,
+}) => (
+  <FormErrorContext.Provider
+    value={{
+      shouldUseAnalysis: enableAnalysisFieldErrors,
+      showUntouchedErrors,
+    }}
+  >
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      validateOnMount={validateOnMount}
+      enableReinitialize={enableReinitialize}
+      onSubmit={onSubmit}
     >
-      <Formik {...formikProps}>
-        {({
-          handleSubmit,
-          isSubmitting,
-          isValid,
-          values,
-          status,
-          setFieldValue,
-        }) => (
-          <BootstrapForm noValidate onSubmit={handleSubmit}>
-            {status && renderStatus({ status })}
-            {renderBody
-              ? renderBody({ isValid, values, setFieldValue, isSubmitting })
-              : children}
-            {renderSubmit({ isSubmitting, isValid, values })}
-          </BootstrapForm>
-        )}
-      </Formik>
-    </FormErrorContext.Provider>
-  );
-};
+      {({
+        handleSubmit,
+        isSubmitting,
+        isValid,
+        values,
+        status,
+        setFieldValue,
+      }) => (
+        <BootstrapForm noValidate onSubmit={handleSubmit}>
+          {status && renderStatus({ status })}
+          {renderBody
+            ? renderBody({ isValid, values, setFieldValue, isSubmitting })
+            : children}
+          {renderSubmit({ isSubmitting, isValid, values })}
+        </BootstrapForm>
+      )}
+    </Formik>
+  </FormErrorContext.Provider>
+);
 
 export default Form;
