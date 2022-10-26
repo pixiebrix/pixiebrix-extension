@@ -18,10 +18,14 @@
 import { useSelector } from "react-redux";
 import { selectAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
 import { useField } from "formik";
+import { useFormErrorSettings } from "@/components/form/FormErrorContext";
 
-function useFormikFieldError(fieldPath: string): string | undefined {
+function useFormikFieldError(
+  fieldPath: string,
+  showUntouched?: boolean
+): string | undefined {
   const [, { error, touched }] = useField(fieldPath);
-  return touched ? error : null;
+  return showUntouched || touched ? error : null;
 }
 
 function useAnalysisFieldError(fieldPath: string): string[] | undefined {
@@ -32,22 +36,14 @@ function useAnalysisFieldError(fieldPath: string): string[] | undefined {
     : undefined;
 }
 
-let shouldUseAnalysis = false;
 function useFieldError(fieldPath: string): string | string[] | undefined {
+  const { shouldUseAnalysis, showUntouchedErrors } = useFormErrorSettings();
+
   return shouldUseAnalysis
     ? // eslint-disable-next-line react-hooks/rules-of-hooks -- shouldUseAnalysis is set once before render
       useAnalysisFieldError(fieldPath)
     : // eslint-disable-next-line react-hooks/rules-of-hooks -- shouldUseAnalysis is set once before render
-      useFormikFieldError(fieldPath);
-}
-
-/**
- * Configure the form field to use the analysis annotations
- * instead of the formik to get the errors.
- * Should be called once only at the start of the application.
- */
-export function enableAnalysisFieldErrors() {
-  shouldUseAnalysis = true;
+      useFormikFieldError(fieldPath, showUntouchedErrors);
 }
 
 export default useFieldError;

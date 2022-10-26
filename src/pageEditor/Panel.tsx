@@ -22,7 +22,6 @@ import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import registerEditors from "@/contrib/editors";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { enableAnalysisFieldErrors } from "@/components/form/useFieldError";
 import useRefresh from "@/hooks/useRefresh";
 import PanelContent from "@/pageEditor/PanelContent";
 import { logActions } from "@/components/logViewer/logSlice";
@@ -34,7 +33,6 @@ registerBuiltinBlocks();
 
 // Register Widgets
 registerDefaultWidgets();
-enableAnalysisFieldErrors();
 
 void store.dispatch(logActions.pollLogs());
 
