@@ -18,10 +18,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AnalysisState, Annotation } from "@/analysis/analysisTypes";
 import { UUID } from "@/core";
+import VarMap from "./analysisVisitors/varMap";
 
 const initialState: AnalysisState = {
   extensionAnnotations: {},
-  knownVars: {},
+  knownVars: null,
 };
 
 const analysisSlice = createSlice({
@@ -59,7 +60,7 @@ const analysisSlice = createSlice({
         ...annotations,
       ];
     },
-    setKnownVars(state, action: PayloadAction<any>) {
+    setKnownVars(state, action: PayloadAction<Map<string, VarMap>>) {
       state.knownVars = action.payload;
     },
   },

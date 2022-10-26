@@ -16,7 +16,8 @@
  */
 
 import { blockConfigFactory, formStateFactory } from "@/testUtils/factories";
-import VarAnalysis, { VarExistence } from "./varAnalysis";
+import VarAnalysis from "./varAnalysis";
+import { VarExistence } from "./VarExistence";
 import { validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";

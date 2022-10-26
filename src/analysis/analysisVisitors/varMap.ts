@@ -16,7 +16,11 @@
  */
 
 import { cloneDeep, get, merge, set } from "lodash";
-import { VarExistence } from "./varAnalysis";
+
+export enum VarExistence {
+  MAYBE = "MAYBE",
+  DEFINITELY = "DEFINITELY",
+}
 
 type VarObj = {
   "*"?: VarExistence;
@@ -88,31 +92,6 @@ class VarMap {
     merged.map = mergedMap;
 
     return merged;
-  }
-}
-
-function mergeObjects(a: unknown, b: unknown) {
-  const merged = {};
-  assign(merged, a);
-  assign(merged, b);
-  return merged;
-
-  function assign(target: unknown, source: unknown) {
-    if (source == null) {
-      return;
-    }
-
-    for (const [key, value] of Object.entries(source)) {
-      if (typeof value === "object") {
-        if (typeof target[key] !== "object") {
-          target[key] = {};
-        }
-
-        assign(target[key], value);
-      } else {
-        target[key] = value;
-      }
-    }
   }
 }
 

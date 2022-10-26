@@ -28,12 +28,7 @@ import { isEmpty, pick } from "lodash";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { makeInternalId } from "@/registry/internal";
 import { Analysis, Annotation, AnnotationType } from "@/analysis/analysisTypes";
-import VarMap from "./varMap";
-
-export enum VarExistence {
-  MAYBE = "MAYBE",
-  DEFINITELY = "DEFINITELY",
-}
+import VarMap, { VarExistence } from "./varMap";
 
 type PreviousVisitedBlock = {
   vars: VarMap;
