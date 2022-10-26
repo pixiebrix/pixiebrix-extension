@@ -264,8 +264,33 @@ describe("commonCssSelector", () => {
     const elements = [...document.body.querySelectorAll(selector)] as [
       HTMLElement
     ];
-    const inferredSelector = commonCssSelector(elements);
-    expect(inferredSelector).toBe(selector);
+    const commonSelector = commonCssSelector(elements);
+    expect(commonSelector).toBe(selector);
+  };
+
+  const expectSimilarElements = (
+    selector1: string,
+    selector2: string,
+    selector3: string,
+    body: string
+  ) => {
+    document.body.innerHTML = body;
+    const element1 = document.body.querySelector(selector1);
+    const element2 = document.body.querySelector(selector2);
+    const element3 = document.body.querySelector(selector3);
+
+    const commonSelector = commonCssSelector([
+      element1 as HTMLElement,
+      element2 as HTMLElement,
+    ]);
+    const commonElements = [
+      ...document.body.querySelectorAll(commonSelector),
+    ] as [HTMLElement];
+    expect(commonElements).toBeArray();
+    expect(commonElements).toHaveLength(3);
+    expect(commonElements).toContain(element1);
+    expect(commonElements).toContain(element2);
+    expect(commonElements).toContain(element3);
   };
 
   const body = html`
@@ -302,6 +327,18 @@ describe("commonCssSelector", () => {
             <span class="titleline"><a href="#">Almost</a> </span>
           </div>
         </div>
+        <div>extra text</div>
+        <div class="spacer" style="height:5px"></div>
+        <div class="athing">
+          <div valign="top" class="votelinks">
+            <a id="up_33239255" href="#"
+              ><div class="votearrow" title="upvote"></div
+            ></a>
+          </div>
+          <div class="title">
+            <span class="titleline"><a href="#">Nearly</a> </span>
+          </div>
+        </div>
       </div>
     </div>
   `;
@@ -318,6 +355,14 @@ describe("commonCssSelector", () => {
     expectSelector(".itemlist .title .titleline", body);
   });
 
+  test("pass two similar elements should return another similar elements", () => {
+    expectSimilarElements(
+      "#up_33240341 .votearrow",
+      "#up_33239220 .votearrow",
+      "#up_33239255 .votearrow",
+      body
+    );
+  });
   /* eslint-enable jest/expect-expect */
 });
 
