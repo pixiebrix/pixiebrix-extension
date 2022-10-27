@@ -31,7 +31,8 @@ const DelayedRender: React.FC<Props> = ({ children, millis }) => {
     }, millis);
   }, [millis]);
 
-  return isShown ? <>{children}</> : null;
+  // The hidden element allows us to preload the content (and images) while hidden. Replacing this with `null` defeats the purpose of this component
+  return isShown ? children : <div hidden>{children}</div>;
 };
 
 export default DelayedRender;

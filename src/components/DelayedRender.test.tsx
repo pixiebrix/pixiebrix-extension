@@ -34,7 +34,15 @@ describe("DelayedRender", () => {
       <DelayedRender millis={300}>Delayed content</DelayedRender>
     );
 
-    expect(rendered.asFragment()).toMatchInlineSnapshot("<DocumentFragment />");
+    expect(rendered.asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          hidden=""
+        >
+          Delayed content
+        </div>
+      </DocumentFragment>
+    `);
 
     jest.runAllTimers();
     expect(rendered.asFragment()).toMatchInlineSnapshot(`
