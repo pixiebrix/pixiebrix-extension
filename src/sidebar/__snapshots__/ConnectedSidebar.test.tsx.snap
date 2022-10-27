@@ -5,96 +5,92 @@ exports[`SidebarApp renders 1`] = `
   <div
     class="full-height"
   >
-    <div
-      hidden=""
-    >
-      <div>
+    <div>
+      <div
+        class="root container"
+      >
         <div
-          class="root container"
+          class="sidebarRow row"
         >
           <div
-            class="sidebarRow row"
+            class="col"
           >
-            <div
-              class="col"
-            >
-              <img
-                alt=""
-                src="test-file-stub"
-                width="300"
-              />
-            </div>
+            <img
+              alt=""
+              src="test-file-stub"
+              width="300"
+            />
           </div>
+        </div>
+        <div
+          class="sidebarRow row"
+        >
           <div
-            class="sidebarRow row"
+            class="col"
           >
-            <div
-              class="col"
+            <h4
+              class="callout"
             >
-              <h4
-                class="callout"
-              >
-                Get started with PixieBrix
-              </h4>
-              <p>
-                Go to the PixieBrix tab via the 
-                <strong>
-                  Chrome Dev Tools
-                </strong>
-              </p>
-              <p>
-                <kbd>
-                  Ctrl + Shift + C
-                </kbd>
-                or
-                <kbd>
-                  F12
-                </kbd>
-              </p>
-            </div>
+              Get started with PixieBrix
+            </h4>
+            <p>
+              Go to the PixieBrix tab via the 
+              <strong>
+                Chrome Dev Tools
+              </strong>
+            </p>
+            <p>
+              <kbd>
+                Ctrl + Shift + C
+              </kbd>
+              or
+              <kbd>
+                F12
+              </kbd>
+            </p>
           </div>
+        </div>
+        <div
+          class="sidebarRowWithDivider row"
+        >
           <div
-            class="sidebarRowWithDivider row"
+            class="col"
           >
-            <div
-              class="col"
+            <h4
+              class="tinyCallout"
             >
-              <h4
-                class="tinyCallout"
+              Need more help?
+            </h4>
+            <p>
+              Visit the 
+              <a
+                href="https://docs.pixiebrix.com/quick-start-guide"
+                rel="noopener noreferrer"
+                target="_blank"
               >
-                Need more help?
-              </h4>
-              <p>
-                Visit the 
-                <a
-                  href="https://docs.pixiebrix.com/quick-start-guide"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  Quick Start Guide
-                </a>
-                 or ask questions in the 
-                <a
-                  href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  Slack Community
-                </a>
-                . 
-              </p>
-              <p>
-                Visit the 
-                <a
-                  href="https://www.pixiebrix.com/marketplace/"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  PixieBrix Marketplace
-                </a>
-                 for ideas.
-              </p>
-            </div>
+                Quick Start Guide
+              </a>
+               or ask questions in the 
+              <a
+                href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                Slack Community
+              </a>
+              . 
+            </p>
+            <p>
+              Visit the 
+              <a
+                href="https://www.pixiebrix.com/marketplace/"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                PixieBrix Marketplace
+              </a>
+               for ideas.
+            </p>
           </div>
         </div>
       </div>

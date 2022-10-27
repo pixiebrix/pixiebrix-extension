@@ -15,23 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { render } from "@testing-library/react";
+import DelayedRender from "./DelayedRender";
 
-type Props = {
-  millis: number;
-};
+beforeAll(() => {
+  jest.useFakeTimers();
+});
 
-/** Component used to reduce flashing */
-const DelayedRender: React.FC<Props> = ({ children, millis }) => {
-  const [isShown, setIsShown] = useState(false);
+afterAll(() => {
+  jest.runAllTimers();
+  jest.useRealTimers();
+});
 
-  useEffect(() => {
-    setTimeout(() => {
-      setIsShown(true);
-    }, millis);
-  }, [millis]);
+describe("DelayedRender", () => {
+  test("renders", async () => {
+    const rendered = render(
+      <DelayedRender millis={300}>Delayed content</DelayedRender>
+    );
 
-  return isShown ? <>{children}</> : null;
-};
+    expect(rendered.asFragment()).toMatchInlineSnapshot("<DocumentFragment />");
 
-export default DelayedRender;
+    jest.runAllTimers();
+    expect(rendered.asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        Delayed content
+      </DocumentFragment>
+    `);
+  });
+});
