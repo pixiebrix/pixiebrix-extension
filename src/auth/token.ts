@@ -30,7 +30,7 @@ import { isEmpty, omit, remove } from "lodash";
 import { UnknownObject } from "@/types";
 
 const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
-const STORAGE_PARTNER_TOKEN = "partnerToken" as ManualStorageKey;
+export const STORAGE_PARTNER_TOKEN = "partnerToken" as ManualStorageKey;
 
 type AuthListener = (auth: Partial<TokenAuthData>) => void;
 
