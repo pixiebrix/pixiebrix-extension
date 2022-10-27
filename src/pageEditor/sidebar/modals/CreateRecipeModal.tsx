@@ -21,6 +21,7 @@ import {
   uuidv4,
   testIsSemVerString,
   validateSemVerString,
+  validateRegistryId,
 } from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -251,19 +252,24 @@ function useInitialFormState({
   );
   const recipeMetadata = dirtyMetadata ?? activeRecipe?.metadata;
 
+  // Handle the "Save As New" case, where an existing recipe, or an
+  // extension within an existing recipe, is selected
   if (recipeMetadata) {
-    // Handle the "Save As New" case, where an existing recipe, or an
-    // extension within an existing recipe, is selected
+    let newId = generateScopeBrickId(scope, recipeMetadata.id);
+    if (newId === recipeMetadata.id) {
+      newId = validateRegistryId(newId + "-copy");
+    }
+
     return {
-      id: generateScopeBrickId(scope, recipeMetadata.id),
+      id: newId,
       name: recipeMetadata.name,
       version: validateSemVerString("1.0.0"),
       description: recipeMetadata.description,
     };
   }
 
+  // Handle creating a new blueprint from a selected extension
   if (activeElement) {
-    // Handle creating a new blueprint from a selected extension
     return {
       id: generateRecipeId(scope, activeElement.label),
       name: activeElement.label,
@@ -290,10 +296,13 @@ function useFormSchema() {
   // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
   return object({
     id: string()
-      .matches(PACKAGE_REGEX, "Invalid registry id")
-      .notOneOf(allRecipeIds, "This id is already in use")
-      .required(),
-    name: string().required(),
+      .matches(
+        PACKAGE_REGEX,
+        "Blueprint ID is required, and may only include lowercase letters, numbers, and the symbols - _ ~"
+      )
+      .notOneOf(allRecipeIds, "Blueprint ID is already in use")
+      .required("Blueprint ID is required"),
+    name: string().required("Name is required"),
     version: string()
       .test(
         "semver",
@@ -425,6 +434,8 @@ const CreateRecipeModal: React.FC = () => {
       <RequireScope scopeSettingsDescription="To create a blueprint, you must first set an account alias for your PixieBrix account">
         <Form
           validationSchema={formSchema}
+          showUntouchedErrors
+          validateOnMount
           initialValues={initialFormState}
           onSubmit={onSubmit}
           renderBody={renderBody}

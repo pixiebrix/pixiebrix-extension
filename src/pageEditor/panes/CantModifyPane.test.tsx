@@ -15,28 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Keep in order so precedence is preserved
-import "@/vendors/theme/app/app.scss";
-import "@/vendors/overrides.scss";
-import "@/utils/layout.scss";
-import "./sidebar.scss";
-
-import "@/extensionContext";
-
-import registerMessenger from "@/sidebar/messenger/registration";
-import App from "@/sidebar/SidebarApp";
-import ReactDOM from "react-dom";
 import React from "react";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
-import { initToaster } from "@/utils/notify";
+import CantModifyPane from "@/pageEditor/panes/CantModifyPane";
+import { render, screen } from "@/pageEditor/testHelpers";
+import { waitFor } from "@testing-library/react";
 
-function init(): void {
-  ReactDOM.render(<App />, document.querySelector("#container"));
-}
+describe("CantModifyPane", () => {
+  test("it renders", () => {
+    const rendered = render(<CantModifyPane url="https://test.url" />);
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
 
-registerMessenger();
-registerContribBlocks();
-registerBuiltinBlocks();
-initToaster();
-init();
+  test("it renders right copy when the URL is HTTP", async () => {
+    render(<CantModifyPane url="http://example.com" />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("PixieBrix cannot modify insecure HTTP pages")
+      ).not.toBeNull();
+    });
+  });
+});

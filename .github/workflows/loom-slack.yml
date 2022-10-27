@@ -11,6 +11,7 @@ on:
 
 jobs:
   search:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     # https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs
     outputs:
@@ -33,19 +34,30 @@ jobs:
     if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     steps:
+      - name: Get PR status
+        run: |
+          STATUS=$(
+            gh pr view ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --json state --jq .state
+          )
+          echo STATUS=$STATUS >> $GITHUB_ENV
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Post loom if present
         uses: marocchino/sticky-pull-request-comment@v2
-        if: ${{ needs.search.outputs.link }}
+        if: ${{ needs.search.outputs.link && env.STATUS == 'OPEN' }}
         with:
           message: |
             When the PR is merged, the [first loom link found on this PR](${{ needs.search.outputs.link }}) will be posted to `#sprint-demo` on Slack. _Do not edit this comment manually._
 
       - name: Remind to post loom if missing
         uses: marocchino/sticky-pull-request-comment@v2
-        if: ${{ ! needs.search.outputs.link }}
+        if: ${{ ! needs.search.outputs.link && env.STATUS == 'OPEN' }}
         with:
           message: |
-            No loom links were found in the first post. Please add one there if you'd like to it to appear on Slack. _Do not edit this comment manually._
+            No loom links were found in the first post. Please add one there if you'd like to it to appear on Slack.
+
+            _Do not edit this comment manually._
 
   slack:
     needs: search

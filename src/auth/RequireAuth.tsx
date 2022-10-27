@@ -48,6 +48,9 @@ type RequireAuthProps = {
   ignoreApiError?: boolean;
 };
 
+/**
+ * Hook to determine authentication status. Authentication can be via native PixieBrix token, or partner Bearer JWT.
+ */
 export const useRequiredAuth = () => {
   const dispatch = useDispatch();
 
