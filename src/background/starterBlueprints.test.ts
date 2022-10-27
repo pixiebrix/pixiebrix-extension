@@ -22,6 +22,7 @@ import axios from "axios";
 import { isLinked } from "@/auth/token";
 import { extensionFactory, recipeFactory } from "@/testUtils/factories";
 import { PersistedExtension, RecipeMetadata } from "@/core";
+import { refreshRegistries } from "./refreshRegistries";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -34,6 +35,10 @@ jest.mock("@/auth/token", () => ({
 
 jest.mock("@/background/activeTab", () => ({
   forEachTab: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock("./refreshRegistries", () => ({
+  refreshRegistries: jest.fn().mockResolvedValue(undefined),
 }));
 
 const isLinkedMock = isLinked as jest.Mock;
@@ -49,8 +54,7 @@ beforeEach(async () => {
     extensions: [],
   });
 
-  isLinkedMock.mockClear();
-  openPlaygroundPage.mockClear();
+  jest.clearAllMocks();
 });
 
 describe("installStarterBlueprints", () => {
@@ -70,6 +74,7 @@ describe("installStarterBlueprints", () => {
 
     expect(extensions.length).toBe(1);
     expect(openPlaygroundPage.mock.calls).toHaveLength(1);
+    expect((refreshRegistries as jest.Mock).mock.calls).toHaveLength(1);
   });
 
   test("user does not have starter blueprints available to install", async () => {

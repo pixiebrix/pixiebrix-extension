@@ -36,11 +36,10 @@ import { castArray } from "lodash";
 import { Annotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
 import { isExpression } from "@/runtime/mapArgs";
+import { expectContext } from "@/utils/expectContext";
 
 export async function getCurrentURL(): Promise<string> {
-  if (!browser.devtools) {
-    throw new Error("getCurrentURL can only run in the developer tools");
-  }
+  expectContext("devTools");
 
   const tab = await browser.tabs.get(chrome.devtools.inspectedWindow.tabId);
   return tab.url;

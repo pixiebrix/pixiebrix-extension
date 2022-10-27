@@ -25,7 +25,6 @@ import hash from "object-hash";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import Loader from "@/components/Loader";
 import RecipeEntry from "@/pageEditor/sidebar/RecipeEntry";
 import useFlags from "@/hooks/useFlags";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
@@ -52,8 +51,7 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 const SidebarExpanded: React.FunctionComponent<{
   collapseSidebar: () => void;
 }> = ({ collapseSidebar }) => {
-  const { data: allRecipes, isLoading: isLoadingRecipes } =
-    useGetRecipesQuery();
+  const { data: allRecipes } = useGetRecipesQuery();
 
   const dispatch = useDispatch();
   const activeElementId = useSelector(selectActiveElementId);
@@ -229,13 +227,9 @@ const SidebarExpanded: React.FunctionComponent<{
         ) : null}
       </div>
       <div className={styles.extensions}>
-        {isLoadingRecipes ? (
-          <Loader />
-        ) : (
-          <Accordion activeKey={expandedRecipeId}>
-            <ListGroup>{listItems}</ListGroup>
-          </Accordion>
-        )}
+        <Accordion activeKey={expandedRecipeId}>
+          <ListGroup>{listItems}</ListGroup>
+        </Accordion>
       </div>
     </div>
   );

@@ -39,8 +39,8 @@ const SAVING_URL_TIMEOUT_MS = 4000;
 
 const AdvancedSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { restrict, permit, flagOn } = useFlags();
-  const { partnerId, authServiceId } = useSelector(selectSettings);
+  const { restrict, permit } = useFlags();
+  const { partnerId, authServiceId, authMethod } = useSelector(selectSettings);
 
   const [serviceURL, setServiceURL] = useConfiguredHost();
 
@@ -182,24 +182,41 @@ const AdvancedSettings: React.FunctionComponent = () => {
               API
             </Form.Text>
           </Form.Group>
-          {flagOn("partner-theming") && (
-            <Form.Group controlId="partnerId">
-              <Form.Label>Partner ID</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="my-company"
-                defaultValue={partnerId ?? ""}
-                onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
-                  dispatch(
-                    settingsSlice.actions.setPartnerId({
-                      partnerId: event.target.value,
-                    })
-                  );
-                }}
-              />
-              <Form.Text muted>The partner id of a PixieBrix partner</Form.Text>
-            </Form.Group>
-          )}
+          <Form.Group controlId="partnerId">
+            <Form.Label>Partner ID</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="my-company"
+              defaultValue={partnerId ?? ""}
+              onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
+                dispatch(
+                  settingsSlice.actions.setPartnerId({
+                    partnerId: event.target.value,
+                  })
+                );
+              }}
+            />
+            <Form.Text muted>The partner id of a PixieBrix partner</Form.Text>
+          </Form.Group>
+
+          <Form.Group controlId="authMethod">
+            <Form.Label>Authentication Method</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="default"
+              defaultValue={authMethod ?? "default"}
+              onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
+                dispatch(
+                  settingsSlice.actions.setAuthMethod({
+                    authMethod: event.target.value,
+                  })
+                );
+              }}
+            />
+            <Form.Text muted>
+              Provide an authentication type to force authentication
+            </Form.Text>
+          </Form.Group>
         </Form>
       </Card.Body>
       <Card.Footer className={styles.cardFooter}>

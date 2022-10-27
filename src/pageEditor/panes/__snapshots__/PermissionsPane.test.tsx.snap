@@ -31,7 +31,7 @@ exports[`PermissionsPane it renders 1`] = `
                 fill="currentColor"
               />
             </svg>
-             Enable PixieBrix on this page
+             Enable PixieBrix on test.url
           </button>
         </p>
         <p
