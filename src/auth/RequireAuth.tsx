@@ -178,10 +178,6 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     return <>{children}</>;
   }
 
-  if (isStartPage) {
-    return <LoginPage />;
-  }
-
   // Show SetupPage if there is auth error or user not logged in
   if (
     // Currently, useGetMeQuery will only return a 401 if the user has a non-empty invalid token. If the extension
@@ -189,6 +185,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     // the user is not authenticated.
     // http://github.com/pixiebrix/pixiebrix-app/blob/0686663bf007cf4b33d547d9f124d1fa2a83ec9a/api/views/site.py#L210-L210
     // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3056
+    isStartPage ||
     isAccountUnlinked ||
     (requiresIntegration && !hasConfiguredIntegration)
   ) {
