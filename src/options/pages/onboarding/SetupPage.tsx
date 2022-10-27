@@ -52,6 +52,8 @@ const SetupPage: React.FunctionComponent = () => {
     hasConfiguredIntegration,
   } = useRequiredPartnerAuth();
 
+  const isStartUrl = location.hash.startsWith("#/start");
+
   const [baseURL, baseURLPending] = useAsyncState(getBaseURL, []);
 
   if (baseURLPending || isPartnerLoading) {
@@ -68,6 +70,7 @@ const SetupPage: React.FunctionComponent = () => {
     // NOP -- user has overridden to use PixieBrix token even though they might be connected to an organization
     // that uses a Control Room
   } else if (
+    isStartUrl ||
     (hasPartner && !hasConfiguredIntegration) ||
     // The user has overridden to use the partner auth even though they might be linked via PixieBrix token
     authMethod === "partner-token" ||
