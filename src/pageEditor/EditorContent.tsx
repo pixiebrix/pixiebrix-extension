@@ -62,6 +62,16 @@ const EditorContent: React.FC = () => {
 
   const url = useCurrentUrl();
 
+  useEffect(() => {
+    if (!url || isPendingInstalledExtensions || isPendingDynamicExtensions) {
+      console.warn("EditorContent will render nothing", {
+        url,
+        isPendingInstalledExtensions,
+        isPendingDynamicExtensions,
+      });
+    }
+  }, [url, isPendingInstalledExtensions, isPendingDynamicExtensions]);
+
   const unavailableCount = unavailableInstalledCount + unavailableDynamicCount;
   const isPendingExtensions =
     isPendingInstalledExtensions || isPendingDynamicExtensions;
