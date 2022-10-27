@@ -20,7 +20,6 @@ import Page from "@/layout/Page";
 import { faHammer, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link } from "react-router-dom";
 import { compact, isEmpty, orderBy, sortBy, uniq } from "lodash";
 import Select from "react-select";
 import { PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
@@ -33,7 +32,6 @@ import { push } from "connected-react-router";
 import CustomBricksCard from "./CustomBricksCard";
 import { EnrichedBrick, NavigateProps } from "./workshopTypes";
 import { RequireScope } from "@/auth/RequireScope";
-import useFlags from "@/hooks/useFlags";
 
 const { actions } = workshopSlice;
 
@@ -240,8 +238,6 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
 };
 
 const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
-  const { flagOn } = useFlags();
-
   return (
     <RequireScope
       scopeSettingsTitle="Welcome to the PixieBrix Workshop!"
@@ -252,13 +248,8 @@ const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
         icon={faHammer}
         description={
           <p>
-            Build and attach bricks.{" "}
-            {flagOn("marketplace") && (
-              <>
-                To activate pre-made blueprints, visit the{" "}
-                <Link to={"/marketplace"}>Marketplace</Link>
-              </>
-            )}
+            Text-based editor for advanced users to create and edit bricks.
+            Creations made in the Page Editor can also be edited here.
           </p>
         }
         toolbar={
