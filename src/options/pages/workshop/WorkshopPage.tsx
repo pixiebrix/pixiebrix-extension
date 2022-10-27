@@ -237,37 +237,35 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
   );
 };
 
-const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
-  return (
-    <RequireScope
-      scopeSettingsTitle="Welcome to the PixieBrix Workshop!"
-      scopeSettingsDescription="To use the Workshop, you must first set an account alias for your PixieBrix account"
+const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => (
+  <RequireScope
+    scopeSettingsTitle="Welcome to the PixieBrix Workshop!"
+    scopeSettingsDescription="To use the Workshop, you must first set an account alias for your PixieBrix account"
+  >
+    <Page
+      title="Workshop"
+      icon={faHammer}
+      description={
+        <p>
+          Text-based editor for advanced users to create and edit bricks.
+          Creations made in the Page Editor can also be edited here.
+        </p>
+      }
+      toolbar={
+        <Button
+          variant="info"
+          onClick={() => {
+            navigate("/workshop/create/");
+          }}
+        >
+          <FontAwesomeIcon icon={faPlus} /> Create New Brick
+        </Button>
+      }
     >
-      <Page
-        title="Workshop"
-        icon={faHammer}
-        description={
-          <p>
-            Text-based editor for advanced users to create and edit bricks.
-            Creations made in the Page Editor can also be edited here.
-          </p>
-        }
-        toolbar={
-          <Button
-            variant="info"
-            onClick={() => {
-              navigate("/workshop/create/");
-            }}
-          >
-            <FontAwesomeIcon icon={faPlus} /> Create New Brick
-          </Button>
-        }
-      >
-        <CustomBricksSection navigate={navigate} />
-      </Page>
-    </RequireScope>
-  );
-};
+      <CustomBricksSection navigate={navigate} />
+    </Page>
+  </RequireScope>
+);
 
 const mapDispatchToProps = { navigate: push };
 
