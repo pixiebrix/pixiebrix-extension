@@ -54,6 +54,10 @@ jest.mock("@/extensionPoints/registry", () => ({
 }));
 
 describe("Collecting available vars", () => {
+  let analysis: VarAnalysis;
+  beforeEach(() => {
+    analysis = new VarAnalysis([]);
+  });
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -75,7 +79,6 @@ describe("Collecting available vars", () => {
       [blockConfigFactory()]
     );
 
-    const analysis = new VarAnalysis();
     await analysis.run(extension);
 
     expect(analysis.getKnownVars().size).toBe(1);
@@ -106,7 +109,6 @@ describe("Collecting available vars", () => {
       blockConfigFactory(),
     ]);
 
-    const analysis = new VarAnalysis();
     await analysis.run(extension);
 
     const block0Vars = analysis.getKnownVars().get("extension.blockPipeline.0");
@@ -126,7 +128,6 @@ describe("Collecting available vars", () => {
       blockConfigFactory(),
     ]);
 
-    const analysis = new VarAnalysis();
     await analysis.run(extension);
 
     const block0Vars = analysis.getKnownVars().get("extension.blockPipeline.0");
@@ -139,7 +140,6 @@ describe("Collecting available vars", () => {
   });
 
   describe("if-else brick", () => {
-    let analysis: VarAnalysis;
     beforeAll(async () => {
       const ifElseBlock = {
         id: IfElse.BLOCK_ID,
@@ -166,7 +166,6 @@ describe("Collecting available vars", () => {
         blockConfigFactory(),
       ]);
 
-      analysis = new VarAnalysis();
       await analysis.run(extension);
     });
 
@@ -203,7 +202,6 @@ describe("Collecting available vars", () => {
   });
 
   describe("for-each brick", () => {
-    let analysis: VarAnalysis;
     beforeAll(async () => {
       const forEachBlock = {
         id: ForEach.BLOCK_ID,
@@ -225,7 +223,6 @@ describe("Collecting available vars", () => {
         blockConfigFactory(),
       ]);
 
-      analysis = new VarAnalysis();
       await analysis.run(extension);
     });
 

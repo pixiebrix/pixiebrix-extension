@@ -129,32 +129,51 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   }
 );
 
+const varAnalysisFactory = (
+  action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
+  state: RootState
+) => {
+  const records = selectExtensionTrace(state);
+
+  return new VarAnalysis(records);
+};
+
 // VarAnalysis on node mutation and traces
-pageEditorAnalysisManager.registerAnalysisEffect(() => new VarAnalysis(), {
-  // Only needed on editorActions.editElement,
-  // but the block path can change when node tree is mutated
-  matcher: isAnyOf(
-    runtimeActions.setExtensionTrace,
-    ...nodeListMutationActions
-  ),
-  postAnalysisAction(analysis, listenerApi) {
-    listenerApi.dispatch(
-      analysisSlice.actions.setKnownVars(analysis.getKnownVars())
-    );
+pageEditorAnalysisManager.registerAnalysisEffect(
+  varAnalysisFactory,
+  {
+    // Only needed on editorActions.editElement,
+    // but the block path can change when node tree is mutated
+    matcher: isAnyOf(
+      runtimeActions.setExtensionTrace,
+      ...nodeListMutationActions
+    ),
   },
-});
+  {
+    postAnalysisAction(analysis, listenerApi) {
+      listenerApi.dispatch(
+        analysisSlice.actions.setKnownVars(analysis.getKnownVars())
+      );
+    },
+  }
+);
 
 // VarAnalysis with debounce on edit
-pageEditorAnalysisManager.registerAnalysisEffect(() => new VarAnalysis(), {
-  // Only needed on editorActions.editElement,
-  // but the block path can change when node tree is mutated
-  matcher: isAnyOf(editorActions.editElement),
-  postAnalysisAction(analysis, listenerApi) {
-    listenerApi.dispatch(
-      analysisSlice.actions.setKnownVars(analysis.getKnownVars())
-    );
+pageEditorAnalysisManager.registerAnalysisEffect(
+  varAnalysisFactory,
+  {
+    // Only needed on editorActions.editElement,
+    // but the block path can change when node tree is mutated
+    matcher: isAnyOf(editorActions.editElement),
   },
-  debounce: 500,
-});
+  {
+    postAnalysisAction(analysis, listenerApi) {
+      listenerApi.dispatch(
+        analysisSlice.actions.setKnownVars(analysis.getKnownVars())
+      );
+    },
+    debounce: 500,
+  }
+);
 
 export default pageEditorAnalysisManager;

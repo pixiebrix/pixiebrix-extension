@@ -29,6 +29,7 @@ import extensionPointRegistry from "@/extensionPoints/registry";
 import { makeInternalId } from "@/registry/internal";
 import { Analysis, Annotation, AnnotationType } from "@/analysis/analysisTypes";
 import VarMap, { VarExistence } from "./varMap";
+import { TraceRecord } from "@/telemetry/trace";
 
 type PreviousVisitedBlock = {
   vars: VarMap;
@@ -52,18 +53,33 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     return this.knownVars;
   }
 
+  /**
+   * @param trace the trace for the latest run of the extension
+   */
+  constructor(private readonly trace: TraceRecord[]) {
+    super();
+  }
+
   override visitBlock(
     position: BlockPosition,
     blockConfig: BlockConfig,
     extra: VisitBlockExtra
   ) {
-    // TODO include the values from a run trace if available
     const currentBlockVars =
       this.previousVisitedBlock.output == null
         ? this.previousVisitedBlock.vars.clone()
         : this.previousVisitedBlock.vars.merge(
             this.previousVisitedBlock.output
           );
+
+    const traceRecord = this.trace.find(
+      (x) =>
+        x.blockInstanceId === blockConfig.instanceId &&
+        x.templateContext != null
+    );
+    if (traceRecord != null) {
+      currentBlockVars.setExistenceFromObj(traceRecord.templateContext);
+    }
 
     this.knownVars.set(position.path, currentBlockVars);
 

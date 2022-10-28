@@ -38,14 +38,14 @@ type AnalysisEffect = ListenerEffect<
   ThunkDispatch<unknown, unknown, AnyAction>
 >;
 
-type AnalysisEffectConfig<TAnalysis extends Analysis = Analysis> = (
+type AnalysisListenerConfig =
   | {
       actionCreator: TypedActionCreator<any>;
     }
   | {
       matcher: MatchFunction<AnyAction>;
-    }
-) & {
+    };
+type EffectConfig<TAnalysis extends Analysis = Analysis> = {
   postAnalysisAction?: (
     analysis: TAnalysis,
     listenerApi: ListenerEffectAPI<
@@ -70,7 +70,8 @@ class ReduxAnalysisManager {
 
   public registerAnalysisEffect<TAnalysis extends Analysis>(
     analysisFactory: AnalysisFactory<TAnalysis>,
-    config: AnalysisEffectConfig<TAnalysis>
+    listenerConfig: AnalysisListenerConfig,
+    effectConfig?: EffectConfig<TAnalysis>
   ) {
     const effect: AnalysisEffect = async (action, listenerApi) => {
       const state = listenerApi.getState();
@@ -103,14 +104,16 @@ class ReduxAnalysisManager {
         })
       );
 
-      if (config.postAnalysisAction) {
-        config.postAnalysisAction(analysis, listenerApi);
+      if (effectConfig?.postAnalysisAction) {
+        effectConfig.postAnalysisAction(analysis, listenerApi);
       }
     };
 
     this.listenerMiddleware.startListening({
-      ...config,
-      effect: config.debounce ? debounce(effect, config.debounce) : effect,
+      ...listenerConfig,
+      effect: effectConfig?.debounce
+        ? debounce(effect, effectConfig.debounce)
+        : effect,
     } as any);
   }
 }
