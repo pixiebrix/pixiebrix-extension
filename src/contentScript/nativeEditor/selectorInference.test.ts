@@ -16,6 +16,7 @@
  */
 
 import {
+  commonCssSelector,
   generateSelector,
   getAttributeSelector,
   getAttributeSelectorRegex,
@@ -252,6 +253,116 @@ describe("safeCssSelector", () => {
     );
   });
 
+  /* eslint-enable jest/expect-expect */
+});
+
+describe("commonCssSelector", () => {
+  /* eslint-disable jest/expect-expect -- Custom expectSelector */
+  const expectSelector = (selector: string, body: string) => {
+    document.body.innerHTML = body;
+
+    const elements = [...document.body.querySelectorAll(selector)] as [
+      HTMLElement
+    ];
+    const commonSelector = commonCssSelector(elements);
+    expect(commonSelector).toBe(selector);
+  };
+
+  const expectSimilarElements = (
+    selector1: string,
+    selector2: string,
+    selector3: string,
+    body: string
+  ) => {
+    document.body.innerHTML = body;
+    const element1 = document.body.querySelector(selector1);
+    const element2 = document.body.querySelector(selector2);
+    const element3 = document.body.querySelector(selector3);
+
+    const commonSelector = commonCssSelector([
+      element1 as HTMLElement,
+      element2 as HTMLElement,
+    ]);
+    const commonElements = [
+      ...document.body.querySelectorAll(commonSelector),
+    ] as [HTMLElement];
+    expect(commonElements).toBeArray();
+    expect(commonElements).toHaveLength(3);
+    expect(commonElements).toContain(element1);
+    expect(commonElements).toContain(element2);
+    expect(commonElements).toContain(element3);
+  };
+
+  const body = html`
+    <div>
+      <div>
+        <div>Hello</div>
+        <div class="title"></div>
+        <span class="titleline"><a href="#">GitHub</a></span>
+      </div>
+      <div class="itemlist">
+        <span class="titleline"><a href="#">Almost</a> </span>
+        <div class="athing">
+          <div class="title">
+            <span class="rank">1.</span>
+          </div>
+          <div valign="top" class="votelinks">
+            <a id="up_33240341" href="#">
+              <div class="votearrow" title="upvote"></div>
+            </a>
+          </div>
+          <div class="title">
+            <span class="titleline"><a href="#">GitHub</a></span>
+          </div>
+        </div>
+        <div>extra text</div>
+        <div class="spacer" style="height:5px"></div>
+        <div class="athing">
+          <div valign="top" class="votelinks">
+            <a id="up_33239220" href="#"
+              ><div class="votearrow" title="upvote"></div
+            ></a>
+          </div>
+          <div class="title">
+            <span class="titleline"><a href="#">Almost</a> </span>
+          </div>
+        </div>
+        <div>extra text</div>
+        <div class="spacer" style="height:5px"></div>
+        <div class="athing">
+          <div valign="top" class="votelinks">
+            <a id="up_33239255" href="#"
+              ><div class="votearrow" title="upvote"></div
+            ></a>
+          </div>
+          <div class="title">
+            <span class="titleline"><a href="#">Nearly</a> </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  test("common ancester classname, parent classname, element tag", () => {
+    expectSelector(".itemlist .titleline > a", body);
+  });
+
+  test("common ancester classname, common element classname", () => {
+    expectSelector(".itemlist .votearrow", body);
+  });
+
+  test("common ancester classname, common parent classname, common element classname", () => {
+    expectSelector(".itemlist .title .titleline", body);
+  });
+
+  test("pass two similar elements should return another similar elements", () => {
+    expectSimilarElements(
+      "#up_33240341 .votearrow",
+      "#up_33239220 .votearrow",
+      "#up_33239255 .votearrow",
+      body
+    );
+  });
   /* eslint-enable jest/expect-expect */
 });
 
