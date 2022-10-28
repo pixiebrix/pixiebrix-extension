@@ -129,11 +129,11 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   }
 );
 
+// VarAnalysis on node mutation and traces
 pageEditorAnalysisManager.registerAnalysisEffect(() => new VarAnalysis(), {
   // Only needed on editorActions.editElement,
   // but the block path can change when node tree is mutated
   matcher: isAnyOf(
-    editorActions.editElement,
     runtimeActions.setExtensionTrace,
     ...nodeListMutationActions
   ),
@@ -142,6 +142,19 @@ pageEditorAnalysisManager.registerAnalysisEffect(() => new VarAnalysis(), {
       analysisSlice.actions.setKnownVars(analysis.getKnownVars())
     );
   },
+});
+
+// VarAnalysis with debounce on edit
+pageEditorAnalysisManager.registerAnalysisEffect(() => new VarAnalysis(), {
+  // Only needed on editorActions.editElement,
+  // but the block path can change when node tree is mutated
+  matcher: isAnyOf(editorActions.editElement),
+  postAnalysisAction(analysis, listenerApi) {
+    listenerApi.dispatch(
+      analysisSlice.actions.setKnownVars(analysis.getKnownVars())
+    );
+  },
+  debounce: 500,
 });
 
 export default pageEditorAnalysisManager;

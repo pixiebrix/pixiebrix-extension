@@ -30,6 +30,7 @@ import {
 } from "@reduxjs/toolkit/dist/listenerMiddleware/types";
 import { Analysis } from "./analysisTypes";
 import { RootState } from "@/pageEditor/pageEditorTypes";
+import { debounce } from "lodash";
 
 type AnalysisEffect = ListenerEffect<
   AnyAction,
@@ -52,6 +53,7 @@ type AnalysisEffectConfig<TAnalysis extends Analysis = Analysis> = (
       ThunkDispatch<unknown, unknown, AnyAction>
     >
   ) => void;
+  debounce?: number;
 };
 
 type AnalysisFactory<
@@ -108,7 +110,7 @@ class ReduxAnalysisManager {
 
     this.listenerMiddleware.startListening({
       ...config,
-      effect,
+      effect: config.debounce ? debounce(effect, config.debounce) : effect,
     } as any);
   }
 }
