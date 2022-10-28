@@ -55,88 +55,99 @@ jest.mock("@/extensionPoints/registry", () => ({
 
 describe("Collecting available vars", () => {
   let analysis: VarAnalysis;
-  beforeEach(() => {
-    analysis = new VarAnalysis([]);
-  });
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  test("collects the context vars", async () => {
-    const extension = formStateFactory(
-      {
-        // Let this extension to have a service reference
-        services: [
-          {
-            outputKey: validateOutputKey("pixiebrix"),
-            id: validateRegistryId("@test/service"),
-          },
-        ],
-        optionsArgs: {
-          foo: "bar",
-        },
-      },
-      [blockConfigFactory()]
-    );
-
-    await analysis.run(extension);
-
-    expect(analysis.getKnownVars().size).toBe(1);
-    expect(analysis.getKnownVars().get("extension.blockPipeline.0")).toEqual({
-      map: {
-        "@input": {
-          title: VarExistence.DEFINITELY,
-          url: VarExistence.DEFINITELY,
-          lang: VarExistence.DEFINITELY,
-        },
-        "@options": {
-          foo: VarExistence.DEFINITELY,
-        },
-        "@pixiebrix": {
-          __service: {
-            serviceId: VarExistence.DEFINITELY,
-          },
-        },
-      },
+  describe("general", () => {
+    beforeEach(() => {
+      analysis = new VarAnalysis([]);
     });
-  });
 
-  test("collects the output key", async () => {
-    const extension = formStateFactory(undefined, [
-      blockConfigFactory({
-        outputKey: validateOutputKey("foo"),
-      }),
-      blockConfigFactory(),
-    ]);
+    test("collects the context vars", async () => {
+      const extension = formStateFactory(
+        {
+          // Let this extension to have a service reference
+          services: [
+            {
+              outputKey: validateOutputKey("pixiebrix"),
+              id: validateRegistryId("@test/service"),
+            },
+          ],
+          optionsArgs: {
+            foo: "bar",
+          },
+        },
+        [blockConfigFactory()]
+      );
 
-    await analysis.run(extension);
+      await analysis.run(extension);
 
-    const block0Vars = analysis.getKnownVars().get("extension.blockPipeline.0");
-    expect(block0Vars.getExistence("@foo")).toBeUndefined();
+      expect(analysis.getKnownVars().size).toBe(1);
+      expect(analysis.getKnownVars().get("extension.blockPipeline.0")).toEqual({
+        map: {
+          "@input": {
+            title: VarExistence.DEFINITELY,
+            url: VarExistence.DEFINITELY,
+            lang: VarExistence.DEFINITELY,
+          },
+          "@options": {
+            foo: VarExistence.DEFINITELY,
+          },
+          "@pixiebrix": {
+            __service: {
+              serviceId: VarExistence.DEFINITELY,
+            },
+          },
+        },
+      });
+    });
 
-    const block1Vars = analysis.getKnownVars().get("extension.blockPipeline.1");
-    expect(block1Vars.getExistence("@foo")).toBe(VarExistence.DEFINITELY);
-    expect(block1Vars.getExistence("@foo.*")).toBe(VarExistence.MAYBE);
-  });
+    test("collects the output key", async () => {
+      const extension = formStateFactory(undefined, [
+        blockConfigFactory({
+          outputKey: validateOutputKey("foo"),
+        }),
+        blockConfigFactory(),
+      ]);
 
-  test("collects the output key of a conditional block", async () => {
-    const extension = formStateFactory(undefined, [
-      blockConfigFactory({
-        if: false,
-        outputKey: validateOutputKey("foo"),
-      }),
-      blockConfigFactory(),
-    ]);
+      await analysis.run(extension);
 
-    await analysis.run(extension);
+      const block0Vars = analysis
+        .getKnownVars()
+        .get("extension.blockPipeline.0");
+      expect(block0Vars.getExistence("@foo")).toBeUndefined();
 
-    const block0Vars = analysis.getKnownVars().get("extension.blockPipeline.0");
-    expect(block0Vars.getExistence("@foo")).toBeUndefined();
+      const block1Vars = analysis
+        .getKnownVars()
+        .get("extension.blockPipeline.1");
+      expect(block1Vars.getExistence("@foo")).toBe(VarExistence.DEFINITELY);
+      expect(block1Vars.getExistence("@foo.*")).toBe(VarExistence.MAYBE);
+    });
 
-    const block1Vars = analysis.getKnownVars().get("extension.blockPipeline.1");
-    // TODO the following check fails due to the VarMap implementation
-    // expect(block1Vars.getExistence("@foo")).toBe(VarExistence.MAYBE);
-    expect(block1Vars.getExistence("@foo.*")).toBe(VarExistence.MAYBE);
+    test("collects the output key of a conditional block", async () => {
+      const extension = formStateFactory(undefined, [
+        blockConfigFactory({
+          if: false,
+          outputKey: validateOutputKey("foo"),
+        }),
+        blockConfigFactory(),
+      ]);
+
+      await analysis.run(extension);
+
+      const block0Vars = analysis
+        .getKnownVars()
+        .get("extension.blockPipeline.0");
+      expect(block0Vars.getExistence("@foo")).toBeUndefined();
+
+      const block1Vars = analysis
+        .getKnownVars()
+        .get("extension.blockPipeline.1");
+      // TODO the following check fails due to the VarMap implementation
+      // expect(block1Vars.getExistence("@foo")).toBe(VarExistence.MAYBE);
+      expect(block1Vars.getExistence("@foo.*")).toBe(VarExistence.MAYBE);
+    });
   });
 
   describe("if-else brick", () => {
@@ -223,6 +234,7 @@ describe("Collecting available vars", () => {
         blockConfigFactory(),
       ]);
 
+      analysis = new VarAnalysis([]);
       await analysis.run(extension);
     });
 

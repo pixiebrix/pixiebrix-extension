@@ -29,8 +29,7 @@ import { LogRootState, LogState } from "./logViewerTypes";
 import { castDraft } from "immer";
 import { WritableDraft } from "immer/dist/types/types-external";
 
-// TODO revert this
-const REFRESH_INTERVAL = 7500;
+const REFRESH_INTERVAL = 750;
 
 export const initialLogState: LogState = {
   activeContext: null,
