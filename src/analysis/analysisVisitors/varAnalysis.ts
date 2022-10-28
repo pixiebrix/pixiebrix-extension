@@ -101,6 +101,10 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     }
 
     const varName = expression.__value__;
+    if (varName == null) {
+      return;
+    }
+
     const blockKnownVars = this.knownVars.get(blockPosition.path);
     if (blockKnownVars?.getExistence(varName) == null) {
       this.annotations.push({

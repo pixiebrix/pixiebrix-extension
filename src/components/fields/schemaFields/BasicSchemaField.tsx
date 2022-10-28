@@ -120,7 +120,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
       validate,
     }
   );
-  const error = useFieldError(name);
+  const { error, warning } = useFieldError(name);
 
   useEffect(() => {
     // Initialize any undefined required fields to prevent inferring an "omit" input
@@ -141,6 +141,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
         name={name}
         label={fieldLabel}
         description={fieldDescription}
+        warning={warning}
         error={error}
         touched={touched}
         as={widgetsRegistry.UnsupportedWidget}
@@ -166,6 +167,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
       name={name}
       label={fieldLabel}
       description={fieldDescription}
+      warning={warning}
       error={error}
       touched={touched}
       className={cx({ "mb-0": hideLabel })} // Remove bottom margin if we're already hiding the label

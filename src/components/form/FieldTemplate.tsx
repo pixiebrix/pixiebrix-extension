@@ -37,6 +37,7 @@ export type FieldProps<As extends React.ElementType = React.ElementType> =
       fitLabelWidth?: boolean;
       widerLabel?: boolean;
       description?: ReactNode;
+      warning?: string | string[];
       error?: string | string[];
       touched?: boolean;
 
@@ -72,7 +73,9 @@ function hasOwnError(error: unknown) {
   // Don't support Formik nested errors.
   return (
     typeof error === "string" ||
-    (Array.isArray(error) && error.every((x) => typeof x === "string"))
+    (Array.isArray(error) &&
+      error.length > 0 &&
+      error.every((x) => typeof x === "string"))
   );
 }
 
@@ -114,6 +117,7 @@ const FieldTemplate: React.FC<FieldProps> = ({
   fitLabelWidth,
   widerLabel,
   description,
+  warning,
   error,
   touched,
   value,
@@ -123,7 +127,6 @@ const FieldTemplate: React.FC<FieldProps> = ({
   className,
   ...restFieldProps
 }) => {
-  // TODO get error type to show a warning instead of an error
   const isInvalid = hasOwnError(error);
 
   // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
@@ -190,6 +193,17 @@ const FieldTemplate: React.FC<FieldProps> = ({
               key={`${errorMessage}-${index}`}
               message={errorMessage}
               type={AnnotationType.Error}
+            />
+          ))}
+        </Col>
+      )}
+      {warning != null && (
+        <Col xs="12" className="mb-2">
+          {castArray(warning).map((warningMessage, index) => (
+            <AnnotationAlert
+              key={`${warningMessage}-${index}`}
+              message={warningMessage}
+              type={AnnotationType.Warning}
             />
           ))}
         </Col>

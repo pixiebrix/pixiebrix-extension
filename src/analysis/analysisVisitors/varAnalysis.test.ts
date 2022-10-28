@@ -53,7 +53,7 @@ jest.mock("@/extensionPoints/registry", () => ({
   },
 }));
 
-describe("VarAnalysis", () => {
+describe("Collecting available vars", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
