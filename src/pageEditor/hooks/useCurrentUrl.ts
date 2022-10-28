@@ -47,16 +47,18 @@ async function onNavigation(
 
 const startWatching = once(async () => {
   browser.webNavigation.onCommitted.addListener(onNavigation);
-  urlChanges.emit(await getCurrentURL());
+  tabUrl = await getCurrentURL();
+  urlChanges.emit(tabUrl);
 });
 
 export default function useCurrentUrl(): string {
   expectContext("devTools");
 
   const [url, setUrl] = useState(tabUrl);
+
   useEffect(() => {
-    void startWatching();
     urlChanges.add(setUrl);
+    void startWatching();
     return () => {
       urlChanges.remove(setUrl);
     };
