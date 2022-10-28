@@ -16,29 +16,30 @@
  */
 
 import React from "react";
-import PermissionsPane from "@/pageEditor/panes/PermissionsPane";
-import { render, screen } from "@/pageEditor/testHelpers";
-import useCurrentUrl from "@/pageEditor/hooks/useCurrentUrl";
-import { waitFor } from "@testing-library/react";
+import SidebarApp from "@/sidebar/SidebarApp";
+import { render } from "@testing-library/react";
+import useContextInvalidated from "@/hooks/useContextInvalidated";
 
-jest.mock("@/pageEditor/hooks/useCurrentUrl", () => ({
+jest.mock("@/options/store", () => ({
+  persistor: {
+    flush: jest.fn(),
+  },
+}));
+
+jest.mock("@/hooks/useContextInvalidated", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
 
-describe("PermissionsPane", () => {
+describe("SidebarApp", () => {
   test("it renders", () => {
-    (useCurrentUrl as jest.Mock).mockReturnValue("https://test.url");
-    const rendered = render(<PermissionsPane />);
+    const rendered = render(<SidebarApp />);
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it renders right copy when the URL isn't available", async () => {
-    (useCurrentUrl as jest.Mock).mockReturnValue(undefined);
-    render(<PermissionsPane />);
-
-    await waitFor(() => {
-      expect(screen.getByText("Enable PixieBrix on this page")).not.toBeNull();
-    });
+  test("it renders error when context is invalidated", () => {
+    (useContextInvalidated as jest.Mock).mockReturnValue(true);
+    const rendered = render(<SidebarApp />);
+    expect(rendered.asFragment()).toMatchSnapshot();
   });
 });

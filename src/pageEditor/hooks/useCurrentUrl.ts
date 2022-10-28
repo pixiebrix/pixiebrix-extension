@@ -15,12 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { resetTab, stopInspectingNative } from "@/contentScript/messenger/api";
-import { thisTab } from "./utils";
+import { once } from "lodash";
+import { useEffect, useState } from "react";
 import { Target } from "@/types";
-import { updatePageEditor } from "./events";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
+import { WebNavigation } from "webextension-polyfill";
+import { expectContext } from "@/utils/expectContext";
+import { getCurrentURL } from "@/pageEditor/utils";
 
+let tabUrl: string;
 const TOP_LEVEL_FRAME_ID = 0;
+
+const urlChanges = new SimpleEventTarget<string>();
 
 // The pageEditor only cares for the top frame
 function isCurrentTopFrame({ tabId, frameId }: Target) {
@@ -30,30 +36,33 @@ function isCurrentTopFrame({ tabId, frameId }: Target) {
   );
 }
 
-// TODO: Migrate to useCurrentUrl()
-async function onNavigation(target: Target): Promise<void> {
+async function onNavigation(
+  target: WebNavigation.OnCommittedDetailsType
+): Promise<void> {
   if (isCurrentTopFrame(target)) {
-    updatePageEditor();
+    tabUrl = target.url;
+    urlChanges.emit(target.url);
   }
 }
 
-function onEditorClose(): void {
-  resetTab(thisTab);
-  stopInspectingNative(thisTab);
-}
+const startWatching = once(async () => {
+  browser.webNavigation.onCommitted.addListener(onNavigation);
+  tabUrl = await getCurrentURL();
+  urlChanges.emit(tabUrl);
+});
 
-export function watchNavigation(): void {
-  browser.webNavigation.onDOMContentLoaded.addListener(onNavigation);
-  browser.permissions.onAdded.addListener(updatePageEditor);
-  browser.permissions.onRemoved.addListener(updatePageEditor);
-  window.addEventListener("beforeunload", onEditorClose);
+export default function useCurrentUrl(): string {
+  expectContext("devTools");
 
-  if (process.env.DEBUG)
-    browser.webNavigation.onTabReplaced.addListener(
-      ({ replacedTabId, tabId }) => {
-        console.warn(
-          `The tab ID was updated by the browser from ${replacedTabId} to ${tabId}. Did this cause any issues? https://stackoverflow.com/q/17756258/288906`
-        );
-      }
-    );
+  const [url, setUrl] = useState(tabUrl);
+
+  useEffect(() => {
+    urlChanges.add(setUrl);
+    void startWatching();
+    return () => {
+      urlChanges.remove(setUrl);
+    };
+  }, [setUrl]);
+
+  return url;
 }

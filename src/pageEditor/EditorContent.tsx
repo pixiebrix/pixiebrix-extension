@@ -38,6 +38,9 @@ import {
   selectTabHasPermissions,
   selectTabIsConnectingToContentScript,
 } from "@/pageEditor/tabState/tabStateSelectors";
+import useCurrentUrl from "./hooks/useCurrentUrl";
+import CantModifyPane from "./panes/CantModifyPane";
+import { isScriptableUrl } from "@/utils/permissions";
 
 const EditorContent: React.FC = () => {
   const tabHasPermissions = useSelector(selectTabHasPermissions);
@@ -56,6 +59,23 @@ const EditorContent: React.FC = () => {
     isPendingInstalledExtensions,
     isPendingDynamicExtensions,
   } = useSelector(selectExtensionAvailability);
+
+  const url = useCurrentUrl();
+
+  useEffect(() => {
+    console.debug("EditorContent debug effect", {
+      url,
+      isPendingInstalledExtensions,
+      isPendingDynamicExtensions,
+      isConnectingToContentScript,
+    });
+  }, [
+    url,
+    isPendingInstalledExtensions,
+    isPendingDynamicExtensions,
+    isConnectingToContentScript,
+  ]);
+
   const unavailableCount = unavailableInstalledCount + unavailableDynamicCount;
   const isPendingExtensions =
     isPendingInstalledExtensions || isPendingDynamicExtensions;
@@ -74,6 +94,15 @@ const EditorContent: React.FC = () => {
       });
     };
   }, [sessionId]);
+
+  if (!url) {
+    // Don't show anything while it's loading the URL, nearly immediate
+    return null;
+  }
+
+  if (!isScriptableUrl(url)) {
+    return <CantModifyPane url={url} />;
+  }
 
   if (!tabHasPermissions && !isConnectingToContentScript) {
     // Check `connecting` to optimistically show the main interface while the devtools are connecting to the page.

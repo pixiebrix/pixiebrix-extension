@@ -77,7 +77,7 @@ const Layout = () => {
     <div>
       <Navbar logo={logo} />
       <Container fluid className="page-body-wrapper">
-        {/* It is guaranteed that under RequireAuth the user has a valid API token. */}
+        {/* It is guaranteed that under RequireAuth the user has a valid API token (either PixieBrix token or partner JWT). */}
         <ErrorBoundary>
           <RequireAuth LoginPage={SetupPage}>
             <RefreshBricks />

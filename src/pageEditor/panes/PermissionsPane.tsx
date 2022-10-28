@@ -15,49 +15,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import Centered from "@/pageEditor/components/Centered";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
-import {
-  canReceiveContentScript,
-  requestPermissions,
-} from "@/utils/permissions";
+import { requestPermissions } from "@/utils/permissions";
 import AsyncButton from "@/components/AsyncButton";
-import { getCurrentURL } from "@/pageEditor/utils";
 import { safeParseUrl } from "@/utils";
 import { parse as parseDomain } from "psl";
-import { useAsyncEffect } from "use-async-effect";
-import CantModifyPane from "@/pageEditor/panes/CantModifyPane";
+import useCurrentUrl from "@/pageEditor/hooks/useCurrentUrl";
+import useUserAction from "@/hooks/useUserAction";
+
+function getLabel(url: string): string {
+  const { hostname } = safeParseUrl(url);
+  const result = parseDomain(hostname);
+  if ("domain" in result && result.domain) {
+    return result.domain;
+  }
+}
 
 const PermissionsPane: React.FunctionComponent = () => {
   const [rejected, setRejected] = useState(false);
-  const [allowed, setAllowed] = useState(true);
-  const [siteLabel, setSiteLabel] = useState("this page");
 
-  useAsyncEffect(async (isMounted) => {
-    const url = await getCurrentURL();
-    if (!isMounted()) {
-      return;
-    }
+  const url = useCurrentUrl();
+  const siteLabel = (url && getLabel(url)) || "this page";
 
-    const { hostname } = safeParseUrl(url);
-    setAllowed(canReceiveContentScript(url));
-    const result = parseDomain(hostname);
-    if ("domain" in result && result.domain) {
-      setSiteLabel(result.domain);
-    }
-  }, []);
-
-  const onRequestPermission = useCallback(async () => {
-    const url = await getCurrentURL();
-    const wasApproved = await requestPermissions({ origins: [url] });
-    setRejected(!wasApproved);
-  }, []);
-
-  if (!allowed) {
-    return <CantModifyPane />;
-  }
+  const onRequestPermission = useUserAction(
+    async () => {
+      const wasApproved = await requestPermissions({ origins: [url] });
+      setRejected(!wasApproved);
+    },
+    { errorMessage: "Error enabling permissions" },
+    [url]
+  );
 
   return (
     <Centered vertically={true}>
