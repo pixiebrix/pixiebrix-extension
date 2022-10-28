@@ -16,7 +16,7 @@
  */
 
 import {
-  commonCssSelector,
+  expandedCssSelector,
   generateSelector,
   getAttributeSelector,
   getAttributeSelectorRegex,
@@ -256,7 +256,7 @@ describe("safeCssSelector", () => {
   /* eslint-enable jest/expect-expect */
 });
 
-describe("commonCssSelector", () => {
+describe("expandedCssSelector", () => {
   /* eslint-disable jest/expect-expect -- Custom expectSelector */
   const expectSelector = (selector: string, body: string) => {
     document.body.innerHTML = body;
@@ -264,7 +264,7 @@ describe("commonCssSelector", () => {
     const elements = [...document.body.querySelectorAll(selector)] as [
       HTMLElement
     ];
-    const commonSelector = commonCssSelector(elements);
+    const commonSelector = expandedCssSelector(elements);
     expect(commonSelector).toBe(selector);
   };
 
@@ -279,7 +279,7 @@ describe("commonCssSelector", () => {
     const element2 = document.body.querySelector(selector2);
     const element3 = document.body.querySelector(selector3);
 
-    const commonSelector = commonCssSelector([
+    const commonSelector = expandedCssSelector([
       element1 as HTMLElement,
       element2 as HTMLElement,
     ]);
@@ -343,16 +343,16 @@ describe("commonCssSelector", () => {
     </div>
   `;
 
-  test("common ancester classname, parent classname, element tag", () => {
+  test("common ancestor classname, parent classname, element tag", () => {
     expectSelector(".itemlist .titleline > a", body);
   });
 
-  test("common ancester classname, common element classname", () => {
+  test("common ancestor classname, common element classname", () => {
     expectSelector(".itemlist .votearrow", body);
   });
 
-  test("common ancester classname, common parent classname, common element classname", () => {
-    expectSelector(".itemlist .title .titleline", body);
+  test("common ancestor classname, common parent classname, common element classname", () => {
+    expectSelector(".itemlist .title > .titleline", body);
   });
 
   test("pass two similar elements should return another similar elements", () => {
