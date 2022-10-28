@@ -248,7 +248,7 @@ const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => (
       description={
         <p>
           Text-based editor for advanced users to create and edit bricks.
-          Creations made in the Page Editor can also be edited here.
+          Blueprints created in the Page Editor can also be edited here.
         </p>
       }
       toolbar={
