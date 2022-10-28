@@ -258,39 +258,48 @@ describe("safeCssSelector", () => {
 
 describe("expandedCssSelector", () => {
   /* eslint-disable jest/expect-expect -- Custom expectSelector */
-  const expectSelector = (selector: string, body: string) => {
+  const expectRountripSelector = (selector: string, body: string) => {
     document.body.innerHTML = body;
-
-    const elements = [...document.body.querySelectorAll(selector)] as [
-      HTMLElement
-    ];
+    const elements = [
+      ...document.body.querySelectorAll(selector),
+    ] as HTMLElement[];
     const commonSelector = expandedCssSelector(elements);
     expect(commonSelector).toBe(selector);
   };
 
+  const expectSelector = (selector: string, expected: string, body: string) => {
+    document.body.innerHTML = body;
+    const elements = [
+      ...document.body.querySelectorAll(selector),
+    ] as HTMLElement[];
+    const commonSelector = expandedCssSelector(elements);
+    expect(commonSelector).toBe(expected);
+  };
+
   const expectSimilarElements = (
-    selector1: string,
-    selector2: string,
-    selector3: string,
+    manualElementSelectors: string[],
+    otherElementSelectors: string[],
     body: string
   ) => {
     document.body.innerHTML = body;
-    const element1 = document.body.querySelector(selector1);
-    const element2 = document.body.querySelector(selector2);
-    const element3 = document.body.querySelector(selector3);
+    const manualElements = manualElementSelectors.map((x) =>
+      document.body.querySelector(x)
+    );
+    const otherElements = otherElementSelectors.map((x) =>
+      document.body.querySelector(x)
+    );
 
-    const commonSelector = expandedCssSelector([
-      element1 as HTMLElement,
-      element2 as HTMLElement,
-    ]);
+    const commonSelector = expandedCssSelector(manualElements as HTMLElement[]);
     const commonElements = [
       ...document.body.querySelectorAll(commonSelector),
-    ] as [HTMLElement];
-    expect(commonElements).toBeArray();
-    expect(commonElements).toHaveLength(3);
-    expect(commonElements).toContain(element1);
-    expect(commonElements).toContain(element2);
-    expect(commonElements).toContain(element3);
+    ] as HTMLElement[];
+
+    const expectedElements = [...manualElements, ...otherElements];
+
+    expect(commonElements).toHaveLength(expectedElements.length);
+    for (const element of commonElements) {
+      expect(commonElements).toContain(element);
+    }
   };
 
   const body = html`
@@ -344,22 +353,53 @@ describe("expandedCssSelector", () => {
   `;
 
   test("common ancestor classname, parent classname, element tag", () => {
-    expectSelector(".itemlist .titleline > a", body);
+    expectRountripSelector(".itemlist .titleline > a", body);
+  });
+
+  test("union tags", () => {
+    const body = html`
+      <div id="root">
+        <a>Hello</a>
+        <span>Span</span>
+      </div>
+    `;
+
+    expectRountripSelector("#root a, #root span", body);
+  });
+
+  test("union tags with parent", () => {
+    const body = html`
+      <div id="root">
+        <div class="foo bar">
+          <a>Hello</a>
+          <span id="span">Span</span>
+        </div>
+        <div class="foo bar">
+          <a id="a">Hello</a>
+          <span>Span</span>
+        </div>
+      </div>
+    `;
+
+    expectSelector(
+      "#span, #a",
+      "#root .foo.bar > span, #root .foo.bar > a",
+      body
+    );
   });
 
   test("common ancestor classname, common element classname", () => {
-    expectSelector(".itemlist .votearrow", body);
+    expectRountripSelector(".itemlist .votearrow", body);
   });
 
   test("common ancestor classname, common parent classname, common element classname", () => {
-    expectSelector(".itemlist .title > .titleline", body);
+    expectRountripSelector(".itemlist .title > .titleline", body);
   });
 
   test("pass two similar elements should return another similar elements", () => {
     expectSimilarElements(
-      "#up_33240341 .votearrow",
-      "#up_33239220 .votearrow",
-      "#up_33239255 .votearrow",
+      ["#up_33240341 .votearrow", "#up_33239220 .votearrow"],
+      ["#up_33239255 .votearrow"],
       body
     );
   });
