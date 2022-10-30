@@ -17,7 +17,6 @@ jobs:
     outputs:
       link: ${{ env.LOOM_LINK }}
     steps:
-      - run: echo  ${{ toJSON(github) }}
       - name: Fetch first post
         run: gh pr view ${{ github.event.pull_request.number }} --repo ${{ github.repository }} | tee ./FIRST_POST
         env:
