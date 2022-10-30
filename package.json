@@ -79,7 +79,7 @@
     "is-promise": "^4.0.0",
     "jq-web": "^0.5.1",
     "jquery": "^3.6.0",
-    "js-beautify": "^1.14.0",
+    "js-beautify": "^1.14.7",
     "js-cookie": "^3.0.0",
     "js-yaml": "^4.1.0",
     "json-stringify-safe": "^5.0.1",
