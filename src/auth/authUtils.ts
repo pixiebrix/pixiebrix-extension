@@ -70,19 +70,22 @@ export function selectUserDataUpdate({
   };
 }
 
-export function selectExtensionAuthState({
-  id,
-  email,
-  scope,
-  organization,
-  telemetry_organization,
-  is_onboarded: isOnboarded,
-  flags = [],
-  organization_memberships: organizationMemberships = [],
-  group_memberships = [],
-  partner,
-  enforce_update_millis: enforceUpdateMillis,
-}: Me, { token }: MeAuthToken): AuthState {
+export function selectExtensionAuthState(
+  {
+    id,
+    email,
+    scope,
+    organization,
+    telemetry_organization,
+    is_onboarded: isOnboarded,
+    flags = [],
+    organization_memberships: organizationMemberships = [],
+    group_memberships = [],
+    partner,
+    enforce_update_millis: enforceUpdateMillis,
+  }: Me,
+  { token }: MeAuthToken
+): AuthState {
   const organizations = selectOrganizations(organizationMemberships);
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
 

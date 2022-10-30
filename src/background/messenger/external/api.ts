@@ -66,5 +66,5 @@ export const openExtensionOptions = liftExternal(
 
 export const getParterToken = liftExternal(
   "GET_PARTNER_TOKEN",
-	readPartnerAuthData
+  readPartnerAuthData
 );
