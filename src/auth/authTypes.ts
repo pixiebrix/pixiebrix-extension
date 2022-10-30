@@ -18,6 +18,7 @@
 import { RegistryId, UUID } from "@/core";
 import { Me, OrganizationTheme } from "@/types/contract";
 import { Except } from "type-fest";
+import { MeOrganization } from "@/types/contract";
 
 export interface AuthOption {
   label: string;
@@ -106,6 +107,7 @@ export type PartnerAuthData = {
   extraHeaders: Record<string, string> | null;
 };
 
+// TODO: can delete this
 export type OrganizationAuthState = {
   /**
    * The id of the organization.
@@ -160,14 +162,14 @@ export type AuthState = {
   /**
    * The PixieBrix userId, or null if the user is not authenticated
    */
-  readonly userId?: UUID | null;
+  readonly userId: UUID | null;
 
-  readonly email?: string | null;
+  readonly email: string | null;
 
   /**
    * The user's package scope.
    */
-  readonly scope?: string | null;
+  readonly scope: string | null;
 
   /**
    * True if the user is authenticated with PixieBrix
@@ -184,12 +186,14 @@ export type AuthState = {
   /**
    *  The primary organization for the user
    */
-  readonly organization?: OrganizationAuthState | null;
+  readonly organization: MeOrganization | null;
 
   /**
    * Organizations the user is a member of
    */
   readonly organizations: AuthUserOrganization[];
+
+  readonly telemetryOrganizationId: UUID | null;
 
   readonly groups: Array<{
     id: UUID;
@@ -204,7 +208,7 @@ export type AuthState = {
   /**
    * The partner, controlling theme, documentation links, etc.
    */
-  readonly partner?: Me["partner"];
+  readonly partner: Me["partner"];
 
   /**
    * Number of milliseconds after which to enforce browser extension and manual deployment updates, or `null` to
@@ -215,6 +219,8 @@ export type AuthState = {
    * @since 1.7.1
    */
   readonly enforceUpdateMillis: number | null;
+
+  readonly token: string;
 };
 
 export type AuthRootState = {
