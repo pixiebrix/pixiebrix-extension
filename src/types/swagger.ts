@@ -134,10 +134,6 @@ export interface paths {
     /** List config of current version of each package. */
     get: operations["listExtentionPoints"];
   };
-  "/api/extension/token/": {
-    /** Return the token for the current user. */
-    get: operations["retrieveExtensionToken"];
-  };
   "/api/extensions/": {
     get: operations["listUserExtensions"];
   };
@@ -202,6 +198,10 @@ export interface paths {
   "/api/me/": {
     get: operations["retrieveMe"];
     delete: operations["destroyMe"];
+  };
+  "/api/me/auth-token/": {
+    /** Return the token for the current user. */
+    get: operations["retrieveMeAuthToken"];
   };
   "/api/memberships/{id}/": {
     /** Detail view for an organization's memberships. */
@@ -312,7 +312,7 @@ export interface paths {
     /** List config of current version of each package. */
     get: operations["listRecipes"];
   };
-  "/api/recipes/{name}": {
+  "/api/recipes/{name}/": {
     get: operations["retrievePackageConfig"];
   };
   "/api/services/shared/": {
@@ -822,9 +822,6 @@ export interface components {
       notify_error?: boolean;
       notify_uninstall?: boolean;
     };
-    ExtensionToken: {
-      extension_token: string;
-    };
     UserExtension: {
       /** Format: uuid */
       id: string;
@@ -1048,6 +1045,7 @@ export interface components {
       updated_at?: string;
     };
     Me: {
+      flags?: string[];
       /** Format: uuid */
       id?: string;
       scope?: string | null;
@@ -1129,7 +1127,6 @@ export interface components {
       is_onboarded?: string;
       /** @description True if the account is an organization API service account */
       service_account?: boolean;
-      flags?: string;
       partner?: {
         /** Format: uuid */
         id?: string;
@@ -1139,6 +1136,9 @@ export interface components {
         documentation_url?: string | null;
       };
       enforce_update_millis?: number;
+    };
+    MeAuthToken: {
+      token?: string;
     };
     Membership: {
       id?: number;
@@ -2633,18 +2633,6 @@ export interface operations {
       };
     };
   };
-  /** Return the token for the current user. */
-  retrieveExtensionToken: {
-    parameters: {};
-    responses: {
-      200: {
-        content: {
-          "application/json; version=1.0": components["schemas"]["ExtensionToken"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ExtensionToken"];
-        };
-      };
-    };
-  };
   listUserExtensions: {
     parameters: {
       query: {
@@ -3229,6 +3217,18 @@ export interface operations {
     parameters: {};
     responses: {
       204: never;
+    };
+  };
+  /** Return the token for the current user. */
+  retrieveMeAuthToken: {
+    parameters: {};
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["MeAuthToken"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["MeAuthToken"];
+        };
+      };
     };
   };
   /** Detail view for an organization's memberships. */
