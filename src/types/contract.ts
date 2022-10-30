@@ -79,6 +79,8 @@ export type Me = Except<
   group_memberships: MeGroup[];
 };
 
+export type MeAuthToken = components["schemas"]["MeAuthToken"];
+
 export enum UserRole {
   member = 1,
   admin = 2,

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Me } from "@/types/contract";
+import { Me, MeAuthToken } from "@/types/contract";
 import { UserDataUpdate, AuthState } from "@/auth/authTypes";
 import { UUID } from "@/core";
 
@@ -75,13 +75,14 @@ export function selectExtensionAuthState({
   email,
   scope,
   organization,
+  telemetry_organization,
   is_onboarded: isOnboarded,
   flags = [],
   organization_memberships: organizationMemberships = [],
   group_memberships = [],
   partner,
   enforce_update_millis: enforceUpdateMillis,
-}: Me): AuthState {
+}: Me, { token }: MeAuthToken): AuthState {
   const organizations = selectOrganizations(organizationMemberships);
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
 
@@ -94,9 +95,11 @@ export function selectExtensionAuthState({
     extension: true,
     organization,
     organizations,
+    telemetryOrganizationId: telemetry_organization?.id,
     groups,
     flags,
     partner,
     enforceUpdateMillis,
+    token,
   };
 }
