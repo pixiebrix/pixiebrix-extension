@@ -44,6 +44,15 @@ jest.mock("@/auth/token", () => {
   };
 });
 
+beforeAll(() => {
+  jest.useFakeTimers();
+});
+
+afterAll(() => {
+  jest.runAllTimers();
+  jest.useRealTimers();
+});
+
 describe("SidebarApp", () => {
   test("renders not connected", async () => {
     (useGetMeQuery as jest.Mock).mockReturnValue({
@@ -58,6 +67,7 @@ describe("SidebarApp", () => {
     );
     await waitForEffect();
 
+    jest.runAllTimers();
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
@@ -80,6 +90,7 @@ describe("SidebarApp", () => {
 
     await waitForEffect();
 
+    jest.runAllTimers();
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 });
