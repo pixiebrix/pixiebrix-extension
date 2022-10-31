@@ -55,9 +55,7 @@ type MeMembershipOrganization = Except<
   is_deployment_manager: boolean;
 };
 
-export type MeOrganization = Required<
-  components["schemas"]["Me"]["organization"]
-> & {
+export type MeOrganization = components["schemas"]["Me"]["organization"] & {
   id: UUID;
 };
 
@@ -97,8 +95,6 @@ export type Organization = components["schemas"]["Organization"] & {
   // a Member or Developer role on the team
   role: UserRole;
 };
-
-export type OrganizationTheme = components["schemas"]["Organization"]["theme"];
 
 export type Group = components["schemas"]["Group"];
 

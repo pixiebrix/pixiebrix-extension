@@ -67,6 +67,7 @@ import {
   Deployment,
   MarketplaceListing,
   MarketplaceTag,
+  MeOrganization,
   UserRole,
 } from "@/types/contract";
 import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
@@ -74,11 +75,7 @@ import getType from "@/runtime/getType";
 import { freshIdentifier } from "@/utils";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
 import { padStart } from "lodash";
-import {
-  AuthState,
-  AuthUserOrganization,
-  OrganizationAuthState,
-} from "@/auth/authTypes";
+import { AuthState, AuthUserOrganization } from "@/auth/authTypes";
 import { JsonObject } from "type-fest";
 import objectHash from "object-hash";
 import { makeEmptyPermissions } from "@/utils/permissions";
@@ -102,6 +99,7 @@ export const organizationFactory = define<AuthUserOrganization>({
   },
   isDeploymentManager: false,
   hasComplianceAuthToken: false,
+  control_room: null,
 });
 
 export const authStateFactory = define<AuthState>({
@@ -143,10 +141,11 @@ export const authStateFactory = define<AuthState>({
       }),
     ];
   },
-  organization: derive<AuthState, OrganizationAuthState>(
+  organization: derive<AuthState, MeOrganization>(
     ({ organizations }) => organizations[0],
     "organizations"
   ),
+  telemetryOrganizationId: null,
   groups() {
     const groups: AuthState["groups"] = [];
     return groups;
@@ -155,6 +154,9 @@ export const authStateFactory = define<AuthState>({
     const flags: AuthState["flags"] = [];
     return flags;
   },
+  partner: null,
+  // TODO: should we generate a random function here? is there a function to do that?
+  token: "f19306288168eb3262fa739e1363e8f4669e849e",
 });
 
 export const recipeMetadataFactory = define<Metadata>({

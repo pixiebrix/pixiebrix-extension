@@ -16,7 +16,7 @@
  */
 
 import { RegistryId, UUID } from "@/core";
-import { Me, OrganizationTheme } from "@/types/contract";
+import { Me } from "@/types/contract";
 import { Except } from "type-fest";
 import { MeOrganization } from "@/types/contract";
 
@@ -107,39 +107,18 @@ export type PartnerAuthData = {
   extraHeaders: Record<string, string> | null;
 };
 
-// TODO: can delete this
-export type OrganizationAuthState = {
-  /**
-   * The id of the organization.
-   */
-  readonly id: UUID;
-  /**
-   * The human-readable name of the organization.
-   */
-  readonly name: string;
-  /**
-   * The package scope of the organization, or null if not set.
-   */
-  readonly scope?: string;
-  /**
-   * The optional custom theme configured for this Organization
-   */
-  readonly theme?: OrganizationTheme;
-  /**
-   * The Automation Anywhere Control Room information
-   */
-  readonly control_room?: Me["organization"]["control_room"];
-};
-
+/**
+ * Very similar to Me["organization_memberships"] but some fields are renamed
+ */
 export type AuthUserOrganization = {
   /**
    * ID of the organization. NOT the id of the membership.
    */
-  id: UUID;
+  id: Me["organization_memberships"][number]["organization"];
   /**
    * Name of the organization.
    */
-  name: string;
+  name: Me["organization_memberships"][number]["organization_name"];
   /**
    * The user's role within the organization.
    */
@@ -147,15 +126,19 @@ export type AuthUserOrganization = {
   /**
    * The organization's brick scope, or null if not set.
    */
-  scope?: string | null;
+  scope: Me["organization_memberships"][number]["scope"];
   /**
    * True if the user is a manager of at least one team deployment.
    */
-  isDeploymentManager: boolean;
+  isDeploymentManager: Me["organization_memberships"][number]["is_deployment_manager"];
   /**
    * True if the organization's compliance auth token is set
    */
-  hasComplianceAuthToken: boolean;
+  hasComplianceAuthToken: Me["organization_memberships"][number]["has_compliance_auth_token"];
+  /**
+   * The Automation Anywhere Control Room information
+   */
+  control_room: Me["organization"]["control_room"];
 };
 
 export type AuthState = {
