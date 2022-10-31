@@ -26,7 +26,6 @@ import {
   Metadata,
   OutputKey,
   RecipeMetadata,
-  RegistryId,
   RenderedArgs,
   SafeString,
   SanitizedConfig,
@@ -34,7 +33,6 @@ import {
   Schema,
   ServiceDependency,
   UserOptions,
-  UUID,
 } from "@/core";
 import { TraceError, TraceRecord } from "@/telemetry/trace";
 import {
@@ -83,6 +81,7 @@ import { JsonObject } from "type-fest";
 import objectHash from "object-hash";
 import { makeEmptyPermissions } from "@/utils/permissions";
 import { Permissions } from "webextension-polyfill";
+import { RegistryId, UUID } from "@/idTypes";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560

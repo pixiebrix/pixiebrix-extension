@@ -18,12 +18,13 @@
 import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
-import { ExtensionRef, RegistryId, RunArgs, RunReason, UUID } from "@/core";
+import { ExtensionRef, RunArgs, RunReason } from "@/core";
 import type {
   FormEntry,
   PanelEntry,
   RendererError,
   ActivatePanelOptions,
+  TemporaryPanelEntry,
 } from "@/sidebar/types";
 import { RendererPayload } from "@/runtime/runtimeTypes";
 import sidebarInThisTab from "@/sidebar/messenger/api";
@@ -35,6 +36,7 @@ import {
   isSidebarFrameVisible,
   removeSidebarFrame,
 } from "./sidebarDomControllerLite";
+import { RegistryId, UUID } from "@/idTypes";
 
 export const PANEL_HIDING_EVENT = "pixiebrix:hideSidebar";
 
@@ -198,6 +200,30 @@ export function hideSidebarForm(nonce: UUID): void {
   const seqNum = renderSequenceNumber;
   renderSequenceNumber++;
   void sidebarInThisTab.hideForm(seqNum, nonce);
+}
+
+export function showTemporarySidebarPanel(entry: TemporaryPanelEntry): void {
+  expectContext("contentScript");
+
+  if (!isSidebarFrameVisible()) {
+    throw new Error(
+      "Cannot add temporary sidebar panel if the sidebar is not visible"
+    );
+  }
+
+  const sequence = renderSequenceNumber++;
+  void sidebarInThisTab.showTemporaryPanel(sequence, entry);
+}
+
+export function hideTemporarySidebarPanel(nonce: UUID): void {
+  expectContext("contentScript");
+
+  if (!isSidebarFrameVisible()) {
+    return;
+  }
+
+  const sequence = renderSequenceNumber++;
+  void sidebarInThisTab.hideTemporaryPanel(sequence, nonce);
 }
 
 export function removeExtension(extensionId: UUID): void {

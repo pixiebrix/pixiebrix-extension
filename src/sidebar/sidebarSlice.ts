@@ -20,13 +20,14 @@ import {
   FormEntry,
   PanelEntry,
   ActivatePanelOptions,
+  TemporaryPanelEntry,
 } from "@/sidebar/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { defaultEventKey, mapTabEventKey } from "@/sidebar/utils";
-import { UUID } from "@/core";
 import { cancelForm } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 import { partition, sortBy } from "lodash";
+import { UUID } from "@/idTypes";
 
 export type SidebarState = SidebarEntries & {
   activeKey: string;
@@ -43,6 +44,7 @@ export type SidebarState = SidebarEntries & {
 export const emptySidebarState: SidebarState = {
   panels: [],
   forms: [],
+  temporaryPanels: [],
   activeKey: null,
   pendingActivePanel: null,
 };
@@ -128,6 +130,27 @@ const sidebarSlice = createSlice({
     removeForm(state, action: PayloadAction<UUID>) {
       const nonce = action.payload;
       state.forms = state.forms.filter((x) => x.nonce !== nonce);
+      state.activeKey = defaultEventKey(state);
+    },
+    addTemporaryPanel(
+      state,
+      action: PayloadAction<{ panel: TemporaryPanelEntry }>
+    ) {
+      const { panel } = action.payload;
+
+      const [, otherTempPanels] = partition(
+        state.temporaryPanels,
+        (x) => x.extensionId === panel.extensionId
+      );
+
+      state.temporaryPanels = [...otherTempPanels, panel];
+      state.activeKey = mapTabEventKey("temporaryPanel", panel);
+    },
+    removeTemporaryPanel(state, action: PayloadAction<UUID>) {
+      const nonce = action.payload;
+      state.temporaryPanels = state.temporaryPanels.filter(
+        (panel) => panel.nonce !== nonce
+      );
       state.activeKey = defaultEventKey(state);
     },
     // In the future, we might want to have ActivatePanelOptions support a "enqueue" prop for controlling whether the

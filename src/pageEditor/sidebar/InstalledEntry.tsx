@@ -18,7 +18,7 @@
 import styles from "./Entry.module.scss";
 
 import React, { useCallback } from "react";
-import { IExtension, UUID } from "@/core";
+import { IExtension } from "@/core";
 import { useDispatch, useSelector } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import {
@@ -49,6 +49,7 @@ import {
   selectActiveElement,
   selectActiveRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
+import { UUID } from "@/idTypes";
 
 /**
  * A sidebar menu entry corresponding to an installed/saved extension point

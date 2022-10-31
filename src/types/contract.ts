@@ -26,12 +26,10 @@ import {
 import {
   SanitizedConfig,
   Metadata,
-  UUID,
   Config,
   EmptyConfig,
   PersistedExtension,
   Timestamp,
-  RegistryId,
   SemVerString,
 } from "@/core";
 
@@ -39,6 +37,7 @@ import { components } from "@/types/swagger";
 import { Except } from "type-fest";
 import { AxiosResponse } from "axios";
 import { IconName, IconPrefix } from "@fortawesome/free-solid-svg-icons";
+import { RegistryId, UUID } from "@/idTypes";
 
 export type Kind = "block" | "foundation" | "service" | "blueprint" | "reader";
 

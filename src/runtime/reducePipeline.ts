@@ -23,7 +23,6 @@ import {
   RenderedArgs,
   ServiceContext,
   UserOptions,
-  UUID,
 } from "@/core";
 import { castArray, isPlainObject } from "lodash";
 import {
@@ -60,6 +59,8 @@ import { resolveBlockConfig } from "@/blocks/registry";
 import { isObject } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
+import { UUID } from "@/idTypes";
+import { PanelPayload } from "@/sidebar/types";
 
 type CommonOptions = ApiVersionOptions & {
   /**
@@ -317,6 +318,60 @@ async function executeBlockWithValidatedProps(
               branches: [...options.trace.branches, branch],
             }
           );
+        },
+        async runRendererPipeline(
+          pipeline,
+          branch,
+          extraContext,
+          rootOverride
+        ) {
+          if (!isObject(commonOptions.ctxt)) {
+            throw new Error("Expected object context for v3+ runtime");
+          }
+
+          const runId = options.trace.runId;
+          const extensionId = options.trace.extensionId;
+          let payload: PanelPayload;
+          try {
+            await reducePipelineExpression(
+              pipeline,
+              {
+                ...commonOptions.ctxt,
+                ...extraContext,
+              },
+              rootOverride ?? root,
+              {
+                ...options,
+                headless: true,
+                runId,
+                extensionId,
+                branches: [...options.trace.branches, branch],
+              }
+            );
+
+            // noinspection ExceptionCaughtLocallyJS -- Already using errors for control flow
+            throw new BusinessError("Pipeline does not include a renderer");
+          } catch (error) {
+            if (error instanceof HeadlessModeError) {
+              payload = {
+                key: runId,
+                blockId: error.blockId,
+                args: error.args,
+                ctxt: error.ctxt,
+                extensionId,
+                runId,
+              };
+            } else {
+              payload = {
+                key: runId,
+                error: serializeError(error),
+                extensionId,
+                runId,
+              };
+            }
+          }
+
+          return payload;
         },
       });
     }
@@ -849,6 +904,7 @@ export async function reducePipelineExpression(
 
     const stepOptions = {
       ...options,
+      headless: true,
       // Could actually parallelize. But performance benefit won't be significant vs. readability impact
       // eslint-disable-next-line no-await-in-loop -- see comment above
       logger: await getStepLogger(blockConfig, pipelineLogger),

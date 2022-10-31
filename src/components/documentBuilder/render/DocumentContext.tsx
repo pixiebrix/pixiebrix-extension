@@ -16,9 +16,10 @@
  */
 
 import React from "react";
-import { BlockArgContext, BlockOptions, UUID } from "@/core";
+import { BlockArgContext, BlockOptions } from "@/core";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { BusinessError } from "@/errors/businessErrors";
+import { UUID } from "@/idTypes";
 
 type DocumentState = {
   meta: {

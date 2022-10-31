@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, UUID } from "@/core";
+import { IExtension } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import React from "react";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isExtension } from "./common";
 import DynamicEntry from "./DynamicEntry";
 import InstalledEntry from "./InstalledEntry";
+import { UUID } from "@/idTypes";
 
 type ExtensionEntryProps = {
   extension: IExtension | FormState;

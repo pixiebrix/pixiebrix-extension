@@ -16,11 +16,15 @@
  */
 
 import { UnknownObject } from "@/types";
-import { RegistryId } from "@/core";
 import { COMPONENT_READER_ID } from "@/blocks/transformers/component/ComponentReader";
 import { FormTransformer } from "@/blocks/transformers/ephemeralForm/formTransformer";
 import { CustomFormRenderer } from "@/blocks/renderers/customForm";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
+import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import { createNewBlock } from "@/pageEditor/createNewBlock";
+import { DocumentRenderer } from "@/blocks/renderers/document";
+import { makePipelineExpression } from "@/runtime/expressionCreators";
+import { RegistryId } from "@/idTypes";
 
 export function getExampleBlockConfig(
   blockId: RegistryId
@@ -104,6 +108,13 @@ export function getExampleBlockConfig(
 
     return {
       body: [container],
+    };
+  }
+
+  if (blockId === DisplayTemporaryInfo.BLOCK_ID) {
+    return {
+      title: "Example info",
+      body: makePipelineExpression([createNewBlock(DocumentRenderer.BLOCK_ID)]),
     };
   }
 }

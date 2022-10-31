@@ -15,13 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  IExtensionPoint,
-  IReader,
-  ReaderOutput,
-  ReaderRoot,
-  UUID,
-} from "@/core";
+import { IExtensionPoint, IReader, ReaderOutput, ReaderRoot } from "@/core";
 import { clearDynamic, runDynamic } from "@/contentScript/lifecycle";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import Overlay from "@/vendors/Overlay";
@@ -38,6 +32,7 @@ import {
   activateExtensionPanel,
   ensureSidebar,
 } from "@/contentScript/sidebarController";
+import { UUID } from "@/idTypes";
 
 let _overlay: Overlay | null = null;
 const _temporaryExtensions = new Map<string, IExtensionPoint>();

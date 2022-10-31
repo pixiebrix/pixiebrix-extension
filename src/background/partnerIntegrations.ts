@@ -19,7 +19,6 @@ import { locator as serviceLocator } from "@/background/locator";
 import { flatten, isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import { safeParseUrl } from "@/utils";
-import { RegistryId } from "@/core";
 import { launchOAuth2Flow } from "@/background/auth";
 import serviceRegistry from "@/services/registry";
 import { setPartnerAuth } from "@/auth/token";
@@ -27,6 +26,7 @@ import {
   CONTROL_ROOM_OAUTH_SERVICE_ID,
   CONTROL_ROOM_SERVICE_ID,
 } from "@/services/constants";
+import { RegistryId } from "@/idTypes";
 
 /**
  * A principal on a remote service, e.g., an Automation Anywhere Control Room.

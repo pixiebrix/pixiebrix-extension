@@ -37,8 +37,8 @@ import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import useReportTraceError from "./useReportTraceError";
 import FoundationNodeConfigPanel from "./FoundationNodeConfigPanel";
-import { UUID } from "@/core";
 import { actions } from "@/pageEditor/slices/editorSlice";
+import { UUID } from "@/idTypes";
 
 const EditTab: React.FC<{
   eventKey: string;

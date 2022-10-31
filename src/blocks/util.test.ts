@@ -16,9 +16,9 @@
  */
 
 import { defaultBlockConfig, isOfficial } from "./util";
-import { RegistryId } from "@/core";
 import IfElse from "./transformers/controlFlow/IfElse";
 import { EMPTY_PIPELINE } from "@/testUtils/testHelpers";
+import { RegistryId } from "@/idTypes";
 
 describe("isOfficial", () => {
   test("returns true for an official block", () => {

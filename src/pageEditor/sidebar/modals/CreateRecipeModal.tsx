@@ -65,7 +65,7 @@ import LoadingDataModal from "@/pageEditor/panes/save/LoadingDataModal";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
-import { RecipeMetadata, RegistryId } from "@/core";
+import { RecipeMetadata } from "@/core";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
@@ -73,6 +73,7 @@ import { generateRecipeId } from "@/utils/recipeUtils";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
+import { RegistryId } from "@/idTypes";
 
 const { actions: optionsActions } = extensionsSlice;
 

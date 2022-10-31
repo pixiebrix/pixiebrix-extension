@@ -18,7 +18,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { clearExtensionTraces } from "@/telemetry/trace";
-import { RecipeMetadata, RegistryId, UUID } from "@/core";
+import { RecipeMetadata } from "@/core";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { BlockConfig } from "@/blocks/types";
 import { ExtensionPointType } from "@/extensionPoints/types";
@@ -71,6 +71,7 @@ import { resolveDefinitions } from "@/registry/internal";
 import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
 import { testMatchPatterns } from "@/blocks/available";
 import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
+import { RegistryId, UUID } from "@/idTypes";
 
 export const initialState: EditorState = {
   selectionSeq: 0,

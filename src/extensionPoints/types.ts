@@ -24,15 +24,14 @@ import {
   IReader,
   Logger,
   Metadata,
-  RegistryId,
   ResolvedExtension,
   RunArgs,
   Schema,
-  UUID,
 } from "@/core";
 import { Availability, ReaderConfig } from "@/blocks/types";
 import { Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "@/types/helpers";
+import { RegistryId, UUID } from "@/idTypes";
 
 export type ExtensionPointType =
   | "panel"

@@ -26,7 +26,6 @@ import {
   NotAvailableIcon,
   UnsavedChangesIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
-import { UUID } from "@/core";
 import {
   disableOverlay,
   enableOverlay,
@@ -47,6 +46,7 @@ import useSaveExtension from "@/pageEditor/hooks/useSaveExtension";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
+import { UUID } from "@/idTypes";
 
 type DynamicEntryProps = {
   extension: FormState;

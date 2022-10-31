@@ -24,11 +24,11 @@ import { authSlice } from "@/auth/authSlice";
 import { Provider } from "react-redux";
 import servicesSlice from "@/store/servicesSlice";
 import { uuidv4 } from "@/types/helpers";
-import { RegistryId } from "@/core";
 import PartnerSetupCard from "@/options/pages/onboarding/partner/PartnerSetupCard";
 import { AuthState } from "@/auth/authTypes";
 import { appApi } from "@/services/api";
 import { rest } from "msw";
+import { RegistryId } from "@/idTypes";
 
 export default {
   title: "Onboarding/Setup/PartnerSetupCard",

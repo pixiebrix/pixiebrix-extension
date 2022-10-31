@@ -27,7 +27,6 @@ import {
   Config,
   IBlock,
   Metadata,
-  RegistryId,
   Schema,
   SemVerString,
 } from "@/core";
@@ -39,6 +38,7 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import getType from "@/runtime/getType";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
+import { RegistryId } from "@/idTypes";
 
 type ComponentConfig = {
   apiVersion?: ApiVersion;

@@ -28,11 +28,11 @@ import ServicesRow from "@/options/pages/activateExtension/ServicesRow";
 import { FormState } from "@/options/pages/activateExtension/activateTypes";
 import PermissionsRow from "@/options/pages/activateExtension/PermissionsRow";
 import extensionsSlice from "@/store/extensionsSlice";
-import { UUID } from "@/core";
 import { Card, Col, Row } from "react-bootstrap";
 import ActivateButton from "@/options/pages/activateExtension/ActivateButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
+import { UUID } from "@/idTypes";
 
 const { actions } = extensionsSlice;
 

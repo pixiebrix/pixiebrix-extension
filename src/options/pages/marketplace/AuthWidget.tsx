@@ -22,7 +22,7 @@ import { useField } from "formik";
 import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import registry from "@/services/registry";
-import { RawServiceConfiguration, RegistryId, UUID } from "@/core";
+import { RawServiceConfiguration } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import { persistor } from "@/options/store";
 import { services } from "@/background/messenger/api";
@@ -35,6 +35,7 @@ import notify from "@/utils/notify";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
 import styles from "./AuthWidget.module.scss";
+import { RegistryId, UUID } from "@/idTypes";
 
 const { updateServiceConfig } = servicesSlice.actions;
 

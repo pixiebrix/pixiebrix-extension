@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, RecipeMetadata, RegistryId, UUID } from "@/core";
+import { IExtension, RecipeMetadata } from "@/core";
 import { createSelector } from "reselect";
 import {
   EditorRootState,
@@ -29,6 +29,7 @@ import { ElementUIState, TabUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 import { ExtensionsRootState } from "@/store/extensionsTypes";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { RegistryId, UUID } from "@/idTypes";
 
 export const selectActiveElementId = ({ editor }: EditorRootState) =>
   editor.activeElementId;

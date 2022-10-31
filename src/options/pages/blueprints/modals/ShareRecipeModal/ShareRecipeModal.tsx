@@ -16,7 +16,6 @@
  */
 
 import React, { ReactElement } from "react";
-import { UUID } from "@/core";
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { selectShowShareContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
@@ -52,6 +51,7 @@ import { selectAuth } from "@/auth/authSelectors";
 import { Organization, UserRole } from "@/types/contract";
 import Loading from "./Loading";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
+import { UUID } from "@/idTypes";
 
 type ShareInstallableFormState = {
   public: boolean;

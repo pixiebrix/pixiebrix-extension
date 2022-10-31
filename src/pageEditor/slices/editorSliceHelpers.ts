@@ -17,7 +17,6 @@
 
 import { WritableDraft } from "immer/dist/types/types-external";
 import { EditorState } from "@/pageEditor/pageEditorTypes";
-import { RegistryId, UUID } from "@/core";
 import {
   FOUNDATION_NODE_ID,
   makeInitialElementUIState,
@@ -31,6 +30,7 @@ import {
   OptionsDefinition,
   RecipeMetadataFormState,
 } from "@/types/definitions";
+import { RegistryId, UUID } from "@/idTypes";
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
 

@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId, UUID } from "@/core";
 import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 import { RendererPayload } from "@/runtime/runtimeTypes";
+import { RegistryId, UUID } from "@/idTypes";
 
 export type RendererError = {
   /**
@@ -49,22 +49,33 @@ export type RendererError = {
  * @see PanelEntry
  * @see FormEntry
  */
-export type EntryType = "panel" | "form";
+export type EntryType = "panel" | "form" | "temporaryPanel";
 
 /**
  * The information required to run the renderer of a pipeline, or error information if the pipeline run errored.
  */
 export type PanelPayload = RendererPayload | RendererError | null;
 
+type BasePanelEntry = {
+  /**
+   * The id of the extension that added the panel
+   */
+  extensionId: UUID;
+  /**
+   * Heading for tab name in the sidebar
+   */
+  heading: string;
+  /**
+   * The information required to run the renderer of a pipeline, or error information if the pipeline run errored.
+   */
+  payload: PanelPayload;
+};
+
 /**
  * A panel added by an extension attached to an SidebarExtensionPoint
  * @see SidebarExtensionPoint
  */
-export type PanelEntry = {
-  /**
-   * The extension that added the panel
-   */
-  extensionId: UUID;
+export type PanelEntry = BasePanelEntry & {
   /**
    * The blueprint associated with the extension that added the panel.
    *
@@ -78,14 +89,16 @@ export type PanelEntry = {
    * @see SidebarExtensionPoint
    */
   extensionPointId: RegistryId;
+};
+
+/**
+ * An ephemeral panel to show in the sidebar. Only one temporary panel can be shown from an extension at a time.
+ */
+export type TemporaryPanelEntry = BasePanelEntry & {
   /**
-   * Heading for tab name in the sidebar
+   * Unique identifier for the temporary panel instance. Used to correlate panel-close action.
    */
-  heading: string;
-  /**
-   * The information required to run the renderer of a pipeline, or error information if the pipeline run errored.
-   */
-  payload: PanelPayload;
+  nonce: UUID;
 };
 
 /**
@@ -113,6 +126,7 @@ export type FormEntry = {
 export type SidebarEntries = {
   panels: PanelEntry[];
   forms: FormEntry[];
+  temporaryPanels: TemporaryPanelEntry[];
 };
 
 /**

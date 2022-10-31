@@ -21,11 +21,9 @@ import {
   BlockArg,
   BlockOptions,
   ComponentRef,
-  RegistryId,
   SanitizedServiceConfiguration,
   Schema,
   UiSchema,
-  UUID,
 } from "@/core";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { JsonObject } from "type-fest";
@@ -44,6 +42,7 @@ import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import safeJsonStringify from "json-stringify-safe";
 import { isEmpty, set } from "lodash";
 import { Stylesheets } from "@/components/Stylesheets";
+import { RegistryId, UUID } from "@/idTypes";
 
 const fields = {
   DescriptionField,

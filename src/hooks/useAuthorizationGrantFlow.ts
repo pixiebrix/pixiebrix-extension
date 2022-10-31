@@ -16,10 +16,11 @@
  */
 
 import { getBaseURL } from "@/services/baseService";
-import { IService, RegistryId } from "@/core";
+import { IService } from "@/core";
 import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
 import { ServiceDefinition } from "@/types/definitions";
+import { RegistryId } from "@/idTypes";
 
 type FlowOptions = {
   target: "_blank" | "_self";

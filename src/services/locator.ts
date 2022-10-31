@@ -23,8 +23,6 @@ import {
   ServiceConfig,
   SanitizedConfig,
   KeyedConfig,
-  RegistryId,
-  UUID,
 } from "@/core";
 import { sortBy, isEmpty } from "lodash";
 import registry, { readRawConfigurations } from "@/services/registry";
@@ -38,6 +36,7 @@ import {
   MissingConfigurationError,
   NotConfiguredError,
 } from "@/errors/businessErrors";
+import { RegistryId, UUID } from "@/idTypes";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",

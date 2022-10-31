@@ -21,7 +21,7 @@ import { registry } from "@/background/messenger/api";
 import { groupBy } from "lodash";
 import { RegistryPackage } from "@/types/contract";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { RegistryId } from "@/core";
+import { RegistryId } from "@/idTypes";
 
 export interface RegistryItem<T extends RegistryId = RegistryId> {
   id: T;

@@ -24,12 +24,12 @@ import SelectWidget, {
   SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
 import { isEmpty } from "lodash";
-import { RegistryId } from "@/core";
 import { Form } from "react-bootstrap";
 import styles from "./RegistryIdWidget.module.scss";
 import { StylesConfig } from "react-select";
 import { UserRole } from "@/types/contract";
 import { getScopeAndId } from "@/utils";
+import { RegistryId } from "@/idTypes";
 
 const editorRoles = new Set<number>([
   UserRole.admin,

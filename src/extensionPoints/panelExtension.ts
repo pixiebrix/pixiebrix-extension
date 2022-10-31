@@ -38,7 +38,6 @@ import {
   IReader,
   ReaderOutput,
   Schema,
-  UUID,
   RendererOutput,
   Metadata,
   Logger,
@@ -63,6 +62,7 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { PIXIEBRIX_DATA_ATTR } from "@/common";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import { UUID } from "@/idTypes";
 
 export type PanelConfig = {
   heading?: string;

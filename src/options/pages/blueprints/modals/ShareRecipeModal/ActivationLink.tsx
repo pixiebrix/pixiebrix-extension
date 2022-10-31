@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId } from "@/core";
 import React from "react";
 import copy from "copy-text-to-clipboard";
 import notify from "@/utils/notify";
 import { Button, Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
+import { RegistryId } from "@/idTypes";
 
 type ActivationLinkProps = {
   blueprintId: RegistryId;

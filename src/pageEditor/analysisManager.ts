@@ -22,7 +22,6 @@ import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
 import TemplateAnalysis from "@/analysis/analysisVisitors/templateAnalysis";
 import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
 import ReduxAnalysisManager from "@/analysis/ReduxAnalysisManager";
-import { UUID } from "@/core";
 import { TraceRecord } from "@/telemetry/trace";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./pageEditorTypes";
@@ -32,6 +31,7 @@ import { isAnyOf } from "@reduxjs/toolkit";
 import RequestPermissionAnalysis from "@/analysis/analysisVisitors/requestPermissionAnalysis";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import { selectExtensionTrace } from "./slices/runtimeSelectors";
+import { UUID } from "@/idTypes";
 
 const runtimeActions = runtimeSlice.actions;
 

@@ -25,9 +25,7 @@ import {
   OutputKey,
   PersistedExtension,
   RecipeMetadata,
-  RegistryId,
   UserOptions,
-  UUID,
 } from "@/core";
 import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import { uuidv4 } from "@/types/helpers";
@@ -41,6 +39,7 @@ import {
 } from "@/store/extensionsTypes";
 import { Except } from "type-fest";
 import { assertExtensionNotResolved } from "@/runtime/runtimeUtils";
+import { RegistryId, UUID } from "@/idTypes";
 
 const initialExtensionsState: ExtensionOptionsState = {
   extensions: [],

@@ -21,7 +21,6 @@ import {
   IService,
   AuthData,
   RawServiceConfiguration,
-  UUID,
   OAuth2Context,
 } from "@/core";
 import {
@@ -33,6 +32,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
 import { UnknownObject } from "@/types";
 import { BusinessError } from "@/errors/businessErrors";
+import { UUID } from "@/idTypes";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2" as ManualStorageKey;
 

@@ -17,7 +17,7 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { getRollbar } from "@/telemetry/initRollbar";
-import { MessageContext, SerializedError, UUID } from "@/core";
+import { MessageContext, SerializedError } from "@/core";
 import { Except, JsonObject } from "type-fest";
 import { deserializeError, serializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
@@ -38,6 +38,7 @@ import {
 } from "@/services/errorService";
 import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
+import { UUID } from "@/idTypes";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";

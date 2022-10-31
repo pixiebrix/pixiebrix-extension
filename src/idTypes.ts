@@ -15,21 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateRegistryId } from "@/types/helpers";
-import { RegistryId } from "@/idTypes";
-
+export type UUID = string & {
+  // Nominal subtyping
+  _uuidBrand: never;
+};
 /**
- * The PixieBrix API integration definition.
+ * A brick registry id conforming to `@scope/collection/name`
  */
-export const PIXIEBRIX_SERVICE_ID: RegistryId =
-  validateRegistryId("@pixiebrix/api");
-
-export const AUTOMATION_ANYWHERE_PARTNER_KEY = "automation-anywhere";
-
-// Automation Anywhere partner service definition constants
-export const CONTROL_ROOM_SERVICE_ID: RegistryId = validateRegistryId(
-  "automation-anywhere/control-room"
-);
-export const CONTROL_ROOM_OAUTH_SERVICE_ID: RegistryId = validateRegistryId(
-  "automation-anywhere/oauth2"
-);
+export type RegistryId = string & {
+  // Nominal subtyping
+  _registryIdBrand: never;
+};
+export type ServiceId = RegistryId;

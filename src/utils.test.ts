@@ -25,9 +25,10 @@ import {
   getScopeAndId,
   smartAppendPeriod,
 } from "@/utils";
-import type { RegistryId, SafeString } from "@/core";
+import type { SafeString } from "@/core";
 import { BusinessError } from "@/errors/businessErrors";
 import { assertHttpsUrl } from "@/errors/assertHttpsUrl";
+import { RegistryId } from "@/idTypes";
 
 test("can generate fresh identifier", () => {
   const root = "field" as SafeString;

@@ -27,6 +27,7 @@ import type { ErrorObject } from "serialize-error";
 import type { Permissions } from "webextension-polyfill";
 import type React from "react";
 import { contextNames } from "webext-detect-page";
+import { RegistryId, ServiceId, UUID } from "@/idTypes";
 
 // Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
@@ -86,11 +87,6 @@ export type SafeString = string & {
   _safeStringBrand: never;
 };
 
-export type UUID = string & {
-  // Nominal subtyping
-  _uuidBrand: never;
-};
-
 /**
  * An ISO timestamp string
  */
@@ -103,15 +99,6 @@ export type InnerDefinitionRef = string & {
   // Nominal subtyping
   _innerDefinitionRefBrand: never;
 };
-
-/**
- * A brick registry id conforming to `@scope/collection/name`
- */
-export type RegistryId = string & {
-  // Nominal subtyping
-  _registryIdBrand: never;
-};
-type ServiceId = RegistryId;
 
 /**
  * The tag of an available template engine for rendering an expression given a context.
@@ -286,6 +273,25 @@ export type BlockOptions<
     extraContext?: Record<string, unknown>,
     root?: ReaderRoot
   ) => Promise<unknown>;
+
+  /**
+   * Callback to run a renderer pipeline.
+   * @since 1.7.13
+   */
+  runRendererPipeline: (
+    // This should be BlockPipeline, but our dependencies are too tangled to use
+    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3477
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- brick is responsible for providing shape
+    pipeline: any,
+    // The branch for tracing. Used to determine order of pipeline runs
+    branch: {
+      key: string;
+      counter: number;
+    },
+    // Should be UnknownObject, but can't use to introduce a circular dependency
+    extraContext?: Record<string, unknown>,
+    root?: ReaderRoot
+  ) => Promise<unknown>; // Should be PanelPayload
 };
 
 /**

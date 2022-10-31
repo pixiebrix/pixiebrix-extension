@@ -16,9 +16,14 @@
  */
 
 import reportError from "@/telemetry/reportError";
-import { ActivatePanelOptions, FormEntry, PanelEntry } from "@/sidebar/types";
+import {
+  ActivatePanelOptions,
+  FormEntry,
+  PanelEntry,
+  TemporaryPanelEntry,
+} from "@/sidebar/types";
 import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
-import { UUID } from "@/core";
+import { UUID } from "@/idTypes";
 
 let lastMessageSeen = -1;
 // Track activate messages separately. The Sidebar App Redux state has special handling for these messages to account
@@ -30,6 +35,8 @@ export type SidebarListener = {
   onShowForm: (form: { nonce: UUID; form: FormDefinition }) => void;
   onHideForm: (form: { nonce: UUID }) => void;
   onActivatePanel: (options: ActivatePanelOptions) => void;
+  onShowTemporaryPanel: (panel: TemporaryPanelEntry) => void;
+  onHideTemporaryPanel: (panel: { nonce: UUID }) => void;
 };
 
 const listeners: SidebarListener[] = [];
@@ -112,4 +119,15 @@ export async function showForm(sequence: number, entry: FormEntry) {
 
 export async function hideForm(sequence: number, nonce: UUID) {
   runListeners("onHideForm", sequence, { nonce });
+}
+
+export async function showTemporaryPanel(
+  sequence: number,
+  entry: TemporaryPanelEntry
+) {
+  runListeners("onShowTemporaryPanel", sequence, entry);
+}
+
+export async function hideTemporaryPanel(sequence: number, nonce: UUID) {
+  runListeners("onHideTemporaryPanel", sequence, { nonce });
 }

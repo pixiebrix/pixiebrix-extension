@@ -16,7 +16,6 @@
  */
 
 import { useCallback } from "react";
-import { RegistryId } from "@/core";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -26,6 +25,7 @@ import { useModals } from "@/components/ConfirmationModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
 import { clearLog } from "@/background/messenger/api";
+import { RegistryId } from "@/idTypes";
 
 type Config = {
   recipeId: RegistryId;

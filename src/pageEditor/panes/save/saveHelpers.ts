@@ -16,7 +16,6 @@
  */
 
 import {
-  RegistryId,
   Metadata,
   IExtension,
   SafeString,
@@ -44,6 +43,7 @@ import {
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
 } from "@/pageEditor/extensionPoints/base";
 import { Except } from "type-fest";
+import { RegistryId } from "@/idTypes";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.

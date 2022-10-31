@@ -17,7 +17,7 @@
 
 import React, { useMemo } from "react";
 import { selectScope } from "@/auth/authSelectors";
-import { RegistryId, SemVerString } from "@/core";
+import { SemVerString } from "@/core";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { generateRecipeId } from "@/utils/recipeUtils";
 import { Button, Modal } from "react-bootstrap";
@@ -48,6 +48,7 @@ import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { StylesConfig } from "react-select";
 import { RequireScope } from "@/auth/RequireScope";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
+import { RegistryId } from "@/idTypes";
 
 type ConvertInstallableFormState = {
   blueprintId: RegistryId;

@@ -17,10 +17,11 @@
 
 import BaseRegistry from "@/baseRegistry";
 import { fromJS } from "@/blocks/transformers/blockFactory";
-import { IBlock, RegistryId } from "@/core";
+import { IBlock } from "@/core";
 import { BlockType, ResolvedBlockConfig } from "@/runtime/runtimeTypes";
 import getType from "@/runtime/getType";
 import { BlockConfig } from "@/blocks/types";
+import { RegistryId } from "@/idTypes";
 
 /**
  * A block along with inferred/calculated information

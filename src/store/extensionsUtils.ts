@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, RegistryId, UserOptions, UUID } from "@/core";
+import { IExtension, UserOptions } from "@/core";
 import { compact, groupBy, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { RegistryId, UUID } from "@/idTypes";
 
 /**
  * Infer options from existing extension-like instances for reinstalling a recipe

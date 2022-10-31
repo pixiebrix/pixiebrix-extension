@@ -16,7 +16,7 @@
  */
 
 import { SidebarEntries, EntryType } from "@/sidebar/types";
-import { UUID } from "@/core";
+import { UUID } from "@/idTypes";
 
 export function mapTabEventKey(
   entryType: EntryType,

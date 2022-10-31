@@ -17,7 +17,6 @@
 
 import { BlockConfig, BlockPosition } from "@/blocks/types";
 import { joinPathParts } from "@/utils";
-import { UUID } from "@/core";
 import { TypedBlock } from "@/blocks/registry";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 import { DocumentRenderer } from "@/blocks/renderers/document";
@@ -30,6 +29,7 @@ import {
 import { ExtensionPointType } from "@/extensionPoints/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { UUID } from "@/idTypes";
 
 export const ROOT_POSITION = Object.freeze({
   path: PIPELINE_BLOCKS_FIELD_NAME,

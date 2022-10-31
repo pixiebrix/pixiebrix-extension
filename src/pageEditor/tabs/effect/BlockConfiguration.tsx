@@ -16,7 +16,6 @@
  */
 
 import React, { useMemo, useRef } from "react";
-import { RegistryId } from "@/core";
 import { getIn, useFormikContext } from "formik";
 import useBlockOptions from "@/hooks/useBlockOptions";
 import { Card } from "react-bootstrap";
@@ -38,6 +37,7 @@ import FieldSection from "@/pageEditor/fields/FieldSection";
 import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import ConfigurationTitle from "./ConfigurationTitle";
+import { RegistryId } from "@/idTypes";
 
 const rootModeOptions = [
   { label: "Inherit", value: "inherit" },

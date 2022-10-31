@@ -33,13 +33,7 @@ import objectHash from "object-hash";
 import { isEmpty } from "lodash";
 import { TraceRecord } from "@/telemetry/trace";
 import { removeEmptyValues } from "@/pageEditor/extensionPoints/base";
-import {
-  ApiVersion,
-  BlockArgContext,
-  IBlock,
-  RegistryId,
-  ServiceDependency,
-} from "@/core";
+import { ApiVersion, BlockArgContext, IBlock, ServiceDependency } from "@/core";
 import { runBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { useField } from "formik";
@@ -51,6 +45,7 @@ import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementCon
 import { isTriggerExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
+import { RegistryId } from "@/idTypes";
 
 /**
  * Bricks to preview even if there's no trace.

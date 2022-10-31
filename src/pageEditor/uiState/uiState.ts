@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UUID } from "@/core";
 import {
   ElementUIState,
   NodeUIState,
   TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { UUID } from "@/idTypes";
 
 export const FOUNDATION_NODE_ID = "foundation" as UUID;
 

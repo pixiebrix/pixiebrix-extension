@@ -16,18 +16,17 @@
  */
 
 import {
-  RegistryId,
   SanitizedServiceConfiguration,
   Schema,
   ServiceContext,
   ServiceDependency,
-  UUID,
 } from "@/core";
 import { services } from "@/background/messenger/api";
 import { pickBy } from "lodash";
 import { resolveObj } from "@/utils";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { MissingConfigurationError } from "@/errors/businessErrors";
+import { RegistryId, UUID } from "@/idTypes";
 
 export const SERVICE_FIELD_REFS = [
   "https://app.pixiebrix.com/schemas/service#/definitions/configuredServiceOrVar",

@@ -21,7 +21,7 @@ import reportError from "@/telemetry/reportError";
 import { once } from "lodash";
 import { DEFAULT_THEME } from "@/options/types";
 import { isValidTheme } from "@/utils/themeUtils";
-import { RegistryId } from "@/core";
+import { RegistryId } from "@/idTypes";
 
 export const initialSettingsState: SettingsState = {
   mode: "remote",

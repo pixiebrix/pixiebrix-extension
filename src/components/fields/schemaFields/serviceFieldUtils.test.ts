@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { OutputKey, UUID } from "@/core";
+import { OutputKey } from "@/core";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
   blockConfigFactory,
@@ -26,6 +26,7 @@ import { toExpression } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { selectServiceVariables } from "./serviceFieldUtils";
 import { makeEmptyPermissions } from "@/utils/permissions";
+import { UUID } from "@/idTypes";
 
 describe("selectVariables", () => {
   test("selects nothing when no services used", () => {

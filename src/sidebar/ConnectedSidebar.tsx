@@ -23,13 +23,19 @@ import {
 } from "@/sidebar/protocol";
 import DefaultPanel from "@/sidebar/DefaultPanel";
 import { useDispatch, useSelector } from "react-redux";
-import { ActivatePanelOptions, FormEntry, PanelEntry } from "@/sidebar/types";
+import {
+  ActivatePanelOptions,
+  FormEntry,
+  PanelEntry,
+  TemporaryPanelEntry,
+} from "@/sidebar/types";
 import Tabs from "@/sidebar/Tabs";
 import sidebarSlice, { SidebarState } from "./sidebarSlice";
 import { AnyAction } from "redux";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./ErrorBoundary";
+import { isEmpty } from "lodash";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -47,6 +53,12 @@ function getConnectedListener(dispatch: Dispatch<AnyAction>): SidebarListener {
     },
     onActivatePanel(options: ActivatePanelOptions) {
       dispatch(sidebarSlice.actions.activatePanel(options));
+    },
+    onShowTemporaryPanel(panel: TemporaryPanelEntry) {
+      dispatch(sidebarSlice.actions.addTemporaryPanel({ panel }));
+    },
+    onHideTemporaryPanel({ nonce }) {
+      dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
     },
   };
 }
@@ -72,6 +84,11 @@ const ConnectedSidebar: React.VFC = () => {
     };
   }, [listener]);
 
+  const showTabs =
+    !isEmpty(sidebarState.panels) ||
+    !isEmpty(sidebarState.forms) ||
+    !isEmpty(sidebarState.temporaryPanels);
+
   return (
     <div className="full-height">
       <ErrorBoundary>
@@ -80,11 +97,14 @@ const ConnectedSidebar: React.VFC = () => {
           // Use ignoreApiError to avoid showing error on intermittent network issues or PixieBrix API degradation
           ignoreApiError
         >
-          {sidebarState.panels?.length || sidebarState.forms?.length ? (
+          {showTabs ? (
             <Tabs
               {...sidebarState}
               onSelectTab={(eventKey: string) => {
                 dispatch(sidebarSlice.actions.selectTab(eventKey));
+              }}
+              onCloseTemporaryTab={(nonce) => {
+                dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
               }}
             />
           ) : (

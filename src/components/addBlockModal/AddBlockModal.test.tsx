@@ -28,12 +28,12 @@ import userEvent from "@testing-library/user-event";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import * as api from "@/services/api";
-import { RegistryId } from "@/core";
 import { MarketplaceListing } from "@/types/contract";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { array } from "cooky-cutter";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { RegistryId } from "@/idTypes";
 
 jest.mock("@/services/api");
 jest.mock("@/components/asyncIcon", () => ({

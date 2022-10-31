@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId, SemVerString, Timestamp, UUID } from "@/core";
+import { SemVerString, Timestamp } from "@/core";
 import { valid as semVerValid } from "semver";
 import { startsWith } from "lodash";
 import validUuidRegex from "@/vendors/validateUuid";
+import { RegistryId, UUID } from "@/idTypes";
 
 export const PACKAGE_REGEX =
   /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;

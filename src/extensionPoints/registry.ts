@@ -17,7 +17,8 @@
 
 import { fromJS } from "@/extensionPoints/factory";
 import BaseRegistry from "@/baseRegistry";
-import { IExtensionPoint, RegistryId } from "@/core";
+import { IExtensionPoint } from "@/core";
+import { RegistryId } from "@/idTypes";
 
 const registry = new BaseRegistry<RegistryId, IExtensionPoint>(
   ["foundation", "extensionPoint"],

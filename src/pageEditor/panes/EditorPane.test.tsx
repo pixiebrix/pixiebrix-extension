@@ -53,7 +53,7 @@ import {
   makeTemplateExpression,
 } from "@/runtime/expressionCreators";
 import { PipelineExpression } from "@/runtime/mapArgs";
-import { OutputKey, RegistryId } from "@/core";
+import { OutputKey } from "@/core";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import * as api from "@/services/api";
 import { MarketplaceListing } from "@/types/contract";
@@ -70,6 +70,7 @@ import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/re
 import { useGetTheme } from "@/hooks/useTheme";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import { RunProcess } from "@/contrib/uipath/process";
+import { RegistryId } from "@/idTypes";
 
 jest.mock("@/services/api", () => ({
   appApi: {

@@ -29,7 +29,6 @@ import {
   RunArgs,
   RunReason,
   Schema,
-  UUID,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -66,6 +65,7 @@ import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { NoRendererError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { isSidebarFrameVisible } from "@/contentScript/sidebarDomControllerLite";
+import { UUID } from "@/idTypes";
 
 export type SidebarConfig = {
   heading: string;

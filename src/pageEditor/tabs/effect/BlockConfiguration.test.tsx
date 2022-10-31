@@ -29,11 +29,11 @@ import { screen } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { RegistryId } from "@/core";
 import { MarketplaceListing } from "@/types/contract";
 import { render } from "@/pageEditor/testHelpers";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
+import { RegistryId } from "@/idTypes";
 
 jest.mock("@/services/api", () => {
   const actual = jest.requireActual("@/services/api");

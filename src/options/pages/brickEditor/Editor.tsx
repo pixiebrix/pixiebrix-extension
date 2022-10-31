@@ -29,7 +29,6 @@ import { useFormikContext } from "formik";
 import CodeEditor from "./CodeEditor";
 import SharingTable from "./SharingTable";
 import { sortBy } from "lodash";
-import { UUID } from "@/core";
 import BrickReference from "@/options/pages/brickEditor/referenceTab/BrickReference";
 import { useAsyncState } from "@/hooks/common";
 import serviceRegistry from "@/services/registry";
@@ -44,6 +43,7 @@ import BrickHistory from "@/options/pages/brickEditor/BrickHistory";
 import { useParams } from "react-router";
 import { isMac } from "@/utils";
 import LogCard from "@/components/logViewer/LogCard";
+import { UUID } from "@/idTypes";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;

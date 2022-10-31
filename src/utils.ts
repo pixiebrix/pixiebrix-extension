@@ -40,10 +40,11 @@ import {
   zip,
 } from "lodash";
 import { JsonObject, Primitive } from "type-fest";
-import { ApiVersion, RegistryId, SafeString } from "@/core";
+import { ApiVersion, SafeString } from "@/core";
 import { UnknownObject } from "@/types";
 import { RecipeDefinition } from "@/types/definitions";
 import safeJsonStringify from "json-stringify-safe";
+import { RegistryId } from "@/idTypes";
 
 const specialCharsRegex = /[.[\]]/;
 
