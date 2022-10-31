@@ -85,6 +85,7 @@ describe("useRequiredPartnerAuth", () => {
       settings: {
         ...settingsSlice.getInitialState(),
         authServiceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+        authMethod: "partner-oauth2",
       },
     });
 

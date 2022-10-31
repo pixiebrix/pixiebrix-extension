@@ -62,6 +62,20 @@ const EditorContent: React.FC = () => {
 
   const url = useCurrentUrl();
 
+  useEffect(() => {
+    console.debug("EditorContent debug effect", {
+      url,
+      isPendingInstalledExtensions,
+      isPendingDynamicExtensions,
+      isConnectingToContentScript,
+    });
+  }, [
+    url,
+    isPendingInstalledExtensions,
+    isPendingDynamicExtensions,
+    isConnectingToContentScript,
+  ]);
+
   const unavailableCount = unavailableInstalledCount + unavailableDynamicCount;
   const isPendingExtensions =
     isPendingInstalledExtensions || isPendingDynamicExtensions;

@@ -23,8 +23,6 @@ import DefaultSetupCard from "@/options/pages/onboarding/DefaultSetupCard";
 import { getBaseURL } from "@/services/baseService";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { isEmpty } from "lodash";
 import Loader from "@/components/Loader";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import PartnerSetupCard from "@/options/pages/onboarding/partner/PartnerSetupCard";
@@ -35,15 +33,26 @@ const Layout: React.FunctionComponent = ({ children }) => (
   </Row>
 );
 
+/**
+ * Extension Setup Page, guiding user to link to PixieBrix or connect via partner authentication.
+ *
+ * See SettingsPage user-controlled settings
+ *
+ * @see SettingsPage
+ */
 const SetupPage: React.FunctionComponent = () => {
   useTitle("Setup");
+
+  // Local override for authentication method
+  const { authMethod } = useSelector(selectSettings);
+
   const {
     isLoading: isPartnerLoading,
     hasPartner,
     hasConfiguredIntegration,
   } = useRequiredPartnerAuth();
 
-  const { authServiceId } = useSelector(selectSettings);
+  const isStartUrl = location.hash.startsWith("#/start");
 
   const [baseURL, baseURLPending] = useAsyncState(getBaseURL, []);
 
@@ -57,9 +66,15 @@ const SetupPage: React.FunctionComponent = () => {
 
   let setupCard = <DefaultSetupCard installURL={baseURL} />;
 
-  if (
-    (!isEmpty(authServiceId) && authServiceId !== PIXIEBRIX_SERVICE_ID) ||
-    (hasPartner && !hasConfiguredIntegration)
+  if (authMethod === "pixiebrix-token") {
+    // NOP -- user has overridden to use PixieBrix token even though they might be connected to an organization
+    // that uses a Control Room
+  } else if (
+    isStartUrl ||
+    (hasPartner && !hasConfiguredIntegration) ||
+    // The user has overridden to use the partner auth even though they might be linked via PixieBrix token
+    authMethod === "partner-token" ||
+    authMethod === "partner-oauth2"
   ) {
     setupCard = <PartnerSetupCard />;
   }

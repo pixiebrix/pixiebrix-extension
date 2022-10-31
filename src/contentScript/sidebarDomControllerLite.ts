@@ -100,6 +100,11 @@ export function insertSidebarFrame(): boolean {
   wrapper.id = PANEL_FRAME_ID;
   html.append(wrapper);
 
+  iframe.animate([{ translate: "50%" }, { translate: 0 }], {
+    duration: 500,
+    easing: "cubic-bezier(0.23, 1, 0.32, 1)",
+  });
+
   return true;
 }
 

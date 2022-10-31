@@ -41,7 +41,7 @@ const RegistryIdWidget: React.VFC<{
   name: string;
   selectStyles?: StylesConfig;
 }> = ({ name, selectStyles = {} }) => {
-  const [{ value }, , { setValue, setTouched }] = useField<RegistryId>(name);
+  const [{ value }, , { setValue }] = useField<RegistryId>(name);
   const { scope: userScope, organizations } = useSelector(selectAuth);
   const organizationScopes = organizations
     .filter(
@@ -55,6 +55,7 @@ const RegistryIdWidget: React.VFC<{
   const [scopeValue = userScope, idValue] = getScopeAndId(value);
 
   useEffect(() => {
+    // Don't validate here with validateRegistryId(), that should be done through form validation
     const fullValue = `${scopeValue}/${idValue}` as RegistryId;
     if (value !== fullValue) {
       setValue(fullValue, true);
@@ -65,16 +66,16 @@ const RegistryIdWidget: React.VFC<{
     const newScope =
       options.find((option) => option.value === event.target.value)?.value ??
       scopeValue;
+    // Don't validate here with validateRegistryId(), that should be done through form validation
     const newValue = `${newScope}/${idValue}` as RegistryId;
     setValue(newValue);
-    setTouched(true);
   };
 
   const onChangeId: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     const newId = event.target.value;
+    // Don't validate here with validateRegistryId(), that should be done through form validation
     const newValue = `${scopeValue}/${newId}` as RegistryId;
     setValue(newValue);
-    setTouched(true);
   };
 
   return (

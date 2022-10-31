@@ -16,7 +16,11 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { SettingsState, SkunkworksSettings } from "@/store/settingsTypes";
+import {
+  AUTH_METHODS,
+  SettingsState,
+  SkunkworksSettings,
+} from "@/store/settingsTypes";
 import reportError from "@/telemetry/reportError";
 import { once } from "lodash";
 import { DEFAULT_THEME } from "@/options/types";
@@ -29,6 +33,7 @@ export const initialSettingsState: SettingsState = {
   suggestElements: false,
   browserWarningDismissed: false,
   partnerId: null,
+  authMethod: null,
   authServiceId: null,
   theme: DEFAULT_THEME,
   updatePromptTimestamp: null,
@@ -70,6 +75,17 @@ const settingsSlice = createSlice({
       { payload: { serviceId } }: { payload: { serviceId: RegistryId } }
     ) {
       state.authServiceId = serviceId;
+    },
+    setAuthMethod(
+      state,
+      { payload: { authMethod } }: { payload: { authMethod: string } }
+    ) {
+      // Ignore invalid values
+      if (AUTH_METHODS.includes(authMethod as SettingsState["authMethod"])) {
+        state.authMethod = authMethod as SettingsState["authMethod"];
+      } else {
+        state.authMethod = null;
+      }
     },
     recordUpdatePromptTimestamp(state) {
       // Don't overwrite the old timestamp

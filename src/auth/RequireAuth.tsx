@@ -48,6 +48,9 @@ type RequireAuthProps = {
   ignoreApiError?: boolean;
 };
 
+/**
+ * Hook to determine authentication status. Authentication can be via native PixieBrix token, or partner Bearer JWT.
+ */
 export const useRequiredAuth = () => {
   const dispatch = useDispatch();
 
@@ -154,6 +157,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   // This is a very simplified version of what otherwise useRouteMatch from react-router would do.
   // We don't want to pull the Router in the Page Editor app.
   const isSettingsPage = location.hash.startsWith("#/settings");
+  const isStartPage = location.hash.startsWith("#/start");
 
   const {
     isAccountUnlinked,
@@ -181,6 +185,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     // the user is not authenticated.
     // http://github.com/pixiebrix/pixiebrix-app/blob/0686663bf007cf4b33d547d9f124d1fa2a83ec9a/api/views/site.py#L210-L210
     // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3056
+    isStartPage ||
     isAccountUnlinked ||
     (requiresIntegration && !hasConfiguredIntegration)
   ) {

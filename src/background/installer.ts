@@ -40,12 +40,25 @@ async function openInstallPage() {
     browser.tabs.query({
       url: [
         new URL("setup", SERVICE_URL).href,
-        new URL("start", SERVICE_URL).href,
+        `${new URL("start", SERVICE_URL).href}?*`,
       ],
     }),
   ]);
 
   if (accountTab) {
+    const accountTabUrl = new URL(accountTab.url);
+
+    if (accountTabUrl.pathname === "/start") {
+      const extensionStartUrl = new URL(browser.runtime.getURL("options.html"));
+      extensionStartUrl.hash = `/start${new URL(accountTab.url).search}`;
+
+      await browser.tabs.update(accountTab.id, {
+        url: extensionStartUrl.href,
+        active: true,
+      });
+      return;
+    }
+
     // Automatically reuse the tab that is part of the onboarding flow
     // https://github.com/pixiebrix/pixiebrix-extension/pull/3506
     await browser.tabs.update(accountTab.id, { url });

@@ -65,7 +65,6 @@ import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { enableAnalysisFieldErrors } from "@/components/form/useFieldError";
 import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/renderersAnalysis";
 import { useGetTheme } from "@/hooks/useTheme";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
@@ -121,7 +120,6 @@ const immediateUserEvent = userEvent.setup({ delay: null });
 
 beforeAll(async () => {
   registerDefaultWidgets();
-  enableAnalysisFieldErrors();
   blockRegistry.clear();
   blockRegistry.register(
     echoBlock,

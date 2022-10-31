@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import Centered from "@/pageEditor/components/Centered";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
@@ -24,6 +24,7 @@ import AsyncButton from "@/components/AsyncButton";
 import { safeParseUrl } from "@/utils";
 import { parse as parseDomain } from "psl";
 import useCurrentUrl from "@/pageEditor/hooks/useCurrentUrl";
+import useUserAction from "@/hooks/useUserAction";
 
 function getLabel(url: string): string {
   const { hostname } = safeParseUrl(url);
@@ -39,10 +40,14 @@ const PermissionsPane: React.FunctionComponent = () => {
   const url = useCurrentUrl();
   const siteLabel = (url && getLabel(url)) || "this page";
 
-  const onRequestPermission = useCallback(async () => {
-    const wasApproved = await requestPermissions({ origins: [url] });
-    setRejected(!wasApproved);
-  }, [url]);
+  const onRequestPermission = useUserAction(
+    async () => {
+      const wasApproved = await requestPermissions({ origins: [url] });
+      setRejected(!wasApproved);
+    },
+    { errorMessage: "Error enabling permissions" },
+    [url]
+  );
 
   return (
     <Centered vertically={true}>
