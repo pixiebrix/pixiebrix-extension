@@ -31,6 +31,7 @@ import {
 import { Analysis } from "./analysisTypes";
 import { RootState } from "@/pageEditor/pageEditorTypes";
 import { debounce } from "lodash";
+import { UUID } from "@/core";
 
 type AnalysisEffect = ListenerEffect<
   AnyAction,
@@ -48,6 +49,7 @@ type AnalysisListenerConfig =
 type EffectConfig<TAnalysis extends Analysis = Analysis> = {
   postAnalysisAction?: (
     analysis: TAnalysis,
+    extensionId: UUID,
     listenerApi: ListenerEffectAPI<
       RootState,
       ThunkDispatch<unknown, unknown, AnyAction>
@@ -85,11 +87,11 @@ class ReduxAnalysisManager {
         return;
       }
 
-      const activeElementId = activeElement.uuid;
+      const extensionId = activeElement.uuid;
 
       listenerApi.dispatch(
         analysisSlice.actions.startAnalysis({
-          extensionId: activeElementId,
+          extensionId: extensionId,
           analysisId: analysis.id,
         })
       );
@@ -98,14 +100,14 @@ class ReduxAnalysisManager {
 
       listenerApi.dispatch(
         analysisSlice.actions.finishAnalysis({
-          extensionId: activeElementId,
+          extensionId,
           analysisId: analysis.id,
           annotations: analysis.getAnnotations(),
         })
       );
 
       if (effectConfig?.postAnalysisAction) {
-        effectConfig.postAnalysisAction(analysis, listenerApi);
+        effectConfig.postAnalysisAction(analysis, extensionId, listenerApi);
       }
     };
 

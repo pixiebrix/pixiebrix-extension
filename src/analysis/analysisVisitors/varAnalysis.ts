@@ -35,6 +35,7 @@ type PreviousVisitedBlock = {
   vars: VarMap;
   output: VarMap | null;
 };
+
 class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   private readonly knownVars = new Map<string, VarMap>();
   private currentBlockKnownVars: VarMap;

@@ -68,8 +68,17 @@ export interface Analysis {
 }
 
 export type AnalysisState = {
+  /**
+   * Annotations stored by extension ID
+   */
   extensionAnnotations: Record<UUID, Annotation[]>;
-  knownVars: Map<string, VarMap>;
+
+  /**
+   * Known variables
+   * stored for each block by block path (string key of the Map)
+   * withing an extension (the UUID key of the Record)
+   */
+  knownVars: Record<UUID, Map<string, VarMap>>;
 };
 
 export type AnalysisRootState = {

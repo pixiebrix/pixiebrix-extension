@@ -150,9 +150,12 @@ pageEditorAnalysisManager.registerAnalysisEffect(
     ),
   },
   {
-    postAnalysisAction(analysis, listenerApi) {
+    postAnalysisAction(analysis, extensionId, listenerApi) {
       listenerApi.dispatch(
-        analysisSlice.actions.setKnownVars(analysis.getKnownVars())
+        analysisSlice.actions.setKnownVars({
+          extensionId,
+          vars: analysis.getKnownVars(),
+        })
       );
     },
   }
@@ -167,9 +170,12 @@ pageEditorAnalysisManager.registerAnalysisEffect(
     matcher: isAnyOf(editorActions.editElement),
   },
   {
-    postAnalysisAction(analysis, listenerApi) {
+    postAnalysisAction(analysis, extensionId, listenerApi) {
       listenerApi.dispatch(
-        analysisSlice.actions.setKnownVars(analysis.getKnownVars())
+        analysisSlice.actions.setKnownVars({
+          extensionId,
+          vars: analysis.getKnownVars(),
+        })
       );
     },
     debounce: 500,

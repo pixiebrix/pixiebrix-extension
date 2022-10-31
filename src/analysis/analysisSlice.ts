@@ -22,7 +22,7 @@ import VarMap from "./analysisVisitors/varMap";
 
 const initialState: AnalysisState = {
   extensionAnnotations: {},
-  knownVars: null,
+  knownVars: {},
 };
 
 const analysisSlice = createSlice({
@@ -60,8 +60,15 @@ const analysisSlice = createSlice({
         ...annotations,
       ];
     },
-    setKnownVars(state, action: PayloadAction<Map<string, VarMap>>) {
-      state.knownVars = action.payload;
+    setKnownVars(
+      state,
+      action: PayloadAction<{
+        extensionId: UUID;
+        vars: Map<string, VarMap>;
+      }>
+    ) {
+      const { extensionId, vars } = action.payload;
+      state.knownVars[extensionId] = vars;
     },
   },
 });
