@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { cloneDeep, get, merge, set } from "lodash";
+import { cloneDeep, get, set } from "lodash";
 
 export enum VarExistence {
   MAYBE = "MAYBE",
@@ -111,7 +111,7 @@ export function mergeExistenceMaps(
           target[key] = {};
         }
 
-        merger(target[key], value);
+        merger(target[key] as ExistenceMap, value);
       } else if (
         typeof target[key] !== "object" &&
         target[key] !== VarExistence.DEFINITELY

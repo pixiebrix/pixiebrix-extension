@@ -46,11 +46,7 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
     for (const [prop, value] of Object.entries(blockConfig.config)) {
       if (isExpression(value)) {
         // TODO: Handle anyOf/oneOf/allOf
-        this.visitExpression(
-          nestedPosition(position, "config", prop),
-          value,
-          position
-        );
+        this.visitExpression(nestedPosition(position, "config", prop), value);
       }
     }
   }
