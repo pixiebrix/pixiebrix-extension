@@ -80,8 +80,7 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
       if (isExpression(value)) {
         this.visitExpression(
           nestedPosition(position, pathInBlock, "config", prop),
-          value,
-          position
+          value
         );
       }
     }
@@ -98,10 +97,14 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
     }
   }
 
+  /**
+   * Visits an expression in a block
+   * @param position Position of the expression (including expression prop name in the block)
+   * @param expression The expression to visit
+   */
   abstract visitExpression(
     position: BlockPosition,
-    expression: Expression<unknown>,
-    blockPosition: BlockPosition
+    expression: Expression<unknown>
   ): void;
 }
 

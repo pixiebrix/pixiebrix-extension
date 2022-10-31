@@ -49,8 +49,6 @@ class VarMap {
   }
 
   getExistence(path: string): VarExistence | undefined {
-    path = path.trim();
-
     const exactExistence = get(this.map, path);
     if (exactExistence !== undefined) {
       return typeof exactExistence === "string"

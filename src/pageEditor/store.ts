@@ -81,7 +81,7 @@ const store = configureStore({
         ignoredActions: ["persist/PERSIST", "analysis/setKnownVars"],
         ignoredPaths: ["analysis.knownVars"],
       },
-      // With RTK we're effectively using Immer, no need for extra check
+      // RTK uses Immer internally, we don't need this extra check
       immutableCheck: false,
     })
       .concat(appApi.middleware)

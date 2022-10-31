@@ -56,7 +56,15 @@ export type VisitResolvedBlockExtra = VisitBlockExtra & {
 };
 export type VisitPipelineExtra = {
   flavor: PipelineFlavor;
+
+  /**
+   * Parent block of the pipeline, if any
+   */
   parentNode?: BlockConfig | undefined;
+
+  /**
+   * Name (e.g., body/action) of the parent block's property that contains the pipeline
+   */
   pipelinePropName?: string | undefined;
 };
 export type VisitRootPipelineExtra = {

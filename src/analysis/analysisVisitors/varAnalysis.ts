@@ -37,6 +37,7 @@ type PreviousVisitedBlock = {
 };
 class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   private readonly knownVars = new Map<string, VarMap>();
+  private currentBlockKnownVars: VarMap;
   private previousVisitedBlock: PreviousVisitedBlock = null;
   private readonly contextStack: PreviousVisitedBlock[] = [];
   protected readonly annotations: Annotation[] = [];
@@ -65,7 +66,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     blockConfig: BlockConfig,
     extra: VisitBlockExtra
   ) {
-    const currentBlockVars =
+    this.currentBlockKnownVars =
       this.previousVisitedBlock.output == null
         ? this.previousVisitedBlock.vars.clone()
         : this.previousVisitedBlock.vars.merge(
@@ -78,13 +79,15 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
         x.templateContext != null
     );
     if (traceRecord != null) {
-      currentBlockVars.setExistenceFromObj(traceRecord.templateContext);
+      this.currentBlockKnownVars.setExistenceFromObj(
+        traceRecord.templateContext
+      );
     }
 
-    this.knownVars.set(position.path, currentBlockVars);
+    this.knownVars.set(position.path, this.currentBlockKnownVars);
 
     this.previousVisitedBlock = {
-      vars: currentBlockVars,
+      vars: this.currentBlockKnownVars,
       output: null,
     };
 
@@ -109,8 +112,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
 
   override visitExpression(
     position: BlockPosition,
-    expression: Expression<unknown>,
-    blockPosition: BlockPosition
+    expression: Expression<unknown>
   ): void {
     if (!isVarExpression(expression)) {
       return;
@@ -121,11 +123,10 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
       return;
     }
 
-    const blockKnownVars = this.knownVars.get(blockPosition.path);
-    if (blockKnownVars?.getExistence(varName) == null) {
+    if (this.currentBlockKnownVars?.getExistence(varName) == null) {
       this.annotations.push({
         position,
-        message: `Variable ${varName} might not be defined`,
+        message: `Variable "${varName}" might not be defined`,
         analysisId: this.id,
         type: AnnotationType.Warning,
         detail: {

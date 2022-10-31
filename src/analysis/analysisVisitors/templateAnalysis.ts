@@ -65,8 +65,7 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
 
   override visitExpression(
     position: BlockPosition,
-    expression: Expression<unknown>,
-    blockPosition: BlockPosition
+    expression: Expression<unknown>
   ): void {
     if (!isTemplateExpression(expression)) {
       return;

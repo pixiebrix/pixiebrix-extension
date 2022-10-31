@@ -37,11 +37,7 @@ describe("TemplateAnalysis", () => {
     "accepts valid nunjucks [%s]",
     (template) => {
       const analysis = new TemplateAnalysis();
-      analysis.visitExpression(
-        position,
-        toExpression("nunjucks", template),
-        blockPosition
-      );
+      analysis.visitExpression(position, toExpression("nunjucks", template));
 
       expect(analysis.getAnnotations()).toHaveLength(0);
     }
@@ -55,11 +51,7 @@ describe("TemplateAnalysis", () => {
     "accepts valid mustache [%s]",
     (template) => {
       const analysis = new TemplateAnalysis();
-      analysis.visitExpression(
-        position,
-        toExpression("mustache", template),
-        blockPosition
-      );
+      analysis.visitExpression(position, toExpression("mustache", template));
 
       expect(analysis.getAnnotations()).toHaveLength(0);
     }
@@ -69,11 +61,7 @@ describe("TemplateAnalysis", () => {
     "rejects mustache template in non-mustache expression [%s]",
     (template) => {
       const analysis = new TemplateAnalysis();
-      analysis.visitExpression(
-        position,
-        toExpression("nunjucks", template),
-        blockPosition
-      );
+      analysis.visitExpression(position, toExpression("nunjucks", template));
 
       expect(analysis.getAnnotations()).toHaveLength(1);
     }
@@ -85,11 +73,7 @@ describe("TemplateAnalysis", () => {
     "rejects invalid nunjucks [%s]",
     (template) => {
       const analysis = new TemplateAnalysis();
-      analysis.visitExpression(
-        position,
-        toExpression("nunjucks", template),
-        blockPosition
-      );
+      analysis.visitExpression(position, toExpression("nunjucks", template));
       expect(analysis.getAnnotations()).toHaveLength(1);
     }
   );
