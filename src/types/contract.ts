@@ -55,7 +55,9 @@ type MeMembershipOrganization = Except<
   is_deployment_manager: boolean;
 };
 
-type MeOrganization = Required<components["schemas"]["Me"]["organization"]> & {
+export type MeOrganization = Required<
+  components["schemas"]["Me"]["organization"]
+> & {
   id: UUID;
 };
 

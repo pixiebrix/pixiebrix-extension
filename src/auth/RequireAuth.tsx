@@ -25,6 +25,7 @@ import {
   isLinked,
   updateUserData,
   clearExtensionAuth,
+  getExtensionToken,
 } from "@/auth/token";
 import {
   selectExtensionAuthState,
@@ -107,7 +108,8 @@ export const useRequiredAuth = () => {
       // Because we're waiting to the Authorization token, there should always be a value here. But, defensively, if
       // not, then reset to the anonymous state
       if (me?.id) {
-        const auth = selectExtensionAuthState(me);
+        const token = await getExtensionToken();
+        const auth = selectExtensionAuthState(me, { token });
         dispatch(authActions.setAuth(auth));
       } else {
         dispatch(authActions.setAuth(anonAuth));
