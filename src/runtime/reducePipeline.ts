@@ -329,8 +329,7 @@ async function executeBlockWithValidatedProps(
             throw new Error("Expected object context for v3+ runtime");
           }
 
-          const runId = options.trace.runId;
-          const extensionId = options.trace.extensionId;
+          const { runId, extensionId, branches } = options.trace;
           let payload: PanelPayload;
           try {
             await reducePipelineExpression(
@@ -345,11 +344,12 @@ async function executeBlockWithValidatedProps(
                 headless: true,
                 runId,
                 extensionId,
-                branches: [...options.trace.branches, branch],
+                branches: [...branches, branch],
               }
             );
 
-            // noinspection ExceptionCaughtLocallyJS -- Already using errors for control flow
+            // Already using errors for control flow, keeping in this way for conciseness
+            // noinspection ExceptionCaughtLocallyJS
             throw new BusinessError("Pipeline does not include a renderer");
           } catch (error) {
             if (error instanceof HeadlessModeError) {
@@ -904,7 +904,6 @@ export async function reducePipelineExpression(
 
     const stepOptions = {
       ...options,
-      headless: true,
       // Could actually parallelize. But performance benefit won't be significant vs. readability impact
       // eslint-disable-next-line no-await-in-loop -- see comment above
       logger: await getStepLogger(blockConfig, pipelineLogger),
