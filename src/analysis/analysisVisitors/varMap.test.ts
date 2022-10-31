@@ -66,7 +66,6 @@ describe("VarMap", () => {
   });
 
   test("clones a var map", () => {
-    const varMap = new VarMap();
     varMap.setExistence("foo", VarExistence.DEFINITELY);
 
     const clone = varMap.clone();
@@ -113,6 +112,23 @@ describe("VarMap", () => {
 
     expect(merged.getExistence("foo.bar")).toBe(VarExistence.DEFINITELY);
     expect(merged.getExistence("foo.baz")).toBe(VarExistence.DEFINITELY);
+  });
+
+  test("doesn't override a var with nested keys", () => {
+    // Set nested keys
+    varMap.setExistence("foo.bar", VarExistence.DEFINITELY);
+
+    // Try to override the parent key
+    varMap.setExistence("foo", VarExistence.MAYBE);
+
+    expect(varMap.getExistence("foo.bar")).toBe(VarExistence.DEFINITELY);
+  });
+
+  test("doesn't override a DEFINITELY var with MAYBE", () => {
+    varMap.setExistence("foo", VarExistence.DEFINITELY);
+    varMap.setExistence("foo", VarExistence.MAYBE);
+
+    expect(varMap.getExistence("foo")).toBe(VarExistence.DEFINITELY);
   });
 });
 

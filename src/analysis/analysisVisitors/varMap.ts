@@ -44,6 +44,12 @@ class VarMap {
   }
 
   setExistence(path: string, existence: VarExistence): void {
+    const current = get(this.map, path);
+    // Not overriding objects and DEFINITELY existing vars
+    if (typeof current === "object" || current === VarExistence.DEFINITELY) {
+      return;
+    }
+
     set(this.map, path, existence);
   }
 
