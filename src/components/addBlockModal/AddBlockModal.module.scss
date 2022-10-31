@@ -89,7 +89,7 @@ $modalPaddingX: calc(
 .brickResults {
   height: $bodyHeight;
   flex-grow: 1;
-  overflow-y: auto;
+  overflow: hidden;
 
   // Round corner to match outer .modal-content #4360
   border-bottom-right-radius: 0.3rem;
