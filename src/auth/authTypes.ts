@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { RegistryId, UUID } from "@/core";
 import { Me, OrganizationTheme } from "@/types/contract";
 import { Except } from "type-fest";
-import { RegistryId, UUID } from "@/core";
 
 export interface AuthOption {
   label: string;

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AnalysisRootState, Annotation } from "./analysisTypes";
 import { UUID } from "@/core";
+import { AnalysisRootState, Annotation } from "./analysisTypes";
 
 // Serves to avoid creating new arrays and ensure reference equality for empty annotations
 const emptyAnnotations = Object.freeze([]) as Annotation[];

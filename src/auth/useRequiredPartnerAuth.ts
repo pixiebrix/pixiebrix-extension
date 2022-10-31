@@ -18,6 +18,7 @@
 import { useGetMeQuery } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
+import { RegistryId } from "@/core";
 import { selectConfiguredServices } from "@/store/servicesSelectors";
 import { selectSettings } from "@/store/settingsSelectors";
 import { isEmpty } from "lodash";
@@ -33,7 +34,6 @@ import {
   CONTROL_ROOM_OAUTH_SERVICE_ID,
   CONTROL_ROOM_SERVICE_ID,
 } from "@/services/constants";
-import { RegistryId } from "@/core";
 
 /**
  * Map from partner keys to partner service IDs

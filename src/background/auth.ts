@@ -21,8 +21,8 @@ import {
   IService,
   AuthData,
   RawServiceConfiguration,
-  OAuth2Context,
   UUID,
+  OAuth2Context,
 } from "@/core";
 import {
   computeChallenge,

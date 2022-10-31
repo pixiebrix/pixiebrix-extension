@@ -24,6 +24,7 @@ import { isLinked, readAuthData, updateUserData } from "@/auth/token";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { selectExtensions } from "@/store/extensionsSelectors";
+import { RegistryId, UUID } from "@/core";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/background/activeTab";
@@ -46,7 +47,6 @@ import { selectUpdatePromptState } from "@/store/settingsSelectors";
 import settingsSlice from "@/store/settingsSlice";
 import { locator } from "@/background/locator";
 import { deploymentPermissions } from "@/utils/deploymentPermissionUtils";
-import { RegistryId, UUID } from "@/core";
 
 const { reducer, actions } = extensionsSlice;
 const locateAllForService = locator.locateAllForService.bind(locator);

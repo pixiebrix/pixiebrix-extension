@@ -23,7 +23,7 @@ import { noop } from "lodash";
 import { handleMenuAction, notify } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/contentScript";
 import { reportEvent } from "@/telemetry/events";
-import { IExtension, ResolvedExtension, UUID } from "@/core";
+import { UUID, IExtension, ResolvedExtension } from "@/core";
 import { expectContext } from "@/utils/expectContext";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import {

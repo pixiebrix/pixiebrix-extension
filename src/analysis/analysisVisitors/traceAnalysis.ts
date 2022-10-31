@@ -19,12 +19,12 @@ import { AnalysisVisitor } from "./baseAnalysisVisitors";
 import { AnnotationType } from "@/analysis/analysisTypes";
 import { isTraceError, TraceError, TraceRecord } from "@/telemetry/trace";
 import { BlockConfig, BlockPosition } from "@/blocks/types";
+import { UUID } from "@/core";
 import { groupBy } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isInputValidationError } from "@/blocks/errors";
 import { nestedPosition, VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { UUID } from "@/core";
 
 const requiredFieldRegex =
   /^Instance does not have required property "(?<property>.+)"\.$/;
