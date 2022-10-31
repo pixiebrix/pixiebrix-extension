@@ -31,6 +31,7 @@ import {
   Metadata,
   PersistedExtension,
   RecipeMetadata,
+  RegistryId,
   SemVerString,
 } from "@/core";
 import { UnsavedRecipeDefinition } from "@/types/definitions";
@@ -48,7 +49,6 @@ import pDefer, { DeferredPromise } from "p-defer";
 import { PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { RegistryId } from "@/idTypes";
 
 const { actions: optionsActions } = extensionsSlice;
 

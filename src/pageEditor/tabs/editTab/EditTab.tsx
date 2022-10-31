@@ -38,7 +38,7 @@ import cx from "classnames";
 import useReportTraceError from "./useReportTraceError";
 import FoundationNodeConfigPanel from "./FoundationNodeConfigPanel";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 const EditTab: React.FC<{
   eventKey: string;

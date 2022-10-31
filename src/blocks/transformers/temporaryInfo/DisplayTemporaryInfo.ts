@@ -63,12 +63,18 @@ class DisplayTemporaryInfo extends Transformer {
       title: string;
       body: PipelineExpression;
     }>,
-    { logger, ctxt, runPipeline, runRendererPipeline }: BlockOptions
+    {
+      logger: {
+        context: { extensionId },
+      },
+      ctxt,
+      runPipeline,
+      runRendererPipeline,
+    }: BlockOptions
   ): Promise<unknown> {
     expectContext("contentScript");
 
     const nonce = uuidv4();
-    const extensionId = logger.context.extensionId;
     const controller = new AbortController();
 
     await ensureSidebar();

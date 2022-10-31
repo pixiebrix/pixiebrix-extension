@@ -19,10 +19,14 @@ import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import blockRegistry from "@/blocks/registry";
 import { inputProperties } from "@/helpers";
 import { UnknownObject } from "@/types";
-import { Expression, SchemaDefinition, TemplateEngine } from "@/core";
+import {
+  Expression,
+  RegistryId,
+  SchemaDefinition,
+  TemplateEngine,
+} from "@/core";
 import { cloneDeep } from "lodash";
 import { isSelectField } from "@/components/fields/schemaFields/fieldTypeCheckers";
-import { RegistryId } from "@/idTypes";
 
 const VARIABLE_REGEX = /^@\S+$/;
 

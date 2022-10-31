@@ -46,7 +46,7 @@ import { selectUpdatePromptState } from "@/store/settingsSelectors";
 import settingsSlice from "@/store/settingsSlice";
 import { locator } from "@/background/locator";
 import { deploymentPermissions } from "@/utils/deploymentPermissionUtils";
-import { RegistryId, UUID } from "@/idTypes";
+import { RegistryId, UUID } from "@/core";
 
 const { reducer, actions } = extensionsSlice;
 const locateAllForService = locator.locateAllForService.bind(locator);

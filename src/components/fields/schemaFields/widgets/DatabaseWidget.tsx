@@ -17,7 +17,7 @@
 
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useField } from "formik";
-import { Expression } from "@/core";
+import { Expression, UUID } from "@/core";
 import useDatabaseOptions from "@/pageEditor/hooks/useDatabaseOptions";
 import DatabaseCreateModal from "@/pageEditor/fields/DatabaseCreateModal";
 import { isExpression } from "@/runtime/mapArgs";
@@ -28,7 +28,6 @@ import SelectWidget, {
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
-import { UUID } from "@/idTypes";
 
 const DatabaseWidget: React.FunctionComponent<{
   /**

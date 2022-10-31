@@ -20,7 +20,7 @@ import { isTraceError, TraceRecord } from "@/telemetry/trace";
 import { EditorState } from "@/pageEditor/pageEditorTypes";
 import { createSelector } from "reselect";
 import { getLatestCall } from "@/telemetry/traceHelpers";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 type RootState = { runtime: RuntimeState; editor: EditorState };
 

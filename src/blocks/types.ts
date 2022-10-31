@@ -15,9 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Expression, OutputKey, TemplateEngine } from "@/core";
+import {
+  Expression,
+  OutputKey,
+  RegistryId,
+  TemplateEngine,
+  UUID,
+} from "@/core";
 import { UnknownObject } from "@/types";
-import { RegistryId, UUID } from "@/idTypes";
 
 /**
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API

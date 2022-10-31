@@ -40,7 +40,7 @@ import {
 import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
 import useCreate from "@/pageEditor/hooks/useCreate";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 const { actions: optionsActions } = extensionsSlice;
 

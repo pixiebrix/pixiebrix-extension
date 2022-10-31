@@ -17,7 +17,7 @@
 
 import { BlockPosition } from "@/blocks/types";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 export enum AnnotationType {
   Error = "error",

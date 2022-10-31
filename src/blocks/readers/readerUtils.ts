@@ -16,14 +16,13 @@
  */
 
 import { ReaderConfig } from "@/blocks/types";
-import { IReader } from "@/core";
+import { IReader, RegistryId } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import { isPlainObject, mapValues } from "lodash";
 import CompositeReader from "@/blocks/readers/CompositeReader";
 import { resolveObj } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
-import { RegistryId } from "@/idTypes";
 
 export function selectReaderIds(config: ReaderConfig): RegistryId[] {
   if (typeof config === "string") {

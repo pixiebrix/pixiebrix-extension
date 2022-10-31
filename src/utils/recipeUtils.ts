@@ -17,7 +17,7 @@
 
 import { validateRegistryId } from "@/types/helpers";
 import slugify from "slugify";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 /**
  * Return a valid recipe id, or empty string in case of error.

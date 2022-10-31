@@ -17,14 +17,13 @@
 
 import { Renderer, UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
-import { BlockArg, BlockOptions, SafeHTML, Schema } from "@/core";
+import { BlockArg, BlockOptions, RegistryId, SafeHTML, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import { Permissions } from "webextension-polyfill";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { waitForTargetByUrl } from "@/background/messenger/api";
 import { runBrick } from "@/contentScript/messenger/api";
 import pTimeout from "p-timeout";
-import { RegistryId } from "@/idTypes";
 
 interface RunDetails {
   blockId: RegistryId;

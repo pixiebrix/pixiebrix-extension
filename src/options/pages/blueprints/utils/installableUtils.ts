@@ -16,7 +16,13 @@
  */
 
 import { RecipeDefinition } from "@/types/definitions";
-import { IExtension, ResolvedExtension, UnresolvedExtension } from "@/core";
+import {
+  IExtension,
+  RegistryId,
+  ResolvedExtension,
+  UnresolvedExtension,
+  UUID,
+} from "@/core";
 import * as semver from "semver";
 import { Organization } from "@/types/contract";
 import {
@@ -26,7 +32,6 @@ import {
 } from "@/options/pages/blueprints/blueprintsTypes";
 import { createSelector } from "reselect";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { RegistryId, UUID } from "@/idTypes";
 
 export const isExtension = (
   installable: Installable

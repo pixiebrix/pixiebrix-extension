@@ -35,7 +35,7 @@ import {
   Row,
 } from "react-bootstrap";
 import { compact, sortBy } from "lodash";
-import { IBlock, IBrick } from "@/core";
+import { IBlock, IBrick, RegistryId } from "@/core";
 import { useDebounce } from "use-debounce";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Fuse from "fuse.js";
@@ -49,7 +49,6 @@ import { Except } from "type-fest";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { RegistryId } from "@/idTypes";
 
 type BrickOption<T extends IBrick = IBlock> = {
   data: T;

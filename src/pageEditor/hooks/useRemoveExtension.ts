@@ -33,7 +33,7 @@ import {
   removeSidebar,
 } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 const { actions: extensionsActions } = extensionsSlice;
 

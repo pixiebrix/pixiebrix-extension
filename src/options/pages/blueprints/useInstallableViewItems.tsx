@@ -43,7 +43,7 @@ import { MarketplaceListing } from "@/types/contract";
 import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 function useInstallableViewItems(installables: Installable[]): {
   installableViewItems: readonly InstallableViewItem[];

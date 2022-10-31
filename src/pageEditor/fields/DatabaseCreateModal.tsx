@@ -31,7 +31,7 @@ import DatabaseGroupSelect from "./DatabaseGroupSelect";
 import notify from "@/utils/notify";
 import { Organization, UserRole } from "@/types/contract";
 import { validateUUID } from "@/types/helpers";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 type DatabaseCreateModalProps = {
   show: boolean;

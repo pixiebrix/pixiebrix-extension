@@ -25,7 +25,7 @@ import {
   selectEditorModalVisibilities,
   selectInstalledRecipeMetadatas,
 } from "@/pageEditor/slices/editorSelectors";
-import { RecipeMetadata } from "@/core";
+import { RecipeMetadata, RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import notify from "@/utils/notify";
 import Form, {
@@ -38,7 +38,6 @@ import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioIt
 import { RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { RegistryId } from "@/idTypes";
 
 type FormState = {
   recipeId: RegistryId;

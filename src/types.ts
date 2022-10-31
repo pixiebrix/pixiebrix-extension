@@ -26,13 +26,13 @@ import {
   KeyedConfig,
   OAuth2Context,
   ReaderOutput,
+  RegistryId,
   RendererOutput,
   Schema,
   TokenContext,
 } from "@/core";
 import { AxiosRequestConfig } from "axios";
 import { validateRegistryId } from "@/types/helpers";
-import { RegistryId } from "@/idTypes";
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 type SecretBrand = { _serviceConfigBrand: null };

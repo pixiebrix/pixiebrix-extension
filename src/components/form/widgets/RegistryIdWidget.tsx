@@ -29,7 +29,7 @@ import styles from "./RegistryIdWidget.module.scss";
 import { StylesConfig } from "react-select";
 import { UserRole } from "@/types/contract";
 import { getScopeAndId } from "@/utils";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 const editorRoles = new Set<number>([
   UserRole.admin,

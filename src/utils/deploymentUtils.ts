@@ -18,14 +18,15 @@
 import {
   DeploymentContext,
   IExtension,
+  RegistryId,
   SanitizedServiceConfiguration,
+  UUID,
 } from "@/core";
 import { Deployment } from "@/types/contract";
 import { gte, satisfies } from "semver";
 import { compact, sortBy, uniq, uniqBy } from "lodash";
 import { RecipeDefinition } from "@/types/definitions";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { RegistryId, UUID } from "@/idTypes";
 
 /**
  * Returns `true` if a managed deployment is active (i.e., has not been remotely paused by an admin)

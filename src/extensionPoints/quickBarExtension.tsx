@@ -27,6 +27,7 @@ import {
   IReader,
   ResolvedExtension,
   Schema,
+  UUID,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { Manifest, Menus, Permissions } from "webextension-polyfill";
@@ -57,7 +58,6 @@ import Icon from "@/icons/Icon";
 import { guessSelectedElement } from "@/utils/selectionController";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
-import { UUID } from "@/idTypes";
 
 export type QuickBarTargetMode = "document" | "eventTarget";
 

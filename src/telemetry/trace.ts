@@ -15,13 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { OutputKey, RenderedArgs } from "@/core";
+import { OutputKey, RegistryId, RenderedArgs, UUID } from "@/core";
 import { JsonObject } from "type-fest";
 import { DBSchema, openDB } from "idb/with-async-ittr";
 import { sortBy } from "lodash";
 import { BlockConfig } from "@/blocks/types";
 import objectHash from "object-hash";
-import { RegistryId, UUID } from "@/idTypes";
 
 const STORAGE_KEY = "TRACE";
 const ENTRY_OBJECT_STORE = "traces";

@@ -26,7 +26,7 @@ import {
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { pull, remove } from "lodash";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
 

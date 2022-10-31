@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IBlock, OutputKey, SafeString } from "@/core";
+import { IBlock, OutputKey, RegistryId, SafeString } from "@/core";
 import { freshIdentifier } from "@/utils";
 import { selectReaderIds } from "@/blocks/readers/readerUtils";
 import getType from "@/runtime/getType";
@@ -24,7 +24,6 @@ import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { BlockConfig, BlockPipeline, BlockPosition } from "@/blocks/types";
 import { PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
 import PipelineVisitor, { VisitBlockExtra } from "@/blocks/PipelineVisitor";
-import { RegistryId } from "@/idTypes";
 
 export function collectRegistryIds(form: FormState): RegistryId[] {
   return [

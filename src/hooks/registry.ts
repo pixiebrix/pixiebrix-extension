@@ -18,7 +18,7 @@
 import { Registry, RegistryItem } from "@/baseRegistry";
 import { useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 export function useRegistry<Id extends RegistryId, T extends RegistryItem<Id>>(
   registry: Registry<Id, T>,

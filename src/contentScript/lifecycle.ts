@@ -17,7 +17,13 @@
 
 import { loadOptions } from "@/store/extensionsStorage";
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { IExtensionPoint, ResolvedExtension, RunReason } from "@/core";
+import {
+  IExtensionPoint,
+  RegistryId,
+  ResolvedExtension,
+  RunReason,
+  UUID,
+} from "@/core";
 import * as context from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebarController";
 import { pollUntilTruthy } from "@/utils";
@@ -32,7 +38,6 @@ import { $safeFind } from "@/helpers";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 import injectScriptTag from "@/utils/injectScriptTag";
-import { RegistryId, UUID } from "@/idTypes";
 
 let _initialLoadNavigation = true;
 const _dynamic = new Map<UUID, IExtensionPoint>();

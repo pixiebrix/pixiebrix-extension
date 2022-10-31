@@ -20,8 +20,10 @@ import {
   EmptyConfig,
   IExtension,
   Metadata,
+  RegistryId,
   SafeString,
   Schema,
+  UUID,
 } from "@/core";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import {
@@ -65,7 +67,6 @@ import {
 import { normalizePipelineForEditor } from "./pipelineMapping";
 import { Permissions } from "webextension-polyfill";
 import { makeEmptyPermissions } from "@/utils/permissions";
-import { RegistryId, UUID } from "@/idTypes";
 
 export interface WizardStep {
   step: string;

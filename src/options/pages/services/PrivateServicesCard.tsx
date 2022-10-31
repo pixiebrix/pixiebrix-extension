@@ -21,7 +21,7 @@ import React, { useCallback, useMemo } from "react";
 import { Column, Row } from "react-table";
 import { isEqual } from "lodash";
 import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
-import { IService, RawServiceConfiguration } from "@/core";
+import { IService, RawServiceConfiguration, UUID } from "@/core";
 import { RootState } from "@/options/store";
 import { faEdit, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -30,7 +30,6 @@ import { ServicesState } from "@/store/servicesSlice";
 import notify from "@/utils/notify";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import BrickIcon from "@/components/BrickIcon";
-import { UUID } from "@/idTypes";
 
 type TableData = {
   service: IService;

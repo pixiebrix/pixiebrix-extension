@@ -25,7 +25,7 @@ import { useModals } from "@/components/ConfirmationModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
 import { clearLog } from "@/background/messenger/api";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 type Config = {
   recipeId: RegistryId;

@@ -16,7 +16,7 @@
  */
 
 import { Menus } from "webextension-polyfill";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 type MenuHandler = (args: Menus.OnClickData) => Promise<void>;
 

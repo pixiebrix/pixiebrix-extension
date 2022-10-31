@@ -16,7 +16,13 @@
  */
 
 import { isEmpty } from "lodash";
-import { Metadata, Schema, UnresolvedExtension, UserOptions } from "@/core";
+import {
+  Metadata,
+  RegistryId,
+  Schema,
+  UnresolvedExtension,
+  UserOptions,
+} from "@/core";
 import { objToYaml } from "@/utils/objToYaml";
 import { saveAs } from "file-saver";
 import {
@@ -28,7 +34,6 @@ import GenerateSchema from "generate-schema";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import filenamify from "filenamify";
 import { validateSemVerString } from "@/types/helpers";
-import { RegistryId } from "@/idTypes";
 
 /**
  * Infer optionsSchema from the options provided to the extension.

@@ -59,13 +59,12 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { getRootPipelineFlavor } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import { OutputKey } from "@/core";
+import { OutputKey, UUID } from "@/core";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 import usePasteBlock from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBlock";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { UUID } from "@/idTypes";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 

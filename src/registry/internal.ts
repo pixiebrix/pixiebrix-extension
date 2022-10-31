@@ -23,6 +23,7 @@ import {
   IExtensionPoint,
   InnerDefinitionRef,
   InnerDefinitions,
+  RegistryId,
   ResolvedExtension,
 } from "@/core";
 import { produce } from "immer";
@@ -41,7 +42,6 @@ import {
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { ReaderConfig } from "@/blocks/types";
 import { UnknownObject } from "@/types";
-import { RegistryId } from "@/idTypes";
 
 type InnerExtensionPoint = Pick<ExtensionPointConfig, "definition" | "kind">;
 

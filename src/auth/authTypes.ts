@@ -17,7 +17,7 @@
 
 import { Me, OrganizationTheme } from "@/types/contract";
 import { Except } from "type-fest";
-import { RegistryId, UUID } from "@/idTypes";
+import { RegistryId, UUID } from "@/core";
 
 export interface AuthOption {
   label: string;

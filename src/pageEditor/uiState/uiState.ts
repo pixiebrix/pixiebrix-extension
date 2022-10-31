@@ -21,7 +21,7 @@ import {
   TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 export const FOUNDATION_NODE_ID = "foundation" as UUID;
 

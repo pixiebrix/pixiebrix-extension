@@ -28,7 +28,7 @@ import PartnerSetupCard from "@/options/pages/onboarding/partner/PartnerSetupCar
 import { AuthState } from "@/auth/authTypes";
 import { appApi } from "@/services/api";
 import { rest } from "msw";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 export default {
   title: "Onboarding/Setup/PartnerSetupCard",

@@ -23,7 +23,7 @@ import { noop } from "lodash";
 import { handleMenuAction, notify } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/contentScript";
 import { reportEvent } from "@/telemetry/events";
-import { IExtension, ResolvedExtension } from "@/core";
+import { IExtension, ResolvedExtension, UUID } from "@/core";
 import { expectContext } from "@/utils/expectContext";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import {
@@ -34,7 +34,6 @@ import { loadOptions } from "@/store/extensionsStorage";
 import { resolveDefinitions } from "@/registry/internal";
 import { allSettledValues } from "@/utils";
 import { CancelError } from "@/errors/businessErrors";
-import { UUID } from "@/idTypes";
 
 type ExtensionId = UUID;
 // This is the type the browser API has for menu ids. In practice they should be strings because that's what we're

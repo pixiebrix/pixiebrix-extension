@@ -24,7 +24,7 @@ import { BlockConfig } from "@/blocks/types";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { BlockType } from "@/runtime/runtimeTypes";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 const PANEL_TYPES = ["actionPanel", "panel"];
 

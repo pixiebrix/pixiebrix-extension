@@ -17,7 +17,7 @@
 
 import { MarketplaceListing, MarketplaceTag } from "@/types/contract";
 import { isEmpty } from "lodash";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 const EMPTY_TAGGED_BRICK_IDS: Record<string, Set<RegistryId>> = {};
 

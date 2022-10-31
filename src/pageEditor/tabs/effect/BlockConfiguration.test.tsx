@@ -33,7 +33,7 @@ import { MarketplaceListing } from "@/types/contract";
 import { render } from "@/pageEditor/testHelpers";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 jest.mock("@/services/api", () => {
   const actual = jest.requireActual("@/services/api");

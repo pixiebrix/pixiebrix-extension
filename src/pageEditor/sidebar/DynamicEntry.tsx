@@ -46,7 +46,7 @@ import useSaveExtension from "@/pageEditor/hooks/useSaveExtension";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 type DynamicEntryProps = {
   extension: FormState;

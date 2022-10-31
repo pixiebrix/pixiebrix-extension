@@ -1,6 +1,5 @@
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
-import { BlockArgContext, BlockOptions } from "@/core";
-import { UUID } from "@/idTypes";
+import { BlockArgContext, BlockOptions, UUID } from "@/core";
 
 export type DocumentViewProps = {
   body: DocumentElement[];

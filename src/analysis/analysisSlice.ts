@@ -17,7 +17,7 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AnalysisState, Annotation } from "@/analysis/analysisTypes";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 const initialState: AnalysisState = {
   extensionAnnotations: {},

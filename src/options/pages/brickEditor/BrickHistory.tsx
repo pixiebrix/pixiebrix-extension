@@ -25,7 +25,7 @@ import {
   useGetPackageQuery,
   useListPackageVersionsQuery,
 } from "@/services/api";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 export interface PackageVersionOption {
   value: string;

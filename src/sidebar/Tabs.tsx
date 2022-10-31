@@ -29,7 +29,7 @@ import PanelBody from "@/sidebar/PanelBody";
 import FormBody from "@/sidebar/FormBody";
 import styles from "./Tabs.module.scss";
 import cx from "classnames";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 type SidebarTabsProps = SidebarEntries & {
   activeKey: string;

@@ -21,7 +21,7 @@ import { useModals } from "@/components/ConfirmationModal";
 import { useDispatch, useSelector } from "react-redux";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import { selectElements } from "@/pageEditor/slices/editorSelectors";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
   const { showConfirmation } = useModals();

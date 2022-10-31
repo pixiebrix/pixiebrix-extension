@@ -17,7 +17,7 @@
 
 import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 import { RendererPayload } from "@/runtime/runtimeTypes";
-import { RegistryId, UUID } from "@/idTypes";
+import { RegistryId, UUID } from "@/core";
 
 export type RendererError = {
   /**

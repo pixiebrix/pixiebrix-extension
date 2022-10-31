@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ResolvedExtension } from "@/core";
+import { RegistryId, ResolvedExtension } from "@/core";
 import { TableInstance } from "react-table";
 import { RecipeDefinition } from "@/types/definitions";
 import { ReactNode } from "react";
 import { Organization } from "@/types/contract";
-import { RegistryId } from "@/idTypes";
 
 // XXX: should this be UnresolvedExtension instead of ResolvedExtension? The old screens used ResolvedExtension
 export type Installable = RecipeDefinition | ResolvedExtension;

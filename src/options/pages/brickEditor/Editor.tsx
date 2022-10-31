@@ -43,7 +43,7 @@ import BrickHistory from "@/options/pages/brickEditor/BrickHistory";
 import { useParams } from "react-router";
 import { isMac } from "@/utils";
 import LogCard from "@/components/logViewer/LogCard";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;

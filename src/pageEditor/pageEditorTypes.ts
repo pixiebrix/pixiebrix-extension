@@ -31,7 +31,7 @@ import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { AnalysisRootState } from "@/analysis/analysisTypes";
 import { FormState } from "./extensionPoints/formStateTypes";
 import { TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
-import { RegistryId, UUID } from "@/idTypes";
+import { RegistryId, UUID } from "@/core";
 
 export enum PipelineFlavor {
   AllBlocks = "allBlocks",

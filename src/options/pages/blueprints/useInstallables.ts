@@ -23,7 +23,7 @@ import { resolveDefinitions } from "@/registry/internal";
 import { Installable } from "./blueprintsTypes";
 import { useGetCloudExtensionsQuery, useGetRecipesQuery } from "@/services/api";
 import { selectScope } from "@/auth/authSelectors";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 type InstallablesState = {
   installables: Installable[];

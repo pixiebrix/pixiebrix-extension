@@ -19,12 +19,11 @@ import React, { useMemo, useState } from "react";
 import genericOptionsFactory, {
   BlockOptionProps,
 } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { IBlock } from "@/core";
+import { IBlock, RegistryId } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import { useAsyncEffect } from "use-async-effect";
 import reportError from "@/telemetry/reportError";
 import optionsRegistry from "@/components/fields/optionsRegistry";
-import { RegistryId } from "@/idTypes";
 
 interface BlockState {
   block?: IBlock | null;

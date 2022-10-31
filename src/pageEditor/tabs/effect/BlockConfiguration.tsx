@@ -37,7 +37,7 @@ import FieldSection from "@/pageEditor/fields/FieldSection";
 import getType from "@/runtime/getType";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import ConfigurationTitle from "./ConfigurationTitle";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 const rootModeOptions = [
   { label: "Inherit", value: "inherit" },

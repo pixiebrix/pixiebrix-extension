@@ -24,7 +24,7 @@ import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTem
 import { createNewBlock } from "@/pageEditor/createNewBlock";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 export function getExampleBlockConfig(
   blockId: RegistryId

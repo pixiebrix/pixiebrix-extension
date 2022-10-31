@@ -21,14 +21,13 @@ import {
   ExtensionPointDefinition,
   ExtensionPointType,
 } from "@/extensionPoints/types";
-import { EmptyConfig, IExtension } from "@/core";
+import { EmptyConfig, IExtension, UUID } from "@/core";
 import { Except } from "type-fest";
 import { PanelConfig, PanelDefinition } from "@/extensionPoints/panelExtension";
 import {
   MenuDefinition,
   MenuItemExtensionConfig,
 } from "@/extensionPoints/menuItemExtension";
-import { UUID } from "@/idTypes";
 
 export interface ElementInfo {
   selectors: string[];

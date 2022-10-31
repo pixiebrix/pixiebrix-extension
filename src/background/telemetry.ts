@@ -20,7 +20,7 @@ import { uuidv4 } from "@/types/helpers";
 import { compact, debounce, throttle, uniq } from "lodash";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { isLinked } from "@/auth/token";
-import { Data } from "@/core";
+import { Data, UUID } from "@/core";
 import { loadOptions } from "@/store/extensionsStorage";
 import {
   getLinkedApiClient,
@@ -28,7 +28,6 @@ import {
 } from "@/services/apiClient";
 import { allowsTrack } from "@/telemetry/dnt";
 import { DBSchema, openDB } from "idb/with-async-ittr";
-import { UUID } from "@/idTypes";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;

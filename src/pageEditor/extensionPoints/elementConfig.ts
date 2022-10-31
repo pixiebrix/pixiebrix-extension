@@ -21,8 +21,10 @@ import {
   IExtension,
   Metadata,
   RecipeMetadata,
+  RegistryId,
   ServiceDependency,
   UserOptions,
+  UUID,
 } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import {
@@ -34,7 +36,6 @@ import { Target } from "@/types";
 import { OptionsDefinition } from "@/types/definitions";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 import type { Permissions } from "webextension-polyfill";
-import { RegistryId, UUID } from "@/idTypes";
 
 /**
  * A simplified type for ReaderConfig to prevent TypeScript reporting problems with infinite type instantiation

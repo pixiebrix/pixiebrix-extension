@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Schema, SchemaProperties, UiSchema } from "@/core";
+import { RegistryId, Schema, SchemaProperties, UiSchema, UUID } from "@/core";
 import { BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import {
   EditablePackage,
@@ -48,7 +48,6 @@ import { produce } from "immer";
 import { sortBy } from "lodash";
 import { serializeError } from "serialize-error";
 import { UnknownObject } from "@/types";
-import { RegistryId, UUID } from "@/idTypes";
 
 type QueryArgs = {
   /**

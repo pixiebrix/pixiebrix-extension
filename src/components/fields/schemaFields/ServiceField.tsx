@@ -21,9 +21,11 @@ import { setIn, useField, useFormikContext } from "formik";
 import {
   Expression,
   OutputKey,
+  RegistryId,
   SafeString,
   ServiceDependency,
   ServiceKeyVar,
+  UUID,
 } from "@/core";
 import { useAuthOptions } from "@/hooks/auth";
 import { AuthOption } from "@/auth/authTypes";
@@ -46,7 +48,6 @@ import {
   ServiceSlice,
 } from "./serviceFieldUtils";
 import ServiceSelectWidget from "@/components/fields/schemaFields/widgets/ServiceSelectWidget";
-import { RegistryId, UUID } from "@/idTypes";
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
 

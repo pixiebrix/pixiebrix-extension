@@ -32,7 +32,7 @@ import { Card, Col, Row } from "react-bootstrap";
 import ActivateButton from "@/options/pages/activateExtension/ActivateButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 const { actions } = extensionsSlice;
 

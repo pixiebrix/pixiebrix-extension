@@ -36,7 +36,7 @@
 import { Target } from "@/types";
 import { forbidContext } from "@/utils/expectContext";
 import { executeFunction } from "webext-content-scripts";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 const html = globalThis.document?.documentElement;
 

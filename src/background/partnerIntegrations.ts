@@ -26,7 +26,7 @@ import {
   CONTROL_ROOM_OAUTH_SERVICE_ID,
   CONTROL_ROOM_SERVICE_ID,
 } from "@/services/constants";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 /**
  * A principal on a remote service, e.g., an Automation Anywhere Control Room.

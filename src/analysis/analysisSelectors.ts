@@ -16,7 +16,7 @@
  */
 
 import { AnalysisRootState, Annotation } from "./analysisTypes";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 // Serves to avoid creating new arrays and ensure reference equality for empty annotations
 const emptyAnnotations = Object.freeze([]) as Annotation[];

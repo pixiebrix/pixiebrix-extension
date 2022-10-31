@@ -29,7 +29,7 @@ import {
 import { ExtensionPointType } from "@/extensionPoints/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 export const ROOT_POSITION = Object.freeze({
   path: PIPELINE_BLOCKS_FIELD_NAME,

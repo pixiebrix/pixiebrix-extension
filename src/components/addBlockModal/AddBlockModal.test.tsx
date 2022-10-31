@@ -33,7 +33,7 @@ import { useAsyncIcon } from "@/components/asyncIcon";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { array } from "cooky-cutter";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 jest.mock("@/services/api");
 jest.mock("@/components/asyncIcon", () => ({

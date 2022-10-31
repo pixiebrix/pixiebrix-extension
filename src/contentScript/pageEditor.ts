@@ -26,7 +26,7 @@ import {
   IntermediateState,
   ReduceOptions,
 } from "@/runtime/reducePipeline";
-import { ApiVersion, BlockArgContext, IReader } from "@/core";
+import { ApiVersion, BlockArgContext, IReader, RegistryId } from "@/core";
 // eslint-disable-next-line import/no-restricted-paths -- Custom devTools mechanism to transfer data
 import { selectedElement } from "@/pageEditor/getSelectedElement";
 import { isNullOrBlank, resolveObj } from "@/utils";
@@ -40,7 +40,6 @@ import { clearDynamicElements } from "@/contentScript/nativeEditor/dynamic";
 import { reactivateTab } from "./lifecycle";
 import selection from "@/utils/selectionController";
 import { BusinessError } from "@/errors/businessErrors";
-import { RegistryId } from "@/idTypes";
 
 async function read(factory: () => Promise<unknown>): Promise<unknown> {
   try {

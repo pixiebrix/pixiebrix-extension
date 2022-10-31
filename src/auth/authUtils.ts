@@ -17,7 +17,7 @@
 
 import { Me } from "@/types/contract";
 import { UserDataUpdate, AuthState } from "@/auth/authTypes";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 export function selectOrganizations(
   organizationMemberships: Me["organization_memberships"]

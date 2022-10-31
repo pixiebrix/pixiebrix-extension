@@ -17,10 +17,9 @@
 
 import { BlockConfig } from "@/blocks/types";
 import { defaultBlockConfig } from "@/blocks/util";
-import { Schema } from "@/core";
+import { RegistryId, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import { getExampleBlockConfig } from "./exampleBlockConfigs";
-import { RegistryId } from "@/idTypes";
 
 export function createNewBlock(
   blockId: RegistryId,

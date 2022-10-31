@@ -27,7 +27,7 @@ import { defaultEventKey, mapTabEventKey } from "@/sidebar/utils";
 import { cancelForm } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 import { partition, sortBy } from "lodash";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 export type SidebarState = SidebarEntries & {
   activeKey: string;

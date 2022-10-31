@@ -27,6 +27,7 @@ import {
   ReaderRoot,
   ResolvedExtension,
   Schema,
+  UUID,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -69,7 +70,6 @@ import pluralize from "@/utils/pluralize";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { BusinessError } from "@/errors/businessErrors";
 import { guessSelectedElement } from "@/utils/selectionController";
-import { UUID } from "@/idTypes";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;

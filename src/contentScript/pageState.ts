@@ -20,7 +20,7 @@ import { cloneDeep, isEqual, merge } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 import { JsonObject } from "type-fest";
 import { expectContext } from "@/utils/expectContext";
-import { RegistryId, UUID } from "@/idTypes";
+import { RegistryId, UUID } from "@/core";
 
 const extensionState = new Map<UUID, UnknownObject>();
 

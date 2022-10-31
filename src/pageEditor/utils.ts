@@ -16,7 +16,7 @@
  */
 
 import { Target } from "@/types";
-import { IExtension } from "@/core";
+import { IExtension, RegistryId, UUID } from "@/core";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { BlockConfig } from "@/blocks/types";
@@ -38,7 +38,6 @@ import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
 import { isExpression } from "@/runtime/mapArgs";
 import { expectContext } from "@/utils/expectContext";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { RegistryId, UUID } from "@/idTypes";
 
 export async function getCurrentURL(): Promise<string> {
   expectContext("devTools");

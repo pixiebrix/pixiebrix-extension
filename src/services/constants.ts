@@ -16,7 +16,7 @@
  */
 
 import { validateRegistryId } from "@/types/helpers";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 /**
  * The PixieBrix API integration definition.

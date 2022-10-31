@@ -33,7 +33,7 @@ import {
   CONTROL_ROOM_OAUTH_SERVICE_ID,
   CONTROL_ROOM_SERVICE_ID,
 } from "@/services/constants";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 /**
  * Map from partner keys to partner service IDs

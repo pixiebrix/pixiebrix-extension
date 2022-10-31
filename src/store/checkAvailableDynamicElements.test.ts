@@ -29,7 +29,7 @@ import { PageTarget } from "webext-messenger";
 import { Availability } from "@/blocks/types";
 import { ExtensionsRootState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   checkAvailable: jest.fn(),

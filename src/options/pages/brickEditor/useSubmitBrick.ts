@@ -38,7 +38,7 @@ import {
   useDeletePackageMutation,
 } from "@/services/api";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 type SubmitOptions = {
   create: boolean;

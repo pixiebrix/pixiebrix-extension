@@ -23,14 +23,15 @@ import {
   Metadata,
   OutputKey,
   RecipeMetadata,
+  RegistryId,
   Schema,
   TemplateEngine,
   Timestamp,
+  UUID,
 } from "@/core";
 import { Permissions } from "webextension-polyfill";
 import { UiSchema } from "@rjsf/core";
 import { pick } from "lodash";
-import { RegistryId, UUID } from "@/idTypes";
 
 export type EditablePackage = {
   /**

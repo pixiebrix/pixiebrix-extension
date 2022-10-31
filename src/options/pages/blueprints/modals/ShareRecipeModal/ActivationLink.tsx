@@ -21,7 +21,7 @@ import notify from "@/utils/notify";
 import { Button, Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 type ActivationLinkProps = {
   blueprintId: RegistryId;

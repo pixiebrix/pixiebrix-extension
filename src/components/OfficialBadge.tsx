@@ -18,7 +18,7 @@
 import { isOfficial } from "@/blocks/util";
 import React from "react";
 import { Badge } from "react-bootstrap";
-import { RegistryId } from "@/idTypes";
+import { RegistryId } from "@/core";
 
 export const OfficialBadge: React.FunctionComponent<{
   id: RegistryId;

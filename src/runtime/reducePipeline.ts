@@ -23,6 +23,7 @@ import {
   RenderedArgs,
   ServiceContext,
   UserOptions,
+  UUID,
 } from "@/core";
 import { castArray, isPlainObject } from "lodash";
 import {
@@ -59,7 +60,6 @@ import { resolveBlockConfig } from "@/blocks/registry";
 import { isObject } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
-import { UUID } from "@/idTypes";
 import { PanelPayload } from "@/sidebar/types";
 
 type CommonOptions = ApiVersionOptions & {

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IBlock, Schema } from "@/core";
+import { IBlock, RegistryId, Schema } from "@/core";
 import { UnknownObject } from "@/types";
 import { castArray, mapValues, pickBy } from "lodash";
 import { removeUndefined } from "@/utils";
@@ -24,7 +24,6 @@ import { PipelineConfigurationError } from "@/blocks/errors";
 import blockRegistry from "@/blocks/registry";
 import pDefer from "p-defer";
 import pipelineSchema from "@schemas/pipeline.json";
-import { RegistryId } from "@/idTypes";
 
 export function isOfficial(id: RegistryId): boolean {
   return id.startsWith("@pixiebrix/");

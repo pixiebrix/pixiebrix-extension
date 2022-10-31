@@ -5,6 +5,7 @@ import {
   MessageContext,
   ServiceContext,
   UserOptions,
+  UUID,
 } from "@/core";
 import { expectContext } from "@/utils/expectContext";
 import { HeadlessModeError } from "@/blocks/errors";
@@ -15,7 +16,6 @@ import { UnknownObject } from "@/types";
 import { ApiVersionOptions } from "@/runtime/apiVersionOptions";
 import { BusinessError } from "@/errors/businessErrors";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { UUID } from "@/idTypes";
 
 type RunMetadata = {
   /**

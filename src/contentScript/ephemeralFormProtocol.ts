@@ -19,7 +19,7 @@ import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 import { expectContext } from "@/utils/expectContext";
 import pDefer, { DeferredPromise } from "p-defer";
 import { CancelError } from "@/errors/businessErrors";
-import { UUID } from "@/idTypes";
+import { UUID } from "@/core";
 
 type RegisteredForm = {
   definition: FormDefinition;
