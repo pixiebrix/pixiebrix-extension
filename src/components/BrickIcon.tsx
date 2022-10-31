@@ -140,7 +140,7 @@ const BrickIcon: React.FunctionComponent<{
     // Don't use the `width`/`height` attributes because they don't work with `em`
     <img
       src={listing.image.url}
-      alt="Icon"
+      alt=""
       style={{ width: cssSize, height: cssSize }}
     />
   ) : (

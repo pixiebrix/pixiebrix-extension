@@ -46,16 +46,11 @@ const TagListItem: React.VFC<{
       }}
       data-testid={`search-tag-item-${item.tag}`}
     >
-      {icon && !item.svgIcon && (
-        <>
-          <FontAwesomeIcon icon={icon} fixedWidth />{" "}
-        </>
-      )}
-      {item.svgIcon && (
-        <>
-          <img src={item.svgIcon} alt="Icon" className={styles.svgIcon} />
-        </>
-      )}
+      {item.svgIcon ? (
+        <img src={item.svgIcon} alt="" className={styles.svgIcon} />
+      ) : (
+        icon && <FontAwesomeIcon icon={icon} fixedWidth />
+      )}{" "}
       {item.tag}
     </button>
   );
