@@ -111,7 +111,7 @@ export type RegistryId = string & {
   // Nominal subtyping
   _registryIdBrand: never;
 };
-export type ServiceId = RegistryId;
+type ServiceId = RegistryId;
 
 /**
  * The tag of an available template engine for rendering an expression given a context.
