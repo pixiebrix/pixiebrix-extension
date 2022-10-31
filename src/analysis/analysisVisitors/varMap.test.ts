@@ -15,101 +15,166 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import VarMap, { VarExistence } from "./varMap";
+import VarMap, { mergeExistenceMaps, VarExistence } from "./varMap";
 
-let varMap: VarMap;
-beforeEach(() => {
-  varMap = new VarMap();
-});
-
-test.each(["foo.bar", "foo"])("get the exact know var (%s)", (varName) => {
-  varMap.setExistence(varName, VarExistence.DEFINITELY);
-  const actual = varMap.getExistence(varName);
-
-  expect(actual).toBe(VarExistence.DEFINITELY);
-});
-
-test("gets nested existence", () => {
-  varMap.setExistence("foo.bar", VarExistence.DEFINITELY);
-  expect(varMap.getExistence("foo.bar")).toBe(VarExistence.DEFINITELY);
-  expect(varMap.getExistence("foo.baz")).toBeUndefined();
-});
-
-test("get a DEFINITELY property of a known container", () => {
-  varMap.setExistence("foo.bar", VarExistence.DEFINITELY);
-  const actual = varMap.getExistence("foo");
-
-  expect(actual).toBe(VarExistence.DEFINITELY);
-});
-
-test("get a MAYBE property of a known container", () => {
-  varMap.setExistence("foo.*", VarExistence.MAYBE);
-  const actual = varMap.getExistence("foo.bar");
-
-  expect(actual).toBe(VarExistence.MAYBE);
-});
-
-test("set existence from context obj", () => {
-  varMap.setExistenceFromObj({
-    foo: {
-      bar: "baz",
-    },
-    qux: "quux",
+describe("VarMap", () => {
+  let varMap: VarMap;
+  beforeEach(() => {
+    varMap = new VarMap();
   });
 
-  expect(varMap.getExistence("foo")).toBe(VarExistence.DEFINITELY);
-  expect(varMap.getExistence("foo.bar")).toBe(VarExistence.DEFINITELY);
-  expect(varMap.getExistence("baz")).toBeUndefined();
-  expect(varMap.getExistence("qux")).toBe(VarExistence.DEFINITELY);
-  expect(varMap.getExistence("quux")).toBeUndefined();
+  test.each(["foo.bar", "foo"])("get the exact know var (%s)", (varName) => {
+    varMap.setExistence(varName, VarExistence.DEFINITELY);
+    const actual = varMap.getExistence(varName);
+
+    expect(actual).toBe(VarExistence.DEFINITELY);
+  });
+
+  test("gets nested existence", () => {
+    varMap.setExistence("foo.bar", VarExistence.DEFINITELY);
+    expect(varMap.getExistence("foo.bar")).toBe(VarExistence.DEFINITELY);
+    expect(varMap.getExistence("foo.baz")).toBeUndefined();
+  });
+
+  test("get a DEFINITELY property of a known container", () => {
+    varMap.setExistence("foo.bar", VarExistence.DEFINITELY);
+    const actual = varMap.getExistence("foo");
+
+    expect(actual).toBe(VarExistence.DEFINITELY);
+  });
+
+  test("get a MAYBE property of a known container", () => {
+    varMap.setExistence("foo.*", VarExistence.MAYBE);
+    const actual = varMap.getExistence("foo.bar");
+
+    expect(actual).toBe(VarExistence.MAYBE);
+  });
+
+  test("set existence from context obj", () => {
+    varMap.setExistenceFromObj({
+      foo: {
+        bar: "baz",
+      },
+      qux: "quux",
+    });
+
+    expect(varMap.getExistence("foo")).toBe(VarExistence.DEFINITELY);
+    expect(varMap.getExistence("foo.bar")).toBe(VarExistence.DEFINITELY);
+    expect(varMap.getExistence("baz")).toBeUndefined();
+    expect(varMap.getExistence("qux")).toBe(VarExistence.DEFINITELY);
+    expect(varMap.getExistence("quux")).toBeUndefined();
+  });
+
+  test("clones a var map", () => {
+    const varMap = new VarMap();
+    varMap.setExistence("foo", VarExistence.DEFINITELY);
+
+    const clone = varMap.clone();
+    clone.setExistence("bar", VarExistence.DEFINITELY);
+
+    expect(varMap.getExistence("foo")).toBe(VarExistence.DEFINITELY);
+    expect(varMap.getExistence("bar")).toBeUndefined();
+
+    expect(clone.getExistence("foo")).toBe(VarExistence.DEFINITELY);
+    expect(clone.getExistence("bar")).toBe(VarExistence.DEFINITELY);
+  });
+
+  test("merges 2 var maps", () => {
+    const varMap1 = new VarMap();
+    varMap1.setExistence("foo.bar", VarExistence.DEFINITELY);
+    varMap1.setExistence("qux", VarExistence.DEFINITELY);
+
+    const varMap2 = new VarMap();
+    varMap2.setExistence("foo.baz", VarExistence.DEFINITELY);
+    varMap2.setExistence("quux", VarExistence.DEFINITELY);
+
+    const merged = varMap1.merge(varMap2);
+    expect(merged).toEqual({
+      map: {
+        foo: {
+          bar: VarExistence.DEFINITELY,
+          baz: VarExistence.DEFINITELY,
+        },
+        qux: VarExistence.DEFINITELY,
+        quux: VarExistence.DEFINITELY,
+      },
+    });
+  });
+
+  test("merged map is a separate object", () => {
+    const varMap1 = new VarMap();
+    varMap1.setExistence("foo.bar", VarExistence.DEFINITELY);
+
+    const merged = varMap1.merge(new VarMap());
+    merged.setExistence("foo.baz", VarExistence.DEFINITELY);
+
+    expect(varMap1.getExistence("foo.bar")).toBe(VarExistence.DEFINITELY);
+    expect(varMap1.getExistence("foo.baz")).toBeUndefined();
+
+    expect(merged.getExistence("foo.bar")).toBe(VarExistence.DEFINITELY);
+    expect(merged.getExistence("foo.baz")).toBe(VarExistence.DEFINITELY);
+  });
 });
 
-test("clones a var map", () => {
-  const varMap = new VarMap();
-  varMap.setExistence("foo", VarExistence.DEFINITELY);
+describe("mergeExistenceMaps", () => {
+  test("works with nulls", () => {
+    const actual = mergeExistenceMaps(null, null);
+    expect(actual).toEqual({});
+  });
 
-  const clone = varMap.clone();
-  clone.setExistence("bar", VarExistence.DEFINITELY);
+  test("merges plain maps", () => {
+    const actual = mergeExistenceMaps(
+      {
+        foo: VarExistence.DEFINITELY,
+      },
+      {
+        bar: VarExistence.DEFINITELY,
+      }
+    );
+    expect(actual).toEqual({
+      foo: VarExistence.DEFINITELY,
+      bar: VarExistence.DEFINITELY,
+    });
+  });
 
-  expect(varMap.getExistence("foo")).toBe(VarExistence.DEFINITELY);
-  expect(varMap.getExistence("bar")).toBeUndefined();
-
-  expect(clone.getExistence("foo")).toBe(VarExistence.DEFINITELY);
-  expect(clone.getExistence("bar")).toBe(VarExistence.DEFINITELY);
-});
-
-test("merges 2 var maps", () => {
-  const varMap1 = new VarMap();
-  varMap1.setExistence("foo.bar", VarExistence.DEFINITELY);
-  varMap1.setExistence("qux", VarExistence.DEFINITELY);
-
-  const varMap2 = new VarMap();
-  varMap2.setExistence("foo.baz", VarExistence.DEFINITELY);
-  varMap2.setExistence("quux", VarExistence.DEFINITELY);
-
-  const merged = varMap1.merge(varMap2);
-  expect(merged).toEqual({
-    map: {
+  test("merges nested maps", () => {
+    const actual = mergeExistenceMaps(
+      { foo: { bar: VarExistence.DEFINITELY } },
+      { foo: { baz: VarExistence.DEFINITELY } }
+    );
+    expect(actual).toEqual({
       foo: {
         bar: VarExistence.DEFINITELY,
         baz: VarExistence.DEFINITELY,
       },
-      qux: VarExistence.DEFINITELY,
-      quux: VarExistence.DEFINITELY,
-    },
+    });
   });
-});
 
-test("merged map is a separate object", () => {
-  const varMap1 = new VarMap();
-  varMap1.setExistence("foo.bar", VarExistence.DEFINITELY);
+  test("merges Existence with an object", () => {
+    const mapA = { foo: { bar: VarExistence.DEFINITELY } };
+    const mapB = { foo: VarExistence.DEFINITELY };
+    const expected = {
+      foo: {
+        bar: VarExistence.DEFINITELY,
+      },
+    };
 
-  const merged = varMap1.merge(new VarMap());
-  merged.setExistence("foo.baz", VarExistence.DEFINITELY);
+    const actualAB = mergeExistenceMaps(mapA, mapB);
+    expect(actualAB).toEqual(expected);
 
-  expect(varMap1.getExistence("foo.bar")).toBe(VarExistence.DEFINITELY);
-  expect(varMap1.getExistence("foo.baz")).toBeUndefined();
+    const actualBA = mergeExistenceMaps(mapB, mapA);
+    expect(actualBA).toEqual(expected);
+  });
 
-  expect(merged.getExistence("foo.bar")).toBe(VarExistence.DEFINITELY);
-  expect(merged.getExistence("foo.baz")).toBe(VarExistence.DEFINITELY);
+  test("overrides the existence with more strict one regardless of the order", () => {
+    const mapA = { foo: { bar: VarExistence.DEFINITELY } };
+    const mapB = { foo: { bar: VarExistence.MAYBE } };
+    const expected = { foo: { bar: VarExistence.DEFINITELY } };
+
+    const actualAB = mergeExistenceMaps(mapA, mapB);
+    expect(actualAB).toEqual(expected);
+
+    const actualBA = mergeExistenceMaps(mapB, mapA);
+    expect(actualBA).toEqual(expected);
+  });
 });

@@ -22,13 +22,13 @@ export enum VarExistence {
   DEFINITELY = "DEFINITELY",
 }
 
-type VarObj = {
+type ExistenceMap = {
   "*"?: VarExistence;
-  [name: string]: VarObj | VarExistence;
+  [name: string]: ExistenceMap | VarExistence;
 };
 
 class VarMap {
-  private map: VarObj = {};
+  private map: ExistenceMap = {};
 
   setExistenceFromObj(obj: Record<string, unknown>, parentPath = ""): void {
     for (const [key, value] of Object.entries(obj)) {
@@ -44,7 +44,6 @@ class VarMap {
   }
 
   setExistence(path: string, existence: VarExistence): void {
-    // TODO add an Object Injection safety check here
     set(this.map, path, existence);
   }
 
@@ -61,14 +60,13 @@ class VarMap {
       return undefined;
     }
 
-    let bag: VarObj | VarExistence = this.map;
+    let bag: ExistenceMap | VarExistence = this.map;
     while (pathParts.length > 0) {
       if (typeof bag["*"] === "string") {
         return bag["*"];
       }
 
       const part = pathParts.shift();
-      // TODO add an Object Injection safety check here
       bag = bag[part];
       if (typeof bag !== "object") {
         return bag;
@@ -85,11 +83,42 @@ class VarMap {
   }
 
   merge(other: VarMap): VarMap {
-    const mergedMap = merge({}, this.map, other.map);
+    const mergedMap = mergeExistenceMaps(this.map, other.map);
     const merged = new VarMap();
     merged.map = mergedMap;
 
     return merged;
+  }
+}
+
+export function mergeExistenceMaps(
+  a: ExistenceMap,
+  b: ExistenceMap
+): ExistenceMap {
+  const merged = {} as ExistenceMap;
+  merger(merged, a);
+  merger(merged, b);
+  return merged;
+
+  function merger(target: ExistenceMap, source: ExistenceMap) {
+    if (source == null) {
+      return;
+    }
+
+    for (const [key, value] of Object.entries(source)) {
+      if (typeof value === "object") {
+        if (typeof target[key] !== "object") {
+          target[key] = {};
+        }
+
+        merger(target[key], value);
+      } else if (
+        typeof target[key] !== "object" &&
+        target[key] !== VarExistence.DEFINITELY
+      ) {
+        target[key] = value;
+      }
+    }
   }
 }
 
