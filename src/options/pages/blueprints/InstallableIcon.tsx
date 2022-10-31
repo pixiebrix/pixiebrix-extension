@@ -56,7 +56,7 @@ const InstallableIcon: React.FunctionComponent<{
   return listing?.image ? (
     <img
       src={listing.image.url}
-      alt=""
+      alt="Icon"
       className={cx(styles.imageIcon, {
         [styles.size1]: size === "1x",
         [styles.size2]: size === "2x",
