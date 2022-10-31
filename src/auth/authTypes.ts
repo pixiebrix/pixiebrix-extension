@@ -135,10 +135,6 @@ export type AuthUserOrganization = {
    * True if the organization's compliance auth token is set
    */
   hasComplianceAuthToken: Me["organization_memberships"][number]["has_compliance_auth_token"];
-  /**
-   * The Automation Anywhere Control Room information
-   */
-  control_room: Me["organization"]["control_room"];
 };
 
 export type AuthState = {

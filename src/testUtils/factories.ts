@@ -99,7 +99,6 @@ export const organizationFactory = define<AuthUserOrganization>({
   },
   isDeploymentManager: false,
   hasComplianceAuthToken: false,
-  control_room: null,
 });
 
 export const authStateFactory = define<AuthState>({
