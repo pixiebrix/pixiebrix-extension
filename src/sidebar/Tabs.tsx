@@ -98,20 +98,18 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
               </Nav.Link>
             ))}
             {temporaryPanels.map((panel) => (
-              <Nav.Item>
-                <Nav.Link
-                  key={panel.nonce}
-                  eventKey={mapTabEventKey("temporaryPanel", panel)}
-                  className={styles.tabHeader}
-                >
-                  {panel.heading}
-                  <CloseButton
-                    onClick={() => {
-                      onCloseTemporaryTab(panel.nonce);
-                    }}
-                  />
-                </Nav.Link>
-              </Nav.Item>
+              <Nav.Link
+                key={panel.nonce}
+                eventKey={mapTabEventKey("temporaryPanel", panel)}
+                className={styles.tabHeader}
+              >
+                {panel.heading}
+                <CloseButton
+                  onClick={() => {
+                    onCloseTemporaryTab(panel.nonce);
+                  }}
+                />
+              </Nav.Link>
             ))}
           </Nav>
         </Card.Header>

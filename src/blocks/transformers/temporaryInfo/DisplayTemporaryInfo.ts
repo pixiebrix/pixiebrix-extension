@@ -105,7 +105,7 @@ class DisplayTemporaryInfo extends Transformer {
       hideTemporarySidebarPanel(nonce);
     });
 
-    return null;
+    return payload;
   }
 }
 
