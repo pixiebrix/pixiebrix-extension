@@ -79,7 +79,8 @@ $modalPaddingX: calc(
   overflow: auto;
   flex-grow: 0;
   flex-shrink: 0;
-  padding-top: $verticalSpacing;
+  padding-block: $verticalSpacing;
+  margin-left: -0.5rem; // Pull a bit to the left to align the icons rather than the wrapper
 }
 
 .widerTagList {
