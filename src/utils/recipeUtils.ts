@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { RegistryId } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import slugify from "slugify";
-import { RegistryId } from "@/core";
 
 /**
  * Return a valid recipe id, or empty string in case of error.

@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { RegistryId, UUID } from "@/core";
 import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 import { RendererPayload } from "@/runtime/runtimeTypes";
-import { RegistryId, UUID } from "@/core";
 
 export type RendererError = {
   /**

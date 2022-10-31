@@ -16,8 +16,8 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { TraceRecord } from "@/telemetry/trace";
 import { UUID } from "@/core";
+import { TraceRecord } from "@/telemetry/trace";
 
 export type RuntimeState = {
   /**

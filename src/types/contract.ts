@@ -26,13 +26,13 @@ import {
 import {
   SanitizedConfig,
   Metadata,
+  UUID,
   Config,
   EmptyConfig,
   PersistedExtension,
   Timestamp,
-  SemVerString,
   RegistryId,
-  UUID,
+  SemVerString,
 } from "@/core";
 
 import { components } from "@/types/swagger";

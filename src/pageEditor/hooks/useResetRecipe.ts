@@ -16,12 +16,12 @@
  */
 
 import { useCallback } from "react";
+import { RegistryId } from "@/core";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
 import { useDispatch, useSelector } from "react-redux";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import { selectElements } from "@/pageEditor/slices/editorSelectors";
-import { RegistryId } from "@/core";
 
 function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
   const { showConfirmation } = useModals();

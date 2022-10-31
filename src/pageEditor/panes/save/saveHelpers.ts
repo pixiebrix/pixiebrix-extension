@@ -16,13 +16,13 @@
  */
 
 import {
+  RegistryId,
   Metadata,
   IExtension,
   SafeString,
   InnerDefinitionRef,
   InnerDefinitions,
   UnresolvedExtension,
-  RegistryId,
 } from "@/core";
 import {
   EditablePackage,

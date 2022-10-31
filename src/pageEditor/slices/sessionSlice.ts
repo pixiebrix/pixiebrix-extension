@@ -16,8 +16,8 @@
  */
 
 import { createSlice } from "@reduxjs/toolkit";
-import { uuidv4 } from "@/types/helpers";
 import { UUID } from "@/core";
+import { uuidv4 } from "@/types/helpers";
 
 export type SessionState = {
   sessionId: UUID;

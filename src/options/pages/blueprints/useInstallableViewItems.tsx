@@ -23,6 +23,7 @@ import {
 import React, { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
+import { UUID } from "@/core";
 
 import {
   getDescription,
@@ -43,7 +44,6 @@ import { MarketplaceListing } from "@/types/contract";
 import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
-import { UUID } from "@/core";
 
 function useInstallableViewItems(installables: Installable[]): {
   installableViewItems: readonly InstallableViewItem[];

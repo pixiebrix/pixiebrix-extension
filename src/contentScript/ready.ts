@@ -33,10 +33,10 @@
  * - Context invalidated: CS must be injected again
  */
 
+import { UUID } from "@/core";
 import { Target } from "@/types";
 import { forbidContext } from "@/utils/expectContext";
 import { executeFunction } from "webext-content-scripts";
-import { UUID } from "@/core";
 
 const html = globalThis.document?.documentElement;
 

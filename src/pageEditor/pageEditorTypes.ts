@@ -22,6 +22,7 @@ import { SavingExtensionState } from "@/pageEditor/panes/save/savingExtensionSli
 import { SettingsState } from "@/store/settingsTypes";
 import { RuntimeState } from "@/pageEditor/slices/runtimeSlice";
 import { ExtensionPointType } from "@/extensionPoints/types";
+import { RegistryId, UUID } from "@/core";
 import { BlockConfig } from "@/blocks/types";
 import {
   OptionsDefinition,
@@ -31,7 +32,6 @@ import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { AnalysisRootState } from "@/analysis/analysisTypes";
 import { FormState } from "./extensionPoints/formStateTypes";
 import { TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
-import { RegistryId, UUID } from "@/core";
 
 export enum PipelineFlavor {
   AllBlocks = "allBlocks",

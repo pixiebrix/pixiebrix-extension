@@ -26,11 +26,11 @@ import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { clearExtensionTraces } from "@/telemetry/trace";
+import { RegistryId, UUID } from "@/core";
 import {
   OptionsDefinition,
   RecipeMetadataFormState,
 } from "@/types/definitions";
-import { RegistryId, UUID } from "@/core";
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
 

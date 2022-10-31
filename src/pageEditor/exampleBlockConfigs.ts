@@ -16,6 +16,7 @@
  */
 
 import { UnknownObject } from "@/types";
+import { RegistryId } from "@/core";
 import { COMPONENT_READER_ID } from "@/blocks/transformers/component/ComponentReader";
 import { FormTransformer } from "@/blocks/transformers/ephemeralForm/formTransformer";
 import { CustomFormRenderer } from "@/blocks/renderers/customForm";
@@ -24,7 +25,6 @@ import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTem
 import { createNewBlock } from "@/pageEditor/createNewBlock";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
-import { RegistryId } from "@/core";
 
 export function getExampleBlockConfig(
   blockId: RegistryId

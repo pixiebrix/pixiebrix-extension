@@ -21,11 +21,11 @@ import React, { Suspense, useEffect, useMemo, useState } from "react";
 import Select, { components, OptionProps } from "react-select";
 import DiffEditor from "@/vendors/DiffEditor";
 import objectHash from "object-hash";
+import { UUID } from "@/core";
 import {
   useGetPackageQuery,
   useListPackageVersionsQuery,
 } from "@/services/api";
-import { UUID } from "@/core";
 
 export interface PackageVersionOption {
   value: string;

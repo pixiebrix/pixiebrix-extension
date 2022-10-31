@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UUID } from "@/core";
 import { BlockPosition } from "@/blocks/types";
+import { UUID } from "@/core";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 export enum AnnotationType {

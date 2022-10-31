@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateRegistryId } from "@/types/helpers";
 import { RegistryId } from "@/core";
+import { validateRegistryId } from "@/types/helpers";
 
 /**
  * The PixieBrix API integration definition.

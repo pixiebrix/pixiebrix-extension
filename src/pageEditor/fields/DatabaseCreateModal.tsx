@@ -30,8 +30,8 @@ import SelectWidget from "@/components/form/widgets/SelectWidget";
 import DatabaseGroupSelect from "./DatabaseGroupSelect";
 import notify from "@/utils/notify";
 import { Organization, UserRole } from "@/types/contract";
-import { validateUUID } from "@/types/helpers";
 import { UUID } from "@/core";
+import { validateUUID } from "@/types/helpers";
 
 type DatabaseCreateModalProps = {
   show: boolean;
