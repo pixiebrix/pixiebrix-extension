@@ -91,7 +91,7 @@ class ReduxAnalysisManager {
 
       listenerApi.dispatch(
         analysisSlice.actions.startAnalysis({
-          extensionId: extensionId,
+          extensionId,
           analysisId: analysis.id,
         })
       );

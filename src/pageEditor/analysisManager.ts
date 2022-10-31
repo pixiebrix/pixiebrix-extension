@@ -34,6 +34,7 @@ import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import { selectExtensionTrace } from "./slices/runtimeSelectors";
 import VarAnalysis from "@/analysis/analysisVisitors/varAnalysis";
 import analysisSlice from "@/analysis/analysisSlice";
+import { selectSettings } from "@/store/settingsSelectors";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -133,6 +134,11 @@ const varAnalysisFactory = (
   action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
   state: RootState
 ) => {
+  const { varAnalysis } = selectSettings(state);
+  if (!varAnalysis) {
+    return null;
+  }
+
   const records = selectExtensionTrace(state);
 
   return new VarAnalysis(records);
