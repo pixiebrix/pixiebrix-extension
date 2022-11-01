@@ -63,7 +63,7 @@ async function setInputVars(extension: FormState, contextVars: VarMap) {
 function setOptionsVars(extension: FormState, contextVars: VarMap) {
   // TODO: should we check the blueprint definition instead?
   if (!isEmpty(extension.optionsArgs)) {
-    contextVars.setExistenceFromObj(extension.optionsArgs, "@options");
+    contextVars.setExistenceFromObj(extension.optionsArgs, "@options.");
   }
 }
 

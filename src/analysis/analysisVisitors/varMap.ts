@@ -30,6 +30,13 @@ type ExistenceMap = {
 class VarMap {
   private map: ExistenceMap = {};
 
+  /**
+   * Sets the existence of variables in the VarMap based on an object with assigned variables.
+   * For every property of the Obj a variable existence will be set to DEFINITELY.
+   * Ex. { @foo: "bar" } -> { @foo: "DEFINITELY" }
+   * @param obj A context object with assigned variables
+   * @param parentPath Path to the object in the VarMap, should end with a dot
+   */
   setExistenceFromObj(obj: Record<string, unknown>, parentPath = ""): void {
     for (const [key, value] of Object.entries(obj)) {
       if (typeof value === "object") {
