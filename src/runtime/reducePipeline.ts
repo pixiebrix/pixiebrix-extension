@@ -304,6 +304,7 @@ async function executeBlockWithValidatedProps(
             throw new Error("Expected object context for v3+ runtime");
           }
 
+          const { runId, extensionId, branches } = options.trace;
           return reducePipelineExpression(
             pipeline,
             {
@@ -313,9 +314,9 @@ async function executeBlockWithValidatedProps(
             rootOverride ?? root,
             {
               ...options,
-              runId: options.trace.runId,
-              extensionId: options.trace.extensionId,
-              branches: [...options.trace.branches, branch],
+              runId,
+              extensionId,
+              branches: [...branches, branch],
             }
           );
         },
@@ -341,6 +342,7 @@ async function executeBlockWithValidatedProps(
               rootOverride ?? root,
               {
                 ...options,
+                // This (headless) is the important difference from the call in runPipeline() above
                 headless: true,
                 runId,
                 extensionId,

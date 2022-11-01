@@ -36,7 +36,7 @@ class DisplayTemporaryInfo extends Transformer {
     super(
       DisplayTemporaryInfo.BLOCK_ID,
       "Display Temporary Information",
-      "Display temporary information in the sidebar"
+      "A display title for the information, shown in the tab name"
     );
   }
 
