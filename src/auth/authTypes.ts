@@ -198,7 +198,9 @@ export type AuthState = {
    * @since 1.7.1
    */
   readonly enforceUpdateMillis: number | null;
-
+  /**
+   * The user's PixieBrix auth token.
+   */
   readonly token: string;
 };
 

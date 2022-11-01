@@ -154,8 +154,7 @@ export const authStateFactory = define<AuthState>({
     return flags;
   },
   partner: null,
-  // TODO: should we generate a random function here? is there a function to do that?
-  token: "f19306288168eb3262fa739e1363e8f4669e849e",
+  token: (n: number) => `notarealtoken-${n}`,
 });
 
 export const recipeMetadataFactory = define<Metadata>({
