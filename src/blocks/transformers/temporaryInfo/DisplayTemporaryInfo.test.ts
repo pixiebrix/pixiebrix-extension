@@ -28,7 +28,12 @@ import { DocumentRenderer } from "@/blocks/renderers/document";
 import { getExampleBlockConfig } from "@/pageEditor/exampleBlockConfigs";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { BusinessError } from "@/errors/businessErrors";
-import { RendererError } from "@/sidebar/types";
+import {
+  PanelPayload,
+  RendererError,
+  TemporaryPanelEntry,
+} from "@/sidebar/types";
+import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
 
 jest.mock("@/background/messenger/api", () => {
   const actual = jest.requireActual("@/background/messenger/api");
@@ -43,6 +48,11 @@ jest.mock("@/background/messenger/api", () => {
 jest.mock("@/contentScript/sidebarController", () => ({
   ensureSidebar: jest.fn(),
   showTemporarySidebarPanel: jest.fn(),
+}));
+
+jest.mock("@/blocks/transformers/temporaryInfo/temporaryPanelProtocol", () => ({
+  registerTemporaryPanel: jest.fn(),
+  resolveTemporaryPanels: jest.fn(),
 }));
 
 describe("DisplayTemporaryInfo", () => {
@@ -68,17 +78,19 @@ describe("DisplayTemporaryInfo", () => {
         body: makePipelineExpression([{ id: renderer.id, config }]),
       },
     };
-    // Result is PanelPayload (= RendererPayload | RendererError)
-    const result = await reducePipeline(
-      pipeline,
-      simpleInput({}),
-      testOptions("v3")
+    let payload: PanelPayload;
+    (showTemporarySidebarPanel as jest.Mock).mockImplementation(
+      (entry: TemporaryPanelEntry) => {
+        payload = entry.payload;
+      }
     );
 
+    await reducePipeline(pipeline, simpleInput({}), testOptions("v3"));
+
     // Check structure for RendererPayload
-    expect(result).toHaveProperty("blockId", renderer.id);
-    expect(result).toHaveProperty("args");
-    expect(result).toHaveProperty("ctxt");
+    expect(payload).toHaveProperty("blockId", renderer.id);
+    expect(payload).toHaveProperty("args");
+    expect(payload).toHaveProperty("ctxt");
   });
 
   test("it returns error", async () => {
@@ -94,16 +106,19 @@ describe("DisplayTemporaryInfo", () => {
         ]),
       },
     };
-    // Result is PanelPayload (= RendererPayload | RendererError)
-    const result = await reducePipeline(
-      pipeline,
-      simpleInput({}),
-      testOptions("v3")
+
+    let payload: PanelPayload;
+    (showTemporarySidebarPanel as jest.Mock).mockImplementation(
+      (entry: TemporaryPanelEntry) => {
+        payload = entry.payload;
+      }
     );
 
+    await reducePipeline(pipeline, simpleInput({}), testOptions("v3"));
+
     // Check structure for RendererError
-    expect(result).toHaveProperty("error");
-    const error = result as RendererError;
+    expect(payload).toHaveProperty("error");
+    const error = payload as RendererError;
     const errorMessage = (error.error as BusinessError).message;
     expect(errorMessage).toStrictEqual(message);
   });
