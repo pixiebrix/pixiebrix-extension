@@ -36,19 +36,17 @@ jest.mock("@/background/messenger/api", () => ({
   },
 }));
 
-jest.mock("@/extensionPoints/registry", () => ({
+jest.mock("@/blocks/registry", () => ({
   __esModule: true,
   default: {
     lookup: jest.fn().mockResolvedValue({
-      defaultReader: jest.fn().mockResolvedValue({
-        outputSchema: {
-          properties: {
-            title: "Test",
-            url: "https://example.com",
-            lang: "en",
-          },
+      outputSchema: {
+        properties: {
+          title: "Test",
+          url: "https://example.com",
+          lang: "en",
         },
-      }),
+      },
     }),
   },
 }));

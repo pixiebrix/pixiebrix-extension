@@ -30,6 +30,7 @@ import { makeInternalId } from "@/registry/internal";
 import { Analysis, Annotation, AnnotationType } from "@/analysis/analysisTypes";
 import VarMap, { VarExistence } from "./varMap";
 import { TraceRecord } from "@/telemetry/trace";
+import { mergeReaders } from "@/blocks/readers/readerUtils";
 
 type PreviousVisitedBlock = {
   vars: VarMap;
@@ -47,14 +48,15 @@ async function setServiceVars(extension: FormState, contextVars: VarMap) {
 }
 
 async function setInputVars(extension: FormState, contextVars: VarMap) {
-  const { selectExtensionPoint } = ADAPTERS.get(extension.type);
-  const extensionPointConfig = selectExtensionPoint(extension);
-  const obj = pick(extensionPointConfig, ["kind", "definition"]);
-  const registryId = makeInternalId(obj);
-  const extensionPoint = await extensionPointRegistry.lookup(registryId);
-  const reader = await extensionPoint?.defaultReader();
-  const readerProperties = reader?.outputSchema?.properties || {};
-  const readerKeys = Object.keys(readerProperties);
+  const readersConfig = extension.extensionPoint.definition.reader;
+  if (readersConfig == null) {
+    return;
+  }
+
+  const reader = await mergeReaders(readersConfig);
+  const readerProperties = reader?.outputSchema?.properties;
+  const readerKeys =
+    readerProperties == null ? [] : Object.keys(readerProperties);
   for (const key of readerKeys) {
     contextVars.setExistence(`@input.${key}`, VarExistence.DEFINITELY);
   }
