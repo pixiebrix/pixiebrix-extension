@@ -36,6 +36,37 @@ type PreviousVisitedBlock = {
   output: VarMap | null;
 };
 
+async function setServiceVars(extension: FormState, contextVars: VarMap) {
+  const serviceContext = extension.services?.length
+    ? await makeServiceContext(extension.services)
+    : null;
+
+  if (serviceContext != null) {
+    contextVars.setExistenceFromObj(serviceContext);
+  }
+}
+
+async function setInputVars(extension: FormState, contextVars: VarMap) {
+  const { selectExtensionPoint } = ADAPTERS.get(extension.type);
+  const extensionPointConfig = selectExtensionPoint(extension);
+  const obj = pick(extensionPointConfig, ["kind", "definition"]);
+  const registryId = makeInternalId(obj);
+  const extensionPoint = await extensionPointRegistry.lookup(registryId);
+  const reader = await extensionPoint?.defaultReader();
+  const readerProperties = reader?.outputSchema?.properties || {};
+  const readerKeys = Object.keys(readerProperties);
+  for (const key of readerKeys) {
+    contextVars.setExistence(`@input.${key}`, VarExistence.DEFINITELY);
+  }
+}
+
+function setOptionsVars(extension: FormState, contextVars: VarMap) {
+  // TODO: should we check the blueprint definition instead?
+  if (!isEmpty(extension.optionsArgs)) {
+    contextVars.setExistenceFromObj(extension.optionsArgs, "@options");
+  }
+}
+
 class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   private readonly knownVars = new Map<string, VarMap>();
   private currentBlockKnownVars: VarMap;
@@ -175,39 +206,10 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   async run(extension: FormState): Promise<void> {
     const contextVars = new VarMap();
 
-    let context = {} as BlockArgContext;
+    await setServiceVars(extension, contextVars);
+    await setInputVars(extension, contextVars);
+    setOptionsVars(extension, contextVars);
 
-    const serviceContext = extension.services?.length
-      ? await makeServiceContext(extension.services)
-      : null;
-    if (serviceContext) {
-      context = {
-        ...context,
-        ...serviceContext,
-      };
-    }
-
-    // Getting the extensions @input vars
-    const { selectExtensionPoint } = ADAPTERS.get(extension.type);
-    const extensionPointConfig = selectExtensionPoint(extension);
-    const obj = pick(extensionPointConfig, ["kind", "definition"]);
-    const registryId = makeInternalId(obj);
-    const extensionPoint = await extensionPointRegistry.lookup(registryId);
-    const reader = await extensionPoint?.defaultReader();
-    const readerProperties = reader?.outputSchema?.properties || {};
-    const readerKeys = Object.keys(readerProperties);
-    if (readerKeys.length > 0) {
-      for (const key of readerKeys) {
-        contextVars.setExistence(`@input.${key}`, VarExistence.DEFINITELY);
-      }
-    }
-
-    // TODO: should we check the blueprint definition instead?
-    if (!isEmpty(extension.optionsArgs)) {
-      context["@options"] = extension.optionsArgs;
-    }
-
-    contextVars.setExistenceFromObj(context);
     this.previousVisitedBlock = {
       vars: contextVars,
       output: null,
