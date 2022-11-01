@@ -25,7 +25,7 @@ import {
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { UUID } from "@/core";
 import { defaultEventKey, mapTabEventKey } from "@/sidebar/utils";
-import { cancelForm } from "@/contentScript/messenger/api";
+import { cancelForm, closeTemporaryPanel } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 import { partition, sortBy } from "lodash";
 
@@ -100,6 +100,12 @@ async function cancelPreexistingForms(forms: UUID[]): Promise<void> {
   cancelForm({ tabId: sender.tab.id, frameId: 0 }, ...forms);
 }
 
+async function resolvePanels(nonces: UUID[]): Promise<void> {
+  // TODO: Replace with `tabId: "this"` once implemented in the messenger
+  const { tab } = await whoAmI();
+  closeTemporaryPanel({ tabId: tab.id, frameId: 0 }, nonces);
+}
+
 const sidebarSlice = createSlice({
   initialState: emptySidebarState,
   name: "sidebar",
@@ -138,10 +144,12 @@ const sidebarSlice = createSlice({
     ) {
       const { panel } = action.payload;
 
-      const [, otherTemporaryPanels] = partition(
+      const [existingPanels, otherTemporaryPanels] = partition(
         state.temporaryPanels,
         (x) => x.extensionId === panel.extensionId
       );
+
+      void resolvePanels(existingPanels.map((panel) => panel.nonce));
 
       state.temporaryPanels = [...otherTemporaryPanels, panel];
       state.activeKey = mapTabEventKey("temporaryPanel", panel);
@@ -152,6 +160,7 @@ const sidebarSlice = createSlice({
         (panel) => panel.nonce !== nonce
       );
       state.activeKey = defaultEventKey(state);
+      void resolvePanels([nonce]);
     },
     // In the future, we might want to have ActivatePanelOptions support a "enqueue" prop for controlling whether the
     // or not a miss here is queued. We added pendingActivePanel to handle race condition on the initial sidebar

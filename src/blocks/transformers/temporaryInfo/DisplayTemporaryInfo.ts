@@ -27,6 +27,10 @@ import {
   showTemporarySidebarPanel,
 } from "@/contentScript/sidebarController";
 import { PanelPayload } from "@/sidebar/types";
+import {
+  registerTemporaryPanel,
+  resolveTemporaryPanels,
+} from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 
 class DisplayTemporaryInfo extends Transformer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/display");
@@ -71,7 +75,7 @@ class DisplayTemporaryInfo extends Transformer {
       runPipeline,
       runRendererPipeline,
     }: BlockOptions
-  ): Promise<unknown> {
+  ): Promise<void> {
     expectContext("contentScript");
 
     const nonce = uuidv4();
@@ -103,9 +107,14 @@ class DisplayTemporaryInfo extends Transformer {
 
     controller.signal.addEventListener("abort", () => {
       hideTemporarySidebarPanel(nonce);
+      void resolveTemporaryPanels([nonce]);
     });
 
-    return payload;
+    try {
+      await registerTemporaryPanel(nonce);
+    } finally {
+      controller.abort();
+    }
   }
 }
 
