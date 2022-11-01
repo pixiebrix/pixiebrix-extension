@@ -396,12 +396,7 @@ export function commonCssSelector(
   if (commonAncestor) {
     // Get common class of elements
     const [commonClassName] = intersection(
-      ...elements.map((element) => element.className)
-    );
-
-    // Get first common class of ancestor of elements
-    const [commonAncestorClassName] = intersection(
-      ...ancestors.map((list) => list.map((element) => element.className))
+      ...elements.map((element) => element.className.split(" "))
     );
 
     // Get selector of common ancestor
@@ -416,6 +411,15 @@ export function commonCssSelector(
 
     // If elements have comment class we can easily select them
     if (commonClassName) {
+      // Make sure to not include the elements with same classname but in different parent class
+      if (commonParentClassName) {
+        return [
+          commonAncestorSelector,
+          getSelectorFromClass(commonParentClassName),
+          getSelectorFromClass(commonClassName),
+        ].join(" ");
+      }
+
       return [
         commonAncestorSelector,
         getSelectorFromClass(commonClassName),
@@ -431,27 +435,9 @@ export function commonCssSelector(
       ].join(" ");
     }
 
-    if (commonAncestorClassName) {
-      // If not, we use common ancestor's class
-
-      if (
-        intersection(
-          $(commonAncestorSelector),
-          $(getSelectorFromClass(commonAncestorClassName))
-        ).length > 0
-      ) {
-        // Make sure that commonAncestorClassName is not duplicated with commonAncestorSelector
-        return [commonAncestorSelector, elements[0].tagName.toLowerCase()].join(
-          " "
-        );
-      }
-
-      return [
-        commonAncestorSelector,
-        getSelectorFromClass(commonAncestorClassName),
-        elements[0].tagName.toLowerCase(),
-      ].join(" ");
-    }
+    return [commonAncestorSelector, elements[0].tagName.toLowerCase()].join(
+      " "
+    );
   }
 }
 

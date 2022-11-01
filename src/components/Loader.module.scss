@@ -14,16 +14,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+.root {
+  margin: auto; // Center
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-import styles from "./Loader.module.scss";
-import React from "react";
-// eslint-disable-next-line no-restricted-imports -- The only allowed import :)
-import GridLoader from "react-spinners/GridLoader";
+  /* If the loading is quick enough, we don't need to show the message. */
+  /* This leads to a cleaner loading experience since there will be one fewer flash of intermediary content. */
+  animation: loading-fade-in 0.5s 0.5s both;
 
-const Loader: typeof GridLoader = (props) => (
-  <div className={styles.root} data-testid="loader">
-    <GridLoader {...props} />
-  </div>
-);
+  span span {
+    /* TODO: Use color variable */
+    background-color: #6562aa !important;
+  }
+}
 
-export default React.memo(Loader);
+@keyframes loading-fade-in {
+  from {
+    opacity: 0;
+    scale: 0.8;
+  }
+}
