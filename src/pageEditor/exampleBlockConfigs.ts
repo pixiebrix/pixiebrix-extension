@@ -16,15 +16,17 @@
  */
 
 import { UnknownObject } from "@/types";
-import { RegistryId } from "@/core";
+import { RegistryId, Schema } from "@/core";
 import { COMPONENT_READER_ID } from "@/blocks/transformers/component/ComponentReader";
 import { FormTransformer } from "@/blocks/transformers/ephemeralForm/formTransformer";
 import { CustomFormRenderer } from "@/blocks/renderers/customForm";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { createNewBlock } from "@/pageEditor/createNewBlock";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
+import { BlockConfig } from "@/blocks/types";
+import { uuidv4 } from "@/types/helpers";
+import { defaultBlockConfig } from "@/blocks/util";
 
 export function getExampleBlockConfig(
   blockId: RegistryId
@@ -117,4 +119,17 @@ export function getExampleBlockConfig(
       body: makePipelineExpression([createNewBlock(DocumentRenderer.BLOCK_ID)]),
     };
   }
+}
+
+export function createNewBlock(
+  blockId: RegistryId,
+  blockInputSchema?: Schema
+): BlockConfig {
+  return {
+    id: blockId,
+    instanceId: uuidv4(),
+    config:
+      getExampleBlockConfig(blockId) ??
+      (blockInputSchema == null ? {} : defaultBlockConfig(blockInputSchema)),
+  };
 }
