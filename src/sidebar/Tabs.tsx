@@ -117,7 +117,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
           <Tab.Content className="p-0 border-0 full-height">
             {panels.map((panel: PanelEntry) => (
               <Tab.Pane
-                className={cx(styles.paneOverrides, "full-height flex-grow")}
+                className={cx("full-height flex-grow", styles.paneOverrides)}
                 key={panel.extensionId}
                 eventKey={mapTabEventKey("panel", panel)}
               >
@@ -147,7 +147,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
             ))}
             {temporaryPanels.map((panel) => (
               <Tab.Pane
-                className={cx(styles.paneOverrides, "full-height flex-grow")}
+                className={cx("full-height flex-grow", styles.paneOverrides)}
                 key={panel.nonce}
                 eventKey={mapTabEventKey("temporaryPanel", panel)}
               >
