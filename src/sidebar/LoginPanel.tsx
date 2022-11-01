@@ -23,8 +23,6 @@ import marketplaceImage from "@img/marketplace.svg";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
-import ControlRoomOAuthForm from "@/options/pages/onboarding/partner/ControlRoomOAuthForm";
-import ControlRoomTokenForm from "@/options/pages/onboarding/partner/ControlRoomTokenForm";
 
 // eslint-disable-next-line prefer-destructuring -- process.env variable
 const SERVICE_URL = process.env.SERVICE_URL;
@@ -47,36 +45,7 @@ const DefaultLogin: React.FunctionComponent = () => (
 );
 
 const PartnerAuth: React.FunctionComponent = () => {
-  const { authMethod } = useSelector(selectSettings);
   const extensionUrl = new URL(browser.runtime.getURL("options.html")).href;
-
-  let authBody = (
-    <Button
-      className="mt-4"
-      href={extensionUrl}
-      target="_blank"
-      variant="primary"
-    >
-      <FontAwesomeIcon icon={faSignInAlt} /> Connect Account
-    </Button>
-  );
-
-  if (authMethod === "partner-oauth2") {
-    authBody = <ControlRoomOAuthForm initialValues={{ controlRoomUrl: "" }} />;
-  }
-
-  if (authMethod === "partner-token") {
-    authBody = (
-      <ControlRoomTokenForm
-        initialValues={{
-          controlRoomUrl: "",
-          username: "",
-          password: "",
-        }}
-      />
-    );
-  }
-
   return (
     <Col className="text-center">
       <h4 className="display-6">Connect your AARI account</h4>
@@ -84,7 +53,14 @@ const PartnerAuth: React.FunctionComponent = () => {
         Authenticate with Automation Anywhere to continue using your team
         extensions
       </p>
-      {authBody}
+      <Button
+        className="mt-4"
+        href={extensionUrl}
+        target="_blank"
+        variant="primary"
+      >
+        <FontAwesomeIcon icon={faSignInAlt} /> Connect Account
+      </Button>
     </Col>
   );
 };
