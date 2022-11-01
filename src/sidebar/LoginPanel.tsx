@@ -20,6 +20,9 @@ import { Button, Col, Container, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignInAlt } from "@fortawesome/free-solid-svg-icons";
 import marketplaceImage from "@img/marketplace.svg";
+import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
+import { useSelector } from "react-redux";
+import { selectSettings } from "@/store/settingsSelectors";
 
 // eslint-disable-next-line prefer-destructuring -- process.env variable
 const SERVICE_URL = process.env.SERVICE_URL;
@@ -43,6 +46,7 @@ const DefaultLogin: React.FunctionComponent = () => (
 
 const PartnerAuth: React.FunctionComponent = () => {
   const extensionUrl = new URL(browser.runtime.getURL("options.html")).href;
+
   return (
     <Col className="text-center">
       <h4 className="display-6">Connect your AARI account</h4>
@@ -63,11 +67,17 @@ const PartnerAuth: React.FunctionComponent = () => {
 };
 
 const LoginPanel: React.FunctionComponent = () => {
-  const partnerAuth = false;
+  const { authMethod } = useSelector(selectSettings);
+  const { hasPartner, hasConfiguredIntegration } = useRequiredPartnerAuth();
+
+  const showPartnerAuth =
+    (hasPartner && !hasConfiguredIntegration) ||
+    ["partner-oauth2", "partner-token"].includes(authMethod);
+
   return (
     <Container>
       <Row className="mt-4">
-        {partnerAuth ? <PartnerAuth /> : <DefaultLogin />}
+        {showPartnerAuth ? <PartnerAuth /> : <DefaultLogin />}
       </Row>
 
       <Row>
