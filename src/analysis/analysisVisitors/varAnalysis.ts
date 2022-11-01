@@ -18,7 +18,7 @@
 import PipelineExpressionVisitor from "@/blocks/PipelineExpressionVisitor";
 import { VisitBlockExtra, VisitPipelineExtra } from "@/blocks/PipelineVisitor";
 import { BlockPosition, BlockConfig } from "@/blocks/types";
-import { BlockArgContext, Expression } from "@/core";
+import { Expression } from "@/core";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getInputKeyForSubPipeline } from "@/pageEditor/utils";
