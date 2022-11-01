@@ -138,12 +138,12 @@ const sidebarSlice = createSlice({
     ) {
       const { panel } = action.payload;
 
-      const [, otherTempPanels] = partition(
+      const [, otherTemporaryPanels] = partition(
         state.temporaryPanels,
         (x) => x.extensionId === panel.extensionId
       );
 
-      state.temporaryPanels = [...otherTempPanels, panel];
+      state.temporaryPanels = [...otherTemporaryPanels, panel];
       state.activeKey = mapTabEventKey("temporaryPanel", panel);
     },
     removeTemporaryPanel(state, action: PayloadAction<UUID>) {

@@ -17,6 +17,7 @@
 
 import { WritableDraft } from "immer/dist/types/types-external";
 import { EditorState } from "@/pageEditor/pageEditorTypes";
+import { RegistryId, UUID } from "@/core";
 import {
   FOUNDATION_NODE_ID,
   makeInitialElementUIState,
@@ -26,7 +27,6 @@ import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { clearExtensionTraces } from "@/telemetry/trace";
-import { RegistryId, UUID } from "@/core";
 import {
   OptionsDefinition,
   RecipeMetadataFormState,
