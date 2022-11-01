@@ -19,14 +19,41 @@ import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 
 import LoginPanel from "@/sidebar/LoginPanel";
+import { configureStore } from "@reduxjs/toolkit";
+import { Provider } from "react-redux";
+import settingsSlice from "@/store/settingsSlice";
+import servicesSlice from "@/store/servicesSlice";
+import { authSlice } from "@/auth/authSlice";
+import { appApi } from "@/services/api";
+import { createApi } from "@reduxjs/toolkit/query/react";
 
 export default {
   title: "Sidebar/LoginPanel",
   component: LoginPanel,
 } as ComponentMeta<typeof LoginPanel>;
 
+const baseQuery = () => ({ data: [] as any });
+
+function optionsStore(initialState?: any) {
+  return configureStore({
+    reducer: {
+      settings: settingsSlice.reducer,
+      services: servicesSlice.reducer,
+      auth: authSlice.reducer,
+      [appApi.reducerPath]: createApi({
+        reducerPath: "appApi",
+        baseQuery,
+        endpoints: (builder) => ({}),
+      }).reducer,
+    },
+    ...(initialState ?? { preloadedState: initialState }),
+  });
+}
+
 const Template: ComponentStory<typeof LoginPanel> = (args) => (
-  <LoginPanel {...args} />
+  <Provider store={optionsStore()}>
+    <LoginPanel {...args} />
+  </Provider>
 );
 
 export const Default = Template.bind({});
