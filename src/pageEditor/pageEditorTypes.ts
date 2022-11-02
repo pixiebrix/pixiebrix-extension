@@ -93,7 +93,8 @@ export interface EditorState {
    */
   expandedRecipeId: RegistryId | null;
 
-  error: string | null;
+  // Should be ErrorObject | null but TS explodes in the slice definition (editorSlice.ts)
+  error: unknown;
 
   dirty: Record<string, boolean>;
 

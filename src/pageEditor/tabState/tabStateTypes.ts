@@ -49,10 +49,11 @@ export type TabState = {
   frameState: FrameConnectionState;
 
   /**
-   * The error connecting to the content script, or undefined.
+   * The error connecting to the content script, or null.
    * @see connectToContentScript
    */
-  error: string | null;
+  // Should be ErrorObject | null but TS explodes in the slice definition (tabStateSlice.ts)
+  error: unknown;
 };
 
 export type TabStateRootState = {
