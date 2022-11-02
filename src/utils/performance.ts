@@ -16,11 +16,13 @@
  */
 import { recordWarning } from "@/background/logging";
 
+const APP_START_ACTION = "app:start";
+
 /**
  * Adds a performance mark for the initialization of an app
  */
 export function markAppStart() {
-  performance.mark("app-start");
+  performance.mark(APP_START_ACTION);
 }
 
 /**
@@ -32,7 +34,7 @@ export function measurePerformanceFromAppStart(
   action: string,
   reportThreshold: number | null = 5000
 ) {
-  const { duration } = performance.measure("app-start");
+  const { duration } = performance.measure(APP_START_ACTION);
   const message = `Performance: "${action}" took ${Math.round(duration)}ms`;
   const data = {
     duration,
