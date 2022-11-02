@@ -349,8 +349,7 @@ async function executeBlockWithValidatedProps(
                 branches: [...branches, branch],
               }
             );
-
-            // Already using errors for control flow, keeping in this way for conciseness
+            // Expecting a HeadlessModeError above for the "success" case
             // noinspection ExceptionCaughtLocallyJS
             throw new BusinessError("Pipeline does not include a renderer");
           } catch (error) {
