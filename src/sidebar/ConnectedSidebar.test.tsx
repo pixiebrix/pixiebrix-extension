@@ -43,6 +43,8 @@ jest.mock("@/auth/token", () => {
     isLinked: jest.fn().mockResolvedValue(true),
   };
 });
+browser.runtime.getURL = (path: string) =>
+  `chrome-extension://example.url/${path}`;
 
 beforeAll(() => {
   jest.useFakeTimers();
@@ -58,6 +60,26 @@ describe("SidebarApp", () => {
     (useGetMeQuery as jest.Mock).mockReturnValue({
       isLoading: false,
       data: anonAuth,
+    });
+
+    const rendered = render(
+      <MemoryRouter>
+        <ConnectedSidebar />
+      </MemoryRouter>
+    );
+    await waitForEffect();
+
+    jest.runAllTimers();
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  test("renders not connected partner view", async () => {
+    (useGetMeQuery as jest.Mock).mockReturnValue({
+      isLoading: false,
+      data: {
+        partner: {},
+        ...anonAuth,
+      },
     });
 
     const rendered = render(
