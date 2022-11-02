@@ -396,6 +396,7 @@ export const appApi = createApi({
         { type: "Package", id },
         "Recipes",
         "EditablePackages",
+        "PackageVersion",
       ],
     }),
     deletePackage: builder.mutation<void, { id: UUID }>({
