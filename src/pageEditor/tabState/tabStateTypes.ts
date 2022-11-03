@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { SimpleErrorObject } from "@/errors/errorHelpers";
 import { FrameworkMeta } from "@/messaging/constants";
 
 interface FrameMeta {
@@ -52,8 +53,7 @@ export type TabState = {
    * The error connecting to the content script, or null.
    * @see connectToContentScript
    */
-  // Should be ErrorObject | null but TS explodes in the slice definition (tabStateSlice.ts)
-  error: unknown;
+  error: SimpleErrorObject | null;
 };
 
 export type TabStateRootState = {

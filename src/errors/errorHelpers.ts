@@ -334,3 +334,10 @@ export function selectError(originalError: unknown): Error {
   // Truncate error message in case it's an excessively-long JSON string
   return new Error(truncate(errorMessage, { length: 2000 }));
 }
+
+/** Basic Error-like type to be used only when ErrorObject is too complex */
+export type SimpleErrorObject = {
+  name?: string;
+  message?: string;
+  stack?: string;
+};

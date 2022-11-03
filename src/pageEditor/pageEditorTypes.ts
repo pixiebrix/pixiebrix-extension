@@ -32,6 +32,7 @@ import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { AnalysisRootState } from "@/analysis/analysisTypes";
 import { FormState } from "./extensionPoints/formStateTypes";
 import { TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
+import { SimpleErrorObject } from "@/errors/errorHelpers";
 
 export enum PipelineFlavor {
   AllBlocks = "allBlocks",
@@ -93,8 +94,7 @@ export interface EditorState {
    */
   expandedRecipeId: RegistryId | null;
 
-  // Should be ErrorObject | null but TS explodes in the slice definition (editorSlice.ts)
-  error: unknown;
+  error: SimpleErrorObject | null;
 
   dirty: Record<string, boolean>;
 
