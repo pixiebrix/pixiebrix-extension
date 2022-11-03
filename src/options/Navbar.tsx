@@ -24,7 +24,7 @@ import { faBars, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { DEFAULT_SERVICE_URL, getBaseURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
-import { isLinked } from "@/auth/token";
+import { isLinked, readPartnerAuthData } from "@/auth/token";
 import { useSelector } from "react-redux";
 import { toggleSidebar } from "./toggleSidebar";
 import { SettingsState } from "@/store/settingsTypes";
@@ -34,7 +34,19 @@ import { ThemeLogo } from "@/utils/themeUtils";
 
 const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
   const { email } = useSelector(selectAuth);
-  const [serviceURL] = useAsyncState<string>(getBaseURL);
+  const [serviceURL] = useAsyncState<string>(async () => {
+    const baseURL = (await getBaseURL()) ?? DEFAULT_SERVICE_URL;
+    const partnerAuth = await readPartnerAuthData();
+    let url;
+
+    if (partnerAuth?.token) {
+      url = new URL("partner-auth", baseURL);
+    } else {
+      url = new URL(baseURL);
+    }
+
+    return url.toString();
+  });
   const [connected, connectedPending] = useAsyncState(isLinked);
   const mode = useSelector<{ settings: SettingsState }, string>(
     ({ settings }) => settings.mode
@@ -81,11 +93,7 @@ const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
 
         <ul className="navbar-nav navbar-nav-right flex-grow-1 justify-content-end">
           {serviceURL && (
-            <Nav.Link
-              className="px-3"
-              target="_blank"
-              href={serviceURL ?? DEFAULT_SERVICE_URL}
-            >
+            <Nav.Link className="px-3" target="_blank" href={serviceURL}>
               <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
               Open Admin Console
             </Nav.Link>
