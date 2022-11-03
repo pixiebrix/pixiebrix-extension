@@ -104,4 +104,9 @@ export type SkunkworksSettings = {
    * Experimental setting to support multi-element selector.
    */
   selectionTools?: boolean;
+
+  /**
+   * Experimental setting to support analysis of var expressions in the Page Editor
+   */
+  varAnalysis?: boolean;
 };

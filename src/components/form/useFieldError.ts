@@ -19,24 +19,43 @@ import { useSelector } from "react-redux";
 import { selectAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
 import { useField } from "formik";
 import { useFormErrorSettings } from "@/components/form/FormErrorContext";
+import { Annotation, AnnotationType } from "@/analysis/analysisTypes";
+
+type UseFieldErrorResult = {
+  warning?: string | string[] | undefined;
+
+  // Formik error tree can return an object, hence the 'Record<string, unknown>'
+  error?: string | string[] | Record<string, unknown> | undefined;
+};
 
 function useFormikFieldError(
   fieldPath: string,
   showUntouched?: boolean
-): string | undefined {
+): UseFieldErrorResult {
   const [, { error, touched }] = useField(fieldPath);
-  return showUntouched || touched ? error : null;
+  return showUntouched || touched ? { error } : {};
 }
 
-function useAnalysisFieldError(fieldPath: string): string[] | undefined {
+function getAnnotationMessages(
+  annotations: Annotation[],
+  type: AnnotationType
+): string[] {
+  return annotations.filter((x) => x.type === type).map((x) => x.message);
+}
+
+function useAnalysisFieldError(fieldPath: string): UseFieldErrorResult {
   const annotations = useSelector(selectAnnotationsForPath(fieldPath));
+  if (!annotations?.length) {
+    return {};
+  }
 
-  return annotations?.length > 0
-    ? annotations.map(({ message }) => message)
-    : undefined;
+  return {
+    error: getAnnotationMessages(annotations, AnnotationType.Error),
+    warning: getAnnotationMessages(annotations, AnnotationType.Warning),
+  };
 }
 
-function useFieldError(fieldPath: string): string | string[] | undefined {
+function useFieldError(fieldPath: string): UseFieldErrorResult {
   const { shouldUseAnalysis, showUntouchedErrors } = useFormErrorSettings();
 
   return shouldUseAnalysis

@@ -339,10 +339,32 @@ export function safeCssSelector(
 }
 
 /**
- * Get common selector for multi-element
- * It is used by expand selection feature
+ * Returns true if selectors match any of the same elements
  */
-export function commonCssSelector(
+function selectorsOverlap(
+  lhs: string,
+  rhs: string,
+  root?: HTMLElement
+): boolean {
+  return (
+    intersection($safeFind(lhs, root).get(), $safeFind(rhs, root).get())
+      .length > 0
+  );
+}
+
+/**
+ * Heuristically infer selector for elements and similar elements on the page.
+ *
+ * The generated selector will match at least all the user-selected `elements`.
+ *
+ * Used by the "expand selection" feature in the Selection Tool.
+ **
+ * @param elements user-selected elements
+ * @param selectors list of selector types to use, in order of preference
+ * @param excludeRandomClasses true to heuristically excluded random classnames
+ * @param root the root to generate selectors relative to
+ */
+export function expandedCssSelector(
   elements: HTMLElement[],
   {
     selectors = DEFAULT_SELECTOR_PRIORITIES,
@@ -351,6 +373,7 @@ export function commonCssSelector(
     root = undefined,
   }: SafeCssSelectorOptions = {}
 ): string {
+  // All elements are on the same page, so just use first element for siteSelectorHint
   // https://github.com/fczbkk/css-selector-generator
   const siteSelectorHint = getSiteSelectorHint(elements[0]);
 
@@ -375,8 +398,9 @@ export function commonCssSelector(
     ...siteSelectorHint.stableAnchors,
   ];
 
-  // Handle differently if multi-element
-  const ancestors = elements.map((element) =>
+  // Find ancestors of each user-selected element. Unlike single-element select, includes both
+  // unique attributes and classnames (classnames might not be stable).
+  const elementAncestors = elements.map((element) =>
     $(element)
       .parentsUntil(root)
       .filter(
@@ -386,59 +410,69 @@ export function commonCssSelector(
       )
       .get()
   );
-  // Get common ancester
-  const [commonAncestor] = intersection(...ancestors);
 
+  // Get an arbitrary common ancestor. (Will likely be first element because parentsUntil works from the element upward)
+  // Might not exist if the root doesn't have any of stable attributes/classname
+  const [closestCommonAncestor] = intersection(...elementAncestors);
+
+  if (!closestCommonAncestor) {
+    return;
+  }
+
+  // Get selector of common ancestor
+  const commonAncestorSelector = getCssSelector(closestCommonAncestor, {
+    blacklist,
+    whitelist: ["class", "tag", ...whitelist],
+    selectors,
+    combineWithinSelector: true,
+    combineBetweenSelectors: true,
+    root,
+  });
+
+  // Get common attribute of parent of user selected elements. Will be used before to use the ">" immediate descendant
+  // operator for the elements.
+  //
+  // Using the parent or another level of ancestor is helpful for preventing over-matching on based on the user-selected
+  // elements attribute/tag name selector.
+  //
+  // TODO: look for all common attributes that could be non-unique, e.g., aria-role="button"
+  // TODO: right now this is picking an arbitrary class name
   const [commonParentClassName] = intersection(
     ...elements.map((element) => [$(element).parent().attr("class")])
   );
 
-  if (commonAncestor) {
-    // Get common class of elements
-    const [commonClassName] = intersection(
-      ...elements.map((element) => element.className.split(" "))
-    );
-
-    // Get selector of common ancestor
-    const commonAncestorSelector = getCssSelector(commonAncestor, {
-      blacklist,
-      whitelist: ["class", "tag", ...whitelist],
-      selectors,
-      combineWithinSelector: true,
-      combineBetweenSelectors: true,
-      root,
-    });
-
-    // If elements have comment class we can easily select them
-    if (commonClassName) {
-      // Make sure to not include the elements with same classname but in different parent class
-      if (commonParentClassName) {
-        return [
+  const commonSelector =
+    commonAncestorSelector &&
+    commonParentClassName &&
+    !selectorsOverlap(
+      commonAncestorSelector,
+      getSelectorFromClass(commonParentClassName)
+    )
+      ? [
           commonAncestorSelector,
           getSelectorFromClass(commonParentClassName),
-          getSelectorFromClass(commonClassName),
-        ].join(" ");
-      }
+          ">",
+        ].join(" ")
+      : commonAncestorSelector;
 
-      return [
-        commonAncestorSelector,
-        getSelectorFromClass(commonClassName),
-      ].join(" ");
-    }
+  // Get common attributes of user-selected elements
+  // TODO: look for all common attribute values that would be non-unique: e.g., aria-role="button"
+  // TODO: right now this is picking an arbitrary class name
+  const [commonElementClassName] = intersection(
+    ...elements.map((element) => element.className.split(" "))
+  );
 
-    if (commonParentClassName) {
-      return [
-        commonAncestorSelector,
-        getSelectorFromClass(commonParentClassName),
-        ">",
-        elements[0].tagName.toLowerCase(),
-      ].join(" ");
-    }
-
-    return [commonAncestorSelector, elements[0].tagName.toLowerCase()].join(
+  if (commonElementClassName) {
+    return [commonSelector, getSelectorFromClass(commonElementClassName)].join(
       " "
     );
   }
+
+  // Union of all tag types for the selected elements
+  // For example: #root a, #root span
+  return uniq(elements.map((element) => element.tagName))
+    .map((tagName) => [commonSelector, tagName.toLowerCase()].join(" "))
+    .join(", ");
 }
 
 function findAncestorsWithIdLikeSelectors(
