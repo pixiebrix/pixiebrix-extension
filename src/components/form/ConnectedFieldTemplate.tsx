@@ -30,13 +30,14 @@ const FormikFieldTemplate = <Values,>({
   formik,
   ...fieldProps
 }: ConnectedFieldProps<Values>) => {
-  const error = useFieldError(fieldProps.name);
+  const { error, warning } = useFieldError(fieldProps.name);
   const touched = getIn(formik.touched, fieldProps.name);
   const value = getIn(formik.values, fieldProps.name);
 
   return (
     <FieldTemplate
       value={value}
+      warning={warning}
       error={error}
       touched={touched}
       onChange={formik.handleChange}
