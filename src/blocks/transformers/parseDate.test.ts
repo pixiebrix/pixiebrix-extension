@@ -62,6 +62,7 @@ describe("ParseDate block", () => {
       logger: null,
       root: null,
       runPipeline: neverPromise,
+      runRendererPipeline: neverPromise,
     });
 
     expect(result).toEqual({
@@ -93,6 +94,7 @@ describe("ParseDate block", () => {
         logger: null,
         root: null,
         runPipeline: neverPromise,
+        runRendererPipeline: neverPromise,
       });
     }).rejects.toThrow(BusinessError);
   });
@@ -106,6 +108,7 @@ describe("ParseDate block", () => {
         logger: null,
         root: null,
         runPipeline: neverPromise,
+        runRendererPipeline: neverPromise,
       });
     }).rejects.toThrow(BusinessError);
   });
@@ -122,6 +125,7 @@ describe("ParseDate block", () => {
       logger: null,
       root: null,
       runPipeline: neverPromise,
+      runRendererPipeline: neverPromise,
     });
 
     expect(result).toEqual({

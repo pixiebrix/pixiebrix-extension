@@ -37,6 +37,7 @@ import { Annotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
 import { isExpression } from "@/runtime/mapArgs";
 import { expectContext } from "@/utils/expectContext";
+import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 
 export async function getCurrentURL(): Promise<string> {
   expectContext("devTools");
@@ -78,6 +79,10 @@ export function getPipelinePropNames(block: BlockConfig): string[] {
     }
 
     case ForEachElement.BLOCK_ID: {
+      return ["body"];
+    }
+
+    case DisplayTemporaryInfo.BLOCK_ID: {
       return ["body"];
     }
 

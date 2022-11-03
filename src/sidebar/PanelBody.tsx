@@ -144,6 +144,11 @@ const PanelBody: React.FunctionComponent<{
             "Support for running pipelines in panels not implemented"
           );
         },
+        async runRendererPipeline() {
+          throw new BusinessError(
+            "Support for running pipelines in panels not implemented"
+          );
+        },
       });
 
       if (!runId || !extensionId) {

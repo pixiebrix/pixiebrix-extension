@@ -31,6 +31,7 @@ describe("smoke tests", () => {
         root: null,
         logger: new ConsoleLogger(),
         runPipeline: neverPromise,
+        runRendererPipeline: neverPromise,
       }
     );
 
@@ -47,6 +48,7 @@ describe("ctxt", () => {
         root: null,
         logger: new ConsoleLogger(),
         runPipeline: neverPromise,
+        runRendererPipeline: neverPromise,
       }
     );
 
@@ -64,6 +66,7 @@ describe("parse compile error", () => {
         root: null,
         logger: new ConsoleLogger(),
         runPipeline: neverPromise,
+        runRendererPipeline: neverPromise,
       }
     );
 
@@ -82,6 +85,7 @@ describe("parse compile error", () => {
         root: null,
         logger: new ConsoleLogger(),
         runPipeline: neverPromise,
+        runRendererPipeline: neverPromise,
       }
     );
 
@@ -100,6 +104,7 @@ describe("parse compile error", () => {
         root: null,
         logger: new ConsoleLogger(),
         runPipeline: neverPromise,
+        runRendererPipeline: neverPromise,
       }
     );
 
