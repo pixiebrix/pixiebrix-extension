@@ -51,8 +51,8 @@ jest.mock("@/contentScript/sidebarController", () => ({
 }));
 
 jest.mock("@/blocks/transformers/temporaryInfo/temporaryPanelProtocol", () => ({
-  registerTemporaryPanel: jest.fn(),
-  resolveTemporaryPanels: jest.fn(),
+  waitForTemporaryPanel: jest.fn(),
+  stopWaitingForTemporaryPanels: jest.fn(),
 }));
 
 describe("DisplayTemporaryInfo", () => {
