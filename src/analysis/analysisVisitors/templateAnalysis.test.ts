@@ -19,11 +19,8 @@ import { BlockPosition } from "@/blocks/types";
 import { toExpression } from "@/testUtils/testHelpers";
 import TemplateAnalysis from "./templateAnalysis";
 
-const blockPosition: BlockPosition = {
-  path: "test.path",
-};
 const position: BlockPosition = {
-  path: `${blockPosition.path}.property`,
+  path: "test.path.property",
 };
 
 describe("TemplateAnalysis", () => {
