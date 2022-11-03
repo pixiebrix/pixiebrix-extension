@@ -34,19 +34,6 @@ import { ThemeLogo } from "@/utils/themeUtils";
 
 const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
   const { email } = useSelector(selectAuth);
-  const [serviceURL] = useAsyncState<string>(async () => {
-    const baseURL = (await getBaseURL()) ?? DEFAULT_SERVICE_URL;
-    const partnerAuth = await readPartnerAuthData();
-    let url;
-
-    if (partnerAuth?.token) {
-      url = new URL("partner-auth", baseURL);
-    } else {
-      url = new URL(baseURL);
-    }
-
-    return url.toString();
-  });
   const [connected, connectedPending] = useAsyncState(isLinked);
   const mode = useSelector<{ settings: SettingsState }, string>(
     ({ settings }) => settings.mode
@@ -54,6 +41,17 @@ const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
 
   // Use `connectedPending` to optimistically show the toggle
   const showNavbarToggle = mode === "local" || connected || connectedPending;
+
+  // Need to update serviceURL on changes to partner auth data:
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/4594
+  const [serviceURL] = useAsyncState<string>(async () => {
+    const baseURL = (await getBaseURL()) ?? DEFAULT_SERVICE_URL;
+    const partnerAuth = await readPartnerAuthData();
+    const url = partnerAuth?.token
+      ? new URL("partner-auth", baseURL)
+      : new URL(baseURL);
+    return url.toString();
+  });
 
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
@@ -93,7 +91,11 @@ const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
 
         <ul className="navbar-nav navbar-nav-right flex-grow-1 justify-content-end">
           {serviceURL && (
-            <Nav.Link className="px-3" target="_blank" href={serviceURL}>
+            <Nav.Link
+              className="px-3"
+              target="_blank"
+              href={serviceURL ?? DEFAULT_SERVICE_URL}
+            >
               <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
               Open Admin Console
             </Nav.Link>
