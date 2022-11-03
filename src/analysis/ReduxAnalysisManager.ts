@@ -24,11 +24,14 @@ import {
 } from "@reduxjs/toolkit";
 import analysisSlice from "./analysisSlice";
 import {
+  ListenerEffectAPI,
   MatchFunction,
   TypedActionCreator,
 } from "@reduxjs/toolkit/dist/listenerMiddleware/types";
 import { Analysis } from "./analysisTypes";
 import { RootState } from "@/pageEditor/pageEditorTypes";
+import { debounce } from "lodash";
+import { UUID } from "@/core";
 
 type AnalysisEffect = ListenerEffect<
   AnyAction,
@@ -36,18 +39,30 @@ type AnalysisEffect = ListenerEffect<
   ThunkDispatch<unknown, unknown, AnyAction>
 >;
 
-type AnalysisEffectConfig =
+type AnalysisListenerConfig =
   | {
       actionCreator: TypedActionCreator<any>;
     }
   | {
       matcher: MatchFunction<AnyAction>;
     };
+type EffectConfig<TAnalysis extends Analysis = Analysis> = {
+  postAnalysisAction?: (
+    analysis: TAnalysis,
+    extensionId: UUID,
+    listenerApi: ListenerEffectAPI<
+      RootState,
+      ThunkDispatch<unknown, unknown, AnyAction>
+    >
+  ) => void;
+  debounce?: number;
+};
 
-type AnalysisFactory<TAction = AnyAction, TState = unknown> = (
-  action: TAction,
-  state: TState
-) => Analysis | null;
+type AnalysisFactory<
+  TAnalysis extends Analysis,
+  TAction = AnyAction,
+  TState = unknown
+> = (action: TAction, state: TState) => TAnalysis | null;
 
 class ReduxAnalysisManager {
   private readonly listenerMiddleware = createListenerMiddleware();
@@ -55,9 +70,10 @@ class ReduxAnalysisManager {
     return this.listenerMiddleware.middleware;
   }
 
-  public registerAnalysisEffect(
-    analysisFactory: AnalysisFactory,
-    config: AnalysisEffectConfig
+  public registerAnalysisEffect<TAnalysis extends Analysis>(
+    analysisFactory: AnalysisFactory<TAnalysis>,
+    listenerConfig: AnalysisListenerConfig,
+    effectConfig?: EffectConfig<TAnalysis>
   ) {
     const effect: AnalysisEffect = async (action, listenerApi) => {
       const state = listenerApi.getState();
@@ -71,11 +87,11 @@ class ReduxAnalysisManager {
         return;
       }
 
-      const activeElementId = activeElement.uuid;
+      const extensionId = activeElement.uuid;
 
       listenerApi.dispatch(
         analysisSlice.actions.startAnalysis({
-          extensionId: activeElementId,
+          extensionId,
           analysisId: analysis.id,
         })
       );
@@ -84,16 +100,22 @@ class ReduxAnalysisManager {
 
       listenerApi.dispatch(
         analysisSlice.actions.finishAnalysis({
-          extensionId: activeElementId,
+          extensionId,
           analysisId: analysis.id,
           annotations: analysis.getAnnotations(),
         })
       );
+
+      if (effectConfig?.postAnalysisAction) {
+        effectConfig.postAnalysisAction(analysis, extensionId, listenerApi);
+      }
     };
 
     this.listenerMiddleware.startListening({
-      ...config,
-      effect,
+      ...listenerConfig,
+      effect: effectConfig?.debounce
+        ? debounce(effect, effectConfig.debounce)
+        : effect,
     } as any);
   }
 }

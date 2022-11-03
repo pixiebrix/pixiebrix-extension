@@ -93,6 +93,11 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
     }
   }
 
+  /**
+   * Visits an expression in a block
+   * @param position Position of the expression (including expression prop name in the block)
+   * @param expression The expression to visit
+   */
   abstract visitExpression(
     position: BlockPosition,
     expression: Expression<unknown>

@@ -20,7 +20,7 @@ import { toExpression } from "@/testUtils/testHelpers";
 import TemplateAnalysis from "./templateAnalysis";
 
 const position: BlockPosition = {
-  path: "test.path",
+  path: "test.path.property",
 };
 
 describe("TemplateAnalysis", () => {

@@ -32,6 +32,9 @@ import { isAnyOf } from "@reduxjs/toolkit";
 import RequestPermissionAnalysis from "@/analysis/analysisVisitors/requestPermissionAnalysis";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import { selectExtensionTrace } from "./slices/runtimeSelectors";
+import VarAnalysis from "@/analysis/analysisVisitors/varAnalysis";
+import analysisSlice from "@/analysis/analysisSlice";
+import { selectSettings } from "@/store/settingsSelectors";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -124,6 +127,64 @@ pageEditorAnalysisManager.registerAnalysisEffect(
     // Only needed on editorActions.editElement,
     // but the block path can change when node tree is mutated
     matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+  }
+);
+
+const varAnalysisFactory = (
+  action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
+  state: RootState
+) => {
+  const { varAnalysis } = selectSettings(state);
+  if (!varAnalysis) {
+    return null;
+  }
+
+  const records = selectExtensionTrace(state);
+
+  return new VarAnalysis(records);
+};
+
+// VarAnalysis on node mutation and traces
+pageEditorAnalysisManager.registerAnalysisEffect(
+  varAnalysisFactory,
+  {
+    // Only needed on editorActions.editElement,
+    // but the block path can change when node tree is mutated
+    matcher: isAnyOf(
+      runtimeActions.setExtensionTrace,
+      ...nodeListMutationActions
+    ),
+  },
+  {
+    postAnalysisAction(analysis, extensionId, listenerApi) {
+      listenerApi.dispatch(
+        analysisSlice.actions.setKnownVars({
+          extensionId,
+          vars: analysis.getKnownVars(),
+        })
+      );
+    },
+  }
+);
+
+// VarAnalysis with debounce on edit
+pageEditorAnalysisManager.registerAnalysisEffect(
+  varAnalysisFactory,
+  {
+    // Only needed on editorActions.editElement,
+    // but the block path can change when node tree is mutated
+    matcher: isAnyOf(editorActions.editElement),
+  },
+  {
+    postAnalysisAction(analysis, extensionId, listenerApi) {
+      listenerApi.dispatch(
+        analysisSlice.actions.setKnownVars({
+          extensionId,
+          vars: analysis.getKnownVars(),
+        })
+      );
+    },
+    debounce: 500,
   }
 );
 
