@@ -39,7 +39,6 @@ import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getInvalidPath } from "@/utils/debugUtils";
 import {
   selectActiveElement,
-  selectActiveElementId,
   selectActiveElementUIState,
   selectNotDeletedElements,
   selectNotDeletedExtensions,
@@ -226,14 +225,45 @@ const checkAvailableDynamicElements = createAsyncThunk<
 });
 
 const checkActiveElementAvailability = createAsyncThunk<
-  { isAvailable: boolean },
+  {
+    availableDynamicIds: UUID[];
+    unavailableInstalledCount: number;
+    unavailableDynamicCount: number;
+  },
   void,
-  { state: EditorRootState }
+  { state: EditorRootState & ExtensionsRootState }
 >("editor/checkDynamicElementAvailability", async (arg, thunkAPI) => {
   const tabUrl = await getCurrentURL();
-  const element = selectActiveElement(thunkAPI.getState());
-  const isAvailable = await isElementAvailable(tabUrl, element.extensionPoint);
-  return { isAvailable };
+  const state = thunkAPI.getState();
+  const extensions = selectNotDeletedExtensions(state);
+  const elements = selectNotDeletedElements(state);
+  const { availableInstalledIds } = state.editor;
+  const activeElement = selectActiveElement(state);
+  const isAvailable = await isElementAvailable(
+    tabUrl,
+    activeElement.extensionPoint
+  );
+  const availableDynamicIds = isAvailable
+    ? uniq([activeElement.uuid, ...state.editor.availableDynamicIds])
+    : state.editor.availableDynamicIds.filter(
+        (id) => id !== activeElement.uuid
+      );
+  const unavailableDynamicCount = elements.length - availableDynamicIds.length;
+  const installedNotDynamicIds = extensions
+    .filter(
+      (extension) => !elements.some((element) => element.uuid === extension.id)
+    )
+    .map((extension) => extension.id);
+  const availableInstalledNotDynamicIds = availableInstalledIds.filter((id) =>
+    installedNotDynamicIds.includes(id)
+  );
+  const unavailableInstalledCount =
+    installedNotDynamicIds.length - availableInstalledNotDynamicIds.length;
+  return {
+    availableDynamicIds,
+    unavailableInstalledCount,
+    unavailableDynamicCount,
+  };
 });
 
 export const editorSlice = createSlice({
@@ -778,23 +808,21 @@ export const editorSlice = createSlice({
       })
       .addCase(
         checkActiveElementAvailability.fulfilled,
-        (state, { payload: { isAvailable } }) => {
-          const activeElementId = selectActiveElementId({ editor: state });
-          if (isAvailable) {
-            state.availableDynamicIds = uniq([
-              activeElementId,
-              ...state.availableDynamicIds,
-            ]);
-          } else {
-            state.availableDynamicIds = state.availableDynamicIds.filter(
-              (id) => id !== activeElementId
-            );
+        (
+          state,
+          {
+            payload: {
+              availableDynamicIds,
+              unavailableDynamicCount,
+              unavailableInstalledCount,
+            },
           }
-
-          const elements = selectNotDeletedElements({ editor: state });
-          state.unavailableDynamicCount =
-            elements.length - state.availableDynamicIds.length;
-        }
+        ) => ({
+          ...state,
+          availableDynamicIds,
+          unavailableDynamicCount,
+          unavailableInstalledCount,
+        })
       );
   },
 });
