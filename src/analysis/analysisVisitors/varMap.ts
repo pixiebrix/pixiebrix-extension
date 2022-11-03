@@ -35,9 +35,13 @@ class VarMap {
    * For every property of the Obj a variable existence will be set to DEFINITELY.
    * Ex. { @foo: "bar" } -> { @foo: "DEFINITELY" }
    * @param obj A context object with assigned variables
-   * @param parentPath Path to the object in the VarMap, should end with a dot
+   * @param parentPath Path to the object in the VarMap
    */
   setExistenceFromObj(obj: Record<string, unknown>, parentPath = ""): void {
+    if (parentPath !== "" && !parentPath.endsWith(".")) {
+      parentPath += ".";
+    }
+
     for (const [key, value] of Object.entries(obj)) {
       if (typeof value === "object") {
         this.setExistenceFromObj(

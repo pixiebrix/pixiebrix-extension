@@ -65,6 +65,19 @@ describe("VarMap", () => {
     expect(varMap.getExistence("quux")).toBeUndefined();
   });
 
+  test("set existence from context obj with parent specified", () => {
+    varMap.setExistence("foo", VarExistence.DEFINITELY);
+    varMap.setExistenceFromObj(
+      {
+        qux: "quux",
+      },
+      "bar.baz"
+    );
+
+    expect(varMap.getExistence("foo")).toBe(VarExistence.DEFINITELY);
+    expect(varMap.getExistence("bar.baz.qux")).toBe(VarExistence.DEFINITELY);
+  });
+
   test("clones a var map", () => {
     varMap.setExistence("foo", VarExistence.DEFINITELY);
 
