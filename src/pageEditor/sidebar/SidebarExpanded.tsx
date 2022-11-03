@@ -48,10 +48,18 @@ import AddExtensionPointButton from "./AddExtensionPointButton";
 import ExtensionEntry from "./ExtensionEntry";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { measureDurationFromAppStart } from "@/utils/performance";
+import { useAsyncState } from "@/hooks/common";
+import blueprintsRegistry from "@/blueprints/registry";
 
 const SidebarExpanded: React.FunctionComponent<{
   collapseSidebar: () => void;
 }> = ({ collapseSidebar }) => {
+  const [allRecipes] = useAsyncState(
+    async () => blueprintsRegistry.all(),
+    [],
+    []
+  );
+  console.log("allRecipes", allRecipes);
   const { data: allRecipes, isLoading: isAllRecipesLoading } =
     useGetRecipesQuery();
 

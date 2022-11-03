@@ -43,7 +43,8 @@ export type Kind =
   | "reader"
   | "effect"
   | "component"
-  | "extensionPoint";
+  | "extensionPoint"
+  | "recipe";
 
 export interface Package {
   id: string;

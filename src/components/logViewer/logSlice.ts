@@ -29,7 +29,7 @@ import { LogRootState, LogState } from "./logViewerTypes";
 import { castDraft } from "immer";
 import { WritableDraft } from "immer/dist/types/types-external";
 
-const REFRESH_INTERVAL = 750;
+const REFRESH_INTERVAL = 5000;
 
 export const initialLogState: LogState = {
   activeContext: null,
@@ -57,6 +57,7 @@ const pollLogs = createAsyncThunk<
     state: LogRootState;
   }
 >("logs/polling", async (arg, thunkAPI) => {
+  console.log("Polling logs", new Date().toISOString());
   const activeContext = selectActiveContext(thunkAPI.getState());
   let availableEntries: LogEntry[] = [];
   if (activeContext != null) {
@@ -106,6 +107,7 @@ export const logSlice: Slice<
         // Do deep equality check. On the log array of ~3k items it takes only a fraction of a ms.
         // Makes sense to spend some cycles here to save on re-rendering of the children.
         if (!isEqual(state.availableEntries, availableEntries)) {
+          console.log("Updating log entries", new Date().toISOString());
           state.availableEntries = castDraft(availableEntries);
         }
 
