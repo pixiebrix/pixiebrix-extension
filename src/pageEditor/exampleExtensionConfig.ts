@@ -17,8 +17,8 @@
 
 import { BlockPipeline } from "@/blocks/types";
 import { ExtensionPointType } from "@/extensionPoints/types";
-import { createNewBlock } from "@/pageEditor/createNewBlock";
 import { validateRegistryId } from "@/types/helpers";
+import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
 
 const documentBlockId = validateRegistryId("@pixiebrix/document");
 

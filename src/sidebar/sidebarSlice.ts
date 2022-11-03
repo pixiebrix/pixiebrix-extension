@@ -20,11 +20,12 @@ import {
   FormEntry,
   PanelEntry,
   ActivatePanelOptions,
+  TemporaryPanelEntry,
 } from "@/sidebar/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { defaultEventKey, mapTabEventKey } from "@/sidebar/utils";
 import { UUID } from "@/core";
-import { cancelForm } from "@/contentScript/messenger/api";
+import { defaultEventKey, mapTabEventKey } from "@/sidebar/utils";
+import { cancelForm, closeTemporaryPanel } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 import { partition, sortBy } from "lodash";
 
@@ -43,6 +44,7 @@ export type SidebarState = SidebarEntries & {
 export const emptySidebarState: SidebarState = {
   panels: [],
   forms: [],
+  temporaryPanels: [],
   activeKey: null,
   pendingActivePanel: null,
 };
@@ -98,6 +100,12 @@ async function cancelPreexistingForms(forms: UUID[]): Promise<void> {
   cancelForm({ tabId: sender.tab.id, frameId: 0 }, ...forms);
 }
 
+async function resolvePanels(nonces: UUID[]): Promise<void> {
+  // TODO: Replace with `tabId: "this"` once implemented in the messenger
+  const { tab } = await whoAmI();
+  closeTemporaryPanel({ tabId: tab.id, frameId: 0 }, nonces);
+}
+
 const sidebarSlice = createSlice({
   initialState: emptySidebarState,
   name: "sidebar",
@@ -129,6 +137,30 @@ const sidebarSlice = createSlice({
       const nonce = action.payload;
       state.forms = state.forms.filter((x) => x.nonce !== nonce);
       state.activeKey = defaultEventKey(state);
+    },
+    addTemporaryPanel(
+      state,
+      action: PayloadAction<{ panel: TemporaryPanelEntry }>
+    ) {
+      const { panel } = action.payload;
+
+      const [existingPanels, otherTemporaryPanels] = partition(
+        state.temporaryPanels,
+        (x) => x.extensionId === panel.extensionId
+      );
+
+      void resolvePanels(existingPanels.map((panel) => panel.nonce));
+
+      state.temporaryPanels = [...otherTemporaryPanels, panel];
+      state.activeKey = mapTabEventKey("temporaryPanel", panel);
+    },
+    removeTemporaryPanel(state, action: PayloadAction<UUID>) {
+      const nonce = action.payload;
+      state.temporaryPanels = state.temporaryPanels.filter(
+        (panel) => panel.nonce !== nonce
+      );
+      state.activeKey = defaultEventKey(state);
+      void resolvePanels([nonce]);
     },
     // In the future, we might want to have ActivatePanelOptions support a "enqueue" prop for controlling whether the
     // or not a miss here is queued. We added pendingActivePanel to handle race condition on the initial sidebar

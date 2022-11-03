@@ -22,26 +22,28 @@ import useExtensionMeta from "@/hooks/useExtensionMeta";
 import { UUID } from "@/core";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
-import { Card, Nav, Tab } from "react-bootstrap";
+import { Card, CloseButton, Nav, Tab } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PanelBody from "@/sidebar/PanelBody";
 import FormBody from "@/sidebar/FormBody";
-
 import styles from "./Tabs.module.scss";
 import cx from "classnames";
 
 type SidebarTabsProps = SidebarEntries & {
   activeKey: string;
   onSelectTab: (eventKey: string) => void;
+  onCloseTemporaryTab: (nonce: UUID) => void;
 };
 
 const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
   activeKey,
   panels,
   forms,
+  temporaryPanels,
   onSelectTab,
+  onCloseTemporaryTab,
 }) => {
   const { lookup } = useExtensionMeta();
 
@@ -95,13 +97,27 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
                 {form.form.schema.title ?? "Form"}
               </Nav.Link>
             ))}
+            {temporaryPanels.map((panel) => (
+              <Nav.Link
+                key={panel.nonce}
+                eventKey={mapTabEventKey("temporaryPanel", panel)}
+                className={styles.tabHeader}
+              >
+                {panel.heading}
+                <CloseButton
+                  onClick={() => {
+                    onCloseTemporaryTab(panel.nonce);
+                  }}
+                />
+              </Nav.Link>
+            ))}
           </Nav>
         </Card.Header>
         <Card.Body className="p-0 scrollable-area full-height">
           <Tab.Content className="p-0 border-0 full-height">
             {panels.map((panel: PanelEntry) => (
               <Tab.Pane
-                className={cx(styles.paneOverrides, "full-height flex-grow")}
+                className={cx("full-height flex-grow", styles.paneOverrides)}
                 key={panel.extensionId}
                 eventKey={mapTabEventKey("panel", panel)}
               >
@@ -126,6 +142,21 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
               >
                 <ErrorBoundary>
                   <FormBody form={form} />
+                </ErrorBoundary>
+              </Tab.Pane>
+            ))}
+            {temporaryPanels.map((panel) => (
+              <Tab.Pane
+                className={cx("full-height flex-grow", styles.paneOverrides)}
+                key={panel.nonce}
+                eventKey={mapTabEventKey("temporaryPanel", panel)}
+              >
+                <ErrorBoundary>
+                  <PanelBody
+                    isRootPanel={false}
+                    payload={panel.payload}
+                    context={{ extensionId: panel.extensionId }}
+                  />
                 </ErrorBoundary>
               </Tab.Pane>
             ))}
