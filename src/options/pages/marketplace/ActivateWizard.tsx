@@ -78,7 +78,8 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const location = useLocation();
   const reinstall =
     new URLSearchParams(location.search).get("reinstall") === "1";
-  const [blueprintSteps, initialValues] = useWizard(blueprint);
+  const [blueprintSteps, initialValues, validationSchema] =
+    useWizard(blueprint);
   const install = useInstall(blueprint);
 
   const installedExtensions = useSelector(selectExtensions);
@@ -103,25 +104,32 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   useTitle(`${action} ${truncate(blueprint.metadata.name, { length: 15 })}`);
 
   return (
-    <Formik initialValues={initialValues} onSubmit={install}>
-      {({ handleSubmit }) => (
-        <Form id="activate-wizard" noValidate onSubmit={handleSubmit}>
-          <BlockFormSubmissionViaEnterIfFirstChild />
-          <Card>
-            <ActivateHeader blueprint={blueprint} />
-            <Card.Body className={styles.wizardBody}>
-              {blueprintSteps.map(({ Component, label, key }, _) => (
-                <Row key={key} className={styles.wizardBodyRow}>
-                  <Col xs={12}>
-                    <h4>{label}</h4>
-                  </Col>
-                  <Component blueprint={blueprint} reinstall={reinstall} />
-                </Row>
-              ))}
-            </Card.Body>
-          </Card>
-        </Form>
-      )}
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={install}
+    >
+      {({ handleSubmit, isValid, errors }) => {
+        console.log("isValid", isValid, errors);
+        return (
+          <Form id="activate-wizard" onSubmit={handleSubmit}>
+            <BlockFormSubmissionViaEnterIfFirstChild />
+            <Card>
+              <ActivateHeader blueprint={blueprint} />
+              <Card.Body className={styles.wizardBody}>
+                {blueprintSteps.map(({ Component, label, key }, _) => (
+                  <Row key={key} className={styles.wizardBodyRow}>
+                    <Col xs={12}>
+                      <h4>{label}</h4>
+                    </Col>
+                    <Component blueprint={blueprint} reinstall={reinstall} />
+                  </Row>
+                ))}
+              </Card.Body>
+            </Card>
+          </Form>
+        );
+      }}
     </Formik>
   );
 };
