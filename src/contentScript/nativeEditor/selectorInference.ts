@@ -398,7 +398,8 @@ export function expandedCssSelector(
     ...siteSelectorHint.stableAnchors,
   ];
 
-  // Find ancestors of each user-selected element. Includes
+  // Find ancestors of each user-selected element. Unlike single-element select, includes both
+  // unique attributes and classnames (classnames might not be stable).
   const elementAncestors = elements.map((element) =>
     $(element)
       .parentsUntil(root)

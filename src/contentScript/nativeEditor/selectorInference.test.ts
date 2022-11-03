@@ -258,7 +258,7 @@ describe("safeCssSelector", () => {
 
 describe("expandedCssSelector", () => {
   /* eslint-disable jest/expect-expect -- Custom expectSelector */
-  const expectRountripSelector = (selector: string, body: string) => {
+  const expectRoundtripSelector = (selector: string, body: string) => {
     document.body.innerHTML = body;
     const elements = [
       ...document.body.querySelectorAll(selector),
@@ -296,10 +296,7 @@ describe("expandedCssSelector", () => {
 
     const expectedElements = [...manualElements, ...otherElements];
 
-    expect(commonElements).toHaveLength(expectedElements.length);
-    for (const element of commonElements) {
-      expect(commonElements).toContain(element);
-    }
+    expect(commonElements).toIncludeSameMembers(expectedElements);
   };
 
   const body = html`
@@ -353,7 +350,7 @@ describe("expandedCssSelector", () => {
   `;
 
   test("common ancestor classname, parent classname, element tag", () => {
-    expectRountripSelector(".itemlist .titleline > a", body);
+    expectRoundtripSelector(".itemlist .titleline > a", body);
   });
 
   test("union tags", () => {
@@ -364,7 +361,7 @@ describe("expandedCssSelector", () => {
       </div>
     `;
 
-    expectRountripSelector("#root a, #root span", body);
+    expectRoundtripSelector("#root a, #root span", body);
   });
 
   test("union tags with parent", () => {
@@ -389,11 +386,11 @@ describe("expandedCssSelector", () => {
   });
 
   test("common ancestor classname, common element classname", () => {
-    expectRountripSelector(".itemlist .votearrow", body);
+    expectRoundtripSelector(".itemlist .votearrow", body);
   });
 
   test("common ancestor classname, common parent classname, common element classname", () => {
-    expectRountripSelector(".itemlist .title > .titleline", body);
+    expectRoundtripSelector(".itemlist .title > .titleline", body);
   });
 
   test("pass two similar elements should return another similar elements", () => {
