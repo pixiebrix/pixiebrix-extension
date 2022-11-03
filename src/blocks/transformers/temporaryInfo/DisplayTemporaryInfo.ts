@@ -28,8 +28,8 @@ import {
 } from "@/contentScript/sidebarController";
 import { PanelPayload } from "@/sidebar/types";
 import {
-  registerTemporaryPanel,
-  resolveTemporaryPanels,
+  waitForTemporaryPanel,
+  stopWaitingForTemporaryPanels,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 
 class DisplayTemporaryInfo extends Transformer {
@@ -75,7 +75,7 @@ class DisplayTemporaryInfo extends Transformer {
       runPipeline,
       runRendererPipeline,
     }: BlockOptions
-  ): Promise<void> {
+  ): Promise<unknown> {
     expectContext("contentScript");
 
     const nonce = uuidv4();
@@ -107,14 +107,16 @@ class DisplayTemporaryInfo extends Transformer {
 
     controller.signal.addEventListener("abort", () => {
       hideTemporarySidebarPanel(nonce);
-      void resolveTemporaryPanels([nonce]);
+      void stopWaitingForTemporaryPanels([nonce]);
     });
 
     try {
-      await registerTemporaryPanel(nonce);
+      await waitForTemporaryPanel(nonce);
     } finally {
       controller.abort();
     }
+
+    return {};
   }
 }
 

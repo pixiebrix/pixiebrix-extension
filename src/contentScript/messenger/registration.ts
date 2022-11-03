@@ -74,7 +74,7 @@ import {
 } from "@/contentScript/pipelineProtocol";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import { getPageState, setPageState } from "@/contentScript/pageState";
-import { resolveTemporaryPanels } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { stopWaitingForTemporaryPanels } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 
 expectContext("contentScript");
 
@@ -83,7 +83,7 @@ declare global {
     FORM_GET_DEFINITION: typeof getFormDefinition;
     FORM_RESOLVE: typeof resolveForm;
     FORM_CANCEL: typeof cancelForm;
-    TEMPORARY_PANEL_CLOSE: typeof resolveTemporaryPanels;
+    TEMPORARY_PANEL_CLOSE: typeof stopWaitingForTemporaryPanels;
 
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
@@ -142,7 +142,7 @@ export default function registerMessenger(): void {
     FORM_GET_DEFINITION: getFormDefinition,
     FORM_RESOLVE: resolveForm,
     FORM_CANCEL: cancelForm,
-    TEMPORARY_PANEL_CLOSE: resolveTemporaryPanels,
+    TEMPORARY_PANEL_CLOSE: stopWaitingForTemporaryPanels,
 
     QUEUE_REACTIVATE_TAB: queueReactivateTab,
     REACTIVATE_TAB: reactivateTab,

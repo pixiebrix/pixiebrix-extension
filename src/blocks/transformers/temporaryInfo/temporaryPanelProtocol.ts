@@ -25,7 +25,7 @@ const panels = new Map<UUID, DeferredPromise<void>>();
  * Register a temporary display panel
  * @param nonce The instance nonce for the panel to register
  */
-export async function registerTemporaryPanel(nonce: UUID): Promise<void> {
+export async function waitForTemporaryPanel(nonce: UUID): Promise<void> {
   expectContext("contentScript");
 
   const registration = pDefer<void>();
@@ -45,7 +45,7 @@ export async function registerTemporaryPanel(nonce: UUID): Promise<void> {
  * Resolve some temporary panels' deferred promises
  * @param nonces The nonces of the panels to resolve
  */
-export async function resolveTemporaryPanels(nonces: UUID[]) {
+export async function stopWaitingForTemporaryPanels(nonces: UUID[]) {
   expectContext("contentScript");
 
   for (const nonce of nonces) {
