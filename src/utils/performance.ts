@@ -30,7 +30,7 @@ export function markAppStart() {
  * @param action String message to log. A pattern to follow is <Place of measurement>:<Action>. For example, "sidebarExpanded:allRecipesLoaded"
  * @param reportThreshold The threshold in milliseconds to report the measurement as warning to rollbar. Pass null to not report
  */
-export function measurePerformanceFromAppStart(
+export function measureDurationFromAppStart(
   action: string,
   reportThreshold: number | null = 5000
 ) {

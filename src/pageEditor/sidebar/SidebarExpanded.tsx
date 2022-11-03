@@ -47,7 +47,7 @@ import ReloadButton from "./ReloadButton";
 import AddExtensionPointButton from "./AddExtensionPointButton";
 import ExtensionEntry from "./ExtensionEntry";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { measurePerformanceFromAppStart } from "@/utils/performance";
+import { measureDurationFromAppStart } from "@/utils/performance";
 
 const SidebarExpanded: React.FunctionComponent<{
   collapseSidebar: () => void;
@@ -57,7 +57,7 @@ const SidebarExpanded: React.FunctionComponent<{
 
   useEffect(() => {
     if (!isAllRecipesLoading) {
-      measurePerformanceFromAppStart("sidebarExpanded:allRecipesLoaded");
+      measureDurationFromAppStart("sidebarExpanded:allRecipesLoaded");
     }
   }, [isAllRecipesLoading]);
 
