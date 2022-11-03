@@ -758,6 +758,7 @@ export const editorSlice = createSlice({
         (state, { error }) => {
           state.isPendingInstalledExtensions = false;
           state.unavailableInstalledCount = 0;
+          state.error = error;
           reportError(error);
         }
       )
@@ -776,6 +777,7 @@ export const editorSlice = createSlice({
       .addCase(checkAvailableDynamicElements.rejected, (state, { error }) => {
         state.isPendingDynamicExtensions = false;
         state.unavailableDynamicCount = 0;
+        state.error = error;
         reportError(error);
       })
       .addCase(
