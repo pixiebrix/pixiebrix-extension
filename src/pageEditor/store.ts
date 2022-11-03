@@ -78,8 +78,11 @@ const store = configureStore({
     return getDefaultMiddleware({
       // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
       serializableCheck: {
-        ignoredActions: ["persist/PERSIST"],
+        ignoredActions: ["persist/PERSIST", "analysis/setKnownVars"],
+        ignoredPaths: ["analysis.knownVars"],
       },
+      // RTK uses Immer internally, we don't need this extra check
+      immutableCheck: false,
     })
       .concat(appApi.middleware)
       .concat(pageEditorAnalysisManager.middleware)
