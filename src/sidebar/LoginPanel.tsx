@@ -20,37 +20,72 @@ import { Button, Col, Container, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignInAlt } from "@fortawesome/free-solid-svg-icons";
 import marketplaceImage from "@img/marketplace.svg";
+import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
+import { useSelector } from "react-redux";
+import { selectSettings } from "@/store/settingsSelectors";
 
 // eslint-disable-next-line prefer-destructuring -- process.env variable
 const SERVICE_URL = process.env.SERVICE_URL;
 
-const LoginPanel: React.FunctionComponent = () => (
-  <Container>
-    <Row className="mt-4">
-      <Col className="text-center">
-        <h4 className="display-6">Connect PixieBrix Account</h4>
+const DefaultLogin: React.FunctionComponent = () => (
+  <Col className="text-center">
+    <h4 className="display-6">Connect PixieBrix Account</h4>
 
-        <p>
-          Register/log-in to PixieBrix to access your personal and team bricks
-        </p>
+    <p>Register/log-in to PixieBrix to access your personal and team bricks</p>
 
-        <Button
-          className="mt-4"
-          href={SERVICE_URL}
-          target="_blank"
-          variant="primary"
-        >
-          <FontAwesomeIcon icon={faSignInAlt} /> Connect Account
-        </Button>
-      </Col>
-    </Row>
-
-    <Row>
-      <Col className="text-center">
-        <img src={marketplaceImage} alt="Marketplace" width={300} />
-      </Col>
-    </Row>
-  </Container>
+    <Button
+      className="mt-4"
+      href={SERVICE_URL}
+      target="_blank"
+      variant="primary"
+    >
+      <FontAwesomeIcon icon={faSignInAlt} /> Connect Account
+    </Button>
+  </Col>
 );
+
+const PartnerAuth: React.FunctionComponent = () => {
+  const extensionUrl = new URL(browser.runtime.getURL("options.html")).href;
+  return (
+    <Col className="text-center">
+      <h4 className="display-6">Connect your AARI account</h4>
+      <p>
+        Authenticate with Automation Anywhere to continue using your team
+        extensions
+      </p>
+      <Button
+        className="mt-4"
+        href={extensionUrl}
+        target="_blank"
+        variant="primary"
+      >
+        <FontAwesomeIcon icon={faSignInAlt} /> Connect Account
+      </Button>
+    </Col>
+  );
+};
+
+const LoginPanel: React.FunctionComponent = () => {
+  const { authMethod } = useSelector(selectSettings);
+  const { hasPartner, hasConfiguredIntegration } = useRequiredPartnerAuth();
+
+  const showPartnerAuth =
+    (hasPartner && !hasConfiguredIntegration) ||
+    ["partner-oauth2", "partner-token"].includes(authMethod);
+
+  return (
+    <Container>
+      <Row className="mt-4">
+        {showPartnerAuth ? <PartnerAuth /> : <DefaultLogin />}
+      </Row>
+
+      <Row>
+        <Col className="text-center">
+          <img src={marketplaceImage} alt="Marketplace" width={300} />
+        </Col>
+      </Row>
+    </Container>
+  );
+};
 
 export default LoginPanel;

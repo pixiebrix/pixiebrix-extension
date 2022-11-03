@@ -30,6 +30,7 @@ import { AnyAction } from "redux";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./ErrorBoundary";
+import DelayedRender from "@/components/DelayedRender";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -88,7 +89,9 @@ const ConnectedSidebar: React.VFC = () => {
               }}
             />
           ) : (
-            <DefaultPanel />
+            <DelayedRender millis={300}>
+              <DefaultPanel />
+            </DelayedRender>
           )}
         </RequireAuth>
       </ErrorBoundary>

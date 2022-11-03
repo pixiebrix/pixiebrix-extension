@@ -43,6 +43,17 @@ jest.mock("@/auth/token", () => {
     isLinked: jest.fn().mockResolvedValue(true),
   };
 });
+browser.runtime.getURL = (path: string) =>
+  `chrome-extension://example.url/${path}`;
+
+beforeAll(() => {
+  jest.useFakeTimers();
+});
+
+afterAll(() => {
+  jest.runAllTimers();
+  jest.useRealTimers();
+});
 
 describe("SidebarApp", () => {
   test("renders not connected", async () => {
@@ -58,6 +69,27 @@ describe("SidebarApp", () => {
     );
     await waitForEffect();
 
+    jest.runAllTimers();
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  test("renders not connected partner view", async () => {
+    (useGetMeQuery as jest.Mock).mockReturnValue({
+      isLoading: false,
+      data: {
+        partner: {},
+        ...anonAuth,
+      },
+    });
+
+    const rendered = render(
+      <MemoryRouter>
+        <ConnectedSidebar />
+      </MemoryRouter>
+    );
+    await waitForEffect();
+
+    jest.runAllTimers();
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
@@ -80,6 +112,7 @@ describe("SidebarApp", () => {
 
     await waitForEffect();
 
+    jest.runAllTimers();
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 });

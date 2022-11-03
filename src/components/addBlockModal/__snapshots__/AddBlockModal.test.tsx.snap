@@ -159,7 +159,7 @@ exports[`AddBlockModal it renders 1`] = `
               style="position: relative; height: 600px; width: 600px; overflow: auto; will-change: transform; direction: ltr;"
             >
               <div
-                style="height: 0px; width: 585px;"
+                style="height: 0px; width: 600px;"
               />
             </div>
           </div>
@@ -349,7 +349,7 @@ exports[`AddBlockModal it renders with tag selected and search query 1`] = `
               style="position: relative; height: 600px; width: 600px; overflow: auto; will-change: transform; direction: ltr;"
             >
               <div
-                style="height: 0px; width: 585px;"
+                style="height: 0px; width: 600px;"
               />
             </div>
           </div>

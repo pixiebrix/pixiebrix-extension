@@ -15,28 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "@/vendors/overrides.scss";
-import "@/utils/layout.scss";
+import React, { useState, useEffect } from "react";
 
-import "@/extensionContext";
-import "@/development/darkMode";
+type Props = {
+  millis: number;
+};
 
-import registerMessenger from "@/pageEditor/messenger/registration";
+/** Component used to reduce flashing */
+const DelayedRender: React.FC<Props> = ({ children, millis }) => {
+  const [isShown, setIsShown] = useState(false);
 
-import ReactDOM from "react-dom";
-import React from "react";
-import Panel from "@/pageEditor/Panel";
-import { watchNavigation } from "@/pageEditor/protocol";
-import initGoogle from "@/contrib/google/initGoogle";
-import { initToaster } from "@/utils/notify";
-import { markAppStart } from "@/utils/performance";
+  useEffect(() => {
+    setTimeout(() => {
+      setIsShown(true);
+    }, millis);
+  }, [millis]);
 
-markAppStart();
+  // The hidden element allows us to preload the content (and images) while hidden. Replacing this with `null` defeats the purpose of this component
+  return isShown ? <>{children}</> : <div hidden>{children}</div>;
+};
 
-registerMessenger();
-void initGoogle();
-watchNavigation();
-initToaster();
-
-ReactDOM.render(<Panel />, document.querySelector("#container"));
+export default DelayedRender;

@@ -65,6 +65,7 @@ import { useAsyncState } from "@/hooks/common";
 import { useGetTheme } from "@/hooks/useTheme";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import aaLogo from "@img/aa-logo-small.svg";
+import { scrollbarWidth } from "@xobotyi/scrollbar-width";
 
 const TAG_POPULAR = "Popular";
 const TAG_UIPATH = "UiPath";
@@ -404,7 +405,9 @@ const AddBlockModal: React.FC = () => {
                     <LazyGrid
                       height={height}
                       width={width}
-                      columnWidth={(width - 15) / BLOCK_RESULT_COLUMN_COUNT} // 15px to make space for scrollbars
+                      columnWidth={
+                        (width - scrollbarWidth()) / BLOCK_RESULT_COLUMN_COUNT
+                      }
                       rowHeight={BLOCK_ITEM_FIXED_HEIGHT_PX}
                       columnCount={BLOCK_RESULT_COLUMN_COUNT}
                       rowCount={Math.ceil(
