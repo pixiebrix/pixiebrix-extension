@@ -16,7 +16,7 @@
  */
 
 import styles from "./Sidebar.module.scss";
-import React, { FormEvent, useMemo, useState } from "react";
+import React, { FormEvent, useEffect, useMemo, useState } from "react";
 import { sortBy } from "lodash";
 import { getRecipeById } from "@/utils";
 import { Accordion, Button, Form, ListGroup } from "react-bootstrap";
@@ -47,11 +47,19 @@ import ReloadButton from "./ReloadButton";
 import AddExtensionPointButton from "./AddExtensionPointButton";
 import ExtensionEntry from "./ExtensionEntry";
 import { actions } from "@/pageEditor/slices/editorSlice";
+import { measureDurationFromAppStart } from "@/utils/performance";
 
 const SidebarExpanded: React.FunctionComponent<{
   collapseSidebar: () => void;
 }> = ({ collapseSidebar }) => {
-  const { data: allRecipes } = useGetRecipesQuery();
+  const { data: allRecipes, isLoading: isAllRecipesLoading } =
+    useGetRecipesQuery();
+
+  useEffect(() => {
+    if (!isAllRecipesLoading) {
+      measureDurationFromAppStart("sidebarExpanded:allRecipesLoaded");
+    }
+  }, [isAllRecipesLoading]);
 
   const dispatch = useDispatch();
   const activeElementId = useSelector(selectActiveElementId);

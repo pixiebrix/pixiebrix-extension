@@ -312,6 +312,27 @@ export async function recordError(
   }
 }
 
+export async function recordWarning(
+  context: MessageContext | null,
+  message: string,
+  data?: JsonObject
+) {
+  forbidContext(
+    "contentScript",
+    "contentScript does not have CSP access to Rollbar"
+  );
+
+  void recordLog(context, "warn", message, data);
+
+  if (!(await allowsTrack())) {
+    warnAboutDisabledDNT();
+    return;
+  }
+
+  const rollbar = await getRollbar();
+  rollbar.warning(message, data);
+}
+
 export async function recordLog(
   context: MessageContext,
   level: MessageLevel,
