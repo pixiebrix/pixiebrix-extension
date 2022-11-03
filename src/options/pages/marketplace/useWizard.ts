@@ -39,13 +39,7 @@ const STEPS: WizardStep[] = [
 const getValidationSchemaFromOptionSchema = (
   optionSchema: Schema
 ): Yup.AnySchema => {
-  const {
-    type,
-    format,
-    $ref,
-    oneOf: dropdownWithLabelOptions,
-    enum: dropdownOptions,
-  } = optionSchema;
+  const { type, format, $ref } = optionSchema;
 
   if (type === "boolean") {
     return Yup.boolean();
@@ -63,8 +57,8 @@ const getValidationSchemaFromOptionSchema = (
     return Yup.string().url();
   }
 
-  if (type === "string" && (dropdownWithLabelOptions || dropdownOptions)) {
-    return Yup.string().oneOf(dropdownWithLabelOptions ?? dropdownOptions);
+  if (type === "string") {
+    return Yup.string();
   }
 
   if ($ref === "https://app.pixiebrix.com/schemas/database#") {
@@ -144,22 +138,16 @@ function useWizard(
         )
       ),
       services: Yup.array().of(
-        Yup.object()
-          .shape({
-            id: Yup.string(),
-            config: Yup.string(),
-          })
-          .test(
-            "is-service-required",
-            () => "This service is required",
-            (value) => value.id !== PIXIEBRIX_SERVICE_ID
-          )
+        Yup.object().shape({
+          id: Yup.string(),
+          config: Yup.string(),
+        })
       ),
       optionsArgs: Yup.object().shape(
         mapValues(
           blueprint.options?.schema?.properties ?? {},
           (optionSchema: Schema, name: string) => {
-            const required = blueprint.options.schema.required.includes(name);
+            const required = blueprint.options.schema.required?.includes(name);
             const baseSchema =
               getValidationSchemaFromOptionSchema(optionSchema);
             return required

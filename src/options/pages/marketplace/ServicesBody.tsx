@@ -28,7 +28,6 @@ import { ServiceAuthPair } from "@/core";
 import { useAuthOptions } from "@/hooks/auth";
 import { useGetServicesQuery } from "@/services/api";
 import { joinName } from "@/utils";
-import useFieldError from "@/components/form/useFieldError";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -38,7 +37,6 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const [authOptions, refreshAuthOptions] = useAuthOptions();
 
   const [field] = useField<ServiceAuthPair[]>("services");
-  const { error, warning } = useFieldError("services");
 
   const { data: serviceConfigs } = useGetServicesQuery();
 
@@ -57,14 +55,12 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   return (
     <Col>
       <Row>
-        {field.value.map(({ id: serviceId }, index, name) => {
-          // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
-          // consistent with the index in field.value
-          return (
+        {field.value.map(
+          ({ id: serviceId }, index) =>
+            // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
+            // consistent with the index in field.value
             visibleServiceIds.has(serviceId) && (
               <Col xs={12} sm={6} xl={4}>
-                {error}
-                {warning}
                 <Card key={serviceId} className={styles.serviceCard}>
                   <ServiceDescriptor
                     serviceId={serviceId}
@@ -79,8 +75,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                 </Card>
               </Col>
             )
-          );
-        })}
+        )}
       </Row>
     </Col>
   );
