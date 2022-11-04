@@ -65,6 +65,7 @@ const getValidationSchemaFromOptionSchema = (
     return Yup.string().uuid();
   }
 
+  // TODO: throw/report and error here
   return Yup.mixed();
 };
 
@@ -153,7 +154,7 @@ function useWizard(
             return required
               ? baseSchema
                   .transform((value) => (value === null ? undefined : value))
-                  .required(`${name} is a required field`)
+                  .required(`${name} is required`)
               : baseSchema;
           }
         )

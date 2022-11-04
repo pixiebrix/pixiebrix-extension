@@ -43,6 +43,7 @@ import { ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
 import { UnknownObject } from "@/types";
 import { PipelineExpression } from "@/runtime/mapArgs";
 import { BlockPipeline } from "@/blocks/types";
+import { MemoryRouter } from "react-router";
 
 export const neverPromise = async (...args: unknown[]): Promise<never> => {
   console.error("This method should not have been called", { args });
@@ -179,7 +180,11 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
             </Formik>
           </Provider>
         )
-      : ({ children }) => <Provider store={store}>{children}</Provider>;
+      : ({ children }) => (
+          <MemoryRouter>
+            <Provider store={store}>{children}</Provider>
+          </MemoryRouter>
+        );
 
     const renderResult = render(ui, { wrapper: Wrapper, ...renderOptions });
 
