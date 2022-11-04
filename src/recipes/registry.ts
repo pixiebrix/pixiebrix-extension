@@ -18,10 +18,19 @@ import BaseRegistry from "@/baseRegistry";
 import { RegistryId } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 
-const registry = new BaseRegistry<RegistryId, RecipeDefinition>(
+type RegistryRecipeDefinition = RecipeDefinition & {
+  id: RegistryId;
+};
+
+function fromJS(x: RecipeDefinition) {
+  (x as RegistryRecipeDefinition).id = x.metadata.id;
+  return x as RegistryRecipeDefinition;
+}
+
+const registry = new BaseRegistry<RegistryId, RegistryRecipeDefinition>(
   ["recipe"],
   "recipes",
-  (x) => x
+  fromJS
 );
 
 export default registry;

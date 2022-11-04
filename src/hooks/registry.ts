@@ -19,6 +19,8 @@ import { Registry, RegistryItem } from "@/baseRegistry";
 import { useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
 import { RegistryId } from "@/core";
+import { useAsyncState } from "./common";
+import recipesRegistry from "@/recipes/registry";
 
 export function useRegistry<Id extends RegistryId, T extends RegistryItem<Id>>(
   registry: Registry<Id, T>,
@@ -37,4 +39,13 @@ export function useRegistry<Id extends RegistryId, T extends RegistryItem<Id>>(
     [registry, id]
   );
   return result;
+}
+
+export function useAllRecipes() {
+  const [data, isLoading, error, recalculate] = useAsyncState(
+    async () => recipesRegistry.all(),
+    [],
+    []
+  );
+  return { data, isLoading, error, recalculate };
 }
