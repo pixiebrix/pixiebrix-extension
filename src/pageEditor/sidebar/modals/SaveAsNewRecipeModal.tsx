@@ -19,22 +19,17 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { Button, Modal } from "react-bootstrap";
-import {
-  selectActiveRecipeId,
-  selectEditorModalVisibilities,
-} from "@/pageEditor/slices/editorSelectors";
-import { useGetRecipesQuery } from "@/services/api";
+import { selectEditorModalVisibilities } from "@/pageEditor/slices/editorSelectors";
 import LoadingDataModal from "@/pageEditor/panes/save/LoadingDataModal";
+import { useActiveRecipe } from "@/pageEditor/hooks/useActiveRecipe";
 
 const SaveAsNewRecipeModal: React.FC = () => {
   const { isSaveAsNewRecipeModalVisible: show } = useSelector(
     selectEditorModalVisibilities
   );
-  const activeRecipeId = useSelector(selectActiveRecipeId);
-  const { data: recipes, isLoading } = useGetRecipesQuery();
-  const recipeName =
-    recipes?.find((recipe) => recipe.metadata.id === activeRecipeId)?.metadata
-      ?.name ?? "this blueprint";
+
+  const { data: recipe, isLoading } = useActiveRecipe();
+  const recipeName = recipe?.metadata?.name ?? "this blueprint";
 
   const dispatch = useDispatch();
 

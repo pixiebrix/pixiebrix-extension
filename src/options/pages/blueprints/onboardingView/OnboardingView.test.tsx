@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
+import { useGetOrganizationsQuery } from "@/services/api";
 import useFlags from "@/hooks/useFlags";
 import { Organization } from "@/types/contract";
 import useDeployments from "@/hooks/useDeployments";
 import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
 import { renderHook } from "@testing-library/react-hooks";
+import { useAllRecipes } from "@/hooks/registry";
 
 jest.mock("react-redux", () => ({
   useSelector: jest.fn(),
@@ -28,11 +29,14 @@ jest.mock("react-redux", () => ({
 
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: jest.fn(),
-  useGetRecipesQuery: jest.fn(),
 }));
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
 jest.mock("@/hooks/useDeployments", () => jest.fn());
+jest.mock("@/hooks/registry", () => ({
+  __esModule: true,
+  useAllRecipes: jest.fn(),
+}));
 
 const mockOnboarding = ({
   hasOrganization = false,
@@ -60,7 +64,7 @@ const mockOnboarding = ({
     };
   });
 
-  (useGetRecipesQuery as jest.Mock).mockImplementation(() => ({
+  (useAllRecipes as jest.Mock).mockImplementation(() => ({
     data: hasTeamBlueprints
       ? [
           {

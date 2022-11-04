@@ -51,7 +51,7 @@ export function useRegistry<Id extends RegistryId, T extends RegistryItem<Id>>(
   id: Id
 ): RegistryRequestState<T> {
   const [data, isLoading, error, recalculate] = useAsyncState<T>(
-    async () => registry.lookup(id),
+    async () => (id == null ? undefined : registry.lookup(id)),
     [registry, id]
   );
   return { data, isLoading, error, recalculate };

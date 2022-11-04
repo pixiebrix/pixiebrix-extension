@@ -21,7 +21,6 @@ import {
   selectActiveRecipeId,
   selectDirtyMetadataForRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
-import { useGetRecipesQuery } from "@/services/api";
 import { RecipeMetadataFormState } from "@/types/definitions";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import Loader from "@/components/Loader";
@@ -36,10 +35,10 @@ import { object, string } from "yup";
 import { testIsSemVerString } from "@/types/helpers";
 import Form, { RenderBody } from "@/components/form/Form";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { getRecipeById } from "@/utils";
 import Alert from "@/components/Alert";
 import { createSelector } from "reselect";
 import { lt } from "semver";
+import { useRecipe } from "@/hooks/registry";
 
 // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
@@ -65,8 +64,7 @@ const selectFirstExtension = createSelector(
 
 const EditRecipe: React.VoidFunctionComponent = () => {
   const recipeId = useSelector(selectActiveRecipeId);
-  const { data: recipes, isLoading, error } = useGetRecipesQuery();
-  const recipe = getRecipeById(recipes ?? [], recipeId);
+  const { data: recipe, isLoading, error } = useRecipe(recipeId);
 
   // Select a single extension for the recipe to check the installed version.
   // We rely on the assumption that every extension in the recipe has the same version.
