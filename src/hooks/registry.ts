@@ -68,7 +68,6 @@ export function useRecipe(
 
 /**
  * Pulls all recipes from the registry
- * @returns
  */
 export function useAllRecipes(): RegistryRequestState<RecipeDefinition[]> {
   const [data, isLoading, error, recalculate] = useAsyncState(
