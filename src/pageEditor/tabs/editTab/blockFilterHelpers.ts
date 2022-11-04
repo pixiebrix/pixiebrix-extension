@@ -23,6 +23,7 @@ import { stubTrue } from "lodash";
 import { BlockConfig } from "@/blocks/types";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { BlockType } from "@/runtime/runtimeTypes";
+import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { RegistryId } from "@/core";
 
 const PANEL_TYPES = ["actionPanel", "panel"];
@@ -53,6 +54,11 @@ export function getSubPipelineFlavor(
   ) {
     // Current pipeline is the Brick sub pipeline of a Document renderer.
     // Since this sub pipeline is a renderer by itself, it should have no side effects
+    return PipelineFlavor.NoEffect;
+  }
+
+  if (parentNodeId === DisplayTemporaryInfo.BLOCK_ID) {
+    // Temporary Info renderer shouldn't have side effects
     return PipelineFlavor.NoEffect;
   }
 

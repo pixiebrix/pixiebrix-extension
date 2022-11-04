@@ -26,6 +26,7 @@ import * as local from "@/background/messenger/external/_implementation";
 import { liftExternalToContentScript } from "@/contentScript/externalProtocol";
 import { isChrome } from "webext-detect-page";
 import { SerializableResponse } from "@/messaging/protocol";
+import { readPartnerAuthData } from "@/auth/token";
 
 const liftExternal = isChrome()
   ? // Chrome can communicate directly via the standard chrome.runtime.sendMessage API.
@@ -61,4 +62,9 @@ export const openActivateBlueprint = liftExternal(
 export const openExtensionOptions = liftExternal(
   "OPEN_OPTIONS",
   local.openExtensionOptions
+);
+
+export const getPartnerToken = liftExternal(
+  "GET_PARTNER_TOKEN",
+  readPartnerAuthData
 );

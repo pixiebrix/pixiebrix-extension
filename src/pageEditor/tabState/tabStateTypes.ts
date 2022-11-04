@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { SimpleErrorObject } from "@/errors/errorHelpers";
 import { FrameworkMeta } from "@/messaging/constants";
 
 interface FrameMeta {
@@ -49,10 +50,10 @@ export type TabState = {
   frameState: FrameConnectionState;
 
   /**
-   * The error connecting to the content script, or undefined.
+   * The error connecting to the content script, or null.
    * @see connectToContentScript
    */
-  error: string | null;
+  error: SimpleErrorObject | null;
 };
 
 export type TabStateRootState = {
