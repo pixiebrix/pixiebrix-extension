@@ -65,7 +65,11 @@ const getValidationSchemaFromOptionSchema = (
     return Yup.string().uuid();
   }
 
-  // TODO: throw/report and error here
+  reportError(
+    `Unknown Blueprint option schema in ActivateWizard: ${JSON.stringify(
+      optionSchema
+    )}`
+  );
   return Yup.mixed();
 };
 
@@ -129,15 +133,15 @@ function useWizard(
       grantPermissions: false,
     };
 
-    console.log("initialValues", initialValues);
-    console.log("blueprintoptions", blueprint.options?.schema);
-
     const validationSchema = Yup.object().shape({
       extensions: Yup.object().shape(
         Object.fromEntries(
           extensionPoints.map((_, index) => [index, Yup.boolean().required()])
         )
       ),
+      // Services is validated in useInstall; denoting services as required will prevent
+      // form submission without errors until we implement error views on ServicesBody.
+      // This is a refactoring opportunity
       services: Yup.array().of(
         Yup.object().shape({
           id: Yup.string(),

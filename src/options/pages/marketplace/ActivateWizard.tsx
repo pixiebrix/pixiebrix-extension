@@ -109,27 +109,24 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
       validationSchema={validationSchema}
       onSubmit={install}
     >
-      {({ handleSubmit, isValid, errors }) => {
-        console.log("isValid", isValid, errors);
-        return (
-          <Form id="activate-wizard" onSubmit={handleSubmit}>
-            <BlockFormSubmissionViaEnterIfFirstChild />
-            <Card>
-              <ActivateHeader blueprint={blueprint} />
-              <Card.Body className={styles.wizardBody}>
-                {blueprintSteps.map(({ Component, label, key }, _) => (
-                  <Row key={key} className={styles.wizardBodyRow}>
-                    <Col xs={12}>
-                      <h4>{label}</h4>
-                    </Col>
-                    <Component blueprint={blueprint} reinstall={reinstall} />
-                  </Row>
-                ))}
-              </Card.Body>
-            </Card>
-          </Form>
-        );
-      }}
+      {({ handleSubmit }) => (
+        <Form id="activate-wizard" onSubmit={handleSubmit}>
+          <BlockFormSubmissionViaEnterIfFirstChild />
+          <Card>
+            <ActivateHeader blueprint={blueprint} />
+            <Card.Body className={styles.wizardBody}>
+              {blueprintSteps.map(({ Component, label, key }, _) => (
+                <Row key={key} className={styles.wizardBodyRow}>
+                  <Col xs={12}>
+                    <h4>{label}</h4>
+                  </Col>
+                  <Component blueprint={blueprint} reinstall={reinstall} />
+                </Row>
+              ))}
+            </Card.Body>
+          </Card>
+        </Form>
+      )}
     </Formik>
   );
 };
