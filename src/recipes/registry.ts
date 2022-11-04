@@ -15,16 +15,56 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import BaseRegistry from "@/baseRegistry";
-import { RegistryId } from "@/core";
-import { RecipeDefinition } from "@/types/definitions";
+import { RegistryId, Schema, SchemaProperties, UiSchema } from "@/core";
+import { OptionsDefinition, RecipeDefinition } from "@/types/definitions";
+import { propertiesToSchema } from "@/validators/generic";
+import { sortBy } from "lodash";
+
+type UnnormalizedOptionsDefinition = {
+  schema: Schema | SchemaProperties;
+  uiSchema?: UiSchema;
+};
+
+type UnnormalizedRecipeDefinition = Exclude<RecipeDefinition, "options"> & {
+  options?: UnnormalizedOptionsDefinition;
+};
 
 type RegistryRecipeDefinition = RecipeDefinition & {
   id: RegistryId;
 };
 
-function fromJS(x: RecipeDefinition) {
-  (x as RegistryRecipeDefinition).id = x.metadata.id;
-  return x as RegistryRecipeDefinition;
+/**
+ * Fix hand-crafted recipe options from the workshop
+ */
+function normalizeRecipeOptions(
+  options?: OptionsDefinition
+): OptionsDefinition {
+  if (options == null) {
+    return {
+      schema: {},
+      uiSchema: {},
+    };
+  }
+
+  const recipeSchema = options.schema ?? {};
+  const schema: Schema =
+    "type" in recipeSchema &&
+    recipeSchema.type === "object" &&
+    "properties" in recipeSchema
+      ? recipeSchema
+      : propertiesToSchema(recipeSchema as SchemaProperties);
+  const uiSchema: UiSchema = options.uiSchema ?? {};
+  uiSchema["ui:order"] = uiSchema["ui:order"] ?? [
+    ...sortBy(Object.keys(schema.properties ?? {})),
+    "*",
+  ];
+  return { schema, uiSchema };
+}
+
+function fromJS(recipe: UnnormalizedRecipeDefinition) {
+  recipe.options = normalizeRecipeOptions(recipe.options);
+  (recipe as RegistryRecipeDefinition).id = recipe.metadata.id;
+  return recipe as RegistryRecipeDefinition;
 }
 
 const registry = new BaseRegistry<RegistryId, RegistryRecipeDefinition>(
