@@ -22,11 +22,11 @@ import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
 import { extensionToFormState } from "@/pageEditor/extensionPoints/adapter";
 import reportError from "@/telemetry/reportError";
-import { useGetRecipesQuery } from "@/services/api";
 import { initRecipeOptionsIfNeeded } from "@/pageEditor/extensionPoints/base";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
 import { UUID } from "@/core";
+import { useAllRecipes } from "@/hooks/registry";
 
 type Config = {
   extensionId: UUID;
@@ -36,7 +36,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const installed = useSelector(selectExtensions);
-  const { data: recipes } = useGetRecipesQuery();
+  const { data: recipes } = useAllRecipes();
   const { showConfirmation } = useModals();
 
   return useCallback(

@@ -26,7 +26,6 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import {
   useGetEditablePackagesQuery,
-  useGetRecipesQuery,
   useUpdateRecipeMutation,
 } from "@/services/api";
 import notify from "@/utils/notify";
@@ -41,6 +40,7 @@ import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
 import useCreate from "@/pageEditor/hooks/useCreate";
 import { RegistryId } from "@/core";
+import { useAllRecipes } from "@/hooks/registry";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -52,7 +52,7 @@ type RecipeSaver = {
 function useSaveRecipe(): RecipeSaver {
   const dispatch = useDispatch();
   const create = useCreate();
-  const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
+  const { data: recipes, isLoading: isRecipesLoading } = useAllRecipes();
   const { data: editablePackages, isLoading: isEditablePackagesLoading } =
     useGetEditablePackagesQuery();
   const [updateRecipe] = useUpdateRecipeMutation();

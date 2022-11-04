@@ -36,14 +36,12 @@ import {
   isExtension,
   updateAvailable,
 } from "@/options/pages/blueprints/utils/installableUtils";
-import {
-  useGetMarketplaceListingsQuery,
-  useGetRecipesQuery,
-} from "@/services/api";
+import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { MarketplaceListing } from "@/types/contract";
 import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
+import { useAllRecipes } from "@/hooks/registry";
 
 function useInstallableViewItems(installables: Installable[]): {
   installableViewItems: readonly InstallableViewItem[];
@@ -53,7 +51,7 @@ function useInstallableViewItems(installables: Installable[]): {
   const installedExtensions = useSelector(selectExtensions);
   const organizations = useSelector(selectOrganizations);
   const listingsQuery = useGetMarketplaceListingsQuery();
-  const recipesQuery = useGetRecipesQuery();
+  const { data: recipes, isLoading: areRecipesLoading } = useAllRecipes();
 
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({
@@ -133,11 +131,7 @@ function useInstallableViewItems(installables: Installable[]): {
         },
         updatedAt: getUpdatedAt(installable),
         status: getStatus(installable),
-        hasUpdate: updateAvailable(
-          recipesQuery.data,
-          installedExtensions,
-          installable
-        ),
+        hasUpdate: updateAvailable(recipes, installedExtensions, installable),
         installedVersionNumber: getInstalledVersionNumber(
           installedExtensions,
           installable
@@ -151,14 +145,14 @@ function useInstallableViewItems(installables: Installable[]): {
       installables,
       installedExtensions,
       organizations,
-      recipesQuery.data,
+      recipes,
       scope,
     ]
   );
 
   return {
     installableViewItems,
-    isLoading: recipesQuery.isLoading || listingsQuery.isLoading,
+    isLoading: areRecipesLoading || listingsQuery.isLoading,
   };
 }
 
