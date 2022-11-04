@@ -34,6 +34,7 @@ async function onNavigation({ tabId, frameId }: Target): Promise<void> {
 function initNavigation(): void {
   // Let the content script know about navigation from the history API. Required for handling SPA navigation
   browser.webNavigation.onHistoryStateUpdated.addListener(onNavigation);
+  browser.webNavigation.onReferenceFragmentUpdated.addListener(onNavigation);
 }
 
 export default initNavigation;
