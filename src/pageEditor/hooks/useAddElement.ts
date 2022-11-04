@@ -44,9 +44,7 @@ function useAddElement(): AddElement {
   return useCallback(
     async (config: ElementConfig) => {
       if (config.flag && flagOff(config.flag)) {
-        dispatch(
-          actions.betaError({ error: "This feature is in private beta" })
-        );
+        dispatch(actions.betaError());
         return;
       }
 

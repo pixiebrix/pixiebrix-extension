@@ -60,6 +60,7 @@ import { resolveBlockConfig } from "@/blocks/registry";
 import { isObject } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
+import { PanelPayload } from "@/sidebar/types";
 
 type CommonOptions = ApiVersionOptions & {
   /**
@@ -303,6 +304,7 @@ async function executeBlockWithValidatedProps(
             throw new Error("Expected object context for v3+ runtime");
           }
 
+          const { runId, extensionId, branches } = options.trace;
           return reducePipelineExpression(
             pipeline,
             {
@@ -312,11 +314,65 @@ async function executeBlockWithValidatedProps(
             rootOverride ?? root,
             {
               ...options,
-              runId: options.trace.runId,
-              extensionId: options.trace.extensionId,
-              branches: [...options.trace.branches, branch],
+              runId,
+              extensionId,
+              branches: [...branches, branch],
             }
           );
+        },
+        async runRendererPipeline(
+          pipeline,
+          branch,
+          extraContext,
+          rootOverride
+        ) {
+          if (!isObject(commonOptions.ctxt)) {
+            throw new Error("Expected object context for v3+ runtime");
+          }
+
+          const { runId, extensionId, branches } = options.trace;
+          let payload: PanelPayload;
+          try {
+            await reducePipelineExpression(
+              pipeline,
+              {
+                ...commonOptions.ctxt,
+                ...extraContext,
+              },
+              rootOverride ?? root,
+              {
+                ...options,
+                // This (headless) is the important difference from the call in runPipeline() above
+                headless: true,
+                runId,
+                extensionId,
+                branches: [...branches, branch],
+              }
+            );
+            // Expecting a HeadlessModeError above for the "success" case
+            // noinspection ExceptionCaughtLocallyJS
+            throw new BusinessError("Pipeline does not include a renderer");
+          } catch (error) {
+            if (error instanceof HeadlessModeError) {
+              payload = {
+                key: runId,
+                blockId: error.blockId,
+                args: error.args,
+                ctxt: error.ctxt,
+                extensionId,
+                runId,
+              };
+            } else {
+              payload = {
+                key: runId,
+                error: serializeError(error),
+                extensionId,
+                runId,
+              };
+            }
+          }
+
+          return payload;
         },
       });
     }

@@ -19,7 +19,6 @@ import { IBlock, OutputKey } from "@/core";
 import { useCallback } from "react";
 import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import { compact, get } from "lodash";
-import { createNewBlock } from "@/pageEditor/createNewBlock";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { reportEvent } from "@/telemetry/events";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,6 +35,7 @@ import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
 import { Analysis } from "@/analysis/analysisTypes";
 import { produce } from "immer";
+import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
 
 type TestAddBlockResult = {
   error?: string;

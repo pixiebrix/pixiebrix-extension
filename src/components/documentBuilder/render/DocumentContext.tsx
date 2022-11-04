@@ -50,6 +50,11 @@ export const initialValue: DocumentState = {
         "Support for running pipelines in documents not implemented"
       );
     },
+    async runRendererPipeline() {
+      throw new BusinessError(
+        "Support for running pipelines in documents not implemented"
+      );
+    },
   },
 };
 
