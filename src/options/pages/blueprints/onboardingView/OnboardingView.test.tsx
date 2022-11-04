@@ -34,7 +34,6 @@ jest.mock("@/services/api", () => ({
 jest.mock("@/hooks/useFlags", () => jest.fn());
 jest.mock("@/hooks/useDeployments", () => jest.fn());
 jest.mock("@/hooks/registry", () => ({
-  __esModule: true,
   useAllRecipes: jest.fn(),
 }));
 

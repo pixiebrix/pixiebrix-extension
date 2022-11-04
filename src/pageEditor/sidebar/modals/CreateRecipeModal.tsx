@@ -54,7 +54,7 @@ import Form, {
   RenderBody,
   RenderSubmit,
 } from "@/components/form/Form";
-import { useCreateRecipeMutation, useGetRecipesQuery } from "@/services/api";
+import { useCreateRecipeMutation } from "@/services/api";
 import useCreate from "@/pageEditor/hooks/useCreate";
 import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
@@ -74,6 +74,7 @@ import { generateRecipeId } from "@/utils/recipeUtils";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
+import { useAllRecipes, useRecipe } from "@/hooks/registry";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -286,7 +287,7 @@ function useInitialFormState({
 
 function useFormSchema() {
   const newRecipeIds = useSelector(selectNewRecipeIds);
-  const { data: recipes } = useGetRecipesQuery();
+  const { data: recipes } = useAllRecipes();
   const savedRecipeIds: RegistryId[] = (recipes ?? []).map(
     (x) => x.metadata.id
   );
@@ -326,11 +327,8 @@ const CreateRecipeModal: React.FC = () => {
   // is open an extension element is active, then we're performing a "Save a New" on that recipe.
   const directlyActiveRecipeId = useSelector(selectActiveRecipeId);
   const activeRecipeId = directlyActiveRecipeId ?? activeElement?.recipe?.id;
-
-  const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
-  const activeRecipe = activeRecipeId
-    ? recipes?.find((recipe) => recipe.metadata.id === activeRecipeId)
-    : undefined;
+  const { data: activeRecipe, isLoading: isRecipeLoading } =
+    useRecipe(activeRecipeId);
 
   const formSchema = useFormSchema();
 
@@ -344,7 +342,7 @@ const CreateRecipeModal: React.FC = () => {
   });
 
   // Loading state -- could consider refactoring into two components: 1) modal with loading state, 2) form
-  if (activeRecipeId && isRecipesLoading) {
+  if (activeRecipeId && isRecipeLoading) {
     return <LoadingDataModal onClose={hideModal} />;
   }
 
