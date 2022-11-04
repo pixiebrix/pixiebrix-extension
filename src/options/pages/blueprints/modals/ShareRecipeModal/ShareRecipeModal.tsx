@@ -51,8 +51,7 @@ import { selectAuth } from "@/auth/authSelectors";
 import { Organization, UserRole } from "@/types/contract";
 import Loading from "./Loading";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { useRegistry } from "@/hooks/registry";
-import recipesRegistry from "@/recipes/registry";
+import { useRecipe } from "@/hooks/registry";
 
 type ShareInstallableFormState = {
   public: boolean;
@@ -77,10 +76,7 @@ const ShareRecipeModal: React.FunctionComponent = () => {
   const [updateRecipe] = useUpdateRecipeMutation();
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
     useGetEditablePackagesQuery();
-  const { data: recipe, isLoading: isLoadingRecipe } = useRegistry(
-    recipesRegistry,
-    blueprintId
-  );
+  const { data: recipe, isLoading: isLoadingRecipe } = useRecipe(blueprintId);
 
   const closeModal = () => {
     dispatch(blueprintModalsSlice.actions.setShareContext(null));

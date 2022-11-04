@@ -18,7 +18,7 @@
 import { RegistryRequestState, useRecipe } from "@/hooks/registry";
 import { RecipeDefinition } from "@/types/definitions";
 import { useSelector } from "react-redux";
-import { selectActiveRecipeId } from "../slices/editorSelectors";
+import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
 
 /**
  * Selects the active recipe id and pulls it from the registry
