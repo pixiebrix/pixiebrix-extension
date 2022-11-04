@@ -16,35 +16,63 @@
  */
 
 import { Registry, RegistryItem } from "@/baseRegistry";
-import { useState } from "react";
-import { useAsyncEffect } from "use-async-effect";
 import { RegistryId } from "@/core";
 import { useAsyncState } from "./common";
 import recipesRegistry from "@/recipes/registry";
+import { RecipeDefinition } from "@/types/definitions";
 
+export type RegistryRequestState<T> = {
+  /**
+   * The value, or `undefined` if the state is loading or there was an error computing the state
+   */
+  data: T | undefined;
+
+  /**
+   * True if the async state is loading
+   */
+  isLoading: boolean;
+
+  /**
+   * Error or undefined if there was no error computing the state
+   */
+  error: unknown;
+
+  /**
+   * Method to re-calculate the value. Does not set `isLoading` flag
+   */
+  recalculate: () => Promise<void>;
+};
+
+/**
+ * Lookup an item from a registry by ID. Converts async call to a React stateful request.
+ */
 export function useRegistry<Id extends RegistryId, T extends RegistryItem<Id>>(
   registry: Registry<Id, T>,
   id: Id
-): T {
-  const [result, setResult] = useState<T>();
-  useAsyncEffect(
-    async (isMounted) => {
-      const result = await registry.lookup(id);
-      if (!isMounted) {
-        return;
-      }
-
-      setResult(result);
-    },
+): RegistryRequestState<T> {
+  const [data, isLoading, error, recalculate] = useAsyncState<T>(
+    async () => registry.lookup(id),
     [registry, id]
   );
-  return result;
+  return { data, isLoading, error, recalculate };
 }
 
-export function useAllRecipes() {
+/**
+ * Lookup a recipe from the registry by ID
+ */
+export function useRecipe(
+  id: RegistryId
+): RegistryRequestState<RecipeDefinition> {
+  return useRegistry(recipesRegistry, id);
+}
+
+/**
+ * Pulls all recipes from the registry
+ * @returns
+ */
+export function useAllRecipes(): RegistryRequestState<RecipeDefinition[]> {
   const [data, isLoading, error, recalculate] = useAsyncState(
     async () => recipesRegistry.all(),
-    [],
     []
   );
   return { data, isLoading, error, recalculate };

@@ -46,7 +46,7 @@ import { OptionsDefinition } from "@/types/definitions";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/pageEditor/components/Effect";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { useAllRecipes } from "@/hooks/registry";
+import { useRecipe } from "@/hooks/registry";
 
 const fieldTypes = [
   ...FORM_FIELD_TYPE_OPTIONS.filter(
@@ -71,8 +71,8 @@ const emptyOptions: OptionsDefinition = {
 const RecipeOptions: React.VFC = () => {
   const [activeField, setActiveField] = useState<string>();
   const recipeId = useSelector(selectActiveRecipeId);
-  const { data: recipes, isLoading, error } = useAllRecipes();
-  const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
+  const { data: recipe, isLoading, error } = useRecipe(recipeId);
+
   const savedOptions = recipe?.options;
   const dirtyOptions = useSelector(selectDirtyOptionsForRecipeId(recipeId));
 
