@@ -335,7 +335,11 @@ export function selectError(originalError: unknown): Error {
   return new Error(truncate(errorMessage, { length: 2000 }));
 }
 
-/** Basic Error-like type to be used only when ErrorObject is too complex */
+/**
+ * Basic Error-like type to be used only when ErrorObject is too complex
+ * @see SerializedError
+ *  todo: We can possibly unify these two types
+ */
 export type SimpleErrorObject = {
   name?: string;
   message?: string;

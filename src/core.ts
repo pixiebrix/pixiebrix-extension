@@ -220,6 +220,11 @@ export type MessageContext = {
   readonly pageName?: ContextName;
 };
 
+/**
+ * A serialized error type
+ * @see SimpleErrorObject
+ *  todo: We can possibly unify these two types
+ */
 export type SerializedError = Primitive | ErrorObject;
 
 export type Data = Record<string, unknown>;

@@ -94,6 +94,9 @@ export interface EditorState {
    */
   expandedRecipeId: RegistryId | null;
 
+  /**
+   * A serialized error that has occurred in the page editor
+   */
   error: SimpleErrorObject | null;
 
   dirty: Record<string, boolean>;
