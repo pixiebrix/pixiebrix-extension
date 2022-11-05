@@ -157,6 +157,8 @@ function useWizard(
               getValidationSchemaFromOptionSchema(optionSchema);
             return required
               ? baseSchema
+                  // This transform prevents nullish type errors being displayed in the form,
+                  // instead of "required" errors
                   .transform((value) => (value === null ? undefined : value))
                   .required(`${name} is required`)
               : baseSchema;
