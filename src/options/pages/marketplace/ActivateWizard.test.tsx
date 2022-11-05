@@ -18,9 +18,22 @@
 import React from "react";
 import { render } from "@/options/testHelpers";
 import ActivateWizard from "@/options/pages/marketplace/ActivateWizard";
-import { recipeDefinitionFactory } from "@/testUtils/factories";
+import {
+  extensionPointConfigFactory,
+  recipeDefinitionFactory,
+  recipeMetadataFactory,
+} from "@/testUtils/factories";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { screen, fireEvent, getByText } from "@testing-library/react";
+import { fireEvent, getByText, screen } from "@testing-library/react";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { RegistryId } from "@/core";
+
+registerDefaultWidgets();
+
+jest.mock("@/permissions", () => ({
+  ensureAllPermissions: jest.fn(() => true),
+  collectPermissions: jest.fn(),
+}));
 
 jest.mock("@/options/store", () => ({
   persistor: {
@@ -35,6 +48,14 @@ jest.mock("@/services/api", () => ({
   useGetRecipesQuery: jest.fn(() => ({
     data: [],
   })),
+  useGetDatabasesQuery: jest.fn(() => ({
+    data: [],
+  })),
+  useGetOrganizationsQuery: jest.fn(() => ({
+    data: [],
+  })),
+  useCreateDatabaseMutation: jest.fn(() => [jest.fn()]),
+  useAddDatabaseToGroupMutation: jest.fn(() => [jest.fn()]),
 }));
 
 global.chrome = {
@@ -52,10 +73,14 @@ describe("ActivateWizard", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("activate blueprint", async () => {
+  test("activate blueprint with missing required blueprint options", async () => {
     const rendered = render(
       <ActivateWizard
         blueprint={recipeDefinitionFactory({
+          metadata: recipeMetadataFactory({
+            id: "test/blueprint-with-required-options" as RegistryId,
+            name: "Blueprint with Required Options",
+          }),
           options: {
             schema: {
               $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -70,6 +95,11 @@ describe("ActivateWizard", () => {
             },
             uiSchema: {},
           },
+          extensionPoints: [
+            extensionPointConfigFactory({
+              label: "Extension Point for Blueprint with Required Options",
+            }),
+          ],
         })}
       />
     );
@@ -84,5 +114,6 @@ describe("ActivateWizard", () => {
     );
     await waitForEffect();
     expect(rendered.asFragment()).toMatchSnapshot();
+    expect(screen.getByText("database is required")).not.toBeNull();
   });
 });
