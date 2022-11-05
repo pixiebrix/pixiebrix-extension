@@ -58,11 +58,7 @@ jest.mock("@/services/api", () => ({
   useAddDatabaseToGroupMutation: jest.fn(() => [jest.fn()]),
 }));
 
-global.chrome = {
-  commands: {
-    getAll: jest.fn(),
-  },
-};
+global.chrome.commands.getAll = jest.fn();
 
 describe("ActivateWizard", () => {
   test("renders", async () => {
