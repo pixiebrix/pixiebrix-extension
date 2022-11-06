@@ -130,7 +130,7 @@
     "redux-persist": "^6.0.0",
     "redux-persist-webextension-storage": "^1.0.2",
     "regenerator-runtime": "^0.13.9",
-    "reselect": "^4.0.0",
+    "reselect": "^4.1.7",
     "rollbar": "^2.25.2",
     "schema-to-yup": "1.11.15",
     "semver": "^7.3.5",
