@@ -41,7 +41,7 @@
     "@reduxjs/toolkit": "^1.8.6",
     "@rjsf/bootstrap-4": "^4.2.3",
     "@rjsf/core": "^4.2.3",
-    "@uipath/robot": "1.2.5",
+    "@uipath/robot": "1.2.9",
     "@vespaiach/axios-fetch-adapter": "^0.3.1",
     "@xobotyi/scrollbar-width": "^1.9.5",
     "ace-builds": "^1.12.3",
