@@ -41,6 +41,7 @@ import {
 import useCurrentUrl from "./hooks/useCurrentUrl";
 import CantModifyPane from "./panes/CantModifyPane";
 import { isScriptableUrl } from "@/utils/permissions";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 const EditorContent: React.FC = () => {
   const tabHasPermissions = useSelector(selectTabHasPermissions);
@@ -117,7 +118,7 @@ const EditorContent: React.FC = () => {
   if (editorError) {
     return (
       <div className="p-2">
-        <span className="text-danger">{editorError}</span>
+        <span className="text-danger">{getErrorMessage(editorError)}</span>
       </div>
     );
   }

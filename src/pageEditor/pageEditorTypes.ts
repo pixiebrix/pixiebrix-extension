@@ -32,6 +32,7 @@ import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { AnalysisRootState } from "@/analysis/analysisTypes";
 import { FormState } from "./extensionPoints/formStateTypes";
 import { TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
+import { SimpleErrorObject } from "@/errors/errorHelpers";
 
 export enum PipelineFlavor {
   AllBlocks = "allBlocks",
@@ -93,7 +94,10 @@ export interface EditorState {
    */
   expandedRecipeId: RegistryId | null;
 
-  error: string | null;
+  /**
+   * A serialized error that has occurred in the page editor
+   */
+  error: SimpleErrorObject | null;
 
   dirty: Record<string, boolean>;
 
