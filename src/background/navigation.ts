@@ -19,6 +19,7 @@ import { reactivateTab, handleNavigate } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/background/activeTab";
 import { Target } from "@/types";
 import { canAccessTab } from "@/utils/permissions";
+import { debounce } from "lodash";
 
 export function reactivateEveryTab(): void {
   console.debug("Reactivate all tabs");
@@ -31,10 +32,21 @@ async function onNavigation({ tabId, frameId }: Target): Promise<void> {
   }
 }
 
+// Some sites use the hash to encode page state (e.g., filters). There are some non-navigation scenarios where the hash
+// could change frequently (e.g., there is a timer in the state). Debounce to avoid overloading the messenger and
+// contentScript.
+const debouncedOnNavigation = debounce(onNavigation, 100, {
+  leading: true,
+  trailing: true,
+  maxWait: 1000,
+});
+
 function initNavigation(): void {
   // Let the content script know about navigation from the history API. Required for handling SPA navigation
   browser.webNavigation.onHistoryStateUpdated.addListener(onNavigation);
-  browser.webNavigation.onReferenceFragmentUpdated.addListener(onNavigation);
+  browser.webNavigation.onReferenceFragmentUpdated.addListener(
+    debouncedOnNavigation
+  );
 }
 
 export default initNavigation;
