@@ -24,7 +24,7 @@ import { faBars, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { DEFAULT_SERVICE_URL, getBaseURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
-import { isLinked } from "@/auth/token";
+import { isLinked, readPartnerAuthData } from "@/auth/token";
 import { useSelector } from "react-redux";
 import { toggleSidebar } from "./toggleSidebar";
 import { SettingsState } from "@/store/settingsTypes";
@@ -34,7 +34,6 @@ import { ThemeLogo } from "@/utils/themeUtils";
 
 const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
   const { email } = useSelector(selectAuth);
-  const [serviceURL] = useAsyncState<string>(getBaseURL);
   const [connected, connectedPending] = useAsyncState(isLinked);
   const mode = useSelector<{ settings: SettingsState }, string>(
     ({ settings }) => settings.mode
@@ -42,6 +41,17 @@ const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
 
   // Use `connectedPending` to optimistically show the toggle
   const showNavbarToggle = mode === "local" || connected || connectedPending;
+
+  // Need to update serviceURL on changes to partner auth data:
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/4594
+  const [serviceURL] = useAsyncState<string>(async () => {
+    const baseURL = (await getBaseURL()) ?? DEFAULT_SERVICE_URL;
+    const partnerAuth = await readPartnerAuthData();
+    const url = partnerAuth?.token
+      ? new URL("partner-auth", baseURL)
+      : new URL(baseURL);
+    return url.toString();
+  });
 
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">

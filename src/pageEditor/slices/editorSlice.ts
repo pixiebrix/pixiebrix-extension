@@ -16,7 +16,6 @@
  */
 
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { getErrorMessage } from "@/errors/errorHelpers";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { RecipeMetadata, RegistryId, UUID } from "@/core";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
@@ -70,6 +69,8 @@ import { resolveDefinitions } from "@/registry/internal";
 import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
 import { testMatchPatterns } from "@/blocks/available";
 import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
+import { BusinessError } from "@/errors/businessErrors";
+import { serializeError } from "serialize-error";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -286,14 +287,15 @@ export const editorSlice = createSlice({
 
       activateElement(state, element);
     },
-    betaError(state, action: PayloadAction<{ error: string }>) {
-      state.error = action.payload.error;
+    betaError(state) {
+      const error = new BusinessError("This feature is in private beta");
+      state.error = serializeError(error);
       state.beta = true;
       state.activeElementId = null;
     },
     adapterError(state, action: PayloadAction<{ uuid: UUID; error: unknown }>) {
       const { uuid, error } = action.payload;
-      state.error = getErrorMessage(error);
+      state.error = serializeError(error);
       state.beta = false;
       state.activeElementId = uuid;
       state.selectionSeq++;
@@ -786,6 +788,7 @@ export const editorSlice = createSlice({
         (state, { error }) => {
           state.isPendingInstalledExtensions = false;
           state.unavailableInstalledCount = 0;
+          state.error = error;
           reportError(error);
         }
       )
@@ -804,6 +807,7 @@ export const editorSlice = createSlice({
       .addCase(checkAvailableDynamicElements.rejected, (state, { error }) => {
         state.isPendingDynamicExtensions = false;
         state.unavailableDynamicCount = 0;
+        state.error = error;
         reportError(error);
       })
       .addCase(

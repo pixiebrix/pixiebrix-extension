@@ -16,12 +16,13 @@
  */
 
 import { TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
+import { deserializeError } from "serialize-error";
 
 export const selectFrameState = ({ tabState }: TabStateRootState) =>
   tabState.frameState;
 
 export const selectTabStateError = ({ tabState }: TabStateRootState) =>
-  tabState.error;
+  tabState.error ? deserializeError(tabState.error) : null;
 
 export const selectTabHasPermissions = ({ tabState }: TabStateRootState) =>
   tabState.frameState.hasPermissions;

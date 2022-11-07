@@ -32,6 +32,8 @@ import { EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { ExtensionsRootState } from "@/store/extensionsTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { canAccessTab } from "@/utils/permissions";
+import { serializeError } from "serialize-error";
+import { BusinessError } from "@/errors/businessErrors";
 
 const defaultFrameState: FrameConnectionState = {
   navSequence: undefined,
@@ -122,13 +124,17 @@ export const tabStateSlice = createSlice({
       .addCase(connectToContentScript.rejected, (state, { error }) => {
         state.isConnecting = false;
         state.frameState = defaultFrameState;
-        state.error = error.message;
+        state.error = serializeError(error);
+        reportError(error);
       })
       .addCase(awaitContextInvalidated.fulfilled, (state) => {
         state.isConnecting = false;
         state.frameState = defaultFrameState;
-        state.error =
-          "PixieBrix was updated or restarted. Reload the Page Editor to continue.";
+        const error = new BusinessError(
+          "PixieBrix was updated or restarted. Reload the Page Editor to continue."
+        );
+        state.error = serializeError(error);
+        reportError(error);
       });
   },
 });

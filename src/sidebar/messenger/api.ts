@@ -25,6 +25,8 @@ const sidebarInThisTab = {
   showForm: getMethod("SIDEBAR_SHOW_FORM", target),
   hideForm: getMethod("SIDEBAR_HIDE_FORM", target),
   pingSidebar: getMethod("SIDEBAR_PING", target),
+  showTemporaryPanel: getMethod("SIDEBAR_SHOW_TEMPORARY_PANEL", target),
+  hideTemporaryPanel: getMethod("SIDEBAR_HIDE_TEMPORARY_PANEL", target),
 };
 
 export default sidebarInThisTab;
