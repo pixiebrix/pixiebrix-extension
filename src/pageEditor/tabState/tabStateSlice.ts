@@ -125,6 +125,7 @@ export const tabStateSlice = createSlice({
         state.isConnecting = false;
         state.frameState = defaultFrameState;
         state.error = serializeError(error);
+        reportError(error);
       })
       .addCase(awaitContextInvalidated.fulfilled, (state) => {
         state.isConnecting = false;
@@ -133,6 +134,7 @@ export const tabStateSlice = createSlice({
           "PixieBrix was updated or restarted. Reload the Page Editor to continue."
         );
         state.error = serializeError(error);
+        reportError(error);
       });
   },
 });
