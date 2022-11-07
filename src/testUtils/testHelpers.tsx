@@ -33,9 +33,10 @@ import {
   PreloadedState,
   Reducer,
   ReducersMapObject,
+  ThunkDispatch,
 } from "@reduxjs/toolkit";
 import { Form, Formik, FormikValues } from "formik";
-import { Dispatch, Middleware } from "redux";
+import { Middleware } from "redux";
 import userEvent from "@testing-library/user-event";
 import { Expression, ExpressionType } from "@/core";
 import { noop } from "lodash";
@@ -128,7 +129,9 @@ export function createRenderFunctionWithRedux<
   };
 }
 
-type SetupRedux = (dispatch: Dispatch) => void;
+type SetupRedux = (
+  dispatch: ThunkDispatch<unknown, unknown, AnyAction>
+) => void;
 
 type WrapperOptions = Omit<RenderOptions, "wrapper"> & {
   initialValues?: FormikValues;
