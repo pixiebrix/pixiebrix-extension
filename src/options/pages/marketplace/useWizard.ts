@@ -20,6 +20,9 @@ import ServicesBody from "@/options/pages/marketplace/ServicesBody";
 import PermissionsBody from "@/options/pages/marketplace/PermissionsBody";
 import { inputProperties } from "@/helpers";
 import * as Yup from "yup";
+import { buildYup } from "schema-to-yup";
+import { dereference } from "@/validators/generic";
+import { useAsyncState } from "@/hooks/common";
 
 const STEPS: WizardStep[] = [
   // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for TypeScript
@@ -36,47 +39,13 @@ const STEPS: WizardStep[] = [
   { key: "activate", label: "Permissions & URLs", Component: PermissionsBody },
 ];
 
-const getValidationSchemaFromOptionSchema = (
-  optionSchema: Schema
-): Yup.AnySchema => {
-  const { type, format, $ref } = optionSchema;
-
-  if (type === "boolean") {
-    return Yup.boolean();
-  }
-
-  if (type === "number") {
-    return Yup.number();
-  }
-
-  if (type === "string" && ["date", "date-time"].includes(format)) {
-    return Yup.date();
-  }
-
-  if (type === "string" && format === "uri") {
-    return Yup.string().url();
-  }
-
-  if (type === "string") {
-    return Yup.string();
-  }
-
-  if ($ref === "https://app.pixiebrix.com/schemas/database#") {
-    return Yup.string().uuid();
-  }
-
-  reportError(
-    `Unknown Blueprint option schema in ActivateWizard: ${JSON.stringify(
-      optionSchema
-    )}`
-  );
-  return Yup.mixed();
-};
-
 function useWizard(
   blueprint: RecipeDefinition
 ): [WizardStep[], WizardValues, Yup.ObjectSchema<any>] {
   const installedExtensions = useSelector(selectExtensions);
+  const [optionsValidationSchema] = useAsyncState(async () =>
+    buildYup(await dereference(blueprint.options?.schema), {})
+  );
 
   return useMemo(() => {
     const extensionPoints = blueprint.extensionPoints ?? [];
@@ -148,28 +117,18 @@ function useWizard(
           config: Yup.string(),
         })
       ),
-      optionsArgs: Yup.object().shape(
-        mapValues(
-          blueprint.options?.schema?.properties ?? {},
-          (optionSchema: Schema, name: string) => {
-            const required = blueprint.options.schema.required?.includes(name);
-            const baseSchema =
-              getValidationSchemaFromOptionSchema(optionSchema);
-            return required
-              ? baseSchema
-                  // This transform prevents nullish type errors being displayed in the form,
-                  // instead of "required" errors
-                  .transform((value) => (value === null ? undefined : value))
-                  .required(`${name} is required`)
-              : baseSchema;
-          }
-        )
-      ),
+      optionsArgs: optionsValidationSchema,
       grantPermissions: Yup.boolean(),
     });
 
     return [steps, initialValues, validationSchema];
-  }, [blueprint, installedExtensions]);
+  }, [
+    blueprint.extensionPoints,
+    blueprint?.metadata.id,
+    blueprint.options?.schema,
+    installedExtensions,
+    optionsValidationSchema,
+  ]);
 }
 
 export default useWizard;
