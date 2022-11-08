@@ -32,7 +32,7 @@ const loadRecipesFromCache = createAsyncThunk(
   }
 );
 
-const refreshRecipes = createAsyncThunk<
+export const refreshRecipes = createAsyncThunk<
   void,
   { backgroundRefresh?: boolean },
   { state: RecipesRootState }
