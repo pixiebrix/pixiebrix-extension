@@ -18,7 +18,6 @@ import { useAsyncEffect } from "use-async-effect";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import blockRegistry from "@/blocks/registry";
 import serviceRegistry from "@/services/registry";
-import blueprintsRegistry from "@/recipes/registry";
 import { stubTrue, throttle } from "lodash";
 import { useCallback, useState } from "react";
 import notify from "@/utils/notify";
@@ -35,7 +34,6 @@ export async function refreshRegistries(): Promise<void> {
     extensionPointRegistry.fetch(),
     blockRegistry.fetch(),
     serviceRegistry.fetch(),
-    blueprintsRegistry.fetch(),
     services.refresh(),
   ]);
 

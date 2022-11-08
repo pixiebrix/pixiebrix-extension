@@ -15,31 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LogEntry } from "@/background/logging";
-import { MessageContext } from "@/core";
+import { RecipeDefinition } from "@/types/definitions";
+import { RecipesRootState } from "./recipesTypes";
 
-export type LogState = {
-  /**
-   * The selected context for Logs
-   */
-  activeContext: MessageContext | null;
-
-  /**
-   * All available log entries
-   */
-  availableEntries: LogEntry[];
-
-  /**
-   * Log entries that have been selected for viewing (without pagination and filtering)
-   */
-  entries: LogEntry[];
-
-  /**
-   * Indicates the progress of the first loading from storage for the active context
-   */
+export function selectAllRecipes({ recipes }: RecipesRootState): {
+  data: RecipeDefinition[];
   isLoading: boolean;
-};
-
-export type LogRootState = {
-  logs: LogState;
-};
+} {
+  return {
+    data: recipes.recipes,
+    isLoading: recipes.isLoading,
+  };
+}

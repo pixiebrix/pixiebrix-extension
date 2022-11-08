@@ -24,7 +24,6 @@ import registerEditors from "@/contrib/editors";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import useRefresh from "@/hooks/useRefresh";
 import PanelContent from "@/pageEditor/PanelContent";
-import { logActions } from "@/components/logViewer/logSlice";
 
 // Register the built-in bricks
 registerEditors();
@@ -33,8 +32,6 @@ registerBuiltinBlocks();
 
 // Register Widgets
 registerDefaultWidgets();
-
-void store.dispatch(logActions.pollLogs());
 
 const Panel: React.VoidFunctionComponent = () => {
   // Refresh the brick registry on mount

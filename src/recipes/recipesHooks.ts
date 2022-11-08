@@ -15,31 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LogEntry } from "@/background/logging";
-import { MessageContext } from "@/core";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { recipesActions } from "./recipesSlice";
 
-export type LogState = {
-  /**
-   * The selected context for Logs
-   */
-  activeContext: MessageContext | null;
+export function useLoadRecipes(): void {
+  const dispatch = useDispatch();
 
-  /**
-   * All available log entries
-   */
-  availableEntries: LogEntry[];
-
-  /**
-   * Log entries that have been selected for viewing (without pagination and filtering)
-   */
-  entries: LogEntry[];
-
-  /**
-   * Indicates the progress of the first loading from storage for the active context
-   */
-  isLoading: boolean;
-};
-
-export type LogRootState = {
-  logs: LogState;
-};
+  useEffect(() => {
+    dispatch(recipesActions.loadRecipesFromCache());
+    dispatch(recipesActions.refreshRecipes({ backgroundRefresh: true }));
+  }, []);
+}

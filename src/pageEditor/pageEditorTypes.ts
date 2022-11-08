@@ -32,6 +32,7 @@ import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { AnalysisRootState } from "@/analysis/analysisTypes";
 import { FormState } from "./extensionPoints/formStateTypes";
 import { TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
+import { RecipesRootState } from "@/recipes/recipesTypes";
 
 export enum PipelineFlavor {
   AllBlocks = "allBlocks",
@@ -213,8 +214,10 @@ export type RootState = AuthRootState &
   LogRootState &
   ExtensionsRootState &
   AnalysisRootState &
-  EditorRootState & {
+  EditorRootState &
+  RecipesRootState &
+  TabStateRootState & {
     savingExtension: SavingExtensionState;
     settings: SettingsState;
     runtime: RuntimeState;
-  } & TabStateRootState;
+  };
