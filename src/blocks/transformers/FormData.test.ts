@@ -53,6 +53,7 @@ describe("FormData block", () => {
       logger: null,
       root: null,
       runPipeline: neverPromise,
+      runRendererPipeline: neverPromise,
     });
 
     expect(result).toEqual({

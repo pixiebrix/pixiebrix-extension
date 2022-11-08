@@ -17,7 +17,7 @@
  */
 import Overlay from "@/vendors/Overlay";
 import {
-  commonCssSelector,
+  expandedCssSelector,
   findContainer,
   inferSelectorsIncludingStableAncestors,
   safeCssSelector,
@@ -161,7 +161,7 @@ export async function userSelectElement({
     function handleSimilarSelectionChange(value: boolean) {
       shouldSelectSimilar = value;
       if (shouldSelectSimilar) {
-        const commonSelector = commonCssSelector([...targets]);
+        const commonSelector = expandedCssSelector([...targets]);
         const expandTargets = difference($(commonSelector), [...targets]);
         selectionHandler(expandTargets.length);
         expandOverlay.inspect([...expandTargets]);
@@ -212,7 +212,7 @@ export async function userSelectElement({
         overlay.inspect([...targets]);
 
         if (targets.size > 1 && shouldSelectSimilar) {
-          const commonSelector = commonCssSelector([...targets]);
+          const commonSelector = expandedCssSelector([...targets]);
           const expandTargets = difference($(commonSelector), [...targets]);
           selectionHandler(expandTargets.length);
           expandOverlay.inspect([...expandTargets]);
@@ -429,7 +429,7 @@ export async function selectElement({
 
     case "element": {
       const selector = shouldSelectSimilar
-        ? commonCssSelector(elements, {
+        ? expandedCssSelector(elements, {
             root: rootElement,
             excludeRandomClasses,
           })

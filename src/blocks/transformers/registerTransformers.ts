@@ -46,6 +46,7 @@ import TryExcept from "./controlFlow/TryExcept";
 import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 import { RandomNumber } from "@/blocks/transformers/randomNumber";
 import Retry from "@/blocks/transformers/controlFlow/Retry";
+import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 
 function registerTransformers() {
   registerBlock(new JQTransformer());
@@ -81,6 +82,9 @@ function registerTransformers() {
   registerBlock(new TryExcept());
   registerBlock(new ForEachElement());
   registerBlock(new Retry());
+
+  // Render Pipelines
+  registerBlock(new DisplayTemporaryInfo());
 }
 
 export default registerTransformers;

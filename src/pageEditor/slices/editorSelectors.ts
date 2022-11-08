@@ -29,6 +29,7 @@ import { ElementUIState, TabUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 import { ExtensionsRootState } from "@/store/extensionsTypes";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { deserializeError } from "serialize-error";
 
 export const selectActiveElementId = ({ editor }: EditorRootState) =>
   editor.activeElementId;
@@ -58,7 +59,7 @@ export const selectInserting = ({ editor }: EditorRootState) =>
 
 export const selectErrorState = ({ editor }: EditorRootState) => ({
   isBetaError: editor.error && editor.beta,
-  editorError: editor.error,
+  editorError: editor.error ? deserializeError(editor.error) : null,
 });
 
 export const selectDirty = ({ editor }: EditorRootState) => editor.dirty;

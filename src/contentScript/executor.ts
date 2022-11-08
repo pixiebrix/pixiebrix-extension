@@ -36,6 +36,11 @@ export async function runBrick(request: RunBlock): Promise<unknown> {
           "Support for running pipelines in other contexts not implemented"
         );
       },
+      async runRendererPipeline() {
+        throw new BusinessError(
+          "Support for running pipelines in other contexts not implemented"
+        );
+      },
     });
   } catch (error) {
     // Provide extra logging on the tab because `handlers` doesn't report errors. It's also nice to log here because

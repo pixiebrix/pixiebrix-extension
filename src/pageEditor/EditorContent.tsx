@@ -38,9 +38,12 @@ import {
   selectTabHasPermissions,
   selectTabIsConnectingToContentScript,
 } from "@/pageEditor/tabState/tabStateSelectors";
-import useCurrentUrl from "./hooks/useCurrentUrl";
-import CantModifyPane from "./panes/CantModifyPane";
+import useCurrentUrl from "@/pageEditor/hooks/useCurrentUrl";
+import CantModifyPane from "@/pageEditor/panes/CantModifyPane";
 import { isScriptableUrl } from "@/utils/permissions";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import Alert from "@/components/Alert";
+import styles from "./EditorContent.module.scss";
 
 const EditorContent: React.FC = () => {
   const tabHasPermissions = useSelector(selectTabHasPermissions);
@@ -95,6 +98,15 @@ const EditorContent: React.FC = () => {
     };
   }, [sessionId]);
 
+  // Always show the main error if present - keep this first
+  if (editorError) {
+    return (
+      <div className={styles.alertContainer}>
+        <Alert variant="danger">{getErrorMessage(editorError)}</Alert>
+      </div>
+    );
+  }
+
   if (!url) {
     // Don't show anything while it's loading the URL, nearly immediate
     return null;
@@ -112,14 +124,6 @@ const EditorContent: React.FC = () => {
   // Show generic error for beta features
   if (isBetaError) {
     return <BetaPane />;
-  }
-
-  if (editorError) {
-    return (
-      <div className="p-2">
-        <span className="text-danger">{editorError}</span>
-      </div>
-    );
   }
 
   if (activeElementId) {
