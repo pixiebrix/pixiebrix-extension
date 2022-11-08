@@ -279,9 +279,6 @@ function useInitialFormState({
     };
   }
 
-  // XXX: The Modal render loop contains useGetRecipesQuery. So, there's a state where activeRecipe won't be set yet
-  // even if there is a recipe selected. To simplify this in the future, we may want to wrap the core logic behind a
-  // loader to avoid handling intermediate loading states.
   return null;
 }
 

@@ -60,7 +60,7 @@ jest.mock("@/services/api", () => ({
   }),
 }));
 
-jest.mock("@/hooks/registry", () => ({
+jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest.fn().mockReturnValue({
     data: [],
     isLoading: false,

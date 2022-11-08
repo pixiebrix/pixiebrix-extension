@@ -32,7 +32,6 @@ const EMPTY_RESPONSE = Object.freeze({
 // Need to return the same object every time, because useInstallableViewItems doesn't destructure the object. Or maybe
 // we just need to make sure the data [] array is the same object?
 jest.mock("@/services/api", () => ({
-  useGetRecipesQuery: jest.fn(() => EMPTY_RESPONSE),
   useGetMeQuery: jest.fn(() => EMPTY_RESPONSE),
   useGetCloudExtensionsQuery: jest.fn(() => EMPTY_RESPONSE),
   useGetMarketplaceListingsQuery: jest.fn(() => EMPTY_RESPONSE),
