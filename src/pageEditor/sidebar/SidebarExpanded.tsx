@@ -47,7 +47,7 @@ import AddExtensionPointButton from "./AddExtensionPointButton";
 import ExtensionEntry from "./ExtensionEntry";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { measureDurationFromAppStart } from "@/utils/performance";
-import { useAllRecipes } from "@/hooks/registry";
+import { useAllRecipes } from "@/recipes/recipesHooks";
 
 const SidebarExpanded: React.FunctionComponent<{
   collapseSidebar: () => void;

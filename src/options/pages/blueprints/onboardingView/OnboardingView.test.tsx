@@ -21,7 +21,7 @@ import { Organization } from "@/types/contract";
 import useDeployments from "@/hooks/useDeployments";
 import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
 import { renderHook } from "@testing-library/react-hooks";
-import { useAllRecipes } from "@/hooks/registry";
+import { useAllRecipes } from "@/recipes/recipesHooks";
 
 jest.mock("react-redux", () => ({
   useSelector: jest.fn(),

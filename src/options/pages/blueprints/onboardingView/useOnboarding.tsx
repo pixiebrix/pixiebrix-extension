@@ -21,7 +21,7 @@ import { useMemo } from "react";
 import useDeployments from "@/hooks/useDeployments";
 import { useSelector } from "react-redux";
 import { selectActiveTab } from "@/options/pages/blueprints/blueprintsSelectors";
-import { useAllRecipes } from "@/hooks/registry";
+import { useAllRecipes } from "@/recipes/recipesHooks";
 
 export type OnboardingType =
   | "default"

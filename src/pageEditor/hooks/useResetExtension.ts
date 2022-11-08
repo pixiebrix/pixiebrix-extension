@@ -26,7 +26,7 @@ import { initRecipeOptionsIfNeeded } from "@/pageEditor/extensionPoints/base";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
 import { UUID } from "@/core";
-import { useAllRecipes } from "@/hooks/registry";
+import { useAllRecipes } from "@/recipes/recipesHooks";
 
 type Config = {
   extensionId: UUID;

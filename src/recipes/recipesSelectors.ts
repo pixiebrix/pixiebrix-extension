@@ -21,9 +21,11 @@ import { RecipesRootState } from "./recipesTypes";
 export function selectAllRecipes({ recipes }: RecipesRootState): {
   data: RecipeDefinition[];
   isLoading: boolean;
+  error: unknown;
 } {
   return {
     data: recipes.recipes,
     isLoading: recipes.isLoading,
+    error: recipes.error,
   };
 }

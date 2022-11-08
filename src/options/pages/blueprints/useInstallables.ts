@@ -24,7 +24,7 @@ import { resolveDefinitions } from "@/registry/internal";
 import { Installable } from "./blueprintsTypes";
 import { useGetCloudExtensionsQuery } from "@/services/api";
 import { selectScope } from "@/auth/authSelectors";
-import { useAllRecipes } from "@/hooks/registry";
+import { useAllRecipes } from "@/recipes/recipesHooks";
 
 type InstallablesState = {
   installables: Installable[];

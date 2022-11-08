@@ -24,7 +24,7 @@ import {
   selectEditorModalVisibilities,
 } from "@/pageEditor/slices/editorSelectors";
 import LoadingDataModal from "@/pageEditor/panes/save/LoadingDataModal";
-import { useRecipe } from "@/hooks/registry";
+import { useRecipe } from "@/recipes/recipesHooks";
 
 const SaveAsNewRecipeModal: React.FC = () => {
   const { isSaveAsNewRecipeModalVisible: show } = useSelector(

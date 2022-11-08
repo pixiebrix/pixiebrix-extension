@@ -15,15 +15,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { recipesActions } from "./recipesSlice";
+import { RegistryId } from "@/core";
+import { RecipeDefinition } from "@/types/definitions";
+import { useSelector } from "react-redux";
+import { selectAllRecipes } from "@/recipes/recipesSelectors";
+import { useMemo } from "react";
 
-export function useLoadRecipes(): void {
-  const dispatch = useDispatch();
+export type StateSelector<T> = {
+  /**
+   * The value, or `undefined` if the state is loading or there was an error computing the state
+   */
+  data: T | undefined;
 
-  useEffect(() => {
-    dispatch(recipesActions.loadRecipesFromCache());
-    dispatch(recipesActions.refreshRecipes({ backgroundRefresh: true }));
-  }, []);
+  /**
+   * True if the async state is loading
+   */
+  isLoading: boolean;
+
+  /**
+   * The error, if any
+   */
+  error: unknown;
+};
+
+/**
+ * Lookup a recipe from the registry by ID
+ */
+export function useRecipe(id: RegistryId): StateSelector<RecipeDefinition> {
+  const { data: allRecipes, isLoading, error } = useAllRecipes();
+  const recipe = useMemo(
+    () =>
+      allRecipes?.length
+        ? allRecipes.find((x) => x.metadata.id === id)
+        : undefined,
+    [id, allRecipes]
+  );
+
+  return { data: recipe, isLoading, error };
+}
+
+/**
+ * Pulls all recipes from the registry
+ */
+export function useAllRecipes(): StateSelector<RecipeDefinition[]> {
+  return useSelector(selectAllRecipes);
 }

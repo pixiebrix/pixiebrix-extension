@@ -16,12 +16,14 @@
  */
 
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { serializeError } from "serialize-error";
 import { RecipesRootState, RecipesState } from "./recipesTypes";
 import registry from "./registry";
 
 const initialState: RecipesState = {
   recipes: [],
   isLoading: false,
+  error: undefined,
 };
 
 const loadRecipesFromCache = createAsyncThunk(
@@ -34,23 +36,29 @@ const loadRecipesFromCache = createAsyncThunk(
 
 export const refreshRecipes = createAsyncThunk<
   void,
-  { backgroundRefresh?: boolean },
+  void | { backgroundRefresh?: boolean },
   { state: RecipesRootState }
 >("recipes/refresh", async (arg, { dispatch, getState }) => {
   if (getState().recipes.isLoading) {
     return;
   }
 
-  if (!arg?.backgroundRefresh) {
+  if (!(arg as any)?.backgroundRefresh) {
     dispatch(recipesSlice.actions.setLoading(true));
   }
 
-  await registry.fetch();
+  try {
+    await registry.fetch();
+  } catch (error) {
+    const serializedError = serializeError(error, { useToJSON: false });
+    dispatch(recipesSlice.actions.setError(serializedError));
+    return;
+  }
 
   const recipes = await registry.all();
   dispatch(recipesSlice.actions.setRecipes(recipes));
 
-  if (!arg?.backgroundRefresh) {
+  if (!(arg as any)?.backgroundRefresh) {
     dispatch(recipesSlice.actions.setLoading(false));
   }
 });
@@ -64,6 +72,11 @@ export const recipesSlice = createSlice({
     },
     setRecipes(state, action) {
       state.recipes = action.payload;
+      state.error = undefined;
+    },
+    setError(state, action) {
+      state.error = action.payload;
+      state.isLoading = false;
     },
   },
 });

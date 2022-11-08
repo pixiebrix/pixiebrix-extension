@@ -46,7 +46,7 @@ import { OptionsDefinition } from "@/types/definitions";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/pageEditor/components/Effect";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { useRecipe } from "@/hooks/registry";
+import { useRecipe } from "@/recipes/recipesHooks";
 
 const fieldTypes = [
   ...FORM_FIELD_TYPE_OPTIONS.filter(

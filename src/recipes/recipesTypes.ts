@@ -20,6 +20,7 @@ import { RecipeDefinition } from "@/types/definitions";
 export type RecipesState = {
   recipes: RecipeDefinition[];
   isLoading: boolean;
+  error: unknown;
 };
 
 export type RecipesRootState = {

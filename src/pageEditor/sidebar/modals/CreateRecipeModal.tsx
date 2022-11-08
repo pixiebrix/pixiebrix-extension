@@ -74,7 +74,7 @@ import { generateRecipeId } from "@/utils/recipeUtils";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
-import { useAllRecipes, useRecipe } from "@/hooks/registry";
+import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
 
 const { actions: optionsActions } = extensionsSlice;
 

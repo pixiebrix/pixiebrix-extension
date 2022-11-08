@@ -33,7 +33,7 @@ import {
 import { pick } from "lodash";
 import Form from "@/components/form/Form";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { appApi, useCreateRecipeMutation } from "@/services/api";
+import { useCreateRecipeMutation } from "@/services/api";
 import {
   RecipeDefinition,
   selectSourceRecipeMetadata,
@@ -48,6 +48,7 @@ import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { StylesConfig } from "react-select";
 import { RequireScope } from "@/auth/RequireScope";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
+import { recipesActions } from "@/recipes/recipesSlice";
 
 type ConvertInstallableFormState = {
   blueprintId: RegistryId;
@@ -162,7 +163,7 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
         })
       );
 
-      dispatch(appApi.util.invalidateTags(["Recipes"]));
+      dispatch(recipesActions.refreshRecipes());
 
       dispatch(
         blueprintModalsSlice.actions.setShareContext({

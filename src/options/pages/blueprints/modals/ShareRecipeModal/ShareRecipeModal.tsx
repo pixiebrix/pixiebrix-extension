@@ -26,7 +26,6 @@ import { sortBy } from "lodash";
 import Form from "@/components/form/Form";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import {
-  appApi,
   useGetEditablePackagesQuery,
   useUpdateRecipeMutation,
 } from "@/services/api";
@@ -51,7 +50,8 @@ import { selectAuth } from "@/auth/authSelectors";
 import { Organization, UserRole } from "@/types/contract";
 import Loading from "./Loading";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { useRecipe } from "@/hooks/registry";
+import { useRecipe } from "@/recipes/recipesHooks";
+import { recipesActions } from "@/recipes/recipesSlice";
 
 type ShareInstallableFormState = {
   public: boolean;
@@ -113,7 +113,7 @@ const ShareRecipeModal: React.FunctionComponent = () => {
 
       notify.success("Shared brick");
       closeModal();
-      dispatch(appApi.util.invalidateTags(["Recipes"]));
+      dispatch(recipesActions.refreshRecipes());
     } catch (error) {
       if (isSingleObjectBadRequestError(error) && error.response.data.config) {
         helpers.setStatus(error.response.data.config);
