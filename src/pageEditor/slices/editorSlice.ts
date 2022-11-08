@@ -262,7 +262,7 @@ const checkActiveElementAvailability = createAsyncThunk<
   // Calculate the new dynamic element availability, depending on the
   // new availability of the active element -- should be a unique list of ids,
   // and we add/remove the active element's id based on isAvailable
-  const { availableDynamicIds } = state.editor;
+  const availableDynamicIds = [...state.editor.availableDynamicIds];
   if (isAvailable) {
     if (!availableDynamicIds.includes(activeElement.uuid)) {
       availableDynamicIds.push(activeElement.uuid);
