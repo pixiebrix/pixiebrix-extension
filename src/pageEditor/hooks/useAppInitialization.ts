@@ -33,6 +33,6 @@ export function useDispatchInitActions(): void {
     dispatch(recipesActions.refreshRecipes({ backgroundRefresh: true }));
 
     // Start polling logs
-    // dispatch(logActions.pollLogs());
+    dispatch(logActions.pollLogs());
   }, [dispatch]);
 }
