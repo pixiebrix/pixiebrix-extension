@@ -55,7 +55,7 @@ function useWizard(
           blueprint.options?.schema?.required?.includes(name)
             ? {
                 ...optionSchema,
-                // Yup will throw an ugly "null is not type of x" error instead of a
+                // Yup will produce an ugly "null is not type of x" validation error instead of a
                 // "this field is required" error unless we allow null values for required fields
                 nullable: true,
               }
