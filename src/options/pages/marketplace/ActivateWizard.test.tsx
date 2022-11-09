@@ -24,10 +24,11 @@ import {
   recipeMetadataFactory,
 } from "@/testUtils/factories";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { fireEvent, getByText, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { RegistryId } from "@/core";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router";
 
 registerDefaultWidgets();
 
@@ -64,7 +65,9 @@ global.chrome.commands.getAll = jest.fn();
 describe("ActivateWizard", () => {
   test("renders", async () => {
     const rendered = render(
-      <ActivateWizard blueprint={recipeDefinitionFactory()} />
+      <MemoryRouter>
+        <ActivateWizard blueprint={recipeDefinitionFactory()} />
+      </MemoryRouter>
     );
     await waitForEffect();
     expect(rendered.asFragment()).toMatchSnapshot();
@@ -72,33 +75,35 @@ describe("ActivateWizard", () => {
 
   test("activate blueprint with missing required blueprint options", async () => {
     const rendered = render(
-      <ActivateWizard
-        blueprint={recipeDefinitionFactory({
-          metadata: recipeMetadataFactory({
-            id: "test/blueprint-with-required-options" as RegistryId,
-            name: "Blueprint with Required Options",
-          }),
-          options: {
-            schema: {
-              $schema: "https://json-schema.org/draft/2019-09/schema#",
-              properties: {
-                database: {
-                  $ref: "https://app.pixiebrix.com/schemas/database#",
-                  title: "Database",
-                },
-              },
-              required: ["database"],
-              type: "object",
-            },
-            uiSchema: {},
-          },
-          extensionPoints: [
-            extensionPointConfigFactory({
-              label: "Extension Point for Blueprint with Required Options",
+      <MemoryRouter>
+        <ActivateWizard
+          blueprint={recipeDefinitionFactory({
+            metadata: recipeMetadataFactory({
+              id: "test/blueprint-with-required-options" as RegistryId,
+              name: "Blueprint with Required Options",
             }),
-          ],
-        })}
-      />
+            options: {
+              schema: {
+                $schema: "https://json-schema.org/draft/2019-09/schema#",
+                properties: {
+                  database: {
+                    $ref: "https://app.pixiebrix.com/schemas/database#",
+                    title: "Database",
+                  },
+                },
+                required: ["database"],
+                type: "object",
+              },
+              uiSchema: {},
+            },
+            extensionPoints: [
+              extensionPointConfigFactory({
+                label: "Extension Point for Blueprint with Required Options",
+              }),
+            ],
+          })}
+        />
+      </MemoryRouter>
     );
     await waitForEffect();
     expect(rendered.asFragment()).toMatchSnapshot();
