@@ -109,10 +109,6 @@ describe("ActivateWizard", () => {
       })
     );
     await waitForEffect();
-    expect(
-      screen.getByText(
-        'Database must be a `string` type, but the final value was: `null`. If "null" is intended as an empty value be sure to mark the schema as `.nullable()`'
-      )
-    ).not.toBeNull();
+    expect(screen.getByText("Database is a required field")).not.toBeNull();
   });
 });

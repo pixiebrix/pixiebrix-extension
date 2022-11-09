@@ -43,9 +43,27 @@ function useWizard(
   blueprint: RecipeDefinition
 ): [WizardStep[], WizardValues, Yup.ObjectSchema<any>] {
   const installedExtensions = useSelector(selectExtensions);
-  const [optionsValidationSchema] = useAsyncState(async () =>
-    buildYup(await dereference(blueprint.options?.schema), {})
-  );
+  const [optionsValidationSchema] = useAsyncState(async () => {
+    const dereferencedOptionsSchema = await dereference(
+      blueprint.options?.schema
+    );
+    const optionSchemaWithNullableRequiredFields = {
+      ...dereferencedOptionsSchema,
+      properties: mapValues(
+        dereferencedOptionsSchema.properties,
+        (optionSchema: Schema, name: string) =>
+          blueprint.options?.schema?.required?.includes(name)
+            ? {
+                ...optionSchema,
+                // Yup will throw an ugly "null is not type of x" error instead of a
+                // "this field is required" error unless we allow null values for required fields
+                nullable: true,
+              }
+            : optionSchema
+      ),
+    };
+    return buildYup(optionSchemaWithNullableRequiredFields, {});
+  });
 
   return useMemo(() => {
     const extensionPoints = blueprint.extensionPoints ?? [];
