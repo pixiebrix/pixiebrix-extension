@@ -33,6 +33,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { serviceOriginPermissions } from "@/permissions";
 import { requestPermissions } from "@/utils/permissions";
 import { isEmpty } from "lodash";
+import { util as apiUtil } from "@/services/api";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -104,6 +105,11 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
         await requestPermissions(requiredPermissions);
 
         await launchAuthIntegration({ serviceId: authServiceId });
+
+        // Refresh auth state so that 1) the user appears as logged in the UI in the navbar, and 2) the Admin Console
+        // link in the navbar links to the URL required for JWT hand-off.
+        // See useRequiredAuth hook for more details
+        dispatch(apiUtil.resetApiState());
       } catch (error) {
         helpers.setStatus(getErrorMessage(error));
       }

@@ -19,13 +19,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "@/components/Loader";
 import { useGetMeQuery } from "@/services/api";
-import {
-  addListener as addAuthListener,
-  removeListener as removeAuthListener,
-  isLinked,
-  updateUserData,
-  clearExtensionAuth,
-} from "@/auth/token";
+import { clearExtensionAuth, updateUserData } from "@/auth/token";
 import {
   selectExtensionAuthState,
   selectUserDataUpdate,
@@ -34,9 +28,9 @@ import { authActions } from "@/auth/authSlice";
 import { anonAuth } from "@/auth/authConstants";
 import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Me } from "@/types/contract";
-import { useAsyncState } from "@/hooks/common";
 import { AxiosError } from "axios";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
+import useLinkState from "@/auth/useLinkState";
 
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
@@ -56,25 +50,7 @@ export const useRequiredAuth = () => {
 
   const hasCachedLoggedIn = useSelector(selectIsLoggedIn);
 
-  // See component documentation for why both isLinked and useGetMeQuery are required
-  const [hasToken, tokenLoading, tokenError, refreshTokenState] = useAsyncState(
-    async () => isLinked(),
-    []
-  );
-
-  useEffect(() => {
-    // Listen for token invalidation
-    const handler = async () => {
-      console.debug("Auth state changed, checking for token");
-      void refreshTokenState();
-    };
-
-    addAuthListener(handler);
-
-    return () => {
-      removeAuthListener(handler);
-    };
-  }, [refreshTokenState]);
+  const { hasToken, tokenLoading, tokenError } = useLinkState();
 
   const {
     isLoading: meLoading,
@@ -119,11 +95,12 @@ export const useRequiredAuth = () => {
 
   const isUnauthenticated = (meError as AxiosError)?.response?.status === 401;
 
-  // FIXME: this should be in a useEffect
-  if (isUnauthenticated) {
-    console.warn("Clearing extension auth state because token was rejected");
+  useEffect(() => {
+    console.warn(
+      "Clearing extension auth state because session or partner JWT was rejected"
+    );
     void clearExtensionAuth();
-  }
+  }, [isUnauthenticated]);
 
   const isAccountUnlinked =
     isUnauthenticated ||

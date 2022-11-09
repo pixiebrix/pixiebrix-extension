@@ -29,6 +29,7 @@ import { expectContext } from "@/utils/expectContext";
 import { isEmpty, omit, remove } from "lodash";
 import { UnknownObject } from "@/types";
 
+// `chrome.storage.local` keys
 const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
 const STORAGE_PARTNER_TOKEN = "partnerToken" as ManualStorageKey;
 

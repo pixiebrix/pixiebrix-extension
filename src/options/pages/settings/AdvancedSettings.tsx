@@ -63,15 +63,16 @@ const AdvancedSettings: React.FunctionComponent = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see documentation link
       await (chromeP.identity as any).clearAllCachedAuthTokens();
 
-      // Force /me query refresh, as user will now not be logged in
+      // Force reset of all queries, and partner bearer JWT will no longer be present.
+      // NOTE: currently the Navbar will show the user information, as it falls back to cached auth
       await clearPartnerAuth();
-      apiUtil.invalidateTags(["Me"]);
+      dispatch(apiUtil.resetApiState());
     },
     {
       successMessage: "Cleared all cached OAuth2 tokens",
       errorMessage: "Error clearing cached OAuth2 tokens",
     },
-    []
+    [dispatch]
   );
 
   const reload = useCallback(() => {
