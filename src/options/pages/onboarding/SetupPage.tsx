@@ -26,6 +26,7 @@ import { selectSettings } from "@/store/settingsSelectors";
 import Loader from "@/components/Loader";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import PartnerSetupCard from "@/options/pages/onboarding/partner/PartnerSetupCard";
+import { useLocation } from "react-router";
 
 const Layout: React.FunctionComponent = ({ children }) => (
   <Row className="w-100 mx-0">
@@ -42,6 +43,7 @@ const Layout: React.FunctionComponent = ({ children }) => (
  */
 const SetupPage: React.FunctionComponent = () => {
   useTitle("Setup");
+  const location = useLocation();
 
   // Local override for authentication method
   const { authMethod } = useSelector(selectSettings);
@@ -52,7 +54,7 @@ const SetupPage: React.FunctionComponent = () => {
     hasConfiguredIntegration,
   } = useRequiredPartnerAuth();
 
-  const isStartUrl = location.hash.startsWith("#/start");
+  const isStartUrl = location.pathname.startsWith("/start");
 
   const [baseURL, baseURLPending] = useAsyncState(getBaseURL, []);
 

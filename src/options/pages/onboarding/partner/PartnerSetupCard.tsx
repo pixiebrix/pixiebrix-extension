@@ -32,6 +32,7 @@ import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";
 import settingsSlice from "@/store/settingsSlice";
 import { ManualStorageKey, readStorage } from "@/chrome";
+import { useLocation } from "react-router";
 
 function useInstallUrl() {
   const { data: me } = useGetMeQuery();
@@ -96,6 +97,8 @@ const CONTROL_ROOM_URL_MANAGED_KEY = "controlRoomUrl" as ManualStorageKey;
  */
 const PartnerSetupCard: React.FunctionComponent = () => {
   const dispatch = useDispatch();
+  // Make sure to use useLocation because the location.search are on the hash route
+  const location = useLocation();
   const mode = usePartnerLoginMode();
   const { data: me } = useGetMeQuery();
   const { installURL } = useInstallUrl();

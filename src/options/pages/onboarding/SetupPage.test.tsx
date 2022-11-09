@@ -29,6 +29,8 @@ import settingsSlice from "@/store/settingsSlice";
 import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
 import { uuidv4 } from "@/types/helpers";
 import { readStorage } from "@/chrome";
+import { HashRouter } from "react-router-dom";
+import { createHashHistory } from "history";
 
 function optionsStore(initialState?: any) {
   return configureStore({
@@ -119,25 +121,16 @@ describe("SetupPage", () => {
       data: {},
     }));
 
-    (global as any).window = Object.create(window);
+    const history = createHashHistory();
+    history.push("/start?hostname=https://mycontrolroom.com");
 
-    const url = new URL(
-      "chrome-extension://abc/options.html?hostname=https://mycontrolroom.com#/start"
-    );
-
-    Object.defineProperty(window, "location", {
-      value: {
-        href: url.href,
-        hash: url.hash,
-        search: url.search,
-      },
-    });
-
+    // Needs to use HashRouter instead of MemoryRouter for the useLocation calls in the components to work correctly
+    // given the URL structure above
     render(
       <Provider store={optionsStore({})}>
-        <MemoryRouter>
+        <HashRouter>
           <SetupPage />
-        </MemoryRouter>
+        </HashRouter>
       </Provider>
     );
 
