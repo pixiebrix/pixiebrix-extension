@@ -22,10 +22,11 @@ import {
   SkunkworksSettings,
 } from "@/store/settingsTypes";
 import reportError from "@/telemetry/reportError";
-import { once } from "lodash";
+import { isEmpty, once } from "lodash";
 import { DEFAULT_THEME } from "@/options/types";
 import { isValidTheme } from "@/utils/themeUtils";
 import { RegistryId } from "@/core";
+import { isRegistryId } from "@/types/helpers";
 
 export const initialSettingsState: SettingsState = {
   mode: "remote",
@@ -75,7 +76,9 @@ const settingsSlice = createSlice({
       state,
       { payload: { serviceId } }: { payload: { serviceId: RegistryId } }
     ) {
-      state.authServiceId = serviceId;
+      // Ensure valid data for authServiceId
+      state.authServiceId =
+        !isEmpty(serviceId) && isRegistryId(serviceId) ? serviceId : null;
     },
     setAuthMethod(
       state,

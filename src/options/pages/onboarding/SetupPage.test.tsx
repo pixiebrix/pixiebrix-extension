@@ -28,6 +28,9 @@ import { useGetMeQuery } from "@/services/api";
 import settingsSlice from "@/store/settingsSlice";
 import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
 import { uuidv4 } from "@/types/helpers";
+import { readStorage } from "@/chrome";
+import { HashRouter } from "react-router-dom";
+import { createHashHistory } from "history";
 
 function optionsStore(initialState?: any) {
   return configureStore({
@@ -39,6 +42,10 @@ function optionsStore(initialState?: any) {
     preloadedState: initialState,
   });
 }
+
+jest.mock("@/chrome", () => ({
+  readStorage: jest.fn().mockResolvedValue(undefined),
+}));
 
 jest.mock("@/services/api", () => ({
   useGetMeQuery: jest.fn(),
@@ -105,5 +112,69 @@ describe("SetupPage", () => {
     });
 
     expect(screen.getByText("Connect your AARI account")).not.toBeNull();
+  });
+
+  test("Start URL", async () => {
+    // User will be unauthenticated
+    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+      isLoading: false,
+      data: {},
+    }));
+
+    const history = createHashHistory();
+    history.push("/start?hostname=https://mycontrolroom.com");
+
+    // Needs to use HashRouter instead of MemoryRouter for the useLocation calls in the components to work correctly
+    // given the URL structure above
+    render(
+      <Provider store={optionsStore({})}>
+        <HashRouter>
+          <SetupPage />
+        </HashRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("loader")).toBeNull();
+    });
+
+    expect(screen.getByText("Connect your AARI account")).not.toBeNull();
+    expect(
+      screen.getByLabelText("Control Room URL").getAttribute("value")
+    ).toStrictEqual("https://mycontrolroom.com");
+  });
+
+  test("Managed Storage OAuth2 partner user", async () => {
+    // User will be unauthenticated
+    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+      isLoading: false,
+      data: {},
+    }));
+
+    const managedConfiguration: Record<string, string> = {
+      partnerId: "automation-anywhere",
+      controlRoomUrl: "https://notarealcontrolroom.com",
+    };
+
+    (readStorage as jest.Mock).mockImplementation(
+      (key: string) => managedConfiguration[key]
+    );
+
+    render(
+      <Provider store={optionsStore({})}>
+        <MemoryRouter>
+          <SetupPage />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("loader")).toBeNull();
+    });
+
+    expect(screen.getByText("Connect your AARI account")).not.toBeNull();
+    expect(
+      screen.getByLabelText("Control Room URL").getAttribute("value")
+    ).toStrictEqual("https://notarealcontrolroom.com");
   });
 });

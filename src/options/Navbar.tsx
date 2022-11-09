@@ -17,41 +17,69 @@
 
 import styles from "./Navbar.module.scss";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Nav } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { DEFAULT_SERVICE_URL, getBaseURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
-import { isLinked, readPartnerAuthData } from "@/auth/token";
+import {
+  addListener as addAuthListener,
+  readPartnerAuthData,
+  removeListener as removeAuthListener,
+} from "@/auth/token";
 import { useSelector } from "react-redux";
 import { toggleSidebar } from "./toggleSidebar";
 import { SettingsState } from "@/store/settingsTypes";
 import cx from "classnames";
 import { selectAuth } from "@/auth/authSelectors";
 import { ThemeLogo } from "@/utils/themeUtils";
+import useLinkState from "@/auth/useLinkState";
+
+function useAdminConsoleUrl(): string {
+  // Need to update serviceURL on changes to partner auth data:
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/4594
+  const [serviceURL, _serviceUrlPending, _serviceUrlError, refreshServiceUrl] =
+    useAsyncState<string>(async () => {
+      const baseURL = (await getBaseURL()) ?? DEFAULT_SERVICE_URL;
+      const partnerAuth = await readPartnerAuthData();
+      const url = partnerAuth?.token
+        ? new URL("partner-auth", baseURL)
+        : new URL(baseURL);
+      return url.toString();
+    });
+
+  useEffect(() => {
+    // Listen for token invalidation
+    const handler = async () => {
+      void refreshServiceUrl();
+    };
+
+    addAuthListener(handler);
+
+    return () => {
+      removeAuthListener(handler);
+    };
+  }, [refreshServiceUrl]);
+
+  return serviceURL ?? DEFAULT_SERVICE_URL;
+}
 
 const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
   const { email } = useSelector(selectAuth);
-  const [connected, connectedPending] = useAsyncState(isLinked);
+
+  const { hasToken: connected, tokenLoading: connectedPending } =
+    useLinkState();
+
+  const serviceURL = useAdminConsoleUrl();
+
   const mode = useSelector<{ settings: SettingsState }, string>(
     ({ settings }) => settings.mode
   );
 
   // Use `connectedPending` to optimistically show the toggle
   const showNavbarToggle = mode === "local" || connected || connectedPending;
-
-  // Need to update serviceURL on changes to partner auth data:
-  // https://github.com/pixiebrix/pixiebrix-extension/issues/4594
-  const [serviceURL] = useAsyncState<string>(async () => {
-    const baseURL = (await getBaseURL()) ?? DEFAULT_SERVICE_URL;
-    const partnerAuth = await readPartnerAuthData();
-    const url = partnerAuth?.token
-      ? new URL("partner-auth", baseURL)
-      : new URL(baseURL);
-    return url.toString();
-  });
 
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
@@ -91,11 +119,7 @@ const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
 
         <ul className="navbar-nav navbar-nav-right flex-grow-1 justify-content-end">
           {serviceURL && (
-            <Nav.Link
-              className="px-3"
-              target="_blank"
-              href={serviceURL ?? DEFAULT_SERVICE_URL}
-            >
+            <Nav.Link className="px-3" target="_blank" href={serviceURL}>
               <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
               Open Admin Console
             </Nav.Link>

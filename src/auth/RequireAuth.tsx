@@ -19,13 +19,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "@/components/Loader";
 import { useGetMeQuery } from "@/services/api";
-import {
-  addListener as addAuthListener,
-  removeListener as removeAuthListener,
-  isLinked,
-  updateUserData,
-  clearExtensionAuth,
-} from "@/auth/token";
+import { clearCachedAuthSecrets, updateUserData } from "@/auth/token";
 import {
   selectExtensionAuthState,
   selectUserDataUpdate,
@@ -34,9 +28,9 @@ import { authActions } from "@/auth/authSlice";
 import { anonAuth } from "@/auth/authConstants";
 import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Me } from "@/types/contract";
-import { useAsyncState } from "@/hooks/common";
 import { AxiosError } from "axios";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
+import useLinkState from "@/auth/useLinkState";
 
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
@@ -53,28 +47,8 @@ type RequireAuthProps = {
  */
 export const useRequiredAuth = () => {
   const dispatch = useDispatch();
-
   const hasCachedLoggedIn = useSelector(selectIsLoggedIn);
-
-  // See component documentation for why both isLinked and useGetMeQuery are required
-  const [hasToken, tokenLoading, tokenError, refreshTokenState] = useAsyncState(
-    async () => isLinked(),
-    []
-  );
-
-  useEffect(() => {
-    // Listen for token invalidation
-    const handler = async () => {
-      console.debug("Auth state changed, checking for token");
-      void refreshTokenState();
-    };
-
-    addAuthListener(handler);
-
-    return () => {
-      removeAuthListener(handler);
-    };
-  }, [refreshTokenState]);
+  const { hasToken, tokenLoading, tokenError } = useLinkState();
 
   const {
     isLoading: meLoading,
@@ -86,8 +60,6 @@ export const useRequiredAuth = () => {
     // be passed in the header which leads to inconsistent results depending on whether the session is still valid
     skip: !hasToken,
   });
-
-  const isLoading = tokenLoading || meLoading;
 
   useEffect(() => {
     // Before we get the first response from API, use the AuthRootState persisted with redux-persist.
@@ -117,16 +89,19 @@ export const useRequiredAuth = () => {
     void setAuth(me);
   }, [isMeSuccess, me, dispatch]);
 
-  const isUnauthenticated = (meError as AxiosError)?.response?.status === 401;
-
-  // FIXME: this should be in a useEffect
-  if (isUnauthenticated) {
-    console.warn("Clearing extension auth state because token was rejected");
-    void clearExtensionAuth();
-  }
+  // Server returns 401 on /api/me/ only if the token (native token or partner JWT) is invalid
+  const isBadToken = (meError as AxiosError)?.response?.status === 401;
+  useEffect(() => {
+    if (isBadToken) {
+      console.warn(
+        "Resetting extension auth because session or partner JWT was rejected by PixieBrix API"
+      );
+      void clearCachedAuthSecrets();
+    }
+  }, [isBadToken]);
 
   const isAccountUnlinked =
-    isUnauthenticated ||
+    isBadToken ||
     (!hasCachedLoggedIn && !meLoading) ||
     (!hasToken && !tokenLoading);
 
@@ -135,7 +110,7 @@ export const useRequiredAuth = () => {
     hasToken,
     tokenError,
     hasCachedLoggedIn,
-    isLoading,
+    isLoading: tokenLoading || meLoading,
     meError,
   };
 };
