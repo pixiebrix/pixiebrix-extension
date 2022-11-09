@@ -78,7 +78,8 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const location = useLocation();
   const reinstall =
     new URLSearchParams(location.search).get("reinstall") === "1";
-  const [blueprintSteps, initialValues] = useWizard(blueprint);
+  const [blueprintSteps, initialValues, validationSchema] =
+    useWizard(blueprint);
   const install = useInstall(blueprint);
 
   const installedExtensions = useSelector(selectExtensions);
@@ -103,9 +104,13 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   useTitle(`${action} ${truncate(blueprint.metadata.name, { length: 15 })}`);
 
   return (
-    <Formik initialValues={initialValues} onSubmit={install}>
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={install}
+    >
       {({ handleSubmit }) => (
-        <Form id="activate-wizard" noValidate onSubmit={handleSubmit}>
+        <Form id="activate-wizard" onSubmit={handleSubmit}>
           <BlockFormSubmissionViaEnterIfFirstChild />
           <Card>
             <ActivateHeader blueprint={blueprint} />
