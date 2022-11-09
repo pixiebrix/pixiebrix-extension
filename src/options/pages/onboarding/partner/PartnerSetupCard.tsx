@@ -109,10 +109,12 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   const [controlRoomUrl] = useAsyncState(
     async () => {
       try {
-        return await readStorage(
-          CONTROL_ROOM_URL_MANAGED_KEY,
-          undefined,
-          "managed"
+        return (
+          (await readStorage(
+            CONTROL_ROOM_URL_MANAGED_KEY,
+            undefined,
+            "managed"
+          )) ?? fallbackControlRoomUrl
         );
       } catch {
         return fallbackControlRoomUrl;

@@ -87,11 +87,11 @@ export type RequiredPartnerState = {
 function decidePartnerServiceIds({
   authServiceIdOverride,
   authMethod,
-  partner,
+  partnerId,
 }: {
   authServiceIdOverride: RegistryId | null;
   authMethod: SettingsState["authMethod"];
-  partner: AuthState["partner"] | null;
+  partnerId: AuthState["partner"]["theme"] | null;
 }): Set<RegistryId> {
   if (authServiceIdOverride) {
     return new Set<RegistryId>([authServiceIdOverride]);
@@ -105,10 +105,11 @@ function decidePartnerServiceIds({
     return new Set<RegistryId>([CONTROL_ROOM_SERVICE_ID]);
   }
 
-  return PARTNER_MAP.get(partner?.theme) ?? new Set();
+  return PARTNER_MAP.get(partnerId) ?? new Set();
 }
 
 const CONTROL_ROOM_URL_MANAGED_KEY = "controlRoomUrl" as ManualStorageKey;
+const PARTNER_MANAGED_KEY = "partnerId" as ManualStorageKey;
 
 /**
  * Hook for determining if the extension has required integrations for the partner.
@@ -130,18 +131,23 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     []
   );
 
+  const [managedPartnerId] = useAsyncState(
+    async () => readStorage(PARTNER_MANAGED_KEY, undefined, "managed"),
+    []
+  );
+
   // Prefer the latest remote data, but use local data to avoid blocking page load
   const { partner, organization } = me ?? localAuth;
   // `organization?.control_room?.id` can only be set when authenticated or the auth is cached. For unauthorized users,
   // the organization will be null on result of useGetMeQuery
   const hasControlRoom =
     Boolean(organization?.control_room?.id) || Boolean(managedControlRoomUrl);
-  const hasPartner = Boolean(partner);
+  const hasPartner = Boolean(partner) || Boolean(managedPartnerId);
 
   const partnerServiceIds = decidePartnerServiceIds({
     authServiceIdOverride,
     authMethod,
-    partner,
+    partnerId: managedPartnerId ?? partner?.theme,
   });
 
   const partnerConfiguration = configuredServices.find((service) =>
