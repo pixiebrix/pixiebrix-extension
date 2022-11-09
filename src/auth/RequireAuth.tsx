@@ -19,7 +19,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "@/components/Loader";
 import { useGetMeQuery } from "@/services/api";
-import { clearExtensionAuth, updateUserData } from "@/auth/token";
+import { clearCachedAuthSecrets, updateUserData } from "@/auth/token";
 import {
   selectExtensionAuthState,
   selectUserDataUpdate,
@@ -47,9 +47,7 @@ type RequireAuthProps = {
  */
 export const useRequiredAuth = () => {
   const dispatch = useDispatch();
-
   const hasCachedLoggedIn = useSelector(selectIsLoggedIn);
-
   const { hasToken, tokenLoading, tokenError } = useLinkState();
 
   const {
@@ -62,8 +60,6 @@ export const useRequiredAuth = () => {
     // be passed in the header which leads to inconsistent results depending on whether the session is still valid
     skip: !hasToken,
   });
-
-  const isLoading = tokenLoading || meLoading;
 
   useEffect(() => {
     // Before we get the first response from API, use the AuthRootState persisted with redux-persist.
@@ -93,17 +89,19 @@ export const useRequiredAuth = () => {
     void setAuth(me);
   }, [isMeSuccess, me, dispatch]);
 
-  const isUnauthenticated = (meError as AxiosError)?.response?.status === 401;
-
+  // Server returns 401 on /api/me/ only if the token (native token or partner JWT) is invalid
+  const isBadToken = (meError as AxiosError)?.response?.status === 401;
   useEffect(() => {
-    console.warn(
-      "Clearing extension auth state because session or partner JWT was rejected"
-    );
-    void clearExtensionAuth();
-  }, [isUnauthenticated]);
+    if (isBadToken) {
+      console.warn(
+        "Resetting extension auth because session or partner JWT was rejected by PixieBrix API"
+      );
+      void clearCachedAuthSecrets();
+    }
+  }, [isBadToken]);
 
   const isAccountUnlinked =
-    isUnauthenticated ||
+    isBadToken ||
     (!hasCachedLoggedIn && !meLoading) ||
     (!hasToken && !tokenLoading);
 
@@ -112,7 +110,7 @@ export const useRequiredAuth = () => {
     hasToken,
     tokenError,
     hasCachedLoggedIn,
-    isLoading,
+    isLoading: tokenLoading || meLoading,
     meError,
   };
 };

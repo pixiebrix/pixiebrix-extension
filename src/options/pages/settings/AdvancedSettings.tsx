@@ -20,7 +20,7 @@ import styles from "./AdvancedSettings.module.scss";
 import { Button, Card, Form } from "react-bootstrap";
 import { DEFAULT_SERVICE_URL, useConfiguredHost } from "@/services/baseService";
 import React, { useCallback } from "react";
-import { clearExtensionAuth, clearPartnerAuth } from "@/auth/token";
+import { clearCachedAuthSecrets, clearPartnerAuth } from "@/auth/token";
 import notify from "@/utils/notify";
 import useFlags from "@/hooks/useFlags";
 import settingsSlice from "@/store/settingsSlice";
@@ -46,7 +46,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
   const [serviceURL, setServiceURL] = useConfiguredHost();
 
   const clear = useCallback(async () => {
-    await clearExtensionAuth();
+    await clearCachedAuthSecrets();
     // The success message will just flash up, because the page reloads on the next line
     notify.success(
       "Cleared the browser extension token. Visit the web app to set it again"

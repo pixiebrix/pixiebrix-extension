@@ -52,10 +52,6 @@ export async function readAuthData(): Promise<
   return readStorage(STORAGE_EXTENSION_KEY, {});
 }
 
-export async function readPartnerAuthData(): Promise<Partial<PartnerAuthData>> {
-  return readStorage(STORAGE_PARTNER_TOKEN, {});
-}
-
 export async function flagOn(flag: string): Promise<boolean> {
   const authData = await readAuthData();
   return authData.flags?.includes(flag);
@@ -69,13 +65,8 @@ export async function getExtensionToken(): Promise<string | undefined> {
   return token;
 }
 
-/**
- * Clear authentication data when using the partner JWT to authenticate.
- *
- * @see setPartnerAuth
- */
-export async function clearPartnerAuth(): Promise<void> {
-  return setStorage(STORAGE_PARTNER_TOKEN, {});
+export async function readPartnerAuthData(): Promise<Partial<PartnerAuthData>> {
+  return readStorage(STORAGE_PARTNER_TOKEN, {});
 }
 
 /**
@@ -85,10 +76,20 @@ export async function clearPartnerAuth(): Promise<void> {
  */
 export async function setPartnerAuth(data: PartnerAuthData): Promise<void> {
   if (!isEmpty(data.authId) && isEmpty(data.token)) {
+    // Should use clearPartnerAuth for clearing the partner integration JWT
     throw new Error("Received null/blank token for partner integration");
   }
 
   return setStorage(STORAGE_PARTNER_TOKEN, data);
+}
+
+/**
+ * Clear authentication data when using the partner JWT to authenticate.
+ *
+ * @see setPartnerAuth
+ */
+export async function clearPartnerAuth(): Promise<void> {
+  return setStorage(STORAGE_PARTNER_TOKEN, {});
 }
 
 /**
@@ -157,12 +158,16 @@ export async function getExtensionAuth(): Promise<
 }
 
 /**
- * Clear the extension state. The options page will show as "unlinked" and prompt the user to link their account.
+ * Clear the cached extension authentication secrets.
+ *
+ * The options page will show as "unlinked" and prompt the user to link their account.
  */
-export async function clearExtensionAuth(): Promise<void> {
+export async function clearCachedAuthSecrets(): Promise<void> {
   console.debug("Clearing extension auth");
-  await browser.storage.local.remove(STORAGE_EXTENSION_KEY);
-  await browser.storage.local.remove(STORAGE_PARTNER_TOKEN);
+  await Promise.all([
+    browser.storage.local.remove(STORAGE_EXTENSION_KEY),
+    browser.storage.local.remove(STORAGE_PARTNER_TOKEN),
+  ]);
   Cookies.remove("csrftoken");
   Cookies.remove("sessionid");
 }

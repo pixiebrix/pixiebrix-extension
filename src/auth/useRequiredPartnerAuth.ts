@@ -122,8 +122,11 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   // Prefer the most recent /api/me/ data from the server
   const { isLoading, data: me, error } = useGetMeQuery();
   const localAuth = useSelector(selectAuth);
-  const { authServiceId: authServiceIdOverride, authMethod } =
-    useSelector(selectSettings);
+  const {
+    authServiceId: authServiceIdOverride,
+    authMethod,
+    partnerId: partnerIdOverride,
+  } = useSelector(selectSettings);
   const configuredServices = useSelector(selectConfiguredServices);
 
   const [managedControlRoomUrl] = useAsyncState(
@@ -142,12 +145,18 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   // the organization will be null on result of useGetMeQuery
   const hasControlRoom =
     Boolean(organization?.control_room?.id) || Boolean(managedControlRoomUrl);
-  const hasPartner = Boolean(partner) || Boolean(managedPartnerId);
+  const hasPartner =
+    Boolean(partner) || Boolean(managedPartnerId) || hasControlRoom;
+  const partnerId =
+    partnerIdOverride ??
+    managedPartnerId ??
+    partner?.theme ??
+    (hasControlRoom ? "automation-anywhere" : null);
 
   const partnerServiceIds = decidePartnerServiceIds({
     authServiceIdOverride,
     authMethod,
-    partnerId: managedPartnerId ?? partner?.theme,
+    partnerId,
   });
 
   const partnerConfiguration = configuredServices.find((service) =>
