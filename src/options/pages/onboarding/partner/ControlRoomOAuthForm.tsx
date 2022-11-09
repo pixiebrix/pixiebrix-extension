@@ -41,8 +41,13 @@ export type ControlRoomConfiguration = {
 };
 
 const validationSchema = Yup.object().shape({
-  // Leave off .url() because it doesn't allow localhost (which is needed for using mock-server for testing)
-  controlRoomUrl: Yup.string().required(),
+  controlRoomUrl: Yup.string()
+    .required()
+    .when([], {
+      // Yup url check doesn't allow localhost. Allow localhost during development
+      is: () => process.env.NODE_ENV === "development",
+      otherwise: (schema) => schema.url(),
+    }),
 });
 
 const ControlRoomOAuthForm: React.FunctionComponent<{
