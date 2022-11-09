@@ -27,6 +27,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { fireEvent, getByText, screen } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { RegistryId } from "@/core";
+import userEvent from "@testing-library/user-event";
 
 registerDefaultWidgets();
 
@@ -101,14 +102,7 @@ describe("ActivateWizard", () => {
     );
     await waitForEffect();
     expect(rendered.asFragment()).toMatchSnapshot();
-    fireEvent(
-      getByText(rendered.container, "Activate"),
-      new MouseEvent("click", {
-        bubbles: true,
-        cancelable: true,
-      })
-    );
-    await waitForEffect();
+    await userEvent.click(rendered.getByText("Activate"));
     expect(screen.getByText("Database is a required field")).not.toBeNull();
   });
 });
