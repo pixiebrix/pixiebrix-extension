@@ -20,7 +20,7 @@ import styles from "./AdvancedSettings.module.scss";
 import { Button, Card, Form } from "react-bootstrap";
 import { DEFAULT_SERVICE_URL, useConfiguredHost } from "@/services/baseService";
 import React, { useCallback } from "react";
-import { clearExtensionAuth } from "@/auth/token";
+import { clearExtensionAuth, clearPartnerAuth } from "@/auth/token";
 import notify from "@/utils/notify";
 import useFlags from "@/hooks/useFlags";
 import settingsSlice from "@/store/settingsSlice";
@@ -33,6 +33,7 @@ import chromeP from "webext-polyfill-kinda";
 import useUserAction from "@/hooks/useUserAction";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { isEmpty } from "lodash";
+import { util as apiUtil } from "@/services/api";
 
 const SAVING_URL_NOTIFICATION_ID = uuidv4();
 const SAVING_URL_TIMEOUT_MS = 4000;
@@ -61,6 +62,10 @@ const AdvancedSettings: React.FunctionComponent = () => {
       // https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see documentation link
       await (chromeP.identity as any).clearAllCachedAuthTokens();
+
+      // Force /me query refresh, as user will now not be logged in
+      await clearPartnerAuth();
+      apiUtil.invalidateTags(["Me"]);
     },
     {
       successMessage: "Cleared all cached OAuth2 tokens",

@@ -32,6 +32,7 @@ import { FormikHelpers } from "formik";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { serviceOriginPermissions } from "@/permissions";
 import { requestPermissions } from "@/utils/permissions";
+import { isEmpty } from "lodash";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -40,7 +41,8 @@ export type ControlRoomConfiguration = {
 };
 
 const validationSchema = Yup.object().shape({
-  controlRoomUrl: Yup.string().url().required(),
+  // Leave off .url() because it doesn't allow localhost (which is needed for using mock-server for testing)
+  controlRoomUrl: Yup.string().required(),
 });
 
 const ControlRoomOAuthForm: React.FunctionComponent<{
@@ -49,8 +51,12 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
   const dispatch = useDispatch();
   const configuredServices = useSelector(selectConfiguredServices);
 
-  const { authServiceId = CONTROL_ROOM_OAUTH_SERVICE_ID } =
-    useSelector(selectSettings);
+  const { authServiceId: authServiceIdOverride } = useSelector(selectSettings);
+
+  // `authServiceIdOverride` can be null/empty, so defaulting in the settings destructuring doesn't work
+  const authServiceId = isEmpty(authServiceIdOverride)
+    ? CONTROL_ROOM_OAUTH_SERVICE_ID
+    : authServiceIdOverride;
 
   const connect = useCallback(
     async (

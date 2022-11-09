@@ -69,7 +69,18 @@ export async function getExtensionToken(): Promise<string | undefined> {
 }
 
 /**
+ * Clear authentication data when using the partner JWT to authenticate.
+ *
+ * @see setPartnerAuth
+ */
+export async function clearPartnerAuth(): Promise<void> {
+  return setStorage(STORAGE_PARTNER_TOKEN, {});
+}
+
+/**
  * Set authentication data when using the partner JWT to authenticate.
+ *
+ * @see clearPartnerAuth
  */
 export async function setPartnerAuth(data: PartnerAuthData): Promise<void> {
   if (!isEmpty(data.authId) && isEmpty(data.token)) {

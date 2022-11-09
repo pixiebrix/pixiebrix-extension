@@ -21,7 +21,6 @@ import { selectAuth } from "@/auth/authSelectors";
 import { RegistryId } from "@/core";
 import { selectConfiguredServices } from "@/store/servicesSelectors";
 import { selectSettings } from "@/store/settingsSelectors";
-import { isEmpty } from "lodash";
 import { useAsyncState } from "@/hooks/common";
 import {
   addListener as addAuthListener,
@@ -34,6 +33,9 @@ import {
   CONTROL_ROOM_OAUTH_SERVICE_ID,
   CONTROL_ROOM_SERVICE_ID,
 } from "@/services/constants";
+import { AuthState } from "@/auth/authTypes";
+import { SettingsState } from "@/store/settingsTypes";
+import { ManualStorageKey, readStorage } from "@/chrome";
 
 /**
  * Map from partner keys to partner service IDs
@@ -82,54 +84,97 @@ export type RequiredPartnerState = {
   error: unknown;
 };
 
+function decidePartnerServiceIds({
+  authServiceIdOverride,
+  authMethod,
+  partner,
+}: {
+  authServiceIdOverride: RegistryId | null;
+  authMethod: SettingsState["authMethod"];
+  partner: AuthState["partner"] | null;
+}): Set<RegistryId> {
+  if (authServiceIdOverride) {
+    return new Set<RegistryId>([authServiceIdOverride]);
+  }
+
+  if (authMethod === "partner-oauth2") {
+    return new Set<RegistryId>([CONTROL_ROOM_OAUTH_SERVICE_ID]);
+  }
+
+  if (authMethod === "partner-token") {
+    return new Set<RegistryId>([CONTROL_ROOM_SERVICE_ID]);
+  }
+
+  return PARTNER_MAP.get(partner?.theme) ?? new Set();
+}
+
+const CONTROL_ROOM_URL_MANAGED_KEY = "controlRoomUrl" as ManualStorageKey;
+
 /**
  * Hook for determining if the extension has required integrations for the partner.
  *
  * Covers both:
  * - Integration required, but PixieBrix native token is still used for authentication
- * - Int
- *
+ * - Integration required, using partner JWT for authentication
  */
 function useRequiredPartnerAuth(): RequiredPartnerState {
   // Prefer the most recent /api/me/ data from the server
   const { isLoading, data: me, error } = useGetMeQuery();
   const localAuth = useSelector(selectAuth);
-  const { authServiceId, authMethod } = useSelector(selectSettings);
+  const { authServiceId: authServiceIdOverride, authMethod } =
+    useSelector(selectSettings);
   const configuredServices = useSelector(selectConfiguredServices);
+
+  const [managedControlRoomUrl] = useAsyncState(
+    async () => readStorage(CONTROL_ROOM_URL_MANAGED_KEY, undefined, "managed"),
+    []
+  );
 
   // Prefer the latest remote data, but use local data to avoid blocking page load
   const { partner, organization } = me ?? localAuth;
+  // `organization?.control_room?.id` can only be set when authenticated or the auth is cached. For unauthorized users,
+  // the organization will be null on result of useGetMeQuery
+  const hasControlRoom =
+    Boolean(organization?.control_room?.id) || Boolean(managedControlRoomUrl);
   const hasPartner = Boolean(partner);
 
-  // If authServiceId is provided, force use of authServiceId
-  const partnerServiceIds = authServiceId
-    ? new Set<RegistryId>([authServiceId])
-    : PARTNER_MAP.get(partner?.theme) ?? new Set();
+  const partnerServiceIds = decidePartnerServiceIds({
+    authServiceIdOverride,
+    authMethod,
+    partner,
+  });
 
   const partnerConfiguration = configuredServices.find((service) =>
     partnerServiceIds.has(service.serviceId)
   );
 
-  const [isMissingPartnerToken, _tokenLoading, _tokenError, refreshTokenState] =
-    useAsyncState(async () => {
-      if (authMethod === "pixiebrix-token") {
-        // User forced pixiebrix-token authentication via Advanced Settings > Authentication Method
-        return false;
-      }
+  // `_` prefix so lint doesn't yell for unused variables in the destructuring
+  const [
+    isMissingPartnerJwt,
+    _partnerJwtLoading,
+    _partnerJwtError,
+    refreshPartnerJwtState,
+  ] = useAsyncState(async () => {
+    if (authMethod === "pixiebrix-token") {
+      // User forced pixiebrix-token authentication via Advanced Settings > Authentication Method
+      return false;
+    }
 
-      if (isEmpty(authServiceId)) {
-        return false;
-      }
-
+    if (hasControlRoom || authMethod === "partner-oauth2") {
+      // Future improvement: check that the Control Room URL from readPartnerAuthData matches the expected
+      // Control Room URL
       const { token: partnerToken } = await readPartnerAuthData();
       return partnerToken == null;
-    }, [authMethod, authServiceId, localAuth]);
+    }
+
+    return false;
+  }, [authMethod, localAuth, hasControlRoom]);
 
   useEffect(() => {
     // Listen for token invalidation
     const handler = async () => {
       console.debug("Auth state changed, checking for token");
-      void refreshTokenState();
+      void refreshPartnerJwtState();
     };
 
     addAuthListener(handler);
@@ -137,7 +182,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     return () => {
       removeAuthListener(handler);
     };
-  }, [refreshTokenState]);
+  }, [refreshPartnerJwtState]);
 
   const requiresIntegration =
     // Primary organization has a partner and linked control room
@@ -166,7 +211,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     hasConfiguredIntegration:
       requiresIntegration &&
       Boolean(partnerConfiguration) &&
-      !isMissingPartnerToken,
+      !isMissingPartnerJwt,
     isLoading,
     error,
   };
