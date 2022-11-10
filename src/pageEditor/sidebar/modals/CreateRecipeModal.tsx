@@ -324,7 +324,7 @@ const CreateRecipeModal: React.FC = () => {
   // is open an extension element is active, then we're performing a "Save a New" on that recipe.
   const directlyActiveRecipeId = useSelector(selectActiveRecipeId);
   const activeRecipeId = directlyActiveRecipeId ?? activeElement?.recipe?.id;
-  const { data: activeRecipe, isLoading: isRecipeLoading } =
+  const { data: activeRecipe, isFetching: isRecipeFetching } =
     useRecipe(activeRecipeId);
 
   const formSchema = useFormSchema();
@@ -339,7 +339,7 @@ const CreateRecipeModal: React.FC = () => {
   });
 
   // Loading state -- could consider refactoring into two components: 1) modal with loading state, 2) form
-  if (activeRecipeId && isRecipeLoading) {
+  if (activeRecipeId && isRecipeFetching) {
     return <LoadingDataModal onClose={hideModal} />;
   }
 

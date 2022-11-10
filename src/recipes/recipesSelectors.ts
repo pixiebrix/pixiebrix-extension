@@ -18,14 +18,41 @@
 import { RecipeDefinition } from "@/types/definitions";
 import { RecipesRootState } from "./recipesTypes";
 
-export function selectAllRecipes({ recipes }: RecipesRootState): {
-  data: RecipeDefinition[];
+export type StateSelector<T> = {
+  /**
+   * The value, or `undefined` if the state is loading or there was an error computing the state
+   */
+  data: T | undefined;
+
+  /**
+   * When true, indicates that the query is currently fetching, but might have data from an earlier request. This will be true for both the first request fired off, as well as subsequent requests.
+   */
+  isFetching: boolean;
+
+  /**
+   * When true, indicates that the query is currently loading for the first time, and has no data yet. This will be true for the first request fired off, but not for subsequent requests.
+   */
   isLoading: boolean;
+
+  /**
+   * When true, indicates that the query has not started yet.
+   */
+  isUninitialized: boolean;
+
+  /**
+   * The error, if any
+   */
   error: unknown;
-} {
+};
+
+export function selectAllRecipes({
+  recipes,
+}: RecipesRootState): StateSelector<RecipeDefinition[]> {
   return {
     data: recipes.recipes,
+    isFetching: recipes.isFetching,
     isLoading: recipes.isLoading,
+    isUninitialized: recipes.isUninitialized,
     error: recipes.error,
   };
 }

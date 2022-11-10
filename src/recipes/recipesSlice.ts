@@ -23,6 +23,8 @@ import registry from "./registry";
 const initialState: RecipesState = {
   recipes: [],
   isLoading: false,
+  isFetching: false,
+  isUninitialized: true,
   error: undefined,
 };
 
@@ -36,16 +38,14 @@ const loadRecipesFromCache = createAsyncThunk(
 
 export const refreshRecipes = createAsyncThunk<
   void,
-  void | { backgroundRefresh?: boolean },
+  void,
   { state: RecipesRootState }
 >("recipes/refresh", async (arg, { dispatch, getState }) => {
-  if (getState().recipes.isLoading) {
+  if (getState().recipes.isFetching) {
     return;
   }
 
-  if (!(arg as any)?.backgroundRefresh) {
-    dispatch(recipesSlice.actions.setLoading(true));
-  }
+  dispatch(recipesSlice.actions.startLoading());
 
   try {
     await registry.fetch();
@@ -57,25 +57,28 @@ export const refreshRecipes = createAsyncThunk<
 
   const recipes = await registry.all();
   dispatch(recipesSlice.actions.setRecipes(recipes));
-
-  if (!(arg as any)?.backgroundRefresh) {
-    dispatch(recipesSlice.actions.setLoading(false));
-  }
 });
 
 export const recipesSlice = createSlice({
   name: "recipes",
   initialState,
   reducers: {
-    setLoading(state, action) {
-      state.isLoading = action.payload;
+    startLoading(state) {
+      state.isFetching = true;
+      if (state.isUninitialized) {
+        state.isLoading = true;
+      }
     },
     setRecipes(state, action) {
       state.recipes = action.payload;
+      state.isFetching = false;
+      state.isLoading = false;
+      state.isUninitialized = false;
       state.error = undefined;
     },
     setError(state, action) {
       state.error = action.payload;
+      state.isFetching = false;
       state.isLoading = false;
     },
   },

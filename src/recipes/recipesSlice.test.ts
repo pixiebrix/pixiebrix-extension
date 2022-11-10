@@ -57,7 +57,7 @@ describe("refreshRecipes", () => {
     await thunkFunction(
       dispatch,
       () => ({
-        recipes: { recipes: [], isLoading: true, error: undefined },
+        recipes: { recipes: [], isFetching: true, error: undefined },
       }),
       undefined
     );

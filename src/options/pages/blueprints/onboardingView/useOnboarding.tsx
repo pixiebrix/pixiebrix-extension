@@ -37,7 +37,7 @@ function useOnboarding(): {
   const { restrict } = useFlags();
   const activeTab = useSelector(selectActiveTab);
 
-  const { data: rawRecipes, isLoading: isRecipesLoading } = useAllRecipes();
+  const { data: rawRecipes, isFetching: isRecipesLoading } = useAllRecipes();
   const { data: organizations, isLoading: isOrganizationsLoading } =
     useGetOrganizationsQuery();
   const { hasUpdate: hasDeployments, isLoading: isDeploymentsLoading } =

@@ -76,14 +76,14 @@ const ShareRecipeModal: React.FunctionComponent = () => {
   const [updateRecipe] = useUpdateRecipeMutation();
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
     useGetEditablePackagesQuery();
-  const { data: recipe, isLoading: isLoadingRecipe } = useRecipe(blueprintId);
+  const { data: recipe, isFetching: isFetchingRecipe } = useRecipe(blueprintId);
 
   const closeModal = () => {
     dispatch(blueprintModalsSlice.actions.setShareContext(null));
   };
 
   // If the was just converted to a blueprint, the API request is likely be in progress and recipe will be null
-  if (isLoadingRecipe) {
+  if (isFetchingRecipe) {
     return <Loading />;
   }
 

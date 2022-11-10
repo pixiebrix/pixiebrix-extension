@@ -71,7 +71,7 @@ const emptyOptions: OptionsDefinition = {
 const RecipeOptions: React.VFC = () => {
   const [activeField, setActiveField] = useState<string>();
   const recipeId = useSelector(selectActiveRecipeId);
-  const { data: recipe, isLoading, error } = useRecipe(recipeId);
+  const { data: recipe, isFetching, error } = useRecipe(recipeId);
 
   const savedOptions = recipe?.options;
   const dirtyOptions = useSelector(selectDirtyOptionsForRecipeId(recipeId));
@@ -88,12 +88,12 @@ const RecipeOptions: React.VFC = () => {
     [dispatch]
   );
 
-  if (isLoading || error) {
+  if (isFetching || error) {
     return (
       <Container>
         <Row>
           <Col>
-            {isLoading ? (
+            {isFetching ? (
               <Loader />
             ) : (
               <div className="text-danger">{getErrorMessage(error)}</div>

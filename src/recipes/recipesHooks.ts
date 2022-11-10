@@ -18,31 +18,14 @@
 import { RegistryId } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { useSelector } from "react-redux";
-import { selectAllRecipes } from "@/recipes/recipesSelectors";
+import { selectAllRecipes, StateSelector } from "@/recipes/recipesSelectors";
 import { useMemo } from "react";
-
-export type StateSelector<T> = {
-  /**
-   * The value, or `undefined` if the state is loading or there was an error computing the state
-   */
-  data: T | undefined;
-
-  /**
-   * True if the async state is loading
-   */
-  isLoading: boolean;
-
-  /**
-   * The error, if any
-   */
-  error: unknown;
-};
 
 /**
  * Lookup a recipe from the registry by ID
  */
 export function useRecipe(id: RegistryId): StateSelector<RecipeDefinition> {
-  const { data: allRecipes, isLoading, error } = useAllRecipes();
+  const { data: allRecipes, ...rest } = useAllRecipes();
   const recipe = useMemo(
     () =>
       allRecipes?.length
@@ -51,7 +34,7 @@ export function useRecipe(id: RegistryId): StateSelector<RecipeDefinition> {
     [id, allRecipes]
   );
 
-  return { data: recipe, isLoading, error };
+  return { data: recipe, ...rest };
 }
 
 /**

@@ -97,7 +97,7 @@ function useInstallables(): InstallablesState {
   return {
     installables: [...extensionsWithoutRecipe, ...personalOrTeamBlueprints],
     isLoading:
-      recipes.isLoading ||
+      recipes.isFetching ||
       cloudExtensions.isLoading ||
       resolvedExtensionsIsLoading,
     error: cloudExtensions.error ?? recipes.error ?? resolveError,

@@ -32,7 +32,7 @@ const SaveAsNewRecipeModal: React.FC = () => {
   );
 
   const recipeId = useSelector(selectActiveRecipeId);
-  const { data: recipe, isLoading } = useRecipe(recipeId);
+  const { data: recipe, isFetching } = useRecipe(recipeId);
   const recipeName = recipe?.metadata?.name ?? "this blueprint";
 
   const dispatch = useDispatch();
@@ -46,7 +46,7 @@ const SaveAsNewRecipeModal: React.FC = () => {
     dispatch(actions.showCreateRecipeModal({ keepLocalCopy: false }));
   };
 
-  if (isLoading && show) {
+  if (isFetching && show) {
     return <LoadingDataModal onClose={hideModal} />;
   }
 
@@ -63,7 +63,7 @@ const SaveAsNewRecipeModal: React.FC = () => {
         <Button variant="info" onClick={hideModal}>
           Cancel
         </Button>
-        <Button variant="primary" disabled={isLoading} onClick={onConfirm}>
+        <Button variant="primary" disabled={isFetching} onClick={onConfirm}>
           Save as New
         </Button>
       </Modal.Footer>
