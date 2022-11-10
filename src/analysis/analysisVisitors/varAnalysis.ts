@@ -21,7 +21,7 @@ import { BlockPosition, BlockConfig } from "@/blocks/types";
 import { Expression } from "@/core";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getInputKeyForSubPipeline } from "@/pageEditor/utils";
-import { isVarExpression } from "@/runtime/mapArgs";
+import { isNunjucksExpression, isVarExpression } from "@/runtime/mapArgs";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { isEmpty } from "lodash";
 import { Analysis, Annotation, AnnotationType } from "@/analysis/analysisTypes";
@@ -145,10 +145,17 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     position: BlockPosition,
     expression: Expression<unknown>
   ): void {
-    if (!isVarExpression(expression)) {
-      return;
+    if (isVarExpression(expression)) {
+      this.visitVarExpression(position, expression);
+    } else if (isNunjucksExpression(expression)) {
+      this.visitNunjucksExpression(position, expression);
     }
+  }
 
+  private visitVarExpression(
+    position: BlockPosition,
+    expression: Expression<string, "var">
+  ) {
     const varName = expression.__value__;
     if (varName == null) {
       return;
@@ -165,6 +172,13 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
         },
       });
     }
+  }
+
+  private visitNunjucksExpression(
+    position: BlockPosition,
+    expression: Expression<string, "nunjucks">
+  ) {
+    throw new Error("Method not implemented.");
   }
 
   override visitPipeline(
