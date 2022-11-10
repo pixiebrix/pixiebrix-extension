@@ -91,6 +91,11 @@ function usePartnerLoginMode(): "token" | "oauth2" {
 const CONTROL_ROOM_URL_MANAGED_KEY = "controlRoomUrl" as ManualStorageKey;
 
 function hostnameToUrl(hostname: string): string {
+  if (hostname == null) {
+    // Give hint to user to include https: scheme
+    return "https://";
+  }
+
   if (/^[\da-z]+:\/\//.test(hostname)) {
     return hostname;
   }
