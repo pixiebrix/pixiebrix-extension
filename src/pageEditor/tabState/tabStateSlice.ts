@@ -134,7 +134,6 @@ export const tabStateSlice = createSlice({
           "PixieBrix was updated or restarted. Reload the Page Editor to continue."
         );
         state.error = serializeError(error);
-        reportError(error);
       });
   },
 });

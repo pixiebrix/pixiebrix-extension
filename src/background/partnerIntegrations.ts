@@ -114,6 +114,10 @@ export async function launchAuthIntegration({
       throw new Error("controlRoomUrl is missing on configuration");
     }
 
+    console.info(
+      "Setting partner auth for Control Room %s",
+      config.config.controlRoomUrl
+    );
     await setPartnerAuth({
       authId: config.id,
       token: data.access_token,

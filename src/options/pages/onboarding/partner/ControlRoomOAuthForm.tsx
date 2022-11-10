@@ -32,6 +32,8 @@ import { FormikHelpers } from "formik";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { serviceOriginPermissions } from "@/permissions";
 import { requestPermissions } from "@/utils/permissions";
+import { isEmpty } from "lodash";
+import { util as apiUtil } from "@/services/api";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -40,7 +42,13 @@ export type ControlRoomConfiguration = {
 };
 
 const validationSchema = Yup.object().shape({
-  controlRoomUrl: Yup.string().url().required(),
+  controlRoomUrl: Yup.string()
+    .required()
+    .when([], {
+      // Yup url check doesn't allow localhost. Allow localhost during development
+      is: () => process.env.NODE_ENV === "development",
+      otherwise: (schema) => schema.url(),
+    }),
 });
 
 const ControlRoomOAuthForm: React.FunctionComponent<{
@@ -49,8 +57,12 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
   const dispatch = useDispatch();
   const configuredServices = useSelector(selectConfiguredServices);
 
-  const { authServiceId = CONTROL_ROOM_OAUTH_SERVICE_ID } =
-    useSelector(selectSettings);
+  const { authServiceId: authServiceIdOverride } = useSelector(selectSettings);
+
+  // `authServiceIdOverride` can be null/empty, so defaulting in the settings destructuring doesn't work
+  const authServiceId = isEmpty(authServiceIdOverride)
+    ? CONTROL_ROOM_OAUTH_SERVICE_ID
+    : authServiceIdOverride;
 
   const connect = useCallback(
     async (
@@ -93,6 +105,11 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
         await requestPermissions(requiredPermissions);
 
         await launchAuthIntegration({ serviceId: authServiceId });
+
+        // Refresh auth state so that 1) the user appears as logged in the UI in the navbar, and 2) the Admin Console
+        // link in the navbar links to the URL required for JWT hand-off.
+        // See useRequiredAuth hook for more details
+        dispatch(apiUtil.resetApiState());
       } catch (error) {
         helpers.setStatus(getErrorMessage(error));
       }

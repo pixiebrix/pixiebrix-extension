@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import OnboardingChecklistCard, {
   OnboardingStep,
 } from "@/components/onboarding/OnboardingChecklistCard";
@@ -31,6 +31,8 @@ import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";
 import settingsSlice from "@/store/settingsSlice";
+import { ManualStorageKey, readStorage } from "@/chrome";
+import { useLocation } from "react-router";
 
 function useInstallUrl() {
   const { data: me } = useGetMeQuery();
@@ -86,32 +88,72 @@ function usePartnerLoginMode(): "token" | "oauth2" {
   }
 }
 
+const CONTROL_ROOM_URL_MANAGED_KEY = "controlRoomUrl" as ManualStorageKey;
+
+function hostnameToUrl(hostname: string): string {
+  if (hostname == null) {
+    // Give hint to user to include https: scheme
+    return "https://";
+  }
+
+  if (/^[\da-z]+:\/\//.test(hostname)) {
+    return hostname;
+  }
+
+  return `https://${hostname}`;
+}
+
 /**
  * A card to set up a required partner integration.
  *
  * Currently, supports the Automation Anywhere partner integration.
  */
 const PartnerSetupCard: React.FunctionComponent = () => {
-  const mode = usePartnerLoginMode();
   const dispatch = useDispatch();
-  const hostname = new URLSearchParams(location.search).get("hostname");
-
+  // Make sure to use useLocation because the location.search are on the hash route
+  const location = useLocation();
+  const mode = usePartnerLoginMode();
   const { data: me } = useGetMeQuery();
   const { installURL } = useInstallUrl();
 
-  // TODO: prefer managed storage for the Control Room URL
-  const controlRoomUrl = hostname ?? me?.organization?.control_room?.url ?? "";
+  // Hostname passed from manual flow during manual setup initiated via Control Room link
+  const hostname = new URLSearchParams(location.search).get("hostname");
+
+  // Prefer controlRoomUrl set by IT for force-installed extensions
+  const fallbackControlRoomUrl =
+    hostnameToUrl(hostname) ?? me?.organization?.control_room?.url ?? "";
+  const [controlRoomUrl] = useAsyncState(
+    async () => {
+      try {
+        return (
+          (await readStorage(
+            CONTROL_ROOM_URL_MANAGED_KEY,
+            undefined,
+            "managed"
+          )) ?? fallbackControlRoomUrl
+        );
+      } catch {
+        return fallbackControlRoomUrl;
+      }
+    },
+    [fallbackControlRoomUrl],
+    fallbackControlRoomUrl
+  );
+
   const initialValues = {
     controlRoomUrl,
     username: "",
     password: "",
   };
 
-  dispatch(
-    settingsSlice.actions.setPartnerId({
-      partnerId: "automation-anywhere",
-    })
-  );
+  useEffect(() => {
+    // Ensure the partner branding is applied
+    dispatch(
+      settingsSlice.actions.setPartnerId({
+        partnerId: "automation-anywhere",
+      })
+    );
+  }, [dispatch]);
 
   if (mode === "oauth2") {
     // For OAuth2, there's only 2 steps because the AA JWT is also used to communicate with the PixieBrix server
@@ -123,7 +165,10 @@ const PartnerSetupCard: React.FunctionComponent = () => {
           completed
         />
         <OnboardingStep number={2} title="Connect your AARI account" active>
-          <ControlRoomOAuthForm initialValues={initialValues} />
+          <ControlRoomOAuthForm
+            initialValues={initialValues}
+            key={controlRoomUrl}
+          />
         </OnboardingStep>
       </OnboardingChecklistCard>
     );
@@ -164,7 +209,10 @@ const PartnerSetupCard: React.FunctionComponent = () => {
         completed
       />
       <OnboardingStep number={3} title="Connect your AARI account" active>
-        <ControlRoomTokenForm initialValues={initialValues} />
+        <ControlRoomTokenForm
+          initialValues={initialValues}
+          key={controlRoomUrl}
+        />
       </OnboardingStep>
     </OnboardingChecklistCard>
   );
