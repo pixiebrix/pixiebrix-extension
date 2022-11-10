@@ -122,7 +122,8 @@ describe("SetupPage", () => {
     }));
 
     const history = createHashHistory();
-    history.push("/start?hostname=https://mycontrolroom.com");
+    // Hostname comes as hostname, not URL
+    history.push("/start?hostname=mycontrolroom.com");
 
     // Needs to use HashRouter instead of MemoryRouter for the useLocation calls in the components to work correctly
     // given the URL structure above
@@ -141,6 +142,7 @@ describe("SetupPage", () => {
     expect(screen.getByText("Connect your AARI account")).not.toBeNull();
     expect(
       screen.getByLabelText("Control Room URL").getAttribute("value")
+      // Schema get pre-pended automatically
     ).toStrictEqual("https://mycontrolroom.com");
   });
 

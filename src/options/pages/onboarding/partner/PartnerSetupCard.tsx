@@ -90,6 +90,19 @@ function usePartnerLoginMode(): "token" | "oauth2" {
 
 const CONTROL_ROOM_URL_MANAGED_KEY = "controlRoomUrl" as ManualStorageKey;
 
+function hostnameToUrl(hostname: string): string {
+  if (hostname == null) {
+    // Give hint to user to include https: scheme
+    return "https://";
+  }
+
+  if (/^[\da-z]+:\/\//.test(hostname)) {
+    return hostname;
+  }
+
+  return `https://${hostname}`;
+}
+
 /**
  * A card to set up a required partner integration.
  *
@@ -108,7 +121,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
 
   // Prefer controlRoomUrl set by IT for force-installed extensions
   const fallbackControlRoomUrl =
-    hostname ?? me?.organization?.control_room?.url ?? "";
+    hostnameToUrl(hostname) ?? me?.organization?.control_room?.url ?? "";
   const [controlRoomUrl] = useAsyncState(
     async () => {
       try {

@@ -27,6 +27,9 @@ import Loader from "@/components/Loader";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import PartnerSetupCard from "@/options/pages/onboarding/partner/PartnerSetupCard";
 import { useLocation } from "react-router";
+import serviceRegistry from "@/services/registry";
+import { clearServiceCache } from "@/background/messenger/api";
+import notify from "@/utils/notify";
 
 const Layout: React.FunctionComponent = ({ children }) => (
   <Row className="w-100 mx-0">
@@ -54,17 +57,33 @@ const SetupPage: React.FunctionComponent = () => {
     hasConfiguredIntegration,
   } = useRequiredPartnerAuth();
 
-  const isStartUrl = location.pathname.startsWith("/start");
+  // Fetch service definitions which are required for partner JWT login.
+  // useAsyncState with ignored output to track loading state
+  const [_, serviceDefinitionsLoading] = useAsyncState(async () => {
+    try {
+      await serviceRegistry.fetch();
+      await clearServiceCache();
+    } catch (error) {
+      notify.warning({
+        message:
+          "Failed to latest load integration definitions. Login via partner may not be available",
+        error,
+        reportError: true,
+      });
+    }
+  }, []);
 
   const [baseURL, baseURLPending] = useAsyncState(getBaseURL, []);
 
-  if (baseURLPending || isPartnerLoading) {
+  if (baseURLPending || isPartnerLoading || serviceDefinitionsLoading) {
     return (
       <Layout>
         <Loader />
       </Layout>
     );
   }
+
+  const isStartUrl = location.pathname.startsWith("/start");
 
   let setupCard = <DefaultSetupCard installURL={baseURL} />;
 
