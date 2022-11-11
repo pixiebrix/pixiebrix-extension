@@ -19,9 +19,14 @@ import { RecipeDefinition } from "@/types/definitions";
 
 export type RecipesState = {
   recipes: RecipeDefinition[];
+
+  isFetchingFromCache: boolean;
+  isCacheUninitialized: boolean;
+
   isLoading: boolean;
   isFetching: boolean;
   isUninitialized: boolean;
+
   error: unknown;
 };
 

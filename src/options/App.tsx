@@ -51,7 +51,6 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import RequireAuth from "@/auth/RequireAuth";
 import useTheme from "@/hooks/useTheme";
 import { logActions } from "@/components/logViewer/logSlice";
-import { recipesActions } from "@/recipes/recipesSlice";
 
 // Register the built-in bricks
 registerEditors();
@@ -67,10 +66,6 @@ const RefreshBricks: React.VFC = () => {
   useRefresh();
 
   useEffect(() => {
-    // Load recipes from cache and refresh from server
-    dispatch(recipesActions.loadRecipesFromCache());
-    dispatch(recipesActions.refreshRecipes());
-
     // Start polling logs
     dispatch(logActions.pollLogs());
   }, [dispatch]);

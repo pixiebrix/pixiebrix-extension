@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useTabEventListener } from "@/hooks/events";
 import { navigationEvent } from "@/pageEditor/events";
@@ -28,7 +28,7 @@ import RequireAuth from "@/auth/RequireAuth";
 import LoginCard from "@/pageEditor/components/LoginCard";
 import EditorLayout from "@/pageEditor/EditorLayout";
 import { PersistGate } from "redux-persist/integration/react";
-import useDispatchInitActionsEffect from "./hooks/useDispatchInitActionsEffect";
+import { logActions } from "@/components/logViewer/logSlice";
 
 const PanelContent: React.FC = () => {
   const dispatch = useDispatch();
@@ -37,7 +37,13 @@ const PanelContent: React.FC = () => {
     dispatch(tabStateActions.connectToContentScript());
   });
 
-  useDispatchInitActionsEffect();
+  useEffect(() => {
+    // Automatically connect on load
+    dispatch(tabStateActions.connectToContentScript());
+
+    // Start polling logs
+    dispatch(logActions.pollLogs());
+  }, [dispatch]);
 
   return (
     <PersistGate persistor={persistor}>

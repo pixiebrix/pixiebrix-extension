@@ -51,7 +51,8 @@ function useInstallableViewItems(installables: Installable[]): {
   const installedExtensions = useSelector(selectExtensions);
   const organizations = useSelector(selectOrganizations);
   const listingsQuery = useGetMarketplaceListingsQuery();
-  const { data: recipes, isFetching: areRecipesLoading } = useAllRecipes();
+  const { data: recipes, isFetchingFromCache: areRecipesLoading } =
+    useAllRecipes();
 
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({

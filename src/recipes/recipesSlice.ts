@@ -22,19 +22,33 @@ import registry from "./registry";
 
 export const initialState: RecipesState = Object.freeze({
   recipes: [],
+
+  isFetchingFromCache: false,
+  isCacheUninitialized: true,
+
   isLoading: false,
   isFetching: false,
   isUninitialized: true,
+
   error: undefined,
 });
 
-const loadRecipesFromCache = createAsyncThunk(
-  "recipes/loadFromCache",
-  async (arg, { dispatch }) => {
-    const recipes = await registry.all();
-    dispatch(recipesSlice.actions.setRecipes(recipes));
+const loadRecipesFromCache = createAsyncThunk<
+  void,
+  void,
+  { state: RecipesRootState }
+>("recipes/loadFromCache", async (arg, { dispatch, getState }) => {
+  if (getState().recipes.isFetchingFromCache) {
+    throw new Error("Aborted due to query being already in progress");
   }
-);
+
+  dispatch(recipesSlice.actions.startLoadingFromCache());
+
+  const recipes = await registry.all();
+  console.log("Loaded recipes from cache");
+
+  dispatch(recipesSlice.actions.setRecipesFromCache(recipes));
+});
 
 export const refreshRecipes = createAsyncThunk<
   void,
@@ -42,7 +56,7 @@ export const refreshRecipes = createAsyncThunk<
   { state: RecipesRootState }
 >("recipes/refresh", async (arg, { dispatch, getState }) => {
   if (getState().recipes.isFetching) {
-    return;
+    throw new Error("Aborted due to query being already in progress");
   }
 
   dispatch(recipesSlice.actions.startLoading());
@@ -55,6 +69,7 @@ export const refreshRecipes = createAsyncThunk<
     return;
   }
 
+  console.log("Loaded recipes from server");
   const recipes = await registry.all();
   dispatch(recipesSlice.actions.setRecipes(recipes));
 });
@@ -63,6 +78,14 @@ export const recipesSlice = createSlice({
   name: "recipes",
   initialState,
   reducers: {
+    startLoadingFromCache(state) {
+      state.isFetchingFromCache = true;
+    },
+    setRecipesFromCache(state, action) {
+      state.recipes = action.payload;
+      state.isFetchingFromCache = false;
+      state.isCacheUninitialized = false;
+    },
     startLoading(state) {
       state.isFetching = true;
       if (state.isUninitialized) {

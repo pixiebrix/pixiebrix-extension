@@ -15,16 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId } from "@/core";
+import { RegistryId, UseCachedQueryResult } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
-import { useSelector } from "react-redux";
-import { selectAllRecipes, StateSelector } from "@/recipes/recipesSelectors";
+import { useDispatch, useSelector } from "react-redux";
+import { selectAllRecipes } from "@/recipes/recipesSelectors";
 import { useMemo } from "react";
+import { recipesActions } from "./recipesSlice";
 
 /**
  * Lookup a recipe from the registry by ID
  */
-export function useRecipe(id: RegistryId): StateSelector<RecipeDefinition> {
+export function useRecipe(
+  id: RegistryId
+): UseCachedQueryResult<RecipeDefinition> {
   const { data: allRecipes, ...rest } = useAllRecipes();
   const recipe = useMemo(
     () =>
@@ -40,6 +43,18 @@ export function useRecipe(id: RegistryId): StateSelector<RecipeDefinition> {
 /**
  * Pulls all recipes from the registry
  */
-export function useAllRecipes(): StateSelector<RecipeDefinition[]> {
-  return useSelector(selectAllRecipes);
+export function useAllRecipes(): UseCachedQueryResult<RecipeDefinition[]> {
+  const dispatch = useDispatch();
+  const refetch = () => dispatch(recipesActions.refreshRecipes());
+  const state = useSelector(selectAllRecipes);
+
+  if (state.isCacheUninitialized && !state.isFetchingFromCache) {
+    dispatch(recipesActions.loadRecipesFromCache());
+  }
+
+  if (state.isUninitialized && !state.isFetching) {
+    dispatch(recipesActions.refreshRecipes());
+  }
+
+  return { ...state, refetch };
 }

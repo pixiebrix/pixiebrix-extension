@@ -51,7 +51,6 @@ import { Organization, UserRole } from "@/types/contract";
 import Loading from "./Loading";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useRecipe } from "@/recipes/recipesHooks";
-import { recipesActions } from "@/recipes/recipesSlice";
 
 type ShareInstallableFormState = {
   public: boolean;
@@ -76,7 +75,11 @@ const ShareRecipeModal: React.FunctionComponent = () => {
   const [updateRecipe] = useUpdateRecipeMutation();
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
     useGetEditablePackagesQuery();
-  const { data: recipe, isFetching: isFetchingRecipe } = useRecipe(blueprintId);
+  const {
+    data: recipe,
+    isFetching: isFetchingRecipe,
+    refetch: refetchRecipes,
+  } = useRecipe(blueprintId);
 
   const closeModal = () => {
     dispatch(blueprintModalsSlice.actions.setShareContext(null));
@@ -113,7 +116,7 @@ const ShareRecipeModal: React.FunctionComponent = () => {
 
       notify.success("Shared brick");
       closeModal();
-      dispatch(recipesActions.refreshRecipes());
+      refetchRecipes();
     } catch (error) {
       if (isSingleObjectBadRequestError(error) && error.response.data.config) {
         helpers.setStatus(error.response.data.config);

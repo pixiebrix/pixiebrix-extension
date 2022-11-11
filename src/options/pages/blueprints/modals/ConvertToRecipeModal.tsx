@@ -48,7 +48,7 @@ import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { StylesConfig } from "react-select";
 import { RequireScope } from "@/auth/RequireScope";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { recipesActions } from "@/recipes/recipesSlice";
+import { useAllRecipes } from "@/recipes/recipesHooks";
 
 type ConvertInstallableFormState = {
   blueprintId: RegistryId;
@@ -131,6 +131,8 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
     dispatch(blueprintModalsSlice.actions.setShareContext(null));
   };
 
+  const { refetch: refetchRecipes } = useAllRecipes();
+
   const convertToRecipe = async (
     formValues: ConvertInstallableFormState,
     helpers: FormikHelpers<ConvertInstallableFormState>
@@ -163,7 +165,7 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
         })
       );
 
-      dispatch(recipesActions.refreshRecipes());
+      refetchRecipes();
 
       dispatch(
         blueprintModalsSlice.actions.setShareContext({
