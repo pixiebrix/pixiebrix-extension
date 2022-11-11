@@ -45,7 +45,6 @@ const loadRecipesFromCache = createAsyncThunk<
   dispatch(recipesSlice.actions.startLoadingFromCache());
 
   const recipes = await registry.all();
-  console.log("Loaded recipes from cache");
 
   dispatch(recipesSlice.actions.setRecipesFromCache(recipes));
 });
@@ -69,7 +68,6 @@ export const refreshRecipes = createAsyncThunk<
     return;
   }
 
-  console.log("Loaded recipes from server");
   const recipes = await registry.all();
   dispatch(recipesSlice.actions.setRecipes(recipes));
 });
