@@ -20,13 +20,13 @@ import { serializeError } from "serialize-error";
 import { RecipesRootState, RecipesState } from "./recipesTypes";
 import registry from "./registry";
 
-const initialState: RecipesState = {
+export const initialState: RecipesState = Object.freeze({
   recipes: [],
   isLoading: false,
   isFetching: false,
   isUninitialized: true,
   error: undefined,
-};
+});
 
 const loadRecipesFromCache = createAsyncThunk(
   "recipes/loadFromCache",

@@ -17,7 +17,7 @@
 
 import { recipeFactory } from "@/testUtils/factories";
 import { serializeError } from "serialize-error";
-import { recipesActions } from "./recipesSlice";
+import { initialState, recipesActions, recipesSlice } from "./recipesSlice";
 import { RecipesRootState } from "./recipesTypes";
 import registry from "./registry";
 
@@ -57,7 +57,11 @@ describe("refreshRecipes", () => {
     await thunkFunction(
       dispatch,
       () => ({
-        recipes: { recipes: [], isFetching: true, error: undefined },
+        recipes: {
+          ...initialState,
+          isFetching: true,
+          isUninitialized: false,
+        },
       }),
       undefined
     );
@@ -79,31 +83,12 @@ describe("refreshRecipes", () => {
       undefined
     );
 
-    expect(dispatch).toHaveBeenCalledWith(recipesActions.setLoading(true));
+    expect(dispatch).toHaveBeenCalledWith(recipesActions.startLoading());
     expect(registry.fetch).toHaveBeenCalledTimes(1);
     expect(registry.all).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
       recipesActions.setRecipes(cachedRecipes)
     );
-    expect(dispatch).toHaveBeenCalledWith(recipesActions.setLoading(false));
-  });
-
-  test("does't change loading state with backgroundRefresh", async () => {
-    const dispatch = jest.fn();
-
-    (registry.fetch as jest.Mock).mockResolvedValueOnce(undefined);
-
-    const thunkFunction = recipesActions.refreshRecipes({
-      backgroundRefresh: true,
-    });
-    await thunkFunction(
-      dispatch,
-      () => ({ recipes: {} } as RecipesRootState),
-      undefined
-    );
-
-    expect(dispatch).not.toHaveBeenCalledWith(recipesActions.setLoading(true));
-    expect(dispatch).not.toHaveBeenCalledWith(recipesActions.setLoading(false));
   });
 
   test("sets error state", async () => {
@@ -123,5 +108,43 @@ describe("refreshRecipes", () => {
     expect(dispatch).toHaveBeenCalledWith(
       recipesActions.setError(serializedError)
     );
+  });
+});
+
+describe("reducers", () => {
+  test.each([true, false])(
+    "sets loading state when isUninitialized=%s",
+    (isUninitialized) => {
+      const state = { ...initialState, isUninitialized };
+
+      // On the first call it should set isLoading to true
+      const shouldSetLoading = isUninitialized;
+
+      const nextState = recipesSlice.reducer(
+        state,
+        recipesActions.startLoading()
+      );
+      expect(nextState.isFetching).toBeTrue();
+      expect(nextState.isLoading).toBe(shouldSetLoading);
+    }
+  );
+
+  test("sets recipes", () => {
+    const recipes = [recipeFactory()];
+    const state = {
+      ...initialState,
+      isFetching: true,
+      isLoading: true,
+      error: new Error("test"),
+    };
+    const nextState = recipesSlice.reducer(
+      state,
+      recipesActions.setRecipes(recipes)
+    );
+    expect(nextState.recipes).toEqual(recipes);
+    expect(nextState.isFetching).toBeFalse();
+    expect(nextState.isLoading).toBeFalse();
+    expect(nextState.isUninitialized).toBeFalse();
+    expect(nextState.error).toBeUndefined();
   });
 });
