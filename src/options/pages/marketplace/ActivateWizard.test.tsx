@@ -47,9 +47,6 @@ jest.mock("@/services/api", () => ({
   useGetMarketplaceListingsQuery: jest.fn(() => ({
     data: [],
   })),
-  useGetRecipesQuery: jest.fn(() => ({
-    data: [],
-  })),
   useGetDatabasesQuery: jest.fn(() => ({
     data: [],
   })),
@@ -58,6 +55,10 @@ jest.mock("@/services/api", () => ({
   })),
   useCreateDatabaseMutation: jest.fn(() => [jest.fn()]),
   useAddDatabaseToGroupMutation: jest.fn(() => [jest.fn()]),
+}));
+
+jest.mock("@/recipes/recipesHooks", () => ({
+  useAllRecipes: jest.fn().mockReturnValue({ data: [] }),
 }));
 
 global.chrome.commands.getAll = jest.fn();

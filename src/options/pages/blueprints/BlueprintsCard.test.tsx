@@ -39,6 +39,12 @@ jest.mock("@/services/api", () => ({
   useGetStarterBlueprintsQuery: jest.fn(() => EMPTY_RESPONSE),
 }));
 
+jest.mock("@/recipes/recipesHooks", () => ({
+  useAllRecipes: jest
+    .fn()
+    .mockReturnValue({ data: [], isFetchingFromCache: false }),
+}));
+
 const installables: Installable[] = [];
 
 describe("BlueprintsCard", () => {

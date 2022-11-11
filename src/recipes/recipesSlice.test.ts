@@ -34,16 +34,16 @@ afterEach(() => {
 });
 
 describe("loadRecipesFromCache", () => {
-  test("calls registry and dispatches setRecipes action", async () => {
+  test("calls registry and dispatches setRecipesFromCache action", async () => {
     const dispatch = jest.fn();
     const cachedRecipes = [recipeFactory()];
     (registry.all as jest.Mock).mockResolvedValueOnce(cachedRecipes);
 
     const thunkFunction = recipesActions.loadRecipesFromCache();
-    await thunkFunction(dispatch, () => ({}), undefined);
+    await thunkFunction(dispatch, () => initialState, undefined);
     expect(registry.all).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
-      recipesActions.setRecipes(cachedRecipes)
+      recipesActions.setRecipesFromCache(cachedRecipes)
     );
   });
 });
