@@ -21,7 +21,7 @@ import { recipesActions } from "@/recipes/recipesSlice";
 import { useDispatch } from "react-redux";
 import { logActions } from "@/components/logViewer/logSlice";
 
-export function useDispatchInitActions(): void {
+function useDispatchInitActionsEffect(): void {
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -30,9 +30,11 @@ export function useDispatchInitActions(): void {
 
     // Load recipes from cache and refresh from server
     dispatch(recipesActions.loadRecipesFromCache());
-    dispatch(recipesActions.refreshRecipes({ backgroundRefresh: true }));
+    dispatch(recipesActions.refreshRecipes());
 
     // Start polling logs
     dispatch(logActions.pollLogs());
   }, [dispatch]);
 }
+
+export default useDispatchInitActionsEffect;

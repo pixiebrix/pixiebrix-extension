@@ -28,7 +28,7 @@ import RequireAuth from "@/auth/RequireAuth";
 import LoginCard from "@/pageEditor/components/LoginCard";
 import EditorLayout from "@/pageEditor/EditorLayout";
 import { PersistGate } from "redux-persist/integration/react";
-import { useDispatchInitActions } from "./hooks/useAppInitialization";
+import useDispatchInitActionsEffect from "./hooks/useDispatchInitActionsEffect";
 
 const PanelContent: React.FC = () => {
   const dispatch = useDispatch();
@@ -37,7 +37,7 @@ const PanelContent: React.FC = () => {
     dispatch(tabStateActions.connectToContentScript());
   });
 
-  useDispatchInitActions();
+  useDispatchInitActionsEffect();
 
   return (
     <PersistGate persistor={persistor}>

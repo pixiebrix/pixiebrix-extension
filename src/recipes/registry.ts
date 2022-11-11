@@ -18,6 +18,7 @@ import BaseRegistry from "@/baseRegistry";
 import { RegistryId, Schema, SchemaProperties, UiSchema } from "@/core";
 import { OptionsDefinition, RecipeDefinition } from "@/types/definitions";
 import { propertiesToSchema } from "@/validators/generic";
+import produce from "immer";
 import { sortBy } from "lodash";
 
 type UnnormalizedOptionsDefinition = {
@@ -61,10 +62,11 @@ function normalizeRecipeOptions(
   return { schema, uiSchema };
 }
 
-function fromJS(recipe: UnnormalizedRecipeDefinition) {
-  recipe.options = normalizeRecipeOptions(recipe.options);
-  (recipe as RegistryRecipeDefinition).id = recipe.metadata.id;
-  return recipe as RegistryRecipeDefinition;
+function fromJS(rawRecipe: UnnormalizedRecipeDefinition) {
+  return produce(rawRecipe, (draft) => {
+    draft.options = normalizeRecipeOptions(rawRecipe.options);
+    (draft as RegistryRecipeDefinition).id = rawRecipe.metadata.id;
+  }) as RegistryRecipeDefinition;
 }
 
 const registry = new BaseRegistry<RegistryId, RegistryRecipeDefinition>(
