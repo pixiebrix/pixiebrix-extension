@@ -40,7 +40,7 @@ describe("loadRecipesFromCache", () => {
     (registry.all as jest.Mock).mockResolvedValueOnce(cachedRecipes);
 
     const thunkFunction = recipesActions.loadRecipesFromCache();
-    await thunkFunction(dispatch, () => initialState, undefined);
+    await thunkFunction(dispatch, () => ({ recipes: initialState }), undefined);
     expect(registry.all).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
       recipesActions.setRecipesFromCache(cachedRecipes)
