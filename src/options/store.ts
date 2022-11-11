@@ -49,6 +49,8 @@ import { LogRootState } from "@/components/logViewer/logViewerTypes";
 import { AuthRootState } from "@/auth/authTypes";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { BlueprintsRootState } from "@/options/pages/blueprints/blueprintsSelectors";
+import { recipesSlice } from "@/recipes/recipesSlice";
+import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -94,6 +96,7 @@ const store = configureStore({
     workshop: persistReducer(persistWorkshopConfig, workshopSlice.reducer),
     blueprintModals: blueprintModalsSlice.reducer,
     logs: logSlice.reducer,
+    recipes: recipesSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {
@@ -105,6 +108,7 @@ const store = configureStore({
       },
     })
       .concat(appApi.middleware)
+      .concat(recipesMiddleware)
       .concat(routerMiddleware(hashHistory))
       .concat(conditionalMiddleware);
     /* eslint-enable unicorn/prefer-spread */

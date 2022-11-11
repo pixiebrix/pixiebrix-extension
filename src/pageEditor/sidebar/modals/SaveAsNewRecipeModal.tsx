@@ -23,18 +23,17 @@ import {
   selectActiveRecipeId,
   selectEditorModalVisibilities,
 } from "@/pageEditor/slices/editorSelectors";
-import { useGetRecipesQuery } from "@/services/api";
 import LoadingDataModal from "@/pageEditor/panes/save/LoadingDataModal";
+import { useRecipe } from "@/recipes/recipesHooks";
 
 const SaveAsNewRecipeModal: React.FC = () => {
   const { isSaveAsNewRecipeModalVisible: show } = useSelector(
     selectEditorModalVisibilities
   );
-  const activeRecipeId = useSelector(selectActiveRecipeId);
-  const { data: recipes, isLoading } = useGetRecipesQuery();
-  const recipeName =
-    recipes?.find((recipe) => recipe.metadata.id === activeRecipeId)?.metadata
-      ?.name ?? "this blueprint";
+
+  const recipeId = useSelector(selectActiveRecipeId);
+  const { data: recipe, isFetching } = useRecipe(recipeId);
+  const recipeName = recipe?.metadata?.name ?? "this blueprint";
 
   const dispatch = useDispatch();
 
@@ -47,7 +46,7 @@ const SaveAsNewRecipeModal: React.FC = () => {
     dispatch(actions.showCreateRecipeModal({ keepLocalCopy: false }));
   };
 
-  if (isLoading && show) {
+  if (isFetching && show) {
     return <LoadingDataModal onClose={hideModal} />;
   }
 
@@ -64,7 +63,7 @@ const SaveAsNewRecipeModal: React.FC = () => {
         <Button variant="info" onClick={hideModal}>
           Cancel
         </Button>
-        <Button variant="primary" disabled={isLoading} onClick={onConfirm}>
+        <Button variant="primary" disabled={isFetching} onClick={onConfirm}>
           Save as New
         </Button>
       </Modal.Footer>

@@ -17,7 +17,7 @@
 
 import React, { useEffect } from "react";
 import store, { hashHistory, persistor } from "./store";
-import { Provider } from "react-redux";
+import { Provider, useDispatch } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { Container } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -60,12 +60,15 @@ registerContribBlocks();
 // Register Widgets
 registerDefaultWidgets();
 
-// Start polling the logs
-void store.dispatch(logActions.pollLogs());
-
 const RefreshBricks: React.VFC = () => {
+  const dispatch = useDispatch();
   // Get the latest brick definitions. Defined as a component to put inside the RequireAuth gate in the layout.
   useRefresh();
+
+  useEffect(() => {
+    // Start polling logs
+    dispatch(logActions.pollLogs());
+  }, [dispatch]);
   return null;
 };
 

@@ -15,31 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LogEntry } from "@/background/logging";
-import { MessageContext } from "@/core";
+import { appApi } from "@/services/api";
+import { createListenerMiddleware, isAnyOf } from "@reduxjs/toolkit";
+import { refreshRecipes } from "./recipesSlice";
 
-export type LogState = {
-  /**
-   * The selected context for Logs
-   */
-  activeContext: MessageContext | null;
+const apiEndpoints = appApi.endpoints;
 
-  /**
-   * All available log entries
-   */
-  availableEntries: LogEntry[];
+const recipesListenerMiddleware = createListenerMiddleware();
+recipesListenerMiddleware.startListening({
+  matcher: isAnyOf(
+    apiEndpoints.createRecipe.matchFulfilled,
+    apiEndpoints.updateRecipe.matchFulfilled,
+    apiEndpoints.createPackage.matchFulfilled,
+    apiEndpoints.updatePackage.matchFulfilled,
+    apiEndpoints.deletePackage.matchFulfilled
+  ),
+  effect(action, { dispatch }) {
+    void dispatch(refreshRecipes());
+  },
+});
 
-  /**
-   * Log entries that have been selected for viewing (without pagination and filtering)
-   */
-  entries: LogEntry[];
-
-  /**
-   * Indicates the progress of the first loading from storage for the active context
-   */
-  isLoading: boolean;
-};
-
-export type LogRootState = {
-  logs: LogState;
-};
+export const recipesMiddleware = recipesListenerMiddleware.middleware;

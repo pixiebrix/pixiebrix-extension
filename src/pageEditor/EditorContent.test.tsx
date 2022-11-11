@@ -35,7 +35,6 @@ jest.mock("@/services/api", () => ({
   useGetMarketplaceTagsQuery: jest.fn(),
   useGetMarketplaceListingsQuery: jest.fn(),
   useGetEditablePackagesQuery: jest.fn(),
-  useGetRecipesQuery: jest.fn(),
   useCreateRecipeMutation: jest.fn(),
   useUpdateRecipeMutation: jest.fn(),
 }));

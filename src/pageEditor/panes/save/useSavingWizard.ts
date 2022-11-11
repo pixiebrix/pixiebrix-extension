@@ -40,7 +40,6 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import {
   useCreateRecipeMutation,
   useGetEditablePackagesQuery,
-  useGetRecipesQuery,
   useUpdateRecipeMutation,
 } from "@/services/api";
 import { replaceRecipeExtension } from "./saveHelpers";
@@ -49,6 +48,7 @@ import pDefer, { DeferredPromise } from "p-defer";
 import { PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { useAllRecipes } from "@/recipes/recipesHooks";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -82,7 +82,7 @@ const useSavingWizard = () => {
   const elements = useSelector(selectElements);
   const element = useSelector(selectActiveElement);
 
-  const { data: recipes } = useGetRecipesQuery();
+  const { data: recipes } = useAllRecipes();
   const { data: editablePackages } = useGetEditablePackagesQuery();
   const [createRecipe] = useCreateRecipeMutation();
   const [updateRecipe] = useUpdateRecipeMutation();

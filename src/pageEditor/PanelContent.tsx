@@ -28,6 +28,7 @@ import RequireAuth from "@/auth/RequireAuth";
 import LoginCard from "@/pageEditor/components/LoginCard";
 import EditorLayout from "@/pageEditor/EditorLayout";
 import { PersistGate } from "redux-persist/integration/react";
+import { logActions } from "@/components/logViewer/logSlice";
 
 const PanelContent: React.FC = () => {
   const dispatch = useDispatch();
@@ -35,9 +36,13 @@ const PanelContent: React.FC = () => {
   useTabEventListener(tabId, navigationEvent, () => {
     dispatch(tabStateActions.connectToContentScript());
   });
-  // Automatically connect on load
+
   useEffect(() => {
+    // Automatically connect on load
     dispatch(tabStateActions.connectToContentScript());
+
+    // Start polling logs
+    dispatch(logActions.pollLogs());
   }, [dispatch]);
 
   return (

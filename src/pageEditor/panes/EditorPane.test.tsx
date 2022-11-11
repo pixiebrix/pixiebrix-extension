@@ -81,7 +81,6 @@ jest.mock("@/services/api", () => ({
   useGetMarketplaceTagsQuery: jest.fn(),
   useGetMarketplaceListingsQuery: jest.fn(),
   useGetEditablePackagesQuery: jest.fn(),
-  useGetRecipesQuery: jest.fn(),
   useCreateRecipeMutation: jest.fn(),
   useUpdateRecipeMutation: jest.fn(),
 }));
@@ -167,10 +166,6 @@ beforeAll(async () => {
     data: packages,
     isLoading: false,
   });
-  (api.useGetRecipesQuery as jest.Mock).mockReturnValue({
-    data: [],
-    isLoading: false,
-  });
   (api.useCreateRecipeMutation as jest.Mock).mockReturnValue([jest.fn()]);
   (api.useUpdateRecipeMutation as jest.Mock).mockReturnValue([jest.fn()]);
 
@@ -231,8 +226,6 @@ async function addABlock(addButton: Element, blockName: string) {
 
   // Run the debounced search
   await runPendingTimers();
-
-  screen.debug(screen.getByRole("dialog"));
 
   // Sometimes unexpected extra results come back in the search,
   // but the exact-match result to the search string should

@@ -33,7 +33,7 @@ import {
 import { pick } from "lodash";
 import Form from "@/components/form/Form";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { appApi, useCreateRecipeMutation } from "@/services/api";
+import { useCreateRecipeMutation } from "@/services/api";
 import {
   RecipeDefinition,
   selectSourceRecipeMetadata,
@@ -48,6 +48,7 @@ import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { StylesConfig } from "react-select";
 import { RequireScope } from "@/auth/RequireScope";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
+import { useAllRecipes } from "@/recipes/recipesHooks";
 
 type ConvertInstallableFormState = {
   blueprintId: RegistryId;
@@ -130,6 +131,8 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
     dispatch(blueprintModalsSlice.actions.setShareContext(null));
   };
 
+  const { refetch: refetchRecipes } = useAllRecipes();
+
   const convertToRecipe = async (
     formValues: ConvertInstallableFormState,
     helpers: FormikHelpers<ConvertInstallableFormState>
@@ -162,7 +165,7 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
         })
       );
 
-      dispatch(appApi.util.invalidateTags(["Recipes"]));
+      refetchRecipes();
 
       dispatch(
         blueprintModalsSlice.actions.setShareContext({

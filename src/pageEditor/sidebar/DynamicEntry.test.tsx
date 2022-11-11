@@ -22,6 +22,10 @@ import DynamicEntry from "@/pageEditor/sidebar/DynamicEntry";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { authActions } from "@/auth/authSlice";
 
+jest.mock("@/recipes/recipesHooks", () => ({
+  useAllRecipes: jest.fn().mockReturnValue({ data: [], isLoading: false }),
+}));
+
 beforeAll(() => {
   // When a FontAwesomeIcon gets a title, it generates a random id, which breaks the snapshot.
   jest.spyOn(global.Math, "random").mockImplementation(() => 0);
