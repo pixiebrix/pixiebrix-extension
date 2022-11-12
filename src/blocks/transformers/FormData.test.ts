@@ -23,28 +23,26 @@ import { FormData } from "./FormData";
 describe("FormData block", () => {
   test("Basic form serialization", async () => {
     const brick = new FormData();
-    document.body.insertAdjacentHTML(
-      "afterbegin",
-      html`
-        <form id="serialize">
-          <input name="no-value" />
 
-          <input name="no-type" value="mongolia" />
+    document.body.innerHTML = html`
+      <form id="serialize">
+        <input name="no-value" />
 
-          <input type="text" name="text" value="georgia" />
+        <input name="no-type" value="mongolia" />
 
-          <input type="checkbox" name="check" value="uruguay" />
-          <input type="checkbox" name="check" value="burundi" checked />
+        <input type="text" name="text" value="georgia" />
 
-          <input type="checkbox" name="check-no-val" checked />
+        <input type="checkbox" name="check" value="uruguay" />
+        <input type="checkbox" name="check" value="burundi" checked />
 
-          <input type="checkbox" name="check-no-val-unchecked" />
+        <input type="checkbox" name="check-no-val" checked />
 
-          <input type="radio" name="radio" value="bahamas" />
-          <input type="radio" name="radio" value="benin" checked />
-        </form>
-      `
-    );
+        <input type="checkbox" name="check-no-val-unchecked" />
+
+        <input type="radio" name="radio" value="bahamas" />
+        <input type="radio" name="radio" value="benin" checked />
+      </form>
+    `;
 
     const arg = unsafeAssumeValidArg({ selector: "#serialize" });
 
@@ -69,16 +67,14 @@ describe("FormData block", () => {
 
   test("Django Admin Logout Form Serialization", async () => {
     const brick = new FormData();
-    document.body.insertAdjacentHTML(
-      "afterbegin",
-      // The name-less field was causing problems here: https://github.com/pixiebrix/pixiebrix-extension/issues/4593
-      html`
-        <form id="logout-form" method="post" action="/admin/logout/">
-          <input type="hidden" name="csrfmiddlewaretoken" value="redacted" />
-          <button type="submit">Log out</button>
-        </form>
-      `
-    );
+
+    // The name-less field was causing problems here: https://github.com/pixiebrix/pixiebrix-extension/issues/4593
+    document.body.innerHTML = html`
+      <form id="logout-form" method="post" action="/admin/logout/">
+        <input type="hidden" name="csrfmiddlewaretoken" value="redacted" />
+        <button type="submit">Log out</button>
+      </form>
+    `;
 
     const arg = unsafeAssumeValidArg({ selector: "#logout-form" });
 
@@ -97,20 +93,16 @@ describe("FormData block", () => {
 
   test("Multiple matching forms iterates all fields", async () => {
     const brick = new FormData();
-    document.body.insertAdjacentHTML(
-      "afterbegin",
-      // The name-less field was causing problems here: https://github.com/pixiebrix/pixiebrix-extension/issues/4593
-      html`
-        <div>
-          <form>
-            <input type="text" name="foo" value="42" />
-          </form>
-          <form>
-            <input type="text" name="bar" value="42" />
-          </form>
-        </div>
-      `
-    );
+    document.body.innerHTML = html`
+      <div>
+        <form>
+          <input type="text" name="foo" value="42" />
+        </form>
+        <form>
+          <input type="text" name="bar" value="42" />
+        </form>
+      </div>
+    `;
 
     const arg = unsafeAssumeValidArg({ selector: "form" });
 
