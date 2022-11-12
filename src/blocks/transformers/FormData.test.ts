@@ -66,4 +66,65 @@ describe("FormData block", () => {
       radio: "benin",
     });
   });
+
+  test("Django Admin Logout Form Serialization", async () => {
+    const brick = new FormData();
+    document.body.insertAdjacentHTML(
+      "afterbegin",
+      // The name-less field was causing problems here: https://github.com/pixiebrix/pixiebrix-extension/issues/4593
+      html`
+        <form id="logout-form" method="post" action="/admin/logout/">
+          <input type="hidden" name="csrfmiddlewaretoken" value="redacted" />
+          <button type="submit">Log out</button>
+        </form>
+      `
+    );
+
+    const arg = unsafeAssumeValidArg({ selector: "#logout-form" });
+
+    const result = await brick.run(arg, {
+      ctxt: null,
+      logger: null,
+      root: null,
+      runPipeline: neverPromise,
+      runRendererPipeline: neverPromise,
+    });
+
+    expect(result).toEqual({
+      csrfmiddlewaretoken: "redacted",
+    });
+  });
+
+  test("Multiple matching forms iterates all fields", async () => {
+    const brick = new FormData();
+    document.body.insertAdjacentHTML(
+      "afterbegin",
+      // The name-less field was causing problems here: https://github.com/pixiebrix/pixiebrix-extension/issues/4593
+      html`
+        <div>
+          <form>
+            <input type="text" name="foo" value="42" />
+          </form>
+          <form>
+            <input type="text" name="bar" value="42" />
+          </form>
+        </div>
+      `
+    );
+
+    const arg = unsafeAssumeValidArg({ selector: "form" });
+
+    const result = await brick.run(arg, {
+      ctxt: null,
+      logger: null,
+      root: null,
+      runPipeline: neverPromise,
+      runRendererPipeline: neverPromise,
+    });
+
+    expect(result).toEqual({
+      foo: "42",
+      bar: "42",
+    });
+  });
 });
