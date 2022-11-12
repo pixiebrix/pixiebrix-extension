@@ -19,6 +19,7 @@ import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { $safeFind } from "@/helpers";
+import { compact } from "lodash";
 
 function isCheckbox(
   element: HTMLInputElement | HTMLTextAreaElement
@@ -72,6 +73,6 @@ export class FormData extends Transformer {
         return [input.name, value];
       });
 
-    return Object.fromEntries(result);
+    return Object.fromEntries(compact(result));
   }
 }
