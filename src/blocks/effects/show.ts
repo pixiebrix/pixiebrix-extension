@@ -40,7 +40,6 @@ export class ShowEffect extends Effect {
   );
 
   async effect({ selector }: BlockArg<{ selector: string }>): Promise<void> {
-    const $elt = $safeFind(selector);
-    $elt.show();
+    $safeFind(selector).show();
   }
 }

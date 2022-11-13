@@ -45,12 +45,10 @@ function setSelectionHandler(handler: SelectionHandlerType) {
 }
 
 export function hideOverlay(): void {
-  if (overlay != null) {
-    overlay.remove();
-    overlay = null;
-    expandOverlay.remove();
-    expandOverlay = null;
-  }
+  overlay?.remove();
+  overlay = null;
+  expandOverlay?.remove();
+  expandOverlay = null;
 }
 
 export function stopInspectingNativeHandler(): void {

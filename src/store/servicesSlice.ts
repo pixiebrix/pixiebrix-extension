@@ -41,7 +41,6 @@ const servicesSlice = createSlice({
         throw new Error(`Service configuration ${id} does not exist`);
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- type-checked as UUID
       delete state.configured[id];
       return state;
     },

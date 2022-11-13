@@ -40,7 +40,6 @@ export class DisableEffect extends Effect {
   );
 
   async effect({ selector }: BlockArg<{ selector: string }>): Promise<void> {
-    const $elt = $safeFind(selector);
-    $elt.prop("disabled", true);
+    $safeFind(selector).prop("disabled", true);
   }
 }

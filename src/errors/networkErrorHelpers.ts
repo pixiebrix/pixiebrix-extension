@@ -46,8 +46,8 @@ export const NO_RESPONSE_MESSAGE =
 export function selectNetworkErrorMessage(error: unknown): string | null {
   if (
     (isAxiosError(error) && error.response == null) ||
-    (typeof (error as any).message === "string" &&
-      (error as { message: string }).message.toLowerCase() === "network error")
+    // Do not use isErrorObject nor getErrorMessage, that'd be a cyclical dependency
+    (isObject(error) && String(error.message).toLowerCase() === "network error")
   ) {
     if (!navigator.onLine) {
       return NO_INTERNET_MESSAGE;

@@ -16,15 +16,14 @@
  */
 
 import reportError from "@/telemetry/reportError";
-
-const API_KEY = process.env.GOOGLE_API_KEY;
-
 import { DISCOVERY_DOCS as SHEETS_DOCS } from "./sheets/handlers";
 import { DISCOVERY_DOCS as BIGQUERY_DOCS } from "./bigquery/handlers";
 import { isChrome } from "webext-detect-page";
 import pMemoize from "p-memoize";
 import injectScriptTag from "@/utils/injectScriptTag";
 import { isMV3 } from "@/mv3/api";
+
+const API_KEY = process.env.GOOGLE_API_KEY;
 
 declare global {
   interface Window {

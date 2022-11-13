@@ -176,7 +176,7 @@ export abstract class Reader extends Block implements IReader {
     return true;
   }
 
-  abstract isAvailable($elt?: JQuery): Promise<boolean>;
+  abstract isAvailable($elements?: JQuery): Promise<boolean>;
 
   abstract read(root: HTMLElement | Document): Promise<ReaderOutput>;
 

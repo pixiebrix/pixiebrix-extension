@@ -29,7 +29,7 @@ function isRendererOutput(
     return true;
   }
 
-  if (value != null && typeof value === "object") {
+  if (value && typeof value === "object") {
     const keys = Object.keys(value);
     return (
       keys.length > 0 &&

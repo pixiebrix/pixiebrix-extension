@@ -216,7 +216,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
             </>
           )}
 
-          {fileId != null && (
+          {fileId && (
             <ChildObjectField
               heading="Input Arguments"
               name={configName("data")}

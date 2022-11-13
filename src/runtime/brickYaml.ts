@@ -104,16 +104,16 @@ function stripNonSchemaProps(brick: any) {
   return produce(brick, (draft: any) => {
     for (const prop of ["sharing", "updated_at"]) {
       if (prop in draft) {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection -- constant above
+        // eslint-disable-next-line security/detect-object-injection -- constant above
         delete draft[prop];
       }
 
       if (
-        draft.metadata != null &&
+        draft.metadata &&
         typeof draft.metadata === "object" &&
         prop in draft.metadata
       ) {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection -- constant above
+        // eslint-disable-next-line security/detect-object-injection -- constant above
         delete draft.metadata[prop];
       }
     }
