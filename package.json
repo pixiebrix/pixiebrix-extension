@@ -237,7 +237,7 @@
     "msw": "^0.47.4",
     "msw-storybook-addon": "^1.6.3",
     "node-polyfill-webpack-plugin": "^2.0.0",
-    "node-sass": "^7.0.3",
+    "node-sass": "^8.0.0",
     "raw-loader": "^4.0.1",
     "react-select-event": "^5.3.0",
     "sass-loader": "^13.0.0",
