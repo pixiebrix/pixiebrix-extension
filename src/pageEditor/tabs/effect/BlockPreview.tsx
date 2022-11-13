@@ -262,7 +262,7 @@ const BlockPreview: React.FunctionComponent<{
     <div>
       {showTraceWarning && traceWarning}
 
-      {!blockInfo?.isPure && (
+      {blockInfo != null && !blockInfo.isPure && (
         <Button
           variant="info"
           size="sm"
