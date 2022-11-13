@@ -171,6 +171,15 @@ interface ExtendedIdentity extends Identity {
   removeCachedAuthToken(
     details: chrome.identity.TokenInformation
   ): Promise<void>;
+
+  /**
+   * Resets the state of the Identity API:
+   *
+   *  * Removes all OAuth2 access tokens from the token cache
+   *  * Removes user's account preferences
+   *  * De-authorizes the user from all auth flows
+   */
+  clearAllCachedAuthTokens(): Promise<void>;
 }
 
 // @ts-expect-error See Firefox/requestUpdateCheck-related comment above

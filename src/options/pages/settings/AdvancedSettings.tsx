@@ -58,10 +58,8 @@ const AdvancedSettings: React.FunctionComponent = () => {
 
   const clearTokens = useUserAction(
     async () => {
-      // Since Chrome 87
       // https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see documentation link
-      await (chromeP.identity as any).clearAllCachedAuthTokens();
+      await chromeP.identity.clearAllCachedAuthTokens();
 
       // Force reset of all queries, and partner bearer JWT will no longer be present.
       // NOTE: currently the Navbar will show the user information, as it falls back to cached auth
