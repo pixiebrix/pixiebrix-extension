@@ -18,13 +18,23 @@
 import { Effect } from "@/types";
 import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { type AutocompleteItem } from "autocompleter";
 import {
   $safeFindElementsWithRootMode,
   IS_ROOT_AWARE_BRICK_PROPS,
 } from "@/blocks/rootModeHelpers";
-import autocompleterStyleUrl from "autocompleter/autocomplete.css?loadAsUrl";
-import injectStylesheet from "@/utils/injectStylesheet";
+import { uuidv4 } from "@/types/helpers";
+
+function getDataList(options: string[]): HTMLDataListElement {
+  const datalist = document.createElement("datalist");
+  datalist.id = "pb-list-" + uuidv4();
+  for (const option of options) {
+    const optionElement = document.createElement("option");
+    optionElement.value = option;
+    datalist.append(optionElement);
+  }
+
+  return datalist;
+}
 
 export class AttachAutocomplete extends Effect {
   constructor() {
@@ -75,11 +85,8 @@ export class AttachAutocomplete extends Effect {
       blockId: this.id,
     });
 
-    const inputs = $elements
-      .toArray()
-      .filter((x) => !(x instanceof Document) && x.tagName === "INPUT");
-
-    if (inputs.length === 0) {
+    const $inputs = $elements.filter("input");
+    if ($inputs.length === 0) {
       logger.warn("No input elements found", {
         selector,
         isRootAware,
@@ -89,27 +96,8 @@ export class AttachAutocomplete extends Effect {
       return;
     }
 
-    const { default: autocompleter } = await import(
-      /* webpackChunkName: "autocompleter" */ "autocompleter"
-    );
-    // TODO: adjust style to hard-code font color so it works on dark themes that have a light font color by default
-    await injectStylesheet(autocompleterStyleUrl);
-
-    for (const input of inputs) {
-      autocompleter({
-        input: input as HTMLInputElement,
-        onSelect(item) {
-          $elements.val(item.label);
-        },
-        fetch(text: string, update: (items: AutocompleteItem[]) => void) {
-          const normalized = text.toLowerCase();
-          update(
-            options
-              .filter((x) => x.toLowerCase().includes(normalized))
-              .map((label) => ({ label }))
-          );
-        },
-      });
-    }
+    const datalist = getDataList(options);
+    document.head.append(datalist);
+    $inputs.attr("list", datalist.id);
   }
 }
