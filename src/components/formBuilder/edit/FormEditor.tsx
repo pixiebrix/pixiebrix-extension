@@ -178,7 +178,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
         );
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
+      // eslint-disable-next-line security/detect-object-injection
       delete draft.schema.properties[propertyToRemove];
 
       if (!uiSchema) {
@@ -187,7 +187,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
       // eslint-disable-next-line security/detect-object-injection -- prop name is a constant
       draft.uiSchema[UI_ORDER] = nextUiOrder;
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
+      // eslint-disable-next-line security/detect-object-injection
       delete draft.uiSchema[propertyToRemove];
     });
 

@@ -1,4 +1,4 @@
-/* eslint-disable security/detect-object-injection,@typescript-eslint/no-dynamic-delete -- working with object props a lot here */
+/* eslint-disable security/detect-object-injection -- working with object props a lot here */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *

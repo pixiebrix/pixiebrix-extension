@@ -32,7 +32,7 @@ export function removeField(parent: unknown, fieldName: string): void {
     const index = Number(fieldName);
     parent.splice(index, 1);
   } else if (isObject(parent)) {
-    // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-dynamic-delete
+    // eslint-disable-next-line security/detect-object-injection
     delete parent[fieldName];
   } else {
     // Can't remove a field from something that isn't an array or object

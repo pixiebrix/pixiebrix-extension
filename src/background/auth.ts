@@ -88,7 +88,7 @@ export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
       `deleteCachedAuthData: removed data for auth ${serviceAuthId}`
     );
     // OK because we're guarding with hasOwnProperty
-    // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-dynamic-delete
+    // eslint-disable-next-line security/detect-object-injection
     delete current[serviceAuthId];
     await setStorage(OAUTH2_STORAGE_KEY, current);
   } else {

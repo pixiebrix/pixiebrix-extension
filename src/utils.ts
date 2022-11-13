@@ -269,7 +269,7 @@ export function clearObject(obj: Record<string, unknown>): void {
   for (const member in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, member)) {
       // Checking to ensure own property
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
+      // eslint-disable-next-line security/detect-object-injection
       delete obj[member];
     }
   }
