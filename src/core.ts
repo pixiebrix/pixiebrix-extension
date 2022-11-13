@@ -808,7 +808,7 @@ export type ReaderOutput = Record<string, unknown>;
  */
 export interface IReader extends IBlock {
   /** Return true if the Reader is for a page/element. */
-  isAvailable: ($elt?: JQuery) => Promise<boolean>;
+  isAvailable: ($elements?: JQuery) => Promise<boolean>;
 
   read: (root: ReaderRoot) => Promise<ReaderOutput>;
 }

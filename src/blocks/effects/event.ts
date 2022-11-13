@@ -75,11 +75,11 @@ export class ElementEvent extends Effect {
     { selector, event }: BlockArg,
     { logger }: BlockOptions
   ): Promise<void> {
-    const $element = $safeFind(selector);
+    const $elements = $safeFind(selector);
 
-    if ($element.length === 0) {
+    if ($elements.length === 0) {
       logger.debug(`Element not found for selector: ${selector as string}`);
-    } else if ($element.length > 1) {
+    } else if ($elements.length > 1) {
       logger.debug(
         `Multiple elements found for selector: ${selector as string}`
       );
@@ -88,7 +88,7 @@ export class ElementEvent extends Effect {
     // Trigger the event (without jQuery #1869)
     // NOTE: the event is not "trusted" as being a user action
     // https://developer.mozilla.org/en-US/docs/Web/API/Event/isTrusted
-    for (const element of $element) {
+    for (const element of $elements) {
       if (event === "click") {
         // Trigger a proper MouseEvent on the most common event
         element.click();

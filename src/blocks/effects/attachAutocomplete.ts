@@ -59,9 +59,9 @@ export class AttachAutocomplete extends Effect {
     }>,
     { logger }: BlockOptions
   ): Promise<void> {
-    const $elt = $safeFind(selector);
+    const $elements = $safeFind(selector);
 
-    const inputs = $elt.toArray().filter((x) => x.tagName === "INPUT");
+    const inputs = $elements.toArray().filter((x) => x.tagName === "INPUT");
 
     const { default: autocompleter } = await import(
       /* webpackChunkName: "autocompleter" */ "autocompleter"
@@ -77,7 +77,7 @@ export class AttachAutocomplete extends Effect {
       autocompleter({
         input: input as HTMLInputElement,
         onSelect(item) {
-          $elt.val(item.label);
+          $elements.val(item.label);
         },
         fetch(text: string, update: (items: AutocompleteItem[]) => void) {
           const normalized = text.toLowerCase();

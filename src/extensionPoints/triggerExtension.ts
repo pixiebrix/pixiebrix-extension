@@ -576,13 +576,13 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   }
 
   private attachInitializeTrigger(
-    $element: JQuery<Document | HTMLElement>
+    $elements: JQuery<Document | HTMLElement>
   ): void {
     this.cancelObservers();
 
     // The caller will have already waited for the element. So $element will contain at least one element
     if (this.attachMode === "once") {
-      void this.debouncedRunTriggersAndNotify([...$element], {
+      void this.debouncedRunTriggersAndNotify([...$elements], {
         nativeEvent: null,
       });
       return;
@@ -604,7 +604,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     });
   }
 
-  private attachAppearTrigger($element: JQuery): void {
+  private attachAppearTrigger($elements: JQuery): void {
     this.cancelObservers();
 
     // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
@@ -622,7 +622,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       }
     );
 
-    for (const element of $element) {
+    for (const element of $elements) {
       appearObserver.observe(element);
     }
 
@@ -665,7 +665,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   }
 
   private attachDOMTrigger(
-    $element: JQuery<HTMLElement | Document>,
+    $elements: JQuery<HTMLElement | Document>,
     { watch = false }: { watch?: boolean }
   ): void {
     const domTrigger =
@@ -687,15 +687,15 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       "Removing existing %s handler for extension point",
       this.trigger
     );
-    $element.off(domTrigger, this.eventHandler);
+    $elements.off(domTrigger, this.eventHandler);
 
     // Install the DOM trigger
-    $element.on(domTrigger, this.eventHandler);
+    $elements.on(domTrigger, this.eventHandler);
     this.installedEvents.add(domTrigger);
     console.debug(
       "Installed %s event handler on %d elements",
       domTrigger,
-      $element.length,
+      $elements.length,
       {
         trigger: domTrigger,
         selector: this.triggerSelector,
@@ -705,7 +705,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     );
 
     if (watch) {
-      if ($element.get(0) === document) {
+      if ($elements.get(0) === document) {
         console.warn("Ignoring watchMode for document target");
         return;
       }
