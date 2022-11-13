@@ -194,7 +194,7 @@ export const produceSchemaOnPropertyNameChange = (
       draft.uiSchema[nextPropertyName] = draft.uiSchema[propertyName];
       delete draft.uiSchema[propertyName];
     }
-    /* eslint-enable @typescript-eslint/no-dynamic-delete, security/detect-object-injection */
+    /* eslint-enable security/detect-object-injection */
   });
 
 export const produceSchemaOnUiTypeChange = (
@@ -262,7 +262,7 @@ export const produceSchemaOnUiTypeChange = (
       delete draftPropertySchema.enum;
       delete draftPropertySchema.oneOf;
     }
-    /* eslint-enable @typescript-eslint/no-dynamic-delete, security/detect-object-injection */
+    /* eslint-enable security/detect-object-injection */
   });
 };
 

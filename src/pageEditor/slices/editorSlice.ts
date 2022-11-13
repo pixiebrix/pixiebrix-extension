@@ -802,7 +802,7 @@ export const editorSlice = createSlice({
       );
   },
 });
-/* eslint-enable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- re-enable rule */
+/* eslint-enable security/detect-object-injection */
 
 export const actions = {
   ...editorSlice.actions,

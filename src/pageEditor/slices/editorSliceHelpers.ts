@@ -173,4 +173,4 @@ export function activateElement(
   ensureElementUIState(state, element.uuid);
 }
 
-/* eslint-enable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- re-enable rule */
+/* eslint-enable security/detect-object-injection */
