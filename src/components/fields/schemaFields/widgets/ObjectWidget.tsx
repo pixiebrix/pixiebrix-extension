@@ -208,7 +208,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
       setFieldValue(
         name,
         produce(valueRef.current, (draft) => {
-          if (draft != null) {
+          if (draft) {
             delete draft[property];
           }
         })

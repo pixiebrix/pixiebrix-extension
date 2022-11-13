@@ -203,8 +203,6 @@ export async function enableOverlay(selector: string): Promise<void> {
 export async function disableOverlay(): Promise<void> {
   expectContext("contentScript");
 
-  if (_overlay != null) {
-    _overlay.remove();
-    _overlay = null;
-  }
+  _overlay?.remove();
+  _overlay = null;
 }

@@ -65,8 +65,8 @@ const BlueprintsPage: React.FunctionComponent = () => {
           context={showLogsContext.messageContext}
         />
       )}
-      {showShareContext?.extensionId != null && <ConvertToRecipeModal />}
-      {showShareContext?.blueprintId != null && <ShareRecipeModal />}
+      {showShareContext?.extensionId && <ConvertToRecipeModal />}
+      {showShareContext?.blueprintId && <ShareRecipeModal />}
       {body}
     </div>
   );

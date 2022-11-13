@@ -316,13 +316,13 @@ const DataPanel: React.FC = () => {
                 />
               </>
             )}
-            {record && "error" in record && record.error != null && (
+            {record && "error" in record && record.error && (
               <ErrorDisplay error={record.error} />
             )}
           </DataTab>
           <DataTab eventKey={DataPanelTabKey.Preview} isTraceEmpty={false}>
             {/* The value of block.if can be `false`, in this case we also need to show the warning */}
-            {blockConfig?.if != null && (
+            {blockConfig?.if && (
               <Alert variant="info">
                 This brick has a condition. The brick will not execute if the
                 condition is not met

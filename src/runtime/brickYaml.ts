@@ -109,7 +109,7 @@ function stripNonSchemaProps(brick: any) {
       }
 
       if (
-        draft.metadata != null &&
+        draft.metadata &&
         typeof draft.metadata === "object" &&
         prop in draft.metadata
       ) {

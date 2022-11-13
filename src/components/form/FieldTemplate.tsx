@@ -197,7 +197,7 @@ const FieldTemplate: React.FC<FieldProps> = ({
           ))}
         </Col>
       )}
-      {warning != null && (
+      {warning && (
         <Col xs="12" className="mb-2">
           {castArray(warning).map((warningMessage, index) => (
             <AnnotationAlert
