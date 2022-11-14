@@ -168,7 +168,7 @@ export const produceSchemaOnPropertyNameChange = (
 ) =>
   produce(rjsfSchema, (draft) => {
     // Relying on Immer to protect against object injections
-    /* eslint-disable @typescript-eslint/no-dynamic-delete, security/detect-object-injection */
+    /* eslint-disable security/detect-object-injection */
     draft.schema.properties[nextPropertyName] =
       draft.schema.properties[propertyName];
     delete draft.schema.properties[propertyName];
@@ -194,7 +194,7 @@ export const produceSchemaOnPropertyNameChange = (
       draft.uiSchema[nextPropertyName] = draft.uiSchema[propertyName];
       delete draft.uiSchema[propertyName];
     }
-    /* eslint-enable @typescript-eslint/no-dynamic-delete, security/detect-object-injection */
+    /* eslint-enable security/detect-object-injection */
   });
 
 export const produceSchemaOnUiTypeChange = (
@@ -207,7 +207,7 @@ export const produceSchemaOnUiTypeChange = (
 
   return produce(rjsfSchema, (draft) => {
     // Relying on Immer to protect against object injections
-    /* eslint-disable @typescript-eslint/no-dynamic-delete, security/detect-object-injection */
+    /* eslint-disable security/detect-object-injection */
     const draftPropertySchema = draft.schema.properties[propertyName] as Schema;
 
     if (uiWidget === "database") {
@@ -262,7 +262,7 @@ export const produceSchemaOnUiTypeChange = (
       delete draftPropertySchema.enum;
       delete draftPropertySchema.oneOf;
     }
-    /* eslint-enable @typescript-eslint/no-dynamic-delete, security/detect-object-injection */
+    /* eslint-enable security/detect-object-injection */
   });
 };
 

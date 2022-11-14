@@ -9,6 +9,11 @@
       "type": "string",
       "description": "PixieBrix partner ID"
     },
+    "controlRoomUrl": {
+      "type": "string",
+      "format": "uri",
+      "description": "Automation Anywhere Control Room URL, including scheme"
+    },
     "campaignIds": {
       "type": "array",
       "description": "Campaign IDs the extension is associated with",

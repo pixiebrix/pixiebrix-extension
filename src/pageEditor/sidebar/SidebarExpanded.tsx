@@ -37,7 +37,6 @@ import {
   selectNotDeletedExtensions,
 } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
-import { useGetRecipesQuery } from "@/services/api";
 import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
@@ -48,12 +47,12 @@ import AddExtensionPointButton from "./AddExtensionPointButton";
 import ExtensionEntry from "./ExtensionEntry";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { measureDurationFromAppStart } from "@/utils/performance";
+import { useAllRecipes } from "@/recipes/recipesHooks";
 
 const SidebarExpanded: React.FunctionComponent<{
   collapseSidebar: () => void;
 }> = ({ collapseSidebar }) => {
-  const { data: allRecipes, isLoading: isAllRecipesLoading } =
-    useGetRecipesQuery();
+  const { data: allRecipes, isLoading: isAllRecipesLoading } = useAllRecipes();
 
   useEffect(() => {
     if (!isAllRecipesLoading) {

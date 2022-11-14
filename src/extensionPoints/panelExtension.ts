@@ -454,7 +454,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     const errors: unknown[] = [];
 
     for (const extension of this.extensions) {
-      if (extensionIds != null && !extensionIds.includes(extension.id)) {
+      if (!extensionIds?.includes(extension.id)) {
         continue;
       }
 

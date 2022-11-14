@@ -1,4 +1,4 @@
-/* eslint-disable security/detect-object-injection,@typescript-eslint/no-dynamic-delete -- working with object props a lot here */
+/* eslint-disable security/detect-object-injection -- working with object props a lot here */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -208,7 +208,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
       setFieldValue(
         name,
         produce(valueRef.current, (draft) => {
-          if (draft != null) {
+          if (draft) {
             delete draft[property];
           }
         })

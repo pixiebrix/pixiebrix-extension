@@ -808,7 +808,7 @@ export type ReaderOutput = Record<string, unknown>;
  */
 export interface IReader extends IBlock {
   /** Return true if the Reader is for a page/element. */
-  isAvailable: ($elt?: JQuery) => Promise<boolean>;
+  isAvailable: ($elements?: JQuery) => Promise<boolean>;
 
   read: (root: ReaderRoot) => Promise<ReaderOutput>;
 }
@@ -980,3 +980,45 @@ export type ComponentRef = {
 };
 
 export type RendererOutput = SafeHTML | ComponentRef;
+
+export type UseCachedQueryResult<TData> = {
+  /**
+   * The value, or `undefined` if the state is loading or there was an error computing the state
+   */
+  data: TData | undefined;
+
+  /**
+   * When true, indicates that the query is currently fetching data from Registry cache
+   */
+  isFetchingFromCache: boolean;
+
+  /**
+   * When true, indicates that the registry cache has not been loaded yet
+   */
+  isCacheUninitialized: boolean;
+
+  /**
+   * When true, indicates that the query is currently fetching, but might have data from an earlier request. This will be true for both the first request fired off, as well as subsequent requests
+   */
+  isFetching: boolean;
+
+  /**
+   * When true, indicates that the query is currently loading for the first time, and has no data yet. This will be true for the first request fired off, but not for subsequent requests
+   */
+  isLoading: boolean;
+
+  /**
+   * When true, indicates that the query has not started yet
+   */
+  isUninitialized: boolean;
+
+  /**
+   * The error, if any
+   */
+  error: unknown;
+
+  /**
+   * A function to force refetch the query
+   */
+  refetch: () => void;
+};

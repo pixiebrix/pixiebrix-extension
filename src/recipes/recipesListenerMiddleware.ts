@@ -15,31 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import { BlockArg, Schema } from "@/core";
-import { propertiesToSchema } from "@/validators/generic";
-import { $safeFind } from "@/helpers";
+import { appApi } from "@/services/api";
+import { createListenerMiddleware, isAnyOf } from "@reduxjs/toolkit";
+import { refreshRecipes } from "./recipesSlice";
 
-export class DisableEffect extends Effect {
-  constructor() {
-    super(
-      "@pixiebrix/disable",
-      "Disable Element",
-      "Disable an element (e.g., button, input)"
-    );
-  }
+const apiEndpoints = appApi.endpoints;
 
-  inputSchema: Schema = propertiesToSchema(
-    {
-      selector: {
-        type: "string",
-        format: "selector",
-      },
-    },
-    ["selector"]
-  );
+const recipesListenerMiddleware = createListenerMiddleware();
+recipesListenerMiddleware.startListening({
+  matcher: isAnyOf(
+    apiEndpoints.createRecipe.matchFulfilled,
+    apiEndpoints.updateRecipe.matchFulfilled,
+    apiEndpoints.createPackage.matchFulfilled,
+    apiEndpoints.updatePackage.matchFulfilled,
+    apiEndpoints.deletePackage.matchFulfilled
+  ),
+  effect(action, { dispatch }) {
+    void dispatch(refreshRecipes());
+  },
+});
 
-  async effect({ selector }: BlockArg<{ selector: string }>): Promise<void> {
-    $safeFind(selector).prop("disabled", true);
-  }
-}
+export const recipesMiddleware = recipesListenerMiddleware.middleware;

@@ -41,12 +41,12 @@ import {
   selectDirtyOptionsForRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
-import { useGetRecipesQuery } from "@/services/api";
 import { Formik } from "formik";
 import { OptionsDefinition } from "@/types/definitions";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/pageEditor/components/Effect";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import { useRecipe } from "@/recipes/recipesHooks";
 
 const fieldTypes = [
   ...FORM_FIELD_TYPE_OPTIONS.filter(
@@ -71,8 +71,8 @@ const emptyOptions: OptionsDefinition = {
 const RecipeOptions: React.VFC = () => {
   const [activeField, setActiveField] = useState<string>();
   const recipeId = useSelector(selectActiveRecipeId);
-  const { data: recipes, isLoading, error } = useGetRecipesQuery();
-  const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
+  const { data: recipe, isFetching, error } = useRecipe(recipeId);
+
   const savedOptions = recipe?.options;
   const dirtyOptions = useSelector(selectDirtyOptionsForRecipeId(recipeId));
 
@@ -88,12 +88,12 @@ const RecipeOptions: React.VFC = () => {
     [dispatch]
   );
 
-  if (isLoading || error) {
+  if (isFetching || error) {
     return (
       <Container>
         <Row>
           <Col>
-            {isLoading ? (
+            {isFetching ? (
               <Loader />
             ) : (
               <div className="text-danger">{getErrorMessage(error)}</div>

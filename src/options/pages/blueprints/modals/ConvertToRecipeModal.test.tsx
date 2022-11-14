@@ -24,6 +24,10 @@ import React from "react";
 import { blueprintModalsSlice } from "./blueprintModalsSlice";
 import ConvertToRecipeModal from "./ConvertToRecipeModal";
 
+jest.mock("@/recipes/recipesHooks", () => ({
+  useAllRecipes: jest.fn().mockReturnValue({ refetch: jest.fn() }),
+}));
+
 describe("it renders", () => {
   test("default state", () => {
     const extension = cloudExtensionFactory();

@@ -51,11 +51,11 @@ export class HideEffect extends Effect {
     selector: string;
     mode?: "hide" | "remove";
   }>): Promise<void> {
-    const $elt = $safeFind(selector);
+    const $elements = $safeFind(selector);
     if (mode === "hide") {
-      $elt.hide();
+      $elements.hide();
     } else {
-      $elt.remove();
+      $elements.remove();
     }
   }
 }

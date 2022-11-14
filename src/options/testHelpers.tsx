@@ -22,6 +22,7 @@ import settingsSlice from "@/store/settingsSlice";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { createRenderWithWrappers } from "@/testUtils/testHelpers";
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
+import { recipesSlice } from "@/recipes/recipesSlice";
 
 const renderWithWrappers = createRenderWithWrappers(() =>
   configureStore({
@@ -31,6 +32,7 @@ const renderWithWrappers = createRenderWithWrappers(() =>
       options: extensionsSlice.reducer,
       blueprintModals: blueprintModalsSlice.reducer,
       blueprints: blueprintsSlice.reducer,
+      recipes: recipesSlice.reducer,
     },
   })
 );

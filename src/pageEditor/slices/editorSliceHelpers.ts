@@ -32,7 +32,7 @@ import {
   RecipeMetadataFormState,
 } from "@/types/definitions";
 
-/* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
+/* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
 export function ensureElementUIState(
   state: WritableDraft<EditorState>,
@@ -173,4 +173,4 @@ export function activateElement(
   ensureElementUIState(state, element.uuid);
 }
 
-/* eslint-enable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- re-enable rule */
+/* eslint-enable security/detect-object-injection */

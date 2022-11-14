@@ -15,31 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import { BlockArg, Schema } from "@/core";
-import { propertiesToSchema } from "@/validators/generic";
-import { $safeFind } from "@/helpers";
+import { RecipeDefinition } from "@/types/definitions";
 
-export class DisableEffect extends Effect {
-  constructor() {
-    super(
-      "@pixiebrix/disable",
-      "Disable Element",
-      "Disable an element (e.g., button, input)"
-    );
-  }
+export type RecipesState = {
+  recipes: RecipeDefinition[];
 
-  inputSchema: Schema = propertiesToSchema(
-    {
-      selector: {
-        type: "string",
-        format: "selector",
-      },
-    },
-    ["selector"]
-  );
+  isFetchingFromCache: boolean;
+  isCacheUninitialized: boolean;
 
-  async effect({ selector }: BlockArg<{ selector: string }>): Promise<void> {
-    $safeFind(selector).prop("disabled", true);
-  }
-}
+  isLoading: boolean;
+  isFetching: boolean;
+  isUninitialized: boolean;
+
+  error: unknown;
+};
+
+export type RecipesRootState = {
+  recipes: RecipesState;
+};

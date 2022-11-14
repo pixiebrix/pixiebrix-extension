@@ -100,7 +100,7 @@ async function processFind(
   );
 }
 
-function processElement($elt: JQuery, selector: SingleSelector) {
+function processElement($elements: JQuery, selector: SingleSelector) {
   const CONTENT_TYPES: Record<string, number | undefined> = {
     text: Node.TEXT_NODE,
     comment: Node.COMMENT_NODE,
@@ -108,7 +108,7 @@ function processElement($elt: JQuery, selector: SingleSelector) {
 
   let value;
   if (selector.attr) {
-    value = $elt.attr(selector.attr);
+    value = $elements.attr(selector.attr);
   } else if (selector.contents) {
     const nodeType = CONTENT_TYPES[selector.contents];
     if (!nodeType) {
@@ -119,7 +119,7 @@ function processElement($elt: JQuery, selector: SingleSelector) {
 
     // https://stackoverflow.com/questions/14248519/jquery-text-equivalent-that-converts-br-tags-to-whitespace
     value = cleanValue(
-      $elt
+      $elements
         .contents()
         .filter(function () {
           return this.nodeType === nodeType;
@@ -127,16 +127,16 @@ function processElement($elt: JQuery, selector: SingleSelector) {
         .text()
     );
   } else if (selector.data) {
-    value = $elt.data(selector.data);
-  } else if ($elt.is("input,select,textarea")) {
-    value = $elt.val();
+    value = $elements.data(selector.data);
+  } else if ($elements.is("input,select,textarea")) {
+    value = $elements.val();
   } else if (selector.renderedText) {
-    const $clone = $elt.clone();
+    const $clone = $elements.clone();
     $clone.find("br").replaceWith("\n");
     // eslint-disable-next-line unicorn/prefer-dom-node-text-content -- TODO: May be unnecessary
     value = $clone.get(0).innerText;
   } else {
-    value = cleanValue($elt.text());
+    value = cleanValue($elements.text());
   }
 
   return castValue(value, selector.type);
@@ -165,9 +165,11 @@ async function select(
   }
 
   const findElements = () => {
-    const $elt = selectorString ? $safeFind(selectorString, root) : $(root);
-    if ($elt.length > 0 || multi) {
-      return $elt.get();
+    const $elements = selectorString
+      ? $safeFind(selectorString, root)
+      : $(root);
+    if ($elements.length > 0 || multi) {
+      return $elements.get();
     }
   };
 

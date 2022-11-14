@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId, Schema, SchemaProperties, UiSchema, UUID } from "@/core";
+import { RegistryId, UUID } from "@/core";
 import { BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import {
   EditablePackage,
-  OptionsDefinition,
   RecipeDefinition,
   ServiceDefinition,
   UnsavedRecipeDefinition,
@@ -43,9 +42,6 @@ import {
 } from "@/types/contract";
 import { components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
-import { propertiesToSchema } from "@/validators/generic";
-import { produce } from "immer";
-import { sortBy } from "lodash";
 import { serializeError } from "serialize-error";
 import { UnknownObject } from "@/types";
 
@@ -100,43 +96,6 @@ const appBaseQuery: BaseQueryFn<QueryArgs> = async ({
   }
 };
 
-type UnnormalizedOptionsDefinition = {
-  schema: Schema | SchemaProperties;
-  uiSchema?: UiSchema;
-};
-
-type UnnormalizedRecipeDefinition = Exclude<RecipeDefinition, "options"> & {
-  options?: UnnormalizedOptionsDefinition;
-};
-
-/**
- * Fix hand-crafted recipe options from the workshop
- */
-function normalizeRecipeOptions(
-  options?: OptionsDefinition
-): OptionsDefinition {
-  if (options == null) {
-    return {
-      schema: {},
-      uiSchema: {},
-    };
-  }
-
-  const recipeSchema = options.schema ?? {};
-  const schema: Schema =
-    "type" in recipeSchema &&
-    recipeSchema.type === "object" &&
-    "properties" in recipeSchema
-      ? recipeSchema
-      : propertiesToSchema(recipeSchema as SchemaProperties);
-  const uiSchema: UiSchema = options.uiSchema ?? {};
-  uiSchema["ui:order"] = uiSchema["ui:order"] ?? [
-    ...sortBy(Object.keys(schema.properties ?? {})),
-    "*",
-  ];
-  return { schema, uiSchema };
-}
-
 export const appApi = createApi({
   reducerPath: "appApi",
   baseQuery: appBaseQuery,
@@ -150,7 +109,6 @@ export const appApi = createApi({
     "Groups",
     "MarketplaceListings",
     "MarketplaceTags",
-    "Recipes",
     "EditablePackages",
     "Invitations",
     "CloudExtensions",
@@ -283,19 +241,6 @@ export const appApi = createApi({
       query: () => ({ url: "/api/bricks/", method: "get" }),
       providesTags: ["EditablePackages"],
     }),
-    getRecipes: builder.query<RecipeDefinition[], void>({
-      query: () => ({ url: "/api/recipes/", method: "get" }),
-      providesTags: ["Recipes"],
-      transformResponse(
-        baseQueryReturnValue: UnnormalizedRecipeDefinition[]
-      ): RecipeDefinition[] {
-        return produce<RecipeDefinition[]>(baseQueryReturnValue, (draft) => {
-          for (const recipe of draft) {
-            recipe.options = normalizeRecipeOptions(recipe.options);
-          }
-        });
-      },
-    }),
     getCloudExtensions: builder.query<CloudExtension[], void>({
       query: () => ({ url: "/api/extensions/", method: "get" }),
       providesTags: ["CloudExtensions"],
@@ -334,7 +279,7 @@ export const appApi = createApi({
           },
         };
       },
-      invalidatesTags: ["Recipes", "EditablePackages"],
+      invalidatesTags: ["EditablePackages"],
     }),
     updateRecipe: builder.mutation<
       PackageUpsertResponse,
@@ -359,7 +304,6 @@ export const appApi = createApi({
       },
       invalidatesTags: (result, error, { packageId }) => [
         { type: "Package", id: packageId },
-        "Recipes",
         "EditablePackages",
       ],
     }),
@@ -379,7 +323,7 @@ export const appApi = createApi({
           data,
         };
       },
-      invalidatesTags: ["Recipes", "EditablePackages"],
+      invalidatesTags: ["EditablePackages"],
     }),
     updatePackage: builder.mutation<
       PackageUpsertResponse,
@@ -394,7 +338,6 @@ export const appApi = createApi({
       },
       invalidatesTags: (result, error, { id }) => [
         { type: "Package", id },
-        "Recipes",
         "EditablePackages",
         "PackageVersion",
       ],
@@ -405,7 +348,6 @@ export const appApi = createApi({
       },
       invalidatesTags: (result, error, { id }) => [
         { type: "Package", id },
-        "Recipes",
         "EditablePackages",
       ],
     }),
@@ -455,7 +397,6 @@ export const {
   useGetMarketplaceTagsQuery,
   useGetOrganizationsQuery,
   useGetGroupsQuery,
-  useGetRecipesQuery,
   useGetCloudExtensionsQuery,
   useDeleteCloudExtensionMutation,
   useGetEditablePackagesQuery,
@@ -469,4 +410,5 @@ export const {
   useListPackageVersionsQuery,
   useUpdateScopeMutation,
   useGetStarterBlueprintsQuery,
+  util,
 } = appApi;

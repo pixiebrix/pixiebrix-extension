@@ -82,7 +82,7 @@ function useDependency(serviceId: RegistryId | RegistryId[]): Dependency {
   }, [dependency?.config]);
 
   useEffect(() => {
-    if (dependency != null && !serviceResult?.hasPermissions) {
+    if (dependency && !serviceResult?.hasPermissions) {
       const key = listenerKey(dependency);
       const listener = () => {
         setGrantedPermissions(true);

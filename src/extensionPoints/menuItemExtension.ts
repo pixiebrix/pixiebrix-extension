@@ -745,7 +745,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         // Run in order so that the order stays the same for where they get rendered. The service
         // context is the only thing that's async as part of the initial configuration right now
 
-        if (extensionIds != null && !extensionIds.includes(extension.id)) {
+        if (!extensionIds?.includes(extension.id)) {
           continue;
         }
 
@@ -896,22 +896,22 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
         console.warn("getReaderRoot called with multiple containerElements");
       }
 
-      const $elt = $containerElement.parents(selector);
-      if ($elt.length > 1) {
+      const $elements = $containerElement.parents(selector);
+      if ($elements.length > 1) {
         throw new MultipleElementsFoundError(
           selector,
           "Multiple elements found for reader selector"
         );
       }
 
-      if ($elt.length === 0) {
+      if ($elements.length === 0) {
         throw new NoElementsFoundError(
           selector,
           "No elements found for reader selector"
         );
       }
 
-      return $elt.get(0);
+      return $elements.get(0);
     }
 
     return document;

@@ -35,7 +35,6 @@ import useResetMock from "@/pageEditor/hooks/useResetExtension";
 import {
   useCreateRecipeMutation as useCreateRecipeMutationMock,
   useUpdateRecipeMutation as useUpdateRecipeMutationMock,
-  useGetRecipesQuery as useGetRecipesQueryMock,
   useGetEditablePackagesQuery as useGetEditablePackagesQueryMock,
 } from "@/services/api";
 import { selectElements } from "@/pageEditor/slices/editorSelectors";
@@ -46,6 +45,7 @@ import { pick } from "lodash";
 import extensionsSlice from "@/store/extensionsSlice";
 import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
 import { OptionsDefinition } from "@/types/definitions";
+import { useAllRecipes } from "@/recipes/recipesHooks";
 
 jest.mock("@/telemetry/logging");
 jest.mock("@/pageEditor/hooks/useCreate");
@@ -54,11 +54,14 @@ jest.mock("@/pageEditor/hooks/useResetExtension");
 jest.mock("@/services/api", () => ({
   useCreateRecipeMutation: jest.fn().mockReturnValue([]),
   useUpdateRecipeMutation: jest.fn().mockReturnValue([]),
-  useGetRecipesQuery: jest.fn().mockReturnValue({
+  useGetEditablePackagesQuery: jest.fn().mockReturnValue({
     data: [],
     isLoading: false,
   }),
-  useGetEditablePackagesQuery: jest.fn().mockReturnValue({
+}));
+
+jest.mock("@/recipes/recipesHooks", () => ({
+  useAllRecipes: jest.fn().mockReturnValue({
     data: [],
     isLoading: false,
   }),
@@ -85,10 +88,11 @@ const renderUseSavingWizard = (store: Store) =>
 
 test("maintains wizard open state", () => {
   const recipe = recipeFactory();
-  (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
+  (useAllRecipes as jest.Mock).mockReturnValue({
     data: [recipe],
     isLoading: false,
   });
+
   const recipeMetadata = installedRecipeMetadataFactory(recipe.metadata);
   const element = formStateFactory({
     recipe: recipeMetadata,
@@ -167,7 +171,7 @@ describe("saving a Recipe Extension", () => {
     const recipe = recipeFactory({
       options: recipeOptions,
     });
-    (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
+    (useAllRecipes as jest.Mock).mockReturnValue({
       data: [recipe],
       isLoading: false,
     });

@@ -26,14 +26,12 @@ import { sortBy } from "lodash";
 import Form from "@/components/form/Form";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import {
-  appApi,
   useGetEditablePackagesQuery,
-  useGetRecipesQuery,
   useUpdateRecipeMutation,
 } from "@/services/api";
 import { FormikHelpers } from "formik";
 import notify from "@/utils/notify";
-import { getRecipeById, getScopeAndId } from "@/utils";
+import { getScopeAndId } from "@/utils";
 import { produce } from "immer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -52,6 +50,7 @@ import { selectAuth } from "@/auth/authSelectors";
 import { Organization, UserRole } from "@/types/contract";
 import Loading from "./Loading";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
+import { useRecipe } from "@/recipes/recipesHooks";
 
 type ShareInstallableFormState = {
   public: boolean;
@@ -76,15 +75,18 @@ const ShareRecipeModal: React.FunctionComponent = () => {
   const [updateRecipe] = useUpdateRecipeMutation();
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
     useGetEditablePackagesQuery();
-  const { data: recipes, isFetching: isFetchingRecipes } = useGetRecipesQuery();
-  const recipe = getRecipeById(recipes, blueprintId);
+  const {
+    data: recipe,
+    isFetching: isFetchingRecipe,
+    refetch: refetchRecipes,
+  } = useRecipe(blueprintId);
 
   const closeModal = () => {
     dispatch(blueprintModalsSlice.actions.setShareContext(null));
   };
 
   // If the was just converted to a blueprint, the API request is likely be in progress and recipe will be null
-  if (isFetchingRecipes) {
+  if (isFetchingRecipe) {
     return <Loading />;
   }
 
@@ -114,7 +116,7 @@ const ShareRecipeModal: React.FunctionComponent = () => {
 
       notify.success("Shared brick");
       closeModal();
-      dispatch(appApi.util.invalidateTags(["Recipes"]));
+      refetchRecipes();
     } catch (error) {
       if (isSingleObjectBadRequestError(error) && error.response.data.config) {
         helpers.setStatus(error.response.data.config);

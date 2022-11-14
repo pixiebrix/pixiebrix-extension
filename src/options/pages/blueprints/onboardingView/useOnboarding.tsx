@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
+import { useGetOrganizationsQuery } from "@/services/api";
 import useFlags from "@/hooks/useFlags";
 import { useMemo } from "react";
 import useDeployments from "@/hooks/useDeployments";
 import { useSelector } from "react-redux";
 import { selectActiveTab } from "@/options/pages/blueprints/blueprintsSelectors";
+import { useAllRecipes } from "@/recipes/recipesHooks";
 
 export type OnboardingType =
   | "default"
@@ -36,8 +37,7 @@ function useOnboarding(): {
   const { restrict } = useFlags();
   const activeTab = useSelector(selectActiveTab);
 
-  const { data: rawRecipes, isLoading: isRecipesLoading } =
-    useGetRecipesQuery();
+  const { data: rawRecipes, isFetching: isRecipesLoading } = useAllRecipes();
   const { data: organizations, isLoading: isOrganizationsLoading } =
     useGetOrganizationsQuery();
   const { hasUpdate: hasDeployments, isLoading: isDeploymentsLoading } =

@@ -19,6 +19,10 @@ import OptionsBody from "@/options/pages/marketplace/OptionsBody";
 import ServicesBody from "@/options/pages/marketplace/ServicesBody";
 import PermissionsBody from "@/options/pages/marketplace/PermissionsBody";
 import { inputProperties } from "@/helpers";
+import * as Yup from "yup";
+import { buildYup } from "schema-to-yup";
+import { dereference } from "@/validators/generic";
+import { useAsyncState } from "@/hooks/common";
 
 const STEPS: WizardStep[] = [
   // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for TypeScript
@@ -35,8 +39,32 @@ const STEPS: WizardStep[] = [
   { key: "activate", label: "Permissions & URLs", Component: PermissionsBody },
 ];
 
-function useWizard(blueprint: RecipeDefinition): [WizardStep[], WizardValues] {
+function useWizard(
+  blueprint: RecipeDefinition
+): [WizardStep[], WizardValues, Yup.ObjectSchema<any>] {
   const installedExtensions = useSelector(selectExtensions);
+  const [optionsValidationSchema] = useAsyncState(async () => {
+    const dereferencedOptionsSchema = await dereference(
+      blueprint.options?.schema
+    );
+    const optionSchemaWithNullableRequiredFields = {
+      ...dereferencedOptionsSchema,
+      properties: mapValues(
+        dereferencedOptionsSchema.properties,
+        (optionSchema: Schema, name: string) =>
+          blueprint.options?.schema?.required?.includes(name)
+            ? {
+                ...optionSchema,
+                // Yup will produce an ugly "null is not type of x" validation error instead of a
+                // "this field is required" error unless we allow null values for required fields
+                // @see FieldTemplate.tsx for context as to why fields are null instead of undefined
+                nullable: true,
+              }
+            : optionSchema
+      ),
+    };
+    return buildYup(optionSchemaWithNullableRequiredFields, {});
+  });
 
   return useMemo(() => {
     const extensionPoints = blueprint.extensionPoints ?? [];
@@ -93,8 +121,33 @@ function useWizard(blueprint: RecipeDefinition): [WizardStep[], WizardValues] {
       grantPermissions: false,
     };
 
-    return [steps, initialValues];
-  }, [blueprint, installedExtensions]);
+    const validationSchema = Yup.object().shape({
+      extensions: Yup.object().shape(
+        Object.fromEntries(
+          extensionPoints.map((_, index) => [index, Yup.boolean().required()])
+        )
+      ),
+      // Services is validated in useInstall; denoting services as required will prevent
+      // form submission without errors until we implement error views on ServicesBody.
+      // This is a refactoring opportunity
+      services: Yup.array().of(
+        Yup.object().shape({
+          id: Yup.string(),
+          config: Yup.string(),
+        })
+      ),
+      optionsArgs: optionsValidationSchema,
+      grantPermissions: Yup.boolean(),
+    });
+
+    return [steps, initialValues, validationSchema];
+  }, [
+    blueprint.extensionPoints,
+    blueprint?.metadata.id,
+    blueprint.options?.schema,
+    installedExtensions,
+    optionsValidationSchema,
+  ]);
 }
 
 export default useWizard;

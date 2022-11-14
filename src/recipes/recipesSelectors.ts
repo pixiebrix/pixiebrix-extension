@@ -15,26 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Registry, RegistryItem } from "@/baseRegistry";
-import { useState } from "react";
-import { useAsyncEffect } from "use-async-effect";
-import { RegistryId } from "@/core";
+import { UseCachedQueryResult } from "@/core";
+import { RecipeDefinition } from "@/types/definitions";
+import { Except } from "type-fest";
+import { RecipesRootState } from "./recipesTypes";
 
-export function useRegistry<Id extends RegistryId, T extends RegistryItem<Id>>(
-  registry: Registry<Id, T>,
-  id: Id
-): T {
-  const [result, setResult] = useState<T>();
-  useAsyncEffect(
-    async (isMounted) => {
-      const result = await registry.lookup(id);
-      if (!isMounted) {
-        return;
-      }
+export type AllRecipesSelector = Except<
+  UseCachedQueryResult<RecipeDefinition[]>,
+  "refetch"
+>;
 
-      setResult(result);
-    },
-    [registry, id]
-  );
-  return result;
+export function selectAllRecipes({
+  recipes,
+}: RecipesRootState): AllRecipesSelector {
+  return {
+    data: recipes.recipes,
+
+    isFetchingFromCache: recipes.isFetchingFromCache,
+    isCacheUninitialized: recipes.isCacheUninitialized,
+
+    isFetching: recipes.isFetching,
+    isLoading: recipes.isLoading,
+    isUninitialized: recipes.isUninitialized,
+
+    error: recipes.error,
+  };
 }

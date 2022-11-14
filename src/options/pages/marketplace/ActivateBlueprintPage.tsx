@@ -59,11 +59,11 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
   }, [remoteBlueprint]);
 
   const body = useMemo(() => {
-    if (remoteBlueprint?.config?.extensionPoints != null) {
+    if (remoteBlueprint?.config?.extensionPoints) {
       return <ActivateWizard blueprint={recipeDefinition} />;
     }
 
-    if (remoteBlueprint != null) {
+    if (remoteBlueprint) {
       // There's nothing stopping someone from hitting the link with a non-blueprint (e.g., service, component). So
       // show an error message if not a valid blueprint
       return (

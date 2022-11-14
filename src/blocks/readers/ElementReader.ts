@@ -40,15 +40,15 @@ export class ElementReader extends Reader {
     const element = isHTMLElement(elementOrDocument)
       ? elementOrDocument
       : document.body;
-    const $element = $(element);
+    const $elements = $(element);
 
     return {
       tagName: element.tagName,
       attrs: Object.fromEntries(
         Object.values(element.attributes).map((x) => [x.name, x.value])
       ),
-      text: $element.text().trim(),
-      data: $element.data(),
+      text: $elements.text().trim(),
+      data: $elements.data(),
     };
   }
 
