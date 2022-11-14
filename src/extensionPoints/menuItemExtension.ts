@@ -745,7 +745,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         // Run in order so that the order stays the same for where they get rendered. The service
         // context is the only thing that's async as part of the initial configuration right now
 
-        if (!extensionIds?.includes(extension.id)) {
+        if (extensionIds != null && !extensionIds.includes(extension.id)) {
           continue;
         }
 
