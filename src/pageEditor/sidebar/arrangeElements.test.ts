@@ -29,18 +29,18 @@ import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import { ActionFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 // Recipes
-const ID_FOO = "test/recipe-foo";
+const ID_FOO = validateRegistryId("test/recipe-foo");
 const recipeFoo: RecipeDefinition = recipeDefinitionFactory({
   metadata: recipeMetadataFactory({
-    id: validateRegistryId(ID_FOO),
+    id: ID_FOO,
     name: "Foo Recipe",
   }),
 });
 
-const ID_BAR = "test/recipe-bar";
+const ID_BAR = validateRegistryId("test/recipe-bar");
 const recipeBar: RecipeDefinition = recipeDefinitionFactory({
   metadata: recipeMetadataFactory({
-    id: validateRegistryId(ID_BAR),
+    id: ID_BAR,
     name: "Bar Recipe",
   }),
 });
@@ -51,7 +51,7 @@ const installedFooA: IExtension = extensionFactory({
   id: ID_FOO_A,
   label: "A",
   _recipe: installedRecipeMetadataFactory({
-    id: validateRegistryId(ID_FOO),
+    id: ID_FOO,
   }),
 });
 
@@ -60,7 +60,7 @@ const dynamicFooB: ActionFormState = menuItemFormStateFactory({
   uuid: ID_FOO_B,
   label: "B",
   recipe: installedRecipeMetadataFactory({
-    id: validateRegistryId(ID_FOO),
+    id: ID_FOO,
   }),
 });
 
@@ -75,7 +75,7 @@ const installedBarD: IExtension = extensionFactory({
   id: ID_BAR_D,
   label: "D",
   _recipe: installedRecipeMetadataFactory({
-    id: validateRegistryId(ID_BAR),
+    id: ID_BAR,
   }),
 });
 
@@ -84,7 +84,7 @@ const dynamicBarE: ActionFormState = menuItemFormStateFactory({
   uuid: ID_BAR_E,
   label: "E",
   recipe: installedRecipeMetadataFactory({
-    id: validateRegistryId(ID_BAR),
+    id: ID_BAR,
   }),
 });
 
@@ -93,7 +93,7 @@ const installedBarF: IExtension = extensionFactory({
   id: ID_BAR_F,
   label: "F",
   _recipe: installedRecipeMetadataFactory({
-    id: validateRegistryId(ID_BAR),
+    id: ID_BAR,
   }),
 });
 
@@ -124,6 +124,7 @@ describe("arrangeElements()", () => {
       availableDynamicIds: [dynamicOrphanC.uuid],
       showAll: false,
       activeElementId: dynamicOrphanC.uuid,
+      activeRecipeId: null,
       expandedRecipeId: null,
     });
 
@@ -147,6 +148,7 @@ describe("arrangeElements()", () => {
       availableDynamicIds: [dynamicBarE.uuid, dynamicFooB.uuid],
       showAll: false,
       activeElementId: dynamicBarE.uuid,
+      activeRecipeId: null,
       expandedRecipeId: null,
     });
 
@@ -165,6 +167,7 @@ describe("arrangeElements()", () => {
       availableDynamicIds: [dynamicBarE.uuid],
       showAll: true,
       activeElementId: dynamicBarE.uuid,
+      activeRecipeId: null,
       expandedRecipeId: null,
     });
 
@@ -184,10 +187,30 @@ describe("arrangeElements()", () => {
       availableDynamicIds: [],
       showAll: false,
       activeElementId: dynamicOrphanC.uuid,
+      activeRecipeId: null,
       expandedRecipeId: null,
     });
 
     expect(elements).toStrictEqual([dynamicOrphanC]);
+  });
+
+  test("keep active recipe when elements not available", () => {
+    const elements = arrangeElements({
+      elements: [dynamicFooB, dynamicOrphanC],
+      installed: [installedFooA],
+      recipes: [recipeFoo],
+      availableInstalledIds: [],
+      availableDynamicIds: [ID_ORPHAN_C],
+      showAll: false,
+      activeElementId: null,
+      activeRecipeId: ID_FOO,
+      expandedRecipeId: null,
+    });
+
+    expect(elements).toStrictEqual([
+      dynamicOrphanC,
+      [recipeFoo.metadata.id, [installedFooA, dynamicFooB]],
+    ]);
   });
 
   test("show element if its recipe is expanded", () => {
@@ -199,6 +222,7 @@ describe("arrangeElements()", () => {
       availableDynamicIds: [],
       showAll: false,
       activeElementId: dynamicOrphanC.uuid,
+      activeRecipeId: null,
       expandedRecipeId: recipeFoo.metadata.id,
     });
 
@@ -216,6 +240,7 @@ describe("arrangeElements()", () => {
       availableDynamicIds: [dynamicOrphanH.uuid],
       showAll: false,
       activeElementId: ID_ORPHAN_H,
+      activeRecipeId: null,
       expandedRecipeId: null,
     });
 

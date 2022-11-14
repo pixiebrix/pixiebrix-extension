@@ -29,7 +29,8 @@ type ArrangeElementsArgs = {
   availableInstalledIds: UUID[];
   availableDynamicIds: UUID[];
   showAll: boolean;
-  activeElementId: UUID;
+  activeElementId: UUID | null;
+  activeRecipeId: RegistryId | null;
   expandedRecipeId: RegistryId | null;
 };
 
@@ -43,6 +44,7 @@ function arrangeElements({
   availableDynamicIds,
   showAll,
   activeElementId,
+  activeRecipeId,
   expandedRecipeId,
 }: ArrangeElementsArgs): Array<Element | [RegistryId, Element[]]> {
   const elementIds = new Set(elements.map((formState) => formState.uuid));
@@ -53,14 +55,14 @@ function arrangeElements({
       !elementIds.has(extension.id) &&
       (showAll ||
         availableInstalledIds?.includes(extension.id) ||
-        extension._recipe?.id === expandedRecipeId)
+        [expandedRecipeId, activeRecipeId].includes(extension._recipe?.id))
   );
   const filteredDynamicElements: FormState[] = elements.filter(
     (formState) =>
       showAll ||
       availableDynamicIds?.includes(formState.uuid) ||
-      formState.recipe?.id === expandedRecipeId ||
-      activeElementId === formState.uuid
+      activeElementId === formState.uuid ||
+      [expandedRecipeId, activeRecipeId].includes(formState.recipe?.id)
   );
 
   const grouped = groupBy(

@@ -115,6 +115,7 @@ const SidebarExpanded: React.FunctionComponent<{
         availableDynamicIds,
         showAll,
         activeElementId,
+        activeRecipeId,
         expandedRecipeId,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using elementHash and recipeHash to track changes
@@ -126,6 +127,7 @@ const SidebarExpanded: React.FunctionComponent<{
       showAll,
       availableInstalledIds,
       activeElementId,
+      activeRecipeId,
       expandedRecipeId,
     ]
   );
