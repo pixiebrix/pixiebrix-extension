@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { ComponentMeta, Story } from "@storybook/react";
 import { configureStore } from "@reduxjs/toolkit";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -37,6 +37,18 @@ export default {
   title: "Onboarding/Setup/PartnerSetupCard",
   component: PartnerSetupCard,
 } as ComponentMeta<typeof PartnerSetupCard>;
+
+const PartnerThemeEffect: React.FunctionComponent = () => {
+  useEffect(() => {
+    addThemeClassToDocumentRoot("automation-anywhere");
+
+    return () => {
+      addThemeClassToDocumentRoot("default");
+    };
+  }, []);
+
+  return null;
+};
 
 const Template: Story<{
   auth: AuthState;
@@ -72,10 +84,9 @@ const Template: Story<{
   const history = createHashHistory();
   history.push("/");
 
-  addThemeClassToDocumentRoot("automation-anywhere");
-
   return (
     <Provider store={templateStore}>
+      <PartnerThemeEffect />
       <HashRouter>
         <PartnerSetupCard />
       </HashRouter>
