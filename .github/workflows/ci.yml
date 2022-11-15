@@ -7,7 +7,7 @@ env:
   PUBLIC_RELEASE: ${{ github.ref == 'refs/heads/main' }}
 
 jobs:
-  run-tests:
+  test:
     runs-on: ubuntu-latest
 
     steps:
