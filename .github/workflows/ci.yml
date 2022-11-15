@@ -7,7 +7,7 @@ env:
   PUBLIC_RELEASE: ${{ github.ref == 'refs/heads/main' }}
 
 jobs:
-  test:
+  run-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,11 +18,28 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run test -- --coverage
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+      - uses: actions/upload-artifact@v3
         with:
-          fail_ci_if_error: true
-          verbose: true
+          name: extension-test-coverage
+          path: coverage/coverage-final.json
+
+  upload-to-codecov:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: extension-test-coverage
+      - name: Upload coverage to Codecov
+        uses: Wandalen/wretry.action@master
+        with:
+          action: codecov/codecov-action@v3
+          with: |
+            fail_ci_if_error: true
+            verbose: true
+          attempt_limit: 3
+          attempt_delay: 2000
 
   build-stage:
     runs-on: ubuntu-latest
