@@ -31,6 +31,7 @@ import { appApi } from "@/services/api";
 import { rest } from "msw";
 import { HashRouter } from "react-router-dom";
 import { createHashHistory } from "history";
+import { addThemeClassToDocumentRoot } from "@/utils/themeUtils";
 
 export default {
   title: "Onboarding/Setup/PartnerSetupCard",
@@ -70,6 +71,8 @@ const Template: Story<{
 
   const history = createHashHistory();
   history.push("/");
+
+  addThemeClassToDocumentRoot("automation-anywhere");
 
   return (
     <Provider store={templateStore}>
