@@ -24,6 +24,7 @@ jobs:
           path: coverage/coverage-final.json
 
   upload-to-codecov:
+    needs: run-tests
     runs-on: ubuntu-latest
 
     steps:
