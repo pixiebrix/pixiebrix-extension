@@ -29,6 +29,8 @@ import PartnerSetupCard from "@/options/pages/onboarding/partner/PartnerSetupCar
 import { AuthState } from "@/auth/authTypes";
 import { appApi } from "@/services/api";
 import { rest } from "msw";
+import { HashRouter } from "react-router-dom";
+import { createHashHistory } from "history";
 
 export default {
   title: "Onboarding/Setup/PartnerSetupCard",
@@ -65,9 +67,14 @@ const Template: Story<{
     },
   });
 
+  const history = createHashHistory();
+  history.push("/");
+
   return (
     <Provider store={templateStore}>
-      <PartnerSetupCard />
+      <HashRouter>
+        <PartnerSetupCard />
+      </HashRouter>
     </Provider>
   );
 };
