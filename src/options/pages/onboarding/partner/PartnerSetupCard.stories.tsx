@@ -41,6 +41,7 @@ const Template: Story<{
   auth: AuthState;
   configuredServiceId: RegistryId | null;
 }> = ({ auth }) => {
+  // Store that doesn't persist the data
   const templateStore = configureStore({
     reducer: {
       options: extensionsSlice.reducer,
@@ -113,7 +114,7 @@ TokenUnlinked.parameters = {
 
 export const TokenLinked = Template.bind({});
 TokenLinked.args = {
-  auth: { ...authSlice.getInitialState(), isLoggedIn: true },
+  auth: { ...authSlice.getInitialState(), isLoggedIn: true, userId: uuidv4() },
 };
 TokenLinked.storyName = "Token (Linked Extension)";
 TokenLinked.parameters = {
