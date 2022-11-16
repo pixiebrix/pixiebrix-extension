@@ -104,10 +104,7 @@ async function dispatchMenu(
 }
 
 function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
-  if (
-    typeof info.menuItemId === "string" &&
-    info.menuItemId.startsWith(MENU_PREFIX)
-  ) {
+  if (String(info.menuItemId).startsWith(MENU_PREFIX)) {
     void dispatchMenu(info, tab);
   } else {
     console.debug(`Ignoring menu item: ${info.menuItemId}`);
@@ -166,6 +163,7 @@ async function _ensureContextMenu({
   } catch {
     // WARNING: Do not remove `chromeP`
     // The standard `contextMenus.create` does not return a Promise in any browser
+    // https://github.com/w3c/webextensions/issues/188#issuecomment-1112436359
     // eslint-disable-next-line @typescript-eslint/await-thenable -- The types don't really match `chromeP`
     await chromeP.contextMenus.create({
       ...updateProperties,

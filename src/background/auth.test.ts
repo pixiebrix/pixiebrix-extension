@@ -18,7 +18,7 @@
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { getToken } from "./auth";
-import { IService, RawServiceConfiguration } from "@/core";
+import { UUID } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 
 const axiosMock = new MockAdapter(axios);
@@ -26,10 +26,11 @@ const axiosMock = new MockAdapter(axios);
 const getOneToken = async (id: UUID) =>
   getToken(
     {
-      isToken: true,
+      // @ts-expect-error The result isn't necessary at this time
       getTokenContext: () => ({}),
-    } as unknown as IService,
-    { id } as RawServiceConfiguration
+      isToken: true,
+    },
+    { id }
   );
 
 describe("getToken", () => {
