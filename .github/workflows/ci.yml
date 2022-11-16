@@ -39,8 +39,10 @@ jobs:
           with: |
             fail_ci_if_error: true
             verbose: true
-          attempt_limit: 3
-          attempt_delay: 2000
+          # This upload endpoint from CodeCov is very flaky
+          # Retry every 10 seconds, for up to 10 minutes
+          attempt_delay: 10_000
+          attempt_limit: 60
 
   build-stage:
     runs-on: ubuntu-latest
