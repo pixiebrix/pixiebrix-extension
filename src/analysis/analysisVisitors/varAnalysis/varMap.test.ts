@@ -23,17 +23,26 @@ describe("VarMap", () => {
     varMap = new VarMap();
   });
 
-  test.each(["foo.bar", "foo"])("get the exact know var (%s)", (varName) => {
-    varMap.setExistence(varName, VarExistence.DEFINITELY);
-    const actual = varMap.getExistence(varName);
+  test.each(["foo.bar", "foo", 'foo["bar baz"].qux[0]'])(
+    "get the exact know var (%s)",
+    (varName) => {
+      varMap.setExistence(varName, VarExistence.DEFINITELY);
+      const actual = varMap.getExistence(varName);
 
-    expect(actual).toBe(VarExistence.DEFINITELY);
-  });
+      expect(actual).toBe(VarExistence.DEFINITELY);
+    }
+  );
 
   test("gets nested existence", () => {
     varMap.setExistence("foo.bar", VarExistence.DEFINITELY);
     expect(varMap.getExistence("foo.bar")).toBe(VarExistence.DEFINITELY);
     expect(varMap.getExistence("foo.baz")).toBeUndefined();
+  });
+
+  test("gets nested existence 2", () => {
+    varMap.setExistence('foo["bar baz"].qux', VarExistence.DEFINITELY);
+    expect(varMap.getExistence('foo["bar baz"]')).toBe(VarExistence.DEFINITELY);
+    expect(varMap.getExistence("foo")).toBe(VarExistence.DEFINITELY);
   });
 
   test("get a DEFINITELY property of a known container", () => {
