@@ -18,7 +18,7 @@
 import PipelineExpressionVisitor from "@/blocks/PipelineExpressionVisitor";
 import { VisitBlockExtra, VisitPipelineExtra } from "@/blocks/PipelineVisitor";
 import { BlockPosition, BlockConfig } from "@/blocks/types";
-import { Expression } from "@/core";
+import { Expression, TemplateEngine } from "@/core";
 import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getInputKeyForSubPipeline } from "@/pageEditor/utils";
 import { isNunjucksExpression, isVarExpression } from "@/runtime/mapArgs";
@@ -28,6 +28,7 @@ import { Analysis, Annotation, AnnotationType } from "@/analysis/analysisTypes";
 import VarMap, { VarExistence } from "./varMap";
 import { TraceRecord } from "@/telemetry/trace";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
+import parseTemplateVariables from "./parseTemplateVariables";
 
 type PreviousVisitedBlock = {
   vars: VarMap;
@@ -162,15 +163,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     }
 
     if (this.currentBlockKnownVars?.getExistence(varName) == null) {
-      this.annotations.push({
-        position,
-        message: `Variable "${varName}" might not be defined`,
-        analysisId: this.id,
-        type: AnnotationType.Warning,
-        detail: {
-          expression,
-        },
-      });
+      this.pushNotFoundVariableAnnotation(position, varName, expression);
     }
   }
 
@@ -178,7 +171,27 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     position: BlockPosition,
     expression: Expression<string, "nunjucks">
   ) {
-    throw new Error("Method not implemented.");
+    for (const varName of parseTemplateVariables(expression.__value__)) {
+      if (this.currentBlockKnownVars?.getExistence(varName) == null) {
+        this.pushNotFoundVariableAnnotation(position, varName, expression);
+      }
+    }
+  }
+
+  private pushNotFoundVariableAnnotation(
+    position: BlockPosition,
+    varName: string,
+    expression: Expression<string, TemplateEngine>
+  ) {
+    this.annotations.push({
+      position,
+      message: `Variable "${varName}" might not be defined`,
+      analysisId: this.id,
+      type: AnnotationType.Warning,
+      detail: {
+        expression,
+      },
+    });
   }
 
   override visitPipeline(
