@@ -60,8 +60,6 @@ pageEditorAnalysisManager.registerAnalysisEffect(
     return new TraceAnalysis(records);
   },
   {
-    // Only needed on runtimeActions.setExtensionTrace,
-    // but the block path can change when node tree is mutated
     matcher: isAnyOf(
       runtimeActions.setExtensionTrace,
       ...nodeListMutationActions
@@ -72,8 +70,6 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new BlockTypeAnalysis(),
   {
-    // Only needed on editorActions.addNode,
-    // but the block path can change on move or remove
     // @ts-expect-error: spreading the array as args
     matcher: isAnyOf(...nodeListMutationActions),
   }
@@ -82,8 +78,6 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new FormBrickAnalysis(),
   {
-    // Only needed on editorActions.addNode,
-    // but the block path can change on move or remove
     // @ts-expect-error: spreading the array as args
     matcher: isAnyOf(...nodeListMutationActions),
   }
@@ -100,23 +94,17 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new OutputKeyAnalysis(),
   {
-    // Only needed on editorActions.editElement,
-    // but the block path can change when node tree is mutated
     matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
   }
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
-  // Only needed on editorActions.editElement,
-  // but the block path can change when node tree is mutated
   matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
 });
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new ExtensionUrlPatternAnalysis(),
   {
-    // Only needed on editorActions.editElement,
-    // but the block path can change when node tree is mutated
     matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
   }
 );
@@ -124,8 +112,6 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new RequestPermissionAnalysis(),
   {
-    // Only needed on editorActions.editElement,
-    // but the block path can change when node tree is mutated
     matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
   }
 );
@@ -148,8 +134,6 @@ const varAnalysisFactory = (
 pageEditorAnalysisManager.registerAnalysisEffect(
   varAnalysisFactory,
   {
-    // Only needed on editorActions.editElement,
-    // but the block path can change when node tree is mutated
     matcher: isAnyOf(
       runtimeActions.setExtensionTrace,
       ...nodeListMutationActions
@@ -171,9 +155,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 pageEditorAnalysisManager.registerAnalysisEffect(
   varAnalysisFactory,
   {
-    // Only needed on editorActions.editElement,
-    // but the block path can change when node tree is mutated
-    matcher: isAnyOf(editorActions.editElement),
+    actionCreator: editorActions.editElement,
   },
   {
     postAnalysisAction(analysis, extensionId, listenerApi) {
