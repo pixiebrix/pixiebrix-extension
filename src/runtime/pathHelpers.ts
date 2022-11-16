@@ -25,8 +25,6 @@ const pathRegex = /^(@?[\w-]+\??)(\.[\w-]+\??)*$/;
 
 /**
  * Return true if maybePath refers to a property in ctxt.
- * @param maybePath
- * @param ctxt
  */
 export function isSimplePath(maybePath: string, ctxt: UnknownObject): boolean {
   if (!pathRegex.test(maybePath)) {

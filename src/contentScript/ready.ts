@@ -84,7 +84,7 @@ export function unsetReadyInThisDocument(uuid: UUID): void {
 /**
  * Fetches the URL and content script state from tab/frame
  * @throws Error if background page doesn't have permission to access the tab
- * */
+ */
 export async function getTargetState(target: Target): Promise<TargetState> {
   forbidContext(
     "web",

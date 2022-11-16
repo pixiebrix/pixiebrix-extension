@@ -427,7 +427,6 @@ export function readerTypeHack(reader: ReaderConfig): SingleLayerReaderConfig {
  * Normalize the pipeline prop name and assign instance ids for tracing.
  * @param config the extension configuration
  * @param pipelineProp the name of the pipeline prop, currently either "action" or "body"
- * @param defaults
  */
 export async function extensionWithNormalizedPipeline<
   T extends UnknownObject,
