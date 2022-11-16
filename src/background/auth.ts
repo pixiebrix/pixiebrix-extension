@@ -103,9 +103,6 @@ export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
  * Exchange credentials for a token, and cache the token response.
  *
  * If a request for the token is already in progress, return the existing promise.
- *
- * @param service
- * @param auth
  */
 
 export const getToken = memoizeUntilSettled(_getToken, {

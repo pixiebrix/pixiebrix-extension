@@ -250,10 +250,6 @@ export function boolean(value: unknown): boolean {
   return false;
 }
 
-export function clone<T extends Record<string, unknown>>(object: T): T {
-  return Object.assign(Object.create(null), object);
-}
-
 export function isObject(value: unknown): value is Record<string, unknown> {
   return value && typeof value === "object";
 }
@@ -264,16 +260,6 @@ export function ensureJsonObject(value: Record<string, unknown>): JsonObject {
   }
 
   return JSON.parse(safeJsonStringify(value)) as JsonObject;
-}
-
-export function clearObject(obj: Record<string, unknown>): void {
-  for (const member in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, member)) {
-      // Checking to ensure own property
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
-      delete obj[member];
-    }
-  }
 }
 
 /**
