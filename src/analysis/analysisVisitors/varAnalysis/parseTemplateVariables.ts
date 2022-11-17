@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const varRegex = /{{\s*(?<varName>[\s\w"'.@[\]]+)(\s*\|\s*[\s\w"(),]+)*\s*}}/g;
+const varRegex = /{{\s*(?<varName>[\s\w"'.@[\]]+)(\s*\|[\s\w"(),]+)*}}/g;
 
 function parseTemplateVariables(template: string): string[] {
   const vars = [];
