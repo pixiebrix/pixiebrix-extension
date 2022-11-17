@@ -7,9 +7,12 @@ In addition to the extension, we maintain [pixiebrix.com](https://www.pixiebrix.
 registry of bricks and pre-made blueprints. You can create a PixieBrix account to enable
 support for team features, such as shared integration configurations and team bricks.
 
-| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/chrome/chrome.svg" alt="" width="24px" height="24px" />](#readme)<br/>Chrome |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| last 2 versions                                                                                                                                            |
+<table>
+<tr><th>
+  <a href="#readme"><img src="https://raw.githubusercontent.com/alrra/browser-logos/ce0aac88/src/chrome/chrome.svg" alt="" width="24" height="24" /></a>
+  <br>Chrome
+<tr><td>last 2 versions
+</table>
 
 ## Example Uses
 
