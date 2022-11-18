@@ -20,6 +20,7 @@ import { anonAuth } from "./authConstants";
 import { AuthState } from "./authTypes";
 import { localStorage } from "redux-persist-webextension-storage";
 import { isEmpty } from "lodash";
+import { StorageInterface } from "@/store/StorageInterface";
 
 export const authSlice = createSlice({
   name: "auth",
@@ -41,11 +42,14 @@ export const authSlice = createSlice({
   },
 });
 
+// Shadowing this type in order to export it properly
+const local: StorageInterface = localStorage;
+
 // TODO refactor to use token.ts/updateUserData
 // Current approach is not ideal, AuthState is cached along with UserData (which is used by background script).
 export const persistAuthConfig = {
   key: "authOptions",
-  storage: localStorage,
+  storage: local,
 };
 
 export const authActions = authSlice.actions;

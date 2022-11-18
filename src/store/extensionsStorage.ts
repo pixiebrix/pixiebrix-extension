@@ -25,6 +25,7 @@ import {
   migrations,
 } from "@/store/extensionsMigrations";
 import { ExtensionOptionsState } from "./extensionsTypes";
+import { StorageInterface } from "@/store/StorageInterface";
 
 const STORAGE_KEY = "persist:extensionOptions" as ReduxStorageKey;
 
@@ -64,9 +65,12 @@ export async function saveOptions(state: ExtensionOptionsState): Promise<void> {
   });
 }
 
+// Shadowing this type in order to export it properly
+const local: StorageInterface = localStorage;
+
 export const persistExtensionOptionsConfig = {
   key: "extensionOptions",
-  storage: localStorage,
+  storage: local,
   version: 2,
   // https://github.com/rt2zz/redux-persist#migrations
   migrate: createMigrate(migrations, { debug: boolean(process.env.DEBUG) }),

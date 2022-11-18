@@ -66,7 +66,13 @@ const store = configureStore({
     ),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
-    editor: editorSlice.reducer,
+    editor: persistReducer(
+      {
+        key: "editor",
+        storage: localStorage,
+      },
+      editorSlice.reducer
+    ),
     session: sessionSlice.reducer,
     savingExtension: savingExtensionSlice.reducer,
     runtime: runtimeSlice.reducer,
