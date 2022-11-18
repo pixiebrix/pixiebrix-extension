@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { ComponentMeta, Story } from "@storybook/react";
 import { configureStore } from "@reduxjs/toolkit";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -29,16 +29,32 @@ import PartnerSetupCard from "@/options/pages/onboarding/partner/PartnerSetupCar
 import { AuthState } from "@/auth/authTypes";
 import { appApi } from "@/services/api";
 import { rest } from "msw";
+import { HashRouter } from "react-router-dom";
+import { createHashHistory } from "history";
+import { addThemeClassToDocumentRoot } from "@/utils/themeUtils";
 
 export default {
   title: "Onboarding/Setup/PartnerSetupCard",
   component: PartnerSetupCard,
 } as ComponentMeta<typeof PartnerSetupCard>;
 
+const PartnerThemeEffect: React.FunctionComponent = () => {
+  useEffect(() => {
+    addThemeClassToDocumentRoot("automation-anywhere");
+
+    return () => {
+      addThemeClassToDocumentRoot("default");
+    };
+  }, []);
+
+  return null;
+};
+
 const Template: Story<{
   auth: AuthState;
   configuredServiceId: RegistryId | null;
 }> = ({ auth }) => {
+  // Store that doesn't persist the data
   const templateStore = configureStore({
     reducer: {
       options: extensionsSlice.reducer,
@@ -65,9 +81,15 @@ const Template: Story<{
     },
   });
 
+  const history = createHashHistory();
+  history.push("/");
+
   return (
     <Provider store={templateStore}>
-      <PartnerSetupCard />
+      <PartnerThemeEffect />
+      <HashRouter>
+        <PartnerSetupCard />
+      </HashRouter>
     </Provider>
   );
 };
@@ -106,7 +128,7 @@ TokenUnlinked.parameters = {
 
 export const TokenLinked = Template.bind({});
 TokenLinked.args = {
-  auth: { ...authSlice.getInitialState(), isLoggedIn: true },
+  auth: { ...authSlice.getInitialState(), isLoggedIn: true, userId: uuidv4() },
 };
 TokenLinked.storyName = "Token (Linked Extension)";
 TokenLinked.parameters = {
