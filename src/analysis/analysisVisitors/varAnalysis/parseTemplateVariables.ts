@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// As of now the regex looks for variables with @ prefix only.
+// A complimentary check for the use of the @ sign in a text template can be done separately:
+// if there's no @ found in a text field show info message "Looks like you haven't used any var."
 const varRegex =
   /{({|%)[^@]*(?<varName>@\w+(\.|\w|(\[\d+])|(\[("|')[\s\w]+("|')]))*)[\s|]?[^%}]*(}|%)}/g;
 
