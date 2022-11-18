@@ -36,9 +36,7 @@ const getOneToken = async (id: UUID) =>
 describe("getToken", () => {
   test("multiple requests are temporarily memoized", async () => {
     let userId = 0;
-    axiosMock.onPost().reply(200, {
-      userId: userId++, // Increase ID at every request
-    });
+    axiosMock.onPost().reply(() => [200, userId++]); // Increase ID at every request
 
     const id1 = uuidv4();
     // Consecutive calls should make new requests
