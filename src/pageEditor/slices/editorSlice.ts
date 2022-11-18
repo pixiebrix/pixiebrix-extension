@@ -110,7 +110,7 @@ export const initialState: EditorState = {
   isPendingDynamicExtensions: false,
 };
 
-/* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
+/* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
 const cloneActiveExtension = createAsyncThunk<
   void,
@@ -869,7 +869,7 @@ export const editorSlice = createSlice({
       );
   },
 });
-/* eslint-enable security/detect-object-injection, @typescript-eslint/no-dynamic-delete */
+/* eslint-enable security/detect-object-injection */
 
 export const actions = {
   ...editorSlice.actions,
