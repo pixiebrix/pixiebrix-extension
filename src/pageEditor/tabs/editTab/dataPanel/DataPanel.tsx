@@ -27,7 +27,7 @@ import BlockPreview, {
 } from "@/pageEditor/tabs/effect/BlockPreview";
 import useReduxState from "@/hooks/useReduxState";
 import { useSelector } from "react-redux";
-import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
 import { JsonObject } from "type-fest";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DataTab from "./DataTab";
@@ -91,7 +91,7 @@ const DataPanel: React.FC = () => {
   const { allBlocks } = useAllBlocks();
   const blockType = allBlocks.get(blockId)?.type;
 
-  const traces = useSelector(selectExtensionTrace);
+  const traces = useSelector(selectActiveElementTraces);
   const record = traces.find((trace) => trace.blockInstanceId === activeNodeId);
 
   const isInputStale = useMemo(() => {

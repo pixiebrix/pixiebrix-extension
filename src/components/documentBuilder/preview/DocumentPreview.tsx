@@ -26,6 +26,14 @@ import ElementPreview from "./ElementPreview";
 import { ROOT_ELEMENT_TYPES } from "@/components/documentBuilder/allowedElementTypes";
 import cx from "classnames";
 import { getPreviewValues } from "@/components/fields/fieldUtils";
+import useBlockPreviewRunBlock from "@/pageEditor/tabs/effect/useBlockPreviewRunBlock";
+import { useSelector } from "react-redux";
+import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
+import { Button } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import Alert from "@/components/Alert";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 type DocumentPreviewProps = {
   documentBodyName: string;
@@ -62,43 +70,65 @@ const DocumentPreview = ({
     setHoveredElement(null);
   };
 
+  const activeNodeId = useSelector(selectActiveNodeId);
+  const {
+    error: previewError,
+    isRunning: isPreviewRunning,
+    runBlockPreview,
+  } = useBlockPreviewRunBlock(activeNodeId);
+
   return (
-    // eslint-disable-next-line jsx-a11y/mouse-events-have-key-events, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- TODO
-    <div
-      onClick={onClick}
-      className={cx(
-        styles.root,
-        previewStyles.root,
-        documentTreeStyles.container,
-        {
-          [previewStyles.hovered]: isHovered,
-          [styles.empty]: body.length === 0,
-        }
+    <>
+      <Button
+        variant="info"
+        size="sm"
+        disabled={isPreviewRunning}
+        onClick={runBlockPreview}
+      >
+        Show Live Preview <FontAwesomeIcon icon={faExternalLinkAlt} />
+      </Button>
+      <br />
+      {previewError && (
+        <Alert variant="danger">{getErrorMessage(previewError)}</Alert>
       )}
-      onMouseOver={onMouseOver}
-      onMouseLeave={onMouseLeave}
-    >
-      {bodyPreview.map((childElement, i) => (
-        <ElementPreview
-          key={`${documentBodyName}.${i}`}
-          documentBodyName={documentBodyName}
-          elementName={String(i)}
-          previewElement={childElement}
-          activeElement={activeElement}
-          setActiveElement={setActiveElement}
+      <hr />
+      {/* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- TODO */}
+      <div
+        onClick={onClick}
+        className={cx(
+          styles.root,
+          previewStyles.root,
+          documentTreeStyles.container,
+          {
+            [previewStyles.hovered]: isHovered,
+            [styles.empty]: body.length === 0,
+          }
+        )}
+        onMouseOver={onMouseOver}
+        onMouseLeave={onMouseLeave}
+      >
+        {bodyPreview.map((childElement, i) => (
+          <ElementPreview
+            key={`${documentBodyName}.${i}`}
+            documentBodyName={documentBodyName}
+            elementName={String(i)}
+            previewElement={childElement}
+            activeElement={activeElement}
+            setActiveElement={setActiveElement}
+            menuBoundary={menuBoundary}
+            hoveredElement={hoveredElement}
+            setHoveredElement={setHoveredElement}
+          />
+        ))}
+        {body.length === 0 && <span className="text-muted">body</span>}
+        <AddElementAction
+          elementsCollectionName={documentBodyName}
+          allowedTypes={ROOT_ELEMENT_TYPES}
+          className={previewStyles.addElement}
           menuBoundary={menuBoundary}
-          hoveredElement={hoveredElement}
-          setHoveredElement={setHoveredElement}
         />
-      ))}
-      {body.length === 0 && <span className="text-muted">body</span>}
-      <AddElementAction
-        elementsCollectionName={documentBodyName}
-        allowedTypes={ROOT_ELEMENT_TYPES}
-        className={previewStyles.addElement}
-        menuBoundary={menuBoundary}
-      />
-    </div>
+      </div>
+    </>
   );
 };
 

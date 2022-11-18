@@ -240,6 +240,17 @@ export const selectActiveNodeInfo = createSelector(
     uiState.pipelineMap[activeNodeId]
 );
 
+const activeElementNodeInfoSelector = createSelector(
+  selectActiveElementUIState,
+  (state: EditorRootState, instanceId: UUID) => instanceId,
+  // eslint-disable-next-line security/detect-object-injection -- using a node uuid
+  (uiState: ElementUIState, instanceId: UUID) => uiState.pipelineMap[instanceId]
+);
+
+export const selectActiveElementNodeInfo =
+  (instanceId: UUID) => (state: EditorRootState) =>
+    activeElementNodeInfoSelector(state, instanceId);
+
 export const selectNodeDataPanelTabSelected: (
   rootState: EditorRootState
 ) => DataPanelTabKey = createSelector(
