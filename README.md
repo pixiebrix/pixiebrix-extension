@@ -5,11 +5,14 @@ with low/no-code.
 
 In addition to the extension, we maintain [pixiebrix.com](https://www.pixiebrix.com/), a
 registry of bricks and pre-made blueprints. You can create a PixieBrix account to enable
-support for team features, such as shared service configurations and team bricks.
+support for team features, such as shared integration configurations and team bricks.
 
-| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/firefox/firefox.svg" alt="" width="24px" height="24px" />](#readme)<br/>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/chrome/chrome.svg" alt="" width="24px" height="24px" />](#readme)<br/>Chrome |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| last 2 versions                                                                                                                                               | last 2 versions                                                                                                                                            |
+<table>
+<tr><th>
+  <a href="#readme"><img src="https://raw.githubusercontent.com/alrra/browser-logos/ce0aac88/src/chrome/chrome.svg" alt="" width="24" height="24" /></a>
+  <br>Chrome
+<tr><td>last 2 versions
+</table>
 
 ## Example Uses
 
@@ -31,7 +34,7 @@ We're building PixieBrix because we believe three things:
 2. Everyone should be empowered to customize their software to give them superpowers
 3. Computing should be delightful
 
-To this end, we’ve set out to create low/no-code tools for customizing the behavior of software,
+We’ve set out to create low/no-code tools for customizing the behavior of software,
 web pages, and SaaS. But, we won’t be able to do it alone. That’s why we’re also working
 hard to build a diverse and vibrant community of makers.
 
