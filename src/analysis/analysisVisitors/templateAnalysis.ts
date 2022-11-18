@@ -18,7 +18,7 @@
 import { Expression } from "@/core";
 import { Analysis, Annotation, AnnotationType } from "@/analysis/analysisTypes";
 import { BlockPosition } from "@/blocks/types";
-import { isTemplateExpression } from "@/runtime/mapArgs";
+import { isNunjucksExpression, isTemplateExpression } from "@/runtime/mapArgs";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import { Template } from "nunjucks";
 import PipelineExpressionVisitor from "@/blocks/PipelineExpressionVisitor";
@@ -82,7 +82,7 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
         message: TEMPLATE_ERROR_MESSAGE,
         expression,
       });
-    } else if (expression.__type__ === "nunjucks") {
+    } else if (isNunjucksExpression(expression)) {
       try {
         // eslint-disable-next-line no-new
         new Template(expression.__value__, undefined, undefined, true);

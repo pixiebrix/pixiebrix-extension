@@ -98,6 +98,16 @@ export function isVarExpression(
 }
 
 /**
+ * Returns true if value represents a nunjucks expression
+ * @see isExpression
+ */
+export function isNunjucksExpression(
+  value: unknown
+): value is Expression<string, "nunjucks"> {
+  return isExpression(value) && (value as Expression).__type__ === "nunjucks";
+}
+
+/**
  * Recursively render values
  * @since 1.5.0
  */
