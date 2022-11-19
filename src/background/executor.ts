@@ -34,12 +34,12 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import type { RunBlock } from "@/contentScript/runBlockTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { canAccessTab } from "@/utils/permissions";
+import { SessionMap } from "@/mv3/SessionStorage";
 
 type TabId = number;
 
-const tabToOpener = new Map<TabId, TabId>();
-const tabToTarget = new Map<TabId, TabId>();
 // TODO: One tab could have multiple targets, but `tabToTarget` currenly only supports one at a time
+const tabToTarget = new SessionMap<TabId>("tabToTarget");
 
 async function safelyRunBrick({ tabId }: { tabId: number }, request: RunBlock) {
   try {
@@ -85,14 +85,14 @@ export async function requestRunInOpener(
   this: MessengerMeta,
   request: RunBlock
 ): Promise<unknown> {
-  const sourceTabId = this.trace[0].tab.id;
+  const { id: sourceTabId, openerTabId } = this.trace[0].tab;
 
-  if (!tabToOpener.has(sourceTabId)) {
+  if (openerTabId == null) {
     throw new BusinessError("Sender tab has no opener");
   }
 
   const opener = {
-    tabId: tabToOpener.get(sourceTabId),
+    tabId: openerTabId,
   };
   const subRequest = { ...request, sourceTabId };
   return safelyRunBrick(opener, subRequest);
@@ -107,7 +107,7 @@ export async function requestRunInTarget(
   request: RunBlock
 ): Promise<unknown> {
   const sourceTabId = this.trace[0].tab.id;
-  const target = tabToTarget.get(sourceTabId);
+  const target = await tabToTarget.get(String(sourceTabId));
 
   if (!target) {
     throw new BusinessError("Sender tab has no target");
@@ -172,14 +172,12 @@ export async function openTab(
   const tab = await browser.tabs.create({ ...createProperties, openerTabId });
 
   // FIXME: include frame information here
-  tabToTarget.set(openerTabId, tab.id);
-  tabToOpener.set(tab.id, openerTabId);
+  void tabToTarget.set(String(openerTabId), tab.id);
 }
 
 async function linkTabListener(tab: Tabs.Tab): Promise<void> {
   if (tab.openerTabId) {
-    tabToOpener.set(tab.id, tab.openerTabId);
-    tabToTarget.set(tab.openerTabId, tab.id);
+    await tabToTarget.set(String(tab.openerTabId), tab.id);
   }
 }
 

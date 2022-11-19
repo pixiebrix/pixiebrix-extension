@@ -193,3 +193,8 @@ declare const browser: ChromeifiedBrowser;
 declare namespace CSS {
   function px(length: number): string;
 }
+
+// Temporary type until officially added
+declare namespace chrome.storage {
+  export const session: StorageArea;
+}

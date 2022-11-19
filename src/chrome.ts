@@ -74,7 +74,7 @@ export class RuntimeNotFoundError extends Error {
 export async function readStorage<T = unknown>(
   storageKey: ManualStorageKey,
   defaultValue?: T,
-  area: "local" | "managed" = "local"
+  area: "local" | "managed" | "session" = "local"
 ): Promise<T | undefined> {
   let result: UnknownObject;
 
@@ -82,7 +82,7 @@ export async function readStorage<T = unknown>(
     // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
     // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
     // eslint-disable-next-line security/detect-object-injection -- type-checked
-    result = await browser.storage[area].get(storageKey);
+    result = await browser.storage[area as "local" | "managed"].get(storageKey);
   } catch (error) {
     if (area === "managed") {
       // Handle Opera: https://github.com/pixiebrix/pixiebrix-extension/issues/4069
@@ -128,9 +128,10 @@ export async function readReduxStorage<T extends JsonValue = JsonValue>(
 
 export async function setStorage(
   storageKey: ManualStorageKey,
-  value: unknown
+  value: unknown,
+  area: "local" | "session" = "local"
 ): Promise<void> {
-  await browser.storage.local.set({ [storageKey]: value });
+  await browser.storage[area as "local"].set({ [storageKey]: value });
 }
 
 export async function setReduxStorage<T extends JsonValue = JsonValue>(

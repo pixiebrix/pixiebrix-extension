@@ -159,8 +159,8 @@ function getUniqueAttributeSelectors(
 /**
  * Convert classname of element to meaningful selector
  */
-const classHelper = document.createElement("i");
 function getSelectorFromClass(className: string): string {
+  const classHelper = document.createElement("i");
   classHelper.className = className;
   return "." + [...classHelper.classList].join(".");
 }
