@@ -86,22 +86,22 @@ export type RequiredPartnerState = {
 
 function decidePartnerServiceIds({
   authServiceIdOverride,
-  authMethod,
+  authMethodOverride,
   partnerId,
 }: {
   authServiceIdOverride: RegistryId | null;
-  authMethod: SettingsState["authMethod"];
+  authMethodOverride: SettingsState["authMethod"];
   partnerId: AuthState["partner"]["theme"] | null;
 }): Set<RegistryId> {
   if (authServiceIdOverride) {
     return new Set<RegistryId>([authServiceIdOverride]);
   }
 
-  if (authMethod === "partner-oauth2") {
+  if (authMethodOverride === "partner-oauth2") {
     return new Set<RegistryId>([CONTROL_ROOM_OAUTH_SERVICE_ID]);
   }
 
-  if (authMethod === "partner-token") {
+  if (authMethodOverride === "partner-token") {
     return new Set<RegistryId>([CONTROL_ROOM_SERVICE_ID]);
   }
 
@@ -124,16 +124,18 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   const localAuth = useSelector(selectAuth);
   const {
     authServiceId: authServiceIdOverride,
-    authMethod,
+    authMethod: authMethodOverride,
     partnerId: partnerIdOverride,
   } = useSelector(selectSettings);
   const configuredServices = useSelector(selectConfiguredServices);
 
+  // Control Room URL specified by IT department during force-install
   const [managedControlRoomUrl] = useAsyncState(
     async () => readStorage(CONTROL_ROOM_URL_MANAGED_KEY, undefined, "managed"),
     []
   );
 
+  // Partner Id/Key specified by IT department during force-install
   const [managedPartnerId] = useAsyncState(
     async () => readStorage(PARTNER_MANAGED_KEY, undefined, "managed"),
     []
@@ -141,21 +143,28 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
 
   // Prefer the latest remote data, but use local data to avoid blocking page load
   const { partner, organization } = me ?? localAuth;
+
   // `organization?.control_room?.id` can only be set when authenticated or the auth is cached. For unauthorized users,
   // the organization will be null on result of useGetMeQuery
   const hasControlRoom =
     Boolean(organization?.control_room?.id) || Boolean(managedControlRoomUrl);
+  const isCommunityEditionUser = (me?.milestones ?? []).some(
+    ({ key }) => key === "aa_community_edition_register"
+  );
   const hasPartner =
-    Boolean(partner) || Boolean(managedPartnerId) || hasControlRoom;
+    Boolean(partner) ||
+    Boolean(managedPartnerId) ||
+    hasControlRoom ||
+    (Boolean(me?.partner) && isCommunityEditionUser);
   const partnerId =
     partnerIdOverride ??
     managedPartnerId ??
     partner?.theme ??
-    (hasControlRoom ? "automation-anywhere" : null);
+    (hasControlRoom || isCommunityEditionUser ? "automation-anywhere" : null);
 
   const partnerServiceIds = decidePartnerServiceIds({
     authServiceIdOverride,
-    authMethod,
+    authMethodOverride,
     partnerId,
   });
 
@@ -170,12 +179,12 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     _partnerJwtError,
     refreshPartnerJwtState,
   ] = useAsyncState(async () => {
-    if (authMethod === "pixiebrix-token") {
+    if (authMethodOverride === "pixiebrix-token") {
       // User forced pixiebrix-token authentication via Advanced Settings > Authentication Method
       return false;
     }
 
-    if (hasControlRoom || authMethod === "partner-oauth2") {
+    if (hasControlRoom || authMethodOverride === "partner-oauth2") {
       // Future improvement: check that the Control Room URL from readPartnerAuthData matches the expected
       // Control Room URL
       const { token: partnerToken } = await readPartnerAuthData();
@@ -183,7 +192,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     }
 
     return false;
-  }, [authMethod, localAuth, hasControlRoom]);
+  }, [authMethodOverride, localAuth, hasControlRoom]);
 
   useEffect(() => {
     // Listen for token invalidation
@@ -202,11 +211,13 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   const requiresIntegration =
     // Primary organization has a partner and linked control room
     (hasPartner && Boolean(organization?.control_room)) ||
+    // Community edition users are required to be linked until they join an organization
+    (me?.partner && isCommunityEditionUser) ||
     // User has overridden local settings
-    authMethod === "partner-oauth2" ||
-    authMethod === "partner-token";
+    authMethodOverride === "partner-oauth2" ||
+    authMethodOverride === "partner-token";
 
-  if (authMethod === "pixiebrix-token") {
+  if (authMethodOverride === "pixiebrix-token") {
     // User forced pixiebrix-token authentication via Advanced Settings > Authentication Method. Keep the theme,
     // if any, but don't require a partner integration configuration.
     return {

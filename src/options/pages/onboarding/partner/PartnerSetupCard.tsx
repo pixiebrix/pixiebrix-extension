@@ -33,6 +33,7 @@ import { getBaseURL } from "@/services/baseService";
 import settingsSlice from "@/store/settingsSlice";
 import { ManualStorageKey, readStorage } from "@/chrome";
 import { useLocation } from "react-router";
+import { hostnameToUrl } from "@/contrib/automationanywhere/aaUtils";
 
 function useInstallUrl() {
   const { data: me } = useGetMeQuery();
@@ -81,7 +82,7 @@ function usePartnerLoginMode(): "token" | "oauth2" {
     }
 
     default: {
-      // If the user is logged in using PixieBrix, show the token configuration screen. They'll keep using their
+      // If the user is logged in using PixieBrix, show the AA token configuration screen. They'll keep using their
       // PixieBrix token login instead of switching to the AA JWT login
       return hasCachedLoggedIn ? "token" : "oauth2";
     }
@@ -89,19 +90,6 @@ function usePartnerLoginMode(): "token" | "oauth2" {
 }
 
 const CONTROL_ROOM_URL_MANAGED_KEY = "controlRoomUrl" as ManualStorageKey;
-
-function hostnameToUrl(hostname: string): string {
-  if (hostname == null) {
-    // Give hint to user to include https: scheme
-    return "https://";
-  }
-
-  if (/^[\da-z]+:\/\//.test(hostname)) {
-    return hostname;
-  }
-
-  return `https://${hostname}`;
-}
 
 /**
  * A card to set up a required partner integration.
@@ -122,6 +110,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   // Prefer controlRoomUrl set by IT for force-installed extensions
   const fallbackControlRoomUrl =
     hostnameToUrl(hostname) ?? me?.organization?.control_room?.url ?? "";
+
   const [controlRoomUrl] = useAsyncState(
     async () => {
       try {

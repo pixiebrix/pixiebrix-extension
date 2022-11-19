@@ -40,6 +40,19 @@ export function isCommunityControlRoom(url: string): boolean {
   return COMMUNITY_HOSTNAME_REGEX.test(parsed.hostname);
 }
 
+export function hostnameToUrl(hostname: string): string {
+  if (hostname == null) {
+    // Give hint to user to include https: scheme
+    return "https://";
+  }
+
+  if (/^[\da-z]+:\/\//.test(hostname)) {
+    return hostname;
+  }
+
+  return `https://${hostname}`;
+}
+
 function selectDefaultValue(variable: Variable): JSONSchema7Type {
   if (!variable.defaultValue) {
     return undefined;
