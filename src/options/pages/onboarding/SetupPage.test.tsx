@@ -146,6 +146,45 @@ describe("SetupPage", () => {
     ).toStrictEqual("https://mycontrolroom.com");
   });
 
+  test("Start URL with Community Edition hostname", async () => {
+    // User will be unauthenticated
+    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+      isLoading: false,
+      data: {},
+    }));
+
+    const history = createHashHistory();
+    // Hostname comes as hostname, not URL
+    history.push(
+      "/start?hostname=community2.cloud-2.automationanywhere.digital"
+    );
+
+    // Needs to use HashRouter instead of MemoryRouter for the useLocation calls in the components to work correctly
+    // given the URL structure above
+    render(
+      <Provider store={optionsStore({})}>
+        <HashRouter>
+          <SetupPage />
+        </HashRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("loader")).toBeNull();
+    });
+
+    expect(screen.getByText("Connect your AARI account")).not.toBeNull();
+    expect(
+      screen.getByLabelText("Control Room URL").getAttribute("value")
+      // Schema get pre-pended automatically
+    ).toStrictEqual("https://community2.cloud-2.automationanywhere.digital");
+
+    expect(
+      screen.getByLabelText("Username")
+      // Schema get pre-pended automatically
+    ).not.toBeNull();
+  });
+
   test("Managed Storage OAuth2 partner user", async () => {
     // User will be unauthenticated
     (useGetMeQuery as jest.Mock).mockImplementation(() => ({

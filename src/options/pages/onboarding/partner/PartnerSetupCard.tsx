@@ -33,7 +33,10 @@ import { getBaseURL } from "@/services/baseService";
 import settingsSlice from "@/store/settingsSlice";
 import { ManualStorageKey, readStorage } from "@/chrome";
 import { useLocation } from "react-router";
-import { hostnameToUrl } from "@/contrib/automationanywhere/aaUtils";
+import {
+  hostnameToUrl,
+  isCommunityControlRoom,
+} from "@/contrib/automationanywhere/aaUtils";
 
 function useInstallUrl() {
   const { data: me } = useGetMeQuery();
@@ -61,10 +64,21 @@ function useInstallUrl() {
 
 /**
  * Helper method to decide partner authentication method given local settings overrides, and current login state.
+ *
+ * @see useRequiredPartnerAuth
  */
 function usePartnerLoginMode(): "token" | "oauth2" {
+  // WARNING: the logic in this method must match the logic in useRequiredPartnerAuth, otherwise logging in using
+  // the method determined here will not result in the user passing the partner auth gate.
+
+  // Make sure to use useLocation because the location.search are on the hash route
+  const location = useLocation();
+
   const { authMethod } = useSelector(selectSettings);
-  const hasCachedLoggedIn = useSelector(selectIsLoggedIn);
+  const hasCachedNativeLogin = useSelector(selectIsLoggedIn);
+
+  // Hostname passed from manual flow during manual setup initiated via Control Room link
+  const hostname = new URLSearchParams(location.search).get("hostname");
 
   switch (authMethod) {
     case "partner-token": {
@@ -84,7 +98,9 @@ function usePartnerLoginMode(): "token" | "oauth2" {
     default: {
       // If the user is logged in using PixieBrix, show the AA token configuration screen. They'll keep using their
       // PixieBrix token login instead of switching to the AA JWT login
-      return hasCachedLoggedIn ? "token" : "oauth2";
+      return hasCachedNativeLogin || isCommunityControlRoom(hostname)
+        ? "token"
+        : "oauth2";
     }
   }
 }

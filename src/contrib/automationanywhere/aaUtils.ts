@@ -29,15 +29,18 @@ import { mapValues } from "lodash";
 import { Primitive } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 
-const COMMUNITY_HOSTNAME_REGEX =
-  /^community\d*\..*\.automationanywhere\.digital$/;
+const COMMUNITY_CONTROL_ROOM_REGEX =
+  /^(https:\/\/)?community\d*\.\S+\.automationanywhere\.digital$/;
 
 /**
- * Return true if the control room URL corresponds to the AA community cloud.
+ * Returns true if the argument corresponds to an Automation Anywhere Community Edition Control Room.
+ *
+ * Returns false for malformed URLs, instead of throwing an error.
+ *
+ * @param hostnameOrUrl
  */
-export function isCommunityControlRoom(url: string): boolean {
-  const parsed = new URL(url);
-  return COMMUNITY_HOSTNAME_REGEX.test(parsed.hostname);
+export function isCommunityControlRoom(hostnameOrUrl: string | null): boolean {
+  return COMMUNITY_CONTROL_ROOM_REGEX.test(hostnameOrUrl ?? "");
 }
 
 export function hostnameToUrl(hostname: string): string {

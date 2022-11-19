@@ -172,6 +172,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     partnerServiceIds.has(service.serviceId)
   );
 
+  // WARNING: the logic in this method must match the logic in usePartnerLoginMode
   // `_` prefix so lint doesn't yell for unused variables in the destructuring
   const [
     isMissingPartnerJwt,

@@ -14,6 +14,13 @@ describe("isCommunityControlRoom", () => {
     expect(isCommunityControlRoom(url)).toBeTruthy();
   });
 
+  test.each([
+    ["community2.cloud-2.automationanywhere.digital/"],
+    ["community.cloud.automationanywhere.digital"],
+  ])("detect community hostname: %s", (url: string) => {
+    expect(isCommunityControlRoom(url)).toBeTruthy();
+  });
+
   test("detect enterprise cloud URL", () => {
     expect(
       isCommunityControlRoom("https://aa-dev-1.my.automationanywhere.digital/")
