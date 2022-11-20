@@ -23,8 +23,8 @@
   },
   "engine-strict": true,
   "engines": {
-    "node": ">= 16.x",
-    "npm": ">= 7.x"
+    "node": "16.x",
+    "npm": "8.x"
   },
   "author": "Todd Schiller",
   "license": "AGPL-3.0",
