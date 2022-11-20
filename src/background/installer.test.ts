@@ -64,7 +64,10 @@ describe("openInstallPage", () => {
       },
     ]);
     await openInstallPage();
-    expect(updateTabMock).toHaveBeenCalledWith(1, { url: APP_BASE_URL });
+    expect(updateTabMock).toHaveBeenCalledWith(1, {
+      url: APP_BASE_URL,
+      active: true,
+    });
     expect(createTabMock.mock.calls.length).toBe(0);
   });
 
@@ -91,7 +94,10 @@ describe("openInstallPage", () => {
       },
     ]);
     await openInstallPage();
-    expect(updateTabMock).toHaveBeenCalledWith(1, { url: APP_BASE_URL });
+    expect(updateTabMock).toHaveBeenCalledWith(1, {
+      url: APP_BASE_URL,
+      active: true,
+    });
     expect(createTabMock.mock.calls.length).toBe(0);
   });
 

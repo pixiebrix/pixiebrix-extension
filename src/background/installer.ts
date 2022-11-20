@@ -51,6 +51,8 @@ export async function openInstallPage() {
   const [appBaseUrl, [appOnboardingTab]] = await Promise.all([
     getBaseURL(),
     browser.tabs.query({
+      // Can't use SERVICE_URL directly because it contains a port number during development, resulting in an
+      // invalid URL match pattern
       url: [
         new URL("setup", SERVICE_URL).href,
         `${new URL("start", SERVICE_URL).href}?*`,
@@ -105,7 +107,10 @@ export async function openInstallPage() {
       //
       // Reuse the tab that is part of the Admin Console onboarding flow to avoid multiple PixieBrix tabs.
       // See discussion here: https://github.com/pixiebrix/pixiebrix-extension/pull/3506
-      await browser.tabs.update(appOnboardingTab.id, { url: appBaseUrl });
+      await browser.tabs.update(appOnboardingTab.id, {
+        url: appBaseUrl,
+        active: true,
+      });
 
       return;
     }
@@ -117,7 +122,10 @@ export async function openInstallPage() {
     //
     // Reuse the tab that is part of the Admin Console onboarding flow to avoid multiple PixieBrix tabs.
     // See discussion here: https://github.com/pixiebrix/pixiebrix-extension/pull/3506
-    await browser.tabs.update(appOnboardingTab.id, { url: appBaseUrl });
+    await browser.tabs.update(appOnboardingTab.id, {
+      url: appBaseUrl,
+      active: true,
+    });
   } else {
     // Case 3: there's no Admin Console onboarding tab open
     //
@@ -141,8 +149,11 @@ export async function checkPartnerAuth(): Promise<void> {
   //
   // Use getExtensionToken instead of isLinked, because isLinked returns true for partner JWT also
   if (!isEmpty(await getExtensionToken())) {
-    const data = await getUserData();
-    if (data.partner?.theme === "automation-anywhere") {
+    const userData = await getUserData();
+
+    console.debug("checkPartnerAuth", userData);
+
+    if (userData.partner?.theme === "automation-anywhere") {
       const configs = await serviceLocator.locateAllForService(
         AUTOMATION_ANYWHERE_SERVICE_ID
       );
@@ -152,7 +163,9 @@ export async function checkPartnerAuth(): Promise<void> {
 
         // Replace the Admin Console tab, if available. The Admin Console tab will be available during openInstallPage
         const [adminConsoleTab] = await browser.tabs.query({
-          url: [SERVICE_URL],
+          // Can't use SERVICE_URL directly because it contains a port number during development, resulting in an
+          // invalid URL match pattern
+          url: [new URL(SERVICE_URL).href],
         });
 
         if (adminConsoleTab) {

@@ -72,12 +72,14 @@ export type UserData = Partial<{
    * @since 1.7.1
    */
   enforceUpdateMillis: number | null;
-
-  partner: {
-    /** Format: uuid */
-    id?: string;
-    theme?: string;
-  } | null;
+  /**
+   * The partner, controlling theme, documentation links, etc.
+   *
+   * Introduced to support partner Community Edition users because they are not part of an organization.
+   *
+   * @since 1.7.14
+   */
+  readonly partner?: Me["partner"];
 }>;
 
 // Exclude tenant information in updates (these are only updated on linking)
@@ -95,6 +97,7 @@ export const USER_DATA_UPDATE_KEYS: Array<keyof UserDataUpdate> = [
   "groups",
   "flags",
   "enforceUpdateMillis",
+  "partner",
 ];
 
 export interface TokenAuthData extends UserData {
