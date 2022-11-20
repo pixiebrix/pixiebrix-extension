@@ -173,6 +173,7 @@ export default function detectRandomString(
   var tab = str.match(/([a-zA-Z\-]{2})(?=(.*?\1){2})/g);
 
   if (Array.isArray(tab)) {
+    // @ts-expect-error It's a vendored file, we don't need this to be exact
     tab = [...new Set(tab)];
 
     var tmpregex = makeRegex(tab);
