@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { cloneDeep, get, set } from "lodash";
+import { cloneDeep, get, set, toPath } from "lodash";
 
 export enum VarExistence {
   MAYBE = "MAYBE",
@@ -72,7 +72,7 @@ class VarMap {
         : VarExistence.DEFINITELY;
     }
 
-    const pathParts = path.split(".");
+    const pathParts = toPath(path);
     if (pathParts.length === 1) {
       return undefined;
     }

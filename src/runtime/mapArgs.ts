@@ -98,6 +98,16 @@ export function isVarExpression(
 }
 
 /**
+ * Returns true if value represents a nunjucks expression
+ * @see isExpression
+ */
+export function isNunjucksExpression(
+  value: unknown
+): value is Expression<string, "nunjucks"> {
+  return isExpression(value) && (value as Expression).__type__ === "nunjucks";
+}
+
+/**
  * Recursively render values
  * @since 1.5.0
  */
@@ -197,7 +207,6 @@ export function renderImplicit(
       const prop = getPropByPath(ctxt, config);
       if (prop && typeof prop === "object" && "__service" in prop) {
         // If we're returning the root service context, return the service itself for use with proxyService
-        // @ts-expect-error not sure why the "in" check isn't working
         return prop.__service;
       }
 
