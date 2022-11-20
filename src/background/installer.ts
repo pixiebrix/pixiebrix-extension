@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { locator as serviceLocator } from "@/background/locator";
 import { Runtime } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
 import { initTelemetry } from "@/background/telemetry";
@@ -22,9 +23,11 @@ import { getUID } from "@/background/messenger/api";
 import { DNT_STORAGE_KEY, allowsTrack } from "@/telemetry/dnt";
 import { gt } from "semver";
 import { getBaseURL } from "@/services/baseService";
-import { isLinked } from "@/auth/token";
+import { getUserData, isLinked } from "@/auth/token";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import { isEmpty } from "lodash";
+import { expectContext } from "@/utils/expectContext";
+import { AUTOMATION_ANYWHERE_SERVICE_ID } from "@/contrib/automationanywhere/contract";
 
 const UNINSTALL_URL = "https://www.pixiebrix.com/uninstall/";
 
@@ -40,6 +43,8 @@ let _availableVersion: string | null = null;
  * Install handler to complete authentication configuration for the extension.
  */
 export async function openInstallPage() {
+  expectContext("background");
+
   // Look for an Admin Console tab that's showing an onboarding page
   // /setup: normal onboarding screen
   // /start: partner onboarding
@@ -54,9 +59,9 @@ export async function openInstallPage() {
   ]);
 
   // There are 4 cases:
-  // Case 1a: there's a partner onboarding tab showing an enterprise onboarding flow
-  // Case 1b: there's a partner onboarding tab showing a community onboarding flow
-  // Case 2: there's a native onboarding tab
+  // Case 1a: there's an Admin Console partner onboarding tab showing an enterprise onboarding flow (/start)
+  // Case 1b: there's an Admin Console partner onboarding tab showing a community onboarding flow (/start)
+  // Case 2: there's an Admin Console native onboarding tab (/setup)
   // Case 3: there's no Admin Console onboarding tab open
 
   if (appOnboardingTab) {
@@ -96,7 +101,7 @@ export async function openInstallPage() {
       // token to the extension).
       //
       // When the extension is linked, the extension reloads itself. On restart, it will automatically show the
-      // screen to configure the required AA integration.
+      // screen to configure the required AA integration. See installer:checkPartnerAuth below
       //
       // Reuse the tab that is part of the Admin Console onboarding flow to avoid multiple PixieBrix tabs.
       // See discussion here: https://github.com/pixiebrix/pixiebrix-extension/pull/3506
@@ -122,18 +127,78 @@ export async function openInstallPage() {
   }
 }
 
-async function install({ reason }: Runtime.OnInstalledDetailsType) {
+/**
+ * For partner installs, if a partner integration is not configured, automatically open the Extension Console
+ * to continue the partner authentication onboarding flow.
+ *
+ * @see useRequiredPartnerAuth
+ */
+export async function checkPartnerAuth(): Promise<void> {
+  expectContext("background");
+
+  // Check for partner community edition install, where the extension is linked, but the partner integration is
+  // not configured yet.
+  if (await isLinked()) {
+    const data = await getUserData();
+    if (data.partner?.theme === "automation-anywhere") {
+      const configs = await serviceLocator.locateAllForService(
+        AUTOMATION_ANYWHERE_SERVICE_ID
+      );
+
+      if (!configs.some((x) => !x.proxy)) {
+        const extensionConsoleUrl = browser.runtime.getURL("options.html");
+
+        // Replace the Admin Console tab, if available. The Admin Console tab will be available during openInstallPage
+        const [adminConsoleTab] = await browser.tabs.query({
+          url: [SERVICE_URL],
+        });
+
+        if (adminConsoleTab) {
+          await browser.tabs.update(adminConsoleTab.id, {
+            url: extensionConsoleUrl,
+            active: true,
+          });
+        } else {
+          await browser.tabs.create({ url: extensionConsoleUrl });
+        }
+      }
+    }
+  }
+}
+
+async function install({
+  reason,
+  previousVersion,
+}: Runtime.OnInstalledDetailsType) {
+  // https://developer.chrome.com/docs/extensions/reference/runtime/#event-onInstalled
+  // https://developer.chrome.com/docs/extensions/reference/runtime/#type-OnInstalledReason
+
+  console.debug("onInstalled", { reason, previousVersion });
+  const { version } = browser.runtime.getManifest();
+
   if (reason === "install") {
     reportEvent("PixieBrixInstall", {
-      version: browser.runtime.getManifest().version,
+      version,
     });
+
+    // XXX: under what conditions could onInstalled fire, but the extension is already linked?
     if (!(await isLinked())) {
       void openInstallPage();
     }
   } else if (reason === "update") {
-    reportEvent("PixieBrixUpdate", {
-      version: browser.runtime.getManifest().version,
-    });
+    // `update` is also triggered on browser.runtime.reload() and manually reloading from the extensions page
+    void checkPartnerAuth();
+
+    if (version === previousVersion) {
+      reportEvent("PixieBrixReload", {
+        version,
+      });
+    } else {
+      reportEvent("PixieBrixUpdate", {
+        version,
+        previousVersion,
+      });
+    }
   }
 }
 
@@ -162,7 +227,7 @@ async function setUninstallURL(): Promise<void> {
     url.searchParams.set("uid", await getUID());
   }
 
-  // We always want to show the uninstallation page so the user can optionally fill out the uninstallation form
+  // We always want to show the uninstallation page so the user can optionally fill out the uninstallation survey
   await browser.runtime.setUninstallURL(url.href);
 }
 

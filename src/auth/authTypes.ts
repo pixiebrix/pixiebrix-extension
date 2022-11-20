@@ -72,11 +72,21 @@ export type UserData = Partial<{
    * @since 1.7.1
    */
   enforceUpdateMillis: number | null;
+
+  partner: {
+    /** Format: uuid */
+    id?: string;
+    theme?: string;
+  } | null;
 }>;
 
 // Exclude tenant information in updates (these are only updated on linking)
 export type UserDataUpdate = Required<Except<UserData, "hostname" | "user">>;
 
+/**
+ * User data keys (in addition to the token) to store in chrome.storage.local when linking the extension.
+ * @see updateUserData
+ */
 export const USER_DATA_UPDATE_KEYS: Array<keyof UserDataUpdate> = [
   "email",
   "organizationId",
