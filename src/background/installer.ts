@@ -23,6 +23,8 @@ import { DNT_STORAGE_KEY, allowsTrack } from "@/telemetry/dnt";
 import { gt } from "semver";
 import { getBaseURL } from "@/services/baseService";
 import { isLinked } from "@/auth/token";
+import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
+import { isEmpty } from "lodash";
 
 const UNINSTALL_URL = "https://www.pixiebrix.com/uninstall/";
 
@@ -34,8 +36,14 @@ const SERVICE_URL = process.env.SERVICE_URL;
  */
 let _availableVersion: string | null = null;
 
-async function openInstallPage() {
-  const [url, [accountTab]] = await Promise.all([
+/**
+ * Install handler to complete authentication configuration for the extension.
+ */
+export async function openInstallPage() {
+  // Look for an Admin Console tab that's showing an onboarding page
+  // /setup: normal onboarding screen
+  // /start: partner onboarding
+  const [appBaseUrl, [appOnboardingTab]] = await Promise.all([
     getBaseURL(),
     browser.tabs.query({
       url: [
@@ -45,25 +53,72 @@ async function openInstallPage() {
     }),
   ]);
 
-  if (accountTab) {
-    const accountTabUrl = new URL(accountTab.url);
+  // There are 4 cases:
+  // Case 1a: there's a partner onboarding tab showing an enterprise onboarding flow
+  // Case 1b: there's a partner onboarding tab showing a community onboarding flow
+  // Case 2: there's a native onboarding tab
+  // Case 3: there's no Admin Console onboarding tab open
 
-    if (accountTabUrl.pathname === "/start") {
-      const extensionStartUrl = new URL(browser.runtime.getURL("options.html"));
-      extensionStartUrl.hash = `/start${new URL(accountTab.url).search}`;
+  if (appOnboardingTab) {
+    const appOnboardingTabUrl = new URL(appOnboardingTab.url);
 
-      await browser.tabs.update(accountTab.id, {
-        url: extensionStartUrl.href,
-        active: true,
-      });
+    if (appOnboardingTabUrl.pathname === "/start") {
+      // Case 1a/1b: Admin Console is showing a partner onboarding flow
+
+      const controlRoomHostname =
+        appOnboardingTabUrl.searchParams.get("hostname");
+
+      if (
+        !isEmpty(controlRoomHostname) &&
+        !isCommunityControlRoom(controlRoomHostname)
+      ) {
+        // Case 1a: Admin Console is showing enterprise onboarding flow
+        //
+        // Show the Extension Console /start page, where the user will be prompted to use OAuth2 to connect their
+        // AARI account. Include the Control Room hostname in the URL so that the ControlRoomOAuthForm can pre-fill
+        // the URL
+        const extensionStartUrl = new URL(
+          browser.runtime.getURL("options.html")
+        );
+        extensionStartUrl.hash = `/start${appOnboardingTabUrl.search}`;
+
+        await browser.tabs.update(appOnboardingTab.id, {
+          url: extensionStartUrl.href,
+          active: true,
+        });
+
+        return;
+      }
+
+      // Case 1b: Admin Console is showing community onboarding flow
+      //
+      // Redirect to the main Admin Console page, which automatically "links" the extension (by passing the PixieBrix
+      // token to the extension).
+      //
+      // When the extension is linked, the extension reloads itself. On restart, it will automatically show the
+      // screen to configure the required AA integration.
+      //
+      // Reuse the tab that is part of the Admin Console onboarding flow to avoid multiple PixieBrix tabs.
+      // See discussion here: https://github.com/pixiebrix/pixiebrix-extension/pull/3506
+      await browser.tabs.update(appOnboardingTab.id, { url: appBaseUrl });
+
       return;
     }
 
-    // Automatically reuse the tab that is part of the onboarding flow
-    // https://github.com/pixiebrix/pixiebrix-extension/pull/3506
-    await browser.tabs.update(accountTab.id, { url });
+    // Case 2: the Admin Console is showing the native PixieBrix onboarding tab.
+    //
+    // Redirect to the main Admin Console page, which automatically "links" the extension (by passing the PixieBrix
+    // token to the extension).
+    //
+    // Reuse the tab that is part of the Admin Console onboarding flow to avoid multiple PixieBrix tabs.
+    // See discussion here: https://github.com/pixiebrix/pixiebrix-extension/pull/3506
+    await browser.tabs.update(appOnboardingTab.id, { url: appBaseUrl });
   } else {
-    await browser.tabs.create({ url });
+    // Case 3: there's no Admin Console onboarding tab open
+    //
+    // Open a new Admin Console tab which will automatically "links" the extension (by passing the native PixieBrix
+    // token to the extension).
+    await browser.tabs.create({ url: appBaseUrl });
   }
 }
 

@@ -30,7 +30,7 @@ import { Primitive } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 
 const COMMUNITY_CONTROL_ROOM_REGEX =
-  /^(https:\/\/)?community\d*\.\S+\.automationanywhere\.digital$/;
+  /^(https:\/\/)?community\d*\.\S+\.automationanywhere\.digital\/?$/;
 
 /**
  * Returns true if the argument corresponds to an Automation Anywhere Community Edition Control Room.
