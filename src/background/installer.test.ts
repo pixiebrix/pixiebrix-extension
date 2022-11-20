@@ -29,6 +29,7 @@ jest.mock("@/services/baseService", () => ({
 
 jest.mock("@/auth/token", () => ({
   isLinked: jest.fn().mockResolvedValue(false),
+  getExtensionToken: jest.fn().mockResolvedValue(null),
   getUserData: jest.fn().mockResolvedValue(null),
 }));
 
@@ -43,6 +44,7 @@ const updateTabMock = browser.tabs.update as jest.Mock;
 const queryTabsMock = browser.tabs.query as jest.Mock;
 const getExtensionUrlMock = browser.runtime.getURL as jest.Mock;
 const isLinkedMock = auth.isLinked as jest.Mock;
+const getExtensionTokenMock = auth.getExtensionToken as jest.Mock;
 const getUserData = auth.getUserData as jest.Mock;
 const locateAllForServiceMock = locator.locateAllForService as jest.Mock;
 
@@ -113,8 +115,25 @@ describe("checkPartnerAuth", () => {
 
   it("skip if no partner", async () => {
     isLinkedMock.mockResolvedValue(true);
+    getExtensionTokenMock.mockResolvedValue("abc123");
     getUserData.mockResolvedValue({
       partner: null,
+    });
+
+    await checkPartnerAuth();
+
+    expect(createTabMock.mock.calls.length).toBe(0);
+    expect(updateTabMock.mock.calls.length).toBe(0);
+  });
+
+  it("skip if partner JWT install", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    getExtensionTokenMock.mockResolvedValue(null);
+    getUserData.mockResolvedValue({
+      partner: {
+        id: uuidv4(),
+        theme: "automation-anywhere",
+      },
     });
 
     await checkPartnerAuth();
@@ -126,6 +145,7 @@ describe("checkPartnerAuth", () => {
   it("opens extension console if linked with partner and no services", async () => {
     queryTabsMock.mockResolvedValue([]);
     isLinkedMock.mockResolvedValue(true);
+    getExtensionTokenMock.mockResolvedValue("abc123");
     locateAllForServiceMock.mockResolvedValue([
       // Include a cloud configuration to clarify that local integration is still required
       { id: uuidv4(), serviceId: "automation-anywhere", proxy: true },
@@ -154,6 +174,7 @@ describe("checkPartnerAuth", () => {
       },
     ]);
     isLinkedMock.mockResolvedValue(true);
+    getExtensionTokenMock.mockResolvedValue("abc123");
     getUserData.mockResolvedValue({
       partner: {
         id: uuidv4(),
@@ -174,6 +195,7 @@ describe("checkPartnerAuth", () => {
   it("does not open extension console if integration is configured", async () => {
     queryTabsMock.mockResolvedValue([]);
     isLinkedMock.mockResolvedValue(true);
+    getExtensionTokenMock.mockResolvedValue("abc123");
     locateAllForServiceMock.mockResolvedValue([
       { id: uuidv4(), serviceId: "automation-anywhere" },
     ]);

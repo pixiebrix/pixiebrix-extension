@@ -23,7 +23,7 @@ import { getUID } from "@/background/messenger/api";
 import { DNT_STORAGE_KEY, allowsTrack } from "@/telemetry/dnt";
 import { gt } from "semver";
 import { getBaseURL } from "@/services/baseService";
-import { getUserData, isLinked } from "@/auth/token";
+import { getExtensionToken, getUserData, isLinked } from "@/auth/token";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import { isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
@@ -136,9 +136,11 @@ export async function openInstallPage() {
 export async function checkPartnerAuth(): Promise<void> {
   expectContext("background");
 
-  // Check for partner community edition install, where the extension is linked, but the partner integration is
-  // not configured yet.
-  if (await isLinked()) {
+  // Check for partner community edition install, where the extension is linked with the native PixieBrix token, but
+  // the partner integration is not configured yet.
+  //
+  // Use getExtensionToken instead of isLinked, because isLinked returns true for partner JWT also
+  if (!isEmpty(await getExtensionToken())) {
     const data = await getUserData();
     if (data.partner?.theme === "automation-anywhere") {
       const configs = await serviceLocator.locateAllForService(
