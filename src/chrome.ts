@@ -81,7 +81,6 @@ export async function readStorage<T = unknown>(
   try {
     // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
     // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
-    // eslint-disable-next-line security/detect-object-injection -- type-checked
     result = await browser.storage[area as "local" | "managed"].get(storageKey);
   } catch (error) {
     if (area === "managed") {
