@@ -18,9 +18,8 @@
 import { ensureContentScript } from "@/background/contentScript";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
 import { executeScript } from "webext-content-scripts";
-import pMemoize from "p-memoize";
 import webextAlert from "./webextAlert";
-import { isMac } from "@/utils";
+import { memoizeUntilSettled, isMac } from "@/utils";
 import { notify } from "@/options/messenger/api";
 import { browserAction, Tab } from "@/mv3/api";
 import { isScriptableUrl } from "@/utils/permissions";
@@ -34,12 +33,7 @@ const MSG_NO_SIDEBAR_ON_OPTIONS_PAGE = `PixieBrix Tip 💜\n If you want to crea
 // The sidebar is always injected to into the top level frame
 const TOP_LEVEL_FRAME_ID = 0;
 
-// Avoid triggering multiple requests at once and causing multiple error alerts.
-// This patterns "debounces" calls while the promise is pending:
-// https://github.com/sindresorhus/promise-fun/issues/15
-const toggleSidebar = pMemoize(_toggleSidebar, {
-  cache: false,
-});
+const toggleSidebar = memoizeUntilSettled(_toggleSidebar);
 
 // Don't accept objects here as they're not easily memoizable
 async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
