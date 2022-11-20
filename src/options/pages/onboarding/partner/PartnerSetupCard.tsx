@@ -192,7 +192,11 @@ const PartnerSetupCard: React.FunctionComponent = () => {
           title="Link the extension to a PixieBrix account"
           active
         >
-          <Button className="btn btn-primary mt-2" href={installURL}>
+          <Button
+            className="btn btn-primary mt-2"
+            href={installURL}
+            data-testid="link-account-btn"
+          >
             <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
           </Button>
         </OnboardingStep>
