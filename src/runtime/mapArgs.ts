@@ -207,7 +207,6 @@ export function renderImplicit(
       const prop = getPropByPath(ctxt, config);
       if (prop && typeof prop === "object" && "__service" in prop) {
         // If we're returning the root service context, return the service itself for use with proxyService
-        // @ts-expect-error not sure why the "in" check isn't working
         return prop.__service;
       }
 
