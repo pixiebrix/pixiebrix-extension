@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { blockConfigFactory, formStateFactory } from "@/testUtils/factories";
+import {
+  blockConfigFactory,
+  formStateFactory,
+  installedRecipeMetadataFactory,
+} from "@/testUtils/factories";
 import VarAnalysis from "./varAnalysis";
 import { validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -25,7 +29,7 @@ import {
   makePipelineExpression,
   makeTemplateExpression,
 } from "@/runtime/expressionCreators";
-import { SELF_EXISTENCE, VarExistence } from "./varMap";
+import { VarExistence } from "./varMap";
 
 jest.mock("@/background/messenger/api", () => ({
   __esModule: true,
@@ -75,6 +79,7 @@ describe("Collecting available vars", () => {
           optionsArgs: {
             foo: "bar",
           },
+          recipe: installedRecipeMetadataFactory(),
         },
         [blockConfigFactory()]
       );
@@ -115,19 +120,23 @@ describe("Collecting available vars", () => {
       const block0Vars = analysis
         .getKnownVars()
         .get("extension.blockPipeline.0");
+
       expect(block0Vars.getExistence("@foo")).toBeUndefined();
 
       const block1Vars = analysis
         .getKnownVars()
         .get("extension.blockPipeline.1");
+
       expect(block1Vars.getExistence("@foo")).toBe(VarExistence.DEFINITELY);
-      expect(block1Vars.getExistence("@foo.*")).toBe(VarExistence.MAYBE);
+
+      // Check that an arbitrary child of the output key is also marked as MAYBE
+      expect(block1Vars.getExistence("@foo.bar")).toBe(VarExistence.MAYBE);
     });
 
     test("collects the output key of a conditional block", async () => {
       const extension = formStateFactory(undefined, [
         blockConfigFactory({
-          if: false,
+          if: true,
           outputKey: validateOutputKey("foo"),
         }),
         blockConfigFactory(),
@@ -138,14 +147,17 @@ describe("Collecting available vars", () => {
       const block0Vars = analysis
         .getKnownVars()
         .get("extension.blockPipeline.0");
+
       expect(block0Vars.getExistence("@foo")).toBeUndefined();
 
       const block1Vars = analysis
         .getKnownVars()
         .get("extension.blockPipeline.1");
-      // TODO the following check fails due to the VarMap implementation
-      // expect(block1Vars.getExistence("@foo")).toBe(VarExistence.MAYBE);
-      expect(block1Vars.getExistence("@foo.*")).toBe(VarExistence.MAYBE);
+
+      expect(block1Vars.getExistence("@foo")).toBe(VarExistence.MAYBE);
+
+      // Check that an arbitrary child of the output key is also marked as MAYBE
+      expect(block1Vars.getExistence("@foo.bar")).toBe(VarExistence.MAYBE);
     });
   });
 

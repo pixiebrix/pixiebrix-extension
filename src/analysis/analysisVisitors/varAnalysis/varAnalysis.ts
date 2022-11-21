@@ -36,12 +36,13 @@ type PreviousVisitedBlock = {
 };
 
 async function setServiceVars(extension: FormState, contextVars: VarMap) {
-  const serviceContext = extension.services?.length
-    ? await makeServiceContext(extension.services)
-    : null;
-
-  if (serviceContext != null) {
+  for (const service of extension.services ?? []) {
+    // eslint-disable-next-line no-await-in-loop
+    const serviceContext = await makeServiceContext([service]);
     contextVars.setExistenceFromObj(serviceContext);
+    for (const serviceKey of Object.keys(serviceContext)) {
+      contextVars.setSource(serviceKey, `service:${service.id}`);
+    }
   }
 }
 
@@ -58,12 +59,17 @@ async function setInputVars(extension: FormState, contextVars: VarMap) {
   for (const key of readerKeys) {
     contextVars.setExistence(`@input.${key}`, VarExistence.DEFINITELY);
   }
+
+  if (readerKeys.length > 0) {
+    contextVars.setSource("@input", reader.id ?? reader.name ?? "reader");
+  }
 }
 
 function setOptionsVars(extension: FormState, contextVars: VarMap) {
   // TODO: should we check the blueprint definition instead?
   if (!isEmpty(extension.optionsArgs)) {
     contextVars.setExistenceFromObj(extension.optionsArgs, "@options");
+    contextVars.setSource("@options", extension.recipe.id);
   }
 }
 
@@ -124,17 +130,17 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     };
 
     if (blockConfig.outputKey) {
+      const outputVarName = `@${blockConfig.outputKey}`;
       const currentBlockOutput = new VarMap();
       currentBlockOutput.setExistence(
-        `@${blockConfig.outputKey}`,
-        blockConfig.if == null ? VarExistence.DEFINITELY : VarExistence.MAYBE
+        outputVarName,
+        blockConfig.if == null ? VarExistence.DEFINITELY : VarExistence.MAYBE,
+
+        // TODO get the output schema and use its properties to be more precise
+        true
       );
 
-      // TODO get the output schema and use its properties to be more precise
-      currentBlockOutput.setExistence(
-        `@${blockConfig.outputKey}.*`,
-        VarExistence.MAYBE
-      );
+      currentBlockOutput.setSource(outputVarName, position.path);
 
       this.previousVisitedBlock.output = currentBlockOutput;
     }

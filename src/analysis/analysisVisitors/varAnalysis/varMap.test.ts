@@ -148,6 +148,25 @@ describe("VarMap", () => {
     expect(merged.getExistence("foo.baz")).toBe(VarExistence.DEFINITELY);
   });
 
+  test("merges meta source", () => {
+    const varMap = new VarMap();
+    varMap.setExistence("foo", VarExistence.DEFINITELY);
+    varMap.setSource("foo", "bar");
+
+    const merged = new VarMap().merge(varMap);
+
+    expect(merged.getMeta("foo").source).toBe("bar");
+  });
+
+  test("merges allowAnyChild flag", () => {
+    const varMap = new VarMap();
+    varMap.setExistence("foo", VarExistence.DEFINITELY, true);
+
+    const merged = new VarMap().merge(varMap);
+
+    expect(merged.getExistence("foo.bar.baz.qux")).toBe(VarExistence.MAYBE);
+  });
+
   test("doesn't override a var with nested keys", () => {
     // Set nested keys
     varMap.setExistence("foo.bar", VarExistence.DEFINITELY);

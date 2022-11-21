@@ -161,6 +161,10 @@ export function mergeExistenceMaps(
       target[SELF_EXISTENCE] = source[SELF_EXISTENCE];
     }
 
+    if (source[ALLOW_ANY_CHILD]) {
+      target[ALLOW_ANY_CHILD] = true;
+    }
+
     if (source[META_SYMBOL]) {
       target[META_SYMBOL] = source[META_SYMBOL];
     }
