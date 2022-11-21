@@ -79,7 +79,9 @@ describe("Collecting available vars", () => {
           optionsArgs: {
             foo: "bar",
           },
-          recipe: installedRecipeMetadataFactory(),
+          recipe: installedRecipeMetadataFactory({
+            id: validateRegistryId("test/recipe"),
+          }),
         },
         [blockConfigFactory()]
       );
@@ -90,6 +92,8 @@ describe("Collecting available vars", () => {
       expect(knownVars.size).toBe(1);
 
       const foundationKnownVars = knownVars.get("extension.blockPipeline.0");
+
+      expect(foundationKnownVars.getMeta("@input").source).toEqual("reader");
       expect(foundationKnownVars.getExistence("@input.title")).toEqual(
         VarExistence.DEFINITELY
       );
@@ -99,8 +103,16 @@ describe("Collecting available vars", () => {
       expect(foundationKnownVars.getExistence("@input.lang")).toEqual(
         VarExistence.DEFINITELY
       );
+
+      expect(foundationKnownVars.getMeta("@options").source).toEqual(
+        "test/recipe"
+      );
       expect(foundationKnownVars.getExistence("@options.foo")).toEqual(
         VarExistence.DEFINITELY
+      );
+
+      expect(foundationKnownVars.getMeta("@pixiebrix").source).toEqual(
+        "service:@test/service"
       );
       expect(
         foundationKnownVars.getExistence("@pixiebrix.__service.serviceId")
@@ -131,6 +143,10 @@ describe("Collecting available vars", () => {
 
       // Check that an arbitrary child of the output key is also marked as MAYBE
       expect(block1Vars.getExistence("@foo.bar")).toBe(VarExistence.MAYBE);
+
+      expect(block1Vars.getMeta("@foo").source).toBe(
+        "extension.blockPipeline.0"
+      );
     });
 
     test("collects the output key of a conditional block", async () => {

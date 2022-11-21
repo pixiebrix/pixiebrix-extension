@@ -36,10 +36,13 @@ type PreviousVisitedBlock = {
 };
 
 async function setServiceVars(extension: FormState, contextVars: VarMap) {
+  // Loop through all the services so we can set the source each service variable properly
   for (const service of extension.services ?? []) {
     // eslint-disable-next-line no-await-in-loop
     const serviceContext = await makeServiceContext([service]);
     contextVars.setExistenceFromObj(serviceContext);
+
+    // Normally serviceContext here will have a single key
     for (const serviceKey of Object.keys(serviceContext)) {
       contextVars.setSource(serviceKey, `service:${service.id}`);
     }
