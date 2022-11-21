@@ -25,7 +25,7 @@ import {
   makePipelineExpression,
   makeTemplateExpression,
 } from "@/runtime/expressionCreators";
-import { VarExistence } from "./varMap";
+import { SELF_EXISTENCE, VarExistence } from "./varMap";
 
 jest.mock("@/background/messenger/api", () => ({
   __esModule: true,
@@ -81,24 +81,25 @@ describe("Collecting available vars", () => {
 
       await analysis.run(extension);
 
-      expect(analysis.getKnownVars().size).toBe(1);
-      expect(analysis.getKnownVars().get("extension.blockPipeline.0")).toEqual({
-        map: {
-          "@input": {
-            title: VarExistence.DEFINITELY,
-            url: VarExistence.DEFINITELY,
-            lang: VarExistence.DEFINITELY,
-          },
-          "@options": {
-            foo: VarExistence.DEFINITELY,
-          },
-          "@pixiebrix": {
-            __service: {
-              serviceId: VarExistence.DEFINITELY,
-            },
-          },
-        },
-      });
+      const knownVars = analysis.getKnownVars();
+      expect(knownVars.size).toBe(1);
+
+      const foundationKnownVars = knownVars.get("extension.blockPipeline.0");
+      expect(foundationKnownVars.getExistence("@input.title")).toEqual(
+        VarExistence.DEFINITELY
+      );
+      expect(foundationKnownVars.getExistence("@input.url")).toEqual(
+        VarExistence.DEFINITELY
+      );
+      expect(foundationKnownVars.getExistence("@input.lang")).toEqual(
+        VarExistence.DEFINITELY
+      );
+      expect(foundationKnownVars.getExistence("@options.foo")).toEqual(
+        VarExistence.DEFINITELY
+      );
+      expect(
+        foundationKnownVars.getExistence("@pixiebrix.__service.serviceId")
+      ).toEqual(VarExistence.DEFINITELY);
     });
 
     test("collects the output key", async () => {

@@ -26,11 +26,13 @@ const META_SYMBOL = Symbol("META");
 type Meta = {
   source: string;
 };
-const SELF_EXISTENCE = Symbol("SELF_EXISTENCE");
+
+export const SELF_EXISTENCE = Symbol("SELF_EXISTENCE");
+export const ALLOW_ANY_CHILD = Symbol("ALLOW_ANY_CHILD");
 type ExistenceMap = {
   [META_SYMBOL]?: Meta;
   [SELF_EXISTENCE]?: VarExistence;
-  "*"?: ExistenceMap;
+  [ALLOW_ANY_CHILD]?: boolean;
 
   [name: string]: ExistenceMap;
 };
@@ -62,18 +64,29 @@ class VarMap {
     }
   }
 
-  setExistence(path: string, existence: VarExistence): void {
-    const selfExistencePathParts = [...toPath(path), SELF_EXISTENCE];
+  setExistence(
+    path: string,
+    existence: VarExistence,
+    allowAnyChild = false
+  ): void {
+    const pathParts = toPath(path);
+    const selfExistencePathParts = [...pathParts, SELF_EXISTENCE];
     const exactExistence = get(this.map, selfExistencePathParts);
 
     // Not overwriting DEFINITELY existing var
-    if (exactExistence === VarExistence.DEFINITELY) {
-      return;
+    if (exactExistence !== VarExistence.DEFINITELY) {
+      setWith(this.map, selfExistencePathParts, existence, (x) =>
+        typeof x === "undefined"
+          ? {
+              [SELF_EXISTENCE]: existence,
+            }
+          : x
+      );
     }
 
-    setWith(this.map, selfExistencePathParts, existence, () => ({
-      [SELF_EXISTENCE]: existence,
-    }));
+    if (allowAnyChild) {
+      set(this.map, [...pathParts, ALLOW_ANY_CHILD], true);
+    }
   }
 
   getExistence(path: string): VarExistence | undefined {
@@ -89,9 +102,7 @@ class VarMap {
 
     let bag = this.map;
     while (pathParts.length > 0) {
-      // TODO refactor the usage of '*'
-      const allowAnyChild = bag["*"]?.[SELF_EXISTENCE];
-      if (allowAnyChild) {
+      if (bag[ALLOW_ANY_CHILD]) {
         return VarExistence.MAYBE;
       }
 
@@ -143,19 +154,23 @@ export function mergeExistenceMaps(
       return;
     }
 
-    for (const [key, value] of Object.entries(source)) {
-      if (typeof value === "object") {
-        if (typeof target[key] !== "object") {
-          target[key] = {};
-        }
+    if (
+      target[SELF_EXISTENCE] !== VarExistence.DEFINITELY &&
+      typeof source[SELF_EXISTENCE] === "string"
+    ) {
+      target[SELF_EXISTENCE] = source[SELF_EXISTENCE];
+    }
 
-        merger(target[key] as ExistenceMap, value);
-      } else if (
-        typeof target[key] !== "object" &&
-        target[key] !== VarExistence.DEFINITELY
-      ) {
-        target[key] = value;
+    if (source[META_SYMBOL]) {
+      target[META_SYMBOL] = source[META_SYMBOL];
+    }
+
+    for (const [key, value] of Object.entries(source)) {
+      if (typeof target[key] !== "object") {
+        target[key] = {};
       }
+
+      merger(target[key], value);
     }
   }
 }
