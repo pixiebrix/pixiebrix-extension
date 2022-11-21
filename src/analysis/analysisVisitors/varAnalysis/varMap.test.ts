@@ -24,7 +24,7 @@ describe("VarMap", () => {
   });
 
   test.each(["foo.bar", "foo", 'foo["bar baz"].qux[0]'])(
-    "get the exact know var (%s)",
+    "get the exact known var (%s)",
     (varName) => {
       varMap.setExistence(varName, VarExistence.DEFINITELY);
       const actual = varMap.getExistence(varName);
@@ -33,26 +33,25 @@ describe("VarMap", () => {
     }
   );
 
-  test("gets nested existence", () => {
-    varMap.setExistence("foo.bar", VarExistence.DEFINITELY);
-    expect(varMap.getExistence("foo.bar")).toBe(VarExistence.DEFINITELY);
-    expect(varMap.getExistence("foo.baz")).toBeUndefined();
-  });
+  test.each([VarExistence.MAYBE, VarExistence.DEFINITELY])(
+    "gets nested existence (%s)",
+    (existence) => {
+      varMap.setExistence("foo.bar", existence);
+      expect(varMap.getExistence("foo.bar")).toBe(existence);
+      expect(varMap.getExistence("foo.baz")).toBeUndefined();
+    }
+  );
 
-  test("gets nested existence 2", () => {
-    varMap.setExistence('foo["bar baz"].qux', VarExistence.DEFINITELY);
-    expect(varMap.getExistence('foo["bar baz"]')).toBe(VarExistence.DEFINITELY);
-    expect(varMap.getExistence("foo")).toBe(VarExistence.DEFINITELY);
-  });
+  test.each([VarExistence.MAYBE, VarExistence.DEFINITELY])(
+    "gets nested existence 2 (%s)",
+    (existence) => {
+      varMap.setExistence('foo["bar baz"].qux', existence);
+      expect(varMap.getExistence('foo["bar baz"]')).toBe(existence);
+      expect(varMap.getExistence("foo")).toBe(existence);
+    }
+  );
 
-  test("get a DEFINITELY property of a known container", () => {
-    varMap.setExistence("foo.bar", VarExistence.DEFINITELY);
-    const actual = varMap.getExistence("foo");
-
-    expect(actual).toBe(VarExistence.DEFINITELY);
-  });
-
-  test("get a MAYBE property of a known container", () => {
+  test("get a child property of a container with any schema", () => {
     varMap.setExistence("foo.*", VarExistence.MAYBE);
     const actual = varMap.getExistence("foo.bar");
 
@@ -152,6 +151,28 @@ describe("VarMap", () => {
 
     expect(varMap.getExistence("foo")).toBe(VarExistence.DEFINITELY);
   });
+});
+
+describe("VarMap meta", () => {
+  test("sets source to undefined var", () => {
+    const varMap = new VarMap();
+    varMap.setSource("@foo", "bar");
+
+    expect(varMap.getMeta("@foo").source).toBe("bar");
+    expect(varMap.getExistence("@foo")).toBeUndefined();
+  });
+
+  test.each([VarExistence.MAYBE, VarExistence.DEFINITELY])(
+    "sets source to an existing var (%s)",
+    (existence) => {
+      const varMap = new VarMap();
+      varMap.setExistence("@foo.bar", existence);
+      varMap.setSource("@foo.bar", "baz");
+
+      expect(varMap.getMeta("@foo.bar").source).toBe("baz");
+      expect(varMap.getExistence("@foo.bar")).toBe(existence);
+    }
+  );
 });
 
 describe("mergeExistenceMaps", () => {

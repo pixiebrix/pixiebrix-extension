@@ -15,16 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { cloneDeep, get, set, toPath } from "lodash";
+import { cloneDeep, get, set, setWith, toPath } from "lodash";
 
 export enum VarExistence {
   MAYBE = "MAYBE",
   DEFINITELY = "DEFINITELY",
 }
 
+const META_SYMBOL = Symbol("META");
+type Meta = {
+  source: string;
+};
+const SELF_EXISTENCE = Symbol("SELF_EXISTENCE");
 type ExistenceMap = {
-  "*"?: VarExistence;
-  [name: string]: ExistenceMap | VarExistence;
+  [META_SYMBOL]?: Meta;
+  [SELF_EXISTENCE]?: VarExistence;
+  "*"?: ExistenceMap;
+
+  [name: string]: ExistenceMap;
 };
 
 class VarMap {
@@ -55,21 +63,23 @@ class VarMap {
   }
 
   setExistence(path: string, existence: VarExistence): void {
-    const current = get(this.map, path);
-    // Not overriding objects and DEFINITELY existing vars
-    if (typeof current === "object" || current === VarExistence.DEFINITELY) {
+    const selfExistencePathParts = [...toPath(path), SELF_EXISTENCE];
+    const exactExistence = get(this.map, selfExistencePathParts);
+
+    // Not overwriting DEFINITELY existing var
+    if (exactExistence === VarExistence.DEFINITELY) {
       return;
     }
 
-    set(this.map, path, existence);
+    setWith(this.map, selfExistencePathParts, existence, () => ({
+      [SELF_EXISTENCE]: existence,
+    }));
   }
 
   getExistence(path: string): VarExistence | undefined {
-    const exactExistence = get(this.map, path);
-    if (exactExistence !== undefined) {
-      return typeof exactExistence === "string"
-        ? exactExistence
-        : VarExistence.DEFINITELY;
+    const exactExistence = get(this.map, path)?.[SELF_EXISTENCE];
+    if (typeof exactExistence === "string") {
+      return exactExistence;
     }
 
     const pathParts = toPath(path);
@@ -77,20 +87,31 @@ class VarMap {
       return undefined;
     }
 
-    let bag: ExistenceMap | VarExistence = this.map;
+    let bag = this.map;
     while (pathParts.length > 0) {
-      if (typeof bag["*"] === "string") {
-        return bag["*"];
+      // TODO refactor the usage of '*'
+      const allowAnyChild = bag["*"]?.[SELF_EXISTENCE];
+      if (allowAnyChild) {
+        return VarExistence.MAYBE;
       }
 
       const part = pathParts.shift();
       bag = bag[part];
-      if (typeof bag !== "object") {
-        return bag;
+      if (typeof bag === "undefined") {
+        return undefined;
       }
     }
 
     return undefined;
+  }
+
+  setSource(path: string, source: string): void {
+    set(this.map, [...toPath(path), META_SYMBOL, "source"], source);
+  }
+
+  getMeta(path: string): Meta | undefined {
+    const existence = get(this.map, path);
+    return existence?.[META_SYMBOL];
   }
 
   clone(): VarMap {
