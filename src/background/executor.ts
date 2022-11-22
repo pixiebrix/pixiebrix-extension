@@ -174,16 +174,14 @@ export async function openTab(
 ): Promise<void> {
   // Natively links the new tab to its opener + opens it right next to it
   const openerTabId = this.trace[0].tab?.id;
-  const tab = await browser.tabs.create({ ...createProperties, openerTabId });
-
-  // FIXME: include frame information in tabToTarget
-  void tabToTarget.set(String(openerTabId), tab.id);
-  void tabToOpener.set(String(tab.id), openerTabId);
+  await browser.tabs.create({ ...createProperties, openerTabId });
 }
 
-async function linkTabListener(tab: Tabs.Tab): Promise<void> {
-  if (tab.openerTabId) {
-    await tabToTarget.set(String(tab.openerTabId), tab.id);
+async function linkTabListener({ id, openerTabId }: Tabs.Tab): Promise<void> {
+  if (openerTabId) {
+    // FIXME: include frame information in tabToTarget
+    void tabToTarget.set(String(openerTabId), id);
+    void tabToOpener.set(String(id), openerTabId);
   }
 }
 
