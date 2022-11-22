@@ -1,4 +1,5 @@
 import {
+  hostnameToUrl,
   interfaceToInputSchema,
   isCommunityControlRoom,
   selectBotOutput,
@@ -13,10 +14,33 @@ describe("isCommunityControlRoom", () => {
     expect(isCommunityControlRoom(url)).toBeTruthy();
   });
 
+  test.each([
+    ["community2.cloud-2.automationanywhere.digital/"],
+    ["community.cloud.automationanywhere.digital"],
+  ])("detect community hostname: %s", (url: string) => {
+    expect(isCommunityControlRoom(url)).toBeTruthy();
+  });
+
   test("detect enterprise cloud URL", () => {
     expect(
       isCommunityControlRoom("https://aa-dev-1.my.automationanywhere.digital/")
     ).toBeFalsy();
+  });
+});
+
+describe("hostnameToUrl", () => {
+  test("nop for HTTPS URL", () => {
+    expect(hostnameToUrl("https://example.com")).toBe("https://example.com");
+  });
+
+  test("nop for HTTP URL", () => {
+    expect(hostnameToUrl("http://foo.example.com")).toBe(
+      "http://foo.example.com"
+    );
+  });
+
+  test("prefixes HTTPS:", () => {
+    expect(hostnameToUrl("foo.example.com")).toBe("https://foo.example.com");
   });
 });
 
