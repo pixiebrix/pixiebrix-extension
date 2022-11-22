@@ -35,10 +35,13 @@ const hasSession = "session" in chrome.storage;
  * and provide some type safety.
  */
 export class SessionMap<Value extends JsonValue> {
-  constructor(private readonly key: string) {}
+  constructor(
+    private readonly key: string,
+    private readonly url: ImportMeta["url"]
+  ) {}
 
   private getRawStorageKey(secondaryKey: string): ManualStorageKey {
-    return (this.key + "::" + secondaryKey) as ManualStorageKey;
+    return `${this.key}::${this.url}::${secondaryKey}` as ManualStorageKey;
   }
 
   private async getFromSession(
@@ -73,8 +76,8 @@ export class SessionMap<Value extends JsonValue> {
 export class SessionValue<Value extends JsonValue> {
   private readonly map: SessionMap<Value>;
 
-  constructor(key: string) {
-    this.map = new SessionMap(key);
+  constructor(key: string, url: ImportMeta["url"]) {
+    this.map = new SessionMap(key, url);
   }
 
   async get(): Promise<Value | undefined> {

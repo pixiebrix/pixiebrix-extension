@@ -18,7 +18,7 @@
 import { SessionMap, SessionValue } from "./SessionStorage";
 
 test("SessionMap", async () => {
-  const map = new SessionMap("jester");
+  const map = new SessionMap("jester", import.meta.url);
   await expect(map.get("alpha")).resolves.toBe(undefined);
 
   await map.set("alpha", 1);
@@ -32,7 +32,7 @@ test("SessionMap", async () => {
 });
 
 test("SessionValue", async () => {
-  const map = new SessionValue("jester");
+  const map = new SessionValue("jester", import.meta.url);
   await expect(map.get()).resolves.toBe(undefined);
 
   await map.set(1);

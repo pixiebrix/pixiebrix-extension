@@ -39,8 +39,8 @@ import { SessionMap } from "@/mv3/SessionStorage";
 type TabId = number;
 
 // TODO: One tab could have multiple targets, but `tabToTarget` currenly only supports one at a time
-const tabToTarget = new SessionMap<TabId>("tabToTarget");
-const tabToOpener = new SessionMap<TabId>("tabToOpener");
+const tabToTarget = new SessionMap<TabId>("tabToTarget", import.meta.url);
+const tabToOpener = new SessionMap<TabId>("tabToOpener", import.meta.url);
 
 async function safelyRunBrick({ tabId }: { tabId: number }, request: RunBlock) {
   try {
