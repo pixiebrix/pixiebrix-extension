@@ -79,6 +79,7 @@ export function selectExtensionAuthState({
   organization,
   is_onboarded: isOnboarded,
   flags = [],
+  milestones = [],
   organization_memberships: organizationMemberships = [],
   group_memberships = [],
   partner,
@@ -98,6 +99,7 @@ export function selectExtensionAuthState({
     organizations,
     groups,
     flags,
+    milestones,
     partner,
     enforceUpdateMillis,
   };
