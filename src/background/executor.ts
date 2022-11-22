@@ -191,8 +191,8 @@ export async function openTab(
 }
 
 async function linkTabListener({ id, openerTabId }: Tabs.Tab): Promise<void> {
+  // `openerTabId` may be missing when created via `tabs.create()`
   if (openerTabId) {
-    // It may be missing when created via `tabs.create()`
     rememberOpener(id, openerTabId);
   }
 }
