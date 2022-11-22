@@ -154,6 +154,11 @@ interface ExtendedRuntime
   requestUpdateCheck(): Promise<chrome.runtime.RequestUpdateCheckStatus>;
 }
 
+type BrowserStorage = Browser["storage"];
+interface ExtendedStorage extends BrowserStorage {
+  session: Browser.storage.local;
+}
+
 type Identity = Browser["identity"];
 
 /**
@@ -186,6 +191,7 @@ interface ExtendedIdentity extends Identity {
 interface ChromeifiedBrowser extends Browser {
   runtime: ExtendedRuntime;
   identity: ExtendedIdentity;
+  storage: ExtendedStorage;
 }
 
 declare const browser: ChromeifiedBrowser;
