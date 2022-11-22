@@ -104,10 +104,7 @@ export async function readReduxStorage<T extends JsonValue = JsonValue>(
   storageKey: ReduxStorageKey,
   defaultValue?: T
 ): Promise<T | undefined> {
-  const value = await readStorage(
-    storageKey as unknown as ManualStorageKey,
-    defaultValue
-  );
+  const value = await readStorage(storageKey as unknown as ManualStorageKey);
   if (typeof value === "string") {
     return JSON.parse(value);
   }

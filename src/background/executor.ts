@@ -40,7 +40,16 @@ type TabId = number;
 
 // TODO: One tab could have multiple targets, but `tabToTarget` currenly only supports one at a time
 const tabToTarget = new SessionMap<TabId>("tabToTarget", import.meta.url);
+
+// We shouldn't need to store this value, but Chrome loses it often
+// https://bugs.chromium.org/p/chromium/issues/detail?id=967150
 const tabToOpener = new SessionMap<TabId>("tabToOpener", import.meta.url);
+
+function rememberOpener(newTabId: TabId, openerTabId: TabId): void {
+  // FIXME: include frame information in tabToTarget
+  void tabToTarget.set(String(openerTabId), newTabId);
+  void tabToOpener.set(String(newTabId), openerTabId);
+}
 
 async function safelyRunBrick({ tabId }: { tabId: number }, request: RunBlock) {
   try {
@@ -174,14 +183,17 @@ export async function openTab(
 ): Promise<void> {
   // Natively links the new tab to its opener + opens it right next to it
   const openerTabId = this.trace[0].tab?.id;
-  await browser.tabs.create({ ...createProperties, openerTabId });
+  const newTab = await browser.tabs.create({
+    ...createProperties,
+    openerTabId,
+  });
+  rememberOpener(newTab.id, openerTabId);
 }
 
 async function linkTabListener({ id, openerTabId }: Tabs.Tab): Promise<void> {
   if (openerTabId) {
-    // FIXME: include frame information in tabToTarget
-    void tabToTarget.set(String(openerTabId), id);
-    void tabToOpener.set(String(id), openerTabId);
+    // It may be missing when created via `tabs.create()`
+    rememberOpener(id, openerTabId);
   }
 }
 
