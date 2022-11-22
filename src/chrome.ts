@@ -24,6 +24,11 @@ import { UnknownObject } from "@/types";
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
 const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
 
+// Extend Storage types because `session` is currently missing
+const browserStorage = browser.storage as typeof browser.storage & {
+  session: typeof browser.storage.local;
+};
+
 /**
  * A storage key managed manually (i.e., not using redux-persist).
  * @see ReduxStorageKey
@@ -81,7 +86,7 @@ export async function readStorage<T = unknown>(
   try {
     // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
     // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
-    result = await browser.storage[area as "local" | "managed"].get(storageKey);
+    result = await browserStorage[area].get(storageKey);
   } catch (error) {
     if (area === "managed") {
       // Handle Opera: https://github.com/pixiebrix/pixiebrix-extension/issues/4069
@@ -130,14 +135,14 @@ export async function setStorage(
   value: unknown,
   area: "local" | "session" = "local"
 ): Promise<void> {
-  await browser.storage[area as "local"].set({ [storageKey]: value });
+  await browserStorage[area].set({ [storageKey]: value });
 }
 
 export async function setReduxStorage<T extends JsonValue = JsonValue>(
   storageKey: ReduxStorageKey,
   value: T
 ): Promise<void> {
-  await browser.storage.local.set({ [storageKey]: JSON.stringify(value) });
+  await browserStorage.local.set({ [storageKey]: JSON.stringify(value) });
 }
 
 export async function onTabClose(watchedTabId: number): Promise<void> {
