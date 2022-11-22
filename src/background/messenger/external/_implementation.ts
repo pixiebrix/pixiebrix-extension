@@ -23,16 +23,22 @@ import { linkExtension } from "@/auth/token";
 import { TokenAuthData } from "@/auth/authTypes";
 import { reportEvent } from "@/telemetry/events";
 
+const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
+
 export async function setExtensionAuth(auth: TokenAuthData) {
   const updated = await linkExtension(auth);
   if (updated) {
     reportEvent("LinkExtension");
+    console.debug(
+      `Extension link updated, reloading extension in ${HACK_EXTENSION_LINK_RELOAD_DELAY_MS}ms`
+    );
 
-    // A hack to ensure the SET_EXTENSION_AUTH response flows to the front-end before the backend
+    // A hack to ensure the SET_EXTENSION_AUTH messenger response flows to the front-end before the backend
     // page is reloaded.
     setTimeout(async () => {
+      console.debug("Reloading extension due to extension link update");
       browser.runtime.reload();
-    }, 100);
+    }, HACK_EXTENSION_LINK_RELOAD_DELAY_MS);
   }
 
   return updated;

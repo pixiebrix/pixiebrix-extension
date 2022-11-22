@@ -134,10 +134,6 @@ export interface paths {
     /** List config of current version of each package. */
     get: operations["listExtentionPoints"];
   };
-  "/api/extension/token/": {
-    /** Return the token for the current user. */
-    get: operations["retrieveExtensionToken"];
-  };
   "/api/extensions/": {
     get: operations["listUserExtensions"];
   };
@@ -202,6 +198,10 @@ export interface paths {
   "/api/me/": {
     get: operations["retrieveMe"];
     delete: operations["destroyMe"];
+  };
+  "/api/me/token/": {
+    /** Return the token for the current user. */
+    get: operations["retrieveMeToken"];
   };
   "/api/memberships/{id}/": {
     /** Detail view for an organization's memberships. */
@@ -272,9 +272,6 @@ export interface paths {
   "/api/organizations/{organization_pk}/subscriptions/": {
     get: operations["listSubscriptions"];
   };
-  "/api/organizations/{organization_pk}/subscriptions/jobs/{id}/": {
-    get: operations["retrieveOrganizationSubscriptionsJob"];
-  };
   "/api/organizations/{organization_pk}/backup/": {
     get: operations["exportOrganizationBackup"];
   };
@@ -312,7 +309,7 @@ export interface paths {
     /** List config of current version of each package. */
     get: operations["listRecipes"];
   };
-  "/api/recipes/{name}": {
+  "/api/recipes/{name}/": {
     get: operations["retrievePackageConfig"];
   };
   "/api/services/shared/": {
@@ -396,11 +393,11 @@ export interface paths {
   "/api/invitations/{id}/reject/": {
     post: operations["rejectPendingInvitation"];
   };
+  "/api/me/milestones/": {
+    post: operations["createMilestone"];
+  };
   "/api/onboarding/": {
     post: operations["createOnboarding"];
-  };
-  "/api/organizations/{organization_pk}/subscriptions/jobs/": {
-    post: operations["createOrganizationSubscriptionsJob"];
   };
   "/api/control-rooms/configurations/": {
     post: operations["createControlRoomConfiguration"];
@@ -822,9 +819,6 @@ export interface components {
       notify_error?: boolean;
       notify_uninstall?: boolean;
     };
-    ExtensionToken: {
-      extension_token: string;
-    };
     UserExtension: {
       /** Format: uuid */
       id: string;
@@ -1012,8 +1006,6 @@ export interface components {
         /** Format: date-time */
         updated_at?: string;
       }[];
-      depends_on?: string;
-      used_by?: string;
       image: {
         /** @description Alt text for the logo */
         alt_text?: string | null;
@@ -1048,6 +1040,7 @@ export interface components {
       updated_at?: string;
     };
     Me: {
+      flags?: string[];
       /** Format: uuid */
       id?: string;
       scope?: string | null;
@@ -1072,7 +1065,7 @@ export interface components {
           show_sidebar_logo?: boolean;
           /**
            * Format: uri
-           * @description The image url of a custom logo. Image format must be svg.
+           * @description The image url of a custom logo. Image format must be svg or png.
            */
           logo?: string | null;
         };
@@ -1095,7 +1088,7 @@ export interface components {
           show_sidebar_logo?: boolean;
           /**
            * Format: uri
-           * @description The image url of a custom logo. Image format must be svg.
+           * @description The image url of a custom logo. Image format must be svg or png.
            */
           logo?: string | null;
         };
@@ -1126,10 +1119,12 @@ export interface components {
         id: string;
         name: string;
       }[];
-      is_onboarded?: string;
+      is_onboarded?: boolean;
+      milestones: {
+        key: string;
+      }[];
       /** @description True if the account is an organization API service account */
       service_account?: boolean;
-      flags?: string;
       partner?: {
         /** Format: uuid */
         id?: string;
@@ -1139,6 +1134,9 @@ export interface components {
         documentation_url?: string | null;
       };
       enforce_update_millis?: number;
+    };
+    MeToken: {
+      token?: string;
     };
     Membership: {
       id?: number;
@@ -1222,7 +1220,7 @@ export interface components {
         show_sidebar_logo?: boolean;
         /**
          * Format: uri
-         * @description The image url of a custom logo. Image format must be svg.
+         * @description The image url of a custom logo. Image format must be svg or png.
          */
         logo?: string | null;
       };
@@ -1477,6 +1475,9 @@ export interface components {
     Identify: {
       uid?: string;
       data?: { [key: string]: unknown };
+    };
+    Milestone: {
+      key: string;
     };
     Onboarding: {
       external?: boolean;
@@ -2633,18 +2634,6 @@ export interface operations {
       };
     };
   };
-  /** Return the token for the current user. */
-  retrieveExtensionToken: {
-    parameters: {};
-    responses: {
-      200: {
-        content: {
-          "application/json; version=1.0": components["schemas"]["ExtensionToken"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ExtensionToken"];
-        };
-      };
-    };
-  };
   listUserExtensions: {
     parameters: {
       query: {
@@ -3231,6 +3220,18 @@ export interface operations {
       204: never;
     };
   };
+  /** Return the token for the current user. */
+  retrieveMeToken: {
+    parameters: {};
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["MeToken"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["MeToken"];
+        };
+      };
+    };
+  };
   /** Detail view for an organization's memberships. */
   retrieveOrganizationMembership: {
     parameters: {
@@ -3793,22 +3794,6 @@ export interface operations {
         content: {
           "application/json; version=1.0": components["schemas"]["Subscription"][];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Subscription"][];
-        };
-      };
-    };
-  };
-  retrieveOrganizationSubscriptionsJob: {
-    parameters: {
-      path: {
-        organization_pk: string;
-        id: string;
-      };
-    };
-    responses: {
-      200: {
-        content: {
-          "application/json; version=1.0": components["schemas"]["Job"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Job"];
         };
       };
     };
@@ -4665,6 +4650,24 @@ export interface operations {
       };
     };
   };
+  createMilestone: {
+    parameters: {};
+    responses: {
+      201: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["Milestone"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Milestone"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Milestone"];
+        "application/x-www-form-urlencoded": components["schemas"]["Milestone"];
+        "multipart/form-data": components["schemas"]["Milestone"];
+      };
+    };
+  };
   createOnboarding: {
     parameters: {};
     responses: {
@@ -4680,28 +4683,6 @@ export interface operations {
         "application/json": components["schemas"]["Onboarding"];
         "application/x-www-form-urlencoded": components["schemas"]["Onboarding"];
         "multipart/form-data": components["schemas"]["Onboarding"];
-      };
-    };
-  };
-  createOrganizationSubscriptionsJob: {
-    parameters: {
-      path: {
-        organization_pk: string;
-      };
-    };
-    responses: {
-      201: {
-        content: {
-          "application/json; version=1.0": components["schemas"]["Job"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Job"];
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["Job"];
-        "application/x-www-form-urlencoded": components["schemas"]["Job"];
-        "multipart/form-data": components["schemas"]["Job"];
       };
     };
   };

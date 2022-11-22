@@ -182,16 +182,16 @@ export async function clearCachedAuthSecrets(): Promise<void> {
  * @see linkExtension
  */
 export async function updateUserData(update: UserDataUpdate): Promise<void> {
-  const updated = await readAuthData();
+  const result = await readAuthData();
 
   for (const key of USER_DATA_UPDATE_KEYS) {
     // Intentionally overwrite values with null/undefined from the update. For some reason TypeScript was complaining
     // about assigning any to never. It's not clear why update[key] was being typed as never
     // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-explicit-any -- keys from compile-time constant
-    (updated[key] as any) = update[key] as any;
+    (result[key] as any) = update[key] as any;
   }
 
-  await setStorage(STORAGE_EXTENSION_KEY, updated);
+  await setStorage(STORAGE_EXTENSION_KEY, result);
 }
 
 /**

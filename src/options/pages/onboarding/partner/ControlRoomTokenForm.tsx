@@ -93,7 +93,11 @@ const ControlRoomTokenForm: React.FunctionComponent<{
 
   const renderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
     <div className="left">
-      <Button type="submit" disabled={isSubmitting || !isValid}>
+      <Button
+        type="submit"
+        disabled={isSubmitting || !isValid}
+        data-test-id="connect-aari-btn"
+      >
         Connect AARI
       </Button>
     </div>
