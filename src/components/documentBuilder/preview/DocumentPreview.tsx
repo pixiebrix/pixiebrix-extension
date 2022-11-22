@@ -26,14 +26,18 @@ import ElementPreview from "./ElementPreview";
 import { ROOT_ELEMENT_TYPES } from "@/components/documentBuilder/allowedElementTypes";
 import cx from "classnames";
 import { getPreviewValues } from "@/components/fields/fieldUtils";
-import useBlockPreviewRunBlock from "@/pageEditor/tabs/effect/useBlockPreviewRunBlock";
+import useDocumentPreviewRunBlock from "@/pageEditor/tabs/effect/useDocumentPreviewRunBlock";
 import { useSelector } from "react-redux";
-import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveNodeId,
+  selectParentBlockInfo,
+} from "@/pageEditor/slices/editorSelectors";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import Alert from "@/components/Alert";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 
 type DocumentPreviewProps = {
   documentBodyName: string;
@@ -71,27 +75,35 @@ const DocumentPreview = ({
   };
 
   const activeNodeId = useSelector(selectActiveNodeId);
+  const parentBlockInfo = useSelector(selectParentBlockInfo(activeNodeId));
+  const showPreviewButton =
+    parentBlockInfo.blockId === DisplayTemporaryInfo.BLOCK_ID;
+
   const {
     error: previewError,
     isRunning: isPreviewRunning,
     runBlockPreview,
-  } = useBlockPreviewRunBlock(activeNodeId);
+  } = useDocumentPreviewRunBlock(activeNodeId);
 
   return (
     <>
-      <Button
-        variant="info"
-        size="sm"
-        disabled={isPreviewRunning}
-        onClick={runBlockPreview}
-      >
-        Show Live Preview <FontAwesomeIcon icon={faExternalLinkAlt} />
-      </Button>
-      <br />
-      {previewError && (
-        <Alert variant="danger">{getErrorMessage(previewError)}</Alert>
+      {showPreviewButton && (
+        <>
+          <Button
+            variant="info"
+            size="sm"
+            disabled={isPreviewRunning}
+            onClick={runBlockPreview}
+          >
+            Show Live Preview <FontAwesomeIcon icon={faExternalLinkAlt} />
+          </Button>
+          <br />
+          {previewError && (
+            <Alert variant="danger">{getErrorMessage(previewError)}</Alert>
+          )}
+          <hr />
+        </>
       )}
-      <hr />
       {/* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- TODO */}
       <div
         onClick={onClick}

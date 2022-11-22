@@ -58,6 +58,7 @@ import {
   runReader,
   readSelected,
   resetTab,
+  runRendererBlock,
 } from "@/contentScript/pageEditor";
 import { checkAvailable } from "@/blocks/available";
 import notify from "@/utils/notify";
@@ -107,6 +108,7 @@ declare global {
     SEARCH_WINDOW: typeof withSearchWindow;
     DETECT_FRAMEWORKS: typeof withDetectFrameworkVersions;
     RUN_SINGLE_BLOCK: typeof runBlock;
+    RUN_RENDERER_BLOCK: typeof runRendererBlock;
     RUN_READER_BLOCK: typeof runReaderBlock;
     RUN_READER: typeof runReader;
     READ_SELECTED: typeof readSelected;
@@ -166,6 +168,7 @@ export default function registerMessenger(): void {
     SEARCH_WINDOW: withSearchWindow,
     DETECT_FRAMEWORKS: withDetectFrameworkVersions,
     RUN_SINGLE_BLOCK: runBlock,
+    RUN_RENDERER_BLOCK: runRendererBlock,
     RUN_READER_BLOCK: runReaderBlock,
     RUN_READER: runReader,
     READ_SELECTED: readSelected,

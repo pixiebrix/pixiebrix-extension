@@ -58,7 +58,7 @@ import { UnknownObject } from "@/types";
 import { RunBlock } from "@/contentScript/runBlockTypes";
 import { resolveBlockConfig } from "@/blocks/registry";
 import { isObject } from "@/utils";
-import { BusinessError } from "@/errors/businessErrors";
+import { BusinessError, NoRendererError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { PanelPayload } from "@/sidebar/types";
 
@@ -320,6 +320,14 @@ async function executeBlockWithValidatedProps(
             }
           );
         },
+        /**
+         * Renderers need to be run with try-catch, catch the HeadlessModeError, and
+         * use that to send the panel payload to the sidebar (or other target)
+         * @see runRendererBlock
+         * @see SidebarExtensionPoint
+         *  starting on line 184, the call to reduceExtensionPipeline(),
+         *  wrapped in a try-catch
+         */
         async runRendererPipeline(
           pipeline,
           branch,
@@ -349,9 +357,9 @@ async function executeBlockWithValidatedProps(
                 branches: [...branches, branch],
               }
             );
-            // Expecting a HeadlessModeError above for the "success" case
+            // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
             // noinspection ExceptionCaughtLocallyJS
-            throw new BusinessError("Pipeline does not include a renderer");
+            throw new NoRendererError();
           } catch (error) {
             if (error instanceof HeadlessModeError) {
               payload = {

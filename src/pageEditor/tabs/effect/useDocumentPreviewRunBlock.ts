@@ -23,17 +23,19 @@ import { useSelector } from "react-redux";
 import {
   selectActiveElement,
   selectActiveElementNodeInfo,
+  selectParentBlockInfo,
 } from "@/pageEditor/slices/editorSelectors";
 import { getErrorMessage, SimpleErrorObject } from "@/errors/errorHelpers";
 import { SerializableResponse } from "@/messaging/protocol";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useDebouncedCallback } from "use-debounce";
-import { runBlock } from "@/contentScript/messenger/api";
+import { runRendererBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { removeEmptyValues } from "@/pageEditor/extensionPoints/base";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSelectors";
 import { useAsyncState } from "@/hooks/common";
+import { isExpression } from "@/runtime/mapArgs";
 
 type BlockPreviewState = {
   /**
@@ -90,16 +92,20 @@ const previewSlice = createSlice({
 });
 
 /**
- * Get a handler to run a "preview" of a block.
+ * Get a handler to run a "preview" of a document renderer block.
  * @param blockInstanceId the instance id (node id) of the block to run
  */
-export default function useBlockPreviewRunBlock(
+export default function useDocumentPreviewRunBlock(
   blockInstanceId: UUID
 ): BlockPreviewRunBlock {
   const [state, dispatch] = useReducer(previewSlice.reducer, initialState);
 
-  const { apiVersion, services, extensionPoint } =
-    useSelector(selectActiveElement);
+  const {
+    uuid: extensionId,
+    apiVersion,
+    services,
+    extensionPoint,
+  } = useSelector(selectActiveElement);
 
   const { blockConfig } = useSelector(
     selectActiveElementNodeInfo(blockInstanceId)
@@ -141,6 +147,15 @@ export default function useBlockPreviewRunBlock(
     blockRootMode === "inherit" &&
     isTriggerExtensionPoint(extensionPoint);
 
+  const parentBlockInfo = useSelector(selectParentBlockInfo(blockInstanceId));
+
+  // Assume the parent is a temp display brick for now
+  const titleField = parentBlockInfo?.blockConfig?.config?.title ?? "";
+  const titleValue = isExpression(titleField)
+    ? titleField.__value__
+    : titleField;
+  const title = (titleValue as string) + " (preview)";
+
   const debouncedRun = useDebouncedCallback(
     async () => {
       if (isLoadingServiceContext || isBlockLoading) {
@@ -149,18 +164,20 @@ export default function useBlockPreviewRunBlock(
 
       dispatch(previewSlice.actions.startPreview());
 
-      // If the block is configured to inherit the root element
-      // and the extension point is a trigger,
-      // try to get the root element from the extension point
-      // Note: this is not possible when extensionPoint's targetMode equals "targetElement",
-      // in this case a special message will be shown instead of the brick output (see the code later in the component)
+      // If the block is configured to inherit the root element, and the
+      // extension point is a trigger, try to get the root element from the
+      // extension point.
+      // Note: this is not possible when extensionPoint's targetMode equals
+      // "targetElement"; in this case a special message will be shown instead
+      // of the brick output (see the code later in the component)
       const rootSelector =
         shouldUseExtensionPointRoot &&
         extensionPoint.definition.targetMode === "root"
           ? extensionPoint.definition.rootSelector
           : undefined;
+
       try {
-        const output = await runBlock(thisTab, {
+        await runRendererBlock(thisTab, extensionId, record.runId, title, {
           apiVersion,
           blockConfig: {
             ...removeEmptyValues(blockConfig),
@@ -169,7 +186,7 @@ export default function useBlockPreviewRunBlock(
           context,
           rootSelector,
         });
-        dispatch(previewSlice.actions.setSuccess({ output }));
+        dispatch(previewSlice.actions.setSuccess({ output: {} }));
       } catch (error) {
         dispatch(previewSlice.actions.setError({ error }));
       }

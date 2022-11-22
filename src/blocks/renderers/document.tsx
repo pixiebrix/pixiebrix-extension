@@ -41,10 +41,6 @@ export class DocumentRenderer extends Renderer {
     required: ["body"],
   };
 
-  override async isPure(): Promise<boolean> {
-    return true;
-  }
-
   async render(
     { body }: BlockArg,
     options: BlockOptions

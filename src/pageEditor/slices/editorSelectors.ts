@@ -251,6 +251,25 @@ export const selectActiveElementNodeInfo =
   (instanceId: UUID) => (state: EditorRootState) =>
     activeElementNodeInfoSelector(state, instanceId);
 
+const parentBlockInfoSelector = createSelector(
+  selectActiveElementUIState,
+  (state: EditorRootState, instanceId: UUID) => instanceId,
+  (uiState: ElementUIState, instanceId: UUID) => {
+    // eslint-disable-next-line security/detect-object-injection -- UUID
+    const { parentNodeId } = uiState.pipelineMap[instanceId];
+    if (!parentNodeId) {
+      return null;
+    }
+
+    // eslint-disable-next-line security/detect-object-injection -- UUID
+    return uiState.pipelineMap[parentNodeId];
+  }
+);
+
+export const selectParentBlockInfo =
+  (instanceId: UUID) => (state: EditorRootState) =>
+    parentBlockInfoSelector(state, instanceId);
+
 export const selectNodeDataPanelTabSelected: (
   rootState: EditorRootState
 ) => DataPanelTabKey = createSelector(
