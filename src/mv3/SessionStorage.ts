@@ -25,7 +25,7 @@
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { JsonValue } from "type-fest";
 
-// Just like chrome.session.storage, this must be "global"
+// Just like chrome.storage.session, this must be "global"
 const storage = new Map<ManualStorageKey, JsonValue>();
 
 const hasSession = "session" in chrome.storage;
@@ -44,27 +44,21 @@ export class SessionMap<Value extends JsonValue> {
     return `${this.key}::${this.url}::${secondaryKey}` as ManualStorageKey;
   }
 
-  private async getFromSession(
-    rawStorageKey: ManualStorageKey
-  ): Promise<Value> {
-    return hasSession
-      ? readStorage(rawStorageKey, undefined, "session")
-      : undefined;
-  }
-
   async get(secondaryKey: string): Promise<Value | undefined> {
     const rawStorageKey = this.getRawStorageKey(secondaryKey);
-    return (
-      (storage.get(rawStorageKey) as Value) ??
-      this.getFromSession(rawStorageKey)
-    );
+    if (hasSession) {
+      return readStorage(rawStorageKey, undefined, "session");
+    }
+
+    return storage.get(rawStorageKey) as Value;
   }
 
   async set(secondaryKey: string, value: Value): Promise<void> {
     const rawStorageKey = this.getRawStorageKey(secondaryKey);
-    storage.set(rawStorageKey, value);
     if (hasSession) {
       await setStorage(rawStorageKey, value, "session");
+    } else {
+      storage.set(rawStorageKey, value);
     }
   }
 }
