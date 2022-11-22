@@ -38,6 +38,8 @@ import {
   MissingConfigurationError,
   NotConfiguredError,
 } from "@/errors/businessErrors";
+import { DoesNotExistError } from "@/baseRegistry";
+import { Service } from "@/types";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",
@@ -215,7 +217,20 @@ class LazyLocatorFactory {
       return [await pixieServiceFactory()];
     }
 
-    const service = await registry.lookup(serviceId);
+    let service: Service;
+
+    // Handle case where locateAllForService is called before service definitions are loaded. (For example, because it's
+    // being called from the background page in installer.ts).
+    // In the future, we may want to expose an option on the method to control this behavior.
+    try {
+      service = await registry.lookup(serviceId);
+    } catch (error) {
+      if (error instanceof DoesNotExistError) {
+        return [];
+      }
+
+      throw error;
+    }
 
     return this.options
       .filter((x) => x.serviceId === serviceId)

@@ -17,9 +17,9 @@
 
 import pTimeout from "p-timeout";
 import { Menus, Tabs } from "webextension-polyfill";
-import { getErrorMessage, hasSpecificErrorCause } from "@/errors/errorHelpers";
+import chromeP from "webext-polyfill-kinda";
+import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
-import { noop } from "lodash";
 import { handleMenuAction, notify } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/contentScript";
 import { reportEvent } from "@/telemetry/events";
@@ -32,16 +32,8 @@ import {
 } from "@/extensionPoints/contextMenu";
 import { loadOptions } from "@/store/extensionsStorage";
 import { resolveDefinitions } from "@/registry/internal";
-import { allSettledValues } from "@/utils";
+import { allSettledValues, memoizeUntilSettled } from "@/utils";
 import { CancelError } from "@/errors/businessErrors";
-
-type ExtensionId = UUID;
-// This is the type the browser API has for menu ids. In practice they should be strings because that's what we're
-// creating via `makeMenuId`
-type MenuItemId = number | string;
-
-const extensionMenuItems = new Map<ExtensionId, MenuItemId>();
-const pendingRegistration = new Set<ExtensionId>();
 
 const MENU_PREFIX = "pixiebrix-";
 
@@ -112,10 +104,7 @@ async function dispatchMenu(
 }
 
 function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
-  if (
-    typeof info.menuItemId === "string" &&
-    info.menuItemId.startsWith(MENU_PREFIX)
-  ) {
+  if (String(info.menuItemId).startsWith(MENU_PREFIX)) {
     void dispatchMenu(info, tab);
   } else {
     console.debug(`Ignoring menu item: ${info.menuItemId}`);
@@ -132,16 +121,7 @@ export async function uninstallContextMenu({
   extensionId: UUID;
 }): Promise<boolean> {
   try {
-    const menuItemId = extensionMenuItems.get(extensionId);
-
-    if (menuItemId) {
-      extensionMenuItems.delete(extensionId);
-      await browser.contextMenus.remove(menuItemId);
-    } else {
-      // Our bookkeeping in `extensionMenuItems` might be off. Try removing the expected menuId just in case.
-      await browser.contextMenus.remove(makeMenuId(extensionId));
-    }
-
+    await browser.contextMenus.remove(makeMenuId(extensionId));
     console.debug(`Uninstalled context menu ${extensionId}`);
     return true;
   } catch (error) {
@@ -154,7 +134,10 @@ export async function uninstallContextMenu({
   }
 }
 
-export async function ensureContextMenu({
+export const ensureContextMenu = memoizeUntilSettled(_ensureContextMenu, {
+  cacheKey: ([{ extensionId }]) => extensionId,
+});
+async function _ensureContextMenu({
   extensionId,
   contexts,
   title,
@@ -166,16 +149,6 @@ export async function ensureContextMenu({
     throw new Error("extensionId is required");
   }
 
-  // Handle the thundering herd of re-registrations when a contentScript.reactivate is broadcast
-  if (pendingRegistration.has(extensionId)) {
-    console.debug("contextMenu registration pending for %s", extensionId);
-
-    // Is it OK to return immediately? Or do we need to track the common promise that all callers should see?
-    return;
-  }
-
-  pendingRegistration.add(extensionId);
-
   const updateProperties: Menus.UpdateUpdatePropertiesType = {
     type: "normal",
     title,
@@ -184,60 +157,18 @@ export async function ensureContextMenu({
   };
 
   const expectedMenuId = makeMenuId(extensionId);
-
   try {
-    let menuId = extensionMenuItems.get(extensionId);
-
-    if (menuId) {
-      try {
-        await browser.contextMenus.update(menuId, updateProperties);
-        return;
-      } catch (error) {
-        console.debug("Cannot update context menu", { error });
-      }
-    } else {
-      // Just to be safe if our `extensionMenuItems` bookkeeping is off, remove any stale menu item
-      await browser.contextMenus.remove(expectedMenuId).catch(noop);
-    }
-
-    // The update failed, or this is a new context menu
-    extensionMenuItems.delete(extensionId);
-
-    // The types of browser.contextMenus.create are wacky. I verified on Chrome that the method does take a callback
-    // even when using the browser polyfill
-    let createdMenuId: string | number;
-    menuId = await new Promise((resolve, reject) => {
-      // `browser.contextMenus.create` returns immediately with the assigned menu id
-      createdMenuId = browser.contextMenus.create(
-        {
-          ...updateProperties,
-          id: makeMenuId(extensionId),
-        },
-        () => {
-          if (browser.runtime.lastError) {
-            reject(new Error(browser.runtime.lastError.message));
-          }
-
-          resolve(createdMenuId);
-        }
-      );
+    // Try updating it first. It will fail if missing, so we attempt to create it instead
+    await browser.contextMenus.update(expectedMenuId, updateProperties);
+  } catch {
+    // WARNING: Do not remove `chromeP`
+    // The standard `contextMenus.create` does not return a Promise in any browser
+    // https://github.com/w3c/webextensions/issues/188#issuecomment-1112436359
+    // eslint-disable-next-line @typescript-eslint/await-thenable -- The types don't really match `chromeP`
+    await chromeP.contextMenus.create({
+      ...updateProperties,
+      id: expectedMenuId,
     });
-
-    extensionMenuItems.set(extensionId, menuId);
-  } catch (error) {
-    if (
-      getErrorMessage(error).includes("Cannot create item with duplicate id")
-    ) {
-      // Likely caused by a concurrent update. In practice, our `pendingRegistration` set and `extensionMenuItems`
-      // should prevent this from happening
-      console.debug("Error registering context menu item", { error });
-      return;
-    }
-
-    console.error("Error registering context menu item", { error });
-    throw error;
-  } finally {
-    pendingRegistration.delete(extensionId);
   }
 }
 

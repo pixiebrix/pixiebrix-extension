@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { checkPartnerAuth, openInstallPage } from "@/background/installer";
+import { requirePartnerAuth, openInstallPage } from "@/background/installer";
 import * as auth from "@/auth/token";
 import { locator } from "@/background/locator";
 import { uuidv4 } from "@/types/helpers";
@@ -113,7 +113,7 @@ describe("checkPartnerAuth", () => {
   it("skips if not linked", async () => {
     isLinkedMock.mockResolvedValue(false);
 
-    await checkPartnerAuth();
+    await requirePartnerAuth();
 
     expect(createTabMock.mock.calls.length).toBe(0);
     expect(updateTabMock.mock.calls.length).toBe(0);
@@ -126,7 +126,7 @@ describe("checkPartnerAuth", () => {
       partner: null,
     });
 
-    await checkPartnerAuth();
+    await requirePartnerAuth();
 
     expect(createTabMock.mock.calls.length).toBe(0);
     expect(updateTabMock.mock.calls.length).toBe(0);
@@ -142,7 +142,7 @@ describe("checkPartnerAuth", () => {
       },
     });
 
-    await checkPartnerAuth();
+    await requirePartnerAuth();
 
     expect(createTabMock.mock.calls.length).toBe(0);
     expect(updateTabMock.mock.calls.length).toBe(0);
@@ -163,7 +163,7 @@ describe("checkPartnerAuth", () => {
       },
     });
 
-    await checkPartnerAuth();
+    await requirePartnerAuth();
 
     expect(createTabMock.mock.calls.length).toBe(1);
     expect(createTabMock).toHaveBeenCalledWith({
@@ -188,7 +188,7 @@ describe("checkPartnerAuth", () => {
       },
     });
 
-    await checkPartnerAuth();
+    await requirePartnerAuth();
 
     expect(createTabMock.mock.calls.length).toBe(0);
     expect(updateTabMock.mock.calls.length).toBe(1);
@@ -212,7 +212,7 @@ describe("checkPartnerAuth", () => {
       },
     });
 
-    await checkPartnerAuth();
+    await requirePartnerAuth();
 
     expect(createTabMock.mock.calls.length).toBe(0);
     expect(updateTabMock.mock.calls.length).toBe(0);

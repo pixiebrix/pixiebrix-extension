@@ -24,6 +24,7 @@ import {
   makeURL,
   getScopeAndId,
   smartAppendPeriod,
+  memoizeUntilSettled,
 } from "@/utils";
 import type { RegistryId, SafeString } from "@/core";
 import { BusinessError } from "@/errors/businessErrors";
@@ -190,7 +191,7 @@ describe("makeURL", () => {
     );
   });
 
-  test("override existing search parameters if requested", () => {
+  test("override existing search parameters if called", () => {
     const origin = "https://pixiebrix.com?a=ORIGINAL&b=ORIGINAL&c=ORIGINAL";
     expect(makeURL(origin, { a: null, c: null })).toBe(
       "https://pixiebrix.com/?b=ORIGINAL"
@@ -270,4 +271,16 @@ describe("smartAppendPeriod", () => {
       }
     }
   });
+});
+
+// From https://github.com/sindresorhus/p-memoize/blob/52fe6052ff2287f528c954c4c67fc5a61ff21360/test.ts#LL198
+test("memoizeUntilSettled", async () => {
+  let index = 0;
+
+  const memoized = memoizeUntilSettled(async () => index++);
+
+  expect(await memoized()).toBe(0);
+  expect(await memoized()).toBe(1);
+  expect(await memoized()).toBe(2);
+  expect(await Promise.all([memoized(), memoized()])).toStrictEqual([3, 3]);
 });

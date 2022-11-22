@@ -141,7 +141,7 @@ export async function openInstallPage() {
  *
  * @see useRequiredPartnerAuth
  */
-export async function checkPartnerAuth(): Promise<void> {
+export async function requirePartnerAuth(): Promise<void> {
   expectContext("background");
 
   // Check for partner community edition install, where the extension is linked with the native PixieBrix token, but
@@ -151,7 +151,7 @@ export async function checkPartnerAuth(): Promise<void> {
   if (!isEmpty(await getExtensionToken())) {
     const userData = await getUserData();
 
-    console.debug("checkPartnerAuth", userData);
+    console.debug("requirePartnerAuth", userData);
 
     if (userData.partner?.theme === "automation-anywhere") {
       const configs = await serviceLocator.locateAllForService(
@@ -202,7 +202,7 @@ async function install({
     }
   } else if (reason === "update") {
     // `update` is also triggered on browser.runtime.reload() and manually reloading from the extensions page
-    void checkPartnerAuth();
+    void requirePartnerAuth();
 
     if (version === previousVersion) {
       reportEvent("PixieBrixReload", {

@@ -24,8 +24,8 @@ import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";
 import { debounce } from "lodash";
-import pMemoize from "p-memoize";
 import { refreshRegistries } from "./refreshRegistries";
+import { memoizeUntilSettled } from "@/utils";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -143,9 +143,7 @@ const _installStarterBlueprints = async (): Promise<boolean> => {
 };
 
 const debouncedInstallStarterBlueprints = debounce(
-  pMemoize(_installStarterBlueprints, {
-    cache: false,
-  }),
+  memoizeUntilSettled(_installStarterBlueprints),
   BLUEPRINT_INSTALLATION_DEBOUNCE_MS,
   {
     leading: true,
