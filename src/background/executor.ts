@@ -40,6 +40,7 @@ type TabId = number;
 
 // TODO: One tab could have multiple targets, but `tabToTarget` currenly only supports one at a time
 const tabToTarget = new SessionMap<TabId>("tabToTarget");
+const tabToOpener = new SessionMap<TabId>("tabToOpener");
 
 async function safelyRunBrick({ tabId }: { tabId: number }, request: RunBlock) {
   try {
@@ -85,7 +86,11 @@ export async function requestRunInOpener(
   this: MessengerMeta,
   request: RunBlock
 ): Promise<unknown> {
-  const { id: sourceTabId, openerTabId } = this.trace[0].tab;
+  let { id: sourceTabId, openerTabId } = this.trace[0].tab;
+
+  // Chrome may have lost this data in the meanwhile
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=967150
+  openerTabId ??= await tabToOpener.get(String(sourceTabId));
 
   if (openerTabId == null) {
     throw new BusinessError("Sender tab has no opener");
@@ -171,8 +176,9 @@ export async function openTab(
   const openerTabId = this.trace[0].tab?.id;
   const tab = await browser.tabs.create({ ...createProperties, openerTabId });
 
-  // FIXME: include frame information here
+  // FIXME: include frame information in tabToTarget
   void tabToTarget.set(String(openerTabId), tab.id);
+  void tabToOpener.set(String(tab.id), openerTabId);
 }
 
 async function linkTabListener(tab: Tabs.Tab): Promise<void> {
