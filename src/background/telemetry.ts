@@ -77,6 +77,7 @@ const UID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
 
 /**
  * Return a random ID for this browser profile.
+ * It's persisted in storage via `chrome.storage.local` and in-memory via `once`
  */
 export const uid = once(async (): Promise<UUID> => {
   const uid = await readStorage<UUID>(UID_STORAGE_KEY);
