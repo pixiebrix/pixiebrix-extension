@@ -27,6 +27,7 @@ import { Schema } from "@/core";
 import { isEmpty } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 const FALLBACK_SCHEMA: Schema = {
   type: "object",
@@ -46,6 +47,8 @@ type OwnProps = {
    */
   schemaLoading?: boolean;
 };
+
+registerDefaultWidgets();
 
 const ChildContainer: React.FC<{ heading: string }> = ({
   heading,
