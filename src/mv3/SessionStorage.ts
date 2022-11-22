@@ -23,6 +23,7 @@
  */
 
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
+import { expectContext } from "@/utils/expectContext";
 import { JsonValue } from "type-fest";
 
 // Just like chrome.storage.session, this must be "global"
@@ -38,7 +39,12 @@ export class SessionMap<Value extends JsonValue> {
   constructor(
     private readonly key: string,
     private readonly url: ImportMeta["url"]
-  ) {}
+  ) {
+    expectContext(
+      "background",
+      "This polyfill doesn’t share data across contexts; only use it in the background page"
+    );
+  }
 
   private getRawStorageKey(secondaryKey: string): ManualStorageKey {
     return `${this.key}::${this.url}::${secondaryKey}` as ManualStorageKey;
