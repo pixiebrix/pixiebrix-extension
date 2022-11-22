@@ -359,20 +359,18 @@ let _config: LoggingConfig = null;
 export async function getLoggingConfig(): Promise<LoggingConfig> {
   expectContext("background");
 
-  if (_config != null) {
-    return _config;
-  }
-
-  return readStorage(LOG_CONFIG_STORAGE_KEY, {
+  _config ??= await readStorage(LOG_CONFIG_STORAGE_KEY, {
     logValues: false,
   });
+
+  return _config;
 }
 
 export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
   expectContext("background");
 
-  await setStorage(LOG_CONFIG_STORAGE_KEY, config);
   _config = config;
+  await setStorage(LOG_CONFIG_STORAGE_KEY, config);
 }
 
 export async function clearExtensionDebugLogs(

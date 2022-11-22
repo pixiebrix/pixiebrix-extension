@@ -27,6 +27,7 @@ import React from "react";
 import App from "@/options/App";
 import initGoogle from "@/contrib/google/initGoogle";
 import { initToaster } from "@/utils/notify";
+import { initTelemetry } from "@/background/messenger/api";
 import registerMessenger from "@/options/messenger/registration";
 
 function init(): void {
@@ -36,4 +37,5 @@ function init(): void {
 registerMessenger();
 void initGoogle();
 initToaster();
+initTelemetry();
 init();

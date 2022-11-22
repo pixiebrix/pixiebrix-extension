@@ -17,7 +17,7 @@
 
 import { JsonObject } from "type-fest";
 import { uuidv4 } from "@/types/helpers";
-import { compact, debounce, throttle, uniq } from "lodash";
+import { compact, debounce, once, throttle, uniq } from "lodash";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { isLinked } from "@/auth/token";
 import { Data, UUID } from "@/core";
@@ -73,28 +73,23 @@ export async function flushEvents(): Promise<UserTelemetryEvent[]> {
   return allEvents;
 }
 
-const UUID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
-let _uid: UUID = null;
+const UID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
 
 /**
  * Return a random ID for this browser profile.
+ * It's persisted in storage via `chrome.storage.local` and in-memory via `once`
  */
-export async function uid(): Promise<UUID> {
-  if (_uid != null) {
-    return _uid;
+export const uid = once(async (): Promise<UUID> => {
+  const uid = await readStorage<UUID>(UID_STORAGE_KEY);
+  if (uid) {
+    return uid;
   }
 
-  let uuid = await readStorage<UUID>(UUID_STORAGE_KEY);
-
-  if (!uuid || typeof uuid !== "string") {
-    uuid = uuidv4();
-    console.debug("Generating UID for browser", { uuid });
-    await setStorage(UUID_STORAGE_KEY, uuid);
-  }
-
-  _uid = uuid;
-  return _uid;
-}
+  const uuid = uuidv4();
+  console.debug("Generating UID for browser", { uuid });
+  await setStorage(UID_STORAGE_KEY, uuid);
+  return uuid;
+});
 
 async function flush(): Promise<void> {
   const client = await maybeGetLinkedApiClient();
