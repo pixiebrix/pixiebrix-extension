@@ -21,35 +21,47 @@ import {
   DocumentElement,
   ListDocumentElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent } from "@testing-library/react";
 import DocumentPreview from "@/components/documentBuilder/preview/DocumentPreview";
-import { Formik } from "formik";
 import userEvent from "@testing-library/user-event";
+import { render } from "@/pageEditor/testHelpers";
+import { formStateFactory } from "@/testUtils/factories";
+import { DocumentRenderer } from "@/blocks/renderers/document";
+import { actions } from "@/pageEditor/slices/editorSlice";
 
 function renderDocumentPreview(documentElement: DocumentElement) {
-  const document = {
-    body: [documentElement],
-  };
+  const formState = formStateFactory(undefined, [
+    {
+      id: DocumentRenderer.BLOCK_ID,
+      config: {
+        body: [documentElement],
+      },
+    },
+  ]);
 
   const PreviewContainer = () => {
     const [activeElement, setActiveElement] = useState<string | null>(null);
     return (
-      <Formik
-        initialValues={{
-          document,
-        }}
-        onSubmit={jest.fn()}
-      >
-        <DocumentPreview
-          documentBodyName="document.body"
-          activeElement={activeElement}
-          setActiveElement={setActiveElement}
-        />
-      </Formik>
+      <DocumentPreview
+        documentBodyName="extension.blockPipeline[0].config.body"
+        activeElement={activeElement}
+        setActiveElement={setActiveElement}
+      />
     );
   };
 
-  return render(<PreviewContainer />);
+  return render(<PreviewContainer />, {
+    initialValues: formState,
+    setupRedux(dispatch) {
+      dispatch(actions.addElement(formState));
+      dispatch(actions.selectElement(formState.uuid));
+      dispatch(
+        actions.setElementActiveNodeId(
+          formState.extension.blockPipeline[0].instanceId
+        )
+      );
+    },
+  });
 }
 
 describe("Add new element", () => {

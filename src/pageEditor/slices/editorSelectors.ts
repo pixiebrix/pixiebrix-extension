@@ -224,7 +224,7 @@ export const selectActiveNodeUIState = createSelector(
 
 export const selectActiveNodeId = createSelector(
   selectActiveElementUIState,
-  (elementUIState) => elementUIState.activeNodeId
+  (elementUIState) => elementUIState?.activeNodeId
 );
 
 export const selectPipelineMap = createSelector(
@@ -255,6 +255,10 @@ const parentBlockInfoSelector = createSelector(
   selectActiveElementUIState,
   (state: EditorRootState, instanceId: UUID) => instanceId,
   (uiState: ElementUIState, instanceId: UUID) => {
+    if (uiState == null) {
+      return null;
+    }
+
     // eslint-disable-next-line security/detect-object-injection -- UUID
     const { parentNodeId } = uiState.pipelineMap[instanceId];
     if (!parentNodeId) {

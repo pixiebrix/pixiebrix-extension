@@ -77,7 +77,7 @@ const DocumentPreview = ({
   const activeNodeId = useSelector(selectActiveNodeId);
   const parentBlockInfo = useSelector(selectParentBlockInfo(activeNodeId));
   const showPreviewButton =
-    parentBlockInfo.blockId === DisplayTemporaryInfo.BLOCK_ID;
+    parentBlockInfo?.blockId === DisplayTemporaryInfo.BLOCK_ID;
 
   const {
     error: previewError,
