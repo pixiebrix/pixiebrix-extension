@@ -59,7 +59,7 @@ async function fetchDeployments(
     "/api/deployments/",
     {
       uid: await getUID(),
-      version: await getExtensionVersion(),
+      version: getExtensionVersion(),
       active: selectInstalledDeployments(installedExtensions),
     }
   );

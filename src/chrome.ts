@@ -63,7 +63,7 @@ export function getChromeExtensionId(): string {
   );
 }
 
-export async function getExtensionVersion() {
+export function getExtensionVersion(): string {
   return browser.runtime.getManifest().version;
 }
 
