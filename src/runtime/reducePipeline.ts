@@ -28,7 +28,6 @@ import {
 import { castArray, isPlainObject } from "lodash";
 import {
   clearExtensionDebugLogs,
-  getLoggingConfig,
   requestRun,
   sendDeploymentAlert,
   traces,
@@ -61,6 +60,7 @@ import { isObject } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { PanelPayload } from "@/sidebar/types";
+import { getLoggingConfig } from "@/telemetry/logging";
 
 type CommonOptions = ApiVersionOptions & {
   /**

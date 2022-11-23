@@ -30,7 +30,7 @@ import {
   IGNORED_ERROR_PATTERNS,
   isSpecificError,
 } from "@/errors/errorHelpers";
-import { expectContext, forbidContext } from "@/utils/expectContext";
+import { forbidContext } from "@/utils/expectContext";
 import { matchesAnyPattern } from "@/utils";
 import {
   reportToErrorService,
@@ -354,22 +354,14 @@ export type LoggingConfig = {
 };
 
 const LOG_CONFIG_STORAGE_KEY = "LOG_OPTIONS" as ManualStorageKey;
-let _config: LoggingConfig = null;
 
 export async function getLoggingConfig(): Promise<LoggingConfig> {
-  expectContext("background");
-
-  _config ??= await readStorage(LOG_CONFIG_STORAGE_KEY, {
+  return readStorage(LOG_CONFIG_STORAGE_KEY, {
     logValues: false,
   });
-
-  return _config;
 }
 
 export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
-  expectContext("background");
-
-  _config = config;
   await setStorage(LOG_CONFIG_STORAGE_KEY, config);
 }
 

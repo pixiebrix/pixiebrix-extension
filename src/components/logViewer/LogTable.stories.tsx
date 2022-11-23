@@ -27,7 +27,7 @@ import { serializeError } from "serialize-error";
 import { Card } from "react-bootstrap";
 import { InputValidationError } from "@/blocks/errors";
 import { Schema } from "@/core";
-import type { LogEntry } from "@/background/logging";
+import type { LogEntry } from "@/telemetry/logging";
 
 export default {
   title: "Editor/LogTable",
