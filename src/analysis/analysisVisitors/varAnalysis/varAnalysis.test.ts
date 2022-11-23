@@ -93,7 +93,6 @@ describe("Collecting available vars", () => {
 
       const foundationKnownVars = knownVars.get("extension.blockPipeline.0");
 
-      expect(foundationKnownVars.getMeta("@input").source).toEqual("reader");
       expect(foundationKnownVars.getExistence("@input.title")).toEqual(
         VarExistence.DEFINITELY
       );
@@ -104,16 +103,10 @@ describe("Collecting available vars", () => {
         VarExistence.DEFINITELY
       );
 
-      expect(foundationKnownVars.getMeta("@options").source).toEqual(
-        "test/recipe"
-      );
       expect(foundationKnownVars.getExistence("@options.foo")).toEqual(
         VarExistence.DEFINITELY
       );
 
-      expect(foundationKnownVars.getMeta("@pixiebrix").source).toEqual(
-        "service:@test/service"
-      );
       expect(
         foundationKnownVars.getExistence("@pixiebrix.__service.serviceId")
       ).toEqual(VarExistence.DEFINITELY);
@@ -143,10 +136,6 @@ describe("Collecting available vars", () => {
 
       // Check that an arbitrary child of the output key is also marked as MAYBE
       expect(block1Vars.getExistence("@foo.bar")).toBe(VarExistence.MAYBE);
-
-      expect(block1Vars.getMeta("@foo").source).toBe(
-        "extension.blockPipeline.0"
-      );
     });
 
     test("collects the output key of a conditional block", async () => {
