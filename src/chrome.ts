@@ -74,7 +74,7 @@ export class RuntimeNotFoundError extends Error {
 export async function readStorage<T = unknown>(
   storageKey: ManualStorageKey,
   defaultValue?: T,
-  area: "local" | "managed" = "local"
+  area: "local" | "managed" | "session" = "local"
 ): Promise<T | undefined> {
   let result: UnknownObject;
 
@@ -105,22 +105,15 @@ export async function readReduxStorage<T extends JsonValue = JsonValue>(
   storageKey: ReduxStorageKey,
   defaultValue?: T
 ): Promise<T | undefined> {
-  // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
-  // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
-  const result = await browser.storage.local.get(storageKey);
+  const value = await readStorage(storageKey as unknown as ManualStorageKey);
+  if (typeof value === "string") {
+    return JSON.parse(value);
+  }
 
-  if (Object.prototype.hasOwnProperty.call(result, storageKey)) {
-    // eslint-disable-next-line security/detect-object-injection -- Just checked with hasOwnProperty
-    const value = result[storageKey];
-    if (typeof value === "string") {
-      return JSON.parse(value);
-    }
-
-    if (value !== undefined) {
-      console.warn("Expected JSON-stringified value for key %s", storageKey, {
-        value,
-      });
-    }
+  if (value !== undefined) {
+    console.warn("Expected JSON-stringified value for key %s", storageKey, {
+      value,
+    });
   }
 
   return defaultValue;
@@ -128,9 +121,10 @@ export async function readReduxStorage<T extends JsonValue = JsonValue>(
 
 export async function setStorage(
   storageKey: ManualStorageKey,
-  value: unknown
+  value: unknown,
+  area: "local" | "session" = "local"
 ): Promise<void> {
-  await browser.storage.local.set({ [storageKey]: value });
+  await browser.storage[area].set({ [storageKey]: value });
 }
 
 export async function setReduxStorage<T extends JsonValue = JsonValue>(

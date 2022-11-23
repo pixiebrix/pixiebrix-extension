@@ -18,11 +18,31 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run test -- --coverage
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+      - uses: actions/upload-artifact@v3
         with:
-          fail_ci_if_error: true
-          verbose: true
+          name: extension-test-coverage
+          path: coverage/coverage-final.json
+
+  upload-to-codecov:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: extension-test-coverage
+      - name: Upload coverage to Codecov
+        uses: Wandalen/wretry.action@v1.0.36
+        with:
+          action: codecov/codecov-action@v3
+          with: |
+            fail_ci_if_error: true
+            verbose: true
+          # This upload endpoint from CodeCov is very flaky
+          # Retry every 10 seconds, for up to 10 minutes
+          attempt_delay: 10_000
+          attempt_limit: 60
 
   build-stage:
     runs-on: ubuntu-latest
