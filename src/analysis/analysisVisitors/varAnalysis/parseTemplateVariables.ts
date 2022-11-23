@@ -21,7 +21,7 @@
 const varRegex =
   /{({|%)[^@]*(?<varName>@\w+(\.|\w|(\[\d+])|(\[("|')[\s\w]+("|')]))*)[\s|]?[^%}]*(}|%)}/g;
 
-function parseTemplateVariables(template: string): string[] {
+export function parseTemplateVariables(template: string): string[] {
   const vars = [];
   let match = varRegex.exec(template);
   while (match !== null) {
@@ -34,6 +34,27 @@ function parseTemplateVariables(template: string): string[] {
   }
 
   return vars;
+}
+
+export function getVariableAtPosition(
+  template: string,
+  position: number
+): string | null {
+  let match = varRegex.exec(template);
+  while (match !== null) {
+    const varName = match.groups.varName.trim();
+
+    // Can't use match.index because it's the index of the whole match, not the variable name
+    const startIndex = template.indexOf(varName);
+    if (startIndex <= position && position <= startIndex + varName.length) {
+      varRegex.lastIndex = 0;
+      return varName;
+    }
+
+    match = varRegex.exec(template);
+  }
+
+  return null;
 }
 
 export default parseTemplateVariables;

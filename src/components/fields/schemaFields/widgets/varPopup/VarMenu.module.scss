@@ -15,32 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: flex;
-  flex-direction: row;
+// Copies the style of react-select's menu
+.menu {
+  top: 100%;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+  background-color: rgb(255, 255, 255);
+  border-radius: 4px;
+  box-shadow: #0000001a 0 0 0 1px;
+  margin-bottom: 8px;
+  margin-top: 8px;
+  box-sizing: border-box;
 }
 
-.dropdown {
-  width: auto;
-  flex-grow: 0;
-  flex-shrink: 0;
-
-  > button {
-    // React-bootstrap Button defaults to 0.75rem horizontal
-    // and 0.375rem vertical padding; we don't need that much
-    // on the field toggle buttons
-    padding: 0.25rem !important;
-  }
-}
-
-.field {
-  width: auto !important;
-  flex-grow: 1;
-
+.menuList {
+  overflow-y: auto;
+  padding-bottom: 4px;
+  padding-top: 4px;
   position: relative;
-}
-
-.symbol {
-  display: inline-block;
-  width: 30px;
 }

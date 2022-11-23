@@ -17,10 +17,9 @@
 
 import styles from "./TemplateToggleWidget.module.scss";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import WidgetLoadingIndicator from "@/components/fields/schemaFields/widgets/WidgetLoadingIndicator";
 import useToggleFormField from "@/pageEditor/hooks/useToggleFormField";
 import { useField } from "formik";
@@ -28,6 +27,7 @@ import {
   InputModeOption,
   TemplateToggleWidgetProps,
 } from "./templateToggleWidgetTypes";
+import VarPopup from "./varPopup/VarPopup";
 
 export function getOptionForInputMode(
   options: InputModeOption[],
@@ -54,6 +54,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
     schemaFieldProps.name,
     schemaFieldProps.schema
   );
+  const inputRef = useRef<HTMLTextAreaElement>();
   const selectedOption = inputModeOptions.find((x) => x.value === inputMode);
   const Widget = selectedOption?.Widget ?? WidgetLoadingIndicator;
   const [focusInput, setFocusInput] = useState(false);
@@ -89,43 +90,34 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
     [inputMode, inputModeOptions, setValue, value, onOmitField]
   );
 
-  const widgetProps = useMemo<SchemaFieldProps>(() => {
-    schemaFieldProps.focusInput = focusInput;
-    return inputMode === "omit"
-      ? {
-          ...schemaFieldProps,
-          onClick() {
-            if (defaultType != null) {
-              onModeChange(defaultType);
-            } else if (
-              inputModeOptions.some((option) => option.value === "string")
-            ) {
-              onModeChange("string");
-            } else if (
-              inputModeOptions.some((option) => option.value === "number")
-            ) {
-              onModeChange("number");
-            } else if (
-              inputModeOptions.some((option) => option.value === "var")
-            ) {
-              onModeChange("var");
-            }
-          },
-        }
-      : schemaFieldProps;
-  }, [
+  const widgetProps = {
+    ...schemaFieldProps,
     focusInput,
-    inputMode,
-    inputModeOptions,
-    onModeChange,
-    schemaFieldProps,
-    defaultType,
-  ]);
+    inputRef,
+  };
+  if (inputMode === "omit") {
+    widgetProps.onClick = () => {
+      if (defaultType != null) {
+        onModeChange(defaultType);
+      } else if (inputModeOptions.some((option) => option.value === "string")) {
+        onModeChange("string");
+      } else if (inputModeOptions.some((option) => option.value === "number")) {
+        onModeChange("number");
+      } else if (inputModeOptions.some((option) => option.value === "var")) {
+        onModeChange("var");
+      }
+    };
+  }
 
   return (
     <div className={styles.root}>
       <div className={styles.field}>
         <Widget {...widgetProps} />
+        <VarPopup
+          inputMode={inputMode}
+          inputElementRef={inputRef}
+          value={value}
+        />
       </div>
       <DropdownButton
         title={

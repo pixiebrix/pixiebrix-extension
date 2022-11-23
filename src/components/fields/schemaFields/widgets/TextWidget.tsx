@@ -69,8 +69,8 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   hideLabel,
   isObjectProperty,
   isArrayItem,
-  onClick,
   focusInput,
+  inputRef,
   ...formControlProps
 }) => {
   const [{ value, ...restInputProps }, , { setValue }] = useField(name);
@@ -85,11 +85,14 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     if (textAreaRef.current) {
       fitTextarea.watch(textAreaRef.current);
     }
-  }, []);
+
+    if (inputRef) {
+      inputRef.current = textAreaRef.current;
+    }
+  }, [textAreaRef.current]);
 
   useEffect(() => {
-    const { current } = textAreaRef;
-    if (focusInput && current) {
+    if (focusInput) {
       // We need to use a setTimeout here in order to override the default
       // behavior of Bootstrap DropdownButton in the field type toggle.
       // The standard w3c behavior of a dropdown/select is that the button
@@ -103,6 +106,11 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
       // this happens.
       // See: https://github.com/react-bootstrap/react-bootstrap/issues/2553
       setTimeout(() => {
+        const { current } = textAreaRef;
+        if (!current) {
+          return;
+        }
+
         current.focus();
         current.selectionStart = current.textLength;
         current.selectionEnd = current.textLength;

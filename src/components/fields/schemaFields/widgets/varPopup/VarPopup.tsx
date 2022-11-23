@@ -1,0 +1,99 @@
+/*
+ * Copyright (C) 2022 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import React, { useEffect, useState } from "react";
+import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
+import { isNunjucksExpression } from "@/runtime/mapArgs";
+import { getVariableAtPosition } from "@/analysis/analysisVisitors/varAnalysis/parseTemplateVariables";
+import VarMenu from "./VarMenu";
+
+type VarPopupProps = {
+  inputMode: FieldInputMode;
+  inputElementRef: React.MutableRefObject<HTMLTextAreaElement>;
+  value: unknown;
+};
+
+const VarPopup: React.FunctionComponent<VarPopupProps> = ({
+  inputMode,
+  inputElementRef,
+  value,
+}) => {
+  const [showMenu, setShowMenu] = useState(false);
+
+  useEffect(() => {
+    if (
+      !inputElementRef.current ||
+      (inputMode !== "var" && inputMode !== "string")
+    ) {
+      return;
+    }
+
+    const onClick = (event: MouseEvent) => {
+      if (inputMode === "var") {
+        if (!showMenu) {
+          setShowMenu(true);
+        }
+
+        return;
+      }
+
+      if (inputMode === "string") {
+        const cursorPosition = inputElementRef.current?.selectionStart ?? 0;
+        const template = isNunjucksExpression(value)
+          ? value.__value__
+          : String(value);
+
+        if (getVariableAtPosition(template, cursorPosition)) {
+          if (!showMenu) {
+            setShowMenu(true);
+          }
+        } else if (showMenu) {
+          setShowMenu(false);
+        }
+      }
+    };
+
+    const onKeyPress = (event: KeyboardEvent) => {
+      if (event.key === "@" && !showMenu) {
+        setShowMenu(true);
+      }
+    };
+
+    const inputElement = inputElementRef.current;
+    inputElement.addEventListener("click", onClick);
+    inputElement.addEventListener("keypress", onKeyPress);
+
+    return () => {
+      inputElement?.removeEventListener("click", onClick);
+      inputElement?.removeEventListener("keypress", onKeyPress);
+    };
+  }, [inputElementRef, inputMode, showMenu, value]);
+
+  if (inputMode !== "var" && inputMode !== "string") {
+    return null;
+  }
+
+  return showMenu ? (
+    <VarMenu
+      onClose={() => {
+        setShowMenu(false);
+      }}
+    />
+  ) : null;
+};
+
+export default VarPopup;
