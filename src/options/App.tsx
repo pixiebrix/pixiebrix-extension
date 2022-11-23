@@ -36,7 +36,6 @@ import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprint
 import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
 import useRefresh from "@/hooks/useRefresh";
 import SetupPage from "@/options/pages/onboarding/SetupPage";
-import { initTelemetry } from "@/background/messenger/api";
 import UpdateBanner from "@/options/pages/UpdateBanner";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
@@ -145,22 +144,16 @@ const Layout = () => {
   );
 };
 
-const App: React.FunctionComponent = () => {
-  useEffect(() => {
-    initTelemetry();
-  }, []);
-
-  return (
-    <Provider store={store}>
-      <PersistGate persistor={persistor}>
-        <ConnectedRouter history={hashHistory}>
-          <ModalProvider>
-            <Layout />
-          </ModalProvider>
-        </ConnectedRouter>
-      </PersistGate>
-    </Provider>
-  );
-};
+const App: React.FunctionComponent = () => (
+  <Provider store={store}>
+    <PersistGate persistor={persistor}>
+      <ConnectedRouter history={hashHistory}>
+        <ModalProvider>
+          <Layout />
+        </ModalProvider>
+      </ConnectedRouter>
+    </PersistGate>
+  </Provider>
+);
 
 export default App;

@@ -155,6 +155,7 @@ export const authStateFactory = define<AuthState>({
     const flags: AuthState["flags"] = [];
     return flags;
   },
+  milestones: [],
 });
 
 export const recipeMetadataFactory = define<Metadata>({
