@@ -34,8 +34,8 @@ describe("setting output key", () => {
       VarExistence.DEFINITELY,
       false
     );
-    expect(varMap.getExistence("@foo")).toBe(VarExistence.DEFINITELY);
-    expect(varMap.getExistence("@bar")).toBe(VarExistence.DEFINITELY);
+    expect(varMap.isVariableDefined("@foo")).toBeTrue();
+    expect(varMap.isVariableDefined("@bar")).toBeTrue();
   });
 
   // No real use case, just a functionality expectations
@@ -55,13 +55,13 @@ describe("setting output key", () => {
       false
     );
 
-    expect(varMap.getExistence("@foo")).toBeUndefined();
-    expect(varMap.getExistence("@bar")).toBe(VarExistence.DEFINITELY);
+    expect(varMap.isVariableDefined("@foo")).toBeFalse();
+    expect(varMap.isVariableDefined("@bar")).toBeTrue();
   });
 
   test.each([
-    [true, VarExistence.MAYBE],
-    [false, undefined],
+    [true, true],
+    [false, false],
   ])("works when allow any child = %s", (allowAnyChild, expectedExistence) => {
     const varMap = new VarMap();
     varMap.setOutputKeyExistence(
@@ -71,7 +71,7 @@ describe("setting output key", () => {
       allowAnyChild
     );
 
-    expect(varMap.getExistence("@foo.bar")).toBe(expectedExistence);
+    expect(varMap.isVariableDefined("@foo.bar")).toBe(expectedExistence);
   });
 });
 
@@ -85,8 +85,8 @@ describe("setExistenceFromValues", () => {
     const varMap = new VarMap();
     varMap.setExistenceFromValues("brick1", values);
 
-    expect(varMap.getExistence("@foo")).toBe(VarExistence.DEFINITELY);
-    expect(varMap.getExistence("@foo.bar")).toBeUndefined();
+    expect(varMap.isVariableDefined("@foo")).toBeTrue();
+    expect(varMap.isVariableDefined("@foo.bar")).toBeFalse();
   });
 
   test("sets the existence for a complex object", () => {
@@ -100,11 +100,11 @@ describe("setExistenceFromValues", () => {
     const varMap = new VarMap();
     varMap.setExistenceFromValues("brick1", values);
 
-    expect(varMap.getExistence("foo")).toBe(VarExistence.DEFINITELY);
-    expect(varMap.getExistence("foo.bar")).toBe(VarExistence.DEFINITELY);
-    expect(varMap.getExistence("foo.bar.baz")).toBeUndefined();
-    expect(varMap.getExistence("qux")).toBe(VarExistence.DEFINITELY);
-    expect(varMap.getExistence("quux")).toBeUndefined();
+    expect(varMap.isVariableDefined("foo")).toBeTrue();
+    expect(varMap.isVariableDefined("foo.bar")).toBeTrue();
+    expect(varMap.isVariableDefined("foo.bar.baz")).toBeFalse();
+    expect(varMap.isVariableDefined("qux")).toBeTrue();
+    expect(varMap.isVariableDefined("quux")).toBeFalse();
   });
 
   test("set existence from context obj with parent specified", () => {
@@ -117,7 +117,7 @@ describe("setExistenceFromValues", () => {
       "bar.baz"
     );
 
-    expect(varMap.getExistence("bar.baz.qux")).toBe(VarExistence.DEFINITELY);
+    expect(varMap.isVariableDefined("bar.baz.qux")).toBeTrue();
   });
 });
 
@@ -139,11 +139,11 @@ describe("cloning", () => {
       false
     );
 
-    expect(varMap.getExistence("@foo")).toBe(VarExistence.DEFINITELY);
-    expect(varMap.getExistence("@bar")).toBeUndefined();
+    expect(varMap.isVariableDefined("@foo")).toBeTrue();
+    expect(varMap.isVariableDefined("@bar")).toBeFalse();
 
-    expect(clone.getExistence("@foo")).toBe(VarExistence.DEFINITELY);
-    expect(clone.getExistence("@bar")).toBe(VarExistence.DEFINITELY);
+    expect(clone.isVariableDefined("@foo")).toBeTrue();
+    expect(clone.isVariableDefined("@bar")).toBeTrue();
   });
 });
 
@@ -168,7 +168,7 @@ describe("addSourceMap", () => {
 
     varMap1.addSourceMap(varMap2);
 
-    expect(varMap1.getExistence("@foo")).toBe(VarExistence.DEFINITELY);
-    expect(varMap1.getExistence("@bar")).toBe(VarExistence.DEFINITELY);
+    expect(varMap1.isVariableDefined("@foo")).toBeTrue();
+    expect(varMap1.isVariableDefined("@bar")).toBeTrue();
   });
 });

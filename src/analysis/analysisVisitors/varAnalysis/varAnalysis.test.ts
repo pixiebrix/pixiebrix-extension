@@ -29,7 +29,6 @@ import {
   makePipelineExpression,
   makeTemplateExpression,
 } from "@/runtime/expressionCreators";
-import { VarExistence } from "./varMap2";
 
 jest.mock("@/background/messenger/api", () => ({
   __esModule: true,
@@ -93,23 +92,15 @@ describe("Collecting available vars", () => {
 
       const foundationKnownVars = knownVars.get("extension.blockPipeline.0");
 
-      expect(foundationKnownVars.getExistence("@input.title")).toEqual(
-        VarExistence.DEFINITELY
-      );
-      expect(foundationKnownVars.getExistence("@input.url")).toEqual(
-        VarExistence.DEFINITELY
-      );
-      expect(foundationKnownVars.getExistence("@input.lang")).toEqual(
-        VarExistence.DEFINITELY
-      );
+      expect(foundationKnownVars.isVariableDefined("@input.title")).toBeTrue();
+      expect(foundationKnownVars.isVariableDefined("@input.url")).toBeTrue();
+      expect(foundationKnownVars.isVariableDefined("@input.lang")).toBeTrue();
 
-      expect(foundationKnownVars.getExistence("@options.foo")).toEqual(
-        VarExistence.DEFINITELY
-      );
+      expect(foundationKnownVars.isVariableDefined("@options.foo")).toBeTrue();
 
       expect(
-        foundationKnownVars.getExistence("@pixiebrix.__service.serviceId")
-      ).toEqual(VarExistence.DEFINITELY);
+        foundationKnownVars.isVariableDefined("@pixiebrix.__service.serviceId")
+      ).toBeTrue();
     });
 
     test("collects the output key", async () => {
@@ -126,16 +117,16 @@ describe("Collecting available vars", () => {
         .getKnownVars()
         .get("extension.blockPipeline.0");
 
-      expect(block0Vars.getExistence("@foo")).toBeUndefined();
+      expect(block0Vars.isVariableDefined("@foo")).toBeFalse();
 
       const block1Vars = analysis
         .getKnownVars()
         .get("extension.blockPipeline.1");
 
-      expect(block1Vars.getExistence("@foo")).toBe(VarExistence.DEFINITELY);
+      expect(block1Vars.isVariableDefined("@foo")).toBeTrue();
 
-      // Check that an arbitrary child of the output key is also marked as MAYBE
-      expect(block1Vars.getExistence("@foo.bar")).toBe(VarExistence.MAYBE);
+      // Check that an arbitrary child of the output key is also defined
+      expect(block1Vars.isVariableDefined("@foo.bar")).toBeTrue();
     });
 
     test("collects the output key of a conditional block", async () => {
@@ -153,16 +144,16 @@ describe("Collecting available vars", () => {
         .getKnownVars()
         .get("extension.blockPipeline.0");
 
-      expect(block0Vars.getExistence("@foo")).toBeUndefined();
+      expect(block0Vars.isVariableDefined("@foo")).toBeFalse();
 
       const block1Vars = analysis
         .getKnownVars()
         .get("extension.blockPipeline.1");
 
-      expect(block1Vars.getExistence("@foo")).toBe(VarExistence.MAYBE);
+      expect(block1Vars.isVariableDefined("@foo")).toBeTrue();
 
-      // Check that an arbitrary child of the output key is also marked as MAYBE
-      expect(block1Vars.getExistence("@foo.bar")).toBe(VarExistence.MAYBE);
+      // Check that an arbitrary child of the output key is also defined
+      expect(block1Vars.isVariableDefined("@foo.bar")).toBeTrue();
     });
   });
 
@@ -201,8 +192,8 @@ describe("Collecting available vars", () => {
         analysis
           .getKnownVars()
           .get("extension.blockPipeline.1")
-          .getExistence("@ifOutput")
-      ).toBe(VarExistence.DEFINITELY);
+          .isVariableDefined("@ifOutput")
+      ).toBeTrue();
     });
 
     test.each([
@@ -214,8 +205,8 @@ describe("Collecting available vars", () => {
       "doesn't add if-else output to sub pipelines (%s)",
       async (blockPath) => {
         expect(
-          analysis.getKnownVars().get(blockPath).getExistence("@ifOutput")
-        ).toBeUndefined();
+          analysis.getKnownVars().get(blockPath).isVariableDefined("@ifOutput")
+        ).toBeFalse();
       }
     );
 
@@ -223,8 +214,8 @@ describe("Collecting available vars", () => {
       const block1Vars = analysis
         .getKnownVars()
         .get("extension.blockPipeline.1");
-      expect(block1Vars.getExistence("@foo")).toBeUndefined();
-      expect(block1Vars.getExistence("@bar")).toBeUndefined();
+      expect(block1Vars.isVariableDefined("@foo")).toBeFalse();
+      expect(block1Vars.isVariableDefined("@bar")).toBeFalse();
     });
   });
 
@@ -259,8 +250,8 @@ describe("Collecting available vars", () => {
         analysis
           .getKnownVars()
           .get("extension.blockPipeline.1")
-          .getExistence("@forEachOutput")
-      ).toBe(VarExistence.DEFINITELY);
+          .isVariableDefined("@forEachOutput")
+      ).toBeTrue();
     });
 
     test.each([
@@ -270,8 +261,11 @@ describe("Collecting available vars", () => {
       "doesn't add for-each output to sub pipelines (%s)",
       async (blockPath) => {
         expect(
-          analysis.getKnownVars().get(blockPath).getExistence("@forEachOutput")
-        ).toBeUndefined();
+          analysis
+            .getKnownVars()
+            .get(blockPath)
+            .isVariableDefined("@forEachOutput")
+        ).toBeFalse();
       }
     );
 
@@ -280,8 +274,8 @@ describe("Collecting available vars", () => {
         analysis
           .getKnownVars()
           .get("extension.blockPipeline.1")
-          .getExistence("@foo")
-      ).toBeUndefined();
+          .isVariableDefined("@foo")
+      ).toBeFalse();
     });
 
     test("adds the element key to the sub pipeline", async () => {
@@ -289,8 +283,8 @@ describe("Collecting available vars", () => {
         analysis
           .getKnownVars()
           .get("extension.blockPipeline.0.config.body.__value__.0")
-          .getExistence("@element")
-      ).toBe(VarExistence.DEFINITELY);
+          .isVariableDefined("@element")
+      ).toBeTrue();
     });
 
     test("doesn't leak the sub pipeline element key", async () => {
@@ -298,8 +292,8 @@ describe("Collecting available vars", () => {
         analysis
           .getKnownVars()
           .get("extension.blockPipeline.1")
-          .getExistence("@element")
-      ).toBeUndefined();
+          .isVariableDefined("@element")
+      ).toBeFalse();
     });
   });
 });

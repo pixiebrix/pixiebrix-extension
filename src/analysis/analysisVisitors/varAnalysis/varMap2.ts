@@ -103,11 +103,11 @@ class VarMap {
   }
 
   /**
-   * Calculates the existence of a variable
+   * Checks if a variable is defined
    * @param path The path to check
-   * @returns Existence of the variable at the path
+   * @returns True for a known variable (either DEFINITELY or MAYBE)
    */
-  public getExistence(path: string): VarExistence | undefined {
+  public isVariableDefined(path: string): boolean {
     const pathParts = toPath(path);
 
     for (const sourceMap of Object.values(this.map)) {
@@ -115,7 +115,7 @@ class VarMap {
         SELF_EXISTENCE
       ];
       if (typeof exactExistence === "string") {
-        return exactExistence;
+        return true;
       }
 
       if (pathParts.length === 1) {
@@ -126,7 +126,7 @@ class VarMap {
       const pathPartsCopy = [...pathParts];
       while (pathPartsCopy.length > 0) {
         if (bag[ALLOW_ANY_CHILD]) {
-          return VarExistence.MAYBE;
+          return true;
         }
 
         const part = pathPartsCopy.shift();
@@ -137,7 +137,7 @@ class VarMap {
       }
     }
 
-    return undefined;
+    return false;
   }
 
   /**

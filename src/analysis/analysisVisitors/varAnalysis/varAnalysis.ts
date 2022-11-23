@@ -173,7 +173,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
       return;
     }
 
-    if (this.currentBlockKnownVars?.getExistence(varName) == null) {
+    if (!this.currentBlockKnownVars?.isVariableDefined(varName)) {
       this.pushNotFoundVariableAnnotation(position, varName, expression);
     }
   }
@@ -183,7 +183,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     expression: Expression<string, "nunjucks">
   ) {
     for (const varName of parseTemplateVariables(expression.__value__)) {
-      if (this.currentBlockKnownVars?.getExistence(varName) == null) {
+      if (!this.currentBlockKnownVars?.isVariableDefined(varName)) {
         this.pushNotFoundVariableAnnotation(position, varName, expression);
       }
     }
