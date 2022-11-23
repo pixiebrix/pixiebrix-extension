@@ -224,7 +224,7 @@ export const selectActiveNodeUIState = createSelector(
 
 export const selectActiveNodeId = createSelector(
   selectActiveElementUIState,
-  (elementUIState) => elementUIState.activeNodeId
+  (elementUIState) => elementUIState?.activeNodeId
 );
 
 export const selectPipelineMap = createSelector(
@@ -239,6 +239,40 @@ export const selectActiveNodeInfo = createSelector(
     // eslint-disable-next-line security/detect-object-injection -- UUID
     uiState.pipelineMap[activeNodeId]
 );
+
+const activeElementNodeInfoSelector = createSelector(
+  selectActiveElementUIState,
+  (state: EditorRootState, instanceId: UUID) => instanceId,
+  // eslint-disable-next-line security/detect-object-injection -- using a node uuid
+  (uiState: ElementUIState, instanceId: UUID) => uiState.pipelineMap[instanceId]
+);
+
+export const selectActiveElementNodeInfo =
+  (instanceId: UUID) => (state: EditorRootState) =>
+    activeElementNodeInfoSelector(state, instanceId);
+
+const parentBlockInfoSelector = createSelector(
+  selectActiveElementUIState,
+  (state: EditorRootState, instanceId: UUID) => instanceId,
+  (uiState: ElementUIState, instanceId: UUID) => {
+    if (uiState == null) {
+      return null;
+    }
+
+    // eslint-disable-next-line security/detect-object-injection -- UUID
+    const { parentNodeId } = uiState.pipelineMap[instanceId];
+    if (!parentNodeId) {
+      return null;
+    }
+
+    // eslint-disable-next-line security/detect-object-injection -- UUID
+    return uiState.pipelineMap[parentNodeId];
+  }
+);
+
+export const selectParentBlockInfo =
+  (instanceId: UUID) => (state: EditorRootState) =>
+    parentBlockInfoSelector(state, instanceId);
 
 export const selectNodeDataPanelTabSelected: (
   rootState: EditorRootState

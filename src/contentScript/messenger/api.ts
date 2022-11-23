@@ -43,6 +43,7 @@ export const searchWindow = getMethod("SEARCH_WINDOW");
 export const detectFrameworks = getMethod("DETECT_FRAMEWORKS");
 
 export const runBlock = getMethod("RUN_SINGLE_BLOCK");
+export const runRendererBlock = getMethod("RUN_RENDERER_BLOCK");
 export const runReaderBlock = getMethod("RUN_READER_BLOCK");
 export const runReader = getMethod("RUN_READER");
 export const readSelected = getMethod("READ_SELECTED");

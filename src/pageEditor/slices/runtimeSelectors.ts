@@ -28,16 +28,27 @@ type EditorSelector<T> = (state: RootState) => T;
 
 const EMPTY_TRACE: TraceRecord[] = Object.freeze([]) as TraceRecord[];
 
-export const selectExtensionTrace: EditorSelector<TraceRecord[]> = ({
+export const selectActiveElementTraces: EditorSelector<TraceRecord[]> = ({
   runtime,
   editor,
 }) => runtime.extensionTraces[editor.activeElementId] ?? EMPTY_TRACE;
+
+const activeElementTraceForBlockSelector = createSelector(
+  selectActiveElementTraces,
+  (state: RootState, instanceId: UUID) => instanceId,
+  (traces, instanceId) =>
+    traces.find((trace) => trace.blockInstanceId === instanceId)
+);
+
+export const selectActiveElementTraceForBlock =
+  (instanceId: UUID) => (state: RootState) =>
+    activeElementTraceForBlockSelector(state, instanceId);
 
 /**
  * Trace records corresponding to errors in the last run. May return multiple for because of sub-pipelines
  */
 export const selectTraceErrors = createSelector(
-  selectExtensionTrace,
+  selectActiveElementTraces,
   // eslint-disable-next-line unicorn/no-array-callback-reference -- a proxy function breaks the type inference of isTraceError
   (records) => records.filter(isTraceError)
 );
