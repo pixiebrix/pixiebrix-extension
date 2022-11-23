@@ -16,7 +16,7 @@
  */
 
 import { RegistryId, UUID } from "@/core";
-import { Me, OrganizationTheme } from "@/types/contract";
+import { Me, OrganizationTheme, Milestone } from "@/types/contract";
 import { Except } from "type-fest";
 
 export interface AuthOption {
@@ -213,6 +213,11 @@ export type AuthState = {
    * List of feature flags for the user.
    */
   readonly flags: string[];
+
+  /**
+   * List of milestones for the user. A Milestone represents progress through the PixieBrix product.
+   */
+  readonly milestones: Milestone[];
 
   /**
    * The partner, controlling theme, documentation links, etc.
