@@ -134,8 +134,11 @@ describe("Show live preview", () => {
     jest.useFakeTimers();
   });
 
-  afterAll(() => {
+  afterEach(() => {
     jest.runAllTimers();
+  });
+
+  afterAll(() => {
     jest.useRealTimers();
   });
 
