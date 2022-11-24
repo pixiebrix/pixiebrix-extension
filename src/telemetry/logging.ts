@@ -30,7 +30,7 @@ import {
   IGNORED_ERROR_PATTERNS,
   isSpecificError,
 } from "@/errors/errorHelpers";
-import { forbidContext } from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { matchesAnyPattern } from "@/utils";
 import {
   reportToErrorService,
@@ -38,6 +38,7 @@ import {
 } from "@/services/errorService";
 import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
+import { MessengerMeta } from "webext-messenger";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -257,13 +258,15 @@ async function reportToRollbar(
 }
 
 export async function recordError(
+  this: MessengerMeta, // Enforce usage via Messenger only
   maybeSerializedError: SerializedError,
   context: MessageContext,
   data?: JsonObject
 ): Promise<void> {
-  forbidContext(
-    "contentScript",
-    "contentScript does not have CSP access to Rollbar"
+  // See https://github.com/pixiebrix/pixiebrix-extension/pull/4696#discussion_r1030668438
+  expectContext(
+    "background",
+    "Errors should be recorded via the background page to allow HTTP request batching"
   );
 
   try {
@@ -303,9 +306,9 @@ export async function recordError(
         error: serializeError(maybeSerializedError),
       }),
     ]);
-  } catch (recordError) {
+  } catch (recordErrorError) {
     console.error("An error occurred while recording another error", {
-      error: recordError,
+      error: recordErrorError,
       originalError: maybeSerializedError,
       context,
     });
@@ -313,13 +316,15 @@ export async function recordError(
 }
 
 export async function recordWarning(
+  this: MessengerMeta, // Enforce usage via Messenger only
   context: MessageContext | null,
   message: string,
   data?: JsonObject
 ) {
-  forbidContext(
-    "contentScript",
-    "contentScript does not have CSP access to Rollbar"
+  // See https://github.com/pixiebrix/pixiebrix-extension/pull/4696#discussion_r1030668438
+  expectContext(
+    "background",
+    "Errors should be recorded via the background page to allow HTTP request batching"
   );
 
   void recordLog(context, "warn", message, data);
