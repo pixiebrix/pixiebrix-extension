@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { cloneDeep, get, set, setWith, toPath } from "lodash";
+import { cloneDeep, get, setWith, toPath } from "lodash";
 
 export enum VarExistence {
   MAYBE = "MAYBE",
@@ -88,7 +88,9 @@ class VarMap {
     const pathParts = toPath(path);
 
     for (const sourceMap of Object.values(this.map)) {
-      const exactExistence = get(sourceMap, pathParts)?.[SELF_EXISTENCE];
+      const exactExistence = (get(sourceMap, pathParts) as ExistenceMap)?.[
+        SELF_EXISTENCE
+      ];
       if (typeof exactExistence === "string") {
         return exactExistence;
       }

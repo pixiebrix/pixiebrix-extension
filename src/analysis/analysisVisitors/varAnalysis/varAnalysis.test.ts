@@ -29,7 +29,7 @@ import {
   makePipelineExpression,
   makeTemplateExpression,
 } from "@/runtime/expressionCreators";
-import { VarExistence } from "./varMap";
+import { VarExistence } from "./varMap2";
 
 jest.mock("@/background/messenger/api", () => ({
   __esModule: true,
