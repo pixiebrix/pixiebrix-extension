@@ -24,7 +24,7 @@ import {
   RunReason,
   UUID,
 } from "@/core";
-import * as context from "@/contentScript/context";
+import { thisTarget, updateNavigationId } from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebarController";
 import { pollUntilTruthy } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
@@ -343,31 +343,27 @@ export async function handleNavigate({
   const runReason = decideRunReason({ force });
   _initialLoadNavigation = false;
 
-  if (context.frameId == null) {
+  if (thisTarget.frameId == null) {
     console.debug(
-      "Ignoring handleNavigate because context.frameId is not set yet"
+      "Ignoring handleNavigate because thisTarget.frameId is not set yet"
     );
     return;
   }
 
   const { href } = location;
 
-  if (!force && _frameHref.get(context.frameId) === href) {
-    console.debug(
-      `Ignoring NOOP navigation to ${href} (tabId=${context.tabId}, frameId=${context.frameId})`
-    );
+  if (!force && _frameHref.get(thisTarget.frameId) === href) {
+    console.debug(`Ignoring NOOP navigation to ${href}`, thisTarget);
     return;
   }
 
-  _frameHref.set(context.frameId, href);
+  _frameHref.set(thisTarget.frameId, href);
 
-  console.debug(
-    `Handling navigation to ${href} (tabId=${context.tabId}, frameId=${context.frameId})`
-  );
+  console.debug(`Handling navigation to ${href}`, thisTarget);
 
   await installScriptOnce();
 
-  context.updateNavigationId();
+  updateNavigationId();
 
   const extensionPoints = await loadExtensionsOnce();
 

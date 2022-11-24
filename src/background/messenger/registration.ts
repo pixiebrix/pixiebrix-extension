@@ -28,7 +28,6 @@ import { openPopupPrompt } from "@/background/permissionPrompt";
 import {
   activateTab,
   closeTab,
-  whoAmI,
   openTab,
   requestRunOnServer,
   requestRunInOpener,
@@ -102,7 +101,6 @@ declare global {
     LAUNCH_AUTH_INTEGRATION: typeof launchAuthIntegration;
 
     GET_UID: typeof uid;
-    ECHO_SENDER: typeof whoAmI;
     WAIT_FOR_TARGET_BY_URL: typeof waitForTargetByUrl;
 
     ACTIVATE_TAB: typeof activateTab;
@@ -179,7 +177,6 @@ export default function registerMessenger(): void {
     OPEN_POPUP_PROMPT: openPopupPrompt,
 
     GET_UID: uid,
-    ECHO_SENDER: whoAmI,
     WAIT_FOR_TARGET_BY_URL: waitForTargetByUrl,
 
     ACTIVATE_TAB: activateTab,

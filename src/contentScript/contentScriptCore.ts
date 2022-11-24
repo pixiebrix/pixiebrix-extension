@@ -27,7 +27,7 @@ import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { handleNavigate } from "@/contentScript/lifecycle";
 import { updateTabInfo } from "@/contentScript/context";
-import { whoAmI, initTelemetry } from "@/background/messenger/api";
+import { initTelemetry } from "@/background/messenger/api";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 // eslint-disable-next-line import/no-restricted-paths -- Custom devTools mechanism to transfer data
 import { addListenerForUpdateSelectedElement } from "@/pageEditor/getSelectedElement";
@@ -39,6 +39,7 @@ import {
 } from "@/errors/contextInvalidated";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
 import { UUID } from "@/core";
+import { getThisFrame } from "webext-messenger";
 
 function ignoreContextInvalidatedErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
@@ -65,9 +66,8 @@ export async function init(uuid: UUID): Promise<void> {
   initTelemetry();
   initToaster();
 
-  const sender = await whoAmI();
-
-  updateTabInfo({ tabId: sender.tab.id, frameId: sender.frameId });
+  const { tabId, frameId } = await getThisFrame();
+  updateTabInfo({ tabId, frameId });
 
   await handleNavigate();
 
