@@ -34,6 +34,12 @@ type ExistenceMap = {
 class VarMap {
   private map: Record<string, ExistenceMap> = {};
 
+  /**
+   * Converts an object containing variables to a var existence map. Each node gets a DEFINITELY existence. Ex. converting trace output to an existence map
+   * @param source The source of the values context (ex.: brick, trace, page reader)
+   * @param values The object containing the context values
+   * @param parentPath Parent path for the values. For instance, a page reader context gets a parent path of "@input"
+   */
   public setExistenceFromValues(
     source: string,
     values: Record<string, unknown>,
@@ -62,6 +68,14 @@ class VarMap {
     }
   }
 
+  /**
+   * Adds an existence for a block with output key
+   * As of now we only set existence for the root object, since output schema is not supported by the VarAnalysis
+   * @param source The source of the values context (ex.: brick, trace, page reader)
+   * @param outputKey The output key of the block
+   * @param existence Existence of the output key (MAYBE for a conditional block)
+   * @param allowAnyChild True if the output key can have any child, i.e. the output schema is unknown
+   */
   public setOutputKeyExistence(
     source: string,
     outputKey: string,
@@ -78,12 +92,21 @@ class VarMap {
     };
   }
 
+  /**
+   * Merges in another VarMap. Overwrites any existing source records
+   * @param varMap A VarMap to merge in
+   */
   public addSourceMap(varMap: VarMap): void {
     for (const [source, existenceMap] of Object.entries(varMap.map)) {
       this.map[source] = existenceMap;
     }
   }
 
+  /**
+   * Calculates the existence of a variable
+   * @param path The path to check
+   * @returns Existence of the variable at the path
+   */
   public getExistence(path: string): VarExistence | undefined {
     const pathParts = toPath(path);
 
@@ -117,6 +140,10 @@ class VarMap {
     return undefined;
   }
 
+  /**
+   * Clones the VarMap
+   * @returns A copy of the VarMap
+   */
   clone(): VarMap {
     const clone = new VarMap();
     clone.map = cloneDeep(this.map);
