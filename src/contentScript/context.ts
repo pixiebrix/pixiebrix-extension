@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Target } from "@/types";
 import { uuidv4 } from "@/types/helpers";
 
 export const sessionId = uuidv4();
@@ -23,8 +22,6 @@ export const sessionTimestamp = new Date();
 
 export let navigationId = uuidv4();
 export let navigationTimestamp = new Date();
-
-export const thisTarget = {} as Target;
 
 /**
  * Set a unique id and timestamp for current navigation event.
@@ -39,11 +36,4 @@ export function updateNavigationId(): void {
  */
 export function getNavigationId(): string {
   return navigationId;
-}
-
-export function updateTabInfo(info: Target): void {
-  thisTarget.tabId = info.tabId;
-  thisTarget.frameId = info.frameId;
-
-  console.debug("updateTabInfo", thisTarget);
 }

@@ -24,7 +24,7 @@ import {
   RunReason,
   UUID,
 } from "@/core";
-import { thisTarget, updateNavigationId } from "@/contentScript/context";
+import { updateNavigationId } from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebarController";
 import { pollUntilTruthy } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
@@ -38,6 +38,7 @@ import { $safeFind } from "@/helpers";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 import injectScriptTag from "@/utils/injectScriptTag";
+import { getThisFrame } from "webext-messenger";
 
 let _initialLoadNavigation = true;
 const _dynamic = new Map<UUID, IExtensionPoint>();
@@ -342,7 +343,7 @@ export async function handleNavigate({
 }: { force?: boolean } = {}): Promise<void> {
   const runReason = decideRunReason({ force });
   _initialLoadNavigation = false;
-
+  const thisTarget = await getThisFrame();
   if (thisTarget.frameId == null) {
     console.debug(
       "Ignoring handleNavigate because thisTarget.frameId is not set yet"
