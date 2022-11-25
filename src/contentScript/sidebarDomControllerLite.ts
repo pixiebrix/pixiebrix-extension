@@ -74,7 +74,7 @@ export function insertSidebarFrame(): boolean {
 
   storeOriginalCSSOnce();
   const nonce = crypto.randomUUID();
-  const actionURL = browser.runtime.getURL("sandbox.html");
+  const actionURL = browser.runtime.getURL("sidebar.html");
 
   setSidebarWidth(SIDEBAR_WIDTH_PX);
 

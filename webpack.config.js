@@ -264,6 +264,8 @@ module.exports = (env, options) =>
         "pageEditor/pageEditor",
         "options/options",
         "sidebar/sidebar",
+        "sandbox/sandbox",
+
         "tinyPages/ephemeralForm",
         "tinyPages/permissionsPopup",
         "tinyPages/browserActionInstantHandler",
@@ -272,7 +274,6 @@ module.exports = (env, options) =>
         "tinyPages/frame",
         "tinyPages/alert",
         "tinyPages/devtools",
-        "tinyPages/sandbox",
 
         // The script that gets injected into the host page
         "pageScript/pageScript",
