@@ -107,9 +107,8 @@ export const proxyService = getMethod("PROXY", bg) as <TData>(
 // export const recordError = getNotifier("RECORD_ERROR", bg);
 
 export const recordLog = getNotifier("RECORD_LOG", bg);
+export const recordWarning = getNotifier("RECORD_WARNING", bg);
 export const recordEvent = getNotifier("RECORD_EVENT", bg);
-export const getLoggingConfig = getMethod("GET_LOGGING_CONFIG", bg);
-export const setLoggingConfig = getMethod("SET_LOGGING_CONFIG", bg);
 export const clearLogs = getMethod("CLEAR_LOGS", bg);
 export const clearLog = getMethod("CLEAR_LOG", bg);
 export const clearExtensionDebugLogs = getMethod(

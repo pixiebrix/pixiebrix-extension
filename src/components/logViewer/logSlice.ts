@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { clearLog, getLog, LogEntry } from "@/background/logging";
+import { clearLog, getLog, type LogEntry } from "@/telemetry/logging";
 import { MessageContext } from "@/core";
 import {
   createAsyncThunk,

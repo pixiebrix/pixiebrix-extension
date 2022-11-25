@@ -31,8 +31,8 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { serializeError } from "serialize-error";
 import { ContextError } from "@/errors/genericErrors";
 
-jest.mock("@/background/messenger/api", () => {
-  const actual = jest.requireActual("@/background/messenger/api");
+jest.mock("@/telemetry/logging", () => {
+  const actual = jest.requireActual("@/telemetry/logging");
   return {
     ...actual,
     getLoggingConfig: jest.fn().mockResolvedValue({

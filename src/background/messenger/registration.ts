@@ -53,11 +53,10 @@ import {
   clearExtensionDebugLogs,
   clearLog,
   clearLogs,
-  getLoggingConfig,
   recordError,
   recordLog,
-  setLoggingConfig,
-} from "@/background/logging";
+  recordWarning,
+} from "@/telemetry/logging";
 import {
   addTraceEntry,
   addTraceExit,
@@ -133,10 +132,9 @@ declare global {
     SET_DATA_STORE: typeof setRecord;
 
     RECORD_LOG: typeof recordLog;
+    RECORD_WARNING: typeof recordWarning;
     RECORD_ERROR: typeof recordError;
     RECORD_EVENT: typeof recordEvent;
-    GET_LOGGING_CONFIG: typeof getLoggingConfig;
-    SET_LOGGING_CONFIG: typeof setLoggingConfig;
     CLEAR_LOGS: typeof clearLogs;
     CLEAR_LOG: typeof clearLog;
     CLEAR_EXTENSION_DEBUG_LOGS: typeof clearExtensionDebugLogs;
@@ -210,10 +208,9 @@ export default function registerMessenger(): void {
     SET_DATA_STORE: setRecord,
 
     RECORD_LOG: recordLog,
+    RECORD_WARNING: recordWarning,
     RECORD_ERROR: recordError,
     RECORD_EVENT: recordEvent,
-    GET_LOGGING_CONFIG: getLoggingConfig,
-    SET_LOGGING_CONFIG: setLoggingConfig,
     CLEAR_LOGS: clearLogs,
     CLEAR_LOG: clearLog,
     CLEAR_EXTENSION_DEBUG_LOGS: clearExtensionDebugLogs,

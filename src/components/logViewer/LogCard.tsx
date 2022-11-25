@@ -16,7 +16,7 @@
  */
 
 import React, { useState } from "react";
-import { MessageLevel } from "@/background/logging";
+import { type MessageLevel } from "@/telemetry/logging";
 import Loader from "@/components/Loader";
 import { Card } from "react-bootstrap";
 import LogTable from "@/components/logViewer/LogTable";
