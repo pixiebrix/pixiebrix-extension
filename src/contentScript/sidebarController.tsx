@@ -62,6 +62,8 @@ export async function showSidebar(
     insertSidebarFrame();
   }
 
+  return; // Sandbox testing online
+
   try {
     await sidebarInThisTab.pingSidebar();
   } catch (error) {
