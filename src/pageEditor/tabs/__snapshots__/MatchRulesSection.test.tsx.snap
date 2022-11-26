@@ -183,6 +183,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                                         <input
                                           class="form-control"
                                           id="extensionPoint.definition.isAvailable.urlPatterns.0.hostname"
+                                          inputref="[object Object]"
                                           name="extensionPoint.definition.isAvailable.urlPatterns.0.hostname"
                                           readonly=""
                                           value=""
@@ -244,6 +245,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                                         <input
                                           class="form-control"
                                           id="extensionPoint.definition.isAvailable.urlPatterns.0.pathname"
+                                          inputref="[object Object]"
                                           name="extensionPoint.definition.isAvailable.urlPatterns.0.pathname"
                                           readonly=""
                                           value=""
@@ -367,6 +369,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                                         <input
                                           class="form-control"
                                           id="extensionPoint.definition.isAvailable.urlPatterns.0.search"
+                                          inputref="[object Object]"
                                           name="extensionPoint.definition.isAvailable.urlPatterns.0.search"
                                           readonly=""
                                           value=""

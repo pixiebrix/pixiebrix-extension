@@ -91,6 +91,7 @@ exports[`ObjectWidget renders widget with properties 1`] = `
                       <input
                         class="form-control"
                         id="testField.foo"
+                        inputref="[object Object]"
                         name="testField.foo"
                         readonly=""
                         value=""
@@ -147,6 +148,7 @@ exports[`ObjectWidget renders widget with properties 1`] = `
                       <input
                         class="form-control"
                         id="testField.bar"
+                        inputref="[object Object]"
                         name="testField.bar"
                         readonly=""
                         value=""
@@ -203,6 +205,7 @@ exports[`ObjectWidget renders widget with properties 1`] = `
                       <input
                         class="form-control"
                         id="testField.baz"
+                        inputref="[object Object]"
                         name="testField.baz"
                         readonly=""
                         value=""
