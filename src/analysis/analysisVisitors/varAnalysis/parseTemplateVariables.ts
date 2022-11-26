@@ -46,7 +46,7 @@ export function getVariableAtPosition(
 
     // Can't use match.index because it's the index of the whole match, not the variable name
     const startIndex = template.indexOf(varName);
-    if (startIndex <= position && position <= startIndex + varName.length) {
+    if (startIndex <= position && position < startIndex + varName.length) {
       varRegex.lastIndex = 0;
       return varName;
     }

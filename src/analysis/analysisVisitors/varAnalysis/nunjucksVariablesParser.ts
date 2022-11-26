@@ -27,10 +27,12 @@ const { parser, nodes } = nunjucks as any;
 const VARIABLE_PARENT_SYMBOL = Symbol("#Variable_parent");
 const VARIABLE_CHILDREN_SYMBOL = Symbol("#Variable_children");
 const VARIABLE_TYPE_SYMBOL = Symbol("#Variable_type");
+const VARIABLE_START_INDEX = Symbol("#Variable_start_index");
 
 export interface VariableOptions {
-  type: string;
-  parent: Variable | undefined;
+  type?: string;
+  parent?: Variable | undefined;
+  startIndex: number;
 }
 
 const {
@@ -65,13 +67,15 @@ export class Variable {
   [VARIABLE_PARENT_SYMBOL]: Variable | undefined;
   [VARIABLE_CHILDREN_SYMBOL]: Variable[];
   [VARIABLE_TYPE_SYMBOL]: string;
+  [VARIABLE_START_INDEX]: number;
 
-  constructor(value: string, options: Partial<VariableOptions> = {}) {
-    const { type = "string", parent } = options;
+  constructor(value: string, options: VariableOptions) {
+    const { type = "string", parent, startIndex } = options;
 
     this[VARIABLE_PARENT_SYMBOL] = parent;
     this[VARIABLE_CHILDREN_SYMBOL] = [];
     this[VARIABLE_TYPE_SYMBOL] = type;
+    this[VARIABLE_START_INDEX] = startIndex;
     this.value = value;
   }
 
@@ -98,11 +102,15 @@ export class Variable {
   set type(type) {
     this[VARIABLE_TYPE_SYMBOL] = type;
   }
+
+  get startIndex() {
+    return this[VARIABLE_START_INDEX];
+  }
 }
 
 function traverseNode(node: any, inLoop = false) {
   if (node instanceof NodeSymbol) {
-    return [new Variable(node.value)];
+    return [new Variable(node.value, { startIndex: node.colno })];
   }
 
   if (node instanceof Pair) {
@@ -213,12 +221,20 @@ function parseLookUp(node: any, inLoop = false): Variable[] {
 
   const targetVars =
     target instanceof NodeSymbol
-      ? [new Variable(target.value, { type: "object" })]
+      ? [
+          new Variable(target.value, {
+            type: "object",
+            startIndex: target.colno,
+          }),
+        ]
       : parseLookUp(target, inLoop);
 
   if (val instanceof Literal) {
     const parentVar = targetVars.at(-1);
-    const newVar = new Variable(val.value, { parent: parentVar });
+    const newVar = new Variable(val.value, {
+      parent: parentVar,
+      startIndex: val.colno,
+    });
     parentVar.addChild(newVar);
     return [...targetVars, newVar];
   }
@@ -247,7 +263,10 @@ function parseFor(node: any) {
 
   let listVars: Variable[];
   if (listNode instanceof NodeSymbol) {
-    const listVar = new Variable(listNode.value, { type: "list" });
+    const listVar = new Variable(listNode.value, {
+      type: "list",
+      startIndex: listNode.colno,
+    });
     listVars = [listVar];
     variables.push(listVar);
   } else {
@@ -257,7 +276,9 @@ function parseFor(node: any) {
 
   let itemVars: Variable[];
   if (itemNode instanceof NodeSymbol) {
-    const itemVar = new Variable(itemNode.value);
+    const itemVar = new Variable(itemNode.value, {
+      startIndex: itemNode.colno,
+    });
     itemVars = [itemVar];
   } else {
     itemVars = traverse(itemNode, true);
@@ -297,17 +318,38 @@ function getVariableName(variable: Variable, path = ""): string {
   return joinedName;
 }
 
-function parseTemplateVariables(template: string): string[] {
+export function parseTemplateVariables(template: string): string[] {
   const ast = parser.parse(template, true);
   const variables = traverse(ast);
   const vars: string[] = [];
-  for (const x of variables) {
-    if (x[VARIABLE_PARENT_SYMBOL] == null) {
-      vars.push(getVariableName(x));
+  for (const variable of variables) {
+    if (variable[VARIABLE_PARENT_SYMBOL] == null) {
+      vars.push(getVariableName(variable));
     }
   }
 
   return vars;
+}
+
+export function getVariableAtPosition(
+  template: string,
+  position: number
+): string | null {
+  const ast = parser.parse(template, true);
+  const variables = traverse(ast);
+  for (const variable of variables) {
+    if (
+      variable[VARIABLE_PARENT_SYMBOL] == null &&
+      variable.startIndex <= position
+    ) {
+      const varName = getVariableName(variable);
+      if (position < variable.startIndex + varName.length) {
+        return varName;
+      }
+    }
+  }
+
+  return null;
 }
 
 export default parseTemplateVariables;
