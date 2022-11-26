@@ -15,8 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import registerMessenger from "./messenger/registration";
+import { addPostMessageListener } from "@/utils/postMessage";
 
-console.log("SANDBOX started");
+/** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
 
-registerMessenger();
+export default function registerMessenger(): void {
+  addPostMessageListener("SANDBOX_PING", (payload) => {
+    console.log("Received PING payload:", payload);
+    return "pong";
+  });
+}

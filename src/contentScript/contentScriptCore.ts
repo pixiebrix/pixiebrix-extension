@@ -39,7 +39,7 @@ import {
 } from "@/errors/contextInvalidated";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
 import { UUID } from "@/core";
-import initSandbox from "./sandbox";
+import createSandbox from "@/sandbox/messenger/api";
 
 function ignoreContextInvalidatedErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
@@ -65,7 +65,7 @@ export async function init(uuid: UUID): Promise<void> {
   addListenerForUpdateSelectedElement();
   initTelemetry();
   initToaster();
-  initSandbox();
+  createSandbox();
 
   const sender = await whoAmI();
 

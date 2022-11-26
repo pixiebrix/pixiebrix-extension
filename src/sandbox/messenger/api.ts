@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
+
+import postMessage from "@/utils/postMessage";
 import { once } from "lodash";
 
 const hiddenIframeStyle = {
@@ -24,24 +27,25 @@ const hiddenIframeStyle = {
   visibility: "hidden",
 };
 
-function onMessage(event: MessageEvent): void {
-  console.log("SANDBOX received", event);
-}
-
 const getSandbox = once(() => {
   const iframe = document.createElement("iframe");
   iframe.src = chrome.runtime.getURL("sandbox.html");
-  window.addEventListener("message", onMessage);
   Object.assign(iframe.style, hiddenIframeStyle);
   return iframe;
 });
 
-export default function initSandbox() {
+export default function createSandbox() {
   const sandbox = getSandbox();
   document.body.append(sandbox);
-  setTimeout(() => {
+  setTimeout(async () => {
     console.log("SANDBOX pinging");
-    // The origin must be "*" probably because it's reported as "null" to the outside world
-    sandbox.contentWindow.postMessage("ping", "*");
+    console.log("SANDBOX received response:", await ping());
   }, 1000);
+}
+
+export async function ping() {
+  return postMessage({
+    channel: getSandbox().contentWindow,
+    id: "SANDBOX_PING",
+  });
 }
