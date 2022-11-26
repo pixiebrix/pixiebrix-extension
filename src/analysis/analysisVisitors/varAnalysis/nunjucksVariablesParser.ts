@@ -297,8 +297,8 @@ function getVariableName(variable: Variable, path = ""): string {
   return joinedName;
 }
 
-function parseTemplateVariables(tpl: string): string[] {
-  const ast = parser.parse(tpl, true);
+function parseTemplateVariables(template: string): string[] {
+  const ast = parser.parse(template, true);
   const variables = traverse(ast);
   const vars: string[] = [];
   for (const x of variables) {
