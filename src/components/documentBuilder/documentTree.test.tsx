@@ -23,7 +23,6 @@ import { render } from "@testing-library/react";
 import React from "react";
 import blockRegistry from "@/blocks/registry";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
-import * as backgroundAPI from "@/background/messenger/api";
 import * as contentScriptAPI from "@/contentScript/messenger/api";
 import { UNSET_UUID, uuidv4 } from "@/types/helpers";
 import { buildDocumentBranch } from "./documentTree";
