@@ -32,7 +32,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { runMapArgs } from "@/contentScript/messenger/api";
 import { isNullOrBlank, joinPathParts } from "@/utils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { whoAmI } from "@/background/messenger/api";
+import { getTopLevelFrame } from "webext-messenger";
 
 type DocumentListProps = {
   array: UnknownObject[];
@@ -59,8 +59,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
   const documentContext = useContext(DocumentContext);
 
   const [rootDefinitions, isLoading, error] = useAsyncState(async () => {
-    const me = await whoAmI();
-    const target = { tabId: me.tab.id, frameId: 0 };
+    const topLevelFrame = await getTopLevelFrame();
 
     const key = `@${elementKey}`;
 
@@ -83,7 +82,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
 
         if (isDeferExpression(config)) {
           documentElement = (await runMapArgs(
-            target,
+            topLevelFrame,
             // TODO: pass runtime version via DocumentContext instead of hard-coding it. This is be wrong for v4+
             {
               config: config.__value__,

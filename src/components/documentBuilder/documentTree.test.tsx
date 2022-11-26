@@ -314,9 +314,6 @@ describe("When rendered in panel", () => {
 
   test("renders block", async () => {
     const markdown = "Pipeline text for card test.";
-    (backgroundAPI.whoAmI as jest.Mock).mockResolvedValueOnce({
-      tab: { id: 0 },
-    });
     (contentScriptAPI.runRendererPipeline as jest.Mock).mockResolvedValueOnce({
       blockId: markdownBlock.id,
       key: uuidv4(),

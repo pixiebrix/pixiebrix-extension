@@ -21,10 +21,10 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
 import { hideSidebar } from "@/contentScript/messenger/api";
-import { whoAmI } from "@/background/messenger/api";
 import useTheme, { useGetTheme } from "@/hooks/useTheme";
 import cx from "classnames";
 import useContextInvalidated from "@/hooks/useContextInvalidated";
+import { getTopLevelFrame } from "webext-messenger";
 
 const Header: React.FunctionComponent = () => {
   const { logo, showSidebarLogo, customSidebarLogo } = useTheme();
@@ -40,8 +40,8 @@ const Header: React.FunctionComponent = () => {
             theme === "default" ? styles.themeColorOverride : styles.themeColor
           )}
           onClick={async () => {
-            const sidebar = await whoAmI();
-            await hideSidebar({ tabId: sidebar.tab.id });
+            const topLevelFrame = await getTopLevelFrame();
+            await hideSidebar(topLevelFrame);
           }}
           size="sm"
           variant="link"

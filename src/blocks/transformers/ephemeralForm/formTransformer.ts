@@ -23,7 +23,6 @@ import {
   registerForm,
 } from "@/contentScript/ephemeralFormProtocol";
 import { expectContext } from "@/utils/expectContext";
-import { whoAmI } from "@/background/messenger/api";
 import {
   ensureSidebar,
   hideSidebarForm,
@@ -31,6 +30,7 @@ import {
   showSidebarForm,
 } from "@/contentScript/sidebarController";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
+import { getThisFrame } from "webext-messenger";
 
 // The modes for createFrameSrc are different than the location argument for FormTransformer. The mode for the frame
 // just determines the layout container of the form
@@ -40,14 +40,11 @@ export async function createFrameSource(
   nonce: string,
   mode: Mode
 ): Promise<URL> {
-  const { tab, frameId } = await whoAmI();
+  const target = await getThisFrame();
 
   const frameSource = new URL(browser.runtime.getURL("ephemeralForm.html"));
   frameSource.searchParams.set("nonce", nonce);
-  frameSource.searchParams.set(
-    "opener",
-    JSON.stringify({ tabId: tab.id, frameId })
-  );
+  frameSource.searchParams.set("opener", JSON.stringify(target));
   frameSource.searchParams.set("mode", mode);
   return frameSource;
 }
