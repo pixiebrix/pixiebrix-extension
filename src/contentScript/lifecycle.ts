@@ -354,13 +354,13 @@ export async function handleNavigate({
   const { href } = location;
 
   if (!force && _frameHref.get(thisTarget.frameId) === href) {
-    console.debug(`Ignoring NOOP navigation to ${href}`, thisTarget);
+    console.debug("Ignoring NOOP navigation to %s", href, thisTarget);
     return;
   }
 
   _frameHref.set(thisTarget.frameId, href);
 
-  console.debug(`Handling navigation to ${href}`, thisTarget);
+  console.debug("Handling navigation to %s", href, thisTarget);
 
   await installScriptOnce();
 
@@ -385,7 +385,7 @@ export async function handleNavigate({
           runReason,
           cancel
         ).catch((error) => {
-          console.error(`Error installing/running: ${extensionPoint.id}`, {
+          console.error("Error installing/running: %s", extensionPoint.id, {
             error,
           });
         });
