@@ -22,6 +22,10 @@ import {
   blockFactory,
   formStateFactory,
   triggerFormStateFactory,
+  quickbarFormStateFactory,
+  menuItemFormStateFactory,
+  contextMenuFormStateFactory,
+  sidebarPanelFormStateFactory,
 } from "@/testUtils/factories";
 import blockRegistry from "@/blocks/registry";
 import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
@@ -90,22 +94,111 @@ test("renders", async () => {
   expect(rendered.asFragment()).toMatchSnapshot();
 });
 
-test("shows root mode for trigger", async () => {
-  const block = echoBlock;
-  blockRegistry.register(block);
-  const initialState = triggerFormStateFactory({ apiVersion: "v3" }, [
-    blockConfigFactory({ id: block.id }),
-  ]);
-  renderBlockConfiguration(
-    <BlockConfiguration name="extension.blockPipeline[0]" blockId={block.id} />,
-    initialState
-  );
+describe("shows root mode", () => {
+  test("shows root mode for trigger", async () => {
+    const block = echoBlock;
+    blockRegistry.register(block);
+    const initialState = triggerFormStateFactory({ apiVersion: "v3" }, [
+      blockConfigFactory({ id: block.id }),
+    ]);
+    renderBlockConfiguration(
+      <BlockConfiguration
+        name="extension.blockPipeline[0]"
+        blockId={block.id}
+      />,
+      initialState
+    );
 
-  await waitForEffect();
+    await waitForEffect();
 
-  const rootModeSelect = screen.getByLabelText("Root Mode");
+    const rootModeSelect = screen.getByLabelText("Root Mode");
 
-  expect(rootModeSelect).not.toBeNull();
+    expect(rootModeSelect).not.toBeNull();
+  });
+
+  test("shows root mode for quickBar", async () => {
+    const block = echoBlock;
+    blockRegistry.register(block);
+    const initialState = quickbarFormStateFactory({ apiVersion: "v3" }, [
+      blockConfigFactory({ id: block.id }),
+    ]);
+    renderBlockConfiguration(
+      <BlockConfiguration
+        name="extension.blockPipeline[0]"
+        blockId={block.id}
+      />,
+      initialState
+    );
+
+    await waitForEffect();
+
+    const rootModeSelect = screen.getByLabelText("Root Mode");
+
+    expect(rootModeSelect).not.toBeNull();
+  });
+
+  test("shows root mode for contextMenu", async () => {
+    const block = echoBlock;
+    blockRegistry.register(block);
+    const initialState = contextMenuFormStateFactory({ apiVersion: "v3" }, [
+      blockConfigFactory({ id: block.id }),
+    ]);
+    renderBlockConfiguration(
+      <BlockConfiguration
+        name="extension.blockPipeline[0]"
+        blockId={block.id}
+      />,
+      initialState
+    );
+
+    await waitForEffect();
+
+    const rootModeSelect = screen.getByLabelText("Root Mode");
+
+    expect(rootModeSelect).not.toBeNull();
+  });
+
+  test("show root mode for menuItem", async () => {
+    const block = echoBlock;
+    blockRegistry.register(block);
+    const initialState = menuItemFormStateFactory({ apiVersion: "v3" }, [
+      blockConfigFactory({ id: block.id }),
+    ]);
+    renderBlockConfiguration(
+      <BlockConfiguration
+        name="extension.blockPipeline[0]"
+        blockId={block.id}
+      />,
+      initialState
+    );
+
+    await waitForEffect();
+
+    const rootModeSelect = screen.queryByLabelText("Root Mode");
+
+    expect(rootModeSelect).not.toBeNull();
+  });
+
+  test("don't show root mode for sidebar panel", async () => {
+    const block = echoBlock;
+    blockRegistry.register(block);
+    const initialState = sidebarPanelFormStateFactory({ apiVersion: "v3" }, [
+      blockConfigFactory({ id: block.id }),
+    ]);
+    renderBlockConfiguration(
+      <BlockConfiguration
+        name="extension.blockPipeline[0]"
+        blockId={block.id}
+      />,
+      initialState
+    );
+
+    await waitForEffect();
+
+    const rootModeSelect = screen.queryByLabelText("Root Mode");
+
+    expect(rootModeSelect).toBeNull();
+  });
 });
 
 test.each`

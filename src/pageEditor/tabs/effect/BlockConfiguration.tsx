@@ -93,10 +93,15 @@ const BlockConfiguration: React.FunctionComponent<{
     [configName]
   );
 
-  // Only show if necessary. Currently, only the trigger extension point passes the element
-  // that triggered the event through for the reader root
+  // Only show if the extension point supports a target mode. menuItem implicitly supports target mode, because
+  // it's root-aware if multiple menu items are added to the page.
+  // Technically trigger/quickBar/etc. allow the user to pick the target mode. But for now, show the field even if
+  // the user has configured the extension point to use the document as the target.
   const showRootMode =
-    isRootAware && ["trigger", "contextMenu"].includes(context.values.type);
+    isRootAware &&
+    ["trigger", "contextMenu", "quickBar", "menuItem"].includes(
+      context.values.type
+    );
   const showIfAndTarget = blockType && blockType !== "renderer";
   const noAdvancedOptions = !showRootMode && !showIfAndTarget;
 
