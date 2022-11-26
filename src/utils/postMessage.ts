@@ -55,8 +55,6 @@ export default async function postMessage({
   const controller = new AbortController();
 
   const listener = ({ origin, data }: MessageEvent<PixiebrixPacket>): void => {
-    console.log("SANDBOX received in main window", origin, data);
-
     if (origin === "null" && data?.pixiebrix === packet.pixiebrix) {
       resolve(data.payload);
     }

@@ -21,7 +21,7 @@ import { addPostMessageListener } from "@/utils/postMessage";
 
 export default function registerMessenger(): void {
   addPostMessageListener("SANDBOX_PING", (payload) => {
-    console.log("Received PING payload:", payload);
+    console.log("SANDBOX: Received PING payload:", payload);
     return "pong";
   });
 }
