@@ -55,8 +55,13 @@ const ExperimentalFeature: React.FunctionComponent<{
 
 const ExperimentalSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { suggestElements, excludeRandomClasses, selectionTools, varAnalysis } =
-    useSelector(selectSettings);
+  const {
+    suggestElements,
+    excludeRandomClasses,
+    selectionTools,
+    varAnalysis,
+    varAutosuggest,
+  } = useSelector(selectSettings);
 
   return (
     <Card>
@@ -112,12 +117,26 @@ const ExperimentalSettings: React.FunctionComponent = () => {
           <ExperimentalFeature
             id="varAnalysis"
             label="Perform Analysis of Variables in Page Editor:"
-            description="Toggle on to enable validation of variables in Page Editor"
+            description="Toggle on to enable validation of variables in Page Editor. Shows a warning if detects a use of undefined variable"
             isEnabled={varAnalysis}
             onChange={(value) => {
               dispatch(
                 settingsSlice.actions.setFlag({
                   flag: "varAnalysis",
+                  value,
+                })
+              );
+            }}
+          />
+          <ExperimentalFeature
+            id="varAutosuggest"
+            label="Display popup with suggested Variables in Page Editor (Analysis of Variables must be enabled):"
+            description="Toggle on to enable variables autosuggest. The popup displayed for Var and Text template inputs"
+            isEnabled={varAutosuggest}
+            onChange={(value) => {
+              dispatch(
+                settingsSlice.actions.setFlag({
+                  flag: "varAutosuggest",
                   value,
                 })
               );

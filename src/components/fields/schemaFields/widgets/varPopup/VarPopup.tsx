@@ -20,6 +20,8 @@ import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode"
 import { isNunjucksExpression } from "@/runtime/mapArgs";
 import getLikelyVariableAtPosition from "./getLikelyVariableAtPosition";
 import VarMenu from "./VarMenu";
+import { useSelector } from "react-redux";
+import { selectSettings } from "@/store/settingsSelectors";
 
 type VarPopupProps = {
   inputMode: FieldInputMode;
@@ -34,10 +36,14 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
 }) => {
   const [showMenu, setShowMenu] = useState(false);
 
+  const { varAnalysis, varAutosuggest } = useSelector(selectSettings);
+  const autosuggestEnabled = varAnalysis && varAutosuggest;
+
   useEffect(() => {
     if (
       !inputElementRef.current ||
-      (inputMode !== "var" && inputMode !== "string")
+      (inputMode !== "var" && inputMode !== "string") ||
+      !autosuggestEnabled
     ) {
       return;
     }
@@ -86,7 +92,7 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
     };
   }, [inputElementRef, inputMode, showMenu, value]);
 
-  if (inputMode !== "var" && inputMode !== "string") {
+  if ((inputMode !== "var" && inputMode !== "string") || !autosuggestEnabled) {
     return null;
   }
 
