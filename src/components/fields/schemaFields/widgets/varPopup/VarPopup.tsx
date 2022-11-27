@@ -18,7 +18,7 @@
 import React, { useEffect, useState } from "react";
 import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import { isNunjucksExpression } from "@/runtime/mapArgs";
-import { getVariableAtPosition } from "@/analysis/analysisVisitors/varAnalysis/nunjucksVariablesParser";
+import getLikelyVariableAtPosition from "./getLikelyVariableAtPosition";
 import VarMenu from "./VarMenu";
 
 type VarPopupProps = {
@@ -57,7 +57,7 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
           ? value.__value__
           : String(value);
 
-        if (getVariableAtPosition(template, cursorPosition)) {
+        if (getLikelyVariableAtPosition(template, cursorPosition)) {
           if (!showMenu) {
             setShowMenu(true);
           }

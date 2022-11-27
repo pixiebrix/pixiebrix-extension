@@ -15,9 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import parseTemplateVariables, {
-  getVariableAtPosition,
-} from "./parseTemplateVariables";
+import parseTemplateVariables from "./parseTemplateVariables";
 
 describe("parseTemplateVariables", () => {
   test("simple template", () => {
@@ -29,16 +27,29 @@ describe("parseTemplateVariables", () => {
     expect(result[1]).toBe("@variableB");
   });
 
+  test("access with .", () => {
+    const result = parseTemplateVariables(
+      "a {{@foo.bar}} {{ @foo.baz}} {{ @foo.bar.baz }} {{ @qux.quux }} template"
+    );
+
+    expect(result).toEqual([
+      "@foo.bar",
+      "@foo.baz",
+      "@foo.bar.baz",
+      "@qux.quux",
+    ]);
+  });
+
   test("access with []", () => {
     const template = "Hello {{ @foo['bar baz'] }}";
     const result = parseTemplateVariables(template);
-    expect(result[0]).toBe("@foo['bar baz']");
+    expect(result[0]).toBe('@foo["bar baz"]');
   });
 
   test("indexed access", () => {
     const template = "Hello {{ @foo[0] }}";
     const result = parseTemplateVariables(template);
-    expect(result[0]).toBe("@foo[0]");
+    expect(result[0]).toBe("@foo.0");
   });
 
   test("works with filters", () => {
@@ -69,41 +80,38 @@ describe("parseTemplateVariables", () => {
     expect(result[1]).toBe("@tired");
   });
 
-  describe("not supported templates", () => {
-    // To simplify regex, we only support variables with @ prefix
-    test("no @ prefix", () => {
-      const template = "Hello {{ variable }}";
-      const result = parseTemplateVariables(template);
-      expect(result).toHaveLength(0);
-    });
+  test("no @ prefix", () => {
+    const template = "Hello {{ variable }}";
+    const result = parseTemplateVariables(template);
+    expect(result[0]).toBe("variable");
+  });
 
-    // Conditions with multiple variables are not fully supported yet
-    test("complex conditions", () => {
-      const template = `
+  test("complex conditions", () => {
+    const template = `
     {% if @happy and @hungry %}
       I am happy *and* hungry; both are true.
     {% endif %}`;
-      const result = parseTemplateVariables(template);
-      expect(result[0]).toBe("@happy");
-      expect(result).toHaveLength(1);
-    });
+    const result = parseTemplateVariables(template);
+    expect(result[0]).toBe("@happy");
+    expect(result[1]).toBe("@hungry");
   });
-});
 
-describe("getVariableAtPosition", () => {
-  test.each([
-    [0, null],
-    [6, null],
-    [7, "@foo"],
-    [10, "@foo"],
-    [11, null],
-    [20, null],
-    [21, "@bar.baz"],
-    [28, "@bar.baz"],
-    [29, null],
-  ])("returns variable at given position %s", (position, expected) => {
-    const template = "012 {{ @foo }} 567 {{@bar.baz}}.";
-    const actual = getVariableAtPosition(template, position);
-    expect(actual).toEqual(expected);
+  test("nunjucks for loop item", () => {
+    const template = `
+    {% for item in @items %}
+      Item value: {{ item }}
+    {% endfor %}`;
+    const result = parseTemplateVariables(template);
+    expect(result).toEqual(["@items"]);
+  });
+
+  test("nunjucks for loop item 2", () => {
+    const template = `
+    {% for qux in @foo.bar.baz %}
+      Item value: {{ qux.quux.quuux }}
+      Context var: {{ @corge.grault.garply}}
+    {% endfor %}`;
+    const result = parseTemplateVariables(template);
+    expect(result).toEqual(["@foo.bar.baz", "@corge.grault.garply"]);
   });
 });

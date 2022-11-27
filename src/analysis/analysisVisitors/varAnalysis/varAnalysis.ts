@@ -28,7 +28,7 @@ import { Analysis, Annotation, AnnotationType } from "@/analysis/analysisTypes";
 import VarMap, { VarExistence } from "./varMap";
 import { TraceRecord } from "@/telemetry/trace";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
-import { parseTemplateVariables } from "./nunjucksVariablesParser";
+import parseTemplateVariables from "./parseTemplateVariables";
 
 type PreviousVisitedBlock = {
   vars: VarMap;
