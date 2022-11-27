@@ -18,7 +18,7 @@
 import React, { useEffect, useState } from "react";
 import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import { isNunjucksExpression } from "@/runtime/mapArgs";
-import { getVariableAtPosition } from "@/analysis/analysisVisitors/varAnalysis/parseTemplateVariables";
+import { getVariableAtPosition } from "@/analysis/analysisVisitors/varAnalysis/nunjucksVariablesParser";
 import VarMenu from "./VarMenu";
 
 type VarPopupProps = {
@@ -68,8 +68,11 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
     };
 
     const onKeyPress = (event: KeyboardEvent) => {
-      if (event.key === "@" && !showMenu) {
+      const { key } = event;
+      if (key === "@" && !showMenu) {
         setShowMenu(true);
+      } else if ((key === "Escape" || key === "}") && showMenu) {
+        setShowMenu(false);
       }
     };
 

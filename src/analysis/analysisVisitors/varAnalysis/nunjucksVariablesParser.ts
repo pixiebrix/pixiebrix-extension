@@ -20,7 +20,8 @@
 
 import { joinName } from "@/utils";
 import * as nunjucks from "nunjucks";
-// The typings of nunjucks do not expose parser, nodes
+
+// The typings of nunjucks do not expose parser and nodes
 // Have to hack the types
 const { parser, nodes } = nunjucks as any;
 
@@ -320,15 +321,9 @@ function getVariableName(variable: Variable, path = ""): string {
 
 export function parseTemplateVariables(template: string): string[] {
   const ast = parser.parse(template, true);
-  const variables = traverse(ast);
-  const vars: string[] = [];
-  for (const variable of variables) {
-    if (variable[VARIABLE_PARENT_SYMBOL] == null) {
-      vars.push(getVariableName(variable));
-    }
-  }
-
-  return vars;
+  return traverse(ast)
+    .filter((x) => x.parent == null)
+    .map((x) => getVariableName(x));
 }
 
 export function getVariableAtPosition(
@@ -337,13 +332,16 @@ export function getVariableAtPosition(
 ): string | null {
   const ast = parser.parse(template, true);
   const variables = traverse(ast);
+
   for (const variable of variables) {
-    if (
-      variable[VARIABLE_PARENT_SYMBOL] == null &&
-      variable.startIndex <= position
-    ) {
+    if (variable[VARIABLE_PARENT_SYMBOL] == null) {
       const varName = getVariableName(variable);
-      if (position < variable.startIndex + varName.length) {
+      const startIndex = template.indexOf(
+        varName,
+        position <= varName.length ? position : position - varName.length
+      );
+
+      if (startIndex <= position && position < startIndex + varName.length) {
         return varName;
       }
     }
