@@ -5,6 +5,7 @@
   "compilerOptions": {
     "sourceMap": true,
     "module": "ES2020",
+    "target": "ES2022",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "baseUrl": ".",
