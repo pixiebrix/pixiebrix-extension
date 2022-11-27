@@ -273,10 +273,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
                   : joinName(field.name, property)
               }
               property={property}
-              defined={Object.prototype.hasOwnProperty.call(
-                declaredProperties,
-                property
-              )}
+              defined={Object.hasOwn(declaredProperties, property)}
               onDelete={onDelete}
               onRename={onRename}
             />

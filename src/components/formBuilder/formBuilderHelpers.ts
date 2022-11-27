@@ -138,12 +138,9 @@ export const validateNextPropertyName = (
     return "Name must not contain periods.";
   }
 
-  if (
-    schema.properties &&
-    Object.prototype.hasOwnProperty.call(schema.properties, nextPropertyName)
-  ) {
+  if (schema.properties && Object.hasOwn(schema.properties, nextPropertyName)) {
     return `Name must be unique. Another property "${
-      // eslint-disable-next-line security/detect-object-injection -- checked with hasOwnProperty
+      // eslint-disable-next-line security/detect-object-injection -- checked with hasOwn
       (schema.properties[nextPropertyName] as Schema).title
     }" already has the name "${nextPropertyName}".`;
   }

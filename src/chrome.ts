@@ -93,8 +93,8 @@ export async function readStorage<T = unknown>(
     }
   }
 
-  if (Object.prototype.hasOwnProperty.call(result, storageKey)) {
-    // eslint-disable-next-line security/detect-object-injection -- Just checked with hasOwnProperty
+  if (Object.hasOwn(result, storageKey)) {
+    // eslint-disable-next-line security/detect-object-injection -- Just checked with hasOwn
     return result[storageKey] as T;
   }
 

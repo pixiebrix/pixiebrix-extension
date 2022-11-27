@@ -32,8 +32,8 @@ function makeLinkRenderer(href: string) {
   return (value: unknown, row: Row) => {
     // Currently for TableRenderer we only support directly accessing the href. This matches the behavior in
     // makeDataTable's renderValue
-    const anchorHref = Object.prototype.hasOwnProperty.call(row, href)
-      ? // eslint-disable-next-line security/detect-object-injection -- checked with hasOwnProperty
+    const anchorHref = Object.hasOwn(row, href)
+      ? // eslint-disable-next-line security/detect-object-injection -- checked with hasOwn
         row[href]
       : null;
 
