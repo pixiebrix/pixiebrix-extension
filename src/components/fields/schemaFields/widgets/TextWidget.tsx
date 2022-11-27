@@ -86,6 +86,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
       fitTextarea.watch(textAreaRef.current);
     }
 
+    // Sync the ref values
     if (inputRef) {
       inputRef.current = textAreaRef.current;
     }

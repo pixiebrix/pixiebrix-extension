@@ -83,7 +83,7 @@ export interface SchemaFieldProps {
   /**
    * Click handler for this field
    */
-  onClick?: (event: MouseEvent) => void;
+  onClick?: (event: React.MouseEvent) => void;
 
   /**
    * Blur handler for this field
@@ -106,5 +106,5 @@ export interface SchemaFieldProps {
    */
   defaultType?: FieldInputMode;
 
-  inputRef?: React.MutableRefObject<HTMLTextAreaElement>;
+  inputRef?: React.MutableRefObject<HTMLElement>;
 }

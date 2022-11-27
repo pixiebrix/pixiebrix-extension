@@ -531,7 +531,6 @@ exports[`UiPath Options Render with selected dependency 1`] = `
             <input
               class="form-control"
               id="extension.blockPipeline.0.config.jobsCount"
-              inputref="[object Object]"
               step=""
               type="number"
               value="1"

@@ -24,7 +24,7 @@ function getLikelyVariableAtPosition(
   while (match !== null) {
     const { varName } = match.groups;
     const startIndex = match.index;
-    if (startIndex <= position && position < startIndex + varName.length) {
+    if (startIndex <= position && position <= startIndex + varName.length) {
       varRegex.lastIndex = 0;
       return varName;
     }

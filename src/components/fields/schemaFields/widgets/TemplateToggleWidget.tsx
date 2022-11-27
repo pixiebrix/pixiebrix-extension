@@ -47,6 +47,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
   inputModeOptions,
   setFieldDescription,
   defaultType,
+  inputRef: inputRefProp, // Cut out from the rest of the props, not used
   ...schemaFieldProps
 }) => {
   const [{ value }, , { setValue }] = useField(schemaFieldProps.name);

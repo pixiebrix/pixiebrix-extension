@@ -26,7 +26,6 @@ exports[`FormEditor renders empty schema 1`] = `
             <input
               class="form-control"
               id="rjsfSchema.schema.title"
-              inputref="[object Object]"
               name="rjsfSchema.schema.title"
               readonly=""
               value=""
@@ -76,7 +75,6 @@ exports[`FormEditor renders empty schema 1`] = `
             <input
               class="form-control"
               id="rjsfSchema.schema.description"
-              inputref="[object Object]"
               name="rjsfSchema.schema.description"
               readonly=""
               value=""
@@ -449,7 +447,6 @@ exports[`FormEditor renders simple schema 1`] = `
               <input
                 class="form-control"
                 id="rjsfSchema.schema.properties.firstName.description"
-                inputref="[object Object]"
                 name="rjsfSchema.schema.properties.firstName.description"
                 readonly=""
                 value=""
@@ -1020,7 +1017,6 @@ exports[`FormEditor renders unknown field format 1`] = `
               <input
                 class="form-control"
                 id="rjsfSchema.schema.properties.unknown.description"
-                inputref="[object Object]"
                 name="rjsfSchema.schema.properties.unknown.description"
                 readonly=""
                 value=""

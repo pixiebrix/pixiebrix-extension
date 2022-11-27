@@ -26,7 +26,6 @@ exports[`Marketplace Activate Wizard OptionsBody renders text field 1`] = `
             <input
               class="form-control"
               id="optionsArgs.textField"
-              inputref="[object Object]"
               name="optionsArgs.textField"
               readonly=""
               value=""
