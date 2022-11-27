@@ -27,7 +27,6 @@ import {
   InputModeOption,
   TemplateToggleWidgetProps,
 } from "./templateToggleWidgetTypes";
-import VarPopup from "./varPopup/VarPopup";
 
 export function getOptionForInputMode(
   options: InputModeOption[],
@@ -114,11 +113,12 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
     <div className={styles.root}>
       <div className={styles.field}>
         <Widget {...widgetProps} />
+        {/* Commented out until the popup body is implemented
         <VarPopup
           inputMode={inputMode}
           inputElementRef={inputRef}
           value={value}
-        />
+        /> */}
       </div>
       <DropdownButton
         title={

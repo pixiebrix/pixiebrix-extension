@@ -203,9 +203,13 @@ function parseIf(node: any, inLoop = false) {
 
   const { body, cond, else_ } = node;
 
-  return [...traverse(body, inLoop), ...traverse(cond, inLoop)].concat(
-    else_ ? traverse(else_, inLoop) : []
-  );
+  return else_
+    ? [...traverse(body, inLoop), ...traverse(cond, inLoop)]
+    : [
+        ...traverse(body, inLoop),
+        ...traverse(cond, inLoop),
+        ...traverse(else_, inLoop),
+      ];
 }
 
 function parseLookUp(node: any, inLoop = false): Variable[] {
