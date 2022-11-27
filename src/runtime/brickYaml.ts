@@ -124,7 +124,6 @@ function stripNonSchemaProps(brick: any) {
 
 /**
  * Load brick YAML, with support for the custom tags for expressions.
- * @param config
  */
 export function loadBrickYaml(config: string): unknown {
   return yaml.load(config, { schema: RUNTIME_SCHEMA });

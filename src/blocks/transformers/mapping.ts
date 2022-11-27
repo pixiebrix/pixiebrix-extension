@@ -66,8 +66,8 @@ export class MappingTransformer extends Transformer {
       return null;
     }
 
-    if (Object.prototype.hasOwnProperty.call(mapping, key)) {
-      // Checking for hasOwnProperty
+    if (Object.hasOwn(mapping, key)) {
+      // Checking for hasOwn
       // eslint-disable-next-line security/detect-object-injection
       return mapping[key];
     }

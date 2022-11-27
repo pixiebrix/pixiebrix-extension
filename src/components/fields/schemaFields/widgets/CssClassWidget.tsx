@@ -265,7 +265,6 @@ const FlagItem: React.VFC<
 
 /**
  * Return utility classes from the value
- * @param value
  */
 export function parseValue(value: Value): {
   classes: string[];

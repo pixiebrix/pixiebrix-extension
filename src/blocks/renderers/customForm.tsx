@@ -314,7 +314,7 @@ export function normalizeIncomingFormData(schema: Schema, data: UnknownObject) {
 export function normalizeOutgoingFormData(schema: Schema, data: UnknownObject) {
   const normalizedData = { ...data };
   for (const key of Object.keys(schema.properties)) {
-    if (typeof normalizedData[key] === "undefined") {
+    if (normalizedData[key] === undefined) {
       normalizedData[key] = null;
     }
   }

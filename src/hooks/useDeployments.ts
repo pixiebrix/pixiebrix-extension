@@ -44,7 +44,6 @@ const { actions } = extensionsSlice;
 
 /**
  * Fetch deployments, or return empty array if the extension is not linked to the PixieBrix API.
- * @param installedExtensions
  */
 async function fetchDeployments(
   installedExtensions: IExtension[]
@@ -59,7 +58,7 @@ async function fetchDeployments(
     "/api/deployments/",
     {
       uid: await getUID(),
-      version: await getExtensionVersion(),
+      version: getExtensionVersion(),
       active: selectInstalledDeployments(installedExtensions),
     }
   );

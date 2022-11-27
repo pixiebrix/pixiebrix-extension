@@ -89,7 +89,6 @@ export async function waitForTargetByUrl(url: string): Promise<Target> {
 
 /**
  * Run a brick in the window that opened the source window
- * @param request
  */
 export async function requestRunInOpener(
   this: MessengerMeta,

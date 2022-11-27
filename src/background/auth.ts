@@ -68,8 +68,8 @@ export async function getCachedAuthData(
     OAUTH2_STORAGE_KEY,
     {}
   );
-  if (Object.prototype.hasOwnProperty.call(current, serviceAuthId)) {
-    // eslint-disable-next-line security/detect-object-injection -- just checked with `hasOwnProperty`
+  if (Object.hasOwn(current, serviceAuthId)) {
+    // eslint-disable-next-line security/detect-object-injection -- just checked with `hasOwn`
     return current[serviceAuthId];
   }
 }
@@ -84,11 +84,11 @@ export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
     OAUTH2_STORAGE_KEY,
     {}
   );
-  if (Object.prototype.hasOwnProperty.call(current, serviceAuthId)) {
+  if (Object.hasOwn(current, serviceAuthId)) {
     console.debug(
       `deleteCachedAuthData: removed data for auth ${serviceAuthId}`
     );
-    // OK because we're guarding with hasOwnProperty
+    // OK because we're guarding with hasOwn
     // eslint-disable-next-line security/detect-object-injection
     delete current[serviceAuthId];
     await setStorage(OAUTH2_STORAGE_KEY, current);
@@ -369,7 +369,7 @@ export async function launchOAuth2Flow(
     throw new BusinessError("authorizeUrl is required for oauth2");
   }
 
-  const isImplicitFlow = typeof rawTokenUrl === "undefined";
+  const isImplicitFlow = rawTokenUrl === undefined;
 
   if (isImplicitFlow) {
     console.debug("Using implicitGrantFlow because not tokenUrl was provided");

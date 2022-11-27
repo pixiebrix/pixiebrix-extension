@@ -132,7 +132,7 @@ export function getComponentDefinition(
     case "pipeline": {
       const { pipeline } = config as PipelineDocumentConfig;
 
-      if (typeof pipeline !== "undefined" && !isPipelineExpression(pipeline)) {
+      if (pipeline !== undefined && !isPipelineExpression(pipeline)) {
         console.debug("Expected pipeline expression for pipeline", {
           componentType: "pipeline",
           config,
@@ -152,7 +152,7 @@ export function getComponentDefinition(
     case "button": {
       const { title, onClick, variant, size, className } =
         config as ButtonDocumentConfig;
-      if (typeof onClick !== "undefined" && !isPipelineExpression(onClick)) {
+      if (onClick !== undefined && !isPipelineExpression(onClick)) {
         console.debug("Expected pipeline expression for onClick", {
           componentType: "button",
           config,

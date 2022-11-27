@@ -229,7 +229,7 @@ export function deepPickBy(
 }
 
 export function removeUndefined(obj: unknown): unknown {
-  return deepPickBy(obj, (value: unknown) => typeof value !== "undefined");
+  return deepPickBy(obj, (value: unknown) => value !== undefined);
 }
 
 export function boolean(value: unknown): boolean {
@@ -463,8 +463,8 @@ export function getProperty<TResult = unknown>(
   obj: UnknownObject,
   property: string
 ): TResult {
-  if (Object.prototype.hasOwnProperty.call(obj, property)) {
-    // Checking for hasOwnProperty
+  if (Object.hasOwn(obj, property)) {
+    // Checking for hasOwn
     // eslint-disable-next-line security/detect-object-injection
     return obj[property] as TResult;
   }

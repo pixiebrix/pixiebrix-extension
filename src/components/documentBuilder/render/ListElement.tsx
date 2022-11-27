@@ -63,9 +63,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
 
     const key = `@${elementKey}`;
 
-    if (
-      Object.prototype.hasOwnProperty.call(documentContext.options.ctxt, key)
-    ) {
+    if (Object.hasOwn(documentContext.options.ctxt, key)) {
       documentContext.options.logger.warn(
         `List key ${key} shadows an existing key`
       );

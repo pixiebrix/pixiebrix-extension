@@ -138,12 +138,9 @@ export const validateNextPropertyName = (
     return "Name must not contain periods.";
   }
 
-  if (
-    schema.properties &&
-    Object.prototype.hasOwnProperty.call(schema.properties, nextPropertyName)
-  ) {
+  if (schema.properties && Object.hasOwn(schema.properties, nextPropertyName)) {
     return `Name must be unique. Another property "${
-      // eslint-disable-next-line security/detect-object-injection -- checked with hasOwnProperty
+      // eslint-disable-next-line security/detect-object-injection -- checked with hasOwn
       (schema.properties[nextPropertyName] as Schema).title
     }" already has the name "${nextPropertyName}".`;
   }
@@ -151,7 +148,7 @@ export const validateNextPropertyName = (
   if (
     // Checked Own Properties already.
     // If the property with nextPropertyName is defined nevertheless, there's something wrong with the new name.
-    typeof schema.properties?.[nextPropertyName] !== "undefined" ||
+    schema.properties?.[nextPropertyName] !== undefined ||
     // Will break the UI Schema
     KEYS_OF_UI_SCHEMA.includes(nextPropertyName)
   ) {
@@ -276,7 +273,7 @@ export const normalizeSchema = (rjsfSchemaDraft: WritableDraft<RJSFSchema>) => {
   }
 
   if (
-    typeof rjsfSchemaDraft.schema.required !== "undefined" &&
+    rjsfSchemaDraft.schema.required !== undefined &&
     !Array.isArray(rjsfSchemaDraft.schema.required)
   ) {
     rjsfSchemaDraft.schema.required = [];

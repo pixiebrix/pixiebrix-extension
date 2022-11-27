@@ -42,7 +42,6 @@ const SERVICE_ID_REGEX =
 
 /**
  * Return the registry ids of services supported by a JSON Schema field definition
- * @param schema
  */
 export function extractServiceIds(schema: Schema): RegistryId[] {
   if ("$ref" in schema) {

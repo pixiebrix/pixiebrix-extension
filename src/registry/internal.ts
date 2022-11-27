@@ -91,8 +91,8 @@ async function ensureReaders(
   }
 
   if (typeof reader === "string") {
-    if (Object.prototype.hasOwnProperty.call(definitions, reader)) {
-      // eslint-disable-next-line security/detect-object-injection -- checked hasOwnProperty
+    if (Object.hasOwn(definitions, reader)) {
+      // eslint-disable-next-line security/detect-object-injection -- checked hasOwn
       const definition = definitions[reader];
       if (definition.kind !== "reader") {
         throw new TypeError(
