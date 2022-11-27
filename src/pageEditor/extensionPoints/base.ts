@@ -352,7 +352,7 @@ export function extensionWithInnerDefinitions(
   if (isInnerExtensionPoint(extension.extensionPointId)) {
     const extensionPointId = freshIdentifier(
       DEFAULT_EXTENSION_POINT_VAR as SafeString,
-      [...Object.keys(extension.definitions ?? {})]
+      Object.keys(extension.definitions ?? {})
     );
 
     const result = cloneDeep(extension);

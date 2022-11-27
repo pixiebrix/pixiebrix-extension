@@ -244,9 +244,10 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
     setFieldValue(
       name,
       produce(valueRef.current, (draft) => {
-        const prop = freshIdentifier("property" as SafeString, [
-          ...Object.keys(draft),
-        ]);
+        const prop = freshIdentifier(
+          "property" as SafeString,
+          Object.keys(draft)
+        );
         draft[prop] = "";
       })
     );
