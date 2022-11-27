@@ -130,10 +130,10 @@ const FieldTemplate: React.FC<FieldProps> = ({
   const isInvalid = hasOwnError(error);
 
   // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
-  const nonUndefinedValue = typeof value === "undefined" ? blankValue : value;
+  const nonUndefinedValue = value === undefined ? blankValue : value;
 
   const isBuiltinControl =
-    typeof AsControl === "undefined" || typeof AsControl === "string";
+    AsControl === undefined || typeof AsControl === "string";
 
   if (isBuiltinControl && isPlainObject(nonUndefinedValue)) {
     console.warn(

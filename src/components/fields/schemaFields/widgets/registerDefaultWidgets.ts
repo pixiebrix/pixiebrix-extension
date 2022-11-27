@@ -34,13 +34,13 @@ import CssClassWidget from "@/components/fields/schemaFields/widgets/CssClassWid
 import DatabaseWidget from "./DatabaseWidget";
 
 function registerDefaultWidgets() {
-  if (typeof TextWidget === "undefined" || TextWidget == null) {
+  if (TextWidget == null) {
     throw new Error(
       "Error registering default widgets. TextWidget is undefined. Is there a circular dependency?"
     );
   }
 
-  if (typeof OmitFieldWidget === "undefined" || OmitFieldWidget == null) {
+  if (OmitFieldWidget == null) {
     throw new Error(
       "Error registering default widgets. OmitFieldWidget is undefined. Is there a circular dependency?"
     );

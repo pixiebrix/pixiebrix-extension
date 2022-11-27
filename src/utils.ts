@@ -229,7 +229,7 @@ export function deepPickBy(
 }
 
 export function removeUndefined(obj: unknown): unknown {
-  return deepPickBy(obj, (value: unknown) => typeof value !== "undefined");
+  return deepPickBy(obj, (value: unknown) => value !== undefined);
 }
 
 export function boolean(value: unknown): boolean {

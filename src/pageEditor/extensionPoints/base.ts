@@ -387,7 +387,7 @@ export function removeEmptyValues<T extends object>(obj: T): T {
   return deepPickBy(
     obj,
     (value: unknown, parent: unknown) =>
-      isExpression(parent) || (typeof value !== "undefined" && value !== "")
+      isExpression(parent) || (value !== undefined && value !== "")
   ) as T;
 }
 

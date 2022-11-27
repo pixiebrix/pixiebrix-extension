@@ -140,7 +140,7 @@ const FieldEditor: React.FC<{
 
     const propertyFormat = propertySchema.format;
     const extra: UiTypeExtra =
-      uiWidget === "select" && typeof propertySchema.oneOf !== "undefined"
+      uiWidget === "select" && propertySchema.oneOf !== undefined
         ? "selectWithLabels"
         : undefined;
 

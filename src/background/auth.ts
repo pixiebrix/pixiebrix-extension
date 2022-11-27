@@ -369,7 +369,7 @@ export async function launchOAuth2Flow(
     throw new BusinessError("authorizeUrl is required for oauth2");
   }
 
-  const isImplicitFlow = typeof rawTokenUrl === "undefined";
+  const isImplicitFlow = rawTokenUrl === undefined;
 
   if (isImplicitFlow) {
     console.debug("Using implicitGrantFlow because not tokenUrl was provided");

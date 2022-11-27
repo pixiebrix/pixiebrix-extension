@@ -148,7 +148,7 @@ export const validateNextPropertyName = (
   if (
     // Checked Own Properties already.
     // If the property with nextPropertyName is defined nevertheless, there's something wrong with the new name.
-    typeof schema.properties?.[nextPropertyName] !== "undefined" ||
+    schema.properties?.[nextPropertyName] !== undefined ||
     // Will break the UI Schema
     KEYS_OF_UI_SCHEMA.includes(nextPropertyName)
   ) {
@@ -273,7 +273,7 @@ export const normalizeSchema = (rjsfSchemaDraft: WritableDraft<RJSFSchema>) => {
   }
 
   if (
-    typeof rjsfSchemaDraft.schema.required !== "undefined" &&
+    rjsfSchemaDraft.schema.required !== undefined &&
     !Array.isArray(rjsfSchemaDraft.schema.required)
   ) {
     rjsfSchemaDraft.schema.required = [];
