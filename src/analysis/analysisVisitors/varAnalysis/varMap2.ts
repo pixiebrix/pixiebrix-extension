@@ -58,11 +58,9 @@ class VarMap {
           [source, ...toPath(parentPath), key, SELF_EXISTENCE],
           VarExistence.DEFINITELY,
           (x) =>
-            typeof x === "undefined"
-              ? {
-                  [SELF_EXISTENCE]: VarExistence.DEFINITELY,
-                }
-              : x
+            x ?? {
+              [SELF_EXISTENCE]: VarExistence.DEFINITELY,
+            }
         );
       }
     }
@@ -131,7 +129,7 @@ class VarMap {
 
         const part = pathPartsCopy.shift();
         bag = bag[part];
-        if (typeof bag === "undefined") {
+        if (bag == null) {
           break;
         }
       }
