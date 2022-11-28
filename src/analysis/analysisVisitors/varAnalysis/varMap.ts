@@ -76,7 +76,7 @@ class VarMap {
     // Not overwriting DEFINITELY existing var
     if (exactExistence !== VarExistence.DEFINITELY) {
       setWith(this.map, selfExistencePathParts, existence, (x) =>
-        typeof x === "undefined"
+        x == null
           ? {
               [SELF_EXISTENCE]: existence,
             }
@@ -108,7 +108,7 @@ class VarMap {
 
       const part = pathParts.shift();
       bag = bag[part];
-      if (typeof bag === "undefined") {
+      if (bag == null) {
         return undefined;
       }
     }
