@@ -43,6 +43,7 @@ export const searchWindow = getMethod("SEARCH_WINDOW");
 export const detectFrameworks = getMethod("DETECT_FRAMEWORKS");
 
 export const runBlock = getMethod("RUN_SINGLE_BLOCK");
+export const runRendererBlock = getMethod("RUN_RENDERER_BLOCK");
 export const runReaderBlock = getMethod("RUN_READER_BLOCK");
 export const runReader = getMethod("RUN_READER");
 export const readSelected = getMethod("READ_SELECTED");
@@ -71,6 +72,7 @@ export const setPageState = getMethod("SET_PAGE_STATE");
 
 export const notify = {
   info: getNotifier("NOTIFY_INFO"),
+  // TODO: Automatically report from api.ts because of https://github.com/pixiebrix/pixiebrix-extension/blob/dce0d5cbb54d5fc1a61d720e43d17383a152df2e/src/background/contextMenus.ts#L92-L95
   error: getNotifier("NOTIFY_ERROR"),
   success: getNotifier("NOTIFY_SUCCESS"),
 };

@@ -72,8 +72,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
 
   const normalizedSchema = useMemo(() => {
     const isObjectType =
-      schema.type === "object" ||
-      !Object.prototype.hasOwnProperty.call(schema, "type");
+      schema.type === "object" || !Object.hasOwn(schema, "type");
 
     if (
       isObjectType &&

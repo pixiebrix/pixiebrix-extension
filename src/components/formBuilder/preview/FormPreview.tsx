@@ -102,7 +102,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
             !(UI_WIDGET in value) ||
             value[UI_WIDGET] !== "select" ||
             typeof propertySchema !== "object" ||
-            typeof propertySchema.oneOf === "undefined"
+            propertySchema.oneOf === undefined
           ) {
             continue;
           }

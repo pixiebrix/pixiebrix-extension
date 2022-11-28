@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { LogEntry } from "@/background/logging";
+import { type LogEntry } from "@/telemetry/logging";
 import { Col, Row } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
 

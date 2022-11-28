@@ -21,36 +21,66 @@ import {
   DocumentElement,
   ListDocumentElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent } from "@testing-library/react";
 import DocumentPreview from "@/components/documentBuilder/preview/DocumentPreview";
-import { Formik } from "formik";
 import userEvent from "@testing-library/user-event";
+import { render } from "@/pageEditor/testHelpers";
+import { formStateFactory, uuidSequence } from "@/testUtils/factories";
+import { DocumentRenderer } from "@/blocks/renderers/document";
+import { actions } from "@/pageEditor/slices/editorSlice";
+import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import {
+  makePipelineExpression,
+  makeTemplateExpression,
+} from "@/runtime/expressionCreators";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import blockRegistry from "@/blocks/registry";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { PipelineExpression } from "@/runtime/mapArgs";
 
 function renderDocumentPreview(documentElement: DocumentElement) {
-  const document = {
-    body: [documentElement],
-  };
+  const formState = formStateFactory(undefined, [
+    {
+      id: DocumentRenderer.BLOCK_ID,
+      config: {
+        body: [documentElement],
+      },
+    },
+  ]);
 
   const PreviewContainer = () => {
     const [activeElement, setActiveElement] = useState<string | null>(null);
     return (
-      <Formik
-        initialValues={{
-          document,
-        }}
-        onSubmit={jest.fn()}
-      >
-        <DocumentPreview
-          documentBodyName="document.body"
-          activeElement={activeElement}
-          setActiveElement={setActiveElement}
-        />
-      </Formik>
+      <DocumentPreview
+        documentBodyName="extension.blockPipeline[0].config.body"
+        activeElement={activeElement}
+        setActiveElement={setActiveElement}
+      />
     );
   };
 
-  return render(<PreviewContainer />);
+  return render(<PreviewContainer />, {
+    initialValues: formState,
+    setupRedux(dispatch) {
+      dispatch(actions.addElement(formState));
+      dispatch(actions.selectElement(formState.uuid));
+      dispatch(
+        actions.setElementActiveNodeId(
+          formState.extension.blockPipeline[0].instanceId
+        )
+      );
+    },
+  });
 }
+
+const documentBlock = new DocumentRenderer();
+const temporaryDisplayBlock = new DisplayTemporaryInfo();
+
+beforeAll(async () => {
+  registerDefaultWidgets();
+  blockRegistry.clear();
+  blockRegistry.register(documentBlock, temporaryDisplayBlock);
+});
 
 describe("Add new element", () => {
   test("Dropdown 'Add new element' stays open on hovering different elements", async () => {
@@ -96,5 +126,73 @@ describe("Add new element", () => {
 
     expect(header).toBeInTheDocument();
     expect(header).toHaveTextContent("Header");
+  });
+});
+
+describe("Show live preview", () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.runAllTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
+  function renderPreviewInTemporaryDisplayPipeline() {
+    const documentElement = createNewElement("container");
+    const formState = formStateFactory(undefined, [
+      {
+        id: DisplayTemporaryInfo.BLOCK_ID,
+        instanceId: uuidSequence(1),
+        config: {
+          title: makeTemplateExpression("nunjucks", "Test Tab"),
+          body: makePipelineExpression([
+            {
+              id: DocumentRenderer.BLOCK_ID,
+              instanceId: uuidSequence(2),
+              config: {
+                body: [documentElement],
+              },
+            },
+          ]),
+        },
+      },
+    ]);
+
+    const PreviewContainer = () => {
+      const [activeElement, setActiveElement] = useState<string | null>(null);
+      return (
+        <DocumentPreview
+          documentBodyName="extension.blockPipeline[0].config.body.__value__[0].config.body"
+          activeElement={activeElement}
+          setActiveElement={setActiveElement}
+        />
+      );
+    };
+
+    const pipelineField = formState.extension.blockPipeline[0].config
+      .body as PipelineExpression;
+
+    return render(<PreviewContainer />, {
+      initialValues: formState,
+      setupRedux(dispatch) {
+        dispatch(actions.addElement(formState));
+        dispatch(actions.selectElement(formState.uuid));
+        dispatch(
+          actions.setElementActiveNodeId(pipelineField.__value__[0].instanceId)
+        );
+      },
+    });
+  }
+
+  test("it renders the button", async () => {
+    const rendered = renderPreviewInTemporaryDisplayPipeline();
+    await waitForEffect();
+    jest.runOnlyPendingTimers();
+    expect(rendered.getByText("Show Live Preview")).toBeInTheDocument();
   });
 });

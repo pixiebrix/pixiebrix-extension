@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LogEntry } from "@/background/logging";
+import { type LogEntry } from "@/telemetry/logging";
 import { MessageContext } from "@/core";
 
 export type LogState = {

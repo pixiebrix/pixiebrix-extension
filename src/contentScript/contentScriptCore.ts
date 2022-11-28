@@ -20,14 +20,12 @@ import "./contentScript.scss";
 import "@/extensionContext";
 
 // Normal imports
-// eslint-disable-next-line import/no-restricted-paths -- Legacy code, needs https://github.com/pixiebrix/webext-messenger/issues/6
 import registerExternalMessenger from "@/background/messenger/external/registration";
 import registerMessenger from "@/contentScript/messenger/registration";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { handleNavigate } from "@/contentScript/lifecycle";
-import { updateTabInfo } from "@/contentScript/context";
-import { whoAmI, initTelemetry } from "@/background/messenger/api";
+import { initTelemetry } from "@/background/messenger/api";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 // eslint-disable-next-line import/no-restricted-paths -- Custom devTools mechanism to transfer data
 import { addListenerForUpdateSelectedElement } from "@/pageEditor/getSelectedElement";
@@ -64,10 +62,6 @@ export async function init(uuid: UUID): Promise<void> {
   addListenerForUpdateSelectedElement();
   initTelemetry();
   initToaster();
-
-  const sender = await whoAmI();
-
-  updateTabInfo({ tabId: sender.tab.id, frameId: sender.frameId });
 
   await handleNavigate();
 

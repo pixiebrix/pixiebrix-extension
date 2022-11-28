@@ -382,7 +382,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
   /**
    * Shared event handler for DOM event triggers
-   * @param event
    */
   private readonly eventHandler: JQuery.EventHandler<unknown> = async (
     event
@@ -499,7 +498,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
   /**
    * Show notification for errors to the user. Caller is responsible for sending error telemetry.
-   * @param errors
    */
   static notifyErrors(errors: unknown[]): void {
     if (errors.length === 0) {

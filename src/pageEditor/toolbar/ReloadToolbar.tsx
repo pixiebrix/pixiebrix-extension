@@ -36,7 +36,6 @@ function isPanelElement(element: FormState | null): boolean {
 
 /**
  * Return true if the trigger runs automatically (not in response to a user action).
- * @param element
  */
 function isAutomaticTrigger(element: FormState): boolean {
   const automatic = ["load", "appear", "initialize", "interval"];

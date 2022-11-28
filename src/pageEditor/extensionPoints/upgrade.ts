@@ -72,7 +72,6 @@ export function stringToExpression(
 
 /**
  * Return true if literalOrTemplate contains a variable or template expression
- * @param literalOrTemplate
  */
 export function isTemplateString(literalOrTemplate: string): boolean {
   if (VARIABLE_REGEX.test(literalOrTemplate)) {

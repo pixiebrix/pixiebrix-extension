@@ -23,9 +23,6 @@ export const sessionTimestamp = new Date();
 export let navigationId = uuidv4();
 export let navigationTimestamp = new Date();
 
-export let tabId: number;
-export let frameId: number;
-
 /**
  * Set a unique id and timestamp for current navigation event.
  */
@@ -39,11 +36,4 @@ export function updateNavigationId(): void {
  */
 export function getNavigationId(): string {
   return navigationId;
-}
-
-export function updateTabInfo(info: { tabId: number; frameId: number }): void {
-  tabId = info.tabId;
-  frameId = info.frameId;
-
-  console.debug("updateTabInfo", { tabId, frameId });
 }

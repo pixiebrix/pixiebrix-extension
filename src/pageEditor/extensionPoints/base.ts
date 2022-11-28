@@ -352,7 +352,7 @@ export function extensionWithInnerDefinitions(
   if (isInnerExtensionPoint(extension.extensionPointId)) {
     const extensionPointId = freshIdentifier(
       DEFAULT_EXTENSION_POINT_VAR as SafeString,
-      [...Object.keys(extension.definitions ?? {})]
+      Object.keys(extension.definitions ?? {})
     );
 
     const result = cloneDeep(extension);
@@ -387,7 +387,7 @@ export function removeEmptyValues<T extends object>(obj: T): T {
   return deepPickBy(
     obj,
     (value: unknown, parent: unknown) =>
-      isExpression(parent) || (typeof value !== "undefined" && value !== "")
+      isExpression(parent) || (value !== undefined && value !== "")
   ) as T;
 }
 
@@ -427,7 +427,6 @@ export function readerTypeHack(reader: ReaderConfig): SingleLayerReaderConfig {
  * Normalize the pipeline prop name and assign instance ids for tracing.
  * @param config the extension configuration
  * @param pipelineProp the name of the pipeline prop, currently either "action" or "body"
- * @param defaults
  */
 export async function extensionWithNormalizedPipeline<
   T extends UnknownObject,

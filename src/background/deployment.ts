@@ -371,7 +371,7 @@ export async function updateDeployments(): Promise<void> {
   const { data: deployments, status: deploymentResponseStatus } =
     await client.post<Deployment[]>("/api/deployments/", {
       uid: await getUID(),
-      version: await getExtensionVersion(),
+      version: getExtensionVersion(),
       active: selectInstalledDeployments(extensions),
       campaignIds: await readStorage(
         MANAGED_CAMPAIGN_IDS_KEY,

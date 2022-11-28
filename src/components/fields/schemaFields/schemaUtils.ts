@@ -42,7 +42,6 @@ export function arraySchema(itemSchema: Schema): Schema {
 
 /**
  * Return as an object schema
- * @param schemaOrProperties
  */
 export function castSchema(
   schemaOrProperties: Schema | SchemaProperties

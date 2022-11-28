@@ -51,7 +51,7 @@ import {
 import { Except } from "type-fest";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 import { useDispatch, useSelector } from "react-redux";
-import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
 import {
   selectActiveElement,
   selectActiveNodeId,
@@ -153,7 +153,7 @@ const usePipelineNodes = (): {
   const dispatch = useDispatch();
   const activeElement = useSelector(selectActiveElement);
   const activeNodeId = useSelector(selectActiveNodeId);
-  const traces = useSelector(selectExtensionTrace);
+  const traces = useSelector(selectActiveElementTraces);
   const maybePipelineMap = useSelector(selectPipelineMap);
   const annotations = useSelector(
     selectExtensionAnnotations(activeElement.uuid)

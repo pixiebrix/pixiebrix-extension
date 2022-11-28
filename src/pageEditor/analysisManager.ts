@@ -31,7 +31,7 @@ import runtimeSlice from "./slices/runtimeSlice";
 import { isAnyOf } from "@reduxjs/toolkit";
 import RequestPermissionAnalysis from "@/analysis/analysisVisitors/requestPermissionAnalysis";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
-import { selectExtensionTrace } from "./slices/runtimeSelectors";
+import { selectActiveElementTraces } from "./slices/runtimeSelectors";
 import VarAnalysis from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import analysisSlice from "@/analysis/analysisSlice";
 import { selectSettings } from "@/store/settingsSelectors";
@@ -55,7 +55,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   ) => {
     // TraceAnalysis filter the trace errors, thus
     // selecting all records here to avoid double filtering
-    const records = selectExtensionTrace(state);
+    const records = selectActiveElementTraces(state);
 
     return new TraceAnalysis(records);
   },
@@ -125,7 +125,7 @@ const varAnalysisFactory = (
     return null;
   }
 
-  const records = selectExtensionTrace(state);
+  const records = selectActiveElementTraces(state);
 
   return new VarAnalysis(records);
 };

@@ -52,7 +52,7 @@ export async function validateSchema(
     };
   }
 
-  if (!Object.prototype.hasOwnProperty.call(KIND_SCHEMAS, json.kind)) {
+  if (!Object.hasOwn(KIND_SCHEMAS, json.kind)) {
     return {
       config: [
         `Expected a value for "kind": ${Object.keys(KIND_SCHEMAS).join(", ")}`,

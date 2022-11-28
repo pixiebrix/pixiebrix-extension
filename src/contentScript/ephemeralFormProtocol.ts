@@ -55,7 +55,6 @@ export async function registerForm(
 
 /**
  * Helper method to unregister the deferred promise for the form.
- * @param formNonce
  */
 function unregisterForm(formNonce: UUID) {
   expectContext("contentScript");

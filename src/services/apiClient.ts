@@ -105,7 +105,6 @@ export async function getApiClient(): Promise<AxiosInstance> {
 
 /**
  * Upsert a singleton extension to the user's account.
- * @param extension
  * @deprecated use RTK Query mutation
  */
 export async function saveUserExtension(extension: IExtension): Promise<void> {
