@@ -22,6 +22,10 @@ import {
   blockFactory,
   formStateFactory,
   triggerFormStateFactory,
+  quickbarFormStateFactory,
+  menuItemFormStateFactory,
+  contextMenuFormStateFactory,
+  sidebarPanelFormStateFactory,
 } from "@/testUtils/factories";
 import blockRegistry from "@/blocks/registry";
 import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
@@ -90,22 +94,54 @@ test("renders", async () => {
   expect(rendered.asFragment()).toMatchSnapshot();
 });
 
-test("shows root mode for trigger", async () => {
-  const block = echoBlock;
-  blockRegistry.register(block);
-  const initialState = triggerFormStateFactory({ apiVersion: "v3" }, [
-    blockConfigFactory({ id: block.id }),
-  ]);
-  renderBlockConfiguration(
-    <BlockConfiguration name="extension.blockPipeline[0]" blockId={block.id} />,
-    initialState
-  );
+describe("shows root mode", () => {
+  test.each([
+    ["trigger", triggerFormStateFactory],
+    ["quickBar", quickbarFormStateFactory],
+    ["contextMenu", contextMenuFormStateFactory],
+    // `menuItem` must show root mode because root mode is used if the location matches multiple elements on the page
+    ["menuItem", menuItemFormStateFactory],
+  ])("shows root mode for %s", async (type, factory) => {
+    const block = echoBlock;
+    blockRegistry.register(block);
+    const initialState = factory({ apiVersion: "v3" }, [
+      blockConfigFactory({ id: block.id }),
+    ]);
+    renderBlockConfiguration(
+      <BlockConfiguration
+        name="extension.blockPipeline[0]"
+        blockId={block.id}
+      />,
+      initialState
+    );
 
-  await waitForEffect();
+    await waitForEffect();
 
-  const rootModeSelect = screen.getByLabelText("Root Mode");
+    const rootModeSelect = screen.getByLabelText("Root Mode");
 
-  expect(rootModeSelect).not.toBeNull();
+    expect(rootModeSelect).not.toBeNull();
+  });
+
+  test("don't show root mode for sidebar panel", async () => {
+    const block = echoBlock;
+    blockRegistry.register(block);
+    const initialState = sidebarPanelFormStateFactory({ apiVersion: "v3" }, [
+      blockConfigFactory({ id: block.id }),
+    ]);
+    renderBlockConfiguration(
+      <BlockConfiguration
+        name="extension.blockPipeline[0]"
+        blockId={block.id}
+      />,
+      initialState
+    );
+
+    await waitForEffect();
+
+    const rootModeSelect = screen.queryByLabelText("Root Mode");
+
+    expect(rootModeSelect).toBeNull();
+  });
 });
 
 test.each`
