@@ -108,29 +108,32 @@ class VarMap {
   public isVariableDefined(path: string): boolean {
     const pathParts = toPath(path);
 
-    for (const sourceMap of Object.values(this.map)) {
-      const exactExistence = (get(sourceMap, pathParts) as ExistenceMap)?.[
-        SELF_EXISTENCE
-      ];
-      if (typeof exactExistence === "string") {
+    for (const sourceMap of Object.values(this.map).filter(
+      // Only check the sources (bricks) that provide the output key (the first part of the path)
+      (x) => x[pathParts[0]] != null
+    )) {
+      if (
+        (get(sourceMap, pathParts) as ExistenceMap)?.[SELF_EXISTENCE] != null
+      ) {
         return true;
       }
 
+      // If path consists of only one key (output key), the existence has been checked above
       if (pathParts.length === 1) {
         continue;
       }
 
+      // Check if any child is allowed up in the hierarchy
       let bag = sourceMap;
-      const pathPartsCopy = [...pathParts];
-      while (pathPartsCopy.length > 0) {
-        if (bag[ALLOW_ANY_CHILD]) {
-          return true;
-        }
-
-        const part = pathPartsCopy.shift();
+      while (pathParts.length > 0) {
+        const part = pathParts.shift();
         bag = bag[part];
         if (bag == null) {
           break;
+        }
+
+        if (bag[ALLOW_ANY_CHILD]) {
+          return true;
         }
       }
     }
