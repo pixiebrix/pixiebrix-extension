@@ -18,7 +18,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AnalysisState, Annotation } from "@/analysis/analysisTypes";
 import { UUID } from "@/core";
-import VarMap from "./analysisVisitors/varAnalysis/varMap2";
+import VarMap from "./analysisVisitors/varAnalysis/varMap";
 
 const initialState: AnalysisState = {
   extensionAnnotations: {},

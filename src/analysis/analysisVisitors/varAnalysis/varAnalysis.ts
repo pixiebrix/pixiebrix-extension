@@ -25,7 +25,7 @@ import { isNunjucksExpression, isVarExpression } from "@/runtime/mapArgs";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { isEmpty } from "lodash";
 import { Analysis, Annotation, AnnotationType } from "@/analysis/analysisTypes";
-import VarMap, { VarExistence } from "./varMap2";
+import VarMap, { VarExistence } from "./varMap";
 import { TraceRecord } from "@/telemetry/trace";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import parseTemplateVariables from "./parseTemplateVariables";
