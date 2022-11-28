@@ -75,12 +75,14 @@ class VarMap {
 
     // Not overwriting DEFINITELY existing var
     if (exactExistence !== VarExistence.DEFINITELY) {
-      setWith(this.map, selfExistencePathParts, existence, (x) =>
-        x == null
-          ? {
-              [SELF_EXISTENCE]: existence,
-            }
-          : x
+      setWith(
+        this.map,
+        selfExistencePathParts,
+        existence,
+        (x) =>
+          x ?? {
+            [SELF_EXISTENCE]: existence,
+          }
       );
     }
 
