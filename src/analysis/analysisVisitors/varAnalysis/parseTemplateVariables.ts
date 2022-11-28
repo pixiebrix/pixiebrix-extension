@@ -204,12 +204,12 @@ function parseIf(node: any, inLoop = false) {
   const { body, cond, else_ } = node;
 
   return else_
-    ? [...traverse(body, inLoop), ...traverse(cond, inLoop)]
-    : [
+    ? [
         ...traverse(body, inLoop),
         ...traverse(cond, inLoop),
         ...traverse(else_, inLoop),
-      ];
+      ]
+    : [...traverse(body, inLoop), ...traverse(cond, inLoop)];
 }
 
 function parseLookUp(node: any, inLoop = false): Variable[] {
