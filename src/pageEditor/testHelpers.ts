@@ -30,6 +30,7 @@ import analysisSlice from "@/analysis/analysisSlice";
 import pageEditorAnalysisManager from "./analysisManager";
 import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
 import { recipesSlice } from "@/recipes/recipesSlice";
+import { appApi } from "@/services/api";
 
 const renderWithWrappers = createRenderWithWrappers(() =>
   configureStore({
@@ -46,15 +47,13 @@ const renderWithWrappers = createRenderWithWrappers(() =>
       analysis: analysisSlice.reducer,
       tabState: tabStateSlice.reducer,
       recipes: recipesSlice.reducer,
-      // This api reducer may be needed at some point, but it's not mocked properly yet, so
-      //  we're not including it for now, until it becomes an issue.
-      // [appApi.reducerPath]: appApi.reducer,
+      [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
       /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
-      return getDefaultMiddleware().concat(
-        pageEditorAnalysisManager.middleware
-      );
+      return getDefaultMiddleware()
+        .concat(appApi.middleware)
+        .concat(pageEditorAnalysisManager.middleware);
       /* eslint-enable unicorn/prefer-spread */
     },
   })

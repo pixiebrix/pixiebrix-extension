@@ -18,6 +18,7 @@
 import "@testing-library/jest-dom";
 import $ from "jquery";
 import crypto from "crypto";
+import "fake-indexeddb/auto";
 
 global.$ = $;
 global.jQuery = $;

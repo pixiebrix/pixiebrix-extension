@@ -40,7 +40,13 @@ import { Except } from "type-fest";
 import { AxiosResponse } from "axios";
 import { IconName, IconPrefix } from "@fortawesome/free-solid-svg-icons";
 
-export type Kind = "block" | "foundation" | "service" | "blueprint" | "reader";
+export type Kind =
+  | "block"
+  | "foundation"
+  | "service"
+  | "blueprint"
+  | "reader"
+  | "recipe";
 
 type MeGroup = components["schemas"]["Me"]["group_memberships"][number] & {
   id: UUID;
