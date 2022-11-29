@@ -29,8 +29,9 @@ import { createRenderWithWrappers } from "@/testUtils/testHelpers";
 import analysisSlice from "@/analysis/analysisSlice";
 import pageEditorAnalysisManager from "./analysisManager";
 import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
-import { recipesSlice } from "@/recipes/recipesSlice";
 import { appApi } from "@/services/api";
+import { recipesSlice } from "@/recipes/recipesSlice";
+import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 
 const renderWithWrappers = createRenderWithWrappers(() =>
   configureStore({
@@ -53,7 +54,8 @@ const renderWithWrappers = createRenderWithWrappers(() =>
       /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
       return getDefaultMiddleware()
         .concat(appApi.middleware)
-        .concat(pageEditorAnalysisManager.middleware);
+        .concat(pageEditorAnalysisManager.middleware)
+        .concat(recipesMiddleware);
       /* eslint-enable unicorn/prefer-spread */
     },
   })

@@ -19,16 +19,11 @@ import React, { useEffect } from "react";
 import { useAllRecipes } from "./recipesHooks";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 import { act, render } from "@/pageEditor/testHelpers";
-import { waitForEffect } from "@/testUtils/testHelpers";
 import { validateSchema } from "@/options/pages/brickEditor/validate";
-import { fetch } from "@/hooks/fetch";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { registry as messengerRegistry } from "@/background/messenger/api";
 import * as localRegistry from "@/registry/localRegistry";
-import { sleep } from "@/utils";
-import { UnsavedRecipeDefinition } from "@/types/definitions";
-import { RegistryPackage } from "@/types/contract";
 
 jest.mock("@/services/apiClient", () => ({
   getApiClient: jest.fn(),
@@ -46,7 +41,7 @@ jest.mock("@/components/ConfirmationModal", () => {
   return {
     ...originalModule,
     useModals: () => ({
-      showConfirmation: () => Promise.resolve(true),
+      showConfirmation: async () => Promise.resolve(true),
     }),
   };
 });
@@ -106,16 +101,16 @@ test("gets recipe and saves it with valid schema", async () => {
   };
 
   // This client is used by registry to fetch recipes: /api/recipes/
-  (getApiClient as jest.Mock).mockReturnValue({
+  (getApiClient as jest.Mock).mockResolvedValue({
     get: jest.fn().mockResolvedValue({ data: [sourceRecipe] }),
   });
 
   const packageId = uuidv4();
   const recipeId = validateRegistryId(sourceRecipe.metadata.id);
-  let resultRecipeSchema: any;
+  let resultRecipeSchema: any; // Holds the data that will be sent to the API
 
   // This linked client is used by the RTK Query hooks
-  (getLinkedApiClient as jest.Mock).mockReturnValue(
+  (getLinkedApiClient as jest.Mock).mockResolvedValue(
     async ({ url, method, data }: any) => {
       if (method === "get" && url === "/api/bricks/") {
         return {
@@ -144,9 +139,9 @@ test("gets recipe and saves it with valid schema", async () => {
     localRegistry.getKind
   );
 
-  let resolveSavingPromise: () => void;
-  const savingPromise = new Promise<void>((resolve) => {
-    resolveSavingPromise = resolve;
+  let resolveFetchingSavingPromise: () => void;
+  const fetchingSavingPromise = new Promise<void>((resolve) => {
+    resolveFetchingSavingPromise = resolve;
   });
 
   const TestComponent: React.FunctionComponent = () => {
@@ -166,27 +161,30 @@ test("gets recipe and saves it with valid schema", async () => {
 
     const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
 
+    // Track if saveRecipe has been called
     const calledSave = React.useRef(false);
-
-    console.log("TestComponent", {
-      allRecipes,
-      isFetchingRecipesFromCache,
-      isFetchingAllRecipes,
-      isSavingRecipe,
-    });
+    // Track if re-fetching of the recipes by the registry has been called
+    const calledRefetch = React.useRef(false);
 
     if (!isFetching && allRecipes.length > 0 && !calledSave.current) {
       // The saveRecipe action involves
       // - preparing a recipe for saving
-      // - calling RTKQ mutation
+      // - calling RTK Query mutation
       // - saving the recipe to the server
-      // eslint-disable-next-line promise/prefer-await-to-then -- need to resolve the promise to no when we're ready to assert
-      void saveRecipe(recipeId).then(() => {
-        resolveSavingPromise();
-      });
+      void saveRecipe(recipeId);
 
       calledSave.current = true;
     }
+
+    useEffect(() => {
+      if (calledSave.current && calledRefetch.current && !isFetching) {
+        resolveFetchingSavingPromise();
+      }
+
+      if (isFetching && calledSave.current) {
+        calledRefetch.current = true;
+      }
+    }, [isFetching]);
 
     return (
       <div>
@@ -201,15 +199,19 @@ test("gets recipe and saves it with valid schema", async () => {
   render(<TestComponent />);
 
   // Let the registry and the RTK Query to load and update a recipe
-  await act(async () => savingPromise);
+  await act(async () => fetchingSavingPromise);
 
-  expect(getApiClient().get).toBeCalledTimes(1);
+  // 2 calls:
+  // - one to load the recipes from the server
+  // - one to re-load the recipes after update
+  const apiClientMock = await getApiClient();
+  expect(apiClientMock.get as jest.Mock).toHaveBeenCalledTimes(2);
 
   // 3 calls:
   // - one for editable packages,
   // - one for updating the recipe,
   // - and one to refetch the editable packages (because the cache is stale after update)
-  expect(getLinkedApiClient).toBeCalledTimes(3);
+  expect(getLinkedApiClient as jest.Mock).toHaveBeenCalledTimes(3);
 
   // Validate the recipe config sent to server
   const validationResult = await validateSchema(resultRecipeSchema.config);
