@@ -1,13 +1,11 @@
-const strictContexts = [
+const restrictedZones = [
   "background",
   "contentScript",
   "pageEditor",
   "options",
   "sidebar",
   // "pageScript", // TODO: After Messenger migration
-];
-
-const restrictedZones = strictContexts.map((exporter) => ({
+].map((exporter) => ({
   target: `./src/!(${exporter})/**/*`,
   from: `./src/${exporter}`,
   message: `Cross-context imports break expectations. Shared components should be in shared folders. Solution 1: keep both importer and imported modules in the same context (shared or @/${exporter}). Solution 2: Use the Messenger if they are in the correct context.`,
