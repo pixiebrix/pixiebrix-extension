@@ -76,11 +76,14 @@ import {
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import { getPageState, setPageState } from "@/contentScript/pageState";
 import { stopWaitingForTemporaryPanels } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { getReadyState } from "@/contentScript/ready";
 
 expectContext("contentScript");
 
 declare global {
   interface MessengerMethods {
+    GET_READY_STATE: typeof getReadyState;
+
     FORM_GET_DEFINITION: typeof getFormDefinition;
     FORM_RESOLVE: typeof resolveForm;
     FORM_CANCEL: typeof cancelForm;
@@ -141,6 +144,8 @@ declare global {
 
 export default function registerMessenger(): void {
   registerMethods({
+    GET_READY_STATE: getTargetState,
+
     FORM_GET_DEFINITION: getFormDefinition,
     FORM_RESOLVE: resolveForm,
     FORM_CANCEL: cancelForm,
