@@ -15,127 +15,140 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { cloneDeep, get, set, toPath } from "lodash";
+import { cloneDeep, get, setWith, toPath } from "lodash";
 
 export enum VarExistence {
   MAYBE = "MAYBE",
   DEFINITELY = "DEFINITELY",
 }
 
+const SELF_EXISTENCE = Symbol("SELF_EXISTENCE");
+const ALLOW_ANY_CHILD = Symbol("ALLOW_ANY_CHILD");
 type ExistenceMap = {
-  "*"?: VarExistence;
-  [name: string]: ExistenceMap | VarExistence;
+  [SELF_EXISTENCE]?: VarExistence;
+  [ALLOW_ANY_CHILD]?: boolean;
+
+  [name: string]: ExistenceMap;
 };
 
 class VarMap {
-  private map: ExistenceMap = {};
+  private map: Record<string, ExistenceMap> = {};
 
   /**
-   * Sets the existence of variables in the VarMap based on an object with assigned variables.
-   * For every property of the Obj a variable existence will be set to DEFINITELY.
-   * Ex. { @foo: "bar" } -> { @foo: "DEFINITELY" }
-   * @param obj A context object with assigned variables
-   * @param parentPath Path to the object in the VarMap
+   * Converts an object containing variables to a var existence map. Each node gets a DEFINITELY existence. Ex. converting trace output to an existence map
+   * @param source The source of the values context (ex.: brick, trace, page reader)
+   * @param values The object containing the context values
+   * @param parentPath Parent path for the values. For instance, a page reader context gets a parent path of "@input"
    */
-  setExistenceFromObj(obj: Record<string, unknown>, parentPath = ""): void {
-    if (parentPath !== "" && !parentPath.endsWith(".")) {
-      parentPath += ".";
-    }
-
-    for (const [key, value] of Object.entries(obj)) {
+  public setExistenceFromValues(
+    source: string,
+    values: Record<string, unknown>,
+    parentPath = ""
+  ): void {
+    for (const [key, value] of Object.entries(values)) {
       if (typeof value === "object") {
-        this.setExistenceFromObj(
+        this.setExistenceFromValues(
+          source,
           value as Record<string, unknown>,
-          `${parentPath}${key}.`
+          parentPath === "" ? key : `${parentPath}.${key}`
         );
       } else {
-        this.setExistence(`${parentPath}${key}`, VarExistence.DEFINITELY);
+        setWith(
+          this.map,
+          [source, ...toPath(parentPath), key, SELF_EXISTENCE],
+          VarExistence.DEFINITELY,
+          (x) =>
+            x ?? {
+              [SELF_EXISTENCE]: VarExistence.DEFINITELY,
+            }
+        );
       }
     }
   }
 
-  setExistence(path: string, existence: VarExistence): void {
-    const current = get(this.map, path);
-    // Not overriding objects and DEFINITELY existing vars
-    if (typeof current === "object" || current === VarExistence.DEFINITELY) {
-      return;
-    }
-
-    set(this.map, path, existence);
+  /**
+   * Adds an existence for a block with output key
+   * As of now we only set existence for the root object, since output schema is not supported by the VarAnalysis
+   * @param source The source of the values context (ex.: brick, trace, page reader)
+   * @param outputKey The output key of the block
+   * @param existence Existence of the output key (MAYBE for a conditional block)
+   * @param allowAnyChild True if the output key can have any child, i.e. the output schema is unknown
+   */
+  public setOutputKeyExistence(
+    source: string,
+    outputKey: string,
+    existence: VarExistence,
+    allowAnyChild: boolean
+  ): void {
+    // While any block can provide no more than one output key,
+    // we are safe to create a new object for the 'source'
+    this.map[source] = {
+      [outputKey]: {
+        [SELF_EXISTENCE]: existence,
+        [ALLOW_ANY_CHILD]: allowAnyChild,
+      },
+    };
   }
 
-  getExistence(path: string): VarExistence | undefined {
-    const exactExistence = get(this.map, path);
-    if (exactExistence !== undefined) {
-      return typeof exactExistence === "string"
-        ? exactExistence
-        : VarExistence.DEFINITELY;
+  /**
+   * Merges in another VarMap. Overwrites any existing source records
+   * @param varMap A VarMap to merge in
+   */
+  public addSourceMap(varMap: VarMap): void {
+    for (const [source, existenceMap] of Object.entries(varMap.map)) {
+      this.map[source] = existenceMap;
     }
+  }
 
+  /**
+   * Checks if a variable is defined
+   * @param path The path to check
+   * @returns True for a known variable (either DEFINITELY or MAYBE)
+   */
+  public isVariableDefined(path: string): boolean {
     const pathParts = toPath(path);
-    if (pathParts.length === 1) {
-      return undefined;
-    }
 
-    let bag: ExistenceMap | VarExistence = this.map;
-    while (pathParts.length > 0) {
-      if (typeof bag["*"] === "string") {
-        return bag["*"];
+    for (const sourceMap of Object.values(this.map).filter(
+      // Only check the sources (bricks) that provide the output key (the first part of the path)
+      (x) => x[pathParts[0]] != null
+    )) {
+      if (
+        (get(sourceMap, pathParts) as ExistenceMap)?.[SELF_EXISTENCE] != null
+      ) {
+        return true;
       }
 
-      const part = pathParts.shift();
-      bag = bag[part];
-      if (typeof bag !== "object") {
-        return bag;
+      // If path consists of only one key (output key), the existence has been checked above
+      if (pathParts.length === 1) {
+        continue;
+      }
+
+      // Check if any child is allowed up in the hierarchy
+      let bag = sourceMap;
+      while (pathParts.length > 0) {
+        const part = pathParts.shift();
+        bag = bag[part];
+        if (bag == null) {
+          break;
+        }
+
+        if (bag[ALLOW_ANY_CHILD]) {
+          return true;
+        }
       }
     }
 
-    return undefined;
+    return false;
   }
 
+  /**
+   * Clones the VarMap
+   * @returns A copy of the VarMap
+   */
   clone(): VarMap {
     const clone = new VarMap();
     clone.map = cloneDeep(this.map);
     return clone;
-  }
-
-  merge(other: VarMap): VarMap {
-    const mergedMap = mergeExistenceMaps(this.map, other.map);
-    const merged = new VarMap();
-    merged.map = mergedMap;
-
-    return merged;
-  }
-}
-
-export function mergeExistenceMaps(
-  a: ExistenceMap,
-  b: ExistenceMap
-): ExistenceMap {
-  const merged = {} as ExistenceMap;
-  merger(merged, a);
-  merger(merged, b);
-  return merged;
-
-  function merger(target: ExistenceMap, source: ExistenceMap) {
-    if (source == null) {
-      return;
-    }
-
-    for (const [key, value] of Object.entries(source)) {
-      if (typeof value === "object") {
-        if (typeof target[key] !== "object") {
-          target[key] = {};
-        }
-
-        merger(target[key] as ExistenceMap, value);
-      } else if (
-        typeof target[key] !== "object" &&
-        target[key] !== VarExistence.DEFINITELY
-      ) {
-        target[key] = value;
-      }
-    }
   }
 }
 
