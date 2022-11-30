@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "@/vendors/theme/assets/styles/_colors";
+
 // Copies the style of react-select's menu
 .menu {
   top: 100%;
@@ -40,6 +42,6 @@
   padding: 10px;
 
   & + & {
-    border-top: 1px solid #a8a1b4;
+    border-top: 1px solid $N200;
   }
 }
