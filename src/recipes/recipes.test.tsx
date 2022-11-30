@@ -46,7 +46,9 @@ jest.mock("@/components/ConfirmationModal", () => {
   };
 });
 
-test("gets recipe and saves it with valid schema", async () => {
+// The test "loads" recipes from server and attempts to save the first (and the only) recipe
+// It verifies the proper API calls and the recipe schema "sent" to the server
+test("load recipes and save one", async () => {
   // This is the the shape of a recipe that we get from the API /api/recipes/ endpoint
   const sourceRecipe = {
     kind: "recipe",
