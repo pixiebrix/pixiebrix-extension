@@ -32,7 +32,7 @@ import cx from "classnames";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { getToggleOptions } from "./getToggleOptions";
 import widgetsRegistry from "./widgets/widgetsRegistry";
-import useToggleFormField from "@/pageEditor/hooks/useToggleFormField";
+import useToggleFormField from "@/hooks/useToggleFormField";
 import { isExpression } from "@/runtime/mapArgs";
 import { getFieldValidator } from "@/components/fields/fieldUtils";
 import useFieldError from "@/components/form/useFieldError";

@@ -50,7 +50,7 @@ import { CustomFormRenderer } from "@/blocks/renderers/customForm";
 import { FormTransformer } from "@/blocks/transformers/ephemeralForm/formTransformer";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import DocumentOutline from "@/components/documentBuilder/outline/DocumentOutline";
-import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
+import useAllBlocks from "@/blocks/hooks/useAllBlocks";
 import StateTab from "./tabs/StateTab";
 import ConfigurationTab from "./tabs/ConfigurationTab";
 import { joinPathParts } from "@/utils";

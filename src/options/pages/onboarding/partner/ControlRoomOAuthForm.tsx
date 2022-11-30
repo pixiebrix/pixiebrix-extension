@@ -17,7 +17,7 @@
 
 import React, { useCallback } from "react";
 import { uuidv4 } from "@/types/helpers";
-import { persistor } from "@/options/store";
+import { persistor } from "@/store/optionsStore";
 import { launchAuthIntegration } from "@/background/messenger/api";
 import Form, { RenderBody, RenderSubmit } from "@/components/form/Form";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";

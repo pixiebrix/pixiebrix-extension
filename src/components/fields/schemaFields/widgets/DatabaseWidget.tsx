@@ -18,7 +18,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useField } from "formik";
 import { Expression, UUID } from "@/core";
-import useDatabaseOptions from "@/pageEditor/hooks/useDatabaseOptions";
+import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import DatabaseCreateModal from "@/pageEditor/fields/DatabaseCreateModal";
 import { isExpression } from "@/runtime/mapArgs";
 import SelectWidget, {

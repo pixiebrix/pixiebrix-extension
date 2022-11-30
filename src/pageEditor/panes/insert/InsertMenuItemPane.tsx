@@ -24,7 +24,7 @@ import {
   MenuDefinition,
   MenuItemExtensionPoint,
 } from "@/extensionPoints/menuItemExtension";
-import Centered from "@/pageEditor/components/Centered";
+import Centered from "@/components/Centered";
 import { Alert, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {

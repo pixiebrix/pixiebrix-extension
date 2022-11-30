@@ -22,7 +22,7 @@ import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode"
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import WidgetLoadingIndicator from "@/components/fields/schemaFields/widgets/WidgetLoadingIndicator";
-import useToggleFormField from "@/pageEditor/hooks/useToggleFormField";
+import useToggleFormField from "@/hooks/useToggleFormField";
 import { useField } from "formik";
 import {
   InputModeOption,

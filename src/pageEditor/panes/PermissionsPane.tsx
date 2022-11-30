@@ -16,7 +16,7 @@
  */
 
 import React, { useState } from "react";
-import Centered from "@/pageEditor/components/Centered";
+import Centered from "@/components/Centered";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { requestPermissions } from "@/utils/permissions";

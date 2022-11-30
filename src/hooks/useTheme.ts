@@ -21,7 +21,7 @@ import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { DEFAULT_THEME, Theme } from "@/options/types";
 import { activatePartnerTheme } from "@/background/messenger/api";
-import { persistor } from "@/options/store";
+import { persistor } from "@/store/optionsStore";
 import { useAsyncState } from "@/hooks/common";
 import { ManualStorageKey, readStorage } from "@/chrome";
 import {

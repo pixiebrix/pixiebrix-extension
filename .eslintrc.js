@@ -12,7 +12,12 @@ const restrictedZones = [
   except: [
     `../${exporter}/messenger`,
     `../${exporter}/types.ts`,
+    // `../${exporter}/**/*Types.ts`, // TODO: Globs don't seem to work
     `../${exporter}/nativeEditor/types.ts`,
+    `../${exporter}/pageEditorTypes.ts`,
+    `../${exporter}/runBlockTypes.ts`,
+    `../${exporter}/extensionPoints/formStateTypes.ts`,
+    `../${exporter}/tabs/editTab/dataPanel/dataPanelTypes.ts`,
   ],
 }));
 
@@ -64,7 +69,7 @@ module.exports = {
       files: [
         "webpack.*.js",
         "*.config.js",
-        "**/testUtils/testEnv.js",
+        "**/testUtils/**",
         "**/__mocks__/**",
         "*.test.js",
         "*.test.ts",
@@ -76,6 +81,9 @@ module.exports = {
       },
       // Overridden rules: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/server.js
       extends: ["pixiebrix/server"],
+      rules: {
+        "import/no-restricted-paths": "off",
+      },
     },
   ],
 };

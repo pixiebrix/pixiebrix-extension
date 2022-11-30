@@ -22,7 +22,7 @@ import { Column, Row } from "react-table";
 import { isEqual } from "lodash";
 import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
 import { IService, RawServiceConfiguration, UUID } from "@/core";
-import { RootState } from "@/options/store";
+import { RootState } from "@/store/optionsStore";
 import { faEdit, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { deleteCachedAuthData } from "@/background/messenger/api";

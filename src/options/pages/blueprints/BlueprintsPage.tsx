@@ -20,7 +20,7 @@ import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
 import useInstallables from "@/options/pages/blueprints/useInstallables";
 import ExtensionLogsModal from "@/options/pages/blueprints/modals/ExtensionLogsModal";
 import { useSelector } from "react-redux";
-import { RootState } from "@/options/store";
+import { RootState } from "@/store/optionsStore";
 import {
   LogsContext,
   ShareContext,
