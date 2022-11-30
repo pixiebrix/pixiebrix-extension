@@ -6,9 +6,16 @@ const restrictedZones = [
   "sidebar",
   // "pageScript", // TODO: After Messenger migration
 ].map((exporter) => ({
-  target: `./src/!(${exporter})/**/*`,
+  // All of these files cannot import `from` (exclude self-imports)
+  target:
+    exporter === "contentScript"
+      ? `./src/!(${exporter}|blocks|extensionPoints)/**/*` // Temporary: Blocks and extensionPoints are implicitly run from CS
+      : `./src/!(${exporter})/**/*`,
+
+  // The files above cannot import `from` this folder
   from: `./src/${exporter}`,
-  message: `Cross-context imports break expectations. Shared components should be in shared folders. Solution 1: keep both importer and imported modules in the same context (shared or @/${exporter}). Solution 2: Use the Messenger if they are in the correct context.`,
+
+  // These can be imported from anywhere
   except: [
     `../${exporter}/messenger`,
     `../${exporter}/types.ts`,
@@ -19,6 +26,11 @@ const restrictedZones = [
     `../${exporter}/extensionPoints/formStateTypes.ts`,
     `../${exporter}/tabs/editTab/dataPanel/dataPanelTypes.ts`,
   ],
+
+  message: `Cross-context imports break expectations. Shared components should be in shared folders.
+  Solution 1: Keep both importer and imported modules in the same context (shared or @/${exporter}).
+  Solution 2: Use the Messenger if they are in the correct context.
+  Solution 3: Propose a clearly-shared component within the context, like we do for Messenger and *Types files.`,
 }));
 
 module.exports = {
@@ -32,7 +44,7 @@ module.exports = {
     "@typescript-eslint/consistent-type-imports": "off",
 
     "import/no-restricted-paths": [
-      "warn",
+      "error",
       {
         zones: restrictedZones,
       },

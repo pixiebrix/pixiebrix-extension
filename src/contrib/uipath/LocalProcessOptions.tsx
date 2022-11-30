@@ -27,6 +27,7 @@ import { joinName } from "@/utils";
 import RequireServiceConfig from "@/contrib/RequireServiceConfig";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
+// TODO: Fix this `no-restricted-paths`, it could point to a real bug
 import { thisTab } from "@/pageEditor/utils";
 import { getProcesses, initRobot } from "@/contentScript/messenger/api";
 import { isDevToolsPage } from "webext-detect-page";
