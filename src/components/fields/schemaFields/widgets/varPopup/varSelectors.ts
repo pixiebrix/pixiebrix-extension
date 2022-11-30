@@ -15,31 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Copies the style of react-select's menu
-.menu {
-  top: 100%;
-  position: absolute;
-  width: 100%;
-  z-index: 1;
-  background-color: rgb(255, 255, 255);
-  border-radius: 4px;
-  box-shadow: #0000001a 0 0 0 1px;
-  margin-bottom: 8px;
-  margin-top: 8px;
-  box-sizing: border-box;
-}
+import { selectKnownVars } from "@/analysis/analysisSelectors";
+import {
+  selectActiveElementId,
+  selectActiveNodeInfo,
+} from "@/pageEditor/slices/editorSelectors";
+import { createSelector } from "reselect";
 
-.menuList {
-  overflow-y: auto;
-  position: relative;
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
+export const selectKnownVarsForActiveNode = createSelector(
+  selectActiveElementId,
+  selectActiveNodeInfo,
+  selectKnownVars,
+  (activeElementId, activeNodeInfo, knownVars) => {
+    if (activeNodeInfo == null) {
+      return null;
+    }
 
-.sourceItem {
-  padding: 10px;
-
-  & + & {
-    border-top: 1px solid #a8a1b4;
+    return knownVars[activeElementId]?.get(activeNodeInfo.path);
   }
-}
+);

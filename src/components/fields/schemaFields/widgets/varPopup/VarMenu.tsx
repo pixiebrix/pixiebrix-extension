@@ -15,8 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { ExistenceMap } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import React, { useEffect, useRef } from "react";
+import { JSONTree } from "react-json-tree";
+import { useSelector } from "react-redux";
 import styles from "./VarMenu.module.scss";
+import { selectKnownVarsForActiveNode } from "./varSelectors";
+import { jsonTreeTheme } from "@/themes/light";
+
+type SourceLabelProps = {
+  source: string;
+};
+
+const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({ source }) => (
+  <div>{source}</div>
+);
+
+type VariablesTreeProps = {
+  vars: ExistenceMap;
+};
+
+const VariablesTree: React.FunctionComponent<VariablesTreeProps> = ({
+  vars,
+}) => <JSONTree data={vars} theme={jsonTreeTheme} invertTheme hideRoot />;
 
 type VarMenuProps = {
   onClose?: () => void;
@@ -38,10 +59,20 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({ onClose }) => {
     };
   }, [onClose]);
 
+  const knownVars = useSelector(selectKnownVarsForActiveNode);
+  if (knownVars == null) {
+    return null;
+  }
+
   return (
     <div className={styles.menu} ref={rootElementRef}>
       <div className={styles.menuList}>
-        All known variables will show up here
+        {Object.entries(knownVars.getMap()).map(([source, vars]) => (
+          <div className={styles.sourceItem} key={source}>
+            <SourceLabel source={source} />
+            <VariablesTree vars={vars} />
+          </div>
+        ))}
       </div>
     </div>
   );

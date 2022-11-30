@@ -24,7 +24,7 @@ export enum VarExistence {
 
 const SELF_EXISTENCE = Symbol("SELF_EXISTENCE");
 const ALLOW_ANY_CHILD = Symbol("ALLOW_ANY_CHILD");
-type ExistenceMap = {
+export type ExistenceMap = {
   [SELF_EXISTENCE]?: VarExistence;
   [ALLOW_ANY_CHILD]?: boolean;
 
@@ -33,6 +33,9 @@ type ExistenceMap = {
 
 class VarMap {
   private map: Record<string, ExistenceMap> = {};
+  public getMap(): Record<string, ExistenceMap> {
+    return cloneDeep(this.map);
+  }
 
   /**
    * Converts an object containing variables to a var existence map. Each node gets a DEFINITELY existence. Ex. converting trace output to an existence map
