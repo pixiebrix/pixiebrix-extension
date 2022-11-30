@@ -16,9 +16,10 @@
  */
 
 import "@testing-library/jest-dom";
+// eslint-disable-next-line import/no-unassigned-import -- mocking the indexedDB
+import "fake-indexeddb/auto";
 import $ from "jquery";
 import crypto from "crypto";
-import "fake-indexeddb/auto";
 
 global.$ = $;
 global.jQuery = $;

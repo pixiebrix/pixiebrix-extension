@@ -41,7 +41,7 @@ jest.mock("@/components/ConfirmationModal", () => {
   return {
     ...originalModule,
     useModals: () => ({
-      showConfirmation: async () => Promise.resolve(true),
+      showConfirmation: async () => true,
     }),
   };
 });
