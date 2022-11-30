@@ -413,6 +413,9 @@ module.exports = (env, options) =>
               options: {
                 // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
                 implementation: require("node-sass"),
+                // The aliases ("@") don't work here
+                additionalData:
+                  '@import "src/vendors/theme/assets/styles/_colors";',
               },
             },
           ],
