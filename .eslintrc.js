@@ -1,6 +1,4 @@
-const strictContexts = ["background"];
-
-const contexts = [
+const strictContexts = [
   "background",
   "contentScript",
   "pageEditor",
@@ -9,36 +7,16 @@ const contexts = [
   // "pageScript", // TODO: After Messenger migration
 ];
 
-const restrictedZones = [];
-for (const exporter of contexts) {
-  for (const importer of contexts) {
-    if (exporter !== importer && !strictContexts.includes(exporter)) {
-      restrictedZones.push({
-        target: `./src/${importer}`,
-        from: `./src/${exporter}`,
-        message: `Cross-context imports break expectations. Either use the Messenger to get data from ${exporter}, or move the imported item out of @/${exporter}`,
-        except: [
-          `../${exporter}/messenger/api.ts`,
-          `../${exporter}/types.ts`,
-          `../${exporter}/nativeEditor/types.ts`,
-        ],
-      });
-    }
-  }
-}
-
-for (const exporter of strictContexts) {
-  restrictedZones.push({
-    target: `./src/!(${exporter})/**/*`,
-    from: `./src/${exporter}`,
-    message: `Cross-context imports break expectations. Either use the Messenger to get data from ${exporter}, or move the imported item out of @/${exporter}`,
-    except: [
-      `../${exporter}/messenger`,
-      `../${exporter}/types.ts`,
-      `../${exporter}/nativeEditor/types.ts`,
-    ],
-  });
-}
+const restrictedZones = strictContexts.map((exporter) => ({
+  target: `./src/!(${exporter})/**/*`,
+  from: `./src/${exporter}`,
+  message: `Cross-context imports break expectations. Shared components should be in shared folders. Solution 1: keep both importer and imported modules in the same context (shared or @/${exporter}). Solution 2: Use the Messenger if they are in the correct context.`,
+  except: [
+    `../${exporter}/messenger`,
+    `../${exporter}/types.ts`,
+    `../${exporter}/nativeEditor/types.ts`,
+  ],
+}));
 
 module.exports = {
   root: true,
@@ -51,7 +29,7 @@ module.exports = {
     "@typescript-eslint/consistent-type-imports": "off",
 
     "import/no-restricted-paths": [
-      "error",
+      "warn",
       {
         zones: restrictedZones,
       },
