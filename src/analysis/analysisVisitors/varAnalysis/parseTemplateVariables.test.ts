@@ -102,6 +102,8 @@ describe("parseTemplateVariables", () => {
       Item value: {{ item }}
     {% endfor %}`;
     const result = parseTemplateVariables(template);
+
+    // The variable "item", which is defined by the loop and doesn't come from the context, is not included in the template variables
     expect(result).toEqual(["@items"]);
   });
 

@@ -117,7 +117,7 @@ const ExperimentalSettings: React.FunctionComponent = () => {
           <ExperimentalFeature
             id="varAnalysis"
             label="Perform Analysis of Variables in Page Editor:"
-            description="Toggle on to enable validation of variables in Page Editor. Shows a warning if detects a use of undefined variable"
+            description="Toggle on to enable validation of variables in Page Editor. Shows a warning if use of an undefined variable is detected"
             isEnabled={varAnalysis}
             onChange={(value) => {
               dispatch(
@@ -130,8 +130,8 @@ const ExperimentalSettings: React.FunctionComponent = () => {
           />
           <ExperimentalFeature
             id="varAutosuggest"
-            label="Display popup with suggested Variables in Page Editor (Analysis of Variables must be enabled):"
-            description="Toggle on to enable variables autosuggest. The popup displayed for Var and Text template inputs"
+            label="Autosuggest Variables in Page Editor. You must also enable Analysis of Variables to use this feature:"
+            description="Toggle on to enable variable autosuggest for variable and text template entry modes"
             isEnabled={varAutosuggest}
             onChange={(value) => {
               dispatch(

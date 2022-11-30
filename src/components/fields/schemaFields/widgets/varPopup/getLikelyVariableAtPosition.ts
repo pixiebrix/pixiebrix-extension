@@ -16,6 +16,8 @@
  */
 
 const varRegex = /(?<varName>@\w+(\.|\w|(\[\d+])|(\[("|')[\s\w]+("|')]))*)/g;
+
+// This method is based on regex because we want to show popup even for incomplete template, ex. "{{ @foo."
 function getLikelyVariableAtPosition(
   template: string,
   position: number
