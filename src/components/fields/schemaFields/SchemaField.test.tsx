@@ -35,7 +35,7 @@ jest.mock("@/hooks/useDatabaseOptions", () => ({
     isLoading: false,
   }),
 }));
-jest.mock("@/pageEditor/fields/DatabaseCreateModal", () => ({
+jest.mock("@/components/DatabaseCreateModal", () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue(() => <div>DatabaseCreateModal</div>),
 }));

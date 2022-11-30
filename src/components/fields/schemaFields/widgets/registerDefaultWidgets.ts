@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import UrlMatchPatternWidget from "@/components/fields/schemaFields/widgets/UrlMatchPatternWidget";
+import UrlMatchPatternWidget from "./UrlMatchPatternWidget";
 import UrlPatternWidget from "@/pageEditor/components/UrlPatternWidget";
 import ArrayWidget from "./ArrayWidget";
 import BooleanWidget from "./BooleanWidget";

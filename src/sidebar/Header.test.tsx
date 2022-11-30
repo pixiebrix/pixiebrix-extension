@@ -21,7 +21,7 @@ import { render } from "@/sidebar/testHelpers";
 import Header from "@/sidebar/Header";
 import { useGetMeQuery } from "@/services/api";
 
-jest.mock("@/options/store", () => ({
+jest.mock("@/store/optionsStore", () => ({
   persistor: {
     flush: jest.fn(),
   },

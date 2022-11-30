@@ -55,7 +55,7 @@ jest.mock("@/services/baseService", () => ({
   getInstallURL: jest.fn().mockResolvedValue("https://app.pixiebrix.com"),
 }));
 
-jest.mock("@/options/store", () => ({
+jest.mock("@/store/optionsStore", () => ({
   persistor: {
     flush: jest.fn(),
   },
