@@ -19,7 +19,7 @@ import { AnalysisVisitorWithResolvedBlocks } from "./baseAnalysisVisitors";
 import { AnnotationType } from "@/analysis/analysisTypes";
 import { BlockConfig, BlockPosition } from "@/blocks/types";
 import { VisitBlockExtra } from "@/blocks/PipelineVisitor";
-import { makeIsBlockAllowedForPipeline } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import { makeIsBlockAllowedForPipeline } from "@/blocks/blockFilterHelpers";
 
 class BlockTypeAnalysis extends AnalysisVisitorWithResolvedBlocks {
   get id() {

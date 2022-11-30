@@ -57,7 +57,7 @@ import {
   selectActiveNodeId,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
-import { getRootPipelineFlavor } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import { getRootPipelineFlavor } from "@/blocks/blockFilterHelpers";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { OutputKey, UUID } from "@/core";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";

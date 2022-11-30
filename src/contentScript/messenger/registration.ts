@@ -144,7 +144,7 @@ declare global {
 
 export default function registerMessenger(): void {
   registerMethods({
-    GET_READY_STATE: getTargetState,
+    GET_READY_STATE: getReadyState,
 
     FORM_GET_DEFINITION: getFormDefinition,
     FORM_RESOLVE: resolveForm,

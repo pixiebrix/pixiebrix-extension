@@ -42,7 +42,7 @@ import {
   selectActiveRecipeId,
   selectElementIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
-import ActionMenu from "@/components/sidebar/ActionMenu";
+import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
 import useSaveExtension from "@/pageEditor/hooks/useSaveExtension";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
