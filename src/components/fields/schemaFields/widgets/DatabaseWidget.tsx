@@ -19,7 +19,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { useField } from "formik";
 import { Expression, UUID } from "@/core";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
-import DatabaseCreateModal from "@/components/DatabaseCreateModal";
+import DatabaseCreateModal from "./DatabaseCreateModal";
 import { isExpression } from "@/runtime/mapArgs";
 import SelectWidget, {
   SelectLike,

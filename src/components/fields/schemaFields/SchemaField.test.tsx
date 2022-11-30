@@ -35,10 +35,13 @@ jest.mock("@/hooks/useDatabaseOptions", () => ({
     isLoading: false,
   }),
 }));
-jest.mock("@/components/DatabaseCreateModal", () => ({
-  __esModule: true,
-  default: jest.fn().mockReturnValue(() => <div>DatabaseCreateModal</div>),
-}));
+jest.mock(
+  "@/components/fields/schemaFields/widgets/DatabaseCreateModal",
+  () => ({
+    __esModule: true,
+    default: jest.fn().mockReturnValue(() => <div>DatabaseCreateModal</div>),
+  })
+);
 
 type SchemaTestCase = {
   name: string;
