@@ -50,7 +50,7 @@ export type InstallableViewItem = {
   installable: Installable;
 };
 
-export type BlueprintListViewProps = {
+export type BlueprintsMainContentProps = {
   tableInstance: TableInstance<InstallableViewItem>;
   width: number;
   height: number;

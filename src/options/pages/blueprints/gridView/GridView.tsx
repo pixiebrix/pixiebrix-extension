@@ -19,7 +19,7 @@ import styles from "./GridView.module.scss";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  BlueprintListViewProps,
+  BlueprintsMainContentProps,
   InstallableViewItem,
 } from "@/options/pages/blueprints/blueprintsTypes";
 import { VariableSizeList as List } from "react-window";
@@ -77,7 +77,7 @@ const MIN_CARD_WIDTH_PX = 235;
 const CARD_HEIGHT_PX = 230;
 const HEADER_ROW_HEIGHT_PX = 43;
 
-const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
+const GridView: React.VoidFunctionComponent<BlueprintsMainContentProps> = ({
   tableInstance,
   width,
   height,

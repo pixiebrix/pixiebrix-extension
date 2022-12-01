@@ -23,14 +23,14 @@ import {
   selectActiveTab,
   selectView,
 } from "@/options/pages/blueprints/blueprintsSelectors";
-import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
+import { BlueprintsMainContentProps } from "@/options/pages/blueprints/blueprintsTypes";
 import OnboardingView from "@/options/pages/blueprints/onboardingView/OnboardingView";
 import EmptyView from "@/options/pages/blueprints/emptyView/EmptyView";
 import GetStartedView from "@/options/pages/blueprints/GetStartedView";
 import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
 
 const BlueprintsMainContent: React.VoidFunctionComponent<
-  BlueprintListViewProps
+  BlueprintsMainContentProps
 > = ({ tableInstance, width, height }) => {
   const view = useSelector(selectView);
   const activeTab = useSelector(selectActiveTab);
@@ -41,7 +41,7 @@ const BlueprintsMainContent: React.VoidFunctionComponent<
     rows,
   } = tableInstance;
 
-  const BlueprintsList = view === "list" ? ListView : GridView;
+  const BlueprintsView = view === "list" ? ListView : GridView;
 
   if (activeTab.key === "Get Started") {
     return <GetStartedView width={width} height={height} />;
@@ -49,7 +49,7 @@ const BlueprintsMainContent: React.VoidFunctionComponent<
 
   if (rows.length > 0) {
     return (
-      <BlueprintsList
+      <BlueprintsView
         tableInstance={tableInstance}
         width={width}
         height={height}
