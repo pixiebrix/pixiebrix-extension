@@ -28,7 +28,7 @@ import {
   useSortBy,
   useTable,
 } from "react-table";
-import BlueprintsSidebar from "./BlueprintsSidebar";
+import BlueprintsPageSidebar from "./BlueprintsPageSidebar";
 import { Installable, InstallableViewItem } from "./blueprintsTypes";
 import {
   selectActiveTab,
@@ -40,7 +40,7 @@ import { uniq } from "lodash";
 import useInstallableViewItems from "@/options/pages/blueprints/useInstallableViewItems";
 import AutoSizer from "react-virtualized-auto-sizer";
 import BlueprintsToolbar from "@/options/pages/blueprints/BlueprintsToolbar";
-import BlueprintsMainContent from "@/options/pages/blueprints/BlueprintsMainContent";
+import BlueprintsPageContent from "@/options/pages/blueprints/BlueprintsPageContent";
 import Loader from "@/components/Loader";
 
 const statusFilter = (
@@ -153,7 +153,7 @@ const BlueprintsPageLayout: React.FunctionComponent<{
 
   return (
     <BootstrapRow className={styles.root}>
-      <BlueprintsSidebar
+      <BlueprintsPageSidebar
         teamFilters={teamFilters}
         tableInstance={tableInstance}
       />
@@ -170,7 +170,7 @@ const BlueprintsPageLayout: React.FunctionComponent<{
           ) : (
             <AutoSizer defaultHeight={500}>
               {({ height, width }) => (
-                <BlueprintsMainContent
+                <BlueprintsPageContent
                   tableInstance={tableInstance}
                   width={width}
                   height={height}

@@ -23,14 +23,14 @@ import {
   selectActiveTab,
   selectView,
 } from "@/options/pages/blueprints/blueprintsSelectors";
-import { BlueprintsMainContentProps } from "@/options/pages/blueprints/blueprintsTypes";
+import { BlueprintsPageContentProps } from "@/options/pages/blueprints/blueprintsTypes";
 import OnboardingView from "@/options/pages/blueprints/onboardingView/OnboardingView";
 import EmptyView from "@/options/pages/blueprints/emptyView/EmptyView";
 import GetStartedView from "@/options/pages/blueprints/GetStartedView";
 import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
 
-const BlueprintsMainContent: React.VoidFunctionComponent<
-  BlueprintsMainContentProps
+const BlueprintsPageContent: React.VoidFunctionComponent<
+  BlueprintsPageContentProps
 > = ({ tableInstance, width, height }) => {
   const view = useSelector(selectView);
   const activeTab = useSelector(selectActiveTab);
@@ -74,4 +74,4 @@ const BlueprintsMainContent: React.VoidFunctionComponent<
   );
 };
 
-export default BlueprintsMainContent;
+export default BlueprintsPageContent;

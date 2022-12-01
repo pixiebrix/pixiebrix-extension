@@ -25,7 +25,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 // eslint-disable-next-line no-restricted-imports -- Type only
 import type { BsPrefixRefForwardingComponent } from "react-bootstrap/esm/helpers";
 
-type ListFiltersProps = {
+type BlueprintsPageSidebarProps = {
   teamFilters: string[];
   tableInstance: TableInstance<InstallableViewItem>;
 };
@@ -80,10 +80,9 @@ const ListItem: BsPrefixRefForwardingComponent<
   </Nav.Link>
 );
 
-const BlueprintsSidebar: React.FunctionComponent<ListFiltersProps> = ({
-  teamFilters,
-  tableInstance,
-}) => {
+const BlueprintsPageSidebar: React.FunctionComponent<
+  BlueprintsPageSidebarProps
+> = ({ teamFilters, tableInstance }) => {
   const { permit } = useFlags();
   const { data: me, isLoading: isMeLoading } = useGetMeQuery();
   const { data: starterBlueprints, isLoading: isStarterBlueprintsLoading } =
@@ -267,4 +266,4 @@ const BlueprintsSidebar: React.FunctionComponent<ListFiltersProps> = ({
   );
 };
 
-export default BlueprintsSidebar;
+export default BlueprintsPageSidebar;
