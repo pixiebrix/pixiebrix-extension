@@ -28,7 +28,7 @@ import {
   useSortBy,
   useTable,
 } from "react-table";
-import ListFilters from "./ListFilters";
+import BlueprintsSidebar from "./BlueprintsSidebar";
 import { Installable, InstallableViewItem } from "./blueprintsTypes";
 import {
   selectActiveTab,
@@ -40,7 +40,7 @@ import { uniq } from "lodash";
 import useInstallableViewItems from "@/options/pages/blueprints/useInstallableViewItems";
 import AutoSizer from "react-virtualized-auto-sizer";
 import BlueprintsToolbar from "@/options/pages/blueprints/BlueprintsToolbar";
-import BlueprintsView from "@/options/pages/blueprints/BlueprintsView";
+import BlueprintsMainContent from "@/options/pages/blueprints/BlueprintsMainContent";
 import Loader from "@/components/Loader";
 
 const statusFilter = (
@@ -103,7 +103,7 @@ const columns: Array<Column<InstallableViewItem>> = [
   },
 ];
 
-const BlueprintsCard: React.FunctionComponent<{
+const BlueprintsPageLayout: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
   const { installableViewItems, isLoading } =
@@ -153,7 +153,10 @@ const BlueprintsCard: React.FunctionComponent<{
 
   return (
     <BootstrapRow className={styles.root}>
-      <ListFilters teamFilters={teamFilters} tableInstance={tableInstance} />
+      <BlueprintsSidebar
+        teamFilters={teamFilters}
+        tableInstance={tableInstance}
+      />
       <Col className={styles.mainContainer} sm={12} md={9} xl={10}>
         <BlueprintsToolbar tableInstance={tableInstance} />
         {/* This wrapper prevents AutoSizer overflow in a flex box container */}
@@ -167,7 +170,7 @@ const BlueprintsCard: React.FunctionComponent<{
           ) : (
             <AutoSizer defaultHeight={500}>
               {({ height, width }) => (
-                <BlueprintsView
+                <BlueprintsMainContent
                   tableInstance={tableInstance}
                   width={width}
                   height={height}
@@ -181,4 +184,4 @@ const BlueprintsCard: React.FunctionComponent<{
   );
 };
 
-export default BlueprintsCard;
+export default BlueprintsPageLayout;

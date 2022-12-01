@@ -17,7 +17,7 @@
 
 import React from "react";
 import { render } from "@/options/testHelpers";
-import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
+import BlueprintsPageLayout from "@/options/pages/blueprints/BlueprintsPageLayout";
 import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { useGetMeQuery, useGetStarterBlueprintsQuery } from "@/services/api";
@@ -49,7 +49,9 @@ const installables: Installable[] = [];
 
 describe("BlueprintsCard", () => {
   test("renders", async () => {
-    const rendered = render(<BlueprintsCard installables={installables} />);
+    const rendered = render(
+      <BlueprintsPageLayout installables={installables} />
+    );
     await waitForEffect();
     expect(rendered.asFragment()).toMatchSnapshot();
   });
@@ -59,7 +61,7 @@ describe("BlueprintsCard", () => {
       isLoading: true,
     }));
 
-    render(<BlueprintsCard installables={installables} />);
+    render(<BlueprintsPageLayout installables={installables} />);
     await waitForEffect();
     expect(
       screen.queryByText("Welcome to the PixieBrix Extension Console")
@@ -70,7 +72,7 @@ describe("BlueprintsCard", () => {
       isLoading: false,
     }));
 
-    render(<BlueprintsCard installables={installables} />);
+    render(<BlueprintsPageLayout installables={installables} />);
     await waitForEffect();
     expect(
       screen.queryByText("Welcome to the PixieBrix Extension Console")
@@ -84,7 +86,7 @@ describe("BlueprintsCard", () => {
       data: { organization: organizationFactory() },
     }));
 
-    render(<BlueprintsCard installables={installables} />);
+    render(<BlueprintsPageLayout installables={installables} />);
     await waitForEffect();
     expect(
       screen.queryByText("Welcome to the PixieBrix Extension Console")

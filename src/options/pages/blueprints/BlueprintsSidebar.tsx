@@ -80,7 +80,7 @@ const ListItem: BsPrefixRefForwardingComponent<
   </Nav.Link>
 );
 
-const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
+const BlueprintsSidebar: React.FunctionComponent<ListFiltersProps> = ({
   teamFilters,
   tableInstance,
 }) => {
@@ -267,4 +267,4 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
   );
 };
 
-export default ListFilters;
+export default BlueprintsSidebar;
