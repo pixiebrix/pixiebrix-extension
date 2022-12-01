@@ -22,6 +22,7 @@ import { useSelector } from "react-redux";
 import styles from "./VarMenu.module.scss";
 import { selectKnownVarsForActiveNode } from "./varSelectors";
 import { jsonTreeTheme } from "@/themes/light";
+import { UnknownObject } from "@/types";
 
 type SourceLabelProps = {
   source: string;
@@ -52,9 +53,49 @@ const theme = {
     alignItems: "center",
   },
 };
+
+function sortObjectKeys(a: string, b: string, obj: UnknownObject): number {
+  const valueA = obj[a];
+  const valueB = obj[b];
+  if (typeof valueA === "object") {
+    if (typeof valueB === "object") {
+      return a.localeCompare(b);
+    }
+
+    return 1;
+  }
+
+  if (typeof valueB === "object") {
+    return -1;
+  }
+
+  return a.localeCompare(b);
+}
+
+// Sorting keys in an alphabetic order, plain values (string, boolean) should come before nested Arrays and Objects.
+function postprocessValue(value: unknown): unknown {
+  if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+    return Object.fromEntries(
+      Object.entries(value).sort(([a], [b]) =>
+        sortObjectKeys(a, b, value as UnknownObject)
+      )
+    );
+  }
+
+  return value;
+}
+
 export const VariablesTree: React.FunctionComponent<VariablesTreeProps> = ({
   vars,
-}) => <JSONTree data={vars} theme={theme} invertTheme hideRoot />;
+}) => (
+  <JSONTree
+    data={vars}
+    theme={theme}
+    postprocessValue={postprocessValue}
+    invertTheme
+    hideRoot
+  />
+);
 
 type VarMenuProps = {
   onClose?: () => void;

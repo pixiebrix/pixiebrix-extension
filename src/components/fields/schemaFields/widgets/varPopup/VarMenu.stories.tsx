@@ -27,11 +27,11 @@ export default {
 const knownVars = {
   "root:Array Composite Reader": {
     "@input": {
-      description: {},
+      description: "not set",
       icon: {},
       image: {},
       keywords: {},
-      title: "not set",
+      title: {},
       type: "not set",
       url: "not set",
       props: {
