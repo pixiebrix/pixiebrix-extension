@@ -24,8 +24,6 @@ import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
 
 // TODO
-// - get values from trace
-// - format label
 // - fix the height of the popup
 
 type VarPopupProps = {

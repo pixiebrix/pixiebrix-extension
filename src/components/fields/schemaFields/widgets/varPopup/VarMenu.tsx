@@ -20,14 +20,14 @@ import { useSelector } from "react-redux";
 import styles from "./VarMenu.module.scss";
 import { selectKnownVarsForActiveNode } from "./varSelectors";
 import VariablesTree from "./VariablesTree";
-
-type SourceLabelProps = {
-  source: string;
-};
-
-const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({ source }) => (
-  <div>{source}</div>
-);
+import {
+  selectActiveElement,
+  selectPipelineMap,
+} from "@/pageEditor/slices/editorSelectors";
+import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
+import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import SourceLabel from "./SourceLabel";
+import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
 
 type VarMenuProps = {
   onClose?: () => void;
@@ -49,19 +49,32 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({ onClose }) => {
     };
   }, [onClose]);
 
+  const activeElement = useSelector(selectActiveElement);
+  const pipelineMap = useSelector(selectPipelineMap) ?? {};
+  const { allBlocks } = useAllBlocks();
+
   const knownVars = useSelector(selectKnownVarsForActiveNode);
   if (knownVars == null) {
     return null;
   }
 
+  const extensionPointLabel = activeElement?.type
+    ? ADAPTERS.get(activeElement.type).label
+    : "";
+
   return (
     <div className={styles.menu} ref={rootElementRef}>
       <div className={styles.menuList}>
         {Object.entries(knownVars.getMap())
-          .filter(([source]) => source !== "trace")
+          .filter(([source]) => source !== KnownSources.TRACE)
           .map(([source, vars]) => (
             <div className={styles.sourceItem} key={source}>
-              <SourceLabel source={source} />
+              <SourceLabel
+                source={source}
+                extensionPointLabel={extensionPointLabel}
+                blocksInfo={Object.values(pipelineMap)}
+                allBlocks={allBlocks}
+              />
               <VariablesTree vars={vars} />
             </div>
           ))}

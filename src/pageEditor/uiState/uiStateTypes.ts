@@ -20,7 +20,7 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import { RegistryId, UUID } from "@/core";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 
-type BlockInfo = {
+export type BlockInfo = {
   blockId: RegistryId;
 
   /**

@@ -24,16 +24,17 @@ export default {
   component: VariablesTree,
 } as ComponentMeta<typeof VariablesTree>;
 
-const knownVars = {
+// Empty objects in the tree correspond to the ExistenceMap leaf
+const knownVars: any = {
   "root:Array Composite Reader": {
     "@input": {
-      description: "not set",
+      description: {},
       icon: {},
       image: {},
       keywords: {},
       title: {},
-      type: "not set",
-      url: "not set",
+      type: {},
+      url: {},
       props: {
         markdown: {},
       },

@@ -35,12 +35,22 @@ type PreviousVisitedBlock = {
   output: VarMap | null;
 };
 
+export enum KnownSources {
+  INPUT = "input",
+  OPTIONS = "options",
+  SERVICE = "service",
+  TRACE = "trace",
+}
+
 async function setServiceVars(extension: FormState, contextVars: VarMap) {
   // Loop through all the services so we can set the source each service variable properly
   for (const service of extension.services ?? []) {
     // eslint-disable-next-line no-await-in-loop
     const serviceContext = await makeServiceContext([service]);
-    contextVars.setExistenceFromValues(`root:${service.id}`, serviceContext);
+    contextVars.setExistenceFromValues(
+      `${KnownSources.SERVICE}:${service.id}`,
+      serviceContext
+    );
   }
 }
 
@@ -65,7 +75,7 @@ async function setInputVars(extension: FormState, contextVars: VarMap) {
   }
 
   contextVars.setExistenceFromValues(
-    `root:${reader.id ?? reader.name ?? "reader"}`,
+    `${KnownSources.INPUT}:${reader.id ?? reader.name ?? "reader"}`,
     inputContextShape,
     "@input"
   );
@@ -75,7 +85,7 @@ function setOptionsVars(extension: FormState, contextVars: VarMap) {
   // TODO: should we check the blueprint definition instead?
   if (!isEmpty(extension.optionsArgs)) {
     contextVars.setExistenceFromValues(
-      `root:${extension.recipe.id}`,
+      `${KnownSources.OPTIONS}:${extension.recipe.id}`,
       extension.optionsArgs,
       "@options"
     );
@@ -125,7 +135,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     );
     if (traceRecord != null) {
       this.currentBlockKnownVars.setExistenceFromValues(
-        "trace",
+        KnownSources.TRACE,
         traceRecord.templateContext
       );
     }
@@ -245,9 +255,10 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   async run(extension: FormState): Promise<void> {
     const contextVars = new VarMap();
 
+    // Order of the following calls will determine the order of the sources in the UI
+    setOptionsVars(extension, contextVars);
     await setServiceVars(extension, contextVars);
     await setInputVars(extension, contextVars);
-    setOptionsVars(extension, contextVars);
 
     this.previousVisitedBlock = {
       vars: contextVars,
