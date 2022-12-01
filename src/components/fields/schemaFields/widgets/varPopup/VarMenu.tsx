@@ -35,9 +35,26 @@ type VariablesTreeProps = {
   vars: ExistenceMap;
 };
 
-const VariablesTree: React.FunctionComponent<VariablesTreeProps> = ({
+const theme = {
+  extend: jsonTreeTheme,
+  base0D: "#2e2441", // Label and arrow color
+  arrowContainer: {
+    padding: "4px",
+    marginRight: "10px",
+    backgroundColor: "#f0eff2",
+    borderRadius: "2px",
+  },
+  arrow: {
+    height: "12px",
+    width: "12px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+};
+export const VariablesTree: React.FunctionComponent<VariablesTreeProps> = ({
   vars,
-}) => <JSONTree data={vars} theme={jsonTreeTheme} invertTheme hideRoot />;
+}) => <JSONTree data={vars} theme={theme} invertTheme hideRoot />;
 
 type VarMenuProps = {
   onClose?: () => void;
@@ -67,12 +84,14 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({ onClose }) => {
   return (
     <div className={styles.menu} ref={rootElementRef}>
       <div className={styles.menuList}>
-        {Object.entries(knownVars.getMap()).map(([source, vars]) => (
-          <div className={styles.sourceItem} key={source}>
-            <SourceLabel source={source} />
-            <VariablesTree vars={vars} />
-          </div>
-        ))}
+        {Object.entries(knownVars.getMap())
+          .filter(([source]) => source !== "trace")
+          .map(([source, vars]) => (
+            <div className={styles.sourceItem} key={source}>
+              <SourceLabel source={source} />
+              <VariablesTree vars={vars} />
+            </div>
+          ))}
       </div>
     </div>
   );
