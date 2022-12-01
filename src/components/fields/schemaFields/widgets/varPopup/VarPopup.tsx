@@ -23,6 +23,11 @@ import VarMenu from "./VarMenu";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
 
+// TODO
+// - get values from trace
+// - format label
+// - fix the height of the popup
+
 type VarPopupProps = {
   inputMode: FieldInputMode;
   inputElementRef: React.MutableRefObject<HTMLTextAreaElement>;

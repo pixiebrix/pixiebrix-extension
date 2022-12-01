@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ComponentMeta, Story } from "@storybook/react";
 import React from "react";
-import { VariablesTree } from "./VarMenu";
+import { ComponentMeta, Story } from "@storybook/react";
+import VariablesTree from "./VariablesTree";
 
 export default {
   title: "PageEditor/VariablesTree",
