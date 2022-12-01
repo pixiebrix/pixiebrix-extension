@@ -46,7 +46,7 @@ import { RecipeDefinition } from "@/types/definitions";
 import safeJsonStringify from "json-stringify-safe";
 import pMemoize from "p-memoize";
 
-const specialCharsRegex = /[.[\]]/;
+const specialCharsRegex = /[\s.[\]]/;
 
 /**
  * Create a Formik field name, validating the individual path parts.

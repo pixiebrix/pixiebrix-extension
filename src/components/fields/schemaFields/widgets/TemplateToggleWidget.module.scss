@@ -36,6 +36,8 @@
 .field {
   width: auto !important;
   flex-grow: 1;
+
+  position: relative;
 }
 
 .symbol {

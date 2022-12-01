@@ -15,22 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { Form, FormControlProps } from "react-bootstrap";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+const varRegex = /(?<varName>@\w+(\.|\w|(\[\d+])|(\[("|')[\s\w]+("|')]))*)/g;
 
-const OmitFieldWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
-  schema,
-  isRequired,
-  uiSchema,
-  hideLabel,
-  isObjectProperty,
-  isArrayItem,
-  focusInput,
-  inputRef,
-  ...restProps
-  // `readyOnly` is like `disabled` except it allows mouse events
-  // and `focus`, which swaps `OmitFieldWidget` out
-}) => <Form.Control {...restProps} readOnly />;
+// This method is based on regex because we want to show popup even for incomplete template, ex. "{{ @foo."
+function getLikelyVariableAtPosition(
+  template: string,
+  position: number
+): string | null {
+  let match = varRegex.exec(template);
+  while (match !== null) {
+    const { varName } = match.groups;
+    const startIndex = match.index;
+    if (startIndex <= position && position <= startIndex + varName.length) {
+      varRegex.lastIndex = 0;
+      return varName;
+    }
 
-export default OmitFieldWidget;
+    match = varRegex.exec(template);
+  }
+
+  return null;
+}
+
+export default getLikelyVariableAtPosition;

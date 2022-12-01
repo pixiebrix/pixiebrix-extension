@@ -58,7 +58,7 @@ const Template: ComponentStory<
       onSubmit={action("onSubmit")}
     >
       <Form>
-        <SchemaField {...args} isRequired={args.required ?? true} />
+        <SchemaField {...args} />
         <Button type="submit">Submit</Button>
       </Form>
     </Formik>
@@ -109,7 +109,7 @@ export const NotRequiredText = Template.bind({});
 NotRequiredText.args = {
   name: "topObj.parentObj.testField",
   defaultValue: "",
-  required: false,
+  isRequired: false,
   label: "Enter some text",
   schema: {
     type: "string",

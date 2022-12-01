@@ -45,9 +45,9 @@ const NumberWidget: React.VFC<
   hideLabel,
   isObjectProperty,
   isArrayItem,
-  onClick,
   focusInput,
   step,
+  inputRef: inputRefProp,
   ...restProps
 }) => {
   const [{ value: formValue }, , { setValue: setFormValue }] =
@@ -61,6 +61,13 @@ const NumberWidget: React.VFC<
       inputRef.current?.focus();
     }
   }, [focusInput]);
+
+  useEffect(() => {
+    // Sync the ref values
+    if (inputRefProp) {
+      inputRefProp.current = inputRef.current;
+    }
+  }, [inputRef.current]);
 
   const onChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     ({ target }) => {

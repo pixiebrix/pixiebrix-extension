@@ -34,6 +34,7 @@ export const initialSettingsState: SettingsState = {
   suggestElements: false,
   browserWarningDismissed: false,
   varAnalysis: false,
+  varAutosuggest: false,
   partnerId: null,
   authMethod: null,
   authServiceId: null,
