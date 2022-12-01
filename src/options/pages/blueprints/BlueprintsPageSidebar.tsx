@@ -36,6 +36,7 @@ const BLUEPRINT_TAB_KEYS = [
   "personal",
   "public",
   "getStarted",
+  "botGames",
 ] as const;
 type BlueprintTabKey = typeof BLUEPRINT_TAB_KEYS[number];
 type BlueprintTabMap = {
@@ -66,6 +67,11 @@ export const BLUEPRINTS_PAGE_TABS: BlueprintTabMap = {
   getStarted: {
     key: "Get Started",
     tabTitle: "Welcome to the PixieBrix Extension Console",
+    filters: [],
+  },
+  botGames: {
+    key: "Bot Games",
+    tabTitle: "Finish your Bot Games setup",
     filters: [],
   },
 };
