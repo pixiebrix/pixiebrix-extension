@@ -35,7 +35,15 @@ import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { array } from "cooky-cutter";
 import { waitForEffect } from "@/testUtils/testHelpers";
 
-jest.mock("@/services/api");
+jest.mock("@/services/api", () => {
+  const originalModule = jest.requireActual("@/services/api");
+
+  return {
+    ...originalModule,
+    useGetMarketplaceTagsQuery: jest.fn(),
+    useGetMarketplaceListingsQuery: jest.fn(),
+  };
+});
 jest.mock("@/components/asyncIcon", () => ({
   useAsyncIcon: jest.fn(),
 }));
