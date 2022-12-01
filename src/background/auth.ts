@@ -33,6 +33,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
 import { UnknownObject } from "@/types";
 import { BusinessError } from "@/errors/businessErrors";
+import { memoizeUntilSettled } from "@/utils";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2" as ManualStorageKey;
 
@@ -67,8 +68,8 @@ export async function getCachedAuthData(
     OAUTH2_STORAGE_KEY,
     {}
   );
-  if (Object.prototype.hasOwnProperty.call(current, serviceAuthId)) {
-    // eslint-disable-next-line security/detect-object-injection -- just checked with `hasOwnProperty`
+  if (Object.hasOwn(current, serviceAuthId)) {
+    // eslint-disable-next-line security/detect-object-injection -- just checked with `hasOwn`
     return current[serviceAuthId];
   }
 }
@@ -83,11 +84,11 @@ export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
     OAUTH2_STORAGE_KEY,
     {}
   );
-  if (Object.prototype.hasOwnProperty.call(current, serviceAuthId)) {
+  if (Object.hasOwn(current, serviceAuthId)) {
     console.debug(
       `deleteCachedAuthData: removed data for auth ${serviceAuthId}`
     );
-    // OK because we're guarding with hasOwnProperty
+    // OK because we're guarding with hasOwn
     // eslint-disable-next-line security/detect-object-injection
     delete current[serviceAuthId];
     await setStorage(OAUTH2_STORAGE_KEY, current);
@@ -98,18 +99,26 @@ export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
     );
   }
 }
-
-// In-progress token requests to coalesce multiple requests for the same token. NOTE: this is not a cache, it only
-// contains in-progress requests.
-const tokenRequests = new Map<UUID, Promise<AuthData>>();
-
 /**
- * @see getToken
+ * Exchange credentials for a token, and cache the token response.
+ *
+ * If a request for the token is already in progress, return the existing promise.
  */
-export async function _getToken(
+
+export const getToken = memoizeUntilSettled(_getToken, {
+  cacheKey: ([, auth]) => auth.id,
+});
+
+async function _getToken(
   service: IService,
   auth: RawServiceConfiguration
 ): Promise<AuthData> {
+  expectContext("background");
+
+  if (!service.isToken) {
+    throw new Error(`Service ${service.id} does not use token authentication`);
+  }
+
   const { url, data: tokenData } = service.getTokenContext(auth.config);
 
   const {
@@ -125,36 +134,6 @@ export async function _getToken(
   await setCachedAuthData(auth.id, responseData);
 
   return responseData;
-}
-
-/**
- * Exchange credentials for a token, and cache the token response.
- *
- * If a request for the token is already in progress, return the existing promise.
- *
- * @param service
- * @param auth
- */
-export async function getToken(
-  service: IService,
-  auth: RawServiceConfiguration
-): Promise<AuthData> {
-  expectContext("background");
-
-  if (!service.isToken) {
-    throw new Error(`Service ${service.id} does not use token authentication`);
-  }
-
-  const existing = tokenRequests.get(auth.id);
-  if (existing != null) {
-    return existing;
-  }
-
-  const tokenPromise = _getToken(service, auth);
-  tokenRequests.set(auth.id, tokenPromise);
-  // eslint-disable-next-line promise/prefer-await-to-then -- returning the promise outside this method
-  tokenPromise.finally(() => tokenRequests.delete(auth.id));
-  return tokenPromise;
 }
 
 function parseResponseParams(url: URL): UnknownObject {
@@ -204,7 +183,7 @@ async function implicitGrantFlow(
   });
 
   const responseUrl = await browser.identity.launchWebAuthFlow({
-    url: authorizeURL.toString(),
+    url: authorizeURL.href,
     interactive: true,
   });
 
@@ -279,7 +258,7 @@ async function codeGrantFlow(
   }
 
   const responseUrl = await browser.identity.launchWebAuthFlow({
-    url: authorizeURL.toString(),
+    url: authorizeURL.href,
     interactive: true,
   });
 
@@ -327,7 +306,7 @@ async function codeGrantFlow(
   let tokenResponse: AxiosResponse;
 
   try {
-    tokenResponse = await axios.post(tokenURL.toString(), tokenParams, {
+    tokenResponse = await axios.post(tokenURL.href, tokenParams, {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
@@ -390,7 +369,7 @@ export async function launchOAuth2Flow(
     throw new BusinessError("authorizeUrl is required for oauth2");
   }
 
-  const isImplicitFlow = typeof rawTokenUrl === "undefined";
+  const isImplicitFlow = rawTokenUrl === undefined;
 
   if (isImplicitFlow) {
     console.debug("Using implicitGrantFlow because not tokenUrl was provided");

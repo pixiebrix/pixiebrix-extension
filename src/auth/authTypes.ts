@@ -16,7 +16,7 @@
  */
 
 import { RegistryId, UUID } from "@/core";
-import { Me, OrganizationTheme } from "@/types/contract";
+import { Me, OrganizationTheme, Milestone } from "@/types/contract";
 import { Except } from "type-fest";
 
 export interface AuthOption {
@@ -72,11 +72,23 @@ export type UserData = Partial<{
    * @since 1.7.1
    */
   enforceUpdateMillis: number | null;
+  /**
+   * The partner, controlling theme, documentation links, etc.
+   *
+   * Introduced to support partner Community Edition users because they are not part of an organization.
+   *
+   * @since 1.7.14
+   */
+  readonly partner?: Me["partner"];
 }>;
 
 // Exclude tenant information in updates (these are only updated on linking)
 export type UserDataUpdate = Required<Except<UserData, "hostname" | "user">>;
 
+/**
+ * User data keys (in addition to the token) to store in chrome.storage.local when linking the extension.
+ * @see updateUserData
+ */
 export const USER_DATA_UPDATE_KEYS: Array<keyof UserDataUpdate> = [
   "email",
   "organizationId",
@@ -85,6 +97,7 @@ export const USER_DATA_UPDATE_KEYS: Array<keyof UserDataUpdate> = [
   "groups",
   "flags",
   "enforceUpdateMillis",
+  "partner",
 ];
 
 export interface TokenAuthData extends UserData {
@@ -200,6 +213,11 @@ export type AuthState = {
    * List of feature flags for the user.
    */
   readonly flags: string[];
+
+  /**
+   * List of milestones for the user. A Milestone represents progress through the PixieBrix product.
+   */
+  readonly milestones: Milestone[];
 
   /**
    * The partner, controlling theme, documentation links, etc.

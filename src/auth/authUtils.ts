@@ -54,6 +54,7 @@ export function selectUserDataUpdate({
   organization_memberships: organizationMemberships = [],
   group_memberships = [],
   flags = [],
+  partner,
   enforce_update_millis: enforceUpdateMillis,
 }: Me): UserDataUpdate {
   const organizations = selectOrganizations(organizationMemberships);
@@ -66,6 +67,7 @@ export function selectUserDataUpdate({
     flags,
     organizations,
     groups,
+    partner,
     enforceUpdateMillis,
   };
 }
@@ -77,6 +79,7 @@ export function selectExtensionAuthState({
   organization,
   is_onboarded: isOnboarded,
   flags = [],
+  milestones = [],
   organization_memberships: organizationMemberships = [],
   group_memberships = [],
   partner,
@@ -96,6 +99,7 @@ export function selectExtensionAuthState({
     organizations,
     groups,
     flags,
+    milestones,
     partner,
     enforceUpdateMillis,
   };

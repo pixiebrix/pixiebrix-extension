@@ -43,7 +43,7 @@ export function inferInputMode(
   fieldName: string,
   fieldSchema: Schema
 ): FieldInputMode {
-  const hasField = Object.prototype.hasOwnProperty.call(fieldConfig, fieldName);
+  const hasField = Object.hasOwn(fieldConfig, fieldName);
   if (!hasField) {
     return "omit";
   }

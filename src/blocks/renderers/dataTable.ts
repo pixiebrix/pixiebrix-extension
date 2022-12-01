@@ -36,7 +36,7 @@ function renderValue<TRow extends Row>(
   row: TRow
 ) {
   const renderer = column.renderer ?? String;
-  const value = Object.prototype.hasOwnProperty.call(row, column.property)
+  const value = Object.hasOwn(row, column.property)
     ? row[column.property]
     : null;
   return renderer(value, row);

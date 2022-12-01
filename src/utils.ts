@@ -44,6 +44,7 @@ import { ApiVersion, RegistryId, SafeString } from "@/core";
 import { UnknownObject } from "@/types";
 import { RecipeDefinition } from "@/types/definitions";
 import safeJsonStringify from "json-stringify-safe";
+import pMemoize from "p-memoize";
 
 const specialCharsRegex = /[.[\]]/;
 
@@ -228,7 +229,7 @@ export function deepPickBy(
 }
 
 export function removeUndefined(obj: unknown): unknown {
-  return deepPickBy(obj, (value: unknown) => typeof value !== "undefined");
+  return deepPickBy(obj, (value: unknown) => value !== undefined);
 }
 
 export function boolean(value: unknown): boolean {
@@ -249,10 +250,6 @@ export function boolean(value: unknown): boolean {
   return false;
 }
 
-export function clone<T extends Record<string, unknown>>(object: T): T {
-  return Object.assign(Object.create(null), object);
-}
-
 export function isObject(value: unknown): value is Record<string, unknown> {
   return value && typeof value === "object";
 }
@@ -263,16 +260,6 @@ export function ensureJsonObject(value: Record<string, unknown>): JsonObject {
   }
 
   return JSON.parse(safeJsonStringify(value)) as JsonObject;
-}
-
-export function clearObject(obj: Record<string, unknown>): void {
-  for (const member in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, member)) {
-      // Checking to ensure own property
-      // eslint-disable-next-line security/detect-object-injection
-      delete obj[member];
-    }
-  }
 }
 
 /**
@@ -476,8 +463,8 @@ export function getProperty<TResult = unknown>(
   obj: UnknownObject,
   property: string
 ): TResult {
-  if (Object.prototype.hasOwnProperty.call(obj, property)) {
-    // Checking for hasOwnProperty
+  if (Object.hasOwn(obj, property)) {
+    // Checking for hasOwn
     // eslint-disable-next-line security/detect-object-injection
     return obj[property] as TResult;
   }
@@ -652,3 +639,23 @@ export function isValidUrl(
     return false;
   }
 }
+
+/**
+ * Ignores calls made with the same arguments while the first call is pending
+ * @example
+ *   const memFetch = ignoreRepeatedCalls(fetch)
+ *   await Promise([memFetch('/time'), memFetch('/time')])
+ *   // => both will return the exact same Promise
+ *   await memFetch('/time')
+ *   // => no concurrent calls at this time, so another request made
+ *
+ * @see https://github.com/sindresorhus/promise-fun/issues/15
+ */
+export const memoizeUntilSettled: typeof pMemoize = (
+  functionToMemoize,
+  options
+) =>
+  pMemoize(functionToMemoize, {
+    ...options,
+    cache: false,
+  });

@@ -16,7 +16,7 @@
  */
 
 import { Form } from "react-bootstrap";
-import type { MessageLevel } from "@/background/logging";
+import type { MessageLevel } from "@/telemetry/logging";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync, faTrash } from "@fortawesome/free-solid-svg-icons";
 import React, { useCallback } from "react";

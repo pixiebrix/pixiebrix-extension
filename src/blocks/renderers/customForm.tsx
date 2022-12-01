@@ -29,7 +29,7 @@ import {
 } from "@/core";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { JsonObject } from "type-fest";
-import { dataStore, proxyService, whoAmI } from "@/background/messenger/api";
+import { dataStore, proxyService } from "@/background/messenger/api";
 import notify from "@/utils/notify";
 import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
@@ -44,6 +44,7 @@ import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import safeJsonStringify from "json-stringify-safe";
 import { isEmpty, set } from "lodash";
 import { Stylesheets } from "@/components/Stylesheets";
+import { getTopLevelFrame } from "webext-messenger";
 
 const fields = {
   DescriptionField,
@@ -120,13 +121,14 @@ async function getInitialData(
 
     case "state": {
       const namespace = storage.namespace ?? "blueprint";
-      const me = await whoAmI();
+      const topLevelFrame = await getTopLevelFrame();
       // Target the top level frame. Inline panels aren't generally available, so the renderer will always be in the
       // sidebar which runs in the context of the top-level frame
-      return getPageState(
-        { tabId: me.tab.id, frameId: 0 },
-        { namespace, blueprintId, extensionId }
-      );
+      return getPageState(topLevelFrame, {
+        namespace,
+        blueprintId,
+        extensionId,
+      });
     }
 
     case "database": {
@@ -186,19 +188,16 @@ async function setData(
     }
 
     case "state": {
-      const me = await whoAmI();
+      const topLevelFrame = await getTopLevelFrame();
       // Target the top level frame. Inline panels aren't generally available, so the renderer will always be in the
       // sidebar which runs in the context of the top-level frame
-      await setPageState(
-        { tabId: me.tab.id, frameId: 0 },
-        {
-          namespace: storage.namespace ?? "blueprint",
-          data: cleanValues,
-          mergeStrategy: "shallow",
-          extensionId,
-          blueprintId,
-        }
-      );
+      await setPageState(topLevelFrame, {
+        namespace: storage.namespace ?? "blueprint",
+        data: cleanValues,
+        mergeStrategy: "shallow",
+        extensionId,
+        blueprintId,
+      });
       return;
     }
 
@@ -315,7 +314,7 @@ export function normalizeIncomingFormData(schema: Schema, data: UnknownObject) {
 export function normalizeOutgoingFormData(schema: Schema, data: UnknownObject) {
   const normalizedData = { ...data };
   for (const key of Object.keys(schema.properties)) {
-    if (typeof normalizedData[key] === "undefined") {
+    if (normalizedData[key] === undefined) {
       normalizedData[key] = null;
     }
   }

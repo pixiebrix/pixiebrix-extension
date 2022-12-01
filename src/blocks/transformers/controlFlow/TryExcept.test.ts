@@ -26,8 +26,8 @@ import { reducePipeline } from "@/runtime/reducePipeline";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
 
-jest.mock("@/background/messenger/api", () => {
-  const actual = jest.requireActual("@/background/messenger/api");
+jest.mock("@/telemetry/logging", () => {
+  const actual = jest.requireActual("@/telemetry/logging");
   return {
     ...actual,
     getLoggingConfig: jest.fn().mockResolvedValue({

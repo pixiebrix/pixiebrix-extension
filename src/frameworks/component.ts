@@ -93,7 +93,6 @@ export interface ReadAdapter<
 
   /**
    * Returns true if there is data defined for the component
-   * @param component
    */
   hasData: (component: TComponent) => boolean;
 

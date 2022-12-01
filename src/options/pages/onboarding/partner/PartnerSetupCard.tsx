@@ -33,6 +33,10 @@ import { getBaseURL } from "@/services/baseService";
 import settingsSlice from "@/store/settingsSlice";
 import { ManualStorageKey, readStorage } from "@/chrome";
 import { useLocation } from "react-router";
+import {
+  hostnameToUrl,
+  isCommunityControlRoom,
+} from "@/contrib/automationanywhere/aaUtils";
 
 function useInstallUrl() {
   const { data: me } = useGetMeQuery();
@@ -60,10 +64,21 @@ function useInstallUrl() {
 
 /**
  * Helper method to decide partner authentication method given local settings overrides, and current login state.
+ *
+ * @see useRequiredPartnerAuth
  */
 function usePartnerLoginMode(): "token" | "oauth2" {
+  // WARNING: the logic in this method must match the logic in useRequiredPartnerAuth, otherwise logging in using
+  // the method determined here will not result in the user passing the partner auth gate.
+
+  // Make sure to use useLocation because the location.search are on the hash route
+  const location = useLocation();
+
   const { authMethod } = useSelector(selectSettings);
-  const hasCachedLoggedIn = useSelector(selectIsLoggedIn);
+  const hasCachedNativeLogin = useSelector(selectIsLoggedIn);
+
+  // Hostname passed from manual flow during manual setup initiated via Control Room link
+  const hostname = new URLSearchParams(location.search).get("hostname");
 
   switch (authMethod) {
     case "partner-token": {
@@ -81,27 +96,16 @@ function usePartnerLoginMode(): "token" | "oauth2" {
     }
 
     default: {
-      // If the user is logged in using PixieBrix, show the token configuration screen. They'll keep using their
+      // If the user is logged in using PixieBrix, show the AA token configuration screen. They'll keep using their
       // PixieBrix token login instead of switching to the AA JWT login
-      return hasCachedLoggedIn ? "token" : "oauth2";
+      return hasCachedNativeLogin || isCommunityControlRoom(hostname)
+        ? "token"
+        : "oauth2";
     }
   }
 }
 
 const CONTROL_ROOM_URL_MANAGED_KEY = "controlRoomUrl" as ManualStorageKey;
-
-function hostnameToUrl(hostname: string): string {
-  if (hostname == null) {
-    // Give hint to user to include https: scheme
-    return "https://";
-  }
-
-  if (/^[\da-z]+:\/\//.test(hostname)) {
-    return hostname;
-  }
-
-  return `https://${hostname}`;
-}
 
 /**
  * A card to set up a required partner integration.
@@ -122,6 +126,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   // Prefer controlRoomUrl set by IT for force-installed extensions
   const fallbackControlRoomUrl =
     hostnameToUrl(hostname) ?? me?.organization?.control_room?.url ?? "";
+
   const [controlRoomUrl] = useAsyncState(
     async () => {
       try {
@@ -187,7 +192,11 @@ const PartnerSetupCard: React.FunctionComponent = () => {
           title="Link the extension to a PixieBrix account"
           active
         >
-          <Button className="btn btn-primary mt-2" href={installURL}>
+          <Button
+            className="btn btn-primary mt-2"
+            href={installURL}
+            data-testid="link-account-btn"
+          >
             <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
           </Button>
         </OnboardingStep>

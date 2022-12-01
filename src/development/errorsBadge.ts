@@ -27,7 +27,7 @@ function updateBadge(errorMessage: string | null): void {
     title: errorMessage ?? "Unknown error (no error message provided)",
   });
   void browserAction.setBadgeText({
-    text: counter ? String(counter) : undefined,
+    text: counter ? String(counter) : "",
   });
   void browserAction.setBadgeBackgroundColor({ color: "#F00" });
 }

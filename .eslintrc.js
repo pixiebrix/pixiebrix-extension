@@ -1,3 +1,5 @@
+const strictContexts = ["background"];
+
 const contexts = [
   "background",
   "contentScript",
@@ -10,10 +12,11 @@ const contexts = [
 const restrictedZones = [];
 for (const exporter of contexts) {
   for (const importer of contexts) {
-    if (exporter !== importer) {
+    if (exporter !== importer && !strictContexts.includes(exporter)) {
       restrictedZones.push({
-        target: `./src/${importer}/**/*`,
+        target: `./src/${importer}`,
         from: `./src/${exporter}`,
+        message: `Cross-context imports break expectations. Either use the Messenger to get data from ${exporter}, or move the imported item out of @/${exporter}`,
         except: [
           `../${exporter}/messenger/api.ts`,
           `../${exporter}/types.ts`,
@@ -22,6 +25,19 @@ for (const exporter of contexts) {
       });
     }
   }
+}
+
+for (const exporter of strictContexts) {
+  restrictedZones.push({
+    target: `./src/!(${exporter})/**/*`,
+    from: `./src/${exporter}`,
+    message: `Cross-context imports break expectations. Either use the Messenger to get data from ${exporter}, or move the imported item out of @/${exporter}`,
+    except: [
+      `../${exporter}/messenger`,
+      `../${exporter}/types.ts`,
+      `../${exporter}/nativeEditor/types.ts`,
+    ],
+  });
 }
 
 module.exports = {

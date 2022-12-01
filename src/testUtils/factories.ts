@@ -48,7 +48,10 @@ import trigger from "@/pageEditor/extensionPoints/trigger";
 import menuItem from "@/pageEditor/extensionPoints/menuItem";
 import {
   ActionFormState,
+  ContextMenuFormState,
   FormState,
+  QuickBarFormState,
+  SidebarFormState,
   TriggerFormState,
 } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
@@ -83,6 +86,9 @@ import { JsonObject } from "type-fest";
 import objectHash from "object-hash";
 import { makeEmptyPermissions } from "@/utils/permissions";
 import { Permissions } from "webextension-polyfill";
+import quickBar from "@/pageEditor/extensionPoints/quickBar";
+import contextMenu from "@/pageEditor/extensionPoints/contextMenu";
+import sidebar from "@/pageEditor/extensionPoints/sidebar";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -155,6 +161,7 @@ export const authStateFactory = define<AuthState>({
     const flags: AuthState["flags"] = [];
     return flags;
   },
+  milestones: [],
 });
 
 export const recipeMetadataFactory = define<Metadata>({
@@ -389,7 +396,6 @@ type ExternalExtensionPointParams = {
 
 /**
  * Factory to create a RecipeDefinition that refers to a versioned extensionPoint
- * @param extensionPointId
  */
 export const versionedExtensionPointRecipeFactory = ({
   extensionPointId,
@@ -423,7 +429,6 @@ export const versionedExtensionPointRecipeFactory = ({
 
 /**
  * Factory to create a RecipeDefinition with a definitions section and resolved extensions
- * @param extensionCount
  */
 export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
   const extensionPoints: ExtensionPointConfig[] = [];
@@ -472,7 +477,6 @@ type InnerExtensionPointParams = {
 
 /**
  * Factory to create a factory that creates a RecipeDefinition that refers to a versioned extensionPoint
- * @param extensionPointId
  */
 export const innerExtensionPointRecipeFactory = ({
   extensionPointRef = "extensionPoint" as InnerDefinitionRef,
@@ -595,6 +599,73 @@ export const triggerFormStateFactory = (
     } as any,
     pipelineOverride
   ) as TriggerFormState;
+};
+
+export const sidebarPanelFormStateFactory = (
+  override?: FactoryConfig<SidebarFormState>,
+  pipelineOverride?: BlockPipeline
+) => {
+  const defaultTriggerProps = sidebar.fromNativeElement(
+    "https://test.com",
+    recipeMetadataFactory({
+      id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
+      name: (n: number) => `Extension Point ${n}`,
+    }),
+    // TypeScript complains if the 3rd positional argument is left off
+    undefined as never
+  );
+
+  return formStateFactory(
+    {
+      ...defaultTriggerProps,
+      ...override,
+    } as any,
+    pipelineOverride
+  ) as SidebarFormState;
+};
+
+export const contextMenuFormStateFactory = (
+  override?: FactoryConfig<ContextMenuFormState>,
+  pipelineOverride?: BlockPipeline
+) => {
+  const defaultTriggerProps = contextMenu.fromNativeElement(
+    "https://test.com",
+    recipeMetadataFactory({
+      id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
+      name: (n: number) => `Extension Point ${n}`,
+    }),
+    null
+  );
+
+  return formStateFactory(
+    {
+      ...defaultTriggerProps,
+      ...override,
+    } as any,
+    pipelineOverride
+  ) as ContextMenuFormState;
+};
+
+export const quickbarFormStateFactory = (
+  override?: FactoryConfig<QuickBarFormState>,
+  pipelineOverride?: BlockPipeline
+) => {
+  const defaultTriggerProps = quickBar.fromNativeElement(
+    "https://test.com",
+    recipeMetadataFactory({
+      id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
+      name: (n: number) => `Extension Point ${n}`,
+    }),
+    null
+  );
+
+  return formStateFactory(
+    {
+      ...defaultTriggerProps,
+      ...override,
+    } as any,
+    pipelineOverride
+  ) as QuickBarFormState;
 };
 
 export const menuItemFormStateFactory = (

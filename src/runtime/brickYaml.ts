@@ -102,19 +102,21 @@ const RUNTIME_SCHEMA = yaml.DEFAULT_SCHEMA.extend([
  */
 function stripNonSchemaProps(brick: any) {
   return produce(brick, (draft: any) => {
-    for (const prop of ["sharing", "updated_at"]) {
+    // Root-level props
+    for (const prop of ["id", "sharing", "updated_at"]) {
       if (prop in draft) {
         // eslint-disable-next-line security/detect-object-injection -- constant above
         delete draft[prop];
       }
+    }
 
-      if (
-        draft.metadata &&
-        typeof draft.metadata === "object" &&
-        prop in draft.metadata
-      ) {
-        // eslint-disable-next-line security/detect-object-injection -- constant above
-        delete draft.metadata[prop];
+    // Props in the `metadata` object
+    if (draft.metadata && typeof draft.metadata === "object") {
+      for (const prop of ["sharing", "updated_at"]) {
+        if (prop in draft.metadata) {
+          // eslint-disable-next-line security/detect-object-injection -- constant above
+          delete draft.metadata[prop];
+        }
       }
     }
 
@@ -124,7 +126,6 @@ function stripNonSchemaProps(brick: any) {
 
 /**
  * Load brick YAML, with support for the custom tags for expressions.
- * @param config
  */
 export function loadBrickYaml(config: string): unknown {
   return yaml.load(config, { schema: RUNTIME_SCHEMA });

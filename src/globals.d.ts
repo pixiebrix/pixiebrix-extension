@@ -154,6 +154,12 @@ interface ExtendedRuntime
   requestUpdateCheck(): Promise<chrome.runtime.RequestUpdateCheckStatus>;
 }
 
+// Temporary type until officially added
+type BrowserStorage = Browser["storage"];
+interface ExtendedStorage extends BrowserStorage {
+  session: Browser.storage.local;
+}
+
 type Identity = Browser["identity"];
 
 /**
@@ -186,10 +192,16 @@ interface ExtendedIdentity extends Identity {
 interface ChromeifiedBrowser extends Browser {
   runtime: ExtendedRuntime;
   identity: ExtendedIdentity;
+  storage: ExtendedStorage;
 }
 
 declare const browser: ChromeifiedBrowser;
 
 declare namespace CSS {
   function px(length: number): string;
+}
+
+// Temporary type until officially added
+declare namespace chrome.storage {
+  export const session: StorageArea;
 }

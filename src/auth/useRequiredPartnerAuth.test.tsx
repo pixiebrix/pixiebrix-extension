@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 import React from "react";
 import { renderHook } from "@testing-library/react-hooks";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
@@ -59,6 +60,7 @@ describe("useRequiredPartnerAuth", () => {
       data: {
         id: uuidv4(),
         partner: null,
+        milestones: [],
       },
     }));
 
@@ -95,6 +97,7 @@ describe("useRequiredPartnerAuth", () => {
       data: {
         id: uuidv4(),
         partner: null,
+        milestones: [],
       },
     }));
 
@@ -126,6 +129,7 @@ describe("useRequiredPartnerAuth", () => {
           id: uuidv4(),
           theme: "automation-anywhere",
         },
+        milestones: [],
         organization: {
           control_room: {
             id: uuidv4(),
@@ -151,6 +155,70 @@ describe("useRequiredPartnerAuth", () => {
     });
   });
 
+  test("requires integration for CE user", async () => {
+    const store = testStore();
+
+    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+      isSuccess: true,
+      isLoading: false,
+      data: {
+        id: uuidv4(),
+        partner: {
+          id: uuidv4(),
+          theme: "automation-anywhere",
+        },
+        milestones: [{ key: "aa_community_edition_register" }],
+        organization: null,
+      },
+    }));
+
+    const { result } = renderHook(() => useRequiredPartnerAuth(), {
+      wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
+    });
+
+    await waitForEffect();
+
+    expect(result.current).toStrictEqual({
+      hasPartner: true,
+      partnerKey: "automation-anywhere",
+      requiresIntegration: true,
+      hasConfiguredIntegration: false,
+      isLoading: false,
+      error: undefined,
+    });
+  });
+
+  test("does not require integration for CE user once partner is removed", async () => {
+    const store = testStore();
+
+    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+      isSuccess: true,
+      isLoading: false,
+      data: {
+        id: uuidv4(),
+        // Partner becomes null once full PixieBrix is toggled on in the Admin Console
+        partner: null,
+        milestones: [{ key: "aa_community_edition_register" }],
+        organization: null,
+      },
+    }));
+
+    const { result } = renderHook(() => useRequiredPartnerAuth(), {
+      wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
+    });
+
+    await waitForEffect();
+
+    expect(result.current).toStrictEqual({
+      hasPartner: false,
+      partnerKey: undefined,
+      requiresIntegration: false,
+      hasConfiguredIntegration: false,
+      isLoading: false,
+      error: undefined,
+    });
+  });
+
   test("has required integration", async () => {
     const store = testStore({
       auth: authSlice.getInitialState(),
@@ -170,6 +238,7 @@ describe("useRequiredPartnerAuth", () => {
       isLoading: false,
       data: {
         id: uuidv4(),
+        milestones: [],
         partner: {
           id: uuidv4(),
           theme: "automation-anywhere",

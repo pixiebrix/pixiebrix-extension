@@ -110,7 +110,6 @@ class LocalDefinedService<
 
   /**
    * Returns origins that require permissions to use the service
-   * @param serviceConfig
    */
   getOrigins(serviceConfig: SanitizedConfig): string[] {
     const patterns = castArray(

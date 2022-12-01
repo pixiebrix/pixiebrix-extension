@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Runtime, Tabs } from "webextension-polyfill";
+import { Tabs } from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 import { asyncForEach } from "@/utils";
 import { getLinkedApiClient } from "@/services/apiClient";
@@ -34,12 +34,22 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import type { RunBlock } from "@/contentScript/runBlockTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { canAccessTab } from "@/utils/permissions";
+import { SessionMap } from "@/mv3/SessionStorage";
 
 type TabId = number;
 
-const tabToOpener = new Map<TabId, TabId>();
-const tabToTarget = new Map<TabId, TabId>();
 // TODO: One tab could have multiple targets, but `tabToTarget` currenly only supports one at a time
+const tabToTarget = new SessionMap<TabId>("tabToTarget", import.meta.url);
+
+// We shouldn't need to store this value, but Chrome loses it often
+// https://bugs.chromium.org/p/chromium/issues/detail?id=967150
+const tabToOpener = new SessionMap<TabId>("tabToOpener", import.meta.url);
+
+function rememberOpener(newTabId: TabId, openerTabId: TabId): void {
+  // FIXME: include frame information in tabToTarget
+  void tabToTarget.set(String(openerTabId), newTabId);
+  void tabToOpener.set(String(newTabId), openerTabId);
+}
 
 async function safelyRunBrick({ tabId }: { tabId: number }, request: RunBlock) {
   try {
@@ -79,20 +89,23 @@ export async function waitForTargetByUrl(url: string): Promise<Target> {
 
 /**
  * Run a brick in the window that opened the source window
- * @param request
  */
 export async function requestRunInOpener(
   this: MessengerMeta,
   request: RunBlock
 ): Promise<unknown> {
-  const sourceTabId = this.trace[0].tab.id;
+  let { id: sourceTabId, openerTabId } = this.trace[0].tab;
 
-  if (!tabToOpener.has(sourceTabId)) {
+  // Chrome may have lost this data in the meanwhile
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=967150
+  openerTabId ??= await tabToOpener.get(String(sourceTabId));
+
+  if (openerTabId == null) {
     throw new BusinessError("Sender tab has no opener");
   }
 
   const opener = {
-    tabId: tabToOpener.get(sourceTabId),
+    tabId: openerTabId,
   };
   const subRequest = { ...request, sourceTabId };
   return safelyRunBrick(opener, subRequest);
@@ -107,7 +120,7 @@ export async function requestRunInTarget(
   request: RunBlock
 ): Promise<unknown> {
   const sourceTabId = this.trace[0].tab.id;
-  const target = tabToTarget.get(sourceTabId);
+  const target = await tabToTarget.get(String(sourceTabId));
 
   if (!target) {
     throw new BusinessError("Sender tab has no target");
@@ -169,17 +182,17 @@ export async function openTab(
 ): Promise<void> {
   // Natively links the new tab to its opener + opens it right next to it
   const openerTabId = this.trace[0].tab?.id;
-  const tab = await browser.tabs.create({ ...createProperties, openerTabId });
-
-  // FIXME: include frame information here
-  tabToTarget.set(openerTabId, tab.id);
-  tabToOpener.set(tab.id, openerTabId);
+  const newTab = await browser.tabs.create({
+    ...createProperties,
+    openerTabId,
+  });
+  rememberOpener(newTab.id, openerTabId);
 }
 
-async function linkTabListener(tab: Tabs.Tab): Promise<void> {
-  if (tab.openerTabId) {
-    tabToOpener.set(tab.id, tab.openerTabId);
-    tabToTarget.set(tab.openerTabId, tab.id);
+async function linkTabListener({ id, openerTabId }: Tabs.Tab): Promise<void> {
+  // `openerTabId` may be missing when created via `tabs.create()`
+  if (openerTabId) {
+    rememberOpener(id, openerTabId);
   }
 }
 
@@ -198,12 +211,6 @@ export async function activateTab(this: MessengerMeta): Promise<void> {
 export async function closeTab(this: MessengerMeta): Promise<void> {
   // Allow `closeTab` to return before closing the tab or else the Messenger won't be able to respond #2051
   setTimeout(async () => browser.tabs.remove(this.trace[0].tab.id), 100);
-}
-
-export async function whoAmI(
-  this: MessengerMeta
-): Promise<Runtime.MessageSender> {
-  return this.trace[0];
 }
 
 interface ServerResponse {

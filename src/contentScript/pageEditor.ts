@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { deserializeError } from "serialize-error";
+import { deserializeError, serializeError } from "serialize-error";
 import { makeRead, ReaderTypeConfig } from "@/blocks/readers/factory";
 import FRAMEWORK_ADAPTERS from "@/frameworks/adapters";
 import { getComponentData } from "@/pageScript/protocol";
@@ -26,7 +26,7 @@ import {
   IntermediateState,
   ReduceOptions,
 } from "@/runtime/reducePipeline";
-import { ApiVersion, BlockArgContext, IReader, RegistryId } from "@/core";
+import { ApiVersion, BlockArgContext, IReader, RegistryId, UUID } from "@/core";
 // eslint-disable-next-line import/no-restricted-paths -- Custom devTools mechanism to transfer data
 import { selectedElement } from "@/pageEditor/getSelectedElement";
 import { isNullOrBlank, resolveObj } from "@/utils";
@@ -39,7 +39,11 @@ import { $safeFind } from "@/helpers";
 import { clearDynamicElements } from "@/contentScript/nativeEditor/dynamic";
 import { reactivateTab } from "./lifecycle";
 import selection from "@/utils/selectionController";
-import { BusinessError } from "@/errors/businessErrors";
+import { BusinessError, NoRendererError } from "@/errors/businessErrors";
+import { uuidv4 } from "@/types/helpers";
+import { PanelPayload } from "@/sidebar/types";
+import { HeadlessModeError } from "@/blocks/errors";
+import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
 
 async function read(factory: () => Promise<unknown>): Promise<unknown> {
   try {
@@ -77,7 +81,7 @@ export async function runBlock({
   context,
   apiVersion,
   rootSelector,
-}: RunBlockArgs) {
+}: RunBlockArgs): Promise<unknown> {
   const versionOptions = apiVersionOptions(apiVersion);
 
   if (!versionOptions.explicitDataFlow) {
@@ -131,6 +135,62 @@ export async function runBlock({
   );
 
   return cloneDeep(output) as SerializableResponse;
+}
+
+/**
+ * Run a single renderer (e.g. - for running a block preview)
+ *
+ * Renderers need to be run with try-catch, catch the HeadlessModeError, and
+ * use that to send the panel payload to the sidebar (or other target)
+ * @see SidebarExtensionPoint
+ *  starting on line 184, the call to reduceExtensionPipeline(),
+ *  wrapped in a try-catch
+ * @see executeBlockWithValidatedProps
+ *  starting on line 323, the runRendererPipeline() function
+ *
+ * Note: Currently only implemented for the temporary sidebar panels
+ * @see useDocumentPreviewRunBlock
+ */
+export async function runRendererBlock(
+  extensionId: UUID,
+  runId: UUID,
+  title: string,
+  args: RunBlockArgs
+): Promise<void> {
+  const nonce = uuidv4();
+
+  let payload: PanelPayload;
+  try {
+    await runBlock(args);
+    // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
+    // noinspection ExceptionCaughtLocallyJS
+    throw new NoRendererError();
+  } catch (error) {
+    if (error instanceof HeadlessModeError) {
+      payload = {
+        key: nonce,
+        blockId: error.blockId,
+        args: error.args,
+        ctxt: error.ctxt,
+        extensionId,
+        runId,
+      };
+    } else {
+      payload = {
+        key: nonce,
+        error: serializeError(error),
+        extensionId,
+        runId,
+      };
+    }
+
+    showTemporarySidebarPanel({
+      extensionId: null,
+      nonce,
+      heading: title,
+      payload,
+    });
+  }
 }
 
 export async function runReaderBlock({

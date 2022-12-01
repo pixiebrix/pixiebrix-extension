@@ -244,9 +244,10 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
     setFieldValue(
       name,
       produce(valueRef.current, (draft) => {
-        const prop = freshIdentifier("property" as SafeString, [
-          ...Object.keys(draft),
-        ]);
+        const prop = freshIdentifier(
+          "property" as SafeString,
+          Object.keys(draft)
+        );
         draft[prop] = "";
       })
     );
@@ -273,10 +274,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
                   : joinName(field.name, property)
               }
               property={property}
-              defined={Object.prototype.hasOwnProperty.call(
-                declaredProperties,
-                property
-              )}
+              defined={Object.hasOwn(declaredProperties, property)}
               onDelete={onDelete}
               onRename={onRename}
             />

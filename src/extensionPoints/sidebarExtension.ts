@@ -181,6 +181,13 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
       serviceContext,
     };
 
+    /**
+     * Renderers need to be run with try-catch, catch the HeadlessModeError, and
+     * use that to send the panel payload to the sidebar (or other target)
+     * @see runRendererBlock
+     * @see executeBlockWithValidatedProps
+     *  starting on line 323, the runRendererPipeline() function
+     */
     try {
       await reduceExtensionPipeline(body, initialValues, {
         headless: true,
