@@ -19,6 +19,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { serializeError } from "serialize-error";
 import { RecipesRootState, RecipesState } from "./recipesTypes";
 import registry from "./registry";
+import { StorageInterface } from "@/store/StorageInterface";
+import { localStorage } from "redux-persist-webextension-storage";
 
 export const initialState: RecipesState = Object.freeze({
   recipes: [],
@@ -109,4 +111,12 @@ export const recipesActions = {
   ...recipesSlice.actions,
   loadRecipesFromCache,
   refreshRecipes,
+};
+
+// Shadowing this type in order to export it properly
+const local: StorageInterface = localStorage;
+
+export const persistRecipesConfig = {
+  key: "recipes",
+  storage: local,
 };

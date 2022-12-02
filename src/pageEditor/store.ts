@@ -38,7 +38,7 @@ import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import analysisSlice from "@/analysis/analysisSlice";
 import pageEditorAnalysisManager from "./analysisManager";
 import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
-import { recipesSlice } from "@/recipes/recipesSlice";
+import { persistRecipesConfig, recipesSlice } from "@/recipes/recipesSlice";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
@@ -76,7 +76,7 @@ const store = configureStore({
     logs: logSlice.reducer,
     analysis: analysisSlice.reducer,
     tabState: tabStateSlice.reducer,
-    recipes: recipesSlice.reducer,
+    recipes: persistReducer(persistRecipesConfig, recipesSlice.reducer),
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {
