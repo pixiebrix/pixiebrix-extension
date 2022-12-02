@@ -18,7 +18,10 @@
 import { configureStore, Middleware } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import { localStorage } from "redux-persist-webextension-storage";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import {
+  editorSlice,
+  persistEditorConfig,
+} from "@/pageEditor/slices/editorSlice";
 import { createLogger } from "redux-logger";
 import { boolean } from "@/utils";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
@@ -66,13 +69,7 @@ const store = configureStore({
     ),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
-    editor: persistReducer(
-      {
-        key: "editor",
-        storage: localStorage,
-      },
-      editorSlice.reducer
-    ),
+    editor: persistReducer(persistEditorConfig, editorSlice.reducer),
     session: sessionSlice.reducer,
     savingExtension: savingExtensionSlice.reducer,
     runtime: runtimeSlice.reducer,

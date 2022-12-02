@@ -81,6 +81,8 @@ import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementCon
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { isExtension } from "@/pageEditor/sidebar/common";
+import { StorageInterface } from "@/store/StorageInterface";
+import { localStorage } from "redux-persist-webextension-storage";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -877,4 +879,12 @@ export const actions = {
   checkAvailableInstalledExtensions,
   checkAvailableDynamicElements,
   checkActiveElementAvailability,
+};
+
+// Shadowing this type in order to export it properly
+const local: StorageInterface = localStorage;
+
+export const persistEditorConfig = {
+  key: "editor",
+  storage: local,
 };
