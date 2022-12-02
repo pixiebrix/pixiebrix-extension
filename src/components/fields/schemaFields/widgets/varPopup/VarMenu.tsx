@@ -62,22 +62,24 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({ onClose }) => {
     ? ADAPTERS.get(activeElement.type).label
     : "";
 
+  const options = Object.entries(knownVars.getMap()).filter(
+    ([source]) => source !== KnownSources.TRACE
+  );
+
   return (
     <div className={styles.menu} ref={rootElementRef}>
       <div className={styles.menuList}>
-        {Object.entries(knownVars.getMap())
-          .filter(([source]) => source !== KnownSources.TRACE)
-          .map(([source, vars]) => (
-            <div className={styles.sourceItem} key={source}>
-              <SourceLabel
-                source={source}
-                extensionPointLabel={extensionPointLabel}
-                blocksInfo={Object.values(pipelineMap)}
-                allBlocks={allBlocks}
-              />
-              <VariablesTree vars={vars} />
-            </div>
-          ))}
+        {options.map(([source, vars]) => (
+          <div className={styles.sourceItem} key={source}>
+            <SourceLabel
+              source={source}
+              extensionPointLabel={extensionPointLabel}
+              blocksInfo={Object.values(pipelineMap)}
+              allBlocks={allBlocks}
+            />
+            <VariablesTree vars={vars} />
+          </div>
+        ))}
       </div>
     </div>
   );

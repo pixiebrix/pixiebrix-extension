@@ -19,6 +19,7 @@
 .menu {
   top: 100%;
   position: absolute;
+  min-width: 300px;
   width: 100%;
   z-index: 1;
   background-color: rgb(255, 255, 255);
@@ -34,6 +35,8 @@
   position: relative;
   padding-top: 4px;
   padding-bottom: 4px;
+
+  max-height: 300px;
 }
 
 .sourceItem {
