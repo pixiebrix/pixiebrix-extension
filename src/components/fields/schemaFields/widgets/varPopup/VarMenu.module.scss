@@ -15,22 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { Form, FormControlProps } from "react-bootstrap";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+// Copies the style of react-select's menu
+.menu {
+  top: 100%;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+  background-color: rgb(255, 255, 255);
+  border-radius: 4px;
+  box-shadow: #0000001a 0 0 0 1px;
+  margin-bottom: 8px;
+  margin-top: 8px;
+  box-sizing: border-box;
+}
 
-const OmitFieldWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
-  schema,
-  isRequired,
-  uiSchema,
-  hideLabel,
-  isObjectProperty,
-  isArrayItem,
-  focusInput,
-  inputRef,
-  ...restProps
-  // `readyOnly` is like `disabled` except it allows mouse events
-  // and `focus`, which swaps `OmitFieldWidget` out
-}) => <Form.Control {...restProps} readOnly />;
-
-export default OmitFieldWidget;
+.menuList {
+  overflow-y: auto;
+  padding-bottom: 4px;
+  padding-top: 4px;
+  position: relative;
+}

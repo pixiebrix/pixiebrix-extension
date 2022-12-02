@@ -70,20 +70,26 @@ import { useGetTheme } from "@/hooks/useTheme";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import { RunProcess } from "@/contrib/uipath/process";
 
-jest.mock("@/services/api", () => ({
-  appApi: {
-    endpoints: {
-      getMarketplaceListings: {
-        useQueryState: jest.fn(),
+jest.mock("@/services/api", () => {
+  const originalModule = jest.requireActual("@/services/api");
+
+  return {
+    appApi: {
+      ...originalModule.appApi,
+      endpoints: {
+        ...originalModule.appApi.endpoints,
+        getMarketplaceListings: {
+          useQueryState: jest.fn(),
+        },
       },
     },
-  },
-  useGetMarketplaceTagsQuery: jest.fn(),
-  useGetMarketplaceListingsQuery: jest.fn(),
-  useGetEditablePackagesQuery: jest.fn(),
-  useCreateRecipeMutation: jest.fn(),
-  useUpdateRecipeMutation: jest.fn(),
-}));
+    useGetMarketplaceTagsQuery: jest.fn(),
+    useGetMarketplaceListingsQuery: jest.fn(),
+    useGetEditablePackagesQuery: jest.fn(),
+    useCreateRecipeMutation: jest.fn(),
+    useUpdateRecipeMutation: jest.fn(),
+  };
+});
 jest.mock("@/components/asyncIcon", () => ({
   useAsyncIcon: jest.fn(),
 }));

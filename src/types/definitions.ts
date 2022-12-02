@@ -110,7 +110,7 @@ export type SharingDefinition = {
   organizations: UUID[];
 };
 
-type Kind = "recipe" | "service" | "reader" | "component";
+export type Kind = "recipe" | "service" | "reader" | "component";
 
 /**
  * A PixieBrix brick or extension point definition

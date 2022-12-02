@@ -19,6 +19,7 @@ import { RegistryId, UUID } from "@/core";
 import { BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import {
   EditablePackage,
+  Kind,
   RecipeDefinition,
   ServiceDefinition,
   UnsavedRecipeDefinition,
@@ -272,7 +273,7 @@ export const appApi = createApi({
           method: "post",
           data: {
             config: recipeConfig,
-            kind: "recipe" as RecipeDefinition["kind"],
+            kind: "recipe" as Kind,
             organizations,
             public: isPublic,
             share_dependencies: shareDependencies,
@@ -295,7 +296,7 @@ export const appApi = createApi({
             id: packageId,
             name: recipe.metadata.id,
             config: recipeConfig,
-            kind: "recipe" as RecipeDefinition["kind"],
+            kind: "recipe" as Kind,
             public: Boolean((recipe as RecipeDefinition).sharing?.public),
             organizations:
               (recipe as RecipeDefinition).sharing?.organizations ?? [],
