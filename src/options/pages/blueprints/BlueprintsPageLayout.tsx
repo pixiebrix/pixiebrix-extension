@@ -33,6 +33,7 @@ import { Installable, InstallableViewItem } from "./blueprintsTypes";
 import {
   selectActiveTab,
   selectGroupBy,
+  selectSearchQuery,
   selectSortBy,
 } from "./blueprintsSelectors";
 import { useSelector } from "react-redux";
@@ -122,6 +123,7 @@ const BlueprintsPageLayout: React.FunctionComponent<{
   const groupBy = useSelector(selectGroupBy);
   const sortBy = useSelector(selectSortBy);
   const activeTab = useSelector(selectActiveTab);
+  const searchQuery = useSelector(selectSearchQuery);
 
   const tableInstance = useTable<InstallableViewItem>(
     {
@@ -131,7 +133,7 @@ const BlueprintsPageLayout: React.FunctionComponent<{
         groupBy,
         sortBy,
         filters: activeTab.filters,
-        globalFilter: "",
+        globalFilter: searchQuery,
       },
       useControlledState: (state) =>
         useMemo(
@@ -140,6 +142,7 @@ const BlueprintsPageLayout: React.FunctionComponent<{
             groupBy,
             sortBy,
             filters: activeTab.filters,
+            globalFilter: searchQuery,
           }),
           // eslint-disable-next-line react-hooks/exhaustive-deps -- table props are required dependencies
           [state, groupBy, sortBy, activeTab.filters]

@@ -29,3 +29,5 @@ export const selectSortBy = ({ blueprints }: BlueprintsRootState) =>
   blueprints.sortBy;
 export const selectActiveTab = ({ blueprints }: BlueprintsRootState) =>
   blueprints.activeTab;
+export const selectSearchQuery = ({ blueprints }: BlueprintsRootState) =>
+  blueprints.searchQuery;

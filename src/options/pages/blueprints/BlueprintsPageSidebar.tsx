@@ -3,7 +3,7 @@ import styles from "./ListFilters.module.scss";
 import { Col, Form, Nav, NavLinkProps } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import useReduxState from "@/hooks/useReduxState";
-import { selectActiveTab } from "./blueprintsSelectors";
+import { selectActiveTab, selectSearchQuery } from "./blueprintsSelectors";
 import blueprintsSlice, { ActiveTab } from "./blueprintsSlice";
 import { useDebounce } from "use-debounce";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -102,6 +102,10 @@ const BlueprintsPageSidebar: React.FunctionComponent<
     selectActiveTab,
     blueprintsSlice.actions.setActiveTab
   );
+  const [_, setSearchQuery] = useReduxState(
+    selectSearchQuery,
+    blueprintsSlice.actions.setSearchQuery
+  );
   const [query, setQuery] = useState("");
   const [debouncedQuery] = useDebounce(query, 300, {
     trailing: true,
@@ -166,7 +170,7 @@ const BlueprintsPageSidebar: React.FunctionComponent<
   // filtered category
   useEffect(() => {
     if (globalFilter !== debouncedQuery) {
-      setGlobalFilter(debouncedQuery);
+      setSearchQuery(debouncedQuery);
     }
 
     if (debouncedQuery) {
