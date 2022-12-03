@@ -270,7 +270,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         }
       } catch (error) {
         // Try to proceed as normal
-        reportError(error, this.logger.context);
+        reportError(error, { context: this.logger.context });
       }
     }
 

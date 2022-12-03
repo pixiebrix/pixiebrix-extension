@@ -27,6 +27,11 @@ expectContext(
   "reportError requires access background messenger API"
 );
 
+interface ErrrorReportOptions {
+  context?: MessageContext;
+  logToConsole?: boolean;
+}
+
 /**
  * Report an error for local logs, remote telemetry, etc.
  * @param errorLike the error object
@@ -35,8 +40,7 @@ expectContext(
  */
 export default function reportError(
   errorLike: unknown, // It might also be an ErrorEvent
-  context?: MessageContext,
-  { logToConsole = true } = {}
+  { context = {}, logToConsole = true }: ErrrorReportOptions = {}
 ): void {
   if (logToConsole) {
     console.error(errorLike, { context });
