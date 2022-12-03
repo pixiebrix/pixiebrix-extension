@@ -35,23 +35,18 @@ import {
   isContextInvalidatedError,
   notifyContextInvalidated,
 } from "@/errors/contextInvalidated";
-import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
 import { UUID } from "@/core";
+import { onUncaughtError } from "@/errors/errorHelpers";
 
-function ignoreContextInvalidatedErrors(
-  errorEvent: ErrorEvent | PromiseRejectionEvent
-): void {
+// Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
+onUncaughtError((error) => {
   // Rather than a global `onContextInvalidated` listener, we want to notify the user only when
   // they're actually interacting with PixieBrix, otherwise they might receive the notification
   // at random times.
-  if (isContextInvalidatedError(errorEvent)) {
+  if (isContextInvalidatedError(error)) {
     void notifyContextInvalidated();
-    errorEvent.preventDefault();
   }
-}
-
-// Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
-uncaughtErrorHandlers.unshift(ignoreContextInvalidatedErrors);
+});
 
 export async function init(uuid: UUID): Promise<void> {
   registerMessenger();

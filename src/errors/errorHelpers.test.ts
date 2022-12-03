@@ -19,17 +19,16 @@ import {
   getErrorMessage,
   getErrorMessageWithCauses,
   hasSpecificErrorCause,
-  IGNORED_ERROR_PATTERNS,
   isErrorObject,
   selectError,
-  selectErrorFromEvent,
+  selectErrorFromErrorEvent,
   selectErrorFromRejectionEvent,
   selectSpecificError,
+  shouldErrorBeIgnored,
 } from "@/errors/errorHelpers";
 import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
-import { matchesAnyPattern } from "@/utils";
 import { isPlainObject } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
 import {
@@ -277,14 +276,14 @@ describe("selectError", () => {
   });
 });
 
-describe("selectErrorFromEvent", () => {
+describe("selectErrorFromErrorEvent", () => {
   it("extracts error from ErrorEvent", () => {
     const error = new Error("This won’t be caught");
     const errorEvent = new ErrorEvent("error", {
       error,
     });
 
-    expect(selectErrorFromEvent(errorEvent)).toBe(error);
+    expect(selectErrorFromErrorEvent(errorEvent)).toBe(error);
   });
 
   it("handles ErrorEvent with null message and error", () => {
@@ -293,7 +292,7 @@ describe("selectErrorFromEvent", () => {
       message: null,
     });
 
-    const selectedError = selectErrorFromEvent(errorEvent);
+    const selectedError = selectErrorFromErrorEvent(errorEvent);
     expect(selectedError).toMatchInlineSnapshot("[Error: Unknown error event]");
   });
 
@@ -309,14 +308,27 @@ describe("selectErrorFromEvent", () => {
       message: eventMessage,
     });
 
-    const selectedError = selectErrorFromEvent(errorEvent);
+    const selectedError = selectErrorFromErrorEvent(errorEvent);
 
     expect(selectedError.message).toBe(eventMessage);
 
-    // This particular error should be ignored by recordError because it's in the IGNORED_ERROR_PATTERNS. Check here
-    // that the error message matches one of the ignored patterns.
-    const message = getErrorMessage(selectedError);
-    expect(matchesAnyPattern(message, IGNORED_ERROR_PATTERNS)).toBeTruthy();
+    // This particular error should be ignored by recordError because it's in the IGNORED_ERROR_PATTERNS
+
+    // It should work with raw error messages
+    expect(shouldErrorBeIgnored(getErrorMessage(selectedError))).toBeTrue();
+
+    // It should work with error objects
+    expect(shouldErrorBeIgnored(selectedError)).toBeTrue();
+
+    // It should ignore specified-but-empty contexts
+    expect(shouldErrorBeIgnored(selectedError, {})).toBeTrue();
+
+    // It should not ignore non-empty contexts
+    expect(
+      shouldErrorBeIgnored(getErrorMessage(selectedError), {
+        label: "Don’t ignore me",
+      })
+    ).toBeFalse();
   });
 
   it("wraps primitive from ErrorEvent and creates stack", () => {
@@ -328,7 +340,7 @@ describe("selectErrorFromEvent", () => {
       error,
     });
 
-    const selectedError = selectErrorFromEvent(errorEvent);
+    const selectedError = selectErrorFromErrorEvent(errorEvent);
     expect(selectedError).toMatchInlineSnapshot("[Error: It’s a non-error]");
     expect(selectedError.stack).toMatchInlineSnapshot(`
       "Error: It’s a non-error

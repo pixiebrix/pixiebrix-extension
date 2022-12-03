@@ -18,7 +18,7 @@
 import { MessageContext } from "@/core";
 import { backgroundTarget as bg, messenger } from "webext-messenger";
 import { serializeError } from "serialize-error";
-import { selectError } from "@/errors/errorHelpers";
+import { selectError, shouldErrorBeIgnored } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
 import { getContextName } from "webext-detect-page";
 
@@ -40,6 +40,13 @@ export default function reportError(
 ): void {
   if (logToConsole) {
     console.error(errorLike, { context });
+  }
+
+  if (shouldErrorBeIgnored(errorLike, context)) {
+    console.debug("Ignoring error matching IGNORED_ERROR_PATTERNS", {
+      error: errorLike,
+    });
+    return;
   }
 
   try {
