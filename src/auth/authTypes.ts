@@ -114,6 +114,12 @@ export type PartnerAuthData = {
    */
   token: string | null;
   /**
+   * The refresh token, if `offline_access` was included in scope.
+   * @since 1.7.15
+   */
+  refreshToken: string | null;
+
+  /**
    * Extra HTTP headers to send with every request.
    */
   extraHeaders: Record<string, string> | null;
