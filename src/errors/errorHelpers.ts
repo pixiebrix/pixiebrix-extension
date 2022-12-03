@@ -83,7 +83,7 @@ export function shouldErrorBeIgnored(
   );
 }
 
-/** Add a global lister for uncaught errors and promise rejections */
+/** Add a global listener for uncaught errors and promise rejections */
 export function onUncaughtError(handler: (error: Error) => void): void {
   const listener = (errorEvent: ErrorEvent | PromiseRejectionEvent): void => {
     handler(selectErrorFromEvent(errorEvent));
@@ -263,7 +263,7 @@ export function getErrorCauseList(error: unknown): unknown[] {
 }
 
 /**
- * Handle ErrorEvents, i.e., generated from window.onerror
+ * Extracts or generates error from ErrorEvent
  * @deprecated use the generic `selectErrorFromEvent`
  */
 export function selectErrorFromErrorEvent(event: ErrorEvent): Error {
@@ -302,7 +302,7 @@ export function selectErrorFromErrorEvent(event: ErrorEvent): Error {
 }
 
 /**
- * Handle unhandled promise rejections
+ * Extracts error from PromiseRejectionEvent
  * @deprecated use the generic `selectErrorFromEvent`
  */
 export function selectErrorFromRejectionEvent(
@@ -318,7 +318,7 @@ export function selectErrorFromRejectionEvent(
 }
 
 /**
- * Handle unhandled promise rejections and ErrorEvents
+ * Extracts error from ErrorEvent and PromiseRejectionEvent
  */
 export function selectErrorFromEvent(
   event: ErrorEvent | PromiseRejectionEvent
