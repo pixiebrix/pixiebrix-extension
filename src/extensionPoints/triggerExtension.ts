@@ -455,7 +455,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
           await this.runExtension(readerContext, extension, root);
         } catch (error) {
           if (this.shouldReportError(extension.id)) {
-            reportError(error, extensionLogger.context);
+            reportError(error, { context: extensionLogger.context });
           }
 
           return error;

@@ -214,9 +214,11 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
           await this.registerExtension(extension);
         } catch (error) {
           reportError(error, {
-            deploymentId: extension._deployment?.id,
-            extensionPointId: extension.extensionPointId,
-            extensionId: extension.id,
+            context: {
+              deploymentId: extension._deployment?.id,
+              extensionPointId: extension.extensionPointId,
+              extensionId: extension.id,
+            },
           });
           throw error;
         }

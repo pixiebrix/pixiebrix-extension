@@ -26,7 +26,7 @@ import reportError from "@/telemetry/reportError";
 // an `init` function will be called after every top-level imports (and their deps)
 // has been executed.
 onUncaughtError((error: Error): void => {
-  reportError(error, undefined, {
+  reportError(error, {
     // The browser already shows uncaught errors in the console
     logToConsole: false,
   });
