@@ -165,7 +165,7 @@ describe("refresh partner token", () => {
     expect(axiosMock.history.post).toHaveLength(0);
   });
 
-  it("it refreshes token", async () => {
+  it("refreshes token", async () => {
     const authId = uuidv4();
     readPartnerAuthDataMock.mockResolvedValue({
       authId,
@@ -203,7 +203,7 @@ describe("refresh partner token", () => {
     });
   });
 
-  it("it throws on authorization error", async () => {
+  it("throws on authorization error", async () => {
     const authId = uuidv4();
     readPartnerAuthDataMock.mockResolvedValue({
       authId,
