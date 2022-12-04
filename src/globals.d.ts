@@ -19,6 +19,7 @@
 /// <reference types="urlpattern-polyfill" />
 
 // This cannot be a regular import because it turns `globals.d.ts` in a "module definition", which it isn't
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 type Browser = import("webextension-polyfill").Browser;
 
 // https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
