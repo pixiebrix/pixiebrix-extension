@@ -17,24 +17,28 @@
 
 import React from "react";
 import {
-  InitialValues,
+  type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
 import {
-  IBlock,
-  IconConfig,
-  IExtensionPoint,
-  IReader,
-  ResolvedExtension,
-  Schema,
-  UUID,
+  type IBlock,
+  type IconConfig,
+  type IExtensionPoint,
+  type IReader,
+  type ResolvedExtension,
+  type Schema,
+  type UUID,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { Manifest, Menus, Permissions } from "webextension-polyfill";
+import {
+  type Manifest,
+  type Menus,
+  type Permissions,
+} from "webextension-polyfill";
 import {
   ExtensionPoint,
-  ExtensionPointConfig,
-  ExtensionPointDefinition,
+  type ExtensionPointConfig,
+  type ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/blocks/available";
@@ -47,7 +51,7 @@ import notify, {
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";

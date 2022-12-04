@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect } from "react";
-import { ComponentMeta, Story } from "@storybook/react";
+import { type ComponentMeta, type Story } from "@storybook/react";
 import { configureStore } from "@reduxjs/toolkit";
 import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settingsSlice";
@@ -24,9 +24,9 @@ import { authSlice } from "@/auth/authSlice";
 import { Provider } from "react-redux";
 import servicesSlice from "@/store/servicesSlice";
 import { uuidv4 } from "@/types/helpers";
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 import PartnerSetupCard from "@/options/pages/onboarding/partner/PartnerSetupCard";
-import { AuthState } from "@/auth/authTypes";
+import { type AuthState } from "@/auth/authTypes";
 import { appApi } from "@/services/api";
 import { rest } from "msw";
 import { HashRouter } from "react-router-dom";

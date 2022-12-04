@@ -16,7 +16,7 @@
  */
 
 import { isErrorObject } from "@/errors/errorHelpers";
-import { AxiosRequestConfig } from "axios";
+import { type AxiosRequestConfig } from "axios";
 import { testMatchPatterns } from "@/blocks/available";
 import {
   DEFAULT_SERVICE_URL,
@@ -27,7 +27,7 @@ import { isAbsoluteUrl } from "@/utils";
 import urljoin from "url-join";
 import {
   isAxiosError,
-  SerializableAxiosError,
+  type SerializableAxiosError,
 } from "@/errors/networkErrorHelpers";
 
 /**

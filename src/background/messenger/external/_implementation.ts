@@ -20,7 +20,7 @@
  */
 
 import { linkExtension } from "@/auth/token";
-import { TokenAuthData } from "@/auth/authTypes";
+import { type TokenAuthData } from "@/auth/authTypes";
 import { reportEvent } from "@/telemetry/events";
 
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;

@@ -16,7 +16,7 @@
  */
 
 import { Reader } from "@/types";
-import { ReaderOutput, Schema } from "@/core";
+import { type ReaderOutput, type Schema } from "@/core";
 import * as session from "@/contentScript/context";
 import { getExtensionAuth } from "@/auth/token";
 

@@ -16,11 +16,11 @@
  */
 
 import React, { useState } from "react";
-import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import FileWidget from "@/contrib/google/sheets/FileWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { validateRegistryId } from "@/types/helpers";
-import { SheetMeta } from "@/contrib/google/sheets/types";
+import { type SheetMeta } from "@/contrib/google/sheets/types";
 
 export const SERVICE_GOOGLE_SHEET_ID = validateRegistryId("google/sheet");
 

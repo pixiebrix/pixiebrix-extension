@@ -20,7 +20,7 @@ import { PageTitle } from "@/layout/Page";
 import { faHammer } from "@fortawesome/free-solid-svg-icons";
 import { Row, Col, Button, Form } from "react-bootstrap";
 import { Formik } from "formik";
-import Editor, { EditorValues } from "./Editor";
+import Editor, { type EditorValues } from "./Editor";
 import useSubmitBrick from "./useSubmitBrick";
 import { useTitle } from "@/hooks/title";
 

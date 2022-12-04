@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 import { getIn } from "formik";
 
 type InvalidPathInformation = {

@@ -17,7 +17,7 @@
 
 import { Renderer } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg, SafeHTML } from "@/core";
+import { type BlockArg, type SafeHTML } from "@/core";
 import sanitize from "@/utils/sanitize";
 
 export class HtmlRenderer extends Renderer {

@@ -16,17 +16,21 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { BlockConfig, BlockPipeline, BlockPosition } from "@/blocks/types";
+import {
+  type BlockConfig,
+  type BlockPipeline,
+  type BlockPosition,
+} from "@/blocks/types";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 import { produce } from "immer";
-import { WritableDraft } from "immer/dist/types/types-external";
+import { type WritableDraft } from "immer/dist/types/types-external";
 import PipelineVisitor, {
   ROOT_POSITION,
-  VisitResolvedBlockExtra,
+  type VisitResolvedBlockExtra,
 } from "@/blocks/PipelineVisitor";
 import pipelineSchema from "@schemas/pipeline.json";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
-import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
+import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
 
 class NormalizePipelineVisitor extends PipelineVisitor {
   constructor(private readonly blockMap: TypedBlockMap) {

@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Schema, UiSchema } from "@/core";
-import testItRenders, { ItRendersOptions } from "@/testUtils/testItRenders";
-import { Except } from "type-fest";
-import FormPreview, { FormPreviewProps } from "./FormPreview";
+import { type Schema, type UiSchema } from "@/core";
+import testItRenders, {
+  type ItRendersOptions,
+} from "@/testUtils/testItRenders";
+import { type Except } from "type-fest";
+import FormPreview, { type FormPreviewProps } from "./FormPreview";
 
 describe("FormPreview", () => {
   const defaultProps: Except<FormPreviewProps, "activeField"> = {

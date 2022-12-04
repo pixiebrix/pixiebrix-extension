@@ -16,9 +16,9 @@
  */
 
 import React from "react";
-import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 
-import AsyncButton from "@/components/AsyncButton";
+import type AsyncButton from "@/components/AsyncButton";
 import { BusinessError, NoRendererError } from "@/errors/businessErrors";
 import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 

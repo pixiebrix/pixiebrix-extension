@@ -17,8 +17,11 @@
 
 import { pickBy } from "lodash";
 import { ComponentNotFoundError, ignoreNotFound } from "@/frameworks/errors";
-import { RootInstanceVisitor } from "@/frameworks/scanner";
-import { ReadableComponentAdapter, traverse } from "@/frameworks/component";
+import { type RootInstanceVisitor } from "@/frameworks/scanner";
+import {
+  type ReadableComponentAdapter,
+  traverse,
+} from "@/frameworks/component";
 import { isNode } from "@/frameworks/dom";
 
 // React architecture references:

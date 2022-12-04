@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { OutputKey } from "@/core";
+import { type OutputKey } from "@/core";
 import styles from "./OutputKeyView.module.scss";
 import cx from "classnames";
 

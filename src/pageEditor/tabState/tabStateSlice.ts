@@ -16,7 +16,7 @@
  */
 
 import pTimeout from "p-timeout";
-import { FrameworkMeta } from "@/messaging/constants";
+import { type FrameworkMeta } from "@/messaging/constants";
 import { uuidv4 } from "@/types/helpers";
 import { thisTab } from "@/pageEditor/utils";
 import { detectFrameworks } from "@/contentScript/messenger/api";
@@ -24,12 +24,12 @@ import { ensureContentScript } from "@/background/messenger/api";
 import { onContextInvalidated } from "@/errors/contextInvalidated";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
-  FrameConnectionState,
-  TabState,
-  TabStateRootState,
+  type FrameConnectionState,
+  type TabState,
+  type TabStateRootState,
 } from "@/pageEditor/tabState/tabStateTypes";
-import { EditorRootState } from "@/pageEditor/pageEditorTypes";
-import { ExtensionsRootState } from "@/store/extensionsTypes";
+import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
+import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { canAccessTab } from "@/utils/permissions";
 import { serializeError } from "serialize-error";

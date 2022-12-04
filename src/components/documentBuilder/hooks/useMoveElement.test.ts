@@ -19,7 +19,7 @@ import {
   arrayMove,
   moveElement,
 } from "@/components/documentBuilder/hooks/useMoveElement";
-import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 
 const data = {
   id: "@pixiebrix/document",

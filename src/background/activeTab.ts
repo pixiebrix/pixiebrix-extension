@@ -2,7 +2,7 @@
 
 import { updatePageEditor } from "@/pageEditor/messenger/api";
 import { isScriptableUrl } from "@/utils/permissions";
-import { browserAction, Tab } from "@/mv3/api";
+import { browserAction, type Tab } from "@/mv3/api";
 
 type TabId = number;
 type Origin = string;

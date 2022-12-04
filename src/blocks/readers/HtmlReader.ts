@@ -16,7 +16,7 @@
  */
 
 import { Reader } from "@/types";
-import { ReaderOutput, ReaderRoot, Schema } from "@/core";
+import { type ReaderOutput, type ReaderRoot, type Schema } from "@/core";
 import { isHTMLElement } from "@/blocks/readers/frameworkReader";
 
 /**

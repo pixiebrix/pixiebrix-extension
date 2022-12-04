@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension } from "@/core";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type IExtension } from "@/core";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 export type SidebarItem = IExtension | FormState;
 

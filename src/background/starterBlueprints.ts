@@ -18,10 +18,10 @@
 import extensionsSlice from "@/store/extensionsSlice";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 import { forEachTab } from "@/background/activeTab";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
-import { ExtensionOptionsState } from "@/store/extensionsTypes";
+import { type ExtensionOptionsState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";
 import { debounce } from "lodash";
 import { refreshRegistries } from "./refreshRegistries";

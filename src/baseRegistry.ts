@@ -16,12 +16,12 @@
  */
 
 import { fetch } from "@/hooks/fetch";
-import { PACKAGE_NAME_REGEX, Kind } from "@/registry/localRegistry";
+import { PACKAGE_NAME_REGEX, type Kind } from "@/registry/localRegistry";
 import { registry } from "@/background/messenger/api";
 import { groupBy } from "lodash";
-import { RegistryPackage } from "@/types/contract";
+import { type RegistryPackage } from "@/types/contract";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 
 export interface RegistryItem<T extends RegistryId = RegistryId> {
   id: T;

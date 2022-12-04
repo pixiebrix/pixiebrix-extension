@@ -23,20 +23,20 @@ import {
   extensionPointDefinitionFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories";
-import { EditorRootState } from "@/pageEditor/pageEditorTypes";
-import { ExtensionsRootState } from "@/store/extensionsTypes";
+import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
+import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
 import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
 import { getCurrentURL } from "@/pageEditor/utils";
 import { validateRegistryId } from "@/types/helpers";
 import {
-  MenuDefinition,
+  type MenuDefinition,
   RemoteMenuItemExtensionPoint,
 } from "@/extensionPoints/menuItemExtension";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { Metadata } from "@/core";
+import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type Metadata } from "@/core";
 import {
-  QuickBarDefinition,
+  type QuickBarDefinition,
   RemoteQuickBarExtensionPoint,
 } from "@/extensionPoints/quickBarExtension";
 

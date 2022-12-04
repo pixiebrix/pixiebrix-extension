@@ -17,9 +17,9 @@
 
 import { Renderer } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg, BlockOptions, SafeHTML } from "@/core";
+import { type BlockArg, type BlockOptions, type SafeHTML } from "@/core";
 import { isNullOrBlank, isObject } from "@/utils";
-import makeDataTable, { Row } from "@/blocks/renderers/dataTable";
+import makeDataTable, { type Row } from "@/blocks/renderers/dataTable";
 import { BusinessError } from "@/errors/businessErrors";
 
 // Type ColumnDefinition = {

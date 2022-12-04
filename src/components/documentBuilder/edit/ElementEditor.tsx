@@ -19,7 +19,7 @@ import styles from "./DocumentEditor.module.scss";
 
 import { useField } from "formik";
 import React from "react";
-import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import { getProperty } from "@/utils";
 import { Col, Row } from "react-bootstrap";
 import RemoveElement from "./RemoveElement";

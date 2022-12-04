@@ -21,7 +21,7 @@ import useCreate from "@/pageEditor/hooks/useCreate";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
 import notify from "@/utils/notify";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 type ExtensionSaver = {
   save: (element: FormState) => Promise<void>;

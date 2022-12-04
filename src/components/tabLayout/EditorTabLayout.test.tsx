@@ -17,8 +17,8 @@
 
 import React from "react";
 import EditorTabLayout, {
-  ActionButton,
-  TabItem,
+  type ActionButton,
+  type TabItem,
 } from "@/components/tabLayout/EditorTabLayout";
 import {
   faHistory,

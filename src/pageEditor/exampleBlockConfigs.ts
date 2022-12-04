@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UnknownObject } from "@/types";
-import { RegistryId, Schema } from "@/core";
+import { type UnknownObject } from "@/types";
+import { type RegistryId, type Schema } from "@/core";
 import { COMPONENT_READER_ID } from "@/blocks/transformers/component/ComponentReader";
 import { FormTransformer } from "@/blocks/transformers/ephemeralForm/formTransformer";
 import { CustomFormRenderer } from "@/blocks/renderers/customForm";
@@ -24,7 +24,7 @@ import { createNewElement } from "@/components/documentBuilder/createNewElement"
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
-import { BlockConfig } from "@/blocks/types";
+import { type BlockConfig } from "@/blocks/types";
 import { uuidv4 } from "@/types/helpers";
 import { defaultBlockConfig } from "@/blocks/util";
 

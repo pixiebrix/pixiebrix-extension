@@ -16,8 +16,8 @@
  */
 
 import { isObject } from "@/utils";
-import { Except } from "type-fest";
-import { AxiosError, AxiosResponse } from "axios";
+import { type Except } from "type-fest";
+import { type AxiosError, type AxiosResponse } from "axios";
 import { isEmpty, isPlainObject } from "lodash";
 import { getReasonPhrase } from "http-status-codes";
 

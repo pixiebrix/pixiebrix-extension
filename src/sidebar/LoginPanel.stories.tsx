@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { ComponentStory, ComponentMeta } from "@storybook/react";
+import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 
 import LoginPanel from "@/sidebar/LoginPanel";
 import { configureStore } from "@reduxjs/toolkit";

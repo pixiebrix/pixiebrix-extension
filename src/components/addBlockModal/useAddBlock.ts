@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IBlock, OutputKey } from "@/core";
+import { type IBlock, type OutputKey } from "@/core";
 import { useCallback } from "react";
 import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import { compact, get } from "lodash";
@@ -30,10 +30,10 @@ import {
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import BlockTypeAnalysis from "@/analysis/analysisVisitors/blockTypeAnalysis";
 import { joinPathParts } from "@/utils";
-import { BlockConfig } from "@/blocks/types";
+import { type BlockConfig } from "@/blocks/types";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
-import { Analysis } from "@/analysis/analysisTypes";
+import { type Analysis } from "@/analysis/analysisTypes";
 import { produce } from "immer";
 import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
 

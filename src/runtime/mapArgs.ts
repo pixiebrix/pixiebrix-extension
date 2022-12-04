@@ -15,14 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UnknownObject } from "@/types";
-import { Renderer, engineRenderer, RendererOptions } from "./renderers";
+import { type UnknownObject } from "@/types";
+import {
+  type Renderer,
+  engineRenderer,
+  type RendererOptions,
+} from "./renderers";
 import { isPlainObject, mapValues, pickBy } from "lodash";
 import { getPropByPath, isSimplePath } from "./pathHelpers";
-import { Expression, ExpressionType, TemplateEngine } from "@/core";
+import {
+  type Expression,
+  type ExpressionType,
+  type TemplateEngine,
+} from "@/core";
 import { asyncMapValues } from "@/utils";
 import Mustache from "mustache";
-import { BlockPipeline } from "@/blocks/types";
+import { type BlockPipeline } from "@/blocks/types";
 
 const templateTypes: TemplateEngine[] = [
   "mustache",

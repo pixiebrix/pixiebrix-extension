@@ -16,7 +16,11 @@
  */
 
 import React from "react";
-import { OverlayTrigger, OverlayTriggerProps, Tooltip } from "react-bootstrap";
+import {
+  OverlayTrigger,
+  type OverlayTriggerProps,
+  Tooltip,
+} from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import styles from "./PopoverInfoLabel.module.scss";

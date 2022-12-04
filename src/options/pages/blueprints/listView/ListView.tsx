@@ -18,7 +18,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ListGroup } from "react-bootstrap";
 import ListItem from "./ListItem";
-import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
+import { type BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
 import { VariableSizeList as List } from "react-window";
 import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
 import { uuidv4 } from "@/types/helpers";

@@ -16,15 +16,15 @@
  */
 
 import React, { useMemo } from "react";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { SheetMeta } from "@/contrib/google/sheets/types";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SheetMeta } from "@/contrib/google/sheets/types";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { sheets } from "@/background/messenger/api";
 import { compact, uniq } from "lodash";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
-import { Expression } from "@/core";
+import { type Expression } from "@/core";
 import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";

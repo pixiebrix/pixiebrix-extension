@@ -19,7 +19,7 @@ import React, { useMemo } from "react";
 import { useField } from "formik";
 import ComplexObjectValue from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import SelectorSelectorWidget, {
-  SelectorSelectorProps,
+  type SelectorSelectorProps,
 } from "@/pageEditor/fields/SelectorSelectorWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 

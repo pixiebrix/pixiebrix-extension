@@ -15,8 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AxiosResponse } from "axios";
-import { ProxyResponseData, ProxyResponseErrorData } from "@/types/contract";
+import { type AxiosResponse } from "axios";
+import {
+  type ProxyResponseData,
+  type ProxyResponseErrorData,
+} from "@/types/contract";
 import { safeGuessStatusText } from "@/errors/networkErrorHelpers";
 
 export function proxyResponseToAxiosResponse(

@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode } from "react";
+import React, { type ReactNode } from "react";
 import {
   Col,
-  ColProps,
+  type ColProps,
   Form as BootstrapForm,
-  FormControlProps,
+  type FormControlProps,
   Row,
 } from "react-bootstrap";
 import styles from "./FieldTemplate.module.scss";

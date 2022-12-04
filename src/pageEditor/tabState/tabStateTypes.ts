@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SimpleErrorObject } from "@/errors/errorHelpers";
-import { FrameworkMeta } from "@/messaging/constants";
+import { type SimpleErrorObject } from "@/errors/errorHelpers";
+import { type FrameworkMeta } from "@/messaging/constants";
 
 interface FrameMeta {
   frameworks: FrameworkMeta[];

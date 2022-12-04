@@ -15,6 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiVersion } from "@/core";
+import { type ApiVersion } from "@/core";
 
 export const OPTIONS_DEFAULT_RUNTIME_API_VERSION: ApiVersion = "v3";

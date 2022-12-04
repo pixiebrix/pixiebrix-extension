@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { FormControlProps } from "react-bootstrap";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import React from "react";
-import { TemplateToggleWidgetProps } from "./templateToggleWidgetTypes";
+import { type FormControlProps } from "react-bootstrap";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import type React from "react";
+import { type TemplateToggleWidgetProps } from "./templateToggleWidgetTypes";
 
 type Widgets = {
   ArrayWidget: React.VFC<SchemaFieldProps>;

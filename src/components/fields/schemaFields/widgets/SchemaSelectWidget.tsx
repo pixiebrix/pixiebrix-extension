@@ -16,8 +16,8 @@
  */
 
 import React, { useCallback, useMemo, useState } from "react";
-import Select, { Options } from "react-select";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import Select, { type Options } from "react-select";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { isEmpty, sortBy, uniq } from "lodash";
 import { useField } from "formik";
 import Creatable from "react-select/creatable";

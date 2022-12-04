@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AuthRootState } from "./authTypes";
+import { type AuthRootState } from "./authTypes";
 
 export const selectAuth = (state: AuthRootState) => state.auth;
 export const selectIsLoggedIn = (state: AuthRootState) =>

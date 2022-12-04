@@ -27,7 +27,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./ActionMenu.module.scss";
 import EllipsisMenu, {
-  EllipsisMenuItem,
+  type EllipsisMenuItem,
 } from "@/components/ellipsisMenu/EllipsisMenu";
 
 export type ActionMenuProps = {

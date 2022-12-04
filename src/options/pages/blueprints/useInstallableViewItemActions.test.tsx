@@ -21,13 +21,13 @@
 import { renderHook } from "@testing-library/react-hooks";
 import { extensionFactory, recipeFactory } from "@/testUtils/factories";
 import useInstallableViewItemActions, {
-  InstallableViewItemActions,
+  type InstallableViewItemActions,
 } from "@/options/pages/blueprints/useInstallableViewItemActions";
 import useFlags from "@/hooks/useFlags";
 import {
-  InstallableStatus,
-  InstallableViewItem,
-  SharingType,
+  type InstallableStatus,
+  type InstallableViewItem,
+  type SharingType,
 } from "@/options/pages/blueprints/blueprintsTypes";
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
 import { useDeleteCloudExtensionMutation } from "@/services/api";

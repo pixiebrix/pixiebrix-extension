@@ -18,7 +18,11 @@
 import styles from "./LockedExtensionPointLabel.module.scss";
 
 import React from "react";
-import { OverlayTrigger, OverlayTriggerProps, Tooltip } from "react-bootstrap";
+import {
+  OverlayTrigger,
+  type OverlayTriggerProps,
+  Tooltip,
+} from "react-bootstrap";
 import { uuidv4 } from "@/types/helpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock } from "@fortawesome/free-solid-svg-icons";

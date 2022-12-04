@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId, SemVerString, Timestamp, UUID } from "@/core";
+import {
+  type RegistryId,
+  type SemVerString,
+  type Timestamp,
+  type UUID,
+} from "@/core";
 import { valid as semVerValid } from "semver";
 import { startsWith } from "lodash";
 import validUuidRegex from "@/vendors/validateUuid";

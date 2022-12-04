@@ -16,18 +16,18 @@
  */
 
 import { clearLog, getLog, type LogEntry } from "@/telemetry/logging";
-import { MessageContext } from "@/core";
+import { type MessageContext } from "@/core";
 import {
   createAsyncThunk,
   createSlice,
-  PayloadAction,
-  Slice,
+  type PayloadAction,
+  type Slice,
 } from "@reduxjs/toolkit";
 import { isEqual } from "lodash";
 import { selectActiveContext } from "./logSelectors";
-import { LogRootState, LogState } from "./logViewerTypes";
+import { type LogRootState, type LogState } from "./logViewerTypes";
 import { castDraft } from "immer";
-import { WritableDraft } from "immer/dist/types/types-external";
+import { type WritableDraft } from "immer/dist/types/types-external";
 
 const REFRESH_INTERVAL = 750;
 

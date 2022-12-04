@@ -31,7 +31,7 @@ import {
   mapValues,
   maxBy,
   negate,
-  ObjectIterator,
+  type ObjectIterator,
   partial,
   partialRight,
   pickBy,
@@ -39,10 +39,10 @@ import {
   unary,
   zip,
 } from "lodash";
-import { JsonObject, Primitive } from "type-fest";
-import { ApiVersion, RegistryId, SafeString } from "@/core";
-import { UnknownObject } from "@/types";
-import { RecipeDefinition } from "@/types/definitions";
+import { type JsonObject, type Primitive } from "type-fest";
+import { type ApiVersion, type RegistryId, type SafeString } from "@/core";
+import { type UnknownObject } from "@/types";
+import { type RecipeDefinition } from "@/types/definitions";
 import safeJsonStringify from "json-stringify-safe";
 import pMemoize from "p-memoize";
 

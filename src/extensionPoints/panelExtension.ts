@@ -21,7 +21,7 @@ import { errorBoundary } from "@/blocks/renderers/common";
 import { checkAvailable } from "@/blocks/available";
 import { castArray, cloneDeep } from "lodash";
 import {
-  InitialValues,
+  type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
 import { boolean } from "@/utils";
@@ -31,31 +31,31 @@ import {
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import {
-  IBlock,
-  IconConfig,
-  ResolvedExtension,
-  IExtensionPoint,
-  IReader,
-  ReaderOutput,
-  Schema,
-  UUID,
-  RendererOutput,
-  Metadata,
-  Logger,
-  RunArgs,
+  type IBlock,
+  type IconConfig,
+  type ResolvedExtension,
+  type IExtensionPoint,
+  type IReader,
+  type ReaderOutput,
+  type Schema,
+  type UUID,
+  type RendererOutput,
+  type Metadata,
+  type Logger,
+  type RunArgs,
 } from "@/core";
 import {
-  ExtensionPointDefinition,
-  ExtensionPointConfig,
+  type ExtensionPointDefinition,
+  type ExtensionPointConfig,
   ExtensionPoint,
 } from "@/extensionPoints/types";
 import { propertiesToSchema } from "@/validators/generic";
 import { render } from "@/extensionPoints/dom";
-import { Permissions } from "webextension-polyfill";
+import { type Permissions } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import getSvgIcon from "@/icons/getSvgIcon";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";

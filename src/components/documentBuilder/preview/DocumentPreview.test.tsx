@@ -18,8 +18,8 @@
 import React, { useState } from "react";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import {
-  DocumentElement,
-  ListDocumentElement,
+  type DocumentElement,
+  type ListDocumentElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { fireEvent } from "@testing-library/react";
 import DocumentPreview from "@/components/documentBuilder/preview/DocumentPreview";
@@ -36,7 +36,7 @@ import {
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import blockRegistry from "@/blocks/registry";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { PipelineExpression } from "@/runtime/mapArgs";
+import { type PipelineExpression } from "@/runtime/mapArgs";
 
 function renderDocumentPreview(documentElement: DocumentElement) {
   const formState = formStateFactory(undefined, [

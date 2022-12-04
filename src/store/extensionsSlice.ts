@@ -15,32 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CloudExtension, Deployment } from "@/types/contract";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type CloudExtension, type Deployment } from "@/types/contract";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { contextMenus } from "@/background/messenger/api";
 import {
-  DeploymentContext,
-  IExtension,
-  OutputKey,
-  PersistedExtension,
-  RecipeMetadata,
-  RegistryId,
-  UserOptions,
-  UUID,
+  type DeploymentContext,
+  type IExtension,
+  type OutputKey,
+  type PersistedExtension,
+  type RecipeMetadata,
+  type RegistryId,
+  type UserOptions,
+  type UUID,
 } from "@/core";
-import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
+import {
+  type ExtensionPointConfig,
+  type RecipeDefinition,
+} from "@/types/definitions";
 import { uuidv4 } from "@/types/helpers";
 import { partition, pick } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import {
-  ExtensionOptionsState,
-  LegacyExtensionObjectState,
-  OptionsState,
+  type ExtensionOptionsState,
+  type LegacyExtensionObjectState,
+  type OptionsState,
 } from "@/store/extensionsTypes";
-import { Except } from "type-fest";
+import { type Except } from "type-fest";
 import { assertExtensionNotResolved } from "@/runtime/runtimeUtils";
 
 const initialExtensionsState: ExtensionOptionsState = {

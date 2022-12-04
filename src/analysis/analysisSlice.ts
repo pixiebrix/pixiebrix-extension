@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AnalysisState, Annotation } from "@/analysis/analysisTypes";
-import { UUID } from "@/core";
-import VarMap from "./analysisVisitors/varAnalysis/varMap";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type AnalysisState, type Annotation } from "@/analysis/analysisTypes";
+import { type UUID } from "@/core";
+import type VarMap from "./analysisVisitors/varAnalysis/varMap";
 
 const initialState: AnalysisState = {
   extensionAnnotations: {},

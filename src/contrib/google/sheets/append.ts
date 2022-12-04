@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect, UnknownObject } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { Effect, type UnknownObject } from "@/types";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank, isObject } from "@/utils";
 import { isEqual, isPlainObject, unary, uniq } from "lodash";

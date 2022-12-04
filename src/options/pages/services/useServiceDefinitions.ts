@@ -16,8 +16,8 @@
  */
 
 import { useSelector } from "react-redux";
-import { RootState } from "@/options/store";
-import { IService, RawServiceConfiguration, UUID } from "@/core";
+import { type RootState } from "@/options/store";
+import { type IService, type RawServiceConfiguration, type UUID } from "@/core";
 import { useParams } from "react-router";
 import { useMemo } from "react";
 import { sortBy } from "lodash";

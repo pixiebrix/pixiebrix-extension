@@ -15,10 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 import { debounce } from "lodash";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
-import { MessageContext, SemVerString, SerializedError } from "@/core";
+import {
+  type MessageContext,
+  type SemVerString,
+  type SerializedError,
+} from "@/core";
 import {
   hasSpecificErrorCause,
   selectSpecificError,
@@ -32,7 +36,7 @@ import {
   selectAbsoluteUrl,
   selectAxiosError,
 } from "@/services/requestErrorUtils";
-import { ErrorItem } from "@/types/contract";
+import { type ErrorItem } from "@/types/contract";
 import { expectContext } from "@/utils/expectContext";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 

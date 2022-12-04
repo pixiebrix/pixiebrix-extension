@@ -28,7 +28,7 @@ import Effect from "@/pageEditor/components/Effect";
 import ElementWizard from "@/pageEditor/ElementWizard";
 import useEditable from "@/pageEditor/hooks/useEditable";
 import { logActions } from "@/components/logViewer/logSlice";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
   selectActiveElement,
   selectSelectionSeq,

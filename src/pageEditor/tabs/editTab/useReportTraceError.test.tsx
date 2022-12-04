@@ -22,8 +22,8 @@ import {
 } from "@/pageEditor/slices/editorSlice";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
-import { configureStore, Store } from "@reduxjs/toolkit";
-import { TraceRecord } from "@/telemetry/trace";
+import { configureStore, type Store } from "@reduxjs/toolkit";
+import { type TraceRecord } from "@/telemetry/trace";
 import { uuidv4 } from "@/types/helpers";
 import { reportEvent } from "@/telemetry/events";
 import { renderHook } from "@testing-library/react-hooks";

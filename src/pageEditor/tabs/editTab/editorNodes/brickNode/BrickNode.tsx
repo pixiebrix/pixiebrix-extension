@@ -25,7 +25,7 @@ import NodeActionsView from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/N
 import PipelineOffsetView from "@/pageEditor/tabs/editTab/editorNodes/PipelineOffsetView";
 import TrailingMessage from "@/pageEditor/tabs/editTab/editorNodes/TrailingMessage";
 import {
-  BrickNodeProps,
+  type BrickNodeProps,
   RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
 

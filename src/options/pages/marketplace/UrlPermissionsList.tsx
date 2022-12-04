@@ -21,7 +21,7 @@ import { selectOptionalPermissions } from "@/utils/permissions";
 import Loader from "@/components/Loader";
 import { Col, Row } from "react-bootstrap";
 import useReportError from "@/hooks/useReportError";
-import { Permissions } from "webextension-polyfill";
+import { type Permissions } from "webextension-polyfill";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
 const UrlPermissionsList: React.FunctionComponent<{

@@ -1,13 +1,18 @@
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { Block, UnknownObject } from "@/types";
+import { Block, type UnknownObject } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { ApiVersion, BlockArg, BlockOptions, Schema } from "@/core";
-import { InitialValues } from "@/runtime/reducePipeline";
+import {
+  type ApiVersion,
+  type BlockArg,
+  type BlockOptions,
+  type Schema,
+} from "@/core";
+import { type InitialValues } from "@/runtime/reducePipeline";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import {
   isDeferExpression,
   mapArgs,
-  PipelineExpression,
+  type PipelineExpression,
 } from "@/runtime/mapArgs";
 import { BusinessError } from "@/errors/businessErrors";
 import { UNSET_UUID } from "@/types/helpers";

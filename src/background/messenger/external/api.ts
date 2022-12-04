@@ -25,7 +25,7 @@ import * as local from "@/background/messenger/external/_implementation";
 // eslint-disable-next-line import/no-restricted-paths -- Legacy code, needs https://github.com/pixiebrix/webext-messenger/issues/6
 import { liftExternalToContentScript } from "@/contentScript/externalProtocol";
 import { isChrome } from "webext-detect-page";
-import { SerializableResponse } from "@/messaging/protocol";
+import { type SerializableResponse } from "@/messaging/protocol";
 import { readPartnerAuthData } from "@/auth/token";
 
 const liftExternal = isChrome()

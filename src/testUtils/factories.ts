@@ -15,77 +15,83 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { array, Config, define, derive, FactoryConfig } from "cooky-cutter";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import {
-  ApiVersion,
-  IBlock,
-  IExtension,
-  InnerDefinitionRef,
-  InnerDefinitions,
-  Metadata,
-  OutputKey,
-  RecipeMetadata,
-  RegistryId,
-  RenderedArgs,
-  SafeString,
-  SanitizedConfig,
-  SanitizedServiceConfiguration,
-  Schema,
-  ServiceDependency,
-  UserOptions,
-  UUID,
+  array,
+  type Config,
+  define,
+  derive,
+  type FactoryConfig,
+} from "cooky-cutter";
+import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import {
+  type ApiVersion,
+  type IBlock,
+  type IExtension,
+  type InnerDefinitionRef,
+  type InnerDefinitions,
+  type Metadata,
+  type OutputKey,
+  type RecipeMetadata,
+  type RegistryId,
+  type RenderedArgs,
+  type SafeString,
+  type SanitizedConfig,
+  type SanitizedServiceConfiguration,
+  type Schema,
+  type ServiceDependency,
+  type UserOptions,
+  type UUID,
 } from "@/core";
-import { TraceError, TraceRecord } from "@/telemetry/trace";
+import { type TraceError, type TraceRecord } from "@/telemetry/trace";
 import {
   validateRegistryId,
   validateSemVerString,
   validateTimestamp,
   validateUUID,
 } from "@/types/helpers";
-import { BaseExtensionState } from "@/pageEditor/extensionPoints/elementConfig";
+import { type BaseExtensionState } from "@/pageEditor/extensionPoints/elementConfig";
 import trigger from "@/pageEditor/extensionPoints/trigger";
 import menuItem from "@/pageEditor/extensionPoints/menuItem";
 import {
-  ActionFormState,
-  ContextMenuFormState,
-  FormState,
-  QuickBarFormState,
-  SidebarFormState,
-  TriggerFormState,
+  type ActionFormState,
+  type ContextMenuFormState,
+  type FormState,
+  type QuickBarFormState,
+  type SidebarFormState,
+  type TriggerFormState,
 } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
-  ExtensionPointConfig,
-  RecipeDefinition,
-  SharingDefinition,
+  type ExtensionPointConfig,
+  type RecipeDefinition,
+  type SharingDefinition,
 } from "@/types/definitions";
 import {
-  ExtensionPointConfig as ExtensionPointDefinition,
-  ExtensionPointDefinition as ExtensionPointConfigDefinition,
-  ExtensionPointType,
+  type ExtensionPointConfig as ExtensionPointDefinition,
+  type ExtensionPointDefinition as ExtensionPointConfigDefinition,
+  type ExtensionPointType,
 } from "@/extensionPoints/types";
-import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
+import { type TypedBlock, type TypedBlockMap } from "@/blocks/registry";
 import {
-  CloudExtension,
-  Deployment,
-  MarketplaceListing,
-  MarketplaceTag,
+  type CloudExtension,
+  type Deployment,
+  type MarketplaceListing,
+  type MarketplaceTag,
   UserRole,
 } from "@/types/contract";
-import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
+import { type ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
 import getType from "@/runtime/getType";
 import { freshIdentifier } from "@/utils";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
 import { padStart } from "lodash";
 import {
-  AuthState,
-  AuthUserOrganization,
-  OrganizationAuthState,
+  type AuthState,
+  type AuthUserOrganization,
+  type OrganizationAuthState,
 } from "@/auth/authTypes";
-import { JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 import objectHash from "object-hash";
 import { makeEmptyPermissions } from "@/utils/permissions";
-import { Permissions } from "webextension-polyfill";
+import { type Permissions } from "webextension-polyfill";
 import quickBar from "@/pageEditor/extensionPoints/quickBar";
 import contextMenu from "@/pageEditor/extensionPoints/contextMenu";
 import sidebar from "@/pageEditor/extensionPoints/sidebar";

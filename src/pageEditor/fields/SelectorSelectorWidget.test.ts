@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ElementInfo } from "@/contentScript/nativeEditor/types";
+import { type ElementInfo } from "@/contentScript/nativeEditor/types";
 import { getSuggestionsForElement } from "./SelectorSelectorWidget";
 
 test("getSuggestionsForElement", () => {

@@ -16,9 +16,9 @@
  */
 
 import { Effect } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { AutocompleteItem } from "autocompleter";
+import { type AutocompleteItem } from "autocompleter";
 
 import autocompleterStyleUrl from "autocompleter/autocomplete.css?loadAsUrl";
 import { attachStylesheet } from "@/blocks/util";

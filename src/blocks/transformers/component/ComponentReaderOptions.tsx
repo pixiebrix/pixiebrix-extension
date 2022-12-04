@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo } from "react";
-import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
-import { Framework, FrameworkMeta } from "@/messaging/constants";
+import { type Framework, type FrameworkMeta } from "@/messaging/constants";
 import { isNullOrBlank, joinName } from "@/utils";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { useSelector } from "react-redux";
 import { selectFrameState } from "@/pageEditor/tabState/tabStateSelectors";

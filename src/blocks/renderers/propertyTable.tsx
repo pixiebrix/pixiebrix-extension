@@ -18,7 +18,7 @@
 import React from "react";
 import { Renderer } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg, BlockOptions, SafeHTML } from "@/core";
+import { type BlockArg, type BlockOptions, type SafeHTML } from "@/core";
 import { sortBy, isPlainObject } from "lodash";
 import { isValidUrl } from "@/utils";
 

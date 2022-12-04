@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ServiceDefinition } from "@/types/definitions";
+import { type ServiceDefinition } from "@/types/definitions";
 import React, { useMemo } from "react";
 import Select from "react-select";
 import useFetch from "@/hooks/useFetch";

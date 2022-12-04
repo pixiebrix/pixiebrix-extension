@@ -31,10 +31,10 @@ import {
 } from "@/auth/token";
 import { useSelector } from "react-redux";
 import { toggleSidebar } from "./toggleSidebar";
-import { SettingsState } from "@/store/settingsTypes";
+import { type SettingsState } from "@/store/settingsTypes";
 import cx from "classnames";
 import { selectAuth } from "@/auth/authSelectors";
-import { ThemeLogo } from "@/utils/themeUtils";
+import { type ThemeLogo } from "@/utils/themeUtils";
 import useLinkState from "@/auth/useLinkState";
 
 function useAdminConsoleUrl(): string {

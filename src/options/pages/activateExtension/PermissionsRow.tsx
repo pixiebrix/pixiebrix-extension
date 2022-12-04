@@ -20,8 +20,8 @@ import React from "react";
 import { useFormikContext } from "formik";
 import UrlPermissionsList from "@/options/pages/marketplace/UrlPermissionsList";
 import useEnsurePermissions from "@/options/pages/activateExtension/useEnsurePermissions";
-import { CloudExtension } from "@/types/contract";
-import { FormState } from "@/options/pages/activateExtension/activateTypes";
+import { type CloudExtension } from "@/types/contract";
+import { type FormState } from "@/options/pages/activateExtension/activateTypes";
 
 const PermissionsRow: React.FunctionComponent<{
   extension: CloudExtension;

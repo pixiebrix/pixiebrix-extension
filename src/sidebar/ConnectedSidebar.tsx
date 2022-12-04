@@ -15,23 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Dispatch, useEffect, useMemo } from "react";
+import React, { type Dispatch, useEffect, useMemo } from "react";
 import {
   addListener,
   removeListener,
-  SidebarListener,
+  type SidebarListener,
 } from "@/sidebar/protocol";
 import DefaultPanel from "@/sidebar/DefaultPanel";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  ActivatePanelOptions,
-  FormEntry,
-  PanelEntry,
-  TemporaryPanelEntry,
+  type ActivatePanelOptions,
+  type FormEntry,
+  type PanelEntry,
+  type TemporaryPanelEntry,
 } from "@/sidebar/types";
 import Tabs from "@/sidebar/Tabs";
-import sidebarSlice, { SidebarState } from "./sidebarSlice";
-import { AnyAction } from "redux";
+import sidebarSlice, { type SidebarState } from "./sidebarSlice";
+import { type AnyAction } from "redux";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./ErrorBoundary";

@@ -16,13 +16,13 @@
  */
 
 import {
-  Expression,
-  OutputKey,
-  RegistryId,
-  TemplateEngine,
-  UUID,
+  type Expression,
+  type OutputKey,
+  type RegistryId,
+  type TemplateEngine,
+  type UUID,
 } from "@/core";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 
 /**
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API

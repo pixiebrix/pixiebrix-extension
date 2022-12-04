@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Variant } from "react-bootstrap/types";
+import { type Variant } from "react-bootstrap/types";
 import { useSelector } from "react-redux";
 import { selectLogs } from "@/components/logViewer/logSelectors";
 import { useMemo } from "react";

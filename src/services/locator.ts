@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SanitizedAuth } from "@/types/contract";
+import { type SanitizedAuth } from "@/types/contract";
 import {
-  SanitizedServiceConfiguration,
-  IService,
-  RawServiceConfiguration,
-  ServiceConfig,
-  SanitizedConfig,
-  KeyedConfig,
-  RegistryId,
-  UUID,
+  type SanitizedServiceConfiguration,
+  type IService,
+  type RawServiceConfiguration,
+  type ServiceConfig,
+  type SanitizedConfig,
+  type KeyedConfig,
+  type RegistryId,
+  type UUID,
 } from "@/core";
 import { sortBy, isEmpty } from "lodash";
 import registry, { readRawConfigurations } from "@/services/registry";
@@ -39,7 +39,7 @@ import {
   NotConfiguredError,
 } from "@/errors/businessErrors";
 import { DoesNotExistError } from "@/baseRegistry";
-import { Service } from "@/types";
+import { type Service } from "@/types";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",

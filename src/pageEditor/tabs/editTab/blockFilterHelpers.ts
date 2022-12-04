@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TypedBlock } from "@/blocks/registry";
+import { type TypedBlock } from "@/blocks/registry";
 import { validateRegistryId } from "@/types/helpers";
-import { ExtensionPointType } from "@/extensionPoints/types";
+import { type ExtensionPointType } from "@/extensionPoints/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { stubTrue } from "lodash";
-import { BlockConfig } from "@/blocks/types";
+import { type BlockConfig } from "@/blocks/types";
 import { DocumentRenderer } from "@/blocks/renderers/document";
-import { BlockType } from "@/runtime/runtimeTypes";
+import { type BlockType } from "@/runtime/runtimeTypes";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 
 const PANEL_TYPES = ["actionPanel", "panel"];
 

@@ -18,7 +18,7 @@
 import React from "react";
 import { render } from "@/options/testHelpers";
 import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
-import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
+import { type Installable } from "@/options/pages/blueprints/blueprintsTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { useGetMeQuery, useGetStarterBlueprintsQuery } from "@/services/api";
 import { screen } from "@testing-library/react";

@@ -20,8 +20,8 @@ import styles from "./BlueprintsCard.module.scss";
 import { Card, Col, Row as BootstrapRow } from "react-bootstrap";
 import React, { useMemo } from "react";
 import {
-  Column,
-  Row,
+  type Column,
+  type Row,
   useFilters,
   useGlobalFilter,
   useGroupBy,
@@ -29,7 +29,7 @@ import {
   useTable,
 } from "react-table";
 import ListFilters from "./ListFilters";
-import { Installable, InstallableViewItem } from "./blueprintsTypes";
+import { type Installable, type InstallableViewItem } from "./blueprintsTypes";
 import {
   selectActiveTab,
   selectGroupBy,

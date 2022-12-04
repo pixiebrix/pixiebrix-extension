@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 
 export class ConfettiEffect extends Effect {
   constructor() {

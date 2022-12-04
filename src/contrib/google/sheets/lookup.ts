@@ -16,8 +16,8 @@
  */
 
 import { validateRegistryId } from "@/types/helpers";
-import { Transformer, UnknownObject } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { Transformer, type UnknownObject } from "@/types";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { sheets } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { zip } from "lodash";

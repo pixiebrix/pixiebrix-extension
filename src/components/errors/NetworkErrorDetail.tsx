@@ -26,7 +26,7 @@ import JsonTree from "@/components/jsonTree/JsonTree";
 import { selectAbsoluteUrl } from "@/services/requestErrorUtils";
 import {
   safeGuessStatusText,
-  SerializableAxiosError,
+  type SerializableAxiosError,
 } from "@/errors/networkErrorHelpers";
 import styles from "./ErrorDetail.module.scss";
 

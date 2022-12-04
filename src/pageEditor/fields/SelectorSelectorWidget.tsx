@@ -24,10 +24,10 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import CreatableAutosuggest, {
-  SuggestionTypeBase,
+  type SuggestionTypeBase,
 } from "@/pageEditor/fields/creatableAutosuggest/CreatableAutosuggest";
 import SelectorListItem from "@/pageEditor/fields/selectorListItem/SelectorListItem";
-import { Framework } from "@/messaging/constants";
+import { type Framework } from "@/messaging/constants";
 import { useField } from "formik";
 import {
   disableOverlay,
@@ -36,9 +36,12 @@ import {
   cancelSelect,
 } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import { ElementInfo, SelectMode } from "@/contentScript/nativeEditor/types";
+import {
+  type ElementInfo,
+  type SelectMode,
+} from "@/contentScript/nativeEditor/types";
 import { useSelector } from "react-redux";
-import { SettingsState } from "@/store/settingsTypes";
+import { type SettingsState } from "@/store/settingsTypes";
 
 // eslint-disable-next-line import/no-restricted-paths -- Not ideal, but webpack should be able to treeshake the file. Maybe move to @/utils ?
 import { sortBySelector } from "@/contentScript/nativeEditor/selectorInference";

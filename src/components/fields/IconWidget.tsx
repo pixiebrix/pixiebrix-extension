@@ -16,10 +16,10 @@
  */
 
 import React, { Suspense, lazy } from "react";
-import { IconOption } from "@/icons/types";
+import { type IconOption } from "@/icons/types";
 import { useField } from "formik";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
-import { IconLibrary } from "@/core";
+import { type CustomFieldWidget } from "@/components/form/FieldTemplate";
+import { type IconLibrary } from "@/core";
 
 const IconSelector = lazy(
   async () =>

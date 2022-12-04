@@ -15,8 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
-import { ServiceAuthPair } from "@/core";
+import {
+  type ExtensionPointConfig,
+  type RecipeDefinition,
+} from "@/types/definitions";
+import { type ServiceAuthPair } from "@/core";
 import notify from "@/utils/notify";
 import { useFormikContext } from "formik";
 import { useAsyncState } from "@/hooks/common";
@@ -25,7 +28,7 @@ import { resolveRecipe } from "@/registry/internal";
 import { containsPermissions, services } from "@/background/messenger/api";
 import { useCallback } from "react";
 import { reportEvent } from "@/telemetry/events";
-import { Permissions } from "webextension-polyfill";
+import { type Permissions } from "webextension-polyfill";
 
 type PermissionsState = {
   enabled: boolean;

@@ -17,21 +17,21 @@
 
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import {
-  AnyAction,
-  ListenerEffect,
-  ThunkDispatch,
+  type AnyAction,
+  type ListenerEffect,
+  type ThunkDispatch,
   createListenerMiddleware,
 } from "@reduxjs/toolkit";
 import analysisSlice from "./analysisSlice";
 import {
-  ListenerEffectAPI,
-  MatchFunction,
-  TypedActionCreator,
+  type ListenerEffectAPI,
+  type MatchFunction,
+  type TypedActionCreator,
 } from "@reduxjs/toolkit/dist/listenerMiddleware/types";
-import { Analysis } from "./analysisTypes";
-import { RootState } from "@/pageEditor/pageEditorTypes";
+import { type Analysis } from "./analysisTypes";
+import { type RootState } from "@/pageEditor/pageEditorTypes";
 import { debounce } from "lodash";
-import { UUID } from "@/core";
+import { type UUID } from "@/core";
 
 type AnalysisEffect = ListenerEffect<
   AnyAction,

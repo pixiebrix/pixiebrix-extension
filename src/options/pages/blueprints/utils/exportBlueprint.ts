@@ -17,17 +17,17 @@
 
 import { isEmpty } from "lodash";
 import {
-  Metadata,
-  RegistryId,
-  Schema,
-  UnresolvedExtension,
-  UserOptions,
+  type Metadata,
+  type RegistryId,
+  type Schema,
+  type UnresolvedExtension,
+  type UserOptions,
 } from "@/core";
 import { objToYaml } from "@/utils/objToYaml";
 import { saveAs } from "file-saver";
 import {
-  OptionsDefinition,
-  UnsavedRecipeDefinition,
+  type OptionsDefinition,
+  type UnsavedRecipeDefinition,
 } from "@/types/definitions";
 import { isNullOrBlank } from "@/utils";
 import GenerateSchema from "generate-schema";

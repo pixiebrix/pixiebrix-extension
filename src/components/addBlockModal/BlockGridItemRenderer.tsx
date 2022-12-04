@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { CSSProperties } from "react";
+import React, { type CSSProperties } from "react";
 import BlockGridItem from "@/components/addBlockModal/BlockGridItem";
-import { BlockGridData } from "./addBlockModalTypes";
+import { type BlockGridData } from "./addBlockModalTypes";
 import { getFlatArrayIndex } from "@/components/addBlockModal/addBlockModalHelpers";
 
 type ItemRendererProps = {

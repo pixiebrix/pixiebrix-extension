@@ -15,18 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Framework } from "@/messaging/constants";
+import { type Framework } from "@/messaging/constants";
 import {
-  ExtensionPointConfig,
-  ExtensionPointDefinition,
-  ExtensionPointType,
+  type ExtensionPointConfig,
+  type ExtensionPointDefinition,
+  type ExtensionPointType,
 } from "@/extensionPoints/types";
-import { EmptyConfig, IExtension, UUID } from "@/core";
-import { Except } from "type-fest";
-import { PanelConfig, PanelDefinition } from "@/extensionPoints/panelExtension";
+import { type EmptyConfig, type IExtension, type UUID } from "@/core";
+import { type Except } from "type-fest";
 import {
-  MenuDefinition,
-  MenuItemExtensionConfig,
+  type PanelConfig,
+  type PanelDefinition,
+} from "@/extensionPoints/panelExtension";
+import {
+  type MenuDefinition,
+  type MenuItemExtensionConfig,
 } from "@/extensionPoints/menuItemExtension";
 
 export interface ElementInfo {

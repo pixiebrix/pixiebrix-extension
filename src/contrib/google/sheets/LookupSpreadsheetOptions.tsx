@@ -16,11 +16,11 @@
  */
 
 import React, { useState } from "react";
-import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
-import { Expression, Schema } from "@/core";
+import { type Expression, type Schema } from "@/core";
 import { joinName } from "@/utils";
-import { SheetMeta } from "@/contrib/google/sheets/types";
+import { type SheetMeta } from "@/contrib/google/sheets/types";
 import FileWidget from "@/contrib/google/sheets/FileWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import TabField from "@/contrib/google/sheets/TabField";

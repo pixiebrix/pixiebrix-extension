@@ -44,7 +44,7 @@ declare module "*?loadAsText" {
 
 // Loading svg as React component using @svgr
 declare module "*.svg?loadAsComponent" {
-  import React from "react";
+  import type React from "react";
 
   const SVG: React.FC<React.SVGProps<SVGSVGElement>>;
   export default SVG;
@@ -75,7 +75,7 @@ declare module "react-select-virtualized" {
 }
 
 declare module "generate-schema" {
-  import { UnknownObject } from "@/types";
+  import { type UnknownObject } from "@/types";
 
   const json: (title: string, obj: unknown) => UnknownObject;
 }
@@ -101,7 +101,7 @@ declare module "page-metadata-parser" {
 }
 
 declare module "@/vendors/initialize" {
-  import { Promisable } from "type-fest";
+  import { type Promisable } from "type-fest";
 
   /** Attach a MutationObserver specifically for a selector */
   const initialize: (

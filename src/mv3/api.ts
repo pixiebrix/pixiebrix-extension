@@ -17,7 +17,7 @@
 
 /** @file Temporary helpers useful for the MV3 transition */
 
-import { Tabs } from "webextension-polyfill";
+import { type Tabs } from "webextension-polyfill";
 
 export const isMV3 = (): boolean =>
   browser.runtime.getManifest().manifest_version === 3;

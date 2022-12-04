@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import { Form, FormControlProps } from "react-bootstrap";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { Form, type FormControlProps } from "react-bootstrap";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 
 const OmitFieldWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   schema,

@@ -17,13 +17,13 @@
 
 import React from "react";
 import NodeActionsView, {
-  NodeAction,
+  type NodeAction,
 } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import cx from "classnames";
 import styles from "./PipelineFooterNode.module.scss";
 import OutputKeyView from "@/pageEditor/tabs/editTab/editorNodes/OutputKeyView";
 import PipelineOffsetView from "@/pageEditor/tabs/editTab/editorNodes/PipelineOffsetView";
-import { OutputKey } from "@/core";
+import { type OutputKey } from "@/core";
 import TrailingMessage from "@/pageEditor/tabs/editTab/editorNodes/TrailingMessage";
 
 export type PipelineFooterNodeProps = {

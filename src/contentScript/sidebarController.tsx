@@ -18,7 +18,13 @@
 import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
-import { ExtensionRef, RegistryId, RunArgs, RunReason, UUID } from "@/core";
+import {
+  type ExtensionRef,
+  type RegistryId,
+  type RunArgs,
+  RunReason,
+  type UUID,
+} from "@/core";
 import type {
   FormEntry,
   PanelEntry,
@@ -26,7 +32,7 @@ import type {
   ActivatePanelOptions,
   TemporaryPanelEntry,
 } from "@/sidebar/types";
-import { RendererPayload } from "@/runtime/runtimeTypes";
+import { type RendererPayload } from "@/runtime/runtimeTypes";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isEmpty } from "lodash";
 import { logPromiseDuration } from "@/utils";
