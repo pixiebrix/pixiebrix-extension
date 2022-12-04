@@ -51,16 +51,29 @@ export async function ping() {
   });
 }
 
-export type NunjucksRenderOptions = {
+export type NunjucksRenderPayload = {
   template: string;
   context: JsonObject;
   autoescape: boolean;
 };
 
-export async function renderNunjucksTemplate(payload: NunjucksRenderOptions) {
+export async function renderNunjucksTemplate(payload: NunjucksRenderPayload) {
   return postMessage({
     channel: getSandbox().contentWindow,
     payload,
     id: "RENDER_NUNJUCKS",
+  });
+}
+
+export type ApplyJqPayload = {
+  input: any;
+  filter: any;
+};
+
+export async function executeJq(payload: ApplyJqPayload) {
+  return postMessage({
+    channel: getSandbox().contentWindow,
+    payload,
+    id: "APPLY_JQ",
   });
 }

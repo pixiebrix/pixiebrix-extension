@@ -16,7 +16,7 @@
  */
 
 import { addPostMessageListener } from "@/utils/postMessage";
-import { type NunjucksRenderOptions } from "./api";
+import { ApplyJqPayload, type NunjucksRenderPayload } from "./api";
 
 /** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
 
@@ -29,13 +29,24 @@ export default function registerMessenger(): void {
   addPostMessageListener("RENDER_NUNJUCKS", async (payload) => {
     console.log("SANDBOX: Received RENDER_NUNJUCKS payload:", payload);
 
+    const { template, context, autoescape } = payload as NunjucksRenderPayload;
     const { default: nunjucks } = await import(
       /* webpackChunkName: "nunjucks" */ "nunjucks"
     );
 
-    const { template, context, autoescape } = payload as NunjucksRenderOptions;
-
     nunjucks.configure({ autoescape });
     return nunjucks.renderString(template, context);
+  });
+
+  addPostMessageListener("APPLY_JQ", async (payload) => {
+    console.log("SANDBOX: Received APPLY_JQ payload:", payload);
+
+    const { input, filter } = payload as ApplyJqPayload;
+    const { default: jq } = await import(
+      /* webpackChunkName: "jq-web" */ "jq-web"
+    );
+
+    // TODO: Handle errors?
+    return jq.promised.json(input, filter);
   });
 }
