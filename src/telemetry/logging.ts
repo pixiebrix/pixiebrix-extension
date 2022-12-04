@@ -17,10 +17,10 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { getRollbar } from "@/telemetry/initRollbar";
-import { MessageContext, SerializedError, UUID } from "@/core";
-import { Except, JsonObject } from "type-fest";
+import { type MessageContext, type SerializedError, type UUID } from "@/core";
+import { type Except, type JsonObject } from "type-fest";
 import { deserializeError } from "serialize-error";
-import { DBSchema, openDB } from "idb/with-async-ittr";
+import { type DBSchema, openDB } from "idb/with-async-ittr";
 import { isEmpty, once, sortBy } from "lodash";
 import { allowsTrack } from "@/telemetry/dnt";
 import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";

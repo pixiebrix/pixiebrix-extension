@@ -35,7 +35,7 @@ import {
   isContextInvalidatedError,
   notifyContextInvalidated,
 } from "@/errors/contextInvalidated";
-import { UUID } from "@/core";
+import { type UUID } from "@/core";
 import { onUncaughtError } from "@/errors/errorHelpers";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run

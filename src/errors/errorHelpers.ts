@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { deserializeError, ErrorObject } from "serialize-error";
+import { deserializeError, type ErrorObject } from "serialize-error";
 import { isObject, matchesAnyPattern, smartAppendPeriod } from "@/utils";
 import safeJsonStringify from "json-stringify-safe";
 import { isEmpty, truncate } from "lodash";
