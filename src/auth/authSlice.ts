@@ -20,7 +20,7 @@ import { anonAuth } from "./authConstants";
 import { type AuthState } from "./authTypes";
 import { localStorage } from "redux-persist-webextension-storage";
 import { isEmpty } from "lodash";
-import { StorageInterface } from "@/store/StorageInterface";
+import { type StorageInterface } from "@/store/StorageInterface";
 
 export const authSlice = createSlice({
   name: "auth",

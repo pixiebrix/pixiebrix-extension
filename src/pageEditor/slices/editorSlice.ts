@@ -85,7 +85,7 @@ import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/eleme
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { isExtension } from "@/pageEditor/sidebar/common";
-import { StorageInterface } from "@/store/StorageInterface";
+import { type StorageInterface } from "@/store/StorageInterface";
 import { localStorage } from "redux-persist-webextension-storage";
 
 export const initialState: EditorState = {

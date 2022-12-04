@@ -28,8 +28,8 @@ import {
   migrateExtensionsShape,
   migrations,
 } from "@/store/extensionsMigrations";
-import { ExtensionOptionsState } from "./extensionsTypes";
-import { StorageInterface } from "@/store/StorageInterface";
+import { type ExtensionOptionsState } from "./extensionsTypes";
+import { type StorageInterface } from "@/store/StorageInterface";
 
 const STORAGE_KEY = "persist:extensionOptions" as ReduxStorageKey;
 
