@@ -17,15 +17,15 @@
 
 // Split from deploymentUtils.ts to avoid circular dependency
 
-import { Deployment } from "@/types/contract";
-import { Permissions } from "webextension-polyfill";
+import { type Deployment } from "@/types/contract";
+import { type Permissions } from "webextension-polyfill";
 import { mergePermissions } from "@/utils/permissions";
 import { resolveRecipe } from "@/registry/internal";
 import { collectPermissions } from "@/permissions";
 import { flatten } from "lodash";
 import {
   findLocalDeploymentServiceConfigurations,
-  Locate,
+  type Locate,
 } from "@/utils/deploymentUtils";
 
 /**

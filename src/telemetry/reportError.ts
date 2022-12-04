@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MessageContext } from "@/core";
+import { type MessageContext } from "@/core";
 import { backgroundTarget as bg, messenger } from "webext-messenger";
 import { serializeError } from "serialize-error";
 import { selectError, shouldErrorBeIgnored } from "@/errors/errorHelpers";

@@ -17,7 +17,7 @@
 
 import React from "react";
 import SaveButton from "@/pageEditor/sidebar/SaveButton";
-import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 
 export default {
   title: "Sidebar/SaveButton",

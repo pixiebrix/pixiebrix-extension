@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Target } from "@/types";
-import { IExtension, RegistryId, UUID } from "@/core";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type Target } from "@/types";
+import { type IExtension, type RegistryId, type UUID } from "@/core";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isExtension } from "@/pageEditor/sidebar/common";
-import { BlockConfig } from "@/blocks/types";
+import { type BlockConfig } from "@/blocks/types";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
 import {
-  DocumentElement,
+  type DocumentElement,
   isButtonElement,
   isListElement,
   isPipelineElement,
@@ -33,7 +33,7 @@ import { joinPathParts } from "@/utils";
 import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 import Retry from "@/blocks/transformers/controlFlow/Retry";
 import { castArray } from "lodash";
-import { Annotation } from "@/analysis/analysisTypes";
+import { type Annotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
 import { isExpression } from "@/runtime/mapArgs";
 import { expectContext } from "@/utils/expectContext";

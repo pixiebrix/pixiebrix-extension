@@ -19,7 +19,7 @@ import { uuidv4 } from "@/types/helpers";
 import { checkAvailable } from "@/blocks/available";
 import { castArray, cloneDeep, debounce, once, pick } from "lodash";
 import {
-  InitialValues,
+  type InitialValues,
   reduceExtensionPipeline,
   reducePipeline,
 } from "@/runtime/reducePipeline";
@@ -32,33 +32,33 @@ import {
 } from "@/extensionPoints/helpers";
 import {
   ExtensionPoint,
-  ExtensionPointConfig,
-  ExtensionPointDefinition,
+  type ExtensionPointConfig,
+  type ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import {
-  IBlock,
-  IconConfig,
-  IExtensionPoint,
-  Logger,
-  Metadata,
-  ReaderOutput,
-  ResolvedExtension,
-  RunArgs,
+  type IBlock,
+  type IconConfig,
+  type IExtensionPoint,
+  type Logger,
+  type Metadata,
+  type ReaderOutput,
+  type ResolvedExtension,
+  type RunArgs,
   RunReason,
-  Schema,
+  type Schema,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { Permissions } from "webextension-polyfill";
+import { type Permissions } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
 import notify, {
   DEFAULT_ACTION_RESULTS,
-  MessageConfig,
+  type MessageConfig,
   showNotification,
 } from "@/utils/notify";
 import { getNavigationId } from "@/contentScript/context";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { selectEventData } from "@/telemetry/deployments";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import apiVersionOptions, {
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
 } from "@/runtime/apiVersionOptions";

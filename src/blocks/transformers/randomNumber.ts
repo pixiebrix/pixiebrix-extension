@@ -17,7 +17,7 @@
 
 import { Transformer } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg } from "@/core";
+import { type BlockArg } from "@/core";
 import { random } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 

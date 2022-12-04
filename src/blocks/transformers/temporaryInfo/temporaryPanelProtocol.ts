@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UUID } from "@/core";
-import pDefer, { DeferredPromise } from "p-defer";
+import { type UUID } from "@/core";
+import pDefer, { type DeferredPromise } from "p-defer";
 import { expectContext } from "@/utils/expectContext";
 
 const panels = new Map<UUID, DeferredPromise<void>>();

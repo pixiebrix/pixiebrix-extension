@@ -17,7 +17,7 @@
 
 /* eslint-disable promise/prefer-await-to-then */
 
-import { configureStore, Store } from "@reduxjs/toolkit";
+import { configureStore, type Store } from "@reduxjs/toolkit";
 import { renderHook, act } from "@testing-library/react-hooks";
 import React from "react";
 import { Provider } from "react-redux";
@@ -45,7 +45,7 @@ import pDefer from "p-defer";
 import { pick } from "lodash";
 import extensionsSlice from "@/store/extensionsSlice";
 import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
-import { OptionsDefinition } from "@/types/definitions";
+import { type OptionsDefinition } from "@/types/definitions";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 
 jest.mock("@/telemetry/logging");

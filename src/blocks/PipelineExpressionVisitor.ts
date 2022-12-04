@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlockConfig, BlockPosition } from "@/blocks/types";
+import { type BlockConfig, type BlockPosition } from "@/blocks/types";
 import { joinPathParts } from "@/utils";
-import { Expression } from "@/core";
+import { type Expression } from "@/core";
 import { isExpression } from "@/runtime/mapArgs";
 import PipelineVisitor, {
   nestedPosition,
-  VisitBlockExtra,
+  type VisitBlockExtra,
 } from "./PipelineVisitor";
-import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 
 export type VisitDocumentElementArgs = {
   position: BlockPosition;

@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Button, ButtonProps } from "react-bootstrap";
+import { Button, type ButtonProps } from "react-bootstrap";
 
 export type AsyncButtonProps = ButtonProps & {
   onClick: (() => Promise<void>) | (() => void);

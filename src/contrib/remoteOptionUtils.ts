@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { OptionsFactory } from "@/components/form/widgets/RemoteSelectWidget";
-import { SanitizedServiceConfiguration } from "@/core";
-import { Option } from "@/components/form/widgets/SelectWidget";
+import { type OptionsFactory } from "@/components/form/widgets/RemoteSelectWidget";
+import { type SanitizedServiceConfiguration } from "@/core";
+import { type Option } from "@/components/form/widgets/SelectWidget";
 
 export function optionalFactory(factory: OptionsFactory): OptionsFactory {
   return async (config: SanitizedServiceConfiguration) => {

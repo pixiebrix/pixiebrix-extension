@@ -16,7 +16,7 @@
  */
 
 import React, { forwardRef } from "react";
-import { ActionId, ActionImpl, KBarResults, useMatches } from "kbar";
+import { type ActionId, type ActionImpl, KBarResults, useMatches } from "kbar";
 import { theme, groupNameStyle } from "./quickBarTheme";
 
 const ResultItem = forwardRef(

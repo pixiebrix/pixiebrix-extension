@@ -19,12 +19,12 @@ import styles from "./ServicesBody.module.scss";
 
 import React, { useMemo } from "react";
 import { Card, Col, Row } from "react-bootstrap";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import AuthWidget from "@/options/pages/marketplace/AuthWidget";
 import ServiceDescriptor from "@/options/pages/marketplace/ServiceDescriptor";
 import { useField } from "formik";
-import { ServiceAuthPair } from "@/core";
+import { type ServiceAuthPair } from "@/core";
 import { useAuthOptions } from "@/hooks/auth";
 import { useGetServicesQuery } from "@/services/api";
 import { joinName } from "@/utils";

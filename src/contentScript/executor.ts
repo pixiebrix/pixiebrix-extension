@@ -17,7 +17,7 @@
 
 import blockRegistry from "@/blocks/registry";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { RunBlock } from "@/contentScript/runBlockTypes";
+import { type RunBlock } from "@/contentScript/runBlockTypes";
 import { BusinessError } from "@/errors/businessErrors";
 
 export async function runBrick(request: RunBlock): Promise<unknown> {

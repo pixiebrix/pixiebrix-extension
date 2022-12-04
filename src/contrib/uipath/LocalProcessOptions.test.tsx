@@ -24,11 +24,11 @@ import { menuItemFormStateFactory } from "@/testUtils/factories";
 import { UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { OutputKey, SanitizedServiceConfiguration } from "@/core";
+import { type OutputKey, type SanitizedServiceConfiguration } from "@/core";
 import * as auth from "@/hooks/auth";
 import * as dependencyHooks from "@/services/useDependency";
-import { Service } from "@/types";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type Service } from "@/types";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 jest.mock("webext-detect-page", () => ({
   isDevToolsPage: () => true,

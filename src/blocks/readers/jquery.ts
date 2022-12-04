@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReaderOutput } from "@/core";
+import { type ReaderOutput } from "@/core";
 import { asyncMapValues, pollUntilTruthy } from "@/utils";
 import { $safeFind } from "@/helpers";
 import {

@@ -16,7 +16,12 @@
  */
 
 import { Renderer } from "@/types";
-import { BlockArg, BlockOptions, ComponentRef, Schema } from "@/core";
+import {
+  type BlockArg,
+  type BlockOptions,
+  type ComponentRef,
+  type Schema,
+} from "@/core";
 import DocumentViewLazy from "./documentView/DocumentViewLazy";
 import { validateRegistryId } from "@/types/helpers";
 

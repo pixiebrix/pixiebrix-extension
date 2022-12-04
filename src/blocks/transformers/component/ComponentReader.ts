@@ -16,9 +16,9 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import {
-  FrameworkConfig,
+  type FrameworkConfig,
   frameworkReadFactory,
 } from "@/blocks/readers/frameworkReader";
 import { KNOWN_READERS } from "@/messaging/constants";

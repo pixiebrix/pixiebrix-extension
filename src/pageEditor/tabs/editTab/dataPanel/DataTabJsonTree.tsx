@@ -16,16 +16,16 @@
  */
 
 import JsonTree, {
-  JsonTreeProps,
-  TreeExpandedState,
+  type JsonTreeProps,
+  type TreeExpandedState,
 } from "@/components/jsonTree/JsonTree";
 import { selectNodeDataPanelTabState } from "@/pageEditor/slices/editorSelectors";
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Except } from "type-fest";
-import { DataPanelTabKey } from "./dataPanelTypes";
+import { type Except } from "type-fest";
+import { type DataPanelTabKey } from "./dataPanelTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { RootState } from "@/pageEditor/pageEditorTypes";
+import { type RootState } from "@/pageEditor/pageEditorTypes";
 
 type DataTabJsonTreeProps = Except<
   JsonTreeProps,

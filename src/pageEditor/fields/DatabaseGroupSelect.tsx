@@ -21,7 +21,7 @@ import { appApi } from "@/services/api";
 import { validateUUID } from "@/types/helpers";
 import { useField } from "formik";
 import React, { useEffect } from "react";
-import { UUID } from "@/core";
+import { type UUID } from "@/core";
 
 const groupIdFieldName = "groupId";
 

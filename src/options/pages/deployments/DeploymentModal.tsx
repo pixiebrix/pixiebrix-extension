@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
-import { DeploymentState } from "@/hooks/useDeployments";
+import { type DeploymentState } from "@/hooks/useDeployments";
 import AsyncButton from "@/components/AsyncButton";
 import { Alert, Dropdown, DropdownButton, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
@@ -28,7 +28,7 @@ import { selectAuth } from "@/auth/authSelectors";
 import { noop } from "lodash";
 import {
   selectUpdatePromptState,
-  StateWithSettings,
+  type StateWithSettings,
 } from "@/store/settingsSelectors";
 import pluralize from "@/utils/pluralize";
 

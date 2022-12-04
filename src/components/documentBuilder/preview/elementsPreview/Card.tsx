@@ -17,9 +17,9 @@
 
 import React from "react";
 import {
-  DocumentComponent,
-  DocumentElement,
-  PreviewComponentProps,
+  type DocumentComponent,
+  type DocumentElement,
+  type PreviewComponentProps,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
 import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";

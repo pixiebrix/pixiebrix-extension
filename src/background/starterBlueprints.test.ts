@@ -21,7 +21,7 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { isLinked } from "@/auth/token";
 import { extensionFactory, recipeFactory } from "@/testUtils/factories";
-import { PersistedExtension, RecipeMetadata } from "@/core";
+import { type PersistedExtension, type RecipeMetadata } from "@/core";
 import { refreshRegistries } from "./refreshRegistries";
 
 const axiosMock = new MockAdapter(axios);

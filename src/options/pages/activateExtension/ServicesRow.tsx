@@ -18,11 +18,11 @@
 import styles from "@/options/pages/marketplace/ServicesBody.module.scss";
 
 import React from "react";
-import { AuthOption } from "@/auth/authTypes";
+import { type AuthOption } from "@/auth/authTypes";
 import { useField } from "formik";
-import { ServiceDependency } from "@/core";
+import { type ServiceDependency } from "@/core";
 import useFetch from "@/hooks/useFetch";
-import { ServiceDefinition } from "@/types/definitions";
+import { type ServiceDefinition } from "@/types/definitions";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { Card, Col, Row } from "react-bootstrap";
 import ServiceDescriptor from "@/options/pages/marketplace/ServiceDescriptor";

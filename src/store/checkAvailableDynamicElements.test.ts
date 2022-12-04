@@ -16,19 +16,19 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import { EditorRootState } from "@/pageEditor/pageEditorTypes";
+import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import { menuItemFormStateFactory } from "@/testUtils/factories";
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
 import { getCurrentURL } from "@/pageEditor/utils";
 import { checkAvailable } from "@/contentScript/messenger/api";
 import { checkAvailable as backgroundCheckAvailable } from "@/blocks/available";
-import { Target } from "@/types";
-import { PageTarget } from "webext-messenger";
-import { Availability } from "@/blocks/types";
-import { ExtensionsRootState } from "@/store/extensionsTypes";
+import { type Target } from "@/types";
+import { type PageTarget } from "webext-messenger";
+import { type Availability } from "@/blocks/types";
+import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 
 jest.mock("@/contentScript/messenger/api", () => ({

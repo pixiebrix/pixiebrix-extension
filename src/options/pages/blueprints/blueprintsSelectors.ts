@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlueprintsState } from "@/options/pages/blueprints/blueprintsSlice";
+import { type BlueprintsState } from "@/options/pages/blueprints/blueprintsSlice";
 
 export type BlueprintsRootState = {
   blueprints: BlueprintsState;

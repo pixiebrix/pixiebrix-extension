@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Card, CardProps } from "react-bootstrap";
+import { Card, type CardProps } from "react-bootstrap";
 import cx from "classnames";
 
 type CardElementProps = CardProps & {

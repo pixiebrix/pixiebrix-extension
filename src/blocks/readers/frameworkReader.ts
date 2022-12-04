@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Read } from "@/blocks/readers/factory";
-import { Framework } from "@/messaging/constants";
-import { ReaderOutput, ReaderRoot } from "@/core";
+import { type Read } from "@/blocks/readers/factory";
+import { type Framework } from "@/messaging/constants";
+import { type ReaderOutput, type ReaderRoot } from "@/core";
 import { getCssSelector } from "css-selector-generator";
 import { castArray, compact } from "lodash";
-import { getComponentData, ReadPayload } from "@/pageScript/protocol";
+import { getComponentData, type ReadPayload } from "@/pageScript/protocol";
 
 export type FrameworkConfig = ReadPayload & {
   /**

@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { FormEntry } from "@/sidebar/types";
+import { type FormEntry } from "@/sidebar/types";
 import { useAsyncState } from "@/hooks/common";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";

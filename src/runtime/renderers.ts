@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TemplateEngine } from "@/core";
+import { type TemplateEngine } from "@/core";
 import Mustache from "mustache";
 import { mapKeys, identity, once } from "lodash";
 import { getPropByPath } from "@/runtime/pathHelpers";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 import { isErrorObject } from "@/errors/errorHelpers";
 import { InvalidTemplateError } from "@/errors/businessErrors";
 

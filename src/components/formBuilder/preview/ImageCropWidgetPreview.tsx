@@ -17,7 +17,7 @@
 
 import React from "react";
 import { FormGroup, FormLabel } from "react-bootstrap";
-import { WidgetProps } from "@rjsf/core";
+import { type WidgetProps } from "@rjsf/core";
 
 const ImageCropWidgetPreview: React.VFC<WidgetProps> = ({ schema }) => (
   <FormGroup>

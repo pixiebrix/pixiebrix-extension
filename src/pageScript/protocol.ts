@@ -17,14 +17,14 @@
 
 import { createSendScriptMessage } from "@/messaging/chrome";
 import {
-  Framework,
+  type Framework,
   GET_COMPONENT_DATA,
   GET_COMPONENT_INFO,
   SET_COMPONENT_DATA,
 } from "@/messaging/constants";
-import { ReaderOutput } from "@/core";
+import { type ReaderOutput } from "@/core";
 import { cleanValue } from "@/utils";
-import { ElementInfo } from "@/contentScript/nativeEditor/types";
+import { type ElementInfo } from "@/contentScript/nativeEditor/types";
 
 export type PathSpec =
   | string

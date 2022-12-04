@@ -16,7 +16,7 @@
  */
 
 import { Reader } from "@/types";
-import { IReader, ReaderOutput } from "@/core";
+import { type IReader, type ReaderOutput } from "@/core";
 import { zip } from "lodash";
 
 class ArrayCompositeReader extends Reader {

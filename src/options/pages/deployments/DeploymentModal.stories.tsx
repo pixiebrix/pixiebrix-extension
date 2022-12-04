@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ComponentProps } from "react";
-import { ComponentMeta, Story } from "@storybook/react";
+import React, { type ComponentProps } from "react";
+import { type ComponentMeta, type Story } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import DeploymentModal from "@/options/pages/deployments/DeploymentModal";
 import { Provider } from "react-redux";

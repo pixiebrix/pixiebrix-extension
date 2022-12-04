@@ -23,7 +23,7 @@ import { deserializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
 import { isEmpty, once, sortBy } from "lodash";
 import { allowsTrack } from "@/telemetry/dnt";
-import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
+import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
   getErrorMessage,
   hasSpecificErrorCause,
@@ -36,7 +36,7 @@ import {
 } from "@/services/errorService";
 import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
-import { MessengerMeta } from "webext-messenger";
+import { type MessengerMeta } from "webext-messenger";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";

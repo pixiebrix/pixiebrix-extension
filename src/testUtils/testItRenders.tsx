@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren } from "react";
+import React, { type PropsWithChildren } from "react";
 import { render } from "@testing-library/react";
 import { waitForEffect } from "./testHelpers";
 

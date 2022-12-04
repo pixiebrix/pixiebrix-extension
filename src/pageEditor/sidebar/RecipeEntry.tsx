@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren } from "react";
-import { SemVerString } from "@/core";
+import React, { type PropsWithChildren } from "react";
+import { type SemVerString } from "@/core";
 import styles from "./Entry.module.scss";
 import {
   RecipeHasUpdateIcon,
@@ -38,7 +38,7 @@ import {
   selectExpandedRecipeId,
   selectRecipeIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 import * as semver from "semver";
 import ActionMenu from "@/components/sidebar/ActionMenu";
 

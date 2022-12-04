@@ -16,9 +16,9 @@
  */
 
 import {
-  ApiVersion,
-  SanitizedServiceConfiguration,
-  ServiceDependency,
+  type ApiVersion,
+  type SanitizedServiceConfiguration,
+  type ServiceDependency,
 } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";

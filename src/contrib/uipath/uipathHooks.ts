@@ -22,9 +22,12 @@ import { useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
 import { releaseSchema } from "@/contrib/uipath/typeUtils";
 import { optionalFactory } from "@/contrib/remoteOptionUtils";
-import { Option } from "@/components/form/widgets/SelectWidget";
-import { ODataResponseData, Release } from "@/contrib/uipath/uipathContract";
-import { SanitizedServiceConfiguration } from "@/core";
+import { type Option } from "@/components/form/widgets/SelectWidget";
+import {
+  type ODataResponseData,
+  type Release,
+} from "@/contrib/uipath/uipathContract";
+import { type SanitizedServiceConfiguration } from "@/core";
 import { proxyService } from "@/background/messenger/api";
 import cachePromise from "@/utils/cachePromise";
 

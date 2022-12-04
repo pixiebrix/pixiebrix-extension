@@ -15,8 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlockConfig } from "@/blocks/types";
-import { BlockArg, IBlock, OutputKey, RegistryId, UUID } from "@/core";
+import { type BlockConfig } from "@/blocks/types";
+import {
+  type BlockArg,
+  type IBlock,
+  type OutputKey,
+  type RegistryId,
+  type UUID,
+} from "@/core";
 
 export type BlockType = "reader" | "effect" | "transform" | "renderer";
 /**

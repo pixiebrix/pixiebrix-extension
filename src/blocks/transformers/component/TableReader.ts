@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import { parseDomTable, getAllTables } from "@/utils/parseDomTable";
 import {

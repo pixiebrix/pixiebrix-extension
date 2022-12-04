@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer, UnknownObject } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { Transformer, type UnknownObject } from "@/types";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 import { getPageState, setPageState } from "@/contentScript/pageState";
 
 type MergeStrategy = "shallow" | "replace" | "deep";

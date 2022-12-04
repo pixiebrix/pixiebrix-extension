@@ -18,7 +18,7 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
-import { Column } from "react-table";
+import { type Column } from "react-table";
 import { MemoryRouter } from "react-router";
 import { waitForEffect } from "@/testUtils/testHelpers";
 

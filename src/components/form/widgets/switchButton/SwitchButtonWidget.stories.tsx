@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import SwitchButtonWidget from "./SwitchButtonWidget";
 
 const componentMeta: ComponentMeta<typeof SwitchButtonWidget> = {

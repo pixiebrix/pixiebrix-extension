@@ -16,9 +16,9 @@
  */
 
 import React from "react";
-import { ComponentStory, ComponentMeta } from "@storybook/react";
+import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import { Form, Formik } from "formik";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Button } from "react-bootstrap";
 import { action } from "@storybook/addon-actions";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";

@@ -16,12 +16,12 @@
  */
 
 import React, { useCallback, useMemo, useState } from "react";
-import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { Expression, Schema } from "@/core";
+import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type Expression, type Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { Webhook } from "@/contrib/zapier/contract";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type Webhook } from "@/contrib/zapier/contract";
 import { pixieServiceFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
 import { ZAPIER_PERMISSIONS, ZAPIER_PROPERTIES } from "@/contrib/zapier/push";

@@ -18,7 +18,7 @@
 import styles from "./Entry.module.scss";
 
 import React, { useCallback } from "react";
-import { IExtension, UUID } from "@/core";
+import { type IExtension, type UUID } from "@/core";
 import { useDispatch, useSelector } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import {
@@ -32,7 +32,7 @@ import {
   NotAvailableIcon,
   ExtensionIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 import { initRecipeOptionsIfNeeded } from "@/pageEditor/extensionPoints/base";
 import {
   disableOverlay,

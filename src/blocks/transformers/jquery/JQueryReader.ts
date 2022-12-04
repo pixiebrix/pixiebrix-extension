@@ -16,8 +16,8 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
-import { readJQuery, SelectorMap } from "@/blocks/readers/jquery";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import { readJQuery, type SelectorMap } from "@/blocks/readers/jquery";
 
 export class JQueryReader extends Transformer {
   constructor() {

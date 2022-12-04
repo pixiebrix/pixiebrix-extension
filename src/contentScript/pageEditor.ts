@@ -16,24 +16,30 @@
  */
 
 import { deserializeError, serializeError } from "serialize-error";
-import { makeRead, ReaderTypeConfig } from "@/blocks/readers/factory";
+import { makeRead, type ReaderTypeConfig } from "@/blocks/readers/factory";
 import FRAMEWORK_ADAPTERS from "@/frameworks/adapters";
 import { getComponentData } from "@/pageScript/protocol";
 import blockRegistry from "@/blocks/registry";
 import { getCssSelector } from "css-selector-generator";
 import {
   blockReducer,
-  IntermediateState,
-  ReduceOptions,
+  type IntermediateState,
+  type ReduceOptions,
 } from "@/runtime/reducePipeline";
-import { ApiVersion, BlockArgContext, IReader, RegistryId, UUID } from "@/core";
+import {
+  type ApiVersion,
+  type BlockArgContext,
+  type IReader,
+  type RegistryId,
+  type UUID,
+} from "@/core";
 // eslint-disable-next-line import/no-restricted-paths -- Custom devTools mechanism to transfer data
 import { selectedElement } from "@/pageEditor/getSelectedElement";
 import { isNullOrBlank, resolveObj } from "@/utils";
-import { BlockConfig } from "@/blocks/types";
+import { type BlockConfig } from "@/blocks/types";
 import { cloneDeep } from "lodash";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { SerializableResponse } from "@/messaging/protocol";
+import { type SerializableResponse } from "@/messaging/protocol";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { $safeFind } from "@/helpers";
 import { clearDynamicElements } from "@/contentScript/nativeEditor/dynamic";
@@ -41,7 +47,7 @@ import { reactivateTab } from "./lifecycle";
 import selection from "@/utils/selectionController";
 import { BusinessError, NoRendererError } from "@/errors/businessErrors";
 import { uuidv4 } from "@/types/helpers";
-import { PanelPayload } from "@/sidebar/types";
+import { type PanelPayload } from "@/sidebar/types";
 import { HeadlessModeError } from "@/blocks/errors";
 import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
 

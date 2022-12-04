@@ -20,8 +20,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavLink } from "react-router-dom";
 import cx from "classnames";
 import { useLocation } from "react-router";
-import { Location } from "history";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { type Location } from "history";
+import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { closeSidebarOnSmallScreen } from "./toggleSidebar";
 
 interface LinkProps {

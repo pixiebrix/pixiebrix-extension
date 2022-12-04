@@ -16,10 +16,10 @@
  */
 
 import React, { useCallback, useEffect } from "react";
-import { SidebarEntries, PanelEntry } from "@/sidebar/types";
+import { type SidebarEntries, type PanelEntry } from "@/sidebar/types";
 import { mapTabEventKey } from "@/sidebar/utils";
 import useExtensionMeta from "@/hooks/useExtensionMeta";
-import { UUID } from "@/core";
+import { type UUID } from "@/core";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { Card, CloseButton, Nav, Tab } from "react-bootstrap";

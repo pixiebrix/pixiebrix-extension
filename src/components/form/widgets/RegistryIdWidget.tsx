@@ -21,13 +21,13 @@ import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
 import SelectWidget, {
   makeStringOptions,
-  SelectWidgetOnChange,
+  type SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
 import { isEmpty } from "lodash";
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 import { Form } from "react-bootstrap";
 import styles from "./RegistryIdWidget.module.scss";
-import { StylesConfig } from "react-select";
+import { type StylesConfig } from "react-select";
 import { UserRole } from "@/types/contract";
 import { getScopeAndId } from "@/utils";
 

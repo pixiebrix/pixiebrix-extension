@@ -18,7 +18,11 @@
 import { isEmpty } from "lodash";
 import { proxyService } from "@/background/messenger/api";
 import { Transformer } from "@/types";
-import { BlockArg, SanitizedServiceConfiguration, Schema } from "@/core";
+import {
+  type BlockArg,
+  type SanitizedServiceConfiguration,
+  type Schema,
+} from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
 interface GeocodedAddress {

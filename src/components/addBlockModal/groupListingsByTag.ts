@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MarketplaceListing, MarketplaceTag } from "@/types/contract";
-import { RegistryId } from "@/core";
+import { type MarketplaceListing, type MarketplaceTag } from "@/types/contract";
+import { type RegistryId } from "@/core";
 import { isEmpty } from "lodash";
 
 const EMPTY_TAGGED_BRICK_IDS: Record<string, Set<RegistryId>> = {};

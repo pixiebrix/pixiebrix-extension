@@ -16,23 +16,27 @@
  */
 
 import {
-  InitialValues,
+  type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
 import {
-  IBlock,
-  IExtensionPoint,
-  IReader,
-  ResolvedExtension,
-  Schema,
+  type IBlock,
+  type IExtensionPoint,
+  type IReader,
+  type ResolvedExtension,
+  type Schema,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { Manifest, Menus, Permissions } from "webextension-polyfill";
+import {
+  type Manifest,
+  type Menus,
+  type Permissions,
+} from "webextension-polyfill";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import {
   ExtensionPoint,
-  ExtensionPointConfig,
-  ExtensionPointDefinition,
+  type ExtensionPointConfig,
+  type ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { castArray, cloneDeep, compact, isEmpty, uniq } from "lodash";
 import { checkAvailable } from "@/blocks/available";
@@ -47,7 +51,7 @@ import notify from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";

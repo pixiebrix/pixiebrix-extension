@@ -17,8 +17,8 @@
 
 import { Effect } from "@/types";
 import copy from "copy-text-to-clipboard";
-import { BlockArg, Schema } from "@/core";
-import { Permissions } from "webextension-polyfill";
+import { type BlockArg, type Schema } from "@/core";
+import { type Permissions } from "webextension-polyfill";
 
 export class CopyToClipboard extends Effect {
   constructor() {

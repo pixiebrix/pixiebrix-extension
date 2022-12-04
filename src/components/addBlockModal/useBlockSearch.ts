@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IBlock } from "@/core";
+import { type IBlock } from "@/core";
 import { useMemo } from "react";
 import { isEmpty, sortBy } from "lodash";
 import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
 import {
-  BlockOption,
-  BlockResult,
+  type BlockOption,
+  type BlockResult,
 } from "@/components/addBlockModal/addBlockModalTypes";
 import { TAG_ALL } from "@/components/addBlockModal/addBlockModalConstants";
 

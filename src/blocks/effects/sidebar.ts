@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { hideSidebar, showSidebar } from "@/contentScript/sidebarController";
 import { propertiesToSchema } from "@/validators/generic";
 

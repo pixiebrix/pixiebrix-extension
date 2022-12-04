@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Logger, MessageContext } from "@/core";
-import { JsonObject } from "type-fest";
+import { type Logger, type MessageContext } from "@/core";
+import { type JsonObject } from "type-fest";
 import { isBackground, isDevToolsPage } from "webext-detect-page";
 import {
   notifyContextInvalidated,

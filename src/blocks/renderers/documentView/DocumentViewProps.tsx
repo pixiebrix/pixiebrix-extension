@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
-import { BlockArgContext, BlockOptions, UUID } from "@/core";
+import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import { type BlockArgContext, type BlockOptions, type UUID } from "@/core";
 
 export type DocumentViewProps = {
   body: DocumentElement[];

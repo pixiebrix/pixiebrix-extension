@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Schema, SchemaDefinition } from "@/core";
+import { type Schema, type SchemaDefinition } from "@/core";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";
-import { UnknownObject } from "@/types";
-import { FieldValidator } from "formik";
-import { Draft, produce } from "immer";
-import * as Yup from "yup";
+import { type UnknownObject } from "@/types";
+import { type FieldValidator } from "formik";
+import { type Draft, produce } from "immer";
+import type * as Yup from "yup";
 
 export function fieldLabel(name: string): string {
   return name.split(".").at(-1);

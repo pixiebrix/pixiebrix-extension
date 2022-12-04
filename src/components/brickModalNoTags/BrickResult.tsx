@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { IBrick } from "@/core";
+import { type IBrick } from "@/core";
 import { Button, ListGroup } from "react-bootstrap";
 import cx from "classnames";
 import styles from "@/options/pages/brickEditor/referenceTab/BlockResult.module.scss";

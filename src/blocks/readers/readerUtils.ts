@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReaderConfig } from "@/blocks/types";
-import { IReader, RegistryId } from "@/core";
+import { type ReaderConfig } from "@/blocks/types";
+import { type IReader, type RegistryId } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import { isPlainObject, mapValues } from "lodash";

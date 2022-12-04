@@ -16,18 +16,18 @@
  */
 
 import pTimeout from "p-timeout";
-import { Menus, Tabs } from "webextension-polyfill";
+import { type Menus, type Tabs } from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
 import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 import { handleMenuAction, notify } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/contentScript";
 import { reportEvent } from "@/telemetry/events";
-import { UUID, IExtension, ResolvedExtension } from "@/core";
+import { type UUID, type IExtension, type ResolvedExtension } from "@/core";
 import { expectContext } from "@/utils/expectContext";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import {
-  ContextMenuConfig,
+  type ContextMenuConfig,
   ContextMenuExtensionPoint,
 } from "@/extensionPoints/contextMenu";
 import { loadOptions } from "@/store/extensionsStorage";

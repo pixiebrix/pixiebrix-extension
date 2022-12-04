@@ -16,7 +16,7 @@
  */
 
 import styles from "./Sidebar.module.scss";
-import React, { FormEvent, useEffect, useMemo, useState } from "react";
+import React, { type FormEvent, useEffect, useMemo, useState } from "react";
 import { sortBy } from "lodash";
 import { getRecipeById } from "@/utils";
 import { Accordion, Button, Form, ListGroup } from "react-bootstrap";

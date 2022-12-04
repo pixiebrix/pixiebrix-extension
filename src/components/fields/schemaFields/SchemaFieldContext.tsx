@@ -17,12 +17,12 @@
 
 import React, { createContext } from "react";
 import {
-  SchemaFieldComponent,
-  SchemaFieldProps,
+  type SchemaFieldComponent,
+  type SchemaFieldProps,
 } from "@/components/fields/schemaFields/propTypes";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
-import { CustomFieldDefinitions } from "@/components/fields/schemaFields/schemaFieldTypes";
+import { type CustomFieldDefinitions } from "@/components/fields/schemaFields/schemaFieldTypes";
 
 export function defaultFieldFactory(
   Widget: React.FC<SchemaFieldProps>

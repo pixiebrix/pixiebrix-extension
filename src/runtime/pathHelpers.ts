@@ -18,7 +18,7 @@
 import { identity, toPath } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { cleanValue, InvalidPathError, isObject, joinName } from "@/utils";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 
 // First part of the path can be global context with a @
 const pathRegex = /^(@?[\w-]+\??)(\.[\w-]+\??)*$/;

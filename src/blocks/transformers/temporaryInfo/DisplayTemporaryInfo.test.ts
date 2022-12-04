@@ -27,11 +27,11 @@ import { makePipelineExpression } from "@/runtime/expressionCreators";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { getExampleBlockConfig } from "@/pageEditor/exampleBlockConfigs";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { BusinessError } from "@/errors/businessErrors";
+import { type BusinessError } from "@/errors/businessErrors";
 import {
-  PanelPayload,
-  RendererError,
-  TemporaryPanelEntry,
+  type PanelPayload,
+  type RendererError,
+  type TemporaryPanelEntry,
 } from "@/sidebar/types";
 import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
 

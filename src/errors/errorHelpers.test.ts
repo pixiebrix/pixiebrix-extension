@@ -30,7 +30,7 @@ import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
 import { isPlainObject } from "@reduxjs/toolkit";
-import { AxiosError } from "axios";
+import { type AxiosError } from "axios";
 import {
   BusinessError,
   CancelError,

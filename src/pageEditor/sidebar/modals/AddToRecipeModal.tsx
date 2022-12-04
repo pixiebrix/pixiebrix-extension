@@ -25,17 +25,17 @@ import {
   selectEditorModalVisibilities,
   selectInstalledRecipeMetadatas,
 } from "@/pageEditor/slices/editorSelectors";
-import { RecipeMetadata, RegistryId } from "@/core";
+import { type RecipeMetadata, type RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import notify from "@/utils/notify";
 import Form, {
-  OnSubmit,
-  RenderBody,
-  RenderSubmit,
+  type OnSubmit,
+  type RenderBody,
+  type RenderSubmit,
 } from "@/components/form/Form";
 import { object, string } from "yup";
 import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioItemListWidget";
-import { RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
+import { type RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 

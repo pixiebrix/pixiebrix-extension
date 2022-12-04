@@ -15,12 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ActionType, Message, SerializedError, Meta } from "@/core";
+import {
+  type ActionType,
+  type Message,
+  type SerializedError,
+  type Meta,
+} from "@/core";
 import { serializeError } from "serialize-error";
 import { createSendScriptMessage } from "./chrome";
 import {
   DETECT_FRAMEWORK_VERSIONS,
-  FrameworkMeta,
+  type FrameworkMeta,
   READ_WINDOW,
   SEARCH_WINDOW,
 } from "./constants";

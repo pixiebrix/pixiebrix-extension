@@ -16,7 +16,7 @@
  */
 
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 import React, { useCallback, useEffect, useState } from "react";
 import { validateRegistryId } from "@/types/helpers";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
@@ -29,13 +29,13 @@ import { joinName } from "@/utils";
 import { partial } from "lodash";
 import {
   customFormRendererSchema,
-  Storage,
+  type Storage,
 } from "@/blocks/renderers/customForm";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import Select, { Options } from "react-select";
+import Select, { type Options } from "react-select";
 import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import databaseSchema from "@schemas/database.json";
 

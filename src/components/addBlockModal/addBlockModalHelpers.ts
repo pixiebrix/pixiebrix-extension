@@ -16,8 +16,8 @@
  */
 
 import { BLOCK_RESULT_COLUMN_COUNT } from "@/components/addBlockModal/addBlockModalConstants";
-import { RegistryId } from "@/core";
-import { ItemKeyInput } from "@/components/addBlockModal/addBlockModalTypes";
+import { type RegistryId } from "@/core";
+import { type ItemKeyInput } from "@/components/addBlockModal/addBlockModalTypes";
 
 export function getFlatArrayIndex({
   rowIndex,

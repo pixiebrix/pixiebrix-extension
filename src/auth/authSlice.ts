@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { anonAuth } from "./authConstants";
-import { AuthState } from "./authTypes";
+import { type AuthState } from "./authTypes";
 import { localStorage } from "redux-persist-webextension-storage";
 import { isEmpty } from "lodash";
 

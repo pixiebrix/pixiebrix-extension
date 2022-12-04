@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
+import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { boolean } from "@/utils";
 import { useCallback, useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
