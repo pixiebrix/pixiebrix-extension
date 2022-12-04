@@ -19,7 +19,7 @@ import React, { useMemo } from "react";
 import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFieldContext";
 import CssClassWidget from "@/components/fields/schemaFields/widgets/CssClassWidget";
 import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 
 const RawCssClassField = defaultFieldFactory(CssClassWidget);
 

@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import { IBrick } from "@/core";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { type IBrick } from "@/core";
+import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
@@ -39,9 +39,9 @@ import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 import { appApi } from "@/services/api";
 import { useAsyncState } from "@/hooks/common";
 import { useAsyncIcon } from "@/components/asyncIcon";
-import { MarketplaceListing } from "@/types/contract";
+import { type MarketplaceListing } from "@/types/contract";
 import getType from "@/runtime/getType";
-import { BlockType } from "@/runtime/runtimeTypes";
+import { type BlockType } from "@/runtime/runtimeTypes";
 
 export function getDefaultBrickIcon(
   brick: IBrick,

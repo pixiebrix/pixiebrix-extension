@@ -17,7 +17,7 @@
  */
 
 import React, { useState } from "react";
-import { RenderItemParams } from "@atlaskit/tree";
+import { type RenderItemParams } from "@atlaskit/tree";
 import cx from "classnames";
 import styles from "@/components/documentBuilder/outline/DocumentOutline.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,8 +28,8 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
-import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
-import { TreeItem } from "@atlaskit/tree/types";
+import { type DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
+import { type TreeItem } from "@atlaskit/tree/types";
 import { acceptDrop } from "@/components/documentBuilder/hooks/useMoveElement";
 import { UnstyledButton } from "@/components/UnstyledButton";
 

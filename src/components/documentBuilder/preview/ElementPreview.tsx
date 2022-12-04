@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { MouseEventHandler, useMemo } from "react";
+import React, { type MouseEventHandler, useMemo } from "react";
 import styles from "./ElementPreview.module.scss";
 import cx from "classnames";
 import {
-  DocumentElement,
+  type DocumentElement,
   isListElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import AddElementAction from "./AddElementAction";

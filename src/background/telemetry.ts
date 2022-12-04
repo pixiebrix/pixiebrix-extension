@@ -15,19 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 import { uuidv4 } from "@/types/helpers";
 import { compact, debounce, once, throttle, uniq } from "lodash";
-import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
+import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { isLinked } from "@/auth/token";
-import { Data, UUID } from "@/core";
+import { type Data, type UUID } from "@/core";
 import { loadOptions } from "@/store/extensionsStorage";
 import {
   getLinkedApiClient,
   maybeGetLinkedApiClient,
 } from "@/services/apiClient";
 import { allowsTrack } from "@/telemetry/dnt";
-import { DBSchema, openDB } from "idb/with-async-ittr";
+import { type DBSchema, openDB } from "idb/with-async-ittr";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;

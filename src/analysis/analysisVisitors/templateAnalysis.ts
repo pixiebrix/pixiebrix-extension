@@ -15,14 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Expression } from "@/core";
-import { Analysis, Annotation, AnnotationType } from "@/analysis/analysisTypes";
-import { BlockPosition } from "@/blocks/types";
+import { type Expression } from "@/core";
+import {
+  type Analysis,
+  type Annotation,
+  AnnotationType,
+} from "@/analysis/analysisTypes";
+import { type BlockPosition } from "@/blocks/types";
 import { isNunjucksExpression, isTemplateExpression } from "@/runtime/mapArgs";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import { Template } from "nunjucks";
 import PipelineExpressionVisitor from "@/blocks/PipelineExpressionVisitor";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 const TEMPLATE_ERROR_MESSAGE =
   "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";

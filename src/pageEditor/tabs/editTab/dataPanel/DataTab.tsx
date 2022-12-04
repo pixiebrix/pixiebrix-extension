@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Tab, TabPaneProps } from "react-bootstrap";
+import { Tab, type TabPaneProps } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";

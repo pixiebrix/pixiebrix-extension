@@ -20,15 +20,15 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { recipeFactory, recipeMetadataFactory } from "@/testUtils/factories";
 import {
   createRenderFunctionWithRedux,
-  RenderFunctionWithRedux,
+  type RenderFunctionWithRedux,
 } from "@/testUtils/testHelpers";
 import {
   editorSlice,
   initialState as editorInitialState,
 } from "@/pageEditor/slices/editorSlice";
-import RecipeEntry, { RecipeEntryProps } from "./RecipeEntry";
-import { EditorState } from "@/pageEditor/pageEditorTypes";
-import { ExtensionOptionsState } from "@/store/extensionsTypes";
+import RecipeEntry, { type RecipeEntryProps } from "./RecipeEntry";
+import { type EditorState } from "@/pageEditor/pageEditorTypes";
+import { type ExtensionOptionsState } from "@/store/extensionsTypes";
 import { validateSemVerString } from "@/types/helpers";
 
 let renderRecipeEntry: RenderFunctionWithRedux<

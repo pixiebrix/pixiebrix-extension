@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Button } from "react-bootstrap";
-import { GroupBase, MenuListProps } from "react-select";
+import { type GroupBase, type MenuListProps } from "react-select";
 
 type MenuListWithAddButtonProps<
   OptionType,

@@ -16,19 +16,19 @@
  */
 
 import React from "react";
-import { Renderer, UnknownObject } from "@/types";
+import { Renderer, type UnknownObject } from "@/types";
 import {
-  BlockArg,
-  BlockOptions,
-  ComponentRef,
-  RegistryId,
-  SanitizedServiceConfiguration,
-  Schema,
-  UiSchema,
-  UUID,
+  type BlockArg,
+  type BlockOptions,
+  type ComponentRef,
+  type RegistryId,
+  type SanitizedServiceConfiguration,
+  type Schema,
+  type UiSchema,
+  type UUID,
 } from "@/core";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
-import { JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 import { dataStore, proxyService } from "@/background/messenger/api";
 import notify from "@/utils/notify";
 import custom from "@/blocks/renderers/customForm.css?loadAsUrl";

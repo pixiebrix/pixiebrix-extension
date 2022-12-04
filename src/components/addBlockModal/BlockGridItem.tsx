@@ -22,7 +22,7 @@ import styles from "./BlockGridItem.module.scss";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Icon from "@/icons/Icon";
-import { BlockResult } from "@/components/addBlockModal/addBlockModalTypes";
+import { type BlockResult } from "@/components/addBlockModal/addBlockModalTypes";
 import cx from "classnames";
 import Alert from "@/components/Alert";
 

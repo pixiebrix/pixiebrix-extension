@@ -16,7 +16,7 @@
  */
 
 import { Reader } from "@/types";
-import { ReaderOutput, Schema } from "@/core";
+import { type ReaderOutput, type Schema } from "@/core";
 
 export class PageSemanticReader extends Reader {
   defaultOutputKey = "metadata";

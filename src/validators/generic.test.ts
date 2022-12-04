@@ -17,9 +17,9 @@
 
 import { validateInput, validateKind } from "@/validators/generic";
 import { loadBrickYaml } from "@/runtime/brickYaml";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 import serviceText from "@contrib/raw/hunter.txt";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 
 describe("validateKind", () => {

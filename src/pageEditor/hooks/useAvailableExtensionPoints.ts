@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtensionPoint } from "@/core";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { type IExtensionPoint } from "@/core";
+import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { useAsyncState } from "@/hooks/common";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { zip } from "lodash";

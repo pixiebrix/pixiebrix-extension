@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiVersion, OutputKey } from "@/core";
+import { type ApiVersion, type OutputKey } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { BlockPipeline } from "@/blocks/types";
+import { type BlockPipeline } from "@/blocks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
   arrayBlock,
@@ -29,7 +29,7 @@ import {
   teapotBlock,
   testOptions,
 } from "./pipelineTestHelpers";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");

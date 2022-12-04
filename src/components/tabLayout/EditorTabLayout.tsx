@@ -18,8 +18,8 @@
 import styles from "./EditorTabLayout.module.scss";
 import React, { useState } from "react";
 import { Badge, Button, ButtonGroup, Nav, Tab } from "react-bootstrap";
-import { ButtonVariant, Variant } from "react-bootstrap/types";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { type ButtonVariant, type Variant } from "react-bootstrap/types";
+import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export interface TabItem {

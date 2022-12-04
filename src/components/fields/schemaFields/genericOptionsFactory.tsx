@@ -17,7 +17,7 @@
 
 import React from "react";
 import { inputProperties } from "@/helpers";
-import { Schema, UiSchema } from "@/core";
+import { type Schema, type UiSchema } from "@/core";
 import { isEmpty } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";

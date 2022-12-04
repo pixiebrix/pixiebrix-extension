@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TraceRecord } from "@/telemetry/trace";
+import { type TraceRecord } from "@/telemetry/trace";
 import { isEqual, reverse, sortBy } from "lodash";
-import { Branch } from "@/blocks/types";
+import { type Branch } from "@/blocks/types";
 
 /**
  * Given records for a single runId and blockInstanceId, return the latest call to a given blockInstanceId.

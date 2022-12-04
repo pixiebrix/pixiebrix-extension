@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { BlockArgContext, BlockOptions, UUID } from "@/core";
+import { type BlockArgContext, type BlockOptions, type UUID } from "@/core";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { BusinessError } from "@/errors/businessErrors";
 

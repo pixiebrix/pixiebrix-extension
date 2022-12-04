@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { UUID } from "@/core";
-import { TraceRecord } from "@/telemetry/trace";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type UUID } from "@/core";
+import { type TraceRecord } from "@/telemetry/trace";
 
 export type RuntimeState = {
   /**

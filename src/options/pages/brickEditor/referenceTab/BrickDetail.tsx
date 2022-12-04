@@ -30,8 +30,8 @@ import {
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 import useUserAction from "@/hooks/useUserAction";
 import DetailSection from "./DetailSection";
-import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
-import { Schema } from "@/core";
+import { type ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
+import { type Schema } from "@/core";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import BrickIcon from "@/components/BrickIcon";
 

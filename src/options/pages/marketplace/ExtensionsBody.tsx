@@ -19,7 +19,7 @@ import styles from "./ExtensionsBody.module.scss";
 
 import React from "react";
 import { Badge, Col } from "react-bootstrap";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 

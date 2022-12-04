@@ -17,8 +17,8 @@
 
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
 import { AnnotationType } from "@/analysis/analysisTypes";
-import { BlockConfig, BlockPosition } from "@/blocks/types";
-import { VisitBlockExtra } from "@/blocks/PipelineVisitor";
+import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { FORM_MODAL_ID } from "@/pageEditor/fields/FormModalOptions";
 
 class FormBrickAnalysis extends AnalysisVisitor {

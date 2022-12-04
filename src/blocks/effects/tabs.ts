@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { activateTab, closeTab } from "@/background/messenger/api";
 

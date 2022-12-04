@@ -16,8 +16,8 @@
  */
 
 import { parseAssemblyQualifiedName } from "csharp-helpers";
-import { Schema, SchemaProperties } from "@/core";
-import { Argument, Release } from "@/contrib/uipath/uipathContract";
+import { type Schema, type SchemaProperties } from "@/core";
+import { type Argument, type Release } from "@/contrib/uipath/uipathContract";
 import { BusinessError } from "@/errors/businessErrors";
 
 function toType(type: string) {

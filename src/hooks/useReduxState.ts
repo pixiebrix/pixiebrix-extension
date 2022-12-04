@@ -17,7 +17,7 @@
 
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Action, AnyAction, Dispatch } from "redux";
+import { type Action, type AnyAction, type Dispatch } from "redux";
 
 /**
  * Hook to simplify getting and setting value in the Redux store.

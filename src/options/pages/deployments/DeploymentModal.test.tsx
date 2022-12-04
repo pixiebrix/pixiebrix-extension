@@ -22,10 +22,10 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import settingsSlice, { initialSettingsState } from "@/store/settingsSlice";
 import MockDate from "mockdate";
-import { SettingsState } from "@/store/settingsTypes";
+import { type SettingsState } from "@/store/settingsTypes";
 import { authSlice } from "@/auth/authSlice";
 import { useUpdateAvailable } from "@/options/pages/UpdateBanner";
-import { AuthState } from "@/auth/authTypes";
+import { type AuthState } from "@/auth/authTypes";
 
 jest.mock("@/options/pages/UpdateBanner", () => ({
   useUpdateAvailable: jest.fn(),

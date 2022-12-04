@@ -17,14 +17,14 @@
 
 import React, { useContext } from "react";
 import DocumentContext from "./DocumentContext";
-import { UnknownObject } from "@/types";
-import { Args, isDeferExpression } from "@/runtime/mapArgs";
+import { type UnknownObject } from "@/types";
+import { type Args, isDeferExpression } from "@/runtime/mapArgs";
 import { useAsyncState } from "@/hooks/common";
 import Loader from "@/components/Loader";
 import {
-  BuildDocumentBranch,
-  DocumentElement,
-  DynamicPath,
+  type BuildDocumentBranch,
+  type DocumentElement,
+  type DynamicPath,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { produce } from "immer";
 import ErrorBoundary from "@/components/ErrorBoundary";

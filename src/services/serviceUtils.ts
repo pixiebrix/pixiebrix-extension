@@ -16,12 +16,12 @@
  */
 
 import {
-  RegistryId,
-  SanitizedServiceConfiguration,
-  Schema,
-  ServiceContext,
-  ServiceDependency,
-  UUID,
+  type RegistryId,
+  type SanitizedServiceConfiguration,
+  type Schema,
+  type ServiceContext,
+  type ServiceDependency,
+  type UUID,
 } from "@/core";
 import { services } from "@/background/messenger/api";
 import { pickBy } from "lodash";

@@ -22,9 +22,9 @@
  * potentially leaving data behind.
  */
 
-import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
+import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { expectContext } from "@/utils/expectContext";
-import { JsonValue } from "type-fest";
+import { type JsonValue } from "type-fest";
 
 // Just like chrome.storage.session, this must be "global"
 const storage = new Map<ManualStorageKey, JsonValue>();

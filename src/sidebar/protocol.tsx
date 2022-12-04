@@ -17,13 +17,13 @@
 
 import reportError from "@/telemetry/reportError";
 import {
-  ActivatePanelOptions,
-  FormEntry,
-  PanelEntry,
-  TemporaryPanelEntry,
+  type ActivatePanelOptions,
+  type FormEntry,
+  type PanelEntry,
+  type TemporaryPanelEntry,
 } from "@/sidebar/types";
-import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
-import { UUID } from "@/core";
+import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
+import { type UUID } from "@/core";
 
 let lastMessageSeen = -1;
 // Track activate messages separately. The Sidebar App Redux state has special handling for these messages to account

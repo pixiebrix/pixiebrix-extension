@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Brick } from "@/types/contract";
+import { type Brick } from "@/types/contract";
 
 export type EnrichedBrick = Brick & {
   scope: string;

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ChangeEventHandler } from "react";
+import React, { type ChangeEventHandler } from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { joinName } from "@/utils";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
@@ -23,11 +23,11 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import {
-  DocumentElementType,
-  ListDocumentElement,
+  type DocumentElementType,
+  type ListDocumentElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { produce } from "immer";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";

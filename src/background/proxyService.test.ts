@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RawServiceConfiguration, ServiceConfig } from "@/core";
+import { type RawServiceConfiguration, type ServiceConfig } from "@/core";
 import serviceRegistry from "@/services/registry";
-import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { isBackground, isExtensionContext } from "webext-detect-page";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";

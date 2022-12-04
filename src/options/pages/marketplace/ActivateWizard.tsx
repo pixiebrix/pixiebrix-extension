@@ -18,7 +18,7 @@
 import styles from "./ActivateWizard.module.scss";
 
 import React, { useEffect } from "react";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 import { Card, Col, Form, Row } from "react-bootstrap";
 import { truncate } from "lodash";
 import { Formik } from "formik";

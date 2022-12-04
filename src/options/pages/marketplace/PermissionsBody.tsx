@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 import React, { useMemo } from "react";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -27,8 +27,8 @@ import extensionPointRegistry from "@/extensionPoints/registry";
 import { useAsyncState } from "@/hooks/common";
 import { allSettledValues } from "@/utils";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
-import { WizardValues } from "@/options/pages/marketplace/wizardTypes";
-import { ServiceAuthPair } from "@/core";
+import { type WizardValues } from "@/options/pages/marketplace/wizardTypes";
+import { type ServiceAuthPair } from "@/core";
 import { useFormikContext } from "formik";
 
 function selectedAuths(values: WizardValues): ServiceAuthPair[] {

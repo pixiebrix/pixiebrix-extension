@@ -26,7 +26,7 @@ import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import * as contentScriptAPI from "@/contentScript/messenger/api";
 import { UNSET_UUID, uuidv4 } from "@/types/helpers";
 import { buildDocumentBranch } from "./documentTree";
-import { DocumentElementType } from "./documentBuilderTypes";
+import { type DocumentElementType } from "./documentBuilderTypes";
 import DocumentContext, {
   initialValue,
 } from "@/components/documentBuilder/render/DocumentContext";

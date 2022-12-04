@@ -1,7 +1,7 @@
-import React, { ChangeEvent } from "react";
+import React, { type ChangeEvent } from "react";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import SwitchButtonWidget, {
-  CheckBoxLike,
+  type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { isEmpty, partial } from "lodash";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
@@ -10,8 +10,8 @@ import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget"
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import { useField, useFormikContext } from "formik";
 import { joinName } from "@/utils";
-import { TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { DebounceOptions } from "@/extensionPoints/types";
+import { type TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type DebounceOptions } from "@/extensionPoints/types";
 
 const DebounceFieldSet: React.FC<{
   isLocked: boolean;

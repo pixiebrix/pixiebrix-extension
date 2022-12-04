@@ -19,7 +19,7 @@
 // angularjs: https://docs.angularjs.org/api/ng/function/angular.element
 
 import { pickBy, isEmpty } from "lodash";
-import { ReadableComponentAdapter } from "@/frameworks/component";
+import { type ReadableComponentAdapter } from "@/frameworks/component";
 import { FrameworkNotFound, ignoreNotFound } from "@/frameworks/errors";
 
 declare global {

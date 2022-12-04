@@ -18,7 +18,7 @@
 import { setComponentData } from "@/pageScript/protocol";
 
 import { Effect } from "@/types";
-import { BlockArg, Schema } from "@/core";
+import { type BlockArg, type Schema } from "@/core";
 
 export class SetVueValues extends Effect {
   constructor() {

@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { FieldArray, useField } from "formik";
 import { Button } from "react-bootstrap";
 import React, { useMemo } from "react";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 import {
   booleanPredicate,
   findOneOf,
   textPredicate,
 } from "@/components/fields/schemaFields/schemaUtils";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 import { defaultBlockConfig } from "@/blocks/util";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";

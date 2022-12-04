@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ChangeEvent } from "react";
+import React, { type ChangeEvent } from "react";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
+import { type CustomFieldWidget } from "@/components/form/FieldTemplate";
 import styles from "./SwitchButtonWidget.module.scss";
 
 export type CheckBoxLike = {

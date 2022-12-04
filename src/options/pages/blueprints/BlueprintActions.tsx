@@ -27,7 +27,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useMemo } from "react";
 import useInstallableViewItemActions from "@/options/pages/blueprints/useInstallableViewItemActions";
-import { InstallableViewItem } from "./blueprintsTypes";
+import { type InstallableViewItem } from "./blueprintsTypes";
 
 const BlueprintActions: React.FunctionComponent<{
   installableViewItem: InstallableViewItem;

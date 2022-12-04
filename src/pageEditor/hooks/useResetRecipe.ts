@@ -16,7 +16,7 @@
  */
 
 import { useCallback } from "react";
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
 import { useDispatch, useSelector } from "react-redux";

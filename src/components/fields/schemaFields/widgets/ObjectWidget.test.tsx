@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 import { render, screen } from "@/pageEditor/testHelpers";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 import userEvent from "@testing-library/user-event";

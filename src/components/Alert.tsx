@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren } from "react";
-import { IconDefinition } from "@fortawesome/fontawesome-common-types";
+import React, { type PropsWithChildren } from "react";
+import { type IconDefinition } from "@fortawesome/fontawesome-common-types";
 import {
   faExclamationCircle,
   faExclamationTriangle,

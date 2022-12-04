@@ -39,9 +39,9 @@ import {
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { Button, Modal } from "react-bootstrap";
 import {
-  RecipeDefinition,
-  RecipeMetadataFormState,
-  UnsavedRecipeDefinition,
+  type RecipeDefinition,
+  type RecipeMetadataFormState,
+  type UnsavedRecipeDefinition,
 } from "@/types/definitions";
 import { selectScope } from "@/auth/authSelectors";
 import {
@@ -50,9 +50,9 @@ import {
 } from "@/pageEditor/panes/save/saveHelpers";
 import { RequireScope } from "@/auth/RequireScope";
 import Form, {
-  OnSubmit,
-  RenderBody,
-  RenderSubmit,
+  type OnSubmit,
+  type RenderBody,
+  type RenderSubmit,
 } from "@/components/form/Form";
 import { useCreateRecipeMutation } from "@/services/api";
 import useCreate from "@/pageEditor/hooks/useCreate";
@@ -63,16 +63,16 @@ import { produce } from "immer";
 import { FieldDescriptions } from "@/utils/strings";
 import { object, string } from "yup";
 import LoadingDataModal from "@/pageEditor/panes/save/LoadingDataModal";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
-import { RecipeMetadata, RegistryId } from "@/core";
+import { type RecipeMetadata, type RegistryId } from "@/core";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { generateRecipeId } from "@/utils/recipeUtils";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { PackageUpsertResponse } from "@/types/contract";
+import { type PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
 import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
 

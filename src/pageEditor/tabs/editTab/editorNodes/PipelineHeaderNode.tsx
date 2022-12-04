@@ -17,7 +17,7 @@
 
 import React from "react";
 import NodeActionsView, {
-  NodeAction,
+  type NodeAction,
 } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import styles from "./PipelineHeaderNode.module.scss";
 import PipelineOffsetView from "@/pageEditor/tabs/editTab/editorNodes/PipelineOffsetView";

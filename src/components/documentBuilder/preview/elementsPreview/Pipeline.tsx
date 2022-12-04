@@ -17,14 +17,14 @@
 
 import React from "react";
 import {
-  DocumentElement,
-  PreviewComponentProps,
+  type DocumentElement,
+  type PreviewComponentProps,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import cx from "classnames";
 import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
 import Flaps from "@/components/documentBuilder/preview/flaps/Flaps";
-import { PipelineExpression } from "@/runtime/mapArgs";
+import { type PipelineExpression } from "@/runtime/mapArgs";
 
 type PipelineProps = PreviewComponentProps & {
   element: DocumentElement;

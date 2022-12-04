@@ -16,7 +16,12 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
+import {
+  type BlockArg,
+  type BlockOptions,
+  type Schema,
+  type SchemaProperties,
+} from "@/core";
 import type { JobResult } from "@uipath/robot/dist/models";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";

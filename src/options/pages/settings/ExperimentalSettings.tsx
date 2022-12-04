@@ -23,7 +23,7 @@ import settingsSlice from "@/store/settingsSlice";
 import { faFlask } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { selectSettings } from "@/store/settingsSelectors";
-import { SkunkworksSettings } from "@/store/settingsTypes";
+import { type SkunkworksSettings } from "@/store/settingsTypes";
 
 const ExperimentalFeature: React.FunctionComponent<{
   id: keyof SkunkworksSettings;

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DBSchema, openDB } from "idb/with-async-ittr";
+import { type DBSchema, openDB } from "idb/with-async-ittr";
 import { sortBy, groupBy } from "lodash";
 
 const STORAGE_KEY = "BRICK_REGISTRY";

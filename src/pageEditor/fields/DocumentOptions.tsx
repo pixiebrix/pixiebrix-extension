@@ -20,7 +20,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { joinName } from "@/utils";
 import { useField } from "formik";
 import DocumentEditor from "@/components/documentBuilder/edit/DocumentEditor";
-import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
 
 export const DOCUMENT_ID = validateRegistryId("@pixiebrix/document");

@@ -2,16 +2,16 @@ import React from "react";
 import { isEmpty, sortBy } from "lodash";
 import { getOptionForInputMode } from "./widgets/TemplateToggleWidget";
 import {
-  InputModeOption,
-  OmitOption,
-  StringOption,
+  type InputModeOption,
+  type OmitOption,
+  type StringOption,
 } from "./widgets/templateToggleWidgetTypes";
-import { ExpressionType, Schema } from "@/core";
+import { type ExpressionType, type Schema } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 import OptionIcon from "./optionIcon/OptionIcon";
 import widgetsRegistry from "./widgets/widgetsRegistry";
-import { CustomFieldToggleMode } from "@/components/fields/schemaFields/schemaFieldTypes";
+import { type CustomFieldToggleMode } from "@/components/fields/schemaFields/schemaFieldTypes";
 import {
   isKeyStringField,
   isSelectField,

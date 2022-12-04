@@ -16,14 +16,14 @@
  */
 
 import {
-  BlockArg,
-  BlockArgContext,
-  Logger,
-  ReaderRoot,
-  RenderedArgs,
-  ServiceContext,
-  UserOptions,
-  UUID,
+  type BlockArg,
+  type BlockArgContext,
+  type Logger,
+  type ReaderRoot,
+  type RenderedArgs,
+  type ServiceContext,
+  type UserOptions,
+  type UUID,
 } from "@/core";
 import { castArray, isPlainObject } from "lodash";
 import {
@@ -36,15 +36,15 @@ import { hideNotification, showNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/blocks/errors";
 import { engineRenderer } from "@/runtime/renderers";
-import { TraceExitData, TraceRecordMeta } from "@/telemetry/trace";
-import { JsonObject } from "type-fest";
+import { type TraceExitData, type TraceRecordMeta } from "@/telemetry/trace";
+import { type JsonObject } from "type-fest";
 import { UNSET_UUID, uuidv4, validateSemVerString } from "@/types/helpers";
 import { mapArgs } from "@/runtime/mapArgs";
 import {
-  ApiVersionOptions,
+  type ApiVersionOptions,
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
 } from "@/runtime/apiVersionOptions";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import {
   logIfInvalidOutput,
   selectBlockRootElement,
@@ -52,14 +52,14 @@ import {
   throwIfInvalidInput,
 } from "@/runtime/runtimeUtils";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { ResolvedBlockConfig } from "@/runtime/runtimeTypes";
-import { UnknownObject } from "@/types";
-import { RunBlock } from "@/contentScript/runBlockTypes";
+import { type ResolvedBlockConfig } from "@/runtime/runtimeTypes";
+import { type UnknownObject } from "@/types";
+import { type RunBlock } from "@/contentScript/runBlockTypes";
 import { resolveBlockConfig } from "@/blocks/registry";
 import { isObject } from "@/utils";
 import { BusinessError, NoRendererError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
-import { PanelPayload } from "@/sidebar/types";
+import { type PanelPayload } from "@/sidebar/types";
 import { getLoggingConfig } from "@/telemetry/logging";
 
 type CommonOptions = ApiVersionOptions & {

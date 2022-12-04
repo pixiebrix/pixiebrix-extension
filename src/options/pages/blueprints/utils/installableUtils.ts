@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 import {
-  IExtension,
-  RegistryId,
-  ResolvedExtension,
-  UnresolvedExtension,
-  UUID,
+  type IExtension,
+  type RegistryId,
+  type ResolvedExtension,
+  type UnresolvedExtension,
+  type UUID,
 } from "@/core";
 import * as semver from "semver";
-import { Organization } from "@/types/contract";
+import { type Organization } from "@/types/contract";
 import {
-  Installable,
-  SharingSource,
-  SharingType,
+  type Installable,
+  type SharingSource,
+  type SharingType,
 } from "@/options/pages/blueprints/blueprintsTypes";
 import { createSelector } from "reselect";
 import { selectExtensions } from "@/store/extensionsSelectors";

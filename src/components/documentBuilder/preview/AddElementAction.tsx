@@ -19,8 +19,8 @@ import { useField } from "formik";
 import React from "react";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import {
-  DocumentElement,
-  DocumentElementType,
+  type DocumentElement,
+  type DocumentElementType,
   DOCUMENT_ELEMENT_TYPES,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import styles from "./AddElementAction.module.scss";

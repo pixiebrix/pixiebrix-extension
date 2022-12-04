@@ -16,14 +16,14 @@
  */
 
 import React, { useContext, useState } from "react";
-import { BlockPipeline } from "@/blocks/types";
-import AsyncButton, { AsyncButtonProps } from "@/components/AsyncButton";
+import { type BlockPipeline } from "@/blocks/types";
+import AsyncButton, { type AsyncButtonProps } from "@/components/AsyncButton";
 import { runEffectPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
-import { Except } from "type-fest";
+import { type Except } from "type-fest";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
+import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
 import { getTopLevelFrame } from "webext-messenger";
 
 type ButtonElementProps = Except<AsyncButtonProps, "onClick"> & {

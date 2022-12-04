@@ -18,10 +18,10 @@
 /* eslint-disable security/detect-object-injection */
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
-import { FieldProps, IChangeEvent } from "@rjsf/core";
+import { type FieldProps, type IChangeEvent } from "@rjsf/core";
 import {
-  RJSFSchema,
-  SetActiveField,
+  type RJSFSchema,
+  type SetActiveField,
 } from "@/components/formBuilder/formBuilderTypes";
 import FormPreviewStringField from "./FormPreviewStringField";
 import {
@@ -37,8 +37,8 @@ import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import SelectWidgetPreview from "./SelectWidgetPreview";
 import FormPreviewSchemaField from "./FormPreviewSchemaField";
 import databaseSchema from "@schemas/database.json";
-import { WritableDraft } from "immer/dist/internal";
-import { Schema } from "@/core";
+import { type WritableDraft } from "immer/dist/internal";
+import { type Schema } from "@/core";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;

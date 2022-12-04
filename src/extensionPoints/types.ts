@@ -16,22 +16,22 @@
  */
 
 import {
-  ApiVersion,
-  BlockIcon,
-  EmptyConfig,
-  IBlock,
-  IExtensionPoint,
-  IReader,
-  Logger,
-  Metadata,
-  RegistryId,
-  ResolvedExtension,
-  RunArgs,
-  Schema,
-  UUID,
+  type ApiVersion,
+  type BlockIcon,
+  type EmptyConfig,
+  type IBlock,
+  type IExtensionPoint,
+  type IReader,
+  type Logger,
+  type Metadata,
+  type RegistryId,
+  type ResolvedExtension,
+  type RunArgs,
+  type Schema,
+  type UUID,
 } from "@/core";
-import { Availability, ReaderConfig } from "@/blocks/types";
-import { Permissions } from "webextension-polyfill";
+import { type Availability, type ReaderConfig } from "@/blocks/types";
+import { type Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "@/types/helpers";
 
 export type ExtensionPointType =

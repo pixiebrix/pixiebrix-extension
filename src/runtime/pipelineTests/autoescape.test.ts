@@ -18,7 +18,7 @@
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { echoBlock, simpleInput, testOptions } from "./pipelineTestHelpers";
-import { ApiVersion } from "@/core";
+import { type ApiVersion } from "@/core";
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");

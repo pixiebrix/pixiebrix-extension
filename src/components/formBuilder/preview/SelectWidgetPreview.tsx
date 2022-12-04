@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { WidgetProps } from "@rjsf/core";
+import { type WidgetProps } from "@rjsf/core";
 import { Theme as RjsfTheme } from "@rjsf/bootstrap-4";
 import React from "react";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 
 const RjsfSelectWidget = RjsfTheme.widgets.SelectWidget;
 
