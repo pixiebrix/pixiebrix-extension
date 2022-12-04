@@ -16,6 +16,7 @@
  */
 
 import { addPostMessageListener } from "@/utils/postMessage";
+import { type NunjucksRenderOptions } from "./api";
 
 /** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
 
@@ -23,5 +24,18 @@ export default function registerMessenger(): void {
   addPostMessageListener("SANDBOX_PING", (payload) => {
     console.log("SANDBOX: Received PING payload:", payload);
     return "pong";
+  });
+
+  addPostMessageListener("RENDER_NUNJUCKS", async (payload) => {
+    console.log("SANDBOX: Received RENDER_NUNJUCKS payload:", payload);
+
+    const { default: nunjucks } = await import(
+      /* webpackChunkName: "nunjucks" */ "nunjucks"
+    );
+
+    const { template, context, autoescape } = payload as NunjucksRenderOptions;
+
+    nunjucks.configure({ autoescape });
+    return nunjucks.renderString(template, context);
   });
 }
