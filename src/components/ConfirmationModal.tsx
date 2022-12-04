@@ -23,7 +23,7 @@ import React, {
   createContext,
 } from "react";
 import { Modal, Button } from "react-bootstrap";
-import { ButtonVariant } from "react-bootstrap/types";
+import { type ButtonVariant } from "react-bootstrap/types";
 
 type ModalProps = {
   title?: string;

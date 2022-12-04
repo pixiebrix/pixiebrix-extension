@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { ApiVersion } from "@/core";
+import { type ApiVersion } from "@/core";
 
 export type RuntimeContext = {
   apiVersion: ApiVersion;

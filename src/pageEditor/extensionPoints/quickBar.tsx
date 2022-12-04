@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, Metadata } from "@/core";
+import { type IExtension, type Metadata } from "@/core";
 import {
   baseFromExtension,
   baseSelectExtension,
@@ -33,27 +33,27 @@ import {
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { uuidv4 } from "@/types/helpers";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { getDomain } from "@/permissions/patterns";
 import {
   faExclamationTriangle,
   faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
 import {
-  ElementConfig,
-  SingleLayerReaderConfig,
+  type ElementConfig,
+  type SingleLayerReaderConfig,
 } from "@/pageEditor/extensionPoints/elementConfig";
 import React from "react";
 import { Alert } from "react-bootstrap";
 import {
-  QuickBarConfig,
-  QuickBarDefinition,
+  type QuickBarConfig,
+  type QuickBarDefinition,
   QuickBarExtensionPoint,
 } from "@/extensionPoints/quickBarExtension";
 import QuickBarConfiguration from "@/pageEditor/tabs/quickBar/QuickBarConfiguration";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { QuickBarFormState } from "./formStateTypes";
+import { type QuickBarFormState } from "./formStateTypes";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { makeEmptyPermissions } from "@/utils/permissions";
 

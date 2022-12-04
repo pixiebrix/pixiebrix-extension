@@ -17,15 +17,17 @@
 
 import React from "react";
 import * as yup from "yup";
-import { ComponentMeta, ComponentStory } from "@storybook/react";
-import Form, { OnSubmit } from "./Form";
+import { type ComponentMeta, type ComponentStory } from "@storybook/react";
+import Form, { type OnSubmit } from "./Form";
 import { action } from "@storybook/addon-actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
+import SelectWidget, {
+  type Option,
+} from "@/components/form/widgets/SelectWidget";
 import { Form as BootstrapForm } from "react-bootstrap";
-import { CustomFieldWidget } from "./FieldTemplate";
+import { type CustomFieldWidget } from "./FieldTemplate";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import { range } from "lodash";
 import SwitchButtonWidget from "./widgets/switchButton/SwitchButtonWidget";

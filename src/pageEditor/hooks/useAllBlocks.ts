@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
+import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
 import { useAsyncState } from "@/hooks/common";
 import { isEmpty } from "lodash";
 import { useEffect, useMemo } from "react";
-import { RegistryChangeListener } from "@/baseRegistry";
+import { type RegistryChangeListener } from "@/baseRegistry";
 
 let allBlocksCached: TypedBlockMap = new Map();
 

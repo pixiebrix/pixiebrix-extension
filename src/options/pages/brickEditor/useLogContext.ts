@@ -16,7 +16,7 @@
  */
 
 import { useDebounce } from "use-debounce";
-import { MessageContext, RawConfig } from "@/core";
+import { type MessageContext, type RawConfig } from "@/core";
 import { useAsyncEffect } from "use-async-effect";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { useDispatch } from "react-redux";

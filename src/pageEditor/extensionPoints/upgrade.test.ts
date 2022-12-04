@@ -21,7 +21,7 @@ import {
   upgradePipelineToV3,
 } from "@/pageEditor/extensionPoints/upgrade";
 import blockRegistry from "@/blocks/registry";
-import { RegistryId, Schema } from "@/core";
+import { type RegistryId, type Schema } from "@/core";
 import { Block } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
 

@@ -17,7 +17,7 @@
 
 import React from "react";
 import ActionMenu from "@/components/sidebar/ActionMenu";
-import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 
 export default {
   title: "Sidebar/ActionMenu",

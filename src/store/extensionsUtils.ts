@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, RegistryId, UserOptions, UUID } from "@/core";
+import {
+  type IExtension,
+  type RegistryId,
+  type UserOptions,
+  type UUID,
+} from "@/core";
 import { compact, groupBy, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 

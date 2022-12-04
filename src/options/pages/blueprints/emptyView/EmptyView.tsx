@@ -17,8 +17,8 @@
 
 import React from "react";
 import styles from "./EmptyView.module.scss";
-import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
-import { TableInstance } from "react-table";
+import { type InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
+import { type TableInstance } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Card } from "react-bootstrap";

@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Analysis, Annotation } from "@/analysis/analysisTypes";
+import { type Analysis, type Annotation } from "@/analysis/analysisTypes";
 import PipelineVisitor from "@/blocks/PipelineVisitor";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
 
 /**
  * A base class for creating analysis visitors.

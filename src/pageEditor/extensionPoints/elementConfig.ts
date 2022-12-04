@@ -15,26 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import type React from "react";
+import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
-  ApiVersion,
-  IExtension,
-  Metadata,
-  RecipeMetadata,
-  RegistryId,
-  ServiceDependency,
-  UserOptions,
-  UUID,
+  type ApiVersion,
+  type IExtension,
+  type Metadata,
+  type RecipeMetadata,
+  type RegistryId,
+  type ServiceDependency,
+  type UserOptions,
+  type UUID,
 } from "@/core";
-import { FrameworkMeta } from "@/messaging/constants";
+import { type FrameworkMeta } from "@/messaging/constants";
 import {
-  ExtensionPointConfig,
-  ExtensionPointType,
+  type ExtensionPointConfig,
+  type ExtensionPointType,
 } from "@/extensionPoints/types";
-import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
-import { Target } from "@/types";
-import { OptionsDefinition } from "@/types/definitions";
+import {
+  type BlockPipeline,
+  type NormalizedAvailability,
+} from "@/blocks/types";
+import { type Target } from "@/types";
+import { type OptionsDefinition } from "@/types/definitions";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 import type { Permissions } from "webextension-polyfill";
 

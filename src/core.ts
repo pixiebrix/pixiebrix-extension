@@ -26,7 +26,7 @@ import type { Except, Primitive } from "type-fest";
 import type { ErrorObject } from "serialize-error";
 import type { Permissions } from "webextension-polyfill";
 import type React from "react";
-import { contextNames } from "webext-detect-page";
+import { type contextNames } from "webext-detect-page";
 
 // Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;

@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RawServiceConfiguration, UUID } from "@/core";
+import { type RawServiceConfiguration, type UUID } from "@/core";
 import { localStorage } from "redux-persist-webextension-storage";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 export interface ServicesState {
   configured: Record<string, RawServiceConfiguration>;

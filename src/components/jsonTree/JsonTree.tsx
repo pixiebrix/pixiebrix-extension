@@ -18,7 +18,7 @@
 import { JSONTree } from "react-json-tree";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import React, {
-  ReactNode,
+  type ReactNode,
   useCallback,
   useMemo,
   useRef,
@@ -38,9 +38,9 @@ import {
   pickBy,
   set,
 } from "lodash";
-import { Primitive } from "type-fest";
+import { type Primitive } from "type-fest";
 import { produce } from "immer";
-import { Styling, Theme } from "react-base16-styling";
+import { type Styling, type Theme } from "react-base16-styling";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";

@@ -16,7 +16,7 @@
  */
 
 import {
-  DocumentElement,
+  type DocumentElement,
   isButtonElement,
   isListElement,
   isPipelineElement,

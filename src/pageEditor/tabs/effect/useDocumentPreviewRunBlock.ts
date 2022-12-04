@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlockArgContext, UUID } from "@/core";
+import { type BlockArgContext, type UUID } from "@/core";
 import { useEffect, useReducer } from "react";
 import { usePreviewInfo } from "@/pageEditor/tabs/effect/BlockPreview";
 import { isTriggerExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
@@ -25,9 +25,9 @@ import {
   selectActiveElementNodeInfo,
   selectParentBlockInfo,
 } from "@/pageEditor/slices/editorSelectors";
-import { getErrorMessage, SimpleErrorObject } from "@/errors/errorHelpers";
-import { SerializableResponse } from "@/messaging/protocol";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { getErrorMessage, type SimpleErrorObject } from "@/errors/errorHelpers";
+import { type SerializableResponse } from "@/messaging/protocol";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useDebouncedCallback } from "use-debounce";
 import { runRendererBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";

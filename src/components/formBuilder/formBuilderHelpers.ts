@@ -17,17 +17,17 @@
 
 import {
   KEYS_OF_UI_SCHEMA,
-  SafeString,
-  Schema,
-  SchemaDefinition,
-  SchemaPropertyType,
-  UiSchema,
+  type SafeString,
+  type Schema,
+  type SchemaDefinition,
+  type SchemaPropertyType,
+  type UiSchema,
 } from "@/core";
-import { RJSFSchema } from "./formBuilderTypes";
+import { type RJSFSchema } from "./formBuilderTypes";
 import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 import { freshIdentifier } from "@/utils";
 import { produce } from "immer";
-import { WritableDraft } from "immer/dist/types/types-external";
+import { type WritableDraft } from "immer/dist/types/types-external";
 import databaseSchema from "@schemas/database.json";
 
 export const getMinimalSchema: () => Schema = () => ({

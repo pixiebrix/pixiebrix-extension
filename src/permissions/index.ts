@@ -16,9 +16,13 @@
  */
 
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { IExtension, IExtensionPoint, ServiceAuthPair } from "@/core";
-import { ResolvedExtensionPointConfig } from "@/types/definitions";
-import { Permissions } from "webextension-polyfill";
+import {
+  type IExtension,
+  type IExtensionPoint,
+  type ServiceAuthPair,
+} from "@/core";
+import { type ResolvedExtensionPointConfig } from "@/types/definitions";
+import { type Permissions } from "webextension-polyfill";
 import { castArray, compact, uniq } from "lodash";
 import serviceRegistry from "@/services/registry";
 import { mergePermissions, requestPermissions } from "@/utils/permissions";

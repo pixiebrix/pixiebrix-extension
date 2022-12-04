@@ -17,21 +17,21 @@
 
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { useMemo } from "react";
-import { AsyncState, useAsyncState } from "@/hooks/common";
+import { type AsyncState, useAsyncState } from "@/hooks/common";
 import { services } from "@/background/messenger/api";
 import {
-  Schema as ValidatorSchema,
-  ValidationResult,
+  type Schema as ValidatorSchema,
+  type ValidationResult,
   Validator,
 } from "@cfworker/json-schema";
-import { IExtension, Schema, SchemaProperties } from "@/core";
+import { type IExtension, type Schema, type SchemaProperties } from "@/core";
 import serviceRegistry from "@/services/registry";
 import { inputProperties } from "@/helpers";
 import { isEmpty, isPlainObject, mapValues, pickBy, uniq } from "lodash";
 import urljoin from "url-join";
 import $RefParser, {
-  FileInfo,
-  ResolverOptions,
+  type FileInfo,
+  type ResolverOptions,
 } from "@apidevtools/json-schema-ref-parser";
 
 import draft07 from "@schemas/draft-07.json";
@@ -48,13 +48,13 @@ import componentSchema from "@schemas/component.json";
 import pipelineSchema from "@schemas/pipeline.json";
 import databaseSchema from "@schemas/database.json";
 import { resolveDefinitions } from "@/registry/internal";
-import Lazy from "yup/lib/Lazy";
+import type Lazy from "yup/lib/Lazy";
 import * as Yup from "yup";
 import blockRegistry from "@/blocks/registry";
 import { isUUID, validateRegistryId } from "@/types/helpers";
 import { DoesNotExistError } from "@/baseRegistry";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 import {
   MissingConfigurationError,
   NotConfiguredError,

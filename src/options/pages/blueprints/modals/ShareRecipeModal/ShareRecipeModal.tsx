@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactElement } from "react";
-import { UUID } from "@/core";
+import React, { type ReactElement } from "react";
+import { type UUID } from "@/core";
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { selectShowShareContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
@@ -29,7 +29,7 @@ import {
   useGetEditablePackagesQuery,
   useUpdateRecipeMutation,
 } from "@/services/api";
-import { FormikHelpers } from "formik";
+import { type FormikHelpers } from "formik";
 import notify from "@/utils/notify";
 import { getScopeAndId } from "@/utils";
 import { produce } from "immer";
@@ -47,7 +47,7 @@ import ReactSelect from "react-select";
 import styles from "./ShareRecipeModal.module.scss";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { selectAuth } from "@/auth/authSelectors";
-import { Organization, UserRole } from "@/types/contract";
+import { type Organization, UserRole } from "@/types/contract";
 import Loading from "./Loading";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useRecipe } from "@/recipes/recipesHooks";

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, Metadata } from "@/core";
+import { type IExtension, type Metadata } from "@/core";
 import {
   baseFromExtension,
   baseSelectExtension,
@@ -31,24 +31,24 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import {
-  PanelConfig,
-  PanelDefinition,
+  type PanelConfig,
+  type PanelDefinition,
   PanelExtensionPoint,
 } from "@/extensionPoints/panelExtension";
 import { uuidv4 } from "@/types/helpers";
 import { boolean } from "@/utils";
 import { getDomain } from "@/permissions/patterns";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
-import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
+import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import PanelConfiguration from "@/pageEditor/tabs/panel/PanelConfiguration";
 import { insertPanel } from "@/contentScript/messenger/api";
 import {
-  DynamicDefinition,
-  PanelSelectionResult,
+  type DynamicDefinition,
+  type PanelSelectionResult,
 } from "@/contentScript/nativeEditor/types";
-import { PanelFormState, PanelTraits } from "./formStateTypes";
+import { type PanelFormState, type PanelTraits } from "./formStateTypes";
 import { makeEmptyPermissions } from "@/utils/permissions";
 
 const DEFAULT_TRAITS: PanelTraits = {

@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ChangeEvent } from "react";
-import { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
+import React, { type ChangeEvent } from "react";
+import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import Select, {
-  GroupBase,
-  SelectComponentsConfig,
-  StylesConfig,
+  type GroupBase,
+  type SelectComponentsConfig,
+  type StylesConfig,
 } from "react-select";
 import { getErrorMessage } from "@/errors/errorHelpers";
 

@@ -1,9 +1,12 @@
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { camelCase } from "lodash";
-import { IconStringDefinition } from "@/types/contract";
+import { type IconStringDefinition } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
 import { useEffect } from "react";
-import { IconName, IconPrefix } from "@fortawesome/free-solid-svg-icons";
+import {
+  type IconName,
+  type IconPrefix,
+} from "@fortawesome/free-solid-svg-icons";
 
 async function handleIconImport(
   moduleImport: Promise<{ definition: IconProp }>

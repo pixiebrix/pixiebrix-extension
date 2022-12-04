@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback } from "react";
-import { ExtensionPointType } from "@/extensionPoints/types";
+import { type ExtensionPointType } from "@/extensionPoints/types";
 import InsertMenuItemPane from "@/pageEditor/panes/insert/InsertMenuItemPane";
 import InsertPanelPane from "@/pageEditor/panes/insert/InsertPanelPane";
 import GenericInsertPane from "@/pageEditor/panes/insert/GenericInsertPane";

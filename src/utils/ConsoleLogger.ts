@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Logger, MessageContext } from "@/core";
-import { UnknownObject } from "@/types";
+import { type Logger, type MessageContext } from "@/core";
+import { type UnknownObject } from "@/types";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
 class ConsoleLogger implements Logger {

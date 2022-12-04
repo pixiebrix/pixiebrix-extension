@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Logger, RendererOutput, SafeHTML } from "@/core";
+import { type Logger, type RendererOutput, type SafeHTML } from "@/core";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import sanitize from "@/utils/sanitize";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 import { escape } from "lodash";
 
 // Require SafeHTML here, because if we just accepted unknown, this would return `true` even for unsanitized strings

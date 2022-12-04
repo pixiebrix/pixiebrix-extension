@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Button, ButtonGroup } from "react-bootstrap";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import cx from "classnames";
 import styles from "./HeadingStyleWidget.module.scss";
 import { useField } from "formik";

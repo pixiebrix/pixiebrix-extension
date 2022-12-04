@@ -21,7 +21,7 @@ import { executeScript } from "webext-content-scripts";
 import webextAlert from "./webextAlert";
 import { memoizeUntilSettled, isMac } from "@/utils";
 import { notify } from "@/options/messenger/api";
-import { browserAction, Tab } from "@/mv3/api";
+import { browserAction, type Tab } from "@/mv3/api";
 import { isScriptableUrl } from "@/utils/permissions";
 
 const ERR_UNABLE_TO_OPEN =

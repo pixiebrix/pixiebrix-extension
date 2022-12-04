@@ -26,7 +26,7 @@ import { truncate } from "lodash";
 import Loader from "@/components/Loader";
 import useSubmitBrick from "./useSubmitBrick";
 import { useDispatch, useSelector } from "react-redux";
-import { RawConfig, UUID } from "@/core";
+import { type RawConfig, type UUID } from "@/core";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useTitle } from "@/hooks/title";
 import { HotKeys } from "react-hotkeys";
@@ -34,7 +34,7 @@ import workshopSlice from "@/store/workshopSlice";
 import useLogContext from "@/options/pages/brickEditor/useLogContext";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
-import { Package } from "@/types/contract";
+import { type Package } from "@/types/contract";
 import { useGetPackageQuery } from "@/services/api";
 
 const { touchBrick } = workshopSlice.actions;

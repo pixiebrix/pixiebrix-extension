@@ -18,8 +18,8 @@
 import automationAnywhere from "@contrib/services/automation-anywhere.yaml";
 import automationAnywhereOAuth2 from "@contrib/services/automation-anywhere-oauth2.yaml";
 import { fromJS } from "@/services/factory";
-import { ServiceDefinition } from "@/types/definitions";
-import { SanitizedConfig } from "@/core";
+import { type ServiceDefinition } from "@/types/definitions";
+import { type SanitizedConfig } from "@/core";
 
 describe("LocalDefinedService", () => {
   test("includes version", () => {

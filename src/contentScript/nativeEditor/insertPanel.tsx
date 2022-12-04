@@ -22,7 +22,7 @@ import { userSelectElement } from "./elementPicker";
 import * as pageScript from "@/pageScript/protocol";
 import { findContainer } from "./selectorInference";
 import { html as beautifyHTML } from "js-beautify";
-import { PanelSelectionResult } from "@/contentScript/nativeEditor/types";
+import { type PanelSelectionResult } from "@/contentScript/nativeEditor/types";
 import { inferPanelHTML } from "@/contentScript/nativeEditor/markupInference";
 
 const DEFAULT_PANEL_HEADING = "PixieBrix Panel";

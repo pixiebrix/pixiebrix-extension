@@ -20,8 +20,8 @@
 // https://github.com/vuejs/vue-devtools/blob/dev/packages/app-backend/src/utils.js
 
 import { pickBy, isEmpty, set } from "lodash";
-import { RootInstanceVisitor } from "@/frameworks/scanner";
-import { WriteableComponentAdapter } from "@/frameworks/component";
+import { type RootInstanceVisitor } from "@/frameworks/scanner";
+import { type WriteableComponentAdapter } from "@/frameworks/component";
 
 declare global {
   interface Window {

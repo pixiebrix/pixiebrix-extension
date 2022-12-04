@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ServicesState } from "@/store/servicesSlice";
-import { RawServiceConfiguration } from "@/core";
+import { type ServicesState } from "@/store/servicesSlice";
+import { type RawServiceConfiguration } from "@/core";
 
 export const selectConfiguredServices = ({
   services,

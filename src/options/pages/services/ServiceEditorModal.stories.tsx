@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ComponentProps } from "react";
-import { ComponentMeta, Story } from "@storybook/react";
+import React, { type ComponentProps } from "react";
+import { type ComponentMeta, type Story } from "@storybook/react";
 import ServiceEditorModal from "./ServiceEditorModal";
 import { action } from "@storybook/addon-actions";
 import { fromJS } from "@/services/factory";
 import { dumpBrickYaml, loadBrickYaml } from "@/runtime/brickYaml";
-import { ServiceDefinition } from "@/types/definitions";
+import { type ServiceDefinition } from "@/types/definitions";
 
 import pipedriveYaml from "@contrib/services/pipedrive.yaml?loadAsText";
 import automationAnywhereYaml from "@contrib/services/automation-anywhere.yaml?loadAsText";

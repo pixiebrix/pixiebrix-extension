@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IBlock, RegistryId, Schema } from "@/core";
-import { UnknownObject } from "@/types";
+import { type IBlock, type RegistryId, type Schema } from "@/core";
+import { type UnknownObject } from "@/types";
 import { castArray, mapValues, pickBy } from "lodash";
 import { removeUndefined } from "@/utils";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import { PipelineConfigurationError } from "@/blocks/errors";
 import blockRegistry from "@/blocks/registry";
 import pDefer from "p-defer";

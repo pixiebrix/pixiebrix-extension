@@ -17,12 +17,12 @@
 
 import styles from "./AdvancedLinks.module.scss";
 
-import { BlockIf, BlockWindow } from "@/blocks/types";
-import { TemplateEngine } from "@/core";
+import { type BlockIf, type BlockWindow } from "@/blocks/types";
+import { type TemplateEngine } from "@/core";
 import { joinName } from "@/utils";
 import { useField } from "formik";
 import { partial } from "lodash";
-import React, { MutableRefObject } from "react";
+import React, { type MutableRefObject } from "react";
 import { Button } from "react-bootstrap";
 import { isExpression } from "@/runtime/mapArgs";
 

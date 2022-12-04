@@ -18,7 +18,11 @@
 import { Effect } from "@/types";
 import { proxyService } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg, BlockOptions, SanitizedServiceConfiguration } from "@/core";
+import {
+  type BlockArg,
+  type BlockOptions,
+  type SanitizedServiceConfiguration,
+} from "@/core";
 import { BusinessError } from "@/errors/businessErrors";
 
 export class AddOrganization extends Effect {

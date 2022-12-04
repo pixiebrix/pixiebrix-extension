@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SettingsState } from "./settingsTypes";
+import { type SettingsState } from "./settingsTypes";
 import { createSelector } from "reselect";
 
 export type StateWithSettings = {

@@ -19,7 +19,7 @@ import styles from "./Sidebar.module.scss";
 
 import React, { useState } from "react";
 import { CSSTransition } from "react-transition-group";
-import { CSSTransitionProps } from "react-transition-group/CSSTransition";
+import { type CSSTransitionProps } from "react-transition-group/CSSTransition";
 import SidebarCollapsed from "./SidebarCollapsed";
 import SidebarExpanded from "./SidebarExpanded";
 

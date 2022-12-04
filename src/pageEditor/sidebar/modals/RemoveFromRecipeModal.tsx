@@ -29,11 +29,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { object, string } from "yup";
 import Form, {
-  OnSubmit,
-  RenderBody,
-  RenderSubmit,
+  type OnSubmit,
+  type RenderBody,
+  type RenderSubmit,
 } from "@/components/form/Form";
-import { RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
+import { type RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
 import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioItemListWidget";
 
 type FormState = {

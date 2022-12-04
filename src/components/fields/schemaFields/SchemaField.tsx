@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 import BasicSchemaField from "@/components/fields/schemaFields/BasicSchemaField";
 import ServiceField from "@/components/fields/schemaFields/ServiceField";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";

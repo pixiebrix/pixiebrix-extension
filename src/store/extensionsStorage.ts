@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { readReduxStorage, ReduxStorageKey, setReduxStorage } from "@/chrome";
+import {
+  readReduxStorage,
+  type ReduxStorageKey,
+  setReduxStorage,
+} from "@/chrome";
 import { localStorage } from "redux-persist-webextension-storage";
 import { createMigrate } from "redux-persist";
 import { boolean } from "@/utils";

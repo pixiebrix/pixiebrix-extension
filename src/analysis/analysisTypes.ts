@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlockPosition } from "@/blocks/types";
-import { UUID } from "@/core";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import VarMap from "./analysisVisitors/varAnalysis/varMap";
+import { type BlockPosition } from "@/blocks/types";
+import { type UUID } from "@/core";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import type VarMap from "./analysisVisitors/varAnalysis/varMap";
 
 export enum AnnotationType {
   Error = "error",

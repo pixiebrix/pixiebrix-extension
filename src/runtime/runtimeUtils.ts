@@ -23,17 +23,17 @@ import {
 import { boolean, excludeUndefined } from "@/utils";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
 import {
-  BlockArgContext,
-  IBlock,
-  IExtension,
-  Logger,
-  ReaderRoot,
-  RenderedArgs,
+  type BlockArgContext,
+  type IBlock,
+  type IExtension,
+  type Logger,
+  type ReaderRoot,
+  type RenderedArgs,
 } from "@/core";
 import { isEmpty } from "lodash";
-import { BlockConfig, BlockWindow } from "@/blocks/types";
+import { type BlockConfig, type BlockWindow } from "@/blocks/types";
 import {
-  ApiVersionOptions,
+  type ApiVersionOptions,
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
 } from "@/runtime/apiVersionOptions";
 import { engineRenderer } from "@/runtime/renderers";

@@ -17,7 +17,7 @@
 
 import React, { useMemo } from "react";
 import { selectScope } from "@/auth/authSelectors";
-import { RegistryId, SemVerString } from "@/core";
+import { type RegistryId, type SemVerString } from "@/core";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { generateRecipeId } from "@/utils/recipeUtils";
 import { Button, Modal } from "react-bootstrap";
@@ -35,17 +35,17 @@ import Form from "@/components/form/Form";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { useCreateRecipeMutation } from "@/services/api";
 import {
-  RecipeDefinition,
+  type RecipeDefinition,
   selectSourceRecipeMetadata,
 } from "@/types/definitions";
-import { FormikHelpers } from "formik";
+import { type FormikHelpers } from "formik";
 import { makeBlueprint } from "@/options/pages/blueprints/utils/exportBlueprint";
 import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { FieldDescriptions } from "@/utils/strings";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
-import { StylesConfig } from "react-select";
+import { type StylesConfig } from "react-select";
 import { RequireScope } from "@/auth/RequireScope";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useAllRecipes } from "@/recipes/recipesHooks";

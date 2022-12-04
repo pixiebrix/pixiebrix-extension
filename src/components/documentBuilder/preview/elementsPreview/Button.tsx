@@ -17,9 +17,9 @@
 
 import React from "react";
 import {
-  ButtonDocumentConfig,
-  ButtonDocumentElement,
-  PreviewComponentProps,
+  type ButtonDocumentConfig,
+  type ButtonDocumentElement,
+  type PreviewComponentProps,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
 import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";

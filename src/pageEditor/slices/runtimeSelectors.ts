@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UUID } from "@/core";
-import { RuntimeState } from "@/pageEditor/slices/runtimeSlice";
-import { isTraceError, TraceRecord } from "@/telemetry/trace";
-import { EditorState } from "@/pageEditor/pageEditorTypes";
+import { type UUID } from "@/core";
+import { type RuntimeState } from "@/pageEditor/slices/runtimeSlice";
+import { isTraceError, type TraceRecord } from "@/telemetry/trace";
+import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { createSelector } from "reselect";
 import { getLatestCall } from "@/telemetry/traceHelpers";
 

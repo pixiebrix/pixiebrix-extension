@@ -16,17 +16,24 @@
  */
 
 import PipelineExpressionVisitor from "@/blocks/PipelineExpressionVisitor";
-import { VisitBlockExtra, VisitPipelineExtra } from "@/blocks/PipelineVisitor";
-import { BlockPosition, BlockConfig } from "@/blocks/types";
-import { Expression, TemplateEngine } from "@/core";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import {
+  type VisitBlockExtra,
+  type VisitPipelineExtra,
+} from "@/blocks/PipelineVisitor";
+import { type BlockPosition, type BlockConfig } from "@/blocks/types";
+import { type Expression, type TemplateEngine } from "@/core";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getInputKeyForSubPipeline } from "@/pageEditor/utils";
 import { isNunjucksExpression, isVarExpression } from "@/runtime/mapArgs";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { isEmpty } from "lodash";
-import { Analysis, Annotation, AnnotationType } from "@/analysis/analysisTypes";
+import {
+  type Analysis,
+  type Annotation,
+  AnnotationType,
+} from "@/analysis/analysisTypes";
 import VarMap, { VarExistence } from "./varMap";
-import { TraceRecord } from "@/telemetry/trace";
+import { type TraceRecord } from "@/telemetry/trace";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import parseTemplateVariables from "./parseTemplateVariables";
 

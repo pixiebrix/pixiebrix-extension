@@ -18,7 +18,7 @@
 import "./FileWidget.module.scss";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Data, SheetMeta } from "@/contrib/google/sheets/types";
+import { type Data, type SheetMeta } from "@/contrib/google/sheets/types";
 import { useField } from "formik";
 import { useAsyncEffect } from "use-async-effect";
 import { isNullOrBlank } from "@/utils";
@@ -29,7 +29,7 @@ import { isOptionsPage } from "webext-detect-page";
 import { Form, InputGroup } from "react-bootstrap";
 import notify from "@/utils/notify";
 import AsyncButton from "@/components/AsyncButton";
-import { Expression } from "@/core";
+import { type Expression } from "@/core";
 import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 

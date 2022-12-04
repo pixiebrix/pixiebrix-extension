@@ -17,20 +17,20 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { getChromeExtensionId, RuntimeNotFoundError } from "@/chrome";
-import { Runtime } from "webextension-polyfill";
+import { type Runtime } from "webextension-polyfill";
 import { patternToRegex } from "webext-patterns";
 import chromeP from "webext-polyfill-kinda";
 import { isBackground, isExtensionContext } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 
 import {
-  HandlerEntry,
-  SerializableResponse,
-  HandlerOptions,
+  type HandlerEntry,
+  type SerializableResponse,
+  type HandlerOptions,
   isNotification,
   toErrorResponse,
   isErrorResponse,
-  RemoteProcedureCallRequest,
+  type RemoteProcedureCallRequest,
 } from "@/messaging/protocol";
 
 type ChromeMessageSender = chrome.runtime.MessageSender;

@@ -26,7 +26,7 @@ import {
   faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useMemo } from "react";
-import { TableInstance } from "react-table";
+import { type TableInstance } from "react-table";
 import useReduxState from "@/hooks/useReduxState";
 import {
   selectActiveTab,

@@ -18,10 +18,10 @@
 import styles from "./SchemaTree.module.scss";
 
 import React, { useMemo } from "react";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 import { Table } from "react-bootstrap";
 import { isEmpty, sortBy } from "lodash";
-import { useTable, useExpanded, Row, Cell } from "react-table";
+import { useTable, useExpanded, type Row, type Cell } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,

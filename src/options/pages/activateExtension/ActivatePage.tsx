@@ -21,7 +21,7 @@ import { useParams } from "react-router";
 import { Col, Row } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import useFetch from "@/hooks/useFetch";
-import { CloudExtension } from "@/types/contract";
+import { type CloudExtension } from "@/types/contract";
 import Page from "@/layout/Page";
 import ActivateForm from "@/options/pages/activateExtension/ActivateForm";
 import { useAuthOptions } from "@/hooks/auth";

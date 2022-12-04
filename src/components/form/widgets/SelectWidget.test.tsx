@@ -18,7 +18,7 @@
 import { render } from "@testing-library/react";
 import React from "react";
 import selectEvent from "react-select-event";
-import SelectWidget, { Option } from "./SelectWidget";
+import SelectWidget, { type Option } from "./SelectWidget";
 
 const options: Option[] = [
   {

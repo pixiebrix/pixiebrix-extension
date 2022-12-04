@@ -23,13 +23,13 @@ import { useGetMeQuery } from "@/services/api";
 import { uuidv4 } from "@/types/helpers";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
-import servicesSlice, { ServicesState } from "@/store/servicesSlice";
-import { AuthState } from "@/auth/authTypes";
+import servicesSlice, { type ServicesState } from "@/store/servicesSlice";
+import { type AuthState } from "@/auth/authTypes";
 import settingsSlice from "@/store/settingsSlice";
-import { SettingsState } from "@/store/settingsTypes";
+import { type SettingsState } from "@/store/settingsTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
-import { RawServiceConfiguration } from "@/core";
+import { type RawServiceConfiguration } from "@/core";
 
 jest.mock("@/services/api", () => ({
   useGetMeQuery: jest.fn(),

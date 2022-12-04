@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import React from "react";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 import FormBuilder from "./FormBuilder";
 import { action } from "@storybook/addon-actions";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
-import { UiSchema } from "@rjsf/core";
+import { type UiSchema } from "@rjsf/core";
 
 const schema: Schema = {
   title: "A form",

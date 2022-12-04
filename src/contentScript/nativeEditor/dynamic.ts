@@ -16,11 +16,11 @@
  */
 
 import {
-  IExtensionPoint,
-  IReader,
-  ReaderOutput,
-  ReaderRoot,
-  UUID,
+  type IExtensionPoint,
+  type IReader,
+  type ReaderOutput,
+  type ReaderRoot,
+  type UUID,
 } from "@/core";
 import { clearDynamic, runDynamic } from "@/contentScript/lifecycle";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
@@ -30,7 +30,7 @@ import { expectContext } from "@/utils/expectContext";
 import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import { $safeFind } from "@/helpers";
-import { TriggerDefinition } from "@/extensionPoints/triggerExtension";
+import { type TriggerDefinition } from "@/extensionPoints/triggerExtension";
 import selection from "@/utils/selectionController";
 import { ContextMenuReader } from "@/extensionPoints/contextMenuReader";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";

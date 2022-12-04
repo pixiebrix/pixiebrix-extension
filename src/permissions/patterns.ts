@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ParsedDomain, parse } from "psl";
+import { type ParsedDomain, parse } from "psl";
 
 export const HTTPS_PATTERN = "https://*/*";
 

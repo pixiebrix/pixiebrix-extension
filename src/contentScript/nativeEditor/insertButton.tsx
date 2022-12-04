@@ -23,7 +23,7 @@ import * as pageScript from "@/pageScript/protocol";
 import { findContainer } from "./selectorInference";
 import { html as beautifyHTML } from "js-beautify";
 import { PRIVATE_ATTRIBUTES_SELECTOR } from "@/common";
-import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
+import { type ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
 import { inferButtonHTML } from "@/contentScript/nativeEditor/markupInference";
 
 export const DEFAULT_ACTION_CAPTION = "Action";

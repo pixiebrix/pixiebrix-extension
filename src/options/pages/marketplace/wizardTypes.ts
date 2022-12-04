@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Primitive } from "type-fest";
-import { ServiceAuthPair } from "@/core";
-import React from "react";
-import { RecipeDefinition } from "@/types/definitions";
+import { type Primitive } from "type-fest";
+import { type ServiceAuthPair } from "@/core";
+import type React from "react";
+import { type RecipeDefinition } from "@/types/definitions";
 
 export type WizardStep = {
   key: string;

@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 import { useLocation } from "react-router";
 import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
 import { useDispatch, useSelector } from "react-redux";

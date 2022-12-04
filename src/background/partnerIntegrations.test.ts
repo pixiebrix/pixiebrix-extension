@@ -22,7 +22,7 @@ import { fetch } from "@/hooks/fetch";
 
 import controlRoomTokenService from "@contrib/services/automation-anywhere.yaml";
 import controlRoomOAuthService from "@contrib/services/automation-anywhere-oauth2.yaml";
-import { RawServiceConfiguration, RegistryId } from "@/core";
+import { type RawServiceConfiguration, type RegistryId } from "@/core";
 import { locator as serviceLocator } from "@/background/locator";
 import { CONTROL_ROOM_SERVICE_ID } from "@/services/constants";
 import { uuidv4 } from "@/types/helpers";

@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { OutputValidationError } from "@/blocks/errors";
+import { type OutputValidationError } from "@/blocks/errors";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import styles from "./ErrorDetail.module.scss";
 

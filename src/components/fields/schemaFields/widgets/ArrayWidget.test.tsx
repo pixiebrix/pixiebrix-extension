@@ -17,7 +17,7 @@
 
 import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import userEvent from "@testing-library/user-event";
 import { stringToExpression } from "@/pageEditor/extensionPoints/upgrade";

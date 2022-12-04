@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
-import { Expression } from "@/core";
-import { UnknownObject } from "@/types";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { JSONSchema7Array } from "json-schema";
+import type React from "react";
+import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
+import { type Expression } from "@/core";
+import { type UnknownObject } from "@/types";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type JSONSchema7Array } from "json-schema";
 
 interface InputModeOptionBase<
   TValue extends FieldInputMode,

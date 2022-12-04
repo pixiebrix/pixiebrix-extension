@@ -1,5 +1,5 @@
 import { getMinimalSchema, getMinimalUiSchema } from "./formBuilderHelpers";
-import { RJSFSchema } from "./formBuilderTypes";
+import { type RJSFSchema } from "./formBuilderTypes";
 
 export const initOneFieldSchemaCase: (fieldName: string) => RJSFSchema = (
   fieldName = "firstName"

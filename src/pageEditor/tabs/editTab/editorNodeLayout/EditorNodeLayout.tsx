@@ -19,12 +19,12 @@ import React from "react";
 import { ListGroup } from "react-bootstrap";
 import BrickNode from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNode";
 import PipelineHeaderNode, {
-  PipelineHeaderNodeProps,
+  type PipelineHeaderNodeProps,
 } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
 import PipelineFooterNode, {
-  PipelineFooterNodeProps,
+  type PipelineFooterNodeProps,
 } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
-import { BrickNodeProps } from "@/pageEditor/tabs/editTab/editTabTypes";
+import { type BrickNodeProps } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import usePipelineNodes from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes";
 
