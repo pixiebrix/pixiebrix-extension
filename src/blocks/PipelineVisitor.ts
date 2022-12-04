@@ -27,7 +27,7 @@ import {
   getRootPipelineFlavor,
   getSubPipelineFlavor,
 } from "@/blocks/blockFilterHelpers";
-import { ExtensionPointType } from "@/extensionPoints/types";
+import { type ExtensionPointType } from "@/extensionPoints/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 

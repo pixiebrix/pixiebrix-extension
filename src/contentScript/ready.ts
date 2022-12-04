@@ -33,9 +33,9 @@
  * - Context invalidated: CS must be injected again
  */
 
-import { UUID } from "@/core";
+import { type UUID } from "@/core";
 import { forbidContext } from "@/utils/expectContext";
-import { MessengerMeta } from "webext-messenger";
+import { type MessengerMeta } from "webext-messenger";
 
 const html = globalThis.document?.documentElement;
 

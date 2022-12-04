@@ -41,7 +41,7 @@ import {
   type SelectMode,
 } from "@/contentScript/nativeEditor/types";
 import { useSelector } from "react-redux";
-import { SettingsState } from "@/store/settingsTypes";
+import { type SettingsState } from "@/store/settingsTypes";
 import { sortBySelector } from "@/contentScript/nativeEditor/selectorInference";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { CancelError } from "@/errors/businessErrors";

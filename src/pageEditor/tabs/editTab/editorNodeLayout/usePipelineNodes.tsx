@@ -52,7 +52,7 @@ import {
   decideBlockStatus,
   decideFoundationStatus,
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/decideStatus";
-import { Except } from "type-fest";
+import { type Except } from "type-fest";
 import useAllBlocks from "@/blocks/hooks/useAllBlocks";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";

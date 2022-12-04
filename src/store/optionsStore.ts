@@ -28,7 +28,7 @@ import servicesSlice, {
 } from "@/store/servicesSlice";
 import {
   blueprintModalsSlice,
-  BlueprintModalsState,
+  type BlueprintModalsState,
 } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { appApi } from "@/services/api";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
