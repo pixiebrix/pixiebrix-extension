@@ -15,13 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MigrationManifest, PersistedState } from "redux-persist/es/types";
-import { PersistedExtension } from "@/core";
 import {
-  ExtensionOptionsState,
-  LegacyExtensionObjectShapeState,
-  LegacyExtensionObjectState,
-  OptionsState,
+  type MigrationManifest,
+  type PersistedState,
+} from "redux-persist/es/types";
+import { type PersistedExtension } from "@/core";
+import {
+  type ExtensionOptionsState,
+  type LegacyExtensionObjectShapeState,
+  type LegacyExtensionObjectState,
+  type OptionsState,
 } from "@/store/extensionsTypes";
 
 export const migrations: MigrationManifest = {

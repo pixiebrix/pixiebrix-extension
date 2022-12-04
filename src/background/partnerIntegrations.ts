@@ -19,7 +19,7 @@ import { locator as serviceLocator } from "@/background/locator";
 import { flatten, isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import { safeParseUrl } from "@/utils";
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 import { launchOAuth2Flow } from "@/background/auth";
 import serviceRegistry from "@/services/registry";
 import { setPartnerAuth } from "@/auth/token";

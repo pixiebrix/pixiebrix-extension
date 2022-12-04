@@ -22,8 +22,8 @@ import ExtensionLogsModal from "@/options/pages/blueprints/modals/ExtensionLogsM
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/optionsStore";
 import {
-  LogsContext,
-  ShareContext,
+  type LogsContext,
+  type ShareContext,
 } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import {
   selectShowLogsContext,

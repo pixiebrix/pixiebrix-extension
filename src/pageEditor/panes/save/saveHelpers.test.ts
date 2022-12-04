@@ -33,7 +33,7 @@ import {
   typedBlockFactory,
 } from "@/testUtils/factories";
 import menuItemExtensionAdapter from "@/pageEditor/extensionPoints/menuItem";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 import {
   internalExtensionPointMetaFactory,
   lookupExtensionPoint,
@@ -42,24 +42,24 @@ import {
 import { produce } from "immer";
 import { makeInternalId } from "@/registry/internal";
 import { cloneDeep, range, uniq } from "lodash";
-import { InnerDefinitionRef, UnresolvedExtension } from "@/core";
-import { MenuDefinition } from "@/extensionPoints/menuItemExtension";
+import { type InnerDefinitionRef, type UnresolvedExtension } from "@/core";
+import { type MenuDefinition } from "@/extensionPoints/menuItemExtension";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
   getMinimalSchema,
   getMinimalUiSchema,
 } from "@/components/formBuilder/formBuilderHelpers";
 import {
-  EditablePackage,
-  OptionsDefinition,
-  UnsavedRecipeDefinition,
+  type EditablePackage,
+  type OptionsDefinition,
+  type UnsavedRecipeDefinition,
 } from "@/types/definitions";
 import {
-  ExtensionPointConfig,
-  ExtensionPointDefinition,
+  type ExtensionPointConfig,
+  type ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 jest.mock("@/background/contextMenus");

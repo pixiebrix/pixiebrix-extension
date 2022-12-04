@@ -19,7 +19,12 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { Formik } from "formik";
-import { ApiVersion, Expression, Schema, TemplateEngine } from "@/core";
+import {
+  type ApiVersion,
+  type Expression,
+  type Schema,
+  type TemplateEngine,
+} from "@/core";
 import { createFormikTemplate } from "@/testUtils/formHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";

@@ -17,13 +17,13 @@
 
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
-import { BlockPosition, BlockConfig } from "@/blocks/types";
+import { type BlockPosition, type BlockConfig } from "@/blocks/types";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import { PipelineExpression } from "@/runtime/mapArgs";
+import { type PipelineExpression } from "@/runtime/mapArgs";
 import { blockConfigFactory, pipelineFactory } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
-import PipelineVisitor, { VisitBlockExtra } from "./PipelineVisitor";
+import PipelineVisitor, { type VisitBlockExtra } from "./PipelineVisitor";
 
 test("should invoke the callback for the pipeline bricks", () => {
   const pipeline = pipelineFactory();

@@ -25,14 +25,14 @@ import {
 import { Alert } from "react-bootstrap";
 import Centered from "@/components/Centered";
 import EditorTabLayout, {
-  ActionButton,
-  TabItem,
+  type ActionButton,
+  type TabItem,
 } from "@/components/tabLayout/EditorTabLayout";
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import AskQuestionModal from "@/pageEditor/askQuestion/AskQuestionModal";
 import Logs from "@/pageEditor/tabs/Logs";
 import EditRecipe from "@/pageEditor/tabs/editRecipeTab/EditRecipe";
-import { MessageContext } from "@/core";
+import { type MessageContext } from "@/core";
 import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
 import RecipeOptions from "@/pageEditor/tabs/RecipeOptions";

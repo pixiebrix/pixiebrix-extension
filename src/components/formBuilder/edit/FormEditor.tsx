@@ -20,9 +20,9 @@ import styles from "./FormEditor.module.scss";
 import { useField } from "formik";
 import React, { useEffect, useMemo } from "react";
 import {
-  RJSFSchema,
-  SelectStringOption,
-  SetActiveField,
+  type RJSFSchema,
+  type SelectStringOption,
+  type SetActiveField,
 } from "@/components/formBuilder/formBuilderTypes";
 import { Button, Col, Row } from "react-bootstrap";
 import FieldEditor from "./FieldEditor";
@@ -37,11 +37,11 @@ import {
 import { UI_ORDER } from "@/components/formBuilder/schemaFieldNames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 import { produce } from "immer";
 import { joinName } from "@/utils";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import LayoutWidget from "@/components/LayoutWidget";
 import { findLast } from "lodash";

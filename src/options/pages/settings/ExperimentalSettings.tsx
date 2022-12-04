@@ -23,7 +23,7 @@ import settingsSlice from "@/store/settingsSlice";
 import { faFlask } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { selectSettings } from "@/store/settingsSelectors";
-import { SkunkworksSettings } from "@/store/settingsTypes";
+import { type SkunkworksSettings } from "@/store/settingsTypes";
 
 const ExperimentalFeature: React.FunctionComponent<{
   id: keyof SkunkworksSettings;
@@ -55,8 +55,13 @@ const ExperimentalFeature: React.FunctionComponent<{
 
 const ExperimentalSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { suggestElements, excludeRandomClasses, selectionTools, varAnalysis } =
-    useSelector(selectSettings);
+  const {
+    suggestElements,
+    excludeRandomClasses,
+    selectionTools,
+    varAnalysis,
+    varAutosuggest,
+  } = useSelector(selectSettings);
 
   return (
     <Card>
@@ -112,12 +117,26 @@ const ExperimentalSettings: React.FunctionComponent = () => {
           <ExperimentalFeature
             id="varAnalysis"
             label="Perform Analysis of Variables in Page Editor:"
-            description="Toggle on to enable validation of variables in Page Editor"
+            description="Toggle on to enable validation of variables in Page Editor. Shows a warning if use of an undefined variable is detected"
             isEnabled={varAnalysis}
             onChange={(value) => {
               dispatch(
                 settingsSlice.actions.setFlag({
                   flag: "varAnalysis",
+                  value,
+                })
+              );
+            }}
+          />
+          <ExperimentalFeature
+            id="varAutosuggest"
+            label="Autosuggest Variables in Page Editor. You must also enable Analysis of Variables to use this feature:"
+            description="Toggle on to enable variable autosuggest for variable and text template entry modes"
+            isEnabled={varAutosuggest}
+            onChange={(value) => {
+              dispatch(
+                settingsSlice.actions.setFlag({
+                  flag: "varAutosuggest",
                   value,
                 })
               );

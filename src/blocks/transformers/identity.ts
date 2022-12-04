@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockArg, Schema } from "@/core";
+import { type BlockArg, type Schema } from "@/core";
 
 export class IdentityTransformer extends Transformer {
   override async isPure(): Promise<boolean> {

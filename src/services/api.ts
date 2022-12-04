@@ -15,35 +15,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId, UUID } from "@/core";
-import { BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
+import { type RegistryId, type UUID } from "@/core";
+import { type BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import {
-  EditablePackage,
-  RecipeDefinition,
-  ServiceDefinition,
-  UnsavedRecipeDefinition,
+  type EditablePackage,
+  type Kind,
+  type RecipeDefinition,
+  type ServiceDefinition,
+  type UnsavedRecipeDefinition,
 } from "@/types/definitions";
-import { AxiosRequestConfig } from "axios";
+import { type AxiosRequestConfig } from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import {
-  CloudExtension,
-  Database,
-  Group,
-  MarketplaceListing,
-  MarketplaceTag,
-  Me,
-  Organization,
-  Package,
-  PackageUpsertResponse,
-  PackageVersion,
-  PendingInvitation,
-  SanitizedAuth,
+  type CloudExtension,
+  type Database,
+  type Group,
+  type MarketplaceListing,
+  type MarketplaceTag,
+  type Me,
+  type Organization,
+  type Package,
+  type PackageUpsertResponse,
+  type PackageVersion,
+  type PendingInvitation,
+  type SanitizedAuth,
   UserRole,
 } from "@/types/contract";
-import { components } from "@/types/swagger";
+import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
 import { serializeError } from "serialize-error";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 
 type QueryArgs = {
   /**
@@ -272,7 +273,7 @@ export const appApi = createApi({
           method: "post",
           data: {
             config: recipeConfig,
-            kind: "recipe" as RecipeDefinition["kind"],
+            kind: "recipe" as Kind,
             organizations,
             public: isPublic,
             share_dependencies: shareDependencies,
@@ -295,7 +296,7 @@ export const appApi = createApi({
             id: packageId,
             name: recipe.metadata.id,
             config: recipeConfig,
-            kind: "recipe" as RecipeDefinition["kind"],
+            kind: "recipe" as Kind,
             public: Boolean((recipe as RecipeDefinition).sharing?.public),
             organizations:
               (recipe as RecipeDefinition).sharing?.organizations ?? [],

@@ -15,21 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { WritableDraft } from "immer/dist/types/types-external";
-import { EditorState } from "@/pageEditor/pageEditorTypes";
-import { RegistryId, UUID } from "@/core";
+import { type WritableDraft } from "immer/dist/types/types-external";
+import { type EditorState } from "@/pageEditor/pageEditorTypes";
+import { type RegistryId, type UUID } from "@/core";
 import {
   FOUNDATION_NODE_ID,
   makeInitialElementUIState,
   makeInitialNodeUIState,
 } from "@/pageEditor/uiState/uiState";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
-import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import {
-  OptionsDefinition,
-  RecipeMetadataFormState,
+  type OptionsDefinition,
+  type RecipeMetadataFormState,
 } from "@/types/definitions";
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */

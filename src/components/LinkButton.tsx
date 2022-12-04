@@ -17,9 +17,9 @@
 
 import styles from "./LinkButton.module.scss";
 import React from "react";
-import { Button, ButtonProps } from "react-bootstrap";
+import { Button, type ButtonProps } from "react-bootstrap";
 import cx from "classnames";
-import { Except } from "type-fest";
+import { type Except } from "type-fest";
 
 type PropType = Except<ButtonProps, "variant" | "size" | "href" | "target">;
 

@@ -27,12 +27,12 @@ import {
   faStoreAlt,
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
-import { Kind } from "@/registry/localRegistry";
+import { type Kind } from "@/registry/localRegistry";
 import styles from "./CustomBricksCard.module.scss";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { Column } from "react-table";
+import { type IconProp } from "@fortawesome/fontawesome-svg-core";
+import { type Column } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { EnrichedBrick, NavigateProps } from "./workshopTypes";
+import { type EnrichedBrick, type NavigateProps } from "./workshopTypes";
 import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
 import AsyncCard from "@/components/asyncCard/AsyncCard";
 

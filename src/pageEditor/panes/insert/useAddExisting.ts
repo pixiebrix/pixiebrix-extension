@@ -20,11 +20,11 @@ import { reportEvent } from "@/telemetry/events";
 import { useDispatch, useSelector } from "react-redux";
 import notify from "@/utils/notify";
 import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
-import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
+import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { getCurrentURL } from "@/pageEditor/utils";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 const { addElement } = editorSlice.actions;
 

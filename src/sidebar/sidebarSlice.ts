@@ -16,14 +16,14 @@
  */
 
 import {
-  SidebarEntries,
-  FormEntry,
-  PanelEntry,
-  ActivatePanelOptions,
-  TemporaryPanelEntry,
+  type SidebarEntries,
+  type FormEntry,
+  type PanelEntry,
+  type ActivatePanelOptions,
+  type TemporaryPanelEntry,
 } from "@/sidebar/types";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { UUID } from "@/core";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type UUID } from "@/core";
 import { defaultEventKey, mapTabEventKey } from "@/sidebar/utils";
 import { cancelForm, closeTemporaryPanel } from "@/contentScript/messenger/api";
 import { partition, sortBy } from "lodash";

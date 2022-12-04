@@ -19,7 +19,10 @@ import React, { useCallback } from "react";
 import { uuidv4 } from "@/types/helpers";
 import { persistor } from "@/store/optionsStore";
 import { launchAuthIntegration } from "@/background/messenger/api";
-import Form, { RenderBody, RenderSubmit } from "@/components/form/Form";
+import Form, {
+  type RenderBody,
+  type RenderSubmit,
+} from "@/components/form/Form";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Button } from "react-bootstrap";
 import * as Yup from "yup";
@@ -28,7 +31,7 @@ import { selectConfiguredServices } from "@/store/servicesSelectors";
 import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
 import servicesSlice from "@/store/servicesSlice";
 import { selectSettings } from "@/store/settingsSelectors";
-import { FormikHelpers } from "formik";
+import { type FormikHelpers } from "formik";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { serviceOriginPermissions } from "@/permissions";
 import { requestPermissions } from "@/utils/permissions";

@@ -26,7 +26,7 @@ import {
   NotAvailableIcon,
   UnsavedChangesIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
-import { UUID } from "@/core";
+import { type UUID } from "@/core";
 import {
   disableOverlay,
   enableOverlay,
@@ -36,7 +36,7 @@ import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
 import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
   selectActiveElement,
   selectActiveRecipeId,

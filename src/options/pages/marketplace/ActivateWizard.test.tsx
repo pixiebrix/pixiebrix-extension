@@ -26,7 +26,7 @@ import {
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 

@@ -19,12 +19,12 @@ import styles from "./GridView.module.scss";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  BlueprintListViewProps,
-  InstallableViewItem,
+  type BlueprintListViewProps,
+  type InstallableViewItem,
 } from "@/options/pages/blueprints/blueprintsTypes";
 import { VariableSizeList as List } from "react-window";
 import GridCard from "./GridCard";
-import { Row } from "react-table";
+import { type Row } from "react-table";
 import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
 import { uuidv4 } from "@/types/helpers";
 import { getUniqueId } from "@/options/pages/blueprints/utils/installableUtils";

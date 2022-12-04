@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UseCachedQueryResult } from "@/core";
-import { RecipeDefinition } from "@/types/definitions";
-import { Except } from "type-fest";
-import { RecipesRootState } from "./recipesTypes";
+import { type UseCachedQueryResult } from "@/core";
+import { type RecipeDefinition } from "@/types/definitions";
+import { type Except } from "type-fest";
+import { type RecipesRootState } from "./recipesTypes";
 
 export type AllRecipesSelector = Except<
   UseCachedQueryResult<RecipeDefinition[]>,

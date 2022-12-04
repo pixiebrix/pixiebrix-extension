@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectNodeDataPanelTabSelected } from "@/pageEditor/slices/editorSelectors";
 import { useCallback, useEffect, useMemo } from "react";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { DataPanelTabKey } from "./dataPanelTypes";
+import { type DataPanelTabKey } from "./dataPanelTypes";
 
 export default function useDataPanelActiveTabKey(
   defaultTabKey: DataPanelTabKey

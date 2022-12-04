@@ -17,8 +17,8 @@
 
 import React from "react";
 import { menuItemFormStateFactory } from "@/testUtils/factories";
-import { IService, OutputKey } from "@/core";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type IService, type OutputKey } from "@/core";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { render } from "@testing-library/react";
 import { Formik } from "formik";
 import { CONTROL_ROOM_SERVICE_ID } from "@/services/constants";

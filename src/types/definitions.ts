@@ -16,21 +16,21 @@
  */
 
 import {
-  ApiVersion,
-  Config,
-  InnerDefinitionRef,
-  InnerDefinitions,
-  Metadata,
-  OutputKey,
-  RecipeMetadata,
-  RegistryId,
-  Schema,
-  TemplateEngine,
-  Timestamp,
-  UUID,
+  type ApiVersion,
+  type Config,
+  type InnerDefinitionRef,
+  type InnerDefinitions,
+  type Metadata,
+  type OutputKey,
+  type RecipeMetadata,
+  type RegistryId,
+  type Schema,
+  type TemplateEngine,
+  type Timestamp,
+  type UUID,
 } from "@/core";
-import { Permissions } from "webextension-polyfill";
-import { UiSchema } from "@rjsf/core";
+import { type Permissions } from "webextension-polyfill";
+import { type UiSchema } from "@rjsf/core";
 import { pick } from "lodash";
 
 export type EditablePackage = {
@@ -110,7 +110,7 @@ export type SharingDefinition = {
   organizations: UUID[];
 };
 
-type Kind = "recipe" | "service" | "reader" | "component";
+export type Kind = "recipe" | "service" | "reader" | "component";
 
 /**
  * A PixieBrix brick or extension point definition

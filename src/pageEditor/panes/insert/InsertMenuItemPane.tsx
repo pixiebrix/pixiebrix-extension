@@ -21,7 +21,7 @@ import React from "react";
 import config from "@/pageEditor/extensionPoints/menuItem";
 import useAvailableExtensionPoints from "@/pageEditor/hooks/useAvailableExtensionPoints";
 import {
-  MenuDefinition,
+  type MenuDefinition,
   MenuItemExtensionPoint,
 } from "@/extensionPoints/menuItemExtension";
 import Centered from "@/components/Centered";
@@ -34,7 +34,7 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import BrickModal from "@/components/brickModalNoTags/BrickModal";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import useAddExisting from "@/pageEditor/panes/insert/useAddExisting";
 import useFlags from "@/hooks/useFlags";
 

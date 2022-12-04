@@ -16,7 +16,7 @@
  */
 
 import yaml from "js-yaml";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 import { produce } from "immer";
 import { isPlainObject } from "lodash";
 

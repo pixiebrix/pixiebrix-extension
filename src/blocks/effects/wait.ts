@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { awaitElementOnce } from "@/extensionPoints/helpers";
 import { runInMillis, sleep, TimeoutError } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";

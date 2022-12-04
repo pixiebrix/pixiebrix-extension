@@ -17,8 +17,11 @@
 
 import { AnalysisVisitorWithResolvedBlocks } from "./baseAnalysisVisitors";
 import { AnnotationType } from "@/analysis/analysisTypes";
-import { BlockConfig, BlockPosition } from "@/blocks/types";
-import { nestedPosition, VisitPipelineExtra } from "@/blocks/PipelineVisitor";
+import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import {
+  nestedPosition,
+  type VisitPipelineExtra,
+} from "@/blocks/PipelineVisitor";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 
 export const MULTIPLE_RENDERERS_ERROR_MESSAGE =

@@ -18,17 +18,17 @@
 import styles from "@/options/pages/marketplace/ActivateWizard.module.scss";
 
 import React, { useCallback, useMemo } from "react";
-import { AuthOption } from "@/auth/authTypes";
-import { CloudExtension } from "@/types/contract";
-import { Form, Formik, FormikProps } from "formik";
+import { type AuthOption } from "@/auth/authTypes";
+import { type CloudExtension } from "@/types/contract";
+import { Form, Formik, type FormikProps } from "formik";
 import { useDispatch } from "react-redux";
 import { push } from "connected-react-router";
 import notify from "@/utils/notify";
 import ServicesRow from "@/options/pages/activateExtension/ServicesRow";
-import { FormState } from "@/options/pages/activateExtension/activateTypes";
+import { type FormState } from "@/options/pages/activateExtension/activateTypes";
 import PermissionsRow from "@/options/pages/activateExtension/PermissionsRow";
 import extensionsSlice from "@/store/extensionsSlice";
-import { UUID } from "@/core";
+import { type UUID } from "@/core";
 import { Card, Col, Row } from "react-bootstrap";
 import ActivateButton from "@/options/pages/activateExtension/ActivateButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

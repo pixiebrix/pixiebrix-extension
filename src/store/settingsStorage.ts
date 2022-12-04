@@ -16,8 +16,12 @@
  */
 
 import { localStorage } from "redux-persist-webextension-storage";
-import { readReduxStorage, ReduxStorageKey, setReduxStorage } from "@/chrome";
-import { SettingsState } from "@/store/settingsTypes";
+import {
+  readReduxStorage,
+  type ReduxStorageKey,
+  setReduxStorage,
+} from "@/chrome";
+import { type SettingsState } from "@/store/settingsTypes";
 import { mapValues } from "lodash";
 
 const SETTINGS_STORAGE_KEY = "persist:settings" as ReduxStorageKey;

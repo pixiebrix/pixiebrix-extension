@@ -17,7 +17,7 @@
 
 import { useGetOrganizationsQuery } from "@/services/api";
 import useFlags from "@/hooks/useFlags";
-import { Organization } from "@/types/contract";
+import { type Organization } from "@/types/contract";
 import useDeployments from "@/hooks/useDeployments";
 import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
 import { renderHook } from "@testing-library/react-hooks";

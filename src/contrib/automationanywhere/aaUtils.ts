@@ -16,17 +16,17 @@
  */
 
 import { boolean } from "@/utils";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 import {
-  Activity,
-  Interface,
-  OutputValue,
-  Variable,
+  type Activity,
+  type Interface,
+  type OutputValue,
+  type Variable,
 } from "@/contrib/automationanywhere/contract";
-import { JSONSchema7Type } from "json-schema";
-import { UnknownObject } from "@/types";
+import { type JSONSchema7Type } from "json-schema";
+import { type UnknownObject } from "@/types";
 import { mapValues } from "lodash";
-import { Primitive } from "type-fest";
+import { type Primitive } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 
 const COMMUNITY_CONTROL_ROOM_REGEX =

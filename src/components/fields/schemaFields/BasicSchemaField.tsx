@@ -22,7 +22,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { useField } from "formik";

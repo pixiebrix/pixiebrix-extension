@@ -17,7 +17,7 @@
 
 import { proxyService } from "@/background/messenger/api";
 import { Effect } from "@/types";
-import { BlockArg, Schema } from "@/core";
+import { type BlockArg, type Schema } from "@/core";
 import { boolean } from "@/utils";
 
 export class SendSimpleSlackMessage extends Effect {

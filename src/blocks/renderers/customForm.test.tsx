@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 import { render } from "@testing-library/react";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";

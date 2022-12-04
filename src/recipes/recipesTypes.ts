@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 
 export type RecipesState = {
   recipes: RecipeDefinition[];

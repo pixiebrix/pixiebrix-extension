@@ -16,14 +16,14 @@
  */
 
 import {
-  Installable,
-  InstallableStatus,
-  InstallableViewItem,
+  type Installable,
+  type InstallableStatus,
+  type InstallableViewItem,
 } from "@/options/pages/blueprints/blueprintsTypes";
 import React, { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { UUID } from "@/core";
+import { type UUID } from "@/core";
 
 import {
   getDescription,
@@ -37,7 +37,7 @@ import {
   updateAvailable,
 } from "@/options/pages/blueprints/utils/installableUtils";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
-import { MarketplaceListing } from "@/types/contract";
+import { type MarketplaceListing } from "@/types/contract";
 import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { isDeploymentActive } from "@/utils/deploymentUtils";

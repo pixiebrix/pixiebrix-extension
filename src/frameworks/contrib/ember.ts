@@ -25,10 +25,10 @@ import {
   isNullOrBlank,
   isPrimitive,
 } from "@/utils";
-import { ReadableComponentAdapter } from "@/frameworks/component";
+import { type ReadableComponentAdapter } from "@/frameworks/component";
 import { FrameworkNotFound, ignoreNotFound } from "@/frameworks/errors";
 import { findElement } from "@/frameworks/dom";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 
 const EMBER_MAX_DEPTH = 5;
 

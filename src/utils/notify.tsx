@@ -22,13 +22,13 @@ import { render } from "react-dom";
 import {
   toast,
   Toaster,
-  DefaultToastOptions,
-  ToastOptions,
+  type DefaultToastOptions,
+  type ToastOptions,
 } from "react-hot-toast";
 import { uuidv4 } from "@/types/helpers";
 import { NOTIFICATIONS_Z_INDEX } from "@/common";
 import reportError from "@/telemetry/reportError";
-import { Except, RequireAtLeastOne } from "type-fest";
+import { type Except, type RequireAtLeastOne } from "type-fest";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { merge, truncate } from "lodash";
 

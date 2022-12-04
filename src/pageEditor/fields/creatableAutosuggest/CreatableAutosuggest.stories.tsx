@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import CreatableAutosuggest from "@/pageEditor/fields/creatableAutosuggest/CreatableAutosuggest";
 import {
   faHandPeace,
@@ -25,7 +25,7 @@ import {
   faStar,
   faThumbsUp,
 } from "@fortawesome/free-solid-svg-icons";
-import { IconDefinition } from "@fortawesome/fontawesome-common-types";
+import { type IconDefinition } from "@fortawesome/fontawesome-common-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default {

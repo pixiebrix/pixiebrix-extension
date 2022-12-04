@@ -20,7 +20,7 @@ import styles from "./BlockResult.module.scss";
 import React, { useMemo } from "react";
 import { ListGroup } from "react-bootstrap";
 import cx from "classnames";
-import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
+import { type ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
 import { OfficialBadge } from "@/components/OfficialBadge";
 import BrickIcon from "@/components/BrickIcon";
 import {
@@ -31,8 +31,8 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { find } from "@/registry/localRegistry";
 import { useAsyncState } from "@/hooks/common";
-import { Organization } from "@/types/contract";
-import { Sharing, UUID } from "@/core";
+import { type Organization } from "@/types/contract";
+import { type Sharing, type UUID } from "@/core";
 
 export const SharingTag: React.FunctionComponent<{
   block: ReferenceEntry;

@@ -17,10 +17,14 @@
 
 import { castArray, noop, once, stubFalse } from "lodash";
 import initialize from "@/vendors/initialize";
-import { IExtension, MessageContext, ResolvedExtension } from "@/core";
+import {
+  type IExtension,
+  type MessageContext,
+  type ResolvedExtension,
+} from "@/core";
 import { $safeFind } from "@/helpers";
 import { EXTENSION_POINT_DATA_ATTR } from "@/common";
-import { JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 import { ensureJsonObject, isObject } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import selectionController from "@/utils/selectionController";

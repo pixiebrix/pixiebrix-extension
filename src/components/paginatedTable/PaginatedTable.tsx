@@ -3,22 +3,22 @@
 // https://flaviocopes.com/parcel-regeneratorruntime-not-defined/ -
 // https://github.com/tannerlinsley/react-table/issues/2071
 import "regenerator-runtime/runtime";
-import React, { useEffect, useState, CSSProperties } from "react";
+import React, { useEffect, useState, type CSSProperties } from "react";
 import {
   useTable,
   usePagination,
-  Column,
+  type Column,
   useSortBy,
   useAsyncDebounce,
   useGlobalFilter,
-  FilterValue,
+  type FilterValue,
   useFlexLayout,
   useResizeColumns,
-  Row,
+  type Row,
 } from "react-table";
 import { useLocation, useHistory } from "react-router";
 import { Pagination, Table, Form } from "react-bootstrap";
-import { History, Location } from "history";
+import { type History, type Location } from "history";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,

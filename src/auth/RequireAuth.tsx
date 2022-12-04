@@ -27,8 +27,8 @@ import {
 import { authActions } from "@/auth/authSlice";
 import { anonAuth } from "@/auth/authConstants";
 import { selectIsLoggedIn } from "@/auth/authSelectors";
-import { Me } from "@/types/contract";
-import { AxiosError } from "axios";
+import { type Me } from "@/types/contract";
+import { type AxiosError } from "axios";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import useLinkState from "@/auth/useLinkState";
 

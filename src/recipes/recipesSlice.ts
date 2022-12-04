@@ -17,7 +17,7 @@
 
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { serializeError } from "serialize-error";
-import { RecipesRootState, RecipesState } from "./recipesTypes";
+import { type RecipesRootState, type RecipesState } from "./recipesTypes";
 import registry from "./registry";
 
 export const initialState: RecipesState = Object.freeze({

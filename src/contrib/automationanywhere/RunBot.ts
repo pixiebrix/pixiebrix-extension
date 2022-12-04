@@ -15,8 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer, UnknownObject } from "@/types";
-import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
+import { Transformer, type UnknownObject } from "@/types";
+import {
+  type BlockArg,
+  type BlockOptions,
+  type Schema,
+  type SchemaProperties,
+} from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import {
@@ -26,8 +31,8 @@ import {
   runEnterpriseBot,
 } from "@/contrib/automationanywhere/aaApi";
 import {
-  BotArgs,
-  EnterpriseBotArgs,
+  type BotArgs,
+  type EnterpriseBotArgs,
 } from "@/contrib/automationanywhere/aaTypes";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import {

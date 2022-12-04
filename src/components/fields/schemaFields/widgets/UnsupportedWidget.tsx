@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import React from "react";
 
 const UnsupportedWidget: React.VFC<SchemaFieldProps> = ({ schema }) => (

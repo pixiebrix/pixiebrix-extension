@@ -1,6 +1,6 @@
 import React from "react";
-import { IBrick } from "@/core";
-import { MarketplaceListing } from "@/types/contract";
+import { type IBrick } from "@/core";
+import { type MarketplaceListing } from "@/types/contract";
 import { Button, Col, Row } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

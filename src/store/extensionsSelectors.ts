@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ExtensionsRootState } from "@/store/extensionsTypes";
-import { UnresolvedExtension } from "@/core";
+import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { type UnresolvedExtension } from "@/core";
 
 export function selectExtensions({
   options,

@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { RadioItemListWidgetProps } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
+import { type RadioItemListWidgetProps } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
 import { isEmpty, uniqBy } from "lodash";
 import styles from "./RadioItemListWidget.module.scss";
 import { useField } from "formik";

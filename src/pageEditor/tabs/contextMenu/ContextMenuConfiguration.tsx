@@ -20,7 +20,9 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Card } from "react-bootstrap";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
-import TemplateWidget, { Snippet } from "@/pageEditor/fields/TemplateWidget";
+import TemplateWidget, {
+  type Snippet,
+} from "@/pageEditor/fields/TemplateWidget";
 import MultiSelectWidget from "@/pageEditor/fields/MultiSelectWidget";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";

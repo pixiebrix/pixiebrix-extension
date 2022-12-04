@@ -18,10 +18,10 @@
 import React, { useMemo, useState } from "react";
 import { partial } from "lodash";
 import { UIPATH_PROPERTIES as REMOTE_UIPATH_PROPERTIES } from "@/contrib/uipath/process";
-import { Expression, Schema } from "@/core";
+import { type Expression, type Schema } from "@/core";
 import { useAsyncEffect } from "use-async-effect";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
-import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
 import { joinName } from "@/utils";
 import RequireServiceConfig from "@/contrib/RequireServiceConfig";

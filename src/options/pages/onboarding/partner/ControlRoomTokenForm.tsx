@@ -23,7 +23,10 @@ import { uuidv4 } from "@/types/helpers";
 import notify from "@/utils/notify";
 import { persistor } from "@/store/optionsStore";
 import { services } from "@/background/messenger/api";
-import Form, { RenderBody, RenderSubmit } from "@/components/form/Form";
+import Form, {
+  type RenderBody,
+  type RenderSubmit,
+} from "@/components/form/Form";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Button } from "react-bootstrap";
 import { CONTROL_ROOM_SERVICE_ID } from "@/services/constants";

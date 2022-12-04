@@ -17,27 +17,30 @@
 
 import { Block } from "@/types";
 import { readerFactory } from "@/blocks/readers/factory";
-import { Validator, Schema as ValidatorSchema } from "@cfworker/json-schema";
-import { castArray } from "lodash";
-import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import {
-  ApiVersion,
-  BlockArg,
-  BlockOptions,
-  Config,
-  IBlock,
-  Metadata,
-  RegistryId,
-  Schema,
-  SemVerString,
+  Validator,
+  type Schema as ValidatorSchema,
+} from "@cfworker/json-schema";
+import { castArray } from "lodash";
+import { type InitialValues, reducePipeline } from "@/runtime/reducePipeline";
+import {
+  type ApiVersion,
+  type BlockArg,
+  type BlockOptions,
+  type Config,
+  type IBlock,
+  type Metadata,
+  type RegistryId,
+  type Schema,
+  type SemVerString,
 } from "@/core";
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
 import blockRegistry from "@/blocks/registry";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import getType from "@/runtime/getType";
-import { BlockType } from "@/runtime/runtimeTypes";
+import { type BlockType } from "@/runtime/runtimeTypes";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
 
 type ComponentConfig = {

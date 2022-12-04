@@ -19,7 +19,7 @@ import useReduxState from "@/hooks/useReduxState";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useField } from "formik";
-import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import getElementCollectionName from "@/components/documentBuilder/edit/getElementCollectionName";
 import { joinPathParts } from "@/utils";
 

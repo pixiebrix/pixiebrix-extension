@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Tabs, Windows } from "webextension-polyfill";
+import { type Tabs, type Windows } from "webextension-polyfill";
 import { isFirefox } from "webext-detect-page";
 import { isMac } from "@/utils";
 import { onTabClose } from "@/chrome";

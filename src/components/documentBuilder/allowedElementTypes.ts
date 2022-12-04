@@ -17,8 +17,8 @@
 
 import {
   DOCUMENT_ELEMENT_TYPES,
-  DocumentElement,
-  DocumentElementType,
+  type DocumentElement,
+  type DocumentElementType,
 } from "./documentBuilderTypes";
 
 export const ROOT_ELEMENT_TYPES: DocumentElementType[] = [

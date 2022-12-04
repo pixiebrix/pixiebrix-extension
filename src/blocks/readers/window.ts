@@ -16,7 +16,7 @@
  */
 
 import { withReadWindow } from "@/messaging/protocol";
-import { ReaderOutput } from "@/core";
+import { type ReaderOutput } from "@/core";
 import { registerFactory } from "@/blocks/readers/factory";
 
 type PathSpecObj = Record<string, string>;

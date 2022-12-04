@@ -17,7 +17,7 @@
 
 import { Transformer } from "@/types";
 import { proxyService } from "@/background/messenger/api";
-import { Schema, BlockArg } from "@/core";
+import { type Schema, type BlockArg } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
 import { PropError } from "@/errors/businessErrors";

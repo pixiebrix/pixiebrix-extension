@@ -22,14 +22,17 @@ import {
 } from "@/pageEditor/slices/editorSlice";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { blockConfigFactory, formStateFactory } from "@/testUtils/factories";
-import { EditorRootState, EditorState } from "@/pageEditor/pageEditorTypes";
+import {
+  type EditorRootState,
+  type EditorState,
+} from "@/pageEditor/pageEditorTypes";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import blockRegistry from "@/blocks/registry";
 import {
   echoBlock,
   teapotBlock,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { OutputKey } from "@/core";
+import { type OutputKey } from "@/core";
 import { defaultBlockConfig } from "@/blocks/util";
 
 function getTabState(

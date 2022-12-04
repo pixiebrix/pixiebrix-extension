@@ -19,13 +19,13 @@ import { useAsyncState } from "@/hooks/common";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useFormikContext } from "formik";
 import {
-  RegistryId,
-  SanitizedServiceConfiguration,
-  ServiceDependency,
+  type RegistryId,
+  type SanitizedServiceConfiguration,
+  type ServiceDependency,
 } from "@/core";
 import { castArray, head } from "lodash";
 import registry from "@/services/registry";
-import { Service } from "@/types";
+import { type Service } from "@/types";
 import { requestPermissions } from "@/utils/permissions";
 import { containsPermissions, services } from "@/background/messenger/api";
 import notify from "@/utils/notify";

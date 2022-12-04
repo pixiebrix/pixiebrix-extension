@@ -20,10 +20,13 @@ import { useCallback } from "react";
 import { useHistory } from "react-router";
 import { push } from "connected-react-router";
 import { useDispatch } from "react-redux";
-import { EditorValues } from "./Editor";
-import { BrickValidationResult, validateSchema } from "./validate";
+import { type EditorValues } from "./Editor";
+import { type BrickValidationResult, validateSchema } from "./validate";
 import useRefresh from "@/hooks/useRefresh";
-import { Definition, UnsavedRecipeDefinition } from "@/types/definitions";
+import {
+  type Definition,
+  type UnsavedRecipeDefinition,
+} from "@/types/definitions";
 import useReinstall from "@/options/pages/blueprints/utils/useReinstall";
 import notify from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
@@ -38,7 +41,7 @@ import {
   useDeletePackageMutation,
 } from "@/services/api";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { UUID } from "@/core";
+import { type UUID } from "@/core";
 
 type SubmitOptions = {
   create: boolean;

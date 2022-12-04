@@ -19,7 +19,7 @@ import { useSelector } from "react-redux";
 import { selectAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
 import { useField } from "formik";
 import { useFormErrorSettings } from "@/components/form/FormErrorContext";
-import { Annotation, AnnotationType } from "@/analysis/analysisTypes";
+import { type Annotation, AnnotationType } from "@/analysis/analysisTypes";
 
 type UseFieldErrorResult = {
   warning?: string | string[] | undefined;

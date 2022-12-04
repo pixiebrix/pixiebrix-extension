@@ -16,9 +16,9 @@
  */
 
 import { DocumentRenderer } from "@/blocks/renderers/document";
-import { BlockPosition, BlockPipeline } from "@/blocks/types";
+import { type BlockPosition, type BlockPipeline } from "@/blocks/types";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
-import { Expression } from "@/core";
+import { type Expression } from "@/core";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { blockConfigFactory } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";

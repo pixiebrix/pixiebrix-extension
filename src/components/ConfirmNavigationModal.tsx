@@ -17,8 +17,8 @@
 
 import React, { useCallback, useState } from "react";
 import { Prompt, useHistory } from "react-router";
-import { Location } from "history";
-import { FormikValues, useFormikContext } from "formik";
+import { type Location } from "history";
+import { type FormikValues, useFormikContext } from "formik";
 import { Button, Modal } from "react-bootstrap";
 
 /**

@@ -16,18 +16,18 @@
  */
 
 import React, {
-  KeyboardEventHandler,
+  type KeyboardEventHandler,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useRef,
 } from "react";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
-import { Form, FormControlProps } from "react-bootstrap";
+import { Form, type FormControlProps } from "react-bootstrap";
 import fitTextarea from "fit-textarea";
-import { Schema, TemplateEngine } from "@/core";
+import { type Schema, type TemplateEngine } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { trim } from "lodash";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
@@ -69,8 +69,8 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   hideLabel,
   isObjectProperty,
   isArrayItem,
-  onClick,
   focusInput,
+  inputRef,
   ...formControlProps
 }) => {
   const [{ value, ...restInputProps }, , { setValue }] = useField(name);
@@ -85,11 +85,15 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     if (textAreaRef.current) {
       fitTextarea.watch(textAreaRef.current);
     }
-  }, []);
+
+    // Sync the ref values
+    if (inputRef) {
+      inputRef.current = textAreaRef.current;
+    }
+  }, [textAreaRef.current]);
 
   useEffect(() => {
-    const { current } = textAreaRef;
-    if (focusInput && current) {
+    if (focusInput) {
       // We need to use a setTimeout here in order to override the default
       // behavior of Bootstrap DropdownButton in the field type toggle.
       // The standard w3c behavior of a dropdown/select is that the button
@@ -103,6 +107,11 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
       // this happens.
       // See: https://github.com/react-bootstrap/react-bootstrap/issues/2553
       setTimeout(() => {
+        const { current } = textAreaRef;
+        if (!current) {
+          return;
+        }
+
         current.focus();
         current.selectionStart = current.textLength;
         current.selectionEnd = current.textLength;

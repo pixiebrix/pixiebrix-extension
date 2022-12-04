@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SidebarEntries, EntryType } from "@/sidebar/types";
-import { UUID } from "@/core";
+import { type SidebarEntries, type EntryType } from "@/sidebar/types";
+import { type UUID } from "@/core";
 
 export function mapTabEventKey(
   entryType: EntryType,

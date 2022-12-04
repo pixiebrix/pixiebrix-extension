@@ -16,7 +16,7 @@
  */
 
 import { getLocalISOString, ParseDate } from "@/blocks/transformers/parseDate";
-import { register, TimeZone, unregister } from "timezone-mock";
+import { register, type TimeZone, unregister } from "timezone-mock";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { validateOutput } from "@/validators/generic";
 import { neverPromise } from "@/testUtils/testHelpers";

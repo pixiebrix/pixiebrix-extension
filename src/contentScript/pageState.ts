@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId, UUID } from "@/core";
-import { UnknownObject } from "@/types";
+import { type RegistryId, type UUID } from "@/core";
+import { type UnknownObject } from "@/types";
 import { cloneDeep, isEqual, merge } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
-import { JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 import { expectContext } from "@/utils/expectContext";
 
 const extensionState = new Map<UUID, UnknownObject>();

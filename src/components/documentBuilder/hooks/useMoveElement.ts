@@ -15,8 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
-import { TreeDestinationPosition, TreeSourcePosition } from "@atlaskit/tree";
+import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import {
+  type TreeDestinationPosition,
+  type TreeSourcePosition,
+} from "@atlaskit/tree";
 import { produce } from "immer";
 import { getIn, useField } from "formik";
 import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";

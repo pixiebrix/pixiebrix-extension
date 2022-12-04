@@ -23,7 +23,7 @@ import {
   isExtensionFromRecipe,
   selectExtensionsFromInstallable,
 } from "@/options/pages/blueprints/utils/installableUtils";
-import { InstallableViewItem } from "./blueprintsTypes";
+import { type InstallableViewItem } from "./blueprintsTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import {
@@ -39,7 +39,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import useUserAction from "@/hooks/useUserAction";
 import { useModals } from "@/components/ConfirmationModal";
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
-import { OptionsState } from "@/store/extensionsTypes";
+import { type OptionsState } from "@/store/extensionsTypes";
 import useFlags from "@/hooks/useFlags";
 import notify from "@/utils/notify";
 import { CancelError } from "@/errors/businessErrors";

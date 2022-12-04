@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { IBrick } from "@/core";
+import { type IBrick } from "@/core";
 import { Button, ListGroup } from "react-bootstrap";
 import cx from "classnames";
 // TODO: Refactor to properly share styles across components (e.g. full component inheritance);

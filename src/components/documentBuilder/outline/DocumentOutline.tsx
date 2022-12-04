@@ -17,15 +17,15 @@
 
 import { useField } from "formik";
 import React, { useCallback, useMemo, useState } from "react";
-import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import Tree, {
-  ItemId,
-  RenderItemParams,
-  TreeDestinationPosition,
-  TreeSourcePosition,
+  type ItemId,
+  type RenderItemParams,
+  type TreeDestinationPosition,
+  type TreeSourcePosition,
 } from "@atlaskit/tree";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/pageEditor/pageEditorTypes";
+import { type RootState } from "@/pageEditor/pageEditorTypes";
 import { selectNodeDataPanelTabState } from "@/pageEditor/slices/editorSelectors";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";

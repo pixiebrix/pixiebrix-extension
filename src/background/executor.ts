@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Tabs } from "webextension-polyfill";
+import { type Tabs } from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 import { asyncForEach } from "@/utils";
 import { getLinkedApiClient } from "@/services/apiClient";
-import { JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 import {
-  MessengerMeta,
+  type MessengerMeta,
   errorTargetClosedEarly,
   errorTabDoesntExist,
 } from "webext-messenger";
 import { runBrick } from "@/contentScript/messenger/api";
-import { Target } from "@/types";
+import { type Target } from "@/types";
 import { RemoteExecutionError } from "@/blocks/errors";
 import pDefer from "p-defer";
 import { getErrorMessage } from "@/errors/errorHelpers";

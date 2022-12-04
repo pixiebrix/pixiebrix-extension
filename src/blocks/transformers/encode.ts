@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockArg } from "@/core";
+import { type BlockArg } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class Base64Encode extends Transformer {

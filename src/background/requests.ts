@@ -16,16 +16,16 @@
  */
 
 import axios, {
-  AxiosError,
-  AxiosRequestConfig,
-  AxiosResponse,
-  Method,
+  type AxiosError,
+  type AxiosRequestConfig,
+  type AxiosResponse,
+  type Method,
 } from "axios";
 import {
-  IService,
-  MessageContext,
-  SanitizedServiceConfiguration,
-  ServiceConfig,
+  type IService,
+  type MessageContext,
+  type SanitizedServiceConfiguration,
+  type ServiceConfig,
 } from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
 import serviceRegistry from "@/services/registry";
@@ -42,7 +42,7 @@ import { isAbsoluteUrl, isObject } from "@/utils";
 import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { ProxyResponseData, RemoteResponse } from "@/types/contract";
+import { type ProxyResponseData, type RemoteResponse } from "@/types/contract";
 import {
   isProxiedErrorResponse,
   proxyResponseToAxiosResponse,

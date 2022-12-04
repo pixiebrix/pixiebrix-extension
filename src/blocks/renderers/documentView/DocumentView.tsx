@@ -19,7 +19,7 @@ import { buildDocumentBranch } from "@/components/documentBuilder/documentTree";
 import React from "react";
 import ReactShadowRoot from "react-shadow-root";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
-import { DocumentViewProps } from "./DocumentViewProps";
+import { type DocumentViewProps } from "./DocumentViewProps";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { joinPathParts } from "@/utils";
 import { Stylesheets } from "@/components/Stylesheets";

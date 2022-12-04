@@ -21,8 +21,8 @@ import { fromJS as deserializeTrigger } from "@/extensionPoints/triggerExtension
 import { fromJS as deserializeContextMenu } from "@/extensionPoints/contextMenu";
 import { fromJS as deserializeSidebar } from "@/extensionPoints/sidebarExtension";
 import { fromJS as deserializeQuickBar } from "@/extensionPoints/quickBarExtension";
-import { IExtensionPoint } from "@/core";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { type IExtensionPoint } from "@/core";
+import { type ExtensionPointConfig } from "@/extensionPoints/types";
 
 const TYPE_MAP = {
   panel: deserializePanel,

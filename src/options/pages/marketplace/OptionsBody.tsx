@@ -16,10 +16,10 @@
  */
 
 import React, { useMemo } from "react";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import FieldRuntimeContext, {
-  RuntimeContext,
+  type RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/options/constants";
 import { Col } from "react-bootstrap";

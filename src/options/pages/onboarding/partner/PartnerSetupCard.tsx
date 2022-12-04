@@ -31,7 +31,7 @@ import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";
 import settingsSlice from "@/store/settingsSlice";
-import { ManualStorageKey, readStorage } from "@/chrome";
+import { type ManualStorageKey, readStorage } from "@/chrome";
 import { useLocation } from "react-router";
 import {
   hostnameToUrl,

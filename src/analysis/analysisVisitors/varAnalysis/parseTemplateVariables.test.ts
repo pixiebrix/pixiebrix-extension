@@ -17,43 +17,57 @@
 
 import parseTemplateVariables from "./parseTemplateVariables";
 
-test("simple template", () => {
-  const result = parseTemplateVariables(
-    "a {{@variableA}} {{ @variableB }} template"
-  );
+describe("parseTemplateVariables", () => {
+  test("simple template", () => {
+    const result = parseTemplateVariables(
+      "a {{@variableA}} {{ @variableB }} template"
+    );
 
-  expect(result[0]).toBe("@variableA");
-  expect(result[1]).toBe("@variableB");
-});
+    expect(result[0]).toBe("@variableA");
+    expect(result[1]).toBe("@variableB");
+  });
 
-test("access with []", () => {
-  const template = "Hello {{ @foo['bar baz'] }}";
-  const result = parseTemplateVariables(template);
-  expect(result[0]).toBe("@foo['bar baz']");
-});
+  test("access with .", () => {
+    const result = parseTemplateVariables(
+      "a {{@foo.bar}} {{ @foo.baz}} {{ @foo.bar.baz }} {{ @qux.quux }} template"
+    );
 
-test("indexed access", () => {
-  const template = "Hello {{ @foo[0] }}";
-  const result = parseTemplateVariables(template);
-  expect(result[0]).toBe("@foo[0]");
-});
+    expect(result).toEqual([
+      "@foo.bar",
+      "@foo.baz",
+      "@foo.bar.baz",
+      "@qux.quux",
+    ]);
+  });
 
-test("works with filters", () => {
-  const template =
-    'A template with a filter {{ @foo | replace("foo", "bar") | capitalize }}.';
-  const result = parseTemplateVariables(template);
+  test("access with []", () => {
+    const template = "Hello {{ @foo['bar baz'] }}";
+    const result = parseTemplateVariables(template);
+    expect(result[0]).toBe('@foo["bar baz"]');
+  });
 
-  expect(result[0]).toBe("@foo");
-});
+  test("indexed access", () => {
+    const template = "Hello {{ @foo[0] }}";
+    const result = parseTemplateVariables(template);
+    expect(result[0]).toBe("@foo.0");
+  });
 
-test("outside braces", () => {
-  const template = "Hello @foo";
-  const result = parseTemplateVariables(template);
-  expect(result).toHaveLength(0);
-});
+  test("works with filters", () => {
+    const template =
+      'A template with a filter {{ @foo | replace("foo", "bar") | capitalize }}.';
+    const result = parseTemplateVariables(template);
 
-test("if tag", () => {
-  const template = `
+    expect(result[0]).toBe("@foo");
+  });
+
+  test("outside braces", () => {
+    const template = "Hello @foo";
+    const result = parseTemplateVariables(template);
+    expect(result).toHaveLength(0);
+  });
+
+  test("if tag", () => {
+    const template = `
     {% if @hungry %}
       I am hungry
     {% elif @tired %}
@@ -61,20 +75,17 @@ test("if tag", () => {
     {% else %}
       I am good!
     {% endif %}`;
-  const result = parseTemplateVariables(template);
-  expect(result[0]).toBe("@hungry");
-  expect(result[1]).toBe("@tired");
-});
+    const result = parseTemplateVariables(template);
+    expect(result[0]).toBe("@hungry");
+    expect(result[1]).toBe("@tired");
+  });
 
-describe("not supported templates", () => {
-  // To simplify regex, we only support variables with @ prefix
   test("no @ prefix", () => {
     const template = "Hello {{ variable }}";
     const result = parseTemplateVariables(template);
-    expect(result).toHaveLength(0);
+    expect(result[0]).toBe("variable");
   });
 
-  // Conditions with multiple variables are not fully supported yet
   test("complex conditions", () => {
     const template = `
     {% if @happy and @hungry %}
@@ -82,6 +93,27 @@ describe("not supported templates", () => {
     {% endif %}`;
     const result = parseTemplateVariables(template);
     expect(result[0]).toBe("@happy");
-    expect(result).toHaveLength(1);
+    expect(result[1]).toBe("@hungry");
+  });
+
+  test("nunjucks for loop item", () => {
+    const template = `
+    {% for item in @items %}
+      Item value: {{ item }}
+    {% endfor %}`;
+    const result = parseTemplateVariables(template);
+
+    // The variable "item", which is defined by the loop and doesn't come from the context, is not included in the template variables
+    expect(result).toEqual(["@items"]);
+  });
+
+  test("nunjucks for loop item 2", () => {
+    const template = `
+    {% for qux in @foo.bar.baz %}
+      Item value: {{ qux.quux.quuux }}
+      Context var: {{ @corge.grault.garply}}
+    {% endfor %}`;
+    const result = parseTemplateVariables(template);
+    expect(result).toEqual(["@foo.bar.baz", "@corge.grault.garply"]);
   });
 });

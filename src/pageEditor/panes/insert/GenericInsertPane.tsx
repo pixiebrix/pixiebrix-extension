@@ -27,7 +27,7 @@ import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { internalExtensionPointMetaFactory } from "@/pageEditor/extensionPoints/base";
-import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
+import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import { reportEvent } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
@@ -35,7 +35,7 @@ import {
   showSidebar,
   updateDynamicElement,
 } from "@/contentScript/messenger/api";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getExampleBlockPipeline } from "@/pageEditor/exampleExtensionConfig";
 import useFlags from "@/hooks/useFlags";
 import Loader from "@/components/Loader";

@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { readReduxStorage, ReduxStorageKey } from "@/chrome";
+import { readReduxStorage, type ReduxStorageKey } from "@/chrome";
 import BaseRegistry from "@/baseRegistry";
 import { fromJS } from "@/services/factory";
-import { RawServiceConfiguration, RegistryId } from "@/core";
-import { Service } from "@/types";
+import { type RawServiceConfiguration, type RegistryId } from "@/core";
+import { type Service } from "@/types";
 
 const storageKey = "persist:servicesOptions" as ReduxStorageKey;
 

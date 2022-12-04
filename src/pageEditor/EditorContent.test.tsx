@@ -24,20 +24,26 @@ import React from "react";
 import EditorContent from "@/pageEditor/EditorContent";
 import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
 
-jest.mock("@/services/api", () => ({
-  appApi: {
-    endpoints: {
-      getMarketplaceListings: {
-        useQueryState: jest.fn(),
+jest.mock("@/services/api", () => {
+  const originalModule = jest.requireActual("@/services/api");
+
+  return {
+    appApi: {
+      ...originalModule.appApi,
+      endpoints: {
+        ...originalModule.appApi.endpoints,
+        getMarketplaceListings: {
+          useQueryState: jest.fn(),
+        },
       },
     },
-  },
-  useGetMarketplaceTagsQuery: jest.fn(),
-  useGetMarketplaceListingsQuery: jest.fn(),
-  useGetEditablePackagesQuery: jest.fn(),
-  useCreateRecipeMutation: jest.fn(),
-  useUpdateRecipeMutation: jest.fn(),
-}));
+    useGetMarketplaceTagsQuery: jest.fn(),
+    useGetMarketplaceListingsQuery: jest.fn(),
+    useGetEditablePackagesQuery: jest.fn(),
+    useCreateRecipeMutation: jest.fn(),
+    useUpdateRecipeMutation: jest.fn(),
+  };
+});
 jest.mock("@/components/asyncIcon", () => ({
   useAsyncIcon: jest.fn(),
 }));

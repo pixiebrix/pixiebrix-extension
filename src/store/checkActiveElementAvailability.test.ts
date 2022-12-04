@@ -17,17 +17,17 @@
 
 import { getCurrentURL } from "@/pageEditor/utils";
 import { configureStore } from "@reduxjs/toolkit";
-import { EditorRootState } from "@/pageEditor/pageEditorTypes";
-import { ExtensionsRootState } from "@/store/extensionsTypes";
+import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
+import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import { menuItemFormStateFactory } from "@/testUtils/factories";
 import { validateRegistryId } from "@/types/helpers";
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 import { checkAvailable } from "@/contentScript/messenger/api";
-import { Target } from "@/types";
-import { PageTarget } from "webext-messenger";
-import { Availability } from "@/blocks/types";
+import { type Target } from "@/types";
+import { type PageTarget } from "webext-messenger";
+import { type Availability } from "@/blocks/types";
 import { checkAvailable as backgroundCheckAvailable } from "@/blocks/available";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
 import { produce } from "immer";

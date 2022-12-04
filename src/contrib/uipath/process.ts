@@ -18,11 +18,11 @@
 import { proxyService } from "@/background/messenger/api";
 import { Transformer } from "@/types";
 import {
-  BlockArg,
-  BlockOptions,
-  RegistryId,
-  Schema,
-  SchemaProperties,
+  type BlockArg,
+  type BlockOptions,
+  type RegistryId,
+  type Schema,
+  type SchemaProperties,
 } from "@/core";
 import { pollUntilTruthy } from "@/utils";
 import { validateRegistryId } from "@/types/helpers";

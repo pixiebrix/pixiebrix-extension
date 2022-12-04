@@ -1,0 +1,37 @@
+/*
+ * Copyright (C) 2022 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+// Copies the style of react-select's menu
+.menu {
+  top: 100%;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+  background-color: rgb(255, 255, 255);
+  border-radius: 4px;
+  box-shadow: #0000001a 0 0 0 1px;
+  margin-bottom: 8px;
+  margin-top: 8px;
+  box-sizing: border-box;
+}
+
+.menuList {
+  overflow-y: auto;
+  padding-bottom: 4px;
+  padding-top: 4px;
+  position: relative;
+}

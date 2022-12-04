@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlockPipeline } from "@/blocks/types";
-import { ExtensionPointType } from "@/extensionPoints/types";
+import { type BlockPipeline } from "@/blocks/types";
+import { type ExtensionPointType } from "@/extensionPoints/types";
 import { validateRegistryId } from "@/types/helpers";
 import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
 

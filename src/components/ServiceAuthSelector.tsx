@@ -15,13 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ComponentType, CSSProperties, useEffect, useMemo } from "react";
+import React, {
+  type ComponentType,
+  type CSSProperties,
+  useEffect,
+  useMemo,
+} from "react";
 import { useField } from "formik";
 import { Form } from "react-bootstrap";
-import Select, { GroupBase, StylesConfig, MenuListProps } from "react-select";
+import Select, {
+  type GroupBase,
+  type StylesConfig,
+  type MenuListProps,
+} from "react-select";
 
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { AuthOption } from "@/auth/authTypes";
+import { type AuthOption } from "@/auth/authTypes";
 
 // CustomStyles.js
 const colors = {

@@ -33,7 +33,7 @@ import { services } from "@/background/messenger/api";
 import ZapierModal from "@/options/pages/services/ZapierModal";
 import notify from "@/utils/notify";
 import { useParams } from "react-router";
-import { IService, RawServiceConfiguration, UUID } from "@/core";
+import { type IService, type RawServiceConfiguration, type UUID } from "@/core";
 import BrickModal from "@/components/brickModalNoTags/BrickModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { uuidv4 } from "@/types/helpers";

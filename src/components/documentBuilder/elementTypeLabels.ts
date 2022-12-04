@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
+import { type DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
 
 const elementTypeLabels: Record<DocumentElementType, string> = {
   header: "Header",
