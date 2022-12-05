@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { ComponentMeta, Story } from "@storybook/react";
+import { type ComponentMeta, type Story } from "@storybook/react";
 import VariablesTree from "./VariablesTree";
 
 export default {

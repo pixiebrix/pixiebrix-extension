@@ -1,8 +1,8 @@
 import React from "react";
-import { BlockInfo } from "@/pageEditor/uiState/uiStateTypes";
+import { type BlockInfo } from "@/pageEditor/uiState/uiStateTypes";
 import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import styles from "./SourceLabel.module.scss";
-import { TypedBlockMap } from "@/blocks/registry";
+import { type TypedBlockMap } from "@/blocks/registry";
 
 type SourceLabelProps = {
   source: string;

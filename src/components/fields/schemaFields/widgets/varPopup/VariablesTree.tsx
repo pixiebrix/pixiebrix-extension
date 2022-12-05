@@ -17,9 +17,9 @@
 
 import React from "react";
 import { JSONTree } from "react-json-tree";
-import { ExistenceMap } from "@/analysis/analysisVisitors/varAnalysis/varMap";
+import { type ExistenceMap } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { jsonTreeTheme } from "@/themes/light";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 
 type VariablesTreeProps = {
   vars: ExistenceMap;
