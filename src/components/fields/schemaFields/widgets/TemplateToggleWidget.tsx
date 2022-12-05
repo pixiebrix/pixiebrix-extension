@@ -21,7 +21,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import WidgetLoadingIndicator from "@/components/fields/schemaFields/widgets/WidgetLoadingIndicator";
-import useToggleFormField from "@/pageEditor/hooks/useToggleFormField";
+import useToggleFormField from "@/hooks/useToggleFormField";
 import { useField } from "formik";
 import {
   type InputModeOption,

@@ -33,17 +33,20 @@ import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestU
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
 import databaseSchema from "@schemas/database.json";
 
-jest.mock("@/pageEditor/hooks/useDatabaseOptions", () => ({
+jest.mock("@/hooks/useDatabaseOptions", () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue({
     databaseOptions: [],
     isLoading: false,
   }),
 }));
-jest.mock("@/pageEditor/fields/DatabaseCreateModal", () => ({
-  __esModule: true,
-  default: jest.fn().mockReturnValue(() => <div>DatabaseCreateModal</div>),
-}));
+jest.mock(
+  "@/components/fields/schemaFields/widgets/DatabaseCreateModal",
+  () => ({
+    __esModule: true,
+    default: jest.fn().mockReturnValue(() => <div>DatabaseCreateModal</div>),
+  })
+);
 
 type SchemaTestCase = {
   name: string;

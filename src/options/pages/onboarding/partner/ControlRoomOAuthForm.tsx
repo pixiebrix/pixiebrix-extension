@@ -17,7 +17,7 @@
 
 import React, { useCallback } from "react";
 import { uuidv4 } from "@/types/helpers";
-import { persistor } from "@/options/store";
+import { persistor } from "@/store/optionsStore";
 import { launchAuthIntegration } from "@/background/messenger/api";
 import Form, {
   type RenderBody,

@@ -26,7 +26,7 @@ import { get } from "lodash";
 import {
   getRootPipelineFlavor,
   getSubPipelineFlavor,
-} from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+} from "@/blocks/blockFilterHelpers";
 import { type ExtensionPointType } from "@/extensionPoints/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";

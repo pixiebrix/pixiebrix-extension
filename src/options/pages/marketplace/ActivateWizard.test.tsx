@@ -37,7 +37,7 @@ jest.mock("@/permissions", () => ({
   collectPermissions: jest.fn(),
 }));
 
-jest.mock("@/options/store", () => ({
+jest.mock("@/store/optionsStore", () => ({
   persistor: {
     flush: jest.fn(),
   },

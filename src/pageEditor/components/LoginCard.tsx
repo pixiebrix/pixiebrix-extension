@@ -20,7 +20,7 @@ import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Button } from "react-bootstrap";
-import Centered from "./Centered";
+import Centered from "@/components/Centered";
 import { getBaseURL } from "@/services/baseService";
 
 const LoginCard: React.VoidFunctionComponent = () => {

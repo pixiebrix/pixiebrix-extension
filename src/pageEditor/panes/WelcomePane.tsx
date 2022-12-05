@@ -18,7 +18,7 @@
 import styles from "@/pageEditor/panes/Pane.module.scss";
 
 import React from "react";
-import Centered from "@/pageEditor/components/Centered";
+import Centered from "@/components/Centered";
 import IntroButtons from "./IntroButtons";
 
 const WelcomePane: React.FunctionComponent = () => (

@@ -30,7 +30,6 @@ import { type Target } from "@/types";
 import { RemoteExecutionError } from "@/blocks/errors";
 import pDefer from "p-defer";
 import { getErrorMessage } from "@/errors/errorHelpers";
-// eslint-disable-next-line import/no-restricted-paths -- Type only
 import type { RunBlock } from "@/contentScript/runBlockTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { canAccessTab } from "@/utils/permissions";

@@ -20,7 +20,7 @@ import paneStyles from "@/pageEditor/panes/Pane.module.scss";
 import styles from "./GenericInsertPane.module.scss";
 import { useDispatch } from "react-redux";
 import useAvailableExtensionPoints from "@/pageEditor/hooks/useAvailableExtensionPoints";
-import Centered from "@/pageEditor/components/Centered";
+import Centered from "@/components/Centered";
 import { Button, Row } from "react-bootstrap";
 import BrickModal from "@/components/brickModalNoTags/BrickModal";
 import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";

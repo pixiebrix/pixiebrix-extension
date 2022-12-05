@@ -42,8 +42,6 @@ import {
 } from "@/contentScript/nativeEditor/types";
 import { useSelector } from "react-redux";
 import { type SettingsState } from "@/store/settingsTypes";
-
-// eslint-disable-next-line import/no-restricted-paths -- Not ideal, but webpack should be able to treeshake the file. Maybe move to @/utils ?
 import { sortBySelector } from "@/contentScript/nativeEditor/selectorInference";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { CancelError } from "@/errors/businessErrors";

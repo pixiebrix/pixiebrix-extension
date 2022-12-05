@@ -23,7 +23,7 @@ import {
   selectSelectionSeq,
 } from "@/pageEditor/slices/editorSelectors";
 import { Alert } from "react-bootstrap";
-import Centered from "@/pageEditor/components/Centered";
+import Centered from "@/components/Centered";
 import EditorTabLayout, {
   type ActionButton,
   type TabItem,

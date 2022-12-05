@@ -256,12 +256,12 @@ module.exports = (env, options) =>
       [
         "background/background",
         "contentScript/contentScript",
+        "contentScript/browserActionInstantHandler",
         "pageEditor/pageEditor",
         "options/options",
         "sidebar/sidebar",
         "tinyPages/ephemeralForm",
         "tinyPages/permissionsPopup",
-        "tinyPages/browserActionInstantHandler",
 
         // Tiny files without imports
         "tinyPages/frame",

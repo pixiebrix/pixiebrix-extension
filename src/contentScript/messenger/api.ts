@@ -18,6 +18,7 @@
 /* Do not use `registerMethod` in this file */
 import { getMethod, getNotifier } from "webext-messenger";
 
+export const getReadyState = getMethod("GET_READY_STATE");
 export const getFormDefinition = getMethod("FORM_GET_DEFINITION");
 export const resolveForm = getMethod("FORM_RESOLVE");
 export const cancelForm = getNotifier("FORM_CANCEL");
