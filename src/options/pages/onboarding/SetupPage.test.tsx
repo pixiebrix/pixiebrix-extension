@@ -31,6 +31,8 @@ import { uuidv4 } from "@/types/helpers";
 import { readStorage } from "@/chrome";
 import { HashRouter } from "react-router-dom";
 import { createHashHistory } from "history";
+import userEvent from "@testing-library/user-event";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 function optionsStore(initialState?: any) {
   return configureStore({
@@ -49,6 +51,13 @@ jest.mock("@/chrome", () => ({
 
 jest.mock("@/services/api", () => ({
   useGetMeQuery: jest.fn(),
+  util: {
+    resetApiState: jest.fn().mockReturnValue({ type: "notarealreset" }),
+  },
+}));
+
+jest.mock("@/background/messenger/api", () => ({
+  launchAuthIntegration: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock("@/services/baseService", () => ({
@@ -59,6 +68,14 @@ jest.mock("@/store/optionsStore", () => ({
   persistor: {
     flush: jest.fn(),
   },
+}));
+
+jest.mock("@/utils/permissions", () => ({
+  requestPermissions: jest.fn().mockResolvedValue(true),
+}));
+
+jest.mock("@/permissions", () => ({
+  serviceOriginPermissions: jest.fn().mockResolvedValue({ origins: [] }),
 }));
 
 describe("SetupPage", () => {
@@ -114,7 +131,9 @@ describe("SetupPage", () => {
     expect(screen.getByText("Connect your AARI account")).not.toBeNull();
   });
 
-  test("Start URL", async () => {
+  test("Start URL for OAuth2 flow", async () => {
+    const user = userEvent.setup();
+
     // User will be unauthenticated
     (useGetMeQuery as jest.Mock).mockImplementation(() => ({
       isLoading: false,
@@ -124,6 +143,12 @@ describe("SetupPage", () => {
     const history = createHashHistory();
     // Hostname comes as hostname, not URL
     history.push("/start?hostname=mycontrolroom.com");
+
+    // Not sure why, but listening here is necessary to get the final `history.location.pathname` assertion to
+    // pass :shrug:
+    history.listen((location) => {
+      console.debug(location);
+    });
 
     // Needs to use HashRouter instead of MemoryRouter for the useLocation calls in the components to work correctly
     // given the URL structure above
@@ -144,6 +169,13 @@ describe("SetupPage", () => {
       screen.getByLabelText("Control Room URL").getAttribute("value")
       // Schema get pre-pended automatically
     ).toStrictEqual("https://mycontrolroom.com");
+
+    const button = screen.getByText("Connect AARI");
+    await user.click(button);
+
+    await waitForEffect();
+
+    expect(history.location.pathname).toStrictEqual("/");
   });
 
   test("Start URL with Community Edition hostname if user is unauthenticated", async () => {
