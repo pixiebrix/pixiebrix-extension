@@ -21,12 +21,14 @@ import { expectContext } from "@/utils/expectContext";
 import { safeParseUrl } from "@/utils";
 import { RegistryId } from "@/core";
 import { launchOAuth2Flow } from "@/background/auth";
+import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
 import serviceRegistry from "@/services/registry";
-import { setPartnerAuth } from "@/auth/token";
+
 import {
   CONTROL_ROOM_OAUTH_SERVICE_ID,
   CONTROL_ROOM_SERVICE_ID,
 } from "@/services/constants";
+import axios from "axios";
 
 /**
  * A principal on a remote service, e.g., an Automation Anywhere Control Room.
@@ -121,6 +123,8 @@ export async function launchAuthIntegration({
     await setPartnerAuth({
       authId: config.id,
       token: data.access_token,
+      // `refresh_token` only returned if offline_access scope is requested
+      refreshToken: data.refresh_token,
       extraHeaders: {
         "X-Control-Room": config.config.controlRoomUrl,
       },
@@ -130,4 +134,62 @@ export async function launchAuthIntegration({
       `Support for login with integration not implemented: ${serviceId}`
     );
   }
+}
+
+/**
+ * Refresh an Automation Anywhere JWT. NOOP if a JWT refresh token is not available.
+ */
+export async function _refreshPartnerToken(): Promise<void> {
+  const authData = await readPartnerAuthData();
+  if (authData.authId && authData.refreshToken) {
+    console.debug("Refreshing partner JWT");
+
+    const service = await serviceRegistry.lookup(CONTROL_ROOM_OAUTH_SERVICE_ID);
+    const config = await serviceLocator.getLocalConfig(authData.authId);
+    const context = service.getOAuth2Context(config.config);
+
+    if (isEmpty(config.config.controlRoomUrl)) {
+      // Fine to dump to console for debugging because CONTROL_ROOM_OAUTH_SERVICE_ID doesn't have any secret props.
+      console.warn("controlRoomUrl is missing on configuration", config);
+      throw new Error("controlRoomUrl is missing on configuration");
+    }
+
+    // https://axios-http.com/docs/urlencoded
+    const params = new URLSearchParams();
+    params.append("grant_type", "refresh_token");
+    params.append("client_id", context.client_id);
+    params.append("refresh_token", authData.refreshToken);
+    params.append("hosturl", config.config.controlRoomUrl);
+
+    // On 401, throw the error. In the future, we might consider clearing the partnerAuth. However, currently that
+    // would trigger a re-login, which may not be desirable at arbitrary times.
+    const { data } = await axios.post(context.tokenUrl, params, {
+      headers: { Authorization: `Basic ${btoa(context.client_id)} ` },
+    });
+
+    await setPartnerAuth({
+      authId: config.id,
+      token: data.access_token,
+      // `refresh_token` only returned if offline_access scope is requested
+      refreshToken: data.refresh_token,
+      extraHeaders: {
+        "X-Control-Room": config.config.controlRoomUrl,
+      },
+    });
+  }
+}
+
+export async function safeTokenRefresh(): Promise<void> {
+  try {
+    await _refreshPartnerToken();
+  } catch (error) {
+    console.warn("Failed to refresh partner token", error);
+  }
+}
+
+/**
+ * Refresh partner JWT every 10 minutes, if a refresh token is available.
+ */
+export function initPartnerTokenRefresh(): void {
+  setInterval(safeTokenRefresh, 1000 * 60 * 10);
 }

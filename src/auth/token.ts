@@ -58,7 +58,7 @@ export async function flagOn(flag: string): Promise<boolean> {
 }
 
 /**
- * Return the PixieBrix API token (issued by the PixieBrix API).
+ * Return the native PixieBrix API token (issued by the PixieBrix API).
  */
 export async function getExtensionToken(): Promise<string | undefined> {
   const { token } = await readAuthData();
