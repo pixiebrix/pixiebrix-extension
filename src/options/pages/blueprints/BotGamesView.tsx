@@ -17,10 +17,18 @@
 
 import React from "react";
 import { Button } from "react-bootstrap";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
 import { useRecipe } from "@/recipes/recipesHooks";
 import { RegistryId } from "@/core";
+import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
+import { OptionsState } from "@/store/extensionsTypes";
+import { selectExtensionsFromInstallable } from "@/options/pages/blueprints/utils/installableUtils";
+import { containsPermissions } from "@/background/messenger/api";
+import { collectPermissions, ensureAllPermissions } from "@/permissions";
+import { resolveRecipe } from "@/registry/internal";
+import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
+import { useSelectedAuths } from "@/options/pages/marketplace/PermissionsBody";
 
 const BOT_GAMES_BLUEPRINT_ID =
   "@pixies/bot-games/oldportal-enhancements" as RegistryId;
@@ -30,9 +38,33 @@ const useInstallBotGamesBlueprint = () => {
   const dispatch = useDispatch();
 
   const { data: botGamesRecipe } = useRecipe(BOT_GAMES_BLUEPRINT_ID);
+  //const selectedAuths = useSelectedAuths();
+  // const {request} = useEnsurePermissions(
+  //   botGamesRecipe,
+  //   botGamesRecipe.extensionPoints,
+  //   []
+  // );
 
-  console.warn("STUFF", botGamesRecipe);
-  return () => {
+  return async () => {
+    const permissions = await collectPermissions(
+      await resolveRecipe(botGamesRecipe, botGamesRecipe.extensionPoints),
+      []
+    );
+    console.warn("permissions", permissions);
+    const enabled = await containsPermissions(permissions);
+
+    console.warn("enabled", enabled);
+
+    let accepted = true;
+
+    if (!enabled) {
+      accepted = await ensureAllPermissions(permissions);
+    }
+
+    if (!accepted) {
+      return;
+    }
+
     dispatch(
       installRecipe({
         recipe: botGamesRecipe,
