@@ -31,16 +31,19 @@ interface ErrorReportOptions {
   /** Optional context for error telemetry */
   context?: MessageContext;
 
-  /* Additionally log error to the browser console (default=true) */
+  /** Additionally log error to the browser console (default=true) */
   logToConsole?: boolean;
 }
 
 /**
  * Report an error for local logs, remote telemetry, etc.
- * @param errorLike the error object
+ * @param errorLike the error object, error event, or string to report. Callers should provide Error objects when
+ *  possible for accurate stack traces.
+ * @param context Optional context for error telemetry
+ * @param logToConsole Additionally log error to the browser console (default=true)
  */
 export default function reportError(
-  errorLike: unknown, // It might also be an ErrorEvent
+  errorLike: unknown, // It might also be an ErrorEvent or string
   { context = {}, logToConsole = true }: ErrorReportOptions = {}
 ): void {
   if (logToConsole) {
