@@ -125,6 +125,22 @@ describe("BlueprintsPageLayout", () => {
     expect(screen.queryByText("Get Started")).not.toBeNull();
   });
 
+  test("get started tab is active by default", async () => {
+    (useGetStarterBlueprintsQuery as jest.Mock).mockImplementation(() => ({
+      isLoading: false,
+    }));
+
+    render(<BlueprintsPageLayout installables={installables} />);
+    await waitForEffect();
+    expect(
+      screen.queryByText("Welcome to the PixieBrix Extension Console")
+    ).not.toBeNull();
+    expect(screen.queryByText("Get Started")).not.toBeNull();
+    expect(screen.getByTestId("get-started-blueprint-tab")).toHaveClass(
+      "active"
+    );
+  });
+
   test("does not show 'Get Started' tab for enterprise users", async () => {
     (useGetMeQuery as jest.Mock).mockImplementation(() => ({
       isLoading: false,
@@ -186,5 +202,24 @@ describe("BlueprintsPageLayout", () => {
     await waitForEffect();
     expect(screen.getByText("Bot Games")).not.toBeNull();
     expect(screen.queryByText("Get Started")).toBeNull();
+  });
+
+  test("bot games tab is active by default", async () => {
+    const rendered = render(
+      <Provider
+        store={optionsStore({
+          auth: {
+            isLoggedIn: true,
+            flags: ["bot-games-event-in-progress"],
+            milestones: [{ key: "bot_games_2022_register" }],
+          },
+        })}
+      >
+        <BlueprintsPageLayout installables={installables} />
+      </Provider>
+    );
+    await waitForEffect();
+    expect(screen.queryByText("Bot Games")).not.toBeNull();
+    expect(screen.getByTestId("bot-games-blueprint-tab")).toHaveClass("active");
   });
 });

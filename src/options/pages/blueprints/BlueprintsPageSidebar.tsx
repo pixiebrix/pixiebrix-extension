@@ -25,6 +25,7 @@ import {
   useGetStarterBlueprintsQuery,
 } from "@/services/api";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { kebabCase } from "lodash";
 
 // eslint-disable-next-line no-restricted-imports -- Type only
 import type { BsPrefixRefForwardingComponent } from "react-bootstrap/esm/helpers";
@@ -86,7 +87,11 @@ const ListItem: BsPrefixRefForwardingComponent<
   "a",
   NavLinkProps & { label: string; icon: IconProp }
 > = ({ label, icon, ...otherProps }) => (
-  <Nav.Link className="media" {...otherProps}>
+  <Nav.Link
+    className="media"
+    data-testid={`${kebabCase(label)}-blueprint-tab`}
+    {...otherProps}
+  >
     <FontAwesomeIcon className="align-self-center" icon={icon} />
     <span className="media-body ml-2">{label}</span>
   </Nav.Link>
