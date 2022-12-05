@@ -17,10 +17,10 @@
 
 import styles from "./Form.module.scss";
 
-import React, { ReactElement } from "react";
+import React, { type ReactElement } from "react";
 import { Alert, Button, Form as BootstrapForm } from "react-bootstrap";
-import { Formik, FormikHelpers, FormikValues } from "formik";
-import * as yup from "yup";
+import { Formik, type FormikHelpers, type FormikValues } from "formik";
+import type * as yup from "yup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FormErrorContext } from "@/components/form/FormErrorContext";

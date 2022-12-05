@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from "react";
-import { FormikValues } from "formik";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { type FormikValues } from "formik";
 import { useDebounce } from "use-debounce";
 import { isEqual } from "lodash";
 

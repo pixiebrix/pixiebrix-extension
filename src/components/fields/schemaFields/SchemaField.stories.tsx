@@ -16,10 +16,10 @@
  */
 
 import React from "react";
-import { ComponentStory, ComponentMeta } from "@storybook/react";
+import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import { Form, Formik } from "formik";
 import SchemaField from "./SchemaField";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Button } from "react-bootstrap";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 import { action } from "@storybook/addon-actions";

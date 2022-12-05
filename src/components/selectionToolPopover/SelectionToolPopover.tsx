@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { type ChangeEvent, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import ReactShadowRoot from "react-shadow-root";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
@@ -23,7 +23,7 @@ import Draggable from "react-draggable";
 
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import SwitchButtonWidget, {
-  CheckBoxLike,
+  type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import switchStyle from "@/components/form/widgets/switchButton/SwitchButtonWidget.module.scss?loadAsUrl";
 import switchButtonStyle from "bootstrap-switch-button-react/src/style.css?loadAsUrl";

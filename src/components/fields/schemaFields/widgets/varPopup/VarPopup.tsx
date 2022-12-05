@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
+import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import { isNunjucksExpression } from "@/runtime/mapArgs";
 import getLikelyVariableAtPosition from "./getLikelyVariableAtPosition";
 import VarMenu from "./VarMenu";

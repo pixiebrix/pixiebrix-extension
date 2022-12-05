@@ -25,7 +25,7 @@ import {
   throwBlock,
 } from "./pipelineTestHelpers";
 import { sendDeploymentAlert } from "@/background/messenger/api";
-import { ApiVersion } from "@/core";
+import { type ApiVersion } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { serializeError } from "serialize-error";

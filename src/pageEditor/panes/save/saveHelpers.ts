@@ -16,34 +16,34 @@
  */
 
 import {
-  RegistryId,
-  Metadata,
-  IExtension,
-  SafeString,
-  InnerDefinitionRef,
-  InnerDefinitions,
-  UnresolvedExtension,
+  type RegistryId,
+  type Metadata,
+  type IExtension,
+  type SafeString,
+  type InnerDefinitionRef,
+  type InnerDefinitions,
+  type UnresolvedExtension,
 } from "@/core";
 import {
-  EditablePackage,
-  ExtensionPointConfig,
-  OptionsDefinition,
-  RecipeDefinition,
-  RecipeMetadataFormState,
-  UnsavedRecipeDefinition,
+  type EditablePackage,
+  type ExtensionPointConfig,
+  type OptionsDefinition,
+  type RecipeDefinition,
+  type RecipeMetadataFormState,
+  type UnsavedRecipeDefinition,
 } from "@/types/definitions";
 import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
 import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
 import { produce } from "immer";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { freshIdentifier } from "@/utils";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import {
   DEFAULT_EXTENSION_POINT_VAR,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
 } from "@/pageEditor/extensionPoints/base";
-import { Except } from "type-fest";
+import { type Except } from "type-fest";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.

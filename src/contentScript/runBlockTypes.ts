@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlockArg, MessageContext, RegistryId } from "@/core";
-import { Availability } from "@/blocks/types";
+import { type BlockArg, type MessageContext, type RegistryId } from "@/core";
+import { type Availability } from "@/blocks/types";
 
 export interface RemoteBlockOptions {
   ctxt: unknown;

@@ -17,9 +17,9 @@
 
 import { once } from "lodash";
 import { useEffect, useState } from "react";
-import { Target } from "@/types";
+import { type Target } from "@/types";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
-import { WebNavigation } from "webextension-polyfill";
+import { type WebNavigation } from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 import { getCurrentURL } from "@/pageEditor/utils";
 

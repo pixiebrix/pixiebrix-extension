@@ -18,15 +18,15 @@
 
 import React, { useCallback, useMemo, useRef } from "react";
 import { Button, Form, Table } from "react-bootstrap";
-import { SafeString, Schema } from "@/core";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SafeString, type Schema } from "@/core";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { isEmpty } from "lodash";
-import { FieldValidator, useField, useFormikContext } from "formik";
+import { type FieldValidator, useField, useFormikContext } from "formik";
 import { produce } from "immer";
 import { freshIdentifier, joinName } from "@/utils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 
 type PropertyRowProps = {
   name: string;

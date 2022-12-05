@@ -17,7 +17,9 @@
 
 import { validateRegistryId } from "@/types/helpers";
 import React from "react";
-import DatabaseOptions, { DatabaseGetPutOptionsProps } from "./DatabaseOptions";
+import DatabaseOptions, {
+  type DatabaseGetPutOptionsProps,
+} from "./DatabaseOptions";
 
 export const DATABASE_PUT_ID = validateRegistryId("@pixiebrix/data/put");
 

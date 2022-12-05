@@ -16,12 +16,12 @@
  */
 
 import React from "react";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./BrickNodeContent.module.scss";
 import OutputKeyView from "@/pageEditor/tabs/editTab/editorNodes/OutputKeyView";
 import {
-  BrickNodeContentProps,
+  type BrickNodeContentProps,
   RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
 

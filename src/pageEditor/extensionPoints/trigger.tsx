@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, Metadata } from "@/core";
+import { type IExtension, type Metadata } from "@/core";
 import {
   baseFromExtension,
   baseSelectExtension,
@@ -35,19 +35,19 @@ import { omitEditorMetadata } from "./pipelineMapping";
 import { uuidv4 } from "@/types/helpers";
 import {
   getDefaultReportModeForTrigger,
-  TriggerConfig,
-  TriggerDefinition,
+  type TriggerConfig,
+  type TriggerDefinition,
   TriggerExtensionPoint,
 } from "@/extensionPoints/triggerExtension";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
-import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
+import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import React from "react";
 import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
-import { TriggerFormState } from "./formStateTypes";
+import { type TriggerFormState } from "./formStateTypes";
 import { makeEmptyPermissions } from "@/utils/permissions";
 
 function fromNativeElement(

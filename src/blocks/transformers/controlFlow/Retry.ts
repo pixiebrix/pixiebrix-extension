@@ -16,9 +16,9 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { PipelineExpression } from "@/runtime/mapArgs";
+import { type PipelineExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
 import { sleep } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";

@@ -36,7 +36,7 @@ import {
   notifyContextInvalidated,
 } from "@/errors/contextInvalidated";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
-import { UUID } from "@/core";
+import { type UUID } from "@/core";
 
 function ignoreContextInvalidatedErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent

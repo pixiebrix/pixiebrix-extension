@@ -16,7 +16,7 @@
  */
 
 import { Reader } from "@/types";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 
 class TimestampReader extends Reader {
   defaultOutputKey = "instant";

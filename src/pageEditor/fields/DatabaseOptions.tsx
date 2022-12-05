@@ -16,7 +16,7 @@
  */
 
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 import { joinName } from "@/utils";
 import { partial } from "lodash";
 import React from "react";

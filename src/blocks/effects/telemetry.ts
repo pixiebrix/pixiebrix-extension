@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { reportEvent } from "@/telemetry/events";
 import { getDNT } from "@/telemetry/dnt";
 import { PropError } from "@/errors/businessErrors";

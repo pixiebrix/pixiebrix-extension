@@ -26,7 +26,7 @@ import React, {
 } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { compact, isEmpty } from "lodash";
-import { IBlock, RegistryId } from "@/core";
+import { type IBlock, type RegistryId } from "@/core";
 import { FixedSizeGrid as LazyGrid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { BLOCK_ITEM_FIXED_HEIGHT_PX } from "./BlockGridItem";
@@ -34,15 +34,15 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faPlus } from "@fortawesome/free-solid-svg-icons";
 import TagSearchInput from "@/components/addBlockModal/TagSearchInput";
-import TagList, { TagItem } from "@/components/addBlockModal/TagList";
+import TagList, { type TagItem } from "@/components/addBlockModal/TagList";
 import {
   useGetMarketplaceListingsQuery,
   useGetMarketplaceTagsQuery,
 } from "@/services/api";
-import { MarketplaceListing } from "@/types/contract";
+import { type MarketplaceListing } from "@/types/contract";
 import BlockDetail from "@/components/addBlockModal/BlockDetail";
 import Loader from "@/components/Loader";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { produce } from "immer";
 import { useDispatch, useSelector } from "react-redux";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
@@ -56,8 +56,8 @@ import {
   TAG_ALL,
 } from "@/components/addBlockModal/addBlockModalConstants";
 import {
-  BlockGridData,
-  BlockOption,
+  type BlockGridData,
+  type BlockOption,
 } from "@/components/addBlockModal/addBlockModalTypes";
 import { getItemKey } from "@/components/addBlockModal/addBlockModalHelpers";
 import useAddBlock from "@/components/addBlockModal/useAddBlock";

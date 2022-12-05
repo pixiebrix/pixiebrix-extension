@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Action } from "kbar";
+import { type Action } from "kbar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAppleAlt,
@@ -25,7 +25,7 @@ import {
   faStore,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 import { pull, remove } from "lodash";
 
 export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;

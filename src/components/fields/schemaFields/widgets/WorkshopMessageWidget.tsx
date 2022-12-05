@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Form } from "react-bootstrap";
 
 const WorkshopMessageWidget: React.VFC<Partial<SchemaFieldProps>> = () => (

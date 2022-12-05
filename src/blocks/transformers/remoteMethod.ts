@@ -17,9 +17,9 @@
 
 import { Transformer } from "@/types";
 import { proxyService } from "@/background/messenger/api";
-import { BlockArg, Schema } from "@/core";
+import { type BlockArg, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { AxiosRequestConfig } from "axios";
+import { type AxiosRequestConfig } from "axios";
 import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "@/types/helpers";
 

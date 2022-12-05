@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId, UseCachedQueryResult } from "@/core";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RegistryId, type UseCachedQueryResult } from "@/core";
+import { type RecipeDefinition } from "@/types/definitions";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAllRecipes } from "@/recipes/recipesSelectors";
 import { useMemo } from "react";

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import React from "react";
 import EllipsisMenu from "./EllipsisMenu";
 import { action } from "@storybook/addon-actions";

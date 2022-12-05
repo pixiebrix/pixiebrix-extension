@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Schema, UiSchema } from "@/core";
+import { type Schema, type UiSchema } from "@/core";
 
 export type RJSFSchema = {
   schema: Schema;

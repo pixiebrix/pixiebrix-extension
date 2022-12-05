@@ -20,11 +20,16 @@ import Loader from "@/components/Loader";
 import blockRegistry from "@/blocks/registry";
 import ReactShadowRoot from "react-shadow-root";
 import { getErrorMessage, selectSpecificError } from "@/errors/errorHelpers";
-import { BlockArg, MessageContext, RegistryId, RendererOutput } from "@/core";
-import { PanelPayload, PanelRunMeta } from "@/sidebar/types";
+import {
+  type BlockArg,
+  type MessageContext,
+  type RegistryId,
+  type RendererOutput,
+} from "@/core";
+import { type PanelPayload, type PanelRunMeta } from "@/sidebar/types";
 import RendererComponent from "@/sidebar/RendererComponent";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useAsyncEffect } from "use-async-effect";
 import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
 import RootErrorPanel from "@/sidebar/components/RootErrorPanel";

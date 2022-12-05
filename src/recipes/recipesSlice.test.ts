@@ -18,7 +18,7 @@
 import { recipeFactory } from "@/testUtils/factories";
 import { serializeError } from "serialize-error";
 import { initialState, recipesActions, recipesSlice } from "./recipesSlice";
-import { RecipesRootState } from "./recipesTypes";
+import { type RecipesRootState } from "./recipesTypes";
 import registry from "./registry";
 
 jest.mock("./registry", () => ({

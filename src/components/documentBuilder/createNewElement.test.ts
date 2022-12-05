@@ -17,7 +17,7 @@
 
 import { createNewElement } from "./createNewElement";
 import { DOCUMENT_ELEMENT_TYPES } from "./documentBuilderTypes";
-import { BlockPipeline } from "@/blocks/types";
+import { type BlockPipeline } from "@/blocks/types";
 
 test.each(
   DOCUMENT_ELEMENT_TYPES.filter(

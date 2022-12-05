@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Theme } from "@/options/types";
-import { RegistryId } from "@/core";
+import { type Theme } from "@/options/types";
+import { type RegistryId } from "@/core";
 
 export type InstallMode = "local" | "remote";
 

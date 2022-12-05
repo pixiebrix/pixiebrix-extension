@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { WebNavigation } from "webextension-polyfill";
+import { type WebNavigation } from "webextension-polyfill";
 import { SimpleEvent } from "@/hooks/events";
 
 type NavigationDetails = WebNavigation.OnHistoryStateUpdatedDetailsType;

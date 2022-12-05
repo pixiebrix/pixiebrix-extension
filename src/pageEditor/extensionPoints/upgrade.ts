@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import blockRegistry from "@/blocks/registry";
 import { inputProperties } from "@/helpers";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 import {
-  Expression,
-  RegistryId,
-  SchemaDefinition,
-  TemplateEngine,
+  type Expression,
+  type RegistryId,
+  type SchemaDefinition,
+  type TemplateEngine,
 } from "@/core";
 import { cloneDeep } from "lodash";
 import { isSelectField } from "@/components/fields/schemaFields/fieldTypeCheckers";

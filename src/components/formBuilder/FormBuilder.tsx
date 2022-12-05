@@ -21,7 +21,7 @@ import React, { useState } from "react";
 import FormEditor from "./edit/FormEditor";
 import FormPreview from "./preview/FormPreview";
 import { useField } from "formik";
-import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
+import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 
 const FormBuilder: React.FC<{

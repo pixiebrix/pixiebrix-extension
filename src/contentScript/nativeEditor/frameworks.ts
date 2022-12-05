@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Framework } from "@/messaging/constants";
+import { type Framework } from "@/messaging/constants";
 import adapters from "@/frameworks/adapters";
 import { isEmpty, uniq } from "lodash";
 import { inferSelectorsIncludingStableAncestors } from "@/contentScript/nativeEditor/selectorInference";
-import { ElementInfo } from "@/contentScript/nativeEditor/types";
+import { type ElementInfo } from "@/contentScript/nativeEditor/types";
 
 export async function elementInfo(
   element: HTMLElement,

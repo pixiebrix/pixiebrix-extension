@@ -18,7 +18,7 @@
 import styles from "./BrickModal.module.scss";
 
 import React, {
-  CSSProperties,
+  type CSSProperties,
   useCallback,
   useEffect,
   useMemo,
@@ -35,7 +35,7 @@ import {
   Row,
 } from "react-bootstrap";
 import { compact, sortBy } from "lodash";
-import { IBlock, IBrick, RegistryId } from "@/core";
+import { type IBlock, type IBrick, type RegistryId } from "@/core";
 import { useDebounce } from "use-debounce";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Fuse from "fuse.js";
@@ -45,7 +45,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import BrickResult from "./BrickResult";
 import BrickDetail from "./BrickDetail";
 import QuickAdd from "@/components/brickModalNoTags/QuickAdd";
-import { Except } from "type-fest";
+import { type Except } from "type-fest";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";

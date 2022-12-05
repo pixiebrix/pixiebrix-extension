@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createDOMPurify, { Config, DOMPurifyI } from "dompurify";
-import { SafeHTML } from "@/core";
+import createDOMPurify, { type Config, type DOMPurifyI } from "dompurify";
+import { type SafeHTML } from "@/core";
 
 let DOMPurify: DOMPurifyI;
 

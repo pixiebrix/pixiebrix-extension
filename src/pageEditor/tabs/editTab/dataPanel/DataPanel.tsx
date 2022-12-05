@@ -28,8 +28,8 @@ import BlockPreview, {
 import useReduxState from "@/hooks/useReduxState";
 import { useSelector } from "react-redux";
 import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
-import { JsonObject } from "type-fest";
-import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
+import { type JsonObject } from "type-fest";
+import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DataTab from "./DataTab";
 import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import DocumentPreview from "@/components/documentBuilder/preview/DocumentPreview";

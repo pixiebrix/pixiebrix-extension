@@ -18,7 +18,7 @@
 import { useFormikContext } from "formik";
 import React from "react";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
-import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import DocumentEditor from "./DocumentEditor";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
@@ -29,8 +29,8 @@ import {
   baseExtensionStateFactory,
 } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
-import { OutputKey, ServiceDependency } from "@/core";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type OutputKey, type ServiceDependency } from "@/core";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";

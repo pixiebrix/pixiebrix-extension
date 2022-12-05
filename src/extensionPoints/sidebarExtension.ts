@@ -16,30 +16,30 @@
  */
 
 import {
-  InitialValues,
+  type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
 import {
-  IBlock,
-  IExtension,
-  IExtensionPoint,
-  IReader,
-  ReaderOutput,
-  ResolvedExtension,
-  RunArgs,
+  type IBlock,
+  type IExtension,
+  type IExtensionPoint,
+  type IReader,
+  type ReaderOutput,
+  type ResolvedExtension,
+  type RunArgs,
   RunReason,
-  Schema,
-  UUID,
+  type Schema,
+  type UUID,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
-  CustomEventOptions,
-  DebounceOptions,
+  type CustomEventOptions,
+  type DebounceOptions,
   ExtensionPoint,
-  ExtensionPointConfig,
-  ExtensionPointDefinition,
+  type ExtensionPointConfig,
+  type ExtensionPointDefinition,
 } from "@/extensionPoints/types";
-import { Permissions } from "webextension-polyfill";
+import { type Permissions } from "webextension-polyfill";
 import { checkAvailable } from "@/blocks/available";
 import notify from "@/utils/notify";
 import {
@@ -57,7 +57,7 @@ import {
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import { cloneDeep, debounce, stubTrue } from "lodash";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";

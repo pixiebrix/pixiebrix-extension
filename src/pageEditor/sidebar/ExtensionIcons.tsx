@@ -23,7 +23,7 @@ import {
   faEyeSlash,
   faPuzzlePiece,
 } from "@fortawesome/free-solid-svg-icons";
-import { ExtensionPointType } from "@/extensionPoints/types";
+import { type ExtensionPointType } from "@/extensionPoints/types";
 import Icon from "@/icons/Icon";
 
 export const ExtensionIcon: React.FunctionComponent<{

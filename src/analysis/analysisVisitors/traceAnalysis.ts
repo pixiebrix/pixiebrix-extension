@@ -17,14 +17,18 @@
 
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
 import { AnnotationType } from "@/analysis/analysisTypes";
-import { isTraceError, TraceError, TraceRecord } from "@/telemetry/trace";
-import { BlockConfig, BlockPosition } from "@/blocks/types";
-import { UUID } from "@/core";
+import {
+  isTraceError,
+  type TraceError,
+  type TraceRecord,
+} from "@/telemetry/trace";
+import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import { type UUID } from "@/core";
 import { groupBy } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isInputValidationError } from "@/blocks/errors";
-import { nestedPosition, VisitBlockExtra } from "@/blocks/PipelineVisitor";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 const requiredFieldRegex =
   /^Instance does not have required property "(?<property>.+)"\.$/;

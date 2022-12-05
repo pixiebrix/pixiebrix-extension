@@ -16,10 +16,15 @@
  */
 
 import { Effect } from "@/types";
-import { BlockArg, BlockOptions, Logger, Schema } from "@/core";
+import {
+  type BlockArg,
+  type BlockOptions,
+  type Logger,
+  type Schema,
+} from "@/core";
 import { boolean } from "@/utils";
 import { requireSingleElement } from "@/utils/requireSingleElement";
-import { RequireExactlyOne } from "type-fest";
+import { type RequireExactlyOne } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 
 type SetValueData = RequireExactlyOne<

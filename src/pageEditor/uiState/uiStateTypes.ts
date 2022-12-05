@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
-import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import { RegistryId, UUID } from "@/core";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
+import { type DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { type RegistryId, type UUID } from "@/core";
+import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 
 export type BlockInfo = {
   blockId: RegistryId;

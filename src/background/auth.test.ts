@@ -18,7 +18,7 @@
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { getToken } from "./auth";
-import { UUID } from "@/core";
+import { type UUID } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 
 const axiosMock = new MockAdapter(axios);

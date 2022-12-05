@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { FieldTemplateProps } from "@rjsf/core";
+import { type FieldTemplateProps } from "@rjsf/core";
 import { Form, ListGroup } from "react-bootstrap";
 // Named import to get the proper type
 import { DescriptionField } from "./DescriptionField";

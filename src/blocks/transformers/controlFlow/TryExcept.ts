@@ -16,11 +16,16 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockArg, BlockOptions, OutputKey, Schema } from "@/core";
+import {
+  type BlockArg,
+  type BlockOptions,
+  type OutputKey,
+  type Schema,
+} from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { serializeError } from "serialize-error";
-import { PipelineExpression } from "@/runtime/mapArgs";
+import { type PipelineExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
 
 class TryExcept extends Transformer {

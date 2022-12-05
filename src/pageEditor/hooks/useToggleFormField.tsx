@@ -19,13 +19,13 @@ import { getIn, useFormikContext } from "formik";
 import { produce } from "immer";
 import { useCallback, useMemo } from "react";
 import {
-  FieldInputMode,
+  type FieldInputMode,
   inferInputMode,
 } from "@/components/fields/schemaFields/fieldInputMode";
 import { isObject } from "@/utils";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
-import { Schema } from "@/core";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type Schema } from "@/core";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 export function removeField(parent: unknown, fieldName: string): void {
   if (Array.isArray(parent)) {

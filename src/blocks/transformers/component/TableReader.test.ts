@@ -17,7 +17,7 @@
 
 import { TableReader } from "@/blocks/transformers/component/TableReader";
 import blockRegistry from "@/blocks/registry";
-import { BlockConfig } from "@/blocks/types";
+import { type BlockConfig } from "@/blocks/types";
 import {
   unsafeAssumeValidArg,
   validateOutputKey,

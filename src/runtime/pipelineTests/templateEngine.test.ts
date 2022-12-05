@@ -17,7 +17,7 @@
 
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { BlockConfig } from "@/blocks/types";
+import { type BlockConfig } from "@/blocks/types";
 import {
   contextBlock,
   echoBlock,

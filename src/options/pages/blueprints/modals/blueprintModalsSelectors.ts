@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RootState } from "@/options/store";
+import { type RootState } from "@/options/store";
 
 export const selectShowLogsContext = ({ blueprintModals }: RootState) =>
   blueprintModals.showLogsContext;

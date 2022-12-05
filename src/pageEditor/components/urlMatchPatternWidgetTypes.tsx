@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { FormControlProps } from "react-bootstrap";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type FormControlProps } from "react-bootstrap";
 
 export type Shortcut = {
   caption: string;

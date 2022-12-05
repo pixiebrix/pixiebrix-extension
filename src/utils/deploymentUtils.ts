@@ -16,16 +16,16 @@
  */
 
 import {
-  DeploymentContext,
-  IExtension,
-  RegistryId,
-  SanitizedServiceConfiguration,
-  UUID,
+  type DeploymentContext,
+  type IExtension,
+  type RegistryId,
+  type SanitizedServiceConfiguration,
+  type UUID,
 } from "@/core";
-import { Deployment } from "@/types/contract";
+import { type Deployment } from "@/types/contract";
 import { gte, satisfies } from "semver";
 import { compact, sortBy, uniq, uniqBy } from "lodash";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 /**

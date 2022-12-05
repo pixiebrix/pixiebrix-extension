@@ -16,9 +16,9 @@
  */
 
 import { groupBy, lowerCase, sortBy } from "lodash";
-import { IExtension, RegistryId, UUID } from "@/core";
-import { RecipeDefinition } from "@/types/definitions";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type IExtension, type RegistryId, type UUID } from "@/core";
+import { type RecipeDefinition } from "@/types/definitions";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getRecipeById } from "@/utils";
 import { isExtension } from "@/pageEditor/sidebar/common";
 

@@ -16,12 +16,12 @@
  */
 
 import { useField } from "formik";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { type ChangeEvent, useEffect, useState } from "react";
 import styles from "./FieldEditor.module.scss";
 import {
-  RJSFSchema,
-  SelectStringOption,
-  SetActiveField,
+  type RJSFSchema,
+  type SelectStringOption,
+  type SetActiveField,
 } from "@/components/formBuilder/formBuilderTypes";
 import { UI_WIDGET } from "@/components/formBuilder/schemaFieldNames";
 import {
@@ -31,21 +31,21 @@ import {
   produceSchemaOnUiTypeChange,
   replaceStringInArray,
   stringifyUiType,
-  UiType,
-  UiTypeExtra,
+  type UiType,
+  type UiTypeExtra,
   validateNextPropertyName,
 } from "@/components/formBuilder/formBuilderHelpers";
-import { Schema, SchemaPropertyType } from "@/core";
+import { type Schema, type SchemaPropertyType } from "@/core";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { produce } from "immer";
 import SelectWidget, {
-  SelectWidgetOnChange,
+  type SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
 import SwitchButtonWidget, {
-  CheckBoxLike,
+  type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { uniq } from "lodash";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import databaseSchema from "@schemas/database.json";
 

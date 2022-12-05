@@ -18,14 +18,14 @@
 import styles from "./TemplateToggleWidget.module.scss";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
+import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import WidgetLoadingIndicator from "@/components/fields/schemaFields/widgets/WidgetLoadingIndicator";
 import useToggleFormField from "@/pageEditor/hooks/useToggleFormField";
 import { useField } from "formik";
 import {
-  InputModeOption,
-  TemplateToggleWidgetProps,
+  type InputModeOption,
+  type TemplateToggleWidgetProps,
 } from "./templateToggleWidgetTypes";
 import VarPopup from "./varPopup/VarPopup";
 

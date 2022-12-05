@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Schema, SchemaProperties } from "@/core";
+import { type Schema, type SchemaProperties } from "@/core";
 import {
   getErrorMessage,
   JQUERY_INVALID_SELECTOR_ERROR,

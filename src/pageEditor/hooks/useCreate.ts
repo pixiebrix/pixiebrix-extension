@@ -30,10 +30,10 @@ import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
 import { extensionWithInnerDefinitions } from "@/pageEditor/extensionPoints/base";
 import { useGetEditablePackagesQuery } from "@/services/api";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 import extensionsSlice from "@/store/extensionsSlice";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 

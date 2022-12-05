@@ -20,7 +20,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./TagList.module.scss";
 import cx from "classnames";
 import { useAsyncIcon } from "@/components/asyncIcon";
-import { IconStringDefinition } from "@/types/contract";
+import { type IconStringDefinition } from "@/types/contract";
 import { faTag } from "@fortawesome/free-solid-svg-icons";
 
 export type TagItem = {

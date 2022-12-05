@@ -17,8 +17,8 @@
 
 import { Transformer } from "@/types";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { BlockArg, BlockOptions, Schema } from "@/core";
-import { PipelineExpression } from "@/runtime/mapArgs";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import { type PipelineExpression } from "@/runtime/mapArgs";
 import { expectContext } from "@/utils/expectContext";
 import {
   ensureSidebar,
@@ -26,7 +26,7 @@ import {
   PANEL_HIDING_EVENT,
   showTemporarySidebarPanel,
 } from "@/contentScript/sidebarController";
-import { PanelPayload } from "@/sidebar/types";
+import { type PanelPayload } from "@/sidebar/types";
 import {
   waitForTemporaryPanel,
   stopWaitingForTemporaryPanels,

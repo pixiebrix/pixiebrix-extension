@@ -33,10 +33,10 @@ import { screen } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { RegistryId } from "@/core";
-import { MarketplaceListing } from "@/types/contract";
+import { type RegistryId } from "@/core";
+import { type MarketplaceListing } from "@/types/contract";
 import { render } from "@/pageEditor/testHelpers";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
 
 jest.mock("@/services/api", () => {

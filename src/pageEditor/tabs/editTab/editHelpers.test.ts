@@ -19,7 +19,7 @@ import { DocumentRenderer } from "@/blocks/renderers/document";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import { PipelineExpression } from "@/runtime/mapArgs";
+import { type PipelineExpression } from "@/runtime/mapArgs";
 import { blockConfigFactory, pipelineFactory } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
 import { getPipelineMap } from "./editHelpers";

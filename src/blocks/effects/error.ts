@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types";
-import { BlockArg, Schema } from "@/core";
+import { type BlockArg, type Schema } from "@/core";
 import { BusinessError } from "@/errors/businessErrors";
 
 export class ErrorEffect extends Effect {

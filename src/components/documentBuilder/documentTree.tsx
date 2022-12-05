@@ -15,19 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType } from "react";
+import React, { type ElementType } from "react";
 import BlockElement from "@/components/documentBuilder/render/BlockElement";
 import { isPipelineExpression } from "@/runtime/mapArgs";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 import { get } from "lodash";
 import { Col, Container, Row, Image } from "react-bootstrap";
 import {
-  BuildDocumentBranch,
-  ButtonDocumentConfig,
-  DocumentComponent,
-  DocumentElement,
-  DynamicPath,
-  PipelineDocumentConfig,
+  type BuildDocumentBranch,
+  type ButtonDocumentConfig,
+  type DocumentComponent,
+  type DocumentElement,
+  type DynamicPath,
+  type PipelineDocumentConfig,
 } from "./documentBuilderTypes";
 import ButtonElement from "@/components/documentBuilder/render/ButtonElement";
 import ListElement from "@/components/documentBuilder/render/ListElement";

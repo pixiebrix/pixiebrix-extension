@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 
 /**

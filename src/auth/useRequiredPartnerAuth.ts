@@ -18,7 +18,7 @@
 import { useGetMeQuery } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 import { selectConfiguredServices } from "@/store/servicesSelectors";
 import { selectSettings } from "@/store/settingsSelectors";
 import { useAsyncState } from "@/hooks/common";
@@ -33,9 +33,9 @@ import {
   CONTROL_ROOM_OAUTH_SERVICE_ID,
   CONTROL_ROOM_SERVICE_ID,
 } from "@/services/constants";
-import { AuthState } from "@/auth/authTypes";
-import { SettingsState } from "@/store/settingsTypes";
-import { ManualStorageKey, readStorage } from "@/chrome";
+import { type AuthState } from "@/auth/authTypes";
+import { type SettingsState } from "@/store/settingsTypes";
+import { type ManualStorageKey, readStorage } from "@/chrome";
 
 /**
  * Map from partner keys to partner service IDs

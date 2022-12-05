@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockArg, Schema } from "@/core";
+import { type BlockArg, type Schema } from "@/core";
 import {
   makeURL,
   URL_INPUT_SPACE_ENCODING_DEFAULT,

@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { ComponentStory, ComponentMeta } from "@storybook/react";
+import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import BlueprintsPage from "@/options/pages/blueprints/BlueprintsPage";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
