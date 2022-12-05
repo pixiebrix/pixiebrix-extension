@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { removeField } from "@/pageEditor/hooks/useToggleFormField";
+import { removeField } from "@/hooks/useToggleFormField";
 
 describe("removeField", () => {
   test("remove field from object", () => {

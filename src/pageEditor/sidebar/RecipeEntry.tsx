@@ -40,7 +40,7 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { type RecipeDefinition } from "@/types/definitions";
 import * as semver from "semver";
-import ActionMenu from "@/components/sidebar/ActionMenu";
+import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
 
 export type RecipeEntryProps = PropsWithChildren<{
   recipe: RecipeDefinition | undefined;

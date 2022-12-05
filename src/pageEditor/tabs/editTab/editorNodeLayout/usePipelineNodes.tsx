@@ -53,7 +53,7 @@ import {
   decideFoundationStatus,
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/decideStatus";
 import { type Except } from "type-fest";
-import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
+import useAllBlocks from "@/blocks/hooks/useAllBlocks";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
 import {
@@ -61,7 +61,7 @@ import {
   selectActiveNodeId,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
-import { getRootPipelineFlavor } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import { getRootPipelineFlavor } from "@/blocks/blockFilterHelpers";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { type OutputKey, type UUID } from "@/core";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";

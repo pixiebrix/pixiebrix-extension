@@ -1,44 +1,37 @@
-const strictContexts = ["background"];
-
-const contexts = [
+const restrictedZones = [
   "background",
   "contentScript",
   "pageEditor",
   "options",
   "sidebar",
   // "pageScript", // TODO: After Messenger migration
-];
+].map((exporter) => ({
+  // All of these files cannot import `from` (exclude self-imports)
+  target:
+    exporter === "contentScript"
+      ? `./src/!(${exporter}|blocks|extensionPoints)/**/*` // Temporary: Blocks and extensionPoints are implicitly run from CS
+      : `./src/!(${exporter})/**/*`,
 
-const restrictedZones = [];
-for (const exporter of contexts) {
-  for (const importer of contexts) {
-    if (exporter !== importer && !strictContexts.includes(exporter)) {
-      restrictedZones.push({
-        target: `./src/${importer}`,
-        from: `./src/${exporter}`,
-        message: `Cross-context imports break expectations. Either use the Messenger to get data from ${exporter}, or move the imported item out of @/${exporter}`,
-        except: [
-          `../${exporter}/messenger/api.ts`,
-          `../${exporter}/types.ts`,
-          `../${exporter}/nativeEditor/types.ts`,
-        ],
-      });
-    }
-  }
-}
+  // The files above cannot import `from` this folder
+  from: `./src/${exporter}`,
 
-for (const exporter of strictContexts) {
-  restrictedZones.push({
-    target: `./src/!(${exporter})/**/*`,
-    from: `./src/${exporter}`,
-    message: `Cross-context imports break expectations. Either use the Messenger to get data from ${exporter}, or move the imported item out of @/${exporter}`,
-    except: [
-      `../${exporter}/messenger`,
-      `../${exporter}/types.ts`,
-      `../${exporter}/nativeEditor/types.ts`,
-    ],
-  });
-}
+  // These can be imported from anywhere
+  except: [
+    `../${exporter}/messenger`,
+    `../${exporter}/types.ts`,
+    // `../${exporter}/**/*Types.ts`, // TODO: Globs don't seem to work
+    `../${exporter}/nativeEditor/types.ts`,
+    `../${exporter}/pageEditorTypes.ts`,
+    `../${exporter}/runBlockTypes.ts`,
+    `../${exporter}/extensionPoints/formStateTypes.ts`,
+    `../${exporter}/tabs/editTab/dataPanel/dataPanelTypes.ts`,
+  ],
+
+  message: `Cross-context imports break expectations. Shared components should be in shared folders.
+  Solution 1: Keep both importing and imported modules in the same context (shared or @/${exporter}).
+  Solution 2: Use the Messenger if they are in the correct context.
+  Solution 3: Propose a clearly-shared component within the context, like we do for Messenger and *Types files.`,
+}));
 
 module.exports = {
   root: true,
@@ -48,7 +41,7 @@ module.exports = {
   ],
   rules: {
     "import/no-restricted-paths": [
-      "error",
+      "warn",
       {
         zones: restrictedZones,
       },
@@ -97,6 +90,9 @@ module.exports = {
       },
       // Overridden rules: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/server.js
       extends: ["pixiebrix/server"],
+      rules: {
+        "import/no-restricted-paths": "off",
+      },
     },
   ],
 };

@@ -28,7 +28,7 @@ import {
   type UUID,
 } from "@/core";
 import { uuidv4 } from "@/types/helpers";
-import { persistor } from "@/options/store";
+import { persistor } from "@/store/optionsStore";
 import { services } from "@/background/messenger/api";
 import { Button } from "react-bootstrap";
 import ServiceEditorModal from "@/options/pages/services/ServiceEditorModal";

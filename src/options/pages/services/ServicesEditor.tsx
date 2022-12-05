@@ -28,7 +28,7 @@ import PrivateServicesCard from "./PrivateServicesCard";
 import ConnectExtensionCard from "./ConnectExtensionCard";
 import { faCloud, faPlus } from "@fortawesome/free-solid-svg-icons";
 import useServiceDefinitions from "./useServiceDefinitions";
-import { persistor } from "@/options/store";
+import { persistor } from "@/store/optionsStore";
 import { services } from "@/background/messenger/api";
 import ZapierModal from "@/options/pages/services/ZapierModal";
 import notify from "@/utils/notify";

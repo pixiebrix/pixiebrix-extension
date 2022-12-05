@@ -27,7 +27,7 @@ import {
   useGetOrganizationsQuery,
 } from "@/services/api";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
-import DatabaseGroupSelect from "./DatabaseGroupSelect";
+import DatabaseGroupSelect from "@/components/fields/schemaFields/DatabaseGroupSelect";
 import notify from "@/utils/notify";
 import { type Organization, UserRole } from "@/types/contract";
 import { type UUID } from "@/core";

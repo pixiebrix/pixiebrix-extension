@@ -21,7 +21,7 @@ import servicesSlice from "@/store/servicesSlice";
 import { useDispatch } from "react-redux";
 import { uuidv4 } from "@/types/helpers";
 import notify from "@/utils/notify";
-import { persistor } from "@/options/store";
+import { persistor } from "@/store/optionsStore";
 import { services } from "@/background/messenger/api";
 import Form, {
   type RenderBody,
