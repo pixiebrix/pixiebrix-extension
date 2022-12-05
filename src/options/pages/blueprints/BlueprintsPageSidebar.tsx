@@ -19,11 +19,7 @@ import {
 import { TableInstance } from "react-table";
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import useFlags from "@/hooks/useFlags";
-import {
-  useCreateMilestoneMutation,
-  useGetMeQuery,
-  useGetStarterBlueprintsQuery,
-} from "@/services/api";
+import { useGetMeQuery, useGetStarterBlueprintsQuery } from "@/services/api";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { kebabCase } from "lodash";
 

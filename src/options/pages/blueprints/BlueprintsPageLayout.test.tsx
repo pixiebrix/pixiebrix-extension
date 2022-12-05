@@ -22,15 +22,10 @@ import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { useGetMeQuery, useGetStarterBlueprintsQuery } from "@/services/api";
 import { screen } from "@testing-library/react";
-import {
-  organizationFactory,
-  recipeDefinitionFactory,
-} from "@/testUtils/factories";
+import { organizationFactory } from "@/testUtils/factories";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
-import settingsSlice from "@/store/settingsSlice";
 import { Provider } from "react-redux";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -205,7 +200,7 @@ describe("BlueprintsPageLayout", () => {
   });
 
   test("bot games tab is active by default", async () => {
-    const rendered = render(
+    render(
       <Provider
         store={optionsStore({
           auth: {
