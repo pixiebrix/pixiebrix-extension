@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import UrlMatchPatternWidget from "@/pageEditor/components/UrlMatchPatternWidget";
+import UrlMatchPatternWidget from "./UrlMatchPatternWidget";
 import UrlPatternWidget from "@/pageEditor/components/UrlPatternWidget";
 import ArrayWidget from "./ArrayWidget";
 import BooleanWidget from "./BooleanWidget";
@@ -30,7 +30,7 @@ import UnsupportedWidget from "./UnsupportedWidget";
 import widgetsRegistry from "./widgetsRegistry";
 import WorkshopMessageWidget from "./WorkshopMessageWidget";
 import SelectorMatchWidget from "@/pageEditor/components/SelectorMatchWidget";
-import CssClassWidget from "@/components/fields/schemaFields/widgets/CssClassWidget";
+import CssClassWidget from "./CssClassWidget";
 import DatabaseWidget from "./DatabaseWidget";
 
 const defaultWidgets = {

@@ -34,13 +34,11 @@
  */
 
 import { type UUID } from "@/core";
-import { type Target } from "@/types";
 import { forbidContext } from "@/utils/expectContext";
-import { executeFunction } from "webext-content-scripts";
+import { type MessengerMeta } from "webext-messenger";
 
 const html = globalThis.document?.documentElement;
 
-// These two must be synched in `getTargetState`
 export const CONTENT_SCRIPT_INJECTED_SYMBOL = Symbol.for(
   "content-script-injected"
 );
@@ -82,28 +80,19 @@ export function unsetReadyInThisDocument(uuid: UUID): void {
 }
 
 /**
- * Fetches the URL and content script state from tab/frame
- * @throws Error if background page doesn't have permission to access the tab
+ * Returns the current URL and content script state
  */
-export async function getTargetState(target: Target): Promise<TargetState> {
+export async function getReadyState(this: MessengerMeta): Promise<TargetState> {
   forbidContext(
     "web",
     "chrome.tabs is only available in chrome-extension:// pages"
   );
 
-  return executeFunction(target, () => {
-    // This function does not have access to globals, the outside scope, nor `import()`
-    // These two symbols must be repeated inline
-    const CONTENT_SCRIPT_INJECTED_SYMBOL = Symbol.for(
-      "content-script-injected"
-    );
-    const CONTENT_SCRIPT_READY_ATTRIBUTE = "data-pb-ready";
-    return {
-      url: location.href,
-      installed: CONTENT_SCRIPT_INJECTED_SYMBOL in globalThis,
-      ready: document.documentElement.hasAttribute(
-        CONTENT_SCRIPT_READY_ATTRIBUTE
-      ),
-    };
-  });
+  return {
+    url: location.href,
+    installed: CONTENT_SCRIPT_INJECTED_SYMBOL in globalThis,
+    ready: document.documentElement.hasAttribute(
+      CONTENT_SCRIPT_READY_ATTRIBUTE
+    ),
+  };
 }

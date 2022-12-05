@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect } from "react";
-import store, { hashHistory, persistor } from "./store";
+import store, { hashHistory, persistor } from "@/store/optionsStore";
 import { Provider, useDispatch } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { Container } from "react-bootstrap";

@@ -16,7 +16,7 @@
  */
 
 import { useSelector } from "react-redux";
-import { type RootState } from "@/options/store";
+import { type RootState } from "@/store/optionsStore";
 import { type IService, type RawServiceConfiguration, type UUID } from "@/core";
 import { useParams } from "react-router";
 import { useMemo } from "react";

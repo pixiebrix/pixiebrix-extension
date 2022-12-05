@@ -25,7 +25,7 @@ import { useGetMeQuery } from "@/services/api";
 import { anonAuth } from "@/auth/authConstants";
 import { MemoryRouter } from "react-router";
 
-jest.mock("@/options/store", () => ({
+jest.mock("@/store/optionsStore", () => ({
   persistor: {
     flush: jest.fn(),
   },

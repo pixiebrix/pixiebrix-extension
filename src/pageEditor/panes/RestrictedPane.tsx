@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import Centered from "@/pageEditor/components/Centered";
+import Centered from "@/components/Centered";
 import styles from "./Pane.module.scss";
 
 const RestrictedPane: React.VoidFunctionComponent = () => (
