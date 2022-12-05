@@ -21,47 +21,54 @@ import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
 import { useRecipe } from "@/recipes/recipesHooks";
 import { RegistryId } from "@/core";
-import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
-import { OptionsState } from "@/store/extensionsTypes";
-import { selectExtensionsFromInstallable } from "@/options/pages/blueprints/utils/installableUtils";
 import { containsPermissions } from "@/background/messenger/api";
 import { collectPermissions, ensureAllPermissions } from "@/permissions";
 import { resolveRecipe } from "@/registry/internal";
-import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
-import { useSelectedAuths } from "@/options/pages/marketplace/PermissionsBody";
+import notify from "@/utils/notify";
+import { selectExtensions } from "@/store/extensionsSelectors";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const BOT_GAMES_BLUEPRINT_ID =
   "@pixies/bot-games/oldportal-enhancements" as RegistryId;
 const { installRecipe } = extensionsSlice.actions;
+const BOT_GAMES_CHALLENGE_URL =
+  "https://developer.automationanywhere.com/challenges/event/swivelchairworkflow-challenge.html";
 
 const useInstallBotGamesBlueprint = () => {
   const dispatch = useDispatch();
-
   const { data: botGamesRecipe } = useRecipe(BOT_GAMES_BLUEPRINT_ID);
-  //const selectedAuths = useSelectedAuths();
-  // const {request} = useEnsurePermissions(
-  //   botGamesRecipe,
-  //   botGamesRecipe.extensionPoints,
-  //   []
-  // );
+  const installedExtensions = useSelector(selectExtensions);
 
-  return async () => {
+  const isBotGamesBlueprintCurrentlyInstalled = installedExtensions.some(
+    (extension) => extension._recipe?.id === BOT_GAMES_BLUEPRINT_ID
+  );
+
+  const installBotGamesBlueprint = async () => {
     const permissions = await collectPermissions(
       await resolveRecipe(botGamesRecipe, botGamesRecipe.extensionPoints),
+      // There shouldn't be any services to configure considering we're hard-coding this Bot Games blueprint
       []
     );
-    console.warn("permissions", permissions);
     const enabled = await containsPermissions(permissions);
-
-    console.warn("enabled", enabled);
-
     let accepted = true;
 
     if (!enabled) {
-      accepted = await ensureAllPermissions(permissions);
+      try {
+        accepted = await ensureAllPermissions(permissions);
+      } catch (error) {
+        notify.error({
+          message: "Error granting permissions",
+          error,
+        });
+        return;
+      }
     }
 
     if (!accepted) {
+      notify.warning(
+        "You must accept permissions to install the Bot Games blueprint"
+      );
       return;
     }
 
@@ -71,6 +78,13 @@ const useInstallBotGamesBlueprint = () => {
         extensionPoints: botGamesRecipe.extensionPoints,
       })
     );
+
+    window.open(BOT_GAMES_CHALLENGE_URL);
+  };
+
+  return {
+    isBotGamesBlueprintCurrentlyInstalled,
+    installBotGamesBlueprint,
   };
 };
 
@@ -78,17 +92,34 @@ const BotGamesView: React.VoidFunctionComponent<{
   width: number;
   height: number;
 }> = ({ width, height }) => {
-  const installBotGamesBlueprint = useInstallBotGamesBlueprint();
+  const { isBotGamesBlueprintCurrentlyInstalled, installBotGamesBlueprint } =
+    useInstallBotGamesBlueprint();
   return (
     <div style={{ height: `${height}px`, width: `${width}px` }}>
-      hello bot games!
-      <Button
-        onClick={() => {
-          installBotGamesBlueprint();
-        }}
-      >
-        Get started by downloading me!
-      </Button>
+      {isBotGamesBlueprintCurrentlyInstalled ? (
+        <>
+          <h3>You're all set!</h3>
+          <a
+            href={BOT_GAMES_CHALLENGE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FontAwesomeIcon icon={faExternalLinkAlt} />
+            Take me to the challenge page
+          </a>
+        </>
+      ) : (
+        <>
+          <h3>You're almost ready to go!</h3>
+          <Button
+            onClick={() => {
+              void installBotGamesBlueprint();
+            }}
+          >
+            Get started by downloading me!
+          </Button>
+        </>
+      )}
     </div>
   );
 };

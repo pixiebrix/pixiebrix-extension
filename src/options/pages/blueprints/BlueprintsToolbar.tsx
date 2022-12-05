@@ -89,9 +89,10 @@ const BlueprintsToolbar: React.FunctionComponent<{
     return { groupByOptions, sortByOptions };
   }, [flatHeaders]);
 
-  const tabContentTitle = globalFilter
-    ? `${numberOfBlueprints} results for "${globalFilter}"`
-    : activeTab.tabTitle;
+  const tabContentTitle =
+    globalFilter && !["Bot Games", "Get Started"].includes(activeTab.key)
+      ? `${numberOfBlueprints} results for "${globalFilter}"`
+      : activeTab.tabTitle;
 
   return (
     <div className="d-flex justify-content-between align-items-center mb-3">

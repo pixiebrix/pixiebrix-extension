@@ -137,7 +137,7 @@ const BlueprintsPageSidebar: React.FunctionComponent<
       : false;
 
   // const showBotGamesTab = hasMilestone("bot_games_2022_register");
-  const showBotGamesTab = true;
+  const showBotGamesTab = process.env.BOT_GAMES_EVENT_IN_PROGRESS;
 
   useEffect(() => {
     if (isStarterBlueprintsLoading || isMeLoading) {
