@@ -15,20 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useGetMeQuery } from "@/services/api";
 import { useSelector } from "react-redux";
-import { selectAuth } from "@/auth/authSelectors";
+import { selectMilestones } from "@/auth/authSelectors";
 import { Milestone } from "@/types/contract";
 
 const useMilestones = (): {
   hasMilestone: (milestoneKey: string) => boolean;
+  hasMilestones: (milestoneKeys: string[]) => boolean;
 } => {
-  const { milestones: cachedMilestones } = useSelector(selectAuth);
-  const { data: me } = useGetMeQuery();
-  const milestones = me?.milestones ?? cachedMilestones ?? [];
+  const milestones = useSelector(selectMilestones);
+
+  const hasMilestone = (milestoneKey: string) =>
+    milestones.some((milestone: Milestone) => milestone.key === milestoneKey);
+  const hasMilestones = (milestoneKeys: string[]) =>
+    milestoneKeys.every((milestoneKey) => hasMilestone(milestoneKey));
   return {
-    hasMilestone: (milestoneKey: string) =>
-      milestones.some((milestone: Milestone) => milestone.key === milestoneKey),
+    hasMilestone,
+    hasMilestones,
   };
 };
 

@@ -22,7 +22,21 @@ import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { useGetMeQuery, useGetStarterBlueprintsQuery } from "@/services/api";
 import { screen } from "@testing-library/react";
-import { organizationFactory } from "@/testUtils/factories";
+import {
+  organizationFactory,
+  recipeDefinitionFactory,
+} from "@/testUtils/factories";
+import { configureStore } from "@reduxjs/toolkit";
+import { persistReducer } from "redux-persist";
+import { authSlice, persistAuthConfig } from "@/auth/authSlice";
+import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
+import settingsSlice from "@/store/settingsSlice";
+import { Provider } from "react-redux";
+import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
+import extensionsSlice from "@/store/extensionsSlice";
+import blueprintsSlice, {
+  persistBlueprintsConfig,
+} from "@/options/pages/blueprints/blueprintsSlice";
 
 const EMPTY_RESPONSE = Object.freeze({
   data: Object.freeze([]),
@@ -43,11 +57,42 @@ jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest
     .fn()
     .mockReturnValue({ data: [], isFetchingFromCache: false }),
+  useRecipe: jest
+    .fn()
+    .mockReturnValue({ data: [], isFetchingFromCache: false }),
 }));
+
+function optionsStore(initialState?: any) {
+  return configureStore({
+    reducer: {
+      auth: persistReducer(persistAuthConfig, authSlice.reducer),
+      options: persistReducer(
+        persistExtensionOptionsConfig,
+        extensionsSlice.reducer
+      ),
+      blueprints: persistReducer(
+        persistBlueprintsConfig,
+        blueprintsSlice.reducer
+      ),
+    },
+    preloadedState: initialState,
+  });
+}
 
 const installables: Installable[] = [];
 
 describe("BlueprintsPageLayout", () => {
+  const env = process.env;
+
+  beforeEach(() => {
+    jest.resetModules();
+    process.env = { ...env };
+  });
+
+  afterEach(() => {
+    process.env = env;
+  });
+
   test("renders", async () => {
     const rendered = render(
       <BlueprintsPageLayout installables={installables} />
@@ -91,6 +136,55 @@ describe("BlueprintsPageLayout", () => {
     expect(
       screen.queryByText("Welcome to the PixieBrix Extension Console")
     ).toBeNull();
+    expect(screen.queryByText("Get Started")).toBeNull();
+  });
+
+  test("shows the bot games tab", async () => {
+    render(
+      <Provider
+        store={optionsStore({
+          auth: {
+            isLoggedIn: true,
+            flags: ["bot-games-event-in-progress"],
+            milestones: [{ key: "bot_games_2022_register" }],
+          },
+        })}
+      >
+        <BlueprintsPageLayout installables={installables} />
+      </Provider>
+    );
+    await waitForEffect();
+    expect(screen.getByText("Bot Games")).not.toBeNull();
+    expect(screen.queryByText("Get Started")).toBeNull();
+  });
+
+  test("doesn't flash get started tab while loading the bot games tab", async () => {
+    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+      isLoading: true,
+    }));
+    (useGetStarterBlueprintsQuery as jest.Mock).mockImplementation(() => ({
+      isLoading: false,
+    }));
+
+    render(<BlueprintsPageLayout installables={installables} />);
+    await waitForEffect();
+    expect(screen.queryByText("Get Started")).toBeNull();
+
+    render(
+      <Provider
+        store={optionsStore({
+          auth: {
+            isLoggedIn: true,
+            flags: ["bot-games-event-in-progress"],
+            milestones: [{ key: "bot_games_2022_register" }],
+          },
+        })}
+      >
+        <BlueprintsPageLayout installables={installables} />
+      </Provider>
+    );
+    await waitForEffect();
+    expect(screen.getByText("Bot Games")).not.toBeNull();
     expect(screen.queryByText("Get Started")).toBeNull();
   });
 });

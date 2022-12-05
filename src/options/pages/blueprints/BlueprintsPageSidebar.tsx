@@ -104,7 +104,8 @@ const useOnboardingTabs = (
   const { data: installableViewItems } = tableInstance;
   const { data: me, isLoading: isMeLoading } = useGetMeQuery();
   const { hasMilestone } = useMilestones();
-  const { hasBotGamesBlueprintCurrentlyInstalled } =
+  const { flagOn } = useFlags();
+  const { isBotGamesBlueprintCurrentlyInstalled } =
     useInstallBotGamesBlueprint();
 
   const isFreemiumUser = !me?.organization;
@@ -124,18 +125,20 @@ const useOnboardingTabs = (
     }
   );
 
-  const showGetStartedTab =
-    !isStarterBlueprintsLoading && !isMeLoading
-      ? isFreemiumUser && !hasSomeBlueprintEngagement
-      : false;
-
   const showBotGamesTab =
     hasMilestone("bot_games_2022_register") &&
-    process.env.BOT_GAMES_EVENT_IN_PROGRESS;
+    flagOn("bot-games-event-in-progress");
+
+  console.warn("showBotGamesTab", showBotGamesTab);
+
+  const showGetStartedTab =
+    !isStarterBlueprintsLoading && !isMeLoading
+      ? isFreemiumUser && !hasSomeBlueprintEngagement && !showBotGamesTab
+      : false;
 
   useEffect(() => {
     // We want to nudge Bot Games users who may gotten lost back to the challenge page
-    if (showBotGamesTab && !hasBotGamesBlueprintCurrentlyInstalled) {
+    if (showBotGamesTab && !isBotGamesBlueprintCurrentlyInstalled) {
       setActiveTab(BLUEPRINTS_PAGE_TABS.botGames);
       return;
     }

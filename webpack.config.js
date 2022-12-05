@@ -371,7 +371,6 @@ module.exports = (env, options) =>
         ROLLBAR_BROWSER_ACCESS_TOKEN: null,
         GOOGLE_API_KEY: null,
         GOOGLE_APP_ID: null,
-        BOT_GAMES_EVENT_IN_PROGRESS: false,
       }),
 
       new MiniCssExtractPlugin({
