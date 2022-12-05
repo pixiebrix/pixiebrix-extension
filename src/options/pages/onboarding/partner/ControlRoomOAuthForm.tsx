@@ -37,6 +37,7 @@ import { serviceOriginPermissions } from "@/permissions";
 import { requestPermissions } from "@/utils/permissions";
 import { isEmpty } from "lodash";
 import { util as apiUtil } from "@/services/api";
+import { useHistory } from "react-router";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -58,6 +59,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
   initialValues: ControlRoomConfiguration;
 }> = ({ initialValues }) => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const configuredServices = useSelector(selectConfiguredServices);
 
   const { authServiceId: authServiceIdOverride } = useSelector(selectSettings);
@@ -109,6 +111,9 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
 
         await launchAuthIntegration({ serviceId: authServiceId });
 
+        // Redirect to blueprints screen. The SetupPage always shows a login screen for the "/start" URL
+        history.push("/");
+
         // Refresh auth state so that 1) the user appears as logged in the UI in the navbar, and 2) the Admin Console
         // link in the navbar links to the URL required for JWT hand-off.
         // See useRequiredAuth hook for more details
@@ -117,7 +122,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
         helpers.setStatus(getErrorMessage(error));
       }
     },
-    [dispatch, configuredServices, authServiceId]
+    [dispatch, history, configuredServices, authServiceId]
   );
 
   const renderBody: RenderBody = () => (

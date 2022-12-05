@@ -30,6 +30,7 @@ import Form, {
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Button } from "react-bootstrap";
 import { CONTROL_ROOM_SERVICE_ID } from "@/services/constants";
+import { useHistory } from "react-router";
 
 type ControlRoomConfiguration = {
   controlRoomUrl: string;
@@ -51,6 +52,7 @@ const ControlRoomTokenForm: React.FunctionComponent<{
 }> = ({ initialValues }) => {
   const { updateServiceConfig } = servicesSlice.actions;
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const handleSubmit = async (formValues: ControlRoomConfiguration) => {
     dispatch(
@@ -68,6 +70,9 @@ const ControlRoomTokenForm: React.FunctionComponent<{
 
     try {
       await services.refresh();
+
+      // Redirect to blueprints screen. The SetupPage will always show a login screen for the "/start" URL
+      history.push("/");
     } catch (error) {
       notify.error({
         message:
@@ -85,11 +90,17 @@ const ControlRoomTokenForm: React.FunctionComponent<{
         type="text"
         description="Your Automation Anywhere Control Room URL, including https://"
       />
-      <ConnectedFieldTemplate name="username" label="Username" type="text" />
+      <ConnectedFieldTemplate
+        name="username"
+        label="Username"
+        type="text"
+        autoComplete="off"
+      />
       <ConnectedFieldTemplate
         name="password"
         label="Password"
         type="password"
+        autoComplete="off"
       />
     </>
   );

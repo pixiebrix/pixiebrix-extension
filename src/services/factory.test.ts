@@ -37,8 +37,8 @@ describe("LocalDefinedService", () => {
 
     expect(origins).toEqual([
       "https://controlroom.example.com/*",
-      "https://dev-5ufv3jh0.us.auth0.com/authorize?organization=org_55te9GGDwlzAS1PB&audience=https://dev-5ufv3jh0.us.auth0.com/userinfo",
-      "https://dev-5ufv3jh0.us.auth0.com/oauth/token",
+      "https://oauthconfigapp.automationanywhere.digital/client/oauth/authorize?hosturl=https://controlroom.example.com&audience=https://controlroom",
+      "https://oauthconfigapp.automationanywhere.digital/client/oauth/token",
     ]);
   });
 
@@ -51,8 +51,9 @@ describe("LocalDefinedService", () => {
     } as unknown as SanitizedConfig);
 
     expect(origins).toEqual([
-      "https://dev-5ufv3jh0.us.auth0.com/authorize?organization=org_55te9GGDwlzAS1PB&audience=https://dev-5ufv3jh0.us.auth0.com/userinfo",
-      "https://dev-5ufv3jh0.us.auth0.com/oauth/token",
+      // `controlRoomUrl` not included because it's not a valid URL
+      "https://oauthconfigapp.automationanywhere.digital/client/oauth/authorize?hosturl=&audience=https://controlroom",
+      "https://oauthconfigapp.automationanywhere.digital/client/oauth/token",
     ]);
   });
 });
