@@ -19,7 +19,11 @@ import {
 import { TableInstance } from "react-table";
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import useFlags from "@/hooks/useFlags";
-import { useGetMeQuery, useGetStarterBlueprintsQuery } from "@/services/api";
+import {
+  useCreateMilestoneMutation,
+  useGetMeQuery,
+  useGetStarterBlueprintsQuery,
+} from "@/services/api";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 // eslint-disable-next-line no-restricted-imports -- Type only
@@ -87,32 +91,18 @@ const ListItem: BsPrefixRefForwardingComponent<
   </Nav.Link>
 );
 
-const BlueprintsPageSidebar: React.FunctionComponent<
-  BlueprintsPageSidebarProps
-> = ({ teamFilters, tableInstance }) => {
-  const { permit } = useFlags();
-  const { data: me, isLoading: isMeLoading } = useGetMeQuery();
-  const { hasMilestone } = useMilestones();
+const useOnboardingTabs = (
+  tableInstance: TableInstance<InstallableViewItem>
+) => {
   const { data: starterBlueprints, isLoading: isStarterBlueprintsLoading } =
     useGetStarterBlueprintsQuery();
-  const {
-    state: { globalFilter },
-    setGlobalFilter,
-    data: installableViewItems,
-  } = tableInstance;
   const [activeTab, setActiveTab] = useReduxState(
     selectActiveTab,
     blueprintsSlice.actions.setActiveTab
   );
-  const [_, setSearchQuery] = useReduxState(
-    selectSearchQuery,
-    blueprintsSlice.actions.setSearchQuery
-  );
-  const [query, setQuery] = useState("");
-  const [debouncedQuery] = useDebounce(query, 300, {
-    trailing: true,
-    leading: false,
-  });
+  const { data: installableViewItems } = tableInstance;
+  const { data: me, isLoading: isMeLoading } = useGetMeQuery();
+  const { hasMilestone } = useMilestones();
 
   const isFreemiumUser = !me?.organization;
 
@@ -136,8 +126,9 @@ const BlueprintsPageSidebar: React.FunctionComponent<
       ? isFreemiumUser && !hasSomeBlueprintEngagement
       : false;
 
-  // const showBotGamesTab = hasMilestone("bot_games_2022_register");
-  const showBotGamesTab = process.env.BOT_GAMES_EVENT_IN_PROGRESS;
+  const showBotGamesTab =
+    hasMilestone("bot_games_2022_register") &&
+    process.env.BOT_GAMES_EVENT_IN_PROGRESS;
 
   useEffect(() => {
     if (isStarterBlueprintsLoading || isMeLoading) {
@@ -145,6 +136,12 @@ const BlueprintsPageSidebar: React.FunctionComponent<
     }
 
     if (activeTab.key === null) {
+      // Bot Games tab takes precedence over the Get Started tab for new users
+      if (showBotGamesTab) {
+        setActiveTab(BLUEPRINTS_PAGE_TABS.botGames);
+        return;
+      }
+
       if (showGetStartedTab) {
         setActiveTab(BLUEPRINTS_PAGE_TABS.getStarted);
         return;
@@ -162,6 +159,13 @@ const BlueprintsPageSidebar: React.FunctionComponent<
     if (!showGetStartedTab && activeTab.key === "Get Started") {
       setActiveTab(BLUEPRINTS_PAGE_TABS.active);
     }
+
+    // Similar to the above situation, if the Bot Games tab is selected
+    // but no longer shown due to the event ending, make sure that we reset
+    // the default
+    if (!showBotGamesTab && activeTab.key === "Bot Games") {
+      setActiveTab(BLUEPRINTS_PAGE_TABS.active);
+    }
   }, [
     isMeLoading,
     starterBlueprints,
@@ -170,6 +174,36 @@ const BlueprintsPageSidebar: React.FunctionComponent<
     showGetStartedTab,
     setActiveTab,
   ]);
+
+  return {
+    showBotGamesTab,
+    showGetStartedTab,
+  };
+};
+
+const BlueprintsPageSidebar: React.FunctionComponent<
+  BlueprintsPageSidebarProps
+> = ({ teamFilters, tableInstance }) => {
+  const { permit } = useFlags();
+  const {
+    state: { globalFilter },
+    setGlobalFilter,
+  } = tableInstance;
+  const [activeTab, setActiveTab] = useReduxState(
+    selectActiveTab,
+    blueprintsSlice.actions.setActiveTab
+  );
+  const [_, setSearchQuery] = useReduxState(
+    selectSearchQuery,
+    blueprintsSlice.actions.setSearchQuery
+  );
+  const [query, setQuery] = useState("");
+  const [debouncedQuery] = useDebounce(query, 300, {
+    trailing: true,
+    leading: false,
+  });
+  const { showBotGamesTab, showGetStartedTab } =
+    useOnboardingTabs(tableInstance);
 
   // By default, search everything with the option to re-select
   // filtered category
