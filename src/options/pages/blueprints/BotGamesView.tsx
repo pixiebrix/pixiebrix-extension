@@ -35,7 +35,7 @@ const { installRecipe } = extensionsSlice.actions;
 const BOT_GAMES_CHALLENGE_URL =
   "https://developer.automationanywhere.com/challenges/event/swivelchairworkflow-challenge.html";
 
-const useInstallBotGamesBlueprint = () => {
+export const useInstallBotGamesBlueprint = () => {
   const dispatch = useDispatch();
   const { data: botGamesRecipe } = useRecipe(BOT_GAMES_BLUEPRINT_ID);
   const installedExtensions = useSelector(selectExtensions);

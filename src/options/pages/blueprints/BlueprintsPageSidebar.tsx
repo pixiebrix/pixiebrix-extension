@@ -29,6 +29,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 // eslint-disable-next-line no-restricted-imports -- Type only
 import type { BsPrefixRefForwardingComponent } from "react-bootstrap/esm/helpers";
 import useMilestones from "@/hooks/useMilestones";
+import { useInstallBotGamesBlueprint } from "@/options/pages/blueprints/BotGamesView";
 
 type BlueprintsPageSidebarProps = {
   teamFilters: string[];
@@ -103,6 +104,8 @@ const useOnboardingTabs = (
   const { data: installableViewItems } = tableInstance;
   const { data: me, isLoading: isMeLoading } = useGetMeQuery();
   const { hasMilestone } = useMilestones();
+  const { hasBotGamesBlueprintCurrentlyInstalled } =
+    useInstallBotGamesBlueprint();
 
   const isFreemiumUser = !me?.organization;
 
@@ -131,12 +134,20 @@ const useOnboardingTabs = (
     process.env.BOT_GAMES_EVENT_IN_PROGRESS;
 
   useEffect(() => {
+    // We want to nudge Bot Games users who may gotten lost back to the challenge page
+    if (showBotGamesTab && !hasBotGamesBlueprintCurrentlyInstalled) {
+      setActiveTab(BLUEPRINTS_PAGE_TABS.botGames);
+      return;
+    }
+  }, []);
+
+  useEffect(() => {
     if (isStarterBlueprintsLoading || isMeLoading) {
       return;
     }
 
     if (activeTab.key === null) {
-      // Bot Games tab takes precedence over the Get Started tab for new users
+      // Bot Games page takes precedence over the Get Started welcome page
       if (showBotGamesTab) {
         setActiveTab(BLUEPRINTS_PAGE_TABS.botGames);
         return;
