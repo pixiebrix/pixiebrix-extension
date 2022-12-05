@@ -28,6 +28,7 @@ import OnboardingView from "@/options/pages/blueprints/onboardingView/Onboarding
 import EmptyView from "@/options/pages/blueprints/emptyView/EmptyView";
 import GetStartedView from "@/options/pages/blueprints/GetStartedView";
 import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
+import BotGamesView from "@/options/pages/blueprints/BotGamesView";
 
 const BlueprintsPageContent: React.VoidFunctionComponent<
   BlueprintsPageContentProps
@@ -45,6 +46,10 @@ const BlueprintsPageContent: React.VoidFunctionComponent<
 
   if (activeTab.key === "Get Started") {
     return <GetStartedView width={width} height={height} />;
+  }
+
+  if (activeTab.key === "Bot Games") {
+    return <BotGamesView width={width} height={height} />;
   }
 
   if (rows.length > 0) {

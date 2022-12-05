@@ -24,6 +24,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 // eslint-disable-next-line no-restricted-imports -- Type only
 import type { BsPrefixRefForwardingComponent } from "react-bootstrap/esm/helpers";
+import useMilestones from "@/hooks/useMilestones";
 
 type BlueprintsPageSidebarProps = {
   teamFilters: string[];
@@ -91,6 +92,7 @@ const BlueprintsPageSidebar: React.FunctionComponent<
 > = ({ teamFilters, tableInstance }) => {
   const { permit } = useFlags();
   const { data: me, isLoading: isMeLoading } = useGetMeQuery();
+  const { hasMilestone } = useMilestones();
   const { data: starterBlueprints, isLoading: isStarterBlueprintsLoading } =
     useGetStarterBlueprintsQuery();
   const {
@@ -133,6 +135,9 @@ const BlueprintsPageSidebar: React.FunctionComponent<
     !isStarterBlueprintsLoading && !isMeLoading
       ? isFreemiumUser && !hasSomeBlueprintEngagement
       : false;
+
+  // const showBotGamesTab = hasMilestone("bot_games_2022_register");
+  const showBotGamesTab = true;
 
   useEffect(() => {
     if (isStarterBlueprintsLoading || isMeLoading) {
@@ -205,6 +210,17 @@ const BlueprintsPageSidebar: React.FunctionComponent<
             eventKey="Get Started"
             onClick={() => {
               setActiveTab(BLUEPRINTS_PAGE_TABS.getStarted);
+            }}
+          />
+        )}
+        {showBotGamesTab && (
+          <ListItem
+            className="mt-3"
+            icon={faRocket}
+            label="Bot Games"
+            eventKey="Bot Games"
+            onClick={() => {
+              setActiveTab(BLUEPRINTS_PAGE_TABS.botGames);
             }}
           />
         )}
