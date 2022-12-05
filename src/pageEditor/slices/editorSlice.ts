@@ -885,10 +885,12 @@ export const actions = {
   checkActiveElementAvailability,
 };
 
-// Shadowing this type in order to export it properly
+// Change the type of localStorage to our overridden version so that it can be exported
+// See: @/store/StorageInterface.ts
 const local: StorageInterface = localStorage;
 
 export const persistEditorConfig = {
   key: "editor",
   storage: local,
+  version: 1,
 };

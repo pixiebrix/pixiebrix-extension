@@ -16,9 +16,10 @@
  */
 
 // Exporting from redux-persist-webextension-storage to fix the
-// "exporting variable using name but cannot be named" lint errors
+// "exporting variable using name but cannot be named" lint errors.
+// This type is private in the library.
 export interface StorageInterface {
-  getItem(key: string): Promise<any>;
+  getItem(key: string): Promise<unknown>;
   removeItem(key: string): Promise<void>;
-  setItem(key: string, value: any): Promise<void>;
+  setItem(key: string, value: unknown): Promise<void>;
 }

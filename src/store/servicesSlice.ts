@@ -18,6 +18,7 @@
 import { type RawServiceConfiguration, type UUID } from "@/core";
 import { localStorage } from "redux-persist-webextension-storage";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type StorageInterface } from "@/store/StorageInterface";
 
 export interface ServicesState {
   configured: Record<string, RawServiceConfiguration>;
@@ -61,9 +62,14 @@ const servicesSlice = createSlice({
   /* eslint-enable security/detect-object-injection */
 });
 
+// Change the type of localStorage to our overridden version so that it can be exported
+// See: @/store/StorageInterface.ts
+const local: StorageInterface = localStorage;
+
 export const persistServicesConfig = {
   key: "servicesOptions",
-  storage: localStorage,
+  storage: local,
+  version: 1,
 };
 
 export default servicesSlice;

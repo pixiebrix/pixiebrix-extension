@@ -38,14 +38,20 @@ import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import analysisSlice from "@/analysis/analysisSlice";
 import pageEditorAnalysisManager from "./analysisManager";
 import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
-import { persistRecipesConfig, recipesSlice } from "@/recipes/recipesSlice";
+import { recipesSlice } from "@/recipes/recipesSlice";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import { type StorageInterface } from "@/store/StorageInterface";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
+// Change the type of localStorage to our overridden version so that it can be exported
+// See: @/store/StorageInterface.ts
+const local: StorageInterface = localStorage;
+
 const persistSettingsConfig = {
   key: "settings",
-  storage: localStorage,
+  storage: local,
+  version: 1,
 };
 
 const conditionalMiddleware: Middleware[] = [];
@@ -76,7 +82,7 @@ const store = configureStore({
     logs: logSlice.reducer,
     analysis: analysisSlice.reducer,
     tabState: tabStateSlice.reducer,
-    recipes: persistReducer(persistRecipesConfig, recipesSlice.reducer),
+    recipes: recipesSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {

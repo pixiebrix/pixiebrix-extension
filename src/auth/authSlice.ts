@@ -42,7 +42,8 @@ export const authSlice = createSlice({
   },
 });
 
-// Shadowing this type in order to export it properly
+// Change the type of localStorage to our overridden version so that it can be exported
+// See: @/store/StorageInterface.ts
 const local: StorageInterface = localStorage;
 
 // TODO refactor to use token.ts/updateUserData
@@ -50,6 +51,7 @@ const local: StorageInterface = localStorage;
 export const persistAuthConfig = {
   key: "authOptions",
   storage: local,
+  version: 1,
 };
 
 export const authActions = authSlice.actions;
