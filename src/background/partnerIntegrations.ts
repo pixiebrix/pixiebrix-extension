@@ -137,7 +137,7 @@ export async function launchAuthIntegration({
 }
 
 /**
- * Refresh an Automation Anywhere JWT. NOOP if a refresh token is not available.
+ * Refresh an Automation Anywhere JWT. NOOP if a JWT refresh token is not available.
  */
 export async function _refreshPartnerToken(): Promise<void> {
   const authData = await readPartnerAuthData();
@@ -188,8 +188,8 @@ export async function safeTokenRefresh(): Promise<void> {
 }
 
 /**
- * Refresh partner token every 10 minutes, if a refresh token is available.
+ * Refresh partner JWT every 10 minutes, if a refresh token is available.
  */
-export function initTokenRefresh(): void {
+export function initPartnerTokenRefresh(): void {
   setInterval(safeTokenRefresh, 1000 * 60 * 10);
 }
