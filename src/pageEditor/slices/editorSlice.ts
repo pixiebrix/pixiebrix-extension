@@ -85,6 +85,8 @@ import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/eleme
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { isExtension } from "@/pageEditor/sidebar/common";
+import { type StorageInterface } from "@/store/StorageInterface";
+import { localStorage } from "redux-persist-webextension-storage";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -881,4 +883,12 @@ export const actions = {
   checkAvailableInstalledExtensions,
   checkAvailableDynamicElements,
   checkActiveElementAvailability,
+};
+
+export const persistEditorConfig = {
+  key: "editor",
+  // Change the type of localStorage to our overridden version so that it can be exported
+  // See: @/store/StorageInterface.ts
+  storage: localStorage as StorageInterface,
+  version: 1,
 };

@@ -18,7 +18,10 @@
 import { configureStore, type Middleware } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import { localStorage } from "redux-persist-webextension-storage";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import {
+  editorSlice,
+  persistEditorConfig,
+} from "@/pageEditor/slices/editorSlice";
 import { createLogger } from "redux-logger";
 import { boolean } from "@/utils";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
@@ -37,12 +40,16 @@ import pageEditorAnalysisManager from "./analysisManager";
 import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import { type StorageInterface } from "@/store/StorageInterface";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
 const persistSettingsConfig = {
   key: "settings",
-  storage: localStorage,
+  // Change the type of localStorage to our overridden version so that it can be exported
+  // See: @/store/StorageInterface.ts
+  storage: localStorage as StorageInterface,
+  version: 1,
 };
 
 const conditionalMiddleware: Middleware[] = [];
@@ -66,7 +73,7 @@ const store = configureStore({
     ),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
-    editor: editorSlice.reducer,
+    editor: persistReducer(persistEditorConfig, editorSlice.reducer),
     session: sessionSlice.reducer,
     savingExtension: savingExtensionSlice.reducer,
     runtime: runtimeSlice.reducer,
