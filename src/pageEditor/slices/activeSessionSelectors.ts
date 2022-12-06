@@ -15,26 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice } from "@reduxjs/toolkit";
-import { type UUID } from "@/core";
-import { uuidv4 } from "@/types/helpers";
+import { type SessionRootState } from "@/pageEditor/slices/sessionSlice";
+import { type ActiveSessionRootState } from "@/pageEditor/slices/activeSessionSlice";
 
-export type SessionState = {
-  sessionId: UUID;
-};
-
-export type SessionRootState = {
-  session: SessionState;
-};
-
-const initialState: SessionState = {
-  sessionId: uuidv4(),
-};
-
-const runtimeSlice = createSlice({
-  name: "session",
-  initialState,
-  reducers: {},
-});
-
-export default runtimeSlice;
+export const selectIsActiveSession = ({
+  session,
+  activeSession,
+}: SessionRootState & ActiveSessionRootState) =>
+  session.sessionId === activeSession.activeSessionId;

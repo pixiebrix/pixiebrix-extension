@@ -41,6 +41,12 @@ import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 import { type StorageInterface } from "@/store/StorageInterface";
+import {
+  activeSessionSlice,
+  activeSessionStateSyncActions,
+  persistActiveSessionConfig,
+} from "@/pageEditor/slices/activeSessionSlice";
+import { createStateSyncMiddleware } from "redux-state-sync";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -81,6 +87,10 @@ const store = configureStore({
     analysis: analysisSlice.reducer,
     tabState: tabStateSlice.reducer,
     recipes: recipesSlice.reducer,
+    activeSession: persistReducer(
+      persistActiveSessionConfig,
+      activeSessionSlice.reducer
+    ),
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {
@@ -97,7 +107,13 @@ const store = configureStore({
       .concat(appApi.middleware)
       .concat(pageEditorAnalysisManager.middleware)
       .concat(recipesMiddleware)
-      .concat(conditionalMiddleware);
+      .concat(conditionalMiddleware)
+      .concat(
+        createStateSyncMiddleware({
+          // In the future: concat whitelisted sync action lists here
+          whitelist: activeSessionStateSyncActions,
+        })
+      );
     /* eslint-enable unicorn/prefer-spread */
   },
   devTools: REDUX_DEV_TOOLS,

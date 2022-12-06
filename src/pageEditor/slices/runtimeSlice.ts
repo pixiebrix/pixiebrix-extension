@@ -26,6 +26,10 @@ export type RuntimeState = {
   extensionTraces: Record<UUID, TraceRecord[]>;
 };
 
+export type RuntimeRootState = {
+  runtime: RuntimeState;
+};
+
 const initialState: RuntimeState = {
   extensionTraces: {},
 };

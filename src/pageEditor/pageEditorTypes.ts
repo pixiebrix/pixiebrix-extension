@@ -19,8 +19,8 @@ import { type AuthRootState } from "@/auth/authTypes";
 import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { type SavingExtensionState } from "@/pageEditor/panes/save/savingExtensionSlice";
-import { type SettingsState } from "@/store/settingsTypes";
-import { type RuntimeState } from "@/pageEditor/slices/runtimeSlice";
+import { type SettingsRootState } from "@/store/settingsTypes";
+import { type RuntimeRootState } from "@/pageEditor/slices/runtimeSlice";
 import { type ExtensionPointType } from "@/extensionPoints/types";
 import { type RegistryId, type UUID } from "@/core";
 import { type BlockConfig } from "@/blocks/types";
@@ -34,6 +34,8 @@ import { type FormState } from "./extensionPoints/formStateTypes";
 import { type TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
 import { type RecipesRootState } from "@/recipes/recipesTypes";
 import { type SimpleErrorObject } from "@/errors/errorHelpers";
+import { type ActiveSessionRootState } from "@/pageEditor/slices/activeSessionSlice";
+import { SessionRootState } from "@/pageEditor/slices/sessionSlice";
 
 export enum PipelineFlavor {
   AllBlocks = "allBlocks",
@@ -220,8 +222,10 @@ export type RootState = AuthRootState &
   AnalysisRootState &
   EditorRootState &
   RecipesRootState &
-  TabStateRootState & {
+  TabStateRootState &
+  RuntimeRootState &
+  SettingsRootState &
+  SessionRootState &
+  ActiveSessionRootState & {
     savingExtension: SavingExtensionState;
-    settings: SettingsState;
-    runtime: RuntimeState;
   };
