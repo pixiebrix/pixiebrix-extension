@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+@import "@/vendors/theme/assets/styles/_colors";
 
 .root {
   font-size: 0.9rem;
@@ -21,7 +22,7 @@
   h5 {
     font-weight: bold;
     font-size: 0.8rem;
-    color: #bba8bff5;
+    color: $sidebar-light-menu-icon-color;
   }
 
   :global .nav-link {
