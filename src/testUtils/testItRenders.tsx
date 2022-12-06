@@ -16,7 +16,7 @@
  */
 
 import React, { type PropsWithChildren } from "react";
-import { render, RenderResult } from "@testing-library/react";
+import { render, type RenderResult } from "@testing-library/react";
 import { waitForEffect } from "./testHelpers";
 
 type RenderFn = (ui: React.ReactElement) => RenderResult;
