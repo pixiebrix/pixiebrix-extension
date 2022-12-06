@@ -19,8 +19,8 @@ import { SerializedError, UUID } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import pDefer from "p-defer";
 import pTimeout from "p-timeout";
-import { JsonValue, Promisable, RequireExactlyOne } from "type-fest";
-import validUuidRegex from "@/vendors/validateUuid";
+import { deserializeError, serializeError } from "serialize-error";
+import { JsonValue, RequireExactlyOne } from "type-fest";
 
 const TIMEOUT_MS = 3000;
 
@@ -42,7 +42,7 @@ interface PostMessageInfo {
   channel: Window;
 }
 
-type PostMessageListener = (payload: Payload) => Promisable<Payload>;
+type PostMessageListener = (payload: Payload) => Promise<Payload>;
 
 /** Use the postMessage API but expect a response from the target */
 export default async function postMessage({
@@ -55,12 +55,16 @@ export default async function postMessage({
     payload,
     pixiebrix: uuidv4(),
   };
-  const { promise, resolve } = pDefer<Payload>();
+  const { promise, resolve, reject } = pDefer<Payload>();
   const controller = new AbortController();
 
   const listener = ({ origin, data }: MessageEvent<PixiebrixPacket>): void => {
     if (origin === "null" && data?.pixiebrix === packet.pixiebrix) {
-      resolve(data.payload);
+      if (data.error) {
+        reject(deserializeError(data.error));
+      } else {
+        resolve(data.payload);
+      }
     }
   };
 
@@ -92,19 +96,21 @@ export function addPostMessageListener(
     source,
     origin,
   }: MessageEvent<PixiebrixPacket>): Promise<void> => {
-    if (data?.id === id && validUuidRegex.test(data.pixiebrix)) {
-      const [response] = await Promise.allSettled([listener(data.payload)]);
-
-      const packet: PixiebrixPacket = {
-        id,
-        pixiebrix: data.pixiebrix,
-        ...("reason" in response
-          ? { error: response.reason }
-          : { payload: response.value }),
-      };
-
-      source.postMessage(packet, { targetOrigin: origin });
+    if (data?.id !== id) {
+      return;
     }
+
+    const [response] = await Promise.allSettled([listener(data.payload)]);
+
+    const packet: PixiebrixPacket = {
+      id,
+      pixiebrix: data.pixiebrix,
+      ...("reason" in response
+        ? { error: serializeError(response.reason) }
+        : { payload: response.value }),
+    };
+
+    source.postMessage(packet, { targetOrigin: origin });
   };
 
   window.addEventListener("message", rawListener, { signal });

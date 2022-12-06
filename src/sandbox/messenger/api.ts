@@ -38,10 +38,6 @@ const getSandbox = once(() => {
 export default function createSandbox() {
   const sandbox = getSandbox();
   document.body.append(sandbox);
-  setTimeout(async () => {
-    console.log("SANDBOX: sending PING");
-    console.log("SANDBOX: received PING response:", await ping());
-  }, 1000);
 }
 
 export async function ping() {
