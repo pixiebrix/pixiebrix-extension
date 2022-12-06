@@ -210,8 +210,8 @@ const BlueprintsPageSidebar: React.FunctionComponent<
     selectSearchQuery,
     blueprintsSlice.actions.setSearchQuery
   );
-  const [query, setQuery] = useState("");
-  const [debouncedQuery] = useDebounce(query, 300, {
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearchInput] = useDebounce(searchInput, 300, {
     trailing: true,
     leading: false,
   });
@@ -221,14 +221,14 @@ const BlueprintsPageSidebar: React.FunctionComponent<
   // By default, search everything with the option to re-select
   // filtered category
   useEffect(() => {
-    if (globalFilter !== debouncedQuery) {
-      setSearchQuery(debouncedQuery);
+    if (globalFilter !== debouncedSearchInput) {
+      setSearchQuery(debouncedSearchInput);
     }
 
-    if (debouncedQuery) {
+    if (debouncedSearchInput) {
       setActiveTab(BLUEPRINTS_PAGE_TABS.all);
     }
-  }, [globalFilter, debouncedQuery, setActiveTab, setGlobalFilter]);
+  }, [globalFilter, debouncedSearchInput, setActiveTab, setGlobalFilter]);
 
   return (
     <Col sm={12} md={3} xl={2} className={styles.root}>
@@ -237,9 +237,9 @@ const BlueprintsPageSidebar: React.FunctionComponent<
           id="query"
           placeholder="Search all blueprints"
           size="sm"
-          value={query}
+          value={searchInput}
           onChange={({ target }) => {
-            setQuery(target.value);
+            setSearchInput(target.value);
           }}
         />
       </Form>
@@ -339,4 +339,4 @@ const BlueprintsPageSidebar: React.FunctionComponent<
   );
 };
 
-export default BlueprintsPageSidebar;
+export default ListFilters;
