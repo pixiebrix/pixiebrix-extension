@@ -103,15 +103,17 @@ export function isSpecificError<
 >(error: unknown, errorType: ErrorType): error is InstanceType<ErrorType> {
   // Catch 2 common error subclass groups. Necessary until we drop support for serialized errors:
   // https://github.com/sindresorhus/serialize-error/issues/72
-  if (errorType.name === "ClientRequestError") {
+  if (isErrorTypeNameMatch(errorType.name, ["ClientRequestError"])) {
     return isClientRequestError(error);
   }
 
-  if (errorType.name === "BusinessError") {
+  if (isErrorTypeNameMatch(errorType.name, ["BusinessError"])) {
     return isBusinessError(error);
   }
 
-  return isErrorObject(error) && error.name === errorType.name;
+  return (
+    isErrorObject(error) && isErrorTypeNameMatch(error.name, [errorType.name])
+  );
 }
 
 export function selectSpecificError<
@@ -172,8 +174,32 @@ const BUSINESS_ERROR_NAMES = new Set([
   "InvalidSelectorError",
 ]);
 
+function isErrorTypeNameMatch(
+  errorName: string,
+  classNames: Iterable<string>
+): boolean {
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/4763
+
+  // In production builds, webpack tries to hoist classes to the global scope. To do so, it namespaces the class name
+  // with the module name: https://webpack.js.org/configuration/optimization/#optimizationconcatenatemodules
+
+  // Also note that keep_classnames must be set in webpack's TerserPlugin configuration to preserve the error
+  // class names for the name check to work
+
+  return (
+    errorName &&
+    [...classNames].some(
+      (className) =>
+        errorName === className || errorName.endsWith(`_${className}`)
+    )
+  );
+}
+
 export function isBusinessError(error: unknown): boolean {
-  return isErrorObject(error) && BUSINESS_ERROR_NAMES.has(error.name);
+  return (
+    isErrorObject(error) &&
+    isErrorTypeNameMatch(error.name, BUSINESS_ERROR_NAMES)
+  );
 }
 
 // List all ClientRequestError subclasses as text:
@@ -191,7 +217,10 @@ const CLIENT_REQUEST_ERROR_NAMES = new Set([
  * @see CLIENT_REQUEST_ERROR_NAMES
  */
 export function isClientRequestError(error: unknown): boolean {
-  return isErrorObject(error) && CLIENT_REQUEST_ERROR_NAMES.has(error.name);
+  return (
+    isErrorObject(error) &&
+    isErrorTypeNameMatch(error.name, CLIENT_REQUEST_ERROR_NAMES)
+  );
 }
 
 /**
