@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Button } from "react-bootstrap";
+import { Button, Card, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
 import { useRecipe } from "@/recipes/recipesHooks";
@@ -28,6 +28,7 @@ import notify from "@/utils/notify";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import botGamesIllustration from "@img/bot-games-arcade-illustration.png";
 
 const BOT_GAMES_BLUEPRINT_ID =
   "@pixies/bot-games/oldportal-enhancements" as RegistryId;
@@ -96,30 +97,62 @@ const BotGamesView: React.VoidFunctionComponent<{
     useInstallBotGamesBlueprint();
   return (
     <div style={{ height: `${height}px`, width: `${width}px` }}>
-      {isBotGamesBlueprintCurrentlyInstalled ? (
-        <>
-          <h3>You're all set!</h3>
-          <a
-            href={BOT_GAMES_CHALLENGE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FontAwesomeIcon icon={faExternalLinkAlt} />
-            Take me to the challenge page
-          </a>
-        </>
-      ) : (
-        <>
-          <h3>You're almost ready to go!</h3>
-          <Button
-            onClick={() => {
-              void installBotGamesBlueprint();
-            }}
-          >
-            Get started by downloading me!
-          </Button>
-        </>
-      )}
+      <Card>
+        <Card.Body>
+          {isBotGamesBlueprintCurrentlyInstalled ? (
+            <Row>
+              <Col className="d-flex justify-content-center flex-column">
+                <h3>Alright, let's go!</h3>
+                <p>
+                  It looks like you're all set. Start working by visiting the{" "}
+                  <strong>Bot Games challenge page</strong>.
+                </p>
+                <div>
+                  <a
+                    href={BOT_GAMES_CHALLENGE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-primary"
+                  >
+                    <FontAwesomeIcon icon={faExternalLinkAlt} /> Take me to the
+                    challenge page
+                  </a>
+                </div>
+              </Col>
+              <Col className="col-auto">
+                <img src={botGamesIllustration} alt="" width={300} />
+              </Col>
+            </Row>
+          ) : (
+            <Row className="d-flex">
+              <Col className="d-flex justify-content-center flex-column flex-grow-1">
+                <h3>Alright, let's go!</h3>
+                <p>
+                  PixieBrix will ask you for{" "}
+                  <strong>
+                    permission to access the Bot Games challenge pages
+                  </strong>{" "}
+                  and get you set up with the required Bot Games blueprints.
+                  You'll need to do this to participate in the challenge.
+                </p>
+                <span>
+                  <Button
+                    onClick={() => {
+                      void installBotGamesBlueprint();
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faExternalLinkAlt} /> Accept
+                    permissions & take me to the challenge page
+                  </Button>
+                </span>
+              </Col>
+              <Col className="col-auto">
+                <img src={botGamesIllustration} alt="" width={300} />
+              </Col>
+            </Row>
+          )}
+        </Card.Body>
+      </Card>
     </div>
   );
 };

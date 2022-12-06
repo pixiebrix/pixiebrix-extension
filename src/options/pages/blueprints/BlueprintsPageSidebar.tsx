@@ -74,7 +74,7 @@ export const BLUEPRINTS_PAGE_TABS: BlueprintTabMap = {
   },
   botGames: {
     key: "Bot Games",
-    tabTitle: "Finish your Bot Games setup",
+    tabTitle: "Virtual Bot Games 2022",
     filters: [],
   },
 };
@@ -128,9 +128,7 @@ const useOnboardingTabs = (
 
   const showBotGamesTab =
     hasMilestone("bot_games_2022_register") &&
-    flagOn("bot-games-event-in-progress");
-
-  console.warn("showBotGamesTab", showBotGamesTab);
+    !flagOn("bot-games-event-in-progress");
 
   const showGetStartedTab =
     !isStarterBlueprintsLoading && !isMeLoading
