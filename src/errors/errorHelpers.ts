@@ -174,7 +174,15 @@ const BUSINESS_ERROR_NAMES = new Set([
   "InvalidSelectorError",
 ]);
 
-function isErrorTypeNameMatch(
+/**
+ * Returns true if errorName matches at least one of classNames.
+ *
+ * Accounts for name-mangling by webpack in optimized code for the class names in classNames.
+ *
+ * @param errorName the query error name
+ * @param classNames the class names to match against
+ */
+export function isErrorTypeNameMatch(
   errorName: string,
   classNames: Iterable<string>
 ): boolean {
@@ -185,6 +193,11 @@ function isErrorTypeNameMatch(
 
   // Also note that keep_classnames must be set in webpack's TerserPlugin configuration to preserve the error
   // class names for the name check to work
+
+  // Defensive check because some call sites cast from unknown
+  if (typeof errorName !== "string") {
+    return false;
+  }
 
   return (
     errorName &&
