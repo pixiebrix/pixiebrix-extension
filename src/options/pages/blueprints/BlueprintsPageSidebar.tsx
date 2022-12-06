@@ -128,7 +128,7 @@ const useOnboardingTabs = (
 
   const showBotGamesTab =
     hasMilestone("bot_games_2022_register") &&
-    !flagOn("bot-games-event-in-progress");
+    flagOn("bot-games-event-in-progress");
 
   const showGetStartedTab =
     !isStarterBlueprintsLoading && !isMeLoading
