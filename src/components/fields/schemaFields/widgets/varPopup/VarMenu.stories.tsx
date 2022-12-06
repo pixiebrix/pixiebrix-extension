@@ -70,8 +70,9 @@ const knownVars: any = {
 };
 
 const Template: Story<typeof VariablesTree> = () => {
-  const vars = knownVars["root:Array Composite Reader"];
-  return <VariablesTree vars={vars} />;
+  const source = "root:Array Composite Reader";
+  const vars = knownVars[source];
+  return <VariablesTree source={source} vars={vars} />;
 };
 
 export const Default = Template.bind({});

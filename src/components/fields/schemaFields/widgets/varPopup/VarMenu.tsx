@@ -122,7 +122,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
             blocksInfo={Object.values(pipelineMap)}
             allBlocks={allBlocks}
           />
-          <VariablesTree vars={vars} />
+          <VariablesTree source={source} vars={vars} />
         </div>
       ))}
     </div>
