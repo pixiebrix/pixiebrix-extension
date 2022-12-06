@@ -66,7 +66,7 @@ export type ApplyJqPayload = {
   filter: any;
 };
 
-export async function executeJq(payload: ApplyJqPayload) {
+export async function applyJq(payload: ApplyJqPayload) {
   return postMessage({
     channel: getSandbox().contentWindow,
     payload,

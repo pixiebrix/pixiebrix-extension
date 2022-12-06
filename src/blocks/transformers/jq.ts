@@ -22,6 +22,7 @@ import { isNullOrBlank } from "@/utils";
 import { InputValidationError } from "@/blocks/errors";
 import { isErrorObject } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
+import { applyJq } from "@/sandbox/messenger/api";
 
 const jqStacktraceRegexp = /jq: error \(at <stdin>:0\): (?<message>.*)/;
 
@@ -59,15 +60,10 @@ export class JQTransformer extends Transformer {
   ): Promise<unknown> {
     const input = isNullOrBlank(data) ? ctxt : data;
 
-    const { default: jq } = await import(
-      /* webpackChunkName: "jq-web" */ "jq-web"
-    );
-
     logger.debug("Running jq transform", { filter, data, ctxt, input });
 
     try {
-      // eslint-disable-next-line @typescript-eslint/return-await -- Type is `any`, it throws the rule off
-      return await jq.promised.json(input, filter);
+      return await applyJq({ input, filter });
     } catch (error) {
       // The message length check is there because the JQ error message sometimes is cut and if it is we try to parse the stacktrace
       // See https://github.com/pixiebrix/pixiebrix-extension/issues/3216

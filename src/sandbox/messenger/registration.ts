@@ -46,7 +46,6 @@ export default function registerMessenger(): void {
       /* webpackChunkName: "jq-web" */ "jq-web"
     );
 
-    // TODO: Handle errors?
     return jq.promised.json(input, filter);
   });
 }
