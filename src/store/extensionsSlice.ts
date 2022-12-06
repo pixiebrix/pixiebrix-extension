@@ -288,7 +288,9 @@ const extensionsSlice = createSlice({
 
       if (index === -1) {
         reportError(
-          `Can't find extension in optionsSlice to update. Target extension id: ${id}.`
+          new Error(
+            `Can't find extension in optionsSlice to update. Target extension id: ${id}.`
+          )
         );
         return;
       }

@@ -18,7 +18,7 @@
 import { type MessageContext } from "@/core";
 import { backgroundTarget as bg, messenger } from "webext-messenger";
 import { serializeError } from "serialize-error";
-import { selectError } from "@/errors/errorHelpers";
+import { selectError, shouldErrorBeIgnored } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
 import { getContextName } from "webext-detect-page";
 
@@ -27,19 +27,34 @@ expectContext(
   "reportError requires access background messenger API"
 );
 
+interface ErrorReportOptions {
+  /** Optional context for error telemetry */
+  context?: MessageContext;
+
+  /** Additionally log error to the browser console (default=true) */
+  logToConsole?: boolean;
+}
+
 /**
  * Report an error for local logs, remote telemetry, etc.
- * @param errorLike the error object
- * @param context optional context for error telemetry
- * @param logToConsole additionally log error to the browser console (default=true)
+ * @param errorLike the error object, error event, or string to report. Callers should provide Error objects when
+ *  possible for accurate stack traces.
+ * @param context Optional context for error telemetry
+ * @param logToConsole Additionally log error to the browser console (default=true)
  */
 export default function reportError(
-  errorLike: unknown, // It might also be an ErrorEvent
-  context?: MessageContext,
-  { logToConsole = true } = {}
+  errorLike: unknown, // It might also be an ErrorEvent or string
+  { context = {}, logToConsole = true }: ErrorReportOptions = {}
 ): void {
   if (logToConsole) {
     console.error(errorLike, { context });
+  }
+
+  if (shouldErrorBeIgnored(errorLike, context)) {
+    console.debug("Ignoring error matching IGNORED_ERROR_PATTERNS", {
+      error: errorLike,
+    });
+    return;
   }
 
   try {

@@ -102,7 +102,7 @@ export const proxyService = getMethod("PROXY", bg) as <TData>(
   requestConfig: AxiosRequestConfig
 ) => Promise<RemoteResponse<TData>>;
 
-// Use `reportError` instead */
+// Use this instead: `import reportError from "@/telemetry/reportError"`
 // export const recordError = getNotifier("RECORD_ERROR", bg);
 
 export const recordLog = getNotifier("RECORD_LOG", bg);
