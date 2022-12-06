@@ -29,10 +29,9 @@ export class ConfettiEffect extends Effect {
   };
 
   async effect(): Promise<void> {
-    const {
-      default: confetti,
-      // @ts-expect-error no existing definitions exist
-    } = await import(/* webpackChunkName: "confetti" */ "canvas-confetti");
+    const { default: confetti } = await import(
+      /* webpackChunkName: "confetti" */ "canvas-confetti"
+    );
 
     // https://www.kirilv.com/canvas-confetti/
     confetti({

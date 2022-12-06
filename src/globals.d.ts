@@ -84,8 +84,9 @@ declare module "generate-schema" {
 // In the end, the types aren't even used.
 declare module "marked";
 
-// No types exist
+// No types available
 declare module "jq-web";
+declare module "canvas-confetti";
 
 // From https://github.com/mozilla/page-metadata-parser/issues/116#issuecomment-614882830
 declare module "page-metadata-parser" {

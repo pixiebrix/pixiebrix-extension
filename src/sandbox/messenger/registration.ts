@@ -21,7 +21,7 @@ import { type ApplyJqPayload, type NunjucksRenderPayload } from "./api";
 /** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
 
 export default function registerMessenger(): void {
-  addPostMessageListener("SANDBOX_PING", (payload) => {
+  addPostMessageListener("SANDBOX_PING", async (payload) => {
     console.log("SANDBOX: Received PING payload:", payload);
     return "pong";
   });
