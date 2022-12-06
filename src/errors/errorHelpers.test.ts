@@ -516,7 +516,7 @@ describe("robust to name mangling", () => {
     ).toBeTrue();
   });
 
-  it("handles namespaced business errors", () => {
+  it("handles namespaced business errors in a context error", () => {
     class businessErrors_BusinessError extends Error {
       // The name that webpack will produce during optimize.concatenateModules
       override name = "businessErrors_BusinessError";
