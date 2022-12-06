@@ -110,7 +110,7 @@ const settingsSlice = createSlice({
       state.theme = DEFAULT_THEME;
 
       once(() => {
-        reportError(`Selected theme "${theme}" doesn't exist.`);
+        reportError(new Error(`Selected theme "${theme}" doesn't exist.`));
       });
     },
   },
