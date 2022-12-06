@@ -284,6 +284,9 @@ module.exports = (env, options) =>
     },
 
     optimization: {
+      // Module concatenation mangles class names https://github.com/pixiebrix/pixiebrix-extension/issues/4763
+      concatenateModules: false,
+
       // Chrome bug https://bugs.chromium.org/p/chromium/issues/detail?id=1108199
       splitChunks: {
         automaticNameDelimiter: "-",
