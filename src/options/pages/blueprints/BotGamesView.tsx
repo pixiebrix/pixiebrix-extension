@@ -81,6 +81,7 @@ export const useInstallBotGamesBlueprint = () => {
       })
     );
 
+    // Open in a new tab
     window.open(BOT_GAMES_CHALLENGE_URL);
   };
 

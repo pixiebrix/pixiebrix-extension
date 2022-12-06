@@ -17,26 +17,30 @@
 
 import { useSelector } from "react-redux";
 import { selectMilestones } from "@/auth/authSelectors";
-import { type Milestone } from "@/types/contract";
-import { useCallback } from "react";
+import { useMemo } from "react";
 
-const useMilestones = (): {
+export type MilestoneHelpers = {
   hasMilestone: (milestoneKey: string) => boolean;
   hasEveryMilestone: (milestoneKeys: string[]) => boolean;
-} => {
+};
+
+function useMilestones(): MilestoneHelpers {
   const milestones = useSelector(selectMilestones);
 
-  const hasMilestone = (milestoneKey: string) =>
-    milestones.some((milestone: Milestone) => milestone.key === milestoneKey);
-  const hasEveryMilestone = useCallback(
-    (milestoneKeys: string[]) =>
-      milestoneKeys.every((milestoneKey) => hasMilestone(milestoneKey)),
-    [milestones]
-  );
-  return {
-    hasMilestone,
-    hasEveryMilestone,
-  };
-};
+  return useMemo(() => {
+    const userMilestoneKeys = new Set((milestones ?? []).map((x) => x.key));
+
+    const hasMilestone = (milestoneKey: string) =>
+      userMilestoneKeys.has(milestoneKey);
+
+    const hasEveryMilestone = (milestoneKeys: string[]) =>
+      milestoneKeys.every((milestoneKey) => hasMilestone(milestoneKey));
+
+    return {
+      hasMilestone,
+      hasEveryMilestone,
+    };
+  }, [milestones]);
+}
 
 export default useMilestones;
