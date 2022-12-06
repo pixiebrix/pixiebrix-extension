@@ -20,7 +20,7 @@ import { Card, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
 import { useRecipe } from "@/recipes/recipesHooks";
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 import { containsPermissions } from "@/background/messenger/api";
 import { collectPermissions, ensureAllPermissions } from "@/permissions";
 import { resolveRecipe } from "@/registry/internal";
@@ -103,10 +103,10 @@ const BotGamesView: React.VoidFunctionComponent<{
           {isBotGamesBlueprintInstalled ? (
             <Row>
               <Col className="d-flex justify-content-center flex-column">
-                <h3>Alright, let's go!</h3>
+                <h3>Alright, let&apos;s go!</h3>
                 <p>
-                  It looks like you're all set. Start working by visiting the{" "}
-                  <strong>Bot Games challenge page</strong>.
+                  It looks like you&apos;re all set. Start working by visiting
+                  the <strong>Bot Games challenge page</strong>.
                 </p>
                 <div>
                   <a
@@ -127,7 +127,7 @@ const BotGamesView: React.VoidFunctionComponent<{
           ) : (
             <Row className="d-flex">
               <Col className="d-flex justify-content-center flex-column flex-grow-1">
-                <h3>Alright, let's go!</h3>
+                <h3>Alright, let&apos;s go!</h3>
                 <p>
                   Click to open the Bot Games challenge page. Chrome will prompt
                   you to allow PixieBrix to enhance the challenge page.

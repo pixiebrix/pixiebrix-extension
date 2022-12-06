@@ -18,7 +18,7 @@
 import React from "react";
 import { render } from "@/options/testHelpers";
 import BlueprintsPageLayout from "@/options/pages/blueprints/BlueprintsPageLayout";
-import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
+import { type Installable } from "@/options/pages/blueprints/blueprintsTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { useGetMeQuery, useGetStarterBlueprintsQuery } from "@/services/api";
 import { screen } from "@testing-library/react";
@@ -77,7 +77,7 @@ function optionsStore(initialState?: any) {
 const installables: Installable[] = [];
 
 describe("BlueprintsPageLayout", () => {
-  const env = process.env;
+  const { env } = process;
 
   beforeEach(() => {
     jest.resetModules();

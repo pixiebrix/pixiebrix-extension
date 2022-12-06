@@ -138,7 +138,6 @@ const useOnboardingTabs = (
     // We want to nudge Bot Games users who may gotten lost back to the challenge page
     if (showBotGamesTab && !isBotGamesBlueprintInstalled) {
       setActiveTab(BLUEPRINTS_PAGE_TABS.botGames);
-      return;
     }
   }, []);
 
