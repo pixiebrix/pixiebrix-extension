@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render } from "@testing-library/react";
+import { render } from "@/options/testHelpers";
 import { Formik } from "formik";
 import { menuItemFormStateFactory } from "@/testUtils/factories";
 import { UIPATH_ID } from "@/contrib/uipath/localProcess";

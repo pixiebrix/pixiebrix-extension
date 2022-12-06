@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@/pageEditor/testHelpers";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { Formik } from "formik";
 import {

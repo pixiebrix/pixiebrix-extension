@@ -20,7 +20,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import testItRenders, {
   type ItRendersOptions,
 } from "@/testUtils/testItRenders";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@/pageEditor/testHelpers";
 import React from "react";
 import { type Except } from "type-fest";
 import {
@@ -64,6 +64,7 @@ describe("FormEditor", () => {
         [RJSF_SCHEMA_PROPERTY_NAME]: {} as RJSFSchema,
       }),
       isAsync: true,
+      renderFn: render,
     });
 
     testItRenders(() => {
@@ -105,6 +106,7 @@ describe("FormEditor", () => {
           } as RJSFSchema,
         }),
         isAsync: true,
+        renderFn: render,
       };
 
       return options;
@@ -141,6 +143,7 @@ describe("FormEditor", () => {
           } as RJSFSchema,
         }),
         isAsync: true,
+        renderFn: render,
       };
 
       return options;

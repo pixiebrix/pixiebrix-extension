@@ -16,8 +16,10 @@
  */
 
 import React, { type PropsWithChildren } from "react";
-import { render } from "@testing-library/react";
+import { render, RenderResult } from "@testing-library/react";
 import { waitForEffect } from "./testHelpers";
+
+type RenderFn = (ui: React.ReactElement) => RenderResult;
 
 export type ItRendersOptions<TProps> = {
   Component: React.ComponentType<TProps>;
@@ -25,6 +27,7 @@ export type ItRendersOptions<TProps> = {
   testName?: string;
   TemplateComponent?: React.ComponentType<PropsWithChildren<unknown>>;
   isAsync?: boolean;
+  renderFn?: RenderFn;
 };
 
 function testItRenders<TProps = unknown>(
@@ -36,6 +39,7 @@ function testItRenders<TProps = unknown>(
     testName = "It renders",
     TemplateComponent,
     isAsync = false,
+    renderFn = render,
   } = typeof options === "function" ? options() : options;
 
   test(testName, async () => {
@@ -46,7 +50,7 @@ function testItRenders<TProps = unknown>(
     ) : (
       <Component {...props} />
     );
-    const rendered = render(ui);
+    const rendered = renderFn(ui);
     if (isAsync) {
       await waitForEffect();
     }
