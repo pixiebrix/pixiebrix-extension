@@ -16,7 +16,7 @@
  */
 
 import { addPostMessageListener } from "@/utils/postMessage";
-import { ApplyJqPayload, type NunjucksRenderPayload } from "./api";
+import { type ApplyJqPayload, type NunjucksRenderPayload } from "./api";
 
 /** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
 

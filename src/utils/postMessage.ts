@@ -15,22 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UUID } from "@/core";
+import { SerializedError, UUID } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import pDefer from "p-defer";
 import pTimeout from "p-timeout";
-import { JsonValue, Promisable } from "type-fest";
+import { JsonValue, Promisable, RequireExactlyOne } from "type-fest";
 import validUuidRegex from "@/vendors/validateUuid";
 
 const TIMEOUT_MS = 3000;
 
 type Payload = JsonValue;
 
-interface PixiebrixPacket {
-  id: string;
-  payload?: Payload;
-  pixiebrix: UUID;
-}
+type PixiebrixPacket = RequireExactlyOne<
+  {
+    id: string;
+    payload: Payload;
+    error: SerializedError;
+    pixiebrix: UUID;
+  },
+  "payload" | "error"
+>;
 
 interface PostMessageInfo {
   id: string;
@@ -89,13 +93,16 @@ export function addPostMessageListener(
     origin,
   }: MessageEvent<PixiebrixPacket>): Promise<void> => {
     if (data?.id === id && validUuidRegex.test(data.pixiebrix)) {
-      const responsePayload = await listener(data.payload);
+      const [response] = await Promise.allSettled([listener(data.payload)]);
 
       const packet: PixiebrixPacket = {
         id,
-        payload: responsePayload,
         pixiebrix: data.pixiebrix,
+        ...("reason" in response
+          ? { error: response.reason }
+          : { payload: response.value }),
       };
+
       source.postMessage(packet, { targetOrigin: origin });
     }
   };
