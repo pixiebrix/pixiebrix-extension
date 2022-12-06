@@ -39,7 +39,6 @@ import {
 } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import {
-  ClientNetworkPermissionError,
   ClientRequestError,
   RemoteServiceError,
 } from "@/errors/clientRequestErrors";
@@ -498,51 +497,5 @@ describe("serialization", () => {
     };
 
     expect(hasSpecificErrorCause(error, CancelError)).toBeTrue();
-  });
-});
-
-describe("robust to name mangling", () => {
-  it("handles namespaced business errors", () => {
-    class businessErrors_BusinessError extends Error {
-      // The name that webpack will produce during optimize.concatenateModules
-      override name = "businessErrors_BusinessError";
-    }
-
-    expect(
-      hasSpecificErrorCause(
-        new CancelError("test"),
-        businessErrors_BusinessError
-      )
-    ).toBeTrue();
-  });
-
-  it("handles namespaced business errors in a context error", () => {
-    class businessErrors_BusinessError extends Error {
-      // The name that webpack will produce during optimize.concatenateModules
-      override name = "businessErrors_BusinessError";
-    }
-
-    const error = new ContextError("foo", {
-      cause: new CancelError("test"),
-      context: {},
-    });
-
-    expect(
-      hasSpecificErrorCause(error, businessErrors_BusinessError)
-    ).toBeTrue();
-  });
-
-  it("handles namespaced client request errors", () => {
-    class clientRequestErrors_ClientRequestError extends Error {
-      // The name that webpack will produce during optimize.concatenateModules
-      override name = "clientRequestErrors_ClientRequestError";
-    }
-
-    expect(
-      hasSpecificErrorCause(
-        new ClientNetworkPermissionError("test", { cause: null }),
-        clientRequestErrors_ClientRequestError
-      )
-    ).toBeTrue();
   });
 });
