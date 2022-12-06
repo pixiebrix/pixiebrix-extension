@@ -68,7 +68,7 @@ export const useInstallBotGamesBlueprint = () => {
 
     if (!accepted) {
       notify.warning(
-        "You must accept permissions to install the Bot Games blueprint"
+        "You must accept permissions to participate in the the Bot Games challenge"
       );
       return;
     }
