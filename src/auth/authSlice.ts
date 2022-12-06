@@ -42,15 +42,13 @@ export const authSlice = createSlice({
   },
 });
 
-// Change the type of localStorage to our overridden version so that it can be exported
-// See: @/store/StorageInterface.ts
-const local: StorageInterface = localStorage;
-
 // TODO refactor to use token.ts/updateUserData
 // Current approach is not ideal, AuthState is cached along with UserData (which is used by background script).
 export const persistAuthConfig = {
   key: "authOptions",
-  storage: local,
+  // Change the type of localStorage to our overridden version so that it can be exported
+  // See: @/store/StorageInterface.ts
+  storage: localStorage as StorageInterface,
   version: 1,
 };
 
