@@ -270,7 +270,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         }
       } catch (error) {
         // Try to proceed as normal
-        reportError(error, this.logger.context);
+        reportError(error, { context: this.logger.context });
       }
     }
 
@@ -775,9 +775,11 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           } else {
             errors.push(error);
             reportError(error, {
-              deploymentId: extension._deployment?.id,
-              extensionPointId: extension.extensionPointId,
-              extensionId: extension.id,
+              context: {
+                deploymentId: extension._deployment?.id,
+                extensionPointId: extension.extensionPointId,
+                extensionId: extension.id,
+              },
             });
           }
         }

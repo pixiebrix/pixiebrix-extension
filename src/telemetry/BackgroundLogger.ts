@@ -82,7 +82,7 @@ class BackgroundLogger implements Logger {
       context: this.context,
       data,
     });
-    reportError(error, this.context, { logToConsole: false });
+    reportError(error, { context: this.context, logToConsole: false });
   }
 }
 

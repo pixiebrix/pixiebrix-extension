@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getErrorMessage } from "@/errors/errorHelpers";
+import { getErrorMessage, onUncaughtError } from "@/errors/errorHelpers";
 import { browserAction } from "@/mv3/api";
-import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
 
 let counter = 0;
 let timer: NodeJS.Timeout;
@@ -32,7 +31,7 @@ function updateBadge(errorMessage: string | null): void {
   void browserAction.setBadgeBackgroundColor({ color: "#F00" });
 }
 
-function backgroundErrorsBadge(_: unknown, error: unknown) {
+function showBadgeOnBackgroundErrors(error: Error): void {
   counter++;
   // Show the last error as tooltip
   updateBadge(getErrorMessage(error));
@@ -46,5 +45,5 @@ function backgroundErrorsBadge(_: unknown, error: unknown) {
 }
 
 if (process.env.ENVIRONMENT === "development") {
-  uncaughtErrorHandlers.push(backgroundErrorsBadge);
+  onUncaughtError(showBadgeOnBackgroundErrors);
 }
