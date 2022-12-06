@@ -17,7 +17,7 @@
 
 import { useSelector } from "react-redux";
 import { selectMilestones } from "@/auth/authSelectors";
-import { Milestone } from "@/types/contract";
+import { type Milestone } from "@/types/contract";
 
 const useMilestones = (): {
   hasMilestone: (milestoneKey: string) => boolean;

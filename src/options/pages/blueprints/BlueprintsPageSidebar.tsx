@@ -339,4 +339,4 @@ const BlueprintsPageSidebar: React.FunctionComponent<
   );
 };
 
-export default ListFilters;
+export default BlueprintsPageSidebar;
