@@ -74,7 +74,7 @@ export const BLUEPRINTS_PAGE_TABS: BlueprintTabMap = {
   },
   botGames: {
     key: "Bot Games",
-    tabTitle: "Virtual Bot Games 2022",
+    tabTitle: "Bot Games 2022",
     filters: [],
   },
 };
@@ -106,8 +106,7 @@ const useOnboardingTabs = (
   const { data: me, isLoading: isMeLoading } = useGetMeQuery();
   const { hasMilestone } = useMilestones();
   const { flagOn } = useFlags();
-  const { isBotGamesBlueprintCurrentlyInstalled } =
-    useInstallBotGamesBlueprint();
+  const { isBotGamesBlueprintInstalled } = useInstallBotGamesBlueprint();
 
   const isFreemiumUser = !me?.organization;
 
@@ -137,7 +136,7 @@ const useOnboardingTabs = (
 
   useEffect(() => {
     // We want to nudge Bot Games users who may gotten lost back to the challenge page
-    if (showBotGamesTab && !isBotGamesBlueprintCurrentlyInstalled) {
+    if (showBotGamesTab && !isBotGamesBlueprintInstalled) {
       setActiveTab(BLUEPRINTS_PAGE_TABS.botGames);
       return;
     }

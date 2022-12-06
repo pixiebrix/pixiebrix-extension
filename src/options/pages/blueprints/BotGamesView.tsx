@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Button, Card, Col, Row } from "react-bootstrap";
+import { Card, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
 import { useRecipe } from "@/recipes/recipesHooks";
@@ -29,6 +29,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import botGamesIllustration from "@img/bot-games-arcade-illustration.png";
+import AsyncButton from "@/components/AsyncButton";
 
 const BOT_GAMES_BLUEPRINT_ID =
   "@pixies/bot-games/oldportal-enhancements" as RegistryId;
@@ -41,7 +42,7 @@ export const useInstallBotGamesBlueprint = () => {
   const { data: botGamesRecipe } = useRecipe(BOT_GAMES_BLUEPRINT_ID);
   const installedExtensions = useSelector(selectExtensions);
 
-  const isBotGamesBlueprintCurrentlyInstalled = installedExtensions.some(
+  const isBotGamesBlueprintInstalled = installedExtensions.some(
     (extension) => extension._recipe?.id === BOT_GAMES_BLUEPRINT_ID
   );
 
@@ -68,7 +69,7 @@ export const useInstallBotGamesBlueprint = () => {
 
     if (!accepted) {
       notify.warning(
-        "You must accept permissions to participate in the the Bot Games challenge"
+        "You must accept permissions to participate in the Bot Games challenge"
       );
       return;
     }
@@ -84,7 +85,7 @@ export const useInstallBotGamesBlueprint = () => {
   };
 
   return {
-    isBotGamesBlueprintCurrentlyInstalled,
+    isBotGamesBlueprintInstalled,
     installBotGamesBlueprint,
   };
 };
@@ -93,13 +94,13 @@ const BotGamesView: React.VoidFunctionComponent<{
   width: number;
   height: number;
 }> = ({ width, height }) => {
-  const { isBotGamesBlueprintCurrentlyInstalled, installBotGamesBlueprint } =
+  const { isBotGamesBlueprintInstalled, installBotGamesBlueprint } =
     useInstallBotGamesBlueprint();
   return (
     <div style={{ height: `${height}px`, width: `${width}px` }}>
       <Card>
         <Card.Body>
-          {isBotGamesBlueprintCurrentlyInstalled ? (
+          {isBotGamesBlueprintInstalled ? (
             <Row>
               <Col className="d-flex justify-content-center flex-column">
                 <h3>Alright, let's go!</h3>
@@ -115,7 +116,7 @@ const BotGamesView: React.VoidFunctionComponent<{
                     className="btn btn-primary"
                   >
                     <FontAwesomeIcon icon={faExternalLinkAlt} /> Take me to the
-                    challenge page
+                    challenge
                   </a>
                 </div>
               </Col>
@@ -128,22 +129,16 @@ const BotGamesView: React.VoidFunctionComponent<{
               <Col className="d-flex justify-content-center flex-column flex-grow-1">
                 <h3>Alright, let's go!</h3>
                 <p>
-                  PixieBrix will ask you for{" "}
-                  <strong>
-                    permission to access the Bot Games challenge pages
-                  </strong>{" "}
-                  and get you set up with the required Bot Games blueprints.
-                  You'll need to do this to participate in the challenge.
+                  Click to open the Bot Games challenge page. Chrome will prompt
+                  you to allow PixieBrix to enhance the challenge page.
+                  Additionally, PixieBrix will activate the challenge hints
+                  blueprint.
                 </p>
                 <span>
-                  <Button
-                    onClick={() => {
-                      void installBotGamesBlueprint();
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faExternalLinkAlt} /> Accept
-                    permissions & take me to the challenge page
-                  </Button>
+                  <AsyncButton onClick={installBotGamesBlueprint}>
+                    <FontAwesomeIcon icon={faExternalLinkAlt} /> Take me to the
+                    challenge
+                  </AsyncButton>
                 </span>
               </Col>
               <Col className="col-auto">

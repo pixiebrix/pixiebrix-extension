@@ -18,20 +18,24 @@
 import { useSelector } from "react-redux";
 import { selectMilestones } from "@/auth/authSelectors";
 import { type Milestone } from "@/types/contract";
+import { useCallback } from "react";
 
 const useMilestones = (): {
   hasMilestone: (milestoneKey: string) => boolean;
-  hasMilestones: (milestoneKeys: string[]) => boolean;
+  hasEveryMilestone: (milestoneKeys: string[]) => boolean;
 } => {
   const milestones = useSelector(selectMilestones);
 
   const hasMilestone = (milestoneKey: string) =>
     milestones.some((milestone: Milestone) => milestone.key === milestoneKey);
-  const hasMilestones = (milestoneKeys: string[]) =>
-    milestoneKeys.every((milestoneKey) => hasMilestone(milestoneKey));
+  const hasEveryMilestone = useCallback(
+    (milestoneKeys: string[]) =>
+      milestoneKeys.every((milestoneKey) => hasMilestone(milestoneKey)),
+    [milestones]
+  );
   return {
     hasMilestone,
-    hasMilestones,
+    hasEveryMilestone,
   };
 };
 
