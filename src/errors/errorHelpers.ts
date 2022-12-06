@@ -194,13 +194,10 @@ export function isErrorTypeNameMatch(
   // Also note that keep_classnames must be set in webpack's TerserPlugin configuration to preserve the error
   // class names for the name check to work
 
-  // Defensive check because some call sites cast from unknown
-  if (typeof errorName !== "string") {
-    return false;
-  }
-
   return (
     errorName &&
+    // Defensive check because some call sites cast from unknown
+    typeof errorName === "string" &&
     [...classNames].some(
       (className) =>
         errorName === className || errorName.endsWith(`_${className}`)
