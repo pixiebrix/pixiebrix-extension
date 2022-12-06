@@ -17,9 +17,9 @@
 
 import styles from "./FormPreviewFieldTemplate.module.scss";
 
-import { Field, FieldProps } from "@rjsf/core";
+import { type Field, type FieldProps } from "@rjsf/core";
 import React from "react";
-import { SetActiveField } from "@/components/formBuilder/formBuilderTypes";
+import { type SetActiveField } from "@/components/formBuilder/formBuilderTypes";
 import { UI_SCHEMA_ACTIVE } from "@/components/formBuilder/schemaFieldNames";
 import cx from "classnames";
 

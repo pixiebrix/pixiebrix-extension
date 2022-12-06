@@ -16,9 +16,9 @@
  */
 
 import {
-  ApiVersion,
-  SanitizedServiceConfiguration,
-  ServiceDependency,
+  type ApiVersion,
+  type SanitizedServiceConfiguration,
+  type ServiceDependency,
 } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
@@ -36,8 +36,8 @@ import { pixieServiceFactory } from "@/services/locator";
 import { services } from "@/background/messenger/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 
-jest.mock("@/background/messenger/api", () => {
-  const actual = jest.requireActual("@/background/messenger/api");
+jest.mock("@/telemetry/logging", () => {
+  const actual = jest.requireActual("@/telemetry/logging");
   return {
     ...actual,
     getLoggingConfig: jest.fn().mockResolvedValue({

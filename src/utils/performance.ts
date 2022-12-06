@@ -14,7 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { recordWarning } from "@/background/logging";
+
+import { recordWarning } from "@/background/messenger/api";
 
 const APP_START_ACTION = "app:start";
 
@@ -44,6 +45,6 @@ export function measureDurationFromAppStart(
   console.debug(message, data);
 
   if (reportThreshold != null && duration > reportThreshold) {
-    void recordWarning(null, message, data);
+    recordWarning(null, message, data);
   }
 }

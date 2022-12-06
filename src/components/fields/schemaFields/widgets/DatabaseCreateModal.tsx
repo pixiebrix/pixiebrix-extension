@@ -27,10 +27,10 @@ import {
   useGetOrganizationsQuery,
 } from "@/services/api";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
-import DatabaseGroupSelect from "./DatabaseGroupSelect";
+import DatabaseGroupSelect from "@/components/fields/schemaFields/DatabaseGroupSelect";
 import notify from "@/utils/notify";
-import { Organization, UserRole } from "@/types/contract";
-import { UUID } from "@/core";
+import { type Organization, UserRole } from "@/types/contract";
+import { type UUID } from "@/core";
 import { validateUUID } from "@/types/helpers";
 
 type DatabaseCreateModalProps = {

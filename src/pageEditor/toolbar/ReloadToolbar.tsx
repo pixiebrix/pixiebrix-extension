@@ -23,7 +23,7 @@ import ToggleField from "@/pageEditor/components/ToggleField";
 import { Button } from "react-bootstrap";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { reportEvent } from "@/telemetry/events";
 import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
@@ -36,7 +36,6 @@ function isPanelElement(element: FormState | null): boolean {
 
 /**
  * Return true if the trigger runs automatically (not in response to a user action).
- * @param element
  */
 function isAutomaticTrigger(element: FormState): boolean {
   const automatic = ["load", "appear", "initialize", "interval"];

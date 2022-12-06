@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import type React from "react";
+import { useEffect } from "react";
 import { useField, useFormikContext } from "formik";
-import { Expression, OutputKey, ServiceKeyVar } from "@/core";
+import { type Expression, type OutputKey, type ServiceKeyVar } from "@/core";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { produce } from "immer";
 import { isEqual, set } from "lodash";
-import { keyToFieldValue, ServiceSlice } from "./serviceFieldUtils";
+import { keyToFieldValue, type ServiceSlice } from "./serviceFieldUtils";
 
 const PIXIEBRIX_OUTPUT_KEY = "pixiebrix" as OutputKey;
 

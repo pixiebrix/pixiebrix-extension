@@ -15,204 +15,160 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import VarMap, { mergeExistenceMaps, VarExistence } from "./varMap";
+import VarMap, { VarExistence } from "./varMap";
 
-describe("VarMap", () => {
-  let varMap: VarMap;
-  beforeEach(() => {
-    varMap = new VarMap();
+describe("setting output key", () => {
+  // Use case: setting the existence for a block's output
+  test("sets the existence", () => {
+    const varMap = new VarMap();
+
+    varMap.setOutputKeyExistence(
+      "brick1",
+      "@foo",
+      VarExistence.DEFINITELY,
+      false
+    );
+    varMap.setOutputKeyExistence(
+      "brick2",
+      "@bar",
+      VarExistence.DEFINITELY,
+      false
+    );
+    expect(varMap.isVariableDefined("@foo")).toBeTrue();
+    expect(varMap.isVariableDefined("@bar")).toBeTrue();
   });
 
-  test.each(["foo.bar", "foo", 'foo["bar baz"].qux[0]'])(
-    "get the exact know var (%s)",
-    (varName) => {
-      varMap.setExistence(varName, VarExistence.DEFINITELY);
-      const actual = varMap.getExistence(varName);
+  // No real use case, just a functionality expectations
+  test("overwrites any previous for the same source", () => {
+    const varMap = new VarMap();
+    varMap.setOutputKeyExistence(
+      "brick1",
+      "@foo",
+      VarExistence.DEFINITELY,
+      false
+    );
 
-      expect(actual).toBe(VarExistence.DEFINITELY);
-    }
-  );
+    varMap.setOutputKeyExistence(
+      "brick1",
+      "@bar",
+      VarExistence.DEFINITELY,
+      false
+    );
 
-  test("gets nested existence", () => {
-    varMap.setExistence("foo.bar", VarExistence.DEFINITELY);
-    expect(varMap.getExistence("foo.bar")).toBe(VarExistence.DEFINITELY);
-    expect(varMap.getExistence("foo.baz")).toBeUndefined();
+    expect(varMap.isVariableDefined("@foo")).toBeFalse();
+    expect(varMap.isVariableDefined("@bar")).toBeTrue();
   });
 
-  test("gets nested existence 2", () => {
-    varMap.setExistence('foo["bar baz"].qux', VarExistence.DEFINITELY);
-    expect(varMap.getExistence('foo["bar baz"]')).toBe(VarExistence.DEFINITELY);
-    expect(varMap.getExistence("foo")).toBe(VarExistence.DEFINITELY);
+  test.each([
+    [true, true],
+    [false, false],
+  ])("works when allow any child = %s", (allowAnyChild, expectedExistence) => {
+    const varMap = new VarMap();
+    varMap.setOutputKeyExistence(
+      "brick1",
+      "@foo",
+      VarExistence.DEFINITELY,
+      allowAnyChild
+    );
+
+    expect(varMap.isVariableDefined("@foo.bar")).toBe(expectedExistence);
+  });
+});
+
+describe("setExistenceFromValues", () => {
+  // Use case: setting the @input based on the page reader schema or adding existence from trace
+  test("sets the existence for a plain object", () => {
+    const values = {
+      "@foo": "bar",
+    };
+
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues("brick1", values);
+
+    expect(varMap.isVariableDefined("@foo")).toBeTrue();
+    expect(varMap.isVariableDefined("@foo.bar")).toBeFalse();
   });
 
-  test("get a DEFINITELY property of a known container", () => {
-    varMap.setExistence("foo.bar", VarExistence.DEFINITELY);
-    const actual = varMap.getExistence("foo");
-
-    expect(actual).toBe(VarExistence.DEFINITELY);
-  });
-
-  test("get a MAYBE property of a known container", () => {
-    varMap.setExistence("foo.*", VarExistence.MAYBE);
-    const actual = varMap.getExistence("foo.bar");
-
-    expect(actual).toBe(VarExistence.MAYBE);
-  });
-
-  test("set existence from context obj", () => {
-    varMap.setExistenceFromObj({
+  test("sets the existence for a complex object", () => {
+    const values = {
       foo: {
         bar: "baz",
       },
       qux: "quux",
-    });
+    };
 
-    expect(varMap.getExistence("foo")).toBe(VarExistence.DEFINITELY);
-    expect(varMap.getExistence("foo.bar")).toBe(VarExistence.DEFINITELY);
-    expect(varMap.getExistence("baz")).toBeUndefined();
-    expect(varMap.getExistence("qux")).toBe(VarExistence.DEFINITELY);
-    expect(varMap.getExistence("quux")).toBeUndefined();
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues("brick1", values);
+
+    expect(varMap.isVariableDefined("foo")).toBeTrue();
+    expect(varMap.isVariableDefined("foo.bar")).toBeTrue();
+    expect(varMap.isVariableDefined("foo.bar.baz")).toBeFalse();
+    expect(varMap.isVariableDefined("qux")).toBeTrue();
+    expect(varMap.isVariableDefined("quux")).toBeFalse();
   });
 
   test("set existence from context obj with parent specified", () => {
-    varMap.setExistence("foo", VarExistence.DEFINITELY);
-    varMap.setExistenceFromObj(
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues(
+      "brick1",
       {
         qux: "quux",
       },
       "bar.baz"
     );
 
-    expect(varMap.getExistence("foo")).toBe(VarExistence.DEFINITELY);
-    expect(varMap.getExistence("bar.baz.qux")).toBe(VarExistence.DEFINITELY);
-  });
-
-  test("clones a var map", () => {
-    varMap.setExistence("foo", VarExistence.DEFINITELY);
-
-    const clone = varMap.clone();
-    clone.setExistence("bar", VarExistence.DEFINITELY);
-
-    expect(varMap.getExistence("foo")).toBe(VarExistence.DEFINITELY);
-    expect(varMap.getExistence("bar")).toBeUndefined();
-
-    expect(clone.getExistence("foo")).toBe(VarExistence.DEFINITELY);
-    expect(clone.getExistence("bar")).toBe(VarExistence.DEFINITELY);
-  });
-
-  test("merges 2 var maps", () => {
-    const varMap1 = new VarMap();
-    varMap1.setExistence("foo.bar", VarExistence.DEFINITELY);
-    varMap1.setExistence("qux", VarExistence.DEFINITELY);
-
-    const varMap2 = new VarMap();
-    varMap2.setExistence("foo.baz", VarExistence.DEFINITELY);
-    varMap2.setExistence("quux", VarExistence.DEFINITELY);
-
-    const merged = varMap1.merge(varMap2);
-    expect(merged).toEqual({
-      map: {
-        foo: {
-          bar: VarExistence.DEFINITELY,
-          baz: VarExistence.DEFINITELY,
-        },
-        qux: VarExistence.DEFINITELY,
-        quux: VarExistence.DEFINITELY,
-      },
-    });
-  });
-
-  test("merged map is a separate object", () => {
-    const varMap1 = new VarMap();
-    varMap1.setExistence("foo.bar", VarExistence.DEFINITELY);
-
-    const merged = varMap1.merge(new VarMap());
-    merged.setExistence("foo.baz", VarExistence.DEFINITELY);
-
-    expect(varMap1.getExistence("foo.bar")).toBe(VarExistence.DEFINITELY);
-    expect(varMap1.getExistence("foo.baz")).toBeUndefined();
-
-    expect(merged.getExistence("foo.bar")).toBe(VarExistence.DEFINITELY);
-    expect(merged.getExistence("foo.baz")).toBe(VarExistence.DEFINITELY);
-  });
-
-  test("doesn't override a var with nested keys", () => {
-    // Set nested keys
-    varMap.setExistence("foo.bar", VarExistence.DEFINITELY);
-
-    // Try to override the parent key
-    varMap.setExistence("foo", VarExistence.MAYBE);
-
-    expect(varMap.getExistence("foo.bar")).toBe(VarExistence.DEFINITELY);
-  });
-
-  test("doesn't override a DEFINITELY var with MAYBE", () => {
-    varMap.setExistence("foo", VarExistence.DEFINITELY);
-    varMap.setExistence("foo", VarExistence.MAYBE);
-
-    expect(varMap.getExistence("foo")).toBe(VarExistence.DEFINITELY);
+    expect(varMap.isVariableDefined("bar.baz.qux")).toBeTrue();
   });
 });
 
-describe("mergeExistenceMaps", () => {
-  test("works with nulls", () => {
-    const actual = mergeExistenceMaps(null, null);
-    expect(actual).toEqual({});
-  });
-
-  test("merges plain maps", () => {
-    const actual = mergeExistenceMaps(
-      {
-        foo: VarExistence.DEFINITELY,
-      },
-      {
-        bar: VarExistence.DEFINITELY,
-      }
+describe("cloning", () => {
+  test("clones a var map", () => {
+    const varMap = new VarMap();
+    varMap.setOutputKeyExistence(
+      "brick1",
+      "@foo",
+      VarExistence.DEFINITELY,
+      false
     );
-    expect(actual).toEqual({
-      foo: VarExistence.DEFINITELY,
-      bar: VarExistence.DEFINITELY,
-    });
-  });
 
-  test("merges nested maps", () => {
-    const actual = mergeExistenceMaps(
-      { foo: { bar: VarExistence.DEFINITELY } },
-      { foo: { baz: VarExistence.DEFINITELY } }
+    const clone = varMap.clone();
+    clone.setOutputKeyExistence(
+      "brick2",
+      "@bar",
+      VarExistence.DEFINITELY,
+      false
     );
-    expect(actual).toEqual({
-      foo: {
-        bar: VarExistence.DEFINITELY,
-        baz: VarExistence.DEFINITELY,
-      },
-    });
+
+    expect(varMap.isVariableDefined("@foo")).toBeTrue();
+    expect(varMap.isVariableDefined("@bar")).toBeFalse();
+
+    expect(clone.isVariableDefined("@foo")).toBeTrue();
+    expect(clone.isVariableDefined("@bar")).toBeTrue();
   });
+});
 
-  test("merges Existence with an object", () => {
-    const mapA = { foo: { bar: VarExistence.DEFINITELY } };
-    const mapB = { foo: VarExistence.DEFINITELY };
-    const expected = {
-      foo: {
-        bar: VarExistence.DEFINITELY,
-      },
-    };
+describe("addSourceMap", () => {
+  // Use case: adding an output of previous brick to the current brick's available vars
+  test("adds a source map", () => {
+    const varMap1 = new VarMap();
+    varMap1.setOutputKeyExistence(
+      "brick1",
+      "@foo",
+      VarExistence.DEFINITELY,
+      false
+    );
 
-    const actualAB = mergeExistenceMaps(mapA, mapB);
-    expect(actualAB).toEqual(expected);
+    const varMap2 = new VarMap();
+    varMap2.setOutputKeyExistence(
+      "brick2",
+      "@bar",
+      VarExistence.DEFINITELY,
+      false
+    );
 
-    const actualBA = mergeExistenceMaps(mapB, mapA);
-    expect(actualBA).toEqual(expected);
-  });
+    varMap1.addSourceMap(varMap2);
 
-  test("overrides the existence with more strict one regardless of the order", () => {
-    const mapA = { foo: { bar: VarExistence.DEFINITELY } };
-    const mapB = { foo: { bar: VarExistence.MAYBE } };
-    const expected = { foo: { bar: VarExistence.DEFINITELY } };
-
-    const actualAB = mergeExistenceMaps(mapA, mapB);
-    expect(actualAB).toEqual(expected);
-
-    const actualBA = mergeExistenceMaps(mapB, mapA);
-    expect(actualBA).toEqual(expected);
+    expect(varMap1.isVariableDefined("@foo")).toBeTrue();
+    expect(varMap1.isVariableDefined("@bar")).toBeTrue();
   });
 });

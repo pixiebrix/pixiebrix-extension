@@ -28,11 +28,11 @@ import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { appApi } from "@/services/api";
 import Form, {
-  OnSubmit,
-  RenderBody,
-  RenderSubmit,
+  type OnSubmit,
+  type RenderBody,
+  type RenderSubmit,
 } from "@/components/form/Form";
-import { FormikErrors } from "formik";
+import { type FormikErrors } from "formik";
 import {
   isAxiosError,
   isSingleObjectBadRequestError,

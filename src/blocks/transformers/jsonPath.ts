@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 
 export class JSONPathTransformer extends Transformer {
   override async isPure(): Promise<boolean> {

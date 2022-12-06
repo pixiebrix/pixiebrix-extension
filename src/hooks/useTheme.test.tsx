@@ -27,7 +27,7 @@ import { Provider } from "react-redux";
 import { DEFAULT_THEME } from "@/options/types";
 import { useGetMeQuery } from "@/services/api";
 
-jest.mock("@/options/store", () => ({
+jest.mock("@/store/optionsStore", () => ({
   persistor: {
     flush: jest.fn(),
   },

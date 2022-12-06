@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UUID } from "@/core";
+import { type UUID } from "@/core";
 import {
-  ElementUIState,
-  NodeUIState,
-  TabUIState,
+  type ElementUIState,
+  type NodeUIState,
+  type TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 

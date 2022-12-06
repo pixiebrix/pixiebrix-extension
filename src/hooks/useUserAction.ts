@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DependencyList, useCallback } from "react";
+import { type DependencyList, useCallback } from "react";
 import notify from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
 import { CancelError } from "@/errors/businessErrors";

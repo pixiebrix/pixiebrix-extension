@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MessengerMeta } from "webext-messenger";
+import { type MessengerMeta } from "webext-messenger";
 
 export async function captureTab(this: MessengerMeta): Promise<string> {
   return browser.tabs.captureVisibleTab(this.trace[0].tab.windowId, {

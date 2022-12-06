@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Form, InputGroup, FormControlProps } from "react-bootstrap";
+import { Form, InputGroup, type FormControlProps } from "react-bootstrap";
 import React from "react";
 
 const KeyNameWidget: React.FC<FormControlProps> = (props) => (

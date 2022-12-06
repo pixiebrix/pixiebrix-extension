@@ -18,12 +18,12 @@
 import React from "react";
 import {
   DOCUMENT_ELEMENT_TYPES,
-  DocumentElement,
-  DocumentElementType,
+  type DocumentElement,
+  type DocumentElementType,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import ElementPreview, {
-  ElementPreviewProps,
+  type ElementPreviewProps,
 } from "@/components/documentBuilder/preview/ElementPreview";
 import { fireEvent } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
@@ -34,7 +34,7 @@ import {
 } from "@/testUtils/factories";
 import { defaultBlockConfig } from "@/blocks/util";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
-import { PipelineExpression } from "@/runtime/mapArgs";
+import { type PipelineExpression } from "@/runtime/mapArgs";
 import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import userEvent from "@testing-library/user-event";

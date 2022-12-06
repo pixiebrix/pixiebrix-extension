@@ -22,7 +22,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { useField } from "formik";
@@ -32,7 +32,7 @@ import cx from "classnames";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { getToggleOptions } from "./getToggleOptions";
 import widgetsRegistry from "./widgets/widgetsRegistry";
-import useToggleFormField from "@/pageEditor/hooks/useToggleFormField";
+import useToggleFormField from "@/hooks/useToggleFormField";
 import { isExpression } from "@/runtime/mapArgs";
 import { getFieldValidator } from "@/components/fields/fieldUtils";
 import useFieldError from "@/components/form/useFieldError";
@@ -72,8 +72,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
 
   const normalizedSchema = useMemo(() => {
     const isObjectType =
-      schema.type === "object" ||
-      !Object.prototype.hasOwnProperty.call(schema, "type");
+      schema.type === "object" || !Object.hasOwn(schema, "type");
 
     if (
       isObjectType &&

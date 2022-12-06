@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
+import type React from "react";
+import { useMemo, useState } from "react";
 import genericOptionsFactory, {
-  BlockOptionProps,
+  type BlockOptionProps,
 } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { IBlock, RegistryId } from "@/core";
+import { type IBlock, type RegistryId } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import { useAsyncEffect } from "use-async-effect";
 import reportError from "@/telemetry/reportError";

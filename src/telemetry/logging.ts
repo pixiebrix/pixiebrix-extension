@@ -17,27 +17,26 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { getRollbar } from "@/telemetry/initRollbar";
-import { MessageContext, SerializedError, UUID } from "@/core";
-import { Except, JsonObject } from "type-fest";
-import { deserializeError, serializeError } from "serialize-error";
-import { DBSchema, openDB } from "idb/with-async-ittr";
+import { type MessageContext, type SerializedError, type UUID } from "@/core";
+import { type Except, type JsonObject } from "type-fest";
+import { deserializeError } from "serialize-error";
+import { type DBSchema, openDB } from "idb/with-async-ittr";
 import { isEmpty, once, sortBy } from "lodash";
 import { allowsTrack } from "@/telemetry/dnt";
-import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
+import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
   getErrorMessage,
   hasSpecificErrorCause,
-  IGNORED_ERROR_PATTERNS,
   isSpecificError,
 } from "@/errors/errorHelpers";
-import { expectContext, forbidContext } from "@/utils/expectContext";
-import { matchesAnyPattern } from "@/utils";
+import { expectContext } from "@/utils/expectContext";
 import {
   reportToErrorService,
   selectExtraContext,
 } from "@/services/errorService";
 import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
+import { type MessengerMeta } from "webext-messenger";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -256,37 +255,22 @@ async function reportToRollbar(
   rollbar.error(message, error, { ...flatContext, ...details });
 }
 
+/** @deprecated Use `reportError` instead: `import reportError from "@/telemetry/reportError"` */
 export async function recordError(
-  maybeSerializedError: SerializedError,
+  this: MessengerMeta, // Enforce usage via Messenger only
+  serializedError: SerializedError,
   context: MessageContext,
   data?: JsonObject
 ): Promise<void> {
-  forbidContext(
-    "contentScript",
-    "contentScript does not have CSP access to Rollbar"
+  // See https://github.com/pixiebrix/pixiebrix-extension/pull/4696#discussion_r1030668438
+  expectContext(
+    "background",
+    "Errors should be recorded via the background page to allow HTTP request batching"
   );
 
   try {
-    // Ensure it's deserialized
-    const error = deserializeError(maybeSerializedError);
-
+    const error = deserializeError(serializedError);
     const message = getErrorMessage(error);
-
-    // For noisy errors, don't record/submit telemetry unless the error prevented an extension point
-    // from being installed or an extension to fail. (In that case, we'd have some context about the error).
-    const { pageName, ...extensionContext } = context ?? {};
-    if (
-      isEmpty(extensionContext) &&
-      matchesAnyPattern(message, IGNORED_ERROR_PATTERNS)
-    ) {
-      console.debug("Ignoring error matching IGNORED_ERROR_PATTERNS", {
-        error,
-        context,
-      });
-
-      return;
-    }
-
     const flatContext = flattenContext(error, context);
 
     await Promise.all([
@@ -300,26 +284,28 @@ export async function recordError(
         message,
         data,
         // Ensure the object is fully serialized. Required because it will be stored in IDB and flow through the Redux state
-        error: serializeError(maybeSerializedError),
+        error: serializedError,
       }),
     ]);
-  } catch (recordError) {
+  } catch (recordErrorError) {
     console.error("An error occurred while recording another error", {
-      error: recordError,
-      originalError: maybeSerializedError,
+      error: recordErrorError,
+      originalError: serializedError,
       context,
     });
   }
 }
 
 export async function recordWarning(
+  this: MessengerMeta, // Enforce usage via Messenger only
   context: MessageContext | null,
   message: string,
   data?: JsonObject
 ) {
-  forbidContext(
-    "contentScript",
-    "contentScript does not have CSP access to Rollbar"
+  // See https://github.com/pixiebrix/pixiebrix-extension/pull/4696#discussion_r1030668438
+  expectContext(
+    "background",
+    "Errors should be recorded via the background page to allow HTTP request batching"
   );
 
   void recordLog(context, "warn", message, data);
@@ -354,22 +340,14 @@ export type LoggingConfig = {
 };
 
 const LOG_CONFIG_STORAGE_KEY = "LOG_OPTIONS" as ManualStorageKey;
-let _config: LoggingConfig = null;
 
 export async function getLoggingConfig(): Promise<LoggingConfig> {
-  expectContext("background");
-
-  _config ??= await readStorage(LOG_CONFIG_STORAGE_KEY, {
+  return readStorage(LOG_CONFIG_STORAGE_KEY, {
     logValues: false,
   });
-
-  return _config;
 }
 
 export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
-  expectContext("background");
-
-  _config = config;
   await setStorage(LOG_CONFIG_STORAGE_KEY, config);
 }
 

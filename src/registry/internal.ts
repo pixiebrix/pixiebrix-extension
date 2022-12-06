@@ -16,15 +16,15 @@
  */
 
 import {
-  Config,
-  EmptyConfig,
-  IBlock,
-  IExtension,
-  IExtensionPoint,
-  InnerDefinitionRef,
-  InnerDefinitions,
-  RegistryId,
-  ResolvedExtension,
+  type Config,
+  type EmptyConfig,
+  type IBlock,
+  type IExtension,
+  type IExtensionPoint,
+  type InnerDefinitionRef,
+  type InnerDefinitions,
+  type RegistryId,
+  type ResolvedExtension,
 } from "@/core";
 import { produce } from "immer";
 import objectHash from "object-hash";
@@ -35,13 +35,13 @@ import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { fromJS as blockFactory } from "@/blocks/transformers/blockFactory";
 import { resolveObj } from "@/utils";
 import {
-  ExtensionPointConfig as ExtensionDefinition,
-  RecipeDefinition,
-  ResolvedExtensionPointConfig,
+  type ExtensionPointConfig as ExtensionDefinition,
+  type RecipeDefinition,
+  type ResolvedExtensionPointConfig,
 } from "@/types/definitions";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { ReaderConfig } from "@/blocks/types";
-import { UnknownObject } from "@/types";
+import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type ReaderConfig } from "@/blocks/types";
+import { type UnknownObject } from "@/types";
 
 type InnerExtensionPoint = Pick<ExtensionPointConfig, "definition" | "kind">;
 
@@ -91,8 +91,8 @@ async function ensureReaders(
   }
 
   if (typeof reader === "string") {
-    if (Object.prototype.hasOwnProperty.call(definitions, reader)) {
-      // eslint-disable-next-line security/detect-object-injection -- checked hasOwnProperty
+    if (Object.hasOwn(definitions, reader)) {
+      // eslint-disable-next-line security/detect-object-injection -- checked hasOwn
       const definition = definitions[reader];
       if (definition.kind !== "reader") {
         throw new TypeError(

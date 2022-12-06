@@ -23,7 +23,7 @@ import CssClassWidget, {
 } from "@/components/fields/schemaFields/widgets/CssClassWidget";
 import { Formik } from "formik";
 import React from "react";
-import { Expression } from "@/core";
+import { type Expression } from "@/core";
 import { noop } from "lodash";
 import { render } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";

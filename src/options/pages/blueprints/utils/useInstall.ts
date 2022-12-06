@@ -16,12 +16,12 @@
  */
 
 import { reportEvent } from "@/telemetry/events";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 import notify from "@/utils/notify";
 import { useDispatch } from "react-redux";
 import { useCallback } from "react";
-import { FormikHelpers } from "formik";
-import { WizardValues } from "@/options/pages/marketplace/wizardTypes";
+import { type FormikHelpers } from "formik";
+import { type WizardValues } from "@/options/pages/marketplace/wizardTypes";
 import { uniq } from "lodash";
 import {
   containsPermissions,

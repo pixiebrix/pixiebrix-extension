@@ -16,17 +16,24 @@
  */
 
 import PipelineExpressionVisitor from "@/blocks/PipelineExpressionVisitor";
-import { VisitBlockExtra, VisitPipelineExtra } from "@/blocks/PipelineVisitor";
-import { BlockPosition, BlockConfig } from "@/blocks/types";
-import { Expression, TemplateEngine } from "@/core";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import {
+  type VisitBlockExtra,
+  type VisitPipelineExtra,
+} from "@/blocks/PipelineVisitor";
+import { type BlockPosition, type BlockConfig } from "@/blocks/types";
+import { type Expression, type TemplateEngine } from "@/core";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getInputKeyForSubPipeline } from "@/pageEditor/utils";
 import { isNunjucksExpression, isVarExpression } from "@/runtime/mapArgs";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { isEmpty } from "lodash";
-import { Analysis, Annotation, AnnotationType } from "@/analysis/analysisTypes";
+import {
+  type Analysis,
+  type Annotation,
+  AnnotationType,
+} from "@/analysis/analysisTypes";
 import VarMap, { VarExistence } from "./varMap";
-import { TraceRecord } from "@/telemetry/trace";
+import { type TraceRecord } from "@/telemetry/trace";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import parseTemplateVariables from "./parseTemplateVariables";
 
@@ -36,12 +43,11 @@ type PreviousVisitedBlock = {
 };
 
 async function setServiceVars(extension: FormState, contextVars: VarMap) {
-  const serviceContext = extension.services?.length
-    ? await makeServiceContext(extension.services)
-    : null;
-
-  if (serviceContext != null) {
-    contextVars.setExistenceFromObj(serviceContext);
+  // Loop through all the services so we can set the source each service variable properly
+  for (const service of extension.services ?? []) {
+    // eslint-disable-next-line no-await-in-loop
+    const serviceContext = await makeServiceContext([service]);
+    contextVars.setExistenceFromValues(`root:${service.id}`, serviceContext);
   }
 }
 
@@ -55,15 +61,31 @@ async function setInputVars(extension: FormState, contextVars: VarMap) {
   const readerProperties = reader?.outputSchema?.properties;
   const readerKeys =
     readerProperties == null ? [] : Object.keys(readerProperties);
-  for (const key of readerKeys) {
-    contextVars.setExistence(`@input.${key}`, VarExistence.DEFINITELY);
+
+  if (readerKeys.length === 0) {
+    return;
   }
+
+  const inputContextShape: Record<string, boolean> = {};
+  for (const key of readerKeys) {
+    inputContextShape[key] = true;
+  }
+
+  contextVars.setExistenceFromValues(
+    `root:${reader.id ?? reader.name ?? "reader"}`,
+    inputContextShape,
+    "@input"
+  );
 }
 
 function setOptionsVars(extension: FormState, contextVars: VarMap) {
   // TODO: should we check the blueprint definition instead?
   if (!isEmpty(extension.optionsArgs)) {
-    contextVars.setExistenceFromObj(extension.optionsArgs, "@options");
+    contextVars.setExistenceFromValues(
+      `root:${extension.recipe.id}`,
+      extension.optionsArgs,
+      "@options"
+    );
   }
 }
 
@@ -98,12 +120,10 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     blockConfig: BlockConfig,
     extra: VisitBlockExtra
   ) {
-    this.currentBlockKnownVars =
-      this.previousVisitedBlock.output == null
-        ? this.previousVisitedBlock.vars.clone()
-        : this.previousVisitedBlock.vars.merge(
-            this.previousVisitedBlock.output
-          );
+    this.currentBlockKnownVars = this.previousVisitedBlock.vars.clone();
+    if (this.previousVisitedBlock.output != null) {
+      this.currentBlockKnownVars.addSourceMap(this.previousVisitedBlock.output);
+    }
 
     const traceRecord = this.trace.find(
       (x) =>
@@ -111,7 +131,8 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
         x.templateContext != null
     );
     if (traceRecord != null) {
-      this.currentBlockKnownVars.setExistenceFromObj(
+      this.currentBlockKnownVars.setExistenceFromValues(
+        "trace",
         traceRecord.templateContext
       );
     }
@@ -124,16 +145,13 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     };
 
     if (blockConfig.outputKey) {
+      const outputVarName = `@${blockConfig.outputKey}`;
       const currentBlockOutput = new VarMap();
-      currentBlockOutput.setExistence(
-        `@${blockConfig.outputKey}`,
-        blockConfig.if == null ? VarExistence.DEFINITELY : VarExistence.MAYBE
-      );
-
-      // TODO get the output schema and use its properties to be more precise
-      currentBlockOutput.setExistence(
-        `@${blockConfig.outputKey}.*`,
-        VarExistence.MAYBE
+      currentBlockOutput.setOutputKeyExistence(
+        position.path,
+        outputVarName,
+        blockConfig.if == null ? VarExistence.DEFINITELY : VarExistence.MAYBE,
+        true
       );
 
       this.previousVisitedBlock.output = currentBlockOutput;
@@ -162,7 +180,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
       return;
     }
 
-    if (this.currentBlockKnownVars?.getExistence(varName) == null) {
+    if (!this.currentBlockKnownVars?.isVariableDefined(varName)) {
       this.pushNotFoundVariableAnnotation(position, varName, expression);
     }
   }
@@ -172,7 +190,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     expression: Expression<string, "nunjucks">
   ) {
     for (const varName of parseTemplateVariables(expression.__value__)) {
-      if (this.currentBlockKnownVars?.getExistence(varName) == null) {
+      if (!this.currentBlockKnownVars?.isVariableDefined(varName)) {
         this.pushNotFoundVariableAnnotation(position, varName, expression);
       }
     }
@@ -211,9 +229,11 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     let subPipelineVars: VarMap;
     if (subPipelineInput) {
       subPipelineVars = new VarMap();
-      subPipelineVars.setExistence(
+      subPipelineVars.setOutputKeyExistence(
+        position.path,
         `@${subPipelineInput}`,
-        VarExistence.DEFINITELY
+        VarExistence.DEFINITELY,
+        false
       );
     }
 

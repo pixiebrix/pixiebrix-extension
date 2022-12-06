@@ -19,28 +19,37 @@
  * Type contract between the backend and front-end.
  */
 import {
-  RecipeDefinition,
-  SharingDefinition,
-  UnsavedRecipeDefinition,
+  type RecipeDefinition,
+  type SharingDefinition,
+  type UnsavedRecipeDefinition,
 } from "@/types/definitions";
 import {
-  SanitizedConfig,
-  Metadata,
-  UUID,
-  Config,
-  EmptyConfig,
-  PersistedExtension,
-  Timestamp,
-  RegistryId,
-  SemVerString,
+  type SanitizedConfig,
+  type Metadata,
+  type UUID,
+  type Config,
+  type EmptyConfig,
+  type PersistedExtension,
+  type Timestamp,
+  type RegistryId,
+  type SemVerString,
 } from "@/core";
 
-import { components } from "@/types/swagger";
-import { Except } from "type-fest";
-import { AxiosResponse } from "axios";
-import { IconName, IconPrefix } from "@fortawesome/free-solid-svg-icons";
+import { type components } from "@/types/swagger";
+import { type Except } from "type-fest";
+import { type AxiosResponse } from "axios";
+import {
+  type IconName,
+  type IconPrefix,
+} from "@fortawesome/free-solid-svg-icons";
 
-export type Kind = "block" | "foundation" | "service" | "blueprint" | "reader";
+export type Kind =
+  | "block"
+  | "foundation"
+  | "service"
+  | "blueprint"
+  | "reader"
+  | "recipe";
 
 type MeGroup = components["schemas"]["Me"]["group_memberships"][number] & {
   id: UUID;

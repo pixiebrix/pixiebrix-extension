@@ -28,14 +28,22 @@ import userEvent from "@testing-library/user-event";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import * as api from "@/services/api";
-import { RegistryId } from "@/core";
-import { MarketplaceListing } from "@/types/contract";
+import { type RegistryId } from "@/core";
+import { type MarketplaceListing } from "@/types/contract";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { array } from "cooky-cutter";
 import { waitForEffect } from "@/testUtils/testHelpers";
 
-jest.mock("@/services/api");
+jest.mock("@/services/api", () => {
+  const originalModule = jest.requireActual("@/services/api");
+
+  return {
+    ...originalModule,
+    useGetMarketplaceTagsQuery: jest.fn(),
+    useGetMarketplaceListingsQuery: jest.fn(),
+  };
+});
 jest.mock("@/components/asyncIcon", () => ({
   useAsyncIcon: jest.fn(),
 }));

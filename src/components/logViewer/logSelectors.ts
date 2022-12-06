@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LogRootState } from "./logViewerTypes";
+import { type LogRootState } from "./logViewerTypes";
 
 export function selectLogs({ logs }: LogRootState) {
   return logs;

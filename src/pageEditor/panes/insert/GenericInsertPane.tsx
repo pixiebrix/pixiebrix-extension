@@ -20,14 +20,14 @@ import paneStyles from "@/pageEditor/panes/Pane.module.scss";
 import styles from "./GenericInsertPane.module.scss";
 import { useDispatch } from "react-redux";
 import useAvailableExtensionPoints from "@/pageEditor/hooks/useAvailableExtensionPoints";
-import Centered from "@/pageEditor/components/Centered";
+import Centered from "@/components/Centered";
 import { Button, Row } from "react-bootstrap";
 import BrickModal from "@/components/brickModalNoTags/BrickModal";
 import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { internalExtensionPointMetaFactory } from "@/pageEditor/extensionPoints/base";
-import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
+import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import { reportEvent } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
@@ -35,7 +35,7 @@ import {
   showSidebar,
   updateDynamicElement,
 } from "@/contentScript/messenger/api";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getExampleBlockPipeline } from "@/pageEditor/exampleExtensionConfig";
 import useFlags from "@/hooks/useFlags";
 import Loader from "@/components/Loader";

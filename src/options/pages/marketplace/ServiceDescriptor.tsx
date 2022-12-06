@@ -14,10 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 import styles from "./ServicesBody.module.scss";
 
 import React, { useMemo } from "react";
-import { ServiceDefinition } from "@/types/definitions";
+import { type ServiceDefinition } from "@/types/definitions";
 
 const ServiceDescriptor: React.FunctionComponent<{
   serviceConfigs: ServiceDefinition[];

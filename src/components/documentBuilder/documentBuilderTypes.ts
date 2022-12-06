@@ -15,10 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UnknownObject } from "@/types";
-import { Expression } from "@/core";
-import { DeferExpression, PipelineExpression } from "@/runtime/mapArgs";
-import { ElementType, MouseEventHandler } from "react";
+import { type UnknownObject } from "@/types";
+import { type Expression } from "@/core";
+import {
+  type DeferExpression,
+  type PipelineExpression,
+} from "@/runtime/mapArgs";
+import { type ElementType, type MouseEventHandler } from "react";
 
 export const DOCUMENT_ELEMENT_TYPES = [
   "header",

@@ -15,22 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Runtime, Tabs } from "webextension-polyfill";
+import { type Tabs } from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 import { asyncForEach } from "@/utils";
 import { getLinkedApiClient } from "@/services/apiClient";
-import { JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 import {
-  MessengerMeta,
+  type MessengerMeta,
   errorTargetClosedEarly,
   errorTabDoesntExist,
 } from "webext-messenger";
 import { runBrick } from "@/contentScript/messenger/api";
-import { Target } from "@/types";
+import { type Target } from "@/types";
 import { RemoteExecutionError } from "@/blocks/errors";
 import pDefer from "p-defer";
 import { getErrorMessage } from "@/errors/errorHelpers";
-// eslint-disable-next-line import/no-restricted-paths -- Type only
 import type { RunBlock } from "@/contentScript/runBlockTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { canAccessTab } from "@/utils/permissions";
@@ -89,7 +88,6 @@ export async function waitForTargetByUrl(url: string): Promise<Target> {
 
 /**
  * Run a brick in the window that opened the source window
- * @param request
  */
 export async function requestRunInOpener(
   this: MessengerMeta,
@@ -212,12 +210,6 @@ export async function activateTab(this: MessengerMeta): Promise<void> {
 export async function closeTab(this: MessengerMeta): Promise<void> {
   // Allow `closeTab` to return before closing the tab or else the Messenger won't be able to respond #2051
   setTimeout(async () => browser.tabs.remove(this.trace[0].tab.id), 100);
-}
-
-export async function whoAmI(
-  this: MessengerMeta
-): Promise<Runtime.MessageSender> {
-  return this.trace[0];
 }
 
 interface ServerResponse {

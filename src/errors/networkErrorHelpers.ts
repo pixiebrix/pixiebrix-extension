@@ -16,10 +16,11 @@
  */
 
 import { isObject } from "@/utils";
-import { Except } from "type-fest";
-import { AxiosError, AxiosResponse } from "axios";
+import { type Except } from "type-fest";
+import { type AxiosError, type AxiosResponse } from "axios";
 import { isEmpty, isPlainObject } from "lodash";
 import { getReasonPhrase } from "http-status-codes";
+import { isErrorTypeNameMatch } from "@/errors/errorHelpers";
 
 /**
  * Axios offers its own serialization method, but it doesn't include the response.
@@ -34,7 +35,8 @@ export function isAxiosError(error: unknown): error is SerializableAxiosError {
     // To deal with original AxiosError as well as a serialized error
     // we check 'isAxiosError' property for a non-serialized Error and 'name' for serialized object
     // Related issue to revisit RTKQ error handling: https://github.com/pixiebrix/pixiebrix-extension/issues/4032
-    (Boolean(error.isAxiosError) || error.name === "AxiosError")
+    (Boolean(error.isAxiosError) ||
+      isErrorTypeNameMatch(error.name as string, ["AxiosError"]))
   );
 }
 

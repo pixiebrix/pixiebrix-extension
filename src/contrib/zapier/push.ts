@@ -16,13 +16,18 @@
  */
 
 import { proxyService } from "@/background/messenger/api";
-import { Effect, UnknownObject } from "@/types";
-import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
+import { Effect, type UnknownObject } from "@/types";
+import {
+  type BlockArg,
+  type BlockOptions,
+  type Schema,
+  type SchemaProperties,
+} from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
 import { validateInput } from "@/validators/generic";
-import { Webhook } from "@/contrib/zapier/contract";
-import { Permissions } from "webextension-polyfill";
+import { type Webhook } from "@/contrib/zapier/contract";
+import { type Permissions } from "webextension-polyfill";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
 

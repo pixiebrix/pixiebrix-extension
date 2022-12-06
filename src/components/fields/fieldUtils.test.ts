@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Expression } from "@/core";
+import { type Expression } from "@/core";
 import {
   getPreviewValues,
   isMustacheOnly,

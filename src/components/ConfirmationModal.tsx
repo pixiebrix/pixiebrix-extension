@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 import React, {
   useCallback,
   useState,
@@ -22,7 +23,7 @@ import React, {
   createContext,
 } from "react";
 import { Modal, Button } from "react-bootstrap";
-import { ButtonVariant } from "react-bootstrap/types";
+import { type ButtonVariant } from "react-bootstrap/types";
 
 type ModalProps = {
   title?: string;

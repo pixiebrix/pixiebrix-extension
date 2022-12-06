@@ -15,28 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ChangeEvent, useCallback, useEffect, useMemo } from "react";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import React, {
+  type ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+} from "react";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { setIn, useField, useFormikContext } from "formik";
 import {
-  Expression,
-  OutputKey,
-  RegistryId,
-  SafeString,
-  ServiceDependency,
-  ServiceKeyVar,
-  UUID,
+  type Expression,
+  type OutputKey,
+  type RegistryId,
+  type SafeString,
+  type ServiceDependency,
+  type ServiceKeyVar,
+  type UUID,
 } from "@/core";
 import { useAuthOptions } from "@/hooks/auth";
-import { AuthOption } from "@/auth/authTypes";
+import { type AuthOption } from "@/auth/authTypes";
 import { produce } from "immer";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { freshIdentifier } from "@/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import {
-  SelectLike,
-  SelectWidgetOnChange,
+  type SelectLike,
+  type SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
 import { isEmpty, isEqual } from "lodash";
 import FieldTemplate from "@/components/form/FieldTemplate";
@@ -45,7 +50,7 @@ import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schema
 import {
   keyToFieldValue,
   produceExcludeUnusedDependencies,
-  ServiceSlice,
+  type ServiceSlice,
 } from "./serviceFieldUtils";
 import ServiceSelectWidget from "@/components/fields/schemaFields/widgets/ServiceSelectWidget";
 

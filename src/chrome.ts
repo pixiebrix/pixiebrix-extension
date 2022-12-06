@@ -17,8 +17,8 @@
 
 import { isExtensionContext } from "webext-detect-page";
 import { forbidContext } from "@/utils/expectContext";
-import { JsonValue } from "type-fest";
-import { UnknownObject } from "@/types";
+import { type JsonValue } from "type-fest";
+import { type UnknownObject } from "@/types";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
@@ -63,7 +63,7 @@ export function getChromeExtensionId(): string {
   );
 }
 
-export async function getExtensionVersion() {
+export function getExtensionVersion(): string {
   return browser.runtime.getManifest().version;
 }
 
@@ -93,8 +93,8 @@ export async function readStorage<T = unknown>(
     }
   }
 
-  if (Object.prototype.hasOwnProperty.call(result, storageKey)) {
-    // eslint-disable-next-line security/detect-object-injection -- Just checked with hasOwnProperty
+  if (Object.hasOwn(result, storageKey)) {
+    // eslint-disable-next-line security/detect-object-injection -- Just checked with hasOwn
     return result[storageKey] as T;
   }
 

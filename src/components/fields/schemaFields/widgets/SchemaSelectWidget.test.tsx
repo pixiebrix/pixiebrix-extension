@@ -17,7 +17,7 @@
 
 import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { render } from "@/pageEditor/testHelpers";
 

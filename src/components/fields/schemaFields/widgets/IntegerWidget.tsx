@@ -17,8 +17,8 @@
 
 import React from "react";
 import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget";
-import { FormControlProps } from "react-bootstrap";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type FormControlProps } from "react-bootstrap";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 
 /**
  * A basic input widget for integers

@@ -14,9 +14,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /* eslint-disable unicorn/prefer-module -- There's no module equivalent to require.context */
 
-import { IconLibrary } from "@/core";
+import { type IconLibrary } from "@/core";
 
 type RequireContext = __WebpackModuleApi.RequireContext;
 

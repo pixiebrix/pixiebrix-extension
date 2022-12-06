@@ -15,74 +15,86 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { array, Config, define, derive, FactoryConfig } from "cooky-cutter";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import {
-  ApiVersion,
-  IBlock,
-  IExtension,
-  InnerDefinitionRef,
-  InnerDefinitions,
-  Metadata,
-  OutputKey,
-  RecipeMetadata,
-  RegistryId,
-  RenderedArgs,
-  SafeString,
-  SanitizedConfig,
-  SanitizedServiceConfiguration,
-  Schema,
-  ServiceDependency,
-  UserOptions,
-  UUID,
+  array,
+  type Config,
+  define,
+  derive,
+  type FactoryConfig,
+} from "cooky-cutter";
+import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import {
+  type ApiVersion,
+  type IBlock,
+  type IExtension,
+  type InnerDefinitionRef,
+  type InnerDefinitions,
+  type Metadata,
+  type OutputKey,
+  type RecipeMetadata,
+  type RegistryId,
+  type RenderedArgs,
+  type SafeString,
+  type SanitizedConfig,
+  type SanitizedServiceConfiguration,
+  type Schema,
+  type ServiceDependency,
+  type UserOptions,
+  type UUID,
 } from "@/core";
-import { TraceError, TraceRecord } from "@/telemetry/trace";
+import { type TraceError, type TraceRecord } from "@/telemetry/trace";
 import {
   validateRegistryId,
   validateSemVerString,
   validateTimestamp,
   validateUUID,
 } from "@/types/helpers";
-import { BaseExtensionState } from "@/pageEditor/extensionPoints/elementConfig";
+import { type BaseExtensionState } from "@/pageEditor/extensionPoints/elementConfig";
 import trigger from "@/pageEditor/extensionPoints/trigger";
 import menuItem from "@/pageEditor/extensionPoints/menuItem";
 import {
-  ActionFormState,
-  FormState,
-  TriggerFormState,
+  type ActionFormState,
+  type ContextMenuFormState,
+  type FormState,
+  type QuickBarFormState,
+  type SidebarFormState,
+  type TriggerFormState,
 } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
-  ExtensionPointConfig,
-  RecipeDefinition,
-  SharingDefinition,
+  type ExtensionPointConfig,
+  type RecipeDefinition,
+  type SharingDefinition,
 } from "@/types/definitions";
 import {
-  ExtensionPointConfig as ExtensionPointDefinition,
-  ExtensionPointDefinition as ExtensionPointConfigDefinition,
-  ExtensionPointType,
+  type ExtensionPointConfig as ExtensionPointDefinition,
+  type ExtensionPointDefinition as ExtensionPointConfigDefinition,
+  type ExtensionPointType,
 } from "@/extensionPoints/types";
-import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
+import { type TypedBlock, type TypedBlockMap } from "@/blocks/registry";
 import {
-  CloudExtension,
-  Deployment,
-  MarketplaceListing,
-  MarketplaceTag,
+  type CloudExtension,
+  type Deployment,
+  type MarketplaceListing,
+  type MarketplaceTag,
   UserRole,
 } from "@/types/contract";
-import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
+import { type ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
 import getType from "@/runtime/getType";
 import { freshIdentifier } from "@/utils";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
 import { padStart } from "lodash";
 import {
-  AuthState,
-  AuthUserOrganization,
-  OrganizationAuthState,
+  type AuthState,
+  type AuthUserOrganization,
+  type OrganizationAuthState,
 } from "@/auth/authTypes";
-import { JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 import objectHash from "object-hash";
 import { makeEmptyPermissions } from "@/utils/permissions";
-import { Permissions } from "webextension-polyfill";
+import { type Permissions } from "webextension-polyfill";
+import quickBar from "@/pageEditor/extensionPoints/quickBar";
+import contextMenu from "@/pageEditor/extensionPoints/contextMenu";
+import sidebar from "@/pageEditor/extensionPoints/sidebar";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -390,7 +402,6 @@ type ExternalExtensionPointParams = {
 
 /**
  * Factory to create a RecipeDefinition that refers to a versioned extensionPoint
- * @param extensionPointId
  */
 export const versionedExtensionPointRecipeFactory = ({
   extensionPointId,
@@ -424,7 +435,6 @@ export const versionedExtensionPointRecipeFactory = ({
 
 /**
  * Factory to create a RecipeDefinition with a definitions section and resolved extensions
- * @param extensionCount
  */
 export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
   const extensionPoints: ExtensionPointConfig[] = [];
@@ -473,7 +483,6 @@ type InnerExtensionPointParams = {
 
 /**
  * Factory to create a factory that creates a RecipeDefinition that refers to a versioned extensionPoint
- * @param extensionPointId
  */
 export const innerExtensionPointRecipeFactory = ({
   extensionPointRef = "extensionPoint" as InnerDefinitionRef,
@@ -596,6 +605,73 @@ export const triggerFormStateFactory = (
     } as any,
     pipelineOverride
   ) as TriggerFormState;
+};
+
+export const sidebarPanelFormStateFactory = (
+  override?: FactoryConfig<SidebarFormState>,
+  pipelineOverride?: BlockPipeline
+) => {
+  const defaultTriggerProps = sidebar.fromNativeElement(
+    "https://test.com",
+    recipeMetadataFactory({
+      id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
+      name: (n: number) => `Extension Point ${n}`,
+    }),
+    // TypeScript complains if the 3rd positional argument is left off
+    undefined as never
+  );
+
+  return formStateFactory(
+    {
+      ...defaultTriggerProps,
+      ...override,
+    } as any,
+    pipelineOverride
+  ) as SidebarFormState;
+};
+
+export const contextMenuFormStateFactory = (
+  override?: FactoryConfig<ContextMenuFormState>,
+  pipelineOverride?: BlockPipeline
+) => {
+  const defaultTriggerProps = contextMenu.fromNativeElement(
+    "https://test.com",
+    recipeMetadataFactory({
+      id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
+      name: (n: number) => `Extension Point ${n}`,
+    }),
+    null
+  );
+
+  return formStateFactory(
+    {
+      ...defaultTriggerProps,
+      ...override,
+    } as any,
+    pipelineOverride
+  ) as ContextMenuFormState;
+};
+
+export const quickbarFormStateFactory = (
+  override?: FactoryConfig<QuickBarFormState>,
+  pipelineOverride?: BlockPipeline
+) => {
+  const defaultTriggerProps = quickBar.fromNativeElement(
+    "https://test.com",
+    recipeMetadataFactory({
+      id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
+      name: (n: number) => `Extension Point ${n}`,
+    }),
+    null
+  );
+
+  return formStateFactory(
+    {
+      ...defaultTriggerProps,
+      ...override,
+    } as any,
+    pipelineOverride
+  ) as QuickBarFormState;
 };
 
 export const menuItemFormStateFactory = (

@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { describeTable, ParsedTable, TableRecord } from "./parseDomTable";
+import {
+  describeTable,
+  type ParsedTable,
+  type TableRecord,
+} from "./parseDomTable";
 
 /** Normalized data extracted from definition list */
 interface NormalizedItem {

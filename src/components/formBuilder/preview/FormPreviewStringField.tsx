@@ -18,7 +18,7 @@
 import { Theme as RjsfTheme } from "@rjsf/bootstrap-4";
 import React from "react";
 import FormPreviewFieldTemplate, {
-  FormPreviewFieldProps,
+  type FormPreviewFieldProps,
 } from "./FormPreviewFieldTemplate";
 import styles from "./FormPreviewBooleanField.module.scss";
 

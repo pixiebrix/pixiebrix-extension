@@ -20,14 +20,14 @@ import { ContextError } from "@/errors/genericErrors";
 Object.assign(global, { chrome: { runtime: { id: 42 } } });
 
 import React from "react";
-import { ComponentStory, ComponentMeta } from "@storybook/react";
+import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import { validateRegistryId, uuidv4 } from "@/types/helpers";
 import LogTable from "@/components/logViewer/LogTable";
 import { serializeError } from "serialize-error";
 import { Card } from "react-bootstrap";
 import { InputValidationError } from "@/blocks/errors";
-import { Schema } from "@/core";
-import type { LogEntry } from "@/background/logging";
+import { type Schema } from "@/core";
+import type { LogEntry } from "@/telemetry/logging";
 
 export default {
   title: "Editor/LogTable",

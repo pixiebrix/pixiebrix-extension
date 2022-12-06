@@ -21,7 +21,7 @@ import {
   selectActiveRecipeId,
   selectDirtyMetadataForRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
-import { RecipeMetadataFormState } from "@/types/definitions";
+import { type RecipeMetadataFormState } from "@/types/definitions";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
@@ -33,7 +33,7 @@ import styles from "./EditRecipe.module.scss";
 import { FieldDescriptions } from "@/utils/strings";
 import { object, string } from "yup";
 import { testIsSemVerString } from "@/types/helpers";
-import Form, { RenderBody } from "@/components/form/Form";
+import Form, { type RenderBody } from "@/components/form/Form";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import Alert from "@/components/Alert";
 import { createSelector } from "reselect";

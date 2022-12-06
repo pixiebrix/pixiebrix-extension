@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReadProxy } from "@/runtime/pathHelpers";
+import { type ReadProxy } from "@/runtime/pathHelpers";
 
 type ComponentData = Record<string, unknown>;
 
@@ -93,7 +93,6 @@ export interface ReadAdapter<
 
   /**
    * Returns true if there is data defined for the component
-   * @param component
    */
   hasData: (component: TComponent) => boolean;
 

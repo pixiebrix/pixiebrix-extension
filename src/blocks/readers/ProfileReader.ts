@@ -17,8 +17,8 @@
 
 import { Reader } from "@/types";
 import { getUserData } from "@/background/messenger/api";
-import { Schema } from "@/core";
-import { UserData } from "@/auth/authTypes";
+import { type Schema } from "@/core";
+import { type UserData } from "@/auth/authTypes";
 
 class ProfileReader extends Reader {
   defaultOutputKey = "profile";

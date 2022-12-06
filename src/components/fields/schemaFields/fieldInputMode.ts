@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 import { isEmpty } from "lodash";
 import { isDatabaseField } from "./fieldTypeCheckers";
 
@@ -43,7 +43,7 @@ export function inferInputMode(
   fieldName: string,
   fieldSchema: Schema
 ): FieldInputMode {
-  const hasField = Object.prototype.hasOwnProperty.call(fieldConfig, fieldName);
+  const hasField = Object.hasOwn(fieldConfig, fieldName);
   if (!hasField) {
     return "omit";
   }

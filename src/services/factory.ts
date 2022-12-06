@@ -19,25 +19,25 @@ import { Service } from "@/types";
 import { produce } from "immer";
 import { renderMustache } from "@/runtime/mapArgs";
 import {
-  OAuth2Context,
-  AuthData,
-  Schema,
-  ServiceConfig,
-  TokenContext,
-  SanitizedConfig,
-  SemVerString,
+  type OAuth2Context,
+  type AuthData,
+  type Schema,
+  type ServiceConfig,
+  type TokenContext,
+  type SanitizedConfig,
+  type SemVerString,
 } from "@/core";
 import { testMatchPatterns } from "@/blocks/available";
 import { isEmpty, castArray, uniq, compact } from "lodash";
 import urljoin from "url-join";
 import {
-  ServiceDefinition,
-  KeyAuthenticationDefinition,
-  OAuth2AuthenticationDefinition,
-  TokenAuthenticationDefinition,
-  OAuth2AuthorizationGrantDefinition,
+  type ServiceDefinition,
+  type KeyAuthenticationDefinition,
+  type OAuth2AuthenticationDefinition,
+  type TokenAuthenticationDefinition,
+  type OAuth2AuthorizationGrantDefinition,
 } from "@/types/definitions";
-import { AxiosRequestConfig } from "axios";
+import { type AxiosRequestConfig } from "axios";
 import { isAbsoluteUrl, safeParseUrl } from "@/utils";
 import { missingProperties } from "@/helpers";
 import { NotConfiguredError } from "@/errors/businessErrors";
@@ -110,7 +110,6 @@ class LocalDefinedService<
 
   /**
    * Returns origins that require permissions to use the service
-   * @param serviceConfig
    */
   getOrigins(serviceConfig: SanitizedConfig): string[] {
     const patterns = castArray(

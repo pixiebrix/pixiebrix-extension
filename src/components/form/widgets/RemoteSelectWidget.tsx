@@ -17,19 +17,19 @@
 
 import React from "react";
 import SelectWidget, {
-  Option,
-  SelectLike,
+  type Option,
+  type SelectLike,
 } from "@/components/form/widgets/SelectWidget";
-import { SanitizedServiceConfiguration } from "@/core";
-import { AsyncState, useAsyncState } from "@/hooks/common";
-import { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
+import { type SanitizedServiceConfiguration } from "@/core";
+import { type AsyncState, useAsyncState } from "@/hooks/common";
+import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import isPromise from "is-promise";
 import useReportError from "@/hooks/useReportError";
 import { BusinessError } from "@/errors/businessErrors";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 
 export type OptionsFactory<T = unknown> = (
   config: SanitizedServiceConfiguration,

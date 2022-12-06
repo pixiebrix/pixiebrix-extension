@@ -16,19 +16,19 @@
  */
 
 import React, { useContext } from "react";
-import { BlockPipeline } from "@/blocks/types";
+import { type BlockPipeline } from "@/blocks/types";
 import { useAsyncState } from "@/hooks/common";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { runRendererPipeline } from "@/contentScript/messenger/api";
-import { whoAmI } from "@/background/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import PanelBody from "@/sidebar/PanelBody";
-import { RendererPayload } from "@/runtime/runtimeTypes";
+import { type RendererPayload } from "@/runtime/runtimeTypes";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { serializeError } from "serialize-error";
-import { DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
+import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
 import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
+import { getTopLevelFrame } from "webext-messenger";
 
 type BlockElementProps = {
   pipeline: BlockPipeline;
@@ -46,12 +46,10 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
 
   const [payload, isLoading, error] =
     useAsyncState<RendererPayload>(async () => {
-      const me = await whoAmI();
-
       // We currently only support associating the sidebar with the content script in the top-level frame (frameId: 0)
-      const target = { tabId: me.tab.id, frameId: 0 };
+      const topLevelFrame = await getTopLevelFrame();
 
-      return runRendererPipeline(target, {
+      return runRendererPipeline(topLevelFrame, {
         nonce: uuidv4(),
         context: ctxt,
         pipeline,

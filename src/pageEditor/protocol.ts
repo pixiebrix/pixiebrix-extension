@@ -17,7 +17,7 @@
 
 import { resetTab, stopInspectingNative } from "@/contentScript/messenger/api";
 import { thisTab } from "./utils";
-import { Target } from "@/types";
+import { type Target } from "@/types";
 import { updatePageEditor } from "./events";
 
 const TOP_LEVEL_FRAME_ID = 0;

@@ -16,28 +16,28 @@
  */
 
 import {
-  InitialValues,
+  type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
 import {
-  IBlock,
-  IExtension,
-  IExtensionPoint,
-  ReaderOutput,
-  ReaderRoot,
-  ResolvedExtension,
-  Schema,
-  UUID,
+  type IBlock,
+  type IExtension,
+  type IExtensionPoint,
+  type ReaderOutput,
+  type ReaderRoot,
+  type ResolvedExtension,
+  type Schema,
+  type UUID,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
-  CustomEventOptions,
-  DebounceOptions,
+  type CustomEventOptions,
+  type DebounceOptions,
   ExtensionPoint,
-  ExtensionPointConfig,
-  ExtensionPointDefinition,
+  type ExtensionPointConfig,
+  type ExtensionPointDefinition,
 } from "@/extensionPoints/types";
-import { Permissions } from "webextension-polyfill";
+import { type Permissions } from "webextension-polyfill";
 import {
   castArray,
   cloneDeep,
@@ -56,7 +56,7 @@ import {
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import notify from "@/utils/notify";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
@@ -382,7 +382,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
   /**
    * Shared event handler for DOM event triggers
-   * @param event
    */
   private readonly eventHandler: JQuery.EventHandler<unknown> = async (
     event
@@ -456,7 +455,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
           await this.runExtension(readerContext, extension, root);
         } catch (error) {
           if (this.shouldReportError(extension.id)) {
-            reportError(error, extensionLogger.context);
+            reportError(error, { context: extensionLogger.context });
           }
 
           return error;
@@ -499,7 +498,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
   /**
    * Show notification for errors to the user. Caller is responsible for sending error telemetry.
-   * @param errors
    */
   static notifyErrors(errors: unknown[]): void {
     if (errors.length === 0) {

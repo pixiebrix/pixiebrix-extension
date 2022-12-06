@@ -14,10 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 import * as redux from "react-redux";
 import { recipeDefinitionFactory } from "@/testUtils/factories";
 import useWizard from "@/options/pages/marketplace/useWizard";
-import { OptionsDefinition } from "@/types/definitions";
+import { type OptionsDefinition } from "@/types/definitions";
 import { renderHook } from "@testing-library/react-hooks";
 
 jest.mock("@/options/pages/marketplace/AuthWidget", () => {});

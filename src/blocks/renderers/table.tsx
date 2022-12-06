@@ -17,9 +17,9 @@
 
 import { Renderer } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg, BlockOptions, SafeHTML } from "@/core";
+import { type BlockArg, type BlockOptions, type SafeHTML } from "@/core";
 import { isNullOrBlank, isObject } from "@/utils";
-import makeDataTable, { Row } from "@/blocks/renderers/dataTable";
+import makeDataTable, { type Row } from "@/blocks/renderers/dataTable";
 import { BusinessError } from "@/errors/businessErrors";
 
 // Type ColumnDefinition = {
@@ -32,8 +32,8 @@ function makeLinkRenderer(href: string) {
   return (value: unknown, row: Row) => {
     // Currently for TableRenderer we only support directly accessing the href. This matches the behavior in
     // makeDataTable's renderValue
-    const anchorHref = Object.prototype.hasOwnProperty.call(row, href)
-      ? // eslint-disable-next-line security/detect-object-injection -- checked with hasOwnProperty
+    const anchorHref = Object.hasOwn(row, href)
+      ? // eslint-disable-next-line security/detect-object-injection -- checked with hasOwn
         row[href]
       : null;
 

@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";

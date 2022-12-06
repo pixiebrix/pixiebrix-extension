@@ -18,19 +18,19 @@
 import { Reader } from "@/types";
 import { checkAvailable } from "@/blocks/available";
 import {
-  Metadata,
-  IReader,
-  Schema,
-  ReaderOutput,
-  ReaderRoot,
-  ApiVersion,
-  SemVerString,
+  type Metadata,
+  type IReader,
+  type Schema,
+  type ReaderOutput,
+  type ReaderRoot,
+  type ApiVersion,
+  type SemVerString,
 } from "@/core";
-import { Availability } from "@/blocks/types";
+import { type Availability } from "@/blocks/types";
 import { Validator } from "@cfworker/json-schema";
 import { dereference } from "@/validators/generic";
 import readerSchema from "@schemas/reader.json";
-import { Schema as ValidatorSchema } from "@cfworker/json-schema/dist/types";
+import { type Schema as ValidatorSchema } from "@cfworker/json-schema/dist/types";
 import { cloneDeep } from "lodash";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
 

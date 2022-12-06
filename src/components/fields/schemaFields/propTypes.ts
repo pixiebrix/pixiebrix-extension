@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Schema, UiSchema } from "@/core";
-import React from "react";
-import { FieldInputMode } from "./fieldInputMode";
-import * as Yup from "yup";
+import { type Schema, type UiSchema } from "@/core";
+import type React from "react";
+import { type FieldInputMode } from "./fieldInputMode";
+import type * as Yup from "yup";
 
 // https://json-schema.org/understanding-json-schema/reference/generic.html
 
@@ -83,7 +83,7 @@ export interface SchemaFieldProps {
   /**
    * Click handler for this field
    */
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent) => void;
 
   /**
    * Blur handler for this field
@@ -105,4 +105,9 @@ export interface SchemaFieldProps {
    * E.g. if the field was omitted and then added
    */
   defaultType?: FieldInputMode;
+
+  /**
+   * Reference to the input DOM element. Used for instance by the Variable autosuggest popup
+   */
+  inputRef?: React.MutableRefObject<HTMLElement>;
 }

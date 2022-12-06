@@ -6,24 +6,24 @@
 
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: npm
+    directory: /
     schedule:
       interval: weekly
-      day: "sunday"
+      day: sunday
       time: "08:42"
-      timezone: "Etc/UTC"
+      timezone: Etc/UTC
     versioning-strategy: increase # Update package.json too https://stackoverflow.com/a/66819358/288906
-    open-pull-requests-limit: 20
+    open-pull-requests-limit: 30
     reviewers:
-      - "fregante"
-  - package-ecosystem: "github-actions"
-    directory: "/"
+      - fregante
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
       interval: weekly
-      day: "sunday"
+      day: sunday
       time: "08:42"
-      timezone: "Etc/UTC"
-    open-pull-requests-limit: 20
+      timezone: Etc/UTC
+    open-pull-requests-limit: 30
     reviewers:
-      - "fregante"
+      - fregante

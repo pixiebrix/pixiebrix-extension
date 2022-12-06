@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 import styles from "./SharingLabel.module.scss";
 
 import React from "react";
@@ -25,7 +26,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import cx from "classnames";
-import { SharingSource } from "@/options/pages/blueprints/blueprintsTypes";
+import { type SharingSource } from "@/options/pages/blueprints/blueprintsTypes";
 
 const sharingIcons = {
   Personal: faEyeSlash,

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, Metadata } from "@/core";
+import { type IExtension, type Metadata } from "@/core";
 import {
   baseFromExtension,
   baseSelectExtension,
@@ -32,22 +32,22 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import {
-  ContextMenuConfig,
+  type ContextMenuConfig,
   ContextMenuExtensionPoint,
-  MenuDefinition,
+  type MenuDefinition,
 } from "@/extensionPoints/contextMenu";
 import { getDomain } from "@/permissions/patterns";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import {
-  ElementConfig,
-  SingleLayerReaderConfig,
+  type ElementConfig,
+  type SingleLayerReaderConfig,
 } from "@/pageEditor/extensionPoints/elementConfig";
 import React from "react";
 import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
-import { ContextMenuFormState } from "./formStateTypes";
+import { type ContextMenuFormState } from "./formStateTypes";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { makeEmptyPermissions } from "@/utils/permissions";
 

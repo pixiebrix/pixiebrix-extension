@@ -15,21 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Deployment, Me } from "@/types/contract";
+import { type Deployment, type Me } from "@/types/contract";
 import { isEmpty, partition } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { getUID } from "@/background/messenger/api";
-import { getExtensionVersion, ManualStorageKey, readStorage } from "@/chrome";
+import {
+  getExtensionVersion,
+  type ManualStorageKey,
+  readStorage,
+} from "@/chrome";
 import { isLinked, readAuthData, updateUserData } from "@/auth/token";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { RegistryId, UUID } from "@/core";
+import { type RegistryId, type UUID } from "@/core";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/background/activeTab";
-import { parse as parseSemVer, satisfies, SemVer } from "semver";
-import { ExtensionOptionsState } from "@/store/extensionsTypes";
+import { parse as parseSemVer, satisfies, type SemVer } from "semver";
+import { type ExtensionOptionsState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { expectContext } from "@/utils/expectContext";
@@ -371,7 +375,7 @@ export async function updateDeployments(): Promise<void> {
   const { data: deployments, status: deploymentResponseStatus } =
     await client.post<Deployment[]>("/api/deployments/", {
       uid: await getUID(),
-      version: await getExtensionVersion(),
+      version: getExtensionVersion(),
       active: selectInstalledDeployments(extensions),
       campaignIds: await readStorage(
         MANAGED_CAMPAIGN_IDS_KEY,

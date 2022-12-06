@@ -17,7 +17,7 @@
 
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { BlockPipeline } from "@/blocks/types";
+import { type BlockPipeline } from "@/blocks/types";
 import {
   contextBlock,
   echoBlock,
@@ -28,8 +28,8 @@ import {
 import { fromJS } from "@/blocks/transformers/blockFactory";
 import { validateSemVerString } from "@/types/helpers";
 
-jest.mock("@/background/messenger/api", () => {
-  const actual = jest.requireActual("@/background/messenger/api");
+jest.mock("@/telemetry/logging", () => {
+  const actual = jest.requireActual("@/telemetry/logging");
   return {
     ...actual,
     getLoggingConfig: jest.fn().mockResolvedValue({

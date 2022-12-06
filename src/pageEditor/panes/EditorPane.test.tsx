@@ -52,38 +52,44 @@ import {
   makePipelineExpression,
   makeTemplateExpression,
 } from "@/runtime/expressionCreators";
-import { PipelineExpression } from "@/runtime/mapArgs";
-import { OutputKey, RegistryId } from "@/core";
+import { type PipelineExpression } from "@/runtime/mapArgs";
+import { type OutputKey, type RegistryId } from "@/core";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import * as api from "@/services/api";
-import { MarketplaceListing } from "@/types/contract";
-import { EditablePackage } from "@/types/definitions";
+import { type MarketplaceListing } from "@/types/contract";
+import { type EditablePackage } from "@/types/definitions";
 import { fireTextInput } from "@/testUtils/formHelpers";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import getType from "@/runtime/getType";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/renderersAnalysis";
 import { useGetTheme } from "@/hooks/useTheme";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import { RunProcess } from "@/contrib/uipath/process";
 
-jest.mock("@/services/api", () => ({
-  appApi: {
-    endpoints: {
-      getMarketplaceListings: {
-        useQueryState: jest.fn(),
+jest.mock("@/services/api", () => {
+  const originalModule = jest.requireActual("@/services/api");
+
+  return {
+    appApi: {
+      ...originalModule.appApi,
+      endpoints: {
+        ...originalModule.appApi.endpoints,
+        getMarketplaceListings: {
+          useQueryState: jest.fn(),
+        },
       },
     },
-  },
-  useGetMarketplaceTagsQuery: jest.fn(),
-  useGetMarketplaceListingsQuery: jest.fn(),
-  useGetEditablePackagesQuery: jest.fn(),
-  useCreateRecipeMutation: jest.fn(),
-  useUpdateRecipeMutation: jest.fn(),
-}));
+    useGetMarketplaceTagsQuery: jest.fn(),
+    useGetMarketplaceListingsQuery: jest.fn(),
+    useGetEditablePackagesQuery: jest.fn(),
+    useCreateRecipeMutation: jest.fn(),
+    useUpdateRecipeMutation: jest.fn(),
+  };
+});
 jest.mock("@/components/asyncIcon", () => ({
   useAsyncIcon: jest.fn(),
 }));

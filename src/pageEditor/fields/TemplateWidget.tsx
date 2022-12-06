@@ -17,7 +17,7 @@
 
 import React, { useCallback, useRef } from "react";
 import { Form } from "react-bootstrap";
-import { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
+import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import { LinkButton } from "@/components/LinkButton";
 
 export type Snippet = {

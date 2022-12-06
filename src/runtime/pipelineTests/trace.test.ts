@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { OutputKey, RenderedArgs } from "@/core";
+import { type OutputKey, type RenderedArgs } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
@@ -28,18 +28,18 @@ import {
 import { uuidv4 } from "@/types/helpers";
 import { traces } from "@/background/messenger/api";
 import {
-  TraceEntryData,
-  TraceExitData,
-  TraceRecordMeta,
+  type TraceEntryData,
+  type TraceExitData,
+  type TraceRecordMeta,
 } from "@/telemetry/trace";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import MockDate from "mockdate";
-import { BlockPipeline } from "@/blocks/types";
+import { type BlockPipeline } from "@/blocks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 
-jest.mock("@/background/messenger/api", () => {
-  const actual = jest.requireActual("@/background/messenger/api");
+jest.mock("@/telemetry/logging", () => {
+  const actual = jest.requireActual("@/telemetry/logging");
   return {
     ...actual,
     getLoggingConfig: jest.fn().mockResolvedValue({

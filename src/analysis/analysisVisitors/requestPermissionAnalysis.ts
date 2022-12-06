@@ -16,11 +16,11 @@
  */
 
 import { AnnotationType } from "@/analysis/analysisTypes";
-import { nestedPosition, VisitBlockExtra } from "@/blocks/PipelineVisitor";
+import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { GetAPITransformer } from "@/blocks/transformers/httpGet";
 import { RemoteMethod } from "@/blocks/transformers/remoteMethod";
-import { BlockConfig, BlockPosition } from "@/blocks/types";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isTemplateString } from "@/pageEditor/extensionPoints/upgrade";
 import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
 import { AnalysisVisitor } from "./baseAnalysisVisitors";

@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Logger, SanitizedServiceConfiguration } from "@/core";
-import { Option } from "@/components/form/widgets/SelectWidget";
+import { type Logger, type SanitizedServiceConfiguration } from "@/core";
+import { type Option } from "@/components/form/widgets/SelectWidget";
 import { proxyService } from "@/background/messenger/api";
 import {
-  Activity,
-  Bot,
+  type Activity,
+  type Bot,
   BOT_TYPE,
-  DeployResponse,
-  Device,
-  DevicePool,
+  type DeployResponse,
+  type Device,
+  type DevicePool,
   FAILURE_STATUSES,
-  Folder,
-  Interface,
-  ListResponse,
-  RunAsUser,
-  WorkspaceType,
+  type Folder,
+  type Interface,
+  type ListResponse,
+  type RunAsUser,
+  type WorkspaceType,
 } from "@/contrib/automationanywhere/contract";
 import { cachePromiseMethod } from "@/utils/cachePromise";
 import {
@@ -40,12 +40,12 @@ import {
 } from "@/contrib/automationanywhere/aaUtils";
 import { pollUntilTruthy, sleep } from "@/utils";
 import {
-  CommunityBotArgs,
-  EnterpriseBotArgs,
+  type CommunityBotArgs,
+  type EnterpriseBotArgs,
 } from "@/contrib/automationanywhere/aaTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { castArray, cloneDeep, isEmpty, sortBy } from "lodash";
-import { AxiosRequestConfig } from "axios";
+import { type AxiosRequestConfig } from "axios";
 
 // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html
 // Same as default for Control Room

@@ -39,7 +39,7 @@ import {
 import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
 import useCreate from "@/pageEditor/hooks/useCreate";
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 
 const { actions: optionsActions } = extensionsSlice;

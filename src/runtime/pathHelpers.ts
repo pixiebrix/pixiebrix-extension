@@ -18,15 +18,13 @@
 import { identity, toPath } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { cleanValue, InvalidPathError, isObject, joinName } from "@/utils";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 
 // First part of the path can be global context with a @
 const pathRegex = /^(@?[\w-]+\??)(\.[\w-]+\??)*$/;
 
 /**
  * Return true if maybePath refers to a property in ctxt.
- * @param maybePath
- * @param ctxt
  */
 export function isSimplePath(maybePath: string, ctxt: UnknownObject): boolean {
   if (!pathRegex.test(maybePath)) {
@@ -35,7 +33,7 @@ export function isSimplePath(maybePath: string, ctxt: UnknownObject): boolean {
 
   const [head] = maybePath.split(".");
   const path = head.endsWith("?") ? head.slice(0, -1) : head;
-  return ctxt ? Object.prototype.hasOwnProperty.call(ctxt, path) : false;
+  return ctxt ? Object.hasOwn(ctxt, path) : false;
 }
 
 export interface ReadProxy {
@@ -46,7 +44,7 @@ export interface ReadProxy {
 export const noopProxy: ReadProxy = {
   toJS: identity,
   get(value, prop) {
-    if (isObject(value) && Object.prototype.hasOwnProperty.call(value, prop)) {
+    if (isObject(value) && Object.hasOwn(value, prop)) {
       // Checking visibility of the property above
       // eslint-disable-next-line security/detect-object-injection
       return value[prop];

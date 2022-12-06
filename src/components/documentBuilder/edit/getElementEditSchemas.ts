@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { joinName } from "@/utils";
-import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
+import { type DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
 
 function getClassNameEdit(elementName: string): SchemaFieldProps {
   return {

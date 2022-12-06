@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SanitizedServiceConfiguration } from "@/core";
-import { UnknownObject } from "@/types";
+import { type SanitizedServiceConfiguration } from "@/core";
+import { type UnknownObject } from "@/types";
 
 export type CommunityBotArgs = {
   service: SanitizedServiceConfiguration;

@@ -16,45 +16,45 @@
  */
 
 import {
-  ApiVersion,
-  EmptyConfig,
-  IExtension,
-  Metadata,
-  RegistryId,
-  SafeString,
-  Schema,
-  UUID,
+  type ApiVersion,
+  type EmptyConfig,
+  type IExtension,
+  type Metadata,
+  type RegistryId,
+  type SafeString,
+  type Schema,
+  type UUID,
 } from "@/core";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import {
   assertExtensionPointConfig,
-  ExtensionPointConfig,
-  ExtensionPointDefinition,
-  ExtensionPointType,
+  type ExtensionPointConfig,
+  type ExtensionPointDefinition,
+  type ExtensionPointType,
 } from "@/extensionPoints/types";
 import { registry } from "@/background/messenger/api";
-import React from "react";
+import type React from "react";
 import { createSitePattern } from "@/permissions/patterns";
 import {
-  BaseExtensionState,
-  BaseFormState,
-  SingleLayerReaderConfig,
+  type BaseExtensionState,
+  type BaseFormState,
+  type SingleLayerReaderConfig,
 } from "@/pageEditor/extensionPoints/elementConfig";
-import { Except } from "type-fest";
+import { type Except } from "type-fest";
 import {
   uuidv4,
   validateRegistryId,
   validateSemVerString,
 } from "@/types/helpers";
 import {
-  BlockPipeline,
-  NormalizedAvailability,
-  ReaderConfig,
+  type BlockPipeline,
+  type NormalizedAvailability,
+  type ReaderConfig,
 } from "@/blocks/types";
 import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 import { isExpression } from "@/runtime/mapArgs";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 import {
   getMinimalSchema,
   getMinimalUiSchema,
@@ -65,7 +65,7 @@ import {
   isInnerExtensionPoint,
 } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
-import { Permissions } from "webextension-polyfill";
+import { type Permissions } from "webextension-polyfill";
 import { makeEmptyPermissions } from "@/utils/permissions";
 
 export interface WizardStep {
@@ -352,7 +352,7 @@ export function extensionWithInnerDefinitions(
   if (isInnerExtensionPoint(extension.extensionPointId)) {
     const extensionPointId = freshIdentifier(
       DEFAULT_EXTENSION_POINT_VAR as SafeString,
-      [...Object.keys(extension.definitions ?? {})]
+      Object.keys(extension.definitions ?? {})
     );
 
     const result = cloneDeep(extension);
@@ -387,7 +387,7 @@ export function removeEmptyValues<T extends object>(obj: T): T {
   return deepPickBy(
     obj,
     (value: unknown, parent: unknown) =>
-      isExpression(parent) || (typeof value !== "undefined" && value !== "")
+      isExpression(parent) || (value !== undefined && value !== "")
   ) as T;
 }
 
@@ -427,7 +427,6 @@ export function readerTypeHack(reader: ReaderConfig): SingleLayerReaderConfig {
  * Normalize the pipeline prop name and assign instance ids for tracing.
  * @param config the extension configuration
  * @param pipelineProp the name of the pipeline prop, currently either "action" or "body"
- * @param defaults
  */
 export async function extensionWithNormalizedPipeline<
   T extends UnknownObject,

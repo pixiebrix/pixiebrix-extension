@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 
 type SchemaProperties = Record<string, Schema>;
 
@@ -42,7 +42,6 @@ export function arraySchema(itemSchema: Schema): Schema {
 
 /**
  * Return as an object schema
- * @param schemaOrProperties
  */
 export function castSchema(
   schemaOrProperties: Schema | SchemaProperties

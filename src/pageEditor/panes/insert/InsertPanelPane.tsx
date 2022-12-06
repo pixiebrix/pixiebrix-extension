@@ -18,13 +18,13 @@
 import styles from "@/pageEditor/panes/Pane.module.scss";
 
 import {
-  PanelDefinition,
+  type PanelDefinition,
   PanelExtensionPoint,
 } from "@/extensionPoints/panelExtension";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import React from "react";
 import useAvailableExtensionPoints from "@/pageEditor/hooks/useAvailableExtensionPoints";
-import Centered from "@/pageEditor/components/Centered";
+import Centered from "@/components/Centered";
 import BrickModal from "@/components/brickModalNoTags/BrickModal";
 import { Alert, Button } from "react-bootstrap";
 import config from "@/pageEditor/extensionPoints/panel";

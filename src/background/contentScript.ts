@@ -24,9 +24,7 @@ import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
 import { expectContext } from "@/utils/expectContext";
 import pTimeout from "p-timeout";
 import type { Target } from "@/types";
-
-// eslint-disable-next-line import/no-restricted-paths -- TODO: Migrate to webext-messenger?
-import { getTargetState } from "@/contentScript/ready";
+import { getReadyState } from "@/contentScript/messenger/api";
 
 /** Checks whether a URL will have the content scripts automatically injected */
 export async function isContentScriptRegistered(url: string): Promise<boolean> {
@@ -109,7 +107,7 @@ async function ensureContentScriptWithoutTimeout(
   // `webext-dynamic-content-scripts` might have already injected the content script
   const readyNotificationPromise = onReadyNotification(signal);
 
-  const result = await getTargetState(target); // It will throw if we don't have permissions
+  const result = await getReadyState(target); // It will throw if we don't have permissions
 
   if (result.ready) {
     console.debug("ensureContentScript: already exists and is ready", target);

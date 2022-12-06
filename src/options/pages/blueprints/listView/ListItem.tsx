@@ -21,7 +21,7 @@ import React from "react";
 import SharingLabel from "@/options/pages/blueprints/labels/SharingLabel";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
 
-import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
+import { type InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import Status from "@/options/pages/blueprints/Status";
 import { ListGroup } from "react-bootstrap";
 import LastUpdatedLabel from "@/options/pages/blueprints/labels/LastUpdatedLabel";

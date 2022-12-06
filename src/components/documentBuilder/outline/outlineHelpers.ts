@@ -16,12 +16,12 @@
  */
 
 import {
-  DocumentElement,
+  type DocumentElement,
   isListElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
-import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
-import { ItemId, TreeData } from "@atlaskit/tree";
-import { TreeItem } from "@atlaskit/tree/types";
+import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
+import { type ItemId, type TreeData } from "@atlaskit/tree";
+import { type TreeItem } from "@atlaskit/tree/types";
 import { joinPathParts } from "@/utils";
 import { PARENT_ELEMENT_TYPES } from "@/components/documentBuilder/allowedElementTypes";
 

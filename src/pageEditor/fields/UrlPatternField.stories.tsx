@@ -16,12 +16,12 @@
  */
 
 import React from "react";
-import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import Form from "@/components/form/Form";
 import { action } from "@storybook/addon-actions";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import UrlPatternField, {
-  UrlPatternFieldProps,
+  type UrlPatternFieldProps,
 } from "@/pageEditor/fields/UrlPatternField";
 
 registerDefaultWidgets();

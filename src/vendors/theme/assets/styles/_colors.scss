@@ -15,24 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { removeField } from "@/pageEditor/hooks/useToggleFormField";
+/*
+* Base Tokens
+*
+* The following color variables are Base Color Tokens defined in our Figma Foundation documents
+* https://www.figma.com/file/LiShRwQlnRG5zNl38oGCKl/%F0%9F%94%91-Foundation?node-id=359%3A11872&t=clXjxbSfhvEFAlPW-0
+*/
 
-describe("removeField", () => {
-  test("remove field from object", () => {
-    const obj = { foo: "foo", bar: "bar" };
-    removeField(obj, "bar");
-    expect(obj).toStrictEqual({ foo: "foo" });
-  });
+// Neutral
+$N400: #675c7c;
+$N600: #3b2e53;
+$N800: #241c32;
 
-  test("remove item from array", () => {
-    const array = ["foo", "bar", "baz"];
-    removeField(array, "1");
-    expect(array).toStrictEqual(["foo", "baz"]);
-  });
-
-  test("try to remove field from non-object", () => {
-    const foo = 42;
-    removeField(foo, "bar");
-    expect(foo).toStrictEqual(42);
-  });
-});
+// Pixie
+$P100: #ccb8f4;
+$P900: #260b5c;

@@ -17,13 +17,13 @@
 
 import React, { Component } from "react";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert, Button } from "react-bootstrap";
-import { whoAmI } from "@/background/messenger/api";
 import { reloadSidebar } from "@/contentScript/messenger/api";
+import { getTopLevelFrame } from "webext-messenger";
 
 interface State {
   hasError: boolean;
@@ -47,8 +47,8 @@ class ErrorBoundary extends Component<UnknownObject, State> {
   }
 
   async reloadSidebar() {
-    const sidebar = await whoAmI();
-    await reloadSidebar({ tabId: sidebar.tab.id });
+    const topLevelFrame = await getTopLevelFrame();
+    await reloadSidebar(topLevelFrame);
   }
 
   override render(): React.ReactNode {

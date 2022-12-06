@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import UrlMatchPatternWidget from "@/pageEditor/components/UrlMatchPatternWidget";
+import UrlMatchPatternWidget from "./UrlMatchPatternWidget";
 import UrlPatternWidget from "@/pageEditor/components/UrlPatternWidget";
 import ArrayWidget from "./ArrayWidget";
 import BooleanWidget from "./BooleanWidget";
@@ -30,38 +30,37 @@ import UnsupportedWidget from "./UnsupportedWidget";
 import widgetsRegistry from "./widgetsRegistry";
 import WorkshopMessageWidget from "./WorkshopMessageWidget";
 import SelectorMatchWidget from "@/pageEditor/components/SelectorMatchWidget";
-import CssClassWidget from "@/components/fields/schemaFields/widgets/CssClassWidget";
+import CssClassWidget from "./CssClassWidget";
 import DatabaseWidget from "./DatabaseWidget";
 
+const defaultWidgets = {
+  ArrayWidget,
+  BooleanWidget,
+  IntegerWidget,
+  NumberWidget,
+  ObjectWidget,
+  OmitFieldWidget,
+  SchemaSelectWidget,
+  TemplateToggleWidget,
+  TextWidget,
+  UnsupportedWidget,
+  UrlMatchPatternWidget,
+  UrlPatternWidget,
+  SelectorMatchWidget,
+  CssClassWidget,
+  WorkshopMessageWidget,
+  DatabaseWidget,
+} as const;
+
 function registerDefaultWidgets() {
-  if (typeof TextWidget === "undefined" || TextWidget == null) {
-    throw new Error(
-      "Error registering default widgets. TextWidget is undefined. Is there a circular dependency?"
-    );
+  Object.assign(widgetsRegistry, defaultWidgets);
+  for (const [name, widget] of Object.entries(defaultWidgets)) {
+    if (!widget) {
+      throw new Error(
+        `Error registering default widgets. ${name} is undefined. Is there a circular dependency?`
+      );
+    }
   }
-
-  if (typeof OmitFieldWidget === "undefined" || OmitFieldWidget == null) {
-    throw new Error(
-      "Error registering default widgets. OmitFieldWidget is undefined. Is there a circular dependency?"
-    );
-  }
-
-  widgetsRegistry.ArrayWidget = ArrayWidget;
-  widgetsRegistry.BooleanWidget = BooleanWidget;
-  widgetsRegistry.IntegerWidget = IntegerWidget;
-  widgetsRegistry.NumberWidget = NumberWidget;
-  widgetsRegistry.ObjectWidget = ObjectWidget;
-  widgetsRegistry.OmitFieldWidget = OmitFieldWidget;
-  widgetsRegistry.SchemaSelectWidget = SchemaSelectWidget;
-  widgetsRegistry.TemplateToggleWidget = TemplateToggleWidget;
-  widgetsRegistry.TextWidget = TextWidget;
-  widgetsRegistry.UnsupportedWidget = UnsupportedWidget;
-  widgetsRegistry.UrlMatchPatternWidget = UrlMatchPatternWidget;
-  widgetsRegistry.UrlPatternWidget = UrlPatternWidget;
-  widgetsRegistry.SelectorMatchWidget = SelectorMatchWidget;
-  widgetsRegistry.CssClassWidget = CssClassWidget;
-  widgetsRegistry.WorkshopMessageWidget = WorkshopMessageWidget;
-  widgetsRegistry.DatabaseWidget = DatabaseWidget;
 }
 
 export default registerDefaultWidgets;

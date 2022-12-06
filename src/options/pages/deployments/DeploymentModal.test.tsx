@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import DeploymentModal from "@/options/pages/deployments/DeploymentModal";
@@ -21,10 +22,10 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import settingsSlice, { initialSettingsState } from "@/store/settingsSlice";
 import MockDate from "mockdate";
-import { SettingsState } from "@/store/settingsTypes";
+import { type SettingsState } from "@/store/settingsTypes";
 import { authSlice } from "@/auth/authSlice";
 import { useUpdateAvailable } from "@/options/pages/UpdateBanner";
-import { AuthState } from "@/auth/authTypes";
+import { type AuthState } from "@/auth/authTypes";
 
 jest.mock("@/options/pages/UpdateBanner", () => ({
   useUpdateAvailable: jest.fn(),

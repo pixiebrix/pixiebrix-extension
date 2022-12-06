@@ -24,11 +24,11 @@
  * For instance, it doesn't have a `length` property.
  */
 
-import { MoveBrickControlProps } from "@/pageEditor/tabs/editTab/editorNodes/brickNode/MoveBrickControl";
-import { NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import React from "react";
-import { OutputKey } from "@/core";
+import { type MoveBrickControlProps } from "@/pageEditor/tabs/editTab/editorNodes/brickNode/MoveBrickControl";
+import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
+import { type IconProp } from "@fortawesome/fontawesome-svg-core";
+import type React from "react";
+import { type OutputKey } from "@/core";
 
 export type FormikError = string | FormikErrorTree;
 

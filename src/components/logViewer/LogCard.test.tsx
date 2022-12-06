@@ -21,7 +21,7 @@ import React from "react";
 import { Provider } from "react-redux";
 import LogCard from "./LogCard";
 import { initialLogState, logSlice } from "./logSlice";
-import { LogState } from "./logViewerTypes";
+import { type LogState } from "./logViewerTypes";
 
 function renderLogCard(state?: LogState) {
   // @ts-expect-error -- assigning state with collections of LogEntries is perfectly fine

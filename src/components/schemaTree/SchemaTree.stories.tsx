@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { ComponentStory, ComponentMeta } from "@storybook/react";
+import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 
 export default {

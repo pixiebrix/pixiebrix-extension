@@ -18,8 +18,11 @@
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
-import { BlockConfig } from "@/blocks/types";
-import { isPipelineExpression, PipelineExpression } from "@/runtime/mapArgs";
+import { type BlockConfig } from "@/blocks/types";
+import {
+  isPipelineExpression,
+  type PipelineExpression,
+} from "@/runtime/mapArgs";
 import {
   echoBlock,
   teapotBlock,

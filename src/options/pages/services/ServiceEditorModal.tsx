@@ -21,7 +21,7 @@ import optionsRegistry from "@/components/fields/optionsRegistry";
 import React, { useCallback, useMemo } from "react";
 import { Modal, Button } from "react-bootstrap";
 import AsyncButton from "@/components/AsyncButton";
-import { IService, RawServiceConfiguration, UUID } from "@/core";
+import { type IService, type RawServiceConfiguration, type UUID } from "@/core";
 import { dereference } from "@/validators/generic";
 import { cloneDeep, truncate } from "lodash";
 import { useAsyncState } from "@/hooks/common";
@@ -33,13 +33,13 @@ import { useTitle } from "@/hooks/title";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import FieldRuntimeContext, {
-  RuntimeContext,
+  type RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/options/constants";
 import Form, {
-  OnSubmit,
-  RenderBody,
-  RenderSubmit,
+  type OnSubmit,
+  type RenderBody,
+  type RenderSubmit,
 } from "@/components/form/Form";
 
 export type OwnProps = {
@@ -114,7 +114,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
       return buildYup(cloneDeep(schema), {});
     } catch (error) {
       console.error("Error building Yup validator from JSON Schema", { error });
-      reportError(error, null, { logToConsole: false });
+      reportError(error, { logToConsole: false });
       return Yup.object();
     }
   }, [schema]);

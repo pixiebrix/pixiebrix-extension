@@ -17,14 +17,14 @@
 
 import React, { useContext } from "react";
 import DocumentContext from "./DocumentContext";
-import { UnknownObject } from "@/types";
-import { Args, isDeferExpression } from "@/runtime/mapArgs";
+import { type UnknownObject } from "@/types";
+import { type Args, isDeferExpression } from "@/runtime/mapArgs";
 import { useAsyncState } from "@/hooks/common";
 import Loader from "@/components/Loader";
 import {
-  BuildDocumentBranch,
-  DocumentElement,
-  DynamicPath,
+  type BuildDocumentBranch,
+  type DocumentElement,
+  type DynamicPath,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { produce } from "immer";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -32,7 +32,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { runMapArgs } from "@/contentScript/messenger/api";
 import { isNullOrBlank, joinPathParts } from "@/utils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { whoAmI } from "@/background/messenger/api";
+import { getTopLevelFrame } from "webext-messenger";
 
 type DocumentListProps = {
   array: UnknownObject[];
@@ -59,14 +59,11 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
   const documentContext = useContext(DocumentContext);
 
   const [rootDefinitions, isLoading, error] = useAsyncState(async () => {
-    const me = await whoAmI();
-    const target = { tabId: me.tab.id, frameId: 0 };
+    const topLevelFrame = await getTopLevelFrame();
 
     const key = `@${elementKey}`;
 
-    if (
-      Object.prototype.hasOwnProperty.call(documentContext.options.ctxt, key)
-    ) {
+    if (Object.hasOwn(documentContext.options.ctxt, key)) {
       documentContext.options.logger.warn(
         `List key ${key} shadows an existing key`
       );
@@ -83,7 +80,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
 
         if (isDeferExpression(config)) {
           documentElement = (await runMapArgs(
-            target,
+            topLevelFrame,
             // TODO: pass runtime version via DocumentContext instead of hard-coding it. This is be wrong for v4+
             {
               config: config.__value__,

@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo, useRef } from "react";
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 import { getIn, useFormikContext } from "formik";
 import useBlockOptions from "@/hooks/useBlockOptions";
 import { Card } from "react-bootstrap";
@@ -26,17 +26,19 @@ import Loader from "@/components/Loader";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { joinName } from "@/utils";
 import { useAsyncState } from "@/hooks/common";
-import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
+import SelectWidget, {
+  type Option,
+} from "@/components/form/widgets/SelectWidget";
 import { partial } from "lodash";
-import { BlockWindow } from "@/blocks/types";
+import { type BlockWindow } from "@/blocks/types";
 import AdvancedLinks, {
   DEFAULT_WINDOW_VALUE,
 } from "@/pageEditor/tabs/effect/AdvancedLinks";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import getType from "@/runtime/getType";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import ConfigurationTitle from "./ConfigurationTitle";
 
 const rootModeOptions = [
@@ -93,10 +95,15 @@ const BlockConfiguration: React.FunctionComponent<{
     [configName]
   );
 
-  // Only show if necessary. Currently, only the trigger extension point passes the element
-  // that triggered the event through for the reader root
+  // Only show if the extension point supports a target mode. menuItem implicitly supports target mode, because
+  // it's root-aware if multiple menu items are added to the page.
+  // Technically trigger/quickBar/etc. allow the user to pick the target mode. But for now, show the field even if
+  // the user has configured the extension point to use the document as the target.
   const showRootMode =
-    isRootAware && ["trigger", "contextMenu"].includes(context.values.type);
+    isRootAware &&
+    ["trigger", "contextMenu", "quickBar", "menuItem"].includes(
+      context.values.type
+    );
   const showIfAndTarget = blockType && blockType !== "renderer";
   const noAdvancedOptions = !showRootMode && !showIfAndTarget;
 

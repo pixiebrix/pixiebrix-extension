@@ -20,7 +20,7 @@ import { getExtensionAuth } from "@/auth/token";
 import { isExtensionContext } from "webext-detect-page";
 import { connectPage } from "@/background/messenger/external/api";
 import { useAsyncState } from "@/hooks/common";
-import Banner, { BannerVariant } from "@/components/banner/Banner";
+import Banner, { type BannerVariant } from "@/components/banner/Banner";
 
 // TODO: don't use process.env here so that we can use the same JS app bundle for all environments
 //  see https://github.com/pixiebrix/pixiebrix-app/issues/259

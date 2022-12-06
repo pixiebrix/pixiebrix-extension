@@ -20,10 +20,10 @@ import React, { useCallback, useMemo, useState } from "react";
 import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import { Button } from "react-bootstrap";
-import Centered from "@/pageEditor/components/Centered";
+import Centered from "@/components/Centered";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
-import { Permissions } from "webextension-polyfill";
+import { type Permissions } from "webextension-polyfill";
 import { selectOptionalPermissions } from "@/utils/permissions";
 
 const PermissionsPopupApp: React.FC = () => {

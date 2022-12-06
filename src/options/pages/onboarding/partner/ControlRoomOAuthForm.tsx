@@ -17,9 +17,12 @@
 
 import React, { useCallback } from "react";
 import { uuidv4 } from "@/types/helpers";
-import { persistor } from "@/options/store";
+import { persistor } from "@/store/optionsStore";
 import { launchAuthIntegration } from "@/background/messenger/api";
-import Form, { RenderBody, RenderSubmit } from "@/components/form/Form";
+import Form, {
+  type RenderBody,
+  type RenderSubmit,
+} from "@/components/form/Form";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Button } from "react-bootstrap";
 import * as Yup from "yup";
@@ -28,12 +31,13 @@ import { selectConfiguredServices } from "@/store/servicesSelectors";
 import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
 import servicesSlice from "@/store/servicesSlice";
 import { selectSettings } from "@/store/settingsSelectors";
-import { FormikHelpers } from "formik";
+import { type FormikHelpers } from "formik";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { serviceOriginPermissions } from "@/permissions";
 import { requestPermissions } from "@/utils/permissions";
 import { isEmpty } from "lodash";
 import { util as apiUtil } from "@/services/api";
+import { useHistory } from "react-router";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -55,6 +59,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
   initialValues: ControlRoomConfiguration;
 }> = ({ initialValues }) => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const configuredServices = useSelector(selectConfiguredServices);
 
   const { authServiceId: authServiceIdOverride } = useSelector(selectSettings);
@@ -106,6 +111,9 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
 
         await launchAuthIntegration({ serviceId: authServiceId });
 
+        // Redirect to blueprints screen. The SetupPage always shows a login screen for the "/start" URL
+        history.push("/");
+
         // Refresh auth state so that 1) the user appears as logged in the UI in the navbar, and 2) the Admin Console
         // link in the navbar links to the URL required for JWT hand-off.
         // See useRequiredAuth hook for more details
@@ -114,7 +122,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
         helpers.setStatus(getErrorMessage(error));
       }
     },
-    [dispatch, configuredServices, authServiceId]
+    [dispatch, history, configuredServices, authServiceId]
   );
 
   const renderBody: RenderBody = () => (

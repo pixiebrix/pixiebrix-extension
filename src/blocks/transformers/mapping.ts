@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockArg, Schema } from "@/core";
+import { type BlockArg, type Schema } from "@/core";
 import { BusinessError } from "@/errors/businessErrors";
 
 export class MappingTransformer extends Transformer {
@@ -66,8 +66,8 @@ export class MappingTransformer extends Transformer {
       return null;
     }
 
-    if (Object.prototype.hasOwnProperty.call(mapping, key)) {
-      // Checking for hasOwnProperty
+    if (Object.hasOwn(mapping, key)) {
+      // Checking for hasOwn
       // eslint-disable-next-line security/detect-object-injection
       return mapping[key];
     }

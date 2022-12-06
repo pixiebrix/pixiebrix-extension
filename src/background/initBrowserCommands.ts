@@ -16,8 +16,8 @@
  */
 
 import { toggleQuickBar } from "@/contentScript/messenger/api";
-import { Tab } from "@/mv3/api";
-import { Target } from "@/types";
+import { type Tab } from "@/mv3/api";
+import { type Target } from "@/types";
 import { expectContext } from "@/utils/expectContext";
 import { isScriptableUrl } from "@/utils/permissions";
 import { ensureContentScript } from "./contentScript";

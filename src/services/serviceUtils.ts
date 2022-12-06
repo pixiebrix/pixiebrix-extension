@@ -16,12 +16,12 @@
  */
 
 import {
-  RegistryId,
-  SanitizedServiceConfiguration,
-  Schema,
-  ServiceContext,
-  ServiceDependency,
-  UUID,
+  type RegistryId,
+  type SanitizedServiceConfiguration,
+  type Schema,
+  type ServiceContext,
+  type ServiceDependency,
+  type UUID,
 } from "@/core";
 import { services } from "@/background/messenger/api";
 import { pickBy } from "lodash";
@@ -42,7 +42,6 @@ const SERVICE_ID_REGEX =
 
 /**
  * Return the registry ids of services supported by a JSON Schema field definition
- * @param schema
  */
 export function extractServiceIds(schema: Schema): RegistryId[] {
   if ("$ref" in schema) {

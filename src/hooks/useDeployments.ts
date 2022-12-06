@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Deployment } from "@/types/contract";
+import { type Deployment } from "@/types/contract";
 import { useCallback, useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
 import { ensureAllPermissions } from "@/permissions";
@@ -26,8 +26,8 @@ import notify from "@/utils/notify";
 import { getUID, services } from "@/background/messenger/api";
 import { getExtensionVersion } from "@/chrome";
 import { refreshRegistries } from "@/hooks/useRefresh";
-import { Dispatch } from "redux";
-import { IExtension } from "@/core";
+import { type Dispatch } from "redux";
+import { type IExtension } from "@/core";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import extensionsSlice from "@/store/extensionsSlice";
 import useFlags from "@/hooks/useFlags";
@@ -44,7 +44,6 @@ const { actions } = extensionsSlice;
 
 /**
  * Fetch deployments, or return empty array if the extension is not linked to the PixieBrix API.
- * @param installedExtensions
  */
 async function fetchDeployments(
   installedExtensions: IExtension[]
@@ -59,7 +58,7 @@ async function fetchDeployments(
     "/api/deployments/",
     {
       uid: await getUID(),
-      version: await getExtensionVersion(),
+      version: getExtensionVersion(),
       active: selectInstalledDeployments(installedExtensions),
     }
   );

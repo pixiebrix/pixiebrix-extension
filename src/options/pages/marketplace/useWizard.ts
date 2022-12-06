@@ -1,18 +1,19 @@
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 import {
-  WizardStep,
-  WizardValues,
+  type WizardStep,
+  type WizardValues,
 } from "@/options/pages/marketplace/wizardTypes";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import React, { useMemo } from "react";
+import type React from "react";
+import { useMemo } from "react";
 import {
   inferRecipeAuths,
   inferRecipeOptions,
 } from "@/options/pages/blueprints/utils/useReinstall";
 import { isEmpty, mapValues, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 import { isPrimitive } from "@/utils";
 import ExtensionsBody from "@/options/pages/marketplace/ExtensionsBody";
 import OptionsBody from "@/options/pages/marketplace/OptionsBody";

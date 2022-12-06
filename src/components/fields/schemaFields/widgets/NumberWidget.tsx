@@ -16,16 +16,16 @@
  */
 
 import React, {
-  FocusEventHandler,
+  type FocusEventHandler,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
-import { Form, FormControlProps } from "react-bootstrap";
+import { Form, type FormControlProps } from "react-bootstrap";
 import { useField } from "formik";
 import { round } from "lodash";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 
 /**
  * A basic input widget for numbers
@@ -45,9 +45,9 @@ const NumberWidget: React.VFC<
   hideLabel,
   isObjectProperty,
   isArrayItem,
-  onClick,
   focusInput,
   step,
+  inputRef: inputRefProp,
   ...restProps
 }) => {
   const [{ value: formValue }, , { setValue: setFormValue }] =
@@ -61,6 +61,13 @@ const NumberWidget: React.VFC<
       inputRef.current?.focus();
     }
   }, [focusInput]);
+
+  useEffect(() => {
+    // Sync the ref values
+    if (inputRefProp) {
+      inputRefProp.current = inputRef.current;
+    }
+  }, [inputRef.current]);
 
   const onChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     ({ target }) => {

@@ -17,13 +17,17 @@
 
 import React, { useState } from "react";
 import {
-  BrickNodeContentProps,
-  BrickNodeProps,
+  type BrickNodeContentProps,
+  type BrickNodeProps,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
-import { PipelineHeaderNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
-import { PipelineFooterNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
+import { type PipelineHeaderNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
+import { type PipelineFooterNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import { BlockConfig, BlockPipeline, Branch } from "@/blocks/types";
+import {
+  type BlockConfig,
+  type BlockPipeline,
+  type Branch,
+} from "@/blocks/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
 import { DocumentRenderer } from "@/blocks/renderers/document";
@@ -37,10 +41,10 @@ import {
 import { isNullOrBlank, joinName, joinPathParts } from "@/utils";
 import { get, isEmpty } from "lodash";
 import {
-  DocumentElement,
+  type DocumentElement,
   isButtonElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
-import { NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
+import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import BrickIcon from "@/components/BrickIcon";
@@ -48,8 +52,8 @@ import {
   decideBlockStatus,
   decideFoundationStatus,
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/decideStatus";
-import { Except } from "type-fest";
-import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
+import { type Except } from "type-fest";
+import useAllBlocks from "@/blocks/hooks/useAllBlocks";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
 import {
@@ -57,13 +61,13 @@ import {
   selectActiveNodeId,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
-import { getRootPipelineFlavor } from "@/pageEditor/tabs/editTab/blockFilterHelpers";
+import { getRootPipelineFlavor } from "@/blocks/blockFilterHelpers";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import { OutputKey, UUID } from "@/core";
+import { type OutputKey, type UUID } from "@/core";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 import usePasteBlock from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBlock";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";

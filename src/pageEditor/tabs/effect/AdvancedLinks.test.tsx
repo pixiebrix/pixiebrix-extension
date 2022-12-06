@@ -17,7 +17,7 @@
 
 import { createFormikTemplate } from "@/testUtils/formHelpers";
 import { render, screen } from "@testing-library/react";
-import { FormikValues } from "formik";
+import { type FormikValues } from "formik";
 import React, { useRef } from "react";
 import AdvancedLinks, {
   DEFAULT_TEMPLATE_ENGINE_VALUE,

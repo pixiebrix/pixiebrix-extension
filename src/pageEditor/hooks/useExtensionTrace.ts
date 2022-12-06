@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getLatestRunByExtensionId, TraceRecord } from "@/telemetry/trace";
+import { getLatestRunByExtensionId, type TraceRecord } from "@/telemetry/trace";
 import useInterval from "@/hooks/useInterval";
 import { useDispatch, useSelector } from "react-redux";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";

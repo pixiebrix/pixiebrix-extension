@@ -15,12 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { FormEvent, useCallback, useMemo, useState, memo } from "react";
+import React, {
+  type FormEvent,
+  useCallback,
+  useMemo,
+  useState,
+  memo,
+} from "react";
 import styles from "./CreatableAutosuggest.module.scss";
 import Autosuggest, {
-  ChangeEvent,
-  InputProps,
-  OnSuggestionSelected,
+  type ChangeEvent,
+  type InputProps,
+  type OnSuggestionSelected,
 } from "react-autosuggest";
 import cx from "classnames";
 import { noop } from "lodash";

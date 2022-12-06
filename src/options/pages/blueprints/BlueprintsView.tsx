@@ -23,7 +23,7 @@ import {
   selectActiveTab,
   selectView,
 } from "@/options/pages/blueprints/blueprintsSelectors";
-import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
+import { type BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
 import OnboardingView from "@/options/pages/blueprints/onboardingView/OnboardingView";
 import EmptyView from "@/options/pages/blueprints/emptyView/EmptyView";
 import GetStartedView from "@/options/pages/blueprints/GetStartedView";

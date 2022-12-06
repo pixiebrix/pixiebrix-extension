@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IconLibrary } from "@/core";
+import { type IconLibrary } from "@/core";
 
 export interface IconOption {
   value: { id: string; library: IconLibrary };

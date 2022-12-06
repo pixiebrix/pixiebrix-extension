@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ServiceDependency } from "@/core";
+import { type ServiceDependency } from "@/core";
 
 export type FormState = {
   services: ServiceDependency[];

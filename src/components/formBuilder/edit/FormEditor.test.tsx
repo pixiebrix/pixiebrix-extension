@@ -15,20 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Schema, UiSchema } from "@/core";
+import { type Schema, type UiSchema } from "@/core";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import testItRenders, { ItRendersOptions } from "@/testUtils/testItRenders";
+import testItRenders, {
+  type ItRendersOptions,
+} from "@/testUtils/testItRenders";
 import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
-import { Except } from "type-fest";
+import { type Except } from "type-fest";
 import {
   createFormikTemplate,
   fireTextInput,
   fireFormSubmit,
   selectSchemaFieldType,
 } from "@/testUtils/formHelpers";
-import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
-import FormEditor, { FormEditorProps } from "./FormEditor";
+import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
+import FormEditor, { type FormEditorProps } from "./FormEditor";
 import {
   initAddingFieldCases,
   initOneFieldSchemaCase,

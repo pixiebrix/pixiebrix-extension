@@ -16,18 +16,18 @@
  */
 
 import Cookies from "js-cookie";
-import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
+import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
-  PartnerAuthData,
-  TokenAuthData,
+  type PartnerAuthData,
+  type TokenAuthData,
   USER_DATA_UPDATE_KEYS,
-  UserData,
-  UserDataUpdate,
+  type UserData,
+  type UserDataUpdate,
 } from "./authTypes";
 import { isExtensionContext } from "webext-detect-page";
 import { expectContext } from "@/utils/expectContext";
 import { isEmpty, omit, remove } from "lodash";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 
 // `chrome.storage.local` keys
 const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
@@ -58,7 +58,7 @@ export async function flagOn(flag: string): Promise<boolean> {
 }
 
 /**
- * Return the PixieBrix API token (issued by the PixieBrix API).
+ * Return the native PixieBrix API token (issued by the PixieBrix API).
  */
 export async function getExtensionToken(): Promise<string | undefined> {
   const { token } = await readAuthData();

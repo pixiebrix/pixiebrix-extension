@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UUID } from "@/core";
+import { type UUID } from "@/core";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
-import { Installable } from "./blueprintsTypes";
+import { type Installable } from "./blueprintsTypes";
 import { useGetCloudExtensionsQuery } from "@/services/api";
 import { selectScope } from "@/auth/authSelectors";
 import { useAllRecipes } from "@/recipes/recipesHooks";

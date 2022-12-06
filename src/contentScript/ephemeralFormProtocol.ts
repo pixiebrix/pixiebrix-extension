@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
-import { UUID } from "@/core";
+import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
+import { type UUID } from "@/core";
 import { expectContext } from "@/utils/expectContext";
-import pDefer, { DeferredPromise } from "p-defer";
+import pDefer, { type DeferredPromise } from "p-defer";
 import { CancelError } from "@/errors/businessErrors";
 
 type RegisteredForm = {
@@ -55,7 +55,6 @@ export async function registerForm(
 
 /**
  * Helper method to unregister the deferred promise for the form.
- * @param formNonce
  */
 function unregisterForm(formNonce: UUID) {
   expectContext("contentScript");

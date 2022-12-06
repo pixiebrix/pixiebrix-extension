@@ -34,7 +34,6 @@ export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
 export const ensureContentScript = getMethod("INJECT_SCRIPT", bg);
 export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT", bg);
 export const getUID = getMethod("GET_UID", bg);
-export const whoAmI = getMethod("ECHO_SENDER", bg);
 export const waitForTargetByUrl = getMethod("WAIT_FOR_TARGET_BY_URL", bg);
 
 export const activatePartnerTheme = getMethod("ACTIVATE_PARTNER_THEME", bg);
@@ -103,13 +102,12 @@ export const proxyService = getMethod("PROXY", bg) as <TData>(
   requestConfig: AxiosRequestConfig
 ) => Promise<RemoteResponse<TData>>;
 
-// Use `reportError` instead */
+// Use this instead: `import reportError from "@/telemetry/reportError"`
 // export const recordError = getNotifier("RECORD_ERROR", bg);
 
 export const recordLog = getNotifier("RECORD_LOG", bg);
+export const recordWarning = getNotifier("RECORD_WARNING", bg);
 export const recordEvent = getNotifier("RECORD_EVENT", bg);
-export const getLoggingConfig = getMethod("GET_LOGGING_CONFIG", bg);
-export const setLoggingConfig = getMethod("SET_LOGGING_CONFIG", bg);
 export const clearLogs = getMethod("CLEAR_LOGS", bg);
 export const clearLog = getMethod("CLEAR_LOG", bg);
 export const clearExtensionDebugLogs = getMethod(

@@ -16,7 +16,7 @@
  */
 
 import { recordEvent } from "@/background/messenger/api";
-import { JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 
 /**
  * Report an event to the PixieBrix telemetry service, if the user doesn't have DNT set.

@@ -15,15 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { deserializeError, ErrorObject } from "serialize-error";
-import { isObject, smartAppendPeriod } from "@/utils";
+import { deserializeError, type ErrorObject } from "serialize-error";
+import { isObject, matchesAnyPattern, smartAppendPeriod } from "@/utils";
 import safeJsonStringify from "json-stringify-safe";
-import { truncate } from "lodash";
+import { isEmpty, truncate } from "lodash";
 import {
   isAxiosError,
   selectNetworkErrorMessage,
   selectServerErrorMessage,
 } from "@/errors/networkErrorHelpers";
+import { type MessageContext } from "@/core";
 
 // From "webext-messenger". Cannot import because the webextension polyfill can only run in an extension context
 // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3641
@@ -69,6 +70,29 @@ export const IGNORED_ERROR_PATTERNS = [
   CONTEXT_INVALIDATED_ERROR,
 ];
 
+export function shouldErrorBeIgnored(
+  possibleError: unknown,
+  context: MessageContext = {}
+): boolean {
+  const { pageName, ...extensionContext } = context;
+  return (
+    // For noisy errors, don't record/submit telemetry unless the error prevented an extension point
+    // from being installed or an extension to fail. (In that case, we'd have some context about the error).
+    isEmpty(extensionContext) &&
+    matchesAnyPattern(getErrorMessage(possibleError), IGNORED_ERROR_PATTERNS)
+  );
+}
+
+/** Add a global listener for uncaught errors and promise rejections */
+export function onUncaughtError(handler: (error: Error) => void): void {
+  const listener = (errorEvent: ErrorEvent | PromiseRejectionEvent): void => {
+    handler(selectErrorFromEvent(errorEvent));
+  };
+
+  self.addEventListener("error", listener);
+  self.addEventListener("unhandledrejection", listener);
+}
+
 export function isErrorObject(error: unknown): error is ErrorObject {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function and it uses ?.
   return typeof (error as any)?.message === "string";
@@ -79,15 +103,17 @@ export function isSpecificError<
 >(error: unknown, errorType: ErrorType): error is InstanceType<ErrorType> {
   // Catch 2 common error subclass groups. Necessary until we drop support for serialized errors:
   // https://github.com/sindresorhus/serialize-error/issues/72
-  if (errorType.name === "ClientRequestError") {
+  if (isErrorTypeNameMatch(errorType.name, ["ClientRequestError"])) {
     return isClientRequestError(error);
   }
 
-  if (errorType.name === "BusinessError") {
+  if (isErrorTypeNameMatch(errorType.name, ["BusinessError"])) {
     return isBusinessError(error);
   }
 
-  return isErrorObject(error) && error.name === errorType.name;
+  return (
+    isErrorObject(error) && isErrorTypeNameMatch(error.name, [errorType.name])
+  );
 }
 
 export function selectSpecificError<
@@ -148,8 +174,42 @@ const BUSINESS_ERROR_NAMES = new Set([
   "InvalidSelectorError",
 ]);
 
+/**
+ * Returns true if errorName matches at least one of classNames.
+ *
+ * Accounts for name-mangling by webpack in optimized code for the class names in classNames.
+ *
+ * @param errorName the query error name
+ * @param classNames the class names to match against
+ */
+export function isErrorTypeNameMatch(
+  errorName: string,
+  classNames: Iterable<string>
+): boolean {
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/4763
+
+  // In production builds, webpack tries to hoist classes to the global scope. To do so, it namespaces the class name
+  // with the module name: https://webpack.js.org/configuration/optimization/#optimizationconcatenatemodules
+
+  // Also note that keep_classnames must be set in webpack's TerserPlugin configuration to preserve the error
+  // class names for the name check to work
+
+  return (
+    errorName &&
+    // Defensive check because some call sites cast from unknown
+    typeof errorName === "string" &&
+    [...classNames].some(
+      (className) =>
+        errorName === className || errorName.endsWith(`_${className}`)
+    )
+  );
+}
+
 export function isBusinessError(error: unknown): boolean {
-  return isErrorObject(error) && BUSINESS_ERROR_NAMES.has(error.name);
+  return (
+    isErrorObject(error) &&
+    isErrorTypeNameMatch(error.name, BUSINESS_ERROR_NAMES)
+  );
 }
 
 // List all ClientRequestError subclasses as text:
@@ -167,7 +227,10 @@ const CLIENT_REQUEST_ERROR_NAMES = new Set([
  * @see CLIENT_REQUEST_ERROR_NAMES
  */
 export function isClientRequestError(error: unknown): boolean {
-  return isErrorObject(error) && CLIENT_REQUEST_ERROR_NAMES.has(error.name);
+  return (
+    isErrorObject(error) &&
+    isErrorTypeNameMatch(error.name, CLIENT_REQUEST_ERROR_NAMES)
+  );
 }
 
 /**
@@ -239,10 +302,10 @@ export function getErrorCauseList(error: unknown): unknown[] {
 }
 
 /**
- * Handle ErrorEvents, i.e., generated from window.onerror
- * @param event the error event
+ * Extracts or generates error from ErrorEvent
+ * @deprecated use the generic `selectErrorFromEvent`
  */
-export function selectErrorFromEvent(event: ErrorEvent): Error {
+export function selectErrorFromErrorEvent(event: ErrorEvent): Error {
   // https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onerror
   // https://developer.mozilla.org/en-US/docs/Web/API/ErrorEvent
 
@@ -278,8 +341,8 @@ export function selectErrorFromEvent(event: ErrorEvent): Error {
 }
 
 /**
- * Handle unhandled promise rejections
- * @param event the promise rejection event
+ * Extracts error from PromiseRejectionEvent
+ * @deprecated use the generic `selectErrorFromEvent`
  */
 export function selectErrorFromRejectionEvent(
   event: PromiseRejectionEvent
@@ -294,6 +357,17 @@ export function selectErrorFromRejectionEvent(
 }
 
 /**
+ * Extracts error from ErrorEvent and PromiseRejectionEvent
+ */
+export function selectErrorFromEvent(
+  event: ErrorEvent | PromiseRejectionEvent
+): Error {
+  return event instanceof PromiseRejectionEvent
+    ? selectErrorFromRejectionEvent(event)
+    : selectErrorFromErrorEvent(event);
+}
+
+/**
  * Finds or creates an Error starting from strings or real Errors.
  *
  * The result is suitable for passing to Rollbar (which treats Errors and objects differently.)
@@ -302,7 +376,7 @@ export function selectError(originalError: unknown): Error {
   // Be defensive here for ErrorEvent. In practice, this method will only be called with errors (as opposed to events,
   // though.) See reportUncaughtErrors
   if (originalError instanceof ErrorEvent) {
-    return selectErrorFromEvent(originalError);
+    return selectErrorFromErrorEvent(originalError);
   }
 
   // Be defensive here for PromiseRejectionEvent. In practice, this method will only be called with errors (as opposed

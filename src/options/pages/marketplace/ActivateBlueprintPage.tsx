@@ -19,7 +19,7 @@ import Page from "@/layout/Page";
 import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";
 import React, { useMemo } from "react";
 import { useLocation, useParams } from "react-router";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 import { Card, Col, Row } from "react-bootstrap";
 import Loader from "@/components/Loader";
 import ActivateWizard from "@/options/pages/marketplace/ActivateWizard";
@@ -27,7 +27,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useFetch from "@/hooks/useFetch";
-import { BlueprintResponse } from "@/types/contract";
+import { type BlueprintResponse } from "@/types/contract";
 import { pick } from "lodash";
 
 const ActivateBlueprintPage: React.FunctionComponent = () => {

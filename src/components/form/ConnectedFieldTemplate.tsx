@@ -17,8 +17,10 @@
 
 import React from "react";
 import { connect, getIn } from "formik";
-import FieldTemplate, { FieldProps } from "@/components/form/FieldTemplate";
-import { FormikContextType } from "formik/dist/types";
+import FieldTemplate, {
+  type FieldProps,
+} from "@/components/form/FieldTemplate";
+import { type FormikContextType } from "formik/dist/types";
 import useFieldError from "./useFieldError";
 
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- https://github.com/typescript-eslint/typescript-eslint/issues/5407

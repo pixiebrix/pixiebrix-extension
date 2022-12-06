@@ -16,7 +16,7 @@
  */
 
 import { isEmpty } from "lodash";
-import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
+import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { isExtensionContext } from "webext-detect-page";
 import { useAsyncEffect } from "use-async-effect";
 import { useCallback, useState } from "react";

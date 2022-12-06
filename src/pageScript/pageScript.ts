@@ -48,7 +48,7 @@ import { isEmpty, identity, castArray, cloneDeep } from "lodash";
 import {
   CONNECT_EXTENSION,
   DETECT_FRAMEWORK_VERSIONS,
-  Framework,
+  type Framework,
   GET_COMPONENT_DATA,
   GET_COMPONENT_INFO,
   READ_WINDOW,
@@ -60,22 +60,26 @@ import detectLibraries from "@/vendors/libraryDetector/detect";
 import adapters from "@/frameworks/adapters";
 import { globalSearch } from "@/vendors/globalSearch";
 import {
-  ReadPayload,
-  PathSpec,
-  ReadOptions,
-  WritePayload,
+  type ReadPayload,
+  type PathSpec,
+  type ReadOptions,
+  type WritePayload,
   initialize,
 } from "@/pageScript/protocol";
 import { awaitValue, TimeoutError } from "@/utils";
 import {
-  ReadableComponentAdapter,
+  type ReadableComponentAdapter,
   traverse,
-  WriteableComponentAdapter,
+  type WriteableComponentAdapter,
 } from "@/frameworks/component";
 import { elementInfo } from "@/contentScript/nativeEditor/frameworks";
 import { requireSingleElement } from "@/utils/requireSingleElement";
-import { getPropByPath, noopProxy, ReadProxy } from "@/runtime/pathHelpers";
-import { UnknownObject } from "@/types";
+import {
+  getPropByPath,
+  noopProxy,
+  type ReadProxy,
+} from "@/runtime/pathHelpers";
+import { type UnknownObject } from "@/types";
 
 const MAX_READ_DEPTH = 5;
 

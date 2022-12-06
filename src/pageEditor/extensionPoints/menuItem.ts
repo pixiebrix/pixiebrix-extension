@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, Metadata } from "@/core";
+import { type IExtension, type Metadata } from "@/core";
 import {
   baseFromExtension,
   baseSelectExtension,
@@ -32,23 +32,23 @@ import {
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import {
-  MenuDefinition,
-  MenuItemExtensionConfig,
+  type MenuDefinition,
+  type MenuItemExtensionConfig,
   MenuItemExtensionPoint,
 } from "@/extensionPoints/menuItemExtension";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
 import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
-import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
+import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import MenuItemConfiguration from "@/pageEditor/tabs/menuItem/MenuItemConfiguration";
 import { insertButton } from "@/contentScript/messenger/api";
 import {
-  ButtonDefinition,
-  ButtonSelectionResult,
+  type ButtonDefinition,
+  type ButtonSelectionResult,
 } from "@/contentScript/nativeEditor/types";
-import { ActionFormState } from "./formStateTypes";
+import { type ActionFormState } from "./formStateTypes";
 import { makeEmptyPermissions } from "@/utils/permissions";
 
 function fromNativeElement(

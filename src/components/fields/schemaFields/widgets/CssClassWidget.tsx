@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useMemo, useState } from "react";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import {
   Button,
   ButtonGroup,
@@ -41,11 +41,11 @@ import {
   faItalic,
 } from "@fortawesome/free-solid-svg-icons";
 import { useField } from "formik";
-import { Expression, TemplateEngine } from "@/core";
+import { type Expression, type TemplateEngine } from "@/core";
 import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
 import { compact, partition, uniq } from "lodash";
 import TemplateToggleWidget from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
-import { InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
+import { type InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
 import styles from "./CssClassWidget.module.scss";
 import { UnstyledButton } from "@/components/UnstyledButton";
 
@@ -265,7 +265,6 @@ const FlagItem: React.VFC<
 
 /**
  * Return utility classes from the value
- * @param value
  */
 export function parseValue(value: Value): {
   classes: string[];

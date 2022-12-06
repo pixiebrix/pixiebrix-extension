@@ -17,13 +17,13 @@
 
 import documentTreeStyles from "./documentTree.module.scss";
 import {
-  ButtonDocumentConfig,
-  DocumentComponent,
-  DocumentElement,
-  DynamicPath,
+  type ButtonDocumentConfig,
+  type DocumentComponent,
+  type DocumentElement,
+  type DynamicPath,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { get } from "lodash";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 import { getComponentDefinition } from "@/components/documentBuilder/documentTree";
 import Unknown from "./elementsPreview/Unknown";
 import Basic from "./elementsPreview/Basic";

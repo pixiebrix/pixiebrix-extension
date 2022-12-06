@@ -19,17 +19,17 @@ import { useEffect, useMemo } from "react";
 import { selectSettings } from "@/store/settingsSelectors";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { DEFAULT_THEME, Theme } from "@/options/types";
+import { DEFAULT_THEME, type Theme } from "@/options/types";
 import { activatePartnerTheme } from "@/background/messenger/api";
-import { persistor } from "@/options/store";
+import { persistor } from "@/store/optionsStore";
 import { useAsyncState } from "@/hooks/common";
-import { ManualStorageKey, readStorage } from "@/chrome";
+import { type ManualStorageKey, readStorage } from "@/chrome";
 import {
   addThemeClassToDocumentRoot,
   getThemeLogo,
   isValidTheme,
   setThemeFavicon,
-  ThemeLogo,
+  type ThemeLogo,
 } from "@/utils/themeUtils";
 import { useGetMeQuery } from "@/services/api";
 import { selectAuth } from "@/auth/authSelectors";

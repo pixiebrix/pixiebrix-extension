@@ -17,7 +17,7 @@
 
 import { Transformer } from "@/types";
 import { proxyService } from "@/background/messenger/api";
-import { BlockArg, Schema } from "@/core";
+import { type BlockArg, type Schema } from "@/core";
 import { BusinessError } from "@/errors/businessErrors";
 
 const PIPEDRIVE_SERVICE_ID = "pipedrive/api";

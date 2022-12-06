@@ -17,7 +17,12 @@
 
 import { Block, Reader } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { ApiVersion, BlockArg, BlockOptions, ReaderRoot } from "@/core";
+import {
+  type ApiVersion,
+  type BlockArg,
+  type BlockOptions,
+  type ReaderRoot,
+} from "@/core";
 import blockRegistry from "@/blocks/registry";
 import {
   echoBlock,
@@ -26,8 +31,8 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 
-jest.mock("@/background/messenger/api", () => {
-  const actual = jest.requireActual("@/background/messenger/api");
+jest.mock("@/telemetry/logging", () => {
+  const actual = jest.requireActual("@/telemetry/logging");
   return {
     ...actual,
     getLoggingConfig: jest.fn().mockResolvedValue({

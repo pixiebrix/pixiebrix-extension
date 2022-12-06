@@ -17,7 +17,7 @@
 
 import { truncate } from "lodash";
 import { JQUERY_INVALID_SELECTOR_ERROR } from "@/errors/errorHelpers";
-import { AxiosResponse } from "axios";
+import { type AxiosResponse } from "axios";
 
 /**
  * @file ONLY KEEP ACTUAL ERRORS IN HERE.

@@ -16,10 +16,10 @@
  */
 
 import React from "react";
-import { ComponentStory, ComponentMeta } from "@storybook/react";
+import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import { Form, Formik } from "formik";
 import SchemaField from "./SchemaField";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Button } from "react-bootstrap";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 import { action } from "@storybook/addon-actions";
@@ -58,7 +58,7 @@ const Template: ComponentStory<
       onSubmit={action("onSubmit")}
     >
       <Form>
-        <SchemaField {...args} isRequired={args.required ?? true} />
+        <SchemaField {...args} />
         <Button type="submit">Submit</Button>
       </Form>
     </Formik>
@@ -109,7 +109,7 @@ export const NotRequiredText = Template.bind({});
 NotRequiredText.args = {
   name: "topObj.parentObj.testField",
   defaultValue: "",
-  required: false,
+  isRequired: false,
   label: "Enter some text",
   schema: {
     type: "string",

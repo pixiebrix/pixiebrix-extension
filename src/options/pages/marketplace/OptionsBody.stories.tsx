@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { ComponentStory, ComponentMeta } from "@storybook/react";
+import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import OptionsBody from "./OptionsBody";
 import { MemoryRouter } from "react-router";
 import { action } from "@storybook/addon-actions";

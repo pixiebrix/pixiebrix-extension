@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import axios, { AxiosInstance } from "axios";
+import axios, { type AxiosInstance } from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { getAuthHeaders } from "@/auth/token";
 import { isAbsoluteUrl } from "@/utils";
-import { IExtension } from "@/core";
+import { type IExtension } from "@/core";
 import {
   ExtensionNotLinkedError,
   SuspiciousOperationError,
@@ -105,7 +105,6 @@ export async function getApiClient(): Promise<AxiosInstance> {
 
 /**
  * Upsert a singleton extension to the user's account.
- * @param extension
  * @deprecated use RTK Query mutation
  */
 export async function saveUserExtension(extension: IExtension): Promise<void> {

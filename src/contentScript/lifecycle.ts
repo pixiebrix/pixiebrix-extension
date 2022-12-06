@@ -18,13 +18,13 @@
 import { loadOptions } from "@/store/extensionsStorage";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import {
-  IExtensionPoint,
-  RegistryId,
-  ResolvedExtension,
+  type IExtensionPoint,
+  type RegistryId,
+  type ResolvedExtension,
   RunReason,
-  UUID,
+  type UUID,
 } from "@/core";
-import * as context from "@/contentScript/context";
+import { updateNavigationId } from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebarController";
 import { pollUntilTruthy } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
@@ -36,8 +36,9 @@ import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { $safeFind } from "@/helpers";
 import { PromiseCancelled } from "@/errors/genericErrors";
-import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
+import { type SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 import injectScriptTag from "@/utils/injectScriptTag";
+import { getThisFrame } from "webext-messenger";
 
 let _initialLoadNavigation = true;
 const _dynamic = new Map<UUID, IExtensionPoint>();
@@ -342,32 +343,28 @@ export async function handleNavigate({
 }: { force?: boolean } = {}): Promise<void> {
   const runReason = decideRunReason({ force });
   _initialLoadNavigation = false;
-
-  if (context.frameId == null) {
+  const thisTarget = await getThisFrame();
+  if (thisTarget.frameId == null) {
     console.debug(
-      "Ignoring handleNavigate because context.frameId is not set yet"
+      "Ignoring handleNavigate because thisTarget.frameId is not set yet"
     );
     return;
   }
 
   const { href } = location;
 
-  if (!force && _frameHref.get(context.frameId) === href) {
-    console.debug(
-      `Ignoring NOOP navigation to ${href} (tabId=${context.tabId}, frameId=${context.frameId})`
-    );
+  if (!force && _frameHref.get(thisTarget.frameId) === href) {
+    console.debug("Ignoring NOOP navigation to %s", href, thisTarget);
     return;
   }
 
-  _frameHref.set(context.frameId, href);
+  _frameHref.set(thisTarget.frameId, href);
 
-  console.debug(
-    `Handling navigation to ${href} (tabId=${context.tabId}, frameId=${context.frameId})`
-  );
+  console.debug("Handling navigation to %s", href, thisTarget);
 
   await installScriptOnce();
 
-  context.updateNavigationId();
+  updateNavigationId();
 
   const extensionPoints = await loadExtensionsOnce();
 
@@ -388,7 +385,7 @@ export async function handleNavigate({
           runReason,
           cancel
         ).catch((error) => {
-          console.error(`Error installing/running: ${extensionPoint.id}`, {
+          console.error("Error installing/running: %s", extensionPoint.id, {
             error,
           });
         });

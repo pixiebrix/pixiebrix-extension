@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Shortcut } from "@/pageEditor/components/urlMatchPatternWidgetTypes";
+import { type Shortcut } from "@/components/fields/schemaFields/widgets/urlMatchPatternWidgetTypes";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import widgetsRegistry from "@/components/fields/schemaFields/widgets/widgetsRegistry";
 

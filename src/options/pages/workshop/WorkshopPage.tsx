@@ -23,14 +23,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { compact, isEmpty, orderBy, sortBy, uniq } from "lodash";
 import Select from "react-select";
 import { PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
-import workshopSlice, { WorkshopState } from "@/store/workshopSlice";
+import workshopSlice, { type WorkshopState } from "@/store/workshopSlice";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Fuse from "fuse.js";
-import { Brick } from "@/types/contract";
+import { type Brick } from "@/types/contract";
 import useFetch from "@/hooks/useFetch";
 import { push } from "connected-react-router";
 import CustomBricksCard from "./CustomBricksCard";
-import { EnrichedBrick, NavigateProps } from "./workshopTypes";
+import { type EnrichedBrick, type NavigateProps } from "./workshopTypes";
 import { RequireScope } from "@/auth/RequireScope";
 
 const { actions } = workshopSlice;

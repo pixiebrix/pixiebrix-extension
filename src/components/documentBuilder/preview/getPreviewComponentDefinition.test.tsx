@@ -17,8 +17,8 @@
 
 import React from "react";
 import {
-  DocumentElement,
-  DocumentElementType,
+  type DocumentElement,
+  type DocumentElementType,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import getPreviewComponentDefinition from "./getPreviewComponentDefinition";
 import { render, screen } from "@testing-library/react";

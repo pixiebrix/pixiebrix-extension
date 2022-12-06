@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Form, Formik, FormikValues } from "formik";
-import React, { PropsWithChildren } from "react";
+import { Form, Formik, type FormikValues } from "formik";
+import React, { type PropsWithChildren } from "react";
 import { fireEvent, screen } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
-import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
+import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 
 export const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
 

@@ -23,20 +23,20 @@ import { render } from "@testing-library/react";
 import React from "react";
 import blockRegistry from "@/blocks/registry";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
-import * as backgroundAPI from "@/background/messenger/api";
 import * as contentScriptAPI from "@/contentScript/messenger/api";
 import { UNSET_UUID, uuidv4 } from "@/types/helpers";
 import { buildDocumentBranch } from "./documentTree";
-import { DocumentElementType } from "./documentBuilderTypes";
+import { type DocumentElementType } from "./documentBuilderTypes";
 import DocumentContext, {
   initialValue,
 } from "@/components/documentBuilder/render/DocumentContext";
+import * as telemetry from "@/telemetry/logging";
 
 // Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandled rejection errors since we call
 // them with `void` instead of awaiting them in the reducePipeline methods
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/background/messenger/api");
-(backgroundAPI.getLoggingConfig as any) = jest.fn().mockResolvedValue({
+(telemetry.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
 });
 
@@ -313,9 +313,6 @@ describe("When rendered in panel", () => {
 
   test("renders block", async () => {
     const markdown = "Pipeline text for card test.";
-    (backgroundAPI.whoAmI as jest.Mock).mockResolvedValueOnce({
-      tab: { id: 0 },
-    });
     (contentScriptAPI.runRendererPipeline as jest.Mock).mockResolvedValueOnce({
       blockId: markdownBlock.id,
       key: uuidv4(),

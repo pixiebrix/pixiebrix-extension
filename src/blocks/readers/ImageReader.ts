@@ -14,8 +14,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 import { Reader } from "@/types";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 
 /**
  * Copied from https://stackoverflow.com/questions/934012/get-image-data-url-in-javascript

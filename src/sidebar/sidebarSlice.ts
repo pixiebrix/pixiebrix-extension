@@ -16,18 +16,18 @@
  */
 
 import {
-  SidebarEntries,
-  FormEntry,
-  PanelEntry,
-  ActivatePanelOptions,
-  TemporaryPanelEntry,
+  type SidebarEntries,
+  type FormEntry,
+  type PanelEntry,
+  type ActivatePanelOptions,
+  type TemporaryPanelEntry,
 } from "@/sidebar/types";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { UUID } from "@/core";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type UUID } from "@/core";
 import { defaultEventKey, mapTabEventKey } from "@/sidebar/utils";
 import { cancelForm, closeTemporaryPanel } from "@/contentScript/messenger/api";
-import { whoAmI } from "@/background/messenger/api";
 import { partition, sortBy } from "lodash";
+import { getTopLevelFrame } from "webext-messenger";
 
 export type SidebarState = SidebarEntries & {
   activeKey: string;
@@ -95,15 +95,13 @@ function findNextActiveKey(
 }
 
 async function cancelPreexistingForms(forms: UUID[]): Promise<void> {
-  // TODO: Replace with `tabId: "this"` once implemented in the messenger
-  const sender = await whoAmI();
-  cancelForm({ tabId: sender.tab.id, frameId: 0 }, ...forms);
+  const topLevelFrame = await getTopLevelFrame();
+  cancelForm(topLevelFrame, ...forms);
 }
 
 async function resolvePanels(nonces: UUID[]): Promise<void> {
-  // TODO: Replace with `tabId: "this"` once implemented in the messenger
-  const { tab } = await whoAmI();
-  closeTemporaryPanel({ tabId: tab.id, frameId: 0 }, nonces);
+  const topLevelFrame = await getTopLevelFrame();
+  closeTemporaryPanel(topLevelFrame, nonces);
 }
 
 const sidebarSlice = createSlice({

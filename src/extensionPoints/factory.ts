@@ -21,8 +21,8 @@ import { fromJS as deserializeTrigger } from "@/extensionPoints/triggerExtension
 import { fromJS as deserializeContextMenu } from "@/extensionPoints/contextMenu";
 import { fromJS as deserializeSidebar } from "@/extensionPoints/sidebarExtension";
 import { fromJS as deserializeQuickBar } from "@/extensionPoints/quickBarExtension";
-import { IExtensionPoint } from "@/core";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { type IExtensionPoint } from "@/core";
+import { type ExtensionPointConfig } from "@/extensionPoints/types";
 
 const TYPE_MAP = {
   panel: deserializePanel,
@@ -40,7 +40,7 @@ export function fromJS(config: ExtensionPointConfig): IExtensionPoint {
     throw new Error(`Expected kind extensionPoint, got ${config.kind}`);
   }
 
-  if (!Object.prototype.hasOwnProperty.call(TYPE_MAP, config.definition.type)) {
+  if (!Object.hasOwn(TYPE_MAP, config.definition.type)) {
     throw new Error(
       `Unexpected extension point type: ${config.definition.type}`
     );
