@@ -18,15 +18,13 @@
 import { deserializeError, type ErrorObject } from "serialize-error";
 import { isObject, matchesAnyPattern, smartAppendPeriod } from "@/utils";
 import safeJsonStringify from "json-stringify-safe";
-import { isEmpty, memoize, truncate } from "lodash";
+import { isEmpty, truncate } from "lodash";
 import {
   isAxiosError,
   selectNetworkErrorMessage,
   selectServerErrorMessage,
 } from "@/errors/networkErrorHelpers";
 import { type MessageContext } from "@/core";
-
-type ErrorConstructor = new (...args: unknown[]) => Error;
 
 // From "webext-messenger". Cannot import because the webextension polyfill can only run in an extension context
 // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3641
@@ -100,33 +98,25 @@ export function isErrorObject(error: unknown): error is ErrorObject {
   return typeof (error as any)?.message === "string";
 }
 
-export function isSpecificError<ErrorType extends ErrorConstructor>(
-  error: unknown,
-  errorType: ErrorType
-): error is InstanceType<ErrorType> {
-  if (!isErrorObject(error)) {
-    return false;
-  }
-
-  const errorTypeName = getErrorName(errorType);
-
+export function isSpecificError<
+  ErrorType extends new (...args: unknown[]) => Error
+>(error: unknown, errorType: ErrorType): error is InstanceType<ErrorType> {
   // Catch 2 common error subclass groups. Necessary until we drop support for serialized errors:
   // https://github.com/sindresorhus/serialize-error/issues/72
-  if (errorTypeName === "ClientRequestError") {
+  if (errorType.name === "ClientRequestError") {
     return isClientRequestError(error);
   }
 
-  if (errorTypeName === "BusinessError") {
+  if (errorType.name === "BusinessError") {
     return isBusinessError(error);
   }
 
-  return errorTypeName === error.name;
+  return isErrorObject(error) && error.name === errorType.name;
 }
 
-export function selectSpecificError<ErrorType extends ErrorConstructor>(
-  error: unknown,
-  errorType: ErrorType
-): InstanceType<ErrorType> | null {
+export function selectSpecificError<
+  ErrorType extends new (...args: unknown[]) => Error
+>(error: unknown, errorType: ErrorType): InstanceType<ErrorType> | null {
   if (!isObject(error)) {
     return null;
   }
@@ -151,17 +141,9 @@ export function getRootCause(error: unknown): unknown {
   return error;
 }
 
-const getErrorName = memoize(
-  (ErrorOrErrorConstructor: Error | ErrorConstructor): string =>
-    ErrorOrErrorConstructor instanceof Error
-      ? ErrorOrErrorConstructor.name
-      : new ErrorOrErrorConstructor().name
-);
-
-export function hasSpecificErrorCause<ErrorType extends ErrorConstructor>(
-  error: unknown,
-  errorType: ErrorType
-): boolean {
+export function hasSpecificErrorCause<
+  ErrorType extends new (...args: unknown[]) => Error
+>(error: unknown, errorType: ErrorType): boolean {
   return Boolean(selectSpecificError(error, errorType));
 }
 
