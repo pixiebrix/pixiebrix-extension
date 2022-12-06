@@ -23,12 +23,9 @@ import VarMenu from "./VarMenu";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
 
-// TODO
-// - fix the height of the popup
-
 type VarPopupProps = {
   inputMode: FieldInputMode;
-  inputElementRef: React.MutableRefObject<HTMLTextAreaElement>;
+  inputElementRef: React.MutableRefObject<HTMLElement>;
   value: unknown;
 };
 
@@ -61,7 +58,9 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
       }
 
       if (inputMode === "string") {
-        const cursorPosition = inputElementRef.current?.selectionStart ?? 0;
+        // For string inputs, we always use TextAreas, hence the cast of the ref to HTMLTextAreaElement
+        const cursorPosition =
+          (inputElementRef.current as HTMLTextAreaElement)?.selectionStart ?? 0;
         const template = isNunjucksExpression(value)
           ? value.__value__
           : String(value);
@@ -101,6 +100,7 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
 
   return showMenu ? (
     <VarMenu
+      inputElementRef={inputElementRef}
       onClose={() => {
         setShowMenu(false);
       }}

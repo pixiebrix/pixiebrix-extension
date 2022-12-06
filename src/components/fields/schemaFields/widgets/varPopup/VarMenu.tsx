@@ -28,12 +28,18 @@ import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysi
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import SourceLabel from "./SourceLabel";
 import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
+import { useAsyncEffect } from "use-async-effect";
+import { computePosition, size, flip, offset } from "@floating-ui/dom";
 
 type VarMenuProps = {
+  inputElementRef: React.MutableRefObject<HTMLElement>;
   onClose?: () => void;
 };
 
-const VarMenu: React.FunctionComponent<VarMenuProps> = ({ onClose }) => {
+const VarMenu: React.FunctionComponent<VarMenuProps> = ({
+  inputElementRef,
+  onClose,
+}) => {
   const rootElementRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
@@ -54,6 +60,46 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({ onClose }) => {
   const { allBlocks } = useAllBlocks();
 
   const knownVars = useSelector(selectKnownVarsForActiveNode);
+
+  useAsyncEffect(async () => {
+    if (
+      !inputElementRef.current ||
+      !rootElementRef.current ||
+      knownVars == null
+    ) {
+      return;
+    }
+
+    const position = await computePosition(
+      inputElementRef.current,
+      rootElementRef.current,
+      {
+        placement: "bottom-start",
+        middleware: [
+          offset(8),
+          flip({
+            flipAlignment: false,
+            padding: 8,
+          }),
+          size({
+            padding: 8,
+            apply({ availableHeight, elements }) {
+              Object.assign(elements.floating.style, {
+                maxHeight: `${availableHeight}px`,
+              });
+            },
+          }),
+        ],
+      }
+    );
+
+    if (rootElementRef.current == null) {
+      return;
+    }
+
+    rootElementRef.current.style.transform = `translate3d(0, ${position.y}px, 0)`;
+  }, [knownVars]);
+
   if (knownVars == null) {
     return null;
   }
@@ -68,19 +114,17 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({ onClose }) => {
 
   return (
     <div className={styles.menu} ref={rootElementRef}>
-      <div className={styles.menuList}>
-        {options.map(([source, vars]) => (
-          <div className={styles.sourceItem} key={source}>
-            <SourceLabel
-              source={source}
-              extensionPointLabel={extensionPointLabel}
-              blocksInfo={Object.values(pipelineMap)}
-              allBlocks={allBlocks}
-            />
-            <VariablesTree vars={vars} />
-          </div>
-        ))}
-      </div>
+      {options.map(([source, vars]) => (
+        <div className={styles.sourceItem} key={source}>
+          <SourceLabel
+            source={source}
+            extensionPointLabel={extensionPointLabel}
+            blocksInfo={Object.values(pipelineMap)}
+            allBlocks={allBlocks}
+          />
+          <VariablesTree vars={vars} />
+        </div>
+      ))}
     </div>
   );
 };
