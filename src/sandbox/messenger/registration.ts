@@ -21,14 +21,9 @@ import { type ApplyJqPayload, type NunjucksRenderPayload } from "./api";
 /** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
 
 export default function registerMessenger(): void {
-  addPostMessageListener("SANDBOX_PING", async (payload) => {
-    console.log("SANDBOX: Received PING payload:", payload);
-    return "pong";
-  });
+  addPostMessageListener("SANDBOX_PING", async (payload) => "pong");
 
   addPostMessageListener("RENDER_NUNJUCKS", async (payload) => {
-    console.log("SANDBOX: Received RENDER_NUNJUCKS payload:", payload);
-
     const { template, context, autoescape } = payload as NunjucksRenderPayload;
     const { default: nunjucks } = await import(
       /* webpackChunkName: "nunjucks" */ "nunjucks"
@@ -39,8 +34,6 @@ export default function registerMessenger(): void {
   });
 
   addPostMessageListener("APPLY_JQ", async (payload) => {
-    console.log("SANDBOX: Received APPLY_JQ payload:", payload);
-
     const { input, filter } = payload as ApplyJqPayload;
     const { default: jq } = await import(
       /* webpackChunkName: "jq-web" */ "jq-web"

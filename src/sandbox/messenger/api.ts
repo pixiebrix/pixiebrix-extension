@@ -19,7 +19,7 @@
 
 import postMessage from "@/utils/postMessage";
 import { once } from "lodash";
-import { JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 
 const hiddenIframeStyle = {
   position: "absolute",

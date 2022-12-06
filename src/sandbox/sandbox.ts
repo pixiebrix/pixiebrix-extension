@@ -17,6 +17,6 @@
 
 import registerMessenger from "./messenger/registration";
 
-console.log("SANDBOX: iframe loaded");
+console.debug("SANDBOX: iframe loaded");
 
 registerMessenger();

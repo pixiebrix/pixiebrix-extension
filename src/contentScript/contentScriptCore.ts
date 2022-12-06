@@ -35,7 +35,7 @@ import {
   isContextInvalidatedError,
   notifyContextInvalidated,
 } from "@/errors/contextInvalidated";
-import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
+import { onUncaughtError } from "@/errors/errorHelpers";
 import { type UUID } from "@/core";
 import createSandbox from "@/sandbox/messenger/api";
 

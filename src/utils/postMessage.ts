@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SerializedError, UUID } from "@/core";
+import { type SerializedError, type UUID } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import pDefer from "p-defer";
 import pTimeout from "p-timeout";
 import { deserializeError, serializeError } from "serialize-error";
-import { JsonValue, RequireExactlyOne } from "type-fest";
+import { type JsonValue, type RequireExactlyOne } from "type-fest";
 
 const TIMEOUT_MS = 3000;
 
@@ -72,6 +72,8 @@ export default async function postMessage({
 
   // The origin must be "*" because it's reported as "null" to the outside world
   // https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#using_window.postmessage_in_extensions_non-standard
+
+  console.debug("SANDBOX: Posting", id, "with payload:", payload);
   channel.postMessage(packet, "*");
 
   try {
@@ -100,7 +102,11 @@ export function addPostMessageListener(
       return;
     }
 
+    console.debug("SANDBOX: Received", id, "payload:", data.payload);
+
     const [response] = await Promise.allSettled([listener(data.payload)]);
+
+    console.debug("SANDBOX: Responding to", id, "with", response);
 
     const packet: PixiebrixPacket = {
       id,
