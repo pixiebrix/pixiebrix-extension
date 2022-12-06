@@ -69,12 +69,11 @@ export async function saveOptions(state: ExtensionOptionsState): Promise<void> {
   });
 }
 
-// Shadowing this type in order to export it properly
-const local: StorageInterface = localStorage;
-
 export const persistExtensionOptionsConfig = {
   key: "extensionOptions",
-  storage: local,
+  // Change the type of localStorage to our overridden version so that it can be exported
+  // See: @/store/StorageInterface.ts
+  storage: localStorage as StorageInterface,
   version: 2,
   // https://github.com/rt2zz/redux-persist#migrations
   migrate: createMigrate(migrations, { debug: boolean(process.env.DEBUG) }),
