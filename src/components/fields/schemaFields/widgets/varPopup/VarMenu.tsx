@@ -27,7 +27,7 @@ import {
 import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import SourceLabel from "./SourceLabel";
-import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
+import useAllBlocks from "@/blocks/hooks/useAllBlocks";
 import { useAsyncEffect } from "use-async-effect";
 import { computePosition, size, flip, offset } from "@floating-ui/dom";
 
