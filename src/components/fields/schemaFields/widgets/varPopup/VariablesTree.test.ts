@@ -15,30 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
-* Base Tokens
-*
-* The following color variables are Base Color Tokens defined in our Figma Foundation documents
-* https://www.figma.com/file/LiShRwQlnRG5zNl38oGCKl/%F0%9F%94%91-Foundation?node-id=359%3A11872&t=clXjxbSfhvEFAlPW-0
-*/
+import testItRenders from "@/testUtils/testItRenders";
+import VariablesTree from "./VariablesTree";
 
-// Neutral
-$N0: #ffffff;
-$N50: #ecebef;
-$N100: #c4c0cc;
-$N200: #a8a1b4;
-$N300: #807691;
-$N400: #675c7c;
-$N600: #3b2e53;
-$N800: #241c32;
-
-// Pixie
-$P100: #ccb8f4;
-$P900: #260b5c;
-
-/*
-* Misc Tokens
-*
-* The following color variables are colors that belong to no particular design system
-*/
-$sidebar-light-menu-icon-color: #bba8bff5;
+testItRenders({
+  testName: "Renders the tree expanded with correct sorting",
+  Component: VariablesTree,
+  props: {
+    vars: {
+      "@input": {
+        type: "not set",
+        description: "not set",
+        props: {
+          markdown: {},
+        },
+        url: "not set",
+        icon: {},
+      },
+    } as any,
+  },
+});

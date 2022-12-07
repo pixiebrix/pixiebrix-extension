@@ -25,7 +25,7 @@ import { Formik } from "formik";
 import React from "react";
 import { type Expression } from "@/core";
 import { noop } from "lodash";
-import { render } from "@testing-library/react";
+import { render } from "@/pageEditor/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";
 
@@ -43,14 +43,13 @@ const renderWidget = (value: string | Expression) =>
   );
 
 beforeAll(() => {
-  console.debug("Registering widgets");
   registerDefaultWidgets();
 });
 
 describe("CssClassWidget", () => {
   it("should render blank literal", () => {
     const result = renderWidget("");
-    expect(result).toMatchSnapshot();
+    expect(result.asFragment()).toMatchSnapshot();
   });
 });
 

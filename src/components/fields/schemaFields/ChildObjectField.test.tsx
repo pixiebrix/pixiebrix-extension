@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type Schema } from "@/core";
-import { render } from "@testing-library/react";
+import { render } from "@/pageEditor/testHelpers";
 import { Formik } from "formik";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
