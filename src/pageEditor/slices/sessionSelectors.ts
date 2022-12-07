@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SessionRootState } from "@/pageEditor/slices/sessionSlice";
+import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
 
 export const selectSessionId = ({ session }: SessionRootState) =>
   session.sessionId;

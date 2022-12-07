@@ -15,26 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import Centered from "@/components/Centered";
-import Alert from "@/components/Alert";
-import { Button } from "react-bootstrap";
+import { type UUID } from "@/core";
+import { type TraceRecord } from "@/telemetry/trace";
 
-const StaleSessionPane: React.FC = () => (
-  <Centered>
-    <Alert variant="danger">
-      There were changes made in a different instance of the Page Editor. Reload
-      this Page Editor to sync the changes.
-    </Alert>
-    <Button
-      variant="primary"
-      onClick={() => {
-        location.reload();
-      }}
-    >
-      Reload
-    </Button>
-  </Centered>
-);
+export type RuntimeState = {
+  /**
+   * Mapping from extension id to its latest available trace.
+   */
+  extensionTraces: Record<UUID, TraceRecord[]>;
+};
 
-export default StaleSessionPane;
+export type RuntimeRootState = {
+  runtime: RuntimeState;
+};

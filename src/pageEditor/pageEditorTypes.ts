@@ -20,7 +20,7 @@ import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { type SavingExtensionState } from "@/pageEditor/panes/save/savingExtensionSlice";
 import { type SettingsRootState } from "@/store/settingsTypes";
-import { type RuntimeRootState } from "@/pageEditor/slices/runtimeSlice";
+import { type RuntimeRootState } from "@/pageEditor/slices/runtimeSliceTypes";
 import { type ExtensionPointType } from "@/extensionPoints/types";
 import { type RegistryId, type UUID } from "@/core";
 import { type BlockConfig } from "@/blocks/types";
@@ -34,8 +34,8 @@ import { type FormState } from "./extensionPoints/formStateTypes";
 import { type TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
 import { type RecipesRootState } from "@/recipes/recipesTypes";
 import { type SimpleErrorObject } from "@/errors/errorHelpers";
-import { type SessionChangesRootState } from "@/pageEditor/sessionChanges/sessionChangesSlice";
-import { type SessionRootState } from "@/pageEditor/slices/sessionSlice";
+import { type SessionChangesRootState } from "@/pageEditor/sessionChanges/sessionChangesTypes";
+import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
 
 export enum PipelineFlavor {
   AllBlocks = "allBlocks",

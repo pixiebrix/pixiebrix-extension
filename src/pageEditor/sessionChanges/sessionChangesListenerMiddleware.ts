@@ -16,7 +16,7 @@
  */
 
 import { createListenerMiddleware, isAnyOf } from "@reduxjs/toolkit";
-import { type SessionRootState } from "@/pageEditor/slices/sessionSlice";
+import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
 import { sessionChangesActions } from "@/pageEditor/sessionChanges/sessionChangesSlice";
 import { actions } from "@/pageEditor/slices/editorSlice";
 

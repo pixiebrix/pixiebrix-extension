@@ -18,17 +18,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type UUID } from "@/core";
 import { type TraceRecord } from "@/telemetry/trace";
-
-export type RuntimeState = {
-  /**
-   * Mapping from extension id to its latest available trace.
-   */
-  extensionTraces: Record<UUID, TraceRecord[]>;
-};
-
-export type RuntimeRootState = {
-  runtime: RuntimeState;
-};
+import { type RuntimeState } from "@/pageEditor/slices/runtimeSliceTypes";
 
 const initialState: RuntimeState = {
   extensionTraces: {},

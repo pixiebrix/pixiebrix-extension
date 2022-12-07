@@ -19,17 +19,7 @@ import { type UUID } from "@/core";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
-
-export type SessionChangesState = {
-  /**
-   * A map of session ids to the timestamp of their latest changes in milliseconds since epoch
-   */
-  latestChanges: Record<UUID, number>;
-};
-
-export type SessionChangesRootState = {
-  sessionChanges: SessionChangesState;
-};
+import { type SessionChangesState } from "@/pageEditor/sessionChanges/sessionChangesTypes";
 
 const initialState: SessionChangesState = {
   latestChanges: {},

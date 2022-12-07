@@ -16,20 +16,8 @@
  */
 
 import { createSlice } from "@reduxjs/toolkit";
-import { type UUID } from "@/core";
 import { uuidv4 } from "@/types/helpers";
-
-export type SessionState = {
-  sessionId: UUID;
-  /**
-   * The session start in milliseconds from epoch
-   */
-  sessionStart: number;
-};
-
-export type SessionRootState = {
-  session: SessionState;
-};
+import { type SessionState } from "@/pageEditor/slices/sessionSliceTypes";
 
 const initialState: SessionState = {
   sessionId: uuidv4(),
