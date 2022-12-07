@@ -16,7 +16,7 @@
  */
 
 import { type SessionRootState } from "@/pageEditor/slices/sessionSlice";
-import { type SessionChangesRootState } from "@/pageEditor/slices/sessionChangesSlice";
+import { type SessionChangesRootState } from "@/pageEditor/sessionChanges/sessionChangesSlice";
 import { createSelector } from "reselect";
 
 /**

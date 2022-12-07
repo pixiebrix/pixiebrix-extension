@@ -45,9 +45,9 @@ import {
   sessionChangesSlice,
   persistSessionChangesConfig,
   sessionChangesStateSyncActions,
-} from "@/pageEditor/slices/sessionChangesSlice";
+} from "@/pageEditor/sessionChanges/sessionChangesSlice";
 import { createStateSyncMiddleware } from "redux-state-sync";
-import { sessionChangesMiddleware } from "@/pageEditor/slices/sessionChangesListenerMiddleware";
+import { sessionChangesMiddleware } from "@/pageEditor/sessionChanges/sessionChangesListenerMiddleware";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 

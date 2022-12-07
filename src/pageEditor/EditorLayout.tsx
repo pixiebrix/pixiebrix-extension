@@ -25,7 +25,7 @@ import EditorContent from "@/pageEditor/EditorContent";
 import styles from "./Editor.module.scss";
 import RestrictedPane from "@/pageEditor/panes/RestrictedPane";
 import InsertPane from "@/pageEditor/panes/insert/InsertPane";
-import { selectIsStaleSession } from "@/pageEditor/slices/sessionChangesSelectors";
+import { selectIsStaleSession } from "@/pageEditor/sessionChanges/sessionChangesSelectors";
 import StaleSessionPane from "@/pageEditor/panes/StaleSessionPane";
 
 const EditorLayout: React.FunctionComponent = () => {

@@ -37,7 +37,7 @@ import { type SimpleErrorObject } from "@/errors/errorHelpers";
 import {
   type ActiveSessionRootState,
   SessionChangesRootState,
-} from "@/pageEditor/slices/sessionChangesSlice";
+} from "@/pageEditor/sessionChanges/sessionChangesSlice";
 import { SessionRootState } from "@/pageEditor/slices/sessionSlice";
 
 export enum PipelineFlavor {
