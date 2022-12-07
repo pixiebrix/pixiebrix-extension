@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SessionRootState } from "@/pageEditor/slices/sessionSlice";
-import { SessionChangesRootState } from "@/pageEditor/sessionChanges/sessionChangesSlice";
+import { type SessionRootState } from "@/pageEditor/slices/sessionSlice";
+import { type SessionChangesRootState } from "@/pageEditor/sessionChanges/sessionChangesSlice";
 import { uuidv4 } from "@/types/helpers";
 import { selectIsStaleSession } from "@/pageEditor/sessionChanges/sessionChangesSelectors";
 
