@@ -26,11 +26,9 @@ import { useUpdateAvailable } from "@/options/pages/UpdateBanner";
 import { reportEvent } from "@/telemetry/events";
 import { selectAuth } from "@/auth/authSelectors";
 import { noop } from "lodash";
-import {
-  selectUpdatePromptState,
-  type StateWithSettings,
-} from "@/store/settingsSelectors";
+import { selectUpdatePromptState } from "@/store/settingsSelectors";
 import pluralize from "@/utils/pluralize";
+import { type SettingsRootState } from "@/store/settingsTypes";
 
 const FIVE_MINUTES_MILLIS = 300_000;
 const FIFTEEN_MINUTES_MILLIS = 900_000;
@@ -149,7 +147,7 @@ const DeploymentModal: React.FC<
   const currentTime = useCurrentTime();
 
   const { isSnoozed, isUpdateOverdue, updatePromptTimestamp, timeRemaining } =
-    useSelector((state: StateWithSettings) =>
+    useSelector((state: SettingsRootState) =>
       selectUpdatePromptState(state, { now: currentTime, enforceUpdateMillis })
     );
 
