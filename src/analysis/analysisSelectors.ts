@@ -28,3 +28,7 @@ export function selectExtensionAnnotations(
     // eslint-disable-next-line security/detect-object-injection -- extensionId is supposed to be UUID, not from user input
     analysis.extensionAnnotations[extensionId] ?? emptyAnnotations;
 }
+
+export function selectKnownVars(state: AnalysisRootState) {
+  return state.analysis.knownVars;
+}

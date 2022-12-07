@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen } from "@/options/testHelpers";
 import OptionsBody from "@/options/pages/marketplace/OptionsBody";
 import { MemoryRouter } from "react-router";
 import { Formik } from "formik";
