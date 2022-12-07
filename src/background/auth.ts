@@ -37,7 +37,7 @@ import { memoizeUntilSettled } from "@/utils";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2" as ManualStorageKey;
 
-async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
+export async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
   serviceAuthId: UUID,
   data: TAuthData
 ): Promise<void> {
