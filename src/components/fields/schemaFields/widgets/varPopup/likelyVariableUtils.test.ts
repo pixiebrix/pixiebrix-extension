@@ -18,7 +18,7 @@
 import {
   getLikelyVariableAtPosition,
   replaceLikelyVariable,
-} from "./getLikelyVariableAtPosition";
+} from "./likelyVariableUtils";
 
 describe("detects the variable and returns its name", () => {
   test.each([
@@ -126,5 +126,32 @@ describe("replaceLikelyVariable", () => {
   test("inserts the new var if no likely variable found in the text", () => {
     const actual = replaceLikelyVariable(template, 0, "@qux.quux");
     expect(actual).toEqual("@qux.quux" + template);
+  });
+
+  test("inserts {{ }}", () => {
+    const actual = replaceLikelyVariable("abc @foo xyz", 5, "@bar");
+    expect(actual).toEqual("abc {{ @bar }} xyz");
+  });
+
+  test("inserts {{ only", () => {
+    const actual = replaceLikelyVariable("abc @foo}} xyz", 4, "@bar");
+    expect(actual).toEqual("abc {{ @bar}} xyz");
+  });
+
+  test("inserts }} only", () => {
+    const actual = replaceLikelyVariable("abc {{@foo xyz", 8, "@bar");
+    expect(actual).toEqual("abc {{@bar }} xyz");
+  });
+
+  test("inserts }} only 2", () => {
+    const template = `
+    {% for qux in @foo %}
+      abc {{ @bar
+    {% endfor %}`;
+    const actual = replaceLikelyVariable(template, 41, "@baz");
+    expect(actual).toEqual(`
+    {% for qux in @foo %}
+      abc {{ @baz }}
+    {% endfor %}`);
   });
 });

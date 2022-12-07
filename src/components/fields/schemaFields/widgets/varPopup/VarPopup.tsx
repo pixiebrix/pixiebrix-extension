@@ -20,7 +20,7 @@ import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInput
 import {
   getLikelyVariableAtPosition,
   replaceLikelyVariable,
-} from "./getLikelyVariableAtPosition";
+} from "./likelyVariableUtils";
 import VarMenu from "./VarMenu";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
