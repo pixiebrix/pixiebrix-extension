@@ -26,7 +26,7 @@ import { uuidv4 } from "@/types/helpers";
 const ROW_HEIGHT_PX = 90;
 const HEADER_ROW_HEIGHT_PX = 43;
 
-const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
+const ListView: React.VoidFunctionComponent<BlueprintsPageContentProps> = ({
   tableInstance,
   height,
   width,

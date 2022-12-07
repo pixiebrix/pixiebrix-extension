@@ -24,16 +24,16 @@ import {
   selectView,
 } from "@/options/pages/blueprints/blueprintsSelectors";
 import { type BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
+import { type BlueprintsPageContentProps } from "@/options/pages/blueprints/blueprintsTypes";
 import OnboardingView from "@/options/pages/blueprints/onboardingView/OnboardingView";
 import EmptyView from "@/options/pages/blueprints/emptyView/EmptyView";
 import GetStartedView from "@/options/pages/blueprints/GetStartedView";
 import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
+import BotGamesView from "@/options/pages/blueprints/BotGamesView";
 
-const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
-  tableInstance,
-  width,
-  height,
-}) => {
+const BlueprintsPageContent: React.VoidFunctionComponent<
+  BlueprintsPageContentProps
+> = ({ tableInstance, width, height }) => {
   const view = useSelector(selectView);
   const activeTab = useSelector(selectActiveTab);
   const { onboardingType, onboardingFilter, isLoading } = useOnboarding();
@@ -43,15 +43,19 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
     rows,
   } = tableInstance;
 
-  const BlueprintsList = view === "list" ? ListView : GridView;
+  const BlueprintsView = view === "list" ? ListView : GridView;
 
   if (activeTab.key === "Get Started") {
     return <GetStartedView width={width} height={height} />;
   }
 
+  if (activeTab.key === "Bot Games") {
+    return <BotGamesView width={width} height={height} />;
+  }
+
   if (rows.length > 0) {
     return (
-      <BlueprintsList
+      <BlueprintsView
         tableInstance={tableInstance}
         width={width}
         height={height}
@@ -76,4 +80,4 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   );
 };
 
-export default BlueprintsView;
+export default BlueprintsPageContent;

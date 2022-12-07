@@ -77,7 +77,7 @@ const MIN_CARD_WIDTH_PX = 235;
 const CARD_HEIGHT_PX = 230;
 const HEADER_ROW_HEIGHT_PX = 43;
 
-const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
+const GridView: React.VoidFunctionComponent<BlueprintsPageContentProps> = ({
   tableInstance,
   width,
   height,
