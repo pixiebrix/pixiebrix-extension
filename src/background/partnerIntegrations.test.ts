@@ -31,6 +31,7 @@ import {
 } from "@/services/constants";
 import { uuidv4 } from "@/types/helpers";
 import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
+import { setCachedAuthData } from "@/background/auth";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 
@@ -79,6 +80,10 @@ jest.mock("@/hooks/fetch", () => ({
   fetch: jest.fn(),
 }));
 
+jest.mock("@/background/auth", () => ({
+  setCachedAuthData: jest.fn().mockResolvedValue(undefined),
+}));
+
 const axiosMock = new MockAdapter(axios);
 
 afterEach(() => {
@@ -90,6 +95,7 @@ const readRawConfigurationsMock = readRawConfigurations as jest.Mock;
 const fetchMock = fetch as jest.Mock;
 const setPartnerAuthMock = setPartnerAuth as jest.Mock;
 const readPartnerAuthDataMock = readPartnerAuthData as jest.Mock;
+const setCachedAuthDataMock = setCachedAuthData as jest.Mock;
 
 describe("getPartnerPrincipals", () => {
   beforeEach(() => {
@@ -200,6 +206,11 @@ describe("refresh partner token", () => {
       extraHeaders: {
         "X-Control-Room": "https://controlroom.com",
       },
+    });
+
+    expect(setCachedAuthDataMock).toHaveBeenCalledWith(authId, {
+      access_token: "notatoken2",
+      refresh_token: "notarefreshtoken2",
     });
   });
 
