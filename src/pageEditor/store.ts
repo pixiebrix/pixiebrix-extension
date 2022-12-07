@@ -42,11 +42,12 @@ import { recipesSlice } from "@/recipes/recipesSlice";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 import { type StorageInterface } from "@/store/StorageInterface";
 import {
-  activeSessionSlice,
-  activeSessionStateSyncActions,
-  persistActiveSessionConfig,
-} from "@/pageEditor/slices/activeSessionSlice";
+  sessionChangesSlice,
+  persistSessionChangesConfig,
+  sessionChangesStateSyncActions,
+} from "@/pageEditor/slices/sessionChangesSlice";
 import { createStateSyncMiddleware } from "redux-state-sync";
+import { sessionChangesMiddleware } from "@/pageEditor/slices/sessionChangesListenerMiddleware";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -87,9 +88,9 @@ const store = configureStore({
     analysis: analysisSlice.reducer,
     tabState: tabStateSlice.reducer,
     recipes: recipesSlice.reducer,
-    activeSession: persistReducer(
-      persistActiveSessionConfig,
-      activeSessionSlice.reducer
+    sessionChanges: persistReducer(
+      persistSessionChangesConfig,
+      sessionChangesSlice.reducer
     ),
     [appApi.reducerPath]: appApi.reducer,
   },
@@ -108,10 +109,11 @@ const store = configureStore({
       .concat(pageEditorAnalysisManager.middleware)
       .concat(recipesMiddleware)
       .concat(conditionalMiddleware)
+      .concat(sessionChangesMiddleware)
       .concat(
         createStateSyncMiddleware({
           // In the future: concat whitelisted sync action lists here
-          whitelist: activeSessionStateSyncActions,
+          whitelist: sessionChangesStateSyncActions,
         })
       );
     /* eslint-enable unicorn/prefer-spread */

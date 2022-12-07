@@ -20,31 +20,41 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
 
-export type ActiveSessionState = {
-  activeSessionId: UUID | null;
+export type SessionChangesState = {
+  /**
+   * A map of session ids to the timestamp of their latest changes in milliseconds since epoch
+   */
+  latestChanges: Record<UUID, number>;
 };
 
-export type ActiveSessionRootState = {
-  activeSession: ActiveSessionState;
+export type SessionChangesRootState = {
+  sessionChanges: SessionChangesState;
 };
 
-const initialState: ActiveSessionState = {
-  activeSessionId: null,
+const initialState: SessionChangesState = {
+  latestChanges: {},
 };
 
-const key = "activeSession";
+const key = "sessionChanges";
 
-export const activeSessionSlice = createSlice({
+export const sessionChangesSlice = createSlice({
   name: key,
   initialState,
   reducers: {
-    setActiveSessionId(state, action: PayloadAction<UUID>) {
-      state.activeSessionId = action.payload;
+    setSessionChanges(
+      state,
+      action: PayloadAction<{
+        sessionId: UUID;
+      }>
+    ) {
+      const { sessionId } = action.payload;
+      // eslint-disable-next-line security/detect-object-injection -- generated UUID
+      state.latestChanges[sessionId] = Date.now();
     },
   },
 });
 
-export const persistActiveSessionConfig = {
+export const persistSessionChangesConfig = {
   key,
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
@@ -52,6 +62,6 @@ export const persistActiveSessionConfig = {
   version: 1,
 };
 
-export const activeSessionActions = activeSessionSlice.actions;
+export const sessionChangesActions = sessionChangesSlice.actions;
 
-export const activeSessionStateSyncActions = [`${key}/setActiveSessionId`];
+export const sessionChangesStateSyncActions = [`${key}/setSessionChanges`];

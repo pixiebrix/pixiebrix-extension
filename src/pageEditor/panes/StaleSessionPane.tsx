@@ -15,11 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SessionRootState } from "@/pageEditor/slices/sessionSlice";
-import { type ActiveSessionRootState } from "@/pageEditor/slices/activeSessionSlice";
+import React from "react";
+import Centered from "@/components/Centered";
+import Alert from "@/components/Alert";
+import { Button } from "react-bootstrap";
 
-export const selectIsActiveSession = ({
-  session,
-  activeSession,
-}: SessionRootState & ActiveSessionRootState) =>
-  session.sessionId === activeSession.activeSessionId;
+const StaleSessionPane: React.FC = () => (
+  <Centered>
+    <Alert variant="danger">
+      You have made changes in another page editor instance on a different
+      browser tab. Reload this page editor to sync up with the changes.
+    </Alert>
+    <Button
+      variant="primary"
+      onClick={() => {
+        location.reload();
+      }}
+    >
+      Reload Editor
+    </Button>
+  </Centered>
+);
+
+export default StaleSessionPane;

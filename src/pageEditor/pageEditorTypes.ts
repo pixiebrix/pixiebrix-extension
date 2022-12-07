@@ -34,7 +34,10 @@ import { type FormState } from "./extensionPoints/formStateTypes";
 import { type TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
 import { type RecipesRootState } from "@/recipes/recipesTypes";
 import { type SimpleErrorObject } from "@/errors/errorHelpers";
-import { type ActiveSessionRootState } from "@/pageEditor/slices/activeSessionSlice";
+import {
+  type ActiveSessionRootState,
+  SessionChangesRootState,
+} from "@/pageEditor/slices/sessionChangesSlice";
 import { SessionRootState } from "@/pageEditor/slices/sessionSlice";
 
 export enum PipelineFlavor {
@@ -226,6 +229,6 @@ export type RootState = AuthRootState &
   RuntimeRootState &
   SettingsRootState &
   SessionRootState &
-  ActiveSessionRootState & {
+  SessionChangesRootState & {
     savingExtension: SavingExtensionState;
   };

@@ -21,6 +21,10 @@ import { uuidv4 } from "@/types/helpers";
 
 export type SessionState = {
   sessionId: UUID;
+  /**
+   * The session start in milliseconds from epoch
+   */
+  sessionStart: number;
 };
 
 export type SessionRootState = {
@@ -29,6 +33,7 @@ export type SessionRootState = {
 
 const initialState: SessionState = {
   sessionId: uuidv4(),
+  sessionStart: Date.now(),
 };
 
 const runtimeSlice = createSlice({
