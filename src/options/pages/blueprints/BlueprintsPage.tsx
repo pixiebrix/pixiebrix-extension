@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo, useEffect } from "react";
-import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
+import BlueprintsPageLayout from "@/options/pages/blueprints/BlueprintsPageLayout";
 import useInstallables from "@/options/pages/blueprints/useInstallables";
 import ExtensionLogsModal from "@/options/pages/blueprints/modals/ExtensionLogsModal";
 import { useSelector } from "react-redux";
@@ -54,7 +54,7 @@ const BlueprintsPage: React.FunctionComponent = () => {
       return <ErrorDisplay error={error} />;
     }
 
-    return <BlueprintsCard installables={installables} />;
+    return <BlueprintsPageLayout installables={installables} />;
   }, [installables, error]);
 
   return (

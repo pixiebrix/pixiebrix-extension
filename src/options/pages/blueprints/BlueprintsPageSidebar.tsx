@@ -3,7 +3,7 @@ import styles from "./ListFilters.module.scss";
 import { Col, Form, Nav, NavLinkProps } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import useReduxState from "@/hooks/useReduxState";
-import { selectActiveTab } from "./blueprintsSelectors";
+import { selectActiveTab, selectSearchQuery } from "./blueprintsSelectors";
 import blueprintsSlice, { ActiveTab } from "./blueprintsSlice";
 import { useDebounce } from "use-debounce";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -21,11 +21,14 @@ import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes"
 import useFlags from "@/hooks/useFlags";
 import { useGetMeQuery, useGetStarterBlueprintsQuery } from "@/services/api";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { kebabCase } from "lodash";
 
 // eslint-disable-next-line no-restricted-imports -- Type only
 import type { BsPrefixRefForwardingComponent } from "react-bootstrap/esm/helpers";
+import useMilestones from "@/hooks/useMilestones";
+import { useInstallBotGamesBlueprint } from "@/options/pages/blueprints/BotGamesView";
 
-type ListFiltersProps = {
+type BlueprintsPageSidebarProps = {
   teamFilters: string[];
   tableInstance: TableInstance<InstallableViewItem>;
 };
@@ -36,6 +39,7 @@ const BLUEPRINT_TAB_KEYS = [
   "personal",
   "public",
   "getStarted",
+  "botGames",
 ] as const;
 type BlueprintTabKey = typeof BLUEPRINT_TAB_KEYS[number];
 type BlueprintTabMap = {
@@ -68,40 +72,41 @@ export const BLUEPRINTS_PAGE_TABS: BlueprintTabMap = {
     tabTitle: "Welcome to the PixieBrix Extension Console",
     filters: [],
   },
+  botGames: {
+    key: "Bot Games",
+    tabTitle: "Bot Games 2022",
+    filters: [],
+  },
 };
 
 const ListItem: BsPrefixRefForwardingComponent<
   "a",
   NavLinkProps & { label: string; icon: IconProp }
 > = ({ label, icon, ...otherProps }) => (
-  <Nav.Link className="media" {...otherProps}>
+  <Nav.Link
+    className="media"
+    data-testid={`${kebabCase(label)}-blueprint-tab`}
+    {...otherProps}
+  >
     <FontAwesomeIcon className="align-self-center" icon={icon} />
     <span className="media-body ml-2">{label}</span>
   </Nav.Link>
 );
 
-const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
-  teamFilters,
-  tableInstance,
-}) => {
-  const { permit } = useFlags();
-  const { data: me, isLoading: isMeLoading } = useGetMeQuery();
+const useOnboardingTabs = (
+  tableInstance: TableInstance<InstallableViewItem>
+) => {
   const { data: starterBlueprints, isLoading: isStarterBlueprintsLoading } =
     useGetStarterBlueprintsQuery();
-  const {
-    state: { globalFilter },
-    setGlobalFilter,
-    data: installableViewItems,
-  } = tableInstance;
   const [activeTab, setActiveTab] = useReduxState(
     selectActiveTab,
     blueprintsSlice.actions.setActiveTab
   );
-  const [query, setQuery] = useState("");
-  const [debouncedQuery] = useDebounce(query, 300, {
-    trailing: true,
-    leading: false,
-  });
+  const { data: installableViewItems } = tableInstance;
+  const { data: me, isLoading: isMeLoading } = useGetMeQuery();
+  const { hasMilestone } = useMilestones();
+  const { flagOn } = useFlags();
+  const { isBotGamesBlueprintInstalled } = useInstallBotGamesBlueprint();
 
   const isFreemiumUser = !me?.organization;
 
@@ -120,10 +125,21 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
     }
   );
 
+  const showBotGamesTab =
+    hasMilestone("bot_games_2022_register") &&
+    flagOn("bot-games-event-in-progress");
+
   const showGetStartedTab =
     !isStarterBlueprintsLoading && !isMeLoading
-      ? isFreemiumUser && !hasSomeBlueprintEngagement
+      ? isFreemiumUser && !hasSomeBlueprintEngagement && !showBotGamesTab
       : false;
+
+  useEffect(() => {
+    // We want to nudge Bot Games users who may gotten lost back to the challenge page
+    if (showBotGamesTab && !isBotGamesBlueprintInstalled) {
+      setActiveTab(BLUEPRINTS_PAGE_TABS.botGames);
+    }
+  }, []);
 
   useEffect(() => {
     if (isStarterBlueprintsLoading || isMeLoading) {
@@ -131,6 +147,12 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
     }
 
     if (activeTab.key === null) {
+      // Bot Games page takes precedence over the Get Started welcome page
+      if (showBotGamesTab) {
+        setActiveTab(BLUEPRINTS_PAGE_TABS.botGames);
+        return;
+      }
+
       if (showGetStartedTab) {
         setActiveTab(BLUEPRINTS_PAGE_TABS.getStarted);
         return;
@@ -148,6 +170,13 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
     if (!showGetStartedTab && activeTab.key === "Get Started") {
       setActiveTab(BLUEPRINTS_PAGE_TABS.active);
     }
+
+    // Similar to the above situation, if the Bot Games tab is selected
+    // but no longer shown due to the event ending, make sure that we reset
+    // the default
+    if (!showBotGamesTab && activeTab.key === "Bot Games") {
+      setActiveTab(BLUEPRINTS_PAGE_TABS.active);
+    }
   }, [
     isMeLoading,
     starterBlueprints,
@@ -157,17 +186,47 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
     setActiveTab,
   ]);
 
+  return {
+    showBotGamesTab,
+    showGetStartedTab,
+  };
+};
+
+const BlueprintsPageSidebar: React.FunctionComponent<
+  BlueprintsPageSidebarProps
+> = ({ teamFilters, tableInstance }) => {
+  const { permit } = useFlags();
+  const {
+    state: { globalFilter },
+    setGlobalFilter,
+  } = tableInstance;
+  const [activeTab, setActiveTab] = useReduxState(
+    selectActiveTab,
+    blueprintsSlice.actions.setActiveTab
+  );
+  const [_, setSearchQuery] = useReduxState(
+    selectSearchQuery,
+    blueprintsSlice.actions.setSearchQuery
+  );
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearchInput] = useDebounce(searchInput, 300, {
+    trailing: true,
+    leading: false,
+  });
+  const { showBotGamesTab, showGetStartedTab } =
+    useOnboardingTabs(tableInstance);
+
   // By default, search everything with the option to re-select
   // filtered category
   useEffect(() => {
-    if (globalFilter !== debouncedQuery) {
-      setGlobalFilter(debouncedQuery);
+    if (globalFilter !== debouncedSearchInput) {
+      setSearchQuery(debouncedSearchInput);
     }
 
-    if (debouncedQuery) {
+    if (debouncedSearchInput) {
       setActiveTab(BLUEPRINTS_PAGE_TABS.all);
     }
-  }, [globalFilter, debouncedQuery, setActiveTab, setGlobalFilter]);
+  }, [globalFilter, debouncedSearchInput, setActiveTab, setGlobalFilter]);
 
   return (
     <Col sm={12} md={3} xl={2} className={styles.root}>
@@ -176,9 +235,9 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
           id="query"
           placeholder="Search all blueprints"
           size="sm"
-          value={query}
+          value={searchInput}
           onChange={({ target }) => {
-            setQuery(target.value);
+            setSearchInput(target.value);
           }}
         />
       </Form>
@@ -196,6 +255,17 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
             eventKey="Get Started"
             onClick={() => {
               setActiveTab(BLUEPRINTS_PAGE_TABS.getStarted);
+            }}
+          />
+        )}
+        {showBotGamesTab && (
+          <ListItem
+            className="mt-3"
+            icon={faRocket}
+            label="Bot Games"
+            eventKey="Bot Games"
+            onClick={() => {
+              setActiveTab(BLUEPRINTS_PAGE_TABS.botGames);
             }}
           />
         )}
@@ -267,4 +337,4 @@ const ListFilters: React.FunctionComponent<ListFiltersProps> = ({
   );
 };
 
-export default ListFilters;
+export default BlueprintsPageSidebar;
