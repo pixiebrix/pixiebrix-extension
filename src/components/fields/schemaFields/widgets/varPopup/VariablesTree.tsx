@@ -20,6 +20,7 @@ import { JSONTree } from "react-json-tree";
 import { type ExistenceMap } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { jsonTreeTheme } from "@/themes/light";
 import { type UnknownObject } from "@/types";
+import { Button } from "react-bootstrap";
 
 const theme = {
   extend: jsonTreeTheme,
@@ -73,8 +74,8 @@ function postprocessValue(value: unknown): unknown {
 }
 
 type NodeLabelProps = {
-  path: (string | number)[];
-  onSelect: (path: (string | number)[]) => void;
+  path: Array<string | number>;
+  onSelect: (path: string[]) => void;
 };
 
 const NodeLabel: React.FunctionComponent<NodeLabelProps> = ({
@@ -85,24 +86,26 @@ const NodeLabel: React.FunctionComponent<NodeLabelProps> = ({
     event.preventDefault();
     event.stopPropagation();
 
-    onSelect([...path].reverse());
+    onSelect([...path.map(String)].reverse());
   };
 
   return (
-    <span style={{ cursor: "pointer" }} onClick={onClick}>
+    <Button variant="link" onClick={onClick}>
       {path[0]}
-    </span>
+    </Button>
   );
 };
 
 type VariablesTreeProps = {
   source: string;
   vars: ExistenceMap;
+  onVarSelect: (selectedPath: string[]) => void;
 };
 
 const VariablesTree: React.FunctionComponent<VariablesTreeProps> = ({
   source,
   vars,
+  onVarSelect,
 }) => (
   <JSONTree
     data={vars}
@@ -112,10 +115,7 @@ const VariablesTree: React.FunctionComponent<VariablesTreeProps> = ({
     invertTheme
     hideRoot
     labelRenderer={(relativePath) => (
-      <NodeLabel
-        path={[...relativePath, source]}
-        onSelect={(path) => console.log(path)}
-      />
+      <NodeLabel path={[...relativePath, source]} onSelect={onVarSelect} />
     )}
   />
 );

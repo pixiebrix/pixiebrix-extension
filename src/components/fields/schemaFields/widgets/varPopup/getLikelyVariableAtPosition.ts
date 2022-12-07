@@ -17,24 +17,40 @@
 
 const varRegex = /(?<varName>@\w+(\.|\w|(\[\d+])|(\[("|')[\s\w]+("|')]))*)/g;
 
+type LikelyVariable = {
+  name: string | null;
+  startIndex: number;
+  endIndex: number;
+};
+
 // This method is based on regex because we want to show popup even for incomplete template, ex. "{{ @foo."
 function getLikelyVariableAtPosition(
   template: string,
   position: number
-): string | null {
+): LikelyVariable {
   let match = varRegex.exec(template);
   while (match !== null) {
     const { varName } = match.groups;
     const startIndex = match.index;
-    if (startIndex <= position && position <= startIndex + varName.length) {
+    const endIndex = startIndex + varName.length;
+    if (startIndex <= position && position <= endIndex) {
       varRegex.lastIndex = 0;
-      return varName;
+
+      return {
+        name: varName,
+        startIndex,
+        endIndex,
+      };
     }
 
     match = varRegex.exec(template);
   }
 
-  return null;
+  return {
+    name: null,
+    startIndex: -1,
+    endIndex: -1,
+  };
 }
 
 export default getLikelyVariableAtPosition;

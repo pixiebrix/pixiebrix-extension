@@ -26,13 +26,15 @@ import { selectSettings } from "@/store/settingsSelectors";
 type VarPopupProps = {
   inputMode: FieldInputMode;
   inputElementRef: React.MutableRefObject<HTMLElement>;
-  value: unknown;
+  value: string;
+  setValue: (value: string) => void;
 };
 
 const VarPopup: React.FunctionComponent<VarPopupProps> = ({
   inputMode,
   inputElementRef,
   value,
+  setValue,
 }) => {
   const [showMenu, setShowMenu] = useState(false);
 
@@ -61,11 +63,8 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
         // For string inputs, we always use TextAreas, hence the cast of the ref to HTMLTextAreaElement
         const cursorPosition =
           (inputElementRef.current as HTMLTextAreaElement)?.selectionStart ?? 0;
-        const template = isNunjucksExpression(value)
-          ? value.__value__
-          : String(value);
 
-        if (getLikelyVariableAtPosition(template, cursorPosition)) {
+        if (getLikelyVariableAtPosition(value, cursorPosition).name) {
           if (!showMenu) {
             setShowMenu(true);
           }
@@ -98,12 +97,37 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
     return null;
   }
 
+  const onClose = () => {
+    setShowMenu(false);
+  };
+
+  const onVarSelect = (selectedPath: string[]) => {
+    if (inputMode === "var") {
+      // TODO fix join
+      setValue(selectedPath.join("."));
+    } else if (inputMode === "string") {
+      const cursorPosition =
+        (inputElementRef.current as HTMLTextAreaElement)?.selectionStart ?? 0;
+      const likelyVariable = getLikelyVariableAtPosition(value, cursorPosition);
+      if (likelyVariable.name) {
+        // TODO fix join
+        const { startIndex, endIndex } = likelyVariable;
+        const newValue =
+          value.slice(0, startIndex) +
+          selectedPath.join(".") +
+          value.slice(endIndex);
+        setValue(newValue);
+      }
+    }
+
+    onClose();
+  };
+
   return showMenu ? (
     <VarMenu
       inputElementRef={inputElementRef}
-      onClose={() => {
-        setShowMenu(false);
-      }}
+      onVarSelect={onVarSelect}
+      onClose={onClose}
     />
   ) : null;
 };
