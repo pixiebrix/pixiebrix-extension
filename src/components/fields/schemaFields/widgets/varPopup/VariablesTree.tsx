@@ -86,7 +86,7 @@ const NodeLabel: React.FunctionComponent<NodeLabelProps> = ({
     event.preventDefault();
     event.stopPropagation();
 
-    onSelect([...path.map(String)].reverse());
+    onSelect(path.map(String).reverse());
   };
 
   return (
@@ -97,13 +97,11 @@ const NodeLabel: React.FunctionComponent<NodeLabelProps> = ({
 };
 
 type VariablesTreeProps = {
-  source: string;
   vars: ExistenceMap;
   onVarSelect: (selectedPath: string[]) => void;
 };
 
 const VariablesTree: React.FunctionComponent<VariablesTreeProps> = ({
-  source,
   vars,
   onVarSelect,
 }) => (
@@ -115,7 +113,7 @@ const VariablesTree: React.FunctionComponent<VariablesTreeProps> = ({
     invertTheme
     hideRoot
     labelRenderer={(relativePath) => (
-      <NodeLabel path={[...relativePath, source]} onSelect={onVarSelect} />
+      <NodeLabel path={relativePath} onSelect={onVarSelect} />
     )}
   />
 );

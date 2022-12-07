@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const varRegex = /(?<varName>@\w+(\.|\w|(\[\d+])|(\[("|')[\s\w]+("|')]))*)/g;
+const varRegex = /(?<varName>@(\.|\w|(\[\d+])|(\[("|')[\s\w]+("|')]))*)/g;
 
 type LikelyVariable = {
   name: string | null;

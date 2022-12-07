@@ -17,11 +17,11 @@
 
 import React, { useEffect, useState } from "react";
 import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
-import { isNunjucksExpression } from "@/runtime/mapArgs";
 import getLikelyVariableAtPosition from "./getLikelyVariableAtPosition";
 import VarMenu from "./VarMenu";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
+import { joinName } from "@/utils";
 
 type VarPopupProps = {
   inputMode: FieldInputMode;
@@ -50,7 +50,7 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
       return;
     }
 
-    const onClick = (event: MouseEvent) => {
+    const onClick = () => {
       if (inputMode === "var") {
         if (!showMenu) {
           setShowMenu(true);
@@ -91,7 +91,7 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
       inputElement?.removeEventListener("click", onClick);
       inputElement?.removeEventListener("keypress", onKeyPress);
     };
-  }, [inputElementRef, inputMode, showMenu, value]);
+  }, [autosuggestEnabled, inputMode, showMenu, value]);
 
   if ((inputMode !== "var" && inputMode !== "string") || !autosuggestEnabled) {
     return null;
@@ -102,20 +102,17 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
   };
 
   const onVarSelect = (selectedPath: string[]) => {
+    const fullVariableName = joinName(null, ...selectedPath);
     if (inputMode === "var") {
-      // TODO fix join
-      setValue(selectedPath.join("."));
+      setValue(fullVariableName);
     } else if (inputMode === "string") {
       const cursorPosition =
         (inputElementRef.current as HTMLTextAreaElement)?.selectionStart ?? 0;
       const likelyVariable = getLikelyVariableAtPosition(value, cursorPosition);
       if (likelyVariable.name) {
-        // TODO fix join
         const { startIndex, endIndex } = likelyVariable;
         const newValue =
-          value.slice(0, startIndex) +
-          selectedPath.join(".") +
-          value.slice(endIndex);
+          value.slice(0, startIndex) + fullVariableName + value.slice(endIndex);
         setValue(newValue);
       }
     }

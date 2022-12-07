@@ -17,53 +17,89 @@
 
 import getLikelyVariableAtPosition from "./getLikelyVariableAtPosition";
 
-test.each([
-  [0, null], // Before the first variable
-  [6, null], // Inside the braces right before the variable
-  [7, "@foo"], // At the start of the variable
-  [11, "@foo"], // At the end of the variable
-  [12, null], // After the variable
-  [20, null], // On the braces before the second variable
-  [21, "@bar.baz"], // At the start of the second variable
-  [29, "@bar.baz"], // At the end of the second variable
-  [30, null], // On the braces after the second variable
-])("returns variable at given position %s", (position, expected) => {
-  const template = "abc {{ @foo }} xyz {{@bar.baz}}.";
-  const actual = getLikelyVariableAtPosition(template, position);
-  expect(actual).toEqual(expected);
+const emptyLikelyVariable = Object.freeze({
+  name: null,
+  startIndex: -1,
+  endIndex: -1,
 });
 
-test.each([
-  [10, null], // In the middle of the item variable "qux"
-  [17, "@foo.bar.baz"], // At the start of the variable in the for loop "@foo.bar.baz"
-  [29, "@foo.bar.baz"], // At the end of the variable in the for loop "@foo.bar.baz"
-  [60, null], // In the middle of the item variable "qux.quux.quuux"
-  [90, "@corge.grault.garply"], // At the beginning of the context variable in the loop body "@corge.grault.garply"
-])("multiline template, variable at position %s", (position, expected) => {
-  const template = `
+describe("detects the variable and returns its name", () => {
+  test.each([
+    [0, null], // Before the first variable
+    [6, null], // Inside the braces right before the variable
+    [7, "@foo"], // At the start of the variable
+    [11, "@foo"], // At the end of the variable
+    [12, null], // After the variable
+    [20, null], // On the braces before the second variable
+    [21, "@bar.baz"], // At the start of the second variable
+    [29, "@bar.baz"], // At the end of the second variable
+    [30, null], // On the braces after the second variable
+  ])("returns variable at given position %s", (position, expected) => {
+    const template = "abc {{ @foo }} xyz {{@bar.baz}}.";
+    const actual = getLikelyVariableAtPosition(template, position).name;
+    expect(actual).toEqual(expected);
+  });
+
+  test.each([
+    [10, null], // In the middle of the item variable "qux"
+    [17, "@foo.bar.baz"], // At the start of the variable in the for loop "@foo.bar.baz"
+    [29, "@foo.bar.baz"], // At the end of the variable in the for loop "@foo.bar.baz"
+    [60, null], // In the middle of the item variable "qux.quux.quuux"
+    [90, "@corge.grault.garply"], // At the beginning of the context variable in the loop body "@corge.grault.garply"
+  ])("multiline template, variable at position %s", (position, expected) => {
+    const template = `
   {% for qux in @foo.bar.baz %}
     Item value: {{ qux.quux.quuux }}
     Context var: {{ @corge.grault.garply }}
   {% endfor %}`;
 
-  const actual = getLikelyVariableAtPosition(template, position);
-  expect(actual).toEqual(expected);
+    const actual = getLikelyVariableAtPosition(template, position).name;
+    expect(actual).toEqual(expected);
+  });
+
+  test.each([8, 23])("repeated variables at position %s", (position) => {
+    const template = "abc {{ @foo }} xyz {{@foo}}.";
+    const actual = getLikelyVariableAtPosition(template, position).name;
+    expect(actual).toEqual("@foo");
+  });
+
+  test("indexed access", () => {
+    const template = "abc {{ @foo[0].bar }}.";
+    const actual = getLikelyVariableAtPosition(template, 8).name;
+    expect(actual).toEqual("@foo[0].bar");
+  });
+
+  test("access with []", () => {
+    const template = "abc {{ @foo['bar baz'] }}.";
+    const actual = getLikelyVariableAtPosition(template, 8).name;
+    expect(actual).toEqual("@foo['bar baz']");
+  });
+
+  test("standalone @", () => {
+    const template = "abc @";
+    const actual = getLikelyVariableAtPosition(template, 4).name;
+    expect(actual).toEqual("@");
+  });
 });
 
-test.each([8, 23])("repeated variables at position %s", (position) => {
-  const template = "abc {{ @foo }} xyz {{@foo}}.";
-  const actual = getLikelyVariableAtPosition(template, position);
-  expect(actual).toEqual("@foo");
-});
+describe("returns the start and end index of the variable", () => {
+  test.each([
+    [7, 7, 11],
+    [21, 21, 29],
+  ])(
+    "returns start and end indexes of the variable at position %s",
+    (position, expectedStartIndex, expectedEndIndex) => {
+      const template = "abc {{ @foo }} xyz {{@bar.baz}}.";
+      const actual = getLikelyVariableAtPosition(template, position);
+      expect(actual.startIndex).toEqual(expectedStartIndex);
+      expect(actual.endIndex).toEqual(expectedEndIndex);
+    }
+  );
 
-test("indexed access", () => {
-  const template = "abc {{ @foo[0].bar }}.";
-  const actual = getLikelyVariableAtPosition(template, 8);
-  expect(actual).toEqual("@foo[0].bar");
-});
-
-test("access with []", () => {
-  const template = "abc {{ @foo['bar baz'] }}.";
-  const actual = getLikelyVariableAtPosition(template, 8);
-  expect(actual).toEqual("@foo['bar baz']");
+  test("standalone @", () => {
+    const template = "abc @";
+    const actual = getLikelyVariableAtPosition(template, 4);
+    expect(actual.startIndex).toEqual(4);
+    expect(actual.endIndex).toEqual(5);
+  });
 });
