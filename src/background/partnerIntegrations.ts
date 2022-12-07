@@ -19,8 +19,8 @@ import { locator as serviceLocator } from "@/background/locator";
 import { flatten, isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import { safeParseUrl } from "@/utils";
-import { RegistryId } from "@/core";
-import { launchOAuth2Flow } from "@/background/auth";
+import { type RegistryId } from "@/core";
+import { launchOAuth2Flow, setCachedAuthData } from "@/background/auth";
 import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
 import serviceRegistry from "@/services/registry";
 
@@ -167,6 +167,10 @@ export async function _refreshPartnerToken(): Promise<void> {
       headers: { Authorization: `Basic ${btoa(context.client_id)} ` },
     });
 
+    // Store for use direct calls to the partner API
+    await setCachedAuthData(config.id, data);
+
+    // Store for use with the PixieBrix API
     await setPartnerAuth({
       authId: config.id,
       token: data.access_token,
