@@ -19,27 +19,21 @@ import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
 import { type SessionChangesRootState } from "@/pageEditor/sessionChanges/sessionChangesTypes";
 import { uuidv4 } from "@/types/helpers";
 import { selectIsStaleSession } from "@/pageEditor/sessionChanges/sessionChangesSelectors";
+import { initialState as initialSessionState } from "@/pageEditor/slices/sessionSlice";
+import { initialState as initialSessionChangesState } from "@/pageEditor/sessionChanges/sessionChangesSlice";
 
 describe("selectIsStaleSession", () => {
   test("empty changes state", () => {
     const state: SessionRootState & SessionChangesRootState = {
-      session: {
-        sessionId: uuidv4(),
-        sessionStart: Date.now(),
-      },
-      sessionChanges: {
-        latestChanges: {},
-      },
+      session: initialSessionState,
+      sessionChanges: initialSessionChangesState,
     };
     expect(selectIsStaleSession(state)).toBeFalse();
   });
 
   test("older changes in another tab", () => {
     const state: SessionRootState & SessionChangesRootState = {
-      session: {
-        sessionId: uuidv4(),
-        sessionStart: Date.now(),
-      },
+      session: initialSessionState,
       sessionChanges: {
         latestChanges: {
           [uuidv4()]: Date.now() - 100_000,

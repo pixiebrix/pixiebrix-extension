@@ -21,7 +21,7 @@ import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { type SessionChangesState } from "@/pageEditor/sessionChanges/sessionChangesTypes";
 
-const initialState: SessionChangesState = {
+export const initialState: SessionChangesState = {
   latestChanges: {},
 };
 

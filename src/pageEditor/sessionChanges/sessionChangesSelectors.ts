@@ -36,8 +36,9 @@ export const selectIsStaleSession: (
     latestChanges,
     { sessionId: thisSessionId, sessionStart: thisSessionStart }
   ) => {
-    for (const entry of Object.entries(latestChanges)) {
-      const [latestChangeSessionId, latestChangeDate] = entry;
+    for (const [latestChangeSessionId, latestChangeDate] of Object.entries(
+      latestChanges
+    )) {
       if (
         thisSessionStart < latestChangeDate &&
         thisSessionId !== latestChangeSessionId
