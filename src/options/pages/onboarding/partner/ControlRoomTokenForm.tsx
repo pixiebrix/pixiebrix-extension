@@ -28,6 +28,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Button } from "react-bootstrap";
 import { CONTROL_ROOM_SERVICE_ID } from "@/services/constants";
 import { useHistory } from "react-router";
+import { normalizeControlRoomUrl } from "@/options/pages/onboarding/partner/partnerOnboardingUtils";
 
 type ControlRoomConfiguration = {
   controlRoomUrl: string;
@@ -57,7 +58,10 @@ const ControlRoomTokenForm: React.FunctionComponent<{
         id: uuidv4(),
         serviceId: CONTROL_ROOM_SERVICE_ID,
         label: "Primary AA Control Room",
-        config: formValues,
+        config: {
+          ...formValues,
+          controlRoomUrl: normalizeControlRoomUrl(formValues.controlRoomUrl),
+        },
       })
     );
 

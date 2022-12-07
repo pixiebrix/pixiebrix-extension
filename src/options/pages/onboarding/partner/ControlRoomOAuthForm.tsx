@@ -34,6 +34,7 @@ import { serviceOriginPermissions } from "@/permissions";
 import { requestPermissions } from "@/utils/permissions";
 import { isEmpty } from "lodash";
 import { util as apiUtil } from "@/services/api";
+import { normalizeControlRoomUrl } from "@/options/pages/onboarding/partner/partnerOnboardingUtils";
 import { useHistory } from "react-router";
 
 const { updateServiceConfig } = servicesSlice.actions;
@@ -87,7 +88,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
               serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
               label: "Primary AARI Account",
               config: {
-                controlRoomUrl: values.controlRoomUrl,
+                controlRoomUrl: normalizeControlRoomUrl(values.controlRoomUrl),
               },
             })
           );
