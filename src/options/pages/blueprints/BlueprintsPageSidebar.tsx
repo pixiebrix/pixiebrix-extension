@@ -3,10 +3,8 @@ import styles from "./ListFilters.module.scss";
 import { Col, Form, Nav, type NavLinkProps } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import useReduxState from "@/hooks/useReduxState";
-import { selectActiveTab } from "./blueprintsSelectors";
 import blueprintsSlice, { type ActiveTab } from "./blueprintsSlice";
 import { selectActiveTab, selectSearchQuery } from "./blueprintsSelectors";
-import blueprintsSlice, { ActiveTab } from "./blueprintsSlice";
 import { useDebounce } from "use-debounce";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -22,7 +20,6 @@ import { type TableInstance } from "react-table";
 import { type InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import useFlags from "@/hooks/useFlags";
 import { useGetMeQuery, useGetStarterBlueprintsQuery } from "@/services/api";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { kebabCase } from "lodash";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 

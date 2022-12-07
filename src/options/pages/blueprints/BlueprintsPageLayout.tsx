@@ -28,10 +28,8 @@ import {
   useSortBy,
   useTable,
 } from "react-table";
-import ListFilters from "./ListFilters";
 import { type Installable, type InstallableViewItem } from "./blueprintsTypes";
 import BlueprintsPageSidebar from "./BlueprintsPageSidebar";
-import { Installable, InstallableViewItem } from "./blueprintsTypes";
 import {
   selectActiveTab,
   selectGroupBy,

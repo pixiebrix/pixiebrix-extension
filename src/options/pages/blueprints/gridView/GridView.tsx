@@ -19,7 +19,7 @@ import styles from "./GridView.module.scss";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  type BlueprintListViewProps,
+  type BlueprintsPageContentProps,
   type InstallableViewItem,
 } from "@/options/pages/blueprints/blueprintsTypes";
 import { VariableSizeList as List } from "react-window";
