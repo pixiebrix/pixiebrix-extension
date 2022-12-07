@@ -22,7 +22,19 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 
 const sessionChangesListenerMiddleware = createListenerMiddleware();
 sessionChangesListenerMiddleware.startListening({
-  matcher: isAnyOf(actions.editElement, actions.moveNode),
+  matcher: isAnyOf(
+    actions.editElement,
+    actions.addNode,
+    actions.moveNode,
+    actions.removeNode,
+    actions.resetInstalled,
+    actions.removeElement,
+    actions.editRecipeMetadata,
+    actions.editRecipeOptions,
+    actions.resetMetadataAndOptionsForRecipe,
+    actions.addElementToRecipe,
+    actions.removeElementFromRecipe
+  ),
   effect(action, { dispatch, getState }) {
     const { sessionId } = (getState() as SessionRootState).session;
     dispatch(sessionChangesActions.setSessionChanges({ sessionId }));
