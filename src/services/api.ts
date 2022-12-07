@@ -33,6 +33,7 @@ import {
   type MarketplaceListing,
   type MarketplaceTag,
   type Me,
+  type Milestone,
   type Organization,
   type Package,
   type PackageUpsertResponse,
@@ -384,6 +385,14 @@ export const appApi = createApi({
         { type: "StarterBlueprints", id: "LIST" },
       ],
     }),
+    createMilestone: builder.mutation<Milestone, { key: string }>({
+      query: (data) => ({
+        url: "/api/me/milestones/",
+        method: "post",
+        data,
+      }),
+      invalidatesTags: ["Me"],
+    }),
   }),
 });
 
@@ -411,5 +420,6 @@ export const {
   useListPackageVersionsQuery,
   useUpdateScopeMutation,
   useGetStarterBlueprintsQuery,
+  useCreateMilestoneMutation,
   util,
 } = appApi;
