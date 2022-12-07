@@ -40,7 +40,7 @@ class DisplayTemporaryInfo extends Transformer {
     super(
       DisplayTemporaryInfo.BLOCK_ID,
       "Display Temporary Information",
-      "A display title for the information, shown in the tab name"
+      "Display a document in a temporary sidebar panel"
     );
   }
 
@@ -49,7 +49,8 @@ class DisplayTemporaryInfo extends Transformer {
     properties: {
       title: {
         type: "string",
-        description: "A display title for the temporary document",
+        description:
+          "A display title for the temporary document, shown in the tab name",
       },
       body: {
         $ref: "https://app.pixiebrix.com/schemas/pipeline#",
