@@ -24,7 +24,7 @@ type LikelyVariable = {
 };
 
 // This method is based on regex because we want to show popup even for incomplete template, ex. "{{ @foo."
-function getLikelyVariableAtPosition(
+export function getLikelyVariableAtPosition(
   template: string,
   position: number
 ): LikelyVariable {
@@ -51,6 +51,24 @@ function getLikelyVariableAtPosition(
     startIndex: -1,
     endIndex: -1,
   };
+}
+
+export function replaceLikelyVariable(
+  template: string,
+  position: number,
+  replacement: string
+): string {
+  let { startIndex, endIndex } = getLikelyVariableAtPosition(
+    template,
+    position
+  );
+
+  if (startIndex === -1 || endIndex === -1) {
+    startIndex = position;
+    endIndex = position;
+  }
+
+  return template.slice(0, startIndex) + replacement + template.slice(endIndex);
 }
 
 export default getLikelyVariableAtPosition;

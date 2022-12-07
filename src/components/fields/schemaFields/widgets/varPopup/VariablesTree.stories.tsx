@@ -18,6 +18,7 @@
 import React from "react";
 import { type ComponentMeta, type Story } from "@storybook/react";
 import VariablesTree from "./VariablesTree";
+import { noop } from "lodash";
 
 export default {
   title: "PageEditor/VariablesTree",
@@ -72,7 +73,7 @@ const knownVars: any = {
 const Template: Story<typeof VariablesTree> = () => {
   const source = "root:Array Composite Reader";
   const vars = knownVars[source];
-  return <VariablesTree source={source} vars={vars} />;
+  return <VariablesTree vars={vars} onVarSelect={noop} />;
 };
 
 export const Default = Template.bind({});

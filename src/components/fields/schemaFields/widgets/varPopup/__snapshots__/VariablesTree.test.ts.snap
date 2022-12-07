@@ -26,9 +26,12 @@ exports[`Renders the tree expanded with correct sorting 1`] = `
           <label
             style="display: inline-block; color: rgb(46, 36, 65); margin: 0px; padding: 0px; cursor: pointer;"
           >
-            <span>
-              @input:
-            </span>
+            <button
+              class="btn"
+              type="button"
+            >
+              @input
+            </button>
           </label>
           <span
             style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
@@ -51,9 +54,12 @@ exports[`Renders the tree expanded with correct sorting 1`] = `
               <label
                 style="display: inline-block; color: rgb(46, 36, 65); margin: 0px 0.5em 0px 0px;"
               >
-                <span>
-                  description:
-                </span>
+                <button
+                  class="btn"
+                  type="button"
+                >
+                  description
+                </button>
               </label>
               <span
                 style="color: rgb(64, 175, 108);"
@@ -67,9 +73,12 @@ exports[`Renders the tree expanded with correct sorting 1`] = `
               <label
                 style="display: inline-block; color: rgb(46, 36, 65); margin: 0px 0.5em 0px 0px;"
               >
-                <span>
-                  type:
-                </span>
+                <button
+                  class="btn"
+                  type="button"
+                >
+                  type
+                </button>
               </label>
               <span
                 style="color: rgb(64, 175, 108);"
@@ -83,9 +92,12 @@ exports[`Renders the tree expanded with correct sorting 1`] = `
               <label
                 style="display: inline-block; color: rgb(46, 36, 65); margin: 0px 0.5em 0px 0px;"
               >
-                <span>
-                  url:
-                </span>
+                <button
+                  class="btn"
+                  type="button"
+                >
+                  url
+                </button>
               </label>
               <span
                 style="color: rgb(64, 175, 108);"
@@ -99,9 +111,12 @@ exports[`Renders the tree expanded with correct sorting 1`] = `
               <label
                 style="display: inline-block; color: rgb(46, 36, 65); margin: 0px; padding: 0px; cursor: default;"
               >
-                <span>
-                  icon:
-                </span>
+                <button
+                  class="btn"
+                  type="button"
+                >
+                  icon
+                </button>
               </label>
               <span
                 style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
@@ -134,9 +149,12 @@ exports[`Renders the tree expanded with correct sorting 1`] = `
               <label
                 style="display: inline-block; color: rgb(46, 36, 65); margin: 0px; padding: 0px; cursor: pointer;"
               >
-                <span>
-                  props:
-                </span>
+                <button
+                  class="btn"
+                  type="button"
+                >
+                  props
+                </button>
               </label>
               <span
                 style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
@@ -159,9 +177,12 @@ exports[`Renders the tree expanded with correct sorting 1`] = `
                   <label
                     style="display: inline-block; color: rgb(46, 36, 65); margin: 0px; padding: 0px; cursor: default;"
                   >
-                    <span>
-                      markdown:
-                    </span>
+                    <button
+                      class="btn"
+                      type="button"
+                    >
+                      markdown
+                    </button>
                   </label>
                   <span
                     style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"

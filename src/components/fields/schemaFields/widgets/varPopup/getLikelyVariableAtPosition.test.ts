@@ -15,13 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import getLikelyVariableAtPosition from "./getLikelyVariableAtPosition";
-
-const emptyLikelyVariable = Object.freeze({
-  name: null,
-  startIndex: -1,
-  endIndex: -1,
-});
+import {
+  getLikelyVariableAtPosition,
+  replaceLikelyVariable,
+} from "./getLikelyVariableAtPosition";
 
 describe("detects the variable and returns its name", () => {
   test.each([
@@ -101,5 +98,33 @@ describe("returns the start and end index of the variable", () => {
     const actual = getLikelyVariableAtPosition(template, 4);
     expect(actual.startIndex).toEqual(4);
     expect(actual.endIndex).toEqual(5);
+  });
+});
+
+describe("replaceLikelyVariable", () => {
+  const template = "abc {{ @foo }} xyz {{@bar.baz}} {{@foo}}.";
+
+  test.each([
+    {
+      position: 8,
+      replacement: "@qux.quux",
+      expected: "abc {{ @qux.quux }} xyz {{@bar.baz}} {{@foo}}.",
+    },
+    {
+      position: 22,
+      replacement: "@qux.quux",
+      expected: "abc {{ @foo }} xyz {{@qux.quux}} {{@foo}}.",
+    },
+  ])(
+    "replaces a variable at position $position",
+    ({ position, replacement, expected }) => {
+      const actual = replaceLikelyVariable(template, position, replacement);
+      expect(actual).toEqual(expected);
+    }
+  );
+
+  test("inserts the new var if no likely variable found in the text", () => {
+    const actual = replaceLikelyVariable(template, 0, "@qux.quux");
+    expect(actual).toEqual("@qux.quux" + template);
   });
 });

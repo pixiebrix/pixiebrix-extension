@@ -17,7 +17,10 @@
 
 import React, { useEffect, useState } from "react";
 import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
-import getLikelyVariableAtPosition from "./getLikelyVariableAtPosition";
+import {
+  getLikelyVariableAtPosition,
+  replaceLikelyVariable,
+} from "./getLikelyVariableAtPosition";
 import VarMenu from "./VarMenu";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
@@ -108,13 +111,12 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
     } else if (inputMode === "string") {
       const cursorPosition =
         (inputElementRef.current as HTMLTextAreaElement)?.selectionStart ?? 0;
-      const likelyVariable = getLikelyVariableAtPosition(value, cursorPosition);
-      if (likelyVariable.name) {
-        const { startIndex, endIndex } = likelyVariable;
-        const newValue =
-          value.slice(0, startIndex) + fullVariableName + value.slice(endIndex);
-        setValue(newValue);
-      }
+      const newValue = replaceLikelyVariable(
+        value,
+        cursorPosition,
+        fullVariableName
+      );
+      setValue(newValue);
     }
 
     onClose();

@@ -20,7 +20,6 @@ import { JSONTree } from "react-json-tree";
 import { type ExistenceMap } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { jsonTreeTheme } from "@/themes/light";
 import { type UnknownObject } from "@/types";
-import { Button } from "react-bootstrap";
 
 const theme = {
   extend: jsonTreeTheme,
@@ -90,9 +89,9 @@ const NodeLabel: React.FunctionComponent<NodeLabelProps> = ({
   };
 
   return (
-    <Button variant="link" onClick={onClick}>
+    <button type="button" className="btn" onClick={onClick}>
       {path[0]}
-    </Button>
+    </button>
   );
 };
 
