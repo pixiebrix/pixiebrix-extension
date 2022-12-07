@@ -22,7 +22,7 @@ import { Button } from "react-bootstrap";
 
 const StaleSessionPane: React.FC = () => (
   <Centered>
-    <Alert variant="danger">
+    <Alert variant="info">
       There were changes made in a different instance of the Page Editor. Reload
       this Page Editor to sync the changes.
     </Alert>
