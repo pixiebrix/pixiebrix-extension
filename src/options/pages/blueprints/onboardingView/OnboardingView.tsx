@@ -26,7 +26,7 @@ import { type OnboardingType } from "@/options/pages/blueprints/onboardingView/u
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 import { useDispatch } from "react-redux";
 import workshopImage from "@img/workshop.svg";
-import { BLUEPRINTS_PAGE_TABS } from "@/options/pages/blueprints/ListFilters";
+import { BLUEPRINTS_PAGE_TABS } from "@/options/pages/blueprints/BlueprintsPageSidebar";
 
 const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
   <Col className="d-flex justify-content-center flex-column text-center">
