@@ -18,6 +18,7 @@
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faArrowAltCircleUp,
   faDownload,
   faList,
   faShare,
@@ -38,6 +39,15 @@ const BlueprintActions: React.FunctionComponent<{
 
   const actionItems = useMemo(
     () => [
+      {
+        title: (
+          <>
+            <FontAwesomeIcon icon={faArrowAltCircleUp} /> Publish to Marketplace
+          </>
+        ),
+        action: actions.viewShare,
+        hide: !actions.viewShare,
+      },
       {
         title: (
           <>
