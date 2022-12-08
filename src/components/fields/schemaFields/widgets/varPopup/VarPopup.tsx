@@ -25,6 +25,7 @@ import VarMenu from "./VarMenu";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
 import { joinName } from "@/utils";
+import fitTextarea from "fit-textarea";
 
 type VarPopupProps = {
   inputMode: FieldInputMode;
@@ -109,14 +110,25 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
     if (inputMode === "var") {
       setValue(fullVariableName);
     } else if (inputMode === "string") {
-      const cursorPosition =
-        (inputElementRef.current as HTMLTextAreaElement)?.selectionStart ?? 0;
+      const textElement = inputElementRef.current as HTMLTextAreaElement;
+      if (textElement == null) {
+        return;
+      }
+
+      const cursorPosition = textElement.selectionStart;
       const newValue = replaceLikelyVariable(
         value,
         cursorPosition,
         fullVariableName
       );
       setValue(newValue);
+      setTimeout(() => {
+        if (textElement == null) {
+          return;
+        }
+
+        fitTextarea(textElement);
+      }, 100);
     }
 
     onClose();
