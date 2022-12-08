@@ -22,10 +22,10 @@ import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import LocationWidget from "@/pageEditor/fields/LocationWidget";
 import { useField, useFormikContext } from "formik";
-import { TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
   getDefaultReportModeForTrigger,
-  Trigger,
+  type Trigger,
 } from "@/extensionPoints/triggerExtension";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
@@ -33,7 +33,7 @@ import { partial } from "lodash";
 import { joinName } from "@/utils";
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
-import { DebounceOptions } from "@/extensionPoints/types";
+import { type DebounceOptions } from "@/extensionPoints/types";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 
 function supportsSelector(trigger: Trigger) {

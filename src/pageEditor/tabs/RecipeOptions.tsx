@@ -17,7 +17,7 @@
 
 import React, { useCallback, useState } from "react";
 import FieldRuntimeContext, {
-  RuntimeContext,
+  type RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { Card, Col, Container, Nav, Row, Tab } from "react-bootstrap";
 import Loader from "@/components/Loader";
@@ -28,7 +28,7 @@ import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import cx from "classnames";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
-import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
+import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import {
   getMinimalSchema,
   getMinimalUiSchema,
@@ -42,7 +42,7 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
 import { Formik } from "formik";
-import { OptionsDefinition } from "@/types/definitions";
+import { type OptionsDefinition } from "@/types/definitions";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/pageEditor/components/Effect";
 import { getErrorMessage } from "@/errors/errorHelpers";

@@ -22,15 +22,18 @@ import { render } from "react-dom";
 import {
   toast,
   Toaster,
-  DefaultToastOptions,
-  ToastOptions,
+  type DefaultToastOptions,
+  type ToastOptions,
 } from "react-hot-toast";
 import { uuidv4 } from "@/types/helpers";
 import { NOTIFICATIONS_Z_INDEX } from "@/common";
 import reportError from "@/telemetry/reportError";
-import { Except, RequireAtLeastOne } from "type-fest";
+import { type Except, type RequireAtLeastOne } from "type-fest";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { merge, truncate } from "lodash";
+
+// While correct, the `sidebarDomControllerLite` name implies that it's a small, pure module and it's unlikely to cause issues
+// eslint-disable-next-line import/no-restricted-paths
 import { SIDEBAR_WIDTH_CSS_PROPERTY } from "@/contentScript/sidebarDomControllerLite";
 import ErrorIcon from "@/icons/error.svg?loadAsComponent";
 import WarningIcon from "@/icons/warning.svg?loadAsComponent";

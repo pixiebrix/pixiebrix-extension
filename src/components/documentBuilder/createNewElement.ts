@@ -15,8 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DocumentElement, DocumentElementType } from "./documentBuilderTypes";
-import { DeferExpression, PipelineExpression } from "@/runtime/mapArgs";
+import {
+  type DocumentElement,
+  type DocumentElementType,
+} from "./documentBuilderTypes";
+import {
+  type DeferExpression,
+  type PipelineExpression,
+} from "@/runtime/mapArgs";
 
 export function createNewElement(elementType: DocumentElementType) {
   const element: DocumentElement = {

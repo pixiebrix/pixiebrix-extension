@@ -17,28 +17,26 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { getRollbar } from "@/telemetry/initRollbar";
-import { MessageContext, SerializedError, UUID } from "@/core";
-import { Except, JsonObject } from "type-fest";
-import { deserializeError, serializeError } from "serialize-error";
-import { DBSchema, openDB } from "idb/with-async-ittr";
+import { type MessageContext, type SerializedError, type UUID } from "@/core";
+import { type Except, type JsonObject } from "type-fest";
+import { deserializeError } from "serialize-error";
+import { type DBSchema, openDB } from "idb/with-async-ittr";
 import { isEmpty, once, sortBy } from "lodash";
 import { allowsTrack } from "@/telemetry/dnt";
-import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
+import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
   getErrorMessage,
   hasSpecificErrorCause,
-  IGNORED_ERROR_PATTERNS,
   isSpecificError,
 } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
-import { matchesAnyPattern } from "@/utils";
 import {
   reportToErrorService,
   selectExtraContext,
 } from "@/services/errorService";
 import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
-import { MessengerMeta } from "webext-messenger";
+import { type MessengerMeta } from "webext-messenger";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -257,9 +255,10 @@ async function reportToRollbar(
   rollbar.error(message, error, { ...flatContext, ...details });
 }
 
+/** @deprecated Use `reportError` instead: `import reportError from "@/telemetry/reportError"` */
 export async function recordError(
   this: MessengerMeta, // Enforce usage via Messenger only
-  maybeSerializedError: SerializedError,
+  serializedError: SerializedError,
   context: MessageContext,
   data?: JsonObject
 ): Promise<void> {
@@ -270,26 +269,8 @@ export async function recordError(
   );
 
   try {
-    // Ensure it's deserialized
-    const error = deserializeError(maybeSerializedError);
-
+    const error = deserializeError(serializedError);
     const message = getErrorMessage(error);
-
-    // For noisy errors, don't record/submit telemetry unless the error prevented an extension point
-    // from being installed or an extension to fail. (In that case, we'd have some context about the error).
-    const { pageName, ...extensionContext } = context ?? {};
-    if (
-      isEmpty(extensionContext) &&
-      matchesAnyPattern(message, IGNORED_ERROR_PATTERNS)
-    ) {
-      console.debug("Ignoring error matching IGNORED_ERROR_PATTERNS", {
-        error,
-        context,
-      });
-
-      return;
-    }
-
     const flatContext = flattenContext(error, context);
 
     await Promise.all([
@@ -303,13 +284,13 @@ export async function recordError(
         message,
         data,
         // Ensure the object is fully serialized. Required because it will be stored in IDB and flow through the Redux state
-        error: serializeError(maybeSerializedError),
+        error: serializedError,
       }),
     ]);
   } catch (recordErrorError) {
     console.error("An error occurred while recording another error", {
       error: recordErrorError,
-      originalError: maybeSerializedError,
+      originalError: serializedError,
       context,
     });
   }

@@ -27,7 +27,7 @@ import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import userEvent from "@testing-library/user-event";
 import { cleanup, perf } from "@/vendors/reactPerformanceTesting/perf";
-import { RenderCountField } from "@/vendors/reactPerformanceTesting/perfTypes";
+import { type RenderCountField } from "@/vendors/reactPerformanceTesting/perfTypes";
 import { act } from "@testing-library/react";
 
 const data = {

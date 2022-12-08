@@ -16,22 +16,22 @@
  */
 
 import {
-  AuthData,
-  BlockArg,
-  BlockIcon,
-  BlockOptions,
-  IBlock,
-  IReader,
-  IService,
-  KeyedConfig,
-  OAuth2Context,
-  ReaderOutput,
-  RegistryId,
-  RendererOutput,
-  Schema,
-  TokenContext,
+  type AuthData,
+  type BlockArg,
+  type BlockIcon,
+  type BlockOptions,
+  type IBlock,
+  type IReader,
+  type IService,
+  type KeyedConfig,
+  type OAuth2Context,
+  type ReaderOutput,
+  type RegistryId,
+  type RendererOutput,
+  type Schema,
+  type TokenContext,
 } from "@/core";
-import { AxiosRequestConfig } from "axios";
+import { type AxiosRequestConfig } from "axios";
 import { validateRegistryId } from "@/types/helpers";
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };

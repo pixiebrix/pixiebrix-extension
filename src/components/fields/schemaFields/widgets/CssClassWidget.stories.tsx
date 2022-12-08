@@ -16,11 +16,11 @@
  */
 
 import React from "react";
-import { ComponentMeta, Story } from "@storybook/react";
+import { type ComponentMeta, type Story } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import CssClassWidget, { parseValue } from "./CssClassWidget";
 import { Formik, useField } from "formik";
-import { Expression } from "@/core";
+import { type Expression } from "@/core";
 import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";
 
 export default {

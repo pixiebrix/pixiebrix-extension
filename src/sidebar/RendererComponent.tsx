@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
-import { RendererOutput } from "@/core";
-import { UnknownObject } from "@/types";
-import { PanelRunMeta } from "@/sidebar/types";
+import { type RendererOutput } from "@/core";
+import { type UnknownObject } from "@/types";
+import { type PanelRunMeta } from "@/sidebar/types";
 
 /**
  * React component to display the output of a renderer brick

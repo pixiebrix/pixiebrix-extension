@@ -1,0 +1,190 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Renders the tree expanded with correct sorting 1`] = `
+<DocumentFragment>
+  <ul
+    style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(253, 255, 255);"
+  >
+    <li
+      style="padding: 0px; margin: 0px;"
+    >
+      <ul
+        style="padding: 0px; margin: 0px; list-style: none;"
+      >
+        <li
+          style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 0px;"
+        >
+          <div
+            style="display: inline-block; cursor: pointer; padding: 4px; margin-right: 10px; background-color: rgb(240, 239, 242); border-radius: 2px;"
+          >
+            <div
+              style="margin-left: 0px; transition: 150ms; transform: rotateZ(90deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; height: 12px; width: 12px; display: flex; justify-content: center; align-items: center; color: rgb(46, 36, 65);"
+            >
+              ▶
+            </div>
+          </div>
+          <label
+            style="display: inline-block; color: rgb(46, 36, 65); margin: 0px; padding: 0px; cursor: pointer;"
+          >
+            <span>
+              @input:
+            </span>
+          </label>
+          <span
+            style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
+          >
+            <span>
+              <span
+                style="margin-left: 0.3em; margin-right: 0.3em;"
+              >
+                {}
+              </span>
+               5 keys
+            </span>
+          </span>
+          <ul
+            style="padding: 0px; margin: 0px; list-style: none; display: block;"
+          >
+            <li
+              style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all;"
+            >
+              <label
+                style="display: inline-block; color: rgb(46, 36, 65); margin: 0px 0.5em 0px 0px;"
+              >
+                <span>
+                  description:
+                </span>
+              </label>
+              <span
+                style="color: rgb(64, 175, 108);"
+              >
+                "not set"
+              </span>
+            </li>
+            <li
+              style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all;"
+            >
+              <label
+                style="display: inline-block; color: rgb(46, 36, 65); margin: 0px 0.5em 0px 0px;"
+              >
+                <span>
+                  type:
+                </span>
+              </label>
+              <span
+                style="color: rgb(64, 175, 108);"
+              >
+                "not set"
+              </span>
+            </li>
+            <li
+              style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all;"
+            >
+              <label
+                style="display: inline-block; color: rgb(46, 36, 65); margin: 0px 0.5em 0px 0px;"
+              >
+                <span>
+                  url:
+                </span>
+              </label>
+              <span
+                style="color: rgb(64, 175, 108);"
+              >
+                "not set"
+              </span>
+            </li>
+            <li
+              style="position: relative; padding-top: 0.25em; margin-left: 0.875em; padding-left: 1.125em;"
+            >
+              <label
+                style="display: inline-block; color: rgb(46, 36, 65); margin: 0px; padding: 0px; cursor: default;"
+              >
+                <span>
+                  icon:
+                </span>
+              </label>
+              <span
+                style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
+              >
+                <span>
+                  <span
+                    style="margin-left: 0.3em; margin-right: 0.3em;"
+                  >
+                    {}
+                  </span>
+                   0 keys
+                </span>
+              </span>
+              <ul
+                style="padding: 0px; margin: 0px; list-style: none; display: block;"
+              />
+            </li>
+            <li
+              style="position: relative; padding-top: 0.25em; margin-left: 0.875em; padding-left: 0px;"
+            >
+              <div
+                style="display: inline-block; cursor: pointer; padding: 4px; margin-right: 10px; background-color: rgb(240, 239, 242); border-radius: 2px;"
+              >
+                <div
+                  style="margin-left: 0px; transition: 150ms; transform: rotateZ(90deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; height: 12px; width: 12px; display: flex; justify-content: center; align-items: center; color: rgb(46, 36, 65);"
+                >
+                  ▶
+                </div>
+              </div>
+              <label
+                style="display: inline-block; color: rgb(46, 36, 65); margin: 0px; padding: 0px; cursor: pointer;"
+              >
+                <span>
+                  props:
+                </span>
+              </label>
+              <span
+                style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
+              >
+                <span>
+                  <span
+                    style="margin-left: 0.3em; margin-right: 0.3em;"
+                  >
+                    {}
+                  </span>
+                   1 key
+                </span>
+              </span>
+              <ul
+                style="padding: 0px; margin: 0px; list-style: none; display: block;"
+              >
+                <li
+                  style="position: relative; padding-top: 0.25em; margin-left: 0.875em; padding-left: 1.125em;"
+                >
+                  <label
+                    style="display: inline-block; color: rgb(46, 36, 65); margin: 0px; padding: 0px; cursor: default;"
+                  >
+                    <span>
+                      markdown:
+                    </span>
+                  </label>
+                  <span
+                    style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
+                  >
+                    <span>
+                      <span
+                        style="margin-left: 0.3em; margin-right: 0.3em;"
+                      >
+                        {}
+                      </span>
+                       0 keys
+                    </span>
+                  </span>
+                  <ul
+                    style="padding: 0px; margin: 0px; list-style: none; display: block;"
+                  />
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</DocumentFragment>
+`;

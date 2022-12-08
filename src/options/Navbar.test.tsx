@@ -20,7 +20,7 @@ import { MemoryRouter } from "react-router";
 import Navbar from "@/options/Navbar";
 import { render } from "@/options/testHelpers";
 import { THEME_LOGOS } from "@/utils/themeUtils";
-import { Theme } from "@/options/types";
+import { type Theme } from "@/options/types";
 
 const renderNavbar = () => {
   // There doesn't seem to be significant testable differences between

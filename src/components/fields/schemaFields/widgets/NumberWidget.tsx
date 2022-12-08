@@ -16,16 +16,16 @@
  */
 
 import React, {
-  FocusEventHandler,
+  type FocusEventHandler,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
-import { Form, FormControlProps } from "react-bootstrap";
+import { Form, type FormControlProps } from "react-bootstrap";
 import { useField } from "formik";
 import { round } from "lodash";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 
 /**
  * A basic input widget for numbers

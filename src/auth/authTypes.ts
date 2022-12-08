@@ -15,9 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId, UUID } from "@/core";
-import { Me, OrganizationTheme, Milestone } from "@/types/contract";
-import { Except } from "type-fest";
+import { type RegistryId, type UUID } from "@/core";
+import {
+  type Me,
+  type OrganizationTheme,
+  type Milestone,
+} from "@/types/contract";
+import { type Except } from "type-fest";
 
 export interface AuthOption {
   label: string;
@@ -113,6 +117,12 @@ export type PartnerAuthData = {
    * The JWT bearer token corresponding to the authId.
    */
   token: string | null;
+  /**
+   * The refresh token, if `offline_access` was included in scope.
+   * @since 1.7.15
+   */
+  refreshToken: string | null;
+
   /**
    * Extra HTTP headers to send with every request.
    */

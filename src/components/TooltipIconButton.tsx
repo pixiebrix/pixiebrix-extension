@@ -15,9 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { MouseEventHandler } from "react";
-import { IconProp, SizeProp } from "@fortawesome/fontawesome-svg-core";
-import { OverlayTrigger, OverlayTriggerProps, Tooltip } from "react-bootstrap";
+import React, { type MouseEventHandler } from "react";
+import {
+  type IconProp,
+  type SizeProp,
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  OverlayTrigger,
+  type OverlayTriggerProps,
+  Tooltip,
+} from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const TooltipIconButton: React.FC<{

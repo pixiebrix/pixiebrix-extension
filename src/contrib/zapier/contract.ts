@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 
 export interface Webhook {
   id: string;

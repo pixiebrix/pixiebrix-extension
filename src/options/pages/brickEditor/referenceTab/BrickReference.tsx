@@ -26,12 +26,12 @@ import {
   ListGroup,
   Row,
 } from "react-bootstrap";
-import { IBlock, IExtensionPoint, IService } from "@/core";
+import { type IBlock, type IExtensionPoint, type IService } from "@/core";
 import Fuse from "fuse.js";
 import { sortBy } from "lodash";
 import Loader from "@/components/Loader";
 import BrickDetail from "./BrickDetail";
-import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
+import { type ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
 import BlockResult from "./BlockResult";
 import { isOfficial } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";

@@ -17,7 +17,7 @@
 
 import { Renderer } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg, ComponentRef } from "@/core";
+import { type BlockArg, type ComponentRef } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import MarkdownLazy from "@/components/MarkdownLazy";
 

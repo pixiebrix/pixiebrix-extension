@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import axios, { AxiosResponse } from "axios";
-import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
+import axios, { type AxiosResponse } from "axios";
+import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
-  IService,
-  AuthData,
-  RawServiceConfiguration,
-  UUID,
-  OAuth2Context,
+  type IService,
+  type AuthData,
+  type RawServiceConfiguration,
+  type UUID,
+  type OAuth2Context,
 } from "@/core";
 import {
   computeChallenge,
@@ -31,13 +31,13 @@ import {
 } from "@/vendors/pkce";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
-import { UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 import { BusinessError } from "@/errors/businessErrors";
 import { memoizeUntilSettled } from "@/utils";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2" as ManualStorageKey;
 
-async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
+export async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
   serviceAuthId: UUID,
   data: TAuthData
 ): Promise<void> {

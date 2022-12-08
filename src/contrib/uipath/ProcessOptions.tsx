@@ -16,15 +16,19 @@
  */
 
 import React, { useCallback, useEffect } from "react";
-import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
 import { UIPATH_PROPERTIES } from "@/contrib/uipath/process";
-import { Expression, SanitizedServiceConfiguration, Schema } from "@/core";
+import {
+  type Expression,
+  type SanitizedServiceConfiguration,
+  type Schema,
+} from "@/core";
 import { useField } from "formik";
 import { proxyService } from "@/background/messenger/api";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
-import { Option } from "@/components/form/widgets/SelectWidget";
-import { ODataResponseData, Robot } from "./uipathContract";
+import { type Option } from "@/components/form/widgets/SelectWidget";
+import { type ODataResponseData, type Robot } from "./uipathContract";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";

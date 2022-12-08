@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types";
-import { BlockArg } from "@/core";
+import { type BlockArg } from "@/core";
 import { openTab } from "@/background/messenger/api";
 import { URL_INPUT_SPEC } from "@/blocks/transformers/url";
 import { LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT, makeURL } from "@/utils";

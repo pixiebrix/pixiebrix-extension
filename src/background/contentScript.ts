@@ -24,8 +24,6 @@ import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
 import { expectContext } from "@/utils/expectContext";
 import pTimeout from "p-timeout";
 import type { Target } from "@/types";
-
-// eslint-disable-next-line import/no-restricted-paths -- TODO: Migrate to webext-messenger?
 import { getTargetState } from "@/contentScript/ready";
 
 /** Checks whether a URL will have the content scripts automatically injected */

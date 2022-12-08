@@ -15,16 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { FormControlProps } from "react-bootstrap";
+.root {
+  height: 100%;
+}
 
-export type Shortcut = {
-  caption: string;
-  getPattern: () => Promise<string>;
-};
+.filterTitle {
+  font-size: 1.125rem;
+}
 
-export type UrlMatchPatternWidgetProps = SchemaFieldProps &
-  FormControlProps & {
-    shortcuts: Shortcut[];
-    addButtonCaption?: string;
-  };
+.mainContainer {
+  // Flex is required to prevent AutoSizer overflow with siblings
+  display: flex;
+  flex-direction: column;
+}
+
+.blueprintsList {
+  overflow-y: scroll;
+}

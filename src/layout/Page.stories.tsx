@@ -17,7 +17,7 @@
 
 import React from "react";
 import Page from "@/layout/Page";
-import { ComponentStory, ComponentMeta } from "@storybook/react";
+import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 
 export default {
   component: Page,

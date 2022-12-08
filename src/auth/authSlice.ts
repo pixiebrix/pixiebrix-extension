@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { anonAuth } from "./authConstants";
-import { AuthState } from "./authTypes";
+import { type AuthState } from "./authTypes";
 import { localStorage } from "redux-persist-webextension-storage";
 import { isEmpty } from "lodash";
+import { type StorageInterface } from "@/store/StorageInterface";
 
 export const authSlice = createSlice({
   name: "auth",
@@ -45,7 +46,10 @@ export const authSlice = createSlice({
 // Current approach is not ideal, AuthState is cached along with UserData (which is used by background script).
 export const persistAuthConfig = {
   key: "authOptions",
-  storage: localStorage,
+  // Change the type of localStorage to our overridden version so that it can be exported
+  // See: @/store/StorageInterface.ts
+  storage: localStorage as StorageInterface,
+  version: 1,
 };
 
 export const authActions = authSlice.actions;

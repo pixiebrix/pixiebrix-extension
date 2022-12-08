@@ -15,20 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, RecipeMetadata, RegistryId, UUID } from "@/core";
+import {
+  type IExtension,
+  type RecipeMetadata,
+  type RegistryId,
+  type UUID,
+} from "@/core";
 import { createSelector } from "reselect";
 import {
-  EditorRootState,
+  type EditorRootState,
   ModalKey,
-  RootState,
+  type RootState,
 } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { flatMap, isEmpty, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import { ElementUIState, TabUIState } from "@/pageEditor/uiState/uiStateTypes";
+import {
+  type ElementUIState,
+  type TabUIState,
+} from "@/pageEditor/uiState/uiStateTypes";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
-import { ExtensionsRootState } from "@/store/extensionsTypes";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { deserializeError } from "serialize-error";
 
 export const selectActiveElementId = ({ editor }: EditorRootState) =>

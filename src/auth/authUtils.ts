@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Me } from "@/types/contract";
-import { UserDataUpdate, AuthState } from "@/auth/authTypes";
-import { UUID } from "@/core";
+import { type Me } from "@/types/contract";
+import { type UserDataUpdate, type AuthState } from "@/auth/authTypes";
+import { type UUID } from "@/core";
 
 export function selectOrganizations(
   organizationMemberships: Me["organization_memberships"]

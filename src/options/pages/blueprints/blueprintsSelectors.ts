@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlueprintsState } from "@/options/pages/blueprints/blueprintsSlice";
+import { type BlueprintsState } from "@/options/pages/blueprints/blueprintsSlice";
 
 export type BlueprintsRootState = {
   blueprints: BlueprintsState;
@@ -29,3 +29,5 @@ export const selectSortBy = ({ blueprints }: BlueprintsRootState) =>
   blueprints.sortBy;
 export const selectActiveTab = ({ blueprints }: BlueprintsRootState) =>
   blueprints.activeTab;
+export const selectSearchQuery = ({ blueprints }: BlueprintsRootState) =>
+  blueprints.searchQuery;

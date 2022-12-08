@@ -17,14 +17,18 @@
 
 import React, { useCallback, useMemo, useState } from "react";
 import ServiceAuthSelector from "@/components/ServiceAuthSelector";
-import { AuthOption } from "@/auth/authTypes";
+import { type AuthOption } from "@/auth/authTypes";
 import { useField } from "formik";
 import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import registry from "@/services/registry";
-import { RawServiceConfiguration, RegistryId, UUID } from "@/core";
+import {
+  type RawServiceConfiguration,
+  type RegistryId,
+  type UUID,
+} from "@/core";
 import { uuidv4 } from "@/types/helpers";
-import { persistor } from "@/options/store";
+import { persistor } from "@/store/optionsStore";
 import { services } from "@/background/messenger/api";
 import { Button } from "react-bootstrap";
 import ServiceEditorModal from "@/options/pages/services/ServiceEditorModal";

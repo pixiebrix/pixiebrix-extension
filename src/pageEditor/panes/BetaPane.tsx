@@ -17,7 +17,7 @@
 
 import styles from "@/pageEditor/panes/Pane.module.scss";
 
-import Centered from "@/pageEditor/components/Centered";
+import Centered from "@/components/Centered";
 import React from "react";
 
 const BetaPane: React.FunctionComponent = () => (

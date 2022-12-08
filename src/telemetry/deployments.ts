@@ -1,5 +1,5 @@
-import { IExtension } from "@/core";
-import { JsonObject } from "type-fest";
+import { type IExtension } from "@/core";
+import { type JsonObject } from "type-fest";
 
 /**
  * Select data to report to the team admins for the deployment

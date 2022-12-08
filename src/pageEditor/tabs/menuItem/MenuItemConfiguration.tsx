@@ -18,12 +18,16 @@
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Card } from "react-bootstrap";
-import TemplateWidget, { Snippet } from "@/pageEditor/fields/TemplateWidget";
+import TemplateWidget, {
+  type Snippet,
+} from "@/pageEditor/fields/TemplateWidget";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import IconWidget from "@/components/fields/IconWidget";
 import LocationWidget from "@/pageEditor/fields/LocationWidget";
-import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
+import SelectWidget, {
+  type Option,
+} from "@/components/form/widgets/SelectWidget";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";

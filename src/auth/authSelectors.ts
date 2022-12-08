@@ -15,13 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AuthRootState } from "./authTypes";
+import { type AuthRootState } from "./authTypes";
 
 export const selectAuth = (state: AuthRootState) => state.auth;
 export const selectIsLoggedIn = (state: AuthRootState) =>
   selectAuth(state).isLoggedIn;
 export const selectScope = (state: AuthRootState) => selectAuth(state).scope;
 export const selectFlags = (state: AuthRootState) => selectAuth(state).flags;
+export const selectMilestones = (state: AuthRootState) =>
+  selectAuth(state).milestones;
 export const selectOrganizations = (state: AuthRootState) =>
   selectAuth(state).organizations;
 export const selectOrganization = (state: AuthRootState) =>

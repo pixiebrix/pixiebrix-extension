@@ -17,7 +17,12 @@
 
 import { Block, Reader } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { ApiVersion, BlockArg, BlockOptions, ReaderRoot } from "@/core";
+import {
+  type ApiVersion,
+  type BlockArg,
+  type BlockOptions,
+  type ReaderRoot,
+} from "@/core";
 import blockRegistry from "@/blocks/registry";
 import {
   echoBlock,

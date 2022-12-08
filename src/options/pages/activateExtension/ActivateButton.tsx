@@ -20,7 +20,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import { useFormikContext } from "formik";
-import { FormState } from "@/options/pages/activateExtension/activateTypes";
+import { type FormState } from "@/options/pages/activateExtension/activateTypes";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 const ActivateButton: React.FunctionComponent = () => {

@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlockConfig, BlockPosition } from "@/blocks/types";
+import { type BlockConfig, type BlockPosition } from "@/blocks/types";
 import { joinPathParts } from "@/utils";
-import { UUID } from "@/core";
-import { TypedBlock } from "@/blocks/registry";
+import { type UUID } from "@/core";
+import { type TypedBlock } from "@/blocks/registry";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { getDocumentPipelinePaths } from "@/pageEditor/utils";
@@ -26,8 +26,8 @@ import { get } from "lodash";
 import {
   getRootPipelineFlavor,
   getSubPipelineFlavor,
-} from "@/pageEditor/tabs/editTab/blockFilterHelpers";
-import { ExtensionPointType } from "@/extensionPoints/types";
+} from "@/blocks/blockFilterHelpers";
+import { type ExtensionPointType } from "@/extensionPoints/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 

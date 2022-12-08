@@ -16,17 +16,17 @@
  */
 
 import React, { useContext } from "react";
-import { BlockPipeline } from "@/blocks/types";
+import { type BlockPipeline } from "@/blocks/types";
 import { useAsyncState } from "@/hooks/common";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { runRendererPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import PanelBody from "@/sidebar/PanelBody";
-import { RendererPayload } from "@/runtime/runtimeTypes";
+import { type RendererPayload } from "@/runtime/runtimeTypes";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { serializeError } from "serialize-error";
-import { DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
+import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
 import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
 import { getTopLevelFrame } from "webext-messenger";
 

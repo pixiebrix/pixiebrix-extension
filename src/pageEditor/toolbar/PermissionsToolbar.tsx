@@ -22,11 +22,11 @@ import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { ensureAllPermissions, extensionPermissions } from "@/permissions";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
-import { Permissions } from "webextension-polyfill";
+import { type Permissions } from "webextension-polyfill";
 import { useDebounce } from "use-debounce";
 import notify from "@/utils/notify";
 import { containsPermissions } from "@/background/messenger/api";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { useAsyncState } from "@/hooks/common";
 import { makeEmptyPermissions } from "@/utils/permissions";
 

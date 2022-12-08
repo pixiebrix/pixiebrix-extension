@@ -4,7 +4,7 @@ import {
   isCommunityControlRoom,
   selectBotOutput,
 } from "@/contrib/automationanywhere/aaUtils";
-import { Activity } from "@/contrib/automationanywhere/contract";
+import { type Activity } from "@/contrib/automationanywhere/contract";
 
 describe("isCommunityControlRoom", () => {
   test.each([

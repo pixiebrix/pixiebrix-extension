@@ -15,8 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Analysis, Annotation, AnnotationType } from "@/analysis/analysisTypes";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import {
+  type Analysis,
+  type Annotation,
+  AnnotationType,
+} from "@/analysis/analysisTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { joinPathParts } from "@/utils";
 import { get, isEmpty } from "lodash";
 

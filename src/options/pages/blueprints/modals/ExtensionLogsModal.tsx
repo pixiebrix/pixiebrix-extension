@@ -17,7 +17,7 @@
 
 import styles from "./ExtensionLogsModal.module.scss";
 
-import { MessageContext } from "@/core";
+import { type MessageContext } from "@/core";
 import React, { useEffect } from "react";
 import { Modal } from "react-bootstrap";
 import { useDispatch } from "react-redux";

@@ -23,7 +23,7 @@ import { Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useAsyncState } from "@/hooks/common";
 import ReloadToolbar from "@/pageEditor/toolbar/ReloadToolbar";
-import { WizardStep } from "@/pageEditor/extensionPoints/base";
+import { type WizardStep } from "@/pageEditor/extensionPoints/base";
 import PermissionsToolbar from "@/pageEditor/toolbar/PermissionsToolbar";
 import LogsTab, { LOGS_EVENT_KEY } from "@/pageEditor/tabs/logs/LogsTab";
 import { thisTab } from "@/pageEditor/utils";
@@ -37,7 +37,7 @@ import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
 import cx from "classnames";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
 
 const EDIT_STEP_NAME = "Edit";

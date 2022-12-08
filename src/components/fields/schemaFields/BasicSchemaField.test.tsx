@@ -16,14 +16,14 @@
  */
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen } from "@/pageEditor/testHelpers";
 import BasicSchemaField from "@/components/fields/schemaFields/BasicSchemaField";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 import { Formik } from "formik";
 import { fireTextInput } from "@/testUtils/formHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
-import { SchemaFieldProps } from "./propTypes";
+import { type SchemaFieldProps } from "./propTypes";
 
 beforeAll(() => {
   registerDefaultWidgets();

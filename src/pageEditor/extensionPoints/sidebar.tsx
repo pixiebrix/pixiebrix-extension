@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, Metadata } from "@/core";
+import { type IExtension, type Metadata } from "@/core";
 import {
   baseFromExtension,
   baseSelectExtension,
@@ -32,20 +32,20 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import {
-  SidebarConfig,
+  type SidebarConfig,
   SidebarExtensionPoint,
-  PanelDefinition,
+  type PanelDefinition,
 } from "@/extensionPoints/sidebarExtension";
 import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
 import SidebarConfiguration from "@/pageEditor/tabs/sidebar/SidebarConfiguration";
-import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
+import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import React from "react";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
-import { SidebarFormState } from "./formStateTypes";
+import { type SidebarFormState } from "./formStateTypes";
 import { makeEmptyPermissions } from "@/utils/permissions";
 
 function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {

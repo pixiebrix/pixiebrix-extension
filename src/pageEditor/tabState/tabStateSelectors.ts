@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
+import { type TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
 import { deserializeError } from "serialize-error";
 
 export const selectFrameState = ({ tabState }: TabStateRootState) =>

@@ -18,8 +18,8 @@
 import { compact, identity, intersection, sortBy, uniq } from "lodash";
 import { getCssSelector } from "css-selector-generator";
 import {
-  CssSelectorType,
-  CssSelectorMatch,
+  type CssSelectorType,
+  type CssSelectorMatch,
 } from "css-selector-generator/types/types";
 import { $safeFind } from "@/helpers";
 import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";

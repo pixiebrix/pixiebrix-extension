@@ -15,23 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Copies the style of react-select's menu
+// Aligned with the style of react-select's menu
 .menu {
-  top: 100%;
-  position: absolute;
   width: 100%;
+  min-width: 200px;
+  height: 300px;
+  max-height: 300px;
   z-index: 1;
   background-color: rgb(255, 255, 255);
   border-radius: 4px;
   box-shadow: #0000001a 0 0 0 1px;
-  margin-bottom: 8px;
-  margin-top: 8px;
-  box-sizing: border-box;
+
+  padding-top: 4px;
+  padding-bottom: 4px;
+
+  max-height: 300px;
+  overflow-y: auto;
+
+  position: absolute;
+  top: 0;
+  bottom: 0;
 }
 
-.menuList {
-  overflow-y: auto;
-  padding-bottom: 4px;
-  padding-top: 4px;
-  position: relative;
+.sourceItem {
+  padding: 10px;
+
+  & + & {
+    border-top: 1px solid $N200;
+  }
 }

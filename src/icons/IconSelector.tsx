@@ -19,12 +19,12 @@
 import "regenerator-runtime/runtime";
 
 import Select from "react-select-virtualized";
-import { components, OptionProps } from "react-select";
+import { components, type OptionProps } from "react-select";
 import React, { useMemo } from "react";
-import { IconOption } from "@/icons/types";
+import { type IconOption } from "@/icons/types";
 import { icons } from "@/icons/list";
 import Icon from "./Icon";
-import { IconLibrary } from "@/core";
+import { type IconLibrary } from "@/core";
 import { sortBy } from "lodash";
 
 const iconOptions: IconOption[] = sortBy(

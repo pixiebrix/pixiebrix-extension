@@ -16,8 +16,8 @@
  */
 
 import React, { useEffect, useReducer } from "react";
-import { BlockConfig } from "@/blocks/types";
-import { AsyncState, useAsyncState } from "@/hooks/common";
+import { type BlockConfig } from "@/blocks/types";
+import { type AsyncState, useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "react-bootstrap";
@@ -31,23 +31,23 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import objectHash from "object-hash";
 import { isEmpty } from "lodash";
-import { TraceRecord } from "@/telemetry/trace";
+import { type TraceRecord } from "@/telemetry/trace";
 import { removeEmptyValues } from "@/pageEditor/extensionPoints/base";
 import {
-  ApiVersion,
-  BlockArgContext,
-  IBlock,
-  RegistryId,
-  ServiceDependency,
+  type ApiVersion,
+  type BlockArgContext,
+  type IBlock,
+  type RegistryId,
+  type ServiceDependency,
 } from "@/core";
 import { runBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { useField } from "formik";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { makeServiceContext } from "@/services/serviceUtils";
 import getType from "@/runtime/getType";
-import { BlockType } from "@/runtime/runtimeTypes";
-import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
+import { type BlockType } from "@/runtime/runtimeTypes";
+import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
 import { isTriggerExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";

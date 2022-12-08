@@ -16,9 +16,9 @@
  */
 
 import { AnnotationType } from "@/analysis/analysisTypes";
-import { nestedPosition, VisitBlockExtra } from "@/blocks/PipelineVisitor";
-import { BlockConfig, BlockPosition } from "@/blocks/types";
-import { BlockType } from "@/runtime/runtimeTypes";
+import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
+import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import { type BlockType } from "@/runtime/runtimeTypes";
 import { AnalysisVisitorWithResolvedBlocks } from "./baseAnalysisVisitors";
 
 const outputKeyRegex = /^[A-Za-z][\dA-Za-z]*$/;

@@ -15,45 +15,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { NormalizedAvailability } from "@/blocks/types";
-import { ElementInfo } from "@/contentScript/nativeEditor/types";
+import { type NormalizedAvailability } from "@/blocks/types";
+import { type ElementInfo } from "@/contentScript/nativeEditor/types";
 import {
-  ContextMenuConfig,
-  ContextMenuTargetMode,
-  MenuDefaultOptions as ContextMenuDefaultOptions,
+  type ContextMenuConfig,
+  type ContextMenuTargetMode,
+  type MenuDefaultOptions as ContextMenuDefaultOptions,
 } from "@/extensionPoints/contextMenu";
 import {
-  MenuItemExtensionConfig,
-  MenuPosition,
+  type MenuItemExtensionConfig,
+  type MenuPosition,
 } from "@/extensionPoints/menuItemExtension";
-import { PanelConfig } from "@/extensionPoints/panelExtension";
+import { type PanelConfig } from "@/extensionPoints/panelExtension";
 import {
-  QuickBarConfig,
-  QuickBarDefaultOptions,
-  QuickBarTargetMode,
+  type QuickBarConfig,
+  type QuickBarDefaultOptions,
+  type QuickBarTargetMode,
 } from "@/extensionPoints/quickBarExtension";
 import {
-  SidebarConfig,
-  Trigger as SidebarTrigger,
+  type SidebarConfig,
+  type Trigger as SidebarTrigger,
 } from "@/extensionPoints/sidebarExtension";
 import {
-  AttachMode,
-  ReportMode,
-  TargetMode,
-  Trigger as TriggerTrigger,
+  type AttachMode,
+  type ReportMode,
+  type TargetMode,
+  type Trigger as TriggerTrigger,
 } from "@/extensionPoints/triggerExtension";
 import {
-  CustomEventOptions,
-  DebounceOptions,
-  ExtensionPointType,
+  type CustomEventOptions,
+  type DebounceOptions,
+  type ExtensionPointType,
 } from "@/extensionPoints/types";
-import { Except } from "type-fest";
-import { Menus } from "webextension-polyfill";
+import { type Except } from "type-fest";
+import { type Menus } from "webextension-polyfill";
 import {
-  BaseExtensionState,
-  BaseExtensionPointState,
-  SingleLayerReaderConfig,
-  BaseFormState,
+  type BaseExtensionState,
+  type BaseExtensionPointState,
+  type SingleLayerReaderConfig,
+  type BaseFormState,
 } from "./elementConfig";
 
 // ActionFormState

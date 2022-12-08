@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import {
   AUTH_METHODS,
-  SettingsState,
-  SkunkworksSettings,
+  type SettingsState,
+  type SkunkworksSettings,
 } from "@/store/settingsTypes";
 import reportError from "@/telemetry/reportError";
 import { isEmpty, once } from "lodash";
 import { DEFAULT_THEME } from "@/options/types";
 import { isValidTheme } from "@/utils/themeUtils";
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 import { isRegistryId } from "@/types/helpers";
 
 export const initialSettingsState: SettingsState = {
@@ -110,7 +110,7 @@ const settingsSlice = createSlice({
       state.theme = DEFAULT_THEME;
 
       once(() => {
-        reportError(`Selected theme "${theme}" doesn't exist.`);
+        reportError(new Error(`Selected theme "${theme}" doesn't exist.`));
       });
     },
   },

@@ -16,10 +16,10 @@
  */
 
 import React from "react";
-import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import Form from "@/components/form/Form";
 import UrlMatchPatternField, {
-  UrlMatchPatternFieldProps,
+  type UrlMatchPatternFieldProps,
 } from "./UrlMatchPatternField";
 import { action } from "@storybook/addon-actions";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";

@@ -20,19 +20,20 @@ import styles from "./BlueprintsCard.module.scss";
 import { Card, Col, Row as BootstrapRow } from "react-bootstrap";
 import React, { useMemo } from "react";
 import {
-  Column,
-  Row,
+  type Column,
+  type Row,
   useFilters,
   useGlobalFilter,
   useGroupBy,
   useSortBy,
   useTable,
 } from "react-table";
-import ListFilters from "./ListFilters";
-import { Installable, InstallableViewItem } from "./blueprintsTypes";
+import { type Installable, type InstallableViewItem } from "./blueprintsTypes";
+import BlueprintsPageSidebar from "./BlueprintsPageSidebar";
 import {
   selectActiveTab,
   selectGroupBy,
+  selectSearchQuery,
   selectSortBy,
 } from "./blueprintsSelectors";
 import { useSelector } from "react-redux";
@@ -40,7 +41,7 @@ import { uniq } from "lodash";
 import useInstallableViewItems from "@/options/pages/blueprints/useInstallableViewItems";
 import AutoSizer from "react-virtualized-auto-sizer";
 import BlueprintsToolbar from "@/options/pages/blueprints/BlueprintsToolbar";
-import BlueprintsView from "@/options/pages/blueprints/BlueprintsView";
+import BlueprintsPageContent from "@/options/pages/blueprints/BlueprintsPageContent";
 import Loader from "@/components/Loader";
 
 const statusFilter = (
@@ -103,7 +104,7 @@ const columns: Array<Column<InstallableViewItem>> = [
   },
 ];
 
-const BlueprintsCard: React.FunctionComponent<{
+const BlueprintsPageLayout: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
   const { installableViewItems, isLoading } =
@@ -122,6 +123,7 @@ const BlueprintsCard: React.FunctionComponent<{
   const groupBy = useSelector(selectGroupBy);
   const sortBy = useSelector(selectSortBy);
   const activeTab = useSelector(selectActiveTab);
+  const searchQuery = useSelector(selectSearchQuery);
 
   const tableInstance = useTable<InstallableViewItem>(
     {
@@ -131,7 +133,7 @@ const BlueprintsCard: React.FunctionComponent<{
         groupBy,
         sortBy,
         filters: activeTab.filters,
-        globalFilter: "",
+        globalFilter: searchQuery,
       },
       useControlledState: (state) =>
         useMemo(
@@ -140,6 +142,7 @@ const BlueprintsCard: React.FunctionComponent<{
             groupBy,
             sortBy,
             filters: activeTab.filters,
+            globalFilter: searchQuery,
           }),
           // eslint-disable-next-line react-hooks/exhaustive-deps -- table props are required dependencies
           [state, groupBy, sortBy, activeTab.filters]
@@ -153,7 +156,10 @@ const BlueprintsCard: React.FunctionComponent<{
 
   return (
     <BootstrapRow className={styles.root}>
-      <ListFilters teamFilters={teamFilters} tableInstance={tableInstance} />
+      <BlueprintsPageSidebar
+        teamFilters={teamFilters}
+        tableInstance={tableInstance}
+      />
       <Col className={styles.mainContainer} sm={12} md={9} xl={10}>
         <BlueprintsToolbar tableInstance={tableInstance} />
         {/* This wrapper prevents AutoSizer overflow in a flex box container */}
@@ -167,7 +173,7 @@ const BlueprintsCard: React.FunctionComponent<{
           ) : (
             <AutoSizer defaultHeight={500}>
               {({ height, width }) => (
-                <BlueprintsView
+                <BlueprintsPageContent
                   tableInstance={tableInstance}
                   width={width}
                   height={height}
@@ -181,4 +187,4 @@ const BlueprintsCard: React.FunctionComponent<{
   );
 };
 
-export default BlueprintsCard;
+export default BlueprintsPageLayout;

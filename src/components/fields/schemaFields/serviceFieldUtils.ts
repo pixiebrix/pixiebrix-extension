@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Expression, OutputKey, ServiceKeyVar } from "@/core";
-import { FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type Expression, type OutputKey, type ServiceKeyVar } from "@/core";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
   isExpression,
   isPipelineExpression,

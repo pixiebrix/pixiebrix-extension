@@ -22,11 +22,11 @@ import {
   recipeDefinitionFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { IExtension } from "@/core";
+import { type IExtension } from "@/core";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
-import { ActionFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ActionFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 // Recipes
 const ID_FOO = validateRegistryId("test/recipe-foo");

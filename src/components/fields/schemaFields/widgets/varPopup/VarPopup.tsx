@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
+import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import { isNunjucksExpression } from "@/runtime/mapArgs";
 import getLikelyVariableAtPosition from "./getLikelyVariableAtPosition";
 import VarMenu from "./VarMenu";
@@ -25,7 +25,7 @@ import { selectSettings } from "@/store/settingsSelectors";
 
 type VarPopupProps = {
   inputMode: FieldInputMode;
-  inputElementRef: React.MutableRefObject<HTMLTextAreaElement>;
+  inputElementRef: React.MutableRefObject<HTMLElement>;
   value: unknown;
 };
 
@@ -58,7 +58,9 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
       }
 
       if (inputMode === "string") {
-        const cursorPosition = inputElementRef.current?.selectionStart ?? 0;
+        // For string inputs, we always use TextAreas, hence the cast of the ref to HTMLTextAreaElement
+        const cursorPosition =
+          (inputElementRef.current as HTMLTextAreaElement)?.selectionStart ?? 0;
         const template = isNunjucksExpression(value)
           ? value.__value__
           : String(value);
@@ -98,6 +100,7 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
 
   return showMenu ? (
     <VarMenu
+      inputElementRef={inputElementRef}
       onClose={() => {
         setShowMenu(false);
       }}

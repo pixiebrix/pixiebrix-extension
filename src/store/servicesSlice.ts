@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RawServiceConfiguration, UUID } from "@/core";
+import { type RawServiceConfiguration, type UUID } from "@/core";
 import { localStorage } from "redux-persist-webextension-storage";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type StorageInterface } from "@/store/StorageInterface";
 
 export interface ServicesState {
   configured: Record<string, RawServiceConfiguration>;
@@ -63,7 +64,10 @@ const servicesSlice = createSlice({
 
 export const persistServicesConfig = {
   key: "servicesOptions",
-  storage: localStorage,
+  // Change the type of localStorage to our overridden version so that it can be exported
+  // See: @/store/StorageInterface.ts
+  storage: localStorage as StorageInterface,
+  version: 1,
 };
 
 export default servicesSlice;

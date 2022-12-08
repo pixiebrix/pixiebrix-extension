@@ -21,7 +21,7 @@ import {
   getErrorMessageWithCauses,
   selectSpecificError,
 } from "@/errors/errorHelpers";
-import { ErrorObject } from "serialize-error";
+import { type ErrorObject } from "serialize-error";
 import InputValidationErrorDetail from "./InputValidationErrorDetail";
 import NetworkErrorDetail from "./NetworkErrorDetail";
 import OutputValidationErrorDetail from "./OutputValidationErrorDetail";

@@ -15,24 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { removeField } from "@/pageEditor/hooks/useToggleFormField";
-
-describe("removeField", () => {
-  test("remove field from object", () => {
-    const obj = { foo: "foo", bar: "bar" };
-    removeField(obj, "bar");
-    expect(obj).toStrictEqual({ foo: "foo" });
-  });
-
-  test("remove item from array", () => {
-    const array = ["foo", "bar", "baz"];
-    removeField(array, "1");
-    expect(array).toStrictEqual(["foo", "baz"]);
-  });
-
-  test("try to remove field from non-object", () => {
-    const foo = 42;
-    removeField(foo, "bar");
-    expect(foo).toStrictEqual(42);
-  });
-});
+.label {
+  color: $N400;
+}

@@ -19,7 +19,7 @@ import React from "react";
 import { Badge, Dropdown, DropdownButton } from "react-bootstrap";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { flagOn } from "@/auth/token";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { sortBy } from "lodash";
 import useAddElement from "@/pageEditor/hooks/useAddElement";

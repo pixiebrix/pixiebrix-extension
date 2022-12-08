@@ -15,17 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getPartnerPrincipals } from "@/background/partnerIntegrations";
+import {
+  _refreshPartnerToken,
+  getPartnerPrincipals,
+} from "@/background/partnerIntegrations";
 import serviceRegistry, { readRawConfigurations } from "@/services/registry";
-
 import { fetch } from "@/hooks/fetch";
-
 import controlRoomTokenService from "@contrib/services/automation-anywhere.yaml";
 import controlRoomOAuthService from "@contrib/services/automation-anywhere-oauth2.yaml";
-import { RawServiceConfiguration, RegistryId } from "@/core";
+import { type RawServiceConfiguration, type RegistryId } from "@/core";
 import { locator as serviceLocator } from "@/background/locator";
-import { CONTROL_ROOM_SERVICE_ID } from "@/services/constants";
+import {
+  CONTROL_ROOM_OAUTH_SERVICE_ID,
+  CONTROL_ROOM_SERVICE_ID,
+} from "@/services/constants";
 import { uuidv4 } from "@/types/helpers";
+import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
+import { setCachedAuthData } from "@/background/auth";
+import MockAdapter from "axios-mock-adapter";
+import axios from "axios";
 
 const serviceMap = new Map([
   [(controlRoomTokenService as any).metadata.id, controlRoomTokenService],
@@ -34,6 +42,11 @@ const serviceMap = new Map([
 
 jest.mock("@/hooks/fetch", () => ({
   fetch: jest.fn(),
+}));
+
+jest.mock("@/auth/token", () => ({
+  readPartnerAuthData: jest.fn().mockResolvedValue({}),
+  setPartnerAuth: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock("@/services/registry", () => {
@@ -63,8 +76,26 @@ jest.mock("@/background/messenger/api", () => {
   };
 });
 
+jest.mock("@/hooks/fetch", () => ({
+  fetch: jest.fn(),
+}));
+
+jest.mock("@/background/auth", () => ({
+  setCachedAuthData: jest.fn().mockResolvedValue(undefined),
+}));
+
+const axiosMock = new MockAdapter(axios);
+
+afterEach(() => {
+  axiosMock.reset();
+  axiosMock.resetHistory();
+});
+
 const readRawConfigurationsMock = readRawConfigurations as jest.Mock;
 const fetchMock = fetch as jest.Mock;
+const setPartnerAuthMock = setPartnerAuth as jest.Mock;
+const readPartnerAuthDataMock = readPartnerAuthData as jest.Mock;
+const setCachedAuthDataMock = setCachedAuthData as jest.Mock;
 
 describe("getPartnerPrincipals", () => {
   beforeEach(() => {
@@ -121,5 +152,92 @@ describe("getPartnerPrincipals", () => {
         principalId: "bot_creator",
       },
     ]);
+  });
+});
+
+describe("refresh partner token", () => {
+  it("nop if no token", async () => {
+    await _refreshPartnerToken();
+    expect(readPartnerAuthDataMock).toHaveBeenCalledOnce();
+  });
+
+  it("nop if no refresh token", async () => {
+    readPartnerAuthDataMock.mockResolvedValue({
+      authId: uuidv4(),
+      token: "notatoken",
+    });
+
+    await _refreshPartnerToken();
+    expect(axiosMock.history.post).toHaveLength(0);
+  });
+
+  it("refreshes token", async () => {
+    const authId = uuidv4();
+    readPartnerAuthDataMock.mockResolvedValue({
+      authId,
+      token: "notatoken",
+      refreshToken: "notarefreshtoken",
+    });
+
+    readRawConfigurationsMock.mockResolvedValue([
+      {
+        id: authId,
+        serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+        config: {
+          controlRoomUrl: "https://controlroom.com",
+        },
+      } as unknown as RawServiceConfiguration,
+    ]);
+
+    axiosMock.onPost().reply(200, {
+      access_token: "notatoken2",
+      refresh_token: "notarefreshtoken2",
+    });
+
+    await serviceLocator.refreshLocal();
+
+    await _refreshPartnerToken();
+    expect(axiosMock.history.post).toHaveLength(1);
+    // `toHaveBeenCalledOnceWith` had the wrong types :shrug:
+    expect(setPartnerAuthMock).toHaveBeenCalledWith({
+      authId,
+      token: "notatoken2",
+      refreshToken: "notarefreshtoken2",
+      extraHeaders: {
+        "X-Control-Room": "https://controlroom.com",
+      },
+    });
+
+    expect(setCachedAuthDataMock).toHaveBeenCalledWith(authId, {
+      access_token: "notatoken2",
+      refresh_token: "notarefreshtoken2",
+    });
+  });
+
+  it("throws on authorization error", async () => {
+    const authId = uuidv4();
+    readPartnerAuthDataMock.mockResolvedValue({
+      authId,
+      token: "notatoken",
+      refreshToken: "notarefreshtoken",
+    });
+
+    readRawConfigurationsMock.mockResolvedValue([
+      {
+        id: authId,
+        serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+        config: {
+          controlRoomUrl: "https://controlroom.com",
+        },
+      } as unknown as RawServiceConfiguration,
+    ]);
+
+    axiosMock.onPost().reply(401);
+
+    await serviceLocator.refreshLocal();
+
+    await expect(_refreshPartnerToken()).rejects.toThrow(
+      "Request failed with status code 401"
+    );
   });
 });

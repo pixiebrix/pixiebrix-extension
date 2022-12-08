@@ -18,7 +18,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import ScopeSettings from "./ScopeSettings";
-import { SettingsState } from "@/store/settingsTypes";
+import { type SettingsState } from "@/store/settingsTypes";
 import { selectScope } from "@/auth/authSelectors";
 
 type RootStateWithSettings = {

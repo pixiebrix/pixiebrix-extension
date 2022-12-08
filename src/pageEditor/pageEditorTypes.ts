@@ -15,25 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AuthRootState } from "@/auth/authTypes";
-import { LogRootState } from "@/components/logViewer/logViewerTypes";
-import { ExtensionsRootState } from "@/store/extensionsTypes";
-import { SavingExtensionState } from "@/pageEditor/panes/save/savingExtensionSlice";
-import { SettingsState } from "@/store/settingsTypes";
-import { RuntimeState } from "@/pageEditor/slices/runtimeSlice";
-import { ExtensionPointType } from "@/extensionPoints/types";
-import { RegistryId, UUID } from "@/core";
-import { BlockConfig } from "@/blocks/types";
+import { type AuthRootState } from "@/auth/authTypes";
+import { type LogRootState } from "@/components/logViewer/logViewerTypes";
+import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { type SavingExtensionState } from "@/pageEditor/panes/save/savingExtensionSlice";
+import { type SettingsState } from "@/store/settingsTypes";
+import { type RuntimeState } from "@/pageEditor/slices/runtimeSlice";
+import { type ExtensionPointType } from "@/extensionPoints/types";
+import { type RegistryId, type UUID } from "@/core";
+import { type BlockConfig } from "@/blocks/types";
 import {
-  OptionsDefinition,
-  RecipeMetadataFormState,
+  type OptionsDefinition,
+  type RecipeMetadataFormState,
 } from "@/types/definitions";
-import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
-import { AnalysisRootState } from "@/analysis/analysisTypes";
-import { FormState } from "./extensionPoints/formStateTypes";
-import { TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
-import { RecipesRootState } from "@/recipes/recipesTypes";
-import { SimpleErrorObject } from "@/errors/errorHelpers";
+import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
+import { type AnalysisRootState } from "@/analysis/analysisTypes";
+import { type FormState } from "./extensionPoints/formStateTypes";
+import { type TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
+import { type RecipesRootState } from "@/recipes/recipesTypes";
+import { type SimpleErrorObject } from "@/errors/errorHelpers";
 
 export enum PipelineFlavor {
   AllBlocks = "allBlocks",

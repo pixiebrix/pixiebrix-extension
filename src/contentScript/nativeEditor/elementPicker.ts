@@ -23,13 +23,13 @@ import {
   inferSelectorsIncludingStableAncestors,
   safeCssSelector,
 } from "@/contentScript/nativeEditor/selectorInference";
-import { Framework } from "@/messaging/constants";
+import { type Framework } from "@/messaging/constants";
 import { uniq, compact, difference } from "lodash";
 import * as pageScript from "@/pageScript/protocol";
 import { requireSingleElement } from "@/utils/requireSingleElement";
-import { SelectMode } from "@/contentScript/nativeEditor/types";
+import { type SelectMode } from "@/contentScript/nativeEditor/types";
 import {
-  SelectionHandlerType,
+  type SelectionHandlerType,
   showSelectionToolPopover,
 } from "@/components/selectionToolPopover/SelectionToolPopover";
 import { CancelError } from "@/errors/businessErrors";

@@ -17,7 +17,9 @@
 
 import React from "react";
 import { validateRegistryId } from "@/types/helpers";
-import DatabaseOptions, { DatabaseGetPutOptionsProps } from "./DatabaseOptions";
+import DatabaseOptions, {
+  type DatabaseGetPutOptionsProps,
+} from "./DatabaseOptions";
 
 export const DATABASE_GET_ID = validateRegistryId("@pixiebrix/data/get");
 

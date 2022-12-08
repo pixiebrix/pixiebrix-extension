@@ -15,20 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { clearExtensionTraces } from "@/telemetry/trace";
-import { RecipeMetadata, RegistryId, UUID } from "@/core";
-import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import { BlockConfig } from "@/blocks/types";
-import { ExtensionPointType } from "@/extensionPoints/types";
 import {
-  OptionsDefinition,
-  RecipeMetadataFormState,
+  createAsyncThunk,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
+import { clearExtensionTraces } from "@/telemetry/trace";
+import { type RecipeMetadata, type RegistryId, type UUID } from "@/core";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
+import { type BlockConfig } from "@/blocks/types";
+import { type ExtensionPointType } from "@/extensionPoints/types";
+import {
+  type OptionsDefinition,
+  type RecipeMetadataFormState,
 } from "@/types/definitions";
 import {
-  AddBlockLocation,
-  EditorRootState,
-  EditorState,
+  type AddBlockLocation,
+  type EditorRootState,
+  type EditorState,
   ModalKey,
 } from "@/pageEditor/pageEditorTypes";
 import { uuidv4 } from "@/types/helpers";
@@ -43,7 +47,7 @@ import {
   uniq,
 } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import { TreeExpandedState } from "@/components/jsonTree/JsonTree";
+import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getInvalidPath } from "@/utils/debugUtils";
 import {
   selectActiveElement,
@@ -52,7 +56,7 @@ import {
   selectNotDeletedExtensions,
 } from "./editorSelectors";
 import {
-  FormState,
+  type FormState,
   isQuickBarExtensionPoint,
 } from "@/pageEditor/extensionPoints/formStateTypes";
 import reportError from "@/telemetry/reportError";
@@ -68,7 +72,7 @@ import {
 } from "@/pageEditor/slices/editorSliceHelpers";
 import { produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/extensionPoints/pipelineMapping";
-import { ExtensionsRootState } from "@/store/extensionsTypes";
+import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import {
   checkAvailable,
   getInstalledExtensionPoints,
@@ -77,10 +81,12 @@ import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { resolveDefinitions } from "@/registry/internal";
 import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
 import { testMatchPatterns } from "@/blocks/available";
-import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
+import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { isExtension } from "@/pageEditor/sidebar/common";
+import { type StorageInterface } from "@/store/StorageInterface";
+import { localStorage } from "redux-persist-webextension-storage";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -877,4 +883,12 @@ export const actions = {
   checkAvailableInstalledExtensions,
   checkAvailableDynamicElements,
   checkActiveElementAvailability,
+};
+
+export const persistEditorConfig = {
+  key: "editor",
+  // Change the type of localStorage to our overridden version so that it can be exported
+  // See: @/store/StorageInterface.ts
+  storage: localStorage as StorageInterface,
+  version: 1,
 };

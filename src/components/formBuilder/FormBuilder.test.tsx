@@ -23,13 +23,13 @@ import {
   selectSchemaFieldType,
 } from "@/testUtils/formHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { render, RenderResult, screen } from "@testing-library/react";
+import { render, type RenderResult, screen } from "@/pageEditor/testHelpers";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import selectEvent from "react-select-event";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import FormBuilder from "./FormBuilder";
-import { RJSFSchema } from "./formBuilderTypes";
+import { type RJSFSchema } from "./formBuilderTypes";
 import userEvent from "@testing-library/user-event";
 import { CustomFormRenderer } from "@/blocks/renderers/customForm";
 

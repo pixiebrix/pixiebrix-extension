@@ -18,7 +18,7 @@
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import {
-  Action,
+  type Action,
   KBarAnimator,
   KBarPositioner,
   KBarProvider,

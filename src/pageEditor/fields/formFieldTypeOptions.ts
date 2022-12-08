@@ -1,4 +1,4 @@
-import { SelectStringOption } from "@/components/formBuilder/formBuilderTypes";
+import { type SelectStringOption } from "@/components/formBuilder/formBuilderTypes";
 import { stringifyUiType } from "@/components/formBuilder/formBuilderHelpers";
 
 const FORM_FIELD_TYPE_OPTIONS: SelectStringOption[] = [

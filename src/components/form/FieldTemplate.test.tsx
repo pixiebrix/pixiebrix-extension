@@ -19,8 +19,8 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import FieldTemplate, {
   computeLabelAndColSize,
-  CustomFieldWidget,
-  FieldProps,
+  type CustomFieldWidget,
+  type FieldProps,
 } from "./FieldTemplate";
 import { fireTextInput } from "@/testUtils/formHelpers";
 

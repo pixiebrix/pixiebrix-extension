@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RawServiceConfiguration } from "@/core";
-import { AuthOption } from "@/auth/authTypes";
+import { type RawServiceConfiguration } from "@/core";
+import { type AuthOption } from "@/auth/authTypes";
 import { useAsyncState } from "./common";
 import { readRawConfigurations } from "@/services/registry";
 import { useMemo, useCallback } from "react";
 import { useGetServiceAuthsQuery } from "@/services/api";
 import { sortBy } from "lodash";
-import { SanitizedAuth } from "@/types/contract";
+import { type SanitizedAuth } from "@/types/contract";
 
 function defaultLabel(label: string): string {
   const normalized = (label ?? "").trim();

@@ -17,12 +17,12 @@
 
 import React, { useMemo } from "react";
 import { isEmpty, partial } from "lodash";
-import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import {
   COMMON_PROPERTIES,
   ENTERPRISE_EDITION_COMMON_PROPERTIES,
 } from "@/contrib/automationanywhere/RunBot";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import useDependency from "@/services/useDependency";
@@ -40,7 +40,7 @@ import {
   cachedFetchRunAsUsers,
   cachedFetchSchema,
 } from "@/contrib/automationanywhere/aaApi";
-import { AUTOMATION_ANYWHERE_SERVICE_ID, WorkspaceType } from "./contract";
+import { AUTOMATION_ANYWHERE_SERVICE_ID, type WorkspaceType } from "./contract";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import RemoteMultiSelectWidget from "@/components/form/widgets/RemoteMultiSelectWidget";

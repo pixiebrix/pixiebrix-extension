@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { $safeFind } from "@/helpers";
 
 // https://developer.mozilla.org/en-US/docs/Web/Events

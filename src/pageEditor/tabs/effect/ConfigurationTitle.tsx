@@ -33,7 +33,7 @@ import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import { Button } from "react-bootstrap";
 import { actions as pageEditorActions } from "@/pageEditor/slices/editorSlice";
 import useReduxState from "@/hooks/useReduxState";
-import useAllBlocks from "@/pageEditor/hooks/useAllBlocks";
+import useAllBlocks from "@/blocks/hooks/useAllBlocks";
 
 const DOCUMENT_BODY_PATH = "config.body";
 

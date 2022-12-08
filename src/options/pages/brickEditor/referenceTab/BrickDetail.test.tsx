@@ -19,10 +19,10 @@ import React from "react";
 import { render } from "@testing-library/react";
 import BrickDetail from "./BrickDetail";
 import { TableRenderer } from "@/blocks/renderers/table";
-import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
-import { MarketplaceListing } from "@/types/contract";
+import { type ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
+import { type MarketplaceListing } from "@/types/contract";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 
 jest.mock("@/services/api", () => ({
   appApi: {

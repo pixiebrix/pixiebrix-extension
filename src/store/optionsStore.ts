@@ -15,40 +15,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { configureStore, Middleware } from "@reduxjs/toolkit";
+import { configureStore, type Middleware } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import { createLogger } from "redux-logger";
 import { connectRouter, routerMiddleware } from "connected-react-router";
 import { createHashHistory } from "history";
 import { boolean } from "@/utils";
-import { ExtensionsRootState } from "@/store/extensionsTypes";
+import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import servicesSlice, {
   persistServicesConfig,
-  ServicesState,
+  type ServicesState,
 } from "@/store/servicesSlice";
 import {
   blueprintModalsSlice,
-  BlueprintModalsState,
-} from "./pages/blueprints/modals/blueprintModalsSlice";
+  type BlueprintModalsState,
+} from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { appApi } from "@/services/api";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settingsSlice";
 import workshopSlice, {
   persistWorkshopConfig,
-  WorkshopState,
+  type WorkshopState,
 } from "@/store/workshopSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import { persistSettingsConfig } from "@/store/settingsStorage";
-import { SettingsState } from "@/store/settingsTypes";
+import { type SettingsState } from "@/store/settingsTypes";
 import blueprintsSlice, {
   persistBlueprintsConfig,
-} from "./pages/blueprints/blueprintsSlice";
+} from "@/options/pages/blueprints/blueprintsSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
-import { LogRootState } from "@/components/logViewer/logViewerTypes";
-import { AuthRootState } from "@/auth/authTypes";
+import { type LogRootState } from "@/components/logViewer/logViewerTypes";
+import { type AuthRootState } from "@/auth/authTypes";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import { BlueprintsRootState } from "@/options/pages/blueprints/blueprintsSelectors";
+import { type BlueprintsRootState } from "@/options/pages/blueprints/blueprintsSelectors";
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 

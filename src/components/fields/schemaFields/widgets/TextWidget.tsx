@@ -16,18 +16,18 @@
  */
 
 import React, {
-  KeyboardEventHandler,
+  type KeyboardEventHandler,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useRef,
 } from "react";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
-import { Form, FormControlProps } from "react-bootstrap";
+import { Form, type FormControlProps } from "react-bootstrap";
 import fitTextarea from "fit-textarea";
-import { Schema, TemplateEngine } from "@/core";
+import { type Schema, type TemplateEngine } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { trim } from "lodash";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";

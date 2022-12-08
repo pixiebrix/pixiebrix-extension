@@ -17,8 +17,8 @@
 
 import { Transformer } from "@/types";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { BlockArg, BlockOptions, Schema } from "@/core";
-import { PipelineExpression } from "@/runtime/mapArgs";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import { type PipelineExpression } from "@/runtime/mapArgs";
 import { expectContext } from "@/utils/expectContext";
 import {
   ensureSidebar,
@@ -26,7 +26,7 @@ import {
   PANEL_HIDING_EVENT,
   showTemporarySidebarPanel,
 } from "@/contentScript/sidebarController";
-import { PanelPayload } from "@/sidebar/types";
+import { type PanelPayload } from "@/sidebar/types";
 import {
   waitForTemporaryPanel,
   stopWaitingForTemporaryPanels,
@@ -40,7 +40,7 @@ class DisplayTemporaryInfo extends Transformer {
     super(
       DisplayTemporaryInfo.BLOCK_ID,
       "Display Temporary Information",
-      "A display title for the information, shown in the tab name"
+      "Display a document in a temporary sidebar panel"
     );
   }
 
@@ -49,7 +49,8 @@ class DisplayTemporaryInfo extends Transformer {
     properties: {
       title: {
         type: "string",
-        description: "A display title for the temporary document",
+        description:
+          "A display title for the temporary document, shown in the tab name",
       },
       body: {
         $ref: "https://app.pixiebrix.com/schemas/pipeline#",

@@ -23,7 +23,7 @@ import {
   sharingDefinitionFactory,
 } from "@/testUtils/factories";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
-import { PersistedExtension, Timestamp } from "@/core";
+import { type PersistedExtension, type Timestamp } from "@/core";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { updateDeployments } from "@/background/deployment";

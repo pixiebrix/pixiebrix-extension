@@ -19,7 +19,7 @@ import styles from "./Status.module.scss";
 
 import React from "react";
 import { Button } from "react-bootstrap";
-import { InstallableViewItem } from "./blueprintsTypes";
+import { type InstallableViewItem } from "./blueprintsTypes";
 import useInstallableViewItemActions from "./useInstallableViewItemActions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {

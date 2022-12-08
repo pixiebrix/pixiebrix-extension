@@ -42,6 +42,7 @@ import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
 import initActiveTabTracking from "@/background/activeTab";
 import initPartnerTheme from "@/background/partnerTheme";
 import initStarterBlueprints from "@/background/starterBlueprints";
+import { initPartnerTokenRefresh } from "@/background/partnerIntegrations";
 
 void initLocator();
 registerMessenger();
@@ -59,3 +60,4 @@ activateBrowserActionIcon();
 initActiveTabTracking();
 initPartnerTheme();
 initStarterBlueprints();
+initPartnerTokenRefresh();

@@ -256,12 +256,12 @@ module.exports = (env, options) =>
       [
         "background/background",
         "contentScript/contentScript",
+        "contentScript/browserActionInstantHandler",
         "pageEditor/pageEditor",
         "options/options",
         "sidebar/sidebar",
         "tinyPages/ephemeralForm",
         "tinyPages/permissionsPopup",
-        "tinyPages/browserActionInstantHandler",
 
         // Tiny files without imports
         "tinyPages/frame",
@@ -284,6 +284,9 @@ module.exports = (env, options) =>
     },
 
     optimization: {
+      // Module concatenation mangles class names https://github.com/pixiebrix/pixiebrix-extension/issues/4763
+      concatenateModules: false,
+
       // Chrome bug https://bugs.chromium.org/p/chromium/issues/detail?id=1108199
       splitChunks: {
         automaticNameDelimiter: "-",
@@ -413,6 +416,9 @@ module.exports = (env, options) =>
               options: {
                 // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
                 implementation: require("node-sass"),
+                // The aliases ("@") don't work here
+                additionalData:
+                  '@import "src/vendors/theme/assets/styles/_colors";',
               },
             },
           ],

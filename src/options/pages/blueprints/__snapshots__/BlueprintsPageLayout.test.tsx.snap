@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`BlueprintsCard renders 1`] = `
+exports[`BlueprintsPageLayout renders 1`] = `
 <DocumentFragment>
   <div
     class="root row"
@@ -24,6 +24,7 @@ exports[`BlueprintsCard renders 1`] = `
         <a
           class="mt-3 nav-link active"
           data-rb-event-key="Get Started"
+          data-testid="get-started-blueprint-tab"
           href="#"
           role="button"
         >
@@ -56,6 +57,7 @@ exports[`BlueprintsCard renders 1`] = `
         <a
           class="media nav-link"
           data-rb-event-key="Active"
+          data-testid="active-blueprint-tab"
           href="#"
           role="button"
         >
@@ -83,6 +85,7 @@ exports[`BlueprintsCard renders 1`] = `
         <a
           class="media nav-link"
           data-rb-event-key="All"
+          data-testid="all-blueprints-blueprint-tab"
           href="#"
           role="button"
         >
@@ -110,6 +113,7 @@ exports[`BlueprintsCard renders 1`] = `
         <a
           class="media nav-link"
           data-rb-event-key="Personal"
+          data-testid="personal-blueprint-tab"
           href="#"
           role="button"
         >
@@ -137,6 +141,7 @@ exports[`BlueprintsCard renders 1`] = `
         <a
           class="media nav-link"
           data-rb-event-key="Public"
+          data-testid="public-marketplace-blueprint-tab"
           href="#"
           role="button"
         >
@@ -171,6 +176,7 @@ exports[`BlueprintsCard renders 1`] = `
         <a
           class="media nav-link"
           data-rb-event-key="https://www.pixiebrix.com/marketplace"
+          data-testid="open-public-marketplace-blueprint-tab"
           href="https://www.pixiebrix.com/marketplace"
           rel="noopener noreferrer"
           target="_blank"

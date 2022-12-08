@@ -18,11 +18,11 @@
 import { loadOptions } from "@/store/extensionsStorage";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import {
-  IExtensionPoint,
-  RegistryId,
-  ResolvedExtension,
+  type IExtensionPoint,
+  type RegistryId,
+  type ResolvedExtension,
   RunReason,
-  UUID,
+  type UUID,
 } from "@/core";
 import { updateNavigationId } from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebarController";
@@ -36,7 +36,7 @@ import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { $safeFind } from "@/helpers";
 import { PromiseCancelled } from "@/errors/genericErrors";
-import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
+import { type SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 import injectScriptTag from "@/utils/injectScriptTag";
 import { getThisFrame } from "webext-messenger";
 

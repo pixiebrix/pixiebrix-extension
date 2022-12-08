@@ -15,11 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer, UnknownObject } from "@/types";
+import { Renderer, type UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
-import { BlockArg, BlockOptions, RegistryId, SafeHTML, Schema } from "@/core";
+import {
+  type BlockArg,
+  type BlockOptions,
+  type RegistryId,
+  type SafeHTML,
+  type Schema,
+} from "@/core";
 import { uuidv4 } from "@/types/helpers";
-import { Permissions } from "webextension-polyfill";
+import { type Permissions } from "webextension-polyfill";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { waitForTargetByUrl } from "@/background/messenger/api";
 import { runBrick } from "@/contentScript/messenger/api";

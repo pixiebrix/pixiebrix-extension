@@ -16,14 +16,14 @@
  */
 
 import React, { useState } from "react";
-import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { sheets } from "@/background/messenger/api";
 import { useField } from "formik";
-import { Expression, Schema } from "@/core";
+import { type Expression, type Schema } from "@/core";
 import { useAsyncState } from "@/hooks/common";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/append";
 import { isNullOrBlank, joinName } from "@/utils";
-import { SheetMeta } from "@/contrib/google/sheets/types";
+import { type SheetMeta } from "@/contrib/google/sheets/types";
 import FileWidget from "@/contrib/google/sheets/FileWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { getErrorMessage } from "@/errors/errorHelpers";

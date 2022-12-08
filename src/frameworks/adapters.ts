@@ -19,10 +19,10 @@ import emberAdapter from "./contrib/ember";
 import angularjsAdapter from "@/frameworks/contrib/angularjs";
 import reactAdapter from "./contrib/react";
 import vueAdapter from "./contrib/vue";
-import { Framework } from "@/messaging/constants";
+import { type Framework } from "@/messaging/constants";
 import {
-  ReadableComponentAdapter,
-  WriteableComponentAdapter,
+  type ReadableComponentAdapter,
+  type WriteableComponentAdapter,
 } from "@/frameworks/component";
 
 const FRAMEWORK_ADAPTERS = new Map<

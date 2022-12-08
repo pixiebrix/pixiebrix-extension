@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 import React from "react";
 import copy from "copy-text-to-clipboard";
 import notify from "@/utils/notify";

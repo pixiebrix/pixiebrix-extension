@@ -22,11 +22,11 @@ import { Button, Card, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import marketplaceImage from "@img/marketplace.svg";
-import { OnboardingType } from "@/options/pages/blueprints/onboardingView/useOnboarding";
+import { type OnboardingType } from "@/options/pages/blueprints/onboardingView/useOnboarding";
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 import { useDispatch } from "react-redux";
 import workshopImage from "@img/workshop.svg";
-import { BLUEPRINTS_PAGE_TABS } from "@/options/pages/blueprints/ListFilters";
+import { BLUEPRINTS_PAGE_TABS } from "@/options/pages/blueprints/BlueprintsPageSidebar";
 
 const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
   <Col className="d-flex justify-content-center flex-column text-center">

@@ -23,7 +23,7 @@ import {
 import { getSharingType } from "./installableUtils";
 import { uuidv4 } from "@/types/helpers";
 import { UserRole } from "@/types/contract";
-import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
+import { type Installable } from "@/options/pages/blueprints/blueprintsTypes";
 
 describe("getSharingType", () => {
   test("personal extension", () => {
