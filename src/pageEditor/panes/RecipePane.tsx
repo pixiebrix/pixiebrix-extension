@@ -36,6 +36,7 @@ import { type MessageContext } from "@/core";
 import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
 import RecipeOptions from "@/pageEditor/tabs/RecipeOptions";
+import ActivateWizard from "@/options/pages/marketplace/ActivateWizard";
 
 const RecipePane: React.VFC = () => {
   const dispatch = useDispatch();
@@ -59,6 +60,10 @@ const RecipePane: React.VFC = () => {
     {
       name: "Edit",
       TabContent: EditRecipe,
+    },
+    {
+      name: "Change Option Values",
+      TabContent: ActivateWizard,
     },
     {
       name: "Blueprint Options",
