@@ -89,6 +89,7 @@ export function useAuthOptions(): [AuthOption[], () => void] {
   }, [isLocalLoading, isRemoteLoading, remoteAuths, configuredServices]);
 
   const refresh = useCallback(() => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises -- reported as promise on next line
     refreshRemote();
     void refreshLocal();
   }, [refreshRemote, refreshLocal]);
