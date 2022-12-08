@@ -22,13 +22,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectShowPublishContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { sortBy } from "lodash";
-import Form from "@/components/form/Form";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import {
   useGetEditablePackagesQuery,
   useUpdateRecipeMutation,
 } from "@/services/api";
-import { type FormikHelpers } from "formik";
 import notify from "@/utils/notify";
 import { getScopeAndId } from "@/utils";
 import { produce } from "immer";
@@ -46,11 +44,6 @@ import { type Organization, UserRole } from "@/types/contract";
 import Loading from "./Loading";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useRecipe } from "@/recipes/recipesHooks";
-
-type ShareInstallableFormState = {
-  public: boolean;
-  organizations: UUID[];
-};
 
 const editorRoles = new Set<number>([UserRole.admin, UserRole.developer]);
 
@@ -71,6 +64,9 @@ const PublishRecipeModal: React.FunctionComponent = () => {
     refetch: refetchRecipes,
   } = useRecipe(blueprintId);
 
+  const [isPublishing, setPublishing] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
   const closeModal = () => {
     dispatch(blueprintModalsSlice.actions.closeModal());
   };
@@ -80,7 +76,10 @@ const PublishRecipeModal: React.FunctionComponent = () => {
     return <Loading />;
   }
 
-  const publish = async (helpers: FormikHelpers<ShareInstallableFormState>) => {
+  const publish = async () => {
+    setPublishing(true);
+    setError(null);
+
     try {
       const newRecipe = produce(recipe, (draft) => {
         draft.sharing.public = true;
@@ -99,20 +98,23 @@ const PublishRecipeModal: React.FunctionComponent = () => {
       closeModal();
       refetchRecipes();
     } catch (error) {
-      if (isSingleObjectBadRequestError(error) && error.response.data.config) {
-        helpers.setStatus(error.response.data.config);
+      if (
+        isSingleObjectBadRequestError(error) &&
+        error.response.data.config?.length > 0
+      ) {
+        setError(error.response.data.config.join(" "));
         return;
       }
 
       const message = getErrorMessage(error);
-      helpers.setStatus(message);
+      setError(message);
 
       notify.error({
         message,
         error,
       });
     } finally {
-      helpers.setSubmitting(false);
+      setPublishing(false);
     }
   };
 
@@ -160,54 +162,45 @@ const PublishRecipeModal: React.FunctionComponent = () => {
       </Modal.Header>
       <RequireScope scopeSettingsDescription="To share a blueprint, you must first set an account alias for your PixieBrix account">
         {hasEditPermissions ? (
-          <Form
-            initialValues={{}}
-            onSubmit={publish}
-            renderStatus={({ status }) => (
-              <div className="text-danger p-3">{status}</div>
-            )}
-            renderBody={() => (
-              <>
-                <Modal.Body>
-                  <h3>{recipe.metadata.name}</h3>
+          <>
+            <Modal.Body>
+              {error && <div className="text-danger p-3">{error}</div>}
 
-                  <p>
-                    On Submit, the public link to this blueprint will be shared
-                    with the{" "}
-                    <a
-                      href="https://www.pixiebrix.com/marketplace/"
-                      target="blank"
-                      rel="noreferrer noopener"
-                    >
-                      PixieBrix Marketplace
-                    </a>{" "}
-                    admin team, who will review your submission and publish your
-                    blueprint.
-                  </p>
-                  <p>
-                    As soon as you Submit, the public link below will work for
-                    anyone, so you can start sharing right away!
-                  </p>
+              <h3>{recipe.metadata.name}</h3>
 
-                  <ActivationLink blueprintId={blueprintId} />
-                </Modal.Body>
-              </>
-            )}
-            renderSubmit={({ isSubmitting }) => (
-              <Modal.Footer>
-                <Button variant="link" onClick={closeModal}>
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  type="submit"
-                  disabled={isSubmitting || isFetchingEditablePackages}
+              <p>
+                On Submit, the public link to this blueprint will be shared with
+                the{" "}
+                <a
+                  href="https://www.pixiebrix.com/marketplace/"
+                  target="blank"
+                  rel="noreferrer noopener"
                 >
-                  Submit
-                </Button>
-              </Modal.Footer>
-            )}
-          />
+                  PixieBrix Marketplace
+                </a>{" "}
+                admin team, who will review your submission and publish your
+                blueprint.
+              </p>
+              <p>
+                As soon as you Submit, the public link below will work for
+                anyone, so you can start sharing right away!
+              </p>
+
+              <ActivationLink blueprintId={blueprintId} />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="link" onClick={closeModal}>
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                disabled={isPublishing || isFetchingEditablePackages}
+                onClick={publish}
+              >
+                Submit
+              </Button>
+            </Modal.Footer>
+          </>
         ) : (
           <Modal.Body>
             <div className="text-info my-3">
