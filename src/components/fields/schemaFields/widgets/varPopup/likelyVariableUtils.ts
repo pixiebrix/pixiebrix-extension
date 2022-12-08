@@ -68,5 +68,42 @@ export function replaceLikelyVariable(
     endIndex = position;
   }
 
-  return template.slice(0, startIndex) + replacement + template.slice(endIndex);
+  const templatePartBefore = template.slice(0, startIndex);
+  const templatePartAfter = template.slice(endIndex);
+
+  let shouldInsertBracesBefore = true;
+  for (let i = templatePartBefore.length - 1; i > 0; i--) {
+    const char = templatePartBefore[i];
+    if (
+      char === "}" &&
+      (templatePartBefore[i - 1] === "}" || templatePartBefore[i - 1] === "%")
+    ) {
+      break;
+    }
+
+    if ((char === "{" || char === "%") && templatePartBefore[i - 1] === "{") {
+      shouldInsertBracesBefore = false;
+      break;
+    }
+  }
+
+  let shouldInsertBracesAfter = true;
+  for (let i = 0; i < templatePartAfter.length - 1; i++) {
+    const char = templatePartAfter[i];
+    if (
+      char === "{" &&
+      (templatePartAfter[i + 1] === "{" || templatePartAfter[i + 1] === "%")
+    ) {
+      break;
+    }
+
+    if ((char === "}" || char === "%") && templatePartAfter[i + 1] === "}") {
+      shouldInsertBracesAfter = false;
+      break;
+    }
+  }
+
+  return `${templatePartBefore}${
+    shouldInsertBracesBefore ? "{{ " : ""
+  }${replacement}${shouldInsertBracesAfter ? " }}" : ""}${templatePartAfter}`;
 }
