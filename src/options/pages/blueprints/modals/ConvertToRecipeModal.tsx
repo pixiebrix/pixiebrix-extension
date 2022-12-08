@@ -22,7 +22,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { generateRecipeId } from "@/utils/recipeUtils";
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { selectShowShareContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
+import { selectModalsContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import * as Yup from "yup";
 import {
@@ -102,7 +102,10 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
   const dispatch = useDispatch();
 
   const [createRecipe] = useCreateRecipeMutation();
-  const { extensionId } = useSelector(selectShowShareContext);
+  const { showShareContext, showPublishContext } =
+    useSelector(selectModalsContext);
+  const extensionId =
+    showShareContext?.extensionId ?? showPublishContext?.extensionId;
   const extensions = useSelector(selectExtensions);
 
   const extension = useMemo(() => {
@@ -128,7 +131,7 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
   };
 
   const closeModal = () => {
-    dispatch(blueprintModalsSlice.actions.setShareContext(null));
+    dispatch(blueprintModalsSlice.actions.closeModal());
   };
 
   const { refetch: refetchRecipes } = useAllRecipes();
@@ -167,11 +170,19 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
 
       refetchRecipes();
 
-      dispatch(
-        blueprintModalsSlice.actions.setShareContext({
-          blueprintId: recipe.metadata.id,
-        })
-      );
+      if (showPublishContext == null) {
+        dispatch(
+          blueprintModalsSlice.actions.setShareContext({
+            blueprintId: recipe.metadata.id,
+          })
+        );
+      } else {
+        dispatch(
+          blueprintModalsSlice.actions.setPublishContext({
+            blueprintId: recipe.metadata.id,
+          })
+        );
+      }
     } catch (error) {
       if (isSingleObjectBadRequestError(error) && error.response.data.config) {
         helpers.setStatus(error.response.data.config);

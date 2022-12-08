@@ -20,30 +20,23 @@ import BlueprintsPageLayout from "@/options/pages/blueprints/BlueprintsPageLayou
 import useInstallables from "@/options/pages/blueprints/useInstallables";
 import ExtensionLogsModal from "@/options/pages/blueprints/modals/ExtensionLogsModal";
 import { useSelector } from "react-redux";
-import { type RootState } from "@/store/optionsStore";
-import {
-  type LogsContext,
-  type ShareContext,
-} from "@/options/pages/blueprints/modals/blueprintModalsSlice";
-import {
-  selectShowLogsContext,
-  selectShowShareContext,
-} from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
+import { selectModalsContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
 import { useTitle } from "@/hooks/title";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import ConvertToRecipeModal from "./modals/ConvertToRecipeModal";
 import ShareRecipeModal from "./modals/ShareRecipeModal/ShareRecipeModal";
 import { reportEvent } from "@/telemetry/events";
+import PublishRecipeModal from "./modals/ShareRecipeModal/PublishRecipeModal";
 
+// TODO:
+// - [ ] Test ConvertToRecipeModal opens correct modal after converting
+// - [ ] Test Publish action is not available for public blueprints
 const BlueprintsPage: React.FunctionComponent = () => {
   useTitle("Blueprints");
   const { installables, error } = useInstallables();
-  const showLogsContext = useSelector<RootState, LogsContext>(
-    selectShowLogsContext
-  );
-  const showShareContext = useSelector<RootState, ShareContext>(
-    selectShowShareContext
-  );
+
+  const { showLogsContext, showShareContext, showPublishContext } =
+    useSelector(selectModalsContext);
 
   useEffect(() => {
     reportEvent("BlueprintsPageView");
@@ -65,8 +58,11 @@ const BlueprintsPage: React.FunctionComponent = () => {
           context={showLogsContext.messageContext}
         />
       )}
-      {showShareContext?.extensionId && <ConvertToRecipeModal />}
+      {(showShareContext?.extensionId || showPublishContext?.extensionId) && (
+        <ConvertToRecipeModal />
+      )}
       {showShareContext?.blueprintId && <ShareRecipeModal />}
+      {showPublishContext?.blueprintId && <PublishRecipeModal />}
       {body}
     </div>
   );

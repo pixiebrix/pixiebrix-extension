@@ -51,6 +51,7 @@ type ActionCallback = () => void;
 export type InstallableViewItemActions = {
   reinstall: ActionCallback | null;
   activate: ActionCallback | null;
+  viewPublish: ActionCallback | null;
   viewShare: ActionCallback | null;
   deleteExtension: ActionCallback | null;
   uninstall: ActionCallback | null;
@@ -130,6 +131,18 @@ function useInstallableViewItemActions(
     } else {
       dispatch(push(`/extensions/install/${installable.id}`));
     }
+  };
+
+  const viewPublish = () => {
+    const shareContext = isBlueprint(installable)
+      ? {
+          blueprintId: getPackageId(installable),
+        }
+      : {
+          extensionId: installable.id,
+        };
+
+    dispatch(blueprintModalsSlice.actions.setPublishContext(shareContext));
   };
 
   const viewShare = () => {
@@ -244,6 +257,11 @@ function useInstallableViewItemActions(
   );
 
   return {
+    // TODO is this always available?
+    viewPublish:
+      isBlueprint(installable) && installable.sharing.public
+        ? null
+        : viewPublish,
     // Deployment sharing is controlled via the Admin Console
     viewShare: isCloudExtension || isDeployment ? null : viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,
