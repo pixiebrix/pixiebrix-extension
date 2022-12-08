@@ -39,7 +39,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.15.4",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
-    "@reduxjs/toolkit": "^1.8.6",
+    "@reduxjs/toolkit": "^1.9.1",
     "@rjsf/bootstrap-4": "^4.2.3",
     "@rjsf/core": "^4.2.3",
     "@uipath/robot": "1.2.5",
