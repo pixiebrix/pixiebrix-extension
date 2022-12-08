@@ -16,7 +16,7 @@
  */
 
 import { type UUID } from "@/core";
-import { type RuntimeState } from "@/pageEditor/slices/runtimeSlice";
+import { type RuntimeState } from "@/pageEditor/slices/runtimeSliceTypes";
 import { isTraceError, type TraceRecord } from "@/telemetry/trace";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { createSelector } from "reselect";
