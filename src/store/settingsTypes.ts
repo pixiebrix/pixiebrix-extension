@@ -89,6 +89,10 @@ export type SettingsState = SkunkworksSettings & {
   theme: Theme;
 };
 
+export type SettingsRootState = {
+  settings: SettingsState;
+};
+
 export type SkunkworksSettings = {
   /**
    * Experimental feature to suggest HTML elements to select in the Page Editor

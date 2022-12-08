@@ -15,19 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice } from "@reduxjs/toolkit";
-import { uuidv4 } from "@/types/helpers";
-import { type SessionState } from "@/pageEditor/slices/sessionSliceTypes";
+import { type UUID } from "@/core";
+import { type TraceRecord } from "@/telemetry/trace";
 
-export const initialState: SessionState = {
-  sessionId: uuidv4(),
-  sessionStart: Date.now(),
+export type RuntimeState = {
+  /**
+   * Mapping from extension id to its latest available trace.
+   */
+  extensionTraces: Record<UUID, TraceRecord[]>;
 };
 
-const runtimeSlice = createSlice({
-  name: "session",
-  initialState,
-  reducers: {},
-});
-
-export default runtimeSlice;
+export type RuntimeRootState = {
+  runtime: RuntimeState;
+};

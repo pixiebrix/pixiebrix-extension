@@ -15,19 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice } from "@reduxjs/toolkit";
-import { uuidv4 } from "@/types/helpers";
-import { type SessionState } from "@/pageEditor/slices/sessionSliceTypes";
+import React from "react";
+import Centered from "@/components/Centered";
+import Alert from "@/components/Alert";
+import { Button } from "react-bootstrap";
 
-export const initialState: SessionState = {
-  sessionId: uuidv4(),
-  sessionStart: Date.now(),
-};
+const StaleSessionPane: React.FC = () => (
+  <Centered>
+    <Alert variant="info">
+      There were changes made in a different instance of the Page Editor. Reload
+      this Page Editor to sync the changes.
+    </Alert>
+    <Button
+      variant="primary"
+      onClick={() => {
+        location.reload();
+      }}
+    >
+      Reload
+    </Button>
+  </Centered>
+);
 
-const runtimeSlice = createSlice({
-  name: "session",
-  initialState,
-  reducers: {},
-});
-
-export default runtimeSlice;
+export default StaleSessionPane;
