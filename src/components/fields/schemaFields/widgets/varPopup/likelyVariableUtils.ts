@@ -68,18 +68,5 @@ export function replaceLikelyVariable(
     endIndex = position;
   }
 
-  const stringToReplace = template.slice(startIndex, endIndex);
-  const leftTagRegex = new RegExp(`{({|%)[^{]*${stringToReplace}`);
-  let stringToInsert = leftTagRegex.test(template)
-    ? replacement
-    : `{{ ${replacement}`;
-
-  const rightTagRegex = new RegExp(`${stringToReplace}[^}]*(}|%)}`);
-  if (!rightTagRegex.test(template)) {
-    stringToInsert += " }}";
-  }
-
-  return (
-    template.slice(0, startIndex) + stringToInsert + template.slice(endIndex)
-  );
+  return template.slice(0, startIndex) + replacement + template.slice(endIndex);
 }
