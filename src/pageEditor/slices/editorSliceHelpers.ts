@@ -156,7 +156,7 @@ export function editRecipeOptions(
     return;
   }
 
-  state.dirtyRecipeOptionsById[recipeId] = options;
+  state.dirtyRecipeOptionDefinitionsById[recipeId] = options;
 }
 
 export function activateElement(

@@ -22,6 +22,7 @@ import { isEmpty } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
 import pipelineSchema from "@schemas/pipeline.json";
+import { schemaPropertiesComparator } from "@/components/fields/schemaFields/schemaUtils";
 
 export type BlockOptionProps = {
   /**
@@ -52,12 +53,15 @@ function genericOptionsFactory(
     return NoOptions;
   }
 
+  const fieldComparator = schemaPropertiesComparator(uiSchema);
+
   const fieldsConfig = Object.entries(optionSchema)
     .filter(
       ([, fieldSchema]) =>
         typeof fieldSchema === "object" &&
         fieldSchema.$ref !== pipelineSchema.$id
     )
+    .sort(([field1], [field2]) => fieldComparator(field1, field2))
     .map(([prop, fieldSchema]) => {
       // Fine because coming from Object.entries for the schema
       // eslint-disable-next-line security/detect-object-injection

@@ -35,8 +35,8 @@ import EditRecipe from "@/pageEditor/tabs/editRecipeTab/EditRecipe";
 import { type MessageContext } from "@/core";
 import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
-import RecipeOptions from "@/pageEditor/tabs/RecipeOptions";
-import ActivateWizard from "@/options/pages/marketplace/ActivateWizard";
+import RecipeOptionsDefinition from "@/pageEditor/tabs/RecipeOptionsDefinition";
+import ActivationOptions from "@/pageEditor/tabs/activationOptionsTab/ActivationOptions";
 
 const RecipePane: React.VFC = () => {
   const dispatch = useDispatch();
@@ -63,11 +63,11 @@ const RecipePane: React.VFC = () => {
     },
     {
       name: "Change Option Values",
-      TabContent: ActivateWizard,
+      TabContent: ActivationOptions,
     },
     {
       name: "Blueprint Options",
-      TabContent: RecipeOptions,
+      TabContent: RecipeOptionsDefinition,
     },
     {
       name: "Logs",

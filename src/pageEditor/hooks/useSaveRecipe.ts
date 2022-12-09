@@ -21,7 +21,7 @@ import {
   selectDeletedElements,
   selectDirty,
   selectDirtyRecipeMetadata,
-  selectDirtyRecipeOptions,
+  selectDirtyRecipeOptionDefinitions,
   selectElements,
 } from "@/pageEditor/slices/editorSelectors";
 import {
@@ -59,7 +59,7 @@ function useSaveRecipe(): RecipeSaver {
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
   const installedExtensions = useSelector(selectExtensions);
-  const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptions);
+  const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptionDefinitions);
   const dirtyRecipeMetadata = useSelector(selectDirtyRecipeMetadata);
   const deletedElementsByRecipeId = useSelector(selectDeletedElements);
   const { showConfirmation } = useModals();

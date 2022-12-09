@@ -102,7 +102,8 @@ export const initialState: EditorState = {
   isBetaUI: false,
   elementUIStates: {},
   showV3UpgradeMessageByElement: {},
-  dirtyRecipeOptionsById: {},
+  dirtyRecipeOptionDefinitionsById: {},
+  modifiedRecipeOptionValuesById: {},
   dirtyRecipeMetadataById: {},
   visibleModalKey: null,
   keepLocalCopyOnCreateRecipe: false,
@@ -545,7 +546,7 @@ export const editorSlice = createSlice({
     resetMetadataAndOptionsForRecipe(state, action: PayloadAction<RegistryId>) {
       const { payload: recipeId } = action;
       delete state.dirtyRecipeMetadataById[recipeId];
-      delete state.dirtyRecipeOptionsById[recipeId];
+      delete state.dirtyRecipeOptionDefinitionsById[recipeId];
     },
     updateRecipeMetadataForElements(
       state,
@@ -709,7 +710,7 @@ export const editorSlice = createSlice({
 
       // Clean up the old metadata and options
       delete state.dirtyRecipeMetadataById[oldRecipeId];
-      delete state.dirtyRecipeOptionsById[oldRecipeId];
+      delete state.dirtyRecipeOptionDefinitionsById[oldRecipeId];
     },
     addNode(
       state,

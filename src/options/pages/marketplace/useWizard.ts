@@ -21,9 +21,7 @@ import ServicesBody from "@/options/pages/marketplace/ServicesBody";
 import PermissionsBody from "@/options/pages/marketplace/PermissionsBody";
 import { inputProperties } from "@/helpers";
 import * as Yup from "yup";
-import { buildYup } from "schema-to-yup";
-import { dereference } from "@/validators/generic";
-import { useAsyncState } from "@/hooks/common";
+import useRecipeOptionsValidationSchema from "@/hooks/useRecipeOptionsValidationSchema";
 
 const STEPS: WizardStep[] = [
   // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for TypeScript
@@ -44,28 +42,9 @@ function useWizard(
   blueprint: RecipeDefinition
 ): [WizardStep[], WizardValues, Yup.ObjectSchema<any>] {
   const installedExtensions = useSelector(selectExtensions);
-  const [optionsValidationSchema] = useAsyncState(async () => {
-    const dereferencedOptionsSchema = await dereference(
-      blueprint.options?.schema
-    );
-    const optionSchemaWithNullableRequiredFields = {
-      ...dereferencedOptionsSchema,
-      properties: mapValues(
-        dereferencedOptionsSchema.properties,
-        (optionSchema: Schema, name: string) =>
-          blueprint.options?.schema?.required?.includes(name)
-            ? {
-                ...optionSchema,
-                // Yup will produce an ugly "null is not type of x" validation error instead of a
-                // "this field is required" error unless we allow null values for required fields
-                // @see FieldTemplate.tsx for context as to why fields are null instead of undefined
-                nullable: true,
-              }
-            : optionSchema
-      ),
-    };
-    return buildYup(optionSchemaWithNullableRequiredFields, {});
-  });
+  const [optionsValidationSchema] = useRecipeOptionsValidationSchema(
+    blueprint?.options?.schema
+  );
 
   return useMemo(() => {
     const extensionPoints = blueprint.extensionPoints ?? [];

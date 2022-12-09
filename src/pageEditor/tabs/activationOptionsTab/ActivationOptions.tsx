@@ -15,8 +15,126 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
+import { useSelector } from "react-redux";
+import {
+  selectActiveRecipeId,
+  selectDirtyOptionDefinitionsForRecipeId,
+  selectModifiedOptionValuesForRecipeId,
+  selectNotDeletedExtensions,
+} from "@/pageEditor/slices/editorSelectors";
+import { useRecipe } from "@/recipes/recipesHooks";
+import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
+import FieldRuntimeContext, {
+  type RuntimeContext,
+} from "@/components/fields/schemaFields/FieldRuntimeContext";
+import { Card, Col, Container, Row } from "react-bootstrap";
+import Form, { type RenderBody } from "@/components/form/Form";
+import Loader from "@/components/Loader";
+import Alert from "@/components/Alert";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { inferRecipeOptions } from "@/store/extensionsUtils";
+import { EMPTY_RECIPE_OPTIONS_DEFINITION } from "@/pageEditor/tabs/RecipeOptionsDefinition";
+import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/common";
+import useRecipeOptionsValidationSchema from "@/hooks/useRecipeOptionsValidationSchema";
 
-const ActivationOptions: React.FC = () => {};
+const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
+  apiVersion: OPTIONS_DEFAULT_RUNTIME_API_VERSION,
+  allowExpressions: false,
+};
+
+const ActivationOptionsContent: React.FC = () => {
+  const recipeId = useSelector(selectActiveRecipeId);
+  const {
+    data: recipe,
+    isFetching: isLoadingRecipe,
+    error: recipeError,
+  } = useRecipe(recipeId);
+  const [validationSchema, isLoadingSchema, schemaError] =
+    useRecipeOptionsValidationSchema(recipe?.options?.schema);
+  const dirtyRecipeOptions = useSelector(
+    selectDirtyOptionDefinitionsForRecipeId(recipeId)
+  );
+  const modifiedOptionValues = useSelector(
+    selectModifiedOptionValuesForRecipeId(recipeId)
+  );
+  const installedExtensions = useSelector(selectNotDeletedExtensions);
+
+  const optionsDefinition = useMemo(() => {
+    if (dirtyRecipeOptions) {
+      return dirtyRecipeOptions;
+    }
+
+    return recipe?.options ?? EMPTY_RECIPE_OPTIONS_DEFINITION;
+  }, [dirtyRecipeOptions, recipe?.options]);
+
+  const OptionsFieldGroup = useMemo(
+    () =>
+      genericOptionsFactory(
+        optionsDefinition?.schema,
+        optionsDefinition?.uiSchema
+      ),
+    [optionsDefinition]
+  );
+
+  const initialValues = useMemo(() => {
+    if (modifiedOptionValues) {
+      return modifiedOptionValues;
+    }
+
+    const recipeExtensions = installedExtensions.filter(
+      (extension) => extension._recipe?.id === recipeId
+    );
+    return inferRecipeOptions(recipeExtensions);
+  }, [installedExtensions, modifiedOptionValues, recipeId]);
+
+  if (isLoadingSchema || isLoadingRecipe) {
+    return <Loader />;
+  }
+
+  const error = recipeError ?? schemaError;
+  if (error) {
+    console.error(error);
+    return <Alert variant="danger">{getErrorMessage(error)}</Alert>;
+  }
+
+  const renderBody: RenderBody = () => (
+    <Card>
+      <Card.Header>Blueprint input options</Card.Header>
+      <Card.Body>
+        <FieldRuntimeContext.Provider value={OPTIONS_FIELD_RUNTIME_CONTEXT}>
+          <OptionsFieldGroup name="" />
+        </FieldRuntimeContext.Provider>
+      </Card.Body>
+    </Card>
+  );
+
+  return (
+    <ErrorBoundary>
+      <Form
+        validationSchema={validationSchema}
+        initialValues={initialValues}
+        renderBody={renderBody}
+        onSubmit={() => {
+          console.error(
+            "The form's submit should not be called to save recipe option values, they are automatically synced with redux"
+          );
+        }}
+        renderSubmit={() => null}
+      />
+    </ErrorBoundary>
+  );
+};
+
+const ActivationOptions: React.FC = () => (
+  <Container fluid className="pt-3">
+    <Row>
+      <Col>
+        <ActivationOptionsContent />
+      </Col>
+    </Row>
+  </Container>
+);
 
 export default ActivationOptions;

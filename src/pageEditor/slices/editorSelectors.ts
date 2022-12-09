@@ -72,20 +72,36 @@ export const selectErrorState = ({ editor }: EditorRootState) => ({
 
 export const selectDirty = ({ editor }: EditorRootState) => editor.dirty;
 
-export const selectDirtyRecipeOptions = ({ editor }: EditorRootState) =>
-  editor.dirtyRecipeOptionsById;
+export const selectDirtyRecipeOptionDefinitions = ({
+  editor,
+}: EditorRootState) => editor.dirtyRecipeOptionDefinitionsById;
 
-const dirtyOptionsForRecipeIdSelector = createSelector(
-  selectDirtyRecipeOptions,
+const dirtyOptionDefinitionsForRecipeIdSelector = createSelector(
+  selectDirtyRecipeOptionDefinitions,
   (state: EditorRootState, recipeId: RegistryId) => recipeId,
-  (dirtyRecipeOptionsById, recipeId) =>
-    // eslint-disable-next-line security/detect-object-injection
-    dirtyRecipeOptionsById[recipeId]
+  (dirtyRecipeOptionDefinitionsById, recipeId) =>
+    // eslint-disable-next-line security/detect-object-injection -- RegistryId for recipe
+    dirtyRecipeOptionDefinitionsById[recipeId]
 );
 
-export const selectDirtyOptionsForRecipeId =
+export const selectDirtyOptionDefinitionsForRecipeId =
   (recipeId: RegistryId) => (state: RootState) =>
-    dirtyOptionsForRecipeIdSelector(state, recipeId);
+    dirtyOptionDefinitionsForRecipeIdSelector(state, recipeId);
+
+const selectModifiedRecipeOptionValues = ({ editor }: EditorRootState) =>
+  editor.modifiedRecipeOptionValuesById;
+
+const modifiedOptionValuesForRecipeIdSelector = createSelector(
+  selectModifiedRecipeOptionValues,
+  (state: EditorRootState, recipeId: RegistryId) => recipeId,
+  (modifiedRecipeOptionValuesById, recipeId) =>
+    // eslint-disable-next-line security/detect-object-injection -- RegistryId for recipe
+    modifiedRecipeOptionValuesById[recipeId]
+);
+
+export const selectModifiedOptionValuesForRecipeId =
+  (recipeId: RegistryId) => (state: EditorRootState) =>
+    modifiedOptionValuesForRecipeIdSelector(state, recipeId);
 
 export const selectDirtyRecipeMetadata = ({ editor }: EditorRootState) =>
   editor.dirtyRecipeMetadataById;
@@ -140,7 +156,7 @@ export const selectElementIsDirty = (elementId: UUID) => (state: RootState) =>
 
 const recipeIsDirtySelector = createSelector(
   selectDirty,
-  dirtyOptionsForRecipeIdSelector,
+  dirtyOptionDefinitionsForRecipeIdSelector,
   dirtyMetadataForRecipeIdSelector,
   (state: EditorRootState, recipeId: RegistryId) =>
     // eslint-disable-next-line security/detect-object-injection
