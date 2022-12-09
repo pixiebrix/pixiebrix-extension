@@ -71,6 +71,9 @@ export function replaceLikelyVariable(
   const templatePartBefore = template.slice(0, startIndex);
   const templatePartAfter = template.slice(endIndex);
 
+  // Check if we need to add braces before the inserted variable
+  // For instance, in the case of "@foo }}"
+  // See likelyVariableUtils.test.ts for more examples
   let shouldInsertBracesBefore = true;
   for (let i = templatePartBefore.length - 1; i > 0; i--) {
     const char = templatePartBefore[i];
@@ -87,6 +90,9 @@ export function replaceLikelyVariable(
     }
   }
 
+  // Check if we need to add braces after the inserted variable
+  // For instance, in the case of "{{ @foo"
+  // See likelyVariableUtils.test.ts for more examples
   let shouldInsertBracesAfter = true;
   for (let i = 0; i < templatePartAfter.length - 1; i++) {
     const char = templatePartAfter[i];
