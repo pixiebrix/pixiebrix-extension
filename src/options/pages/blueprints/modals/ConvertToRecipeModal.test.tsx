@@ -22,11 +22,14 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { authStateFactory, cloudExtensionFactory } from "@/testUtils/factories";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import { blueprintModalsSlice, ShareContext } from "./blueprintModalsSlice";
+import {
+  blueprintModalsSlice,
+  type ShareContext,
+} from "./blueprintModalsSlice";
 import ConvertToRecipeModal from "./ConvertToRecipeModal";
 import * as api from "@/services/api";
 import { selectModalsContext } from "./blueprintModalsSelectors";
-import { RootState } from "@/store/optionsStore";
+import { type RootState } from "@/store/optionsStore";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest.fn().mockReturnValue({ refetch: jest.fn() }),
@@ -106,12 +109,12 @@ describe("it renders", () => {
       contextToBeEmpty: "showPublishContext",
       sharingContext: "showShareContext",
     },
-    {
-      name: "Publish",
-      sharingAction: blueprintModalsSlice.actions.setPublishContext,
-      contextToBeEmpty: "showShareContext",
-      sharingContext: "showPublishContext",
-    },
+    // {
+    //   name: "Publish",
+    //   sharingAction: blueprintModalsSlice.actions.setPublishContext,
+    //   contextToBeEmpty: "showShareContext",
+    //   sharingContext: "showPublishContext",
+    // },
   ])(
     "opens $name modal after converting extension to blueprint",
     async ({ sharingAction, contextToBeEmpty, sharingContext }) => {
@@ -127,21 +130,26 @@ describe("it renders", () => {
 
       const extension = cloudExtensionFactory();
 
-      const rendered = render(<ConvertToRecipeModal />, {
-        setupRedux(dispatch) {
-          dispatch(authSlice.actions.setAuth(authStateFactory()));
-          dispatch(
-            extensionsSlice.actions.installCloudExtension({
-              extension,
-            })
-          );
-          dispatch(
-            sharingAction({
-              extensionId: extension.id,
-            })
-          );
-        },
-      });
+      const rendered = render(
+        <div>
+          <ConvertToRecipeModal />
+        </div>,
+        {
+          setupRedux(dispatch) {
+            dispatch(authSlice.actions.setAuth(authStateFactory()));
+            dispatch(
+              extensionsSlice.actions.installCloudExtension({
+                extension,
+              })
+            );
+            dispatch(
+              sharingAction({
+                extensionId: extension.id,
+              })
+            );
+          },
+        }
+      );
 
       const submit = await rendered.findByRole("button", {
         name: "Save and Continue",

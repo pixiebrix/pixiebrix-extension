@@ -123,12 +123,16 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
 
   const scope = useSelector(selectScope);
 
-  const initialValues: ConvertInstallableFormState = {
-    blueprintId: generateRecipeId(scope, extension.label),
-    name: extension.label,
-    version: validateSemVerString("1.0.0"),
-    description: "Created with the PixieBrix Page Editor",
-  };
+  const initialValues: ConvertInstallableFormState = useMemo(
+    () => ({
+      blueprintId: generateRecipeId(scope, extension.label),
+      name: extension.label,
+      version: validateSemVerString("1.0.0"),
+      description: "Created with the PixieBrix Page Editor",
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- initial values for the form, we calculate them once
+    []
+  );
 
   const closeModal = () => {
     dispatch(blueprintModalsSlice.actions.closeModal());

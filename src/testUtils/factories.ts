@@ -76,8 +76,8 @@ import {
   type Deployment,
   type MarketplaceListing,
   type MarketplaceTag,
+  type Milestone,
   UserRole,
-  Milestone,
 } from "@/types/contract";
 import { type ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
 import getType from "@/runtime/getType";
