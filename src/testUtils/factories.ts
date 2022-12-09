@@ -77,6 +77,7 @@ import {
   type MarketplaceListing,
   type MarketplaceTag,
   UserRole,
+  Milestone,
 } from "@/types/contract";
 import { type ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
 import getType from "@/runtime/getType";
@@ -167,7 +168,9 @@ export const authStateFactory = define<AuthState>({
     const flags: AuthState["flags"] = [];
     return flags;
   },
-  milestones: [],
+  milestones(): Milestone[] {
+    return [];
+  },
 });
 
 export const recipeMetadataFactory = define<Metadata>({

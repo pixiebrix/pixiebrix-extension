@@ -28,9 +28,6 @@ import ShareRecipeModal from "./modals/ShareRecipeModal/ShareRecipeModal";
 import { reportEvent } from "@/telemetry/events";
 import PublishRecipeModal from "./modals/ShareRecipeModal/PublishRecipeModal";
 
-// TODO:
-// - [ ] Test ConvertToRecipeModal opens correct modal after converting
-// - [ ] Move Publish modal to another folder
 const BlueprintsPage: React.FunctionComponent = () => {
   useTitle("Blueprints");
   const { installables, error } = useInstallables();
