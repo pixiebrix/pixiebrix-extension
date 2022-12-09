@@ -491,9 +491,9 @@ export const innerExtensionPointRecipeFactory = ({
     kind: "recipe",
     apiVersion: "v3",
     metadata: recipeMetadataFactory,
-    sharing: { public: false, organizations: [] },
+    sharing: (): SharingDefinition => ({ public: false, organizations: [] }),
     updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
-    definitions: {
+    definitions: (): InnerDefinitions => ({
       [extensionPointRef]: {
         kind: "extensionPoint",
         definition: {
@@ -506,7 +506,7 @@ export const innerExtensionPointRecipeFactory = ({
           reader: validateRegistryId("@pixiebrix/document-context"),
         },
       },
-    },
+    }),
     options: undefined,
     extensionPoints: () => [
       extensionPointConfigFactory({ id: extensionPointRef }),

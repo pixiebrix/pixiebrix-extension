@@ -30,8 +30,6 @@ import PublishRecipeModal from "./modals/ShareRecipeModal/PublishRecipeModal";
 
 // TODO:
 // - [ ] Test ConvertToRecipeModal opens correct modal after converting
-// - [ ] Test Publish action is not available for public blueprints
-// - [ ] pull out the logic for permissions and organization from the modals and share
 // - [ ] Move Publish modal to another folder
 const BlueprintsPage: React.FunctionComponent = () => {
   useTitle("Blueprints");

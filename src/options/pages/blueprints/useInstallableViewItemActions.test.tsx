@@ -113,7 +113,10 @@ describe("useInstallableViewItemActions", () => {
     const {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(cloudExtensionItem));
-    expectActions(["activate", "deleteExtension", "exportBlueprint"], actions);
+    expectActions(
+      ["viewPublish", "activate", "deleteExtension", "exportBlueprint"],
+      actions
+    );
   });
 
   test("active personal extension", () => {
@@ -128,7 +131,7 @@ describe("useInstallableViewItemActions", () => {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(personalExtensionItem));
     expectActions(
-      ["viewShare", "uninstall", "viewLogs", "exportBlueprint"],
+      ["viewPublish", "viewShare", "uninstall", "viewLogs", "exportBlueprint"],
       actions
     );
   });
@@ -145,7 +148,14 @@ describe("useInstallableViewItemActions", () => {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(personalBlueprintItem));
     expectActions(
-      ["viewShare", "uninstall", "viewLogs", "exportBlueprint", "reinstall"],
+      [
+        "viewPublish",
+        "viewShare",
+        "uninstall",
+        "viewLogs",
+        "exportBlueprint",
+        "reinstall",
+      ],
       actions
     );
   });
@@ -161,7 +171,10 @@ describe("useInstallableViewItemActions", () => {
     const {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(personalBlueprintItem));
-    expectActions(["activate", "viewShare", "exportBlueprint"], actions);
+    expectActions(
+      ["viewPublish", "activate", "viewShare", "exportBlueprint"],
+      actions
+    );
   });
 
   test("active team blueprint", () => {
@@ -176,7 +189,14 @@ describe("useInstallableViewItemActions", () => {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(teamBlueprintItem));
     expectActions(
-      ["viewShare", "uninstall", "viewLogs", "exportBlueprint", "reinstall"],
+      [
+        "viewPublish",
+        "viewShare",
+        "uninstall",
+        "viewLogs",
+        "exportBlueprint",
+        "reinstall",
+      ],
       actions
     );
   });
@@ -192,7 +212,10 @@ describe("useInstallableViewItemActions", () => {
     const {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(teamBlueprintItem));
-    expectActions(["activate", "viewShare", "exportBlueprint"], actions);
+    expectActions(
+      ["viewPublish", "activate", "viewShare", "exportBlueprint"],
+      actions
+    );
   });
 
   test("public blueprint", () => {
@@ -207,7 +230,14 @@ describe("useInstallableViewItemActions", () => {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(publicBlueprintItem));
     expectActions(
-      ["reinstall", "viewShare", "exportBlueprint", "viewLogs", "uninstall"],
+      [
+        "viewPublish",
+        "reinstall",
+        "viewShare",
+        "exportBlueprint",
+        "viewLogs",
+        "uninstall",
+      ],
       actions
     );
   });
@@ -223,7 +253,10 @@ describe("useInstallableViewItemActions", () => {
     const {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(deploymentItem));
-    expectActions(["reinstall", "uninstall", "viewLogs"], actions);
+    expectActions(
+      ["viewPublish", "reinstall", "uninstall", "viewLogs"],
+      actions
+    );
   });
 
   test("restricted team deployment", () => {
@@ -237,7 +270,7 @@ describe("useInstallableViewItemActions", () => {
     const {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(deploymentItem));
-    expectActions(["viewLogs"], actions);
+    expectActions(["viewPublish", "viewLogs"], actions);
   });
 
   test("blueprint with missing permissions", () => {
@@ -253,6 +286,7 @@ describe("useInstallableViewItemActions", () => {
     } = renderHook(() => useInstallableViewItemActions(deploymentItem));
     expectActions(
       [
+        "viewPublish",
         "viewShare",
         "uninstall",
         "viewLogs",
@@ -278,7 +312,10 @@ describe("useInstallableViewItemActions", () => {
 
     // Unrestricted users (e.g., developers) need to be able to uninstall/reactivate a deployment to use a later
     // version of the blueprint for development/testing.
-    expectActions(["viewLogs", "uninstall", "reinstall"], actions);
+    expectActions(
+      ["viewPublish", "viewLogs", "uninstall", "reinstall"],
+      actions
+    );
   });
 
   test("paused deployment with restricted user", () => {
@@ -293,6 +330,29 @@ describe("useInstallableViewItemActions", () => {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(deploymentItem));
 
-    expectActions(["viewLogs"], actions);
+    expectActions(["viewPublish", "viewLogs"], actions);
+  });
+
+  test("public blueprint is not publishable", () => {
+    mockHooks();
+    const blueprintItem = {
+      installable: recipeFactory({
+        sharing: { public: true, organizations: [] },
+      }),
+      sharing: {
+        source: {
+          type: "Personal",
+        },
+      },
+      status: "Active",
+    } as InstallableViewItem;
+
+    const {
+      result: { current: actions },
+    } = renderHook(() => useInstallableViewItemActions(blueprintItem));
+    expectActions(
+      ["viewShare", "uninstall", "viewLogs", "exportBlueprint", "reinstall"],
+      actions
+    );
   });
 });
