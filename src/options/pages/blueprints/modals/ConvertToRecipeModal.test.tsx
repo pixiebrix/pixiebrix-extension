@@ -109,12 +109,12 @@ describe("it renders", () => {
       contextToBeEmpty: "showPublishContext",
       sharingContext: "showShareContext",
     },
-    // {
-    //   name: "Publish",
-    //   sharingAction: blueprintModalsSlice.actions.setPublishContext,
-    //   contextToBeEmpty: "showShareContext",
-    //   sharingContext: "showPublishContext",
-    // },
+    {
+      name: "Publish",
+      sharingAction: blueprintModalsSlice.actions.setPublishContext,
+      contextToBeEmpty: "showShareContext",
+      sharingContext: "showPublishContext",
+    },
   ])(
     "opens $name modal after converting extension to blueprint",
     async ({ sharingAction, contextToBeEmpty, sharingContext }) => {
