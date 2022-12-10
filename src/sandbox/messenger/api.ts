@@ -19,7 +19,7 @@
 
 import postMessage from "@/utils/postMessage";
 import { once } from "lodash";
-import { type JsonObject } from "type-fest";
+import { type JsonValue, type JsonObject } from "type-fest";
 
 const hiddenIframeStyle = {
   position: "absolute",
@@ -43,7 +43,7 @@ export default function createSandbox() {
 export async function ping() {
   return postMessage({
     channel: getSandbox().contentWindow,
-    id: "SANDBOX_PING",
+    type: "SANDBOX_PING",
   });
 }
 
@@ -57,19 +57,19 @@ export async function renderNunjucksTemplate(payload: NunjucksRenderPayload) {
   return postMessage({
     channel: getSandbox().contentWindow,
     payload,
-    id: "RENDER_NUNJUCKS",
+    type: "RENDER_NUNJUCKS",
   });
 }
 
 export type ApplyJqPayload = {
-  input: any;
-  filter: any;
+  input: JsonValue;
+  filter: string;
 };
 
 export async function applyJq(payload: ApplyJqPayload) {
   return postMessage({
     channel: getSandbox().contentWindow,
     payload,
-    id: "APPLY_JQ",
+    type: "APPLY_JQ",
   });
 }

@@ -28,16 +28,16 @@ type Payload = JsonValue;
 
 type PixiebrixPacket = RequireExactlyOne<
   {
-    id: string;
+    type: string;
     payload: Payload;
     error: SerializedError;
-    pixiebrix: UUID;
+    nonce: UUID;
   },
   "payload" | "error"
 >;
 
 interface PostMessageInfo {
-  id: string;
+  type: string;
   payload?: Payload;
   channel: Window;
 }
@@ -46,20 +46,20 @@ type PostMessageListener = (payload: Payload) => Promise<Payload>;
 
 /** Use the postMessage API but expect a response from the target */
 export default async function postMessage({
-  id,
+  type,
   payload,
   channel,
 }: PostMessageInfo): Promise<Payload> {
   const packet: PixiebrixPacket = {
-    id,
+    type,
     payload,
-    pixiebrix: uuidv4(),
+    nonce: uuidv4(),
   };
   const { promise, resolve, reject } = pDefer<Payload>();
   const controller = new AbortController();
 
   const listener = ({ origin, data }: MessageEvent<PixiebrixPacket>): void => {
-    if (origin === "null" && data?.pixiebrix === packet.pixiebrix) {
+    if (origin === "null" && data?.nonce === packet.nonce) {
       if (data.error) {
         reject(deserializeError(data.error));
       } else {
@@ -73,13 +73,13 @@ export default async function postMessage({
   // The origin must be "*" because it's reported as "null" to the outside world
   // https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#using_window.postmessage_in_extensions_non-standard
 
-  console.debug("SANDBOX: Posting", id, "with payload:", payload);
+  console.debug("SANDBOX: Posting", type, "with payload:", payload);
   channel.postMessage(packet, "*");
 
   try {
     return await pTimeout(promise, {
       milliseconds: TIMEOUT_MS,
-      message: `Message ${id} did not receive a response within ${
+      message: `Message ${type} did not receive a response within ${
         TIMEOUT_MS / 1000
       } seconds`,
     });
@@ -89,7 +89,7 @@ export default async function postMessage({
 }
 
 export function addPostMessageListener(
-  id: string,
+  type: string,
   listener: PostMessageListener,
   { signal }: { signal?: AbortSignal } = {}
 ): void {
@@ -98,19 +98,19 @@ export function addPostMessageListener(
     source,
     origin,
   }: MessageEvent<PixiebrixPacket>): Promise<void> => {
-    if (data?.id !== id) {
+    if (data?.type !== type) {
       return;
     }
 
-    console.debug("SANDBOX: Received", id, "payload:", data.payload);
+    console.debug("SANDBOX: Received", type, "payload:", data.payload);
 
     const [response] = await Promise.allSettled([listener(data.payload)]);
 
-    console.debug("SANDBOX: Responding to", id, "with", response);
+    console.debug("SANDBOX: Responding to", type, "with", response);
 
     const packet: PixiebrixPacket = {
-      id,
-      pixiebrix: data.pixiebrix,
+      type,
+      nonce: data.nonce,
       ...("reason" in response
         ? { error: serializeError(response.reason) }
         : { payload: response.value }),
