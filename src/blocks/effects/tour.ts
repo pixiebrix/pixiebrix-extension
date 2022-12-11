@@ -18,7 +18,7 @@
 import { Effect } from "@/types";
 import { type BlockArg, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import injectStylesheet from "@/utils/injectStylesheet";
+import { attachStylesheet } from "@/blocks/util";
 import stylesheetUrl from "@/vendors/intro.js/introjs.scss?loadAsUrl";
 import { $safeFind } from "@/helpers";
 import pDefer from "p-defer";
@@ -112,7 +112,7 @@ export class TourEffect extends Effect {
     disableInteraction = false,
     steps = [] as Step[],
   }: BlockArg): Promise<void> {
-    const stylesheetLink = await injectStylesheet(stylesheetUrl);
+    const stylesheetLink = await attachStylesheet(stylesheetUrl);
 
     const removeStylesheet = () => {
       stylesheetLink.remove();
