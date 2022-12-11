@@ -122,7 +122,6 @@
     "react-shadow-root": "^6.1.0",
     "react-spinners": "^0.13.0",
     "react-table": "^7.7.0",
-    "react-test-renderer": "^18.2.0",
     "react-transition-group": "^4.4.2",
     "react-virtualized": "^9.22.3",
     "react-virtualized-auto-sizer": "^1.0.7",
