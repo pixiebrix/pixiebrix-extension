@@ -8,6 +8,8 @@ repos:
       - id: trailing-whitespace
       - id: detect-private-key
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.5.1
+    rev: v2.5.1 # Ignored
     hooks:
       - id: prettier
+        additional_dependencies:
+          - prettier@2.8.1 # Required because pre-commit is poorly maintained
