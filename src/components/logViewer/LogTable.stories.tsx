@@ -17,8 +17,6 @@
 
 import { ContextError } from "@/errors/genericErrors";
 
-Object.assign(global, { chrome: { runtime: { id: 42 } } });
-
 import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import { validateRegistryId, uuidv4 } from "@/types/helpers";
@@ -28,6 +26,8 @@ import { Card } from "react-bootstrap";
 import { InputValidationError } from "@/blocks/errors";
 import { type Schema } from "@/core";
 import type { LogEntry } from "@/telemetry/logging";
+
+Object.assign(global, { chrome: { runtime: { id: 42 } } });
 
 export default {
   title: "Editor/LogTable",

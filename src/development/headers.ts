@@ -20,14 +20,14 @@ import fs from "fs";
 import "./cryptoNodePolyfill.js";
 import blockRegistry from "@/blocks/registry";
 
-// Maintaining this number is a simple way to ensure bricks don't accidentally get dropped
-const EXPECTED_HEADER_COUNT = 105;
-
 // Import for side-effects (these modules register the blocks)
 // NOTE: we don't need to also include extensionPoints because we got rid of all the legacy hard-coded extension points
 // (e.g., the Pipedrive calendar extension point, and TechCrunch entity extension point)
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
+
+// Maintaining this number is a simple way to ensure bricks don't accidentally get dropped
+const EXPECTED_HEADER_COUNT = 105;
 
 registerBuiltinBlocks();
 registerContribBlocks();

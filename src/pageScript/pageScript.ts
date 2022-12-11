@@ -23,27 +23,6 @@ import { uuidv4 } from "@/types/helpers";
 // eslint-disable-next-line import/no-unassigned-import -- monkey patching import
 import "@/utils/jqueryHack";
 
-const JQUERY_WINDOW_PROP = "$$jquery";
-const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");
-
-declare global {
-  interface Window {
-    [PAGESCRIPT_SYMBOL]?: string;
-    [JQUERY_WINDOW_PROP]?: unknown;
-  }
-}
-
-// eslint-disable-next-line security/detect-object-injection -- using constant symbol defined above
-if (window[PAGESCRIPT_SYMBOL]) {
-  throw new Error(
-    // eslint-disable-next-line security/detect-object-injection -- using constant symbol defined above
-    `PixieBrix pageScript already installed: ${window[PAGESCRIPT_SYMBOL]}`
-  );
-}
-
-// eslint-disable-next-line security/detect-object-injection -- using constant symbol defined above
-window[PAGESCRIPT_SYMBOL] = uuidv4();
-
 import { isEmpty, identity, castArray, cloneDeep } from "lodash";
 import {
   CONNECT_EXTENSION,
@@ -80,6 +59,27 @@ import {
   type ReadProxy,
 } from "@/runtime/pathHelpers";
 import { type UnknownObject } from "@/types";
+
+const JQUERY_WINDOW_PROP = "$$jquery";
+const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");
+
+declare global {
+  interface Window {
+    [PAGESCRIPT_SYMBOL]?: string;
+    [JQUERY_WINDOW_PROP]?: unknown;
+  }
+}
+
+// eslint-disable-next-line security/detect-object-injection -- using constant symbol defined above
+if (window[PAGESCRIPT_SYMBOL]) {
+  throw new Error(
+    // eslint-disable-next-line security/detect-object-injection -- using constant symbol defined above
+    `PixieBrix pageScript already installed: ${window[PAGESCRIPT_SYMBOL]}`
+  );
+}
+
+// eslint-disable-next-line security/detect-object-injection -- using constant symbol defined above
+window[PAGESCRIPT_SYMBOL] = uuidv4();
 
 const MAX_READ_DEPTH = 5;
 
