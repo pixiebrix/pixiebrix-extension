@@ -32,8 +32,3 @@ global.PromiseRejectionEvent = class PromiseRejectionEvent extends Event {
     this.reason = init.reason;
   }
 };
-
-module.exports = async () => {
-  // Consistent timezone for snapshot testing
-  process.env.TZ = "America/New_York";
-};

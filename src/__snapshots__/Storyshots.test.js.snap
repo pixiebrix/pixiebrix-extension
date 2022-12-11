@@ -2991,7 +2991,7 @@ exports[`Storyshots Editor/LogTable Populated 1`] = `
               className="caret"
             />
             <td>
-              12/3/22, 7:12 PM
+              12/4/22, 12:12 AM
             </td>
             <td
               className="level"
@@ -3034,7 +3034,7 @@ exports[`Storyshots Editor/LogTable Populated 1`] = `
               </span>
             </td>
             <td>
-              12/3/22, 7:12 PM
+              12/4/22, 12:12 AM
             </td>
             <td
               className="level"
@@ -3077,7 +3077,7 @@ exports[`Storyshots Editor/LogTable Populated 1`] = `
               </span>
             </td>
             <td>
-              12/3/22, 7:12 PM
+              12/4/22, 12:12 AM
             </td>
             <td
               className="level"
@@ -3120,7 +3120,7 @@ exports[`Storyshots Editor/LogTable Populated 1`] = `
               </span>
             </td>
             <td>
-              12/3/22, 7:12 PM
+              12/4/22, 12:12 AM
             </td>
             <td
               className="level"

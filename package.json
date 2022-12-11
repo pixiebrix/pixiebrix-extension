@@ -3,8 +3,8 @@
   "version": "1.7.16-alpha.1",
   "description": "PixieBrix Browser Extension",
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watchAll",
+    "test": "TZ=UTC jest",
+    "test:watch": "TZ=UTC jest --watchAll",
     "test:selenium": "jest --config selenium/jest.config.js",
     "test:selenium:local": "BROWSERSTACK_USERNAME= jest --config selenium/jest.config.js",
     "lint": "eslint src --ext js,jsx,ts,tsx --quiet --report-unused-disable-directives --rule '{\"import/no-cycle\": \"off\"}'",
