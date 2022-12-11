@@ -17,5 +17,5 @@
 
 export function escapeSingleQuotes(str: string): string {
   // https://gist.github.com/getify/3667624
-  return str.replace(/\\([\S\s])|(')/g, "\\$1$2");
+  return str.replaceAll(/\\([\S\s])|(')/g, "\\$1$2");
 }

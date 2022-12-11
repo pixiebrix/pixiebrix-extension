@@ -68,7 +68,7 @@ export async function engineRenderer(
       return (template, ctxt) => {
         // Convert top level data from kebab case to snake case in order to be valid identifiers
         const snakeCased = mapKeys(ctxt as UnknownObject, (value, key) =>
-          key.replace(hyphenRegex, "_")
+          key.replaceAll(hyphenRegex, "_")
         );
 
         try {
