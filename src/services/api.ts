@@ -46,6 +46,7 @@ import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
 import { serializeError } from "serialize-error";
 import { type UnknownObject } from "@/types";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
 
 type QueryArgs = {
   /**
@@ -91,9 +92,19 @@ const appBaseQuery: BaseQueryFn<QueryArgs> = async ({
 
     return { data: result.data, meta };
   } catch (error) {
-    // Axios offers its own serialization method, but it reshapes the Error object (doesn't include the response, puts the status on the root level). `useToJSON: false` skips that.
+    if (isAxiosError(error)) {
+      // Was running into issues with AxiosError generation in axios-mock-adapter where the prototype was AxiosError
+      // but the Error name was Error and there was no isAxiosError present after serializeError
+      // See line here: https://github.com/axios/axios/blob/v0.27.2/lib/core/AxiosError.js#L79
+      error.name = "AxiosError";
+      return {
+        // Axios offers its own serialization method, but it reshapes the Error object (doesn't include the response, puts the status on the root level). `useToJSON: false` skips that.
+        error: serializeError(error, { useToJSON: false }),
+      };
+    }
+
     return {
-      error: serializeError(error, { useToJSON: false }),
+      error: serializeError(error),
     };
   }
 };
