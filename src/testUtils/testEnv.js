@@ -16,8 +16,7 @@
  */
 
 // Jest fails without these
-// eslint-disable-next-line node/prefer-global/text-decoder, node/prefer-global/text-encoder
-import { TextEncoder, TextDecoder } from "util";
+import { TextEncoder, TextDecoder } from "node:util";
 
 // eslint-disable-next-line import/no-unassigned-import -- It's a polyfill
 import "urlpattern-polyfill";

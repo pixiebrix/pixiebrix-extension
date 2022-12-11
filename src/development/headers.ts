@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import fs from "fs";
+import fs from "node:fs";
 // eslint-disable-next-line import/no-unassigned-import -- Until Node adds the global
 import "./cryptoNodePolyfill.js";
 import blockRegistry from "@/blocks/registry";
