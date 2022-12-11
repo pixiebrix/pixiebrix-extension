@@ -35,7 +35,7 @@ export default function initSandbox() {}
 
 export async function ping() {
   return postMessage({
-    channel: await loadSandbox(),
+    recipient: await loadSandbox(),
     type: "SANDBOX_PING",
   });
 }
@@ -48,7 +48,7 @@ export type NunjucksRenderPayload = {
 
 export async function renderNunjucksTemplate(payload: NunjucksRenderPayload) {
   return postMessage({
-    channel: await loadSandbox(),
+    recipient: await loadSandbox(),
     payload,
     type: "RENDER_NUNJUCKS",
   });
@@ -61,7 +61,7 @@ export type ApplyJqPayload = {
 
 export async function applyJq(payload: ApplyJqPayload) {
   return postMessage({
-    channel: await loadSandbox(),
+    recipient: await loadSandbox(),
     payload,
     type: "APPLY_JQ",
   });

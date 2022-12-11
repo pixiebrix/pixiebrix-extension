@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-add-event-listener -- `onmessage` is preferred due to `MessagePort#start` */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -13,6 +14,21 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
+ * @file and security
+ * 1. The content script generates an iframe with a local document.
+ * 2. postMessage only works with `"*"` in this direction
+ *    https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#using_window.postmessage_in_extensions_non-standard
+ * 3. The iframe is safe because it's local and wrapped in a Shadow DOM,
+ *    thus inaccessible/not-alterable by the host website.
+ * 4. Each content script message includes a private channel port that the
+ *    iframe can use to respond exclusively to the content script.
+ * 5. The channel is closed immediately after the response.
+ *
+ * Prior art: https://groups.google.com/a/chromium.org/g/chromium-extensions/c/IPJSfjNSgh8/m/Dh35-tZPAgAJ
+ * Relevant discussion: https://github.com/w3c/webextensions/issues/78
  */
 
 import { type SerializedError, type UUID } from "@/core";
@@ -39,7 +55,7 @@ type PixiebrixPacket = RequireExactlyOne<
 interface PostMessageInfo {
   type: string;
   payload?: Payload;
-  channel: Window;
+  recipient: Window;
 }
 
 type PostMessageListener = (payload: Payload) => Promise<Payload>;
@@ -48,35 +64,28 @@ type PostMessageListener = (payload: Payload) => Promise<Payload>;
 export default async function postMessage({
   type,
   payload,
-  channel,
+  recipient,
 }: PostMessageInfo): Promise<Payload> {
+  const { promise, resolve, reject } = pDefer<Payload>();
+  const privateChannel = new MessageChannel();
+  privateChannel.port1.onmessage = ({
+    data,
+  }: MessageEvent<PixiebrixPacket>): void => {
+    if (data.error) {
+      reject(deserializeError(data.error));
+    } else {
+      resolve(data.payload);
+    }
+  };
+
+  console.debug("SANDBOX: Posting", type, "with payload:", payload);
   const packet: PixiebrixPacket = {
     type,
     payload,
     nonce: uuidv4(),
   };
-  const { promise, resolve, reject } = pDefer<Payload>();
-  const controller = new AbortController();
-
-  const listener = ({ origin, data }: MessageEvent<PixiebrixPacket>): void => {
-    if (origin === "null" && data?.nonce === packet.nonce) {
-      if (data.error) {
-        reject(deserializeError(data.error));
-      } else {
-        resolve(data.payload);
-      }
-    }
-  };
-
-  window.addEventListener("message", listener, { signal: controller.signal });
-
-  // The origin must be "*" because it's reported as "null" to the outside world.
-  // This is fine because the host page does not receive these messages, they're only
-  // sent to the iframe, which is wrapped in a closed shadow DOM.
-  // https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#using_window.postmessage_in_extensions_non-standard
-
-  console.debug("SANDBOX: Posting", type, "with payload:", payload);
-  channel.postMessage(packet, "*");
+  // The origin must be "*". See note in @file
+  recipient.postMessage(packet, "*", [privateChannel.port2]);
 
   try {
     return await pTimeout(promise, {
@@ -86,7 +95,7 @@ export default async function postMessage({
       } seconds`,
     });
   } finally {
-    controller.abort();
+    privateChannel.port1.onmessage = null;
   }
 }
 
@@ -97,8 +106,7 @@ export function addPostMessageListener(
 ): void {
   const rawListener = async ({
     data,
-    source,
-    origin,
+    ports: [source],
   }: MessageEvent<PixiebrixPacket>): Promise<void> => {
     if (data?.type !== type) {
       return;
@@ -118,7 +126,9 @@ export function addPostMessageListener(
         : { payload: response.value }),
     };
 
-    source.postMessage(packet, { targetOrigin: origin });
+    console.log(source);
+
+    source.postMessage(packet);
   };
 
   window.addEventListener("message", rawListener, { signal });
