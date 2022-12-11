@@ -15,13 +15,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
-
-import { addPostMessageListener } from "@/utils/postMessage";
-import { applyJq, renderNunjucksTemplate } from "./executor";
-
-export default function registerMessenger(): void {
-  addPostMessageListener("SANDBOX_PING", async (payload) => "pong");
-  addPostMessageListener("RENDER_NUNJUCKS", renderNunjucksTemplate);
-  addPostMessageListener("APPLY_JQ", applyJq);
-}
+// Skip the sandbox messenger
+export { renderNunjucksTemplate, applyJq } from "@/sandbox/messenger/executor";

@@ -15,13 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
+import { type ApplyJqPayload, type NunjucksRenderPayload } from "./api";
 
-import { addPostMessageListener } from "@/utils/postMessage";
-import { applyJq, renderNunjucksTemplate } from "./executor";
+export async function renderNunjucksTemplate(payload: NunjucksRenderPayload) {
+  const { template, context, autoescape } = payload;
+  const { default: nunjucks } = await import(
+    /* webpackChunkName: "nunjucks" */ "nunjucks"
+  );
 
-export default function registerMessenger(): void {
-  addPostMessageListener("SANDBOX_PING", async (payload) => "pong");
-  addPostMessageListener("RENDER_NUNJUCKS", renderNunjucksTemplate);
-  addPostMessageListener("APPLY_JQ", applyJq);
+  nunjucks.configure({ autoescape });
+  return nunjucks.renderString(template, context);
+}
+
+export async function applyJq(payload: ApplyJqPayload) {
+  const { input, filter } = payload;
+  const { default: jq } = await import(
+    /* webpackChunkName: "jq-web" */ "jq-web"
+  );
+
+  return jq.promised.json(input, filter);
 }
