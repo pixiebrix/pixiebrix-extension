@@ -1,3 +1,6 @@
+/**
+ * @jest-environment-options {"resources": "usable", "runScripts": "dangerously"}
+ */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -15,8 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { sleep } from "@/utils";
 import { serializeError } from "serialize-error";
-import postMessage, { addPostMessageListener } from "./postMessage";
+import postMessage, {
+  addPostMessageListener,
+  type RequestPacket,
+} from "./postMessage";
+
+afterEach(jest.restoreAllMocks);
 
 describe("postMessage", () => {
   test("post message and receive answer", async () => {
@@ -54,5 +63,84 @@ describe("postMessage", () => {
         recipient: channel as Window,
       })
     ).rejects.toMatchInlineSnapshot("[Error: No balls found]");
+  });
+});
+
+describe("addPostMessageListener", () => {
+  // TODO: Skip due to lack of jsdom support for Transfer
+  //   https://github.com/jsdom/jsdom/issues/3287
+  //   For this reason, we have to mock the whole native postMessage API
+  test.skip("handle received packet (real API)", async () => {
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    const callback = jest.fn();
+    const packet: RequestPacket = { type: "SANDBOX_PING", payload: "ball" };
+    const privateChannel = new MessageChannel();
+    addPostMessageListener("SANDBOX_PING", callback, { signal });
+    window.postMessage(packet, "*", [privateChannel.port2]);
+
+    await sleep(100);
+    expect(callback).toHaveBeenCalledWith("ball");
+
+    // Cleanup listener
+    controller.abort();
+  });
+
+  test("handle received packet (mocked API)", async () => {
+    const callback = jest.fn();
+    const packet: RequestPacket = { type: "SANDBOX_PING", payload: "ball" };
+
+    const privateChannel = new MessageChannel();
+    jest
+      .spyOn(window, "addEventListener")
+      .mockImplementation((type, listener: EventListener) => {
+        if (type === "message") {
+          listener(
+            new MessageEvent("message", {
+              data: packet,
+              ports: [privateChannel.port2],
+            })
+          );
+        }
+      });
+    addPostMessageListener("SANDBOX_PING", callback);
+
+    // Implied by `addEventListener`’s mock
+    // window.postMessage(packet, "*", [privateChannel.port2]);
+
+    await sleep(100);
+    expect(callback).toHaveBeenCalledWith("ball");
+  });
+
+  test("ignores unrelated packets", async () => {
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    const callback = jest.fn();
+    const packet: RequestPacket = { type: "SANDBOX_CASTLE", payload: 1583 };
+    addPostMessageListener("SANDBOX_PING", callback, { signal });
+    window.postMessage(packet, "*");
+
+    await sleep(100);
+    expect(callback).not.toHaveBeenCalled();
+
+    // Cleanup listener
+    controller.abort();
+  });
+
+  test("ignores unrelated messages", async () => {
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    const callback = jest.fn();
+    addPostMessageListener("SANDBOX_PING", callback, { signal });
+    window.postMessage("Give me all you got", "*");
+
+    await sleep(100);
+    expect(callback).not.toHaveBeenCalled();
+
+    // Cleanup listener
+    controller.abort();
   });
 });

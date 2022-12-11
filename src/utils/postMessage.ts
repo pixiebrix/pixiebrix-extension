@@ -39,12 +39,12 @@ const TIMEOUT_MS = 3000;
 
 type Payload = JsonValue;
 
-type RequestPacket = {
+export type RequestPacket = {
   type: string;
   payload: Payload;
 };
 
-type ResponsePacket = { response: Payload } | { error: SerializedError };
+export type ResponsePacket = { response: Payload } | { error: SerializedError };
 
 interface PostMessageInfo {
   type: string;
