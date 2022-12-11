@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/prefer-add-event-listener -- `onmessage` is preferred due to `MessagePort#start` */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -31,9 +30,8 @@
  * Relevant discussion: https://github.com/w3c/webextensions/issues/78
  */
 
-import { type SerializedError, type UUID } from "@/core";
+import { type SerializedError } from "@/core";
 import { uuidv4 } from "@/types/helpers";
-import pDefer from "p-defer";
 import pTimeout from "p-timeout";
 import { deserializeError, serializeError } from "serialize-error";
 import { type JsonValue, type RequireExactlyOne } from "type-fest";
@@ -47,7 +45,6 @@ type PixiebrixPacket = RequireExactlyOne<
     type: string;
     payload: Payload;
     error: SerializedError;
-    nonce: UUID;
   },
   "payload" | "error"
 >;
@@ -66,37 +63,36 @@ export default async function postMessage({
   payload,
   recipient,
 }: PostMessageInfo): Promise<Payload> {
-  const { promise, resolve, reject } = pDefer<Payload>();
-  const privateChannel = new MessageChannel();
-  privateChannel.port1.onmessage = ({
-    data,
-  }: MessageEvent<PixiebrixPacket>): void => {
-    if (data.error) {
-      reject(deserializeError(data.error));
-    } else {
-      resolve(data.payload);
-    }
-  };
+  const promise = new Promise<Payload>((resolve, reject) => {
+    const privateChannel = new MessageChannel();
+    privateChannel.port1.start(); // Mandatory to start receiving messages
+    privateChannel.port1.addEventListener(
+      "message",
+      ({ data }: MessageEvent<PixiebrixPacket>): void => {
+        if (data.error) {
+          reject(deserializeError(data.error));
+        } else {
+          resolve(data.payload);
+        }
+      },
+      { once: true }
+    );
 
-  console.debug("SANDBOX: Posting", type, "with payload:", payload);
-  const packet: PixiebrixPacket = {
-    type,
-    payload,
-    nonce: uuidv4(),
-  };
-  // The origin must be "*". See note in @file
-  recipient.postMessage(packet, "*", [privateChannel.port2]);
+    console.debug("SANDBOX: Posting", type, "with payload:", payload);
+    const packet: PixiebrixPacket = {
+      type,
+      payload,
+    };
+    // The origin must be "*". See note in @file
+    recipient.postMessage(packet, "*", [privateChannel.port2]);
+  });
 
-  try {
-    return await pTimeout(promise, {
-      milliseconds: TIMEOUT_MS,
-      message: `Message ${type} did not receive a response within ${
-        TIMEOUT_MS / 1000
-      } seconds`,
-    });
-  } finally {
-    privateChannel.port1.onmessage = null;
-  }
+  return pTimeout(promise, {
+    milliseconds: TIMEOUT_MS,
+    message: `Message ${type} did not receive a response within ${
+      TIMEOUT_MS / 1000
+    } seconds`,
+  });
 }
 
 export function addPostMessageListener(
@@ -114,21 +110,22 @@ export function addPostMessageListener(
 
     console.debug("SANDBOX: Received", type, "payload:", data.payload);
 
-    const [response] = await Promise.allSettled([listener(data.payload)]);
+    try {
+      const payload = await listener(data.payload);
 
-    console.debug("SANDBOX: Responding to", type, "with", response);
-
-    const packet: PixiebrixPacket = {
-      type,
-      nonce: data.nonce,
-      ...("reason" in response
-        ? { error: serializeError(response.reason) }
-        : { payload: response.value }),
-    };
-
-    console.log(source);
-
-    source.postMessage(packet);
+      console.debug("SANDBOX: Responding to", type, "with", payload);
+      const packet: PixiebrixPacket = {
+        type,
+        payload,
+      };
+      source.postMessage(packet);
+    } catch (error) {
+      const packet: PixiebrixPacket = {
+        type,
+        error: serializeError(error),
+      };
+      source.postMessage(packet);
+    }
   };
 
   window.addEventListener("message", rawListener, { signal });
