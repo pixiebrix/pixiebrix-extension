@@ -25,14 +25,11 @@ import settingsSlice from "@/store/settingsSlice";
 import servicesSlice from "@/store/servicesSlice";
 import { authSlice } from "@/auth/authSlice";
 import { appApi } from "@/services/api";
-import { createApi } from "@reduxjs/toolkit/query/react";
 
 export default {
   title: "Sidebar/LoginPanel",
   component: LoginPanel,
 } as ComponentMeta<typeof LoginPanel>;
-
-const baseQuery = () => ({ data: [] as any });
 
 function optionsStore(initialState?: any) {
   return configureStore({
@@ -40,11 +37,7 @@ function optionsStore(initialState?: any) {
       settings: settingsSlice.reducer,
       services: servicesSlice.reducer,
       auth: authSlice.reducer,
-      [appApi.reducerPath]: createApi({
-        reducerPath: "appApi",
-        baseQuery,
-        endpoints: (builder) => ({}),
-      }).reducer,
+      [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
       /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */

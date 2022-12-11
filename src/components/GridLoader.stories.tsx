@@ -23,6 +23,10 @@ export default {
   title: "Common/Loader",
   component: Loader,
   argTypes: {},
+  parameters: {
+    // Loader is an animation, so has non-deterministic output for Storyshots
+    storyshots: false,
+  },
 } as ComponentMeta<typeof Loader>;
 
 const Template: ComponentStory<typeof Loader> = (args) => <Loader />;

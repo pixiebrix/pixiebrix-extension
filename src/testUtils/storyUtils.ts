@@ -17,11 +17,18 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import settingsSlice from "@/store/settingsSlice";
+import { appApi } from "@/services/api";
 
 export function settingsStore() {
   return configureStore({
     reducer: {
       settings: settingsSlice.reducer,
+      [appApi.reducerPath]: appApi.reducer,
+    },
+    middleware(getDefaultMiddleware) {
+      /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
+      return getDefaultMiddleware().concat(appApi.middleware);
+      /* eslint-enable unicorn/prefer-spread */
     },
     preloadedState: {},
   });

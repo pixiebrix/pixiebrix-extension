@@ -42,6 +42,10 @@ Loading.args = {
   isPending: true,
   description: "Welcome to an example page! Have a look around.",
 };
+Loading.parameters = {
+  // Loading indicator is an animation
+  storyshots: false,
+};
 
 export const LoadError = Template.bind({});
 LoadError.args = {

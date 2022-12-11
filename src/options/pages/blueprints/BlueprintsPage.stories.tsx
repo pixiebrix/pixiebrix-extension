@@ -58,3 +58,7 @@ const Template: ComponentStory<typeof BlueprintsPage> = (args) => (
 );
 
 export const Default = Template.bind({});
+Default.parameters = {
+  // Initial state is a loading state. Our loader is not compatible with Storyshots
+  storyshots: false,
+};

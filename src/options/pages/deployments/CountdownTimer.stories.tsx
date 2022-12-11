@@ -23,6 +23,10 @@ import { action } from "@storybook/addon-actions";
 export default {
   title: "Options/CountdownTimer",
   component: CountdownTimer,
+  // Need to mock time in storybook for this to work
+  parameters: {
+    storyshots: false,
+  },
 } as ComponentMeta<typeof CountdownTimer>;
 
 const Template: ComponentStory<typeof CountdownTimer> = (args) => (
