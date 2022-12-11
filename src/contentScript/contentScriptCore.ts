@@ -58,7 +58,7 @@ export async function init(uuid: UUID): Promise<void> {
   addListenerForUpdateSelectedElement();
   initTelemetry();
   initToaster();
-  initSandbox();
+  void initSandbox();
 
   await handleNavigate();
 
