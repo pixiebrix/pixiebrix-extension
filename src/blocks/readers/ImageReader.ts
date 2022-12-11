@@ -16,7 +16,7 @@
  */
 
 import { Reader } from "@/types";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 
 /**
  * Copied from https://stackoverflow.com/questions/934012/get-image-data-url-in-javascript
@@ -31,7 +31,10 @@ function getBase64Image(img: HTMLImageElement) {
   const context = canvas.getContext("2d");
   context.drawImage(img, 0, 0);
 
-  // Get the data-URL formatted image in a lossless format
+  // Get the data-URL formatted image
+  // Firefox supports PNG and JPEG. You could check img.src to
+  // guess the original format, but be aware the using "image/jpg"
+  // will re-encode the image.
   const dataURL = canvas.toDataURL("image/png");
 
   return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
