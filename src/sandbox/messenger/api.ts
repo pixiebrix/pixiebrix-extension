@@ -17,32 +17,25 @@
 
 /** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
 
+import injectIframe, { hiddenIframeStyle } from "@/utils/injectIframe";
 import postMessage from "@/utils/postMessage";
-import { once } from "lodash";
+import pMemoize from "p-memoize";
 import { type JsonValue, type JsonObject } from "type-fest";
 
-const hiddenIframeStyle = {
-  position: "absolute",
-  bottom: "105%",
-  right: "105%",
-  visibility: "hidden",
-};
-
-const getSandbox = once(() => {
-  const iframe = document.createElement("iframe");
-  iframe.src = chrome.runtime.getURL("sandbox.html");
-  Object.assign(iframe.style, hiddenIframeStyle);
-  return iframe;
+// Uses pMemoize to allow retries after a failure
+const loadSandbox = pMemoize(async () => {
+  const iframe = await injectIframe(
+    chrome.runtime.getURL("sandbox.html"),
+    hiddenIframeStyle
+  );
+  return iframe.contentWindow;
 });
 
-export default function createSandbox() {
-  const sandbox = getSandbox();
-  document.body.append(sandbox);
-}
+export default function initSandbox() {}
 
 export async function ping() {
   return postMessage({
-    channel: getSandbox().contentWindow,
+    channel: await loadSandbox(),
     type: "SANDBOX_PING",
   });
 }
@@ -55,7 +48,7 @@ export type NunjucksRenderPayload = {
 
 export async function renderNunjucksTemplate(payload: NunjucksRenderPayload) {
   return postMessage({
-    channel: getSandbox().contentWindow,
+    channel: await loadSandbox(),
     payload,
     type: "RENDER_NUNJUCKS",
   });
@@ -68,7 +61,7 @@ export type ApplyJqPayload = {
 
 export async function applyJq(payload: ApplyJqPayload) {
   return postMessage({
-    channel: getSandbox().contentWindow,
+    channel: await loadSandbox(),
     payload,
     type: "APPLY_JQ",
   });

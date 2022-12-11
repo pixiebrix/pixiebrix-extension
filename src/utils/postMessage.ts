@@ -70,7 +70,9 @@ export default async function postMessage({
 
   window.addEventListener("message", listener, { signal: controller.signal });
 
-  // The origin must be "*" because it's reported as "null" to the outside world
+  // The origin must be "*" because it's reported as "null" to the outside world.
+  // This is fine because the host page does not receive these messages, they're only
+  // sent to the iframe, which is wrapped in a closed shadow DOM.
   // https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#using_window.postmessage_in_extensions_non-standard
 
   console.debug("SANDBOX: Posting", type, "with payload:", payload);

@@ -62,7 +62,7 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
-import { sleep } from "@/utils";
+import { sleep, waitAnimationFrame } from "@/utils";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
@@ -178,9 +178,7 @@ async function interval({
     try {
       if (requestAnimationFrame) {
         // eslint-disable-next-line no-await-in-loop -- intentionally running in sequence
-        await new Promise((resolve) => {
-          window.requestAnimationFrame(resolve);
-        });
+        await waitAnimationFrame();
       }
 
       // eslint-disable-next-line no-await-in-loop -- intentionally running in sequence

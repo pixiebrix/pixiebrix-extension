@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** Wrap the element in a shadow and return the shadow container, which can then attach to your document */
-export default function shadowWrap(element: HTMLElement): HTMLElement {
+// Don't shadow-wrap in tests because JSDOM can't handle it (e.g. iframes won't load even with `resources:usable`)
+export default function shadowWrap(element) {
   const wrapper = document.createElement("div");
-  const root = wrapper.attachShadow({ mode: "closed" });
-  root.append(element);
+  wrapper.append(element);
   return wrapper;
 }
