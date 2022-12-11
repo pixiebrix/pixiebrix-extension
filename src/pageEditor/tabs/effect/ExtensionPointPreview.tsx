@@ -27,8 +27,10 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AsyncButton from "@/components/AsyncButton";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { type TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import {
+  type FormState,
+  type TriggerFormState,
+} from "@/pageEditor/extensionPoints/formStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 

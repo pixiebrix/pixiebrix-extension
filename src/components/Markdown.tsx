@@ -19,7 +19,7 @@ import React, { useMemo } from "react";
 import sanitize from "@/utils/sanitize";
 import { marked } from "marked";
 
-type MarkdownProps = {
+export type MarkdownProps = {
   markdown: string | null;
   as?: React.ElementType;
   className?: string;
