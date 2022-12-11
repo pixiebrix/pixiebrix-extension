@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Jest fails without these
+// TODO: Drop after https://github.com/jsdom/jsdom/issues/2524
 import { TextEncoder, TextDecoder } from "node:util";
 
 // eslint-disable-next-line import/no-unassigned-import -- It's a polyfill

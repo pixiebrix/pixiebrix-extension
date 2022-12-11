@@ -17,12 +17,14 @@
 
 /**
  * The script that gets injected into the host page. Shares a JS context with the host page
+ *
+ * IMPORTANT: do not import anything that has a transitive dependency of the messenger.
+ * See for more information: https://github.com/pixiebrix/pixiebrix-extension/issues/4058
  */
 
-import { uuidv4 } from "@/types/helpers";
 // eslint-disable-next-line import/no-unassigned-import -- monkey patching import
 import "@/utils/jqueryHack";
-
+import { uuidv4 } from "@/types/helpers";
 import { isEmpty, identity, castArray, cloneDeep } from "lodash";
 import {
   CONNECT_EXTENSION,

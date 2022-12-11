@@ -28,7 +28,6 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { updateDeployments } from "@/background/deployment";
 import { reportEvent } from "@/telemetry/events";
-
 import { isLinked, readAuthData } from "@/auth/token";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { isUpdateAvailable } from "@/background/installer";
