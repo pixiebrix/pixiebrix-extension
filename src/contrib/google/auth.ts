@@ -41,6 +41,7 @@ export async function ensureAuth(
     });
     if (token) {
       // https://bumbu.me/gapi-in-chrome-extension
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- GAPI types are unnecessarily strict
       gapi.auth.setToken({ access_token: token } as any);
       return token;
     }

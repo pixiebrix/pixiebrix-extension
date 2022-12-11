@@ -33,6 +33,7 @@ export type BlueprintsState = {
   groupBy: string[];
   sortBy: Array<SortingRule<InstallableViewItem>>;
   activeTab: ActiveTab;
+  searchQuery: string;
 };
 
 const initialState: BlueprintsState = {
@@ -44,6 +45,7 @@ const initialState: BlueprintsState = {
     tabTitle: null,
     filters: [],
   },
+  searchQuery: "",
 };
 
 const blueprintsSlice = createSlice({
@@ -66,6 +68,9 @@ const blueprintsSlice = createSlice({
     },
     setActiveTab(state, { payload: tab }: PayloadAction<ActiveTab>) {
       state.activeTab = tab;
+    },
+    setSearchQuery(state, { payload: searchQuery }: PayloadAction<string>) {
+      state.searchQuery = searchQuery;
     },
   },
 });

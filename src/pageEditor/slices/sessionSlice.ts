@@ -16,15 +16,12 @@
  */
 
 import { createSlice } from "@reduxjs/toolkit";
-import { type UUID } from "@/core";
 import { uuidv4 } from "@/types/helpers";
+import { type SessionState } from "@/pageEditor/slices/sessionSliceTypes";
 
-export type SessionState = {
-  sessionId: UUID;
-};
-
-const initialState: SessionState = {
+export const initialState: SessionState = {
   sessionId: uuidv4(),
+  sessionStart: Date.now(),
 };
 
 const runtimeSlice = createSlice({

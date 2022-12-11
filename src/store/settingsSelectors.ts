@@ -15,18 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SettingsState } from "./settingsTypes";
 import { createSelector } from "reselect";
-
-export type StateWithSettings = {
-  settings: SettingsState;
-};
+import { type SettingsRootState } from "@/store/settingsTypes";
 
 export const selectUpdatePromptState = createSelector(
   [
-    (state: StateWithSettings) => state.settings,
+    ({ settings }: SettingsRootState) => settings,
     (
-      state: StateWithSettings,
+      state: SettingsRootState,
       args: { now: number; enforceUpdateMillis: number | null }
     ) => args,
   ],
@@ -49,8 +45,8 @@ export const selectUpdatePromptState = createSelector(
   }
 );
 
-export const selectSettings = ({ settings }: StateWithSettings) => settings;
+export const selectSettings = ({ settings }: SettingsRootState) => settings;
 
 export const selectBrowserWarningDismissed = ({
   settings,
-}: StateWithSettings) => settings.browserWarningDismissed;
+}: SettingsRootState) => settings.browserWarningDismissed;
