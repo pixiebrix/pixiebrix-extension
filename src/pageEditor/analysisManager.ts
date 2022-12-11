@@ -45,7 +45,7 @@ const nodeListMutationActions = [
   editorActions.addNode,
   editorActions.moveNode,
   editorActions.removeNode,
-];
+] as const;
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   (
@@ -69,7 +69,6 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new BlockTypeAnalysis(),
   {
-    // @ts-expect-error: spreading the array as args
     matcher: isAnyOf(...nodeListMutationActions),
   }
 );
@@ -77,7 +76,6 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new FormBrickAnalysis(),
   {
-    // @ts-expect-error: spreading the array as args
     matcher: isAnyOf(...nodeListMutationActions),
   }
 );
@@ -85,7 +83,6 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new RenderersAnalysis(),
   {
-    // @ts-expect-error: spreading the array as args
     matcher: isAnyOf(...nodeListMutationActions),
   }
 );
