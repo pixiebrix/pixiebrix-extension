@@ -31,23 +31,20 @@
  */
 
 import { type SerializedError } from "@/core";
-import { uuidv4 } from "@/types/helpers";
 import pTimeout from "p-timeout";
 import { deserializeError, serializeError } from "serialize-error";
-import { type JsonValue, type RequireExactlyOne } from "type-fest";
+import { type JsonValue } from "type-fest";
 
 const TIMEOUT_MS = 3000;
 
 type Payload = JsonValue;
 
-type PixiebrixPacket = RequireExactlyOne<
-  {
-    type: string;
-    payload: Payload;
-    error: SerializedError;
-  },
-  "payload" | "error"
->;
+type RequestPacket = {
+  type: string;
+  payload: Payload;
+};
+
+type ResponsePacket = { response: Payload } | { error: SerializedError };
 
 interface PostMessageInfo {
   type: string;
@@ -68,18 +65,18 @@ export default async function postMessage({
     privateChannel.port1.start(); // Mandatory to start receiving messages
     privateChannel.port1.addEventListener(
       "message",
-      ({ data }: MessageEvent<PixiebrixPacket>): void => {
-        if (data.error) {
+      ({ data }: MessageEvent<ResponsePacket>): void => {
+        if ("error" in data) {
           reject(deserializeError(data.error));
         } else {
-          resolve(data.payload);
+          resolve(data.response);
         }
       },
       { once: true }
     );
 
-    console.debug("SANDBOX: Posting", type, "with payload:", payload);
-    const packet: PixiebrixPacket = {
+    console.debug("SANDBOX:", type, "Posting payload:", payload);
+    const packet: RequestPacket = {
       type,
       payload,
     };
@@ -103,28 +100,22 @@ export function addPostMessageListener(
   const rawListener = async ({
     data,
     ports: [source],
-  }: MessageEvent<PixiebrixPacket>): Promise<void> => {
+  }: MessageEvent<RequestPacket>): Promise<void> => {
     if (data?.type !== type) {
       return;
     }
 
-    console.debug("SANDBOX: Received", type, "payload:", data.payload);
-
     try {
-      const payload = await listener(data.payload);
+      console.debug("SANDBOX:", type, "Received payload:", data.payload);
+      const response = await listener(data.payload);
 
-      console.debug("SANDBOX: Responding to", type, "with", payload);
-      const packet: PixiebrixPacket = {
-        type,
-        payload,
-      };
-      source.postMessage(packet);
+      console.debug("SANDBOX:", type, "Responding with", response);
+      source.postMessage({ response } satisfies ResponsePacket);
     } catch (error) {
-      const packet: PixiebrixPacket = {
-        type,
+      console.debug("SANDBOX:", type, "Throwing", error);
+      source.postMessage({
         error: serializeError(error),
-      };
-      source.postMessage(packet);
+      } satisfies ResponsePacket);
     }
   };
 
