@@ -31,7 +31,7 @@ const loadSandbox = pMemoize(async () => {
   return iframe.contentWindow;
 });
 
-export default function initSandbox() {}
+export default loadSandbox;
 
 export async function ping() {
   return postMessage({
