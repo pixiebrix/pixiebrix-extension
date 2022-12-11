@@ -315,10 +315,14 @@ export const appApi = createApi({
           },
         };
       },
-      invalidatesTags: (result, error, { packageId }) => [
-        { type: "Package", id: packageId },
-        "EditablePackages",
-      ],
+      invalidatesTags(result, error, { packageId }) {
+        if (isAxiosError(error) && error.response?.status === 400) {
+          // Package is invalid, don't invalidate cache because no changes were made on the server.
+          return [];
+        }
+
+        return [{ type: "Package", id: packageId }, "EditablePackages"];
+      },
     }),
     getInvitations: builder.query<PendingInvitation[], void>({
       query: () => ({ url: "/api/invitations/me", method: "get" }),
@@ -349,11 +353,14 @@ export const appApi = createApi({
           data,
         };
       },
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Package", id },
-        "EditablePackages",
-        "PackageVersion",
-      ],
+      invalidatesTags(result, error, { id }) {
+        if (isAxiosError(error) && error.response?.status === 400) {
+          // Package is invalid, don't invalidate cache because no changes were made on the server.
+          return [];
+        }
+
+        return [{ type: "Package", id }, "EditablePackages", "PackageVersion"];
+      },
     }),
     deletePackage: builder.mutation<void, { id: UUID }>({
       query({ id }) {

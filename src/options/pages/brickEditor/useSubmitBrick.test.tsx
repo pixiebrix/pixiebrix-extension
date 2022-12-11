@@ -33,6 +33,10 @@ import { appApi } from "@/services/api";
 import { brickToYaml } from "@/utils/objToYaml";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { act } from "react-dom/test-utils";
+import testMiddleware, {
+  resetTestMiddleware,
+  actionTypes,
+} from "@/testUtils/testMiddleware";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -64,7 +68,9 @@ function testStore(initialState?: {
     },
     middleware(getDefaultMiddleware) {
       // eslint-disable-next-line unicorn/prefer-spread -- use concat for proper type inference
-      return getDefaultMiddleware().concat(appApi.middleware);
+      return getDefaultMiddleware()
+        .concat(appApi.middleware)
+        .concat(testMiddleware);
     },
     preloadedState: initialState,
   });
@@ -73,6 +79,9 @@ function testStore(initialState?: {
 describe("useSubmitBrick", () => {
   it("handles 400 error editing public listing", async () => {
     const store = testStore();
+
+    resetTestMiddleware();
+
     const { result } = renderHook(() => useSubmitBrick({ create: false }), {
       wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
     });
@@ -106,5 +115,13 @@ describe("useSubmitBrick", () => {
 
     expect(setErrors).toHaveBeenCalledWith(errorData);
     expect(resetForm).not.toHaveBeenCalled();
+
+    // XXX: check that cache is not invalidated. This isn't quite right -- it appears no action is dispatched if
+    // no components are subscribed to the tag.
+    expect(actionTypes()).toEqual([
+      "appApi/config/middlewareRegistered",
+      "appApi/executeMutation/pending",
+      "appApi/executeMutation/rejected",
+    ]);
   });
 });
