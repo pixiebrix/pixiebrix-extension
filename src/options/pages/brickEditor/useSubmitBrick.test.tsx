@@ -67,10 +67,13 @@ function testStore(initialState?: {
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      // eslint-disable-next-line unicorn/prefer-spread -- use concat for proper type inference
-      return getDefaultMiddleware()
-        .concat(appApi.middleware)
-        .concat(testMiddleware);
+      return (
+        getDefaultMiddleware()
+          // eslint-disable-next-line unicorn/prefer-spread -- use concat for proper type inference
+          .concat(appApi.middleware)
+          // eslint-disable-next-line unicorn/prefer-spread -- use concat for proper type inference
+          .concat(testMiddleware)
+      );
     },
     preloadedState: initialState,
   });
