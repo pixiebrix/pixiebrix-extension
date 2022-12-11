@@ -22,6 +22,8 @@ import CssClassWidget, { parseValue } from "./CssClassWidget";
 import { Formik, useField } from "formik";
 import { type Expression } from "@/core";
 import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";
+import { settingsStore } from "@/testUtils/storyUtils";
+import { Provider } from "react-redux";
 
 export default {
   title: "Widgets/CssClassWidget",
@@ -47,23 +49,25 @@ const Preview: React.VFC = () => {
 const Template: Story<
   typeof CssClassWidget & { initialValues: { cssClass: string | Expression } }
 > = ({ initialValues }) => (
-  <Formik initialValues={initialValues} onSubmit={action("submit")}>
-    <>
-      <div className="mb-4">
-        <Preview />
-      </div>
+  <Provider store={settingsStore()}>
+    <Formik initialValues={initialValues} onSubmit={action("submit")}>
+      <>
+        <div className="mb-4">
+          <Preview />
+        </div>
 
-      <div>
-        <CssClassWidget
-          inputModeOptions={getCssClassInputFieldOptions()}
-          schema={{
-            type: "string",
-          }}
-          name="cssClass"
-        />
-      </div>
-    </>
-  </Formik>
+        <div>
+          <CssClassWidget
+            inputModeOptions={getCssClassInputFieldOptions()}
+            schema={{
+              type: "string",
+            }}
+            name="cssClass"
+          />
+        </div>
+      </>
+    </Formik>
+  </Provider>
 );
 
 export const BlankLiteral = Template.bind({});

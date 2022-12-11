@@ -25,6 +25,7 @@ import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { appApi } from "@/services/api";
+import { recipesSlice } from "@/recipes/recipesSlice";
 
 export default {
   title: "Blueprints/BlueprintsPage",
@@ -38,7 +39,13 @@ function optionsStore(initialState?: any) {
       blueprints: blueprintsSlice.reducer,
       options: extensionsSlice.reducer,
       blueprintModals: blueprintModalsSlice.reducer,
+      recipes: recipesSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
+    },
+    middleware(getDefaultMiddleware) {
+      /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
+      return getDefaultMiddleware().concat(appApi.middleware);
+      /* eslint-enable unicorn/prefer-spread */
     },
     ...(initialState ?? { preloadedState: initialState }),
   });

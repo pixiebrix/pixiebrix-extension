@@ -26,6 +26,8 @@ import { type ServiceDefinition } from "@/types/definitions";
 import pipedriveYaml from "@contrib/services/pipedrive.yaml?loadAsText";
 import automationAnywhereYaml from "@contrib/services/automation-anywhere.yaml?loadAsText";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { settingsStore } from "@/testUtils/storyUtils";
+import { Provider } from "react-redux";
 
 const FIXTURES = {
   pipedrive: pipedriveYaml,
@@ -39,6 +41,10 @@ type StoryType = ComponentProps<typeof ServiceEditorModal> & {
 export default {
   title: "Options/ServiceEditorModal",
   component: ServiceEditorModal,
+  // Modals are not compatible with Storyshots
+  parameters: {
+    storyshots: false,
+  },
 } as ComponentMeta<typeof ServiceEditorModal>;
 
 const Template: Story<StoryType> = ({ fixture, ...args }) => {
@@ -50,7 +56,11 @@ const Template: Story<StoryType> = ({ fixture, ...args }) => {
   // Cheap call, just call in the render function
   registerDefaultWidgets();
 
-  return <ServiceEditorModal {...args} service={service} />;
+  return (
+    <Provider store={settingsStore()}>
+      <ServiceEditorModal {...args} service={service} />
+    </Provider>
+  );
 };
 
 export const Pipedrive = Template.bind({});

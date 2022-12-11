@@ -28,6 +28,10 @@ import { authSlice } from "@/auth/authSlice";
 export default {
   title: "Options/DeploymentModal",
   component: DeploymentModal,
+  // Modals are not compatible with Storyshots
+  parameters: {
+    storyshots: false,
+  },
 } as ComponentMeta<typeof DeploymentModal>;
 
 type StoryType = ComponentProps<typeof DeploymentModal> & {

@@ -46,6 +46,11 @@ function optionsStore(initialState?: any) {
         endpoints: (builder) => ({}),
       }).reducer,
     },
+    middleware(getDefaultMiddleware) {
+      /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
+      return getDefaultMiddleware().concat(appApi.middleware);
+      /* eslint-enable unicorn/prefer-spread */
+    },
     ...(initialState ?? { preloadedState: initialState }),
   });
 }
