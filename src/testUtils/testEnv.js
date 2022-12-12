@@ -32,3 +32,7 @@ global.PromiseRejectionEvent = class PromiseRejectionEvent extends Event {
     this.reason = init.reason;
   }
 };
+
+if (process.env.JEST_CONSOLE_DEBUG === "false") {
+  console.debug = () => {};
+}
