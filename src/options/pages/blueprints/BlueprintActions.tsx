@@ -53,7 +53,7 @@ const BlueprintActions: React.FunctionComponent<{
       {
         title: (
           <>
-            <FontAwesomeIcon icon={faShare} /> Share
+            <FontAwesomeIcon icon={faShare} /> Share with Teams
           </>
         ),
         action: actions.viewShare,

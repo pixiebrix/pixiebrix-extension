@@ -35,32 +35,28 @@ import { getScopeAndId } from "@/utils";
 import { produce } from "immer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faGlobe,
   faInfoCircle,
   faTimes,
   faUser,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import ActivationLink from "./ActivationLink";
 import { RequireScope } from "@/auth/RequireScope";
 import ReactSelect from "react-select";
 import styles from "./ShareRecipeModal.module.scss";
-import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { selectAuth } from "@/auth/authSelectors";
 import { type Organization, UserRole } from "@/types/contract";
 import Loading from "./Loading";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useRecipe } from "@/recipes/recipesHooks";
+import ActivationLink from "./ActivationLink";
 
 type ShareInstallableFormState = {
-  public: boolean;
   organizations: UUID[];
 };
 
 const editorRoles = new Set<number>([UserRole.admin, UserRole.developer]);
 
 const validationSchema = Yup.object().shape({
-  public: Yup.boolean().required(),
   organizations: Yup.array().of(Yup.string().required()),
 });
 
@@ -92,7 +88,6 @@ const ShareRecipeModal: React.FunctionComponent = () => {
 
   const initialValues: ShareInstallableFormState = {
     organizations: recipe.sharing.organizations,
-    public: recipe.sharing.public,
   };
 
   const saveSharing = async (
@@ -102,7 +97,6 @@ const ShareRecipeModal: React.FunctionComponent = () => {
     try {
       const newRecipe = produce(recipe, (draft) => {
         draft.sharing.organizations = formValues.organizations;
-        draft.sharing.public = formValues.public;
       });
 
       const packageId = editablePackages.find(
@@ -233,29 +227,6 @@ const ShareRecipeModal: React.FunctionComponent = () => {
                         </Button>
                       </div>
                     ))}
-
-                  <div className={styles.row}>
-                    {values.public ? (
-                      <span>
-                        <FontAwesomeIcon icon={faGlobe} /> Public - anyone with
-                        the link can access
-                      </span>
-                    ) : (
-                      <span className="text-muted">
-                        <FontAwesomeIcon icon={faGlobe} /> Public - toggle to
-                        share with anyone with link
-                      </span>
-                    )}
-
-                    <BootstrapSwitchButton
-                      onlabel=" "
-                      offlabel=" "
-                      checked={values.public}
-                      onChange={(checked: boolean) => {
-                        setFieldValue("public", checked);
-                      }}
-                    />
-                  </div>
                 </Modal.Body>
               </>
             )}
@@ -300,6 +271,10 @@ const ShareRecipeModal: React.FunctionComponent = () => {
           </Modal.Body>
         )}
         <Modal.Body>
+          <h4>Link to share:</h4>
+          <p className="mb-1">
+            People with access can activate the blueprint with this link
+          </p>
           <ActivationLink blueprintId={blueprintId} />
         </Modal.Body>
       </RequireScope>
