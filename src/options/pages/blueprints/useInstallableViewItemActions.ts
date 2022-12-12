@@ -263,7 +263,11 @@ function useInstallableViewItemActions(
     isInstallableBlueprint && installable.sharing.public;
 
   return {
-    viewPublish: notShareable || isPublicBlueprint ? null : viewPublish,
+    viewPublish:
+      // isCloudExtension ||
+      isDeployment || (isInstallableBlueprint && installable.sharing.public)
+        ? null
+        : viewPublish,
     // Deployment sharing is controlled via the Admin Console
     viewShare: notShareable ? null : viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,

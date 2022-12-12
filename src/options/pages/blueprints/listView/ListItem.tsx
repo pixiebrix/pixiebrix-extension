@@ -25,18 +25,30 @@ import { type InstallableViewItem } from "@/options/pages/blueprints/blueprintsT
 import Status from "@/options/pages/blueprints/Status";
 import { ListGroup } from "react-bootstrap";
 import LastUpdatedLabel from "@/options/pages/blueprints/labels/LastUpdatedLabel";
+import { isExtension } from "../utils/installableUtils";
 
 const ListItem: React.VoidFunctionComponent<{
   installableItem: InstallableViewItem;
   style: React.CSSProperties;
 }> = ({ installableItem, style }) => {
-  const { name, sharing, updatedAt, icon, description } = installableItem;
+  const { installable, status, name, sharing, updatedAt, icon, description } =
+    installableItem;
+
+  const isInstalled = status === "Active" || status === "Paused";
+  const isInstallableExtension = isExtension(installable);
+  const isCloudExtension =
+    isInstallableExtension &&
+    sharing.source.type === "Personal" &&
+    // If the status is active, there is still likely a copy of the extension saved on our server. But the point
+    // this check is for extensions that aren't also installed locally
+    !isInstalled;
 
   return (
     <ListGroup.Item className={styles.root} style={style}>
       <div className={styles.icon}>{icon}</div>
       <div className={styles.primaryInfo}>
         <h5 className={styles.name}>{name}</h5>
+        {isCloudExtension && <p>Cloud Extension</p>}
         <p className={styles.description}>{description}</p>
         <div className={styles.packageId}>{sharing.packageId}</div>
       </div>
