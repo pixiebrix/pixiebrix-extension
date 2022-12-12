@@ -62,6 +62,7 @@ export type InstallableViewItemActions = {
   exportBlueprint: ActionCallback;
 };
 
+// eslint-disable-next-line complexity
 function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
 ): InstallableViewItemActions {
@@ -257,11 +258,14 @@ function useInstallableViewItemActions(
     [installable, extensionsFromInstallable]
   );
 
+  const notShareable = isCloudExtension || isDeployment;
+  const isPublicBlueprint =
+    isInstallableBlueprint && installable.sharing.public;
+
   return {
-    viewPublish:
-      isInstallableBlueprint && installable.sharing.public ? null : viewPublish,
+    viewPublish: notShareable || isPublicBlueprint ? null : viewPublish,
     // Deployment sharing is controlled via the Admin Console
-    viewShare: isCloudExtension || isDeployment ? null : viewShare,
+    viewShare: notShareable ? null : viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,
     uninstall: isInstalled && !isRestricted ? uninstall : null,
     // Only blueprints/deployments can be reinstalled. (Because there's no reason to reinstall an extension... there's
