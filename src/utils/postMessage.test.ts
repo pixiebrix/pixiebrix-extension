@@ -19,14 +19,15 @@
  */
 
 import { sleep } from "@/utils";
-import { MessageChannel, MessagePort } from "node:worker_threads";
+import polyfill from "node:worker_threads";
 import { serializeError } from "serialize-error";
 import postMessage, {
   addPostMessageListener,
   type RequestPacket,
 } from "./postMessage";
 
-(global as any).MessageChannel = MessageChannel;
+(global as any).MessageChannel = polyfill.MessageChannel;
+(global as any).MessagePort = polyfill.MessagePort;
 
 afterEach(jest.restoreAllMocks);
 
