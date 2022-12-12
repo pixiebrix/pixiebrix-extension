@@ -215,7 +215,7 @@ export function getErrorMessage(
     return networkErrorMessage;
   }
 
-  if (isAxiosError(error)) {
+  if (isAxiosError(error) && error.response) {
     // The case when server response is empty handled by the selectNetworkErrorMessage above.
     const serverMessage = selectServerErrorMessage(error.response);
     if (serverMessage) {
