@@ -121,7 +121,7 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
             }
 
             if (kind === "service") {
-              // Flear the background page's service cache after refreshing so
+              // Clear the background page's service cache after refreshing so
               // it's forced to read the updated service definition.
               await clearServiceCache();
             }

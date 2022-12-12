@@ -15,10 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** Wrap the element in a shadow and return the shadow container, which can then attach to your document */
-export default function shadowWrap(element: HTMLElement): HTMLElement {
-  const wrapper = document.createElement("div");
-  const root = wrapper.attachShadow({ mode: "closed" });
-  root.append(element);
-  return wrapper;
+import { type Middleware } from "@reduxjs/toolkit";
+import { type Action } from "redux";
+
+const actions: Action[] = [];
+
+// eslint-disable-next-line unicorn/consistent-function-scoping -- idiomatic redux
+const testMiddleware: Middleware = (store) => (next) => (action) => {
+  actions.push(action);
+  next(action);
+};
+
+export function resetTestMiddleware(): void {
+  actions.length = 0;
 }
+
+export function actionTypes(): string[] {
+  return actions.map((x) => x.type);
+}
+
+export default testMiddleware;

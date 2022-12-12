@@ -29,7 +29,9 @@ module.exports = {
     builder: "webpack5",
   },
   features: {
-    storyStoreV7: true,
+    // Not currently compatible with Storyshots: https://github.com/storybookjs/storybook/issues/18994
+    // Enable for Storybook since it has significant performance benefits
+    storyStoreV7: process.env.NODE_ENV !== "test",
   },
   // https://storybook.js.org/docs/react/builders/webpack#extending-storybooks-webpack-config
   webpackFinal: async (config) => {

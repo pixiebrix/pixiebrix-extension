@@ -15,10 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** Wrap the element in a shadow and return the shadow container, which can then attach to your document */
-export default function shadowWrap(element: HTMLElement): HTMLElement {
-  const wrapper = document.createElement("div");
-  const root = wrapper.attachShadow({ mode: "closed" });
-  root.append(element);
-  return wrapper;
+import { configureStore } from "@reduxjs/toolkit";
+import settingsSlice from "@/store/settingsSlice";
+import { appApi } from "@/services/api";
+
+export function settingsStore() {
+  return configureStore({
+    reducer: {
+      settings: settingsSlice.reducer,
+      [appApi.reducerPath]: appApi.reducer,
+    },
+    middleware(getDefaultMiddleware) {
+      /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
+      return getDefaultMiddleware().concat(appApi.middleware);
+      /* eslint-enable unicorn/prefer-spread */
+    },
+    preloadedState: {},
+  });
 }

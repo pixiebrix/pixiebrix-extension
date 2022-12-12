@@ -21,6 +21,8 @@ import OptionsBody from "./OptionsBody";
 import { MemoryRouter } from "react-router";
 import { action } from "@storybook/addon-actions";
 import { Formik } from "formik";
+import { settingsStore } from "@/testUtils/storyUtils";
+import { Provider } from "react-redux";
 
 export default {
   title: "ActivateWizard/OptionsBody",
@@ -28,11 +30,13 @@ export default {
 } as ComponentMeta<typeof OptionsBody>;
 
 const Template: ComponentStory<typeof OptionsBody> = (args) => (
-  <MemoryRouter>
-    <Formik initialValues={{ optionsArgs: {} }} onSubmit={action("onSubmit")}>
-      <OptionsBody {...args} />
-    </Formik>
-  </MemoryRouter>
+  <Provider store={settingsStore()}>
+    <MemoryRouter>
+      <Formik initialValues={{ optionsArgs: {} }} onSubmit={action("onSubmit")}>
+        <OptionsBody {...args} />
+      </Formik>
+    </MemoryRouter>
+  </Provider>
 );
 
 export const TextField = Template.bind({});

@@ -127,6 +127,13 @@ export async function waitAnimationFrame(): Promise<void> {
   });
 }
 
+export async function waitForBody(): Promise<void> {
+  while (!document.body) {
+    // eslint-disable-next-line no-await-in-loop -- Polling pattern
+    await sleep(20);
+  }
+}
+
 /**
  * Returns a new object with all the values from the original resolved
  */
