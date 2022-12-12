@@ -28,6 +28,7 @@ import {
   type TemplateToggleWidgetProps,
 } from "./templateToggleWidgetTypes";
 import VarPopup from "./varPopup/VarPopup";
+import { isTemplateExpression } from "@/runtime/mapArgs";
 
 export function getOptionForInputMode(
   options: InputModeOption[],
@@ -56,14 +57,13 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
     schemaFieldProps.schema
   );
   const inputRef = useRef<HTMLTextAreaElement>();
-  const selectedOption = inputModeOptions.find((x) => x.value === inputMode);
+  const selectedOption = getOptionForInputMode(inputModeOptions, inputMode);
   const Widget = selectedOption?.Widget ?? WidgetLoadingIndicator;
   const [focusInput, setFocusInput] = useState(false);
 
   useEffect(() => {
     setFocusInput(false);
-    const option = getOptionForInputMode(inputModeOptions, inputMode);
-    setFieldDescription(option?.description);
+    setFieldDescription(selectedOption?.description);
   }, [inputMode, inputModeOptions, setFieldDescription]);
 
   const onModeChange = useCallback(
@@ -110,6 +110,15 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
     };
   }
 
+  const stringValue = isTemplateExpression(value) ? value.__value__ : "";
+  const setNewValueFromString = (newValue: string) => {
+    if (inputMode !== "var" && inputMode !== "string") {
+      return;
+    }
+
+    setValue(selectedOption.interpretValue(newValue));
+  };
+
   return (
     <div className={styles.root}>
       <div className={styles.field}>
@@ -117,7 +126,8 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
         <VarPopup
           inputMode={inputMode}
           inputElementRef={inputRef}
-          value={value}
+          value={stringValue}
+          setValue={setNewValueFromString}
         />
       </div>
       <DropdownButton
