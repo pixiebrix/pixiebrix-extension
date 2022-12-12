@@ -7184,10 +7184,13 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
             }
           }
         >
-          <span>
+          <button
+            className="btn"
+            onClick={[Function]}
+            type="button"
+          >
             @input
-            :
-          </span>
+          </button>
         </label>
         <span
           onClick={[Function]}
@@ -7248,10 +7251,13 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                 }
               }
             >
-              <span>
+              <button
+                className="btn"
+                onClick={[Function]}
+                type="button"
+              >
                 description
-                :
-              </span>
+              </button>
             </label>
             <span
               onClick={[Function]}
@@ -7313,10 +7319,13 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                 }
               }
             >
-              <span>
+              <button
+                className="btn"
+                onClick={[Function]}
+                type="button"
+              >
                 icon
-                :
-              </span>
+              </button>
             </label>
             <span
               onClick={[Function]}
@@ -7378,10 +7387,13 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                 }
               }
             >
-              <span>
+              <button
+                className="btn"
+                onClick={[Function]}
+                type="button"
+              >
                 image
-                :
-              </span>
+              </button>
             </label>
             <span
               onClick={[Function]}
@@ -7443,10 +7455,13 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                 }
               }
             >
-              <span>
+              <button
+                className="btn"
+                onClick={[Function]}
+                type="button"
+              >
                 keywords
-                :
-              </span>
+              </button>
             </label>
             <span
               onClick={[Function]}
@@ -7551,10 +7566,13 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                 }
               }
             >
-              <span>
+              <button
+                className="btn"
+                onClick={[Function]}
+                type="button"
+              >
                 props
-                :
-              </span>
+              </button>
             </label>
             <span
               onClick={[Function]}
@@ -7615,10 +7633,13 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                     }
                   }
                 >
-                  <span>
+                  <button
+                    className="btn"
+                    onClick={[Function]}
+                    type="button"
+                  >
                     markdown
-                    :
-                  </span>
+                  </button>
                 </label>
                 <span
                   onClick={[Function]}
@@ -7682,10 +7703,13 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                 }
               }
             >
-              <span>
+              <button
+                className="btn"
+                onClick={[Function]}
+                type="button"
+              >
                 title
-                :
-              </span>
+              </button>
             </label>
             <span
               onClick={[Function]}
@@ -7747,10 +7771,13 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                 }
               }
             >
-              <span>
+              <button
+                className="btn"
+                onClick={[Function]}
+                type="button"
+              >
                 type
-                :
-              </span>
+              </button>
             </label>
             <span
               onClick={[Function]}
@@ -7812,10 +7839,13 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                 }
               }
             >
-              <span>
+              <button
+                className="btn"
+                onClick={[Function]}
+                type="button"
+              >
                 url
-                :
-              </span>
+              </button>
             </label>
             <span
               onClick={[Function]}
