@@ -17,7 +17,6 @@
 
 // TODO: Drop after https://github.com/jsdom/jsdom/issues/2524
 import { TextEncoder, TextDecoder } from "node:util";
-import { MessageChannel, MessagePort } from "node:worker_threads";
 
 // eslint-disable-next-line import/no-unassigned-import -- It's a polyfill
 import "urlpattern-polyfill";
@@ -26,8 +25,6 @@ process.env.SERVICE_URL = "https://app.pixiebrix.com";
 
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
-global.MessageChannel = MessageChannel;
-global.MessagePort = MessagePort;
 global.PromiseRejectionEvent = class PromiseRejectionEvent extends Event {
   constructor(type, init) {
     super(type);
