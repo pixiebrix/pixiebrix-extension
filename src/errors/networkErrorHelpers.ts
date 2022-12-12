@@ -45,7 +45,7 @@ export const NO_RESPONSE_MESSAGE =
 
 export function selectNetworkErrorMessage(error: unknown): string | null {
   if (
-    (isAxiosError(error) && error.response == null) ||
+    (isAxiosError(error) && error.status == null) ||
     // Do not use isErrorObject nor getErrorMessage, that'd be a cyclical dependency
     (isObject(error) && String(error.message).toLowerCase() === "network error")
   ) {
