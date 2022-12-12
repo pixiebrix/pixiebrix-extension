@@ -151,6 +151,11 @@ function updateManifestToV3(manifest) {
   policy.remove("script-src", "'unsafe-eval'");
   manifest.content_security_policy = {
     extension_pages: policy.toString(),
+
+    // Set the native default CSP
+    // https://developer.chrome.com/docs/extensions/mv3/manifest/sandbox/
+    sandbox:
+      "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';",
   };
 
   // Replace background script
@@ -260,6 +265,8 @@ module.exports = (env, options) =>
         "pageEditor/pageEditor",
         "options/options",
         "sidebar/sidebar",
+        "sandbox/sandbox",
+
         "tinyPages/ephemeralForm",
         "tinyPages/permissionsPopup",
 

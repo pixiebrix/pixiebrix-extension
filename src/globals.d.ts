@@ -85,6 +85,9 @@ declare module "generate-schema" {
 // In the end, the types aren't even used.
 declare module "marked";
 
+// No types available
+declare module "jq-web";
+
 // From https://github.com/mozilla/page-metadata-parser/issues/116#issuecomment-614882830
 declare module "page-metadata-parser" {
   export type IPageMetadata = Record<string, string | string[]>;

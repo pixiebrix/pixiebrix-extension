@@ -15,10 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** Wrap the element in a shadow and return the shadow container, which can then attach to your document */
-export default function shadowWrap(element: HTMLElement): HTMLElement {
-  const wrapper = document.createElement("div");
-  const root = wrapper.attachShadow({ mode: "closed" });
-  root.append(element);
-  return wrapper;
+/** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
+
+import { addPostMessageListener } from "@/utils/postMessage";
+import { applyJq, renderNunjucksTemplate } from "./executor";
+
+export default function registerMessenger(): void {
+  addPostMessageListener("SANDBOX_PING", async (payload) => "pong");
+  addPostMessageListener("RENDER_NUNJUCKS", renderNunjucksTemplate);
+  addPostMessageListener("APPLY_JQ", applyJq);
 }

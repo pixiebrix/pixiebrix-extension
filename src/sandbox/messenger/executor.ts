@@ -15,10 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** Wrap the element in a shadow and return the shadow container, which can then attach to your document */
-export default function shadowWrap(element: HTMLElement): HTMLElement {
-  const wrapper = document.createElement("div");
-  const root = wrapper.attachShadow({ mode: "closed" });
-  root.append(element);
-  return wrapper;
+import { type ApplyJqPayload, type NunjucksRenderPayload } from "./api";
+
+export async function renderNunjucksTemplate(payload: NunjucksRenderPayload) {
+  const { template, context, autoescape } = payload;
+  const { default: nunjucks } = await import(
+    /* webpackChunkName: "nunjucks" */ "nunjucks"
+  );
+
+  nunjucks.configure({ autoescape });
+  return nunjucks.renderString(template, context);
+}
+
+export async function applyJq(payload: ApplyJqPayload) {
+  const { input, filter } = payload;
+  const { default: jq } = await import(
+    /* webpackChunkName: "jq-web" */ "jq-web"
+  );
+
+  return jq.promised.json(input, filter);
 }

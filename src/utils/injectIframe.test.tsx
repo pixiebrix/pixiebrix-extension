@@ -1,3 +1,6 @@
+/**
+ * @jest-environment-options {"resources": "usable" }
+ */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -15,10 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** Wrap the element in a shadow and return the shadow container, which can then attach to your document */
-export default function shadowWrap(element: HTMLElement): HTMLElement {
-  const wrapper = document.createElement("div");
-  const root = wrapper.attachShadow({ mode: "closed" });
-  root.append(element);
-  return wrapper;
-}
+import injectIframe from "./injectIframe";
+
+describe("injectIframe", () => {
+  test("load simple iframe", async () => {
+    const iframe = await injectIframe("data:text/html,<html>Good soup", {});
+    expect(
+      iframe.contentDocument.documentElement.outerHTML
+    ).toMatchInlineSnapshot(
+      '"<html><head></head><body>Good soup</body></html>"'
+    );
+  });
+});
