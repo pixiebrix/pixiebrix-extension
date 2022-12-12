@@ -19,11 +19,7 @@ import { deserializeError, type ErrorObject } from "serialize-error";
 import { isObject, matchesAnyPattern, smartAppendPeriod } from "@/utils";
 import safeJsonStringify from "json-stringify-safe";
 import { isEmpty, truncate } from "lodash";
-import {
-  isAxiosError,
-  selectNetworkErrorMessage,
-  selectServerErrorMessage,
-} from "@/errors/networkErrorHelpers";
+import { selectNetworkErrorMessage } from "@/errors/networkErrorHelpers";
 import { type MessageContext } from "@/core";
 
 // From "webext-messenger". Cannot import because the webextension polyfill can only run in an extension context
@@ -112,6 +108,12 @@ export function isSpecificError<
   }
 
   return isErrorObject(error) && error.name === errorType.name;
+}
+
+export function isCustomAggregateError(
+  error: unknown
+): error is ErrorObject & { errors: unknown[] } {
+  return isObject(error) && "errors" in error && Array.isArray(error.errors);
 }
 
 export function selectSpecificError<
@@ -210,25 +212,13 @@ export function getErrorMessage(
     return error;
   }
 
-  const networkErrorMessage = selectNetworkErrorMessage(error);
-  if (networkErrorMessage != null) {
-    return networkErrorMessage;
+  const requestErrorMessage = selectNetworkErrorMessage(error);
+  if (requestErrorMessage) {
+    return requestErrorMessage;
   }
 
-  if (isAxiosError(error) && error.response) {
-    // The case when server response is empty handled by the selectNetworkErrorMessage above.
-    const serverMessage = selectServerErrorMessage(error.response);
-    if (serverMessage) {
-      return String(serverMessage);
-    }
-  }
-
-  // @ts-expect-error -- We're checking if errors is there and if it's an array
-  if (Array.isArray(error.errors)) {
-    // @ts-expect-error -- error does have "errors" property
-    return error.errors
-      .filter((x: unknown) => typeof x === "string")
-      .join(". ");
+  if (isCustomAggregateError(error)) {
+    return error.errors.filter((x) => typeof x === "string").join(". ");
   }
 
   return String(selectError(error).message ?? defaultMessage);

@@ -43,20 +43,35 @@ export const NO_INTERNET_MESSAGE =
 export const NO_RESPONSE_MESSAGE =
   "No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/network-errors for troubleshooting information";
 
+/**
+ * @deprecated DO NOT CALL DIRECTLY. Call getErrorMessage
+ * @see getErrorMessage
+ */
 export function selectNetworkErrorMessage(error: unknown): string | null {
-  if (
-    (isAxiosError(error) && error.status == null) ||
-    // Do not use isErrorObject nor getErrorMessage, that'd be a cyclical dependency
-    (isObject(error) && String(error.message).toLowerCase() === "network error")
-  ) {
-    if (!navigator.onLine) {
-      return NO_INTERNET_MESSAGE;
-    }
+  if (!isAxiosError(error)) {
+    return;
+  }
 
+  if (!navigator.onLine) {
+    return NO_INTERNET_MESSAGE;
+  }
+
+  console.log("selectNetworkErrorMessage", error);
+
+  // The response object may exist even on "offline" errors
+  if (error.response) {
+    const serverErrorMessage = selectServerErrorMessage(error.response);
+    if (!serverErrorMessage) {
+      return serverErrorMessage;
+    }
+  }
+
+  if (!error.status || error.message === "Network Error") {
+    // No response, no status, not offline. The request likely failed in the browser
     return NO_RESPONSE_MESSAGE;
   }
 
-  return null;
+  // Likely a non-200 error. No special handling needed, getErrorMessage can handle it
 }
 
 /**
@@ -159,7 +174,7 @@ export function isClientErrorResponse(
  * Heuristically select the most user-friendly error message for an Axios response.
  *
  * Tries to handle:
- * - Errors produced by our backed (Django Rest Framework style)
+ * - Errors produced by our backend (Django Rest Framework style)
  * - Common response body patterns of other APIs
  * - HTTP standards in statusText/status
  *
