@@ -24,6 +24,8 @@ import { Button } from "react-bootstrap";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 import { action } from "@storybook/addon-actions";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
+import { Provider } from "react-redux";
+import { settingsStore } from "@/testUtils/storyUtils";
 
 registerDefaultWidgets();
 
@@ -42,26 +44,28 @@ const Template: ComponentStory<
 > = (args) => {
   const fieldName = getFieldNamesFromPathString(args.name)[1];
   return (
-    <Formik
-      initialValues={{
-        apiVersion: "v3",
+    <Provider store={settingsStore()}>
+      <Formik
+        initialValues={{
+          apiVersion: "v3",
 
-        myStr: "abc",
+          myStr: "abc",
 
-        topObj: {
-          myNum: 2,
-          parentObj: {
-            [fieldName]: args.defaultValue,
+          topObj: {
+            myNum: 2,
+            parentObj: {
+              [fieldName]: args.defaultValue,
+            },
           },
-        },
-      }}
-      onSubmit={action("onSubmit")}
-    >
-      <Form>
-        <SchemaField {...args} />
-        <Button type="submit">Submit</Button>
-      </Form>
-    </Formik>
+        }}
+        onSubmit={action("onSubmit")}
+      >
+        <Form>
+          <SchemaField {...args} />
+          <Button type="submit">Submit</Button>
+        </Form>
+      </Formik>
+    </Provider>
   );
 };
 

@@ -24,6 +24,8 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
 import { type UiSchema } from "@rjsf/core";
+import { settingsStore } from "@/testUtils/storyUtils";
+import { Provider } from "react-redux";
 
 const schema: Schema = {
   title: "A form",
@@ -65,18 +67,20 @@ const initialValues = {
 };
 
 const FormBuilderTemplate: ComponentStory<typeof Formik> = (args) => (
-  <Formik
-    validationSchema={schemaShape}
-    onSubmit={action("onSubmit")}
-    {...args}
-  >
-    {({ handleSubmit }) => (
-      <BootstrapForm noValidate onSubmit={handleSubmit}>
-        <FormBuilder name="dynamicForm" />
-        <Button type="submit">Submit</Button>
-      </BootstrapForm>
-    )}
-  </Formik>
+  <Provider store={settingsStore()}>
+    <Formik
+      validationSchema={schemaShape}
+      onSubmit={action("onSubmit")}
+      {...args}
+    >
+      {({ handleSubmit }) => (
+        <BootstrapForm noValidate onSubmit={handleSubmit}>
+          <FormBuilder name="dynamicForm" />
+          <Button type="submit">Submit</Button>
+        </BootstrapForm>
+      )}
+    </Formik>
+  </Provider>
 );
 
 export const Default = FormBuilderTemplate.bind({});

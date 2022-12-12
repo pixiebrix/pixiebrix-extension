@@ -23,6 +23,10 @@ import { ModalProvider, useModals } from "@/components/ConfirmationModal";
 export default {
   title: "Components/ConfirmationModal",
   component: ModalProvider,
+  // Modals are not compatible with Storyshots
+  parameters: {
+    storyshots: false,
+  },
 } as ComponentMeta<typeof ModalProvider>;
 
 type StoryType = ComponentProps<typeof ModalProvider> & {

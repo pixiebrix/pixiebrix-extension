@@ -15,25 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { type ComponentStory, type ComponentMeta } from "@storybook/react";
-import Loader from "@/components/Loader";
+import initStoryshots from "@storybook/addon-storyshots";
 
-export default {
-  title: "Common/Loader",
-  component: Loader,
-  argTypes: {},
-  parameters: {
-    // Loader is an animation, so has non-deterministic output for Storyshots
-    storyshots: false,
-  },
-} as ComponentMeta<typeof Loader>;
+// https://plainenglish.io/blog/storybook-snapshot-testing
+jest.mock("react-dom", () => {
+  const original = jest.requireActual("react-dom");
+  return {
+    ...original,
+    createPortal: (node) => node,
+  };
+});
 
-const Template: ComponentStory<typeof Loader> = (args) => (
-  <div>
-    <Loader {...args} />
-  </div>
-);
-
-export const Default = Template.bind({});
-Default.args = {};
+initStoryshots({});

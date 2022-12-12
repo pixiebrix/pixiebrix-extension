@@ -15,25 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { type ComponentStory, type ComponentMeta } from "@storybook/react";
-import Loader from "@/components/Loader";
+import { configureStore } from "@reduxjs/toolkit";
+import settingsSlice from "@/store/settingsSlice";
+import { appApi } from "@/services/api";
 
-export default {
-  title: "Common/Loader",
-  component: Loader,
-  argTypes: {},
-  parameters: {
-    // Loader is an animation, so has non-deterministic output for Storyshots
-    storyshots: false,
-  },
-} as ComponentMeta<typeof Loader>;
-
-const Template: ComponentStory<typeof Loader> = (args) => (
-  <div>
-    <Loader {...args} />
-  </div>
-);
-
-export const Default = Template.bind({});
-Default.args = {};
+export function settingsStore() {
+  return configureStore({
+    reducer: {
+      settings: settingsSlice.reducer,
+      [appApi.reducerPath]: appApi.reducer,
+    },
+    middleware(getDefaultMiddleware) {
+      /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
+      return getDefaultMiddleware().concat(appApi.middleware);
+      /* eslint-enable unicorn/prefer-spread */
+    },
+    preloadedState: {},
+  });
+}

@@ -22,6 +22,8 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import { Button } from "react-bootstrap";
 import { action } from "@storybook/addon-actions";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
+import { settingsStore } from "@/testUtils/storyUtils";
+import { Provider } from "react-redux";
 
 export default {
   title: "Fields/ChildObjectField",
@@ -36,18 +38,20 @@ const Template: ComponentStory<
     }
   >
 > = (args) => (
-  <Formik
-    initialValues={{
-      apiVersion: "v3",
-      childObject: {},
-    }}
-    onSubmit={action("onSubmit")}
-  >
-    <Form>
-      <ChildObjectField {...args} heading="Child Object" />
-      <Button type="submit">Submit</Button>
-    </Form>
-  </Formik>
+  <Provider store={settingsStore()}>
+    <Formik
+      initialValues={{
+        apiVersion: "v3",
+        childObject: {},
+      }}
+      onSubmit={action("onSubmit")}
+    >
+      <Form>
+        <ChildObjectField {...args} heading="Child Object" />
+        <Button type="submit">Submit</Button>
+      </Form>
+    </Formik>
+  </Provider>
 );
 
 export const PrimitiveValue = Template.bind({});
