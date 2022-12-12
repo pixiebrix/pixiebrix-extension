@@ -23,8 +23,6 @@ import { type UnknownObject } from "@/types";
 import { isErrorObject } from "@/errors/errorHelpers";
 import { InvalidTemplateError } from "@/errors/businessErrors";
 
-const hyphenRegex = /-/gi;
-
 export type Renderer = (template: string, context: unknown) => unknown;
 
 const ensureNunjucks = once(async () => {
@@ -68,7 +66,7 @@ export async function engineRenderer(
       return (template, ctxt) => {
         // Convert top level data from kebab case to snake case in order to be valid identifiers
         const snakeCased = mapKeys(ctxt as UnknownObject, (value, key) =>
-          key.replace(hyphenRegex, "_")
+          key.replaceAll("-", "_")
         );
 
         try {

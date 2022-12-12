@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Jest fails without these
-// eslint-disable-next-line node/prefer-global/text-decoder, node/prefer-global/text-encoder
-import { TextEncoder, TextDecoder } from "util";
+// TODO: Drop after https://github.com/jsdom/jsdom/issues/2524
+import { TextEncoder, TextDecoder } from "node:util";
 
 // eslint-disable-next-line import/no-unassigned-import -- It's a polyfill
 import "urlpattern-polyfill";
@@ -33,3 +32,7 @@ global.PromiseRejectionEvent = class PromiseRejectionEvent extends Event {
     this.reason = init.reason;
   }
 };
+
+if (process.env.JEST_CONSOLE_DEBUG === "false") {
+  console.debug = () => {};
+}

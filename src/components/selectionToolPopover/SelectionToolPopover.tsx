@@ -29,8 +29,7 @@ import switchStyle from "@/components/form/widgets/switchButton/SwitchButtonWidg
 import switchButtonStyle from "bootstrap-switch-button-react/src/style.css?loadAsUrl";
 import custom from "./SelectionToolPopover.module.scss?loadAsUrl";
 import { Stylesheets } from "@/components/Stylesheets";
-import { Button } from "react-bootstrap";
-import { FormLabel } from "react-bootstrap";
+import { Button, FormLabel } from "react-bootstrap";
 import pluralize from "@/utils/pluralize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGripHorizontal } from "@fortawesome/free-solid-svg-icons";

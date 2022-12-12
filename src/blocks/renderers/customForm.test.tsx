@@ -129,7 +129,6 @@ describe("form data normalization", () => {
       age: null,
       isAdmin: null,
       rating: null,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- relaxed type checking in test
     } as any;
 
     expect(normalizedData).toStrictEqual(expectedData);
