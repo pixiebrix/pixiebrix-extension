@@ -136,7 +136,7 @@ export class InvalidTemplateError extends BusinessError {
   constructor(message: string, template: string) {
     // Remove excess whitespace/newlines and truncate to ensure the message isn't too long. The main point of including
     // the template is to identify which expression generated the problem
-    const normalized = truncate(template.replace(/\s+/g, " ").trim(), {
+    const normalized = truncate(template.replaceAll(/\s+/g, " ").trim(), {
       length: 32,
     });
     super(`Invalid template: ${message}. Template: "${normalized}"`);

@@ -24,11 +24,10 @@ import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
 import ReduxAnalysisManager from "@/analysis/ReduxAnalysisManager";
 import { type UUID } from "@/core";
 import { type TraceRecord } from "@/telemetry/trace";
-import { type PayloadAction } from "@reduxjs/toolkit";
+import { type PayloadAction, isAnyOf } from "@reduxjs/toolkit";
 import { type RootState } from "./pageEditorTypes";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import runtimeSlice from "./slices/runtimeSlice";
-import { isAnyOf } from "@reduxjs/toolkit";
 import RequestPermissionAnalysis from "@/analysis/analysisVisitors/requestPermissionAnalysis";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import { selectActiveElementTraces } from "./slices/runtimeSelectors";
@@ -46,7 +45,7 @@ const nodeListMutationActions = [
   editorActions.addNode,
   editorActions.moveNode,
   editorActions.removeNode,
-];
+] as const;
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   (
@@ -70,7 +69,6 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new BlockTypeAnalysis(),
   {
-    // @ts-expect-error: spreading the array as args
     matcher: isAnyOf(...nodeListMutationActions),
   }
 );
@@ -78,7 +76,6 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new FormBrickAnalysis(),
   {
-    // @ts-expect-error: spreading the array as args
     matcher: isAnyOf(...nodeListMutationActions),
   }
 );
@@ -86,7 +83,6 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new RenderersAnalysis(),
   {
-    // @ts-expect-error: spreading the array as args
     matcher: isAnyOf(...nodeListMutationActions),
   }
 );
