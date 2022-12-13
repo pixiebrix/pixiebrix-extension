@@ -28,7 +28,10 @@ import {
 } from "./blueprintModalsSlice";
 import ConvertToRecipeModal from "./ConvertToRecipeModal";
 import * as api from "@/services/api";
-import { selectModalsContext } from "./blueprintModalsSelectors";
+import {
+  selectModalsContext,
+  selectShowShareContext,
+} from "./blueprintModalsSelectors";
 import { type RootState } from "@/store/optionsStore";
 
 jest.mock("@/recipes/recipesHooks", () => ({
@@ -178,4 +181,48 @@ describe("it renders", () => {
       ).not.toBeUndefined();
     }
   );
+
+  test("converts cloud extension", async () => {
+    const extension = cloudExtensionFactory();
+
+    (api.useGetCloudExtensionsQuery as jest.Mock).mockReturnValue({
+      data: [extension],
+    });
+    (api.useCreateRecipeMutation as jest.Mock).mockReturnValue([
+      jest.fn().mockReturnValue({ unwrap: jest.fn().mockResolvedValue({}) }),
+    ]);
+    const deleteCloudExtensionMock = jest
+      .fn()
+      .mockReturnValue({ unwrap: jest.fn().mockResolvedValue({}) });
+
+    (api.useDeleteCloudExtensionMutation as jest.Mock).mockReturnValue([
+      deleteCloudExtensionMock,
+    ]);
+
+    const rendered = render(<ConvertToRecipeModal />, {
+      setupRedux(dispatch) {
+        dispatch(authSlice.actions.setAuth(authStateFactory()));
+        dispatch(
+          blueprintModalsSlice.actions.setShareContext({
+            extensionId: extension.id,
+          })
+        );
+      },
+    });
+
+    const submit = await rendered.findByRole("button", {
+      name: "Save and Continue",
+    });
+    await userEvent.click(submit);
+
+    // The Cloud extension is deleted
+    expect(deleteCloudExtensionMock).toHaveBeenCalled();
+
+    const showShareContext = selectShowShareContext(
+      rendered.getReduxStore().getState() as RootState
+    );
+
+    expect(showShareContext.extensionId).toBeUndefined();
+    expect(showShareContext.blueprintId).not.toBeUndefined();
+  });
 });

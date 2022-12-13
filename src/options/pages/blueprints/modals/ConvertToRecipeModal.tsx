@@ -186,7 +186,7 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
         // Since it's now a part of the blueprint
         await deleteCloudExtension({
           extensionId: extension.id,
-        });
+        }).unwrap();
       }
 
       refetchRecipes();
