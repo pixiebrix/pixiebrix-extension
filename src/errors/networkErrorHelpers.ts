@@ -61,12 +61,16 @@ export function selectNetworkErrorMessage(error: unknown): string | null {
   // The response object may exist even on "offline" errors
   if (error.response) {
     const serverErrorMessage = selectServerErrorMessage(error.response);
-    if (!serverErrorMessage) {
+    if (serverErrorMessage) {
       return serverErrorMessage;
     }
   }
 
-  if (!error.status || error.message === "Network Error") {
+  // `error.status` is an incorrect declaration: https://github.com/axios/axios/pull/5331
+  if (
+    !(error.status || error.response?.status) ||
+    error.message === "Network Error"
+  ) {
     // No response, no status, not offline. The request likely failed in the browser
     return NO_RESPONSE_MESSAGE;
   }

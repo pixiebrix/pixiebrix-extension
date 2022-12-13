@@ -19,6 +19,8 @@ import {
   isAxiosError,
   isBadRequestObjectData,
   isSingleObjectBadRequestError,
+  NO_RESPONSE_MESSAGE,
+  selectNetworkErrorMessage,
 } from "@/errors/networkErrorHelpers";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
@@ -47,6 +49,48 @@ describe("isSingleObjectBadRequestError", () => {
     } catch (error) {
       expect(isAxiosError(error)).toBe(true);
       expect(isSingleObjectBadRequestError(error)).toBe(true);
+    }
+  });
+});
+
+describe("selectNetworkErrorMessage", () => {
+  test("handles network error", async () => {
+    axiosMock.onPut().networkError();
+
+    try {
+      await axios.create().put("/", {});
+      expect.fail("Expected error");
+    } catch (error) {
+      expect(isAxiosError(error)).toBe(true);
+      expect(selectNetworkErrorMessage(error)).toBe(NO_RESPONSE_MESSAGE);
+    }
+  });
+
+  test("handles timeout", async () => {
+    axiosMock.onPut().timeout();
+
+    try {
+      await axios.create().put("/", {});
+      expect.fail("Expected error");
+    } catch (error) {
+      expect(isAxiosError(error)).toBe(true);
+      expect(selectNetworkErrorMessage(error)).toBe(NO_RESPONSE_MESSAGE);
+    }
+  });
+
+  test("handles DRF 404", async () => {
+    axiosMock
+      .onGet()
+      .reply(404, { detail: "These aren't the droids you're looking for" });
+
+    try {
+      await axios.create().get("/");
+      expect.fail("Expected error");
+    } catch (error) {
+      expect(isAxiosError(error)).toBe(true);
+      expect(selectNetworkErrorMessage(error)).toBe(
+        "These aren't the droids you're looking for"
+      );
     }
   });
 });

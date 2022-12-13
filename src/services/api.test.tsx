@@ -106,5 +106,7 @@ describe("appBaseQuery", () => {
     expect(axiosError.isAxiosError).toBeUndefined();
     expect(axiosError.response).toBeDefined();
     expect(axiosError.response.status).toBe(404);
+    // The type definition is incorrect: https://github.com/axios/axios/pull/5331
+    expect(axiosError.status).toBeUndefined();
   });
 });
