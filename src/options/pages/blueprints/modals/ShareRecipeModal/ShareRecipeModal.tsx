@@ -49,6 +49,8 @@ import Loading from "./Loading";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useRecipe } from "@/recipes/recipesHooks";
 import ActivationLink from "./ActivationLink";
+import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
+import { type Option } from "@/components/form/widgets/SelectWidget";
 
 type ShareInstallableFormState = {
   organizations: UUID[];
@@ -62,6 +64,10 @@ const validationSchema = Yup.object().shape({
 
 const sortOrganizations = (organizations: Organization[]) =>
   sortBy(organizations, (organization) => organization.name);
+
+const AddATeamMenuList = createMenuListWithAddButton(
+  "https://app.pixiebrix.com/teams/create"
+);
 
 const ShareRecipeModal: React.FunctionComponent = () => {
   const dispatch = useDispatch();
@@ -187,11 +193,14 @@ const ShareRecipeModal: React.FunctionComponent = () => {
                   <ReactSelect
                     options={organizationsForSelect
                       .filter((x) => !values.organizations.includes(x.id))
-                      .map((x) => ({
-                        label: x.name,
-                        value: x.id,
-                      }))}
-                    onChange={(selected) => {
+                      .map(
+                        (x) =>
+                          ({
+                            label: x.name,
+                            value: x.id,
+                          } satisfies Option)
+                      )}
+                    onChange={(selected: Option) => {
                       setFieldValue("organizations", [
                         ...values.organizations,
                         selected.value,
@@ -199,6 +208,9 @@ const ShareRecipeModal: React.FunctionComponent = () => {
                     }}
                     value={null}
                     placeholder="Add a team"
+                    components={{
+                      MenuList: AddATeamMenuList,
+                    }}
                   />
 
                   <div className={styles.row}>
