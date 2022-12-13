@@ -16,7 +16,7 @@
  */
 
 import MockAdapter from "axios-mock-adapter";
-import axios, { AxiosError } from "axios";
+import axios, { type AxiosError } from "axios";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { configureStore } from "@reduxjs/toolkit";
 import {
@@ -81,7 +81,7 @@ describe("appBaseQuery", () => {
   });
 
   test("RTK preserves response on 404", async () => {
-    axiosMock.onGet().reply(404, {});
+    axiosMock.onGet().reply(404);
 
     const store = testStore();
 
@@ -102,5 +102,6 @@ describe("appBaseQuery", () => {
     // `serializeError` doesn't serialize properties on the prototype
     expect(axiosError.isAxiosError).toBeUndefined();
     expect(axiosError.response).toBeDefined();
+    expect(axiosError.response.status).toBe(404);
   });
 });
