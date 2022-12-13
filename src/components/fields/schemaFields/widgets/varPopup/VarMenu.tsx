@@ -33,19 +33,21 @@ import { computePosition, size, flip, offset } from "@floating-ui/dom";
 
 type VarMenuProps = {
   inputElementRef: React.MutableRefObject<HTMLElement>;
-  onClose?: () => void;
+  onClose: () => void;
+  onVarSelect: (selectedPath: string[]) => void;
 };
 
 const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   inputElementRef,
   onClose,
+  onVarSelect,
 }) => {
   const rootElementRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
       const parent = rootElementRef.current?.parentElement;
       if (parent && !parent.contains(event.target as Node)) {
-        onClose?.();
+        onClose();
       }
     };
 
@@ -122,7 +124,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
             blocksInfo={Object.values(pipelineMap)}
             allBlocks={allBlocks}
           />
-          <VariablesTree vars={vars} />
+          <VariablesTree vars={vars} onVarSelect={onVarSelect} />
         </div>
       ))}
     </div>

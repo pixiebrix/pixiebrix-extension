@@ -106,7 +106,9 @@ type ClientErrorData = {
   detail: string;
 };
 
-function isBadRequestObjectData(data: unknown): data is BadRequestObjectData {
+export function isBadRequestObjectData(
+  data: unknown
+): data is BadRequestObjectData {
   if (!isPlainObject(data)) {
     return false;
   }

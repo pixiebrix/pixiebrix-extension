@@ -27,6 +27,10 @@ export default {
   title: "Components/SelectionToolPopover",
   component: SelectionToolPopover,
   argTypes: {},
+  parameters: {
+    // Popovers not compatible with Storyshots? Modals aren't.
+    storyshots: false,
+  },
 } as ComponentMeta<typeof SelectionToolPopover>;
 
 const Template: ComponentStory<typeof SelectionToolPopover> = (args) => (

@@ -64,6 +64,10 @@ const throttledRefreshRegistries = throttle(
   }
 );
 
+/**
+ * Hook to refresh brick registries.
+ * @param options hook options, e.g., whether to refresh the registries on initial hook mount.
+ */
 function useRefresh(options?: {
   refreshOnMount: boolean;
 }): [boolean, () => Promise<void>] {

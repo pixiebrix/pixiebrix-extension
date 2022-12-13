@@ -54,6 +54,11 @@ function optionsStore(initialState?: any) {
       ),
       [appApi.reducerPath]: appApi.reducer,
     },
+    middleware(getDefaultMiddleware) {
+      /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
+      return getDefaultMiddleware().concat(appApi.middleware);
+      /* eslint-enable unicorn/prefer-spread */
+    },
     preloadedState: initialState,
   });
 }

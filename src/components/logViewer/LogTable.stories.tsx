@@ -56,9 +56,12 @@ NoEntriesForLevel.args = {
 
 const blockId = validateRegistryId("@pixiebrix/system/notification");
 
+// Constant date to support storyshots
+const MESSAGE_DATE = Date.parse("04 Dec 2022 00:12:00 GMT");
+
 const DEBUG_MESSAGE: LogEntry = {
   uuid: uuidv4(),
-  timestamp: Date.now().toString(),
+  timestamp: MESSAGE_DATE.toString(),
   message: "Sample debug message",
   level: "debug",
   context: {
@@ -68,7 +71,7 @@ const DEBUG_MESSAGE: LogEntry = {
 
 const ERROR_MESSAGE: LogEntry = {
   uuid: uuidv4(),
-  timestamp: Date.now().toString(),
+  timestamp: MESSAGE_DATE.toString(),
   message: "Sample error running brick message",
   level: "error",
   context: {
@@ -80,7 +83,7 @@ const ERROR_MESSAGE: LogEntry = {
 
 const NESTED_ERROR_MESSAGE: LogEntry = {
   uuid: uuidv4(),
-  timestamp: Date.now().toString(),
+  timestamp: MESSAGE_DATE.toString(),
   message: "Sample error with cause chain",
   level: "error",
   context: {
@@ -119,7 +122,7 @@ const validationError = new InputValidationError(
 
 const CONTEXT_ERROR_MESSAGE: LogEntry = {
   uuid: uuidv4(),
-  timestamp: Date.now().toString(),
+  timestamp: MESSAGE_DATE.toString(),
   message: "Invalid inputs for block",
   level: "error",
   context: {

@@ -17,22 +17,28 @@
 
 import React, { useEffect, useState } from "react";
 import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
-import { isNunjucksExpression } from "@/runtime/mapArgs";
-import getLikelyVariableAtPosition from "./getLikelyVariableAtPosition";
+import {
+  getLikelyVariableAtPosition,
+  replaceLikelyVariable,
+} from "./likelyVariableUtils";
 import VarMenu from "./VarMenu";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
+import { joinName } from "@/utils";
+import fitTextarea from "fit-textarea";
 
 type VarPopupProps = {
   inputMode: FieldInputMode;
   inputElementRef: React.MutableRefObject<HTMLElement>;
-  value: unknown;
+  value: string;
+  setValue: (value: string) => void;
 };
 
 const VarPopup: React.FunctionComponent<VarPopupProps> = ({
   inputMode,
   inputElementRef,
   value,
+  setValue,
 }) => {
   const [showMenu, setShowMenu] = useState(false);
 
@@ -48,7 +54,7 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
       return;
     }
 
-    const onClick = (event: MouseEvent) => {
+    const onClick = () => {
       if (inputMode === "var") {
         if (!showMenu) {
           setShowMenu(true);
@@ -61,11 +67,8 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
         // For string inputs, we always use TextAreas, hence the cast of the ref to HTMLTextAreaElement
         const cursorPosition =
           (inputElementRef.current as HTMLTextAreaElement)?.selectionStart ?? 0;
-        const template = isNunjucksExpression(value)
-          ? value.__value__
-          : String(value);
 
-        if (getLikelyVariableAtPosition(template, cursorPosition)) {
+        if (getLikelyVariableAtPosition(value, cursorPosition).name) {
           if (!showMenu) {
             setShowMenu(true);
           }
@@ -92,18 +95,50 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
       inputElement?.removeEventListener("click", onClick);
       inputElement?.removeEventListener("keypress", onKeyPress);
     };
-  }, [inputElementRef, inputMode, showMenu, value]);
+  }, [autosuggestEnabled, inputMode, showMenu, value]);
 
   if ((inputMode !== "var" && inputMode !== "string") || !autosuggestEnabled) {
     return null;
   }
 
+  const onClose = () => {
+    setShowMenu(false);
+  };
+
+  const onVarSelect = (selectedPath: string[]) => {
+    const fullVariableName = joinName(null, ...selectedPath);
+    if (inputMode === "var") {
+      setValue(fullVariableName);
+    } else if (inputMode === "string") {
+      const textElement = inputElementRef.current as HTMLTextAreaElement;
+      if (textElement == null) {
+        return;
+      }
+
+      const cursorPosition = textElement.selectionStart;
+      const newValue = replaceLikelyVariable(
+        value,
+        cursorPosition,
+        fullVariableName
+      );
+      setValue(newValue);
+      setTimeout(() => {
+        if (textElement == null) {
+          return;
+        }
+
+        fitTextarea(textElement);
+      }, 100);
+    }
+
+    onClose();
+  };
+
   return showMenu ? (
     <VarMenu
       inputElementRef={inputElementRef}
-      onClose={() => {
-        setShowMenu(false);
-      }}
+      onVarSelect={onVarSelect}
+      onClose={onClose}
     />
   ) : null;
 };

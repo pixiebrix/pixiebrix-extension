@@ -24,10 +24,15 @@ import { configureStore } from "@reduxjs/toolkit";
 import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settingsSlice";
 import { authSlice } from "@/auth/authSlice";
+import { appApi } from "@/services/api";
 
 export default {
   title: "Options/DeploymentModal",
   component: DeploymentModal,
+  // Modals are not compatible with Storyshots
+  parameters: {
+    storyshots: false,
+  },
 } as ComponentMeta<typeof DeploymentModal>;
 
 type StoryType = ComponentProps<typeof DeploymentModal> & {
@@ -46,6 +51,12 @@ const Template: Story<StoryType> = ({
       options: extensionsSlice.reducer,
       settings: settingsSlice.reducer,
       auth: authSlice.reducer,
+      [appApi.reducerPath]: appApi.reducer,
+    },
+    middleware(getDefaultMiddleware) {
+      /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
+      return getDefaultMiddleware().concat(appApi.middleware);
+      /* eslint-enable unicorn/prefer-spread */
     },
     preloadedState: {
       options: extensionsSlice.getInitialState(),

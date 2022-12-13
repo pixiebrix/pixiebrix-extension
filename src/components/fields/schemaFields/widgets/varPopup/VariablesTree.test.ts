@@ -16,6 +16,7 @@
  */
 
 import testItRenders from "@/testUtils/testItRenders";
+import { noop } from "lodash";
 import VariablesTree from "./VariablesTree";
 
 testItRenders({
@@ -33,5 +34,6 @@ testItRenders({
         icon: {},
       },
     } as any,
+    onVarSelect: noop,
   },
 });
