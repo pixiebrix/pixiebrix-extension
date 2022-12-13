@@ -28,26 +28,33 @@ import {
 export default {
   title: "DocumentOutline/OutlineItem",
   component: OutlineItem,
+  parameters: {
+    // The dnd library doesn't appear to be compatible with storyshots
+    // Stories error with "Invariant failed: Drag handle could not obtain draggable ref"
+    storyshots: false,
+  },
 } as ComponentMeta<typeof OutlineItem>;
 
 const Template: ComponentStory<typeof OutlineItem> = (args) => (
-  <DragDropContext onDragEnd={action("onDragEnd")}>
-    <Droppable droppableId="droppable">
-      {(provided) => (
-        <div {...provided.droppableProps} ref={provided.innerRef}>
-          <Draggable draggableId="item" index={0}>
-            {(provided) => (
-              <OutlineItem
-                {...args}
-                provided={provided}
-                snapshot={{ isDragging: false, isDropAnimating: false }}
-              />
-            )}
-          </Draggable>
-        </div>
-      )}
-    </Droppable>
-  </DragDropContext>
+  <div>
+    <DragDropContext onDragEnd={action("onDragEnd")}>
+      <Droppable droppableId="droppable">
+        {(provided) => (
+          <div {...provided.droppableProps} ref={provided.innerRef}>
+            <Draggable draggableId="item" index={0}>
+              {(provided) => (
+                <OutlineItem
+                  {...args}
+                  provided={provided}
+                  snapshot={{ isDragging: false, isDropAnimating: false }}
+                />
+              )}
+            </Draggable>
+          </div>
+        )}
+      </Droppable>
+    </DragDropContext>
+  </div>
 );
 
 const element = {

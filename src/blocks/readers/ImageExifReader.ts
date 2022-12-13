@@ -21,7 +21,7 @@ import axios from "axios";
 
 function base64ToArrayBuffer(base64: string): ArrayBuffer {
   // Adapted from https://github.com/exif-js/exif-js/blob/master/exif.js#L343
-  base64 = base64.replace(/^data:([^;]+);base64,/gim, "");
+  base64 = base64.replace(/^data:([^;]+);base64,/im, "");
   const binary = atob(base64);
   const length_ = binary.length;
   const buffer = new ArrayBuffer(length_);

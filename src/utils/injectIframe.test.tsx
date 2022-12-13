@@ -1,3 +1,6 @@
+/**
+ * @jest-environment-options {"resources": "usable" }
+ */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -15,26 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const varRegex = /(?<varName>@\w+(\.|\w|(\[\d+])|(\[("|')[\s\w]+("|')]))*)/g;
+import injectIframe from "./injectIframe";
 
-// This method is based on regex because we want to show popup even for incomplete template, ex. "{{ @foo."
-function getLikelyVariableAtPosition(
-  template: string,
-  position: number
-): string | null {
-  let match = varRegex.exec(template);
-  while (match !== null) {
-    const { varName } = match.groups;
-    const startIndex = match.index;
-    if (startIndex <= position && position <= startIndex + varName.length) {
-      varRegex.lastIndex = 0;
-      return varName;
-    }
-
-    match = varRegex.exec(template);
-  }
-
-  return null;
-}
-
-export default getLikelyVariableAtPosition;
+describe("injectIframe", () => {
+  test("load simple iframe", async () => {
+    const iframe = await injectIframe("data:text/html,<html>Good soup", {});
+    expect(
+      iframe.contentDocument.documentElement.outerHTML
+    ).toMatchInlineSnapshot(
+      '"<html><head></head><body>Good soup</body></html>"'
+    );
+  });
+});

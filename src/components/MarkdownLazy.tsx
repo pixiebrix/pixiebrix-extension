@@ -16,6 +16,7 @@
  */
 
 import React, { Suspense } from "react";
+import { type MarkdownProps } from "./Markdown";
 
 const MarkdownLoader = React.lazy(
   async () =>
@@ -25,7 +26,7 @@ const MarkdownLoader = React.lazy(
     )
 );
 
-const MarkdownLazy: React.FC<any> = (props) => (
+const MarkdownLazy: React.FC<MarkdownProps> = (props) => (
   <Suspense fallback={null}>
     <MarkdownLoader {...props} />
   </Suspense>

@@ -21,10 +21,6 @@ import { type ExistenceMap } from "@/analysis/analysisVisitors/varAnalysis/varMa
 import { jsonTreeTheme } from "@/themes/light";
 import { type UnknownObject } from "@/types";
 
-type VariablesTreeProps = {
-  vars: ExistenceMap;
-};
-
 const theme = {
   extend: jsonTreeTheme,
   base0D: "#2e2441", // Label and arrow color
@@ -76,8 +72,37 @@ function postprocessValue(value: unknown): unknown {
   return value;
 }
 
+type NodeLabelProps = {
+  path: Array<string | number>;
+  onSelect: (path: string[]) => void;
+};
+
+const NodeLabel: React.FunctionComponent<NodeLabelProps> = ({
+  path,
+  onSelect,
+}) => {
+  const onClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    onSelect(path.map(String).reverse());
+  };
+
+  return (
+    <button type="button" className="btn" onClick={onClick}>
+      {path[0]}
+    </button>
+  );
+};
+
+type VariablesTreeProps = {
+  vars: ExistenceMap;
+  onVarSelect: (selectedPath: string[]) => void;
+};
+
 const VariablesTree: React.FunctionComponent<VariablesTreeProps> = ({
   vars,
+  onVarSelect,
 }) => (
   <JSONTree
     data={vars}
@@ -86,6 +111,9 @@ const VariablesTree: React.FunctionComponent<VariablesTreeProps> = ({
     shouldExpandNode={() => true}
     invertTheme
     hideRoot
+    labelRenderer={(relativePath) => (
+      <NodeLabel path={relativePath} onSelect={onVarSelect} />
+    )}
   />
 );
 

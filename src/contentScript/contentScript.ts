@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// IMPORTANT: do not import anything that has a transitive dependency of the messenger.
-// See for more information: https://github.com/pixiebrix/pixiebrix-extension/issues/4058
 import "./contentScript.scss";
 import { uuidv4 } from "@/types/helpers";
 import {

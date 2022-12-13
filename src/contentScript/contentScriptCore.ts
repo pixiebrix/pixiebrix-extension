@@ -35,8 +35,9 @@ import {
   isContextInvalidatedError,
   notifyContextInvalidated,
 } from "@/errors/contextInvalidated";
-import { type UUID } from "@/core";
 import { onUncaughtError } from "@/errors/errorHelpers";
+import { type UUID } from "@/core";
+import initSandbox from "@/sandbox/messenger/api";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -57,6 +58,7 @@ export async function init(uuid: UUID): Promise<void> {
   addListenerForUpdateSelectedElement();
   initTelemetry();
   initToaster();
+  void initSandbox();
 
   await handleNavigate();
 

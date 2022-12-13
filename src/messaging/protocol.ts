@@ -86,8 +86,9 @@ export const withReadWindow = createSendScriptMessage(
   READ_WINDOW
 ) as unknown as ReadSpec;
 
-export const withSearchWindow =
-  createSendScriptMessage<{ results: unknown[] }>(SEARCH_WINDOW);
+export const withSearchWindow = createSendScriptMessage<{ results: unknown[] }>(
+  SEARCH_WINDOW
+);
 
 export const withDetectFrameworkVersions = createSendScriptMessage<
   FrameworkMeta[]

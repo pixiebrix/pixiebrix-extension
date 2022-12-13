@@ -28,6 +28,10 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { updateDeployments } from "@/background/deployment";
 import { reportEvent } from "@/telemetry/events";
+import { isLinked, readAuthData } from "@/auth/token";
+import { refreshRegistries } from "@/hooks/useRefresh";
+import { isUpdateAvailable } from "@/background/installer";
+import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 
@@ -94,11 +98,6 @@ jest.mock("webext-detect-page", () => ({
 jest.mock("@/background/installer", () => ({
   isUpdateAvailable: jest.fn().mockReturnValue(false),
 }));
-
-import { isLinked, readAuthData } from "@/auth/token";
-import { refreshRegistries } from "@/hooks/useRefresh";
-import { isUpdateAvailable } from "@/background/installer";
-import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
 
 const isLinkedMock = isLinked as jest.Mock;
 const readAuthDataMock = readAuthData as jest.Mock;

@@ -66,7 +66,7 @@ export interface JQueryConfig {
 }
 
 function cleanValue(value: string): string {
-  return value.trim().replace(/\s+/g, " ");
+  return value.trim().replaceAll(/\s+/g, " ");
 }
 
 function castValue(value: string, type?: CastType): Result {

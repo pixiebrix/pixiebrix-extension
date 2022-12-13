@@ -27,6 +27,9 @@
       "run_at": "document_idle"
     }
   ],
+  "sandbox": {
+    "pages": ["sandbox.html"]
+  },
   "optional_permissions": ["clipboardWrite", "*://*/*"],
   "permissions": [
     "activeTab",
@@ -47,6 +50,7 @@
   "web_accessible_resources": [
     "css/*",
     "bundles/*",
+    "sandbox.html",
     "frame.html",
     "frame.css",
     "sidebar.html",
