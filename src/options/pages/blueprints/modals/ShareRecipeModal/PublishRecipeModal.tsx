@@ -142,6 +142,7 @@ const PublishRecipeModal: React.FunctionComponent = () => {
         </span>
       );
     } else {
+      // We get the owner's organization and remove it from the list of organizations (splice mutates the array)
       const ownerOrganization = sortedOrganizations.splice(
         ownerOrganizationIndex,
         1
