@@ -31,6 +31,7 @@ import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { uuidv4 } from "@/types/helpers";
 import { act } from "react-dom/test-utils";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { isPlainObject } from "lodash";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -97,9 +98,11 @@ describe("appBaseQuery", () => {
     expect(data).toBeUndefined();
     expect(isAxiosError(error)).toBe(true);
 
+    // Is a plain serialized object, but use type for autocomplete
     const axiosError = error as AxiosError;
 
     // `serializeError` doesn't serialize properties on the prototype
+    expect(isPlainObject(error)).toBe(true);
     expect(axiosError.isAxiosError).toBeUndefined();
     expect(axiosError.response).toBeDefined();
     expect(axiosError.response.status).toBe(404);
