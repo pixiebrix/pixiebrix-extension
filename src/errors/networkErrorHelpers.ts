@@ -56,8 +56,6 @@ export function selectNetworkErrorMessage(error: unknown): string | null {
     return NO_INTERNET_MESSAGE;
   }
 
-  console.log("selectNetworkErrorMessage", error);
-
   // The response object may exist even on "offline" errors
   if (error.response) {
     const serverErrorMessage = selectServerErrorMessage(error.response);
