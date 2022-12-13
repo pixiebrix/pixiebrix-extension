@@ -30,7 +30,7 @@ import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
 import { isPlainObject } from "@reduxjs/toolkit";
-import { type AxiosError } from "axios";
+import axios, { type AxiosError } from "axios";
 import {
   BusinessError,
   CancelError,
@@ -42,6 +42,9 @@ import {
   ClientRequestError,
   RemoteServiceError,
 } from "@/errors/clientRequestErrors";
+import MockAdapter from "axios-mock-adapter";
+
+const axiosMock = new MockAdapter(axios);
 
 const TEST_MESSAGE = "Test message";
 
@@ -178,6 +181,36 @@ describe("getErrorMessage", () => {
   test("handles null/undefined", () => {
     expect(getErrorMessage(null)).toBe("Unknown error");
     expect(getErrorMessage(undefined)).toBe("Unknown error");
+  });
+
+  test("handles axios error", async () => {
+    axiosMock
+      .onGet()
+      .reply(404, { detail: "These aren't the droids you're looking for" });
+
+    try {
+      await axios.create().get("/");
+      expect.fail("Expected error");
+    } catch (error) {
+      expect(getErrorMessage(error)).toBe(
+        "These aren't the droids you're looking for"
+      );
+    }
+  });
+
+  test("handles serialized axios error", async () => {
+    axiosMock
+      .onGet()
+      .reply(404, { detail: "These aren't the droids you're looking for" });
+
+    try {
+      await axios.create().get("/");
+      expect.fail("Expected error");
+    } catch (error) {
+      expect(getErrorMessage(serializeError(error))).toBe(
+        "These aren't the droids you're looking for"
+      );
+    }
   });
 });
 
