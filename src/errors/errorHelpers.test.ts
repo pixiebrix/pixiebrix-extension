@@ -19,6 +19,7 @@ import {
   getErrorMessage,
   getErrorMessageWithCauses,
   hasSpecificErrorCause,
+  isCustomAggregateError,
   isErrorObject,
   selectError,
   selectErrorFromErrorEvent,
@@ -34,6 +35,7 @@ import axios, { type AxiosError } from "axios";
 import {
   BusinessError,
   CancelError,
+  InvalidDefinitionError,
   MultipleElementsFoundError,
   NoElementsFoundError,
 } from "@/errors/businessErrors";
@@ -530,5 +532,17 @@ describe("serialization", () => {
     };
 
     expect(hasSpecificErrorCause(error, CancelError)).toBeTrue();
+  });
+});
+
+describe("isCustomAggregateError", () => {
+  it("returns false for normal error", () => {
+    expect(isCustomAggregateError(new Error("normal error"))).toBeFalse();
+  });
+
+  it("returns true for aggregate error", () => {
+    expect(
+      isCustomAggregateError(new InvalidDefinitionError("aggregate error", []))
+    ).toBeTrue();
   });
 });
