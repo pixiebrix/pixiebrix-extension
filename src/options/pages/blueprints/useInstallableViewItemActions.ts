@@ -18,7 +18,6 @@
 import {
   getLabel,
   getPackageId,
-  isBlueprint,
   isExtension,
   isExtensionFromRecipe,
   selectExtensionsFromInstallable,
@@ -51,6 +50,7 @@ type ActionCallback = () => void;
 export type InstallableViewItemActions = {
   reinstall: ActionCallback | null;
   activate: ActionCallback | null;
+  viewPublish: ActionCallback | null;
   viewShare: ActionCallback | null;
   deleteExtension: ActionCallback | null;
   uninstall: ActionCallback | null;
@@ -62,6 +62,7 @@ export type InstallableViewItemActions = {
   exportBlueprint: ActionCallback;
 };
 
+// eslint-disable-next-line complexity
 function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
 ): InstallableViewItemActions {
@@ -73,16 +74,18 @@ function useInstallableViewItemActions(
 
   // NOTE: paused deployments are installed, but they are not executed. See deployments.ts:isDeploymentActive
   const isInstalled = status === "Active" || status === "Paused";
+  const isInstallableExtension = isExtension(installable);
+  const isInstallableBlueprint = !isInstallableExtension;
 
   const isCloudExtension =
-    isExtension(installable) &&
+    isInstallableExtension &&
     sharing.source.type === "Personal" &&
     // If the status is active, there is still likely a copy of the extension saved on our server. But the point
     // this check is for extensions that aren't also installed locally
     !isInstalled;
 
   const hasBlueprint =
-    isExtensionFromRecipe(installable) || isBlueprint(installable);
+    isExtensionFromRecipe(installable) || isInstallableBlueprint;
 
   const isDeployment = sharing.source.type === "Deployment";
 
@@ -105,7 +108,7 @@ function useInstallableViewItemActions(
       dispatch(
         push(
           `marketplace/activate/${encodeURIComponent(
-            isBlueprint(installable)
+            isInstallableBlueprint
               ? installable.metadata.id
               : installable._recipe.id
           )}?reinstall=1`
@@ -121,7 +124,7 @@ function useInstallableViewItemActions(
   };
 
   const activate = () => {
-    if (isBlueprint(installable)) {
+    if (isInstallableBlueprint) {
       dispatch(
         push(
           `/marketplace/activate/${encodeURIComponent(installable.metadata.id)}`
@@ -132,10 +135,22 @@ function useInstallableViewItemActions(
     }
   };
 
+  const viewPublish = () => {
+    const shareContext = isInstallableBlueprint
+      ? {
+          blueprintId: getPackageId(installable),
+        }
+      : {
+          extensionId: installable.id,
+        };
+
+    dispatch(blueprintModalsSlice.actions.setPublishContext(shareContext));
+  };
+
   const viewShare = () => {
     let shareContext = null;
 
-    if (isBlueprint(installable)) {
+    if (isInstallableBlueprint) {
       shareContext = {
         blueprintId: getPackageId(installable),
       };
@@ -150,7 +165,7 @@ function useInstallableViewItemActions(
 
   const deleteExtension = useUserAction(
     async () => {
-      if (isBlueprint(installable)) {
+      if (isInstallableBlueprint) {
         return;
       }
 
@@ -190,7 +205,7 @@ function useInstallableViewItemActions(
       }
 
       // Report telemetry
-      if (isBlueprint(installable)) {
+      if (isInstallableBlueprint) {
         reportEvent("BlueprintRemove", {
           blueprintId: installable.metadata.id,
         });
@@ -213,7 +228,7 @@ function useInstallableViewItemActions(
     dispatch(
       blueprintModalsSlice.actions.setLogsContext({
         title: getLabel(installable),
-        messageContext: isBlueprint(installable)
+        messageContext: isInstallableBlueprint
           ? {
               label: getLabel(installable),
               blueprintId: installable.metadata.id,
@@ -225,7 +240,7 @@ function useInstallableViewItemActions(
 
   const exportBlueprint = useUserAction(
     () => {
-      if (isBlueprint(installable)) {
+      if (isInstallableBlueprint) {
         throw new Error("Already a blueprint. Access in the Workshop");
       }
 
@@ -243,9 +258,14 @@ function useInstallableViewItemActions(
     [installable, extensionsFromInstallable]
   );
 
+  const notShareable = isCloudExtension || isDeployment;
+  const isPublicBlueprint =
+    isInstallableBlueprint && installable.sharing.public;
+
   return {
+    viewPublish: notShareable || isPublicBlueprint ? null : viewPublish,
     // Deployment sharing is controlled via the Admin Console
-    viewShare: isCloudExtension || isDeployment ? null : viewShare,
+    viewShare: notShareable ? null : viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,
     uninstall: isInstalled && !isRestricted ? uninstall : null,
     // Only blueprints/deployments can be reinstalled. (Because there's no reason to reinstall an extension... there's

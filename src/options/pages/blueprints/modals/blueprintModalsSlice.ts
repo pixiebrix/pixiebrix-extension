@@ -31,12 +31,14 @@ export type ShareContext = {
 export type BlueprintModalsState = {
   showLogsContext: LogsContext;
   showShareContext: ShareContext;
+  showPublishContext: ShareContext;
 };
 
-const initialState: BlueprintModalsState = {
+const initialState: BlueprintModalsState = Object.freeze<BlueprintModalsState>({
   showLogsContext: null,
   showShareContext: null,
-};
+  showPublishContext: null,
+});
 
 export const blueprintModalsSlice = createSlice({
   name: "blueprintModals",
@@ -45,10 +47,20 @@ export const blueprintModalsSlice = createSlice({
     setLogsContext(state, action: PayloadAction<LogsContext>) {
       state.showLogsContext = action.payload;
       state.showShareContext = null;
+      state.showPublishContext = null;
     },
     setShareContext(state, action: PayloadAction<ShareContext | null>) {
       state.showShareContext = action.payload;
       state.showLogsContext = null;
+      state.showPublishContext = null;
+    },
+    setPublishContext(state, action: PayloadAction<ShareContext | null>) {
+      state.showPublishContext = action.payload;
+      state.showLogsContext = null;
+      state.showShareContext = null;
+    },
+    closeModal() {
+      return initialState;
     },
   },
 });

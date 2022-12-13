@@ -15,13 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RootState } from "@/store/optionsStore";
-
-export const selectShowShareContext = ({ blueprintModals }: RootState) =>
-  blueprintModals.showShareContext;
-
-export const selectShowPublishContext = ({ blueprintModals }: RootState) =>
-  blueprintModals.showPublishContext;
-
-export const selectModalsContext = ({ blueprintModals }: RootState) =>
-  blueprintModals;
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1.5rem 0;
+}
