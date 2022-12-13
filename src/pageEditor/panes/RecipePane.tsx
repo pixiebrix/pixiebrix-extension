@@ -62,11 +62,11 @@ const RecipePane: React.VFC = () => {
       TabContent: EditRecipe,
     },
     {
-      name: "Change Option Values",
+      name: "Current Inputs",
       TabContent: ActivationOptions,
     },
     {
-      name: "Blueprint Options",
+      name: "Input Form",
       TabContent: RecipeOptionsDefinition,
     },
     {
