@@ -187,6 +187,7 @@ const PublishRecipeModal: React.FunctionComponent = () => {
                 anyone, so you can start sharing right away!
               </p>
 
+              <p className="mb-1">Public link to share:</p>
               <ActivationLink blueprintId={blueprintId} />
             </Modal.Body>
             <Modal.Footer>

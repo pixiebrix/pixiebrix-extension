@@ -33,29 +33,21 @@ const ActivationLink: React.FunctionComponent<ActivationLinkProps> = ({
   const installationLink = `https://app.pixiebrix.com/activate?id=${blueprintId}`;
 
   return (
-    <div>
-      <h4>Get activation link</h4>
-      <Form.Group>
-        <Form.Label className="pb-2">
-          People with access can activate the blueprint with this link
-        </Form.Label>
-        <InputGroup>
-          <Form.Control type="text" readOnly defaultValue={installationLink} />
-          <InputGroup.Append>
-            <Button
-              variant="info"
-              onClick={() => {
-                copy(installationLink);
-                // Don't close the modal - that allows the user to re-copy the link and verify the link works
-                notify.success("Copied activation link to clipboard");
-              }}
-            >
-              <FontAwesomeIcon icon={faCopy} />
-            </Button>
-          </InputGroup.Append>
-        </InputGroup>
-      </Form.Group>
-    </div>
+    <InputGroup>
+      <Form.Control type="text" readOnly defaultValue={installationLink} />
+      <InputGroup.Append>
+        <Button
+          variant="info"
+          onClick={() => {
+            copy(installationLink);
+            // Don't close the modal - that allows the user to re-copy the link and verify the link works
+            notify.success("Copied activation link to clipboard");
+          }}
+        >
+          <FontAwesomeIcon icon={faCopy} />
+        </Button>
+      </InputGroup.Append>
+    </InputGroup>
   );
 };
 
