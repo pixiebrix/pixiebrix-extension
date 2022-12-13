@@ -292,7 +292,7 @@ export const appApi = createApi({
           },
         };
       },
-      invalidatesTags: ["EditablePackages", "CloudExtensions"],
+      invalidatesTags: ["EditablePackages"],
     }),
     updateRecipe: builder.mutation<
       PackageUpsertResponse,
