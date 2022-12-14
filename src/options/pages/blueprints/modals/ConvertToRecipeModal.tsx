@@ -173,8 +173,8 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
         ...pick(response, ["updated_at"]),
       };
 
-      // @ts-expect-error -- cloud extension doesn't have "active" property
-      if (extension.active) {
+      // Cloud extension doesn't have "active" property
+      if ("active" in extension && extension.active) {
         // Dealing with installed extension
         dispatch(
           extensionsSlice.actions.attachExtension({
