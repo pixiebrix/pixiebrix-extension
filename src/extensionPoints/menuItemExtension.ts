@@ -538,18 +538,18 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       const serviceContext = await makeServiceContext(extension.services);
       const extensionContext = { ...ctxt, ...serviceContext };
 
-      html = renderMustache(this.getTemplate(), {
+      html = (await renderMustache(this.getTemplate(), {
         caption: (await mapArgs(caption, extensionContext, {
           implicitRender,
           autoescape: versionOptions.autoescape,
         })) as string,
         icon: icon ? await getSvgIcon(icon) : null,
-      }) as string;
+      })) as string;
     } else {
-      html = renderMustache(this.getTemplate(), {
+      html = (await renderMustache(this.getTemplate(), {
         caption,
         icon: icon ? await getSvgIcon(icon) : null,
-      }) as string;
+      })) as string;
     }
 
     const $menuItem = this.makeItem(html, extension);
