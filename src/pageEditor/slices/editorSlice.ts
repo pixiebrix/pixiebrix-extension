@@ -830,6 +830,7 @@ export const editorSlice = createSlice({
       );
       for (const element of recipeElements) {
         element.optionsArgs = action.payload;
+        state.dirty[element.uuid] = true;
       }
     },
   },
