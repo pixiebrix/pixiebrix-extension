@@ -113,7 +113,16 @@ describe("useInstallableViewItemActions", () => {
     const {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(cloudExtensionItem));
-    expectActions(["activate", "deleteExtension", "exportBlueprint"], actions);
+    expectActions(
+      [
+        "viewPublish",
+        "viewShare",
+        "activate",
+        "deleteExtension",
+        "exportBlueprint",
+      ],
+      actions
+    );
   });
 
   test("active personal extension", () => {
