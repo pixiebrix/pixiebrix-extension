@@ -107,8 +107,7 @@ export const initialState: EditorState = {
   isBetaUI: false,
   elementUIStates: {},
   showV3UpgradeMessageByElement: {},
-  dirtyRecipeOptionDefinitionsById: {},
-  dirtyRecipeOptionValuesById: {},
+  dirtyRecipeOptionsById: {},
   dirtyRecipeMetadataById: {},
   visibleModalKey: null,
   keepLocalCopyOnCreateRecipe: false,
@@ -551,7 +550,7 @@ export const editorSlice = createSlice({
     resetMetadataAndOptionsForRecipe(state, action: PayloadAction<RegistryId>) {
       const { payload: recipeId } = action;
       delete state.dirtyRecipeMetadataById[recipeId];
-      delete state.dirtyRecipeOptionDefinitionsById[recipeId];
+      delete state.dirtyRecipeOptionsById[recipeId];
     },
     updateRecipeMetadataForElements(
       state,
@@ -715,7 +714,7 @@ export const editorSlice = createSlice({
 
       // Clean up the old metadata and options
       delete state.dirtyRecipeMetadataById[oldRecipeId];
-      delete state.dirtyRecipeOptionDefinitionsById[oldRecipeId];
+      delete state.dirtyRecipeOptionsById[oldRecipeId];
     },
     addNode(
       state,
@@ -825,7 +824,13 @@ export const editorSlice = createSlice({
         return;
       }
 
-      state.dirtyRecipeOptionValuesById[recipeId] = action.payload;
+      const elements = selectNotDeletedElements({ editor: state });
+      const recipeElements = elements.filter(
+        (element) => element.recipe?.id === recipeId
+      );
+      for (const element of recipeElements) {
+        element.optionsArgs = action.payload;
+      }
     },
   },
   extraReducers(builder) {

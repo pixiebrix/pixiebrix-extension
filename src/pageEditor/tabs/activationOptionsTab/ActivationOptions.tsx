@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveRecipeId,
   selectDirtyOptionDefinitionsForRecipeId,
-  selectModifiedOptionValuesForRecipeId,
+  selectDirtyOptionValuesForRecipeId,
   selectNotDeletedExtensions,
 } from "@/pageEditor/slices/editorSelectors";
 import { useRecipe } from "@/recipes/recipesHooks";
@@ -61,7 +61,7 @@ const ActivationOptionsContent: React.FC = () => {
     selectDirtyOptionDefinitionsForRecipeId(recipeId)
   );
   const modifiedOptionValues = useSelector(
-    selectModifiedOptionValuesForRecipeId(recipeId)
+    selectDirtyOptionValuesForRecipeId(recipeId)
   );
   const installedExtensions = useSelector(selectNotDeletedExtensions);
 
@@ -83,6 +83,7 @@ const ActivationOptionsContent: React.FC = () => {
   );
 
   const initialValues = useMemo(() => {
+    console.log("initialValues memo");
     if (modifiedOptionValues) {
       return modifiedOptionValues;
     }
@@ -110,7 +111,7 @@ const ActivationOptionsContent: React.FC = () => {
     return <Alert variant="danger">{getErrorMessage(error)}</Alert>;
   }
 
-  const renderBody: RenderBody = (values) => (
+  const renderBody: RenderBody = ({ values }) => (
     <>
       <Effect values={values} onChange={updateRedux} delayMillis={100} />
       <Card>

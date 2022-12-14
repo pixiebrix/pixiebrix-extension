@@ -72,52 +72,6 @@ export const selectErrorState = ({ editor }: EditorRootState) => ({
 
 export const selectDirty = ({ editor }: EditorRootState) => editor.dirty;
 
-export const selectDirtyRecipeOptionDefinitions = ({
-  editor,
-}: EditorRootState) => editor.dirtyRecipeOptionDefinitionsById;
-
-const dirtyOptionDefinitionsForRecipeIdSelector = createSelector(
-  selectDirtyRecipeOptionDefinitions,
-  (state: EditorRootState, recipeId: RegistryId) => recipeId,
-  (dirtyRecipeOptionDefinitionsById, recipeId) =>
-    // eslint-disable-next-line security/detect-object-injection -- RegistryId for recipe
-    dirtyRecipeOptionDefinitionsById[recipeId]
-);
-
-export const selectDirtyOptionDefinitionsForRecipeId =
-  (recipeId: RegistryId) => (state: RootState) =>
-    dirtyOptionDefinitionsForRecipeIdSelector(state, recipeId);
-
-const selectModifiedRecipeOptionValues = ({ editor }: EditorRootState) =>
-  editor.dirtyRecipeOptionValuesById;
-
-const modifiedOptionValuesForRecipeIdSelector = createSelector(
-  selectModifiedRecipeOptionValues,
-  (state: EditorRootState, recipeId: RegistryId) => recipeId,
-  (modifiedRecipeOptionValuesById, recipeId) =>
-    // eslint-disable-next-line security/detect-object-injection -- RegistryId for recipe
-    modifiedRecipeOptionValuesById[recipeId]
-);
-
-export const selectModifiedOptionValuesForRecipeId =
-  (recipeId: RegistryId) => (state: EditorRootState) =>
-    modifiedOptionValuesForRecipeIdSelector(state, recipeId);
-
-export const selectDirtyRecipeMetadata = ({ editor }: EditorRootState) =>
-  editor.dirtyRecipeMetadataById;
-
-const dirtyMetadataForRecipeIdSelector = createSelector(
-  selectDirtyRecipeMetadata,
-  (state: EditorRootState, recipeId: RegistryId) => recipeId,
-  (dirtyRecipeMetadataById, recipeId) =>
-    // eslint-disable-next-line security/detect-object-injection
-    dirtyRecipeMetadataById[recipeId]
-);
-
-export const selectDirtyMetadataForRecipeId =
-  (recipeId: RegistryId) => (state: RootState) =>
-    dirtyMetadataForRecipeIdSelector(state, recipeId);
-
 export const selectDeletedElements = ({ editor }: EditorRootState) =>
   editor.deletedElementsByRecipeId;
 
@@ -143,6 +97,48 @@ export const selectNotDeletedExtensions: ({
   (extensions, deletedElementIds) =>
     extensions.filter(({ id }) => !deletedElementIds.has(id))
 );
+
+export const selectDirtyRecipeOptionDefinitions = ({
+  editor,
+}: EditorRootState) => editor.dirtyRecipeOptionsById;
+
+const dirtyOptionDefinitionsForRecipeIdSelector = createSelector(
+  selectDirtyRecipeOptionDefinitions,
+  (state: EditorRootState, recipeId: RegistryId) => recipeId,
+  (dirtyRecipeOptionDefinitionsById, recipeId) =>
+    // eslint-disable-next-line security/detect-object-injection -- RegistryId for recipe
+    dirtyRecipeOptionDefinitionsById[recipeId]
+);
+
+export const selectDirtyOptionDefinitionsForRecipeId =
+  (recipeId: RegistryId) => (state: RootState) =>
+    dirtyOptionDefinitionsForRecipeIdSelector(state, recipeId);
+
+const dirtyOptionValuesForRecipeIdSelector = createSelector(
+  selectNotDeletedElements,
+  (state: EditorRootState, recipeId: RegistryId) => recipeId,
+  (elements, recipeId) =>
+    elements.find((element) => element.recipe?.id === recipeId)?.optionsArgs
+);
+
+export const selectDirtyOptionValuesForRecipeId =
+  (recipeId: RegistryId) => (state: EditorRootState) =>
+    dirtyOptionValuesForRecipeIdSelector(state, recipeId);
+
+export const selectDirtyRecipeMetadata = ({ editor }: EditorRootState) =>
+  editor.dirtyRecipeMetadataById;
+
+const dirtyMetadataForRecipeIdSelector = createSelector(
+  selectDirtyRecipeMetadata,
+  (state: EditorRootState, recipeId: RegistryId) => recipeId,
+  (dirtyRecipeMetadataById, recipeId) =>
+    // eslint-disable-next-line security/detect-object-injection
+    dirtyRecipeMetadataById[recipeId]
+);
+
+export const selectDirtyMetadataForRecipeId =
+  (recipeId: RegistryId) => (state: RootState) =>
+    dirtyMetadataForRecipeIdSelector(state, recipeId);
 
 const elementIsDirtySelector = createSelector(
   selectDirty,

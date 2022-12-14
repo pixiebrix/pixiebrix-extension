@@ -22,7 +22,7 @@ import { type SavingExtensionState } from "@/pageEditor/panes/save/savingExtensi
 import { type SettingsRootState } from "@/store/settingsTypes";
 import { type RuntimeRootState } from "@/pageEditor/slices/runtimeSliceTypes";
 import { type ExtensionPointType } from "@/extensionPoints/types";
-import { type RegistryId, type UserOptions, type UUID } from "@/core";
+import { type RegistryId, type UUID } from "@/core";
 import { type BlockConfig } from "@/blocks/types";
 import {
   type OptionsDefinition,
@@ -143,12 +143,7 @@ export interface EditorState {
   /**
    * Unsaved, changed recipe options definitions
    */
-  dirtyRecipeOptionDefinitionsById: Record<RegistryId, OptionsDefinition>;
-
-  /**
-   * Recipe activation option values that have been modified in the page editor
-   */
-  dirtyRecipeOptionValuesById: Record<RegistryId, UserOptions>;
+  dirtyRecipeOptionsById: Record<RegistryId, OptionsDefinition>;
 
   /**
    * Unsaved, changed recipe metadata
