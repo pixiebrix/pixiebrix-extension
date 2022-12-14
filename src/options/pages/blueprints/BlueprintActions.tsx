@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React, { useMemo } from "react";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -25,9 +26,9 @@ import {
   faTimes,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import React, { useMemo } from "react";
 import useInstallableViewItemActions from "@/options/pages/blueprints/useInstallableViewItemActions";
 import { type InstallableViewItem } from "./blueprintsTypes";
+import PublishIcon from "@/icons/arrow-up-from-bracket-solid.svg?loadAsComponent";
 
 const BlueprintActions: React.FunctionComponent<{
   installableViewItem: InstallableViewItem;
@@ -41,7 +42,18 @@ const BlueprintActions: React.FunctionComponent<{
       {
         title: (
           <>
-            <FontAwesomeIcon icon={faShare} /> Share
+            {/* Applying the same classes which <FontAwesomeIcon/> applies */}
+            <PublishIcon className="svg-inline--fa fa-w-16" /> Publish to
+            Marketplace
+          </>
+        ),
+        action: actions.viewPublish,
+        hide: !actions.viewPublish,
+      },
+      {
+        title: (
+          <>
+            <FontAwesomeIcon icon={faShare} /> Share with Teams
           </>
         ),
         action: actions.viewShare,

@@ -76,6 +76,7 @@ import {
   type Deployment,
   type MarketplaceListing,
   type MarketplaceTag,
+  type Milestone,
   UserRole,
 } from "@/types/contract";
 import { type ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
@@ -167,7 +168,9 @@ export const authStateFactory = define<AuthState>({
     const flags: AuthState["flags"] = [];
     return flags;
   },
-  milestones: [],
+  milestones(): Milestone[] {
+    return [];
+  },
 });
 
 export const recipeMetadataFactory = define<Metadata>({
@@ -491,9 +494,9 @@ export const innerExtensionPointRecipeFactory = ({
     kind: "recipe",
     apiVersion: "v3",
     metadata: recipeMetadataFactory,
-    sharing: { public: false, organizations: [] },
+    sharing: (): SharingDefinition => ({ public: false, organizations: [] }),
     updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
-    definitions: {
+    definitions: (): InnerDefinitions => ({
       [extensionPointRef]: {
         kind: "extensionPoint",
         definition: {
@@ -506,7 +509,7 @@ export const innerExtensionPointRecipeFactory = ({
           reader: validateRegistryId("@pixiebrix/document-context"),
         },
       },
-    },
+    }),
     options: undefined,
     extensionPoints: () => [
       extensionPointConfigFactory({ id: extensionPointRef }),

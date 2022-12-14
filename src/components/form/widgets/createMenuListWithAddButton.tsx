@@ -24,7 +24,8 @@ type MenuListWithAddButtonProps<
   IsMulti extends boolean,
   GroupType extends GroupBase<OptionType> = GroupBase<OptionType>
 > = MenuListProps<OptionType, IsMulti, GroupType> & {
-  onAddClick: () => void;
+  onAddClick?: () => void;
+  href?: string;
 };
 
 const MenuListWithAddButton = <
@@ -43,7 +44,12 @@ const MenuListWithAddButton = <
     innerRef,
     isMulti,
     onAddClick,
+    href,
   } = props;
+
+  const actionProps = onAddClick
+    ? { onClick: onAddClick }
+    : { href, target: "_blank", rel: "noopener noreferrer" };
 
   return (
     <div
@@ -61,7 +67,7 @@ const MenuListWithAddButton = <
     >
       {children}
       <div className="text-center">
-        <Button size="sm" variant="link" onClick={onAddClick}>
+        <Button size="sm" variant="link" {...actionProps}>
           + Add new
         </Button>
       </div>
@@ -73,14 +79,29 @@ const MenuListWithAddButton = <
  * This is meant to be used together with {@link SelectWidget} to show "Add new" button.
  * See [From.stories.tsx](https://github.com/pixiebrix/pixiebrix-extension/blob/main/src/components/form/Form.stories.tsx#L184:L195) for usage example.
  */
-const createMenuListWithAddButton = (onAddClick: () => void) => {
+const createMenuListWithAddButton = (action: (() => void) | string) => {
+  let onAddClick: () => void;
+  let href: string;
+
+  if (typeof action === "string") {
+    href = action;
+  } else {
+    onAddClick = action;
+  }
+
   const MenuList = <
     OptionType,
     IsMulti extends boolean,
     GroupType extends GroupBase<OptionType> = GroupBase<OptionType>
   >(
     menuListProps: MenuListWithAddButtonProps<OptionType, IsMulti, GroupType>
-  ) => <MenuListWithAddButton onAddClick={onAddClick} {...menuListProps} />;
+  ) => (
+    <MenuListWithAddButton
+      onAddClick={onAddClick}
+      href={href}
+      {...menuListProps}
+    />
+  );
   return MenuList;
 };
 

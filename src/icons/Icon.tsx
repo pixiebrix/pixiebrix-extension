@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./Icon.module.scss";
 import React, { useState } from "react";
+import styles from "./Icon.module.scss";
 import { useAsyncEffect } from "use-async-effect";
 import { type IconLibrary } from "@/core";
 import getSvgIcon from "@/icons/getSvgIcon";

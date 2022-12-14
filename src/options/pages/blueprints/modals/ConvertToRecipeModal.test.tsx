@@ -20,13 +20,35 @@ import { authSlice } from "@/auth/authSlice";
 import { render } from "@/options/testHelpers";
 import extensionsSlice from "@/store/extensionsSlice";
 import { authStateFactory, cloudExtensionFactory } from "@/testUtils/factories";
+import userEvent from "@testing-library/user-event";
 import React from "react";
-import { blueprintModalsSlice } from "./blueprintModalsSlice";
+import {
+  blueprintModalsSlice,
+  type ShareContext,
+} from "./blueprintModalsSlice";
 import ConvertToRecipeModal from "./ConvertToRecipeModal";
+import * as api from "@/services/api";
+import { selectModalsContext } from "./blueprintModalsSelectors";
+import { type RootState } from "@/store/optionsStore";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest.fn().mockReturnValue({ refetch: jest.fn() }),
 }));
+
+jest.mock("@/services/api", () => {
+  const originalModule = jest.requireActual("@/services/api");
+  return {
+    ...originalModule,
+    useCreateRecipeMutation: jest.fn(),
+  };
+});
+
+beforeEach(() => {
+  (api.useCreateRecipeMutation as jest.Mock).mockReturnValue([jest.fn()]);
+});
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
 describe("it renders", () => {
   test("default state", () => {
@@ -79,4 +101,75 @@ describe("it renders", () => {
     const dialogRoot = rendered.getByRole("dialog");
     expect(dialogRoot).toMatchSnapshot();
   });
+
+  test.each([
+    {
+      name: "Share",
+      sharingAction: blueprintModalsSlice.actions.setShareContext,
+      contextToBeEmpty: "showPublishContext",
+      sharingContext: "showShareContext",
+    },
+    {
+      name: "Publish",
+      sharingAction: blueprintModalsSlice.actions.setPublishContext,
+      contextToBeEmpty: "showShareContext",
+      sharingContext: "showPublishContext",
+    },
+  ])(
+    "opens $name modal after converting extension to blueprint",
+    async ({ sharingAction, contextToBeEmpty, sharingContext }) => {
+      (api.useCreateRecipeMutation as jest.Mock).mockReturnValue([
+        jest.fn().mockReturnValue({
+          unwrap: jest.fn().mockResolvedValue({
+            public: false,
+            organizations: [],
+            updated_at: new Date().toISOString(),
+          }),
+        }),
+      ]);
+
+      const extension = cloudExtensionFactory();
+
+      const rendered = render(
+        <div>
+          <ConvertToRecipeModal />
+        </div>,
+        {
+          setupRedux(dispatch) {
+            dispatch(authSlice.actions.setAuth(authStateFactory()));
+            dispatch(
+              extensionsSlice.actions.installCloudExtension({
+                extension,
+              })
+            );
+            dispatch(
+              sharingAction({
+                extensionId: extension.id,
+              })
+            );
+          },
+        }
+      );
+
+      const submit = await rendered.findByRole("button", {
+        name: "Save and Continue",
+      });
+      await userEvent.click(submit);
+
+      const modalState = selectModalsContext(
+        rendered.getReduxStore().getState() as RootState
+      );
+
+      // @ts-expect-error -- use dynamic key to access state property
+      expect(modalState[contextToBeEmpty]).toBeNull();
+      expect(
+        // @ts-expect-error -- use dynamic key to access state property
+        (modalState[sharingContext] as ShareContext).extensionId
+      ).toBeUndefined();
+      expect(
+        // @ts-expect-error -- use dynamic key to access state property
+        (modalState[sharingContext] as ShareContext).blueprintId
+      ).not.toBeUndefined();
+    }
+  );
 });
