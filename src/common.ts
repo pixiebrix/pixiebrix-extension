@@ -16,7 +16,7 @@
  */
 
 import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
-import { ApiVersion } from "@/core";
+import { type ApiVersion } from "@/core";
 
 export const NOTIFICATIONS_Z_INDEX = 2_147_483_647;
 export const MAX_Z_INDEX = NOTIFICATIONS_Z_INDEX - 1; // Let notifications always be higher
