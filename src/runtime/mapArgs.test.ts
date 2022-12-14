@@ -101,18 +101,18 @@ describe("exclude null", () => {
 });
 
 describe("renderImplicit", () => {
-  test("prefer path to renderer", () => {
-    expect(
+  test("prefer path to renderer", async () => {
+    await expect(
       renderImplicit({ foo: "array.0" }, { array: ["bar"] }, Mustache.render)
-    ).toEqual({
+    ).resolves.toEqual({
       foo: "bar",
     });
   });
 
-  test("render path as string if it doesn't exist in the context", () => {
-    expect(
+  test("render path as string if it doesn't exist in the context", async () => {
+    await expect(
       renderImplicit({ foo: "array.0" }, { otherVar: ["bar"] }, Mustache.render)
-    ).toEqual({
+    ).resolves.toEqual({
       foo: "array.0",
     });
   });
@@ -120,13 +120,13 @@ describe("renderImplicit", () => {
 
 describe("handlebars", () => {
   test("render array item", async () => {
-    expect(
+    await expect(
       renderImplicit(
         { foo: "{{ obj.prop }}" },
         { obj: { prop: 42 } },
-        await engineRenderer("handlebars", apiVersionOptions("v3"))
+        engineRenderer("handlebars", apiVersionOptions("v3"))
       )
-    ).toEqual({
+    ).resolves.toEqual({
       foo: "42",
     });
   });
@@ -134,13 +134,13 @@ describe("handlebars", () => {
   // NOTE: Handlebars doesn't work with @-prefixed variable because it uses @ to denote data variables
   // see: https://handlebarsjs.com/api-reference/data-variables.html
   test("cannot render @-prefixed variable", async () => {
-    expect(
+    await expect(
       renderImplicit(
         { foo: "{{ obj.prop }}" },
         { "@obj": { prop: 42 } },
-        await engineRenderer("handlebars", apiVersionOptions("v3"))
+        engineRenderer("handlebars", apiVersionOptions("v3"))
       )
-    ).toEqual({
+    ).resolves.toEqual({
       foo: "",
     });
   });

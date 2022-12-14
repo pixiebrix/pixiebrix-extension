@@ -15,5 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Skip the sandbox messenger
-export { renderNunjucksTemplate, applyJq } from "@/sandbox/messenger/executor";
+// Skip the sandbox messenger during tests
+export {
+  renderNunjucksTemplate,
+  renderHandlebarsTemplate,
+  applyJq,
+} from "@/sandbox/messenger/executor";

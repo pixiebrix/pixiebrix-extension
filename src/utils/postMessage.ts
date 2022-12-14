@@ -105,14 +105,24 @@ export function addPostMessageListener(
       return;
     }
 
+    // Only log with process.env.WEBEXT_MESSENGER_LOGGING to avoid large logging payloads
     try {
-      console.debug("SANDBOX:", type, "Received payload:", data.payload);
+      if (process.env.WEBEXT_MESSENGER_LOGGING) {
+        console.debug("SANDBOX:", type, "Received payload:", data.payload);
+      }
+
       const response = await listener(data.payload);
 
-      console.debug("SANDBOX:", type, "Responding with", response);
+      if (process.env.WEBEXT_MESSENGER_LOGGING) {
+        console.debug("SANDBOX:", type, "Responding with", response);
+      }
+
       source.postMessage({ response } satisfies ResponsePacket);
     } catch (error) {
-      console.debug("SANDBOX:", type, "Throwing", error);
+      if (process.env.WEBEXT_MESSENGER_LOGGING) {
+        console.debug("SANDBOX:", type, "Throwing", error);
+      }
+
       source.postMessage({
         error: serializeError(error),
       } satisfies ResponsePacket);

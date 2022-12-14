@@ -17,7 +17,8 @@
 
 import { type UnknownObject } from "@/types";
 import {
-  type Renderer,
+  type AsyncTemplateRenderer,
+  type TemplateRenderer,
   engineRenderer,
   type RendererOptions,
 } from "./renderers";
@@ -131,7 +132,7 @@ export async function renderExplicit(
       return isVarExpression(config) ? null : "";
     }
 
-    const render = await engineRenderer(config.__type__, options);
+    const render = engineRenderer(config.__type__, options);
     return render(config.__value__, ctxt);
   }
 
@@ -192,18 +193,20 @@ export function renderMustache(config: Args, ctxt: UnknownObject): unknown {
   return Mustache.render(config, ctxt);
 }
 
-export function renderImplicit(
+export async function renderImplicit(
   config: Args,
   ctxt: UnknownObject,
-  render: Renderer
-): unknown {
+  render: AsyncTemplateRenderer | TemplateRenderer
+): Promise<unknown> {
   if (Array.isArray(config)) {
-    return config.map((x) => renderImplicit(x, ctxt, render));
+    return Promise.all(
+      config.map(async (x) => renderImplicit(x, ctxt, render))
+    );
   }
 
   if (isPlainObject(config) && typeof config === "object") {
     return pickBy(
-      mapValues(config, (subConfig) =>
+      await asyncMapValues(config, async (subConfig) =>
         renderImplicit(subConfig as UnknownObject, ctxt, render)
       ),
       (x) => x != null
@@ -233,7 +236,7 @@ export type MapOptions = {
   /**
    * Render method for v1-v2 implicit runtime behavior
    */
-  implicitRender: Renderer | null;
+  implicitRender: AsyncTemplateRenderer | null;
 
   /**
    * True to auto-escape the values.

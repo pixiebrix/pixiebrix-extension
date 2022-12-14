@@ -17,29 +17,37 @@
 
 import { type TemplateEngine } from "@/core";
 import Mustache from "mustache";
-import { mapKeys, identity, once } from "lodash";
+import { identity, mapKeys } from "lodash";
 import { getPropByPath } from "@/runtime/pathHelpers";
 import { type UnknownObject } from "@/types";
-import { isErrorObject } from "@/errors/errorHelpers";
-import { InvalidTemplateError } from "@/errors/businessErrors";
+import {
+  renderHandlebarsTemplate,
+  renderNunjucksTemplate,
+} from "@/sandbox/messenger/api";
+import { type JsonObject } from "type-fest";
 
-export type Renderer = (template: string, context: unknown) => unknown;
-
-const ensureNunjucks = once(async () => {
-  const { default: nunjucks } = await import(
-    /* webpackChunkName: "nunjucks" */ "nunjucks"
-  );
-  return nunjucks;
-});
+export type AsyncTemplateRenderer = (
+  template: string,
+  context: unknown
+) => Promise<unknown>;
+export type TemplateRenderer = (template: string, context: unknown) => unknown;
 
 export type RendererOptions = {
   autoescape?: boolean;
 };
 
-export async function engineRenderer(
+/**
+ * Returns true if `literalOrTemplate` includes any template expressions that would be replaced by `context`.
+ * @param literalOrTemplate the string literal or Nunjucks/Handlebars template.
+ */
+export function containsTemplateExpression(literalOrTemplate: string): boolean {
+  return literalOrTemplate.includes("{{") || literalOrTemplate.includes("{%");
+}
+
+export function engineRenderer(
   templateEngine: TemplateEngine,
   options: RendererOptions
-): Promise<Renderer | undefined> {
+): AsyncTemplateRenderer | undefined {
   const autoescape = options.autoescape ?? true;
 
   if (templateEngine == null) {
@@ -48,7 +56,8 @@ export async function engineRenderer(
 
   switch (templateEngine.toLowerCase()) {
     case "mustache": {
-      return (template, ctxt) =>
+      // Mustache can run directly (not in sandbox) because it doesn't use eval or Function constructor
+      return async (template, ctxt) =>
         Mustache.render(
           template,
           ctxt,
@@ -61,40 +70,43 @@ export async function engineRenderer(
     }
 
     case "nunjucks": {
-      const nunjucks = await ensureNunjucks();
-      nunjucks.configure({ autoescape });
-      return (template, ctxt) => {
+      return async (template, ctxt) => {
+        if (!containsTemplateExpression(template)) {
+          // Avoid trip to sandbox for literal values
+          return template;
+        }
+
         // Convert top level data from kebab case to snake case in order to be valid identifiers
         const snakeCased = mapKeys(ctxt as UnknownObject, (value, key) =>
           key.replaceAll("-", "_")
         );
 
-        try {
-          return nunjucks.renderString(template, snakeCased);
-        } catch (error) {
-          if (isErrorObject(error) && error.name === "Template render error") {
-            throw new InvalidTemplateError(error.message, template);
-          }
-
-          throw error;
-        }
+        return renderNunjucksTemplate({
+          template,
+          context: snakeCased as JsonObject,
+          autoescape: options.autoescape,
+        });
       };
     }
 
     case "handlebars": {
-      const { default: handlebars } = await import(
-        /* webpackChunkName: "handlebars" */ "handlebars"
-      );
-      return (template, ctxt) => {
-        const compiledTemplate = handlebars.compile(template, {
-          noEscape: !autoescape,
+      return async (template, ctxt) => {
+        if (!containsTemplateExpression(template)) {
+          // Avoid trip to sandbox for literal values
+          return template;
+        }
+
+        return renderHandlebarsTemplate({
+          template,
+          context: ctxt as JsonObject,
+          autoescape: options.autoescape,
         });
-        return compiledTemplate(ctxt);
       };
     }
 
     case "var": {
-      return (template, ctxt) => {
+      return async (template, ctxt) => {
+        // `var` can run directly (not in sandbox) because it doesn't use eval or Function constructor
         const value = getPropByPath(ctxt as UnknownObject, template);
         if (value && typeof value === "object" && "__service" in value) {
           // If we're returning the root service context, return the service itself for use with proxyService

@@ -40,17 +40,25 @@ export async function ping() {
   });
 }
 
-export type NunjucksRenderPayload = {
+export type TemplateRenderPayload = {
   template: string;
   context: JsonObject;
   autoescape: boolean;
 };
 
-export async function renderNunjucksTemplate(payload: NunjucksRenderPayload) {
+export async function renderNunjucksTemplate(payload: TemplateRenderPayload) {
   return postMessage({
     recipient: await loadSandbox(),
     payload,
     type: "RENDER_NUNJUCKS",
+  });
+}
+
+export async function renderHandlebarsTemplate(payload: TemplateRenderPayload) {
+  return postMessage({
+    recipient: await loadSandbox(),
+    payload,
+    type: "RENDER_HANDLEBARS",
   });
 }
 
