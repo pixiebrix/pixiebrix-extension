@@ -73,7 +73,7 @@ const PublishRecipeModal: React.FunctionComponent = () => {
 
   // If the was just converted to a blueprint, the API request is likely be in progress and recipe will be null
   if (isFetchingRecipe) {
-    return <Loading />;
+    return <Loading title="Publish to Marketplace" />;
   }
 
   const publish = async () => {

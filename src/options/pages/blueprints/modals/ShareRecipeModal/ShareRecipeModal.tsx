@@ -89,7 +89,7 @@ const ShareRecipeModal: React.FunctionComponent = () => {
 
   // If the was just converted to a blueprint, the API request is likely be in progress and recipe will be null
   if (isFetchingRecipe) {
-    return <Loading />;
+    return <Loading title="Share with Teams" />;
   }
 
   const initialValues: ShareInstallableFormState = {
