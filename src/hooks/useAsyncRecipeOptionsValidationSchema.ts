@@ -22,7 +22,7 @@ import { type Schema } from "@/core";
 import { buildYup } from "schema-to-yup";
 import { useAsyncState } from "@/hooks/common";
 
-const useRecipeOptionsValidationSchema = (
+const useAsyncRecipeOptionsValidationSchema = (
   optionsDefinitionSchema: Schema | undefined
 ) =>
   useAsyncState(async () => {
@@ -52,4 +52,4 @@ const useRecipeOptionsValidationSchema = (
     return buildYup(cloneDeep(schemaWithNullableRequiredFields), {});
   }, [optionsDefinitionSchema]);
 
-export default useRecipeOptionsValidationSchema;
+export default useAsyncRecipeOptionsValidationSchema;

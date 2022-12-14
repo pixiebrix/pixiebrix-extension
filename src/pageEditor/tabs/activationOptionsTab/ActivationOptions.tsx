@@ -37,7 +37,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { inferRecipeOptions } from "@/store/extensionsUtils";
 import { EMPTY_RECIPE_OPTIONS_DEFINITION } from "@/pageEditor/tabs/RecipeOptionsDefinition";
 import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/common";
-import useRecipeOptionsValidationSchema from "@/hooks/useRecipeOptionsValidationSchema";
+import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: OPTIONS_DEFAULT_RUNTIME_API_VERSION,
@@ -52,7 +52,7 @@ const ActivationOptionsContent: React.FC = () => {
     error: recipeError,
   } = useRecipe(recipeId);
   const [validationSchema, isLoadingSchema, schemaError] =
-    useRecipeOptionsValidationSchema(recipe?.options?.schema);
+    useAsyncRecipeOptionsValidationSchema(recipe?.options?.schema);
   const dirtyRecipeOptions = useSelector(
     selectDirtyOptionDefinitionsForRecipeId(recipeId)
   );

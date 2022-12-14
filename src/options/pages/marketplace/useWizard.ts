@@ -21,7 +21,7 @@ import ServicesBody from "@/options/pages/marketplace/ServicesBody";
 import PermissionsBody from "@/options/pages/marketplace/PermissionsBody";
 import { inputProperties } from "@/helpers";
 import * as Yup from "yup";
-import useRecipeOptionsValidationSchema from "@/hooks/useRecipeOptionsValidationSchema";
+import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
 
 const STEPS: WizardStep[] = [
   // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for TypeScript
@@ -42,7 +42,7 @@ function useWizard(
   blueprint: RecipeDefinition
 ): [WizardStep[], WizardValues, Yup.ObjectSchema<any>] {
   const installedExtensions = useSelector(selectExtensions);
-  const [optionsValidationSchema] = useRecipeOptionsValidationSchema(
+  const [optionsValidationSchema] = useAsyncRecipeOptionsValidationSchema(
     blueprint?.options?.schema
   );
 
