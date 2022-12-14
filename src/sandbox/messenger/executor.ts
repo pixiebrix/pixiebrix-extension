@@ -16,29 +16,18 @@
  */
 
 import { type ApplyJqPayload, type TemplateRenderPayload } from "./api";
-import { once } from "lodash";
 import { isErrorObject } from "@/errors/errorHelpers";
 import { InvalidTemplateError } from "@/errors/businessErrors";
-
-const ensureNunjucks = once(async () => {
-  const { default: nunjucks } = await import(
-    /* webpackChunkName: "nunjucks" */ "nunjucks"
-  );
-  return nunjucks;
-});
-
-const ensureHandlebars = once(async () => {
-  const { default: handlebars } = await import(
-    /* webpackChunkName: "handlebars" */ "handlebars"
-  );
-  return handlebars;
-});
 
 export async function renderNunjucksTemplate(
   payload: TemplateRenderPayload
 ): Promise<string> {
   const { template, context, autoescape } = payload;
-  const nunjucks = await ensureNunjucks();
+
+  // Webpack caches the module import, so doesn't need to cache via lodash's `once`
+  const { default: nunjucks } = await import(
+    /* webpackChunkName: "nunjucks" */ "nunjucks"
+  );
 
   nunjucks.configure({ autoescape });
   try {
@@ -54,7 +43,12 @@ export async function renderHandlebarsTemplate(
   payload: TemplateRenderPayload
 ): Promise<string> {
   const { template, context, autoescape } = payload;
-  const handlebars = await ensureHandlebars();
+
+  // Webpack caches the module import, so doesn't need to cache via lodash's `once`
+  const { default: handlebars } = await import(
+    /* webpackChunkName: "handlebars" */ "handlebars"
+  );
+
   const compiledTemplate = handlebars.compile(template, {
     noEscape: !autoescape,
   });

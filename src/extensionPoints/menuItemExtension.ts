@@ -493,7 +493,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     const implicitRender = versionOptions.explicitRender
       ? null
-      : await engineRenderer(
+      : engineRenderer(
           extension.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
           versionOptions
         );
@@ -531,7 +531,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       }
     }
 
-    const renderMustache = await engineRenderer("mustache", versionOptions);
+    const renderMustache = engineRenderer("mustache", versionOptions);
 
     if (dynamicCaption) {
       const ctxt = await ctxtPromise;
