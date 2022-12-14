@@ -30,7 +30,7 @@ import {
 import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
-import { isPlainObject } from "@reduxjs/toolkit";
+import { configureStore, isPlainObject } from "@reduxjs/toolkit";
 import axios, { type AxiosError } from "axios";
 import {
   BusinessError,
@@ -45,8 +45,37 @@ import {
   RemoteServiceError,
 } from "@/errors/clientRequestErrors";
 import MockAdapter from "axios-mock-adapter";
+import { uuidv4 } from "@/types/helpers";
+import { renderHook } from "@testing-library/react-hooks";
+import { appApi, useGetPackageQuery } from "@/services/api";
+import { Provider } from "react-redux";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
+import { getLinkedApiClient } from "@/services/apiClient";
+import React from "react";
 
 const axiosMock = new MockAdapter(axios);
+
+jest.mock("@/services/apiClient", () => ({
+  getLinkedApiClient: jest.fn(),
+}));
+
+const getLinkedApiClientMock = getLinkedApiClient as jest.Mock;
+
+getLinkedApiClientMock.mockResolvedValue(axios.create());
+
+function testStore() {
+  return configureStore({
+    reducer: {
+      [appApi.reducerPath]: appApi.reducer,
+    },
+    middleware(getDefaultMiddleware) {
+      // eslint-disable-next-line unicorn/prefer-spread -- use concat for proper type inference
+      return getDefaultMiddleware().concat(appApi.middleware);
+    },
+    preloadedState: {},
+  });
+}
 
 const TEST_MESSAGE = "Test message";
 
@@ -216,6 +245,32 @@ describe("getErrorMessage", () => {
         "Request failed with status code 404"
       );
     }
+  });
+
+  test("handles error message from RTK", async () => {
+    axiosMock
+      .onGet()
+      .reply(404, { detail: "These aren't the droids you're looking for" });
+
+    const store = testStore();
+
+    const id = uuidv4();
+
+    const { result } = renderHook(() => useGetPackageQuery({ id }), {
+      wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
+    });
+
+    await waitForEffect();
+
+    const { error, data } = result.current;
+    expect(data).toBeUndefined();
+    expect(isAxiosError(error)).toBe(true);
+
+    // Unlike the non-RTK test case, the error here is detected as an AxiosError in the test suite because the base
+    // query overrides the name to be AxiosError so it's detected by isAxiosError(...)
+    expect(getErrorMessage(serializeError(error))).toBe(
+      "These aren't the droids you're looking for"
+    );
   });
 });
 
