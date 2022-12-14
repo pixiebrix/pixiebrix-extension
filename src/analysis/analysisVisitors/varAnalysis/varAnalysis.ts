@@ -199,7 +199,16 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     position: BlockPosition,
     expression: Expression<string, "nunjucks">
   ) {
-    for (const varName of parseTemplateVariables(expression.__value__)) {
+    let templateVariables: string[];
+    try {
+      templateVariables = parseTemplateVariables(expression.__value__);
+    } catch {
+      // Parsing errors usually happen because of malformed or incomplete template
+      // Ignoring this for VarAnalysis
+      return;
+    }
+
+    for (const varName of templateVariables) {
       if (!this.currentBlockKnownVars?.isVariableDefined(varName)) {
         this.pushNotFoundVariableAnnotation(position, varName, expression);
       }

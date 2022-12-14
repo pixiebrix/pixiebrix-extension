@@ -29,6 +29,8 @@ import {
   makePipelineExpression,
   makeTemplateExpression,
 } from "@/runtime/expressionCreators";
+import { EchoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 jest.mock("@/background/messenger/api", () => ({
   __esModule: true,
@@ -295,5 +297,50 @@ describe("Collecting available vars", () => {
           .isVariableDefined("@element")
       ).toBeFalse();
     });
+  });
+});
+
+describe("Invalid template", () => {
+  let extension: FormState;
+  let analysis: VarAnalysis;
+
+  beforeEach(() => {
+    const invalidEchoBlock = {
+      id: EchoBlock.BLOCK_ID,
+      config: {
+        message: makeTemplateExpression(
+          "nunjucks",
+          "This is a malformed template {{ @foo."
+        ),
+      },
+    };
+    const validEchoBlock = {
+      id: EchoBlock.BLOCK_ID,
+      config: {
+        message: makeTemplateExpression(
+          "nunjucks",
+          "This is a valid template {{ @bar }}"
+        ),
+      },
+    };
+
+    extension = formStateFactory(undefined, [invalidEchoBlock, validEchoBlock]);
+
+    analysis = new VarAnalysis([]);
+  });
+
+  test("analysis doesn't throw", async () => {
+    await expect(analysis.run(extension)).toResolve();
+  });
+
+  test("analysis doesn't annotate invalid template", async () => {
+    await analysis.run(extension);
+    const annotations = analysis.getAnnotations();
+
+    // Only the second (index = 1) block should be annotated
+    expect(annotations).toHaveLength(1);
+    expect(annotations[0].position.path).toEqual(
+      "extension.blockPipeline.1.config.message"
+    );
   });
 });
