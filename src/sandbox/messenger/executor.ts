@@ -36,6 +36,8 @@ export async function renderNunjucksTemplate(
     if (isErrorObject(error) && error.name === "Template render error") {
       throw new InvalidTemplateError(error.message, template);
     }
+
+    throw error;
   }
 }
 
