@@ -148,7 +148,7 @@ export interface EditorState {
   /**
    * Recipe activation option values that have been modified in the page editor
    */
-  modifiedRecipeOptionValuesById: Record<RegistryId, UserOptions>;
+  dirtyRecipeOptionValuesById: Record<RegistryId, UserOptions>;
 
   /**
    * Unsaved, changed recipe metadata

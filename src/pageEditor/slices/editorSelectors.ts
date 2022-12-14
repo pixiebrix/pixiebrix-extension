@@ -89,7 +89,7 @@ export const selectDirtyOptionDefinitionsForRecipeId =
     dirtyOptionDefinitionsForRecipeIdSelector(state, recipeId);
 
 const selectModifiedRecipeOptionValues = ({ editor }: EditorRootState) =>
-  editor.modifiedRecipeOptionValuesById;
+  editor.dirtyRecipeOptionValuesById;
 
 const modifiedOptionValuesForRecipeIdSelector = createSelector(
   selectModifiedRecipeOptionValues,

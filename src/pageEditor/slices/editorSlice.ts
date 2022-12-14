@@ -21,7 +21,12 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { clearExtensionTraces } from "@/telemetry/trace";
-import { type RecipeMetadata, type RegistryId, type UUID } from "@/core";
+import {
+  type RecipeMetadata,
+  type RegistryId,
+  type UserOptions,
+  type UUID,
+} from "@/core";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { type BlockConfig } from "@/blocks/types";
 import { type ExtensionPointType } from "@/extensionPoints/types";
@@ -103,7 +108,7 @@ export const initialState: EditorState = {
   elementUIStates: {},
   showV3UpgradeMessageByElement: {},
   dirtyRecipeOptionDefinitionsById: {},
-  modifiedRecipeOptionValuesById: {},
+  dirtyRecipeOptionValuesById: {},
   dirtyRecipeMetadataById: {},
   visibleModalKey: null,
   keepLocalCopyOnCreateRecipe: false,
@@ -813,6 +818,14 @@ export const editorSlice = createSlice({
     },
     hideModal(state) {
       state.visibleModalKey = null;
+    },
+    editRecipeOptionValues(state, action: PayloadAction<UserOptions>) {
+      const recipeId = state.activeRecipeId;
+      if (recipeId == null) {
+        return;
+      }
+
+      state.dirtyRecipeOptionValuesById[recipeId] = action.payload;
     },
   },
   extraReducers(builder) {

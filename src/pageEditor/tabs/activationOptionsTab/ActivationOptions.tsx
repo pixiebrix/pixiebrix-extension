@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
-import { useSelector } from "react-redux";
+import React, { useCallback, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveRecipeId,
   selectDirtyOptionDefinitionsForRecipeId,
@@ -38,6 +38,9 @@ import { inferRecipeOptions } from "@/store/extensionsUtils";
 import { EMPTY_RECIPE_OPTIONS_DEFINITION } from "@/pageEditor/tabs/RecipeOptionsDefinition";
 import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/common";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
+import Effect from "@/pageEditor/components/Effect";
+import { type UserOptions } from "@/core";
+import { actions } from "@/pageEditor/slices/editorSlice";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: OPTIONS_DEFAULT_RUNTIME_API_VERSION,
@@ -45,6 +48,7 @@ const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
 };
 
 const ActivationOptionsContent: React.FC = () => {
+  const dispatch = useDispatch();
   const recipeId = useSelector(selectActiveRecipeId);
   const {
     data: recipe,
@@ -89,6 +93,13 @@ const ActivationOptionsContent: React.FC = () => {
     return inferRecipeOptions(recipeExtensions);
   }, [installedExtensions, modifiedOptionValues, recipeId]);
 
+  const updateRedux = useCallback(
+    (options: UserOptions) => {
+      dispatch(actions.editRecipeOptionValues(options));
+    },
+    [dispatch]
+  );
+
   if (isLoadingSchema || isLoadingRecipe) {
     return <Loader />;
   }
@@ -99,15 +110,18 @@ const ActivationOptionsContent: React.FC = () => {
     return <Alert variant="danger">{getErrorMessage(error)}</Alert>;
   }
 
-  const renderBody: RenderBody = () => (
-    <Card>
-      <Card.Header>Blueprint input options</Card.Header>
-      <Card.Body>
-        <FieldRuntimeContext.Provider value={OPTIONS_FIELD_RUNTIME_CONTEXT}>
-          <OptionsFieldGroup name="" />
-        </FieldRuntimeContext.Provider>
-      </Card.Body>
-    </Card>
+  const renderBody: RenderBody = (values) => (
+    <>
+      <Effect values={values} onChange={updateRedux} delayMillis={100} />
+      <Card>
+        <Card.Header>Blueprint input options</Card.Header>
+        <Card.Body>
+          <FieldRuntimeContext.Provider value={OPTIONS_FIELD_RUNTIME_CONTEXT}>
+            <OptionsFieldGroup name="" />
+          </FieldRuntimeContext.Provider>
+        </Card.Body>
+      </Card>
+    </>
   );
 
   return (
@@ -115,6 +129,7 @@ const ActivationOptionsContent: React.FC = () => {
       <Form
         validationSchema={validationSchema}
         initialValues={initialValues}
+        enableReinitialize
         renderBody={renderBody}
         onSubmit={() => {
           console.error(
