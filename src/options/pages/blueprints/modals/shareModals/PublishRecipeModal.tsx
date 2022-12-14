@@ -38,7 +38,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ActivationLink from "./ActivationLink";
 import { RequireScope } from "@/auth/RequireScope";
-import styles from "./ShareRecipeModal.module.scss";
+import styles from "./ShareModals.module.scss";
 import { selectAuth } from "@/auth/authSelectors";
 import { type Organization, UserRole } from "@/types/contract";
 import Loading from "./Loading";
