@@ -209,8 +209,11 @@ describe("getErrorMessage", () => {
       await axios.create().get("/");
       expect.fail("Expected error");
     } catch (error) {
+      // `axios-mock-adapter` produces an error with name="Error" and prototype=AxiosError. When serialized, the
+      // isAxiosError is also dropped because it's on the prototype, and not the instance. As a result, error
+      // fails the isAxiosError(...) check getErrorMessage uses getErrorMessage
       expect(getErrorMessage(serializeError(error))).toBe(
-        "These aren't the droids you're looking for"
+        "Request failed with status code 404"
       );
     }
   });
