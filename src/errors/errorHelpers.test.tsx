@@ -19,6 +19,7 @@ import {
   getErrorMessage,
   getErrorMessageWithCauses,
   hasSpecificErrorCause,
+  isCustomAggregateError,
   isErrorObject,
   selectError,
   selectErrorFromErrorEvent,
@@ -29,11 +30,12 @@ import {
 import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
-import { isPlainObject } from "@reduxjs/toolkit";
-import { type AxiosError } from "axios";
+import { configureStore, isPlainObject } from "@reduxjs/toolkit";
+import axios, { type AxiosError } from "axios";
 import {
   BusinessError,
   CancelError,
+  InvalidDefinitionError,
   MultipleElementsFoundError,
   NoElementsFoundError,
 } from "@/errors/businessErrors";
@@ -42,6 +44,38 @@ import {
   ClientRequestError,
   RemoteServiceError,
 } from "@/errors/clientRequestErrors";
+import MockAdapter from "axios-mock-adapter";
+import { uuidv4 } from "@/types/helpers";
+import { renderHook } from "@testing-library/react-hooks";
+import { appApi, useGetPackageQuery } from "@/services/api";
+import { Provider } from "react-redux";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
+import { getLinkedApiClient } from "@/services/apiClient";
+import React from "react";
+
+const axiosMock = new MockAdapter(axios);
+
+jest.mock("@/services/apiClient", () => ({
+  getLinkedApiClient: jest.fn(),
+}));
+
+const getLinkedApiClientMock = getLinkedApiClient as jest.Mock;
+
+getLinkedApiClientMock.mockResolvedValue(axios.create());
+
+function testStore() {
+  return configureStore({
+    reducer: {
+      [appApi.reducerPath]: appApi.reducer,
+    },
+    middleware(getDefaultMiddleware) {
+      // eslint-disable-next-line unicorn/prefer-spread -- use concat for proper type inference
+      return getDefaultMiddleware().concat(appApi.middleware);
+    },
+    preloadedState: {},
+  });
+}
 
 const TEST_MESSAGE = "Test message";
 
@@ -178,6 +212,65 @@ describe("getErrorMessage", () => {
   test("handles null/undefined", () => {
     expect(getErrorMessage(null)).toBe("Unknown error");
     expect(getErrorMessage(undefined)).toBe("Unknown error");
+  });
+
+  test("handles axios error", async () => {
+    axiosMock
+      .onGet()
+      .reply(404, { detail: "These aren't the droids you're looking for" });
+
+    try {
+      await axios.create().get("/");
+      expect.fail("Expected error");
+    } catch (error) {
+      expect(getErrorMessage(error)).toBe(
+        "These aren't the droids you're looking for"
+      );
+    }
+  });
+
+  test("handles serialized axios error", async () => {
+    axiosMock
+      .onGet()
+      .reply(404, { detail: "These aren't the droids you're looking for" });
+
+    try {
+      await axios.create().get("/");
+      expect.fail("Expected error");
+    } catch (error) {
+      // `axios-mock-adapter` produces an error with name="Error" and prototype=AxiosError. When serialized, the
+      // isAxiosError is also dropped because it's on the prototype, and not the instance. As a result, error
+      // fails the isAxiosError(...) check getErrorMessage uses getErrorMessage
+      expect(getErrorMessage(serializeError(error))).toBe(
+        "Request failed with status code 404"
+      );
+    }
+  });
+
+  test("handles error message from RTK", async () => {
+    axiosMock
+      .onGet()
+      .reply(404, { detail: "These aren't the droids you're looking for" });
+
+    const store = testStore();
+
+    const id = uuidv4();
+
+    const { result } = renderHook(() => useGetPackageQuery({ id }), {
+      wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
+    });
+
+    await waitForEffect();
+
+    const { error, data } = result.current;
+    expect(data).toBeUndefined();
+    expect(isAxiosError(error)).toBe(true);
+
+    // Unlike the non-RTK test case, the error here is detected as an AxiosError in the test suite because the base
+    // query overrides the name to be AxiosError so it's detected by isAxiosError(...)
+    expect(getErrorMessage(serializeError(error))).toBe(
+      "These aren't the droids you're looking for"
+    );
   });
 });
 
@@ -497,5 +590,17 @@ describe("serialization", () => {
     };
 
     expect(hasSpecificErrorCause(error, CancelError)).toBeTrue();
+  });
+});
+
+describe("isCustomAggregateError", () => {
+  it("returns false for normal error", () => {
+    expect(isCustomAggregateError(new Error("normal error"))).toBeFalse();
+  });
+
+  it("returns true for aggregate error", () => {
+    expect(
+      isCustomAggregateError(new InvalidDefinitionError("aggregate error", []))
+    ).toBeTrue();
   });
 });
