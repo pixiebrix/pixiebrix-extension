@@ -29,7 +29,7 @@ import {
   type ExpressionType,
   type TemplateEngine,
 } from "@/core";
-import { asyncMapValues } from "@/utils";
+import { asyncMapValues, isObject } from "@/utils";
 import Mustache from "mustache";
 import { type BlockPipeline } from "@/blocks/types";
 
@@ -53,12 +53,8 @@ export type Args = string | UnknownObject | UnknownObject[];
  * @see isTemplateExpression
  */
 export function isExpression(value: unknown): value is Expression<unknown> {
-  if (
-    isPlainObject(value) &&
-    typeof value === "object" &&
-    "__type__" in value
-  ) {
-    return expressionTypes.includes((value as Expression).__type__);
+  if (isObject(value) && "__type__" in value) {
+    return expressionTypes.includes(value.__type__ as ExpressionType);
   }
 
   return false;
@@ -103,7 +99,7 @@ export function isTemplateExpression(
 export function isVarExpression(
   value: unknown
 ): value is Expression<string, "var"> {
-  return isExpression(value) && (value as Expression).__type__ === "var";
+  return isExpression(value) && value.__type__ === "var";
 }
 
 /**
@@ -113,7 +109,7 @@ export function isVarExpression(
 export function isNunjucksExpression(
   value: unknown
 ): value is Expression<string, "nunjucks"> {
-  return isExpression(value) && (value as Expression).__type__ === "nunjucks";
+  return isExpression(value) && value.__type__ === "nunjucks";
 }
 
 /**

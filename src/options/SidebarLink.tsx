@@ -17,25 +17,24 @@
 
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { NavLink } from "react-router-dom";
+import { NavLink, type NavLinkProps } from "react-router-dom";
 import cx from "classnames";
 import { useLocation } from "react-router";
-import { type Location } from "history";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { closeSidebarOnSmallScreen } from "./toggleSidebar";
 
 interface LinkProps {
-  isActive?: (match: any, location: Location) => boolean;
   title: string;
   icon: IconProp;
   route: string;
 }
 
-export const SidebarLink: React.FunctionComponent<LinkProps> = ({
+export const SidebarLink: React.FunctionComponent<LinkProps & NavLinkProps> = ({
   route,
   title,
   icon,
   isActive,
+  ...navLinkProps
 }) => {
   const location = useLocation();
   const rootPathname = location.pathname.split("/")[1];
@@ -52,6 +51,7 @@ export const SidebarLink: React.FunctionComponent<LinkProps> = ({
         className="nav-link"
         isActive={isActive}
         onClick={closeSidebarOnSmallScreen}
+        {...navLinkProps}
       >
         <span className="menu-title">{title}</span>
         <FontAwesomeIcon icon={icon} className="menu-icon" fixedWidth />
