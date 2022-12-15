@@ -113,7 +113,7 @@ export async function shouldRunBlock(
   if (blockConfig.if !== undefined) {
     const render = explicitRender
       ? null
-      : await engineRenderer(
+      : engineRenderer(
           blockConfig.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
           { autoescape }
         );

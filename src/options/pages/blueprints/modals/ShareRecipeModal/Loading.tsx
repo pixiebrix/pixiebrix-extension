@@ -21,16 +21,20 @@ import Loader from "@/components/Loader";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { Modal } from "react-bootstrap";
 
-const Loading: React.FunctionComponent = () => {
+type LoadingProps = {
+  title: string;
+};
+
+const Loading: React.FunctionComponent<LoadingProps> = ({ title }) => {
   const dispatch = useDispatch();
   const closeModal = () => {
-    dispatch(blueprintModalsSlice.actions.setShareContext(null));
+    dispatch(blueprintModalsSlice.actions.closeModal());
   };
 
   return (
     <Modal show onHide={closeModal}>
       <Modal.Header closeButton>
-        <Modal.Title>Share with Teams</Modal.Title>
+        <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Loader />

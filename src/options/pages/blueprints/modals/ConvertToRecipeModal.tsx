@@ -33,7 +33,11 @@ import {
 import { pick } from "lodash";
 import Form from "@/components/form/Form";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { useCreateRecipeMutation } from "@/services/api";
+import {
+  useCreateRecipeMutation,
+  useDeleteCloudExtensionMutation,
+  useGetCloudExtensionsQuery,
+} from "@/services/api";
 import {
   type RecipeDefinition,
   selectSourceRecipeMetadata,
@@ -107,13 +111,17 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
   const extensionId =
     showShareContext?.extensionId ?? showPublishContext?.extensionId;
   const extensions = useSelector(selectExtensions);
+  const { data: cloudExtensions } = useGetCloudExtensionsQuery();
+  const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
 
   const extension = useMemo(() => {
     if (extensionId == null) {
       return null;
     }
 
-    const extension = extensions.find((x) => x.id === extensionId);
+    const extension =
+      extensions.find((x) => x.id === extensionId) ??
+      cloudExtensions?.find((x) => x.id === extensionId);
     if (extension == null) {
       throw new Error(`No persisted extension exists with id: ${extensionId}`);
     }
@@ -165,12 +173,22 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
         ...pick(response, ["updated_at"]),
       };
 
-      dispatch(
-        extensionsSlice.actions.attachExtension({
+      // Cloud extension doesn't have "active" property
+      if ("active" in extension && extension.active) {
+        // Dealing with installed extension
+        dispatch(
+          extensionsSlice.actions.attachExtension({
+            extensionId: extension.id,
+            recipeMetadata: selectSourceRecipeMetadata(recipe),
+          })
+        );
+      } else {
+        // In case of cloud extension, we need to delete it
+        // Since it's now a part of the blueprint
+        await deleteCloudExtension({
           extensionId: extension.id,
-          recipeMetadata: selectSourceRecipeMetadata(recipe),
-        })
-      );
+        }).unwrap();
+      }
 
       refetchRecipes();
 

@@ -15,7 +15,7 @@ import {
   type PipelineExpression,
 } from "@/runtime/mapArgs";
 import { BusinessError } from "@/errors/businessErrors";
-import { UNSET_UUID } from "@/types/helpers";
+import { UNSET_UUID, validateRegistryId } from "@/types/helpers";
 
 const logger = new ConsoleLogger();
 
@@ -31,9 +31,10 @@ class ContextBlock extends Block {
   }
 }
 
-class EchoBlock extends Block {
+export class EchoBlock extends Block {
+  static BLOCK_ID = validateRegistryId("test/echo");
   constructor() {
-    super("test/echo", "Echo Block");
+    super(EchoBlock.BLOCK_ID, "Echo Block");
   }
 
   inputSchema = propertiesToSchema({

@@ -447,7 +447,7 @@ async function renderBlockArg(
 
   const implicitRender = explicitRender
     ? null
-    : await engineRenderer(
+    : engineRenderer(
         config.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
         { autoescape }
       );

@@ -15,16 +15,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ApplyJqPayload, type NunjucksRenderPayload } from "./api";
+import { type ApplyJqPayload, type TemplateRenderPayload } from "./api";
+import { isErrorObject } from "@/errors/errorHelpers";
+import { InvalidTemplateError } from "@/errors/businessErrors";
 
-export async function renderNunjucksTemplate(payload: NunjucksRenderPayload) {
+export async function renderNunjucksTemplate(
+  payload: TemplateRenderPayload
+): Promise<string> {
   const { template, context, autoescape } = payload;
+
+  // Webpack caches the module import, so doesn't need to cache via lodash's `once`
   const { default: nunjucks } = await import(
     /* webpackChunkName: "nunjucks" */ "nunjucks"
   );
 
   nunjucks.configure({ autoescape });
-  return nunjucks.renderString(template, context);
+  try {
+    return nunjucks.renderString(template, context);
+  } catch (error) {
+    if (isErrorObject(error) && error.name === "Template render error") {
+      throw new InvalidTemplateError(error.message, template);
+    }
+
+    throw error;
+  }
+}
+
+export async function renderHandlebarsTemplate(
+  payload: TemplateRenderPayload
+): Promise<string> {
+  const { template, context, autoescape } = payload;
+
+  // Webpack caches the module import, so doesn't need to cache via lodash's `once`
+  const { default: handlebars } = await import(
+    /* webpackChunkName: "handlebars" */ "handlebars"
+  );
+
+  const compiledTemplate = handlebars.compile(template, {
+    noEscape: !autoescape,
+  });
+  return compiledTemplate(context);
 }
 
 export async function applyJq(payload: ApplyJqPayload) {

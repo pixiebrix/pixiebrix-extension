@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const path = require("path");
+const path = require("node:path");
 const dotenv = require("dotenv");
 const webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -32,16 +32,26 @@ const mergeWithShared = require("./webpack.sharedConfig.js");
 
 function parseEnv(value) {
   switch (String(value).toLowerCase()) {
-    case "undefined":
+    case "undefined": {
       return;
-    case "null":
+    }
+
+    case "null": {
       return null;
-    case "false":
+    }
+
+    case "false": {
       return false;
-    case "true":
+    }
+
+    case "true": {
       return true;
-    case "":
+    }
+
+    case "": {
       return "";
+    }
+
     default:
   }
 
@@ -79,7 +89,7 @@ console.log(
 );
 
 if (!process.env.SOURCE_VERSION) {
-  process.env.SOURCE_VERSION = require("child_process")
+  process.env.SOURCE_VERSION = require("node:child_process")
     .execSync("git rev-parse --short HEAD")
     .toString()
     .trim();

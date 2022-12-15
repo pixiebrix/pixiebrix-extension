@@ -16,16 +16,22 @@
  */
 
 import MockAdapter from "axios-mock-adapter";
-import axios from "axios";
+import axios, { type AxiosError } from "axios";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { configureStore } from "@reduxjs/toolkit";
-import { appApi, useUpdatePackageMutation } from "@/services/api";
+import {
+  appApi,
+  useUpdatePackageMutation,
+  useGetPackageQuery,
+} from "@/services/api";
 import { renderHook } from "@testing-library/react-hooks";
 import { Provider } from "react-redux";
 import React from "react";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { uuidv4 } from "@/types/helpers";
 import { act } from "react-dom/test-utils";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { isPlainObject } from "lodash";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -73,5 +79,34 @@ describe("appBaseQuery", () => {
       // `serializeError` doesn't serialize properties on the prototype
       expect((error as any).isAxiosError).toBeUndefined();
     }
+  });
+
+  test("RTK preserves response on 404", async () => {
+    axiosMock.onGet().reply(404);
+
+    const store = testStore();
+
+    const id = uuidv4();
+
+    const { result } = renderHook(() => useGetPackageQuery({ id }), {
+      wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
+    });
+
+    await waitForEffect();
+
+    const { error, data } = result.current;
+    expect(data).toBeUndefined();
+    expect(isAxiosError(error)).toBe(true);
+
+    // Is a plain serialized object, but use type for autocomplete
+    const axiosError = error as AxiosError;
+
+    // `serializeError` doesn't serialize properties on the prototype
+    expect(isPlainObject(error)).toBe(true);
+    expect(axiosError.isAxiosError).toBeUndefined();
+    expect(axiosError.response).toBeDefined();
+    expect(axiosError.response.status).toBe(404);
+    // The type definition is incorrect: https://github.com/axios/axios/pull/5331
+    expect(axiosError.status).toBeUndefined();
   });
 });

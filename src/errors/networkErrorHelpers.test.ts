@@ -19,6 +19,9 @@ import {
   isAxiosError,
   isBadRequestObjectData,
   isSingleObjectBadRequestError,
+  NO_INTERNET_MESSAGE,
+  NO_RESPONSE_MESSAGE,
+  selectNetworkErrorMessage,
 } from "@/errors/networkErrorHelpers";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
@@ -47,6 +50,66 @@ describe("isSingleObjectBadRequestError", () => {
     } catch (error) {
       expect(isAxiosError(error)).toBe(true);
       expect(isSingleObjectBadRequestError(error)).toBe(true);
+    }
+  });
+});
+
+describe("selectNetworkErrorMessage", () => {
+  test("handles non-axios error", async () => {
+    expect(selectNetworkErrorMessage(new Error("test"))).toBeUndefined();
+  });
+
+  test("handles network error", async () => {
+    axiosMock.onPut().networkError();
+
+    try {
+      await axios.create().put("/", {});
+      expect.fail("Expected error");
+    } catch (error) {
+      expect(isAxiosError(error)).toBe(true);
+      expect(selectNetworkErrorMessage(error)).toBe(NO_RESPONSE_MESSAGE);
+    }
+  });
+
+  test("handles timeout", async () => {
+    axiosMock.onPut().timeout();
+
+    try {
+      await axios.create().put("/", {});
+      expect.fail("Expected error");
+    } catch (error) {
+      expect(isAxiosError(error)).toBe(true);
+      expect(selectNetworkErrorMessage(error)).toBe(NO_RESPONSE_MESSAGE);
+    }
+  });
+
+  test("handles offline", async () => {
+    jest.spyOn(navigator, "onLine", "get").mockReturnValueOnce(false);
+
+    axiosMock.onPut().networkError();
+
+    try {
+      await axios.create().put("/", {});
+      expect.fail("Expected error");
+    } catch (error) {
+      expect(isAxiosError(error)).toBe(true);
+      expect(selectNetworkErrorMessage(error)).toBe(NO_INTERNET_MESSAGE);
+    }
+  });
+
+  test("handles DRF 404", async () => {
+    axiosMock
+      .onGet()
+      .reply(404, { detail: "These aren't the droids you're looking for" });
+
+    try {
+      await axios.create().get("/");
+      expect.fail("Expected error");
+    } catch (error) {
+      expect(isAxiosError(error)).toBe(true);
+      expect(selectNetworkErrorMessage(error)).toBe(
+        "These aren't the droids you're looking for"
+      );
     }
   });
 });

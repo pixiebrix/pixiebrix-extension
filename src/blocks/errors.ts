@@ -67,23 +67,15 @@ export class HeadlessModeError extends Error {
  * Error indicating input elements to a block did not match the JSON schema.
  */
 export class InputValidationError extends BusinessError {
-  readonly schema: Schema;
-
-  readonly input: unknown;
-
-  readonly errors: OutputUnit[];
+  override name = "InputValidationError";
 
   constructor(
     message: string,
-    schema: Schema,
-    input: unknown,
-    errors: OutputUnit[]
+    readonly schema: Schema,
+    readonly input: unknown,
+    readonly errors: OutputUnit[]
   ) {
     super(message);
-    this.name = "InputValidationError";
-    this.schema = schema;
-    this.input = input;
-    this.errors = errors;
   }
 }
 
@@ -100,32 +92,22 @@ export function isInputValidationError(
  * localization, but we optimistically try to proceed with brick execution.
  */
 export class OutputValidationError extends BusinessError {
-  readonly schema: Schema;
-
-  readonly instance: unknown;
-
-  readonly errors: OutputUnit[];
+  override name = "OutputValidationError";
 
   constructor(
     message: string,
-    schema: Schema,
-    instance: unknown,
-    errors: OutputUnit[]
+    readonly schema: Schema,
+    readonly instance: unknown,
+    readonly errors: OutputUnit[]
   ) {
     super(message);
-    this.name = "OutputValidationError";
-    this.schema = schema;
-    this.instance = instance;
-    this.errors = errors;
   }
 }
 
 export class RemoteExecutionError extends BusinessError {
-  readonly error: JsonObject;
+  override name = "RemoteExecutionError";
 
-  constructor(message: string, error: JsonObject) {
+  constructor(message: string, readonly error: JsonObject) {
     super(message);
-    this.name = "RemoteExecutionError";
-    this.error = error;
   }
 }
