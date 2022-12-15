@@ -22,12 +22,30 @@ type ModalLayoutProps = {
   title: string;
   show: boolean;
   onHide: () => void;
+
+  className?: string;
+  dialogClassName?: string;
+  contentClassName?: string;
 };
 
 const ModalLayout: React.FunctionComponent<
   React.PropsWithChildren<ModalLayoutProps>
-> = ({ title, show, onHide, children }) => (
-  <Modal show={show} onHide={onHide}>
+> = ({
+  title,
+  show,
+  onHide,
+  children,
+  className,
+  dialogClassName,
+  contentClassName,
+}) => (
+  <Modal
+    show={show}
+    onHide={onHide}
+    className={className}
+    dialogClassName={dialogClassName}
+    contentClassName={contentClassName}
+  >
     <Modal.Header closeButton>
       <Modal.Title>{title}</Modal.Title>
     </Modal.Header>

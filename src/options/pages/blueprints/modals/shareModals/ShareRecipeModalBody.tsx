@@ -40,7 +40,6 @@ import {
   faUser,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import { RequireScope } from "@/auth/RequireScope";
 import ReactSelect from "react-select";
 import styles from "./ShareModals.module.scss";
 import { selectAuth } from "@/auth/authSelectors";

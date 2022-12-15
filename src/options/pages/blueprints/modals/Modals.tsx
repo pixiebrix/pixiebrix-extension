@@ -16,34 +16,18 @@
  */
 
 import React from "react";
-import { useSelector } from "react-redux";
-import { selectModalsContext } from "./blueprintModalsSelectors";
 import ConvertToRecipeModal from "./convertToRecipeModal/ConvertToRecipeModal";
 import ExtensionLogsModal from "./extensionLogsModal/ExtensionLogsModal";
 import PublishRecipeModal from "./shareModals/PublishRecipeModal";
 import ShareRecipeModal from "./shareModals/ShareRecipeModal";
 
-const Modals: React.FunctionComponent = () => {
-  const { showLogsContext, showShareContext, showPublishContext } =
-    useSelector(selectModalsContext);
-
-  const showLogsModal = showLogsContext !== null;
-  const showConvertToRecipeModal =
-    showShareContext?.extensionId || showPublishContext?.extensionId;
-
-  return (
-    <>
-      {showLogsModal && (
-        <ExtensionLogsModal
-          title={showLogsContext.title}
-          context={showLogsContext.messageContext}
-        />
-      )}
-      {showConvertToRecipeModal && <ConvertToRecipeModal />}
-      <ShareRecipeModal />
-      <PublishRecipeModal />
-    </>
-  );
-};
+const Modals: React.FunctionComponent = () => (
+  <>
+    <ExtensionLogsModal />
+    <ConvertToRecipeModal />
+    <ShareRecipeModal />
+    <PublishRecipeModal />
+  </>
+);
 
 export default Modals;

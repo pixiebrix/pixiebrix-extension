@@ -25,11 +25,11 @@ import PublishRecipeModalBody from "./PublishRecipeModalBody";
 
 const PublishRecipeModal: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const showPublishContext = useSelector(selectShowPublishContext);
-
   const closeModal = () => {
     dispatch(blueprintModalsSlice.actions.closeModal());
   };
+
+  const showPublishContext = useSelector(selectShowPublishContext);
 
   return (
     <ModalLayout

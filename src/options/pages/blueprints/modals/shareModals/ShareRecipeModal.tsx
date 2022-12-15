@@ -25,11 +25,11 @@ import ShareRecipeModalBody from "./ShareRecipeModalBody";
 
 const ShareRecipeModal: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const showShareContext = useSelector(selectShowShareContext);
-
   const closeModal = () => {
     dispatch(blueprintModalsSlice.actions.closeModal());
   };
+
+  const showShareContext = useSelector(selectShowShareContext);
 
   return (
     <ModalLayout

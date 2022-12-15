@@ -295,7 +295,7 @@ exports[`it renders requires user scope 1`] = `
         <div
           class="font-weight-bold"
         >
-          To share a blueprint, you must first set an account alias for your PixieBrix account
+          To publish a blueprint, you must first set an account alias for your PixieBrix account
         </div>
         <div
           class="fade mt-2 alert alert-info show"
