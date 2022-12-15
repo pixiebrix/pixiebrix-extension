@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { describeTable, type ParsedTable } from "./parseDomTable";
+import {
+  describeTable,
+  type ParsedTable,
+  type TableRecord,
+} from "./parseDomTable";
 
 /** Normalized data extracted from definition list */
 interface NormalizedItem {
@@ -56,18 +60,18 @@ function flattenListContent(list: HTMLDListElement): NormalizedItem[] {
 
 export function parseDefinitionList(list: HTMLDListElement): ParsedTable {
   // Lists are monodimensional, there can only be one record
-  const record = new Map<string, string>();
+  const record: TableRecord = {};
 
   for (const { terms, definitions } of flattenListContent(list)) {
     for (const term of terms) {
-      record.set(term, definitions.join("\n"));
+      // TODO: Possible injection with `<dt>__proto__</dt>`
+      record[term] = definitions.join("\n");
     }
   }
 
   return {
     fieldNames: Object.keys(record),
-    // `fromEntries` saves us from __proto__ https://stackoverflow.com/a/63455731/288906
-    records: [Object.fromEntries(record)],
+    records: [record],
   };
 }
 

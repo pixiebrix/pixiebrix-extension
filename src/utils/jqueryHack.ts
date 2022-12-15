@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/prefer-reflect-apply,prefer-rest-params -- copied code from maintainer */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *

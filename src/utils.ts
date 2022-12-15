@@ -26,6 +26,7 @@ import {
   flow,
   head,
   isEmpty,
+  isPlainObject,
   last,
   mapValues,
   maxBy,
@@ -338,7 +339,7 @@ export function isNullOrBlank(value: unknown): boolean {
 }
 
 export function excludeUndefined(obj: unknown): unknown {
-  if (isObject(obj)) {
+  if (isPlainObject(obj) && typeof obj === "object") {
     return mapValues(
       pickBy(obj, (x) => x !== undefined),
       excludeUndefined

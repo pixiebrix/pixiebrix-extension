@@ -27,15 +27,21 @@ import { joinName } from "@/utils";
 import RequireServiceConfig from "@/contrib/RequireServiceConfig";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
-// TODO: Fix this `no-restricted-paths`, it could point to a real bug
+// TODO: Fix `no-restricted-paths`: Look into a standardized way to mark this whole as pageEditor-only
 import { thisTab } from "@/pageEditor/utils";
 import { getProcesses, initRobot } from "@/contentScript/messenger/api";
 import { isDevToolsPage } from "webext-detect-page";
 import { useField } from "formik";
 import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
+import { expectContext } from "@/utils/expectContext";
 
 function useLocalRobot() {
+  expectContext(
+    "devTools",
+    "useLocalRobot only works in the page editor due to its `thisTab` usage"
+  );
+
   const [robotAvailable, setRobotAvailable] = useState(false);
   const [consentCode, setConsentCode] = useState(null);
   const [initError, setInitError] = useState(null);
