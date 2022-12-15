@@ -83,7 +83,6 @@ const ActivationOptionsContent: React.FC = () => {
   );
 
   const initialValues = useMemo(() => {
-    console.log("initialValues memo");
     if (modifiedOptionValues) {
       return modifiedOptionValues;
     }
