@@ -26,7 +26,6 @@ import {
   flow,
   head,
   isEmpty,
-  isPlainObject,
   last,
   mapValues,
   maxBy,
