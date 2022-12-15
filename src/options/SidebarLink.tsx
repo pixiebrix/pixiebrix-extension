@@ -29,13 +29,9 @@ interface LinkProps {
   route: string;
 }
 
-export const SidebarLink: React.FunctionComponent<LinkProps & NavLinkProps> = ({
-  route,
-  title,
-  icon,
-  isActive,
-  ...navLinkProps
-}) => {
+export const SidebarLink: React.FunctionComponent<
+  LinkProps & Omit<NavLinkProps, "to">
+> = ({ route, title, icon, isActive, ...navLinkProps }) => {
   const location = useLocation();
   const rootPathname = location.pathname.split("/")[1];
   const rootRoute = route.split("/")[1];

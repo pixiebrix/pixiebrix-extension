@@ -122,6 +122,13 @@ declare module "@/vendors/initialize" {
   export default initialize;
 }
 
+interface JQueryStatic {
+  find: (() => JQuery) & {
+    /** Partial type for `$.find.tokenize */
+    tokenize: (selector: string) => string[];
+  };
+}
+
 // `useUnknownInCatchVariables` for .catch method https://github.com/microsoft/TypeScript/issues/45602
 interface Promise<T> {
   /**
