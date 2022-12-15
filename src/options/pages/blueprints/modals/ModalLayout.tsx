@@ -16,31 +16,23 @@
  */
 
 import React from "react";
-import { useDispatch } from "react-redux";
-import Loader from "@/components/Loader";
-import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { Modal } from "react-bootstrap";
 
-type LoadingProps = {
+type ModalLayoutProps = {
   title: string;
+  show: boolean;
+  onHide: () => void;
 };
 
-const Loading: React.FunctionComponent<LoadingProps> = ({ title }) => {
-  const dispatch = useDispatch();
-  const closeModal = () => {
-    dispatch(blueprintModalsSlice.actions.closeModal());
-  };
+const ModalLayout: React.FunctionComponent<
+  React.PropsWithChildren<ModalLayoutProps>
+> = ({ title, show, onHide, children }) => (
+  <Modal show={show} onHide={onHide}>
+    <Modal.Header closeButton>
+      <Modal.Title>{title}</Modal.Title>
+    </Modal.Header>
+    {show && children}
+  </Modal>
+);
 
-  return (
-    <Modal show onHide={closeModal}>
-      <Modal.Header closeButton>
-        <Modal.Title>{title}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Loader />
-      </Modal.Body>
-    </Modal>
-  );
-};
-
-export default Loading;
+export default ModalLayout;

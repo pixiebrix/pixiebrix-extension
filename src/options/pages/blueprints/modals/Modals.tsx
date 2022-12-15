@@ -30,8 +30,6 @@ const Modals: React.FunctionComponent = () => {
   const showLogsModal = showLogsContext !== null;
   const showConvertToRecipeModal =
     showShareContext?.extensionId || showPublishContext?.extensionId;
-  const showShareRecipeModal = showShareContext?.blueprintId;
-  const showPublishRecipeModal = showPublishContext?.blueprintId;
 
   return (
     <>
@@ -42,8 +40,8 @@ const Modals: React.FunctionComponent = () => {
         />
       )}
       {showConvertToRecipeModal && <ConvertToRecipeModal />}
-      {showShareRecipeModal && <ShareRecipeModal />}
-      {showPublishRecipeModal && <PublishRecipeModal />}
+      <ShareRecipeModal />
+      <PublishRecipeModal />
     </>
   );
 };
